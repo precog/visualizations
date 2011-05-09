@@ -1,0 +1,369 @@
+.rgviz
+{
+	font-family: arial, verdana, sans-serif;;
+	font-size: 11px;
+}
+
+.rgviz .hidden
+{
+	display: none !important;
+}
+
+.rgviz ul
+{
+	list-style: none;
+}
+
+.rgviz ul, .rgviz dl, .rgviz ul li, .rgviz dl dd, .rgviz dl dt
+{
+	padding: 0;
+	margin: 0;
+}
+
+.rgviz .header
+{
+	width: 22em;
+	float: left;
+}
+
+.rgviz .header dl
+{
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	padding: 4px;
+	margin: 0 0 8px 0;
+	background-color: #eef;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+
+.rgviz .header dt
+{
+	padding: 0px 0;
+	clear: left;
+}
+
+.rgviz .header dd
+{
+	margin-bottom: 5px 0;
+}
+
+.rgviz .header .property dl
+{
+	padding-bottom: 0px;
+}
+
+.rgviz .header .property dl dl
+{
+	padding-bottom: 5px;
+}
+
+.rgviz .header .property dd
+{
+	background-color: transparent;
+	padding: 0px;
+	margin: 0px;
+}
+
+.rgviz .header .property dd li dd
+{
+	padding: 5px 8px;
+	margin-bottom: 5px 0;
+	background-color: #eee;
+}
+
+.rgviz .header dd.current li
+{
+	float:left;
+}
+
+.rgviz .header dd.current ul
+{
+	min-height: 2em;
+}
+
+.rgviz .header .current li, .rgviz .header .children li, .rgviz .header .event dd li, .rgviz .header .property dd dt, .rgviz .header .property dd dd, .rgviz .header .options dd
+{
+	outline: none;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	font: 13px/100% Arial, Helvetica, sans-serif;
+	padding: .5em 1em .55em;
+	text-shadow: 0 1px 1px rgba(0,0,0,.3);
+	-webkit-border-radius: .5em;
+	-moz-border-radius: .5em;
+	border-radius: .5em;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+
+.rgviz .count
+{
+	font-size: 10px;
+}
+
+/* PATH */
+.rgviz .header .current li:hover, .rgviz .header .children li:hover
+{
+	color: #e8f0de;
+	border: solid 1px #538312;
+	background: #64991e;
+	background: -webkit-gradient(linear, left top, left bottom, from(#7db72f), to(#4e7d0e));
+	background: -moz-linear-gradient(top,  #7db72f,  #4e7d0e);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#7db72f', endColorstr='#4e7d0e');
+}
+
+.rgviz .header .current li, .rgviz .header .children li
+{
+	color: #fef4e9;
+	border: solid 1px #538018;
+	background: #538018;
+	background: -webkit-gradient(linear, left top, left bottom, from(#6b9d28), to(#436b0c));
+	background: -moz-linear-gradient(top,  #6b9d28,  #436b0c);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#6b9d28', endColorstr='#436b0c');
+}
+
+/* PROPERTY/OPTION */
+.rgviz .header .property dd dt:hover, .rgviz .header .options dd:hover
+{
+	color: #faddde;
+	border: solid 1px #980c10;
+	background: #d81b21;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
+	background: -moz-linear-gradient(top,  #ed1c24,  #aa1317);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ed1c24', endColorstr='#aa1317');
+}
+
+
+.rgviz .header .property dd dt, .rgviz .header .options dd
+{
+	color: #fef4e9;
+	border: solid 1px #b61318;
+	background: #b61318;
+	background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115));
+	background: -moz-linear-gradient(top,  #c9151b,  #a11115);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#c9151b', endColorstr='#a11115');
+}
+
+/* EVENT/VALUE */
+.rgviz .header .event dd li:hover, .rgviz .header .property dd dd:hover
+{
+	text-decoration: none;
+	background: #f47c20;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f88e11), to(#f06015));
+	background: -moz-linear-gradient(top,  #f88e11,  #f06015);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f88e11', endColorstr='#f06015');
+}
+
+.rgviz .header .event dd li, .rgviz .header .property dd dd
+{
+	color: #fef4e9;
+	border: solid 1px #da7c0c;
+	background: #f78d1d;
+	background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+	background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#faa51a', endColorstr='#f47a20');
+}
+
+.rgviz .header .current li
+{
+	font: 12px/100% Arial, Helvetica, sans-serif;
+	padding: .25em 0.5em .275em;
+	margin-right: 2px;
+}
+
+/* SVG */
+div.rgviz svg
+{
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	padding: 8px;
+	margin: 0 0 8px 8px;
+	background-color: #eef;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+
+
+.rgviz rect
+{
+	fill: none;
+}
+
+/* REVIEW */
+.rgviz rect.panel
+{
+	fill: transparent;
+	stroke: transparent;
+}
+
+.rgviz line.tick
+{
+	stroke: #aaa;
+	shape-rendering: crispEdges;
+}
+
+.rgviz path.line
+{
+	fill: none;
+	shape-rendering: geometricPrecision;
+	stroke-width: 2;
+}
+
+.rgviz line.rule
+{
+	stroke-dasharray: 1, 1;
+	stroke: #ccc;
+	shape-rendering: crispEdges;
+}
+
+.rgviz text.label
+{
+	font: 8px Verdana;
+	text-rendering: optimizeLegibility;
+}
+
+.rgviz span.layer
+{
+	float: right;
+	display: block;
+	width: 14px;
+	height: 14px;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+
+.rgviz span.layer-0, .rgviz span.layer-10
+{
+	background-color: #4D708B;
+}
+
+.rgviz span.layer-1, .rgviz span.layer-11
+{
+	background-color: #F4DD39;
+}
+
+.rgviz span.layer-2, .rgviz span.layer-12
+{
+	background-color: #CB2027;
+}
+
+.rgviz span.layer-3, .rgviz span.layer-13
+{
+	background-color: #458A17;
+}
+
+.rgviz span.layer-4, .rgviz span.layer-14
+{
+	background-color: #AAB6A2;
+}
+
+.rgviz span.layer-5, .rgviz span.layer-15
+{
+	background-color: #d62728;
+}
+
+.rgviz span.layer-6, .rgviz span.layer-16
+{
+	background-color: #ff9896;
+}
+
+.rgviz span.layer-7, .rgviz span.layer-17
+{
+	background-color: #9467bd;
+}
+
+.rgviz span.layer-8, .rgviz span.layer-18
+{
+	background-color: #c5b0d5;
+}
+
+.rgviz span.layer-9, .rgviz span.layer-19
+{
+	background-color: #8c564b;
+}
+
+.rgviz g.layer
+{
+	shape-rendering: crispEdges;
+}
+
+.rgviz g.layer .bar rect
+{
+	fill: inherit;
+}
+
+.rgviz g.layer text
+{
+	stroke: none;
+	fill: #000;
+	font: 10px Verdana;
+	text-rendering: optimizeLegibility;
+}
+
+.rgviz g.layer-0, .rgviz g.layer-10
+{
+	fill: #4D708B;
+	stroke: #4D708B;
+}
+
+.rgviz g.layer-1, .rgviz g.layer-11
+{
+	fill: #F4DD39;
+	stroke: #F4DD39;
+}
+
+.rgviz g.layer-2, .rgviz g.layer-12
+{
+	fill: #CB2027;
+	stroke: #CB2027;
+}
+
+.rgviz g.layer-3, .rgviz g.layer-13
+{
+	fill: #458A17;
+	stroke: #458A17;
+}
+
+.rgviz g.layer-4, .rgviz g.layer-14
+{
+	fill: #AAB6A2;
+	stroke: #AAB6A2;
+}
+
+.rgviz g.layer-5, .rgviz g.layer-15
+{
+	fill: #d62728;
+	stroke: #d62728;
+}
+
+.rgviz g.layer-6, .rgviz g.layer-16
+{
+	fill: #ff9896;
+	stroke: #ff9896;
+}
+
+.rgviz g.layer-7, .rgviz g.layer-17
+{
+	fill: #9467bd;
+	stroke: #9467bd;
+}
+
+.rgviz g.layer-8, .rgviz g.layer-18
+{
+	fill: #c5b0d5;
+	stroke: #c5b0d5;
+}
+
+.rgviz g.layer-9, .rgviz g.layer-19
+{
+	fill: #8c564b;
+	stroke: #8c564b;
+}

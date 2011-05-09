@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../main/js/reportgrid-core.js?tokenId=8E680858-329C-4F31-BEE3-2AD15FB67EED&amp;analyticsServer=http%3A%2F%2Flocalhost%3A8888%2F&amp;useJsonp=true"></script>
+    <script type="text/javascript" src="../main/js/reportgrid-viz.js?tokenId=8E680858-329C-4F31-BEE3-2AD15FB67EED&amp;analyticsServer=http%3A%2F%2Flocalhost%3A8888%2F&amp;useJsonp=true"></script>
+    <script type="text/javascript">
+      var showReport = function(report) {
+        var asText = JSON.stringify(report, null, '  ');
+
+        document.getElementById('target').innerHTML = asText;
+      }
+
+      var getPeriodicity = function() {
+        var select = document.getElementById('periodicity');
+
+        var option = select.options[select.selectedIndex];
+
+        return option.value;
+      }
+
+      var getCustomEventName = function() {
+        var e = document.getElementById('event-name');
+
+        return e.value;
+      }
+
+      var getCustomEventProperties = function() {
+        var e = document.getElementById('event-properties');
+
+        var v = JSON.stringify(eval('(' + e.value + ')'));
+
+        console.info('Event properties: ' + v);
+
+        return JSON.parse(v);
+      }
+    </script>
+    <title>ReportGrid JS API Demo</title>
+  </head>
+  <body>
+    <form>
+      <input type="button" value="click" onclick="ReportGrid.track('/blog/entries/', 'click')"/>
+      <input type="button" value="impression" onclick="ReportGrid.track('/blog/entries/', 'impression')"/>
+      <input type="button" value="custom" onclick="ReportGrid.track('/blog/entries/', getCustomEventName(), getCustomEventProperties())"/>
+      <input id="event-name" type="text" size="10" value="custom"/>
+      <input id="event-properties" type="text" size="20" value="{}"/>
+    </form>
+    <form>
+      <input type="button" value="Summary" onclick="ReportGrid.summary('/blog/entries/', showReport)"/>
+      <input type="button" value="Time Series" onclick="ReportGrid.timeSeries('/blog/entries/', getPeriodicity(), 0, new Date().getTime(), showReport)"/>
+      <select id="periodicity">
+        <option value="minute">minute</option>
+        <option value="hour">hour</option>
+        <option value="day">day</option>
+        <option value="week">week</option>
+        <option value="month">month</option>
+        <option value="year">year</option>
+        <option value="eternity">eternity</option>
+      </select>
+    </form>
+    <div id="viz"></div>
+    <pre id="target">
+    </pre>
+  </body>
+</html>

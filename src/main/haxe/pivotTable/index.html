@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <title></title>
+    <style type="text/css">
+      * {
+        font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial;
+        font-size: 12px;
+        border: 0px;
+      	margin: 0px;
+      	padding; 0px;
+      }
+      
+      body {
+        position: relative;
+        background-color: black;
+      }
+      
+      div {
+      	margin: 0px;
+        border: 0px;
+        padding: 0px;
+      }
+      
+      select {
+        border-color: #50cdfa;
+        border-style: solid;
+        border-width: 2px;
+        float: right;
+      }
+      
+      option {
+        border-color: #50cdfa;
+        border-style: solid;
+        border-width: 2px;
+      }
+      
+      .pivot-table-demo {
+        position: relative;
+        width: 780px;
+        background-color: #2772AA;
+        height: auto;
+        margin: 0px auto;
+      }
+      
+      #blue {
+        position: relative;
+        width: 780px;
+        height: 900px;
+        background-color: #2772AA;
+        margin: 0px auto;
+      }
+      
+      body #pivot-table-dashboard {
+      	position: relative;
+      	margin: 5px;
+      	height: 179px;
+      	width: 770px;
+      	background-color: #222222;
+      	border-radius :  8px;
+      	border-color: #666666;
+      	border-style: solid;
+      	border-width: 0px;
+      	text-shadow: #444444 1px 1px;
+      }
+      
+      .pivot-table-selectors {
+        position: relative;
+        width: 734px;
+        margin: 2px;
+      }
+      
+      .selector-block {
+        position: relative;
+        width: 766px;
+        height: 40px;
+      }
+      
+      .pivot-table-field {
+        position: relative;
+        width: 369px;
+        margin: 5px 5px;
+        height: 36px;
+        background-color: #111111;
+      	border-radius :  8px;
+      	border-color: #666666;
+      	border-style: solid;
+      	border-width: 2px;
+      	float: left;
+      }
+      
+      .pivot-table-property-selectors-parent {
+        margin: 15px 5px;
+        background-color: #111111;
+      	border-radius :  8px;
+      	border-color: #666666;
+      	border-style: solid;
+      	border-width: 2px;
+      	height: 115px;
+      	width: 752px;
+      }
+      
+      .dashboard-field {
+      	position: relative;
+      	margin: 7px;
+      	left: 5px;
+      	width: 342px;
+      }
+      
+      .dashboard-field input {
+      	position: relative;
+      	margin: 0px 8px;
+      	height: 16px;
+      	border-radius: 6px;
+      	border-color: #666666;
+      	border-style: solid;
+      	border-width: 2px;
+      }
+      
+      .dashboard-field #get-properties-button {
+        height: 24px;
+        color: #white;
+        border-color: #666666;
+        border-radius: 10px;
+        background: -moz-radial-gradient(circle, #1a82f7, #2F2727);
+        background: -webkit-radial-gradient(circle, #1a82f7, #2F2727);
+        background: -webkit-gradient(radial, center center, 0, center center, 80, from(#1a82f7), to(#2F2727));
+        float: right;
+      }
+      
+      .dashboard-field #get-properties-button:hover {
+         cursor: pointer;
+      }
+      
+      #pivot-table-dashboard .horizontal-line {
+        position: relative;
+        width: 100%;
+        height: 2px;
+        background-color: #666666;
+      }
+      
+      .pivot-table-label {
+      	margin: 4px 5px;
+      	display: block;
+      }
+      
+      .dashboard-field h2 {
+        margin: 5px 3px;
+      }
+      
+      h2 {
+      	font-size: 14px;
+      	color: #white;
+      	display: inline;
+      	font-weight: normal;
+      	position: relative;
+      	top: 1px;
+      }
+      
+      h3 {
+      	font-size: 14px;
+      	color: #white;
+      	font-weight: normal;
+      	position: relative;
+      	margin: 8px 14px;
+      }
+      
+      .properties-selectors {
+        position: relative;
+        width: 752px;
+        margin-top: 10px;
+        height: 30px;
+      }
+      
+      .properties-selectors h2 {
+        font-size: 12px;
+      }
+      
+      .property-selector-container {
+        position: relative;
+        width: 710px;
+        margin-left: 15px;
+        margin-top: 15px;
+      }
+      
+      #pivot-table-placeholder-parent {
+        position: relative;
+        width:765px;
+        overflow: auto;
+        text-align: center;
+      }
+      
+      #table {
+        position: relative;
+        width:    auto;
+        height:   auto;
+        padding: 8px 8px;
+      }
+      
+      #pivot-table-dashboard table {
+        border-color: black;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 4px;
+        background-color: white;
+      }
+      
+      .properties-selector-header-container {
+        position: relative;
+        top: -2px;
+        left: -2px;
+        height: auto;
+        width: 96px;
+        border-radius: 6px;
+      	border-color: #666666;
+      	border-style: solid;
+      	border-width: 2px;
+      }
+      
+      .pivot-table-header table td{
+        border-color: #999999;
+        border-style: solid;
+        border-width: 1px;
+      }
+      
+      
+    </style>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script src="http://static.reportgrid.com/api/js/v1/reportgrid-core.js?tokenId=2E57096A-510E-44A4-A301-EDAD54D400EA&amp;analyticsServer=http%3A%2F%2Fapi.reportgrid.com%2Fservices%2Fanalytics%2Fv0%2F&amp;useJsonp=true" type="text/javascript"></script>
+    
+  </head>
+  <body>
+    
+    <div class="pivot-table-demo">
+      
+      <div id="haxe:trace"></div>
+      <div id="blue">
+        <h2>Pivot Table</h2>
+    		<div id="pivot-table-dashboard">
+    		  <div class="pivot-table-selectors">
+    		    <div class="selector-block">
+      		    <div class="pivot-table-field">
+        		    <div class="dashboard-field"><h2>Path </h2>
+          		  	<input id="path-input" type="text"  value="/adv/"/> <input id="get-properties-button" type="submit" value="Get Properties" />
+          		  </div>
+          		</div>
+          		<div class="pivot-table-field">
+          		  <div class="dashboard-field"><h2>Event Name <h2> 
+          		    <select id="event-selector">
+          		      <option>select</option>
+          		    </select>
+          		  </div>
+          		</div>
+          	</div>
+          	<div class="pivot-table-property-selectors-parent">
+          	  <div class="properties-selector-header-container">
+          	    <h3>Properties</h3>
+          	  </div>
+        		  <div class="properties-selectors dashboard-field">
+        		    <div class="property-selector-container"><h2>Columns </h2>
+        		      <select id="column-selector" class="property-selector">
+        		        <option>select</option>
+        		      </select>
+        		    </div>
+        		    <div class="property-selector-container"><h2>Rows </h2>
+        		      <select  id="row-selector" class="property-selector">
+        		      	<option>select</option>
+        		      </select>
+        		    </div>
+      		    </div>
+      		  </div>
+    		  </div>
+    		  <div id="pivot-table-placeholder-parent">
+            <div id="table"></div>
+          </div>
+  	    </div>
+      </div>
+    </div>
+    
+    
+
+    <script type="text/javascript" src="pivotTable.js"></script>
+    <script type="text/javascript">
+    
+      function attachPivotTableToHTML(tableId, pathInputId, submitButtonId ) {
+        var input   			      = $("#path-input");
+        var button  			      = $("#get-properties-button");
+        var eventSelector 	    = $("#event-selector");
+        var rowSelector   	    = $("#row-selector");
+        var columnSelector   	  = $("#column-selector");
+        var propertySelectors   = $(".property-selector");
+        var eventSelection      = null;
+        var colSelection        = null;
+        var rowSelection        = null;
+        var availProperties     = [];
+
+        function resetOptions(elem) {
+        	elem.html("<option>select</option>");
+        }
+
+        function addOption(optEl, value) {
+        	optEl.append($("<option class='option-" + toClassName(value) + "'>" + noDot(value) + "</option>"));
+        }
+
+        function fillOptions(options, elem) {
+        	resetOptions(elem);
+          $.each(options, function (index, value) {
+          	addOption(elem, value);
+          });
+        }
+        function propertyUnavailable(s) {
+        	var result = [];
+        	$.each(availProperties, function(index, value) {
+        	  if (s != value) result.push(value);	
+    	    });
+    	    return result;
+        }
+        function checkIfFieldHasProperties(f) {
+        	ReportGrid.children(input.val(), { "type" : "field", "field" : eventSelection + f }, function(e) { 
+        	  if (e.length > 0) { 
+        	  	fillOptions(propertyUnavailable(f), rowSelector); 
+        	  	fillOptions(propertyUnavailable(f), columnSelector);
+        	  	addOption(eventSelector, eventSelection +  f); 
+        	  	availProperties = propertyUnavailable(f);
+    	  	  }	
+    	    });
+        }
+
+        eventSelector.change(function () {
+          $("#event-selector option:selected").each(function () {
+          	eventSelection = withDot($(this).text());
+              ReportGrid.children(input.val(), { "type" : "field", "field" : eventSelection }, function(e) {
+                availProperties = e;
+             	  fillOptions(e, propertySelectors); 
+             	  $.each(e, function(index, value) {checkIfFieldHasProperties(value); });
+             	});
+          });
+        })
+        rowSelector.change(function () {
+          $("#row-selector option:selected").each(function () {
+          	rowSelection = withDot($(this).text());
+          	fillOptions(propertyUnavailable(rowSelection), columnSelector);
+
+          	generatePivotTable();
+          });
+        })
+        columnSelector.change(function () {
+          $("#column-selector option:selected").each(function () {
+          	colSelection = withDot($(this).text());
+          	fillOptions(propertyUnavailable(colSelection), rowSelector);
+          	generatePivotTable();
+          });
+        })
+        function generatePivotTable() {
+
+        	if (rowSelection  && colSelection) {
+        		document.getElementById("table").innerHTML = "";
+        		new ReportGrid.pivotTable("table", input.val(), { rows : eventSelection + rowSelection, columns : eventSelection + colSelection });
+        		fillOptions(availProperties, propertySelectors)
+        		rowSelection = null; colSelection = null;
+        	}
+        }
+        button.click(function() { ReportGrid.children(input.val(), { "type" : "all" }, function(e) {
+          fillOptions(e, eventSelector); }); 
+        });
+        function withDot(s) {
+          return "." + s;
+        }
+        function toClassName(s) {
+          return String(s).replace(/./gi, "");
+        }
+        function noDot(s) {
+          return String(s).replace(".", "");
+        }
+      }
+      attachPivotTableToHTML();
+      
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>D3 Examples</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+    <style type="text/css">
+
+body {
+  font: 10px sans-serif;
+}
+
+/* NESTED KEY */
+.nestedkey td {
+  font: 14px Helvetica Neue;
+  text-rendering: optimizeLegibility;
+  margin: 1em;
+}
+
+table.nestedkey {
+  border-collapse: collapse;
+  margin-top: .5em;
+}
+
+.nestedkey td {
+  border: solid 1px #fff;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+}
+
+/* BAR */
+svg.barex {
+  shape-rendering: crispEdges;
+}
+
+/* AREA EXAMPLE */
+.areaex .rule line {
+  stroke: #eee;
+  shape-rendering: crispEdges;
+}
+
+.areaex .rule line.axis {
+  stroke: #000;
+}
+
+.areaex .area {
+  fill: lightsteelblue;
+}
+
+.areaex .line, circle.area {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.areaex circle.area {
+  fill: #fff;
+}
+
+/* TIMER EXAMPLE */
+#countdown
+{
+	font-weight: bold;
+	font-size: 200px;
+}
+
+/* TRANSITION EXAMPLE */
+div.flying
+{
+	padding: 5px;
+	font-size: 12px;
+	text-align: center;
+	width: 75px;
+}
+
+/* HELLO SORT */
+
+.HelloSort
+{
+	font: 14px Helvetica Neue;
+	margin: 0;
+	display: block;
+	position: fixed;
+}
+
+.HelloSort circle
+{
+	fill: steelblue;
+	fill-opacity: .8;
+	stroke: #fff;
+}
+
+.HelloWebkitTransition
+{
+	font: 14px Helvetica Neue;
+	text-rendering: optimizeLegibility;
+	margin: 1em;
+}
+
+.HelloWebkitTransition #cells
+{
+	position: relative;
+	margin-top: .5em;
+	height: 300px;
+	overflow: hidden;
+}
+
+.HelloWebkitTransition .cell
+{
+	position: absolute;
+	background: steelblue;
+	color: white;
+	width: 28px;
+	text-align: center;
+	padding-top: 6px;
+	top: 300px;
+	bottom: 0;
+	background: -webkit-gradient(linear, left top, left bottom, from(transparent), to(steelblue));
+	-webkit-transition-property: top, background-color;
+	-webkit-transition-duration: 500ms;
+	-webkit-transition-timing-function: ease, linear;
+}
+
+
+/* HELLO TRANSITION */
+
+.HelloTransition div, .HelloTransitionUndefined div
+{
+	font-size: 42px;
+	margin-top: .5em;
+	color: white;
+	text-align: right;
+	padding-right: 12px;
+}
+
+.Line .rule line
+{
+	stroke: #eee;
+	shape-rendering: crispEdges;
+}
+
+.Line .rule line.axis
+{
+	stroke: #000;
+}
+
+.Line .line
+{
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+}
+
+.Line circle.line
+{
+	fill: #fff;
+}
+
+.Moire circle
+{
+	fill: none;
+	stroke: #000;
+}
+
+.Chord .chord path
+{
+	fill-opacity: .67;
+	stroke: #000;
+	stroke-width: .5px;
+}
+
+.Stack line {
+	stroke : black;
+}
+
+.ZoomPan svg {
+	font: 10px sans-serif;
+	shape-rendering: crispEdges;
+}
+
+/* EXAMPLES */
+#examples
+{
+	float: right;
+	width: 200px;
+	border: 1px solid #ccc;
+	list-style: none;
+	padding: 0 0 2px 0;
+	margin: 0;
+}
+
+#examples li
+{
+	margin: 2px 2px 0 2px;
+	border: 1px solid #ccc;
+}
+
+#examples li a
+{
+	padding: 2px;
+	display: block;
+	background-color: #333;
+	color: #fff;
+	text-align: center;
+	text-decoration: none;
+	font-weight: bold;
+}
+    </style>
+</head>
+<body>
+	<ul id="examples"></ul>
+	<div id="example"></div>
+	<div id="description"></div>
+	<div id="haxe:trace"></div>
+	<script src="D3Examples.js"></script>
+</body>
+</html>

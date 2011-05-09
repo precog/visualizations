@@ -1,0 +1,154 @@
+/* HTML */
+* {
+	font-family: sans-serif;
+	font-size: 12px;
+}
+
+fieldset, ul, li {
+	padding: 0;
+	margin: 0;
+}
+
+legend {
+	font-weight: bold;
+}
+
+sup {
+	font-size: 0.8em;
+}
+
+fieldset {
+	padding: 5px;
+	margin: 0 0 10px 0;
+	border: 1px solid #ccc;
+}
+
+ul {
+	list-style: none;
+}
+
+body {
+	text-align: center;
+}
+
+div#main {
+  width: 750px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.small {
+	font-size: 0.85em;
+}
+
+td.number {
+	text-align: center;
+}
+
+hr {
+	clear: both;
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+.vis {
+	margin: 12px 0;
+	border-bottom: 1px solid #ccc;
+}
+
+ul#breadcrumbs li {
+	display: block;
+	float: left;
+	padding: 0 5px 0 0;
+	
+}
+
+ul#breadcrumbs li:before {
+	content : " » ";
+}
+
+ul#breadcrumbs li:first-child:before {
+	font-weight: bold;
+	content : "";
+}
+
+ul#breadcrumbs {
+	margin: 0 0 35px 0;
+}
+
+table {
+	padding: 0;
+	border-collapse:collapse;
+}
+
+td {
+	border: 1px solid #ccc;
+	text-align: left;
+}
+
+th {
+	font-weight: bold;
+	background-color: #eee;
+	text-align: center;
+	padding: 2px 6px;
+	border: 1px solid #ccc;
+}
+
+/* SVG */
+text.label {
+	font-family: Verdana, sans-serif;
+	font-size: 8px;
+	fill: #666;
+}
+
+rect.chart-background {
+	fill: #fff;
+}
+
+.bar rect {
+	stroke: #666;
+}
+
+.bar rect:hover {
+	stroke: #000;
+	fill: #ffa;
+}
+
+path.line {
+	stroke-width: 2;
+	fill: none;
+}
+
+.rule line.axis {
+	stroke: #000;
+	stroke-opacity: 1;
+	stroke-dasharray: 1;
+}
+
+.rule line {
+	stroke: #000;
+	stroke-opacity: 0.25;
+	stroke-dasharray: 3 2;
+}
+
+circle.dot {
+	stroke: #fff;
+	fill: #39f;
+	r: 10;
+}
+/*
+.area {
+	fill-opacity: 1.25;
+	stroke: #999;
+}
+*/

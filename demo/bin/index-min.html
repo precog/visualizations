@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>ReportGrid</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link href="css/ui-lightness/jquery-ui-1.8.11.custom.css" rel="stylesheet" type="text/css" />
+	<script src="js/rg/reportgrid-core.js?tokenId=8E680858-329C-4F31-BEE3-2AD15FB67EED&amp;analyticsServer=http%3A%2F%2Flocalhost%3A8888%2F&amp;useJsonp=true" type="text/javascript"></script>
+	<script src="js/rg.js" type="text/javascript"></script>
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div id="main">
+		<h1>Tapad DSP Reporting Dashboard - Nike</h1>
+		<ul id="breadcrumbs">
+			<li>Websites</li>
+			<li>Yahoo.com</li>
+		</ul>
+		<hr/>
+		<table id="report">
+			<thead>
+				<tr>
+					<th>Total Impressions</th>
+					<th>Average eCPM</th>
+					<th>Total Spend</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td id="total" class="number"></td>
+					<td id="average" class="number">???</td>
+					<td id="spend" class="number">???</td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="charts">
+			<form class="vis">
+				<div class="left">
+					<label>Chart type:
+						<select name="charttype" id="charttype">
+							<option value="area">area</option>
+							<option value="line">line</option>
+							<option value="bar">bar</option>
+						</select>
+					</label>
+					<label>
+						Start: <input type="text" id="start" name="start"/>
+					</label>
+					<label>
+						End: <input type="text" id="end" name="end"/>
+					</label>
+				</div>
+				<div class="right">
+					<label>Breakdown by: <select name="breakdown" id="breakdown"></select></label>
+				</div>
+				<div id="chart"></div>
+				<div class="right">
+					<label>x axis: <select name="xbreakdown" id="xbreakdown"></select></label>
+				</div>
+				<hr/>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

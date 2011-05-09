@@ -1,0 +1,5 @@
+-cp src
+-cp ../../../../../reportgrid-client-libraries/haxe/src
+-cp ../../../../../core/src
+-js bin/insightexplorer.js
+rg.InsightExplorer
