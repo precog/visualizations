@@ -33,14 +33,14 @@ class InsightExplorer
 			;
 		return new InsightExplorer(target, path, translator, width, height, startd, endd);
 	}
-	var _container : thx.js.Selection<Dynamic>;
+	var _container : thx.js.Selection;
 	var _t : ITranslation;
 	var _hpath : HeaderPath;
 	var _hevent : HeaderEvent;
 	var _hproperty : HeaderProperty;
 	var _hoptions : HeaderOptions;
-	var _header : Selection<Dynamic>;
-	var _visualization : Selection<Dynamic>;
+	var _header : Selection;
+	var _visualization : Selection;
 	var _vis : Visualization;
 	
 	public var width(default, null) : Int;

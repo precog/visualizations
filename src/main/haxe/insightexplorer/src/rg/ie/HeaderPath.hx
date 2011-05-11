@@ -15,10 +15,10 @@ class HeaderPath
 {
 	public var path(default, null) : String;
 	public var children(default, null) : Array<{ path : String, name : String }>;
-	var _container : Selection<Dynamic>;
+	var _container : Selection;
 	var _t : ITranslation;
 	
-	public function new(container : Selection<Dynamic>, path : String, t : ITranslation)
+	public function new(container : Selection, path : String, t : ITranslation)
 	{
 		this.path = path;
 		_t = t;
@@ -28,7 +28,7 @@ class HeaderPath
 	public dynamic function pathChange() : Void;
 	public dynamic function childrenChange() : Void;
 	
-	function init(container : Selection<Dynamic>)
+	function init(container : Selection)
 	{
 		_container = container.append("div").attr("class").string("path");
 		// path

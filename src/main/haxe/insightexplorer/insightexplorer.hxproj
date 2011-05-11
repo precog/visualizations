@@ -14,8 +14,6 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="..\..\..\..\..\reportgrid-client-libraries\haxe\src" />
-    <class path="..\..\..\..\..\core\src" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -27,7 +25,8 @@
   </build>
   <!-- haxelib libraries -->
   <haxelib>
-    <!-- example: <library name="..." /> -->
+    <library name="thx" />
+    <library name="reportgrid" />
   </haxelib>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>

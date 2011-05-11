@@ -125,7 +125,7 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		var layer = svg.selectAll("g.layer").data(_prepdata);
 		
 		// update
-		layer.select("path.line")
+		layer.update().select("path.line")
 			.transition()
 				.attr("d").stringf(_path)
 		;
@@ -148,7 +148,7 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		
 		// update
 		if (_pathCreated)
-			layer.select("path.line").attr("d").stringf(_path);
+			layer.update().select("path.line").attr("d").stringf(_path);
 
 		// enter
 		layer.enter()
@@ -157,10 +157,8 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 			.append("svg:path")
 				.attr("class").string("line")
 				.attr("d").stringf(path0)
-					.transition()
-						.attr("d").stringf(_path)
-						.end(_setPathCreated)
-		;
+					.transition().attr("d").stringf(_path)
+					.endNode(_setPathCreated);
 		
 		// exit
 		layer.exit().remove();

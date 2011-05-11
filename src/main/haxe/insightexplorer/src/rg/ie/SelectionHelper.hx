@@ -10,7 +10,7 @@ import thx.js.Selection;
 class SelectionHelper
 {
 
-	public static function appendCount(sel : Selection<Dynamic>, count : Int)
+	public static function appendCount(sel : Selection, count : Int)
 	{
 		sel.html().string(sel.html().get() + ' <spann class="count">(' + Ints.format(count) +')</span>');
 	}

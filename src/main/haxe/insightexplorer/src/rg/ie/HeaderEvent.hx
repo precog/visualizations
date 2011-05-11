@@ -2,9 +2,10 @@ package rg.ie;
 
 import rg.js.ReportGrid;
 import thx.js.Dom;
+import js.Dom;
 import thx.js.Selection;
+import thx.js.Access;
 import thx.translation.ITranslation;
-import thx.js.Node;
 using Arrays;
 using rg.ie.SelectionHelper;
 
@@ -18,22 +19,22 @@ class HeaderEvent
 	public var events(default, null) : Array<String>;
 	public var event(default, null) : String;
 	
-	var _block : Selection<Dynamic>;
-	var _container : Selection<Dynamic>;
+	var _block : Selection;
+	var _container : Selection;
 	var _t : ITranslation;
 	public var path(default, null) : String;
 	
 	public dynamic function eventsChange() : Void;
 	public dynamic function eventChange() : Void;
 	
-	public function new(container : Selection<Dynamic>, path : String, t : ITranslation)
+	public function new(container : Selection, path : String, t : ITranslation)
 	{
 		this.path = path;
 		_t = t;
 		init(container);
 	}
 	
-	function init(container : Selection<Dynamic>)
+	function init(container : Selection)
 	{
 		_block = container.append("div").attr("class").string("event hidden");
 		var dl = _block.append("dl");
@@ -80,12 +81,12 @@ class HeaderEvent
 		eventChange();
 	}
 	
-	function _eachEventCount(n : Node<Dynamic>, i)
+	function _eachEventCount(n : HtmlDom, i)
 	{
-		ReportGrid.propertyCount(path, { property  : n.data }, callback(_eventCount, n) );
+		ReportGrid.propertyCount(path, { property  : Access.getData(n) }, callback(_eventCount, n) );
 	}
 	
-	function _eventCount(n : Node<Dynamic>, count : Int)
+	function _eventCount(n : HtmlDom, count : Int)
 	{
 		Dom.selectNode(n).appendCount(count);
 	}

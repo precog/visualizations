@@ -3,8 +3,9 @@ package rg.ie;
 import thx.js.Selection;
 import thx.translation.ITranslation;
 import rg.js.ReportGrid;
-import thx.js.Node;
 import thx.js.Dom;
+import thx.js.Access;
+import js.Dom;
 using Arrays;
 using rg.ie.SelectionHelper;
 
@@ -22,21 +23,21 @@ class HeaderProperty
 	public var value(default, null) : Dynamic;
 	public var values(default, null) : Hash<Array<Dynamic>>;
 	
-	var _block : Selection<Dynamic>;
-	var _container : Selection<Dynamic>;
+	var _block : Selection;
+	var _container : Selection;
 	var _t : ITranslation;
 	
 	public dynamic function propertiesChange() : Void;
 	public dynamic function propertyChange() : Void;
 	
-	public function new(container : Selection<Dynamic>, path : String, t : ITranslation)
+	public function new(container : Selection, path : String, t : ITranslation)
 	{
 		this.path = path;
 		_t = t;
 		init(container);
 	}
 	
-	function init(container : Selection<Dynamic>)
+	function init(container : Selection)
 	{
 		_block = container.append("div").attr("class").string("property hidden");
 		var dl = _block.append("dl");
@@ -118,16 +119,16 @@ class HeaderProperty
 		});
 	}
 	
-	function _eachPropertyValue(n : Node<Dynamic>, i)
+	function _eachPropertyValue(n : HtmlDom, i)
 	{
-		ReportGrid.propertyValues(path, { property  : event + "." + n.data }, callback(_propertyValue, n) );
+		ReportGrid.propertyValues(path, { property  : event + "." + Access.getData(n) }, callback(_propertyValue, n) );
 	}
 	
-	function _propertyValue(n : Node<Dynamic>, values : Array<Dynamic>)
+	function _propertyValue(n : HtmlDom, values : Array<Dynamic>)
 	{
 		var t = _t;
 		var sel = Dom.selectNode(n);
-		this.values.set(n.data, values);
+		this.values.set(Access.getData(n), values);
 		if (values.length == 0)
 			return;
 		if (Std.is(values[0], Float))
@@ -143,18 +144,18 @@ class HeaderProperty
 				.enter()
 					.append("dd")
 					.html().stringf(function(d, i) return '<span class="hidden layer layer-' + i + '"> </span> ' + t._(d))
-					.on("click", callback(_clickValue, n.data))
-					.eachNode(callback(_eachPropertyCount, n.data))
+					.on("click", callback(_clickValue, Access.getData(n)))
+					.eachNode(callback(_eachPropertyCount, Access.getData(n)))
 			;
 		}
 	}
 	
-	function _eachPropertyCount(prop : String, n : Node<Dynamic>, i : Int)
+	function _eachPropertyCount(prop : String, n : HtmlDom, i : Int)
 	{
-		ReportGrid.propertyValueCount(path, { property : event + "." + prop, value : n.data }, callback(_propertyCount, n) );
+		ReportGrid.propertyValueCount(path, { property : event + "." + prop, value : Access.getData(n) }, callback(_propertyCount, n) );
 	}
 	
-	function _propertyCount(n : Node<Dynamic>, count : Int)
+	function _propertyCount(n : HtmlDom, count : Int)
 	{
 		Dom.selectNode(n).appendCount(count);
 	}

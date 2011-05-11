@@ -16,7 +16,7 @@ class SvgPanel
 	public static var transitionTime = 500;
 	
 	public var frame(default, null) : Frame;
-	public var svg(default, null) : Selection<Dynamic>;
+	public var svg(default, null) : Selection;
 //	public var animatePosition : Null<Bool>;
 	public var parent(default, null) : SvgContainer;
 	
@@ -51,7 +51,7 @@ class SvgPanel
 		init(v.svg);
 	}
 	
-	function init(container : Selection<Dynamic>)
+	function init(container : Selection)
 	{
 		svg = container.append("svg:g")
 			.attr("class").string("panel")

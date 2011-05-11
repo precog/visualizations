@@ -12,10 +12,10 @@ import rg.layout.Stack;
 
 class SvgSpace
 {
-	public var svg(default, null) : Selection<Dynamic>;
+	public var svg(default, null) : Selection;
 	public var workspace(default, null) : SvgContainer;
 	var _stackFrame : StackFrame;
-	public function new(width : Int, height : Int, parentSelection : Selection<Dynamic>)
+	public function new(width : Int, height : Int, parentSelection : Selection)
 	{
 		svg = parentSelection.append("svg:svg");
 		_stackFrame = new StackFrame(Fill());
@@ -42,7 +42,7 @@ class SvgSpace
 
 private class SvgSpaceContainer extends SvgContainer
 {
-	public function new(svgcontainer : Selection<Dynamic>, frame : StackFrame)
+	public function new(svgcontainer : Selection, frame : StackFrame)
 	{
 		super(frame, Vertical);
 //		animatePosition = false;

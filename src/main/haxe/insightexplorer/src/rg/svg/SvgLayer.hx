@@ -10,7 +10,7 @@ import thx.js.Selection;
 class SvgLayer<T>
 {
 	var panel : SvgPanel;
-	var svg : Selection<T>;
+	var svg : Selection;
 
 	public function new(panel : SvgPanel)
 	{

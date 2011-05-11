@@ -25,7 +25,7 @@ using Arrays;
 class TimeChart
 {
 	var _space : SvgSpace3x3;
-	var _svg : Selection<Dynamic>;
+	var _svg : Selection;
 	var _w : Int;
 	var _h : Int;
 	
@@ -45,7 +45,7 @@ class TimeChart
 	var _start : Float;
 	var _end : Float;
 
-	public function new(container : Selection<Dynamic>, w : Int, h : Int)
+	public function new(container : Selection, w : Int, h : Int)
 	{
 		_w = w;
 		_h = h;

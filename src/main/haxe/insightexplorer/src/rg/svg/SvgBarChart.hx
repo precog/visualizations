@@ -164,7 +164,7 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 		var layers = svg.selectAll("g.layer").data(_prepdata, _keyLayer);
 		
 		// update
-		layers.attr("transform").string("translate(0,0)");
+		layers.update().attr("transform").string("translate(0,0)");
 		
 		// enter
 		layers.enter()
@@ -175,10 +175,10 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 		layers.exit().remove();
 		
 		// BARS
-		var bars = layers.selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
+		var bars = layers.update().selectAll("g.bar").dataf(function(d, i) return d, _keyBar); // TODO WORKS???
 		
 		// update
-		bars
+		bars.update()
 			.attr("transform").stringf(tx)
 			.select("rect")
 				.transition()
@@ -187,7 +187,7 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 				.attr("width").float(_px)
 				.attr("height").floatf(hb)
 		;
-		bars
+		bars.update()
 			.select("text")
 				.attr("x").float(0)
 				.attr("y").floatf(py0label)
@@ -231,12 +231,13 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 	{
 		var layers = svg.selectAll("g.layer").data(_prepdata, _keyLayer);
 		
-		var bars = layers.selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
-		bars.select("rect")
+		var bars = layers.update().selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
+		bars.update().select("rect")
 			.transition()
-			.attr("y").floatf(py0)
-			.end(_transitionEndStack);
-		bars.select("text")
+				.attr("y").floatf(py0)
+				.end(_transitionEndStack);
+		
+		bars.update().select("text")
 			.transition()
 			.attr("y").floatf(py0label);
 	}
@@ -247,14 +248,15 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 			return;
 		var layers = svg.selectAll("g.layer").data(_prepdata, _keyLayer);
 		layers
+			.update()
 			.transition()
 			.attr("transform").string("translate(0,0)");
 			
-		var bars = layers.selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
-		bars.select("rect")
+		var bars = layers.update().selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
+		bars.update().select("rect")
 			.transition()
 			.attr("width").float(_px);
-		bars.select("text")
+		bars.update().select("text")
 			.transition()
 			.attr("x").float(0);
 	}
@@ -262,15 +264,13 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 	function _transitionSideBySide()
 	{
 		var layers = svg.selectAll("g.layer").data(_prepdata, _keyLayer);
-		layers
-			.transition()
-				.attr("transform").stringf(tl)
-				.end(_transitionEndSideBySide)
-			;
+		layers.update().transition()
+			.attr("transform").stringf(tl)
+			.end(_transitionEndSideBySide);
 			
-		var bars = layers.selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
-		bars.select("rect").transition().attr("width").float(_bnw);
-		bars.select("text").transition().attr("x").floatf(ttx);
+		var bars = layers.update().selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
+		bars.update().select("rect").transition().attr("width").float(_bnw);
+		bars.update().select("text").transition().attr("x").floatf(ttx);
 	}
 	
 	function _transitionEndSideBySide(_, i : Int)
@@ -279,9 +279,9 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 			return;
 
 		var layers = svg.selectAll("g.layer").data(_prepdata, _keyLayer);
-		var bars = layers.selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
-		bars.select("rect").transition().attr("y").floatf(py);
-		bars.select("text").transition().attr("y").floatf(pylabel);
+		var bars = layers.update().selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
+		bars.update().select("rect").transition().attr("y").floatf(py);
+		bars.update().select("text").transition().attr("y").floatf(pylabel);
 	}
 	
 	function _redrawSideBySide()
@@ -294,7 +294,7 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 		var layers = svg.selectAll("g.layer").data(_prepdata, _keyLayer);
 		
 		// update
-		layers.attr("transform").stringf(tl);
+		layers.update().attr("transform").stringf(tl);
 		
 		// enter
 		layers.enter()
@@ -307,10 +307,10 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 		layers.exit().remove();
 		
 		// BARS
-		var bars = layers.selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
+		var bars = layers.update().selectAll("g.bar").dataf(function(d, i) return d, _keyBar);
 		
 		// update
-		bars
+		bars.update()
 			.attr("transform").stringf(tx)
 			.select("rect")
 				.transition()
@@ -319,7 +319,7 @@ class SvgBarChart extends SvgLayer<Array<XYY0>>
 				.attr("width").float(_bnw)
 				.attr("height").floatf(hb)
 		;
-		bars
+		bars.update()
 			.select("text")
 				.attr("x").floatf(ttx)
 				.attr("y").floatf(pylabel)

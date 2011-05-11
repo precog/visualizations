@@ -54,6 +54,7 @@ class SvgScaleTick extends SvgLayer<Float>
 		
 		var g = svg.selectAll("g." + _axis)
 			.data(_ticks(), _key)
+			.update()
 			.attr("transform").stringf(_t);
 
 		// REGEN

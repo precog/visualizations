@@ -25,7 +25,7 @@ class SvgSpace3x3 extends SvgSpace
 	var containers : Array<SvgContainer>;
 	var frames : Array<StackFrame>;
 	
-	public function new(width : Int, height : Int, parentSelection : Selection<Dynamic>, t = 50, ?r : Int, ?b : Int, ?l : Int)
+	public function new(width : Int, height : Int, parentSelection : Selection, t = 50, ?r : Int, ?b : Int, ?l : Int)
 	{
 		super(width, height, parentSelection);
 		if (null == r)

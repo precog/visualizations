@@ -41,12 +41,12 @@ class Visualization
 	public var time(default, null) : LinearTime;
 	public var widetime(default, null) : LinearTime;
 	
-	var _container : Selection<Dynamic>;
+	var _container : Selection;
 	var _dirty : Bool;
 	var _w : Int;
 	var _h : Int;
 	
-	public function new(path : String, container : Selection<Dynamic>, time : LinearTime)
+	public function new(path : String, container : Selection, time : LinearTime)
 	{
 		this.path = path;
 		_container = container;

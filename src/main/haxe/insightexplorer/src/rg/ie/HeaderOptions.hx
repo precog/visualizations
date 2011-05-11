@@ -10,13 +10,13 @@ import thx.translation.ITranslation;
 
 class HeaderOptions
 {
-	var _container : Selection<Dynamic>;
+	var _container : Selection;
 	var _t : ITranslation;
 	var _chart : TimeChart;
 	
 	public dynamic function toggleStack();
 	
-	public function new(container : Selection<Dynamic>, t : ITranslation)
+	public function new(container : Selection, t : ITranslation)
 	{
 		_t = t;
 		init(container);
@@ -41,7 +41,7 @@ class HeaderOptions
 		_container.classed().remove("hidden");
 	}
 	
-	function init(container : Selection<Dynamic>)
+	function init(container : Selection)
 	{
 		_container = container.append("div").attr("class").string("options hidden");
 		// path
@@ -51,7 +51,7 @@ class HeaderOptions
 		dl.append("dt").text().string(_t._("options"));
 		dl.append("dd")
 			.text().string(_t._("toggle stack"))
-			.on("click", _toggleStack);
+			.onNode("click", _toggleStack);
 				
 		/*
 		// children

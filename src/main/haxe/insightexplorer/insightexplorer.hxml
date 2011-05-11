@@ -1,5 +1,5 @@
 -cp src
--cp ../../../../../reportgrid-client-libraries/haxe/src
--cp ../../../../../core/src
+-lib thx
+-lib reportgrid
 -js bin/insightexplorer.js
 rg.InsightExplorer

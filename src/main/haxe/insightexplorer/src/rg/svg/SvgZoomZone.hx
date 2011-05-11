@@ -5,6 +5,7 @@ package rg.svg;
  * @author Franco Ponticelli
  */
 
+import js.Dom;
 import thx.js.behavior.Zoom;
 import thx.js.behavior.ZoomEvent;
 
@@ -26,7 +27,7 @@ class SvgZoomZone extends SvgLayer<Dynamic>
 		_handler = function(_){}
 	}
 	
-	function wireZoom(n : thx.js.Node<Dynamic>, i)
+	function wireZoom(n : HtmlDom, i)
 	{
 		_zoom = new thx.js.behavior.Zoom().zoom(_zoomh, n);
 	}
