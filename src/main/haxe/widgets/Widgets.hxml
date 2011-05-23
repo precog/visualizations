@@ -1,0 +1,6 @@
+-cp src
+-cp ../insightexplorer/src
+-cp ../../../../../client-libraries/haxe/src
+-lib thx
+-js bin/chart.js
+-main Main
