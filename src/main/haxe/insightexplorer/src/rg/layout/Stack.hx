@@ -14,7 +14,7 @@ class Stack
 	public var height(default, null) : Int;
 	public var orientation(default, null) : Orientation;
 	
-	public dynamic function moreSpaceRequired(size : Int) : Void;
+	public dynamic function moreSpaceRequired(size : Int) {}
 	public function new(width : Int, height : Int, ?orientation : Orientation)
 	{
 		this.orientation = null == orientation ? Vertical : orientation;

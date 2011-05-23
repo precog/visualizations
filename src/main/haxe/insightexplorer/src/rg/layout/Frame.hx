@@ -15,7 +15,7 @@ class Frame
 	public var width(default, null) : Int;
 	public var height(default, null) : Int;
 	
-	public dynamic function change();
+	public dynamic function change() {}
 	
 	public function new()
 	{

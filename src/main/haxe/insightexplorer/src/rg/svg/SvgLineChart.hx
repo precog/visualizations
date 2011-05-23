@@ -1,6 +1,10 @@
 package rg.svg;
 import haxe.Timer;
 import thx.math.scale.Linear;
+import thx.svg.LineInterpolator;
+import js.Dom;
+import thx.js.Svg;
+import thx.js.Access;
 
 /**
  * ...
@@ -21,6 +25,8 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 	var _cpid : String;
 	var _stacked : Bool;
 	var _curstacked : Bool;
+	var _interpolator : LineInterpolator;
+	
 	public function new(panel : SvgPanel, data : Array<Array<XYY0>>, xscale : Linear, yscale : Linear)
 	{
 		this._cpid = "linechart_clip_path_" + (++_pathid);
@@ -30,11 +36,12 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		this._scaley = yscale;
 	}
 	
-	override public function destroy();
+	override public function destroy(){}
 	
 	override function init()
 	{
 		svg
+			.classed().add("line-chart")
 			.append("svg:clipPath")
 				.attr("id").string(_cpid)
 				.append("svg:rect")
@@ -46,6 +53,11 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		svg.attr("clip-path").string("url(#" + _cpid + ")");
 	}
 	
+	public function lineInterpolator(interpolator : LineInterpolator)
+	{
+		this._interpolator = interpolator;
+	}
+	
 	public function getStacked() return _stacked
 	public function stacked(v : Bool)
 	{
@@ -53,18 +65,30 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		return this;
 	}
 	
+	var _redrawn : Bool;
 	override public function redraw()
 	{
 		_prepareData();
-		if (null == _curstacked || _curstacked == _stacked)
-		{
+//		if (_redrawn == true)
+//			_transition();
+//		else {
+//			_redrawn = true;
 			_redraw();
-		} else {
-			_transition();
-		}
+//		}
+//		if (null == _curstacked || _curstacked == _stacked)
+//		{
+//			_redraw();
+//		} else {
+//			_transition();
+//		}
 		_curstacked = _stacked;
 	}
 
+	public function data(d : Array<Array<XYY0>>)
+	{
+		_data = d;
+	}
+	
 	var _h : Int;
 	var _w : Int;
 	var _path : Array<XYY0> -> Int -> String;
@@ -92,10 +116,13 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 	function path(d : Array<XYY0>, i : Int)
 	{
 		var sx = _scalex, sy = _scaley;
-		var shape = new thx.svg.Line(
+		var line = new thx.svg.Line(
 			function(d : XYY0, i : Int) return sx.scale(d.x),
 			function(d : XYY0, i : Int) return sy.scale(d.y)
-		).shape(d);
+		);
+		if (null != _interpolator)
+			line.interpolator(_interpolator);
+		var shape = line.shape(d);
 		return shape;
 	}
 	
@@ -103,27 +130,32 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 	{
 		var sx = _scalex,
 			zero = _scaley.scale(0);
-		var shape = new thx.svg.Line(
+		var line =  new thx.svg.Line(
 			function(d : XYY0, i : Int) return sx.scale(d.x),
 			function(d : XYY0, i : Int) return zero
-		).shape(d);
+		);
+		if (null != _interpolator)
+			line.interpolator(_interpolator);
+		var shape = line.shape(d);
 		return shape;
 	}
 	
 	function pathStacked(d : Array<XYY0>, i : Int)
 	{
 		var sx = _scalex, sy = _scaley;
-		return new thx.svg.Line(
+		var line = new thx.svg.Line(
 			function(d : XYY0, i : Int) return sx.scale(d.x),
 			function(d : XYY0, i : Int) return sy.scale(d.y + d.y0)
-		).shape(d);
+		);
+		if (null != _interpolator)
+			line.interpolator(_interpolator);
+		return line.shape(d);
 	}
 
 	function _transition()
 	{
 		// LAYER
 		var layer = svg.selectAll("g.layer").data(_prepdata);
-		
 		// update
 		layer.update().select("path.line")
 			.transition()
@@ -154,6 +186,8 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		layer.enter()
 			.append("svg:g")
 			.attr("class").stringf(function(d, i) return "layer layer-" + i)
+			.onNode("mousemove", over)
+			.onNode("mouseout", out)
 			.append("svg:path")
 				.attr("class").string("line")
 				.attr("d").stringf(path0)
@@ -162,5 +196,46 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		
 		// exit
 		layer.exit().remove();
+	}
+	
+	var _over : { x : Float, y : Float, y0 : Float } -> Int -> Void;
+	function over(n : HtmlDom, i : Int) 
+	{
+		if (null == _over)
+			return;
+
+		_over(getDataAtNode(n), i);
+	}
+	
+	var _out : { x : Float, y : Float, y0 : Float } -> Int -> Void;
+	function out(n : HtmlDom, i : Int) 
+	{
+		if (null == _out)
+			return;
+		
+		_out(getDataAtNode(n), i);
+	}
+	
+	function getDataAtNode(n : HtmlDom)
+	{
+		var time = _scalex.invert(Svg.mouse(n)[0]);
+		
+		var data : Array<{ x : Float, y : Float, y0 : Float }> = Access.getData(n);
+		
+		var delta = Math.POSITIVE_INFINITY,
+			pos = 0,
+			v = Math.abs(time - data[0].x);
+		while (v < delta)
+		{
+			delta = v;
+			v = Math.abs(time - data[++pos].x);
+		}
+		return data[pos-1];
+	}
+	
+	public function setTooltip(over : { x : Float, y : Float, y0 : Float } -> Int -> Void, out : { x : Float, y : Float, y0 : Float } -> Int -> Void)
+	{
+		_over = over;
+		_out = out;
 	}
 }

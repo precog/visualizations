@@ -34,7 +34,7 @@ class SvgScaleLabel extends SvgLayer<Float>
 	var _oaxis : String;
 	
 	var _ticks : Void -> Array<Float>;
-	var _range : Float -> Float -> Dynamic;
+	var _range : Array<Float> -> Dynamic;
 	var _scale : Float -> Int -> Float;
 	var _key : Float -> Int -> String;
 	var _label : Float -> Int -> String;
@@ -55,7 +55,7 @@ class SvgScaleLabel extends SvgLayer<Float>
 	
 	override public function redraw()
 	{
-		_range(0, _maxRange());
+		_range([0.0, _maxRange()]);
 		
 		var g = svg.selectAll("g." + _axis)
 			.data(_ticks(), _key)
@@ -87,7 +87,7 @@ class SvgScaleLabel extends SvgLayer<Float>
 	}
 	
 	public function getRange() return _range
-	public function range(f : Float -> Float -> Dynamic)
+	public function range(f : Array<Float> -> Dynamic)
 	{
 		_range = f;
 		return this;
