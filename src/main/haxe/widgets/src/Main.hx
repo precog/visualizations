@@ -9,33 +9,55 @@ import thx.js.Dom;
 
 class Main 
 {
-	
+	// TEST TOKEN: A3BC1539-E8A9-4207-BB41-3036EC2C6E6D
+	// C49A058D-459D-415D-B41D-5805357FF874
 	static function main() 
 	{
+		/*
+		ReportGrid.tokens();
+		ReportGrid.newToken({
+			path: "/",
+			permissions: {
+				read: true,
+				write: true,
+				share: true
+			},
+			expires: DateTools.delta(Date.now(), DateTools.days(365)).getTime(),
+			limits: {
+				order: 3,
+				limit: 3,
+				depth: 3
+			}
+		});
+		*/
+//		ReportGrid.tokens();
+//		ReportGrid.children("/", {} );
+/*
 		var where = { };
 		Reflect.setField(where, ".tweet.startup", "@ReportGrid");
 		rg.js.ReportGrid.searchSeries("/tweets", { periodicity: "eternity", where: where}, function(v) trace(v) );
 		rg.js.ReportGrid.propertyCount("/tweets", { property: ".tweet.startup" }, function(v) trace("propertyCount tweets: " + v) );
 		rg.js.ReportGrid.propertyValueCount("/tweets", { property: ".tweet.startup", value : "@ReportGrid" }, function(v) trace("propertyValueCount tweets: " + v) );
 		rg.js.ReportGrid.propertyCount("/pivots", { property: ".click.gender" }, function(v) trace("propertyCount pivot: " + v) );
-		rg.js.ReportGrid.propertyValueCount("/pivots", { property: ".click.gender", value : "@male" }, function(v) trace("propertyValueCount pivot: " + v) );
-		
-		
-//		createPivotRandomData();
+		rg.js.ReportGrid.propertyValueCount("/pivots", { property: ".click.gender", value : "male" }, function(v) trace("propertyValueCount pivot: " + v) );
+*/
+/*
+		createPivotRandomData();
 
 		rg.Viz.pivot("#pivot", {
 			query : {
 				path : PATH_PIVOTS,
 				event : "click"
 			},
-			properties : ["Gender", "Location"]
+//			properties : ["gender", "location"]
 		});
-		
+*/
+/*
 		createTweetRandomData();
 		
 		var tops = ["@ReportGrid", "@One", "@Two", "@Three", "@Four", "@Five", "@Six", "@Seven", "@Eight", "@Nine"];
 		var gluecons = [ "@ReportGrid", "@One", "@Two", "@Three", "@Four", "@Five", "@Six", "@Seven", "@Eight", "@Nine", "@Ten", "@Eleven", "@Twelve", "@Thirteen", "@Fourteen" ];
-
+*/
 /*
 		// chart
 		rg.Viz.stream("#stream", { 
@@ -43,8 +65,9 @@ class Main
 			height : 320,
 			query : { path : PATH_TWEETS, event : "tweet", property : "startup", values : tops } 
 		});
-
-		rg.Viz.time("#line", { 
+*/
+/*
+		rg.Viz.line("#line", { 
 			width: 940,
 			height : 320,
 			lineinterpolation : "cardinal",
@@ -90,7 +113,8 @@ class Main
 				events : {
 					click : { 
 						location : Arrays.random(locations),
-						gender : Arrays.random(genders)
+						gender : Arrays.random(genders),
+						age : Arrays.random(ageranges)
 					}
 				}
 			});
@@ -121,10 +145,13 @@ class Main
 	static var locations = [
 		"El Paso",
 		"Denver",
+		"Denver",
 		"Arapahoe",
 		"Jefferson",
 		"Adams",
 		"Larimer",
+		"Boulder",
+		"Boulder",
 		"Boulder",
 		"Douglas",
 		"Weld",
@@ -135,7 +162,21 @@ class Main
 	
 	static var genders = [
 		"male",
+		"male",
+		"female",
+		"female",
 		"female"
+	];
+	
+	static var ageranges = [
+		"13-19",
+		"20-24",
+		"25-34",
+		"25-34",
+		"25-34",
+		"35-50",
+		"35-50",
+		"over fifty"
 	];
 	
 	static var gluecons = [
@@ -143,24 +184,24 @@ class Main
 		"@ReportGrid",
 		"@ReportGrid",
 		"@ReportGrid",
-		"@One",
-		"@One",
-		"@Two",
-		"@Two",
-		"@Three",
-		"@Four",
-		"@Five",
-		"@Six",
-		"@Seven",
-		"@Eight",
-		"@Nine",
-		"@Nine",
-		"@Ten",
-		"@Eleven",
-		"@Eleven",
-		"@Twelve",
-		"@Thirteen",
-		"@Fourteen",
+		"@axiomatics",
+		"@axiomatics",
+		"@bigdoormedia",
+		"@bigdoormedia",
+		"@jexyco",
+		"@eclipse foundation",
+		"@flomio",
+		"@locvox",
+		"@proxomo",
+		"@singlyinc",
+		"@standing_cloud",
+		"@standing_cloud",
+		"@statsmix",
+		"@StreamStep",
+		"@StreamStep",
+		"@tendril",
+		"@wanderfly",
+		"@get_rainmaker",
 		];
 	
 /*

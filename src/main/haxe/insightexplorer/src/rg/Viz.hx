@@ -1,7 +1,7 @@
 package rg;
-import rg.chart.TimeChart;
+import rg.chart.LineChart;
 import rg.chart.PieChart;
-import rg.chart.StreamChart;
+import rg.chart.StreamGraph;
 import rg.chart.ChartOptions;
 import rg.pivottable.PivotTable;
 import rg.pivottable.PivotTableOptions;
@@ -53,13 +53,12 @@ class Viz
 			{
 				pivot.queryProperties.push(TimeProperty(
 					periodicity(property.time), 
-					property.order.toLowerCase() == "ascending",
-					null == property.limit ? 20 : property.limit
+					property.order.toLowerCase() == "top"
 				));
 			} else {
 				pivot.queryProperties.push(ValueProperty(
 					property.name, 
-					property.order.toLowerCase() == "ascending",
+					property.order.toLowerCase() == "bottom",
 					null == property.limit ? 20 : property.limit
 				));
 			}
@@ -96,14 +95,14 @@ class Viz
 		}));
 	}
 	
-	public static function time(el : Dynamic, ?options : { } )
+	public static function line(el : Dynamic, ?options : { } )
 	{
-		return new TimeChart(select(el), makeoptions(options, { }));
+		return new LineChart(select(el), makeoptions(options, { }));
 	}
 
 	public static function stream(el : Dynamic, ?options : { } )
 	{
-		return new StreamChart(select(el), makeoptions(options, {
+		return new StreamGraph(select(el), makeoptions(options, {
 			lineinterpolation : "cardinal",
 			left : scale(false, false, 0),
 		}));

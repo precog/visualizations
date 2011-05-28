@@ -8,6 +8,7 @@ package rg.pivottable;
 enum QueryProperty 
 {
 	// todo, can limit be null?
-	ValueProperty(name : String, ascending : Bool, limit : Int);
-	TimeProperty(periodicity : String, ascending : Bool, limit : Int);
+	ValueProperty(name : String, top : Bool, limit : Int);
+	TimeProperty(periodicity : String, top : Bool);
+	EmptyProperty;
 }

@@ -96,7 +96,7 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 	function _prepareData()
 	{
 		_prepdata = _data.copy();
-		_prepdata.reverse();
+//		_prepdata.reverse();
 		var domy = _scaley.getDomain();
 		var domx = _scalex.getDomain();
 		var minx = domx.min();
@@ -155,7 +155,7 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 	function _transition()
 	{
 		// LAYER
-		var layer = svg.selectAll("g.layer").data(_prepdata);
+		var layer = svg.selectAll("g.group").data(_prepdata);
 		// update
 		layer.update().select("path.line")
 			.transition()
@@ -176,7 +176,7 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 			.attr("height").float(_h);
 		
 		// LAYER
-		var layer = svg.selectAll("g.layer").data(_prepdata);
+		var layer = svg.selectAll("g.group").data(_prepdata);
 		
 		// update
 		if (_pathCreated)
@@ -185,7 +185,7 @@ class SvgLineChart extends SvgLayer<Array<XYY0>>
 		// enter
 		layer.enter()
 			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "layer layer-" + i)
+			.attr("class").stringf(function(d, i) return "group group-" + i)
 			.onNode("mousemove", over)
 			.onNode("mouseout", out)
 			.append("svg:path")

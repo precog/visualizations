@@ -60,7 +60,7 @@ class SvgPieChart extends SvgLayer<Array<Float>>
 			.data([_data]).update()
 		;
 
-		var selection = vis.selectAll("g.layer")
+		var selection = vis.selectAll("g.group")
 			.dataf(_pie.pie, function(_, i : Int) return "" + i);
 			
 		selection.update()
@@ -81,7 +81,7 @@ class SvgPieChart extends SvgLayer<Array<Float>>
 			
 		var arcs = selection.enter()
 				.append("svg:g")
-					.attr("class").stringf(function(d, i) return "layer layer-" + i)
+					.attr("class").stringf(function(d, i) return "group group-" + i)
 					.attr("transform").string("translate(" + (_padding / 2 + _r) + "," + (_padding / 2 + _r) + ")");
 
 		arcs
