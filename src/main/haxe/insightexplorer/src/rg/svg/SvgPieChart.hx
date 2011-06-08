@@ -112,10 +112,10 @@ class SvgPieChart extends SvgLayer
 		;
 */
 	}
-
+	
 	override public function redraw()
 	{
-		_r = Math.min(panel.frame.width, panel.frame.height) / 2 - _padding;
+		_r = Math.min(width, height) / 2 - _padding;
 		_pie = new Pie();
 		_arc = Arc.fromAngleObject().innerRadius(_r * .2).outerRadius(_r);
 		_startarc = Arc.fromAngleObject().innerRadius(_r * .2).outerRadius(_r * .2);

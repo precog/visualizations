@@ -13,9 +13,9 @@
 	stroke-width: 2;
 }
 
-.rg path.selected
+.rg path:hover
 {
-	stroke-width: 10;
+	stroke-width: 8;
 }
 
 .rg text
@@ -330,7 +330,7 @@ border: 1px solid #0026FF !important;
 .rg text
 {
 	font-family: 'Verdana', arial, serif; 
-	font-size: 10px;
+	font-size: 10pt;
 	fill: #000;
 /*	shape-rendering: crispEdges;
 	text-rendering: optimizeLegibility; */
@@ -362,4 +362,24 @@ border: 1px solid #0026FF !important;
 	font-family: Verdana;
 	font-size: 10px;
 	padding: 3px 8px;
+}
+
+.rg g.linechart-highlighter line
+{
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+	stroke-dasharray: 1, 1;
+	stroke: #000;
+}
+
+.rg line.tick
+{
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+	stroke: #666;
+}
+
+.rg rect.panel-frame
+{
+	fill: rgba(255,255,0,0.1);
 }

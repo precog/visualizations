@@ -1,4 +1,5 @@
 package rg.svg;
+import hxevents.Notifier;
 import rg.layout.Frame;
 import rg.layout.StackFrame;
 import thx.js.Selection;
@@ -19,12 +20,14 @@ class SvgPanel
 	public var svg(default, null) : Selection;
 //	public var animatePosition : Null<Bool>;
 	public var parent(default, null) : SvgContainer;
+	public var onResize(default, null) : Notifier;
 	
 	var _layers : Array<SvgLayer>;
 	public function new(frame : StackFrame)
 	{
 		this.frame = frame;
 		frame.change = reframe;
+		onResize = new Notifier();
 //		animatePosition = null;
 		_layers = [];
 	}
@@ -76,5 +79,6 @@ class SvgPanel
 				.attr("width").float(frame.width)
 				.attr("height").float(frame.height);
 		redraw();
+		onResize.dispatch();
 	}
 }

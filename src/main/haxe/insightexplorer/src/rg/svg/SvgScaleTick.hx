@@ -50,6 +50,9 @@ class SvgScaleTick extends SvgLayer
 	
 	override public function redraw()
 	{
+		if (null == _maxRange)
+			return;
+			
 		_range([0.0, _maxRange()]);
 		
 		var g = svg.selectAll("g." + _axis)

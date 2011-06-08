@@ -11,6 +11,8 @@ class SvgLayer
 {
 	var panel : SvgPanel;
 	var svg : Selection;
+	var width : Int;
+	var height : Int;
 
 	public function new(panel : SvgPanel)
 	{
@@ -19,13 +21,22 @@ class SvgLayer
 		p.addLayer(this);
 		svg = cast panel.svg.append("svg:g");
 		svg.attr("class").string("layer");
+		panel.onResize.add(_resize);
 		init();
+		_resize();
 	}
 	
-	function init()
+	function init() { }
+	
+	function _resize()
 	{
-		
+		width = panel.frame.width;
+		height = panel.frame.height;
+		resize();
+		redraw();
 	}
+	
+	function resize() { }
 	
 	public function destroy()
 	{

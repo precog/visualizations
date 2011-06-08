@@ -20,13 +20,13 @@ class SvgScaleLabel extends SvgLayer
 			;
 	}
 	
-	public static var defaultTextHeight : Float = 12;
+	public static var defaultTexttextHeight : Float = 12;
 	public static var defaultTextPadding : Float = 2;
 	
 	var _anchor : Anchor;
 	
 	var _padding : Float;
-	var _height : Float;
+	var _texttextHeight : Float;
 	var _pos : Void -> Float;
 	var _t : Float -> Int -> String;
 	var _maxRange : Void -> Int;
@@ -44,7 +44,7 @@ class SvgScaleLabel extends SvgLayer
 	public function new(panel : SvgPanel, anchor : Anchor)
 	{
 		super(panel);
-		_height = defaultTextHeight;
+		_texttextHeight = defaultTexttextHeight;
 		_padding = defaultTextPadding;
 		this.anchor(anchor);
 		svg.attr("class").string("scale-ticks");
@@ -55,6 +55,9 @@ class SvgScaleLabel extends SvgLayer
 	
 	override public function redraw()
 	{
+		if (null == _maxRange)
+			return;
+
 		_range([0.0, _maxRange()]);
 		
 		var g = svg.selectAll("g." + _axis)
@@ -126,7 +129,7 @@ class SvgScaleLabel extends SvgLayer
 	{
 		if (Type.enumEq(o, _anchor))
 			return this;
-		var panel = this.panel;
+		var me = this;
 		
 		switch(_anchor = o)
 		{
@@ -134,12 +137,12 @@ class SvgScaleLabel extends SvgLayer
 				_axis = "x";
 				_oaxis = "x";
 				_t = translateX;
-				_maxRange = function() return panel.frame.width;
+				_maxRange = function() return me.width;
 			case Left, Right:
 				_axis = "y";
 				_oaxis = "x";
 				_t = translateY;
-				_maxRange = function() return panel.frame.height;
+				_maxRange = function() return me.height;
 		}
 		switch(_anchor)
 		{
@@ -151,19 +154,19 @@ class SvgScaleLabel extends SvgLayer
 				_textBaseline = "middle";
 			case Left:
 				_textAnchor = "start";
-				_textBaseline = "middle";
+				_textBaseline = "central";
 			case Right:
 				_textAnchor = "end";
-				_textBaseline = "middle";
+				_textBaseline = "central";
 		}
 		adjustPositionFunction();
 		return this;
 	}
 	
-	public function getHeight() return _height
-	public function height(v : Float)
+	public function gettextHeight() return _texttextHeight
+	public function textHeight(v : Float)
 	{
-		_height = v;
+		_texttextHeight = v;
 		adjustPositionFunction();
 		return this;
 	}
@@ -186,9 +189,9 @@ class SvgScaleLabel extends SvgLayer
 			case Left:
 				_pos = function() return me._padding;
 			case Bottom:
-				_pos = function() return me.panel.frame.height - me._padding;
+				_pos = function() return me.height - me._padding;
 			case Right:
-				_pos = function() return me.panel.frame.width - me._padding;
+				_pos = function() return me.width - me._padding;
 		}
 	}
 }

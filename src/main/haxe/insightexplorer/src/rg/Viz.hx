@@ -12,8 +12,12 @@ import rg.query.QueryPropertyValues;
 import rg.query.QueryTimerUpdate;
 import rg.query.QueryValuesCount;
 import rg.svg.LineChartData;
+import rg.svg.SvgContainer;
 import rg.svg.SvgLineChart;
+import rg.svg.SvgLineChartHighlighter;
 import rg.svg.SvgPanel;
+import rg.svg.SvgScaleLabel;
+import rg.svg.SvgTitle;
 import thx.date.DateParser;
 import thx.error.Error;
 import thx.js.Dom;
@@ -32,6 +36,12 @@ import rg.layout.Disposition;
 import thx.math.scale.Linear;
 import thx.math.scale.LinearTime;
 import thx.svg.LineInterpolator;
+import thx.svg.LineInterpolators;
+import rg.svg.Anchor;
+import rg.layout.StackFrame;
+import rg.layout.Orientation;
+import rg.svg.SvgScaleTick;
+import rg.svg.SvgScaleRule;
 
 using Objects;
 using Arrays;
@@ -229,12 +239,34 @@ class Viz
 
 		var space = new SvgSpace(o.width, o.height, selection);
 		space.svg.attr("class").string("rg");
-		var panel = space.createPanel(Disposition.Fill());
 		
 		var x = new LinearTime();
 		var y = new Linear();
 		
-		var chart = new SvgLineChart(panel, x, y);
+//		var panel = space.createPanel(Disposition.Fill());
+//		var chartpanel = panel;
+		
+		var container = space.createContainer(Disposition.Fill(), Orientation.Horizontal);
+		
+		var scalepanel = container.createPanel(Disposition.Fixed(50));
+		
+		var scale = SvgScaleLabel.ofLinear(scalepanel, Anchor.Right, y);
+		var ticks = SvgScaleTick.ofLinear(scalepanel, Anchor.Right, y);
+		scale.padding(10);
+		
+		var chartpanel = container.createPanel(Disposition.Fill());
+
+/*
+		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Top", Anchor.Top);
+		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Right", Anchor.Right);
+		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Bottom", Anchor.Bottom);
+		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Left", Anchor.Left);
+*/
+		
+		var highlighter = new SvgLineChartHighlighter(chartpanel, x, y);
+//		highlighter.approximator = function(c : { x : Float, y : Float } ) c.x = Dates.snap(c.x, loader.time.periodicity);
+		
+		var chart = new SvgLineChart(chartpanel, x, y);
 		
 		if (o.animated)
 		{
@@ -242,21 +274,21 @@ class Viz
 				loader.time.update();
 				x.domain([loader.time.start.getTime(), loader.time.end.getTime()]);
 				chart.updatex();
+	//			highlighter.redraw();
 				return false;
 			});
 		}
 
 		loader.onChange.add(function(v : LineChartData) {
 			y.domain([v.maxy * 1.2, 0.0]);
+			scale.redraw();
+			ticks.redraw();
 			x.domain([null == loader.time.start ? v.minx : loader.time.start.getTime(), null == loader.time.end ? v.maxx : loader.time.end.getTime()]);
 			chart.data(v.data);
 		});
 		
-//		values.onData.add(function(d) trace(d));
-//		loader.onData.add(function(d) trace(d));
-		
 		// add line interpolator
-		chart.lineInterpolator(LineInterpolator.Cardinal());
+		chart.lineInterpolator(null == o.lineinterpolator ? LineInterpolator.Linear : LineInterpolators.parse(o.lineinterpolator));
 
 		loader.onError.add(error);
 		values.onError.add(error);

@@ -11,6 +11,8 @@ import thx.js.Dom;
 import thx.svg.LineInterpolator;
 import rg.chart.ToolTip;
 import thx.culture.FormatDate;
+import thx.math.Ease;
+import thx.math.EaseMode;
 
 class SvgLineChart extends SvgLayer
 {
@@ -24,7 +26,6 @@ class SvgLineChart extends SvgLayer
 	var _duration : Int;
 	var _created : Int;
 	var _interpolator : LineInterpolator;
-	var _linewidth : Array<Int>;
 	
 	public function new(panel : SvgPanel, x : Linear, y : Linear) 
 	{
@@ -32,10 +33,9 @@ class SvgLineChart extends SvgLayer
 		this._x = x;
 		this._y = y;
 		
-		_ease = Equations.elasticf();
+		_ease = Ease.mode(EaseMode.EaseOut, Equations.exponential); // .elasticf();
 		_duration = 1500;
 		_created = 0;
-		_linewidth = [];
 		
 		super(panel);
 		redraw();
@@ -44,7 +44,7 @@ class SvgLineChart extends SvgLayer
 	public dynamic function tooltip(label : String, x : Float, y : Float)
 	{
 		var d = Date.fromTime(x);
-		return label + ": " + Ints.format(y) + " count, " + FormatDate.dateShort(d) + ", " + FormatDate.timeShort(d);
+		return label + ", " + Ints.format(y);
 	}
 	
 	override function init()
@@ -72,6 +72,12 @@ class SvgLineChart extends SvgLayer
 		if (null == _data || _data.length == 0)
 			return;
 		_redraw();
+	}
+	
+	override function resize()
+	{
+		_x.range([0.0, width]);
+		_y.range([0.0, height]);
 	}
 	
 	public function lineInterpolator(interpolator : LineInterpolator)
@@ -114,7 +120,6 @@ class SvgLineChart extends SvgLayer
 	
 	public function updatex()
 	{
-		_x.range([0.0, panel.frame.width]);
 		var s = _x.scale(Date.now().getTime() - _timedelta + _x.getDomain()[0]);
 		var layer = svg.selectAll("g.group")
 			.attr("transform").string("translate(-" + s + ",0)")
@@ -125,107 +130,51 @@ class SvgLineChart extends SvgLayer
 	function _redraw()
 	{
 		_timedelta = Date.now().getTime();
-		_x.range([0.0, panel.frame.width]);
-		_y.range([0.0, panel.frame.height]);
 		svg.select("#" + _cpid + " rect")
-			.attr("width").float(panel.frame.width)
-			.attr("height").float(panel.frame.height);
+			.attr("width").float(width)
+			.attr("height").float(height);
 			
 		var layer = svg.selectAll("g.group")
 			.attr("transform").string("translate(0,0)")
 			.data(_data, function(d,i) return d.label);
 		
 		// update
-		layer.update().select("path.line").attr("d").stringf(_path);
+		layer.update().select("path.line")
+			.transition().ease(_ease).duration(_duration)
+				.attr("d").stringf(_path);
 		
 		// enter
 		layer.enter()
 			.append("svg:g")
 			.attr("class").stringf(function(d, i) return "group group-" + i)
-			.onNode("mouseover.animation", _highlight)
-			.onNode("mouseout.animation", _backtonormal)
-			.on("mousemove.tooltip", _showtooltip)
-			.on("mouseout.tooltip", _hidetooltip)
+			.onNode("mouseover.animation", _highlight, true)
+			.onNode("mouseout.animation", _backtonormal, true)
+			.on("mousemove.tooltip", _showtooltip, true)
+			.on("mouseout.tooltip", _hidetooltip, true)
 			.append("svg:path")
 				.attr("class").string("line")
 				.attr("d").stringf(_path0)
 				.style("opacity").float(0)
 				.eachNode(_popin);
-				/*
-					.transition()
-						.duration(_duration)
-						.ease(_ease)
-						.attr("d").stringf(_path)
-						*/
-//					.endNode(_setPathCreated)
-		
 
 		// exit
 		layer.exit().remove();
-		
-		/*
-		// LAYER
-		var layer = svg.selectAll("g.group").data(_prepdata);
-		
-		// update
-		if (_pathCreated)
-			layer.update().select("path.line").attr("d").stringf(_path);
-
-		// enter
-		layer.enter()
-			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "group group-" + i)
-			.onNode("mousemove", over)
-			.onNode("mouseout", out)
-			.append("svg:path")
-				.attr("class").string("line")
-				.attr("d").stringf(path0)
-					.transition().attr("d").stringf(_path)
-					.endNode(_setPathCreated);
-		
-		// exit
-		layer.exit().remove();
-		*/
 	}
-	
-//	var last : Selection;
+
 	function _highlight(d, i : Int)
 	{
-		/*
-		if (null != last)
-			last
-				.transition().ease(_ease).duration(_duration)
-				.style("stroke-width").float(_linewidth[i]);
-			*/
 		Dom.selectNode(d).select("path").classed().add("selected");
-		/*
-		last
-			.transition().ease(_ease).duration(_duration)
-			.style("stroke-width").float(10);
-			*/
 	}
 	
 	function _backtonormal(d, i : Int)
 	{
 		Dom.selectNode(d).select("path").classed().remove("selected");
-		/*
-		var path = Dom.selectNodeData(d).select("path");
-		path
-			.transition().ease(_ease).duration(_duration)
-			.style("stroke-width").float(_linewidth[i]);
-			*/
 	}
 	
 	function _showtooltip(d : { label : String, values : Array<{ x : Float, y : Float}> }, _ : Int) 
 	{
-		// TODO find i
-		var i = 0;
-//		trace(Dom.event.clientX);
-		var x = _x.invert(Dom.event.clientX);
-//		trace(x);
-		var v = Arrays.nearest(d.values, x, function(d) return d.x);
-		var s = tooltip(d.label, v.x, v.y);
-		ToolTip.display(s);
+		var v = Arrays.nearest(d.values, _x.invert(Dom.event.clientX), function(d) return d.x);
+		ToolTip.display(tooltip(d.label, v.x, v.y));
 	}
 	
 	function _hidetooltip(d, i : Int) 
@@ -242,10 +191,7 @@ class SvgLineChart extends SvgLayer
 			.style("opacity").float(1.0)
 			.attr("d").stringf(_path)
 		;
-		
-		if (null == _linewidth[i])
-			_linewidth[i] = path.style("stroke-width").get();
-		
+
 		if (i == _data.length - 1)
 		{
 			_created = i;

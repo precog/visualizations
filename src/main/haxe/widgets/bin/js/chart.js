@@ -1,50 +1,96 @@
 $estr = function() { return js.Boot.__string_rec(this,''); }
 EReg = function(r,opt) {
 	if( r === $_ ) return;
+	$s.push("EReg::new");
+	var $spos = $s.length;
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
+	$s.pop();
 }
 EReg.__name__ = ["EReg"];
 EReg.prototype.r = null;
 EReg.prototype.match = function(s) {
+	$s.push("EReg::match");
+	var $spos = $s.length;
 	this.r.m = this.r.exec(s);
 	this.r.s = s;
 	this.r.l = RegExp.leftContext;
 	this.r.r = RegExp.rightContext;
-	return this.r.m != null;
+	var $tmp = this.r.m != null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.matched = function(n) {
-	return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
+	$s.push("EReg::matched");
+	var $spos = $s.length;
+	var $tmp = this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
 		var $r;
 		throw "EReg::matched";
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.matchedLeft = function() {
+	$s.push("EReg::matchedLeft");
+	var $spos = $s.length;
 	if(this.r.m == null) throw "No string matched";
-	if(this.r.l == null) return this.r.s.substr(0,this.r.m.index);
-	return this.r.l;
+	if(this.r.l == null) {
+		var $tmp = this.r.s.substr(0,this.r.m.index);
+		$s.pop();
+		return $tmp;
+	}
+	var $tmp = this.r.l;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.matchedRight = function() {
+	$s.push("EReg::matchedRight");
+	var $spos = $s.length;
 	if(this.r.m == null) throw "No string matched";
 	if(this.r.r == null) {
 		var sz = this.r.m.index + this.r.m[0].length;
-		return this.r.s.substr(sz,this.r.s.length - sz);
+		var $tmp = this.r.s.substr(sz,this.r.s.length - sz);
+		$s.pop();
+		return $tmp;
 	}
-	return this.r.r;
+	var $tmp = this.r.r;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.matchedPos = function() {
+	$s.push("EReg::matchedPos");
+	var $spos = $s.length;
 	if(this.r.m == null) throw "No string matched";
-	return { pos : this.r.m.index, len : this.r.m[0].length};
+	var $tmp = { pos : this.r.m.index, len : this.r.m[0].length};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.split = function(s) {
+	$s.push("EReg::split");
+	var $spos = $s.length;
 	var d = "#__delim__#";
-	return s.replace(this.r,d).split(d);
+	var $tmp = s.replace(this.r,d).split(d);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.replace = function(s,by) {
-	return s.replace(this.r,by);
+	$s.push("EReg::replace");
+	var $spos = $s.length;
+	var $tmp = s.replace(this.r,by);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.customReplace = function(s,f) {
+	$s.push("EReg::customReplace");
+	var $spos = $s.length;
 	var buf = new StringBuf();
 	while(true) {
 		if(!this.match(s)) break;
@@ -53,14 +99,21 @@ EReg.prototype.customReplace = function(s,f) {
 		s = this.matchedRight();
 	}
 	buf.b[buf.b.length] = s;
-	return buf.b.join("");
+	var $tmp = buf.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 EReg.prototype.__class__ = EReg;
 Strings = function() { }
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
+	$s.push("Strings::format");
+	var $spos = $s.length;
 	if(nullstring == null) nullstring = "null";
-	return (Strings.formatf(pattern,nullstring,culture))(values);
+	var $tmp = (Strings.formatf(pattern,nullstring,culture))(values);
+	$s.pop();
+	return $tmp;
 	if(null == values) values = [];
 	var buf = new StringBuf();
 	while(true) {
@@ -84,17 +137,31 @@ Strings.format = function(pattern,values,nullstring,culture) {
 		buf.b[buf.b.length] = Strings._reFormat.matchedLeft();
 		buf.b[buf.b.length] = Dynamics.format(values[pos],f,params,nullstring,culture);
 	}
-	return buf.b.join("");
+	var $tmp = buf.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.formatf = function(pattern,nullstring,culture) {
+	$s.push("Strings::formatf");
+	var $spos = $s.length;
 	if(nullstring == null) nullstring = "null";
 	var buf = [];
 	while(true) {
 		if(!Strings._reFormat.match(pattern)) {
 			buf.push((function() {
-				return function(_) {
+				$s.push("Strings::formatf@142");
+				var $spos = $s.length;
+				var $tmp = function(_) {
+					$s.push("Strings::formatf@142@142");
+					var $spos = $s.length;
+					$s.pop();
 					return pattern;
+					$s.pop();
 				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			})());
 			break;
 		}
@@ -112,153 +179,350 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		}
 		var left = [Strings._reFormat.matchedLeft()];
 		buf.push((function(left) {
-			return function(_) {
-				return left[0];
+			$s.push("Strings::formatf@160");
+			var $spos = $s.length;
+			var $tmp = function(_) {
+				$s.push("Strings::formatf@160@160");
+				var $spos = $s.length;
+				var $tmp = left[0];
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})(left));
 		var df = [Dynamics.formatf(format,params,nullstring,culture)];
 		buf.push(((function() {
-			return function(f,a1) {
-				return (function() {
-					return function(a2) {
-						return f(a1,a2);
+			$s.push("Strings::formatf@162");
+			var $spos = $s.length;
+			var $tmp = function(f,a1) {
+				$s.push("Strings::formatf@162@162");
+				var $spos = $s.length;
+				var $tmp = (function() {
+					$s.push("Strings::formatf@162@162@162");
+					var $spos = $s.length;
+					var $tmp = function(a2) {
+						$s.push("Strings::formatf@162@162@162@162");
+						var $spos = $s.length;
+						var $tmp = f(a1,a2);
+						$s.pop();
+						return $tmp;
+						$s.pop();
 					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				})();
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})())((function(df) {
-			return function(i,v) {
-				return df[0](v[i]);
+			$s.push("Strings::formatf@162");
+			var $spos = $s.length;
+			var $tmp = function(i,v) {
+				$s.push("Strings::formatf@162@162");
+				var $spos = $s.length;
+				var $tmp = df[0](v[i]);
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})(df),pos));
 		pattern = Strings._reFormat.matchedRight();
 	}
-	return function(values) {
+	var $tmp = function(values) {
+		$s.push("Strings::formatf@165");
+		var $spos = $s.length;
 		if(null == values) values = [];
-		return buf.map(function(df,_) {
-			return df(values);
+		var $tmp = buf.map(function(df,_) {
+			$s.push("Strings::formatf@165@169");
+			var $spos = $s.length;
+			var $tmp = df(values);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		}).join("");
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.formatOne = function(v,param,params,culture) {
-	return (Strings.formatOnef(param,params,culture))(v);
+	$s.push("Strings::formatOne");
+	var $spos = $s.length;
+	var $tmp = (Strings.formatOnef(param,params,culture))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.formatOnef = function(param,params,culture) {
+	$s.push("Strings::formatOnef");
+	var $spos = $s.length;
 	params = thx.culture.FormatParams.params(param,params,"S");
 	var format = params.shift();
 	switch(format) {
 	case "S":
-		return function(v) {
+		var $tmp = function(v) {
+			$s.push("Strings::formatOnef@185");
+			var $spos = $s.length;
+			$s.pop();
 			return v;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "T":
 		var len = params.length < 1?20:Std.parseInt(params[0]);
 		var ellipsis = params.length < 2?"...":params[1];
-		return Strings.ellipsisf(len,ellipsis);
+		var $tmp = Strings.ellipsisf(len,ellipsis);
+		$s.pop();
+		return $tmp;
 	case "PR":
 		var len = params.length < 1?10:Std.parseInt(params[0]);
 		var pad = params.length < 2?" ":params[1];
-		return function(v) {
-			return StringTools.rpad(v,pad,len);
+		var $tmp = function(v) {
+			$s.push("Strings::formatOnef@193");
+			var $spos = $s.length;
+			var $tmp = StringTools.rpad(v,pad,len);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "PL":
 		var len = params.length < 1?10:Std.parseInt(params[0]);
 		var pad = params.length < 2?" ":params[1];
-		return function(v) {
-			return StringTools.lpad(v,pad,len);
+		var $tmp = function(v) {
+			$s.push("Strings::formatOnef@197");
+			var $spos = $s.length;
+			var $tmp = StringTools.lpad(v,pad,len);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	default:
-		return (function($this) {
+		var $tmp = (function($this) {
 			var $r;
 			throw "Unsupported string format: " + format;
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Strings.upTo = function(value,searchFor) {
+	$s.push("Strings::upTo");
+	var $spos = $s.length;
 	var pos = value.indexOf(searchFor);
-	if(pos < 0) return value; else return value.substr(0,pos);
+	if(pos < 0) {
+		$s.pop();
+		return value;
+	} else {
+		var $tmp = value.substr(0,pos);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 Strings.startFrom = function(value,searchFor) {
+	$s.push("Strings::startFrom");
+	var $spos = $s.length;
 	var pos = value.indexOf(searchFor);
-	if(pos < 0) return value; else return value.substr(pos + searchFor.length);
+	if(pos < 0) {
+		$s.pop();
+		return value;
+	} else {
+		var $tmp = value.substr(pos + searchFor.length);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 Strings.rtrim = function(value,charlist) {
+	$s.push("Strings::rtrim");
+	var $spos = $s.length;
 	var len = value.length;
 	while(len > 0) {
 		var c = value.substr(len - 1,1);
 		if(charlist.indexOf(c) < 0) break;
 		len--;
 	}
-	return value.substr(0,len);
+	var $tmp = value.substr(0,len);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.ltrim = function(value,charlist) {
+	$s.push("Strings::ltrim");
+	var $spos = $s.length;
 	var start = 0;
 	while(start < value.length) {
 		var c = value.substr(start,1);
 		if(charlist.indexOf(c) < 0) break;
 		start++;
 	}
-	return value.substr(start);
+	var $tmp = value.substr(start);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.trim = function(value,charlist) {
-	return Strings.rtrim(Strings.ltrim(value,charlist),charlist);
+	$s.push("Strings::trim");
+	var $spos = $s.length;
+	var $tmp = Strings.rtrim(Strings.ltrim(value,charlist),charlist);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.collapse = function(value) {
-	return Strings._reCollapse.replace(StringTools.trim(value)," ");
+	$s.push("Strings::collapse");
+	var $spos = $s.length;
+	var $tmp = Strings._reCollapse.replace(StringTools.trim(value)," ");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.ucfirst = function(value) {
-	return value == null?null:value.charAt(0).toUpperCase() + value.substr(1);
+	$s.push("Strings::ucfirst");
+	var $spos = $s.length;
+	var $tmp = value == null?null:value.charAt(0).toUpperCase() + value.substr(1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.lcfirst = function(value) {
-	return value == null?null:value.charAt(0).toLowerCase() + value.substr(1);
+	$s.push("Strings::lcfirst");
+	var $spos = $s.length;
+	var $tmp = value == null?null:value.charAt(0).toLowerCase() + value.substr(1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.empty = function(value) {
-	return value == null || value == "";
+	$s.push("Strings::empty");
+	var $spos = $s.length;
+	var $tmp = value == null || value == "";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.isAlphaNum = function(value) {
-	return value == null?false:Strings.__alphaNumPattern.match(value);
+	$s.push("Strings::isAlphaNum");
+	var $spos = $s.length;
+	var $tmp = value == null?false:Strings.__alphaNumPattern.match(value);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.digitsOnly = function(value) {
-	return value == null?false:Strings.__digitsPattern.match(value);
+	$s.push("Strings::digitsOnly");
+	var $spos = $s.length;
+	var $tmp = value == null?false:Strings.__digitsPattern.match(value);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.ucwords = function(value) {
-	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+	$s.push("Strings::ucwords");
+	var $spos = $s.length;
+	var $tmp = Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.ucwordsws = function(value) {
-	return Strings.__ucwordswsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+	$s.push("Strings::ucwordsws");
+	var $spos = $s.length;
+	var $tmp = Strings.__ucwordswsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.__upperMatch = function(re) {
-	return re.matched(0).toUpperCase();
+	$s.push("Strings::__upperMatch");
+	var $spos = $s.length;
+	var $tmp = re.matched(0).toUpperCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.humanize = function(s) {
-	return StringTools.replace(Strings.underscore(s),"_"," ");
+	$s.push("Strings::humanize");
+	var $spos = $s.length;
+	var $tmp = StringTools.replace(Strings.underscore(s),"_"," ");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.capitalize = function(s) {
-	return s.substr(0,1).toUpperCase() + s.substr(1);
+	$s.push("Strings::capitalize");
+	var $spos = $s.length;
+	var $tmp = s.substr(0,1).toUpperCase() + s.substr(1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.succ = function(s) {
-	return s.substr(0,-1) + String.fromCharCode(s.substr(-1).charCodeAt(0) + 1);
+	$s.push("Strings::succ");
+	var $spos = $s.length;
+	var $tmp = s.substr(0,-1) + String.fromCharCode(s.substr(-1).charCodeAt(0) + 1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.underscore = function(s) {
+	$s.push("Strings::underscore");
+	var $spos = $s.length;
 	s = new EReg("::","g").replace(s,"/");
 	s = new EReg("([A-Z]+)([A-Z][a-z])","g").replace(s,"$1_$2");
 	s = new EReg("([a-z\\d])([A-Z])","g").replace(s,"$1_$2");
 	s = new EReg("-","g").replace(s,"_");
-	return s.toLowerCase();
+	var $tmp = s.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.dasherize = function(s) {
-	return StringTools.replace(s,"_","-");
+	$s.push("Strings::dasherize");
+	var $spos = $s.length;
+	var $tmp = StringTools.replace(s,"_","-");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.repeat = function(s,times) {
+	$s.push("Strings::repeat");
+	var $spos = $s.length;
 	var b = [];
 	var _g = 0;
 	while(_g < times) {
 		var i = _g++;
 		b.push(s);
 	}
-	return b.join("");
+	var $tmp = b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.wrapColumns = function(s,columns,indent,newline) {
+	$s.push("Strings::wrapColumns");
+	var $spos = $s.length;
 	if(newline == null) newline = "\n";
 	if(indent == null) indent = "";
 	if(columns == null) columns = 78;
@@ -270,9 +534,14 @@ Strings.wrapColumns = function(s,columns,indent,newline) {
 		++_g;
 		result.push(Strings._wrapColumns(StringTools.trim(Strings._reReduceWS.replace(part," ")),columns,indent,newline));
 	}
-	return result.join(newline);
+	var $tmp = result.join(newline);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings._wrapColumns = function(s,columns,indent,newline) {
+	$s.push("Strings::_wrapColumns");
+	var $spos = $s.length;
 	var parts = [];
 	var pos = 0;
 	var len = s.length;
@@ -295,22 +564,49 @@ Strings._wrapColumns = function(s,columns,indent,newline) {
 			pos += columns - i + 1;
 		}
 	}
-	return indent + parts.join(newline + indent);
+	var $tmp = indent + parts.join(newline + indent);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.stripTags = function(s) {
-	return Strings._reStripTags.replace(s,"");
+	$s.push("Strings::stripTags");
+	var $spos = $s.length;
+	var $tmp = Strings._reStripTags.replace(s,"");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.ascending = function(a,b) {
-	return a < b?-1:a > b?1:0;
+	$s.push("Strings::ascending");
+	var $spos = $s.length;
+	var $tmp = a < b?-1:a > b?1:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.descending = function(a,b) {
-	return a > b?-1:a < b?1:0;
+	$s.push("Strings::descending");
+	var $spos = $s.length;
+	var $tmp = a > b?-1:a < b?1:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.interpolate = function(v,a,b,equation) {
-	return (Strings.interpolatef(a,b,equation))(v);
+	$s.push("Strings::interpolate");
+	var $spos = $s.length;
+	var $tmp = (Strings.interpolatef(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.interpolatef = function(a,b,equation) {
+	$s.push("Strings::interpolatef");
+	var $spos = $s.length;
 	var extract = function(value,s,f) {
+		$s.push("Strings::interpolatef@451");
+		var $spos = $s.length;
 		while(Strings._reInterpolateNumber.match(value)) {
 			var left = Strings._reInterpolateNumber.matchedLeft();
 			if(!Strings.empty(left)) {
@@ -325,6 +621,7 @@ Strings.interpolatef = function(a,b,equation) {
 			s.push(value);
 			f.push(null);
 		}
+		$s.pop();
 	};
 	var sa = [], fa = [], sb = [], fb = [];
 	extract(a,sa,fa);
@@ -337,24 +634,54 @@ Strings.interpolatef = function(a,b,equation) {
 			if(fa[i] == fb[i]) {
 				var s = ["" + fa[i]];
 				functions.push((function(s) {
-					return function(_) {
-						return s[0];
+					$s.push("Strings::interpolatef@489");
+					var $spos = $s.length;
+					var $tmp = function(_) {
+						$s.push("Strings::interpolatef@489@489");
+						var $spos = $s.length;
+						var $tmp = s[0];
+						$s.pop();
+						return $tmp;
+						$s.pop();
 					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				})(s));
 			} else {
 				var f = [Floats.interpolatef(fa[i],fb[i],equation)];
 				functions.push((function(f) {
-					return function(t) {
-						return "" + f[0](t);
+					$s.push("Strings::interpolatef@492");
+					var $spos = $s.length;
+					var $tmp = function(t) {
+						$s.push("Strings::interpolatef@492@492");
+						var $spos = $s.length;
+						var $tmp = "" + f[0](t);
+						$s.pop();
+						return $tmp;
+						$s.pop();
 					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				})(f));
 			}
 		} else {
 			var s = [sa[i]];
 			functions.push((function(s) {
-				return function(_) {
-					return s[0];
+				$s.push("Strings::interpolatef@496");
+				var $spos = $s.length;
+				var $tmp = function(_) {
+					$s.push("Strings::interpolatef@496@496");
+					var $spos = $s.length;
+					var $tmp = s[0];
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			})(s));
 		}
 		i++;
@@ -365,25 +692,67 @@ Strings.interpolatef = function(a,b,equation) {
 		i++;
 	}
 	if("" != rest) functions.push(function(_) {
+		$s.push("Strings::interpolatef@510");
+		var $spos = $s.length;
+		$s.pop();
 		return rest;
+		$s.pop();
 	});
-	return function(t) {
-		return functions.map(function(f,_) {
-			return f(t);
+	var $tmp = function(t) {
+		$s.push("Strings::interpolatef@511");
+		var $spos = $s.length;
+		var $tmp = functions.map(function(f,_) {
+			$s.push("Strings::interpolatef@511@512");
+			var $spos = $s.length;
+			var $tmp = f(t);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		}).join("");
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.ellipsis = function(s,maxlen,symbol) {
+	$s.push("Strings::ellipsis");
+	var $spos = $s.length;
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
-	if(s.length > maxlen) return s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+	if(s.length > maxlen) {
+		var $tmp = s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol;
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return s;
+	}
+	$s.pop();
 }
 Strings.ellipsisf = function(maxlen,symbol) {
+	$s.push("Strings::ellipsisf");
+	var $spos = $s.length;
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
-	return function(s) {
-		if(s.length > maxlen) return s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+	var $tmp = function(s) {
+		$s.push("Strings::ellipsisf@526");
+		var $spos = $s.length;
+		if(s.length > maxlen) {
+			var $tmp = s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol;
+			$s.pop();
+			return $tmp;
+		} else {
+			$s.pop();
+			return s;
+		}
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Strings.prototype.__class__ = Strings;
 if(typeof rg=='undefined') rg = {}
@@ -392,6 +761,8 @@ if(!rg.query.mock) rg.query.mock = {}
 rg.query.mock.DefaultStructure = function() { }
 rg.query.mock.DefaultStructure.__name__ = ["rg","query","mock","DefaultStructure"];
 rg.query.mock.DefaultStructure.getStructure = function() {
+	$s.push("rg.query.mock.DefaultStructure::getStructure");
+	var $spos = $s.length;
 	var hash = new Hash();
 	var _g = 0, _g1 = rg.query.mock.DefaultStructure.paths;
 	while(_g < _g1.length) {
@@ -422,80 +793,172 @@ rg.query.mock.DefaultStructure.getStructure = function() {
 		}
 		hash.set(path.path,ob);
 	}
+	$s.pop();
 	return hash;
+	$s.pop();
 }
 rg.query.mock.DefaultStructure.prototype.__class__ = rg.query.mock.DefaultStructure;
 if(typeof thx=='undefined') thx = {}
 if(!thx.color) thx.color = {}
 thx.color.Rgb = function(r,g,b) {
 	if( r === $_ ) return;
+	$s.push("thx.color.Rgb::new");
+	var $spos = $s.length;
 	this.red = Ints.clamp(r,0,255);
 	this.green = Ints.clamp(g,0,255);
 	this.blue = Ints.clamp(b,0,255);
+	$s.pop();
 }
 thx.color.Rgb.__name__ = ["thx","color","Rgb"];
 thx.color.Rgb.fromFloats = function(r,g,b) {
-	return new thx.color.Rgb(Ints.interpolate(r,0,255),Ints.interpolate(g,0,255),Ints.interpolate(b,0,255));
+	$s.push("thx.color.Rgb::fromFloats");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Rgb(Ints.interpolate(r,0,255),Ints.interpolate(g,0,255),Ints.interpolate(b,0,255));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.fromInt = function(v) {
-	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
+	$s.push("thx.color.Rgb::fromInt");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.equals = function(a,b) {
-	return a.red == b.red && a.green == b.green && a.blue == b.blue;
+	$s.push("thx.color.Rgb::equals");
+	var $spos = $s.length;
+	var $tmp = a.red == b.red && a.green == b.green && a.blue == b.blue;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.darker = function(color,t,equation) {
-	return new thx.color.Rgb(Ints.interpolate(t * color.red,0,255,equation),Ints.interpolate(t * color.green,0,255,equation),Ints.interpolate(t * color.blue,0,255,equation));
+	$s.push("thx.color.Rgb::darker");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Rgb(Ints.interpolate(t * color.red,0,255,equation),Ints.interpolate(t * color.green,0,255,equation),Ints.interpolate(t * color.blue,0,255,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.interpolate = function(a,b,t,equation) {
-	return new thx.color.Rgb(Ints.interpolate(t,a.red,b.red,equation),Ints.interpolate(t,a.green,b.green,equation),Ints.interpolate(t,a.blue,b.blue,equation));
+	$s.push("thx.color.Rgb::interpolate");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Rgb(Ints.interpolate(t,a.red,b.red,equation),Ints.interpolate(t,a.green,b.green,equation),Ints.interpolate(t,a.blue,b.blue,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.interpolatef = function(a,b,equation) {
+	$s.push("thx.color.Rgb::interpolatef");
+	var $spos = $s.length;
 	var r = Ints.interpolatef(a.red,b.red,equation), g = Ints.interpolatef(a.green,b.green,equation), b1 = Ints.interpolatef(a.blue,b.blue,equation);
-	return function(t) {
-		return new thx.color.Rgb(r(t),g(t),b1(t));
+	var $tmp = function(t) {
+		$s.push("thx.color.Rgb::interpolatef@95");
+		var $spos = $s.length;
+		var $tmp = new thx.color.Rgb(r(t),g(t),b1(t));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.contrast = function(c) {
+	$s.push("thx.color.Rgb::contrast");
+	var $spos = $s.length;
 	var nc = thx.color.Hsl.toHsl(c);
-	if(nc.lightness < .5) return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness + 0.5); else return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness - 0.5);
+	if(nc.lightness < .5) {
+		var $tmp = new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness + 0.5);
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness - 0.5);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.color.Rgb.contrastBW = function(c) {
+	$s.push("thx.color.Rgb::contrastBW");
+	var $spos = $s.length;
 	var g = thx.color.Grey.toGrey(c);
 	var nc = thx.color.Hsl.toHsl(c);
-	if(g.grey < .5) return new thx.color.Hsl(nc.hue,nc.saturation,1.0); else return new thx.color.Hsl(nc.hue,nc.saturation,0);
+	if(g.grey < .5) {
+		var $tmp = new thx.color.Hsl(nc.hue,nc.saturation,1.0);
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = new thx.color.Hsl(nc.hue,nc.saturation,0);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.color.Rgb.prototype.blue = null;
 thx.color.Rgb.prototype.green = null;
 thx.color.Rgb.prototype.red = null;
 thx.color.Rgb.prototype["int"] = function() {
-	return (this.red & 255) << 16 | (this.green & 255) << 8 | this.blue & 255;
+	$s.push("thx.color.Rgb::int");
+	var $spos = $s.length;
+	var $tmp = (this.red & 255) << 16 | (this.green & 255) << 8 | this.blue & 255;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.prototype.hex = function(prefix) {
+	$s.push("thx.color.Rgb::hex");
+	var $spos = $s.length;
 	if(prefix == null) prefix = "";
-	return prefix + StringTools.hex(this.red,2) + StringTools.hex(this.green,2) + StringTools.hex(this.blue,2);
+	var $tmp = prefix + StringTools.hex(this.red,2) + StringTools.hex(this.green,2) + StringTools.hex(this.blue,2);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.prototype.toCss = function() {
-	return this.hex("#");
+	$s.push("thx.color.Rgb::toCss");
+	var $spos = $s.length;
+	var $tmp = this.hex("#");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.prototype.toRgbString = function() {
-	return "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
+	$s.push("thx.color.Rgb::toRgbString");
+	var $spos = $s.length;
+	var $tmp = "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.prototype.toString = function() {
-	return this.toRgbString();
+	$s.push("thx.color.Rgb::toString");
+	var $spos = $s.length;
+	var $tmp = this.toRgbString();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Rgb.prototype.__class__ = thx.color.Rgb;
 thx.color.Cmyk = function(cyan,magenta,yellow,black) {
 	if( cyan === $_ ) return;
+	$s.push("thx.color.Cmyk::new");
+	var $spos = $s.length;
 	thx.color.Rgb.call(this,Ints.interpolate(Floats.normalize(1 - cyan - black),0,255,null),Ints.interpolate(Floats.normalize(1 - magenta - black),0,255,null),Ints.interpolate(Floats.normalize(1 - yellow - black),0,255,null));
 	this.cyan = Floats.normalize(cyan);
 	this.magenta = Floats.normalize(magenta);
 	this.yellow = Floats.normalize(yellow);
 	this.black = Floats.normalize(black);
+	$s.pop();
 }
 thx.color.Cmyk.__name__ = ["thx","color","Cmyk"];
 thx.color.Cmyk.__super__ = thx.color.Rgb;
 for(var k in thx.color.Rgb.prototype ) thx.color.Cmyk.prototype[k] = thx.color.Rgb.prototype[k];
 thx.color.Cmyk.toCmyk = function(rgb) {
+	$s.push("thx.color.Cmyk::toCmyk");
+	var $spos = $s.length;
 	var c = 0.0, y = 0.0, m = 0.0, k;
 	if(rgb.red + rgb.blue + rgb.green == 0) k = 1.0; else {
 		c = 1 - rgb.red / 255;
@@ -506,87 +969,179 @@ thx.color.Cmyk.toCmyk = function(rgb) {
 		m = (m - k) / (1 - k);
 		y = (y - k) / (1 - k);
 	}
-	return new thx.color.Cmyk(c,m,y,k);
+	var $tmp = new thx.color.Cmyk(c,m,y,k);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Cmyk.equals = function(a,b) {
-	return a.black == b.black && a.cyan == b.cyan && a.magenta == b.magenta && a.yellow == b.yellow;
+	$s.push("thx.color.Cmyk::equals");
+	var $spos = $s.length;
+	var $tmp = a.black == b.black && a.cyan == b.cyan && a.magenta == b.magenta && a.yellow == b.yellow;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Cmyk.darker = function(color,t,equation) {
+	$s.push("thx.color.Cmyk::darker");
+	var $spos = $s.length;
 	var v = t * color.black;
-	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(v,0,1,equation));
+	var $tmp = new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(v,0,1,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Cmyk.interpolate = function(a,b,t,equation) {
-	return new thx.color.Cmyk(Floats.interpolate(t,a.cyan,b.cyan,equation),Floats.interpolate(t,a.magenta,b.magenta,equation),Floats.interpolate(t,a.yellow,b.yellow,equation),Floats.interpolate(t,a.black,b.black,equation));
+	$s.push("thx.color.Cmyk::interpolate");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Cmyk(Floats.interpolate(t,a.cyan,b.cyan,equation),Floats.interpolate(t,a.magenta,b.magenta,equation),Floats.interpolate(t,a.yellow,b.yellow,equation),Floats.interpolate(t,a.black,b.black,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Cmyk.prototype.black = null;
 thx.color.Cmyk.prototype.cyan = null;
 thx.color.Cmyk.prototype.magenta = null;
 thx.color.Cmyk.prototype.yellow = null;
 thx.color.Cmyk.prototype.toCmykString = function() {
-	return "cmyk(" + this.cyan + "," + this.magenta + "," + this.yellow + "," + this.black + ")";
+	$s.push("thx.color.Cmyk::toCmykString");
+	var $spos = $s.length;
+	var $tmp = "cmyk(" + this.cyan + "," + this.magenta + "," + this.yellow + "," + this.black + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Cmyk.prototype.__class__ = thx.color.Cmyk;
 Dynamics = function() { }
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
-	return (Dynamics.formatf(param,params,nullstring,culture))(v);
+	$s.push("Dynamics::format");
+	var $spos = $s.length;
+	var $tmp = (Dynamics.formatf(param,params,nullstring,culture))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dynamics.formatf = function(param,params,nullstring,culture) {
+	$s.push("Dynamics::formatf");
+	var $spos = $s.length;
 	if(nullstring == null) nullstring = "null";
-	return function(v) {
+	var $tmp = function(v) {
+		$s.push("Dynamics::formatf@18");
+		var $spos = $s.length;
 		var $e = (Type["typeof"](v));
 		switch( $e[1] ) {
 		case 0:
+			$s.pop();
 			return nullstring;
 		case 1:
-			return Ints.format(v,param,params,culture);
+			var $tmp = Ints.format(v,param,params,culture);
+			$s.pop();
+			return $tmp;
 		case 2:
-			return Floats.format(v,param,params,culture);
+			var $tmp = Floats.format(v,param,params,culture);
+			$s.pop();
+			return $tmp;
 		case 3:
-			return Bools.format(v,param,params,culture);
+			var $tmp = Bools.format(v,param,params,culture);
+			$s.pop();
+			return $tmp;
 		case 6:
 			var c = $e[2];
-			if(c == String) return Strings.formatOne(v,param,params,culture); else if(c == Array) return Arrays.format(v,param,params,culture); else if(c == Date) return Dates.format(v,param,params,culture); else return Std.string(v);
+			if(c == String) {
+				var $tmp = Strings.formatOne(v,param,params,culture);
+				$s.pop();
+				return $tmp;
+			} else if(c == Array) {
+				var $tmp = Arrays.format(v,param,params,culture);
+				$s.pop();
+				return $tmp;
+			} else if(c == Date) {
+				var $tmp = Dates.format(v,param,params,culture);
+				$s.pop();
+				return $tmp;
+			} else {
+				var $tmp = Std.string(v);
+				$s.pop();
+				return $tmp;
+			}
 			break;
 		default:
-			return (function($this) {
+			var $tmp = (function($this) {
 				var $r;
 				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 40, className : "Dynamics", methodName : "formatf"});
 				return $r;
 			}(this));
+			$s.pop();
+			return $tmp;
 		}
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dynamics.interpolate = function(v,a,b,equation) {
-	return (Dynamics.interpolatef(a,b,equation))(v);
+	$s.push("Dynamics::interpolate");
+	var $spos = $s.length;
+	var $tmp = (Dynamics.interpolatef(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dynamics.interpolatef = function(a,b,equation) {
+	$s.push("Dynamics::interpolatef");
+	var $spos = $s.length;
 	var ta = Type["typeof"](a);
 	var tb = Type["typeof"](b);
 	if(!((Std["is"](a,Float) || Std["is"](a,Int)) && (Std["is"](b,Float) || Std["is"](b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 55, className : "Dynamics", methodName : "interpolatef"});
 	var $e = (ta);
 	switch( $e[1] ) {
 	case 0:
-		return function(_) {
+		var $tmp = function(_) {
+			$s.push("Dynamics::interpolatef@58");
+			var $spos = $s.length;
+			$s.pop();
 			return null;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case 1:
-		if(Std["is"](b,Int)) return Ints.interpolatef(a,b,equation); else return Floats.interpolatef(a,b,equation);
+		if(Std["is"](b,Int)) {
+			var $tmp = Ints.interpolatef(a,b,equation);
+			$s.pop();
+			return $tmp;
+		} else {
+			var $tmp = Floats.interpolatef(a,b,equation);
+			$s.pop();
+			return $tmp;
+		}
 		break;
 	case 2:
-		return Floats.interpolatef(a,b,equation);
+		var $tmp = Floats.interpolatef(a,b,equation);
+		$s.pop();
+		return $tmp;
 	case 3:
-		return Bools.interpolatef(a,b,equation);
+		var $tmp = Bools.interpolatef(a,b,equation);
+		$s.pop();
+		return $tmp;
 	case 4:
-		return Objects.interpolatef(a,b,equation);
+		var $tmp = Objects.interpolatef(a,b,equation);
+		$s.pop();
+		return $tmp;
 	case 6:
 		var c = $e[2];
 		var name = Type.getClassName(c);
 		switch(name) {
 		case "String":
-			return Strings.interpolatef(a,b,equation);
+			var $tmp = Strings.interpolatef(a,b,equation);
+			$s.pop();
+			return $tmp;
 		case "Date":
-			return Dates.interpolatef(a,b,equation);
+			var $tmp = Dates.interpolatef(a,b,equation);
+			$s.pop();
+			return $tmp;
 		default:
 			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 73, className : "Dynamics", methodName : "interpolatef"});
 		}
@@ -594,18 +1149,28 @@ Dynamics.interpolatef = function(a,b,equation) {
 	default:
 		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 75, className : "Dynamics", methodName : "interpolatef"});
 	}
+	$s.pop();
 }
 Dynamics.string = function(v) {
+	$s.push("Dynamics::string");
+	var $spos = $s.length;
 	var $e = (Type["typeof"](v));
 	switch( $e[1] ) {
 	case 0:
+		$s.pop();
 		return "null";
 	case 1:
-		return Ints.format(v);
+		var $tmp = Ints.format(v);
+		$s.pop();
+		return $tmp;
 	case 2:
-		return Floats.format(v);
+		var $tmp = Floats.format(v);
+		$s.pop();
+		return $tmp;
 	case 3:
-		return Bools.format(v);
+		var $tmp = Bools.format(v);
+		$s.pop();
+		return $tmp;
 	case 4:
 		var keys = Reflect.fields(v);
 		var result = [];
@@ -615,36 +1180,64 @@ Dynamics.string = function(v) {
 			++_g;
 			result.push(key + " : " + Dynamics.string(Reflect.field(v,key)));
 		}
-		return "{" + result.join(", ") + "}";
+		var $tmp = "{" + result.join(", ") + "}";
+		$s.pop();
+		return $tmp;
 	case 6:
 		var c = $e[2];
 		var name = Type.getClassName(c);
 		switch(name) {
 		case "Array":
-			return Arrays.string(v);
+			var $tmp = Arrays.string(v);
+			$s.pop();
+			return $tmp;
 		case "String":
 			var s = v;
-			if(s.indexOf("\"") < 0) return "\"" + s + "\""; else if(s.indexOf("'") < 0) return "'" + s + "'"; else return "\"" + StringTools.replace(s,"\"","\\\"") + "\"";
+			if(s.indexOf("\"") < 0) {
+				var $tmp = "\"" + s + "\"";
+				$s.pop();
+				return $tmp;
+			} else if(s.indexOf("'") < 0) {
+				var $tmp = "'" + s + "'";
+				$s.pop();
+				return $tmp;
+			} else {
+				var $tmp = "\"" + StringTools.replace(s,"\"","\\\"") + "\"";
+				$s.pop();
+				return $tmp;
+			}
 			break;
 		case "Date":
-			return Dates.format(v);
+			var $tmp = Dates.format(v);
+			$s.pop();
+			return $tmp;
 		default:
-			return Std.string(v);
+			var $tmp = Std.string(v);
+			$s.pop();
+			return $tmp;
 		}
 		break;
 	case 7:
 		var e = $e[2];
-		return Enums.string(v);
+		var $tmp = Enums.string(v);
+		$s.pop();
+		return $tmp;
 	case 8:
+		$s.pop();
 		return "<unknown>";
 	case 5:
+		$s.pop();
 		return "<function>";
 	}
+	$s.pop();
 }
 Dynamics.clone = function(v) {
+	$s.push("Dynamics::clone");
+	var $spos = $s.length;
 	var $e = (Type["typeof"](v));
 	switch( $e[1] ) {
 	case 0:
+		$s.pop();
 		return null;
 	case 1:
 	case 2:
@@ -652,10 +1245,12 @@ Dynamics.clone = function(v) {
 	case 7:
 	case 8:
 	case 5:
+		$s.pop();
 		return v;
 	case 4:
 		var o = { };
 		Objects.copyTo(v,o);
+		$s.pop();
 		return o;
 	case 6:
 		var c = $e[2];
@@ -669,8 +1264,10 @@ Dynamics.clone = function(v) {
 				++_g;
 				a.push(Dynamics.clone(i));
 			}
+			$s.pop();
 			return a;
 		case "String":case "Date":
+			$s.pop();
 			return v;
 		default:
 			var o = Type.createEmptyInstance(c);
@@ -680,61 +1277,105 @@ Dynamics.clone = function(v) {
 				++_g;
 				o[field] = Dynamics.clone(Reflect.field(v,field));
 			}
+			$s.pop();
 			return o;
 		}
 		break;
 	}
+	$s.pop();
 }
 Dynamics.same = function(a,b) {
+	$s.push("Dynamics::same");
+	var $spos = $s.length;
 	var ta = Types.typeName(a), tb = Types.typeName(b);
-	if(ta != tb) return false;
+	if(ta != tb) {
+		$s.pop();
+		return false;
+	}
 	var $e = (Type["typeof"](a));
 	switch( $e[1] ) {
 	case 2:
-		return Floats.equals(a,b);
+		var $tmp = Floats.equals(a,b);
+		$s.pop();
+		return $tmp;
 	case 0:
 	case 1:
 	case 3:
-		return a == b;
+		var $tmp = a == b;
+		$s.pop();
+		return $tmp;
 	case 5:
-		return Reflect.compareMethods(a,b);
+		var $tmp = Reflect.compareMethods(a,b);
+		$s.pop();
+		return $tmp;
 	case 6:
 		var c = $e[2];
 		var ca = Type.getClassName(c), cb = Type.getClassName(Type.getClass(b));
-		if(ca != cb) return false;
-		if(Std["is"](a,String) && a != b) return false;
+		if(ca != cb) {
+			$s.pop();
+			return false;
+		}
+		if(Std["is"](a,String) && a != b) {
+			$s.pop();
+			return false;
+		}
 		if(Std["is"](a,Array)) {
 			var aa = a, ab = b;
-			if(aa.length != ab.length) return false;
+			if(aa.length != ab.length) {
+				$s.pop();
+				return false;
+			}
 			var _g1 = 0, _g = aa.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(!Dynamics.same(aa[i],ab[i])) return false;
+				if(!Dynamics.same(aa[i],ab[i])) {
+					$s.pop();
+					return false;
+				}
 			}
+			$s.pop();
 			return true;
 		}
-		if(Std["is"](a,Date)) return a.getTime() == b.getTime();
+		if(Std["is"](a,Date)) {
+			var $tmp = a.getTime() == b.getTime();
+			$s.pop();
+			return $tmp;
+		}
 		if(Std["is"](a,Hash) || Std["is"](a,IntHash)) {
 			var ha = a, hb = b;
 			var ka = Iterators.array(ha.keys()), kb = Iterators.array(hb.keys());
-			if(ka.length != kb.length) return false;
+			if(ka.length != kb.length) {
+				$s.pop();
+				return false;
+			}
 			var _g = 0;
 			while(_g < ka.length) {
 				var key = ka[_g];
 				++_g;
-				if(!hb.exists(key) || !Dynamics.same(ha.get(key),hb.get(key))) return false;
+				if(!hb.exists(key) || !Dynamics.same(ha.get(key),hb.get(key))) {
+					$s.pop();
+					return false;
+				}
 			}
+			$s.pop();
 			return true;
 		}
 		var t = false;
 		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
 			var va = t?Iterators.array(a):Iterators.array(a.iterator()), vb = t?Iterators.array(b):Iterators.array(b.iterator());
-			if(va.length != vb.length) return false;
+			if(va.length != vb.length) {
+				$s.pop();
+				return false;
+			}
 			var _g1 = 0, _g = va.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(!Dynamics.same(va[i],vb[i])) return false;
+				if(!Dynamics.same(va[i],vb[i])) {
+					$s.pop();
+					return false;
+				}
 			}
+			$s.pop();
 			return true;
 		}
 		var fields = Type.getInstanceFields(Type.getClass(a));
@@ -745,20 +1386,34 @@ Dynamics.same = function(a,b) {
 			var va = Reflect.field(a,field);
 			if(Reflect.isFunction(va)) continue;
 			var vb = Reflect.field(b,field);
-			if(!Dynamics.same(va,vb)) return false;
+			if(!Dynamics.same(va,vb)) {
+				$s.pop();
+				return false;
+			}
 		}
+		$s.pop();
 		return true;
 	case 7:
 		var e = $e[2];
 		var ea = Type.getEnumName(e), eb = Type.getEnumName(Type.getEnum(b));
-		if(ea != eb) return false;
-		if(a[1] != b[1]) return false;
+		if(ea != eb) {
+			$s.pop();
+			return false;
+		}
+		if(a[1] != b[1]) {
+			$s.pop();
+			return false;
+		}
 		var pa = a.slice(2), pb = b.slice(2);
 		var _g1 = 0, _g = pa.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			if(!Dynamics.same(pa[i],pb[i])) return false;
+			if(!Dynamics.same(pa[i],pb[i])) {
+				$s.pop();
+				return false;
+			}
 		}
+		$s.pop();
 		return true;
 	case 4:
 		var fa = Reflect.fields(a), fb = Reflect.fields(b);
@@ -767,49 +1422,85 @@ Dynamics.same = function(a,b) {
 			var field = fa[_g];
 			++_g;
 			fb.remove(field);
-			if(!Reflect.hasField(b,field)) return false;
+			if(!Reflect.hasField(b,field)) {
+				$s.pop();
+				return false;
+			}
 			var va = Reflect.field(a,field);
 			if(Reflect.isFunction(va)) continue;
 			var vb = Reflect.field(b,field);
-			if(!Dynamics.same(va,vb)) return false;
+			if(!Dynamics.same(va,vb)) {
+				$s.pop();
+				return false;
+			}
 		}
-		if(fb.length > 0) return false;
+		if(fb.length > 0) {
+			$s.pop();
+			return false;
+		}
 		var t = false;
 		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
-			if(t && !Iterators.isIterator(b)) return false;
-			if(!t && !Iterables.isIterable(b)) return false;
+			if(t && !Iterators.isIterator(b)) {
+				$s.pop();
+				return false;
+			}
+			if(!t && !Iterables.isIterable(b)) {
+				$s.pop();
+				return false;
+			}
 			var aa = t?Iterators.array(a):Iterators.array(a.iterator());
 			var ab = t?Iterators.array(b):Iterators.array(b.iterator());
-			if(aa.length != ab.length) return false;
+			if(aa.length != ab.length) {
+				$s.pop();
+				return false;
+			}
 			var _g1 = 0, _g = aa.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(!Dynamics.same(aa[i],ab[i])) return false;
+				if(!Dynamics.same(aa[i],ab[i])) {
+					$s.pop();
+					return false;
+				}
 			}
+			$s.pop();
 			return true;
 		}
+		$s.pop();
 		return true;
 	case 8:
-		return (function($this) {
+		var $tmp = (function($this) {
 			var $r;
 			throw "Unable to compare two unknown types";
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
 	}
-	return (function($this) {
+	var $tmp = (function($this) {
 		var $r;
 		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 295, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dynamics.number = function(v) {
-	return Number(v);
+	$s.push("Dynamics::number");
+	var $spos = $s.length;
+	var $tmp = Number(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dynamics.prototype.__class__ = Dynamics;
 if(!rg.layout) rg.layout = {}
 rg.layout.Frame = function(p) {
 	if( p === $_ ) return;
+	$s.push("rg.layout.Frame::new");
+	var $spos = $s.length;
 	this.x = this.y = this.width = this.height = 0;
+	$s.pop();
 }
 rg.layout.Frame.__name__ = ["rg","layout","Frame"];
 rg.layout.Frame.prototype.x = null;
@@ -817,62 +1508,112 @@ rg.layout.Frame.prototype.y = null;
 rg.layout.Frame.prototype.width = null;
 rg.layout.Frame.prototype.height = null;
 rg.layout.Frame.prototype.change = function() {
+	$s.push("rg.layout.Frame::change");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.layout.Frame.prototype.set = function(x,y,width,height) {
-	if(this.x == x && this.y == y && this.width == width && this.height == height) return;
+	$s.push("rg.layout.Frame::set");
+	var $spos = $s.length;
+	if(this.x == x && this.y == y && this.width == width && this.height == height) {
+		$s.pop();
+		return;
+	}
 	this.x = x;
 	this.y = y;
 	this.width = width;
 	this.height = height;
 	this.change();
+	$s.pop();
 }
 rg.layout.Frame.prototype.toString = function() {
-	return "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
+	$s.push("rg.layout.Frame::toString");
+	var $spos = $s.length;
+	var $tmp = "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.layout.Frame.prototype.__class__ = rg.layout.Frame;
 List = function(p) {
 	if( p === $_ ) return;
+	$s.push("List::new");
+	var $spos = $s.length;
 	this.length = 0;
+	$s.pop();
 }
 List.__name__ = ["List"];
 List.prototype.h = null;
 List.prototype.q = null;
 List.prototype.length = null;
 List.prototype.add = function(item) {
+	$s.push("List::add");
+	var $spos = $s.length;
 	var x = [item];
 	if(this.h == null) this.h = x; else this.q[1] = x;
 	this.q = x;
 	this.length++;
+	$s.pop();
 }
 List.prototype.push = function(item) {
+	$s.push("List::push");
+	var $spos = $s.length;
 	var x = [item,this.h];
 	this.h = x;
 	if(this.q == null) this.q = x;
 	this.length++;
+	$s.pop();
 }
 List.prototype.first = function() {
-	return this.h == null?null:this.h[0];
+	$s.push("List::first");
+	var $spos = $s.length;
+	var $tmp = this.h == null?null:this.h[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 List.prototype.last = function() {
-	return this.q == null?null:this.q[0];
+	$s.push("List::last");
+	var $spos = $s.length;
+	var $tmp = this.q == null?null:this.q[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 List.prototype.pop = function() {
-	if(this.h == null) return null;
+	$s.push("List::pop");
+	var $spos = $s.length;
+	if(this.h == null) {
+		$s.pop();
+		return null;
+	}
 	var x = this.h[0];
 	this.h = this.h[1];
 	if(this.h == null) this.q = null;
 	this.length--;
+	$s.pop();
 	return x;
+	$s.pop();
 }
 List.prototype.isEmpty = function() {
-	return this.h == null;
+	$s.push("List::isEmpty");
+	var $spos = $s.length;
+	var $tmp = this.h == null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 List.prototype.clear = function() {
+	$s.push("List::clear");
+	var $spos = $s.length;
 	this.h = null;
 	this.q = null;
 	this.length = 0;
+	$s.pop();
 }
 List.prototype.remove = function(v) {
+	$s.push("List::remove");
+	var $spos = $s.length;
 	var prev = null;
 	var l = this.h;
 	while(l != null) {
@@ -880,24 +1621,46 @@ List.prototype.remove = function(v) {
 			if(prev == null) this.h = l[1]; else prev[1] = l[1];
 			if(this.q == l) this.q = prev;
 			this.length--;
+			$s.pop();
 			return true;
 		}
 		prev = l;
 		l = l[1];
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 List.prototype.iterator = function() {
-	return { h : this.h, hasNext : function() {
-		return this.h != null;
+	$s.push("List::iterator");
+	var $spos = $s.length;
+	var $tmp = { h : this.h, hasNext : function() {
+		$s.push("List::iterator@155");
+		var $spos = $s.length;
+		var $tmp = this.h != null;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}, next : function() {
-		if(this.h == null) return null;
+		$s.push("List::iterator@158");
+		var $spos = $s.length;
+		if(this.h == null) {
+			$s.pop();
+			return null;
+		}
 		var x = this.h[0];
 		this.h = this.h[1];
+		$s.pop();
 		return x;
+		$s.pop();
 	}};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 List.prototype.toString = function() {
+	$s.push("List::toString");
+	var $spos = $s.length;
 	var s = new StringBuf();
 	var first = true;
 	var l = this.h;
@@ -908,9 +1671,14 @@ List.prototype.toString = function() {
 		l = l[1];
 	}
 	s.b[s.b.length] = "}";
-	return s.b.join("");
+	var $tmp = s.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 List.prototype.join = function(sep) {
+	$s.push("List::join");
+	var $spos = $s.length;
 	var s = new StringBuf();
 	var first = true;
 	var l = this.h;
@@ -919,9 +1687,14 @@ List.prototype.join = function(sep) {
 		s.b[s.b.length] = l[0];
 		l = l[1];
 	}
-	return s.b.join("");
+	var $tmp = s.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 List.prototype.filter = function(f) {
+	$s.push("List::filter");
+	var $spos = $s.length;
 	var l2 = new List();
 	var l = this.h;
 	while(l != null) {
@@ -929,9 +1702,13 @@ List.prototype.filter = function(f) {
 		l = l[1];
 		if(f(v)) l2.add(v);
 	}
+	$s.pop();
 	return l2;
+	$s.pop();
 }
 List.prototype.map = function(f) {
+	$s.push("List::map");
+	var $spos = $s.length;
 	var b = new List();
 	var l = this.h;
 	while(l != null) {
@@ -939,96 +1716,184 @@ List.prototype.map = function(f) {
 		l = l[1];
 		b.add(f(v));
 	}
+	$s.pop();
 	return b;
+	$s.pop();
 }
 List.prototype.__class__ = List;
 if(!rg.svg) rg.svg = {}
 rg.svg.SvgPanel = function(frame) {
 	if( frame === $_ ) return;
+	$s.push("rg.svg.SvgPanel::new");
+	var $spos = $s.length;
 	this.frame = frame;
 	frame.change = $closure(this,"reframe");
+	this.onResize = new hxevents.Notifier();
 	this._layers = [];
+	$s.pop();
 }
 rg.svg.SvgPanel.__name__ = ["rg","svg","SvgPanel"];
 rg.svg.SvgPanel.prototype.frame = null;
 rg.svg.SvgPanel.prototype.svg = null;
 rg.svg.SvgPanel.prototype.parent = null;
+rg.svg.SvgPanel.prototype.onResize = null;
 rg.svg.SvgPanel.prototype._layers = null;
 rg.svg.SvgPanel.prototype.addLayer = function(layer) {
+	$s.push("rg.svg.SvgPanel::addLayer");
+	var $spos = $s.length;
 	this._layers.remove(layer);
 	this._layers.push(layer);
+	$s.pop();
 }
 rg.svg.SvgPanel.prototype.removeLayer = function(layer) {
+	$s.push("rg.svg.SvgPanel::removeLayer");
+	var $spos = $s.length;
 	this._layers.remove(layer);
+	$s.pop();
 }
 rg.svg.SvgPanel.prototype.setParent = function(v) {
+	$s.push("rg.svg.SvgPanel::setParent");
+	var $spos = $s.length;
 	if(null != this.svg) this.svg.remove();
-	if(null == v) return;
+	if(null == v) {
+		$s.pop();
+		return;
+	}
 	this.init(v.svg);
+	$s.pop();
 }
 rg.svg.SvgPanel.prototype.init = function(container) {
+	$s.push("rg.svg.SvgPanel::init");
+	var $spos = $s.length;
 	this.svg = container.append("svg:g").attr("class").string("panel").attr("transform").string("translate(0,0)");
 	this.svg.append("svg:rect").attr("class").string("panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
+	$s.pop();
 }
 rg.svg.SvgPanel.prototype.redraw = function() {
+	$s.push("rg.svg.SvgPanel::redraw");
+	var $spos = $s.length;
 	this._layers.forEach(function(l,i) {
+		$s.push("rg.svg.SvgPanel::redraw@71");
+		var $spos = $s.length;
 		l.redraw();
+		$s.pop();
 	});
+	$s.pop();
 }
 rg.svg.SvgPanel.prototype.reframe = function() {
+	$s.push("rg.svg.SvgPanel::reframe");
+	var $spos = $s.length;
 	this.svg.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")").select(".panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
 	this.redraw();
+	this.onResize.dispatch();
+	$s.pop();
 }
 rg.svg.SvgPanel.prototype.__class__ = rg.svg.SvgPanel;
 if(!thx.js) thx.js = {}
 thx.js.Access = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.Access::new");
+	var $spos = $s.length;
 	this.selection = selection;
+	$s.pop();
 }
 thx.js.Access.__name__ = ["thx","js","Access"];
 thx.js.Access.getData = function(d) {
-	return Reflect.field(d,"__data__");
+	$s.push("thx.js.Access::getData");
+	var $spos = $s.length;
+	var $tmp = Reflect.field(d,"__data__");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Access.setData = function(d,v) {
+	$s.push("thx.js.Access::setData");
+	var $spos = $s.length;
 	d["__data__"] = v;
+	$s.pop();
 }
 thx.js.Access.emptyHtmlDom = function(v) {
-	return { __data__ : v};
+	$s.push("thx.js.Access::emptyHtmlDom");
+	var $spos = $s.length;
+	var $tmp = { __data__ : v};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Access.eventName = function(event) {
-	return "__on" + event;
+	$s.push("thx.js.Access::eventName");
+	var $spos = $s.length;
+	var $tmp = "__on" + event;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Access.getEvent = function(d,event) {
-	return Reflect.field(d,"__on" + event);
+	$s.push("thx.js.Access::getEvent");
+	var $spos = $s.length;
+	var $tmp = Reflect.field(d,"__on" + event);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Access.hasEvent = function(d,event) {
-	return null != Reflect.field(d,"__on" + event);
+	$s.push("thx.js.Access::hasEvent");
+	var $spos = $s.length;
+	var $tmp = null != Reflect.field(d,"__on" + event);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Access.addEvent = function(d,event,listener) {
+	$s.push("thx.js.Access::addEvent");
+	var $spos = $s.length;
 	d["__on" + event] = listener;
+	$s.pop();
 }
 thx.js.Access.removeEvent = function(d,event) {
+	$s.push("thx.js.Access::removeEvent");
+	var $spos = $s.length;
 	Reflect.deleteField(d,"__on" + event);
+	$s.pop();
 }
 thx.js.Access.setTransition = function(d,id) {
+	$s.push("thx.js.Access::setTransition");
+	var $spos = $s.length;
 	if(Reflect.hasField(d,"__transition__")) Reflect.field(d,"__transition__").owner = id; else d["__transition__"] = { owner : id};
+	$s.pop();
 }
 thx.js.Access.getTransition = function(d) {
-	return Reflect.field(d,"__transition__");
+	$s.push("thx.js.Access::getTransition");
+	var $spos = $s.length;
+	var $tmp = Reflect.field(d,"__transition__");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Access.resetTransition = function(d) {
+	$s.push("thx.js.Access::resetTransition");
+	var $spos = $s.length;
 	Reflect.deleteField(d,"__transition__");
+	$s.pop();
 }
 thx.js.Access.prototype.selection = null;
 thx.js.Access.prototype._that = function() {
-	return this.selection;
+	$s.push("thx.js.Access::_that");
+	var $spos = $s.length;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Access.prototype.__class__ = thx.js.Access;
 thx.js.AccessAttribute = function(name,selection) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessAttribute::new");
+	var $spos = $s.length;
 	thx.js.Access.call(this,selection);
 	this.name = name;
 	this.qname = thx.xml.Namespace.qualify(name);
+	$s.pop();
 }
 thx.js.AccessAttribute.__name__ = ["thx","js","AccessAttribute"];
 thx.js.AccessAttribute.__super__ = thx.js.Access;
@@ -1036,227 +1901,466 @@ for(var k in thx.js.Access.prototype ) thx.js.AccessAttribute.prototype[k] = thx
 thx.js.AccessAttribute.prototype.name = null;
 thx.js.AccessAttribute.prototype.qname = null;
 thx.js.AccessAttribute.prototype.get = function() {
+	$s.push("thx.js.AccessAttribute::get");
+	var $spos = $s.length;
 	var n = this.name, q = this.qname;
-	return this.selection.firstNode(function(node) {
-		return q == null?node.getAttribute(n):node.getAttributeNS(q.space,q.local);
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessAttribute::get@25");
+		var $spos = $s.length;
+		var $tmp = q == null?node.getAttribute(n):node.getAttributeNS(q.space,q.local);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessAttribute.prototype.getFloat = function() {
+	$s.push("thx.js.AccessAttribute::getFloat");
+	var $spos = $s.length;
+	var v = this.get();
+	if(thx.js.AccessAttribute.refloat.match(v)) {
+		var $tmp = Std.parseFloat(thx.js.AccessAttribute.refloat.matched(1));
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = Math.NaN;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.js.AccessAttribute.prototype.remove = function() {
+	$s.push("thx.js.AccessAttribute::remove");
+	var $spos = $s.length;
 	if(null == this.qname) {
 		var n = this.name;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::remove@43");
+			var $spos = $s.length;
 			node.removeAttribute(n);
+			$s.pop();
 		});
 	} else {
 		var q = this.qname;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::remove@46");
+			var $spos = $s.length;
 			node.removeAttributeNS(q.space,q.local);
+			$s.pop();
 		});
 	}
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessAttribute.prototype.string = function(v) {
+	$s.push("thx.js.AccessAttribute::string");
+	var $spos = $s.length;
 	if(null == this.qname) {
 		var n = this.name;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::string@55");
+			var $spos = $s.length;
 			node.setAttribute(n,v);
+			$s.pop();
 		});
 	} else {
 		var q = this.qname;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::string@58");
+			var $spos = $s.length;
 			node.setAttributeNS(q.space,q.local,v);
+			$s.pop();
 		});
 	}
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessAttribute.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessAttribute::float");
+	var $spos = $s.length;
 	var s = "" + v;
 	if(null == this.qname) {
 		var n = this.name;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::float@68");
+			var $spos = $s.length;
 			node.setAttribute(n,s);
+			$s.pop();
 		});
 	} else {
 		var q = this.qname;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::float@71");
+			var $spos = $s.length;
 			node.setAttributeNS(q.space,q.local,s);
+			$s.pop();
 		});
 	}
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessAttribute.prototype.__class__ = thx.js.AccessAttribute;
 thx.js.AccessDataAttribute = function(name,selection) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataAttribute::new");
+	var $spos = $s.length;
 	thx.js.AccessAttribute.call(this,name,selection);
+	$s.pop();
 }
 thx.js.AccessDataAttribute.__name__ = ["thx","js","AccessDataAttribute"];
 thx.js.AccessDataAttribute.__super__ = thx.js.AccessAttribute;
 for(var k in thx.js.AccessAttribute.prototype ) thx.js.AccessDataAttribute.prototype[k] = thx.js.AccessAttribute.prototype[k];
 thx.js.AccessDataAttribute.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataAttribute::stringf");
+	var $spos = $s.length;
 	if(null == this.qname) {
 		var n = this.name;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::stringf@89");
+			var $spos = $s.length;
 			var s = v(Reflect.field(node,"__data__"),i);
 			if(null == s) node.removeAttribute(n); else node.setAttribute(n,s);
+			$s.pop();
 		});
 	} else {
 		var q = this.qname;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::stringf@98");
+			var $spos = $s.length;
 			var s = v(Reflect.field(node,"__data__"),i);
 			if(null == s) node.removeAttributeNS(n); else node.setAttributeNS(q.space,q.local,s);
+			$s.pop();
 		});
 	}
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataAttribute.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataAttribute::floatf");
+	var $spos = $s.length;
 	if(null == this.qname) {
 		var n = this.name;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::floatf@113");
+			var $spos = $s.length;
 			var s = v(Reflect.field(node,"__data__"),i);
 			if(null == s) node.removeAttribute(n); else node.setAttribute(n,"" + s);
+			$s.pop();
 		});
 	} else {
 		var q = this.qname;
 		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::floatf@122");
+			var $spos = $s.length;
 			var s = v(Reflect.field(node,"__data__"),i);
 			if(null == s) node.removeAttributeNS(n); else node.setAttributeNS(q.space,q.local,"" + s);
+			$s.pop();
 		});
 	}
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataAttribute.prototype.data = function() {
-	return this.stringf(function(d,_) {
-		return "" + d;
+	$s.push("thx.js.AccessDataAttribute::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataAttribute::data@135");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataAttribute.prototype.__class__ = thx.js.AccessDataAttribute;
 Bools = function() { }
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
-	return (Bools.formatf(param,params,culture))(v);
+	$s.push("Bools::format");
+	var $spos = $s.length;
+	var $tmp = (Bools.formatf(param,params,culture))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Bools.formatf = function(param,params,culture) {
+	$s.push("Bools::formatf");
+	var $spos = $s.length;
 	params = thx.culture.FormatParams.params(param,params,"B");
 	var format = params.shift();
 	switch(format) {
 	case "B":
-		return function(v) {
-			return v?"true":"false";
+		var $tmp = function(v) {
+			$s.push("Bools::formatf@23");
+			var $spos = $s.length;
+			var $tmp = v?"true":"false";
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "N":
-		return function(v) {
-			return v?"1":"0";
+		var $tmp = function(v) {
+			$s.push("Bools::formatf@25");
+			var $spos = $s.length;
+			var $tmp = v?"1":"0";
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "R":
 		if(params.length != 2) throw "bool format R requires 2 parameters";
-		return function(v) {
-			return v?params[0]:params[1];
+		var $tmp = function(v) {
+			$s.push("Bools::formatf@29");
+			var $spos = $s.length;
+			var $tmp = v?params[0]:params[1];
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	default:
 		throw "Unsupported bool format: " + format;
 	}
+	$s.pop();
 }
 Bools.interpolate = function(v,a,b,equation) {
-	return (Bools.interpolatef(a,b,equation))(v);
+	$s.push("Bools::interpolate");
+	var $spos = $s.length;
+	var $tmp = (Bools.interpolatef(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Bools.interpolatef = function(a,b,equation) {
-	if(a == b) return function(_) {
-		return a;
-	}; else {
-		var f = Floats.interpolatef(0,1,equation);
-		return function(v) {
-			return f(v) < 0.5?a:b;
+	$s.push("Bools::interpolatef");
+	var $spos = $s.length;
+	if(a == b) {
+		var $tmp = function(_) {
+			$s.push("Bools::interpolatef@43");
+			var $spos = $s.length;
+			$s.pop();
+			return a;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+	} else {
+		var f = Floats.interpolatef(0,1,equation);
+		var $tmp = function(v) {
+			$s.push("Bools::interpolatef@47");
+			var $spos = $s.length;
+			var $tmp = f(v) < 0.5?a:b;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Bools.canParse = function(s) {
+	$s.push("Bools::canParse");
+	var $spos = $s.length;
 	s = s.toLowerCase();
-	return s == "true" || s == "false";
+	var $tmp = s == "true" || s == "false";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Bools.parse = function(s) {
-	return s.toLowerCase() == "true";
+	$s.push("Bools::parse");
+	var $spos = $s.length;
+	var $tmp = s.toLowerCase() == "true";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Bools.prototype.__class__ = Bools;
 thx.js.AccessHtml = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.AccessHtml::new");
+	var $spos = $s.length;
 	thx.js.Access.call(this,selection);
+	$s.pop();
 }
 thx.js.AccessHtml.__name__ = ["thx","js","AccessHtml"];
 thx.js.AccessHtml.__super__ = thx.js.Access;
 for(var k in thx.js.Access.prototype ) thx.js.AccessHtml.prototype[k] = thx.js.Access.prototype[k];
 thx.js.AccessHtml.prototype.get = function() {
-	return this.selection.firstNode(function(node) {
-		return node.innerHTML;
+	$s.push("thx.js.AccessHtml::get");
+	var $spos = $s.length;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessHtml::get@14");
+		var $spos = $s.length;
+		var $tmp = node.innerHTML;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessHtml.prototype.string = function(v) {
+	$s.push("thx.js.AccessHtml::string");
+	var $spos = $s.length;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessHtml::string@19");
+		var $spos = $s.length;
 		node.innerHTML = v;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessHtml.prototype.clear = function() {
+	$s.push("thx.js.AccessHtml::clear");
+	var $spos = $s.length;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessHtml::clear@25");
+		var $spos = $s.length;
 		node.innerHTML = "";
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessHtml.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessHtml::float");
+	var $spos = $s.length;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessHtml::float@31");
+		var $spos = $s.length;
 		node.innerHTML = "" + v;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessHtml.prototype.__class__ = thx.js.AccessHtml;
 thx.js.AccessDataHtml = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.AccessDataHtml::new");
+	var $spos = $s.length;
 	thx.js.AccessHtml.call(this,selection);
+	$s.pop();
 }
 thx.js.AccessDataHtml.__name__ = ["thx","js","AccessDataHtml"];
 thx.js.AccessDataHtml.__super__ = thx.js.AccessHtml;
 for(var k in thx.js.AccessHtml.prototype ) thx.js.AccessDataHtml.prototype[k] = thx.js.AccessHtml.prototype[k];
 thx.js.AccessDataHtml.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataHtml::stringf");
+	var $spos = $s.length;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataHtml::stringf@45");
+		var $spos = $s.length;
 		var s = v(Reflect.field(node,"__data__"),i);
 		if(null == s) s = "";
 		node.innerHTML = s;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataHtml.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataHtml::floatf");
+	var $spos = $s.length;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataHtml::floatf@56");
+		var $spos = $s.length;
 		var f = v(Reflect.field(node,"__data__"),i);
 		if(null == f) node.innerHTML = ""; else node.innerHTML = "" + f;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataHtml.prototype.data = function() {
-	return this.stringf(function(d,_) {
-		return "" + d;
+	$s.push("thx.js.AccessDataHtml::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataHtml::data@69");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataHtml.prototype.__class__ = thx.js.AccessDataHtml;
 IntIter = function(min,max) {
 	if( min === $_ ) return;
+	$s.push("IntIter::new");
+	var $spos = $s.length;
 	this.min = min;
 	this.max = max;
+	$s.pop();
 }
 IntIter.__name__ = ["IntIter"];
 IntIter.prototype.min = null;
 IntIter.prototype.max = null;
 IntIter.prototype.hasNext = function() {
-	return this.min < this.max;
+	$s.push("IntIter::hasNext");
+	var $spos = $s.length;
+	var $tmp = this.min < this.max;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 IntIter.prototype.next = function() {
-	return this.min++;
+	$s.push("IntIter::next");
+	var $spos = $s.length;
+	var $tmp = this.min++;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 IntIter.prototype.__class__ = IntIter;
 thx.js.BaseSelection = function(groups) {
 	if( groups === $_ ) return;
+	$s.push("thx.js.BaseSelection::new");
+	var $spos = $s.length;
 	this.groups = groups;
+	$s.pop();
 }
 thx.js.BaseSelection.__name__ = ["thx","js","BaseSelection"];
 thx.js.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
+	$s.push("thx.js.BaseSelection::bindJoin");
+	var $spos = $s.length;
 	var n = group.nodes.length, m = groupData.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
 	var nodeByKey = new Hash(), keys = [], key, j = groupData.length;
 	var _g = 0;
@@ -1296,8 +2400,11 @@ thx.js.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit)
 	var exitGroup = new thx.js.Group(exitHtmlDoms);
 	exitGroup.parentNode = group.parentNode;
 	exit.push(exitGroup);
+	$s.pop();
 }
 thx.js.BaseSelection.bind = function(group,groupData,update,enter,exit) {
+	$s.push("thx.js.BaseSelection::bind");
+	var $spos = $s.length;
 	var n0 = Ints.min(group.nodes.length,groupData.length), n1 = Ints.max(group.nodes.length,groupData.length), updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
 	var _g = 0;
 	while(_g < n0) {
@@ -1336,66 +2443,133 @@ thx.js.BaseSelection.bind = function(group,groupData,update,enter,exit) {
 	var exitGroup = new thx.js.Group(exitHtmlDoms);
 	exitGroup.parentNode = group.parentNode;
 	exit.push(exitGroup);
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.parentNode = null;
 thx.js.BaseSelection.prototype.groups = null;
 thx.js.BaseSelection.prototype.select = function(selector) {
-	return this._select(function(el) {
-		return thx.js.Dom.selectionEngine.select(selector,el);
+	$s.push("thx.js.BaseSelection::select");
+	var $spos = $s.length;
+	var $tmp = this._select(function(el) {
+		$s.push("thx.js.BaseSelection::select@359");
+		var $spos = $s.length;
+		var $tmp = thx.js.Dom.selectionEngine.select(selector,el);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.selectAll = function(selector) {
-	return this._selectAll(function(el) {
-		return thx.js.Dom.selectionEngine.selectAll(selector,el);
+	$s.push("thx.js.BaseSelection::selectAll");
+	var $spos = $s.length;
+	var $tmp = this._selectAll(function(el) {
+		$s.push("thx.js.BaseSelection::selectAll@366");
+		var $spos = $s.length;
+		var $tmp = thx.js.Dom.selectionEngine.selectAll(selector,el);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype._this = function() {
-	return this;
+	$s.push("thx.js.BaseSelection::_this");
+	var $spos = $s.length;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.append = function(name) {
+	$s.push("thx.js.BaseSelection::append");
+	var $spos = $s.length;
 	var qname = thx.xml.Namespace.qualify(name);
 	var append = function(node) {
+		$s.push("thx.js.BaseSelection::append@377");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElement(name);
 		node.appendChild(n);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
 	var appendNS = function(node) {
+		$s.push("thx.js.BaseSelection::append@384");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElementNS(qname.space,qname.local);
 		node.appendChild(n);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
-	return this._select(null == qname?append:appendNS);
+	var $tmp = this._select(null == qname?append:appendNS);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.remove = function() {
-	return this.eachNode(function(node,i) {
+	$s.push("thx.js.BaseSelection::remove");
+	var $spos = $s.length;
+	var $tmp = this.eachNode(function(node,i) {
+		$s.push("thx.js.BaseSelection::remove@396");
+		var $spos = $s.length;
 		var parent = node.parentNode;
 		if(null != parent) parent.removeChild(node);
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.eachNode = function(f) {
+	$s.push("thx.js.BaseSelection::eachNode");
+	var $spos = $s.length;
 	var _g = 0, _g1 = this.groups;
 	while(_g < _g1.length) {
 		var group = _g1[_g];
 		++_g;
 		group.each(f);
 	}
-	return this;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.insert = function(name,before,beforeSelector) {
+	$s.push("thx.js.BaseSelection::insert");
+	var $spos = $s.length;
 	var qname = thx.xml.Namespace.qualify(name);
 	var insertDom = function(node) {
+		$s.push("thx.js.BaseSelection::insert@413");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElement(name);
 		node.insertBefore(n,Sizzle(null != before?before:beforeSelector,node,node)[0]);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
 	var insertNsDom = function(node) {
+		$s.push("thx.js.BaseSelection::insert@419");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElementNS(qname.space,qname.local);
 		node.insertBefore(n,Sizzle(null != before?before:beforeSelector,node,node)[0]);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
-	return this._select(null == qname?insertDom:insertNsDom);
+	var $tmp = this._select(null == qname?insertDom:insertNsDom);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.sortNode = function(comparator) {
+	$s.push("thx.js.BaseSelection::sortNode");
+	var $spos = $s.length;
 	var m = this.groups.length;
 	var _g = 0;
 	while(_g < m) {
@@ -1414,9 +2588,13 @@ thx.js.BaseSelection.prototype.sortNode = function(comparator) {
 			}
 		}
 	}
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.firstNode = function(f) {
+	$s.push("thx.js.BaseSelection::firstNode");
+	var $spos = $s.length;
 	var _g = 0, _g1 = this.groups;
 	while(_g < _g1.length) {
 		var group = _g1[_g];
@@ -1424,22 +2602,48 @@ thx.js.BaseSelection.prototype.firstNode = function(f) {
 		var $it0 = group.nodes.iterator();
 		while( $it0.hasNext() ) {
 			var node = $it0.next();
-			if(null != node) return f(node);
+			if(null != node) {
+				var $tmp = f(node);
+				$s.pop();
+				return $tmp;
+			}
 		}
 	}
+	$s.pop();
 	return null;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.node = function() {
-	return this.firstNode(function(n) {
+	$s.push("thx.js.BaseSelection::node");
+	var $spos = $s.length;
+	var $tmp = this.firstNode(function(n) {
+		$s.push("thx.js.BaseSelection::node@463");
+		var $spos = $s.length;
+		$s.pop();
 		return n;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.empty = function() {
-	return null == this.firstNode(function(n) {
+	$s.push("thx.js.BaseSelection::empty");
+	var $spos = $s.length;
+	var $tmp = null == this.firstNode(function(n) {
+		$s.push("thx.js.BaseSelection::empty@468");
+		var $spos = $s.length;
+		$s.pop();
 		return n;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.filterNode = function(f) {
+	$s.push("thx.js.BaseSelection::filterNode");
+	var $spos = $s.length;
 	var subgroups = [], subgroup;
 	var _g = 0, _g1 = this.groups;
 	while(_g < _g1.length) {
@@ -1455,20 +2659,33 @@ thx.js.BaseSelection.prototype.filterNode = function(f) {
 			if(null != node && f(node,++i)) subgroup.push(node);
 		}
 	}
-	return this.createSelection(subgroups);
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.onNode = function(type,listener,capture) {
+	$s.push("thx.js.BaseSelection::onNode");
+	var $spos = $s.length;
 	if(capture == null) capture = false;
 	var i = type.indexOf("."), typo = i < 0?type:type.substr(0,i);
-	return this.eachNode(function(n,i1) {
+	var $tmp = this.eachNode(function(n,i1) {
+		$s.push("thx.js.BaseSelection::onNode@498");
+		var $spos = $s.length;
 		var l = function(e) {
+			$s.push("thx.js.BaseSelection::onNode@498@499");
+			var $spos = $s.length;
 			var o = thx.js.Dom.event;
 			thx.js.Dom.event = e;
 			try {
 				listener(n,i1);
 			} catch( e1 ) {
+				$e = [];
+				while($s.length >= $spos) $e.unshift($s.pop());
+				$s.push($e[0]);
 			}
 			thx.js.Dom.event = o;
+			$s.pop();
 		};
 		if(null != Reflect.field(n,"__on" + type)) {
 			n.removeEventListener(typo,Reflect.field(n,"__on" + type),capture);
@@ -1478,16 +2695,27 @@ thx.js.BaseSelection.prototype.onNode = function(type,listener,capture) {
 			n["__on" + type] = l;
 			n.addEventListener(typo,l,capture);
 		}
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.createSelection = function(groups) {
-	return (function($this) {
+	$s.push("thx.js.BaseSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 524, className : "thx.js.BaseSelection", methodName : "createSelection"});
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype._select = function(selectf) {
+	$s.push("thx.js.BaseSelection::_select");
+	var $spos = $s.length;
 	var subgroups = [], subgroup, subnode, node;
 	var _g = 0, _g1 = this.groups;
 	while(_g < _g1.length) {
@@ -1504,9 +2732,14 @@ thx.js.BaseSelection.prototype._select = function(selectf) {
 			} else subgroup.nodes.push(null);
 		}
 	}
-	return this.createSelection(subgroups);
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype._selectAll = function(selectallf) {
+	$s.push("thx.js.BaseSelection::_selectAll");
+	var $spos = $s.length;
 	var subgroups = [], subgroup;
 	var _g = 0, _g1 = this.groups;
 	while(_g < _g1.length) {
@@ -1521,38 +2754,81 @@ thx.js.BaseSelection.prototype._selectAll = function(selectallf) {
 			}
 		}
 	}
-	return this.createSelection(subgroups);
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseSelection.prototype.__class__ = thx.js.BaseSelection;
 thx.js.UnboundSelection = function(groups) {
 	if( groups === $_ ) return;
+	$s.push("thx.js.UnboundSelection::new");
+	var $spos = $s.length;
 	thx.js.BaseSelection.call(this,groups);
+	$s.pop();
 }
 thx.js.UnboundSelection.__name__ = ["thx","js","UnboundSelection"];
 thx.js.UnboundSelection.__super__ = thx.js.BaseSelection;
 for(var k in thx.js.BaseSelection.prototype ) thx.js.UnboundSelection.prototype[k] = thx.js.BaseSelection.prototype[k];
 thx.js.UnboundSelection.prototype.html = function() {
-	return new thx.js.AccessHtml(this);
+	$s.push("thx.js.UnboundSelection::html");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessHtml(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.text = function() {
-	return new thx.js.AccessText(this);
+	$s.push("thx.js.UnboundSelection::text");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessText(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.attr = function(name) {
-	return new thx.js.AccessAttribute(name,this);
+	$s.push("thx.js.UnboundSelection::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessAttribute(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.classed = function() {
-	return new thx.js.AccessClassed(this);
+	$s.push("thx.js.UnboundSelection::classed");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessClassed(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.property = function(name) {
-	return new thx.js.AccessProperty(name,this);
+	$s.push("thx.js.UnboundSelection::property");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessProperty(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.style = function(name) {
-	return new thx.js.AccessStyle(name,this);
+	$s.push("thx.js.UnboundSelection::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessStyle(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.transition = function() {
-	return new thx.js.UnboundTransition(this);
+	$s.push("thx.js.UnboundSelection::transition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UnboundTransition(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.data = function(d,join) {
+	$s.push("thx.js.UnboundSelection::data");
+	var $spos = $s.length;
 	var update = [], enter = [], exit = [];
 	if(null == join) {
 		var _g = 0, _g1 = this.groups;
@@ -1569,25 +2845,46 @@ thx.js.UnboundSelection.prototype.data = function(d,join) {
 			thx.js.BaseSelection.bindJoin(join,group,d,update,enter,exit);
 		}
 	}
-	return new thx.js.DataChoice(update,enter,exit);
+	var $tmp = new thx.js.DataChoice(update,enter,exit);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.selectAllData = function(selector) {
+	$s.push("thx.js.UnboundSelection::selectAllData");
+	var $spos = $s.length;
 	var selection = this.selectAll(selector);
-	return new thx.js.ResumeSelection(selection.groups);
+	var $tmp = new thx.js.ResumeSelection(selection.groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundSelection.prototype.__class__ = thx.js.UnboundSelection;
 thx.js.Selection = function(groups) {
 	if( groups === $_ ) return;
+	$s.push("thx.js.Selection::new");
+	var $spos = $s.length;
 	thx.js.UnboundSelection.call(this,groups);
+	$s.pop();
 }
 thx.js.Selection.__name__ = ["thx","js","Selection"];
 thx.js.Selection.__super__ = thx.js.UnboundSelection;
 for(var k in thx.js.UnboundSelection.prototype ) thx.js.Selection.prototype[k] = thx.js.UnboundSelection.prototype[k];
 thx.js.Selection.create = function(groups) {
-	return new thx.js.Selection(groups);
+	$s.push("thx.js.Selection::create");
+	var $spos = $s.length;
+	var $tmp = new thx.js.Selection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Selection.prototype.createSelection = function(groups) {
-	return new thx.js.Selection(groups);
+	$s.push("thx.js.Selection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.Selection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Selection.prototype.__class__ = thx.js.Selection;
 if(typeof js=='undefined') js = {}
@@ -1598,43 +2895,81 @@ js.Lib.isOpera = null;
 js.Lib.document = null;
 js.Lib.window = null;
 js.Lib.alert = function(v) {
+	$s.push("js.Lib::alert");
+	var $spos = $s.length;
 	alert(js.Boot.__string_rec(v,""));
+	$s.pop();
 }
 js.Lib.eval = function(code) {
-	return eval(code);
+	$s.push("js.Lib::eval");
+	var $spos = $s.length;
+	var $tmp = eval(code);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 js.Lib.setErrorHandler = function(f) {
+	$s.push("js.Lib::setErrorHandler");
+	var $spos = $s.length;
 	js.Lib.onerror = f;
+	$s.pop();
 }
 js.Lib.prototype.__class__ = js.Lib;
 thx.js.Group = function(nodes) {
 	if( nodes === $_ ) return;
+	$s.push("thx.js.Group::new");
+	var $spos = $s.length;
 	this.nodes = nodes;
+	$s.pop();
 }
 thx.js.Group.__name__ = ["thx","js","Group"];
 thx.js.Group.prototype.parentNode = null;
 thx.js.Group.prototype.nodes = null;
 thx.js.Group.prototype.each = function(f) {
+	$s.push("thx.js.Group::each");
+	var $spos = $s.length;
 	var _g1 = 0, _g = this.nodes.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		if(null != this.nodes[i]) f(this.nodes[i],i);
 	}
+	$s.pop();
 }
 thx.js.Group.prototype.iterator = function() {
-	return this.nodes.iterator();
+	$s.push("thx.js.Group::iterator");
+	var $spos = $s.length;
+	var $tmp = this.nodes.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Group.prototype.get = function(i) {
-	return this.nodes[i];
+	$s.push("thx.js.Group::get");
+	var $spos = $s.length;
+	var $tmp = this.nodes[i];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Group.prototype.count = function() {
-	return this.nodes.length;
+	$s.push("thx.js.Group::count");
+	var $spos = $s.length;
+	var $tmp = this.nodes.length;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Group.prototype.push = function(node) {
+	$s.push("thx.js.Group::push");
+	var $spos = $s.length;
 	this.nodes.push(node);
+	$s.pop();
 }
 thx.js.Group.prototype.sort = function(comparator) {
+	$s.push("thx.js.Group::sort");
+	var $spos = $s.length;
 	this.nodes.sort(comparator);
+	$s.pop();
 }
 thx.js.Group.prototype.__class__ = thx.js.Group;
 thx.js.ISelectorEngine = function() { }
@@ -1643,32 +2978,70 @@ thx.js.ISelectorEngine.prototype.select = null;
 thx.js.ISelectorEngine.prototype.selectAll = null;
 thx.js.ISelectorEngine.prototype.__class__ = thx.js.ISelectorEngine;
 thx.js.SizzleEngine = function(p) {
+	$s.push("thx.js.SizzleEngine::new");
+	var $spos = $s.length;
+	$s.pop();
 }
 thx.js.SizzleEngine.__name__ = ["thx","js","SizzleEngine"];
 thx.js.SizzleEngine.prototype.select = function(selector,node) {
-	return thx.js.Sizzle.select(selector,node)[0];
+	$s.push("thx.js.SizzleEngine::select");
+	var $spos = $s.length;
+	var $tmp = thx.js.Sizzle.select(selector,node)[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.SizzleEngine.prototype.selectNode = function(n,p) {
-	return thx.js.Sizzle.select(n,p)[0];
+	$s.push("thx.js.SizzleEngine::selectNode");
+	var $spos = $s.length;
+	var $tmp = thx.js.Sizzle.select(n,p)[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.SizzleEngine.prototype.selectAll = function(selector,node) {
-	return thx.js.Sizzle.uniqueSort(thx.js.Sizzle.select(selector,node));
+	$s.push("thx.js.SizzleEngine::selectAll");
+	var $spos = $s.length;
+	var $tmp = thx.js.Sizzle.uniqueSort(thx.js.Sizzle.select(selector,node));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.SizzleEngine.prototype.__class__ = thx.js.SizzleEngine;
 thx.js.SizzleEngine.__interfaces__ = [thx.js.ISelectorEngine];
 thx.js.Dom = function() { }
 thx.js.Dom.__name__ = ["thx","js","Dom"];
 thx.js.Dom.select = function(selector) {
-	return thx.js.Dom.doc.select(selector);
+	$s.push("thx.js.Dom::select");
+	var $spos = $s.length;
+	var $tmp = thx.js.Dom.doc.select(selector);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Dom.selectAll = function(selector) {
-	return thx.js.Dom.doc.selectAll(selector);
+	$s.push("thx.js.Dom::selectAll");
+	var $spos = $s.length;
+	var $tmp = thx.js.Dom.doc.selectAll(selector);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Dom.selectNode = function(node) {
-	return thx.js.Selection.create([new thx.js.Group([node])]);
+	$s.push("thx.js.Dom::selectNode");
+	var $spos = $s.length;
+	var $tmp = thx.js.Selection.create([new thx.js.Group([node])]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Dom.selectNodeData = function(node) {
-	return thx.js.ResumeSelection.create([new thx.js.Group([node])]);
+	$s.push("thx.js.Dom::selectNodeData");
+	var $spos = $s.length;
+	var $tmp = thx.js.ResumeSelection.create([new thx.js.Group([node])]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Dom.event = null;
 thx.js.Dom.prototype.__class__ = thx.js.Dom;
@@ -1693,70 +3066,149 @@ rg.svg.Anchor.Right.toString = $estr;
 rg.svg.Anchor.Right.__enum__ = rg.svg.Anchor;
 rg.svg.SvgLayer = function(panel) {
 	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgLayer::new");
+	var $spos = $s.length;
 	this.panel = panel;
 	var p = panel;
 	p.addLayer(this);
 	this.svg = panel.svg.append("svg:g");
 	this.svg.attr("class").string("layer");
+	panel.onResize.add($closure(this,"_resize"));
 	this.init();
+	this._resize();
+	$s.pop();
 }
 rg.svg.SvgLayer.__name__ = ["rg","svg","SvgLayer"];
 rg.svg.SvgLayer.prototype.panel = null;
 rg.svg.SvgLayer.prototype.svg = null;
+rg.svg.SvgLayer.prototype.width = null;
+rg.svg.SvgLayer.prototype.height = null;
 rg.svg.SvgLayer.prototype.init = function() {
+	$s.push("rg.svg.SvgLayer::init");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.svg.SvgLayer.prototype._resize = function() {
+	$s.push("rg.svg.SvgLayer::_resize");
+	var $spos = $s.length;
+	this.width = this.panel.frame.width;
+	this.height = this.panel.frame.height;
+	this.resize();
+	this.redraw();
+	$s.pop();
+}
+rg.svg.SvgLayer.prototype.resize = function() {
+	$s.push("rg.svg.SvgLayer::resize");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.svg.SvgLayer.prototype.destroy = function() {
+	$s.push("rg.svg.SvgLayer::destroy");
+	var $spos = $s.length;
 	var p = this.panel;
 	p.removeLayer(this);
 	this.svg.remove();
+	$s.pop();
 }
 rg.svg.SvgLayer.prototype.redraw = function() {
+	$s.push("rg.svg.SvgLayer::redraw");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.svg.SvgLayer.prototype.__class__ = rg.svg.SvgLayer;
 Hash = function(p) {
 	if( p === $_ ) return;
+	$s.push("Hash::new");
+	var $spos = $s.length;
 	this.h = {}
 	if(this.h.__proto__ != null) {
 		this.h.__proto__ = null;
 		delete(this.h.__proto__);
 	}
+	$s.pop();
 }
 Hash.__name__ = ["Hash"];
 Hash.prototype.h = null;
 Hash.prototype.set = function(key,value) {
+	$s.push("Hash::set");
+	var $spos = $s.length;
 	this.h["$" + key] = value;
+	$s.pop();
 }
 Hash.prototype.get = function(key) {
-	return this.h["$" + key];
+	$s.push("Hash::get");
+	var $spos = $s.length;
+	var $tmp = this.h["$" + key];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Hash.prototype.exists = function(key) {
+	$s.push("Hash::exists");
+	var $spos = $s.length;
 	try {
 		key = "$" + key;
-		return this.hasOwnProperty.call(this.h,key);
+		var $tmp = this.hasOwnProperty.call(this.h,key);
+		$s.pop();
+		return $tmp;
 	} catch( e ) {
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
 		for(var i in this.h) if( i == key ) return true;
+		$s.pop();
 		return false;
 	}
+	$s.pop();
 }
 Hash.prototype.remove = function(key) {
-	if(!this.exists(key)) return false;
+	$s.push("Hash::remove");
+	var $spos = $s.length;
+	if(!this.exists(key)) {
+		$s.pop();
+		return false;
+	}
 	delete(this.h["$" + key]);
+	$s.pop();
 	return true;
+	$s.pop();
 }
 Hash.prototype.keys = function() {
+	$s.push("Hash::keys");
+	var $spos = $s.length;
 	var a = new Array();
 	for(var i in this.h) a.push(i.substr(1));
-	return a.iterator();
+	var $tmp = a.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Hash.prototype.iterator = function() {
-	return { ref : this.h, it : this.keys(), hasNext : function() {
-		return this.it.hasNext();
+	$s.push("Hash::iterator");
+	var $spos = $s.length;
+	var $tmp = { ref : this.h, it : this.keys(), hasNext : function() {
+		$s.push("Hash::iterator@75");
+		var $spos = $s.length;
+		var $tmp = this.it.hasNext();
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}, next : function() {
+		$s.push("Hash::iterator@76");
+		var $spos = $s.length;
 		var i = this.it.next();
-		return this.ref["$" + i];
+		var $tmp = this.ref["$" + i];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Hash.prototype.toString = function() {
+	$s.push("Hash::toString");
+	var $spos = $s.length;
 	var s = new StringBuf();
 	s.b[s.b.length] = "{";
 	var it = this.keys();
@@ -1768,26 +3220,51 @@ Hash.prototype.toString = function() {
 		if(it.hasNext()) s.b[s.b.length] = ", ";
 	}
 	s.b[s.b.length] = "}";
-	return s.b.join("");
+	var $tmp = s.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Hash.prototype.__class__ = Hash;
 thx.color.Hsl = function(h,s,l) {
 	if( h === $_ ) return;
+	$s.push("thx.color.Hsl::new");
+	var $spos = $s.length;
 	this.hue = h = Floats.circularWrap(h,360);
 	this.saturation = s = Floats.normalize(s);
 	this.lightness = l = Floats.normalize(l);
 	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
+	$s.pop();
 }
 thx.color.Hsl.__name__ = ["thx","color","Hsl"];
 thx.color.Hsl.__super__ = thx.color.Rgb;
 for(var k in thx.color.Rgb.prototype ) thx.color.Hsl.prototype[k] = thx.color.Rgb.prototype[k];
 thx.color.Hsl._c = function(d,s,l) {
+	$s.push("thx.color.Hsl::_c");
+	var $spos = $s.length;
 	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
 	var m1 = 2 * l - m2;
 	d = Floats.circularWrap(d,360);
-	if(d < 60) return m1 + (m2 - m1) * d / 60; else if(d < 180) return m2; else if(d < 240) return m1 + (m2 - m1) * (240 - d) / 60; else return m1;
+	if(d < 60) {
+		var $tmp = m1 + (m2 - m1) * d / 60;
+		$s.pop();
+		return $tmp;
+	} else if(d < 180) {
+		$s.pop();
+		return m2;
+	} else if(d < 240) {
+		var $tmp = m1 + (m2 - m1) * (240 - d) / 60;
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return m1;
+	}
+	$s.pop();
 }
 thx.color.Hsl.toHsl = function(c) {
+	$s.push("thx.color.Hsl::toHsl");
+	var $spos = $s.length;
 	var r = c.red / 255.0;
 	var g = c.green / 255.0, b = c.blue / 255.0, min = Floats.min(r < g?r:g,b), max = Floats.max(r > g?r:g,b), delta = max - min, h, s, l = (max + min) / 2;
 	if(delta == 0.0) s = h = 0.0; else {
@@ -1795,28 +3272,61 @@ thx.color.Hsl.toHsl = function(c) {
 		if(r == max) h = (g - b) / delta + (g < b?6:0); else if(g == max) h = (b - r) / delta + 2; else h = (r - g) / delta + 4;
 		h *= 60;
 	}
-	return new thx.color.Hsl(h,s,l);
+	var $tmp = new thx.color.Hsl(h,s,l);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Hsl.equals = function(a,b) {
-	return a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
+	$s.push("thx.color.Hsl::equals");
+	var $spos = $s.length;
+	var $tmp = a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Hsl.darker = function(color,t,equation) {
+	$s.push("thx.color.Hsl::darker");
+	var $spos = $s.length;
 	var v = color.lightness / t;
-	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(v,0,1,equation));
+	var $tmp = new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(v,0,1,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Hsl.interpolate = function(a,b,t,equation) {
-	return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+	$s.push("thx.color.Hsl::interpolate");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Hsl.interpolatef = function(a,b,equation) {
-	return function(t) {
-		return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+	$s.push("thx.color.Hsl::interpolatef");
+	var $spos = $s.length;
+	var $tmp = function(t) {
+		$s.push("thx.color.Hsl::interpolatef@101");
+		var $spos = $s.length;
+		var $tmp = new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Hsl.prototype.hue = null;
 thx.color.Hsl.prototype.saturation = null;
 thx.color.Hsl.prototype.lightness = null;
 thx.color.Hsl.prototype.toHslString = function() {
-	return "hsl(" + this.hue + "," + this.saturation * 100 + "%," + this.lightness * 100 + "%)";
+	$s.push("thx.color.Hsl::toHslString");
+	var $spos = $s.length;
+	var $tmp = "hsl(" + this.hue + "," + this.saturation * 100 + "%," + this.lightness * 100 + "%)";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Hsl.prototype.__class__ = thx.color.Hsl;
 if(!thx.math) thx.math = {}
@@ -1825,12 +3335,15 @@ thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype.__class__ = thx.math.Const;
 rg.query.TimeQuery = function(p) {
 	if( p === $_ ) return;
+	$s.push("rg.query.TimeQuery::new");
+	var $spos = $s.length;
 	this.onChangePeriodicity = new hxevents.Dispatcher();
 	this.onChangeRange = new hxevents.Dispatcher();
 	this.startLimit = rg.query.DateLimit.NoLimit;
 	this.endLimit = rg.query.DateLimit.NoLimit;
 	this.autosetPeriodicity = true;
 	this.setPeriodicity("eternity");
+	$s.pop();
 }
 rg.query.TimeQuery.__name__ = ["rg","query","TimeQuery"];
 rg.query.TimeQuery.prototype.periodicity = null;
@@ -1842,10 +3355,15 @@ rg.query.TimeQuery.prototype.autosetPeriodicity = null;
 rg.query.TimeQuery.prototype.start = null;
 rg.query.TimeQuery.prototype.end = null;
 rg.query.TimeQuery.prototype.close = function() {
+	$s.push("rg.query.TimeQuery::close");
+	var $spos = $s.length;
 	this.onChangePeriodicity.clear();
 	this.onChangeRange.clear();
+	$s.pop();
 }
 rg.query.TimeQuery.prototype.update = function() {
+	$s.push("rg.query.TimeQuery::update");
+	var $spos = $s.length;
 	var s = this.getDateLimit(this.startLimit), e = this.getDateLimit(this.endLimit), ts = s == null?null:s.getTime(), te = e == null?null:e.getTime(), now = Date.now().getTime();
 	if(ts != null && te != null && ts > te) {
 		var td = s, tt = ts;
@@ -1859,67 +3377,125 @@ rg.query.TimeQuery.prototype.update = function() {
 	var trigger = null == this.start && null != ts || null != this.start && this.start.getTime() != ts || null == this.end && null != te || null != this.end && this.end.getTime() != te;
 	if(trigger) this.onChangeRange.dispatch({ start : this.start = s, end : this.end = e});
 	if(this.autosetPeriodicity) this.setPeriodicity(rg.util.Periodicity.calculateBetween(this.start,this.end));
+	$s.pop();
 }
 rg.query.TimeQuery.prototype.getDateLimit = function(limit) {
+	$s.push("rg.query.TimeQuery::getDateLimit");
+	var $spos = $s.length;
 	var $e = (limit);
 	switch( $e[1] ) {
 	case 0:
+		$s.pop();
 		return null;
 	case 1:
 		var d = $e[2];
+		$s.pop();
 		return d;
 	case 2:
 		var f = $e[2];
-		return f();
+		var $tmp = f();
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 rg.query.TimeQuery.prototype.setPeriodicity = function(v) {
+	$s.push("rg.query.TimeQuery::setPeriodicity");
+	var $spos = $s.length;
 	if(null == v) v = "eternity"; else {
 		v = v.toLowerCase();
 		if(!rg.util.Periodicity.isValid(v)) throw new thx.error.Error("invalid periodicity '{0}'",null,v,{ fileName : "TimeQuery.hx", lineNumber : 85, className : "rg.query.TimeQuery", methodName : "setPeriodicity"});
 	}
 	if(v != this.periodicity) this.onChangePeriodicity.dispatch(this.periodicity = v);
-	return this.periodicity;
+	var $tmp = this.periodicity;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.TimeQuery.prototype.__class__ = rg.query.TimeQuery;
 IntHash = function(p) {
 	if( p === $_ ) return;
+	$s.push("IntHash::new");
+	var $spos = $s.length;
 	this.h = {}
 	if(this.h.__proto__ != null) {
 		this.h.__proto__ = null;
 		delete(this.h.__proto__);
 	}
+	$s.pop();
 }
 IntHash.__name__ = ["IntHash"];
 IntHash.prototype.h = null;
 IntHash.prototype.set = function(key,value) {
+	$s.push("IntHash::set");
+	var $spos = $s.length;
 	this.h[key] = value;
+	$s.pop();
 }
 IntHash.prototype.get = function(key) {
-	return this.h[key];
+	$s.push("IntHash::get");
+	var $spos = $s.length;
+	var $tmp = this.h[key];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 IntHash.prototype.exists = function(key) {
-	return this.h[key] != null;
+	$s.push("IntHash::exists");
+	var $spos = $s.length;
+	var $tmp = this.h[key] != null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 IntHash.prototype.remove = function(key) {
-	if(this.h[key] == null) return false;
+	$s.push("IntHash::remove");
+	var $spos = $s.length;
+	if(this.h[key] == null) {
+		$s.pop();
+		return false;
+	}
 	delete(this.h[key]);
+	$s.pop();
 	return true;
+	$s.pop();
 }
 IntHash.prototype.keys = function() {
+	$s.push("IntHash::keys");
+	var $spos = $s.length;
 	var a = new Array();
 	for( x in this.h ) a.push(x);
-	return a.iterator();
+	var $tmp = a.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 IntHash.prototype.iterator = function() {
-	return { ref : this.h, it : this.keys(), hasNext : function() {
-		return this.it.hasNext();
+	$s.push("IntHash::iterator");
+	var $spos = $s.length;
+	var $tmp = { ref : this.h, it : this.keys(), hasNext : function() {
+		$s.push("IntHash::iterator@66");
+		var $spos = $s.length;
+		var $tmp = this.it.hasNext();
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}, next : function() {
+		$s.push("IntHash::iterator@67");
+		var $spos = $s.length;
 		var i = this.it.next();
-		return this.ref[i];
+		var $tmp = this.ref[i];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 IntHash.prototype.toString = function() {
+	$s.push("IntHash::toString");
+	var $spos = $s.length;
 	var s = new StringBuf();
 	s.b[s.b.length] = "{";
 	var it = this.keys();
@@ -1931,13 +3507,19 @@ IntHash.prototype.toString = function() {
 		if(it.hasNext()) s.b[s.b.length] = ", ";
 	}
 	s.b[s.b.length] = "}";
-	return s.b.join("");
+	var $tmp = s.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 IntHash.prototype.__class__ = IntHash;
 rg.layout.StackFrame = function(disposition) {
 	if( disposition === $_ ) return;
+	$s.push("rg.layout.StackFrame::new");
+	var $spos = $s.length;
 	rg.layout.Frame.call(this);
 	this.setDisposition(disposition);
+	$s.pop();
 }
 rg.layout.StackFrame.__name__ = ["rg","layout","StackFrame"];
 rg.layout.StackFrame.__super__ = rg.layout.Frame;
@@ -1945,81 +3527,167 @@ for(var k in rg.layout.Frame.prototype ) rg.layout.StackFrame.prototype[k] = rg.
 rg.layout.StackFrame.prototype.disposition = null;
 rg.layout.StackFrame.prototype.parent = null;
 rg.layout.StackFrame.prototype.setParent = function(v) {
+	$s.push("rg.layout.StackFrame::setParent");
+	var $spos = $s.length;
 	if(null != this.parent) this.parent.removeChild(this);
-	return this.parent = v;
+	var $tmp = this.parent = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.layout.StackFrame.prototype.setDisposition = function(v) {
+	$s.push("rg.layout.StackFrame::setDisposition");
+	var $spos = $s.length;
 	this.disposition = v;
 	if(null != this.parent) this.parent.reflow();
+	$s.pop();
 	return v;
+	$s.pop();
 }
 rg.layout.StackFrame.prototype.__class__ = rg.layout.StackFrame;
 if(!thx.svg) thx.svg = {}
 thx.svg.Line = function(x,y,interpolator) {
 	if( x === $_ ) return;
+	$s.push("thx.svg.Line::new");
+	var $spos = $s.length;
 	this._x = x;
 	this._y = y;
 	this._interpolator = interpolator;
+	$s.pop();
 }
 thx.svg.Line.__name__ = ["thx","svg","Line"];
 thx.svg.Line.pointArray = function(interpolator) {
-	return new thx.svg.Line(function(d,_) {
-		return d[0];
+	$s.push("thx.svg.Line::pointArray");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Line(function(d,_) {
+		$s.push("thx.svg.Line::pointArray@53");
+		var $spos = $s.length;
+		var $tmp = d[0];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d,_) {
-		return d[1];
+		$s.push("thx.svg.Line::pointArray@53");
+		var $spos = $s.length;
+		var $tmp = d[1];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Line.pointObject = function(interpolator) {
-	return new thx.svg.Line(function(d,_) {
-		return d.x;
+	$s.push("thx.svg.Line::pointObject");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Line(function(d,_) {
+		$s.push("thx.svg.Line::pointObject@58");
+		var $spos = $s.length;
+		var $tmp = d.x;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d,_) {
-		return d.y;
+		$s.push("thx.svg.Line::pointObject@58");
+		var $spos = $s.length;
+		var $tmp = d.y;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Line.prototype._x = null;
 thx.svg.Line.prototype._y = null;
 thx.svg.Line.prototype._interpolator = null;
 thx.svg.Line.prototype.shape = function(data,i) {
-	return data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y),this._interpolator);
+	$s.push("thx.svg.Line::shape");
+	var $spos = $s.length;
+	var $tmp = data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y),this._interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Line.prototype.getInterpolator = function() {
-	return this._interpolator;
+	$s.push("thx.svg.Line::getInterpolator");
+	var $spos = $s.length;
+	var $tmp = this._interpolator;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Line.prototype.interpolator = function(type) {
+	$s.push("thx.svg.Line::interpolator");
+	var $spos = $s.length;
 	this._interpolator = type;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Line.prototype.getX = function() {
-	return this._x;
+	$s.push("thx.svg.Line::getX");
+	var $spos = $s.length;
+	var $tmp = this._x;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Line.prototype.x = function(v) {
+	$s.push("thx.svg.Line::x");
+	var $spos = $s.length;
 	this._x = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Line.prototype.getY = function() {
-	return this._y;
+	$s.push("thx.svg.Line::getY");
+	var $spos = $s.length;
+	var $tmp = this._y;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Line.prototype.y = function(v) {
+	$s.push("thx.svg.Line::y");
+	var $spos = $s.length;
 	this._y = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Line.prototype.__class__ = thx.svg.Line;
 if(!thx.geom) thx.geom = {}
 if(!thx.geom.layout) thx.geom.layout = {}
 thx.geom.layout.Stack = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.geom.layout.Stack::new");
+	var $spos = $s.length;
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
+	$s.pop();
 }
 thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
 thx.geom.layout.Stack.getStackOrder = function(order,data) {
+	$s.push("thx.geom.layout.Stack::getStackOrder");
+	var $spos = $s.length;
 	switch( (order)[1] ) {
 	case 0:
-		return Ints.range(data.length);
+		var $tmp = Ints.range(data.length);
+		$s.pop();
+		return $tmp;
 	case 1:
 		var n = data.length, max = data.map(thx.geom.layout.Stack.stackMaxIndex), sums = data.map(thx.geom.layout.Stack.stackReduceSum), index = Ints.range(n), top = 0.0, bottom = 0.0, tops = [], bottoms = [];
 		index.sort(function(a,b) {
-			return max[a] - max[b];
+			$s.push("thx.geom.layout.Stack::getStackOrder@84");
+			var $spos = $s.length;
+			var $tmp = max[a] - max[b];
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
 		var _g = 0;
 		while(_g < n) {
@@ -2034,14 +3702,20 @@ thx.geom.layout.Stack.getStackOrder = function(order,data) {
 			}
 		}
 		bottoms.reverse();
-		return bottoms.concat(tops);
+		var $tmp = bottoms.concat(tops);
+		$s.pop();
+		return $tmp;
 	case 2:
 		var index = Ints.range(data.length);
 		index.reverse();
+		$s.pop();
 		return index;
 	}
+	$s.pop();
 }
 thx.geom.layout.Stack.getStackOffset = function(offset,index,data) {
+	$s.push("thx.geom.layout.Stack::getStackOffset");
+	var $spos = $s.length;
 	switch( (offset)[1] ) {
 	case 0:
 		var n = data.length, m = data[0].length, sums = [], max = 0.0, o;
@@ -2108,8 +3782,11 @@ thx.geom.layout.Stack.getStackOffset = function(offset,index,data) {
 		}
 		break;
 	}
+	$s.pop();
 }
 thx.geom.layout.Stack.stackMaxIndex = function(data,_) {
+	$s.push("thx.geom.layout.Stack::stackMaxIndex");
+	var $spos = $s.length;
 	var j = 0, v = data[0].y, k, n = data.length;
 	var _g = 1;
 	while(_g < n) {
@@ -2119,17 +3796,31 @@ thx.geom.layout.Stack.stackMaxIndex = function(data,_) {
 			v = k;
 		}
 	}
+	$s.pop();
 	return j;
+	$s.pop();
 }
 thx.geom.layout.Stack.stackReduceSum = function(data,_) {
-	return Iterators.reduce(data.iterator(),thx.geom.layout.Stack.stackSum,0.0);
+	$s.push("thx.geom.layout.Stack::stackReduceSum");
+	var $spos = $s.length;
+	var $tmp = Iterators.reduce(data.iterator(),thx.geom.layout.Stack.stackSum,0.0);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Stack.stackSum = function(p,c,i) {
-	return p + c.y;
+	$s.push("thx.geom.layout.Stack::stackSum");
+	var $spos = $s.length;
+	var $tmp = p + c.y;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Stack.prototype._order = null;
 thx.geom.layout.Stack.prototype._offset = null;
 thx.geom.layout.Stack.prototype.stack = function(data) {
+	$s.push("thx.geom.layout.Stack::stack");
+	var $spos = $s.length;
 	var n = data.length, m = data[0].length, i, j, y0, result = [];
 	var _g = 0;
 	while(_g < n) {
@@ -2155,21 +3846,41 @@ thx.geom.layout.Stack.prototype.stack = function(data) {
 			result[index[i1]][j1].y0 = y0 += result[index[i1 - 1]][j1].y;
 		}
 	}
+	$s.pop();
 	return result;
+	$s.pop();
 }
 thx.geom.layout.Stack.prototype.getOrder = function() {
-	return this._order;
+	$s.push("thx.geom.layout.Stack::getOrder");
+	var $spos = $s.length;
+	var $tmp = this._order;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Stack.prototype.order = function(x) {
+	$s.push("thx.geom.layout.Stack::order");
+	var $spos = $s.length;
 	this._order = x;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.geom.layout.Stack.prototype.getOffset = function() {
-	return this._offset;
+	$s.push("thx.geom.layout.Stack::getOffset");
+	var $spos = $s.length;
+	var $tmp = this._offset;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Stack.prototype.offset = function(x) {
+	$s.push("thx.geom.layout.Stack::offset");
+	var $spos = $s.length;
 	this._offset = x;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.geom.layout.Stack.prototype.__class__ = thx.geom.layout.Stack;
 thx.geom.layout.StackOrder = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
@@ -2196,18 +3907,29 @@ if(!thx.xml) thx.xml = {}
 thx.xml.Namespace = function() { }
 thx.xml.Namespace.__name__ = ["thx","xml","Namespace"];
 thx.xml.Namespace.qualify = function(name) {
+	$s.push("thx.xml.Namespace::qualify");
+	var $spos = $s.length;
 	var i = name.indexOf(":");
-	if(i < 0) return null; else {
+	if(i < 0) {
+		$s.pop();
+		return null;
+	} else {
 		var space = thx.xml.Namespace.prefix.get(name.substr(0,i));
 		if(null == space) throw new thx.error.Error("unable to find a namespace for {0}",[space],null,{ fileName : "Namespace.hx", lineNumber : 29, className : "thx.xml.Namespace", methodName : "qualify"});
-		return new thx.xml.NSQualifier(space,name.substr(i + 1));
+		var $tmp = new thx.xml.NSQualifier(space,name.substr(i + 1));
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 thx.xml.Namespace.prototype.__class__ = thx.xml.Namespace;
 thx.xml.NSQualifier = function(space,local) {
 	if( space === $_ ) return;
+	$s.push("thx.xml.NSQualifier::new");
+	var $spos = $s.length;
 	this.space = space;
 	this.local = local;
+	$s.pop();
 }
 thx.xml.NSQualifier.__name__ = ["thx","xml","NSQualifier"];
 thx.xml.NSQualifier.prototype.space = null;
@@ -2216,140 +3938,262 @@ thx.xml.NSQualifier.prototype.__class__ = thx.xml.NSQualifier;
 Iterators = function() { }
 Iterators.__name__ = ["Iterators"];
 Iterators.indexOf = function(it,v,f) {
+	$s.push("Iterators::indexOf");
+	var $spos = $s.length;
 	if(null == f) f = function(v2) {
-		return v == v2;
+		$s.push("Iterators::indexOf@11");
+		var $spos = $s.length;
+		var $tmp = v == v2;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var c = 0;
 	while( it.hasNext() ) {
 		var i = it.next();
-		if(f(i)) return c; else c++;
+		if(f(i)) {
+			$s.pop();
+			return c;
+		} else c++;
 	}
+	$s.pop();
 	return -1;
+	$s.pop();
 }
 Iterators.contains = function(it,v,f) {
+	$s.push("Iterators::contains");
+	var $spos = $s.length;
 	if(null == f) f = function(v2) {
-		return v == v2;
+		$s.push("Iterators::contains@24");
+		var $spos = $s.length;
+		var $tmp = v == v2;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var c = 0;
 	while( it.hasNext() ) {
 		var i = it.next();
-		if(f(i)) return true;
+		if(f(i)) {
+			$s.pop();
+			return true;
+		}
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 Iterators.array = function(it) {
+	$s.push("Iterators::array");
+	var $spos = $s.length;
 	var result = [];
 	while( it.hasNext() ) {
 		var v = it.next();
 		result.push(v);
 	}
+	$s.pop();
 	return result;
+	$s.pop();
 }
 Iterators.map = function(it,f) {
+	$s.push("Iterators::map");
+	var $spos = $s.length;
 	var result = [], i = 0;
 	while( it.hasNext() ) {
 		var v = it.next();
 		result.push(f(v,i++));
 	}
+	$s.pop();
 	return result;
+	$s.pop();
 }
 Iterators.each = function(it,f) {
+	$s.push("Iterators::each");
+	var $spos = $s.length;
 	var i = 0;
 	while( it.hasNext() ) {
 		var o = it.next();
 		f(o,i++);
 	}
+	$s.pop();
 }
 Iterators.reduce = function(it,f,initialValue) {
+	$s.push("Iterators::reduce");
+	var $spos = $s.length;
 	var accumulator = initialValue, i = 0;
 	while( it.hasNext() ) {
 		var o = it.next();
 		accumulator = f(accumulator,o,i++);
 	}
+	$s.pop();
 	return accumulator;
+	$s.pop();
 }
 Iterators.random = function(it) {
-	return Arrays.random(Iterators.array(it));
+	$s.push("Iterators::random");
+	var $spos = $s.length;
+	var $tmp = Arrays.random(Iterators.array(it));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterators.any = function(it,f) {
+	$s.push("Iterators::any");
+	var $spos = $s.length;
 	while( it.hasNext() ) {
 		var v = it.next();
-		if(f(v)) return true;
+		if(f(v)) {
+			$s.pop();
+			return true;
+		}
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 Iterators.all = function(it,f) {
+	$s.push("Iterators::all");
+	var $spos = $s.length;
 	while( it.hasNext() ) {
 		var v = it.next();
-		if(!f(v)) return false;
+		if(!f(v)) {
+			$s.pop();
+			return false;
+		}
 	}
+	$s.pop();
 	return true;
+	$s.pop();
 }
 Iterators.last = function(it) {
+	$s.push("Iterators::last");
+	var $spos = $s.length;
 	var o = null;
 	while(it.hasNext()) o = it.next();
+	$s.pop();
 	return o;
+	$s.pop();
 }
 Iterators.lastf = function(it,f) {
+	$s.push("Iterators::lastf");
+	var $spos = $s.length;
 	var rev = Iterators.array(it);
 	rev.reverse();
-	return Arrays.lastf(rev,f);
+	var $tmp = Arrays.lastf(rev,f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterators.first = function(it) {
-	return it.next();
+	$s.push("Iterators::first");
+	var $spos = $s.length;
+	var $tmp = it.next();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterators.firstf = function(it,f) {
+	$s.push("Iterators::firstf");
+	var $spos = $s.length;
 	while( it.hasNext() ) {
 		var v = it.next();
-		if(f(v)) return v;
+		if(f(v)) {
+			$s.pop();
+			return v;
+		}
 	}
+	$s.pop();
 	return null;
+	$s.pop();
 }
 Iterators.order = function(it,f) {
-	return Arrays.order(Iterators.array(it),f);
+	$s.push("Iterators::order");
+	var $spos = $s.length;
+	var $tmp = Arrays.order(Iterators.array(it),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterators.isIterator = function(v) {
+	$s.push("Iterators::isIterator");
+	var $spos = $s.length;
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
-	if(!Lambda.has(fields,"next") || !Lambda.has(fields,"hasNext")) return false;
-	return Reflect.isFunction(Reflect.field(v,"next")) && Reflect.isFunction(Reflect.field(v,"hasNext"));
+	if(!Lambda.has(fields,"next") || !Lambda.has(fields,"hasNext")) {
+		$s.pop();
+		return false;
+	}
+	var $tmp = Reflect.isFunction(Reflect.field(v,"next")) && Reflect.isFunction(Reflect.field(v,"hasNext"));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterators.prototype.__class__ = Iterators;
 if(typeof hxevents=='undefined') hxevents = {}
 hxevents.Notifier = function(p) {
 	if( p === $_ ) return;
+	$s.push("hxevents.Notifier::new");
+	var $spos = $s.length;
 	this.handlers = new Array();
+	$s.pop();
 }
 hxevents.Notifier.__name__ = ["hxevents","Notifier"];
 hxevents.Notifier.stop = function() {
+	$s.push("hxevents.Notifier::stop");
+	var $spos = $s.length;
 	throw hxevents.EventException.StopPropagation;
+	$s.pop();
 }
 hxevents.Notifier.prototype.handlers = null;
 hxevents.Notifier.prototype.add = function(h) {
+	$s.push("hxevents.Notifier::add");
+	var $spos = $s.length;
 	this.handlers.push(h);
+	$s.pop();
 	return h;
+	$s.pop();
 }
 hxevents.Notifier.prototype.addOnce = function(h) {
+	$s.push("hxevents.Notifier::addOnce");
+	var $spos = $s.length;
 	var me = this;
 	var _h = null;
 	_h = function() {
+		$s.push("hxevents.Notifier::addOnce@19");
+		var $spos = $s.length;
 		me.remove(_h);
 		h();
+		$s.pop();
 	};
 	this.add(_h);
+	$s.pop();
 	return _h;
+	$s.pop();
 }
 hxevents.Notifier.prototype.remove = function(h) {
+	$s.push("hxevents.Notifier::remove");
+	var $spos = $s.length;
 	var _g1 = 0, _g = this.handlers.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		if(Reflect.compareMethods(this.handlers[i],h)) return this.handlers.splice(i,1)[0];
+		if(Reflect.compareMethods(this.handlers[i],h)) {
+			var $tmp = this.handlers.splice(i,1)[0];
+			$s.pop();
+			return $tmp;
+		}
 	}
+	$s.pop();
 	return null;
+	$s.pop();
 }
 hxevents.Notifier.prototype.clear = function() {
+	$s.push("hxevents.Notifier::clear");
+	var $spos = $s.length;
 	this.handlers = new Array();
+	$s.pop();
 }
 hxevents.Notifier.prototype.dispatch = function() {
+	$s.push("hxevents.Notifier::dispatch");
+	var $spos = $s.length;
 	try {
 		var list = this.handlers.copy();
 		var _g = 0;
@@ -2358,67 +4202,146 @@ hxevents.Notifier.prototype.dispatch = function() {
 			++_g;
 			l();
 		}
+		$s.pop();
 		return true;
 	} catch( exc ) {
 		if( js.Boot.__instanceof(exc,hxevents.EventException) ) {
+			$e = [];
+			while($s.length >= $spos) $e.unshift($s.pop());
+			$s.push($e[0]);
+			$s.pop();
 			return false;
 		} else throw(exc);
 	}
+	$s.pop();
 }
 hxevents.Notifier.prototype.has = function(h) {
-	if(null == h) return this.handlers.length > 0; else {
+	$s.push("hxevents.Notifier::has");
+	var $spos = $s.length;
+	if(null == h) {
+		var $tmp = this.handlers.length > 0;
+		$s.pop();
+		return $tmp;
+	} else {
 		var _g = 0, _g1 = this.handlers;
 		while(_g < _g1.length) {
 			var handler = _g1[_g];
 			++_g;
-			if(h == handler) return true;
+			if(h == handler) {
+				$s.pop();
+				return true;
+			}
 		}
+		$s.pop();
 		return false;
 	}
+	$s.pop();
 }
 hxevents.Notifier.prototype.__class__ = hxevents.Notifier;
 StringTools = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
-	return encodeURIComponent(s);
+	$s.push("StringTools::urlEncode");
+	var $spos = $s.length;
+	var $tmp = encodeURIComponent(s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.urlDecode = function(s) {
-	return decodeURIComponent(s.split("+").join(" "));
+	$s.push("StringTools::urlDecode");
+	var $spos = $s.length;
+	var $tmp = decodeURIComponent(s.split("+").join(" "));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.htmlEscape = function(s) {
-	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+	$s.push("StringTools::htmlEscape");
+	var $spos = $s.length;
+	var $tmp = s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.htmlUnescape = function(s) {
-	return s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
+	$s.push("StringTools::htmlUnescape");
+	var $spos = $s.length;
+	var $tmp = s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.startsWith = function(s,start) {
-	return s.length >= start.length && s.substr(0,start.length) == start;
+	$s.push("StringTools::startsWith");
+	var $spos = $s.length;
+	var $tmp = s.length >= start.length && s.substr(0,start.length) == start;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.endsWith = function(s,end) {
+	$s.push("StringTools::endsWith");
+	var $spos = $s.length;
 	var elen = end.length;
 	var slen = s.length;
-	return slen >= elen && s.substr(slen - elen,elen) == end;
+	var $tmp = slen >= elen && s.substr(slen - elen,elen) == end;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.isSpace = function(s,pos) {
+	$s.push("StringTools::isSpace");
+	var $spos = $s.length;
 	var c = s.charCodeAt(pos);
-	return c >= 9 && c <= 13 || c == 32;
+	var $tmp = c >= 9 && c <= 13 || c == 32;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.ltrim = function(s) {
+	$s.push("StringTools::ltrim");
+	var $spos = $s.length;
 	var l = s.length;
 	var r = 0;
 	while(r < l && StringTools.isSpace(s,r)) r++;
-	if(r > 0) return s.substr(r,l - r); else return s;
+	if(r > 0) {
+		var $tmp = s.substr(r,l - r);
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return s;
+	}
+	$s.pop();
 }
 StringTools.rtrim = function(s) {
+	$s.push("StringTools::rtrim");
+	var $spos = $s.length;
 	var l = s.length;
 	var r = 0;
 	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
-	if(r > 0) return s.substr(0,l - r); else return s;
+	if(r > 0) {
+		var $tmp = s.substr(0,l - r);
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return s;
+	}
+	$s.pop();
 }
 StringTools.trim = function(s) {
-	return StringTools.ltrim(StringTools.rtrim(s));
+	$s.push("StringTools::trim");
+	var $spos = $s.length;
+	var $tmp = StringTools.ltrim(StringTools.rtrim(s));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.rpad = function(s,c,l) {
+	$s.push("StringTools::rpad");
+	var $spos = $s.length;
 	var sl = s.length;
 	var cl = c.length;
 	while(sl < l) if(l - sl < cl) {
@@ -2428,12 +4351,19 @@ StringTools.rpad = function(s,c,l) {
 		s += c;
 		sl += cl;
 	}
+	$s.pop();
 	return s;
+	$s.pop();
 }
 StringTools.lpad = function(s,c,l) {
+	$s.push("StringTools::lpad");
+	var $spos = $s.length;
 	var ns = "";
 	var sl = s.length;
-	if(sl >= l) return s;
+	if(sl >= l) {
+		$s.pop();
+		return s;
+	}
 	var cl = c.length;
 	while(sl < l) if(l - sl < cl) {
 		ns += c.substr(0,l - sl);
@@ -2442,12 +4372,22 @@ StringTools.lpad = function(s,c,l) {
 		ns += c;
 		sl += cl;
 	}
-	return ns + s;
+	var $tmp = ns + s;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.replace = function(s,sub,by) {
-	return s.split(sub).join(by);
+	$s.push("StringTools::replace");
+	var $spos = $s.length;
+	var $tmp = s.split(sub).join(by);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.hex = function(n,digits) {
+	$s.push("StringTools::hex");
+	var $spos = $s.length;
 	var s = "";
 	var hexChars = "0123456789ABCDEF";
 	do {
@@ -2455,50 +4395,112 @@ StringTools.hex = function(n,digits) {
 		n >>>= 4;
 	} while(n > 0);
 	if(digits != null) while(s.length < digits) s = "0" + s;
+	$s.pop();
 	return s;
+	$s.pop();
 }
 StringTools.fastCodeAt = function(s,index) {
-	return s.cca(index);
+	$s.push("StringTools::fastCodeAt");
+	var $spos = $s.length;
+	var $tmp = s.cca(index);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.isEOF = function(c) {
-	return c != c;
+	$s.push("StringTools::isEOF");
+	var $spos = $s.length;
+	var $tmp = c != c;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringTools.prototype.__class__ = StringTools;
 if(!thx.util) thx.util = {}
 thx.util.Message = function(message,params,param) {
 	if( message === $_ ) return;
+	$s.push("thx.util.Message::new");
+	var $spos = $s.length;
 	this.message = message;
 	if(null == params) this.params = []; else this.params = params;
 	if(null != param) this.params.push(param);
+	$s.pop();
 }
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype.message = null;
 thx.util.Message.prototype.params = null;
 thx.util.Message.prototype.toString = function() {
-	return Strings.format(this.message,this.params);
+	$s.push("thx.util.Message::toString");
+	var $spos = $s.length;
+	var $tmp = Strings.format(this.message,this.params);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.util.Message.prototype.translate = function(translator) {
-	return Strings.format(translator(this.message),this.params);
+	$s.push("thx.util.Message::translate");
+	var $spos = $s.length;
+	var $tmp = Strings.format(translator(this.message),this.params);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.util.Message.prototype.__class__ = thx.util.Message;
 if(!thx.culture) thx.culture = {}
 thx.culture.FormatParams = function() { }
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
-	if(p.length <= 1) return p;
+	$s.push("thx.culture.FormatParams::cleanQuotes");
+	var $spos = $s.length;
+	if(p.length <= 1) {
+		$s.pop();
+		return p;
+	}
 	var f = p.substr(0,1);
-	if(("\"" == f || "'" == f) && p.substr(-1) == f) return p.substr(1,p.length - 2); else return p;
+	if(("\"" == f || "'" == f) && p.substr(-1) == f) {
+		var $tmp = p.substr(1,p.length - 2);
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return p;
+	}
+	$s.pop();
 }
 thx.culture.FormatParams.params = function(p,ps,alt) {
-	if(null != ps && null != p) return [p].concat(ps);
-	if((null == ps || ps.length == 0) && null == p) return [alt];
+	$s.push("thx.culture.FormatParams::params");
+	var $spos = $s.length;
+	if(null != ps && null != p) {
+		var $tmp = [p].concat(ps);
+		$s.pop();
+		return $tmp;
+	}
+	if((null == ps || ps.length == 0) && null == p) {
+		var $tmp = [alt];
+		$s.pop();
+		return $tmp;
+	}
 	if(null == ps || ps.length == 0) {
 		var parts = p.split(":");
-		return [parts[0]].concat(parts.length == 1?[]:parts[1].split(",").map(function(s,i) {
-			if(0 == i) return s; else return thx.culture.FormatParams.cleanQuotes(s);
+		var $tmp = [parts[0]].concat(parts.length == 1?[]:parts[1].split(",").map(function(s,i) {
+			$s.push("thx.culture.FormatParams::params@33");
+			var $spos = $s.length;
+			if(0 == i) {
+				$s.pop();
+				return s;
+			} else {
+				var $tmp = thx.culture.FormatParams.cleanQuotes(s);
+				$s.pop();
+				return $tmp;
+			}
+			$s.pop();
 		}));
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 	return ps;
+	$s.pop();
 }
 thx.culture.FormatParams.prototype.__class__ = thx.culture.FormatParams;
 thx.culture.Info = function() { }
@@ -2510,66 +4512,152 @@ thx.culture.Info.prototype.iso2 = null;
 thx.culture.Info.prototype.iso3 = null;
 thx.culture.Info.prototype.pluralRule = null;
 thx.culture.Info.prototype.toString = function() {
-	return this["native"] + " (" + this.english + ")";
+	$s.push("thx.culture.Info::toString");
+	var $spos = $s.length;
+	var $tmp = this["native"] + " (" + this.english + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Info.prototype.__class__ = thx.culture.Info;
 Iterables = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.indexOf = function(it,v,f) {
-	return Iterators.indexOf(it.iterator(),v,f);
+	$s.push("Iterables::indexOf");
+	var $spos = $s.length;
+	var $tmp = Iterators.indexOf(it.iterator(),v,f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.contains = function(it,v,f) {
-	return Iterators.contains(it.iterator(),v,f);
+	$s.push("Iterables::contains");
+	var $spos = $s.length;
+	var $tmp = Iterators.contains(it.iterator(),v,f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.array = function(it) {
-	return Iterators.array(it.iterator());
+	$s.push("Iterables::array");
+	var $spos = $s.length;
+	var $tmp = Iterators.array(it.iterator());
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.map = function(it,f) {
-	return Iterators.map(it.iterator(),f);
+	$s.push("Iterables::map");
+	var $spos = $s.length;
+	var $tmp = Iterators.map(it.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.each = function(it,f) {
-	return Iterators.each(it.iterator(),f);
+	$s.push("Iterables::each");
+	var $spos = $s.length;
+	var $tmp = Iterators.each(it.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.reduce = function(it,f,initialValue) {
-	return Iterators.reduce(it.iterator(),f,initialValue);
+	$s.push("Iterables::reduce");
+	var $spos = $s.length;
+	var $tmp = Iterators.reduce(it.iterator(),f,initialValue);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.random = function(it) {
-	return Arrays.random(Iterators.array(it.iterator()));
+	$s.push("Iterables::random");
+	var $spos = $s.length;
+	var $tmp = Arrays.random(Iterators.array(it.iterator()));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.any = function(it,f) {
-	return Iterators.any(it.iterator(),f);
+	$s.push("Iterables::any");
+	var $spos = $s.length;
+	var $tmp = Iterators.any(it.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.all = function(it,f) {
-	return Iterators.all(it.iterator(),f);
+	$s.push("Iterables::all");
+	var $spos = $s.length;
+	var $tmp = Iterators.all(it.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.last = function(it) {
-	return Iterators.last(it.iterator());
+	$s.push("Iterables::last");
+	var $spos = $s.length;
+	var $tmp = Iterators.last(it.iterator());
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.lastf = function(it,f) {
-	return Iterators.lastf(it.iterator(),f);
+	$s.push("Iterables::lastf");
+	var $spos = $s.length;
+	var $tmp = Iterators.lastf(it.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.first = function(it) {
-	return it.iterator().next();
+	$s.push("Iterables::first");
+	var $spos = $s.length;
+	var $tmp = it.iterator().next();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.firstf = function(it,f) {
-	return Iterators.firstf(it.iterator(),f);
+	$s.push("Iterables::firstf");
+	var $spos = $s.length;
+	var $tmp = Iterators.firstf(it.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.order = function(it,f) {
-	return Arrays.order(Iterators.array(it.iterator()),f);
+	$s.push("Iterables::order");
+	var $spos = $s.length;
+	var $tmp = Arrays.order(Iterators.array(it.iterator()),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.isIterable = function(v) {
+	$s.push("Iterables::isIterable");
+	var $spos = $s.length;
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
-	if(!Lambda.has(fields,"iterator")) return false;
-	return Reflect.isFunction(Reflect.field(v,"iterator"));
+	if(!Lambda.has(fields,"iterator")) {
+		$s.pop();
+		return false;
+	}
+	var $tmp = Reflect.isFunction(Reflect.field(v,"iterator"));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Iterables.prototype.__class__ = Iterables;
 rg.query.QueryTimerUpdate = function(query,elapse) {
 	if( query === $_ ) return;
+	$s.push("rg.query.QueryTimerUpdate::new");
+	var $spos = $s.length;
 	if(elapse == null) elapse = 5000;
 	this.query = query;
 	this.elapse = elapse;
 	this.paused = true;
 	this.resume();
+	$s.pop();
 }
 rg.query.QueryTimerUpdate.__name__ = ["rg","query","QueryTimerUpdate"];
 rg.query.QueryTimerUpdate.prototype.elapse = null;
@@ -2577,74 +4665,156 @@ rg.query.QueryTimerUpdate.prototype.paused = null;
 rg.query.QueryTimerUpdate.prototype.query = null;
 rg.query.QueryTimerUpdate.prototype.timer = null;
 rg.query.QueryTimerUpdate.prototype.pause = function() {
-	if(this.paused) return;
+	$s.push("rg.query.QueryTimerUpdate::pause");
+	var $spos = $s.length;
+	if(this.paused) {
+		$s.pop();
+		return;
+	}
 	this.paused = true;
+	$s.pop();
 }
 rg.query.QueryTimerUpdate.prototype.resume = function() {
-	if(!this.paused) return;
+	$s.push("rg.query.QueryTimerUpdate::resume");
+	var $spos = $s.length;
+	if(!this.paused) {
+		$s.pop();
+		return;
+	}
 	this.paused = false;
 	this.query.onComplete.addOnce($closure(this,"scheduleNext"));
 	this.query.load();
+	$s.pop();
 }
 rg.query.QueryTimerUpdate.prototype.scheduleNext = function() {
-	if(this.paused) return;
+	$s.push("rg.query.QueryTimerUpdate::scheduleNext");
+	var $spos = $s.length;
+	if(this.paused) {
+		$s.pop();
+		return;
+	}
 	haxe.Timer.delay($closure(this,"execute"),this.elapse);
+	$s.pop();
 }
 rg.query.QueryTimerUpdate.prototype.execute = function() {
-	if(this.paused) return;
+	$s.push("rg.query.QueryTimerUpdate::execute");
+	var $spos = $s.length;
+	if(this.paused) {
+		$s.pop();
+		return;
+	}
 	this.query.onComplete.addOnce($closure(this,"scheduleNext"));
 	this.query.load();
+	$s.pop();
 }
 rg.query.QueryTimerUpdate.prototype.__class__ = rg.query.QueryTimerUpdate;
 thx.js.DataChoice = function(update,enter,exit) {
 	if( update === $_ ) return;
+	$s.push("thx.js.DataChoice::new");
+	var $spos = $s.length;
 	this._update = update;
 	this._enter = enter;
 	this._exit = exit;
+	$s.pop();
 }
 thx.js.DataChoice.__name__ = ["thx","js","DataChoice"];
 thx.js.DataChoice.prototype._update = null;
 thx.js.DataChoice.prototype._enter = null;
 thx.js.DataChoice.prototype._exit = null;
 thx.js.DataChoice.prototype.enter = function() {
-	return new thx.js.PreEnterSelection(this._enter,this);
+	$s.push("thx.js.DataChoice::enter");
+	var $spos = $s.length;
+	var $tmp = new thx.js.PreEnterSelection(this._enter,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.DataChoice.prototype.exit = function() {
-	return new thx.js.ExitSelection(this._exit,this);
+	$s.push("thx.js.DataChoice::exit");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ExitSelection(this._exit,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.DataChoice.prototype.update = function() {
-	return new thx.js.UpdateSelection(this._update,this);
+	$s.push("thx.js.DataChoice::update");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UpdateSelection(this._update,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.DataChoice.prototype.__class__ = thx.js.DataChoice;
 thx.js.BoundSelection = function(groups) {
 	if( groups === $_ ) return;
+	$s.push("thx.js.BoundSelection::new");
+	var $spos = $s.length;
 	thx.js.BaseSelection.call(this,groups);
+	$s.pop();
 }
 thx.js.BoundSelection.__name__ = ["thx","js","BoundSelection"];
 thx.js.BoundSelection.__super__ = thx.js.BaseSelection;
 for(var k in thx.js.BaseSelection.prototype ) thx.js.BoundSelection.prototype[k] = thx.js.BaseSelection.prototype[k];
 thx.js.BoundSelection.prototype.html = function() {
-	return new thx.js.AccessDataHtml(this);
+	$s.push("thx.js.BoundSelection::html");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataHtml(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.text = function() {
-	return new thx.js.AccessDataText(this);
+	$s.push("thx.js.BoundSelection::text");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataText(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.attr = function(name) {
-	return new thx.js.AccessDataAttribute(name,this);
+	$s.push("thx.js.BoundSelection::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataAttribute(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.classed = function() {
-	return new thx.js.AccessDataClassed(this);
+	$s.push("thx.js.BoundSelection::classed");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataClassed(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.property = function(name) {
-	return new thx.js.AccessDataProperty(name,this);
+	$s.push("thx.js.BoundSelection::property");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataProperty(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.style = function(name) {
-	return new thx.js.AccessDataStyle(name,this);
+	$s.push("thx.js.BoundSelection::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataStyle(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.transition = function() {
-	return new thx.js.BoundTransition(this);
+	$s.push("thx.js.BoundSelection::transition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.BoundTransition(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.data = function(d,join) {
+	$s.push("thx.js.BoundSelection::data");
+	var $spos = $s.length;
 	var update = [], enter = [], exit = [];
 	if(null == join) {
 		var _g = 0, _g1 = this.groups;
@@ -2661,9 +4831,14 @@ thx.js.BoundSelection.prototype.data = function(d,join) {
 			thx.js.BaseSelection.bindJoin(join,group,d,update,enter,exit);
 		}
 	}
-	return new thx.js.DataChoice(update,enter,exit);
+	var $tmp = new thx.js.DataChoice(update,enter,exit);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.dataf = function(fd,join) {
+	$s.push("thx.js.BoundSelection::dataf");
+	var $spos = $s.length;
 	if(null == join) {
 		var update = [], enter = [], exit = [], i = 0;
 		var _g = 0, _g1 = this.groups;
@@ -2672,7 +4847,9 @@ thx.js.BoundSelection.prototype.dataf = function(fd,join) {
 			++_g;
 			thx.js.BaseSelection.bind(group,fd(Reflect.field(group.parentNode,"__data__"),i++),update,enter,exit);
 		}
-		return new thx.js.DataChoice(update,enter,exit);
+		var $tmp = new thx.js.DataChoice(update,enter,exit);
+		$s.pop();
+		return $tmp;
 	} else {
 		var update = [], enter = [], exit = [], i = 0;
 		var _g = 0, _g1 = this.groups;
@@ -2681,30 +4858,72 @@ thx.js.BoundSelection.prototype.dataf = function(fd,join) {
 			++_g;
 			thx.js.BaseSelection.bindJoin(join,group,fd(Reflect.field(group.parentNode,"__data__"),i++),update,enter,exit);
 		}
-		return new thx.js.DataChoice(update,enter,exit);
+		var $tmp = new thx.js.DataChoice(update,enter,exit);
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.selfData = function() {
-	return this.dataf(function(d,i) {
+	$s.push("thx.js.BoundSelection::selfData");
+	var $spos = $s.length;
+	var $tmp = this.dataf(function(d,i) {
+		$s.push("thx.js.BoundSelection::selfData@164");
+		var $spos = $s.length;
+		$s.pop();
 		return d;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.each = function(f) {
-	return this.eachNode(function(n,i) {
+	$s.push("thx.js.BoundSelection::each");
+	var $spos = $s.length;
+	var $tmp = this.eachNode(function(n,i) {
+		$s.push("thx.js.BoundSelection::each@169");
+		var $spos = $s.length;
 		f(Reflect.field(n,"__data__"),i);
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.sort = function(comparator) {
-	return this.sortNode(function(a,b) {
-		return comparator(Reflect.field(a,"__data__"),Reflect.field(b,"__data__"));
+	$s.push("thx.js.BoundSelection::sort");
+	var $spos = $s.length;
+	var $tmp = this.sortNode(function(a,b) {
+		$s.push("thx.js.BoundSelection::sort@174");
+		var $spos = $s.length;
+		var $tmp = comparator(Reflect.field(a,"__data__"),Reflect.field(b,"__data__"));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.filter = function(f) {
-	return this.filterNode(function(n,i) {
-		return f(Reflect.field(n,"__data__"),i);
+	$s.push("thx.js.BoundSelection::filter");
+	var $spos = $s.length;
+	var $tmp = this.filterNode(function(n,i) {
+		$s.push("thx.js.BoundSelection::filter@179");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.map = function(f) {
+	$s.push("thx.js.BoundSelection::map");
+	var $spos = $s.length;
 	var ngroups = [];
 	var _g = 0, _g1 = this.groups;
 	while(_g < _g1.length) {
@@ -2720,74 +4939,144 @@ thx.js.BoundSelection.prototype.map = function(f) {
 		}
 		ngroups.push(ngroup);
 	}
-	return this.createSelection(ngroups);
+	var $tmp = this.createSelection(ngroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.first = function(f) {
-	return this.firstNode(function(n) {
-		return f(Reflect.field(n,"__data__"));
+	$s.push("thx.js.BoundSelection::first");
+	var $spos = $s.length;
+	var $tmp = this.firstNode(function(n) {
+		$s.push("thx.js.BoundSelection::first@202");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.on = function(type,listener,capture) {
+	$s.push("thx.js.BoundSelection::on");
+	var $spos = $s.length;
 	if(capture == null) capture = false;
-	return this.onNode(type,null == listener?null:function(n,i) {
+	var $tmp = this.onNode(type,null == listener?null:function(n,i) {
+		$s.push("thx.js.BoundSelection::on@207");
+		var $spos = $s.length;
 		listener(Reflect.field(n,"__data__"),i);
+		$s.pop();
 	},capture);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundSelection.prototype.__class__ = thx.js.BoundSelection;
 thx.js.ResumeSelection = function(groups) {
 	if( groups === $_ ) return;
+	$s.push("thx.js.ResumeSelection::new");
+	var $spos = $s.length;
 	thx.js.BoundSelection.call(this,groups);
+	$s.pop();
 }
 thx.js.ResumeSelection.__name__ = ["thx","js","ResumeSelection"];
 thx.js.ResumeSelection.__super__ = thx.js.BoundSelection;
 for(var k in thx.js.BoundSelection.prototype ) thx.js.ResumeSelection.prototype[k] = thx.js.BoundSelection.prototype[k];
 thx.js.ResumeSelection.create = function(groups) {
-	return new thx.js.ResumeSelection(groups);
+	$s.push("thx.js.ResumeSelection::create");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ResumeSelection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.ResumeSelection.prototype.createSelection = function(groups) {
-	return new thx.js.ResumeSelection(groups);
+	$s.push("thx.js.ResumeSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ResumeSelection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.ResumeSelection.prototype.__class__ = thx.js.ResumeSelection;
 thx.js.PreEnterSelection = function(enter,choice) {
 	if( enter === $_ ) return;
+	$s.push("thx.js.PreEnterSelection::new");
+	var $spos = $s.length;
 	this.groups = enter;
 	this._choice = choice;
+	$s.pop();
 }
 thx.js.PreEnterSelection.__name__ = ["thx","js","PreEnterSelection"];
 thx.js.PreEnterSelection.prototype.groups = null;
 thx.js.PreEnterSelection.prototype._choice = null;
 thx.js.PreEnterSelection.prototype.append = function(name) {
+	$s.push("thx.js.PreEnterSelection::append");
+	var $spos = $s.length;
 	var qname = thx.xml.Namespace.qualify(name);
 	var append = function(node) {
+		$s.push("thx.js.PreEnterSelection::append@226");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElement(name);
 		node.appendChild(n);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
 	var appendNS = function(node) {
+		$s.push("thx.js.PreEnterSelection::append@233");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElementNS(qname.space,qname.local);
 		node.appendChild(n);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
-	return this._select(null == qname?append:appendNS);
+	var $tmp = this._select(null == qname?append:appendNS);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.PreEnterSelection.prototype.insert = function(name,before,beforeSelector) {
+	$s.push("thx.js.PreEnterSelection::insert");
+	var $spos = $s.length;
 	var qname = thx.xml.Namespace.qualify(name);
 	var insertDom = function(node) {
+		$s.push("thx.js.PreEnterSelection::insert@246");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElement(name);
 		node.insertBefore(n,Sizzle(null != before?before:beforeSelector,node)[0]);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
 	var insertNsDom = function(node) {
+		$s.push("thx.js.PreEnterSelection::insert@252");
+		var $spos = $s.length;
 		var n = js.Lib.document.createElementNS(qname.space,qname.local);
 		node.insertBefore(n,Sizzle(null != before?before:beforeSelector,node)[0]);
+		$s.pop();
 		return n;
+		$s.pop();
 	};
-	return this._select(null == qname?insertDom:insertNsDom);
+	var $tmp = this._select(null == qname?insertDom:insertNsDom);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.PreEnterSelection.prototype.createSelection = function(groups) {
-	return new thx.js.EnterSelection(groups,this._choice);
+	$s.push("thx.js.PreEnterSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.EnterSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.PreEnterSelection.prototype._select = function(selectf) {
+	$s.push("thx.js.PreEnterSelection::_select");
+	var $spos = $s.length;
 	var subgroups = [], subgroup, subnode, node;
 	var _g = 0, _g1 = this.groups;
 	while(_g < _g1.length) {
@@ -2804,64 +5093,121 @@ thx.js.PreEnterSelection.prototype._select = function(selectf) {
 			} else subgroup.nodes.push(null);
 		}
 	}
-	return this.createSelection(subgroups);
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.PreEnterSelection.prototype.__class__ = thx.js.PreEnterSelection;
 thx.js.EnterSelection = function(enter,choice) {
 	if( enter === $_ ) return;
+	$s.push("thx.js.EnterSelection::new");
+	var $spos = $s.length;
 	thx.js.BoundSelection.call(this,enter);
 	this._choice = choice;
+	$s.pop();
 }
 thx.js.EnterSelection.__name__ = ["thx","js","EnterSelection"];
 thx.js.EnterSelection.__super__ = thx.js.BoundSelection;
 for(var k in thx.js.BoundSelection.prototype ) thx.js.EnterSelection.prototype[k] = thx.js.BoundSelection.prototype[k];
 thx.js.EnterSelection.prototype._choice = null;
 thx.js.EnterSelection.prototype.createSelection = function(groups) {
-	return new thx.js.EnterSelection(groups,this._choice);
+	$s.push("thx.js.EnterSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.EnterSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.EnterSelection.prototype.exit = function() {
-	return this._choice.exit();
+	$s.push("thx.js.EnterSelection::exit");
+	var $spos = $s.length;
+	var $tmp = this._choice.exit();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.EnterSelection.prototype.update = function() {
-	return this._choice.update();
+	$s.push("thx.js.EnterSelection::update");
+	var $spos = $s.length;
+	var $tmp = this._choice.update();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.EnterSelection.prototype.__class__ = thx.js.EnterSelection;
 thx.js.ExitSelection = function(exit,choice) {
 	if( exit === $_ ) return;
+	$s.push("thx.js.ExitSelection::new");
+	var $spos = $s.length;
 	thx.js.UnboundSelection.call(this,exit);
 	this._choice = choice;
+	$s.pop();
 }
 thx.js.ExitSelection.__name__ = ["thx","js","ExitSelection"];
 thx.js.ExitSelection.__super__ = thx.js.UnboundSelection;
 for(var k in thx.js.UnboundSelection.prototype ) thx.js.ExitSelection.prototype[k] = thx.js.UnboundSelection.prototype[k];
 thx.js.ExitSelection.prototype._choice = null;
 thx.js.ExitSelection.prototype.createSelection = function(groups) {
-	return new thx.js.ExitSelection(groups,this._choice);
+	$s.push("thx.js.ExitSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ExitSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.ExitSelection.prototype.enter = function() {
-	return this._choice.enter();
+	$s.push("thx.js.ExitSelection::enter");
+	var $spos = $s.length;
+	var $tmp = this._choice.enter();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.ExitSelection.prototype.update = function() {
-	return this._choice.update();
+	$s.push("thx.js.ExitSelection::update");
+	var $spos = $s.length;
+	var $tmp = this._choice.update();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.ExitSelection.prototype.__class__ = thx.js.ExitSelection;
 thx.js.UpdateSelection = function(update,choice) {
 	if( update === $_ ) return;
+	$s.push("thx.js.UpdateSelection::new");
+	var $spos = $s.length;
 	thx.js.BoundSelection.call(this,update);
 	this._choice = choice;
+	$s.pop();
 }
 thx.js.UpdateSelection.__name__ = ["thx","js","UpdateSelection"];
 thx.js.UpdateSelection.__super__ = thx.js.BoundSelection;
 for(var k in thx.js.BoundSelection.prototype ) thx.js.UpdateSelection.prototype[k] = thx.js.BoundSelection.prototype[k];
 thx.js.UpdateSelection.prototype._choice = null;
 thx.js.UpdateSelection.prototype.createSelection = function(groups) {
-	return new thx.js.UpdateSelection(groups,this._choice);
+	$s.push("thx.js.UpdateSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UpdateSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UpdateSelection.prototype.enter = function() {
-	return this._choice.enter();
+	$s.push("thx.js.UpdateSelection::enter");
+	var $spos = $s.length;
+	var $tmp = this._choice.enter();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UpdateSelection.prototype.exit = function() {
-	return this._choice.exit();
+	$s.push("thx.js.UpdateSelection::exit");
+	var $spos = $s.length;
+	var $tmp = this._choice.exit();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UpdateSelection.prototype.__class__ = thx.js.UpdateSelection;
 thx.culture.Culture = function() { }
@@ -2870,29 +5216,66 @@ thx.culture.Culture.__super__ = thx.culture.Info;
 for(var k in thx.culture.Info.prototype ) thx.culture.Culture.prototype[k] = thx.culture.Info.prototype[k];
 thx.culture.Culture.cultures = null;
 thx.culture.Culture.getCultures = function() {
+	$s.push("thx.culture.Culture::getCultures");
+	var $spos = $s.length;
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
-	return thx.culture.Culture.cultures;
+	var $tmp = thx.culture.Culture.cultures;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Culture.get = function(name) {
-	return thx.culture.Culture.getCultures().get(name.toLowerCase());
+	$s.push("thx.culture.Culture::get");
+	var $spos = $s.length;
+	var $tmp = thx.culture.Culture.getCultures().get(name.toLowerCase());
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Culture.names = function() {
-	return thx.culture.Culture.getCultures().keys();
+	$s.push("thx.culture.Culture::names");
+	var $spos = $s.length;
+	var $tmp = thx.culture.Culture.getCultures().keys();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Culture._defaultCulture = null;
 thx.culture.Culture.defaultCulture = null;
 thx.culture.Culture.getDefaultCulture = function() {
-	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
+	$s.push("thx.culture.Culture::getDefaultCulture");
+	var $spos = $s.length;
+	if(null == thx.culture.Culture._defaultCulture) {
+		var $tmp = thx.cultures.EnUS.getCulture();
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = thx.culture.Culture._defaultCulture;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.culture.Culture.setDefaultCulture = function(culture) {
-	return thx.culture.Culture._defaultCulture = culture;
+	$s.push("thx.culture.Culture::setDefaultCulture");
+	var $spos = $s.length;
+	var $tmp = thx.culture.Culture._defaultCulture = culture;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Culture.add = function(culture) {
+	$s.push("thx.culture.Culture::add");
+	var $spos = $s.length;
 	if(null == thx.culture.Culture._defaultCulture) thx.culture.Culture._defaultCulture = culture;
 	var name = culture.name.toLowerCase();
 	if(!thx.culture.Culture.getCultures().exists(name)) thx.culture.Culture.getCultures().set(name,culture);
+	$s.pop();
 }
 thx.culture.Culture.loadAll = function() {
+	$s.push("thx.culture.Culture::loadAll");
+	var $spos = $s.length;
+	$s.pop();
 }
 thx.culture.Culture.prototype.language = null;
 thx.culture.Culture.prototype.date = null;
@@ -2918,6 +5301,8 @@ thx.culture.Culture.prototype.__class__ = thx.culture.Culture;
 if(!thx.cultures) thx.cultures = {}
 thx.cultures.EnUS = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.cultures.EnUS::new");
+	var $spos = $s.length;
 	this.language = thx.languages.En.getLanguage();
 	this.name = "en-US";
 	this.english = "English (United States)";
@@ -2944,21 +5329,30 @@ thx.cultures.EnUS = function(p) {
 	this.iso3 = "USA";
 	this.isMetric = false;
 	thx.culture.Culture.add(this);
+	$s.pop();
 }
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
 thx.cultures.EnUS.__super__ = thx.culture.Culture;
 for(var k in thx.culture.Culture.prototype ) thx.cultures.EnUS.prototype[k] = thx.culture.Culture.prototype[k];
 thx.cultures.EnUS.culture = null;
 thx.cultures.EnUS.getCulture = function() {
+	$s.push("thx.cultures.EnUS::getCulture");
+	var $spos = $s.length;
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
-	return thx.cultures.EnUS.culture;
+	var $tmp = thx.cultures.EnUS.culture;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.cultures.EnUS.prototype.__class__ = thx.cultures.EnUS;
 if(!thx.error) thx.error = {}
 thx.error.Error = function(message,params,param,pos) {
 	if( message === $_ ) return;
+	$s.push("thx.error.Error::new");
+	var $spos = $s.length;
 	thx.util.Message.call(this,message,params,param);
 	this.pos = pos;
+	$s.pop();
 }
 thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
@@ -2966,47 +5360,87 @@ for(var k in thx.util.Message.prototype ) thx.error.Error.prototype[k] = thx.uti
 thx.error.Error.prototype.pos = null;
 thx.error.Error.prototype.inner = null;
 thx.error.Error.prototype.setInner = function(inner) {
+	$s.push("thx.error.Error::setInner");
+	var $spos = $s.length;
 	this.inner = inner;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.error.Error.prototype.toString = function() {
+	$s.push("thx.error.Error::toString");
+	var $spos = $s.length;
 	try {
-		return Strings.format(this.message,this.params);
+		var $tmp = Strings.format(this.message,this.params);
+		$s.pop();
+		return $tmp;
 	} catch( e ) {
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
 		var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
 		haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 34, className : "thx.error.Error", methodName : "toString"});
+		$s.pop();
 		return "";
 	}
+	$s.pop();
 }
 thx.error.Error.prototype.__class__ = thx.error.Error;
 rg.svg.SvgSpace = function(width,height,parentSelection) {
 	if( width === $_ ) return;
+	$s.push("rg.svg.SvgSpace::new");
+	var $spos = $s.length;
 	this.svg = parentSelection.append("svg:svg");
 	this._stackFrame = new rg.layout.StackFrame(rg.layout.Disposition.Fill());
 	this.workspace = new rg.svg._SvgSpace.SvgSpaceContainer(this.svg,this._stackFrame);
 	this.resize(width,height);
+	$s.pop();
 }
 rg.svg.SvgSpace.__name__ = ["rg","svg","SvgSpace"];
 rg.svg.SvgSpace.prototype.svg = null;
 rg.svg.SvgSpace.prototype.workspace = null;
 rg.svg.SvgSpace.prototype._stackFrame = null;
 rg.svg.SvgSpace.prototype.resize = function(width,height) {
-	if(this._stackFrame.width == width && this._stackFrame.height == height) return;
+	$s.push("rg.svg.SvgSpace::resize");
+	var $spos = $s.length;
+	if(this._stackFrame.width == width && this._stackFrame.height == height) {
+		$s.pop();
+		return;
+	}
 	this.svg.attr("width")["float"](width).attr("height")["float"](height);
 	var sf = this._stackFrame;
 	sf.set(0,0,width,height);
+	$s.pop();
 }
 rg.svg.SvgSpace.prototype.redraw = function() {
+	$s.push("rg.svg.SvgSpace::redraw");
+	var $spos = $s.length;
 	this.workspace.redraw();
+	$s.pop();
 }
 rg.svg.SvgSpace.prototype.createPanel = function(disp) {
+	$s.push("rg.svg.SvgSpace::createPanel");
+	var $spos = $s.length;
 	var panel = new rg.svg.SvgPanel(new rg.layout.StackFrame(disp));
 	this.workspace.addPanel(panel);
+	$s.pop();
 	return panel;
+	$s.pop();
+}
+rg.svg.SvgSpace.prototype.createContainer = function(disp,orientation) {
+	$s.push("rg.svg.SvgSpace::createContainer");
+	var $spos = $s.length;
+	var panel = new rg.svg.SvgContainer(new rg.layout.StackFrame(disp),orientation);
+	this.workspace.addPanel(panel);
+	$s.pop();
+	return panel;
+	$s.pop();
 }
 rg.svg.SvgSpace.prototype.__class__ = rg.svg.SvgSpace;
 rg.svg.SvgSpace3x3 = function(width,height,parentSelection,t,r,b,l) {
 	if( width === $_ ) return;
+	$s.push("rg.svg.SvgSpace3x3::new");
+	var $spos = $s.length;
 	if(t == null) t = 50;
 	rg.svg.SvgSpace.call(this,width,height,parentSelection);
 	if(null == r) r = t;
@@ -3018,6 +5452,7 @@ rg.svg.SvgSpace3x3 = function(width,height,parentSelection,t,r,b,l) {
 	this.containers[0].addPanels([this.topLeft = new rg.svg.SvgPanel(this.frames[2] = new rg.layout.StackFrame(rg.layout.Disposition.Fixed(l))),this.top = new rg.svg.SvgPanel(new rg.layout.StackFrame(rg.layout.Disposition.Fill())),this.topRight = new rg.svg.SvgPanel(this.frames[3] = new rg.layout.StackFrame(rg.layout.Disposition.Fixed(r)))]);
 	this.containers[1].addPanels([this.left = new rg.svg.SvgPanel(this.frames[4] = new rg.layout.StackFrame(rg.layout.Disposition.Fixed(l))),this.center = new rg.svg.SvgPanel(new rg.layout.StackFrame(rg.layout.Disposition.Fill())),this.right = new rg.svg.SvgPanel(this.frames[5] = new rg.layout.StackFrame(rg.layout.Disposition.Fixed(r)))]);
 	this.containers[2].addPanels([this.bottomLeft = new rg.svg.SvgPanel(this.frames[6] = new rg.layout.StackFrame(rg.layout.Disposition.Fixed(l))),this.bottom = new rg.svg.SvgPanel(new rg.layout.StackFrame(rg.layout.Disposition.Fill())),this.bottomRight = new rg.svg.SvgPanel(this.frames[7] = new rg.layout.StackFrame(rg.layout.Disposition.Fixed(r)))]);
+	$s.pop();
 }
 rg.svg.SvgSpace3x3.__name__ = ["rg","svg","SvgSpace3x3"];
 rg.svg.SvgSpace3x3.__super__ = rg.svg.SvgSpace;
@@ -3034,47 +5469,77 @@ rg.svg.SvgSpace3x3.prototype.bottomRight = null;
 rg.svg.SvgSpace3x3.prototype.containers = null;
 rg.svg.SvgSpace3x3.prototype.frames = null;
 rg.svg.SvgSpace3x3.prototype.setTop = function(v) {
+	$s.push("rg.svg.SvgSpace3x3::setTop");
+	var $spos = $s.length;
 	if(v < 0) v = 0;
 	this.frames[0].setDisposition(rg.layout.Disposition.Fixed(v));
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgSpace3x3.prototype.setBottom = function(v) {
+	$s.push("rg.svg.SvgSpace3x3::setBottom");
+	var $spos = $s.length;
 	if(v < 0) v = 0;
 	this.frames[1].setDisposition(rg.layout.Disposition.Fixed(v));
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgSpace3x3.prototype.setLeft = function(v) {
+	$s.push("rg.svg.SvgSpace3x3::setLeft");
+	var $spos = $s.length;
 	if(v < 0) v = 0;
 	this.frames[2].setDisposition(rg.layout.Disposition.Fixed(v));
 	this.frames[4].setDisposition(rg.layout.Disposition.Fixed(v));
 	this.frames[6].setDisposition(rg.layout.Disposition.Fixed(v));
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgSpace3x3.prototype.setRight = function(v) {
+	$s.push("rg.svg.SvgSpace3x3::setRight");
+	var $spos = $s.length;
 	if(v < 0) v = 0;
 	this.frames[3].setDisposition(rg.layout.Disposition.Fixed(v));
 	this.frames[5].setDisposition(rg.layout.Disposition.Fixed(v));
 	this.frames[7].setDisposition(rg.layout.Disposition.Fixed(v));
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgSpace3x3.prototype.__class__ = rg.svg.SvgSpace3x3;
 Arrays = function() { }
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
+	$s.push("Arrays::addIf");
+	var $spos = $s.length;
 	if(null != condition) {
 		if(condition) arr.push(value);
 	} else if(null != value) arr.push(value);
+	$s.pop();
 	return arr;
+	$s.pop();
 }
 Arrays.add = function(arr,value) {
+	$s.push("Arrays::add");
+	var $spos = $s.length;
 	arr.push(value);
+	$s.pop();
 	return arr;
+	$s.pop();
 }
 Arrays["delete"] = function(arr,value) {
+	$s.push("Arrays::delete");
+	var $spos = $s.length;
 	arr.remove(value);
+	$s.pop();
 	return arr;
+	$s.pop();
 }
 Arrays.filter = function(arr,f) {
+	$s.push("Arrays::filter");
+	var $spos = $s.length;
 	var result = [];
 	var _g = 0;
 	while(_g < arr.length) {
@@ -3082,10 +5547,17 @@ Arrays.filter = function(arr,f) {
 		++_g;
 		if(f(i)) result.push(i);
 	}
+	$s.pop();
 	return result;
+	$s.pop();
 }
 Arrays.min = function(arr,f) {
-	if(arr.length == 0) return null;
+	$s.push("Arrays::min");
+	var $spos = $s.length;
+	if(arr.length == 0) {
+		$s.pop();
+		return null;
+	}
 	if(null == f) {
 		var a = arr[0], p = 0;
 		var _g1 = 1, _g = arr.length;
@@ -3093,7 +5565,9 @@ Arrays.min = function(arr,f) {
 			var i = _g1++;
 			if(Reflect.compare(a,arr[i]) > 0) a = arr[p = i];
 		}
-		return arr[p];
+		var $tmp = arr[p];
+		$s.pop();
+		return $tmp;
 	} else {
 		var a = f(arr[0]), p = 0, b;
 		var _g1 = 1, _g = arr.length;
@@ -3104,21 +5578,37 @@ Arrays.min = function(arr,f) {
 				p = i;
 			}
 		}
-		return arr[p];
+		var $tmp = arr[p];
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Arrays.floatMin = function(arr,f) {
-	if(arr.length == 0) return Math.NaN;
+	$s.push("Arrays::floatMin");
+	var $spos = $s.length;
+	if(arr.length == 0) {
+		var $tmp = Math.NaN;
+		$s.pop();
+		return $tmp;
+	}
 	var a = f(arr[0]), b;
 	var _g1 = 1, _g = arr.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		if(a > (b = f(arr[i]))) a = b;
 	}
+	$s.pop();
 	return a;
+	$s.pop();
 }
 Arrays.max = function(arr,f) {
-	if(arr.length == 0) return null;
+	$s.push("Arrays::max");
+	var $spos = $s.length;
+	if(arr.length == 0) {
+		$s.pop();
+		return null;
+	}
 	if(null == f) {
 		var a = arr[0], p = 0;
 		var _g1 = 1, _g = arr.length;
@@ -3126,7 +5616,9 @@ Arrays.max = function(arr,f) {
 			var i = _g1++;
 			if(Reflect.compare(a,arr[i]) < 0) a = arr[p = i];
 		}
-		return arr[p];
+		var $tmp = arr[p];
+		$s.pop();
+		return $tmp;
 	} else {
 		var a = f(arr[0]), p = 0, b;
 		var _g1 = 1, _g = arr.length;
@@ -3137,20 +5629,33 @@ Arrays.max = function(arr,f) {
 				p = i;
 			}
 		}
-		return arr[p];
+		var $tmp = arr[p];
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Arrays.floatMax = function(arr,f) {
-	if(arr.length == 0) return Math.NaN;
+	$s.push("Arrays::floatMax");
+	var $spos = $s.length;
+	if(arr.length == 0) {
+		var $tmp = Math.NaN;
+		$s.pop();
+		return $tmp;
+	}
 	var a = f(arr[0]), b;
 	var _g1 = 1, _g = arr.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		if(a < (b = f(arr[i]))) a = b;
 	}
+	$s.pop();
 	return a;
+	$s.pop();
 }
 Arrays.flatten = function(arr) {
+	$s.push("Arrays::flatten");
+	var $spos = $s.length;
 	var r = [];
 	var _g = 0;
 	while(_g < arr.length) {
@@ -3158,21 +5663,44 @@ Arrays.flatten = function(arr) {
 		++_g;
 		r = r.concat(v);
 	}
+	$s.pop();
 	return r;
+	$s.pop();
 }
 Arrays.map = function(arr,f) {
-	return arr.map(f);
+	$s.push("Arrays::map");
+	var $spos = $s.length;
+	var $tmp = arr.map(f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.reduce = function(arr,f,initialValue) {
-	return Iterators.reduce(arr.iterator(),f,initialValue);
+	$s.push("Arrays::reduce");
+	var $spos = $s.length;
+	var $tmp = Iterators.reduce(arr.iterator(),f,initialValue);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.order = function(arr,f) {
+	$s.push("Arrays::order");
+	var $spos = $s.length;
 	arr.sort(null == f?Reflect.compare:f);
+	$s.pop();
 	return arr;
+	$s.pop();
 }
 Arrays.split = function(arr,f) {
+	$s.push("Arrays::split");
+	var $spos = $s.length;
 	if(null == f) f = function(v,_) {
-		return v == null;
+		$s.push("Arrays::split@124");
+		var $spos = $s.length;
+		var $tmp = v == null;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var arrays = [], i = -1, values = [], value;
 	var _g1 = 0, _g = arr.length;
@@ -3183,94 +5711,177 @@ Arrays.split = function(arr,f) {
 			values.push(value);
 		}
 	}
+	$s.pop();
 	return arrays;
+	$s.pop();
 }
 Arrays.exists = function(arr,value,f) {
+	$s.push("Arrays::exists");
+	var $spos = $s.length;
 	if(null != f) {
 		var _g = 0;
 		while(_g < arr.length) {
 			var v = arr[_g];
 			++_g;
-			if(f(v)) return true;
+			if(f(v)) {
+				$s.pop();
+				return true;
+			}
 		}
 	} else {
 		var _g = 0;
 		while(_g < arr.length) {
 			var v = arr[_g];
 			++_g;
-			if(v == value) return true;
+			if(v == value) {
+				$s.pop();
+				return true;
+			}
 		}
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 Arrays.format = function(v,param,params,culture) {
+	$s.push("Arrays::format");
+	var $spos = $s.length;
 	params = thx.culture.FormatParams.params(param,params,"J");
 	var format = params.shift();
 	switch(format) {
 	case "J":
 		if(v.length == 0) {
 			var empty = null == params[1]?"[]":params[1];
+			$s.pop();
 			return empty;
 		}
 		var sep = null == params[2]?", ":params[2];
 		var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
 		if(null != max && max < v.length) {
 			var elipsis = null == params[4]?" ...":params[4];
-			return v.copy().splice(0,max).map(function(d,i) {
-				return Dynamics.format(d,params[0],null,null,culture);
+			var $tmp = v.copy().splice(0,max).map(function(d,i) {
+				$s.push("Arrays::format@173");
+				var $spos = $s.length;
+				var $tmp = Dynamics.format(d,params[0],null,null,culture);
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			}).join(sep) + elipsis;
-		} else return v.map(function(d,i) {
-			return Dynamics.format(d,params[0],null,null,culture);
-		}).join(sep);
+			$s.pop();
+			return $tmp;
+		} else {
+			var $tmp = v.map(function(d,i) {
+				$s.push("Arrays::format@175");
+				var $spos = $s.length;
+				var $tmp = Dynamics.format(d,params[0],null,null,culture);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			}).join(sep);
+			$s.pop();
+			return $tmp;
+		}
 		break;
 	case "C":
-		return Ints.format(v.length,"I",[],culture);
+		var $tmp = Ints.format(v.length,"I",[],culture);
+		$s.pop();
+		return $tmp;
 	default:
 		throw "Unsupported array format: " + format;
 	}
+	$s.pop();
 }
 Arrays.formatf = function(param,params,culture) {
+	$s.push("Arrays::formatf");
+	var $spos = $s.length;
 	params = thx.culture.FormatParams.params(param,params,"J");
 	var format = params.shift();
 	switch(format) {
 	case "J":
-		return function(v) {
+		var $tmp = function(v) {
+			$s.push("Arrays::formatf@190");
+			var $spos = $s.length;
 			if(v.length == 0) {
 				var empty = null == params[1]?"[]":params[1];
+				$s.pop();
 				return empty;
 			}
 			var sep = null == params[2]?", ":params[2];
 			var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
 			if(null != max && max < v.length) {
 				var elipsis = null == params[4]?" ...":params[4];
-				return v.copy().splice(0,max).map(function(d,i) {
-					return Dynamics.format(d,params[0],null,null,culture);
+				var $tmp = v.copy().splice(0,max).map(function(d,i) {
+					$s.push("Arrays::formatf@190@203");
+					var $spos = $s.length;
+					var $tmp = Dynamics.format(d,params[0],null,null,culture);
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				}).join(sep) + elipsis;
-			} else return v.map(function(d,i) {
-				return Dynamics.format(d,params[0],null,null,culture);
-			}).join(sep);
+				$s.pop();
+				return $tmp;
+			} else {
+				var $tmp = v.map(function(d,i) {
+					$s.push("Arrays::formatf@190@205");
+					var $spos = $s.length;
+					var $tmp = Dynamics.format(d,params[0],null,null,culture);
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				}).join(sep);
+				$s.pop();
+				return $tmp;
+			}
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "C":
 		var f = Ints.formatf("I",[],culture);
-		return function(v) {
-			return f(v.length);
+		var $tmp = function(v) {
+			$s.push("Arrays::formatf@209");
+			var $spos = $s.length;
+			var $tmp = f(v.length);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	default:
 		throw "Unsupported array format: " + format;
 	}
+	$s.pop();
 }
 Arrays.interpolate = function(v,a,b,equation) {
-	return (Arrays.interpolatef(a,b,equation))(v);
+	$s.push("Arrays::interpolate");
+	var $spos = $s.length;
+	var $tmp = (Arrays.interpolatef(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.interpolatef = function(a,b,equation) {
+	$s.push("Arrays::interpolatef");
+	var $spos = $s.length;
 	var functions = [], i = 0, min = Ints.min(a.length,b.length);
 	while(i < min) {
 		if(a[i] == b[i]) {
 			var v = [b[i]];
 			functions.push((function(v) {
-				return function(_) {
-					return v[0];
+				$s.push("Arrays::interpolatef@231");
+				var $spos = $s.length;
+				var $tmp = function(_) {
+					$s.push("Arrays::interpolatef@231@231");
+					var $spos = $s.length;
+					var $tmp = v[0];
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			})(v));
 		} else functions.push(Floats.interpolatef(a[i],b[i],equation));
 		i++;
@@ -3278,30 +5889,70 @@ Arrays.interpolatef = function(a,b,equation) {
 	while(i < b.length) {
 		var v = [b[i]];
 		functions.push((function(v) {
-			return function(_) {
-				return v[0];
+			$s.push("Arrays::interpolatef@239");
+			var $spos = $s.length;
+			var $tmp = function(_) {
+				$s.push("Arrays::interpolatef@239@239");
+				var $spos = $s.length;
+				var $tmp = v[0];
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})(v));
 		i++;
 	}
-	return function(t) {
-		return functions.map(function(f,_) {
-			return f(t);
+	var $tmp = function(t) {
+		$s.push("Arrays::interpolatef@242");
+		var $spos = $s.length;
+		var $tmp = functions.map(function(f,_) {
+			$s.push("Arrays::interpolatef@242@242");
+			var $spos = $s.length;
+			var $tmp = f(t);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.interpolateStrings = function(v,a,b,equation) {
-	return (Arrays.interpolateStringsf(a,b,equation))(v);
+	$s.push("Arrays::interpolateStrings");
+	var $spos = $s.length;
+	var $tmp = (Arrays.interpolateStringsf(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.interpolateStringsf = function(a,b,equation) {
+	$s.push("Arrays::interpolateStringsf");
+	var $spos = $s.length;
 	var functions = [], i = 0, min = Ints.min(a.length,b.length);
 	while(i < min) {
 		if(a[i] == b[i]) {
 			var v = [b[i]];
 			functions.push((function(v) {
-				return function(_) {
-					return v[0];
+				$s.push("Arrays::interpolateStringsf@261");
+				var $spos = $s.length;
+				var $tmp = function(_) {
+					$s.push("Arrays::interpolateStringsf@261@261");
+					var $spos = $s.length;
+					var $tmp = v[0];
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			})(v));
 		} else functions.push(Strings.interpolatef(a[i],b[i],equation));
 		i++;
@@ -3309,30 +5960,70 @@ Arrays.interpolateStringsf = function(a,b,equation) {
 	while(i < b.length) {
 		var v = [b[i]];
 		functions.push((function(v) {
-			return function(_) {
-				return v[0];
+			$s.push("Arrays::interpolateStringsf@269");
+			var $spos = $s.length;
+			var $tmp = function(_) {
+				$s.push("Arrays::interpolateStringsf@269@269");
+				var $spos = $s.length;
+				var $tmp = v[0];
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})(v));
 		i++;
 	}
-	return function(t) {
-		return functions.map(function(f,_) {
-			return f(t);
+	var $tmp = function(t) {
+		$s.push("Arrays::interpolateStringsf@272");
+		var $spos = $s.length;
+		var $tmp = functions.map(function(f,_) {
+			$s.push("Arrays::interpolateStringsf@272@272");
+			var $spos = $s.length;
+			var $tmp = f(t);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.interpolateInts = function(v,a,b,equation) {
-	return (Arrays.interpolateIntsf(a,b,equation))(v);
+	$s.push("Arrays::interpolateInts");
+	var $spos = $s.length;
+	var $tmp = (Arrays.interpolateIntsf(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.interpolateIntsf = function(a,b,equation) {
+	$s.push("Arrays::interpolateIntsf");
+	var $spos = $s.length;
 	var functions = [], i = 0, min = Ints.min(a.length,b.length);
 	while(i < min) {
 		if(a[i] == b[i]) {
 			var v = [b[i]];
 			functions.push((function(v) {
-				return function(_) {
-					return v[0];
+				$s.push("Arrays::interpolateIntsf@291");
+				var $spos = $s.length;
+				var $tmp = function(_) {
+					$s.push("Arrays::interpolateIntsf@291@291");
+					var $spos = $s.length;
+					var $tmp = v[0];
+					$s.pop();
+					return $tmp;
+					$s.pop();
 				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			})(v));
 		} else functions.push(Ints.interpolatef(a[i],b[i],equation));
 		i++;
@@ -3340,84 +6031,182 @@ Arrays.interpolateIntsf = function(a,b,equation) {
 	while(i < b.length) {
 		var v = [b[i]];
 		functions.push((function(v) {
-			return function(_) {
-				return v[0];
+			$s.push("Arrays::interpolateIntsf@299");
+			var $spos = $s.length;
+			var $tmp = function(_) {
+				$s.push("Arrays::interpolateIntsf@299@299");
+				var $spos = $s.length;
+				var $tmp = v[0];
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})(v));
 		i++;
 	}
-	return function(t) {
-		return functions.map(function(f,_) {
-			return f(t);
+	var $tmp = function(t) {
+		$s.push("Arrays::interpolateIntsf@302");
+		var $spos = $s.length;
+		var $tmp = functions.map(function(f,_) {
+			$s.push("Arrays::interpolateIntsf@302@302");
+			var $spos = $s.length;
+			var $tmp = f(t);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.indexOf = function(arr,el) {
-	return arr.indexOf(el);
+	$s.push("Arrays::indexOf");
+	var $spos = $s.length;
+	var $tmp = arr.indexOf(el);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.every = function(arr,f) {
-	return arr.every(f);
+	$s.push("Arrays::every");
+	var $spos = $s.length;
+	var $tmp = arr.every(f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.each = function(arr,f) {
+	$s.push("Arrays::each");
+	var $spos = $s.length;
 	arr.forEach(f);
+	$s.pop();
 }
 Arrays.any = function(arr,f) {
-	return Iterators.any(arr.iterator(),f);
+	$s.push("Arrays::any");
+	var $spos = $s.length;
+	var $tmp = Iterators.any(arr.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.all = function(arr,f) {
-	return Iterators.all(arr.iterator(),f);
+	$s.push("Arrays::all");
+	var $spos = $s.length;
+	var $tmp = Iterators.all(arr.iterator(),f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.random = function(arr) {
-	return arr[Std.random(arr.length)];
+	$s.push("Arrays::random");
+	var $spos = $s.length;
+	var $tmp = arr[Std.random(arr.length)];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.string = function(arr) {
-	return "[" + arr.map(function(v,_) {
-		return Dynamics.string(v);
+	$s.push("Arrays::string");
+	var $spos = $s.length;
+	var $tmp = "[" + arr.map(function(v,_) {
+		$s.push("Arrays::string@357");
+		var $spos = $s.length;
+		var $tmp = Dynamics.string(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).join(", ") + "]";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.last = function(arr) {
-	return arr[arr.length - 1];
+	$s.push("Arrays::last");
+	var $spos = $s.length;
+	var $tmp = arr[arr.length - 1];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.lastf = function(arr,f) {
+	$s.push("Arrays::lastf");
+	var $spos = $s.length;
 	var t = arr.copy();
 	t.reverse();
-	return Arrays.firstf(arr,f);
+	var $tmp = Arrays.firstf(arr,f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.first = function(arr) {
-	return arr[0];
+	$s.push("Arrays::first");
+	var $spos = $s.length;
+	var $tmp = arr[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.firstf = function(arr,f) {
+	$s.push("Arrays::firstf");
+	var $spos = $s.length;
 	var _g = 0;
 	while(_g < arr.length) {
 		var v = arr[_g];
 		++_g;
-		if(f(v)) return v;
+		if(f(v)) {
+			$s.pop();
+			return v;
+		}
 	}
+	$s.pop();
 	return null;
+	$s.pop();
 }
 Arrays.bisect = function(a,x,lo,hi) {
+	$s.push("Arrays::bisect");
+	var $spos = $s.length;
 	if(lo == null) lo = 0;
-	return Arrays.bisectRight(a,x,lo,hi);
+	var $tmp = Arrays.bisectRight(a,x,lo,hi);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.bisectRight = function(a,x,lo,hi) {
+	$s.push("Arrays::bisectRight");
+	var $spos = $s.length;
 	if(lo == null) lo = 0;
 	if(null == hi) hi = a.length;
 	while(lo < hi) {
 		var mid = lo + hi >> 1;
 		if(x < a[mid]) hi = mid; else lo = mid + 1;
 	}
+	$s.pop();
 	return lo;
+	$s.pop();
 }
 Arrays.bisectLeft = function(a,x,lo,hi) {
+	$s.push("Arrays::bisectLeft");
+	var $spos = $s.length;
 	if(lo == null) lo = 0;
 	if(null == hi) hi = a.length;
 	while(lo < hi) {
 		var mid = lo + hi >> 1;
 		if(a[mid] < x) lo = mid + 1; else hi = mid;
 	}
+	$s.pop();
 	return lo;
+	$s.pop();
 }
 Arrays.nearest = function(a,x,f) {
+	$s.push("Arrays::nearest");
+	var $spos = $s.length;
 	var delta = [];
 	var _g1 = 0, _g = a.length;
 	while(_g1 < _g) {
@@ -3425,14 +6214,24 @@ Arrays.nearest = function(a,x,f) {
 		delta.push({ i : i, v : Math.abs(f(a[i]) - x)});
 	}
 	delta.sort(function(a1,b) {
-		return Floats.compare(a1.v,b.v);
+		$s.push("Arrays::nearest@425");
+		var $spos = $s.length;
+		var $tmp = Floats.compare(a1.v,b.v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
-	return a[delta[0].i];
+	var $tmp = a[delta[0].i];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Arrays.prototype.__class__ = Arrays;
 if(!thx.math.scale) thx.math.scale = {}
 thx.math.scale.NumericScale = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.math.scale.NumericScale::new");
+	var $spos = $s.length;
 	this._domain = [0.0,1.0];
 	this._range = [0.0,1.0];
 	this.kx = 1;
@@ -3442,15 +6241,28 @@ thx.math.scale.NumericScale = function(p) {
 	this._clampmin = 0.0;
 	this._clampmax = 1.0;
 	this.rescale();
+	$s.pop();
 }
 thx.math.scale.NumericScale.__name__ = ["thx","math","scale","NumericScale"];
 thx.math.scale.NumericScale.scaleBilinear = function(domain,range,uninterpolate,interpolate) {
+	$s.push("thx.math.scale.NumericScale::scaleBilinear");
+	var $spos = $s.length;
 	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
-	return function(x) {
-		return i(u(x));
+	var $tmp = function(x) {
+		$s.push("thx.math.scale.NumericScale::scaleBilinear@130");
+		var $spos = $s.length;
+		var $tmp = i(u(x));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.scalePolylinear = function(domain,range,uninterpolate,interpolate) {
+	$s.push("thx.math.scale.NumericScale::scalePolylinear");
+	var $spos = $s.length;
 	var u = [], i = [];
 	var _g1 = 1, _g = domain.length;
 	while(_g1 < _g) {
@@ -3458,10 +6270,18 @@ thx.math.scale.NumericScale.scalePolylinear = function(domain,range,uninterpolat
 		u.push(uninterpolate(domain[j - 1],domain[j]));
 		i.push(interpolate(range[j - 1],range[j],null));
 	}
-	return function(x) {
+	var $tmp = function(x) {
+		$s.push("thx.math.scale.NumericScale::scalePolylinear@143");
+		var $spos = $s.length;
 		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
-		return i[j](u[j](x));
+		var $tmp = i[j](u[j](x));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype._domain = null;
 thx.math.scale.NumericScale.prototype._range = null;
@@ -3474,94 +6294,201 @@ thx.math.scale.NumericScale.prototype._clampmax = null;
 thx.math.scale.NumericScale.prototype._output = null;
 thx.math.scale.NumericScale.prototype._input = null;
 thx.math.scale.NumericScale.prototype.rescale = function() {
+	$s.push("thx.math.scale.NumericScale::rescale");
+	var $spos = $s.length;
 	var linear = this._domain.length == 2?thx.math.scale.NumericScale.scaleBilinear:thx.math.scale.NumericScale.scalePolylinear, uninterpolate = this._clamp?Floats.uninterpolateClampf(this._clampmin,this._clampmax):Floats.uninterpolatef;
 	this._output = linear(this._domain,this._range,uninterpolate,this.f);
 	this._input = linear(this._range,this._domain,uninterpolate,Floats.interpolatef);
-	return this;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.scale = function(x,_) {
-	return this._output(x);
+	$s.push("thx.math.scale.NumericScale::scale");
+	var $spos = $s.length;
+	var $tmp = this._output(x);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.invert = function(y,_) {
-	return this._input(y);
+	$s.push("thx.math.scale.NumericScale::invert");
+	var $spos = $s.length;
+	var $tmp = this._input(y);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.getDomain = function() {
-	return this._domain;
+	$s.push("thx.math.scale.NumericScale::getDomain");
+	var $spos = $s.length;
+	var $tmp = this._domain;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.domain = function(d) {
+	$s.push("thx.math.scale.NumericScale::domain");
+	var $spos = $s.length;
 	this._domain = d;
-	return this.rescale();
+	var $tmp = this.rescale();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.getRange = function() {
-	return this._range;
+	$s.push("thx.math.scale.NumericScale::getRange");
+	var $spos = $s.length;
+	var $tmp = this._range;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.range = function(r) {
+	$s.push("thx.math.scale.NumericScale::range");
+	var $spos = $s.length;
 	this._range = r;
-	return this.rescale();
+	var $tmp = this.rescale();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.rangeRound = function(r) {
+	$s.push("thx.math.scale.NumericScale::rangeRound");
+	var $spos = $s.length;
 	this.range(r);
 	this.interpolatef(Ints.interpolatef);
-	return this;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.getInterpolate = function() {
-	return this.f;
+	$s.push("thx.math.scale.NumericScale::getInterpolate");
+	var $spos = $s.length;
+	var $tmp = this.f;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.interpolatef = function(x) {
+	$s.push("thx.math.scale.NumericScale::interpolatef");
+	var $spos = $s.length;
 	this.f = x;
-	return this.rescale();
+	var $tmp = this.rescale();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.getClamp = function() {
-	return this._clamp;
+	$s.push("thx.math.scale.NumericScale::getClamp");
+	var $spos = $s.length;
+	var $tmp = this._clamp;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.clamp = function(v) {
+	$s.push("thx.math.scale.NumericScale::clamp");
+	var $spos = $s.length;
 	this._clamp = v;
-	return this.rescale();
+	var $tmp = this.rescale();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.getClampMin = function() {
-	return this._clampmin;
+	$s.push("thx.math.scale.NumericScale::getClampMin");
+	var $spos = $s.length;
+	var $tmp = this._clampmin;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.clampMin = function(v) {
+	$s.push("thx.math.scale.NumericScale::clampMin");
+	var $spos = $s.length;
 	this._clampmin = v;
-	return this.rescale();
+	var $tmp = this.rescale();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.getClampMax = function() {
-	return this._clampmax;
+	$s.push("thx.math.scale.NumericScale::getClampMax");
+	var $spos = $s.length;
+	var $tmp = this._clampmax;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.clampMax = function(v) {
+	$s.push("thx.math.scale.NumericScale::clampMax");
+	var $spos = $s.length;
 	this._clampmax = v;
-	return this.rescale();
+	var $tmp = this.rescale();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.ticks = function() {
-	return (function($this) {
+	$s.push("thx.math.scale.NumericScale::ticks");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 107, className : "thx.math.scale.NumericScale", methodName : "ticks"});
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.tickFormat = function(v,i) {
-	return (function($this) {
+	$s.push("thx.math.scale.NumericScale::tickFormat");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 112, className : "thx.math.scale.NumericScale", methodName : "tickFormat"});
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.transform = function(scale,t,a,b) {
+	$s.push("thx.math.scale.NumericScale::transform");
+	var $spos = $s.length;
 	var range = this.getRange().map(function(v,_) {
-		return (v - t) / scale;
+		$s.push("thx.math.scale.NumericScale::transform@117");
+		var $spos = $s.length;
+		var $tmp = (v - t) / scale;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	this.domain([a,b]);
 	var r = range.map($closure(this,"invert"));
 	this.domain(r);
-	return this;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype._this = function() {
-	return this;
+	$s.push("thx.math.scale.NumericScale::_this");
+	var $spos = $s.length;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.NumericScale.prototype.__class__ = thx.math.scale.NumericScale;
 Ints = function() { }
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
+	$s.push("Ints::range");
+	var $spos = $s.length;
 	if(step == null) step = 1;
 	if(null == stop) {
 		stop = start;
@@ -3570,65 +6497,167 @@ Ints.range = function(start,stop,step) {
 	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 19, className : "Ints", methodName : "range"});
 	var range = [], i = -1, j;
 	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	$s.pop();
 	return range;
+	$s.pop();
 }
 Ints.sign = function(v) {
-	return v < 0?-1:1;
+	$s.push("Ints::sign");
+	var $spos = $s.length;
+	var $tmp = v < 0?-1:1;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.abs = function(a) {
-	return a < 0?-a:a;
+	$s.push("Ints::abs");
+	var $spos = $s.length;
+	var $tmp = a < 0?-a:a;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.min = function(a,b) {
-	return a < b?a:b;
+	$s.push("Ints::min");
+	var $spos = $s.length;
+	var $tmp = a < b?a:b;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.max = function(a,b) {
-	return a > b?a:b;
+	$s.push("Ints::max");
+	var $spos = $s.length;
+	var $tmp = a > b?a:b;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.wrap = function(v,min,max) {
-	return Math.round(Floats.wrap(v,min,max));
+	$s.push("Ints::wrap");
+	var $spos = $s.length;
+	var $tmp = Math.round(Floats.wrap(v,min,max));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.clamp = function(v,min,max) {
-	if(v < min) return min; else if(v > max) return max; else return v;
+	$s.push("Ints::clamp");
+	var $spos = $s.length;
+	if(v < min) {
+		$s.pop();
+		return min;
+	} else if(v > max) {
+		$s.pop();
+		return max;
+	} else {
+		$s.pop();
+		return v;
+	}
+	$s.pop();
 }
 Ints.clampSym = function(v,max) {
-	if(v < -max) return -max; else if(v > max) return max; else return v;
+	$s.push("Ints::clampSym");
+	var $spos = $s.length;
+	if(v < -max) {
+		var $tmp = -max;
+		$s.pop();
+		return $tmp;
+	} else if(v > max) {
+		$s.pop();
+		return max;
+	} else {
+		$s.pop();
+		return v;
+	}
+	$s.pop();
 }
 Ints.interpolate = function(f,min,max,equation) {
+	$s.push("Ints::interpolate");
+	var $spos = $s.length;
 	if(max == null) max = 100.0;
 	if(min == null) min = 0.0;
 	if(null == equation) equation = thx.math.Equations.linear;
-	return Math.round(min + equation(f) * (max - min));
+	var $tmp = Math.round(min + equation(f) * (max - min));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.interpolatef = function(min,max,equation) {
+	$s.push("Ints::interpolatef");
+	var $spos = $s.length;
 	if(max == null) max = 1.0;
 	if(min == null) min = 0.0;
 	if(null == equation) equation = thx.math.Equations.linear;
 	var d = max - min;
-	return function(f) {
-		return Math.round(min + equation(f) * d);
+	var $tmp = function(f) {
+		$s.push("Ints::interpolatef@85");
+		var $spos = $s.length;
+		var $tmp = Math.round(min + equation(f) * d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.ascending = function(a,b) {
-	return a < b?-1:a > b?1:0;
+	$s.push("Ints::ascending");
+	var $spos = $s.length;
+	var $tmp = a < b?-1:a > b?1:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.descending = function(a,b) {
-	return a > b?-1:a < b?1:0;
+	$s.push("Ints::descending");
+	var $spos = $s.length;
+	var $tmp = a > b?-1:a < b?1:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.format = function(v,param,params,culture) {
-	return (Ints.formatf(param,params,culture))(v);
+	$s.push("Ints::format");
+	var $spos = $s.length;
+	var $tmp = (Ints.formatf(param,params,culture))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.formatf = function(param,params,culture) {
-	return Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
+	$s.push("Ints::formatf");
+	var $spos = $s.length;
+	var $tmp = Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.canParse = function(s) {
-	return Ints._reparse.match(s);
+	$s.push("Ints::canParse");
+	var $spos = $s.length;
+	var $tmp = Ints._reparse.match(s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.parse = function(s) {
+	$s.push("Ints::parse");
+	var $spos = $s.length;
 	if(s.substr(0,1) == "+") s = s.substr(1);
-	return Std.parseInt(s);
+	var $tmp = Std.parseInt(s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.compare = function(a,b) {
-	return a - b;
+	$s.push("Ints::compare");
+	var $spos = $s.length;
+	var $tmp = a - b;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Ints.prototype.__class__ = Ints;
 if(!rg.pivottable) rg.pivottable = {}
@@ -3641,38 +6670,73 @@ rg.pivottable.QueryProperty.EmptyProperty.__enum__ = rg.pivottable.QueryProperty
 js.Boot = function() { }
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__unhtml = function(s) {
-	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+	$s.push("js.Boot::__unhtml");
+	var $spos = $s.length;
+	var $tmp = s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 js.Boot.__trace = function(v,i) {
+	$s.push("js.Boot::__trace");
+	var $spos = $s.length;
 	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
 	msg += js.Boot.__unhtml(js.Boot.__string_rec(v,"")) + "<br/>";
 	var d = document.getElementById("haxe:trace");
 	if(d == null) alert("No haxe:trace element defined\n" + msg); else d.innerHTML += msg;
+	$s.pop();
 }
 js.Boot.__clear_trace = function() {
+	$s.push("js.Boot::__clear_trace");
+	var $spos = $s.length;
 	var d = document.getElementById("haxe:trace");
 	if(d != null) d.innerHTML = "";
+	$s.pop();
 }
 js.Boot.__closure = function(o,f) {
+	$s.push("js.Boot::__closure");
+	var $spos = $s.length;
 	var m = o[f];
-	if(m == null) return null;
+	if(m == null) {
+		$s.pop();
+		return null;
+	}
 	var f1 = function() {
-		return m.apply(o,arguments);
+		$s.push("js.Boot::__closure@67");
+		var $spos = $s.length;
+		var $tmp = m.apply(o,arguments);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	f1.scope = o;
 	f1.method = m;
+	$s.pop();
 	return f1;
+	$s.pop();
 }
 js.Boot.__string_rec = function(o,s) {
-	if(o == null) return "null";
-	if(s.length >= 5) return "<...>";
+	$s.push("js.Boot::__string_rec");
+	var $spos = $s.length;
+	if(o == null) {
+		$s.pop();
+		return "null";
+	}
+	if(s.length >= 5) {
+		$s.pop();
+		return "<...>";
+	}
 	var t = typeof(o);
 	if(t == "function" && (o.__name__ != null || o.__ename__ != null)) t = "object";
 	switch(t) {
 	case "object":
 		if(o instanceof Array) {
 			if(o.__enum__ != null) {
-				if(o.length == 2) return o[0];
+				if(o.length == 2) {
+					var $tmp = o[0];
+					$s.pop();
+					return $tmp;
+				}
 				var str = o[0] + "(";
 				s += "\t";
 				var _g1 = 2, _g = o.length;
@@ -3680,7 +6744,9 @@ js.Boot.__string_rec = function(o,s) {
 					var i = _g1++;
 					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
 				}
-				return str + ")";
+				var $tmp = str + ")";
+				$s.pop();
+				return $tmp;
 			}
 			var l = o.length;
 			var i;
@@ -3692,17 +6758,25 @@ js.Boot.__string_rec = function(o,s) {
 				str += (i1 > 0?",":"") + js.Boot.__string_rec(o[i1],s);
 			}
 			str += "]";
+			$s.pop();
 			return str;
 		}
 		var tostr;
 		try {
 			tostr = o.toString;
 		} catch( e ) {
+			$e = [];
+			while($s.length >= $spos) $e.unshift($s.pop());
+			$s.push($e[0]);
+			$s.pop();
 			return "???";
 		}
 		if(tostr != null && tostr != Object.toString) {
 			var s2 = o.toString();
-			if(s2 != "[object Object]") return s2;
+			if(s2 != "[object Object]") {
+				$s.pop();
+				return s2;
+			}
 		}
 		var k = null;
 		var str = "{\n";
@@ -3720,103 +6794,202 @@ js.Boot.__string_rec = function(o,s) {
 		}
 		s = s.substring(1);
 		str += "\n" + s + "}";
+		$s.pop();
 		return str;
 	case "function":
+		$s.pop();
 		return "<function>";
 	case "string":
+		$s.pop();
 		return o;
 	default:
-		return String(o);
+		var $tmp = String(o);
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 js.Boot.__interfLoop = function(cc,cl) {
-	if(cc == null) return false;
-	if(cc == cl) return true;
+	$s.push("js.Boot::__interfLoop");
+	var $spos = $s.length;
+	if(cc == null) {
+		$s.pop();
+		return false;
+	}
+	if(cc == cl) {
+		$s.pop();
+		return true;
+	}
 	var intf = cc.__interfaces__;
 	if(intf != null) {
 		var _g1 = 0, _g = intf.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			var i1 = intf[i];
-			if(i1 == cl || js.Boot.__interfLoop(i1,cl)) return true;
+			if(i1 == cl || js.Boot.__interfLoop(i1,cl)) {
+				$s.pop();
+				return true;
+			}
 		}
 	}
-	return js.Boot.__interfLoop(cc.__super__,cl);
+	var $tmp = js.Boot.__interfLoop(cc.__super__,cl);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 js.Boot.__instanceof = function(o,cl) {
+	$s.push("js.Boot::__instanceof");
+	var $spos = $s.length;
 	try {
 		if(o instanceof cl) {
-			if(cl == Array) return o.__enum__ == null;
+			if(cl == Array) {
+				var $tmp = o.__enum__ == null;
+				$s.pop();
+				return $tmp;
+			}
+			$s.pop();
 			return true;
 		}
-		if(js.Boot.__interfLoop(o.__class__,cl)) return true;
+		if(js.Boot.__interfLoop(o.__class__,cl)) {
+			$s.pop();
+			return true;
+		}
 	} catch( e ) {
-		if(cl == null) return false;
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
+		if(cl == null) {
+			$s.pop();
+			return false;
+		}
 	}
 	switch(cl) {
 	case Int:
-		return Math.ceil(o%2147483648.0) === o;
+		var $tmp = Math.ceil(o%2147483648.0) === o;
+		$s.pop();
+		return $tmp;
 	case Float:
-		return typeof(o) == "number";
+		var $tmp = typeof(o) == "number";
+		$s.pop();
+		return $tmp;
 	case Bool:
-		return o === true || o === false;
+		var $tmp = o === true || o === false;
+		$s.pop();
+		return $tmp;
 	case String:
-		return typeof(o) == "string";
+		var $tmp = typeof(o) == "string";
+		$s.pop();
+		return $tmp;
 	case Dynamic:
+		$s.pop();
 		return true;
 	default:
-		if(o == null) return false;
-		return o.__enum__ == cl || cl == Class && o.__name__ != null || cl == Enum && o.__ename__ != null;
+		if(o == null) {
+			$s.pop();
+			return false;
+		}
+		var $tmp = o.__enum__ == cl || cl == Class && o.__name__ != null || cl == Enum && o.__ename__ != null;
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 js.Boot.__init = function() {
+	$s.push("js.Boot::__init");
+	var $spos = $s.length;
 	js.Lib.isIE = typeof document!='undefined' && document.all != null && typeof window!='undefined' && window.opera == null;
 	js.Lib.isOpera = typeof window!='undefined' && window.opera != null;
 	Array.prototype.copy = Array.prototype.slice;
 	Array.prototype.insert = function(i,x) {
+		$s.push("js.Boot::__init@205");
+		var $spos = $s.length;
 		this.splice(i,0,x);
+		$s.pop();
 	};
 	Array.prototype.remove = Array.prototype.indexOf?function(obj) {
+		$s.push("js.Boot::__init@208");
+		var $spos = $s.length;
 		var idx = this.indexOf(obj);
-		if(idx == -1) return false;
+		if(idx == -1) {
+			$s.pop();
+			return false;
+		}
 		this.splice(idx,1);
+		$s.pop();
 		return true;
+		$s.pop();
 	}:function(obj) {
+		$s.push("js.Boot::__init@213");
+		var $spos = $s.length;
 		var i = 0;
 		var l = this.length;
 		while(i < l) {
 			if(this[i] == obj) {
 				this.splice(i,1);
+				$s.pop();
 				return true;
 			}
 			i++;
 		}
+		$s.pop();
 		return false;
+		$s.pop();
 	};
 	Array.prototype.iterator = function() {
-		return { cur : 0, arr : this, hasNext : function() {
-			return this.cur < this.arr.length;
+		$s.push("js.Boot::__init@225");
+		var $spos = $s.length;
+		var $tmp = { cur : 0, arr : this, hasNext : function() {
+			$s.push("js.Boot::__init@225@229");
+			var $spos = $s.length;
+			var $tmp = this.cur < this.arr.length;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		}, next : function() {
-			return this.arr[this.cur++];
+			$s.push("js.Boot::__init@225@232");
+			var $spos = $s.length;
+			var $tmp = this.arr[this.cur++];
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		}};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	if(String.prototype.cca == null) String.prototype.cca = String.prototype.charCodeAt;
 	String.prototype.charCodeAt = function(i) {
+		$s.push("js.Boot::__init@239");
+		var $spos = $s.length;
 		var x = this.cca(i);
-		if(x != x) return null;
+		if(x != x) {
+			$s.pop();
+			return null;
+		}
+		$s.pop();
 		return x;
+		$s.pop();
 	};
 	var oldsub = String.prototype.substr;
 	String.prototype.substr = function(pos,len) {
-		if(pos != null && pos != 0 && len != null && len < 0) return "";
+		$s.push("js.Boot::__init@246");
+		var $spos = $s.length;
+		if(pos != null && pos != 0 && len != null && len < 0) {
+			$s.pop();
+			return "";
+		}
 		if(len == null) len = this.length;
 		if(pos < 0) {
 			pos = this.length + pos;
 			if(pos < 0) pos = 0;
 		} else if(len < 0) len = this.length + len - pos;
-		return oldsub.apply(this,[pos,len]);
+		var $tmp = oldsub.apply(this,[pos,len]);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	$closure = js.Boot.__closure;
+	$s.pop();
 }
 js.Boot.prototype.__class__ = js.Boot;
 thx.color.NamedColors = function() { }
@@ -3972,9 +7145,12 @@ thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype.__class__ = thx.color.NamedColors;
 rg.svg.SvgContainer = function(frame,orientation) {
 	if( frame === $_ ) return;
+	$s.push("rg.svg.SvgContainer::new");
+	var $spos = $s.length;
 	this.stack = new rg.layout.Stack(frame.width,frame.height,orientation);
 	this.panels = [];
 	rg.svg.SvgPanel.call(this,frame);
+	$s.pop();
 }
 rg.svg.SvgContainer.__name__ = ["rg","svg","SvgContainer"];
 rg.svg.SvgContainer.__super__ = rg.svg.SvgPanel;
@@ -3982,9 +7158,16 @@ for(var k in rg.svg.SvgPanel.prototype ) rg.svg.SvgContainer.prototype[k] = rg.s
 rg.svg.SvgContainer.prototype.stack = null;
 rg.svg.SvgContainer.prototype.panels = null;
 rg.svg.SvgContainer.prototype.addPanel = function(panel) {
-	return this.addPanels([panel]);
+	$s.push("rg.svg.SvgContainer::addPanel");
+	var $spos = $s.length;
+	var $tmp = this.addPanels([panel]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgContainer.prototype.addPanels = function(it) {
+	$s.push("rg.svg.SvgContainer::addPanels");
+	var $spos = $s.length;
 	var frames = [];
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
@@ -4003,10 +7186,17 @@ rg.svg.SvgContainer.prototype.addPanels = function(it) {
 		}(this)));
 	}
 	this.stack.addMany(frames);
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgContainer.prototype.removePanel = function(panel) {
-	if(!this.panels.remove(panel)) return this;
+	$s.push("rg.svg.SvgContainer::removePanel");
+	var $spos = $s.length;
+	if(!this.panels.remove(panel)) {
+		$s.pop();
+		return this;
+	}
 	this.stack.removeChild((function($this) {
 		var $r;
 		var $t = panel.frame;
@@ -4016,27 +7206,59 @@ rg.svg.SvgContainer.prototype.removePanel = function(panel) {
 	}(this)));
 	var f = panel;
 	f.setParent(null);
+	$s.pop();
 	return this;
+	$s.pop();
+}
+rg.svg.SvgContainer.prototype.createPanel = function(disp) {
+	$s.push("rg.svg.SvgContainer::createPanel");
+	var $spos = $s.length;
+	var panel = new rg.svg.SvgPanel(new rg.layout.StackFrame(disp));
+	this.addPanel(panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.svg.SvgContainer.prototype.createContainer = function(disp,orientation) {
+	$s.push("rg.svg.SvgContainer::createContainer");
+	var $spos = $s.length;
+	var panel = new rg.svg.SvgContainer(new rg.layout.StackFrame(disp),orientation);
+	this.addPanel(panel);
+	$s.pop();
+	return panel;
+	$s.pop();
 }
 rg.svg.SvgContainer.prototype.redraw = function() {
+	$s.push("rg.svg.SvgContainer::redraw");
+	var $spos = $s.length;
 	rg.svg.SvgPanel.prototype.redraw.call(this);
 	Iterators.each(this.panels.iterator(),function(v,i) {
+		$s.push("rg.svg.SvgContainer::redraw@79");
+		var $spos = $s.length;
 		v.redraw();
+		$s.pop();
 	});
+	$s.pop();
 }
 rg.svg.SvgContainer.prototype.reframe = function() {
+	$s.push("rg.svg.SvgContainer::reframe");
+	var $spos = $s.length;
 	rg.svg.SvgPanel.prototype.reframe.call(this);
 	this.stack.setSize(this.frame.width,this.frame.height);
 	this.stack.reflow();
 	this.redraw();
+	$s.pop();
 }
 rg.svg.SvgContainer.prototype.__class__ = rg.svg.SvgContainer;
 if(!rg.svg._SvgSpace) rg.svg._SvgSpace = {}
 rg.svg._SvgSpace.SvgSpaceContainer = function(svgcontainer,frame) {
 	if( svgcontainer === $_ ) return;
+	$s.push("rg.svg._SvgSpace.SvgSpaceContainer::new");
+	var $spos = $s.length;
 	rg.svg.SvgContainer.call(this,frame,rg.layout.Orientation.Vertical);
 	this.init(svgcontainer);
 	this.reframe();
+	$s.pop();
 }
 rg.svg._SvgSpace.SvgSpaceContainer.__name__ = ["rg","svg","_SvgSpace","SvgSpaceContainer"];
 rg.svg._SvgSpace.SvgSpaceContainer.__super__ = rg.svg.SvgContainer;
@@ -4069,89 +7291,186 @@ thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
 thx.js.AccessStyle = function(name,selection) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessStyle::new");
+	var $spos = $s.length;
 	thx.js.Access.call(this,selection);
 	this.name = name;
+	$s.pop();
 }
 thx.js.AccessStyle.__name__ = ["thx","js","AccessStyle"];
 thx.js.AccessStyle.__super__ = thx.js.Access;
 for(var k in thx.js.Access.prototype ) thx.js.AccessStyle.prototype[k] = thx.js.Access.prototype[k];
 thx.js.AccessStyle.prototype.name = null;
 thx.js.AccessStyle.prototype.get = function() {
+	$s.push("thx.js.AccessStyle::get");
+	var $spos = $s.length;
 	var n = this.name;
-	return this.selection.firstNode(function(node) {
-		return js.Lib.window.getComputedStyle(node,null).getPropertyValue(n);
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessStyle::get@21");
+		var $spos = $s.length;
+		var $tmp = js.Lib.window.getComputedStyle(node,null).getPropertyValue(n);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessStyle.prototype.getFloat = function() {
+	$s.push("thx.js.AccessStyle::getFloat");
+	var $spos = $s.length;
+	var v = this.get();
+	if(thx.js.AccessStyle.refloat.match(v)) {
+		var $tmp = Std.parseFloat(thx.js.AccessStyle.refloat.matched(1));
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = Math.NaN;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.js.AccessStyle.prototype.remove = function() {
+	$s.push("thx.js.AccessStyle::remove");
+	var $spos = $s.length;
 	var n = this.name;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::remove@37");
+		var $spos = $s.length;
 		node.style.removeProperty(n);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessStyle.prototype.string = function(v,priority) {
+	$s.push("thx.js.AccessStyle::string");
+	var $spos = $s.length;
 	var n = this.name;
 	if(null == priority) priority = "";
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::string@45");
+		var $spos = $s.length;
 		node.style.setProperty(n,v,priority);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessStyle.prototype["float"] = function(v,priority) {
+	$s.push("thx.js.AccessStyle::float");
+	var $spos = $s.length;
 	var s = "" + v, n = this.name;
 	if(null == priority) priority = "";
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::float@54");
+		var $spos = $s.length;
 		node.style.setProperty(n,s,priority);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessStyle.prototype.color = function(v,priority) {
+	$s.push("thx.js.AccessStyle::color");
+	var $spos = $s.length;
 	var s = v.toRgbString(), n = this.name;
 	if(null == priority) priority = "";
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::color@63");
+		var $spos = $s.length;
 		node.style.setProperty(n,s,priority);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessStyle.prototype.__class__ = thx.js.AccessStyle;
 thx.js.AccessDataStyle = function(name,selection) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataStyle::new");
+	var $spos = $s.length;
 	thx.js.AccessStyle.call(this,name,selection);
+	$s.pop();
 }
 thx.js.AccessDataStyle.__name__ = ["thx","js","AccessDataStyle"];
 thx.js.AccessDataStyle.__super__ = thx.js.AccessStyle;
 for(var k in thx.js.AccessStyle.prototype ) thx.js.AccessDataStyle.prototype[k] = thx.js.AccessStyle.prototype[k];
 thx.js.AccessDataStyle.prototype.stringf = function(v,priority) {
+	$s.push("thx.js.AccessDataStyle::stringf");
+	var $spos = $s.length;
 	var n = this.name;
 	if(null == priority) priority = "";
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataStyle::stringf@80");
+		var $spos = $s.length;
 		var s = v(Reflect.field(node,"__data__"),i);
 		if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,s,priority);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataStyle.prototype.floatf = function(v,priority) {
+	$s.push("thx.js.AccessDataStyle::floatf");
+	var $spos = $s.length;
 	var n = this.name;
 	if(null == priority) priority = "";
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataStyle::floatf@94");
+		var $spos = $s.length;
 		var s = v(Reflect.field(node,"__data__"),i);
 		if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s,priority);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataStyle.prototype.colorf = function(v,priority) {
+	$s.push("thx.js.AccessDataStyle::colorf");
+	var $spos = $s.length;
 	var n = this.name;
 	if(null == priority) priority = "";
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataStyle::colorf@108");
+		var $spos = $s.length;
 		var s = v(Reflect.field(node,"__data__"),i);
 		if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s.toRgbString(),priority);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataStyle.prototype.data = function() {
-	return this.stringf(function(d,_) {
-		return "" + d;
+	$s.push("thx.js.AccessDataStyle::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataStyle::data@120");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataStyle.prototype.__class__ = thx.js.AccessDataStyle;
 ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
@@ -4181,148 +7500,351 @@ ValueType.TUnknown.__enum__ = ValueType;
 Type = function() { }
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
-	if(o == null) return null;
-	if(o.__enum__ != null) return null;
-	return o.__class__;
+	$s.push("Type::getClass");
+	var $spos = $s.length;
+	if(o == null) {
+		$s.pop();
+		return null;
+	}
+	if(o.__enum__ != null) {
+		$s.pop();
+		return null;
+	}
+	var $tmp = o.__class__;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.getEnum = function(o) {
-	if(o == null) return null;
-	return o.__enum__;
+	$s.push("Type::getEnum");
+	var $spos = $s.length;
+	if(o == null) {
+		$s.pop();
+		return null;
+	}
+	var $tmp = o.__enum__;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.getSuperClass = function(c) {
-	return c.__super__;
+	$s.push("Type::getSuperClass");
+	var $spos = $s.length;
+	var $tmp = c.__super__;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.getClassName = function(c) {
+	$s.push("Type::getClassName");
+	var $spos = $s.length;
 	var a = c.__name__;
-	return a.join(".");
+	var $tmp = a.join(".");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.getEnumName = function(e) {
+	$s.push("Type::getEnumName");
+	var $spos = $s.length;
 	var a = e.__ename__;
-	return a.join(".");
+	var $tmp = a.join(".");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.resolveClass = function(name) {
+	$s.push("Type::resolveClass");
+	var $spos = $s.length;
 	var cl;
 	try {
 		cl = eval(name);
 	} catch( e ) {
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
 		cl = null;
 	}
-	if(cl == null || cl.__name__ == null) return null;
+	if(cl == null || cl.__name__ == null) {
+		$s.pop();
+		return null;
+	}
+	$s.pop();
 	return cl;
+	$s.pop();
 }
 Type.resolveEnum = function(name) {
+	$s.push("Type::resolveEnum");
+	var $spos = $s.length;
 	var e;
 	try {
 		e = eval(name);
 	} catch( err ) {
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
 		e = null;
 	}
-	if(e == null || e.__ename__ == null) return null;
+	if(e == null || e.__ename__ == null) {
+		$s.pop();
+		return null;
+	}
+	$s.pop();
 	return e;
+	$s.pop();
 }
 Type.createInstance = function(cl,args) {
-	if(args.length <= 3) return new cl(args[0],args[1],args[2]);
+	$s.push("Type::createInstance");
+	var $spos = $s.length;
+	if(args.length <= 3) {
+		var $tmp = new cl(args[0],args[1],args[2]);
+		$s.pop();
+		return $tmp;
+	}
 	if(args.length > 8) throw "Too many arguments";
-	return new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+	var $tmp = new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.createEmptyInstance = function(cl) {
-	return new cl($_);
+	$s.push("Type::createEmptyInstance");
+	var $spos = $s.length;
+	var $tmp = new cl($_);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.createEnum = function(e,constr,params) {
+	$s.push("Type::createEnum");
+	var $spos = $s.length;
 	var f = Reflect.field(e,constr);
 	if(f == null) throw "No such constructor " + constr;
 	if(Reflect.isFunction(f)) {
 		if(params == null) throw "Constructor " + constr + " need parameters";
-		return f.apply(e,params);
+		var $tmp = f.apply(e,params);
+		$s.pop();
+		return $tmp;
 	}
 	if(params != null && params.length != 0) throw "Constructor " + constr + " does not need parameters";
+	$s.pop();
 	return f;
+	$s.pop();
 }
 Type.createEnumIndex = function(e,index,params) {
+	$s.push("Type::createEnumIndex");
+	var $spos = $s.length;
 	var c = e.__constructs__[index];
 	if(c == null) throw index + " is not a valid enum constructor index";
-	return Type.createEnum(e,c,params);
+	var $tmp = Type.createEnum(e,c,params);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.getInstanceFields = function(c) {
+	$s.push("Type::getInstanceFields");
+	var $spos = $s.length;
 	var a = Reflect.fields(c.prototype);
 	a.remove("__class__");
+	$s.pop();
 	return a;
+	$s.pop();
 }
 Type.getClassFields = function(c) {
+	$s.push("Type::getClassFields");
+	var $spos = $s.length;
 	var a = Reflect.fields(c);
 	a.remove("__name__");
 	a.remove("__interfaces__");
 	a.remove("__super__");
 	a.remove("prototype");
+	$s.pop();
 	return a;
+	$s.pop();
 }
 Type.getEnumConstructs = function(e) {
+	$s.push("Type::getEnumConstructs");
+	var $spos = $s.length;
 	var a = e.__constructs__;
-	return a.copy();
+	var $tmp = a.copy();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type["typeof"] = function(v) {
+	$s.push("Type::typeof");
+	var $spos = $s.length;
 	switch(typeof(v)) {
 	case "boolean":
-		return ValueType.TBool;
+		var $tmp = ValueType.TBool;
+		$s.pop();
+		return $tmp;
 	case "string":
-		return ValueType.TClass(String);
+		var $tmp = ValueType.TClass(String);
+		$s.pop();
+		return $tmp;
 	case "number":
-		if(Math.ceil(v) == v % 2147483648.0) return ValueType.TInt;
-		return ValueType.TFloat;
+		if(Math.ceil(v) == v % 2147483648.0) {
+			var $tmp = ValueType.TInt;
+			$s.pop();
+			return $tmp;
+		}
+		var $tmp = ValueType.TFloat;
+		$s.pop();
+		return $tmp;
 	case "object":
-		if(v == null) return ValueType.TNull;
+		if(v == null) {
+			var $tmp = ValueType.TNull;
+			$s.pop();
+			return $tmp;
+		}
 		var e = v.__enum__;
-		if(e != null) return ValueType.TEnum(e);
+		if(e != null) {
+			var $tmp = ValueType.TEnum(e);
+			$s.pop();
+			return $tmp;
+		}
 		var c = v.__class__;
-		if(c != null) return ValueType.TClass(c);
-		return ValueType.TObject;
+		if(c != null) {
+			var $tmp = ValueType.TClass(c);
+			$s.pop();
+			return $tmp;
+		}
+		var $tmp = ValueType.TObject;
+		$s.pop();
+		return $tmp;
 	case "function":
-		if(v.__name__ != null) return ValueType.TObject;
-		return ValueType.TFunction;
+		if(v.__name__ != null) {
+			var $tmp = ValueType.TObject;
+			$s.pop();
+			return $tmp;
+		}
+		var $tmp = ValueType.TFunction;
+		$s.pop();
+		return $tmp;
 	case "undefined":
-		return ValueType.TNull;
+		var $tmp = ValueType.TNull;
+		$s.pop();
+		return $tmp;
 	default:
-		return ValueType.TUnknown;
+		var $tmp = ValueType.TUnknown;
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Type.enumEq = function(a,b) {
-	if(a == b) return true;
+	$s.push("Type::enumEq");
+	var $spos = $s.length;
+	if(a == b) {
+		$s.pop();
+		return true;
+	}
 	try {
-		if(a[0] != b[0]) return false;
+		if(a[0] != b[0]) {
+			$s.pop();
+			return false;
+		}
 		var _g1 = 2, _g = a.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			if(!Type.enumEq(a[i],b[i])) return false;
+			if(!Type.enumEq(a[i],b[i])) {
+				$s.pop();
+				return false;
+			}
 		}
 		var e = a.__enum__;
-		if(e != b.__enum__ || e == null) return false;
+		if(e != b.__enum__ || e == null) {
+			$s.pop();
+			return false;
+		}
 	} catch( e ) {
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
+		$s.pop();
 		return false;
 	}
+	$s.pop();
 	return true;
+	$s.pop();
 }
 Type.enumConstructor = function(e) {
-	return e[0];
+	$s.push("Type::enumConstructor");
+	var $spos = $s.length;
+	var $tmp = e[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.enumParameters = function(e) {
-	return e.slice(2);
+	$s.push("Type::enumParameters");
+	var $spos = $s.length;
+	var $tmp = e.slice(2);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.enumIndex = function(e) {
-	return e[1];
+	$s.push("Type::enumIndex");
+	var $spos = $s.length;
+	var $tmp = e[1];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Type.prototype.__class__ = Type;
 Floats = function() { }
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
-	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
+	$s.push("Floats::normalize");
+	var $spos = $s.length;
+	if(v < 0.0) {
+		$s.pop();
+		return 0.0;
+	} else if(v > 1.0) {
+		$s.pop();
+		return 1.0;
+	} else {
+		$s.pop();
+		return v;
+	}
+	$s.pop();
 }
 Floats.clamp = function(v,min,max) {
-	if(v < min) return min; else if(v > max) return max; else return v;
+	$s.push("Floats::clamp");
+	var $spos = $s.length;
+	if(v < min) {
+		$s.pop();
+		return min;
+	} else if(v > max) {
+		$s.pop();
+		return max;
+	} else {
+		$s.pop();
+		return v;
+	}
+	$s.pop();
 }
 Floats.clampSym = function(v,max) {
-	if(v < -max) return -max; else if(v > max) return max; else return v;
+	$s.push("Floats::clampSym");
+	var $spos = $s.length;
+	if(v < -max) {
+		var $tmp = -max;
+		$s.pop();
+		return $tmp;
+	} else if(v > max) {
+		$s.pop();
+		return max;
+	} else {
+		$s.pop();
+		return v;
+	}
+	$s.pop();
 }
 Floats.range = function(start,stop,step) {
+	$s.push("Floats::range");
+	var $spos = $s.length;
 	if(step == null) step = 1.0;
 	if(null == stop) {
 		stop = start;
@@ -4331,144 +7853,329 @@ Floats.range = function(start,stop,step) {
 	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 50, className : "Floats", methodName : "range"});
 	var range = [], i = -1.0, j;
 	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	$s.pop();
 	return range;
+	$s.pop();
 }
 Floats.sign = function(v) {
-	return v < 0?-1:1;
+	$s.push("Floats::sign");
+	var $spos = $s.length;
+	var $tmp = v < 0?-1:1;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.abs = function(a) {
-	return a < 0?-a:a;
+	$s.push("Floats::abs");
+	var $spos = $s.length;
+	var $tmp = a < 0?-a:a;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.min = function(a,b) {
-	return a < b?a:b;
+	$s.push("Floats::min");
+	var $spos = $s.length;
+	var $tmp = a < b?a:b;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.max = function(a,b) {
-	return a > b?a:b;
+	$s.push("Floats::max");
+	var $spos = $s.length;
+	var $tmp = a > b?a:b;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.wrap = function(v,min,max) {
+	$s.push("Floats::wrap");
+	var $spos = $s.length;
 	var range = max - min + 1;
 	if(v < min) v += range * ((min - v) / range + 1);
-	return min + (v - min) % range;
+	var $tmp = min + (v - min) % range;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.circularWrap = function(v,max) {
+	$s.push("Floats::circularWrap");
+	var $spos = $s.length;
 	v = v % max;
 	if(v < 0) v += max;
+	$s.pop();
 	return v;
+	$s.pop();
 }
 Floats.interpolate = function(f,a,b,equation) {
+	$s.push("Floats::interpolate");
+	var $spos = $s.length;
 	if(b == null) b = 1.0;
 	if(a == null) a = 0.0;
 	if(null == equation) equation = thx.math.Equations.linear;
-	return a + equation(f) * (b - a);
+	var $tmp = a + equation(f) * (b - a);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.interpolatef = function(a,b,equation) {
+	$s.push("Floats::interpolatef");
+	var $spos = $s.length;
 	if(b == null) b = 1.0;
 	if(a == null) a = 0.0;
 	if(null == equation) equation = thx.math.Equations.linear;
 	var d = b - a;
-	return function(f) {
-		return a + equation(f) * d;
+	var $tmp = function(f) {
+		$s.push("Floats::interpolatef@106");
+		var $spos = $s.length;
+		var $tmp = a + equation(f) * d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.ascending = function(a,b) {
-	return a < b?-1:a > b?1:0;
+	$s.push("Floats::ascending");
+	var $spos = $s.length;
+	var $tmp = a < b?-1:a > b?1:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.descending = function(a,b) {
-	return a > b?-1:a < b?1:0;
+	$s.push("Floats::descending");
+	var $spos = $s.length;
+	var $tmp = a > b?-1:a < b?1:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.format = function(v,param,params,culture) {
-	return (Floats.formatf(param,params,culture))(v);
+	$s.push("Floats::format");
+	var $spos = $s.length;
+	var $tmp = (Floats.formatf(param,params,culture))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.formatf = function(param,params,culture) {
+	$s.push("Floats::formatf");
+	var $spos = $s.length;
 	params = thx.culture.FormatParams.params(param,params,"D");
 	var format = params.shift();
 	var decimals = params.length > 0?Std.parseInt(params[0]):null;
 	switch(format) {
 	case "D":
-		return function(v) {
-			return thx.culture.FormatNumber.decimal(v,decimals,culture);
+		var $tmp = function(v) {
+			$s.push("Floats::formatf@125");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatNumber.decimal(v,decimals,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "I":
-		return function(v) {
-			return thx.culture.FormatNumber["int"](v,culture);
+		var $tmp = function(v) {
+			$s.push("Floats::formatf@127");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatNumber["int"](v,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "C":
 		var s = params.length > 1?params[1]:null;
-		return function(v) {
-			return thx.culture.FormatNumber.currency(v,s,decimals,culture);
+		var $tmp = function(v) {
+			$s.push("Floats::formatf@130");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatNumber.currency(v,s,decimals,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "P":
-		return function(v) {
-			return thx.culture.FormatNumber.percent(v,decimals,culture);
+		var $tmp = function(v) {
+			$s.push("Floats::formatf@132");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatNumber.percent(v,decimals,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "M":
-		return function(v) {
-			return thx.culture.FormatNumber.permille(v,decimals,culture);
+		var $tmp = function(v) {
+			$s.push("Floats::formatf@134");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatNumber.permille(v,decimals,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	default:
-		return (function($this) {
+		var $tmp = (function($this) {
 			var $r;
 			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 136, className : "Floats", methodName : "formatf"});
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Floats.canParse = function(s) {
-	return Floats._reparse.match(s);
+	$s.push("Floats::canParse");
+	var $spos = $s.length;
+	var $tmp = Floats._reparse.match(s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.parse = function(s) {
+	$s.push("Floats::parse");
+	var $spos = $s.length;
 	if(s.substr(0,1) == "+") s = s.substr(1);
-	return Std.parseFloat(s);
+	var $tmp = Std.parseFloat(s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.compare = function(a,b) {
-	return a < b?-1:a > b?1:0;
+	$s.push("Floats::compare");
+	var $spos = $s.length;
+	var $tmp = a < b?-1:a > b?1:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.isNumeric = function(v) {
-	return Std["is"](v,Float) || Std["is"](v,Int);
+	$s.push("Floats::isNumeric");
+	var $spos = $s.length;
+	var $tmp = Std["is"](v,Float) || Std["is"](v,Int);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.equals = function(a,b,approx) {
+	$s.push("Floats::equals");
+	var $spos = $s.length;
 	if(approx == null) approx = 1e-5;
-	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
-	return Math.abs(b - a) < approx;
+	if(Math.isNaN(a)) {
+		var $tmp = Math.isNaN(b);
+		$s.pop();
+		return $tmp;
+	} else if(Math.isNaN(b)) {
+		$s.pop();
+		return false;
+	} else if(!Math.isFinite(a) && !Math.isFinite(b)) {
+		var $tmp = a > 0 == b > 0;
+		$s.pop();
+		return $tmp;
+	}
+	var $tmp = Math.abs(b - a) < approx;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.uninterpolatef = function(a,b) {
+	$s.push("Floats::uninterpolatef");
+	var $spos = $s.length;
 	b = 1 / (b - a);
-	return function(x) {
-		return (x - a) * b;
+	var $tmp = function(x) {
+		$s.push("Floats::uninterpolatef@177");
+		var $spos = $s.length;
+		var $tmp = (x - a) * b;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.uninterpolateClamp = function(a,b) {
+	$s.push("Floats::uninterpolateClamp");
+	var $spos = $s.length;
 	b = 1 / (b - a);
-	return function(x) {
-		return Floats.clamp((x - a) * b,0.0,1.0);
+	var $tmp = function(x) {
+		$s.push("Floats::uninterpolateClamp@183");
+		var $spos = $s.length;
+		var $tmp = Floats.clamp((x - a) * b,0.0,1.0);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.uninterpolateClampf = function(min,max) {
-	return function(a,b) {
+	$s.push("Floats::uninterpolateClampf");
+	var $spos = $s.length;
+	var $tmp = function(a,b) {
+		$s.push("Floats::uninterpolateClampf@188");
+		var $spos = $s.length;
 		b = 1 / (b - a);
-		return function(x) {
-			return Floats.clamp((x - a) * b,min,max);
+		var $tmp = function(x) {
+			$s.push("Floats::uninterpolateClampf@188@191");
+			var $spos = $s.length;
+			var $tmp = Floats.clamp((x - a) * b,min,max);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.round = function(x,n) {
+	$s.push("Floats::round");
+	var $spos = $s.length;
 	if(n == null) n = 2;
-	return n != 0?Math.round(x * Math.pow(10,n)) * Math.pow(10,-n):Math.round(x);
+	var $tmp = n != 0?Math.round(x * Math.pow(10,n)) * Math.pow(10,-n):Math.round(x);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Floats.prototype.__class__ = Floats;
 rg.svg.SvgScaleTick = function(panel,anchor) {
 	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgScaleTick::new");
+	var $spos = $s.length;
 	rg.svg.SvgLayer.call(this,panel);
 	this._length = rg.svg.SvgScaleTick.defaultTickLength;
 	this._padding = rg.svg.SvgScaleTick.defaultTickPadding;
 	this.anchor(anchor);
 	this.svg.attr("class").string("scale-ticks");
+	$s.pop();
 }
 rg.svg.SvgScaleTick.__name__ = ["rg","svg","SvgScaleTick"];
 rg.svg.SvgScaleTick.__super__ = rg.svg.SvgLayer;
 for(var k in rg.svg.SvgLayer.prototype ) rg.svg.SvgScaleTick.prototype[k] = rg.svg.SvgLayer.prototype[k];
 rg.svg.SvgScaleTick.ofLinear = function(panel,anchor,scale) {
-	return new rg.svg.SvgScaleTick(panel,anchor).scale($closure(scale,"scale")).range($closure(scale,"range")).ticks($closure(scale,"ticks")).key($closure(scale,"tickFormat"));
+	$s.push("rg.svg.SvgScaleTick::ofLinear");
+	var $spos = $s.length;
+	var $tmp = new rg.svg.SvgScaleTick(panel,anchor).scale($closure(scale,"scale")).range($closure(scale,"range")).ticks($closure(scale,"ticks")).key($closure(scale,"tickFormat"));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype._anchor = null;
 rg.svg.SvgScaleTick.prototype._padding = null;
@@ -4483,51 +8190,114 @@ rg.svg.SvgScaleTick.prototype._range = null;
 rg.svg.SvgScaleTick.prototype._scale = null;
 rg.svg.SvgScaleTick.prototype._key = null;
 rg.svg.SvgScaleTick.prototype.translateX = function(d,i) {
-	return "translate(" + this._scale(d,i) + ",0)";
+	$s.push("rg.svg.SvgScaleTick::translateX");
+	var $spos = $s.length;
+	var $tmp = "translate(" + this._scale(d,i) + ",0)";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.translateY = function(d,i) {
-	return "translate(0," + this._scale(d,i) + ")";
+	$s.push("rg.svg.SvgScaleTick::translateY");
+	var $spos = $s.length;
+	var $tmp = "translate(0," + this._scale(d,i) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.redraw = function() {
+	$s.push("rg.svg.SvgScaleTick::redraw");
+	var $spos = $s.length;
+	if(null == this._maxRange) {
+		$s.pop();
+		return;
+	}
 	this._range([0.0,this._maxRange()]);
 	var g = this.svg.selectAll("g." + this._axis).data(this._ticks(),this._key).update().attr("transform").stringf(this._t);
 	g.selectAll("line.tick").attr(this._oaxis + "1")["float"](this._pos()).attr(this._oaxis + "2")["float"](this._pos() + this._length);
 	g.enter().append("svg:g").attr("class").string(this._axis).attr("transform").stringf(this._t).append("svg:line").attr("class").string("tick").attr(this._oaxis + "1")["float"](this._pos()).attr(this._oaxis + "2")["float"](this._pos() + this._length);
 	g.exit().remove();
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.getRange = function() {
-	return this._range;
+	$s.push("rg.svg.SvgScaleTick::getRange");
+	var $spos = $s.length;
+	var $tmp = this._range;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.range = function(f) {
+	$s.push("rg.svg.SvgScaleTick::range");
+	var $spos = $s.length;
 	this._range = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.getScale = function() {
-	return this._scale;
+	$s.push("rg.svg.SvgScaleTick::getScale");
+	var $spos = $s.length;
+	var $tmp = this._scale;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.scale = function(f) {
+	$s.push("rg.svg.SvgScaleTick::scale");
+	var $spos = $s.length;
 	this._scale = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.getTicks = function() {
-	return this._ticks;
+	$s.push("rg.svg.SvgScaleTick::getTicks");
+	var $spos = $s.length;
+	var $tmp = this._ticks;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.ticks = function(f) {
+	$s.push("rg.svg.SvgScaleTick::ticks");
+	var $spos = $s.length;
 	this._ticks = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.getKey = function() {
-	return this._key;
+	$s.push("rg.svg.SvgScaleTick::getKey");
+	var $spos = $s.length;
+	var $tmp = this._key;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.key = function(f) {
+	$s.push("rg.svg.SvgScaleTick::key");
+	var $spos = $s.length;
 	this._key = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.getAnchor = function() {
-	return this._anchor;
+	$s.push("rg.svg.SvgScaleTick::getAnchor");
+	var $spos = $s.length;
+	var $tmp = this._anchor;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.anchor = function(o) {
-	if(Type.enumEq(o,this._anchor)) return this;
+	$s.push("rg.svg.SvgScaleTick::anchor");
+	var $spos = $s.length;
+	if(Type.enumEq(o,this._anchor)) {
+		$s.pop();
+		return this;
+	}
 	var panel = this.panel;
 	switch( (this._anchor = o)[1] ) {
 	case 0:
@@ -4536,7 +8306,12 @@ rg.svg.SvgScaleTick.prototype.anchor = function(o) {
 		this._oaxis = "y";
 		this._t = $closure(this,"translateX");
 		this._maxRange = function() {
-			return panel.frame.width;
+			$s.push("rg.svg.SvgScaleTick::anchor@123");
+			var $spos = $s.length;
+			var $tmp = panel.frame.width;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	case 2:
@@ -4545,49 +8320,92 @@ rg.svg.SvgScaleTick.prototype.anchor = function(o) {
 		this._oaxis = "x";
 		this._t = $closure(this,"translateY");
 		this._maxRange = function() {
-			return panel.frame.height;
+			$s.push("rg.svg.SvgScaleTick::anchor@128");
+			var $spos = $s.length;
+			var $tmp = panel.frame.height;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	}
 	this.adjustPositionFunction();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.getLength = function() {
-	return this._length;
+	$s.push("rg.svg.SvgScaleTick::getLength");
+	var $spos = $s.length;
+	var $tmp = this._length;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.length = function(v) {
+	$s.push("rg.svg.SvgScaleTick::length");
+	var $spos = $s.length;
 	this._length = v;
 	this.adjustPositionFunction();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.getPadding = function() {
-	return this._padding;
+	$s.push("rg.svg.SvgScaleTick::getPadding");
+	var $spos = $s.length;
+	var $tmp = this._padding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.padding = function(v) {
+	$s.push("rg.svg.SvgScaleTick::padding");
+	var $spos = $s.length;
 	this._padding = v;
 	this.adjustPositionFunction();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.adjustPositionFunction = function() {
+	$s.push("rg.svg.SvgScaleTick::adjustPositionFunction");
+	var $spos = $s.length;
 	var me = this;
 	switch( (this._anchor)[1] ) {
 	case 0:
 	case 2:
 		this._pos = function() {
-			return me._padding;
+			$s.push("rg.svg.SvgScaleTick::adjustPositionFunction@156");
+			var $spos = $s.length;
+			var $tmp = me._padding;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	case 1:
 		this._pos = function() {
-			return me.panel.frame.height - me._length - me._padding;
+			$s.push("rg.svg.SvgScaleTick::adjustPositionFunction@158");
+			var $spos = $s.length;
+			var $tmp = me.panel.frame.height - me._length - me._padding;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	case 3:
 		this._pos = function() {
-			return me.panel.frame.width - me._length - me._padding;
+			$s.push("rg.svg.SvgScaleTick::adjustPositionFunction@160");
+			var $spos = $s.length;
+			var $tmp = me.panel.frame.width - me._length - me._padding;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	}
+	$s.pop();
 }
 rg.svg.SvgScaleTick.prototype.__class__ = rg.svg.SvgScaleTick;
 thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
@@ -4603,6 +8421,192 @@ thx.math.EaseMode.EaseInEaseOut.__enum__ = thx.math.EaseMode;
 thx.math.EaseMode.EaseOutEaseIn = ["EaseOutEaseIn",3];
 thx.math.EaseMode.EaseOutEaseIn.toString = $estr;
 thx.math.EaseMode.EaseOutEaseIn.__enum__ = thx.math.EaseMode;
+rg.svg.SvgScaleRule = function(panel,orientation) {
+	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgScaleRule::new");
+	var $spos = $s.length;
+	rg.svg.SvgLayer.call(this,panel);
+	this.orientation(orientation);
+	this.svg.attr("class").string("scale-rules");
+	$s.pop();
+}
+rg.svg.SvgScaleRule.__name__ = ["rg","svg","SvgScaleRule"];
+rg.svg.SvgScaleRule.__super__ = rg.svg.SvgLayer;
+for(var k in rg.svg.SvgLayer.prototype ) rg.svg.SvgScaleRule.prototype[k] = rg.svg.SvgLayer.prototype[k];
+rg.svg.SvgScaleRule.ofLinear = function(panel,orientation,scale) {
+	$s.push("rg.svg.SvgScaleRule::ofLinear");
+	var $spos = $s.length;
+	var $tmp = new rg.svg.SvgScaleRule(panel,orientation).scale($closure(scale,"scale")).range($closure(scale,"range")).ticks($closure(scale,"ticks")).key($closure(scale,"tickFormat"));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype._orientation = null;
+rg.svg.SvgScaleRule.prototype._pos = null;
+rg.svg.SvgScaleRule.prototype._t = null;
+rg.svg.SvgScaleRule.prototype._maxRange = null;
+rg.svg.SvgScaleRule.prototype._axis = null;
+rg.svg.SvgScaleRule.prototype._oaxis = null;
+rg.svg.SvgScaleRule.prototype._ticks = null;
+rg.svg.SvgScaleRule.prototype._range = null;
+rg.svg.SvgScaleRule.prototype._scale = null;
+rg.svg.SvgScaleRule.prototype._key = null;
+rg.svg.SvgScaleRule.prototype._length = null;
+rg.svg.SvgScaleRule.prototype.translateX = function(d,i) {
+	$s.push("rg.svg.SvgScaleRule::translateX");
+	var $spos = $s.length;
+	var $tmp = "translate(" + this._scale(d,i) + ",0)";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.translateY = function(d,i) {
+	$s.push("rg.svg.SvgScaleRule::translateY");
+	var $spos = $s.length;
+	var $tmp = "translate(0," + this._scale(d,i) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.redraw = function() {
+	$s.push("rg.svg.SvgScaleRule::redraw");
+	var $spos = $s.length;
+	this._range([0.0,this._maxRange()]);
+	var g = this.svg.selectAll("g." + this._axis).data(this._ticks(),this._key).update().attr("transform").stringf(this._t);
+	g.selectAll("line.rule").attr(this._oaxis + "1")["float"](0).attr(this._oaxis + "2")["float"](this._length());
+	g.enter().append("svg:g").attr("class").string(this._axis).attr("transform").stringf(this._t).append("svg:line").attr("class").string("rule").attr(this._oaxis + "1")["float"](0).attr(this._oaxis + "2")["float"](this._length());
+	g.exit().remove();
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.getRange = function() {
+	$s.push("rg.svg.SvgScaleRule::getRange");
+	var $spos = $s.length;
+	var $tmp = this._range;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.range = function(f) {
+	$s.push("rg.svg.SvgScaleRule::range");
+	var $spos = $s.length;
+	this._range = f;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.getScale = function() {
+	$s.push("rg.svg.SvgScaleRule::getScale");
+	var $spos = $s.length;
+	var $tmp = this._scale;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.scale = function(f) {
+	$s.push("rg.svg.SvgScaleRule::scale");
+	var $spos = $s.length;
+	this._scale = f;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.getTicks = function() {
+	$s.push("rg.svg.SvgScaleRule::getTicks");
+	var $spos = $s.length;
+	var $tmp = this._ticks;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.ticks = function(f) {
+	$s.push("rg.svg.SvgScaleRule::ticks");
+	var $spos = $s.length;
+	this._ticks = f;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.getKey = function() {
+	$s.push("rg.svg.SvgScaleRule::getKey");
+	var $spos = $s.length;
+	var $tmp = this._key;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.key = function(f) {
+	$s.push("rg.svg.SvgScaleRule::key");
+	var $spos = $s.length;
+	this._key = f;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.getOrientation = function() {
+	$s.push("rg.svg.SvgScaleRule::getOrientation");
+	var $spos = $s.length;
+	var $tmp = this._orientation;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.orientation = function(o) {
+	$s.push("rg.svg.SvgScaleRule::orientation");
+	var $spos = $s.length;
+	if(Type.enumEq(o,this._orientation)) {
+		$s.pop();
+		return this;
+	}
+	var panel = this.panel;
+	switch( (this._orientation = o)[1] ) {
+	case 0:
+		this._axis = "x";
+		this._oaxis = "y";
+		this._t = $closure(this,"translateX");
+		this._maxRange = function() {
+			$s.push("rg.svg.SvgScaleRule::orientation@115");
+			var $spos = $s.length;
+			var $tmp = panel.frame.width;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		this._length = function() {
+			$s.push("rg.svg.SvgScaleRule::orientation@116");
+			var $spos = $s.length;
+			var $tmp = panel.frame.height;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		break;
+	case 1:
+		this._axis = "y";
+		this._oaxis = "x";
+		this._t = $closure(this,"translateY");
+		this._maxRange = function() {
+			$s.push("rg.svg.SvgScaleRule::orientation@121");
+			var $spos = $s.length;
+			var $tmp = panel.frame.height;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		this._length = function() {
+			$s.push("rg.svg.SvgScaleRule::orientation@122");
+			var $spos = $s.length;
+			var $tmp = panel.frame.width;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		break;
+	}
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.svg.SvgScaleRule.prototype.__class__ = rg.svg.SvgScaleRule;
 rg.layout.Disposition = { __ename__ : ["rg","layout","Disposition"], __constructs__ : ["Fixed","Variable","Fill","Floating"] }
 rg.layout.Disposition.Fixed = function(size) { var $x = ["Fixed",0,size]; $x.__enum__ = rg.layout.Disposition; $x.toString = $estr; return $x; }
 rg.layout.Disposition.Variable = function(percent,min,max) { var $x = ["Variable",1,percent,min,max]; $x.__enum__ = rg.layout.Disposition; $x.toString = $estr; return $x; }
@@ -4610,12 +8614,15 @@ rg.layout.Disposition.Fill = function(min,max) { var $x = ["Fill",2,min,max]; $x
 rg.layout.Disposition.Floating = function(x,y,width,height) { var $x = ["Floating",3,x,y,width,height]; $x.__enum__ = rg.layout.Disposition; $x.toString = $estr; return $x; }
 rg.svg.SvgPieChart = function(panel) {
 	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgPieChart::new");
+	var $spos = $s.length;
 	this._padding = 30;
 	this._created = 0;
 	rg.svg.SvgLayer.call(this,panel);
 	this._ease = thx.math.Equations.elasticf();
 	this._duration = 1500;
 	this.redraw();
+	$s.pop();
 }
 rg.svg.SvgPieChart.__name__ = ["rg","svg","SvgPieChart"];
 rg.svg.SvgPieChart.__super__ = rg.svg.SvgLayer;
@@ -4633,31 +8640,62 @@ rg.svg.SvgPieChart.prototype._created = null;
 rg.svg.SvgPieChart.prototype._ease = null;
 rg.svg.SvgPieChart.prototype._duration = null;
 rg.svg.SvgPieChart.prototype.tooltip = function(label,value,total) {
-	return label + ": " + Ints.format(value);
+	$s.push("rg.svg.SvgPieChart::tooltip");
+	var $spos = $s.length;
+	var $tmp = label + ": " + Ints.format(value);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.label = function(label,value,total) {
-	return thx.culture.FormatNumber.percent(value / total * 100,1);
+	$s.push("rg.svg.SvgPieChart::label");
+	var $spos = $s.length;
+	var $tmp = thx.culture.FormatNumber.percent(value / total * 100,1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._label = function(d,i) {
-	return this.label(this._labels[i],d.value,this._total);
+	$s.push("rg.svg.SvgPieChart::_label");
+	var $spos = $s.length;
+	var $tmp = this.label(this._labels[i],d.value,this._total);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.init = function() {
+	$s.push("rg.svg.SvgPieChart::init");
+	var $spos = $s.length;
 	rg.svg.SvgLayer.prototype.init.call(this);
 	this.svg.classed().add("pie-chart");
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.redraw = function() {
-	this._r = Math.min(this.panel.frame.width,this.panel.frame.height) / 2 - this._padding;
+	$s.push("rg.svg.SvgPieChart::redraw");
+	var $spos = $s.length;
+	this._r = Math.min(this.width,this.height) / 2 - this._padding;
 	this._pie = new thx.geom.layout.Pie();
 	this._arc = thx.svg.Arc.fromAngleObject().innerRadius(this._r * .2).outerRadius(this._r);
 	this._startarc = thx.svg.Arc.fromAngleObject().innerRadius(this._r * .2).outerRadius(this._r * .2);
 	this._bigarc = thx.svg.Arc.fromAngleObject().innerRadius(this._r * .4).outerRadius(this._r + this._padding * .9);
-	if(null == this._data || this._data.length == 0) return;
+	if(null == this._data || this._data.length == 0) {
+		$s.pop();
+		return;
+	}
 	this._redraw();
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.getData = function() {
-	return this._data;
+	$s.push("rg.svg.SvgPieChart::getData");
+	var $spos = $s.length;
+	var $tmp = this._data;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.data = function(d) {
+	$s.push("rg.svg.SvgPieChart::data");
+	var $spos = $s.length;
 	this._data = [];
 	this._labels = [];
 	this._total = 0.0;
@@ -4670,78 +8708,140 @@ rg.svg.SvgPieChart.prototype.data = function(d) {
 		this._total += item.value;
 	}
 	this.redraw();
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.sliceid = function(d,i) {
-	return this._labels[i];
+	$s.push("rg.svg.SvgPieChart::sliceid");
+	var $spos = $s.length;
+	var $tmp = this._labels[i];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._keyLayer = function(_,i) {
-	return this._labels[i];
+	$s.push("rg.svg.SvgPieChart::_keyLayer");
+	var $spos = $s.length;
+	var $tmp = this._labels[i];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._redraw = function() {
+	$s.push("rg.svg.SvgPieChart::_redraw");
+	var $spos = $s.length;
 	var vis = this.svg.data([this._data]).update();
 	var selection = vis.selectAll("g.group").dataf($closure(this._pie,"pie"),$closure(this,"sliceid"));
 	selection.update().select("path").transition().ease(this._ease).duration(null,this._duration).attr("d").stringf($closure(this._arc,"shape"));
 	selection.update().select("text").text().stringf($closure(this,"_label")).transition().ease(this._ease).duration(null,this._duration).attr("transform").stringf($closure(this,"transformLabel")).attr("display").stringf(function(d,i) {
-		return d.value > .15?null:"none";
+		$s.push("rg.svg.SvgPieChart::_redraw@171");
+		var $spos = $s.length;
+		var $tmp = d.value > .15?null:"none";
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	var arcs = selection.enter().append("svg:g").attr("class").stringf(function(d,i) {
-		return "group group-" + i;
+		$s.push("rg.svg.SvgPieChart::_redraw@176");
+		var $spos = $s.length;
+		var $tmp = "group group-" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).attr("transform").string("translate(" + (this._padding + this._r) + "," + (this._padding + this._r) + ")");
 	arcs.onNode("mousemove.animation",$closure(this,"_highlight")).onNode("mouseout.animation",$closure(this,"_backtonormal"));
 	arcs.on("mouseover.tooltip",$closure(this,"_showtooltip")).on("mouseout.tooltip",$closure(this,"_hidetooltip"));
 	arcs.append("svg:path").attr("d").stringf($closure(this._startarc,"shape")).eachNode($closure(this,"_arcinp"));
 	arcs.append("svg:text").attr("transform").stringf($closure(this,"transformStartLabel")).attr("dy").string(".35em").attr("text-anchor").string("middle").attr("display").stringf(function(d,i) {
-		return d.value > .15?null:"none";
+		$s.push("rg.svg.SvgPieChart::_redraw@195");
+		var $spos = $s.length;
+		var $tmp = d.value > .15?null:"none";
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).text().stringf($closure(this,"_label")).style("opacity")["float"](0).eachNode($closure(this,"_arcint"));
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._arcinp = function(n,i) {
+	$s.push("rg.svg.SvgPieChart::_arcinp");
+	var $spos = $s.length;
 	thx.js.Dom.selectNodeData(n).transition().ease(this._ease).duration(null,this._duration).delay(null,150 * (i - this._created)).attr("d").stringf($closure(this._arc,"shape"));
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._arcint = function(n,i) {
+	$s.push("rg.svg.SvgPieChart::_arcint");
+	var $spos = $s.length;
 	thx.js.Dom.selectNodeData(n).transition().ease(this._ease).duration(null,this._duration).delay(null,150 * (i - this._created)).style("opacity")["float"](1).attr("transform").stringf($closure(this,"transformLabel"));
 	if(i == this._data.length - 1) this._created = i;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._highlight = function(d,i) {
+	$s.push("rg.svg.SvgPieChart::_highlight");
+	var $spos = $s.length;
 	var slice = thx.js.Dom.selectNodeData(d).select("path");
 	slice.transition().ease(this._ease).duration(null,this._duration).attr("d").stringf($closure(this._bigarc,"shape"));
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._backtonormal = function(d,i) {
+	$s.push("rg.svg.SvgPieChart::_backtonormal");
+	var $spos = $s.length;
 	var slice = thx.js.Dom.selectNodeData(d).select("path");
 	slice.transition().ease(this._ease).duration(null,this._duration).attr("d").stringf($closure(this._arc,"shape"));
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._showtooltip = function(d,i) {
+	$s.push("rg.svg.SvgPieChart::_showtooltip");
+	var $spos = $s.length;
 	var v = this.tooltip(this._labels[i],d.value,this._total);
 	rg.chart.ToolTip.display(v);
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype._hidetooltip = function(d,i) {
+	$s.push("rg.svg.SvgPieChart::_hidetooltip");
+	var $spos = $s.length;
 	rg.chart.ToolTip.display(null);
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.transformLabel = function(d,i) {
+	$s.push("rg.svg.SvgPieChart::transformLabel");
+	var $spos = $s.length;
 	var c = this._arc.centroid(d);
 	var a = -90 + 57.29577951308232088 * ((d.endAngle - d.startAngle) / 2 + d.startAngle);
 	if(a > 90) a -= 180;
-	return "translate(" + c[0] + "," + c[1] + ") rotate(" + a + ")";
+	var $tmp = "translate(" + c[0] + "," + c[1] + ") rotate(" + a + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.transformStartLabel = function(d,i) {
+	$s.push("rg.svg.SvgPieChart::transformStartLabel");
+	var $spos = $s.length;
 	var c = this._startarc.centroid(d);
 	var a = -90 + 57.29577951308232088 * ((d.endAngle - d.startAngle) / 2 + d.startAngle);
 	if(a > 90) a -= 180;
-	return "translate(" + c[0] + "," + c[1] + ") rotate(" + a + ")";
+	var $tmp = "translate(" + c[0] + "," + c[1] + ") rotate(" + a + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgPieChart.prototype.__class__ = rg.svg.SvgPieChart;
 if(!rg.chart) rg.chart = {}
 rg.chart.ToolTip = function(p) {
 	if( p === $_ ) return;
+	$s.push("rg.chart.ToolTip::new");
+	var $spos = $s.length;
 	this._visible = false;
 	this._el = js.Lib.document.createElement("div");
 	js.Lib.document.body.appendChild(this._el);
 	this._el.id = "tooltip";
 	this._el.style.position = "absolute";
 	this._el.style.display = "none";
+	$s.pop();
 }
 rg.chart.ToolTip.__name__ = ["rg","chart","ToolTip"];
 rg.chart.ToolTip._tooltip = null;
 rg.chart.ToolTip.display = function(text,x,y) {
+	$s.push("rg.chart.ToolTip::display");
+	var $spos = $s.length;
 	if(null == rg.chart.ToolTip._tooltip) rg.chart.ToolTip._tooltip = new rg.chart.ToolTip();
 	if(Strings.empty(text)) rg.chart.ToolTip._tooltip.hide(); else {
 		rg.chart.ToolTip._tooltip.setText(text);
@@ -4756,81 +8856,159 @@ rg.chart.ToolTip.display = function(text,x,y) {
 		rg.chart.ToolTip._tooltip.show();
 		rg.chart.ToolTip._tooltip.moveAt(x,y);
 	}
+	$s.pop();
 }
 rg.chart.ToolTip.prototype._visible = null;
 rg.chart.ToolTip.prototype._el = null;
 rg.chart.ToolTip.prototype._text = null;
 rg.chart.ToolTip.prototype.setText = function(text) {
+	$s.push("rg.chart.ToolTip::setText");
+	var $spos = $s.length;
 	if(text != this._text) this._el.innerHTML = this._text = text;
+	$s.pop();
 }
 rg.chart.ToolTip.prototype.hide = function() {
-	if(!this._visible) return;
+	$s.push("rg.chart.ToolTip::hide");
+	var $spos = $s.length;
+	if(!this._visible) {
+		$s.pop();
+		return;
+	}
 	this._visible = false;
 	this._el.style.display = "none";
+	$s.pop();
 }
 rg.chart.ToolTip.prototype.show = function() {
-	if(this._visible) return;
+	$s.push("rg.chart.ToolTip::show");
+	var $spos = $s.length;
+	if(this._visible) {
+		$s.pop();
+		return;
+	}
 	this._visible = true;
 	this._el.style.display = "block";
+	$s.pop();
 }
 rg.chart.ToolTip.prototype.moveAt = function(x,y) {
+	$s.push("rg.chart.ToolTip::moveAt");
+	var $spos = $s.length;
 	var w = this._el.clientWidth;
 	var h = this._el.clientHeight;
 	this._el.style.left = x - w / 2 + "px";
 	this._el.style.top = y - h - 10 + "px";
+	$s.pop();
 }
 rg.chart.ToolTip.prototype.__class__ = rg.chart.ToolTip;
 thx.js.AccessClassed = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.AccessClassed::new");
+	var $spos = $s.length;
 	thx.js.Access.call(this,selection);
+	$s.pop();
 }
 thx.js.AccessClassed.__name__ = ["thx","js","AccessClassed"];
 thx.js.AccessClassed.__super__ = thx.js.Access;
 for(var k in thx.js.Access.prototype ) thx.js.AccessClassed.prototype[k] = thx.js.Access.prototype[k];
 thx.js.AccessClassed.getRe = function(name) {
-	return new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
+	$s.push("thx.js.AccessClassed::getRe");
+	var $spos = $s.length;
+	var $tmp = new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessClassed.prototype.exists = function(name) {
-	return this.selection.firstNode(function(node) {
+	$s.push("thx.js.AccessClassed::exists");
+	var $spos = $s.length;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessClassed::exists@22");
+		var $spos = $s.length;
 		var list = node.classList;
-		if(null != list) return list.contains(name);
+		if(null != list) {
+			var $tmp = list.contains(name);
+			$s.pop();
+			return $tmp;
+		}
 		var cls = node.className;
 		var re = new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
 		var bv = cls.baseVal;
-		return re.match(null != bv?bv:cls);
+		var $tmp = re.match(null != bv?bv:cls);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessClassed.prototype.remove = function(name) {
+	$s.push("thx.js.AccessClassed::remove");
+	var $spos = $s.length;
 	this.selection.eachNode((function(f,a1) {
-		return function(a2,a3) {
-			return f(a1,a2,a3);
+		$s.push("thx.js.AccessClassed::remove@35");
+		var $spos = $s.length;
+		var $tmp = function(a2,a3) {
+			$s.push("thx.js.AccessClassed::remove@35@35");
+			var $spos = $s.length;
+			var $tmp = f(a1,a2,a3);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	})($closure(this,"_remove"),name));
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessClassed.prototype._remove = function(name,node,i) {
+	$s.push("thx.js.AccessClassed::_remove");
+	var $spos = $s.length;
 	var list = node.classList;
 	if(null != list) {
 		list.remove(name);
+		$s.pop();
 		return;
 	}
 	var cls = node.className, clsb = null != cls.baseVal, clsv = clsb?cls.baseVal:cls;
 	var re = new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
 	clsv = Strings.collapse(re.replace(clsv," "));
 	if(clsb) cls.baseVal = clsv; else node.className = clsv;
+	$s.pop();
 }
 thx.js.AccessClassed.prototype.add = function(name) {
+	$s.push("thx.js.AccessClassed::add");
+	var $spos = $s.length;
 	this.selection.eachNode((function(f,a1) {
-		return function(a2,a3) {
-			return f(a1,a2,a3);
+		$s.push("thx.js.AccessClassed::add@64");
+		var $spos = $s.length;
+		var $tmp = function(a2,a3) {
+			$s.push("thx.js.AccessClassed::add@64@64");
+			var $spos = $s.length;
+			var $tmp = f(a1,a2,a3);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	})($closure(this,"_add"),name));
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessClassed.prototype._add = function(name,node,i) {
+	$s.push("thx.js.AccessClassed::_add");
+	var $spos = $s.length;
 	var list = node.classList;
 	if(null != list) {
 		list.add(name);
+		$s.pop();
 		return;
 	}
 	var cls = node.className, clsb = null != cls.baseVal, clsv = clsb?cls.baseVal:cls;
@@ -4839,42 +9017,74 @@ thx.js.AccessClassed.prototype._add = function(name,node,i) {
 		clsv = Strings.collapse(clsv + " " + name);
 		if(clsb) cls.baseVal = clsv; else node.className = clsv;
 	}
+	$s.pop();
 }
 thx.js.AccessClassed.prototype.__class__ = thx.js.AccessClassed;
 thx.js.AccessDataClassed = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.AccessDataClassed::new");
+	var $spos = $s.length;
 	thx.js.AccessClassed.call(this,selection);
+	$s.pop();
 }
 thx.js.AccessDataClassed.__name__ = ["thx","js","AccessDataClassed"];
 thx.js.AccessDataClassed.__super__ = thx.js.AccessClassed;
 for(var k in thx.js.AccessClassed.prototype ) thx.js.AccessDataClassed.prototype[k] = thx.js.AccessClassed.prototype[k];
 thx.js.AccessDataClassed.prototype.removef = function(v) {
+	$s.push("thx.js.AccessDataClassed::removef");
+	var $spos = $s.length;
 	var f = $closure(this,"_remove");
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataClassed::removef@108");
+		var $spos = $s.length;
 		var c = v(Reflect.field(node,"__data__"),i);
 		if(null != c) f(c,node,i);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataClassed.prototype.addf = function(v) {
+	$s.push("thx.js.AccessDataClassed::addf");
+	var $spos = $s.length;
 	var f = $closure(this,"_add");
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataClassed::addf@119");
+		var $spos = $s.length;
 		var c = v(Reflect.field(node,"__data__"),i);
 		if(null != c) f(c,node,i);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataClassed.prototype.__class__ = thx.js.AccessDataClassed;
 Types = function() { }
 Types.__name__ = ["Types"];
 Types.className = function(o) {
-	return Type.getClassName(Type.getClass(o)).split(".").pop();
+	$s.push("Types::className");
+	var $spos = $s.length;
+	var $tmp = Type.getClassName(Type.getClass(o)).split(".").pop();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Types.fullName = function(o) {
-	return Type.getClassName(Type.getClass(o));
+	$s.push("Types::fullName");
+	var $spos = $s.length;
+	var $tmp = Type.getClassName(Type.getClass(o));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Types.typeName = function(o) {
-	return (function($this) {
+	$s.push("Types::typeName");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		var $e = (Type["typeof"](o));
 		switch( $e[1] ) {
@@ -4910,42 +9120,86 @@ Types.typeName = function(o) {
 		}
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Types.hasSuperClass = function(type,sup) {
+	$s.push("Types::hasSuperClass");
+	var $spos = $s.length;
 	while(null != type) {
-		if(type == sup) return true;
+		if(type == sup) {
+			$s.pop();
+			return true;
+		}
 		type = Type.getSuperClass(type);
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 Types.isAnonymous = function(v) {
-	return Reflect.isObject(v) && null == Type.getClass(v);
+	$s.push("Types::isAnonymous");
+	var $spos = $s.length;
+	var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Types["as"] = function(value,type) {
-	return Std["is"](value,type)?value:null;
+	$s.push("Types::as");
+	var $spos = $s.length;
+	var $tmp = Std["is"](value,type)?value:null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Types.ifIs = function(value,type,handler) {
+	$s.push("Types::ifIs");
+	var $spos = $s.length;
 	if(Std["is"](value,type)) handler(value);
+	$s.pop();
 	return value;
+	$s.pop();
 }
 Types.of = function(type,value) {
-	return Std["is"](value,type)?value:null;
+	$s.push("Types::of");
+	var $spos = $s.length;
+	var $tmp = Std["is"](value,type)?value:null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Types.sameAs = function(a,b) {
-	if(null == a && b == null) return true;
-	if(null == a || b == null) return false;
+	$s.push("Types::sameAs");
+	var $spos = $s.length;
+	if(null == a && b == null) {
+		$s.pop();
+		return true;
+	}
+	if(null == a || b == null) {
+		$s.pop();
+		return false;
+	}
 	var tb = Type["typeof"](b);
 	var $e = (tb);
 	switch( $e[1] ) {
 	case 6:
 		var c = $e[2];
-		return Std["is"](a,c);
+		var $tmp = Std["is"](a,c);
+		$s.pop();
+		return $tmp;
 	case 7:
 		var e = $e[2];
-		return Std["is"](a,e);
+		var $tmp = Std["is"](a,e);
+		$s.pop();
+		return $tmp;
 	default:
-		return Type["typeof"](a) == tb;
+		var $tmp = Type["typeof"](a) == tb;
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Types.prototype.__class__ = Types;
 hxevents.EventException = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
@@ -4955,31 +9209,63 @@ hxevents.EventException.StopPropagation.__enum__ = hxevents.EventException;
 Reflect = function() { }
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
-	if(o.hasOwnProperty != null) return o.hasOwnProperty(field);
+	$s.push("Reflect::hasField");
+	var $spos = $s.length;
+	if(o.hasOwnProperty != null) {
+		var $tmp = o.hasOwnProperty(field);
+		$s.pop();
+		return $tmp;
+	}
 	var arr = Reflect.fields(o);
 	var $it0 = arr.iterator();
 	while( $it0.hasNext() ) {
 		var t = $it0.next();
-		if(t == field) return true;
+		if(t == field) {
+			$s.pop();
+			return true;
+		}
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 Reflect.field = function(o,field) {
+	$s.push("Reflect::field");
+	var $spos = $s.length;
 	var v = null;
 	try {
 		v = o[field];
 	} catch( e ) {
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
 	}
+	$s.pop();
 	return v;
+	$s.pop();
 }
 Reflect.setField = function(o,field,value) {
+	$s.push("Reflect::setField");
+	var $spos = $s.length;
 	o[field] = value;
+	$s.pop();
 }
 Reflect.callMethod = function(o,func,args) {
-	return func.apply(o,args);
+	$s.push("Reflect::callMethod");
+	var $spos = $s.length;
+	var $tmp = func.apply(o,args);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Reflect.fields = function(o) {
-	if(o == null) return new Array();
+	$s.push("Reflect::fields");
+	var $spos = $s.length;
+	if(o == null) {
+		var $tmp = new Array();
+		$s.pop();
+		return $tmp;
+	}
 	var a = new Array();
 	if(o.hasOwnProperty) {
 		for(var i in o) if( o.hasOwnProperty(i) ) a.push(i);
@@ -4988,36 +9274,79 @@ Reflect.fields = function(o) {
 		try {
 			t = o.__proto__;
 		} catch( e ) {
+			$e = [];
+			while($s.length >= $spos) $e.unshift($s.pop());
+			$s.push($e[0]);
 			t = null;
 		}
 		if(t != null) o.__proto__ = null;
 		for(var i in o) if( i != "__proto__" ) a.push(i);
 		if(t != null) o.__proto__ = t;
 	}
+	$s.pop();
 	return a;
+	$s.pop();
 }
 Reflect.isFunction = function(f) {
-	return typeof(f) == "function" && f.__name__ == null;
+	$s.push("Reflect::isFunction");
+	var $spos = $s.length;
+	var $tmp = typeof(f) == "function" && f.__name__ == null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Reflect.compare = function(a,b) {
-	return a == b?0:a > b?1:-1;
+	$s.push("Reflect::compare");
+	var $spos = $s.length;
+	var $tmp = a == b?0:a > b?1:-1;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Reflect.compareMethods = function(f1,f2) {
-	if(f1 == f2) return true;
-	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
-	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
+	$s.push("Reflect::compareMethods");
+	var $spos = $s.length;
+	if(f1 == f2) {
+		$s.pop();
+		return true;
+	}
+	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) {
+		$s.pop();
+		return false;
+	}
+	var $tmp = f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Reflect.isObject = function(v) {
-	if(v == null) return false;
+	$s.push("Reflect::isObject");
+	var $spos = $s.length;
+	if(v == null) {
+		$s.pop();
+		return false;
+	}
 	var t = typeof(v);
-	return t == "string" || t == "object" && !v.__enum__ || t == "function" && v.__name__ != null;
+	var $tmp = t == "string" || t == "object" && !v.__enum__ || t == "function" && v.__name__ != null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Reflect.deleteField = function(o,f) {
-	if(!Reflect.hasField(o,f)) return false;
+	$s.push("Reflect::deleteField");
+	var $spos = $s.length;
+	if(!Reflect.hasField(o,f)) {
+		$s.pop();
+		return false;
+	}
 	delete(o[f]);
+	$s.pop();
 	return true;
+	$s.pop();
 }
 Reflect.copy = function(o) {
+	$s.push("Reflect::copy");
+	var $spos = $s.length;
 	var o2 = { };
 	var _g = 0, _g1 = Reflect.fields(o);
 	while(_g < _g1.length) {
@@ -5025,23 +9354,37 @@ Reflect.copy = function(o) {
 		++_g;
 		o2[f] = Reflect.field(o,f);
 	}
+	$s.pop();
 	return o2;
+	$s.pop();
 }
 Reflect.makeVarArgs = function(f) {
-	return function() {
+	$s.push("Reflect::makeVarArgs");
+	var $spos = $s.length;
+	var $tmp = function() {
+		$s.push("Reflect::makeVarArgs@108");
+		var $spos = $s.length;
 		var a = new Array();
 		var _g1 = 0, _g = arguments.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			a.push(arguments[i]);
 		}
-		return f(a);
+		var $tmp = f(a);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Reflect.prototype.__class__ = Reflect;
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	if( months === $_ ) return;
+	$s.push("thx.culture.core.DateTimeInfo::new");
+	var $spos = $s.length;
 	this.months = months;
 	this.abbrMonths = abbrMonths;
 	this.days = days;
@@ -5062,6 +9405,7 @@ thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDa
 	this.patternSortable = patternSortable;
 	this.patternTime = patternTime;
 	this.patternTimeShort = patternTimeShort;
+	$s.pop();
 }
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype.months = null;
@@ -5089,6 +9433,8 @@ if(!thx.date) thx.date = {}
 thx.date.DateParser = function() { }
 thx.date.DateParser.__name__ = ["thx","date","DateParser"];
 thx.date.DateParser.parse = function(s,d) {
+	$s.push("thx.date.DateParser::parse");
+	var $spos = $s.length;
 	var time = thx.date.DateParser.parseTime(s), v;
 	if(null == d) d = Date.now();
 	s = StringTools.replace(s,time.matched,"");
@@ -5234,11 +9580,19 @@ thx.date.DateParser.parse = function(s,d) {
 			break;
 		}
 	}
-	return Date.fromTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
+	var $tmp = Date.fromTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.date.DateParser.parseTime = function(s) {
+	$s.push("thx.date.DateParser::parseTime");
+	var $spos = $s.length;
 	var result = { hour : 0, minute : 0, second : 0, millis : 0.0, matched : null};
-	if(!thx.date.DateParser.timeexp.match(s)) return result;
+	if(!thx.date.DateParser.timeexp.match(s)) {
+		$s.pop();
+		return result;
+	}
 	result.matched = thx.date.DateParser.timeexp.matched(0);
 	var v;
 	if(null != (v = thx.date.DateParser.timeexp.matched(1))) {
@@ -5278,29 +9632,75 @@ thx.date.DateParser.parseTime = function(s) {
 		result.millis = 0.999;
 		break;
 	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 400, className : "thx.date.DateParser", methodName : "parseTime"});
+	$s.pop();
 	return result;
+	$s.pop();
 }
 thx.date.DateParser.fixyear = function(y) {
-	if(y < 70) return 2000 + y; else if(y < 100) return 1900 + y; else return y;
+	$s.push("thx.date.DateParser::fixyear");
+	var $spos = $s.length;
+	if(y < 70) {
+		var $tmp = 2000 + y;
+		$s.pop();
+		return $tmp;
+	} else if(y < 100) {
+		var $tmp = 1900 + y;
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return y;
+	}
+	$s.pop();
 }
 thx.date.DateParser.last = function(s) {
-	if(null == s) return false; else return "last" == s.toLowerCase();
+	$s.push("thx.date.DateParser::last");
+	var $spos = $s.length;
+	if(null == s) {
+		$s.pop();
+		return false;
+	} else {
+		var $tmp = "last" == s.toLowerCase();
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.date.DateParser.next = function(s) {
-	if(null == s) return true; else return "next" == s.toLowerCase();
+	$s.push("thx.date.DateParser::next");
+	var $spos = $s.length;
+	if(null == s) {
+		$s.pop();
+		return true;
+	} else {
+		var $tmp = "next" == s.toLowerCase();
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.date.DateParser.plusPm = function(s) {
-	if(null == s) return 0; else return (function($this) {
-		var $r;
-		switch(s.toLowerCase()) {
-		case "pm":case "evening":case "afternoon":
-			$r = 12;
-			break;
-		default:
-			$r = 0;
-		}
-		return $r;
-	}(this));
+	$s.push("thx.date.DateParser::plusPm");
+	var $spos = $s.length;
+	if(null == s) {
+		$s.pop();
+		return 0;
+	} else {
+		var $tmp = (function($this) {
+			var $r;
+			switch(s.toLowerCase()) {
+			case "pm":case "evening":case "afternoon":
+				$r = 12;
+				break;
+			default:
+				$r = 0;
+			}
+			return $r;
+		}(this));
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.date.DateParser.prototype.__class__ = thx.date.DateParser;
 rg.query.IExecutor = function() { }
@@ -5317,88 +9717,203 @@ rg.query.IExecutor.prototype.intersect = null;
 rg.query.IExecutor.prototype.__class__ = rg.query.IExecutor;
 rg.query.mock.RandomExecutor = function(delay,start,structure) {
 	if( delay === $_ ) return;
+	$s.push("rg.query.mock.RandomExecutor::new");
+	var $spos = $s.length;
 	if(delay == null) delay = 15;
 	this.delay = delay;
 	if(null != structure) this.structure = structure; else this.structure = rg.query.mock.DefaultStructure.getStructure();
 	if(null == start) this.start = DateTools.delta(Date.now(),-DateTools.days(3)).getTime(); else this.start = start.getTime();
 	this.cache = new Hash();
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.__name__ = ["rg","query","mock","RandomExecutor"];
 rg.query.mock.RandomExecutor.getProperties = function(values) {
-	return Iterators.array(values).map(function(d,i) {
-		return "." + d;
+	$s.push("rg.query.mock.RandomExecutor::getProperties");
+	var $spos = $s.length;
+	var $tmp = Iterators.array(values).map(function(d,i) {
+		$s.push("rg.query.mock.RandomExecutor::getProperties@44");
+		var $spos = $s.length;
+		var $tmp = "." + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.delay = null;
 rg.query.mock.RandomExecutor.prototype.structure = null;
 rg.query.mock.RandomExecutor.prototype.start = null;
 rg.query.mock.RandomExecutor.prototype.cache = null;
 rg.query.mock.RandomExecutor.prototype.time = function() {
+	$s.push("rg.query.mock.RandomExecutor::time");
+	var $spos = $s.length;
 	var delta = Date.now().getTime() - this.start, min = Math.floor(delta / 60000);
-	return { minute : min, percent : (delta - min * 60000) / 60000};
+	var $tmp = { minute : min, percent : (delta - min * 60000) / 60000};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.children = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::children");
+	var $spos = $s.length;
 	var type = options.type;
 	switch(type) {
 	case "all":
 		var h = this.structure.get(path);
-		return null == h?this.go(success,[]):this.go(success,h.sub.concat(rg.query.mock.RandomExecutor.getProperties(h.events.keys())));
+		var $tmp = null == h?this.go(success,[]):this.go(success,h.sub.concat(rg.query.mock.RandomExecutor.getProperties(h.events.keys())));
+		$s.pop();
+		return $tmp;
 	case "path":
 		var h = this.structure.get(path);
-		return null == h?this.go(success,[]):this.go(success,h.sub);
+		var $tmp = null == h?this.go(success,[]):this.go(success,h.sub);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 		return;
 	case "property":
 		var h = this.structure.get(path);
-		return null == h?this.go(success,[]):this.go(success,rg.query.mock.RandomExecutor.getProperties(h.events.keys()));
+		var $tmp = null == h?this.go(success,[]):this.go(success,rg.query.mock.RandomExecutor.getProperties(h.events.keys()));
+		$s.pop();
+		return $tmp;
 	default:
 	}
-	return this.go(error,"'property' option is not implemented in children()");
+	var $tmp = this.go(error,"'property' option is not implemented in children()");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.propertyCount = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::propertyCount");
+	var $spos = $s.length;
 	this.filldata(path);
 	var event = this.structure.get(path);
-	if(null == event) return this.go(success,{ }); else return this.go(success,this.countproperty(path,this.extractEventFromProperty(options.property),this.extractNameFromProperty(options.property)));
+	if(null == event) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.go(success,this.countproperty(path,this.extractEventFromProperty(options.property),this.extractNameFromProperty(options.property)));
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.propertySeries = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::propertySeries");
+	var $spos = $s.length;
 	this.filldata(path);
 	var event = this.structure.get(path);
-	if(null == event) return this.go(success,{ }); else return this.go(error,"not implemented");
+	if(null == event) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.go(error,"not implemented");
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.propertyValues = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::propertyValues");
+	var $spos = $s.length;
 	this.filldata(path);
 	var event = this.structure.get(path);
-	if(null == event) return this.go(success,{ }); else return this.go(error,"not implemented");
+	if(null == event) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.go(error,"not implemented");
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.propertyValueCount = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::propertyValueCount");
+	var $spos = $s.length;
 	this.filldata(path);
 	var event = this.structure.get(path);
-	if(null == event) return this.go(success,{ }); else return this.go(error,"not implemented");
+	if(null == event) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.go(error,"not implemented");
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.propertyValueSeries = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::propertyValueSeries");
+	var $spos = $s.length;
 	this.filldata(path);
 	var event = this.structure.get(path);
-	if(null == event) return this.go(success,{ }); else {
+	if(null == event) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
 		var periodicity = Reflect.field(options,"periodicity"), start = Reflect.field(options,"start"), end = Reflect.field(options,"end"), event1 = this.extractEventFromProperty(options.property), property = this.extractNameFromProperty(options.property);
 		var result = this.series(periodicity,start,end,path,event1,property,options.value);
-		return this.go(success,result.series);
+		var $tmp = this.go(success,result.series);
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.searchCount = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::searchCount");
+	var $spos = $s.length;
 	this.filldata(path);
 	var event = this.structure.get(path);
-	if(null == event) return this.go(success,{ }); else return this.go(error,"not implemented");
+	if(null == event) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.go(error,"not implemented");
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.searchSeries = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::searchSeries");
+	var $spos = $s.length;
 	this.filldata(path);
 	var event = this.structure.get(path);
-	if(null == event) return this.go(success,{ }); else return this.go(error,"not implemented");
+	if(null == event) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.go(error,"not implemented");
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.intersect = function(path,options,success,error) {
+	$s.push("rg.query.mock.RandomExecutor::intersect");
+	var $spos = $s.length;
 	this.filldata(path);
 	var events = this.structure.get(path);
-	if(null == events) return this.go(success,{ }); else {
+	if(null == events) {
+		var $tmp = this.go(success,{ });
+		$s.pop();
+		return $tmp;
+	} else {
 		var periodicity = Reflect.field(options,"periodicity"), start = Reflect.field(options,"start"), end = Reflect.field(options,"end");
-		if(null == periodicity) return this.go(error,"periodicity is null");
+		if(null == periodicity) {
+			var $tmp = this.go(error,"periodicity is null");
+			$s.pop();
+			return $tmp;
+		}
 		var properties = Reflect.field(options,"properties");
 		var result = { }, current = result;
 		var _g = 0;
@@ -5414,16 +9929,33 @@ rg.query.mock.RandomExecutor.prototype.intersect = function(path,options,success
 				current[value.value] = value.series;
 			}
 		}
-		return this.go(success,result);
+		var $tmp = this.go(success,result);
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.topseries = function(periodicity,start,end,path,event,property,qt,reverse) {
+	$s.push("rg.query.mock.RandomExecutor::topseries");
+	var $spos = $s.length;
 	var events = this.structure.get(path);
-	if(null == events) return [];
+	if(null == events) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var e = events.events.get(event);
-	if(null == e) return [];
+	if(null == e) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var values = e.get(property);
-	if(null == values) return [];
+	if(null == values) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var result = [];
 	var $it0 = values.keys();
 	while( $it0.hasNext() ) {
@@ -5431,14 +9963,29 @@ rg.query.mock.RandomExecutor.prototype.topseries = function(periodicity,start,en
 		result.push({ value : "\"" + value + "\"", data : this.series(periodicity,start,end,path,event,property,value)});
 	}
 	result.sort(function(a,b) {
-		return b.data.count - a.data.count;
+		$s.push("rg.query.mock.RandomExecutor::topseries@207");
+		var $spos = $s.length;
+		var $tmp = b.data.count - a.data.count;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	if(reverse) result.reverse();
-	return result.slice(0,qt).map(function(d,i) {
-		return { value : d.value, series : d.data.series};
+	var $tmp = result.slice(0,qt).map(function(d,i) {
+		$s.push("rg.query.mock.RandomExecutor::topseries@213");
+		var $spos = $s.length;
+		var $tmp = { value : d.value, series : d.data.series};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.series = function(periodicity,start,end,path,event,property,value) {
+	$s.push("rg.query.mock.RandomExecutor::series");
+	var $spos = $s.length;
 	var series = { }, count = 0;
 	switch(periodicity) {
 	case "eternity":
@@ -5459,21 +10006,41 @@ rg.query.mock.RandomExecutor.prototype.series = function(periodicity,start,end,p
 	}
 	var s = { };
 	s[periodicity] = series;
-	return { count : count, series : s};
+	var $tmp = { count : count, series : s};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.gettimeforindex = function(periodicity,i) {
-	return i * this.periodicityspan(periodicity) + this.start;
+	$s.push("rg.query.mock.RandomExecutor::gettimeforindex");
+	var $spos = $s.length;
+	var $tmp = i * this.periodicityspan(periodicity) + this.start;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.getindex = function(periodicity,date,isstart,path,event) {
+	$s.push("rg.query.mock.RandomExecutor::getindex");
+	var $spos = $s.length;
 	if(null == date) {
-		if(isstart) return 0;
+		if(isstart) {
+			$s.pop();
+			return 0;
+		}
 		var k = this.eventkey(periodicity,path,event), values = this.cache.get(k);
-		return values.length - 1;
+		var $tmp = values.length - 1;
+		$s.pop();
+		return $tmp;
 	}
-	return Math.floor((date - this.start) / this.periodicityspan(periodicity));
+	var $tmp = Math.floor((date - this.start) / this.periodicityspan(periodicity));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.periodicityspan = function(periodicity) {
-	return (function($this) {
+	$s.push("rg.query.mock.RandomExecutor::periodicityspan");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		switch(periodicity) {
 		case "minute":
@@ -5499,14 +10066,31 @@ rg.query.mock.RandomExecutor.prototype.periodicityspan = function(periodicity) {
 		}
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.topvalues = function(path,event,property,qt,reverse) {
+	$s.push("rg.query.mock.RandomExecutor::topvalues");
+	var $spos = $s.length;
 	var events = this.structure.get(path);
-	if(null == events) return [];
+	if(null == events) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var e = events.events.get(event);
-	if(null == e) return [];
+	if(null == e) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var values = e.get(property);
-	if(null == values) return [];
+	if(null == values) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var result = [];
 	var $it0 = values.keys();
 	while( $it0.hasNext() ) {
@@ -5514,29 +10098,59 @@ rg.query.mock.RandomExecutor.prototype.topvalues = function(path,event,property,
 		result.push({ value : "\"" + value + "\"", count : this.countvalue(path,event,property,value)});
 	}
 	result.sort(function(a,b) {
-		return b.count - a.count;
+		$s.push("rg.query.mock.RandomExecutor::topvalues@305");
+		var $spos = $s.length;
+		var $tmp = b.count - a.count;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	if(reverse) result.reverse();
-	return result.slice(0,qt);
+	var $tmp = result.slice(0,qt);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.extractEventFromProperty = function(p) {
-	return Strings.ltrim(p,".").split(".").shift();
+	$s.push("rg.query.mock.RandomExecutor::extractEventFromProperty");
+	var $spos = $s.length;
+	var $tmp = Strings.ltrim(p,".").split(".").shift();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.extractNameFromProperty = function(p) {
-	return p.split(".").pop();
+	$s.push("rg.query.mock.RandomExecutor::extractNameFromProperty");
+	var $spos = $s.length;
+	var $tmp = p.split(".").pop();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.countvalue = function(path,event,property,value) {
+	$s.push("rg.query.mock.RandomExecutor::countvalue");
+	var $spos = $s.length;
 	var key = this.valuekey("eternity",path,event,property,value);
 	var v = this.cache.get(key);
-	return null == v?0:v[0];
+	var $tmp = null == v?0:v[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.countproperty = function(path,event,property) {
+	$s.push("rg.query.mock.RandomExecutor::countproperty");
+	var $spos = $s.length;
 	var key = this.propertykey("eternity",path,event,property);
 	var v = this.cache.get(key);
-	return null == v?0:v[0];
+	var $tmp = null == v?0:v[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.eventkey = function(periodicity,path,event) {
-	return (function($this) {
+	$s.push("rg.query.mock.RandomExecutor::eventkey");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		switch(periodicity) {
 		case "eternity":
@@ -5569,16 +10183,34 @@ rg.query.mock.RandomExecutor.prototype.eventkey = function(periodicity,path,even
 		}
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.propertykey = function(periodicity,path,event,property) {
-	return this.eventkey(periodicity,path,event) + ":" + property;
+	$s.push("rg.query.mock.RandomExecutor::propertykey");
+	var $spos = $s.length;
+	var $tmp = this.eventkey(periodicity,path,event) + ":" + property;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.valuekey = function(periodicity,path,event,property,value) {
-	return this.propertykey(periodicity,path,event,property) + ":" + value;
+	$s.push("rg.query.mock.RandomExecutor::valuekey");
+	var $spos = $s.length;
+	var $tmp = this.propertykey(periodicity,path,event,property) + ":" + value;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.filldata = function(path) {
+	$s.push("rg.query.mock.RandomExecutor::filldata");
+	var $spos = $s.length;
 	var time = this.time(), p = this.structure.get(path);
-	if(null == p) return;
+	if(null == p) {
+		$s.pop();
+		return;
+	}
 	var $it0 = p.events.keys();
 	while( $it0.hasNext() ) {
 		var eventname = $it0.next();
@@ -5748,18 +10380,34 @@ rg.query.mock.RandomExecutor.prototype.filldata = function(path) {
 			}
 		}
 	}
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.go = function(f,o) {
+	$s.push("rg.query.mock.RandomExecutor::go");
+	var $spos = $s.length;
 	haxe.Timer.delay((function(f,a1) {
-		return function() {
-			return f(a1);
+		$s.push("rg.query.mock.RandomExecutor::go@545");
+		var $spos = $s.length;
+		var $tmp = function() {
+			$s.push("rg.query.mock.RandomExecutor::go@545@545");
+			var $spos = $s.length;
+			var $tmp = f(a1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	})(f,o),this.delay);
+	$s.pop();
 }
 rg.query.mock.RandomExecutor.prototype.__class__ = rg.query.mock.RandomExecutor;
 rg.query.mock.RandomExecutor.__interfaces__ = [rg.query.IExecutor];
 rg.pivottable.PivotTable = function(container) {
 	if( container === $_ ) return;
+	$s.push("rg.pivottable.PivotTable::new");
+	var $spos = $s.length;
 	this.id = "rg-pivottable-" + ++rg.pivottable.PivotTable.nextid;
 	this.container = container;
 	this.start = null;
@@ -5768,42 +10416,75 @@ rg.pivottable.PivotTable = function(container) {
 	this.setAvailableProperties([]);
 	this.queryProperties = [];
 	this.periodicity = "day";
+	$s.pop();
 }
 rg.pivottable.PivotTable.__name__ = ["rg","pivottable","PivotTable"];
 rg.pivottable.PivotTable.formatTimef = function(p) {
-	return (function($this) {
+	$s.push("rg.pivottable.PivotTable::formatTimef");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		switch(p) {
 		case "minute":case "hour":
 			$r = function(v) {
-				return thx.culture.FormatDate.timeShort(Date.fromTime(v));
+				$s.push("rg.pivottable.PivotTable::formatTimef@414");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.timeShort(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
 			break;
 		case "day":
 			$r = function(v) {
-				return thx.culture.FormatDate.dateShort(Date.fromTime(v));
+				$s.push("rg.pivottable.PivotTable::formatTimef@416");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.dateShort(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
 			break;
 		case "week":
 			$r = function(v) {
-				return thx.culture.FormatDate.monthDay(Date.fromTime(v));
+				$s.push("rg.pivottable.PivotTable::formatTimef@418");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.monthDay(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
 			break;
 		case "month":
 			$r = function(v) {
-				return thx.culture.FormatDate.monthNameShort(Date.fromTime(v));
+				$s.push("rg.pivottable.PivotTable::formatTimef@420");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.monthNameShort(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
 			break;
 		case "year":
 			$r = function(v) {
-				return "" + Date.fromTime(v).getFullYear();
+				$s.push("rg.pivottable.PivotTable::formatTimef@422");
+				var $spos = $s.length;
+				var $tmp = "" + Date.fromTime(v).getFullYear();
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
 			break;
 		}
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.pivottable.PivotTable.buildContext = function(id) {
+	$s.push("rg.pivottable.PivotTable::buildContext");
+	var $spos = $s.length;
 	var b = "<div class=\"rg\" class=\"pivot-table-container\">";
 	b += "<form id=\"" + id + "\">";
 	b += "<div class=\"controls\">";
@@ -5820,7 +10501,9 @@ rg.pivottable.PivotTable.buildContext = function(id) {
 	b += "</form>";
 	b += "<div class=\"pivot-table\"><table></table></div>";
 	b += "</div>";
+	$s.pop();
 	return b;
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.container = null;
 rg.pivottable.PivotTable.prototype.id = null;
@@ -5833,12 +10516,19 @@ rg.pivottable.PivotTable.prototype.queryProperties = null;
 rg.pivottable.PivotTable.prototype.usedProperties = null;
 rg.pivottable.PivotTable.prototype.periodicity = null;
 rg.pivottable.PivotTable.prototype.init = function() {
+	$s.push("rg.pivottable.PivotTable::init");
+	var $spos = $s.length;
 	this._init();
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.query = function() {
+	$s.push("rg.pivottable.PivotTable::query");
+	var $spos = $s.length;
 	var event = this.event;
 	var properties = Arrays.filter(this.queryProperties,function(d) {
-		return (function($this) {
+		$s.push("rg.pivottable.PivotTable::query@66");
+		var $spos = $s.length;
+		var $tmp = (function($this) {
 			var $r;
 			switch( (d)[1] ) {
 			case 0:
@@ -5849,27 +10539,45 @@ rg.pivottable.PivotTable.prototype.query = function() {
 			}
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).map(function(d,_) {
+		$s.push("rg.pivottable.PivotTable::query@67");
+		var $spos = $s.length;
 		var $e = (d);
 		switch( $e[1] ) {
 		case 0:
 			var limit = $e[4], top = $e[3], name = $e[2];
-			return { property : "." + event + name, limit : limit, order : top?"descending":"ascending"};
+			var $tmp = { property : "." + event + name, limit : limit, order : top?"descending":"ascending"};
+			$s.pop();
+			return $tmp;
 		default:
-			return (function($this) {
+			var $tmp = (function($this) {
 				var $r;
 				throw new thx.error.Error("invalid property option {0}",null,d,{ fileName : "PivotTable.hx", lineNumber : 77, className : "rg.pivottable.PivotTable", methodName : "query"});
 				return $r;
 			}(this));
+			$s.pop();
+			return $tmp;
 		}
+		$s.pop();
 	});
 	var hastime = this.queryHasTimeProperty();
-	if(properties.length == 0 && !hastime) return;
+	if(properties.length == 0 && !hastime) {
+		$s.pop();
+		return;
+	}
 	rg.js.ReportGrid.intersect(this.path,{ start : !hastime || null == this.start?0:this.start.getTime(), end : !hastime || null == this.end?0:this.end.getTime(), properties : properties, periodicity : hastime?this.periodicity:"eternity"},$closure(this,"intersect"));
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.queryHasTimeProperty = function() {
-	return Iterators.any(this.queryProperties.iterator(),function(d) {
-		return (function($this) {
+	$s.push("rg.pivottable.PivotTable::queryHasTimeProperty");
+	var $spos = $s.length;
+	var $tmp = Iterators.any(this.queryProperties.iterator(),function(d) {
+		$s.push("rg.pivottable.PivotTable::queryHasTimeProperty@95");
+		var $spos = $s.length;
+		var $tmp = (function($this) {
 			var $r;
 			switch( (d)[1] ) {
 			case 1:
@@ -5880,13 +10588,22 @@ rg.pivottable.PivotTable.prototype.queryHasTimeProperty = function() {
 			}
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.timePropertyPosition = function() {
+	$s.push("rg.pivottable.PivotTable::timePropertyPosition");
+	var $spos = $s.length;
 	var i = 0;
 	while(i < this.queryProperties.length) {
 		switch( (this.queryProperties[i])[1] ) {
 		case 1:
+			$s.pop();
 			return i;
 		case 0:
 			i++;
@@ -5895,14 +10612,23 @@ rg.pivottable.PivotTable.prototype.timePropertyPosition = function() {
 			break;
 		}
 	}
+	$s.pop();
 	return i;
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.intersect = function(v) {
+	$s.push("rg.pivottable.PivotTable::intersect");
+	var $spos = $s.length;
 	var data = this.normalizeData(v), table = this.container.select("table");
 	table.html().string("");
 	var thead = table.append("thead");
 	var _bg = thx.color.Hsl.interpolatef(rg.pivottable.PivotTable.startColor,rg.pivottable.PivotTable.endColor), delta = data.max - data.min, bg = function(t) {
-		return _bg((t - data.min) / delta);
+		$s.push("rg.pivottable.PivotTable::intersect@126");
+		var $spos = $s.length;
+		var $tmp = _bg((t - data.min) / delta);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var h = thead.append("tr");
 	var _g1 = 0, _g = data.rows[0].headers.length;
@@ -5915,7 +10641,9 @@ rg.pivottable.PivotTable.prototype.intersect = function(v) {
 	h = thead.append("tr");
 	var q = this.queryProperties.copy().splice(1,this.queryProperties.length - 1);
 	var properties = Arrays.filter(q,function(d) {
-		return (function($this) {
+		$s.push("rg.pivottable.PivotTable::intersect@145");
+		var $spos = $s.length;
+		var $tmp = (function($this) {
 			var $r;
 			switch( (d)[1] ) {
 			case 2:
@@ -5926,8 +10654,13 @@ rg.pivottable.PivotTable.prototype.intersect = function(v) {
 			}
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).map(function(d,i) {
-		return (function($this) {
+		$s.push("rg.pivottable.PivotTable::intersect@146");
+		var $spos = $s.length;
+		var $tmp = (function($this) {
 			var $r;
 			var $e = (d);
 			switch( $e[1] ) {
@@ -5944,6 +10677,9 @@ rg.pivottable.PivotTable.prototype.intersect = function(v) {
 			}
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	var _g1 = 0, _g = properties.length;
 	while(_g1 < _g) {
@@ -5996,11 +10732,19 @@ rg.pivottable.PivotTable.prototype.intersect = function(v) {
 		}
 		tr.append("td").attr("class").string("total").text().string(Ints.format(data.total));
 	}
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.normalizeData = function(src) {
+	$s.push("rg.pivottable.PivotTable::normalizeData");
+	var $spos = $s.length;
 	var data = { columns : { header : null, values : [], count : 0, totals : [], averages : []}, rows : [], max : -1, min : -1, total : 0};
 	var first = Arrays.firstf(this.queryProperties,function(d) {
-		return !Type.enumEq(d,rg.pivottable.QueryProperty.EmptyProperty);
+		$s.push("rg.pivottable.PivotTable::normalizeData@262");
+		var $spos = $s.length;
+		var $tmp = !Type.enumEq(d,rg.pivottable.QueryProperty.EmptyProperty);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	data.columns.header = (function($this) {
 		var $r;
@@ -6023,7 +10767,11 @@ rg.pivottable.PivotTable.prototype.normalizeData = function(src) {
 	var fields = data.columns.values = Reflect.fields(src);
 	data.columns.count = fields.length;
 	data.columns.totals = fields.map(function(_,_1) {
+		$s.push("rg.pivottable.PivotTable::normalizeData@271");
+		var $spos = $s.length;
+		$s.pop();
 		return 0;
+		$s.pop();
 	});
 	var arr = [];
 	var rows = -1;
@@ -6067,9 +10815,13 @@ rg.pivottable.PivotTable.prototype.normalizeData = function(src) {
 			row.headers.pop();
 		}
 		Arrays.order(data.rows,function(a,b) {
+			$s.push("rg.pivottable.PivotTable::normalizeData@322");
+			var $spos = $s.length;
 			var ah = a.headers, bh = b.headers, c = Reflect.compare(ah[0],bh[0]), i = 1;
 			while(c == 0 && i < ah.length) c = Reflect.compare(ah[i],bh[i++]);
+			$s.pop();
 			return c;
+			$s.pop();
 		});
 	} else {
 		var pos = this.timePropertyPosition() - 1;
@@ -6088,9 +10840,13 @@ rg.pivottable.PivotTable.prototype.normalizeData = function(src) {
 			row.headers.insert(pos,stime);
 		}
 		Arrays.order(data.rows,function(a,b) {
+			$s.push("rg.pivottable.PivotTable::normalizeData@346");
+			var $spos = $s.length;
 			var ah = a.headers, bh = b.headers, c = Reflect.compare(ah[0],bh[0]), i = 1;
 			while(c == 0 && i < ah.length) c = Reflect.compare(ah[i],bh[i++]);
+			$s.pop();
 			return c;
+			$s.pop();
 		});
 		var _g = 0, _g1 = data.rows;
 		while(_g < _g1.length) {
@@ -6100,7 +10856,11 @@ rg.pivottable.PivotTable.prototype.normalizeData = function(src) {
 		}
 	}
 	var last = Ints.range(len).map(function(_,_1) {
+		$s.push("rg.pivottable.PivotTable::normalizeData@363");
+		var $spos = $s.length;
+		$s.pop();
 		return null;
+		$s.pop();
 	});
 	len = hastime?len - 1:len - 2;
 	var _g = 0, _g1 = data.rows;
@@ -6118,10 +10878,14 @@ rg.pivottable.PivotTable.prototype.normalizeData = function(src) {
 		var i = _g1++;
 		data.columns.averages[i] = data.columns.totals[i] / data.rows.length;
 	}
+	$s.pop();
 	return data;
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.wired = null;
 rg.pivottable.PivotTable.prototype._init = function() {
+	$s.push("rg.pivottable.PivotTable::_init");
+	var $spos = $s.length;
 	while(this.queryProperties.length < 3) this.queryProperties.push(rg.pivottable.QueryProperty.EmptyProperty);
 	this.container.node().innerHTML = rg.pivottable.PivotTable.buildContext(this.id);
 	if(this.wired != true) {
@@ -6129,21 +10893,31 @@ rg.pivottable.PivotTable.prototype._init = function() {
 		this.wireDateControls();
 	}
 	this.refreshQueryProperties();
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.setAvailableProperties = function(values) {
+	$s.push("rg.pivottable.PivotTable::setAvailableProperties");
+	var $spos = $s.length;
 	if(null == values) values = [];
 	this.availableProperties = values;
+	$s.pop();
 	return values;
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.refreshQueryProperties = function() {
+	$s.push("rg.pivottable.PivotTable::refreshQueryProperties");
+	var $spos = $s.length;
 	this.usedProperties = [];
 	var panel = this.container.select(".property-controls").selectAll("div.property-panel").data(this.queryProperties);
 	var p = panel.enter().append("div").attr("class").string("property-panel").html().stringf($closure(this,"buildPanel"));
 	p.select("select.property").onNode("change",$closure(this,"valueChanged"));
 	p.select("input.limit").onNode("change",$closure(this,"valueChanged"));
 	p.select("input.top").onNode("change",$closure(this,"valueChanged"));
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.periodicityChanged = function(d,i) {
+	$s.push("rg.pivottable.PivotTable::periodicityChanged");
+	var $spos = $s.length;
 	this.periodicity = thx.js.Dom.selectNode(d).property("value").get();
 	var _g1 = 0, _g = this.queryProperties.length;
 	while(_g1 < _g) {
@@ -6158,15 +10932,21 @@ rg.pivottable.PivotTable.prototype.periodicityChanged = function(d,i) {
 		}
 	}
 	this.query();
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.valueChanged = function(d,i) {
+	$s.push("rg.pivottable.PivotTable::valueChanged");
+	var $spos = $s.length;
 	var p = d.parentNode;
 	while(p.className != "property-panel") p = p.parentNode;
 	var parent = thx.js.Dom.selectNode(p);
 	this.updateQuery(parent,i);
 	this.query();
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.updateQuery = function(parent,i) {
+	$s.push("rg.pivottable.PivotTable::updateQuery");
+	var $spos = $s.length;
 	var name = parent.select("select.property").property("value").get();
 	var limitcontrol = parent.select("input.limit");
 	var asccontrol = parent.select("input.top");
@@ -6190,33 +10970,49 @@ rg.pivottable.PivotTable.prototype.updateQuery = function(parent,i) {
 	var timecontrolscontainer = this.container.select(".time-controls").style("display").string("none");
 	if(this.queryHasTimeProperty()) {
 		timecontrols.forEach(function(d,_) {
+			$s.push("rg.pivottable.PivotTable::updateQuery@504");
+			var $spos = $s.length;
 			d.attr("disabled").remove();
+			$s.pop();
 		});
 		timecontrolscontainer.style("display").string("block");
 	} else {
 		timecontrols.forEach(function(d,_) {
+			$s.push("rg.pivottable.PivotTable::updateQuery@507");
+			var $spos = $s.length;
 			d.attr("disabled").string("true");
+			$s.pop();
 		});
 		timecontrolscontainer.style("display").string("none");
 	}
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.buildPanel = function(p,i) {
+	$s.push("rg.pivottable.PivotTable::buildPanel");
+	var $spos = $s.length;
 	var $e = (p);
 	switch( $e[1] ) {
 	case 1:
 		var top = $e[3], periodicity = $e[2];
+		$s.pop();
 		return "time panel";
 	case 0:
 		var limit = $e[4], top = $e[3], name = $e[2];
-		return "value panel " + name;
+		var $tmp = "value panel " + name;
+		$s.pop();
+		return $tmp;
 	case 2:
 		var buf = "<div><select name=\"property\" class=\"property\">" + this.getOptionsString(i == 0) + "</select></div>";
 		buf += "<div>limit <input name=\"limit\" class=\"limit\" type=\"number\" step=\"1\" value=\"20\"/></div>";
 		buf += "<div>top <input name=\"top\" class=\"top\" type=\"checkbox\" checked/></div>";
+		$s.pop();
 		return buf;
 	}
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.getOptions = function(skiptime) {
+	$s.push("rg.pivottable.PivotTable::getOptions");
+	var $spos = $s.length;
 	var pairs = [{ value : null, label : "- select an option -"}];
 	var _g = 0, _g1 = this.availableProperties;
 	while(_g < _g1.length) {
@@ -6225,9 +11021,13 @@ rg.pivottable.PivotTable.prototype.getOptions = function(skiptime) {
 		pairs.push({ value : "." + p, label : p});
 	}
 	if(!skiptime) pairs.push({ value : "time", label : "time"});
+	$s.pop();
 	return pairs;
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.getOptionsString = function(skiptime) {
+	$s.push("rg.pivottable.PivotTable::getOptionsString");
+	var $spos = $s.length;
 	var buf = [];
 	var _g = 0, _g1 = this.getOptions(skiptime);
 	while(_g < _g1.length) {
@@ -6235,123 +11035,246 @@ rg.pivottable.PivotTable.prototype.getOptionsString = function(skiptime) {
 		++_g;
 		buf.push("<option value=\"" + (null == option.value?"":option.value) + "\">" + option.label + "</option>");
 	}
-	return buf.join("");
+	var $tmp = buf.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.wireDateControls = function() {
+	$s.push("rg.pivottable.PivotTable::wireDateControls");
+	var $spos = $s.length;
 	this.container.select("input.start-time").onNode("change",$closure(this,"startTimeChanged"));
 	this.container.select("input.end-time").onNode("change",$closure(this,"endTimeChanged"));
 	this.container.select("select.periodicity").onNode("change",$closure(this,"periodicityChanged"));
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.startTimeChanged = function(n,_) {
+	$s.push("rg.pivottable.PivotTable::startTimeChanged");
+	var $spos = $s.length;
 	var v = n.value;
 	if(v == "") this.start = null; else if(Dates.canParse(v)) this.start = Dates.parse(v); else {
 		haxe.Log.trace("unable to parse date",{ fileName : "PivotTable.hx", lineNumber : 578, className : "rg.pivottable.PivotTable", methodName : "startTimeChanged"});
+		$s.pop();
 		return;
 	}
 	this.query();
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.endTimeChanged = function(n,_) {
+	$s.push("rg.pivottable.PivotTable::endTimeChanged");
+	var $spos = $s.length;
 	var v = n.value;
 	if(v == "") this.end = null; else if(Dates.canParse(v)) this.end = Dates.parse(v); else {
 		haxe.Log.trace("unable to parse date",{ fileName : "PivotTable.hx", lineNumber : 594, className : "rg.pivottable.PivotTable", methodName : "endTimeChanged"});
+		$s.pop();
 		return;
 	}
 	this.query();
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype._loadProperties = function(v) {
+	$s.push("rg.pivottable.PivotTable::_loadProperties");
+	var $spos = $s.length;
 	this.setAvailableProperties(v);
 	this._init();
+	$s.pop();
 }
 rg.pivottable.PivotTable.prototype.__class__ = rg.pivottable.PivotTable;
 thx.math.scale.Linear = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.math.scale.Linear::new");
+	var $spos = $s.length;
 	thx.math.scale.NumericScale.call(this);
 	this.m = 10;
+	$s.pop();
 }
 thx.math.scale.Linear.__name__ = ["thx","math","scale","Linear"];
 thx.math.scale.Linear.__super__ = thx.math.scale.NumericScale;
 for(var k in thx.math.scale.NumericScale.prototype ) thx.math.scale.Linear.prototype[k] = thx.math.scale.NumericScale.prototype[k];
 thx.math.scale.Linear.prototype.m = null;
 thx.math.scale.Linear.prototype.getModulo = function() {
-	return this.m;
+	$s.push("thx.math.scale.Linear::getModulo");
+	var $spos = $s.length;
+	var $tmp = this.m;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.Linear.prototype.modulo = function(m) {
+	$s.push("thx.math.scale.Linear::modulo");
+	var $spos = $s.length;
 	this.m = m;
-	return this;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.Linear.prototype.tickRange = function() {
+	$s.push("thx.math.scale.Linear::tickRange");
+	var $spos = $s.length;
 	var start = Arrays.min(this._domain), stop = Arrays.max(this._domain), span = stop - start, step = Math.pow(10,Math.floor(Math.log(span / this.m) / 2.302585092994046)), err = this.m / (span / step);
 	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
-	return { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
+	var $tmp = { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.Linear.prototype.ticks = function() {
+	$s.push("thx.math.scale.Linear::ticks");
+	var $spos = $s.length;
 	var range = this.tickRange();
-	return Floats.range(range.start,range.stop,range.step);
+	var $tmp = Floats.range(range.start,range.stop,range.step);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.Linear.prototype.tickFormat = function(v,i) {
+	$s.push("thx.math.scale.Linear::tickFormat");
+	var $spos = $s.length;
 	var n = Math.max(0,-Math.floor(Math.log(this.tickRange().step) / 2.302585092994046 + .01));
-	return Floats.format(v,"D:" + n);
+	var $tmp = Floats.format(v,"D:" + n);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.Linear.prototype.__class__ = thx.math.scale.Linear;
 thx.math.scale.LinearTime = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.math.scale.LinearTime::new");
+	var $spos = $s.length;
 	thx.math.scale.Linear.call(this);
 	this._usetimeticks = false;
+	$s.pop();
 }
 thx.math.scale.LinearTime.__name__ = ["thx","math","scale","LinearTime"];
 thx.math.scale.LinearTime.__super__ = thx.math.scale.Linear;
 for(var k in thx.math.scale.Linear.prototype ) thx.math.scale.LinearTime.prototype[k] = thx.math.scale.Linear.prototype[k];
 thx.math.scale.LinearTime.guessPeriodicity = function(a,b,disc) {
+	$s.push("thx.math.scale.LinearTime::guessPeriodicity");
+	var $spos = $s.length;
 	if(disc == null) disc = 2;
 	var delta = Math.abs(b - a);
-	if(delta >= DateTools.days(365 * disc)) return "year"; else if(delta >= DateTools.days(30 * disc)) return "month"; else if(delta >= DateTools.days(7 * disc)) return "week"; else if(delta >= DateTools.days(disc)) return "day"; else if(delta >= DateTools.hours(disc)) return "hour"; else return "minute";
+	if(delta >= DateTools.days(365 * disc)) {
+		$s.pop();
+		return "year";
+	} else if(delta >= DateTools.days(30 * disc)) {
+		$s.pop();
+		return "month";
+	} else if(delta >= DateTools.days(7 * disc)) {
+		$s.pop();
+		return "week";
+	} else if(delta >= DateTools.days(disc)) {
+		$s.pop();
+		return "day";
+	} else if(delta >= DateTools.hours(disc)) {
+		$s.pop();
+		return "hour";
+	} else {
+		$s.pop();
+		return "minute";
+	}
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype._usetimeticks = null;
 thx.math.scale.LinearTime.prototype._periodicity = null;
 thx.math.scale.LinearTime.prototype.domain = function(d) {
+	$s.push("thx.math.scale.LinearTime::domain");
+	var $spos = $s.length;
 	thx.math.scale.Linear.prototype.domain.call(this,d);
 	this._periodicity = thx.math.scale.LinearTime.guessPeriodicity(d[0],d[1]);
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.getPeriodicity = function() {
-	return this._periodicity;
+	$s.push("thx.math.scale.LinearTime::getPeriodicity");
+	var $spos = $s.length;
+	var $tmp = this._periodicity;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.periodicity = function(v) {
+	$s.push("thx.math.scale.LinearTime::periodicity");
+	var $spos = $s.length;
 	v = v.toLowerCase();
 	if(!Arrays.exists(thx.math.scale.LinearTime.valids,v)) throw new thx.error.Error("invalid periodicity '{0}'",null,v,{ fileName : "LinearTime.hx", lineNumber : 56, className : "thx.math.scale.LinearTime", methodName : "periodicity"});
 	this._periodicity = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.tickFormat = function(v,i) {
+	$s.push("thx.math.scale.LinearTime::tickFormat");
+	var $spos = $s.length;
 	var d = Date.fromTime(v);
 	switch(this._periodicity) {
 	case "minute":
-		return thx.culture.FormatDate.timeShort(d);
+		var $tmp = thx.culture.FormatDate.timeShort(d);
+		$s.pop();
+		return $tmp;
 	case "hour":
-		return thx.culture.FormatDate.timeShort(d);
+		var $tmp = thx.culture.FormatDate.timeShort(d);
+		$s.pop();
+		return $tmp;
 	case "day":case "week":
-		return thx.culture.FormatDate.monthDay(d);
+		var $tmp = thx.culture.FormatDate.monthDay(d);
+		$s.pop();
+		return $tmp;
 	case "month":
-		return thx.culture.FormatDate.yearMonth(d);
+		var $tmp = thx.culture.FormatDate.yearMonth(d);
+		$s.pop();
+		return $tmp;
 	case "year":
-		return thx.culture.FormatDate.year(d);
+		var $tmp = thx.culture.FormatDate.year(d);
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 	return "invalid date periodicity";
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.getUseTimeTicks = function() {
-	return this._usetimeticks;
+	$s.push("thx.math.scale.LinearTime::getUseTimeTicks");
+	var $spos = $s.length;
+	var $tmp = this._usetimeticks;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.useTimeTicks = function(v) {
+	$s.push("thx.math.scale.LinearTime::useTimeTicks");
+	var $spos = $s.length;
 	this._usetimeticks = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.ticks = function() {
-	if(this._usetimeticks) return this.timeTicks(); else return this.linearTicks();
+	$s.push("thx.math.scale.LinearTime::ticks");
+	var $spos = $s.length;
+	if(this._usetimeticks) {
+		var $tmp = this.timeTicks();
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.linearTicks();
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.linearTicks = function() {
-	return thx.math.scale.Linear.prototype.ticks.call(this);
+	$s.push("thx.math.scale.LinearTime::linearTicks");
+	var $spos = $s.length;
+	var $tmp = thx.math.scale.Linear.prototype.ticks.call(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.timeTicks = function() {
+	$s.push("thx.math.scale.LinearTime::timeTicks");
+	var $spos = $s.length;
 	var start = Arrays.min(this._domain);
 	var stop = Arrays.max(this._domain);
 	var step = 0.0;
@@ -6379,6 +11302,7 @@ thx.math.scale.LinearTime.prototype.timeTicks = function() {
 			var d = Date.fromTime(start);
 			start = new Date(d.getFullYear(),d.getMonth() + 1,d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
 		}
+		$s.pop();
 		return range;
 	case "year":
 		var range = [];
@@ -6390,20 +11314,34 @@ thx.math.scale.LinearTime.prototype.timeTicks = function() {
 			var d = Date.fromTime(start);
 			start = new Date(d.getFullYear() + 1,d.getMonth(),d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
 		}
+		$s.pop();
 		return range;
 	}
 	start = Math.ceil(start / step) * step;
 	stop = Math.floor(stop / step) * step + step * .5;
-	return Floats.range(start,stop,step);
+	var $tmp = Floats.range(start,stop,step);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.scale.LinearTime.prototype.__class__ = thx.math.scale.LinearTime;
 if(!thx.text) thx.text = {}
 thx.text.ERegs = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
 thx.text.ERegs.escapeERegChars = function(s) {
-	return thx.text.ERegs._escapePattern.customReplace(s,function(e) {
-		return "\\" + e.matched(0);
+	$s.push("thx.text.ERegs::escapeERegChars");
+	var $spos = $s.length;
+	var $tmp = thx.text.ERegs._escapePattern.customReplace(s,function(e) {
+		$s.push("thx.text.ERegs::escapeERegChars@8");
+		var $spos = $s.length;
+		var $tmp = "\\" + e.matched(0);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.text.ERegs.prototype.__class__ = thx.text.ERegs;
 thx.culture.Language = function() { }
@@ -6412,22 +11350,42 @@ thx.culture.Language.__super__ = thx.culture.Info;
 for(var k in thx.culture.Info.prototype ) thx.culture.Language.prototype[k] = thx.culture.Info.prototype[k];
 thx.culture.Language.languages = null;
 thx.culture.Language.getLanguages = function() {
+	$s.push("thx.culture.Language::getLanguages");
+	var $spos = $s.length;
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
-	return thx.culture.Language.languages;
+	var $tmp = thx.culture.Language.languages;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Language.get = function(name) {
-	return thx.culture.Language.getLanguages().get(name.toLowerCase());
+	$s.push("thx.culture.Language::get");
+	var $spos = $s.length;
+	var $tmp = thx.culture.Language.getLanguages().get(name.toLowerCase());
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Language.names = function() {
-	return thx.culture.Language.getLanguages().keys();
+	$s.push("thx.culture.Language::names");
+	var $spos = $s.length;
+	var $tmp = thx.culture.Language.getLanguages().keys();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.Language.add = function(language) {
+	$s.push("thx.culture.Language::add");
+	var $spos = $s.length;
 	if(!thx.culture.Language.getLanguages().exists(language.iso2)) thx.culture.Language.getLanguages().set(language.iso2,language);
+	$s.pop();
 }
 thx.culture.Language.prototype.__class__ = thx.culture.Language;
 if(!thx.languages) thx.languages = {}
 thx.languages.En = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.languages.En::new");
+	var $spos = $s.length;
 	this.name = "en";
 	this.english = "English";
 	this["native"] = "English";
@@ -6435,46 +11393,225 @@ thx.languages.En = function(p) {
 	this.iso3 = "eng";
 	this.pluralRule = 1;
 	thx.culture.Language.add(this);
+	$s.pop();
 }
 thx.languages.En.__name__ = ["thx","languages","En"];
 thx.languages.En.__super__ = thx.culture.Language;
 for(var k in thx.culture.Language.prototype ) thx.languages.En.prototype[k] = thx.culture.Language.prototype[k];
 thx.languages.En.language = null;
 thx.languages.En.getLanguage = function() {
+	$s.push("thx.languages.En::getLanguage");
+	var $spos = $s.length;
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
-	return thx.languages.En.language;
+	var $tmp = thx.languages.En.language;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.languages.En.prototype.__class__ = thx.languages.En;
+rg.svg.SvgTitle = function(panel,text,anchor,padding,className) {
+	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgTitle::new");
+	var $spos = $s.length;
+	if(className == null) className = "title";
+	if(padding == null) padding = 1;
+	rg.svg.SvgLayer.call(this,panel);
+	this.setText(text);
+	this.setAnchor(anchor);
+	this.setPadding(padding);
+	this.setClassName(className);
+	$s.pop();
+}
+rg.svg.SvgTitle.__name__ = ["rg","svg","SvgTitle"];
+rg.svg.SvgTitle.__super__ = rg.svg.SvgLayer;
+for(var k in rg.svg.SvgLayer.prototype ) rg.svg.SvgTitle.prototype[k] = rg.svg.SvgLayer.prototype[k];
+rg.svg.SvgTitle.prototype.text = null;
+rg.svg.SvgTitle.prototype.anchor = null;
+rg.svg.SvgTitle.prototype.padding = null;
+rg.svg.SvgTitle.prototype.className = null;
+rg.svg.SvgTitle.prototype._text = null;
+rg.svg.SvgTitle.prototype._gtext = null;
+rg.svg.SvgTitle.prototype.init = function() {
+	$s.push("rg.svg.SvgTitle::init");
+	var $spos = $s.length;
+	this._gtext = this.svg.append("svg:g");
+	this._text = this._gtext.append("svg:text").attr("class").string(this.className).attr("text-anchor").string("middle");
+	$s.pop();
+}
+rg.svg.SvgTitle.prototype.redraw = function() {
+	$s.push("rg.svg.SvgTitle::redraw");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.svg.SvgTitle.prototype.resize = function() {
+	$s.push("rg.svg.SvgTitle::resize");
+	var $spos = $s.length;
+	if(null == this._text || null == this.anchor || null == this.width || this.padding == null) {
+		$s.pop();
+		return;
+	}
+	switch( (this.anchor)[1] ) {
+	case 0:
+		this._text.attr("transform").string("rotate(0)").attr("dominant-baseline").string("hanging");
+		this._gtext.attr("transform").string("translate(" + this.width / 2 + "," + this.padding + ")");
+		break;
+	case 3:
+		this._text.attr("transform").string("rotate(-90)").attr("dominant-baseline").string("baseline");
+		this._gtext.attr("transform").string("translate(" + (this.width - this.padding) + "," + this.height / 2 + ")");
+		break;
+	case 2:
+		this._text.attr("transform").string("rotate(90)").attr("dominant-baseline").string("baseline");
+		this._gtext.attr("transform").string("translate(" + this.padding + "," + this.height / 2 + ")");
+		break;
+	case 1:
+		this._text.attr("transform").string("rotate(0)").attr("dominant-baseline").string("baseline");
+		this._gtext.attr("transform").string("translate(" + this.width / 2 + "," + (this.height - this.padding) + ")");
+		break;
+	}
+	$s.pop();
+}
+rg.svg.SvgTitle.prototype.setText = function(v) {
+	$s.push("rg.svg.SvgTitle::setText");
+	var $spos = $s.length;
+	this.text = v;
+	if(null != this._text) this._text.text().string(this.text);
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.svg.SvgTitle.prototype.setClassName = function(v) {
+	$s.push("rg.svg.SvgTitle::setClassName");
+	var $spos = $s.length;
+	this.className = v;
+	if(null != this._text) this._text.attr("class").string(v);
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.svg.SvgTitle.prototype.setAnchor = function(v) {
+	$s.push("rg.svg.SvgTitle::setAnchor");
+	var $spos = $s.length;
+	this.anchor = v;
+	this.resize();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.svg.SvgTitle.prototype.setPadding = function(v) {
+	$s.push("rg.svg.SvgTitle::setPadding");
+	var $spos = $s.length;
+	this.padding = v;
+	this.resize();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.svg.SvgTitle.prototype.__class__ = rg.svg.SvgTitle;
+thx.svg.LineInterpolators = function() { }
+thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
+thx.svg.LineInterpolators.parse = function(s,sep) {
+	$s.push("thx.svg.LineInterpolators::parse");
+	var $spos = $s.length;
+	if(sep == null) sep = "-";
+	var interp = s.split(sep)[0].toLowerCase();
+	var $tmp = (function($this) {
+		var $r;
+		switch(interp) {
+		case "basis":
+			$r = thx.svg.LineInterpolator.Basis;
+			break;
+		case "basisopen":
+			$r = thx.svg.LineInterpolator.BasisOpen;
+			break;
+		case "basisclosed":
+			$r = thx.svg.LineInterpolator.BasisClosed;
+			break;
+		case "cardinal":
+			$r = thx.svg.LineInterpolator.Cardinal(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "cardinalopen":
+			$r = thx.svg.LineInterpolator.CardinalOpen(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "cardinalclosed":
+			$r = thx.svg.LineInterpolator.CardinalClosed(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "monotone":
+			$r = thx.svg.LineInterpolator.Monotone;
+			break;
+		case "stepafter":
+			$r = thx.svg.LineInterpolator.StepAfter;
+			break;
+		case "stepbefore":
+			$r = thx.svg.LineInterpolator.StepBefore;
+			break;
+		default:
+			$r = thx.svg.LineInterpolator.Linear;
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.LineInterpolators.argument = function(s) {
+	$s.push("thx.svg.LineInterpolators::argument");
+	var $spos = $s.length;
+	var v = s.split("-")[1];
+	if(null == v) {
+		$s.pop();
+		return null;
+	} else {
+		var $tmp = Std.parseFloat(v);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.svg.LineInterpolators.prototype.__class__ = thx.svg.LineInterpolators;
 Lambda = function() { }
 Lambda.__name__ = ["Lambda"];
 Lambda.array = function(it) {
+	$s.push("Lambda::array");
+	var $spos = $s.length;
 	var a = new Array();
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var i = $it0.next();
 		a.push(i);
 	}
+	$s.pop();
 	return a;
+	$s.pop();
 }
 Lambda.list = function(it) {
+	$s.push("Lambda::list");
+	var $spos = $s.length;
 	var l = new List();
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var i = $it0.next();
 		l.add(i);
 	}
+	$s.pop();
 	return l;
+	$s.pop();
 }
 Lambda.map = function(it,f) {
+	$s.push("Lambda::map");
+	var $spos = $s.length;
 	var l = new List();
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var x = $it0.next();
 		l.add(f(x));
 	}
+	$s.pop();
 	return l;
+	$s.pop();
 }
 Lambda.mapi = function(it,f) {
+	$s.push("Lambda::mapi");
+	var $spos = $s.length;
 	var l = new List();
 	var i = 0;
 	var $it0 = it.iterator();
@@ -6482,65 +11619,104 @@ Lambda.mapi = function(it,f) {
 		var x = $it0.next();
 		l.add(f(i++,x));
 	}
+	$s.pop();
 	return l;
+	$s.pop();
 }
 Lambda.has = function(it,elt,cmp) {
+	$s.push("Lambda::has");
+	var $spos = $s.length;
 	if(cmp == null) {
 		var $it0 = it.iterator();
 		while( $it0.hasNext() ) {
 			var x = $it0.next();
-			if(x == elt) return true;
+			if(x == elt) {
+				$s.pop();
+				return true;
+			}
 		}
 	} else {
 		var $it1 = it.iterator();
 		while( $it1.hasNext() ) {
 			var x = $it1.next();
-			if(cmp(x,elt)) return true;
+			if(cmp(x,elt)) {
+				$s.pop();
+				return true;
+			}
 		}
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 Lambda.exists = function(it,f) {
+	$s.push("Lambda::exists");
+	var $spos = $s.length;
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var x = $it0.next();
-		if(f(x)) return true;
+		if(f(x)) {
+			$s.pop();
+			return true;
+		}
 	}
+	$s.pop();
 	return false;
+	$s.pop();
 }
 Lambda.foreach = function(it,f) {
+	$s.push("Lambda::foreach");
+	var $spos = $s.length;
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var x = $it0.next();
-		if(!f(x)) return false;
+		if(!f(x)) {
+			$s.pop();
+			return false;
+		}
 	}
+	$s.pop();
 	return true;
+	$s.pop();
 }
 Lambda.iter = function(it,f) {
+	$s.push("Lambda::iter");
+	var $spos = $s.length;
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var x = $it0.next();
 		f(x);
 	}
+	$s.pop();
 }
 Lambda.filter = function(it,f) {
+	$s.push("Lambda::filter");
+	var $spos = $s.length;
 	var l = new List();
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var x = $it0.next();
 		if(f(x)) l.add(x);
 	}
+	$s.pop();
 	return l;
+	$s.pop();
 }
 Lambda.fold = function(it,f,first) {
+	$s.push("Lambda::fold");
+	var $spos = $s.length;
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var x = $it0.next();
 		first = f(x,first);
 	}
+	$s.pop();
 	return first;
+	$s.pop();
 }
 Lambda.count = function(it,pred) {
+	$s.push("Lambda::count");
+	var $spos = $s.length;
 	var n = 0;
 	if(pred == null) {
 		var $it0 = it.iterator();
@@ -6555,22 +11731,38 @@ Lambda.count = function(it,pred) {
 			if(pred(x)) n++;
 		}
 	}
+	$s.pop();
 	return n;
+	$s.pop();
 }
 Lambda.empty = function(it) {
-	return !it.iterator().hasNext();
+	$s.push("Lambda::empty");
+	var $spos = $s.length;
+	var $tmp = !it.iterator().hasNext();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Lambda.indexOf = function(it,v) {
+	$s.push("Lambda::indexOf");
+	var $spos = $s.length;
 	var i = 0;
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
 		var v2 = $it0.next();
-		if(v == v2) return i;
+		if(v == v2) {
+			$s.pop();
+			return i;
+		}
 		i++;
 	}
+	$s.pop();
 	return -1;
+	$s.pop();
 }
 Lambda.concat = function(a,b) {
+	$s.push("Lambda::concat");
+	var $spos = $s.length;
 	var l = new List();
 	var $it0 = a.iterator();
 	while( $it0.hasNext() ) {
@@ -6582,20 +11774,28 @@ Lambda.concat = function(a,b) {
 		var x = $it1.next();
 		l.add(x);
 	}
+	$s.pop();
 	return l;
+	$s.pop();
 }
 Lambda.prototype.__class__ = Lambda;
 thx.svg.LineInternals = function() { }
 thx.svg.LineInternals.__name__ = ["thx","svg","LineInternals"];
 thx.svg.LineInternals.linePoints = function(data,x,y) {
+	$s.push("thx.svg.LineInternals::linePoints");
+	var $spos = $s.length;
 	var points = [], i = -1, n = data.length, fx = null != x, fy = null != y, value;
 	while(++i < n) {
 		value = data[i];
 		points.push([x(value,i),y(value,i)]);
 	}
+	$s.pop();
 	return points;
+	$s.pop();
 }
 thx.svg.LineInternals.interpolatePoints = function(points,type) {
+	$s.push("thx.svg.LineInternals::interpolatePoints");
+	var $spos = $s.length;
 	if(null == type) type = thx.svg.LineInterpolator.Linear;
 	var path = [], i = 0, n = points.length, p = points[0];
 	var $e = (type);
@@ -6622,7 +11822,11 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 		}
 		break;
 	case 3:
-		if(points.length < 3) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
+		if(points.length < 3) {
+			var $tmp = thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
+			$s.pop();
+			return $tmp;
+		}
 		i = 1;
 		var x0 = p[0], y0 = p[1], px = [x0,x0,x0,(p = points[1])[0]], py = [y0,y0,y0,p[1]];
 		path.push(x0 + "," + y0);
@@ -6645,7 +11849,11 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 		}
 		break;
 	case 4:
-		if(points.length < 4) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
+		if(points.length < 4) {
+			var $tmp = thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
+			$s.pop();
+			return $tmp;
+		}
 		i = -1;
 		var pi, px = [0.0], py = [0.0];
 		while(++i < 3) {
@@ -6686,36 +11894,72 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 	case 6:
 		var tension = $e[2];
 		if(null == tension) tension = .7;
-		if(points.length < 3) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear); else return points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents(points,tension));
+		if(points.length < 3) {
+			var $tmp = thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
+			$s.pop();
+			return $tmp;
+		} else {
+			var $tmp = points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents(points,tension));
+			$s.pop();
+			return $tmp;
+		}
 		break;
 	case 7:
 		var tension = $e[2];
-		return points.length < 4?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[1][0] + "," + points[1][1] + thx.svg.LineInternals._lineCardinalTangents(points,tension);
+		var $tmp = points.length < 4?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[1][0] + "," + points[1][1] + thx.svg.LineInternals._lineCardinalTangents(points,tension);
+		$s.pop();
+		return $tmp;
 	case 8:
 		var tension = $e[2];
 		if(null == tension) tension = .7;
-		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents([points[points.length - 2]].concat(points).concat([points[1]]),tension));
+		var $tmp = points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents([points[points.length - 2]].concat(points).concat([points[1]]),tension));
+		$s.pop();
+		return $tmp;
 	case 9:
-		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
+		var $tmp = points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
+		$s.pop();
+		return $tmp;
 	}
-	return path.join("");
+	var $tmp = path.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.LineInternals._lineDot4 = function(a,b) {
-	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+	$s.push("thx.svg.LineInternals::_lineDot4");
+	var $spos = $s.length;
+	var $tmp = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.LineInternals._lineBasisBezier = function(path,x,y) {
+	$s.push("thx.svg.LineInternals::_lineBasisBezier");
+	var $spos = $s.length;
 	path.push("C" + thx.svg.LineInternals._lineDot4(thx.svg.LineInternals._lineBasisBezier1,x) + "," + thx.svg.LineInternals._lineDot4(thx.svg.LineInternals._lineBasisBezier1,y) + "," + thx.svg.LineInternals._lineDot4(thx.svg.LineInternals._lineBasisBezier2,x) + "," + thx.svg.LineInternals._lineDot4(thx.svg.LineInternals._lineBasisBezier2,y) + "," + thx.svg.LineInternals._lineDot4(thx.svg.LineInternals._lineBasisBezier3,x) + "," + thx.svg.LineInternals._lineDot4(thx.svg.LineInternals._lineBasisBezier3,y));
+	$s.pop();
 }
 thx.svg.LineInternals._lineSlope = function(p0,p1) {
-	return (p1[1] - p0[1]) / (p1[0] - p0[0]);
+	$s.push("thx.svg.LineInternals::_lineSlope");
+	var $spos = $s.length;
+	var $tmp = (p1[1] - p0[1]) / (p1[0] - p0[0]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.LineInternals._lineFiniteDifferences = function(points) {
+	$s.push("thx.svg.LineInternals::_lineFiniteDifferences");
+	var $spos = $s.length;
 	var i = 0, j = points.length - 1, m = [], p0 = points[0], p1 = points[1], d = m[0] = thx.svg.LineInternals._lineSlope(p0,p1);
 	while(++i < j) m[i] = d + (d = thx.svg.LineInternals._lineSlope(p0 = p1,p1 = points[i + 1]));
 	m[i] = d;
+	$s.pop();
 	return m;
+	$s.pop();
 }
 thx.svg.LineInternals._lineMonotoneTangents = function(points) {
+	$s.push("thx.svg.LineInternals::_lineMonotoneTangents");
+	var $spos = $s.length;
 	var tangents = [], d, a, b, s, m = thx.svg.LineInternals._lineFiniteDifferences(points), i = -1, j = points.length - 1;
 	while(++i < j) {
 		d = thx.svg.LineInternals._lineSlope(points[i],points[i + 1]);
@@ -6735,10 +11979,18 @@ thx.svg.LineInternals._lineMonotoneTangents = function(points) {
 		s = (points[Ints.min(j,i + 1)][0] - points[Ints.max(0,i - 1)][0]) / (6 * (1 + m[i] * m[i]));
 		tangents.push([Math.isFinite(s)?s:0,Math.isFinite(s = m[i] * s)?s:0]);
 	}
+	$s.pop();
 	return tangents;
+	$s.pop();
 }
 thx.svg.LineInternals._lineHermite = function(points,tangents) {
-	if(tangents.length < 1 || points.length != tangents.length && points.length != tangents.length + 2) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
+	$s.push("thx.svg.LineInternals::_lineHermite");
+	var $spos = $s.length;
+	if(tangents.length < 1 || points.length != tangents.length && points.length != tangents.length + 2) {
+		var $tmp = thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
+		$s.pop();
+		return $tmp;
+	}
 	var quad = points.length != tangents.length, path = "", p0 = points[0], p = points[1], t0 = tangents[0], t = t0, pi = 1;
 	if(quad) {
 		path += "Q" + (p[0] - t0[0] * 2 / 3) + "," + (p[1] - t0[1] * 2 / 3) + "," + p[0] + "," + p[1];
@@ -6763,9 +12015,13 @@ thx.svg.LineInternals._lineHermite = function(points,tangents) {
 		var lp = points[pi];
 		path += "Q" + (p[0] + t[0] * 2 / 3) + "," + (p[1] + t[1] * 2 / 3) + "," + lp[0] + "," + lp[1];
 	}
+	$s.pop();
 	return path;
+	$s.pop();
 }
 thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
+	$s.push("thx.svg.LineInternals::_lineCardinalTangents");
+	var $spos = $s.length;
 	var tangents = [], a = (1 - tension) / 2, p0 = points[0], p1 = points[1], p2 = points[2], i = 2, n = points.length;
 	while(++i < n) {
 		tangents.push([a * (p2[0] - p0[0]),a * (p2[1] - p0[1])]);
@@ -6774,14 +12030,19 @@ thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
 		p2 = points[i];
 	}
 	tangents.push([a * (p2[0] - p0[0]),a * (p2[1] - p0[1])]);
+	$s.pop();
 	return tangents;
+	$s.pop();
 }
 thx.svg.LineInternals.prototype.__class__ = thx.svg.LineInternals;
 rg.svg.SvgStreamGraph = function(panel,xscale) {
 	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgStreamGraph::new");
+	var $spos = $s.length;
 	this._cpid = "streamchart_clip_path_" + ++rg.svg.SvgStreamGraph._pathid;
 	rg.svg.SvgLayer.call(this,panel);
 	this._scalex = xscale;
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.__name__ = ["rg","svg","SvgStreamGraph"];
 rg.svg.SvgStreamGraph.__super__ = rg.svg.SvgLayer;
@@ -6793,26 +12054,43 @@ rg.svg.SvgStreamGraph.prototype._cpid = null;
 rg.svg.SvgStreamGraph.prototype._interpolator = null;
 rg.svg.SvgStreamGraph.prototype._area = null;
 rg.svg.SvgStreamGraph.prototype.destroy = function() {
+	$s.push("rg.svg.SvgStreamGraph::destroy");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype.init = function() {
+	$s.push("rg.svg.SvgStreamGraph::init");
+	var $spos = $s.length;
 	this.svg.classed().add("stream-chart").append("svg:clipPath").attr("id").string(this._cpid).append("svg:rect").attr("x")["float"](0).attr("y")["float"](0).attr("width")["float"](0).attr("height")["float"](0);
 	this.svg.attr("clip-path").string("url(#" + this._cpid + ")");
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype.lineInterpolator = function(interpolator) {
+	$s.push("rg.svg.SvgStreamGraph::lineInterpolator");
+	var $spos = $s.length;
 	this._interpolator = interpolator;
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype._redrawn = null;
 rg.svg.SvgStreamGraph.prototype.redraw = function() {
+	$s.push("rg.svg.SvgStreamGraph::redraw");
+	var $spos = $s.length;
 	this._redraw();
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype.data = function(d) {
+	$s.push("rg.svg.SvgStreamGraph::data");
+	var $spos = $s.length;
 	this._data = d;
 	this._prepareData();
 	this._redraw();
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype._h = null;
 rg.svg.SvgStreamGraph.prototype._w = null;
 rg.svg.SvgStreamGraph.prototype._prepareData = function() {
+	$s.push("rg.svg.SvgStreamGraph::_prepareData");
+	var $spos = $s.length;
 	this._prepdata = new thx.geom.layout.Stack().offset(thx.geom.layout.StackOffset.Wiggle).stack(this._data.copy());
 	var domx = this._scalex.getDomain();
 	var minx = Arrays.min(domx);
@@ -6820,34 +12098,77 @@ rg.svg.SvgStreamGraph.prototype._prepareData = function() {
 	var h = this._h = this.panel.frame.height;
 	var w = this._w = this.panel.frame.width;
 	var mx = this._prepdata[0].length, my = Arrays.floatMax(this._prepdata,function(d) {
-		return Arrays.floatMax(d,function(d1) {
-			return d1.y0 + d1.y;
+		$s.push("rg.svg.SvgStreamGraph::_prepareData@84");
+		var $spos = $s.length;
+		var $tmp = Arrays.floatMax(d,function(d1) {
+			$s.push("rg.svg.SvgStreamGraph::_prepareData@84@85");
+			var $spos = $s.length;
+			var $tmp = d1.y0 + d1.y;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}) * 1.1;
 	var sx = $closure(this._scalex,"scale");
 	this._area = new thx.svg.Area().interpolator(this._interpolator).x(function(d,i) {
-		return sx(d.x);
+		$s.push("rg.svg.SvgStreamGraph::_prepareData@94");
+		var $spos = $s.length;
+		var $tmp = sx(d.x);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).y0(function(d,i) {
-		return h - d.y0 * h / my;
+		$s.push("rg.svg.SvgStreamGraph::_prepareData@95");
+		var $spos = $s.length;
+		var $tmp = h - d.y0 * h / my;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).y1(function(d,i) {
-		return h - (d.y + d.y0) * h / my;
+		$s.push("rg.svg.SvgStreamGraph::_prepareData@96");
+		var $spos = $s.length;
+		var $tmp = h - (d.y + d.y0) * h / my;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype._transition = function() {
+	$s.push("rg.svg.SvgStreamGraph::_transition");
+	var $spos = $s.length;
 	var layer = this.svg.selectAll("g.group").data(this._prepdata);
 	layer.update().select("path.line").transition().attr("d").stringf($closure(this._area,"shape"));
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype._over = null;
 rg.svg.SvgStreamGraph.prototype.over = function(n,i) {
-	if(null == this._over) return;
+	$s.push("rg.svg.SvgStreamGraph::over");
+	var $spos = $s.length;
+	if(null == this._over) {
+		$s.pop();
+		return;
+	}
 	this._over(this.getDataAtNode(n),i);
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype._out = null;
 rg.svg.SvgStreamGraph.prototype.out = function(n,i) {
-	if(null == this._out) return;
+	$s.push("rg.svg.SvgStreamGraph::out");
+	var $spos = $s.length;
+	if(null == this._out) {
+		$s.pop();
+		return;
+	}
 	this._out(this.getDataAtNode(n),i);
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype.getDataAtNode = function(n) {
+	$s.push("rg.svg.SvgStreamGraph::getDataAtNode");
+	var $spos = $s.length;
 	var time = this._scalex.invert(thx.js.Svg.mouse(n)[0]);
 	var data = Reflect.field(n,"__data__");
 	var delta = Math.POSITIVE_INFINITY, pos = 0, v = Math.abs(time - data[0].x);
@@ -6855,35 +12176,67 @@ rg.svg.SvgStreamGraph.prototype.getDataAtNode = function(n) {
 		delta = v;
 		v = Math.abs(time - data[++pos].x);
 	}
-	return data[pos - 1];
+	var $tmp = data[pos - 1];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype.setTooltip = function(over,out) {
+	$s.push("rg.svg.SvgStreamGraph::setTooltip");
+	var $spos = $s.length;
 	this._over = over;
 	this._out = out;
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype._redraw = function() {
+	$s.push("rg.svg.SvgStreamGraph::_redraw");
+	var $spos = $s.length;
 	this.svg.select("#" + this._cpid + " rect").attr("width")["float"](this._w).attr("height")["float"](this._h);
 	var layer = this.svg.selectAll("g.group").data(this._prepdata,function(d,i) {
-		return "" + i;
+		$s.push("rg.svg.SvgStreamGraph::_redraw@158");
+		var $spos = $s.length;
+		var $tmp = "" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	layer.update().select("path.line").attr("d").stringf($closure(this._area,"shape"));
 	layer.enter().append("svg:g").attr("class").stringf(function(d,i) {
-		return "group group-" + i;
+		$s.push("rg.svg.SvgStreamGraph::_redraw@166");
+		var $spos = $s.length;
+		var $tmp = "group group-" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).onNode("mousemove",$closure(this,"over")).onNode("mouseout",$closure(this,"out")).append("svg:path").attr("class").string("line").attr("d").stringf($closure(this._area,"shape"));
 	layer.exit().remove();
+	$s.pop();
 }
 rg.svg.SvgStreamGraph.prototype.__class__ = rg.svg.SvgStreamGraph;
 rg.chart.BaseChart = function(container,loader,options) {
 	if( container === $_ ) return;
+	$s.push("rg.chart.BaseChart::new");
+	var $spos = $s.length;
 	this.container = container;
 	this.loader = loader;
 	loader.onChange.add($closure(this,"onData"));
 	this.layers = [];
 	this.initOptions(options,(function(f,a1) {
-		return function() {
-			return f(a1);
+		$s.push("rg.chart.BaseChart::new@56");
+		var $spos = $s.length;
+		var $tmp = function() {
+			$s.push("rg.chart.BaseChart::new@56@56");
+			var $spos = $s.length;
+			var $tmp = f(a1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	})($closure(this,"init"),options));
+	$s.pop();
 }
 rg.chart.BaseChart.__name__ = ["rg","chart","BaseChart"];
 rg.chart.BaseChart.prototype.container = null;
@@ -6904,28 +12257,53 @@ rg.chart.BaseChart.prototype.startdata = null;
 rg.chart.BaseChart.prototype.end = null;
 rg.chart.BaseChart.prototype.loader = null;
 rg.chart.BaseChart.prototype.onData = function(v) {
+	$s.push("rg.chart.BaseChart::onData");
+	var $spos = $s.length;
 	haxe.Log.trace("data is here",{ fileName : "BaseChart.hx", lineNumber : 61, className : "rg.chart.BaseChart", methodName : "onData"});
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.onAnimationStep = function() {
+	$s.push("rg.chart.BaseChart::onAnimationStep");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.onDataStep = function() {
+	$s.push("rg.chart.BaseChart::onDataStep");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype._lastanimation = null;
 rg.chart.BaseChart.prototype._lastdata = null;
 rg.chart.BaseChart.prototype._stepanimation = function(t) {
-	if(t - this._lastanimation < this.timerAnimationUpdate) return false;
+	$s.push("rg.chart.BaseChart::_stepanimation");
+	var $spos = $s.length;
+	if(t - this._lastanimation < this.timerAnimationUpdate) {
+		$s.pop();
+		return false;
+	}
 	this._lastanimation = t;
 	this.updateTimeDomain();
 	this.onAnimationStep();
+	$s.pop();
 	return false;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype._stepdata = function(t) {
-	if(t - this._lastdata < this.timerDataUpdate) return false;
+	$s.push("rg.chart.BaseChart::_stepdata");
+	var $spos = $s.length;
+	if(t - this._lastdata < this.timerDataUpdate) {
+		$s.pop();
+		return false;
+	}
 	this._lastdata = t;
 	this.onDataStep();
+	$s.pop();
 	return false;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.init = function(options) {
+	$s.push("rg.chart.BaseChart::init");
+	var $spos = $s.length;
 	this.updateTimeDomain();
 	this.initScales(options);
 	this.initSpace(options);
@@ -6939,15 +12317,24 @@ rg.chart.BaseChart.prototype.init = function(options) {
 		this._lastdata = 0.0;
 		thx.js.Timer.timer($closure(this,"_stepdata"),this.timerDataUpdate);
 	}
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.initScales = function(options) {
+	$s.push("rg.chart.BaseChart::initScales");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.initQuery = function(q) {
+	$s.push("rg.chart.BaseChart::initQuery");
+	var $spos = $s.length;
 	this.query.event = q.event;
 	this.query.path = q.path;
 	this.query.property = q.property;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.initOptions = function(options,handler) {
+	$s.push("rg.chart.BaseChart::initOptions");
+	var $spos = $s.length;
 	this.width = options.width;
 	this.height = options.height;
 	options.animated;
@@ -6981,34 +12368,59 @@ rg.chart.BaseChart.prototype.initOptions = function(options,handler) {
 		return $r;
 	}(this));
 	if(null == this.query.values) rg.js.ReportGrid.propertyValues(this.query.path,{ property : this.query.event + "." + this.query.property},(function(f,a1) {
-		return function(a2) {
-			return f(a1,a2);
+		$s.push("rg.chart.BaseChart::initOptions@154");
+		var $spos = $s.length;
+		var $tmp = function(a2) {
+			$s.push("rg.chart.BaseChart::initOptions@154@154");
+			var $spos = $s.length;
+			var $tmp = f(a1,a2);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	})($closure(this,"loadProperties"),handler)); else handler();
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.loadProperties = function(handler,data) {
+	$s.push("rg.chart.BaseChart::loadProperties");
+	var $spos = $s.length;
 	this.query.values = data;
 	handler();
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.initSpace = function(options) {
+	$s.push("rg.chart.BaseChart::initSpace");
+	var $spos = $s.length;
 	this.space = new rg.svg.SvgSpace3x3(this.width,this.height,this.container,0);
 	this.space.svg.attr("class").string("rg");
 	this.space.setLeft(this.scalePanel(this.space.left,rg.svg.Anchor.Right,this.y,options.left));
 	this.space.setRight(this.scalePanel(this.space.right,rg.svg.Anchor.Left,this.y,options.right));
 	this.space.setTop(this.scalePanel(this.space.top,rg.svg.Anchor.Bottom,this.x,options.top));
 	this.space.setBottom(this.scalePanel(this.space.bottom,rg.svg.Anchor.Top,this.x,options.bottom));
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.initChart = function(options) {
+	$s.push("rg.chart.BaseChart::initChart");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.refresh = function() {
+	$s.push("rg.chart.BaseChart::refresh");
+	var $spos = $s.length;
 	var _g = 0, _g1 = this.layers;
 	while(_g < _g1.length) {
 		var layer = _g1[_g];
 		++_g;
 		layer.redraw();
 	}
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.scalePanel = function(panel,anchor,scale,options) {
+	$s.push("rg.chart.BaseChart::scalePanel");
+	var $spos = $s.length;
 	var len = 0;
 	if(options.ticks) {
 		var tick = rg.svg.SvgScaleTick.ofLinear(panel,anchor,scale);
@@ -7023,18 +12435,26 @@ rg.chart.BaseChart.prototype.scalePanel = function(panel,anchor,scale,options) {
 		this.layers.push(label);
 		len += options.labellength;
 	}
+	$s.pop();
 	return len;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.updateTimeDomain = function() {
+	$s.push("rg.chart.BaseChart::updateTimeDomain");
+	var $spos = $s.length;
 	var now = Date.now().getTime();
 	this.start = now - 900000;
 	this.startdata = now - 960000;
 	this.end = now - 60000 * .5;
+	$s.pop();
 }
 rg.chart.BaseChart.prototype.__class__ = rg.chart.BaseChart;
 rg.chart.StreamGraph = function(container,loader,options) {
 	if( container === $_ ) return;
+	$s.push("rg.chart.StreamGraph::new");
+	var $spos = $s.length;
 	rg.chart.BaseChart.call(this,container,loader,options);
+	$s.pop();
 }
 rg.chart.StreamGraph.__name__ = ["rg","chart","StreamGraph"];
 rg.chart.StreamGraph.__super__ = rg.chart.BaseChart;
@@ -7044,17 +12464,28 @@ rg.chart.StreamGraph.prototype.xtime = null;
 rg.chart.StreamGraph.prototype.chart = null;
 rg.chart.StreamGraph.prototype.loading = null;
 rg.chart.StreamGraph.prototype.initScales = function(options) {
+	$s.push("rg.chart.StreamGraph::initScales");
+	var $spos = $s.length;
 	this.x = this.xtime = new thx.math.scale.LinearTime();
 	this.x.range([0.0,this.width]);
 	this.currentMax = 1.0;
 	this.loading = false;
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.onAnimationStep = function() {
+	$s.push("rg.chart.StreamGraph::onAnimationStep");
+	var $spos = $s.length;
 	this.x.domain([this.start,this.end]);
 	this.refresh();
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.onDataStep = function() {
-	if(this.loading) return;
+	$s.push("rg.chart.StreamGraph::onDataStep");
+	var $spos = $s.length;
+	if(this.loading) {
+		$s.pop();
+		return;
+	}
 	this.collectedData = [];
 	this.seriesCount = 0;
 	this.loading = true;
@@ -7063,13 +12494,26 @@ rg.chart.StreamGraph.prototype.onDataStep = function() {
 		var i = _g1++;
 		var o = { start : this.startdata, end : this.end, periodicity : "minute", property : this.query.event + "." + this.query.property, value : this.query.values[i]};
 		rg.js.ReportGrid.propertyValueSeries(this.query.path,o,(function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
+			$s.push("rg.chart.StreamGraph::onDataStep@49");
+			var $spos = $s.length;
+			var $tmp = function(a2) {
+				$s.push("rg.chart.StreamGraph::onDataStep@49@49");
+				var $spos = $s.length;
+				var $tmp = f(a1,a2);
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})($closure(this,"updateData"),i));
 	}
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.initChart = function(options) {
+	$s.push("rg.chart.StreamGraph::initChart");
+	var $spos = $s.length;
 	this.data = [];
 	var _g1 = 0, _g = this.query.values.length;
 	while(_g1 < _g) {
@@ -7078,35 +12522,55 @@ rg.chart.StreamGraph.prototype.initChart = function(options) {
 	}
 	this.onAnimationStep();
 	this.onDataStep();
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.collectedData = null;
 rg.chart.StreamGraph.prototype.seriesCount = null;
 rg.chart.StreamGraph.prototype.updateData = function(pos,d) {
+	$s.push("rg.chart.StreamGraph::updateData");
+	var $spos = $s.length;
 	var a = Reflect.field(d,this.periodicity);
 	this.collectedData[pos] = a;
 	this.seriesCount++;
-	if(this.seriesCount < this.query.values.length) return;
+	if(this.seriesCount < this.query.values.length) {
+		$s.pop();
+		return;
+	}
 	this.loading = false;
 	var results = this.normalizeData(this.collectedData);
 	this.updateChart(results);
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.tooltip = function(d,i) {
+	$s.push("rg.chart.StreamGraph::tooltip");
+	var $spos = $s.length;
 	var date = Date.fromTime(d.x);
 	rg.chart.ToolTip.display("<span class=\"title\">" + this.query.values[i] + "</span><br/><span class=\"count\">" + "count: " + Ints.format(d.y) + "<br/>" + thx.culture.FormatDate.dateShort(date) + " " + thx.culture.FormatDate.timeShort(date) + "</span>");
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.currentMax = null;
 rg.chart.StreamGraph.prototype.updateChart = function(data) {
+	$s.push("rg.chart.StreamGraph::updateChart");
+	var $spos = $s.length;
 	if(null == this.chart) {
 		this.chart = new rg.svg.SvgStreamGraph(this.space.center,this.x);
 		this.chart.setTooltip($closure(this,"tooltip"),function(d,i) {
+			$s.push("rg.chart.StreamGraph::updateChart@97");
+			var $spos = $s.length;
 			rg.chart.ToolTip.display();
+			$s.pop();
 		});
 		if(null != this.lineInterpolator) this.chart.lineInterpolator(this.lineInterpolator);
 		this.layers.push(this.chart);
 	}
 	this.chart.data(data);
 	var len = Std["int"](Arrays.floatMax(data,function(a) {
-		return a.length;
+		$s.push("rg.chart.StreamGraph::updateChart@107");
+		var $spos = $s.length;
+		var $tmp = a.length;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}));
 	var _g = 0;
 	while(_g < len) {
@@ -7120,8 +12584,11 @@ rg.chart.StreamGraph.prototype.updateChart = function(data) {
 		this.currentMax = Math.max(1,m);
 	}
 	this.chart.redraw();
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.timeRange = function(data) {
+	$s.push("rg.chart.StreamGraph::timeRange");
+	var $spos = $s.length;
 	var sd = null;
 	var _g1 = 0, _g = data.length;
 	while(_g1 < _g) {
@@ -7129,7 +12596,10 @@ rg.chart.StreamGraph.prototype.timeRange = function(data) {
 		sd = data[i];
 		if(null != sd) break; else data[i] = [];
 	}
-	if(null == sd || null == sd[0] || null == sd[0][0]) return null;
+	if(null == sd || null == sd[0] || null == sd[0][0]) {
+		$s.pop();
+		return null;
+	}
 	var s = sd[0][0], sample = s, d;
 	switch(this.periodicity) {
 	case "minute":
@@ -7213,9 +12683,13 @@ rg.chart.StreamGraph.prototype.timeRange = function(data) {
 		}
 		break;
 	}
+	$s.pop();
 	return results;
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.normalizeData = function(data) {
+	$s.push("rg.chart.StreamGraph::normalizeData");
+	var $spos = $s.length;
 	var ticks = this.timeRange(data);
 	if(null == ticks) ticks = this.xtime.timeTicks();
 	var map = new Hash();
@@ -7249,146 +12723,350 @@ rg.chart.StreamGraph.prototype.normalizeData = function(data) {
 			series[pos].y = seq[j][1];
 		}
 	}
+	$s.pop();
 	return results;
+	$s.pop();
 }
 rg.chart.StreamGraph.prototype.__class__ = rg.chart.StreamGraph;
 Dates = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
-	return (Dates.formatf(param,params,culture))(d);
+	$s.push("Dates::format");
+	var $spos = $s.length;
+	var $tmp = (Dates.formatf(param,params,culture))(d);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dates.formatf = function(param,params,culture) {
+	$s.push("Dates::formatf");
+	var $spos = $s.length;
 	params = thx.culture.FormatParams.params(param,params,"D");
 	var format = params.shift();
 	switch(format) {
 	case "D":
-		return function(d) {
-			return thx.culture.FormatDate.date(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@25");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.date(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "DS":
-		return function(d) {
-			return thx.culture.FormatDate.dateShort(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@27");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.dateShort(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "DST":
-		return function(d) {
-			return thx.culture.FormatDate.dateShort(d,culture) + " " + thx.culture.FormatDate.time(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@29");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.dateShort(d,culture) + " " + thx.culture.FormatDate.time(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "DSTS":
-		return function(d) {
-			return thx.culture.FormatDate.dateShort(d,culture) + " " + thx.culture.FormatDate.timeShort(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@31");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.dateShort(d,culture) + " " + thx.culture.FormatDate.timeShort(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "DTS":
-		return function(d) {
-			return thx.culture.FormatDate.date(d,culture) + " " + thx.culture.FormatDate.timeShort(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@33");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.date(d,culture) + " " + thx.culture.FormatDate.timeShort(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "Y":
-		return function(d) {
-			return thx.culture.FormatDate.year(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@35");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.year(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "YM":
-		return function(d) {
-			return thx.culture.FormatDate.yearMonth(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@37");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.yearMonth(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "M":
-		return function(d) {
-			return thx.culture.FormatDate.month(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@39");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.month(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "MN":
-		return function(d) {
-			return thx.culture.FormatDate.monthName(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@41");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.monthName(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "MS":
-		return function(d) {
-			return thx.culture.FormatDate.monthNameShort(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@43");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.monthNameShort(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "MD":
-		return function(d) {
-			return thx.culture.FormatDate.monthDay(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@45");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.monthDay(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "WD":
-		return function(d) {
-			return thx.culture.FormatDate.weekDay(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@47");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.weekDay(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "WDN":
-		return function(d) {
-			return thx.culture.FormatDate.weekDayName(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@49");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.weekDayName(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "WDS":
-		return function(d) {
-			return thx.culture.FormatDate.weekDayNameShort(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@51");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.weekDayNameShort(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "R":
-		return function(d) {
-			return thx.culture.FormatDate.dateRfc(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@53");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.dateRfc(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "DT":
-		return function(d) {
-			return thx.culture.FormatDate.dateTime(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@55");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.dateTime(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "U":
-		return function(d) {
-			return thx.culture.FormatDate.universal(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@57");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.universal(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "S":
-		return function(d) {
-			return thx.culture.FormatDate.sortable(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@59");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.sortable(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "T":
-		return function(d) {
-			return thx.culture.FormatDate.time(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@61");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.time(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "TS":
-		return function(d) {
-			return thx.culture.FormatDate.timeShort(d,culture);
+		var $tmp = function(d) {
+			$s.push("Dates::formatf@63");
+			var $spos = $s.length;
+			var $tmp = thx.culture.FormatDate.timeShort(d,culture);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case "C":
 		var f = params[0];
-		if(null == f) return function(d) {
-			return thx.culture.FormatDate.date(d,culture);
-		}; else return function(d) {
-			return thx.culture.FormatDate.format(f,d,culture,params[1] != null?params[1] == "true":true);
-		};
+		if(null == f) {
+			var $tmp = function(d) {
+				$s.push("Dates::formatf@67");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.date(d,culture);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+		} else {
+			var $tmp = function(d) {
+				$s.push("Dates::formatf@69");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.format(f,d,culture,params[1] != null?params[1] == "true":true);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+		}
 		break;
 	default:
 		throw new thx.error.Error("Unsupported date format: {0}",null,format,{ fileName : "Dates.hx", lineNumber : 71, className : "Dates", methodName : "formatf"});
 	}
+	$s.pop();
 }
 Dates.interpolate = function(f,a,b,equation) {
-	return (Dates.interpolatef(a,b,equation))(f);
+	$s.push("Dates::interpolate");
+	var $spos = $s.length;
+	var $tmp = (Dates.interpolatef(a,b,equation))(f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dates.interpolatef = function(a,b,equation) {
+	$s.push("Dates::interpolatef");
+	var $spos = $s.length;
 	var f = Floats.interpolatef(a.getTime(),b.getTime(),equation);
-	return function(v) {
-		return Date.fromTime(f(v));
+	var $tmp = function(v) {
+		$s.push("Dates::interpolatef@83");
+		var $spos = $s.length;
+		var $tmp = Date.fromTime(f(v));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dates.snap = function(time,period) {
+	$s.push("Dates::snap");
+	var $spos = $s.length;
 	switch(period) {
 	case "second":
-		return Math.round(time / 1000) * 1000;
+		var $tmp = Math.round(time / 1000) * 1000;
+		$s.pop();
+		return $tmp;
 	case "minute":
-		return Math.round(time / 60000) * 60000;
+		var $tmp = Math.round(time / 60000) * 60000;
+		$s.pop();
+		return $tmp;
 	case "hour":
-		return Math.round(time / 3600000) * 3600000;
+		var $tmp = Math.round(time / 3600000) * 3600000;
+		$s.pop();
+		return $tmp;
 	case "day":
-		return Math.round(time / 86400000) * 86400000;
+		var $tmp = Math.round(time / 86400000) * 86400000;
+		$s.pop();
+		return $tmp;
 	case "week":
-		return Math.round(time / 604800000) * 604800000;
+		var $tmp = Math.round(time / 604800000) * 604800000;
+		$s.pop();
+		return $tmp;
 	case "month":
 		var d = Date.fromTime(time);
-		return new Date(d.getFullYear(),d.getMonth(),1,0,0,0).getTime();
+		var $tmp = new Date(d.getFullYear(),d.getMonth(),1,0,0,0).getTime();
+		$s.pop();
+		return $tmp;
 	case "year":
 		var d = Date.fromTime(time);
-		return new Date(d.getFullYear(),0,1,0,0,0).getTime();
+		var $tmp = new Date(d.getFullYear(),0,1,0,0,0).getTime();
+		$s.pop();
+		return $tmp;
 	default:
-		return (function($this) {
+		var $tmp = (function($this) {
 			var $r;
 			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 107, className : "Dates", methodName : "snap"});
 			return $r;
 		}(this));
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 Dates.snapToWeekDay = function(time,day) {
+	$s.push("Dates::snapToWeekDay");
+	var $spos = $s.length;
 	var d = Date.fromTime(time).getDay();
 	var s = 0;
 	switch(day.toLowerCase()) {
@@ -7416,163 +13094,445 @@ Dates.snapToWeekDay = function(time,day) {
 	default:
 		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 132, className : "Dates", methodName : "snapToWeekDay"});
 	}
-	return time - (d - s) % 7 * 24 * 60 * 60 * 1000;
+	var $tmp = time - (d - s) % 7 * 24 * 60 * 60 * 1000;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dates.canParse = function(s) {
-	return Dates._reparse.match(s);
+	$s.push("Dates::canParse");
+	var $spos = $s.length;
+	var $tmp = Dates._reparse.match(s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Dates.parse = function(s) {
+	$s.push("Dates::parse");
+	var $spos = $s.length;
 	var parts = s.split(".");
 	var date = Date.fromString(StringTools.replace(parts[0],"T"," "));
 	if(parts.length > 1) date = Date.fromTime(date.getTime() + Std.parseInt(parts[1]));
+	$s.pop();
 	return date;
+	$s.pop();
 }
 Dates.prototype.__class__ = Dates;
 if(!rg.query.js) rg.query.js = {}
 rg.query.js.ReportGridExecutor = function(p) {
+	$s.push("rg.query.js.ReportGridExecutor::new");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.__name__ = ["rg","query","js","ReportGridExecutor"];
 rg.query.js.ReportGridExecutor.prototype.children = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::children");
+	var $spos = $s.length;
 	rg.js.ReportGrid.children(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.propertyCount = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::propertyCount");
+	var $spos = $s.length;
 	rg.js.ReportGrid.propertyCount(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.propertySeries = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::propertySeries");
+	var $spos = $s.length;
 	rg.js.ReportGrid.propertySeries(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.propertyValues = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::propertyValues");
+	var $spos = $s.length;
 	rg.js.ReportGrid.propertyValues(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.propertyValueCount = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::propertyValueCount");
+	var $spos = $s.length;
 	rg.js.ReportGrid.propertyValueCount(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.propertyValueSeries = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::propertyValueSeries");
+	var $spos = $s.length;
 	rg.js.ReportGrid.propertyValueSeries(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.searchCount = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::searchCount");
+	var $spos = $s.length;
 	rg.js.ReportGrid.searchCount(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.searchSeries = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::searchSeries");
+	var $spos = $s.length;
 	rg.js.ReportGrid.searchSeries(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.intersect = function(path,options,success,error) {
+	$s.push("rg.query.js.ReportGridExecutor::intersect");
+	var $spos = $s.length;
 	rg.js.ReportGrid.intersect(path,options,success,error);
+	$s.pop();
 }
 rg.query.js.ReportGridExecutor.prototype.__class__ = rg.query.js.ReportGridExecutor;
 rg.query.js.ReportGridExecutor.__interfaces__ = [rg.query.IExecutor];
 thx.svg.Arc = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.svg.Arc::new");
+	var $spos = $s.length;
 	this._r0 = function(_,_1) {
+		$s.push("thx.svg.Arc::new@16");
+		var $spos = $s.length;
+		$s.pop();
 		return 0;
+		$s.pop();
 	};
 	this._r1 = function(_,_1) {
+		$s.push("thx.svg.Arc::new@17");
+		var $spos = $s.length;
+		$s.pop();
 		return 1;
+		$s.pop();
 	};
 	this._a0 = function(_,_1) {
+		$s.push("thx.svg.Arc::new@18");
+		var $spos = $s.length;
+		$s.pop();
 		return 0;
+		$s.pop();
 	};
 	this._a1 = function(_,_1) {
-		return Math.PI;
+		$s.push("thx.svg.Arc::new@19");
+		var $spos = $s.length;
+		var $tmp = Math.PI;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
 }
 thx.svg.Arc.__name__ = ["thx","svg","Arc"];
 thx.svg.Arc.fromObject = function() {
-	return new thx.svg.Arc().innerRadiusf(function(d,_) {
-		return d.innerRadius;
+	$s.push("thx.svg.Arc::fromObject");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Arc().innerRadiusf(function(d,_) {
+		$s.push("thx.svg.Arc::fromObject@102");
+		var $spos = $s.length;
+		var $tmp = d.innerRadius;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).outerRadiusf(function(d,_) {
-		return d.outerRadius;
+		$s.push("thx.svg.Arc::fromObject@103");
+		var $spos = $s.length;
+		var $tmp = d.outerRadius;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).startAnglef(function(d,_) {
-		return d.startAngle;
+		$s.push("thx.svg.Arc::fromObject@104");
+		var $spos = $s.length;
+		var $tmp = d.startAngle;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).endAnglef(function(d,_) {
-		return d.endAngle;
+		$s.push("thx.svg.Arc::fromObject@105");
+		var $spos = $s.length;
+		var $tmp = d.endAngle;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.fromAngleObject = function() {
-	return new thx.svg.Arc().startAnglef(function(d,_) {
-		return d.startAngle;
+	$s.push("thx.svg.Arc::fromAngleObject");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Arc().startAnglef(function(d,_) {
+		$s.push("thx.svg.Arc::fromAngleObject@112");
+		var $spos = $s.length;
+		var $tmp = d.startAngle;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}).endAnglef(function(d,_) {
-		return d.endAngle;
+		$s.push("thx.svg.Arc::fromAngleObject@113");
+		var $spos = $s.length;
+		var $tmp = d.endAngle;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype._r0 = null;
 thx.svg.Arc.prototype._r1 = null;
 thx.svg.Arc.prototype._a0 = null;
 thx.svg.Arc.prototype._a1 = null;
 thx.svg.Arc.prototype.getInnerRadius = function() {
-	return this._r0;
+	$s.push("thx.svg.Arc::getInnerRadius");
+	var $spos = $s.length;
+	var $tmp = this._r0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.innerRadius = function(v) {
-	return this.innerRadiusf(function(_,_1) {
+	$s.push("thx.svg.Arc::innerRadius");
+	var $spos = $s.length;
+	var $tmp = this.innerRadiusf(function(_,_1) {
+		$s.push("thx.svg.Arc::innerRadius@23");
+		var $spos = $s.length;
+		$s.pop();
 		return v;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.innerRadiusf = function(v) {
+	$s.push("thx.svg.Arc::innerRadiusf");
+	var $spos = $s.length;
 	this._r0 = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Arc.prototype.getOuterRadius = function() {
-	return this._r1;
+	$s.push("thx.svg.Arc::getOuterRadius");
+	var $spos = $s.length;
+	var $tmp = this._r1;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.outerRadius = function(v) {
-	return this.outerRadiusf(function(_,_1) {
+	$s.push("thx.svg.Arc::outerRadius");
+	var $spos = $s.length;
+	var $tmp = this.outerRadiusf(function(_,_1) {
+		$s.push("thx.svg.Arc::outerRadius@31");
+		var $spos = $s.length;
+		$s.pop();
 		return v;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.outerRadiusf = function(v) {
+	$s.push("thx.svg.Arc::outerRadiusf");
+	var $spos = $s.length;
 	this._r1 = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Arc.prototype.getStartAngle = function() {
-	return this._a0;
+	$s.push("thx.svg.Arc::getStartAngle");
+	var $spos = $s.length;
+	var $tmp = this._a0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.startAngle = function(v) {
-	return this.startAnglef(function(_,_1) {
+	$s.push("thx.svg.Arc::startAngle");
+	var $spos = $s.length;
+	var $tmp = this.startAnglef(function(_,_1) {
+		$s.push("thx.svg.Arc::startAngle@39");
+		var $spos = $s.length;
+		$s.pop();
 		return v;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.startAnglef = function(v) {
+	$s.push("thx.svg.Arc::startAnglef");
+	var $spos = $s.length;
 	this._a0 = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Arc.prototype.getEndAngle = function() {
-	return this._a1;
+	$s.push("thx.svg.Arc::getEndAngle");
+	var $spos = $s.length;
+	var $tmp = this._a1;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.endAngle = function(v) {
-	return this.endAnglef(function(_,_1) {
+	$s.push("thx.svg.Arc::endAngle");
+	var $spos = $s.length;
+	var $tmp = this.endAnglef(function(_,_1) {
+		$s.push("thx.svg.Arc::endAngle@47");
+		var $spos = $s.length;
+		$s.pop();
 		return v;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.endAnglef = function(v) {
+	$s.push("thx.svg.Arc::endAnglef");
+	var $spos = $s.length;
 	this._a1 = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Arc.prototype.shape = function(d,i) {
+	$s.push("thx.svg.Arc::shape");
+	var $spos = $s.length;
 	var a0 = this._a0(d,i) + thx.svg.LineInternals.arcOffset, a1 = this._a1(d,i) + thx.svg.LineInternals.arcOffset, da = a1 - a0, df = da < Math.PI?"0":"1", c0 = Math.cos(a0), s0 = Math.sin(a0), c1 = Math.cos(a1), s1 = Math.sin(a1), r0 = this._r0(d,i), r1 = this._r1(d,i);
-	return da >= thx.svg.LineInternals.arcMax?r0 != 0?"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "M0," + r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + -r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + r0 + "Z":"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "Z":r0 != 0?"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L" + r0 * c1 + "," + r0 * s1 + "A" + r0 + "," + r0 + " 0 " + df + ",0 " + r0 * c0 + "," + r0 * s0 + "Z":"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L0,0" + "Z";
+	var $tmp = da >= thx.svg.LineInternals.arcMax?r0 != 0?"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "M0," + r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + -r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + r0 + "Z":"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "Z":r0 != 0?"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L" + r0 * c1 + "," + r0 * s1 + "A" + r0 + "," + r0 + " 0 " + df + ",0 " + r0 * c0 + "," + r0 * s0 + "Z":"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L0,0" + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.centroid = function(d,i) {
+	$s.push("thx.svg.Arc::centroid");
+	var $spos = $s.length;
 	var r = (this._r0(d,i) + this._r1(d,i)) / 2, a = (this._a0(d,i) + this._a1(d,i)) / 2 + thx.svg.LineInternals.arcOffset;
-	return [Math.cos(a) * r,Math.sin(a) * r];
+	var $tmp = [Math.cos(a) * r,Math.sin(a) * r];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Arc.prototype.__class__ = thx.svg.Arc;
+rg.svg.SvgLineChartHighlighter = function(panel,x,y) {
+	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgLineChartHighlighter::new");
+	var $spos = $s.length;
+	this.x = x;
+	this.y = y;
+	this.coords = { x : 0.0, y : 0.0};
+	rg.svg.SvgLayer.call(this,panel);
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.__name__ = ["rg","svg","SvgLineChartHighlighter"];
+rg.svg.SvgLineChartHighlighter.__super__ = rg.svg.SvgLayer;
+for(var k in rg.svg.SvgLayer.prototype ) rg.svg.SvgLineChartHighlighter.prototype[k] = rg.svg.SvgLayer.prototype[k];
+rg.svg.SvgLineChartHighlighter.prototype.text = null;
+rg.svg.SvgLineChartHighlighter.prototype.x = null;
+rg.svg.SvgLineChartHighlighter.prototype.y = null;
+rg.svg.SvgLineChartHighlighter.prototype.selector = null;
+rg.svg.SvgLineChartHighlighter.prototype.approximator = function(coords) {
+	$s.push("rg.svg.SvgLineChartHighlighter::approximator");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype.init = function() {
+	$s.push("rg.svg.SvgLineChartHighlighter::init");
+	var $spos = $s.length;
+	this.svg.append("svg:rect").style("fill").string("rgba(0,0,0,0)").onNode("mouseover",$closure(this,"_over")).onNode("mousemove",$closure(this,"_move"));
+	this._createHighlighter();
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype.label = function(x,y) {
+	$s.push("rg.svg.SvgLineChartHighlighter::label");
+	var $spos = $s.length;
+	var $tmp = thx.culture.FormatDate.dateShort(Date.fromTime(x)) + ", " + thx.culture.FormatDate.timeShort(Date.fromTime(x));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype._createHighlighter = function() {
+	$s.push("rg.svg.SvgLineChartHighlighter::_createHighlighter");
+	var $spos = $s.length;
+	this.selector = this.svg.append("svg:g").attr("class").string("linechart-highlighter").style("display").string("none");
+	this.selector.append("svg:line").attr("x1")["float"](0).attr("y1").string("1em").attr("x2")["float"](0).attr("y2")["float"](this.panel.frame.height);
+	this.text = this.selector.append("svg:text").attr("dy").string("1em").attr("text-anchor").string("middle");
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype._over = function(d,_) {
+	$s.push("rg.svg.SvgLineChartHighlighter::_over");
+	var $spos = $s.length;
+	this.selector.style("display").string("block");
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype.coords = null;
+rg.svg.SvgLineChartHighlighter.prototype.mouse = null;
+rg.svg.SvgLineChartHighlighter.prototype._move = function(_,_1) {
+	$s.push("rg.svg.SvgLineChartHighlighter::_move");
+	var $spos = $s.length;
+	this.mouse = thx.js.Svg.mouse(this.svg.node());
+	this._update();
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype._update = function() {
+	$s.push("rg.svg.SvgLineChartHighlighter::_update");
+	var $spos = $s.length;
+	if(null == this.mouse) {
+		$s.pop();
+		return;
+	}
+	this.coords.x = this.x.invert(this.mouse[0]);
+	this.coords.y = this.y.invert(this.mouse[1]);
+	this.approximator(this.coords);
+	var t = "translate(" + this.x.scale(this.coords.x) + ",0)";
+	this.selector.attr("transform").string(t);
+	this.text.text().string(this.label(this.coords.x,this.coords.y));
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype._out = function(_,_1) {
+	$s.push("rg.svg.SvgLineChartHighlighter::_out");
+	var $spos = $s.length;
+	this.selector.style("display").string("none");
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype.redraw = function() {
+	$s.push("rg.svg.SvgLineChartHighlighter::redraw");
+	var $spos = $s.length;
+	this.svg.select("rect").attr("width")["float"](this.width).attr("height")["float"](this.height);
+	this.svg.select(".linechart-highlighter").attr("y2")["float"](this.height);
+	this._update();
+	$s.pop();
+}
+rg.svg.SvgLineChartHighlighter.prototype.__class__ = rg.svg.SvgLineChartHighlighter;
 rg.svg.SvgScaleLabel = function(panel,anchor) {
 	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgScaleLabel::new");
+	var $spos = $s.length;
 	rg.svg.SvgLayer.call(this,panel);
-	this._height = rg.svg.SvgScaleLabel.defaultTextHeight;
+	this._texttextHeight = rg.svg.SvgScaleLabel.defaultTexttextHeight;
 	this._padding = rg.svg.SvgScaleLabel.defaultTextPadding;
 	this.anchor(anchor);
 	this.svg.attr("class").string("scale-ticks");
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.__name__ = ["rg","svg","SvgScaleLabel"];
 rg.svg.SvgScaleLabel.__super__ = rg.svg.SvgLayer;
 for(var k in rg.svg.SvgLayer.prototype ) rg.svg.SvgScaleLabel.prototype[k] = rg.svg.SvgLayer.prototype[k];
 rg.svg.SvgScaleLabel.ofLinear = function(panel,anchor,scale) {
-	return new rg.svg.SvgScaleLabel(panel,anchor).scale($closure(scale,"scale")).range($closure(scale,"range")).ticks($closure(scale,"ticks")).key($closure(scale,"tickFormat")).label($closure(scale,"tickFormat"));
+	$s.push("rg.svg.SvgScaleLabel::ofLinear");
+	var $spos = $s.length;
+	var $tmp = new rg.svg.SvgScaleLabel(panel,anchor).scale($closure(scale,"scale")).range($closure(scale,"range")).ticks($closure(scale,"ticks")).key($closure(scale,"tickFormat")).label($closure(scale,"tickFormat"));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype._anchor = null;
 rg.svg.SvgScaleLabel.prototype._padding = null;
-rg.svg.SvgScaleLabel.prototype._height = null;
+rg.svg.SvgScaleLabel.prototype._texttextHeight = null;
 rg.svg.SvgScaleLabel.prototype._pos = null;
 rg.svg.SvgScaleLabel.prototype._t = null;
 rg.svg.SvgScaleLabel.prototype._maxRange = null;
@@ -7586,59 +13546,131 @@ rg.svg.SvgScaleLabel.prototype._label = null;
 rg.svg.SvgScaleLabel.prototype._textAnchor = null;
 rg.svg.SvgScaleLabel.prototype._textBaseline = null;
 rg.svg.SvgScaleLabel.prototype.translateX = function(d,i) {
-	return "translate(" + this._scale(d,i) + ",0) rotate(-90)";
+	$s.push("rg.svg.SvgScaleLabel::translateX");
+	var $spos = $s.length;
+	var $tmp = "translate(" + this._scale(d,i) + ",0) rotate(-90)";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.translateY = function(d,i) {
-	return "translate(0," + this._scale(d,i) + ")";
+	$s.push("rg.svg.SvgScaleLabel::translateY");
+	var $spos = $s.length;
+	var $tmp = "translate(0," + this._scale(d,i) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.redraw = function() {
+	$s.push("rg.svg.SvgScaleLabel::redraw");
+	var $spos = $s.length;
+	if(null == this._maxRange) {
+		$s.pop();
+		return;
+	}
 	this._range([0.0,this._maxRange()]);
 	var g = this.svg.selectAll("g." + this._axis).data(this._ticks(),this._key).update().attr("transform").stringf(this._t);
 	g.selectAll("text.label").attr(this._oaxis)["float"](this._pos()).attr("text-anchor").string(this._textAnchor).attr("dominant-baseline").string(this._textBaseline).text().stringf(this._label);
 	g.enter().append("svg:g").attr("class").string(this._axis).attr("transform").stringf(this._t).append("svg:text").attr("class").string("label").attr(this._oaxis)["float"](this._pos()).attr("text-anchor").string(this._textAnchor).attr("dominant-baseline").string(this._textBaseline).text().stringf(this._label);
 	g.exit().remove();
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.getRange = function() {
-	return this._range;
+	$s.push("rg.svg.SvgScaleLabel::getRange");
+	var $spos = $s.length;
+	var $tmp = this._range;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.range = function(f) {
+	$s.push("rg.svg.SvgScaleLabel::range");
+	var $spos = $s.length;
 	this._range = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.getScale = function() {
-	return this._scale;
+	$s.push("rg.svg.SvgScaleLabel::getScale");
+	var $spos = $s.length;
+	var $tmp = this._scale;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.scale = function(f) {
+	$s.push("rg.svg.SvgScaleLabel::scale");
+	var $spos = $s.length;
 	this._scale = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.getTicks = function() {
-	return this._ticks;
+	$s.push("rg.svg.SvgScaleLabel::getTicks");
+	var $spos = $s.length;
+	var $tmp = this._ticks;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.ticks = function(f) {
+	$s.push("rg.svg.SvgScaleLabel::ticks");
+	var $spos = $s.length;
 	this._ticks = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.getKey = function() {
-	return this._key;
+	$s.push("rg.svg.SvgScaleLabel::getKey");
+	var $spos = $s.length;
+	var $tmp = this._key;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.key = function(f) {
+	$s.push("rg.svg.SvgScaleLabel::key");
+	var $spos = $s.length;
 	this._key = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.getLabel = function() {
-	return this._label;
+	$s.push("rg.svg.SvgScaleLabel::getLabel");
+	var $spos = $s.length;
+	var $tmp = this._label;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.label = function(f) {
+	$s.push("rg.svg.SvgScaleLabel::label");
+	var $spos = $s.length;
 	this._label = f;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.getAnchor = function() {
-	return this._anchor;
+	$s.push("rg.svg.SvgScaleLabel::getAnchor");
+	var $spos = $s.length;
+	var $tmp = this._anchor;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.anchor = function(o) {
-	if(Type.enumEq(o,this._anchor)) return this;
-	var panel = this.panel;
+	$s.push("rg.svg.SvgScaleLabel::anchor");
+	var $spos = $s.length;
+	if(Type.enumEq(o,this._anchor)) {
+		$s.pop();
+		return this;
+	}
+	var me = this;
 	switch( (this._anchor = o)[1] ) {
 	case 0:
 	case 1:
@@ -7646,7 +13678,12 @@ rg.svg.SvgScaleLabel.prototype.anchor = function(o) {
 		this._oaxis = "x";
 		this._t = $closure(this,"translateX");
 		this._maxRange = function() {
-			return panel.frame.width;
+			$s.push("rg.svg.SvgScaleLabel::anchor@140");
+			var $spos = $s.length;
+			var $tmp = me.width;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	case 2:
@@ -7655,7 +13692,12 @@ rg.svg.SvgScaleLabel.prototype.anchor = function(o) {
 		this._oaxis = "x";
 		this._t = $closure(this,"translateY");
 		this._maxRange = function() {
-			return panel.frame.height;
+			$s.push("rg.svg.SvgScaleLabel::anchor@145");
+			var $spos = $s.length;
+			var $tmp = me.height;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	}
@@ -7670,61 +13712,106 @@ rg.svg.SvgScaleLabel.prototype.anchor = function(o) {
 		break;
 	case 2:
 		this._textAnchor = "start";
-		this._textBaseline = "middle";
+		this._textBaseline = "central";
 		break;
 	case 3:
 		this._textAnchor = "end";
-		this._textBaseline = "middle";
+		this._textBaseline = "central";
 		break;
 	}
 	this.adjustPositionFunction();
+	$s.pop();
 	return this;
+	$s.pop();
 }
-rg.svg.SvgScaleLabel.prototype.getHeight = function() {
-	return this._height;
+rg.svg.SvgScaleLabel.prototype.gettextHeight = function() {
+	$s.push("rg.svg.SvgScaleLabel::gettextHeight");
+	var $spos = $s.length;
+	var $tmp = this._texttextHeight;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
-rg.svg.SvgScaleLabel.prototype.height = function(v) {
-	this._height = v;
+rg.svg.SvgScaleLabel.prototype.textHeight = function(v) {
+	$s.push("rg.svg.SvgScaleLabel::textHeight");
+	var $spos = $s.length;
+	this._texttextHeight = v;
 	this.adjustPositionFunction();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.getPadding = function() {
-	return this._padding;
+	$s.push("rg.svg.SvgScaleLabel::getPadding");
+	var $spos = $s.length;
+	var $tmp = this._padding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.padding = function(v) {
+	$s.push("rg.svg.SvgScaleLabel::padding");
+	var $spos = $s.length;
 	this._padding = v;
 	this.adjustPositionFunction();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.adjustPositionFunction = function() {
+	$s.push("rg.svg.SvgScaleLabel::adjustPositionFunction");
+	var $spos = $s.length;
 	var me = this;
 	switch( (this._anchor)[1] ) {
 	case 0:
 		this._pos = function() {
-			return -me._padding;
+			$s.push("rg.svg.SvgScaleLabel::adjustPositionFunction@188");
+			var $spos = $s.length;
+			var $tmp = -me._padding;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	case 2:
 		this._pos = function() {
-			return me._padding;
+			$s.push("rg.svg.SvgScaleLabel::adjustPositionFunction@190");
+			var $spos = $s.length;
+			var $tmp = me._padding;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	case 1:
 		this._pos = function() {
-			return me.panel.frame.height - me._padding;
+			$s.push("rg.svg.SvgScaleLabel::adjustPositionFunction@192");
+			var $spos = $s.length;
+			var $tmp = me.height - me._padding;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	case 3:
 		this._pos = function() {
-			return me.panel.frame.width - me._padding;
+			$s.push("rg.svg.SvgScaleLabel::adjustPositionFunction@194");
+			var $spos = $s.length;
+			var $tmp = me.width - me._padding;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
 		break;
 	}
+	$s.pop();
 }
 rg.svg.SvgScaleLabel.prototype.__class__ = rg.svg.SvgScaleLabel;
 Enums = function() { }
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
+	$s.push("Enums::string");
+	var $spos = $s.length;
 	var cons = e[0];
 	var params = [];
 	var _g = 0, _g1 = e.slice(2);
@@ -7733,25 +13820,45 @@ Enums.string = function(e) {
 		++_g;
 		params.push(Dynamics.string(param));
 	}
-	return cons + (params.length == 0?"":"(" + params.join(", ") + ")");
+	var $tmp = cons + (params.length == 0?"":"(" + params.join(", ") + ")");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Enums.prototype.__class__ = Enums;
 StringBuf = function(p) {
 	if( p === $_ ) return;
+	$s.push("StringBuf::new");
+	var $spos = $s.length;
 	this.b = new Array();
+	$s.pop();
 }
 StringBuf.__name__ = ["StringBuf"];
 StringBuf.prototype.add = function(x) {
+	$s.push("StringBuf::add");
+	var $spos = $s.length;
 	this.b[this.b.length] = x;
+	$s.pop();
 }
 StringBuf.prototype.addSub = function(s,pos,len) {
+	$s.push("StringBuf::addSub");
+	var $spos = $s.length;
 	this.b[this.b.length] = s.substr(pos,len);
+	$s.pop();
 }
 StringBuf.prototype.addChar = function(c) {
+	$s.push("StringBuf::addChar");
+	var $spos = $s.length;
 	this.b[this.b.length] = String.fromCharCode(c);
+	$s.pop();
 }
 StringBuf.prototype.toString = function() {
-	return this.b.join("");
+	$s.push("StringBuf::toString");
+	var $spos = $s.length;
+	var $tmp = this.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 StringBuf.prototype.b = null;
 StringBuf.prototype.__class__ = StringBuf;
@@ -7761,19 +13868,46 @@ rg.query.QueryLimit.Bottom = function(v) { var $x = ["Bottom",1,v]; $x.__enum__ 
 rg.query.QueryLimit.NoLimit = ["NoLimit",2];
 rg.query.QueryLimit.NoLimit.toString = $estr;
 rg.query.QueryLimit.NoLimit.__enum__ = rg.query.QueryLimit;
+if(typeof haxe=='undefined') haxe = {}
+haxe.Log = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	$s.push("haxe.Log::trace");
+	var $spos = $s.length;
+	js.Boot.__trace(v,infos);
+	$s.pop();
+}
+haxe.Log.clear = function() {
+	$s.push("haxe.Log::clear");
+	var $spos = $s.length;
+	js.Boot.__clear_trace();
+	$s.pop();
+}
+haxe.Log.prototype.__class__ = haxe.Log;
 Main = function() { }
 Main.__name__ = ["Main"];
 Main.main = function() {
+	$s.push("Main::main");
+	var $spos = $s.length;
+	$s.pop();
 }
 Main.createTimedData = function(creator) {
+	$s.push("Main::createTimedData");
+	var $spos = $s.length;
 	var timer = new haxe.Timer(Main.TIME_SPAN);
 	timer.run = creator;
 	creator();
+	$s.pop();
 }
 Main.createPivotRandomData = function() {
+	$s.push("Main::createPivotRandomData");
+	var $spos = $s.length;
 	Main.createTimedData(Main.createPivotData);
+	$s.pop();
 }
 Main.createPivotData = function() {
+	$s.push("Main::createPivotData");
+	var $spos = $s.length;
 	var qt = Std.random(Main.MAX_PER_CREATION - Main.MIN_PER_CREATION) + Main.MIN_PER_CREATION;
 	var now = Date.now().getTime();
 	var _g = 0;
@@ -7781,11 +13915,17 @@ Main.createPivotData = function() {
 		var i = _g++;
 		rg.js.ReportGrid.track(Main.PATH_PIVOTS,{ count : 1, timestamp : now - Std.random(Main.TIME_SPAN), events : { click : { location : Arrays.random(Main.locations), gender : Arrays.random(Main.genders), age : Arrays.random(Main.ageranges)}}});
 	}
+	$s.pop();
 }
 Main.createTweetRandomData = function() {
+	$s.push("Main::createTweetRandomData");
+	var $spos = $s.length;
 	Main.createTimedData(Main.createTweetData);
+	$s.pop();
 }
 Main.createTweetData = function() {
+	$s.push("Main::createTweetData");
+	var $spos = $s.length;
 	var qt = Std.random(Main.MAX_PER_CREATION - Main.MIN_PER_CREATION) + Main.MIN_PER_CREATION;
 	var now = Date.now().getTime();
 	var _g = 0;
@@ -7793,20 +13933,13 @@ Main.createTweetData = function() {
 		var i = _g++;
 		rg.js.ReportGrid.track(Main.PATH_TWEETS,{ count : 1, timestamp : now - Std.random(Main.TIME_SPAN), events : { tweet : { startup : Arrays.random(Main.gluecons)}}});
 	}
+	$s.pop();
 }
 Main.prototype.__class__ = Main;
-if(typeof haxe=='undefined') haxe = {}
-haxe.Log = function() { }
-haxe.Log.__name__ = ["haxe","Log"];
-haxe.Log.trace = function(v,infos) {
-	js.Boot.__trace(v,infos);
-}
-haxe.Log.clear = function() {
-	js.Boot.__clear_trace();
-}
-haxe.Log.prototype.__class__ = haxe.Log;
 thx.js.BaseTransition = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.BaseTransition::new");
+	var $spos = $s.length;
 	this.selection = selection;
 	var tid = this._transitionId = thx.js.BaseTransition._inheritid > 0?thx.js.BaseTransition._inheritid:++thx.js.BaseTransition._id;
 	this._tweens = new Hash();
@@ -7818,10 +13951,14 @@ thx.js.BaseTransition = function(selection) {
 	this._ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
 	this._step = $closure(this,"step");
 	selection.eachNode(function(n,_) {
+		$s.push("thx.js.BaseTransition::new@54");
+		var $spos = $s.length;
 		if(Reflect.hasField(n,"__transition__")) Reflect.field(n,"__transition__").owner = tid; else n["__transition__"] = { owner : tid};
+		$s.pop();
 	});
 	this.delay(null,0);
 	this.duration(null,250);
+	$s.pop();
 }
 thx.js.BaseTransition.__name__ = ["thx","js","BaseTransition"];
 thx.js.BaseTransition.prototype._transitionId = null;
@@ -7838,21 +13975,33 @@ thx.js.BaseTransition.prototype._start = null;
 thx.js.BaseTransition.prototype._end = null;
 thx.js.BaseTransition.prototype.selection = null;
 thx.js.BaseTransition.prototype.step = function(elapsed) {
+	$s.push("thx.js.BaseTransition::step");
+	var $spos = $s.length;
 	var clear = true, k = -1, me = this;
 	this.selection.eachNode(function(n,i) {
-		if(2 == me._stage[++k]) return;
+		$s.push("thx.js.BaseTransition::step@67");
+		var $spos = $s.length;
+		if(2 == me._stage[++k]) {
+			$s.pop();
+			return;
+		}
 		var t = (elapsed - me._delay[k]) / me._duration[k], tx = Reflect.field(n,"__transition__"), te, tk, ik = me._interpolators[k];
 		if(t < 1) {
 			clear = false;
-			if(t < 0) return;
+			if(t < 0) {
+				$s.pop();
+				return;
+			}
 		} else t = 1;
 		if(null != me._stage[k]) {
 			if(null == tx || tx.active != me._transitionId) {
 				me._stage[k] = 2;
+				$s.pop();
 				return;
 			}
 		} else if(null == tx || tx.active > me._transitionId) {
 			me._stage[k] = 2;
+			$s.pop();
 			return;
 		} else {
 			me._stage[k] = 1;
@@ -7886,154 +14035,299 @@ thx.js.BaseTransition.prototype.step = function(elapsed) {
 				tx.owner = owner;
 			}
 		}
+		$s.pop();
 	});
+	$s.pop();
 	return clear;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.startNode = function(f) {
+	$s.push("thx.js.BaseTransition::startNode");
+	var $spos = $s.length;
 	this._start = f;
-	return this._this();
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.endNode = function(f) {
+	$s.push("thx.js.BaseTransition::endNode");
+	var $spos = $s.length;
 	this._end = f;
-	return this._this();
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.stop = function() {
+	$s.push("thx.js.BaseTransition::stop");
+	var $spos = $s.length;
 	var k = -1, me = this;
 	this.selection.eachNode(function(n,i) {
+		$s.push("thx.js.BaseTransition::stop@156");
+		var $spos = $s.length;
 		me._stage[++k] = 2;
 		Reflect.deleteField(n,"__transition__");
+		$s.pop();
 	});
-	return this._this();
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.delay = function(f,v) {
+	$s.push("thx.js.BaseTransition::delay");
+	var $spos = $s.length;
 	if(v == null) v = 0.0;
 	var delayMin = Math.POSITIVE_INFINITY, k = -1, me = this;
 	if(null != f) this.selection.eachNode(function(n,i) {
+		$s.push("thx.js.BaseTransition::delay@170");
+		var $spos = $s.length;
 		var x = me._delay[++k] = f(n,i);
 		if(x < delayMin) delayMin = x;
+		$s.pop();
 	}); else {
 		delayMin = v;
 		this.selection.eachNode(function(n,i) {
+			$s.push("thx.js.BaseTransition::delay@177");
+			var $spos = $s.length;
 			me._delay[++k] = delayMin;
+			$s.pop();
 		});
 	}
 	thx.js.Timer.timer(this._step,delayMin);
-	return this._this();
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.duration = function(f,v) {
+	$s.push("thx.js.BaseTransition::duration");
+	var $spos = $s.length;
 	if(v == null) v = 0.0;
 	var k = -1, me = this;
 	if(null != f) {
 		this._durationMax = 0;
 		this.selection.eachNode(function(n,i) {
+			$s.push("thx.js.BaseTransition::duration@192");
+			var $spos = $s.length;
 			var x = me._duration[++k] = f(n,i);
 			if(x > me._durationMax) me._durationMax = x;
+			$s.pop();
 		});
 	} else {
 		this._durationMax = v;
 		this.selection.eachNode(function(n,i) {
+			$s.push("thx.js.BaseTransition::duration@199");
+			var $spos = $s.length;
 			me._duration[++k] = me._durationMax;
+			$s.pop();
 		});
 	}
-	return this._this();
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.ease = function(f,easemode) {
+	$s.push("thx.js.BaseTransition::ease");
+	var $spos = $s.length;
 	this._ease = thx.math.Ease.mode(easemode,f);
-	return this._this();
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.remove = function(v) {
+	$s.push("thx.js.BaseTransition::remove");
+	var $spos = $s.length;
 	if(v == null) v = true;
 	this._remove = v;
-	return this._this();
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.select = function(selector) {
+	$s.push("thx.js.BaseTransition::select");
+	var $spos = $s.length;
 	var k, t = this.createTransition(this.selection.select(selector));
 	t._ease = this._ease;
 	var delay = this._delay;
 	var duration = this._duration;
 	k = -1;
 	t.delay(function(d,i) {
-		return delay[++k];
+		$s.push("thx.js.BaseTransition::select@224");
+		var $spos = $s.length;
+		var $tmp = delay[++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	k = -1;
 	t.delay(function(d,i) {
-		return duration[++k];
+		$s.push("thx.js.BaseTransition::select@225");
+		var $spos = $s.length;
+		var $tmp = duration[++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
 	return t;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.selectAll = function(selector) {
+	$s.push("thx.js.BaseTransition::selectAll");
+	var $spos = $s.length;
 	var k, t = this.createTransition(this.selection.selectAll(selector));
 	t._ease = this._ease;
 	var delay = this._delay;
 	var duration = this._duration;
 	k = -1;
 	t.delay(function(d,i) {
-		return delay[i > 0?k:++k];
+		$s.push("thx.js.BaseTransition::selectAll@235");
+		var $spos = $s.length;
+		var $tmp = delay[i > 0?k:++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	k = -1;
 	t.delay(function(d,i) {
-		return duration[i > 0?k:++k];
+		$s.push("thx.js.BaseTransition::selectAll@236");
+		var $spos = $s.length;
+		var $tmp = duration[i > 0?k:++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
 	return t;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.createTransition = function(selection) {
-	return (function($this) {
+	$s.push("thx.js.BaseTransition::createTransition");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 242, className : "thx.js.BaseTransition", methodName : "createTransition"});
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype._this = function() {
-	return this;
+	$s.push("thx.js.BaseTransition::_this");
+	var $spos = $s.length;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BaseTransition.prototype.__class__ = thx.js.BaseTransition;
 thx.js.UnboundTransition = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.UnboundTransition::new");
+	var $spos = $s.length;
 	thx.js.BaseTransition.call(this,selection);
+	$s.pop();
 }
 thx.js.UnboundTransition.__name__ = ["thx","js","UnboundTransition"];
 thx.js.UnboundTransition.__super__ = thx.js.BaseTransition;
 for(var k in thx.js.BaseTransition.prototype ) thx.js.UnboundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
 thx.js.UnboundTransition.prototype.style = function(name) {
-	return new thx.js.AccessTweenStyle(name,this,this._tweens);
+	$s.push("thx.js.UnboundTransition::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessTweenStyle(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundTransition.prototype.attr = function(name) {
-	return new thx.js.AccessTweenAttribute(name,this,this._tweens);
+	$s.push("thx.js.UnboundTransition::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessTweenAttribute(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundTransition.prototype.createTransition = function(selection) {
-	return new thx.js.UnboundTransition(selection);
+	$s.push("thx.js.UnboundTransition::createTransition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UnboundTransition(selection);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.UnboundTransition.prototype.__class__ = thx.js.UnboundTransition;
 thx.js.BoundTransition = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.BoundTransition::new");
+	var $spos = $s.length;
 	thx.js.BaseTransition.call(this,selection);
+	$s.pop();
 }
 thx.js.BoundTransition.__name__ = ["thx","js","BoundTransition"];
 thx.js.BoundTransition.__super__ = thx.js.BaseTransition;
 for(var k in thx.js.BaseTransition.prototype ) thx.js.BoundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
 thx.js.BoundTransition.prototype.style = function(name) {
-	return new thx.js.AccessDataTweenStyle(name,this,this._tweens);
+	$s.push("thx.js.BoundTransition::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataTweenStyle(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundTransition.prototype.attr = function(name) {
-	return new thx.js.AccessDataTweenAttribute(name,this,this._tweens);
+	$s.push("thx.js.BoundTransition::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataTweenAttribute(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundTransition.prototype.start = function(f) {
-	return this.startNode(function(n,i) {
+	$s.push("thx.js.BoundTransition::start");
+	var $spos = $s.length;
+	var $tmp = this.startNode(function(n,i) {
+		$s.push("thx.js.BoundTransition::start@271");
+		var $spos = $s.length;
 		f(Reflect.field(n,"__data__"),i);
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundTransition.prototype.end = function(f) {
-	return this.endNode(function(n,i) {
+	$s.push("thx.js.BoundTransition::end");
+	var $spos = $s.length;
+	var $tmp = this.endNode(function(n,i) {
+		$s.push("thx.js.BoundTransition::end@276");
+		var $spos = $s.length;
 		f(Reflect.field(n,"__data__"),i);
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundTransition.prototype.createTransition = function(selection) {
-	return new thx.js.BoundTransition(selection);
+	$s.push("thx.js.BoundTransition::createTransition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.BoundTransition(selection);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.BoundTransition.prototype.__class__ = thx.js.BoundTransition;
 thx.culture.FormatDate = function() { }
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
+	$s.push("thx.culture.FormatDate::format");
+	var $spos = $s.length;
 	if(leadingspace == null) leadingspace = true;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
 	var pos = 0;
@@ -8182,79 +14476,169 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 		}
 		pos++;
 	}
-	return buf.b.join("");
+	var $tmp = buf.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.yearMonth = function(date,culture) {
+	$s.push("thx.culture.FormatDate::yearMonth");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternYearMonth,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternYearMonth,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.monthDay = function(date,culture) {
+	$s.push("thx.culture.FormatDate::monthDay");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternMonthDay,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternMonthDay,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.date = function(date,culture) {
+	$s.push("thx.culture.FormatDate::date");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternDate,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternDate,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.dateShort = function(date,culture) {
+	$s.push("thx.culture.FormatDate::dateShort");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternDateShort,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternDateShort,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.dateRfc = function(date,culture) {
+	$s.push("thx.culture.FormatDate::dateRfc");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternDateRfc,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternDateRfc,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.dateTime = function(date,culture) {
+	$s.push("thx.culture.FormatDate::dateTime");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternDateTime,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternDateTime,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.universal = function(date,culture) {
+	$s.push("thx.culture.FormatDate::universal");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternUniversal,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternUniversal,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.sortable = function(date,culture) {
+	$s.push("thx.culture.FormatDate::sortable");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternSortable,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternSortable,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.time = function(date,culture) {
+	$s.push("thx.culture.FormatDate::time");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternTime,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternTime,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.timeShort = function(date,culture) {
+	$s.push("thx.culture.FormatDate::timeShort");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatDate.format(culture.date.patternTimeShort,date,culture,false);
+	var $tmp = thx.culture.FormatDate.format(culture.date.patternTimeShort,date,culture,false);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.year = function(date,culture) {
+	$s.push("thx.culture.FormatDate::year");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.digits("" + date.getFullYear(),culture);
+	var $tmp = thx.culture.FormatNumber.digits("" + date.getFullYear(),culture);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.month = function(date,culture) {
+	$s.push("thx.culture.FormatDate::month");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.digits("" + (date.getMonth() + 1),culture);
+	var $tmp = thx.culture.FormatNumber.digits("" + (date.getMonth() + 1),culture);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.monthName = function(date,culture) {
+	$s.push("thx.culture.FormatDate::monthName");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return culture.date.abbrMonths[date.getMonth()];
+	var $tmp = culture.date.abbrMonths[date.getMonth()];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.monthNameShort = function(date,culture) {
+	$s.push("thx.culture.FormatDate::monthNameShort");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return culture.date.months[date.getMonth()];
+	var $tmp = culture.date.months[date.getMonth()];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.weekDay = function(date,culture) {
+	$s.push("thx.culture.FormatDate::weekDay");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.digits("" + (date.getDay() + culture.date.firstWeekDay),culture);
+	var $tmp = thx.culture.FormatNumber.digits("" + (date.getDay() + culture.date.firstWeekDay),culture);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.weekDayName = function(date,culture) {
+	$s.push("thx.culture.FormatDate::weekDayName");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return culture.date.abbrDays[date.getDay()];
+	var $tmp = culture.date.abbrDays[date.getDay()];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
+	$s.push("thx.culture.FormatDate::weekDayNameShort");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return culture.date.days[date.getDay()];
+	var $tmp = culture.date.days[date.getDay()];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatDate.prototype.__class__ = thx.culture.FormatDate;
 rg.query.Query = function(executor) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.Query::new");
+	var $spos = $s.length;
 	this.data = null;
 	this.onLoading = new hxevents.Notifier();
 	this.onComplete = new hxevents.Notifier();
@@ -8262,11 +14646,25 @@ rg.query.Query = function(executor) {
 	this.onData = new hxevents.Dispatcher();
 	this.onError = new hxevents.Dispatcher();
 	this.executor = executor;
+	$s.pop();
 }
 rg.query.Query.__name__ = ["rg","query","Query"];
 rg.query.Query.normalizeName = function(s) {
-	if(s == null) return null;
-	if("." == s.substr(0,1)) return s.substr(1); else return s;
+	$s.push("rg.query.Query::normalizeName");
+	var $spos = $s.length;
+	if(s == null) {
+		$s.pop();
+		return null;
+	}
+	if("." == s.substr(0,1)) {
+		var $tmp = s.substr(1);
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return s;
+	}
+	$s.pop();
 }
 rg.query.Query.prototype.data = null;
 rg.query.Query.prototype._data = null;
@@ -8277,84 +14675,131 @@ rg.query.Query.prototype.onData = null;
 rg.query.Query.prototype.onError = null;
 rg.query.Query.prototype.executor = null;
 rg.query.Query.prototype.close = function() {
+	$s.push("rg.query.Query::close");
+	var $spos = $s.length;
 	this.onLoading.clear();
 	this.onError.clear();
 	this.onData.clear();
 	this.onChange.clear();
 	this.onComplete.clear();
+	$s.pop();
 }
 rg.query.Query.prototype.executeLoad = function(success,error) {
+	$s.push("rg.query.Query::executeLoad");
+	var $spos = $s.length;
 	throw new thx.error.AbstractMethod({ fileName : "Query.hx", lineNumber : 49, className : "rg.query.Query", methodName : "executeLoad"});
+	$s.pop();
 }
 rg.query.Query.prototype.load = function() {
+	$s.push("rg.query.Query::load");
+	var $spos = $s.length;
 	this.onLoading.dispatch();
 	this.executeLoad($closure(this,"_success"),$closure(this,"_error"));
+	$s.pop();
 }
 rg.query.Query.prototype.transform = function(v) {
-	return v;
+	$s.push("rg.query.Query::transform");
+	var $spos = $s.length;
+	var $tmp = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.Query.prototype._success = function(v) {
+	$s.push("rg.query.Query::_success");
+	var $spos = $s.length;
 	if(!Dynamics.same(v,this._data)) this.onChange.dispatch(this.data = this.transform(this._data = v));
 	this.onData.dispatch(this.data);
 	this.onComplete.dispatch();
+	$s.pop();
 }
 rg.query.Query.prototype._error = function(v) {
+	$s.push("rg.query.Query::_error");
+	var $spos = $s.length;
 	this.onError.dispatch(v);
 	this.onComplete.dispatch();
+	$s.pop();
 }
 rg.query.Query.prototype.__class__ = rg.query.Query;
 rg.query.QueryPath = function(executor,path) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryPath::new");
+	var $spos = $s.length;
 	rg.query.Query.call(this,executor);
 	this.setPath(path);
+	$s.pop();
 }
 rg.query.QueryPath.__name__ = ["rg","query","QueryPath"];
 rg.query.QueryPath.__super__ = rg.query.Query;
 for(var k in rg.query.Query.prototype ) rg.query.QueryPath.prototype[k] = rg.query.Query.prototype[k];
 rg.query.QueryPath.prototype.path = null;
 rg.query.QueryPath.prototype.setPath = function(v) {
+	$s.push("rg.query.QueryPath::setPath");
+	var $spos = $s.length;
 	if(null == v || 0 == v.length) throw new thx.error.NullArgument("v",{ fileName : "Query.hx", lineNumber : 104, className : "rg.query.QueryPath", methodName : "setPath"}); else null;
-	return this.path = v;
+	var $tmp = this.path = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryPath.prototype.__class__ = rg.query.QueryPath;
 rg.query.QueryEvent = function(executor,path,event) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryEvent::new");
+	var $spos = $s.length;
 	rg.query.QueryPath.call(this,executor,path);
 	this.setEvent(event);
+	$s.pop();
 }
 rg.query.QueryEvent.__name__ = ["rg","query","QueryEvent"];
 rg.query.QueryEvent.__super__ = rg.query.QueryPath;
 for(var k in rg.query.QueryPath.prototype ) rg.query.QueryEvent.prototype[k] = rg.query.QueryPath.prototype[k];
 rg.query.QueryEvent.prototype.event = null;
 rg.query.QueryEvent.prototype.setEvent = function(v) {
+	$s.push("rg.query.QueryEvent::setEvent");
+	var $spos = $s.length;
 	v = rg.query.Query.normalizeName(v);
 	if(null == v) throw new thx.error.NullArgument("v",{ fileName : "Query.hx", lineNumber : 119, className : "rg.query.QueryEvent", methodName : "setEvent"}); else null;
-	return this.event = v;
+	var $tmp = this.event = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryEvent.prototype.__class__ = rg.query.QueryEvent;
 rg.query.QueryProperty = function(executor,path,event,property) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryProperty::new");
+	var $spos = $s.length;
 	rg.query.QueryEvent.call(this,executor,path,event);
 	this.setProperty(property);
+	$s.pop();
 }
 rg.query.QueryProperty.__name__ = ["rg","query","QueryProperty"];
 rg.query.QueryProperty.__super__ = rg.query.QueryEvent;
 for(var k in rg.query.QueryEvent.prototype ) rg.query.QueryProperty.prototype[k] = rg.query.QueryEvent.prototype[k];
 rg.query.QueryProperty.prototype.property = null;
 rg.query.QueryProperty.prototype.setProperty = function(v) {
+	$s.push("rg.query.QueryProperty::setProperty");
+	var $spos = $s.length;
 	v = rg.query.Query.normalizeName(v);
 	if(null == v) throw new thx.error.NullArgument("v",{ fileName : "Query.hx", lineNumber : 137, className : "rg.query.QueryProperty", methodName : "setProperty"}); else null;
-	return this.property = v;
+	var $tmp = this.property = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryProperty.prototype.__class__ = rg.query.QueryProperty;
 rg.query.QueryValues = function(executor,path,event,property,values,others,otherslabel) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryValues::new");
+	var $spos = $s.length;
 	if(otherslabel == null) otherslabel = "others";
 	if(others == null) others = false;
 	rg.query.QueryProperty.call(this,executor,path,event,property);
 	this.setValues(values);
 	this.others = others;
 	this.othersLabel = otherslabel;
+	$s.pop();
 }
 rg.query.QueryValues.__name__ = ["rg","query","QueryValues"];
 rg.query.QueryValues.__super__ = rg.query.QueryProperty;
@@ -8363,50 +14808,80 @@ rg.query.QueryValues.prototype.values = null;
 rg.query.QueryValues.prototype.others = null;
 rg.query.QueryValues.prototype.othersLabel = null;
 rg.query.QueryValues.prototype.formatter = function(v,i) {
-	return "" + v;
+	$s.push("rg.query.QueryValues::formatter");
+	var $spos = $s.length;
+	var $tmp = "" + v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryValues.prototype.formattedValues = function() {
+	$s.push("rg.query.QueryValues::formattedValues");
+	var $spos = $s.length;
 	var v = this.values.map($closure(this,"formatter"));
 	if(this.others) v.push(this.othersLabel);
+	$s.pop();
 	return v;
+	$s.pop();
 }
 rg.query.QueryValues.prototype.setValues = function(v) {
+	$s.push("rg.query.QueryValues::setValues");
+	var $spos = $s.length;
 	if(null == v) throw new thx.error.NullArgument("v",{ fileName : "Query.hx", lineNumber : 185, className : "rg.query.QueryValues", methodName : "setValues"}); else null;
-	return this.values = v;
+	var $tmp = this.values = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryValues.prototype.__class__ = rg.query.QueryValues;
 rg.query.QueryValuesPeridocity = function(executor,path,event,property,values,others,otherslabel) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryValuesPeridocity::new");
+	var $spos = $s.length;
 	if(otherslabel == null) otherslabel = "others";
 	if(others == null) others = false;
 	rg.query.QueryValues.call(this,executor,path,event,property,values,others,otherslabel);
 	this.time = new rg.query.TimeQuery();
+	$s.pop();
 }
 rg.query.QueryValuesPeridocity.__name__ = ["rg","query","QueryValuesPeridocity"];
 rg.query.QueryValuesPeridocity.__super__ = rg.query.QueryValues;
 for(var k in rg.query.QueryValues.prototype ) rg.query.QueryValuesPeridocity.prototype[k] = rg.query.QueryValues.prototype[k];
 rg.query.QueryValuesPeridocity.prototype.time = null;
 rg.query.QueryValuesPeridocity.prototype.close = function() {
+	$s.push("rg.query.QueryValuesPeridocity::close");
+	var $spos = $s.length;
 	rg.query.QueryValues.prototype.close.call(this);
 	this.time.close();
+	$s.pop();
 }
 rg.query.QueryValuesPeridocity.prototype.load = function() {
+	$s.push("rg.query.QueryValuesPeridocity::load");
+	var $spos = $s.length;
 	this.time.update();
 	rg.query.QueryValues.prototype.load.call(this);
+	$s.pop();
 }
 rg.query.QueryValuesPeridocity.prototype.__class__ = rg.query.QueryValuesPeridocity;
 rg.query.QueryValuesSeries = function(executor,path,event,property,values,others,otherslabel) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryValuesSeries::new");
+	var $spos = $s.length;
 	if(otherslabel == null) otherslabel = "others";
 	if(others == null) others = false;
 	rg.query.QueryValuesPeridocity.call(this,executor,path,event,property,values,others,otherslabel);
+	$s.pop();
 }
 rg.query.QueryValuesSeries.__name__ = ["rg","query","QueryValuesSeries"];
 rg.query.QueryValuesSeries.__super__ = rg.query.QueryValuesPeridocity;
 for(var k in rg.query.QueryValuesPeridocity.prototype ) rg.query.QueryValuesSeries.prototype[k] = rg.query.QueryValuesPeridocity.prototype[k];
 rg.query.QueryValuesSeries.forLineChart = function(executor,path,event,property,values,others,otherslabel) {
+	$s.push("rg.query.QueryValuesSeries::forLineChart");
+	var $spos = $s.length;
 	var query = new rg.query.QueryValuesSeries(executor,path,event,property,values,others,otherslabel);
 	query.transform = function(data) {
+		$s.push("rg.query.QueryValuesSeries::forLineChart@76");
+		var $spos = $s.length;
 		var start = null != query.time.start?query.time.start.getTime():rg.util.Periodicity.minForPeriodicityInSeries(data,query.time.periodicity), end = null != query.time.end?query.time.end.getTime():rg.util.Periodicity.maxForPeriodicityInSeries(data,query.time.periodicity), minx = Math.POSITIVE_INFINITY, maxx = Math.NEGATIVE_INFINITY, miny = Math.POSITIVE_INFINITY, maxy = Math.NEGATIVE_INFINITY;
 		var labels = query.formattedValues(), result = [], range = rg.util.Periodicity.range(start,end,query.time.periodicity), values1, d, y;
 		var _g1 = 0, _g = labels.length;
@@ -8428,13 +14903,22 @@ rg.query.QueryValuesSeries.forLineChart = function(executor,path,event,property,
 			}
 			result.push({ label : labels[i], values : values1});
 		}
-		return { minx : minx, maxx : maxx, miny : miny, maxy : maxy, data : result};
+		var $tmp = { minx : minx, maxx : maxx, miny : miny, maxy : maxy, data : result};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
 	return query;
+	$s.pop();
 }
 rg.query.QueryValuesSeries.prototype.executeLoad = function(success,error) {
+	$s.push("rg.query.QueryValuesSeries::executeLoad");
+	var $spos = $s.length;
 	var count = 0, total = this.values.length + (this.others?1:0), data = [], others = this.others;
 	var _end = function() {
+		$s.push("rg.query.QueryValuesSeries::executeLoad@22");
+		var $spos = $s.length;
 		if(others) {
 			var tot = data[total - 1];
 			var _g1 = 0, _g = total - 1;
@@ -8450,70 +14934,147 @@ rg.query.QueryValuesSeries.prototype.executeLoad = function(success,error) {
 			}
 		}
 		success(data);
+		$s.pop();
 	};
 	var _total = function(value) {
+		$s.push("rg.query.QueryValuesSeries::executeLoad@39");
+		var $spos = $s.length;
 		haxe.Log.trace(value,{ fileName : "QueryValuesSeries.hx", lineNumber : 41, className : "rg.query.QueryValuesSeries", methodName : "executeLoad"});
 		data[total - 1] = value;
 		if(++count == total) _end();
+		$s.pop();
 	};
 	var _collect = function(pos,value) {
+		$s.push("rg.query.QueryValuesSeries::executeLoad@47");
+		var $spos = $s.length;
 		data[pos] = value;
 		if(++count == total) _end();
+		$s.pop();
 	};
 	var _g1 = 0, _g = this.values.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		this.executor.propertyValueSeries(this.path,{ start : this.time.start, end : this.time.end, periodicity : this.time.periodicity, property : this.event + "." + this.property, value : this.values[i]},(function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
+			$s.push("rg.query.QueryValuesSeries::executeLoad@62");
+			var $spos = $s.length;
+			var $tmp = function(a2) {
+				$s.push("rg.query.QueryValuesSeries::executeLoad@62@62");
+				var $spos = $s.length;
+				var $tmp = f(a1,a2);
+				$s.pop();
+				return $tmp;
+				$s.pop();
 			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		})(_collect,i),error);
 	}
 	if(others) this.executor.propertySeries(this.path,{ start : this.time.start, end : this.time.end, periodicity : this.time.periodicity, property : this.event + "." + this.property},_total,error);
+	$s.pop();
 }
 rg.query.QueryValuesSeries.prototype.__class__ = rg.query.QueryValuesSeries;
 thx.culture.FormatNumber = function() { }
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
+	$s.push("thx.culture.FormatNumber::decimal");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.number.patternNegative,culture.number.patternPositive,culture,null,null);
+	var $tmp = thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.number.patternNegative,culture.number.patternPositive,culture,null,null);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatNumber.percent = function(v,decimals,culture) {
+	$s.push("thx.culture.FormatNumber::percent");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPercent);
+	var $tmp = thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPercent);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatNumber.permille = function(v,decimals,culture) {
+	$s.push("thx.culture.FormatNumber::permille");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPermille);
+	var $tmp = thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPermille);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatNumber.currency = function(v,symbol,decimals,culture) {
+	$s.push("thx.culture.FormatNumber::currency");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.crunch(v,decimals,culture.currency,culture.currency.patternNegative,culture.currency.patternPositive,culture,"$",symbol == null?culture.currencySymbol:symbol);
+	var $tmp = thx.culture.FormatNumber.crunch(v,decimals,culture.currency,culture.currency.patternNegative,culture.currency.patternPositive,culture,"$",symbol == null?culture.currencySymbol:symbol);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatNumber["int"] = function(v,culture) {
+	$s.push("thx.culture.FormatNumber::int");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.decimal(v,0,culture);
+	var $tmp = thx.culture.FormatNumber.decimal(v,0,culture);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatNumber.digits = function(v,culture) {
+	$s.push("thx.culture.FormatNumber::digits");
+	var $spos = $s.length;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
-	return thx.culture.FormatNumber.processDigits(v,culture.digits);
+	var $tmp = thx.culture.FormatNumber.processDigits(v,culture.digits);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatNumber.crunch = function(v,decimals,info,negative,positive,culture,symbol,replace) {
-	if(Math.isNaN(v)) return culture.symbolNaN; else if(!Math.isFinite(v)) return v == Math.NEGATIVE_INFINITY?culture.symbolNegInf:culture.symbolPosInf;
+	$s.push("thx.culture.FormatNumber::crunch");
+	var $spos = $s.length;
+	if(Math.isNaN(v)) {
+		var $tmp = culture.symbolNaN;
+		$s.pop();
+		return $tmp;
+	} else if(!Math.isFinite(v)) {
+		var $tmp = v == Math.NEGATIVE_INFINITY?culture.symbolNegInf:culture.symbolPosInf;
+		$s.pop();
+		return $tmp;
+	}
 	var fv = thx.culture.FormatNumber.value(v,info,decimals == null?info.decimals:decimals < 0?0:decimals,culture.digits);
-	if(symbol != null) return StringTools.replace(StringTools.replace(v < 0?negative:positive,"n",fv),symbol,replace); else return StringTools.replace(v < 0?negative:positive,"n",fv);
+	if(symbol != null) {
+		var $tmp = StringTools.replace(StringTools.replace(v < 0?negative:positive,"n",fv),symbol,replace);
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = StringTools.replace(v < 0?negative:positive,"n",fv);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.culture.FormatNumber.processDigits = function(s,digits) {
-	if(digits == null) return s;
+	$s.push("thx.culture.FormatNumber::processDigits");
+	var $spos = $s.length;
+	if(digits == null) {
+		$s.pop();
+		return s;
+	}
 	var o = [];
 	var _g1 = 0, _g = s.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		o.push(digits[Std.parseInt(s.substr(i,1))]);
 	}
-	return o.join("");
+	var $tmp = o.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
+	$s.push("thx.culture.FormatNumber::value");
+	var $spos = $s.length;
 	var fv = "" + Math.abs(v);
 	var pos = fv.indexOf("E");
 	if(pos > 0) {
@@ -8544,25 +15105,39 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 	var intpart = intparts.join(info.groupsSeparator);
 	if(decimals > 0) {
 		var decpart = parts.length == 1?StringTools.lpad("","0",decimals):parts[1].length > decimals?parts[1].substr(0,decimals):StringTools.rpad(parts[1],"0",decimals);
-		return intpart + info.decimalsSeparator + thx.culture.FormatNumber.processDigits(decpart,digits);
-	} else return intpart;
+		var $tmp = intpart + info.decimalsSeparator + thx.culture.FormatNumber.processDigits(decpart,digits);
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return intpart;
+	}
+	$s.pop();
 }
 thx.culture.FormatNumber.prototype.__class__ = thx.culture.FormatNumber;
 rg.Viz = function() { }
 rg.Viz.__name__ = ["rg","Viz"];
 rg.Viz.pivot = function(el,query,options) {
+	$s.push("rg.Viz::pivot");
+	var $spos = $s.length;
 	var pivot = new rg.pivottable.PivotTable(rg.Viz.select(el));
 	var queryoptions = rg.QueryOptionsUtil.emptyPivotTableQuery();
 	Objects.copyTo(query,queryoptions);
 	rg.Viz.makePivotOptions(pivot,queryoptions,options,$closure(pivot,"init"));
+	$s.pop();
 	return pivot;
+	$s.pop();
 }
 rg.Viz.makePivotOptions = function(pivot,query,options,handler) {
+	$s.push("rg.Viz::makePivotOptions");
+	var $spos = $s.length;
 	if(null == options) options = { };
 	var o = Objects.copyTo(rg.Viz.defaultOptions,options);
-	if(null == query.path) throw new thx.error.Error("you must provide a path value for your query",null,null,{ fileName : "Viz.hx", lineNumber : 63, className : "rg.Viz", methodName : "makePivotOptions"});
-	if(null == query.event) throw new thx.error.Error("you must provide an event name for your query",null,null,{ fileName : "Viz.hx", lineNumber : 65, className : "rg.Viz", methodName : "makePivotOptions"});
+	if(null == query.path) throw new thx.error.Error("you must provide a path value for your query",null,null,{ fileName : "Viz.hx", lineNumber : 73, className : "rg.Viz", methodName : "makePivotOptions"});
+	if(null == query.event) throw new thx.error.Error("you must provide an event name for your query",null,null,{ fileName : "Viz.hx", lineNumber : 75, className : "rg.Viz", methodName : "makePivotOptions"});
 	var init = function() {
+		$s.push("rg.Viz::makePivotOptions@77");
+		var $spos = $s.length;
 		if(null != query.filter) pivot.setAvailableProperties(Arrays.filter(query.availableProperties,query.filter)); else pivot.setAvailableProperties(query.availableProperties);
 		pivot.start = (rg.Viz.toDatef(o.start))(Date.now());
 		pivot.end = (rg.Viz.toDatef(o.end))(Date.now());
@@ -8576,47 +15151,139 @@ rg.Viz.makePivotOptions = function(pivot,query,options,handler) {
 			if(null != property.time) pivot.queryProperties.push(rg.pivottable.QueryProperty.TimeProperty(rg.Viz.periodicity(property.time),null == property.order?true:property.order.toLowerCase() == "top")); else pivot.queryProperties.push(rg.pivottable.QueryProperty.ValueProperty(property.name,null == property.order?false:property.order.toLowerCase() == "bottom",null == property.limit?20:property.limit));
 		}
 		handler();
+		$s.pop();
 	};
 	if(null == query.availableProperties || 0 == query.availableProperties.length) rg.js.ReportGrid.children(query.path,{ property : query.event, type : "property"},function(v) {
+		$s.push("rg.Viz::makePivotOptions@112");
+		var $spos = $s.length;
 		query.availableProperties = v.map(function(d,i) {
-			if(d.substr(0,1) == ".") return d.substr(1); else return d;
+			$s.push("rg.Viz::makePivotOptions@112@113");
+			var $spos = $s.length;
+			if(d.substr(0,1) == ".") {
+				var $tmp = d.substr(1);
+				$s.pop();
+				return $tmp;
+			} else {
+				$s.pop();
+				return d;
+			}
+			$s.pop();
 		});
 		init();
+		$s.pop();
 	}); else init();
+	$s.pop();
 }
 rg.Viz.periodicity = function(v) {
-	if(null == v) return "Eternity";
+	$s.push("rg.Viz::periodicity");
+	var $spos = $s.length;
+	if(null == v) {
+		$s.pop();
+		return "Eternity";
+	}
 	var v1 = Strings.ucfirst(v.toLowerCase());
-	if(!Reflect.hasField(rg.js.ReportGrid.Periodicity,v1)) throw new thx.error.Error("invalid periodicity '{0}'",null,v1,{ fileName : "Viz.hx", lineNumber : 122, className : "rg.Viz", methodName : "periodicity"});
+	if(!Reflect.hasField(rg.js.ReportGrid.Periodicity,v1)) throw new thx.error.Error("invalid periodicity '{0}'",null,v1,{ fileName : "Viz.hx", lineNumber : 132, className : "rg.Viz", methodName : "periodicity"});
+	$s.pop();
 	return v1;
+	$s.pop();
 }
 rg.Viz.toDateLimit = function(v) {
-	if(null == v) return rg.query.DateLimit.NoLimit;
-	if(Reflect.isFunction(v)) return rg.query.DateLimit.VariableLimit(v);
-	if(Std["is"](v,Date)) return rg.query.DateLimit.FixedLimit(v);
-	if(Std["is"](v,Float)) return rg.query.DateLimit.FixedLimit(Date.fromTime(v));
-	if(Std["is"](v,String)) return rg.query.DateLimit.VariableLimit(function() {
-		return thx.date.DateParser.parse(v);
-	});
-	throw new thx.error.Error("invalid date value '{0}'",v,null,{ fileName : "Viz.hx", lineNumber : 138, className : "rg.Viz", methodName : "toDateLimit"});
+	$s.push("rg.Viz::toDateLimit");
+	var $spos = $s.length;
+	if(null == v) {
+		var $tmp = rg.query.DateLimit.NoLimit;
+		$s.pop();
+		return $tmp;
+	}
+	if(Reflect.isFunction(v)) {
+		var $tmp = rg.query.DateLimit.VariableLimit(v);
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](v,Date)) {
+		var $tmp = rg.query.DateLimit.FixedLimit(v);
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](v,Float)) {
+		var $tmp = rg.query.DateLimit.FixedLimit(Date.fromTime(v));
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](v,String)) {
+		var $tmp = rg.query.DateLimit.VariableLimit(function() {
+			$s.push("rg.Viz::toDateLimit@147");
+			var $spos = $s.length;
+			var $tmp = thx.date.DateParser.parse(v);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		});
+		$s.pop();
+		return $tmp;
+	}
+	throw new thx.error.Error("invalid date value '{0}'",v,null,{ fileName : "Viz.hx", lineNumber : 148, className : "rg.Viz", methodName : "toDateLimit"});
+	$s.pop();
 }
 rg.Viz.toDatef = function(v) {
-	if(null == v) return function(_) {
-		return null;
-	};
-	if(Reflect.isFunction(v)) return v;
-	if(Std["is"](v,Date)) return function(_) {
+	$s.push("rg.Viz::toDatef");
+	var $spos = $s.length;
+	if(null == v) {
+		var $tmp = function(_) {
+			$s.push("rg.Viz::toDatef@154");
+			var $spos = $s.length;
+			$s.pop();
+			return null;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	}
+	if(Reflect.isFunction(v)) {
+		$s.pop();
 		return v;
-	};
-	if(Std["is"](v,Float)) return function(_) {
-		return Date.fromTime(v);
-	};
-	if(Std["is"](v,String)) return function(d) {
-		return thx.date.DateParser.parse(v,d);
-	};
-	throw new thx.error.Error("invalid date value '{0}'",v,null,{ fileName : "Viz.hx", lineNumber : 153, className : "rg.Viz", methodName : "toDatef"});
+	}
+	if(Std["is"](v,Date)) {
+		var $tmp = function(_) {
+			$s.push("rg.Viz::toDatef@158");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](v,Float)) {
+		var $tmp = function(_) {
+			$s.push("rg.Viz::toDatef@160");
+			var $spos = $s.length;
+			var $tmp = Date.fromTime(v);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](v,String)) {
+		var $tmp = function(d) {
+			$s.push("rg.Viz::toDatef@162");
+			var $spos = $s.length;
+			var $tmp = thx.date.DateParser.parse(v,d);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	}
+	throw new thx.error.Error("invalid date value '{0}'",v,null,{ fileName : "Viz.hx", lineNumber : 163, className : "rg.Viz", methodName : "toDatef"});
+	$s.pop();
 }
 rg.Viz.pie = function(el,query,options) {
+	$s.push("rg.Viz::pie");
+	var $spos = $s.length;
 	var selection = rg.Viz.select(el);
 	var q = Objects.copyTo(query,rg.QueryOptionsUtil.emptyQuery());
 	var top = null == q.bottom && q.top > 0;
@@ -8634,17 +15301,29 @@ rg.Viz.pie = function(el,query,options) {
 	loader.onChange.add($closure(chart,"data"));
 	var animated = null != o.refresh && o.refresh > 0;
 	if(animated) new rg.query.QueryTimerUpdate(loader,o.refresh); else loader.load();
+	$s.pop();
 	return chart;
+	$s.pop();
 }
 rg.Viz.error = function(e) {
-	haxe.Log.trace("ERROR: " + e,{ fileName : "Viz.hx", lineNumber : 196, className : "rg.Viz", methodName : "error"});
+	$s.push("rg.Viz::error");
+	var $spos = $s.length;
+	haxe.Log.trace("ERROR: " + e,{ fileName : "Viz.hx", lineNumber : 206, className : "rg.Viz", methodName : "error"});
+	$s.pop();
 }
 rg.Viz.sizeOptions = function(selection,options) {
+	$s.push("rg.Viz::sizeOptions");
+	var $spos = $s.length;
 	var v;
 	if(null == options) options = { };
-	return Objects.copyTo(options,{ width : (v = selection.node().clientWidth) > 10?v:400, height : (v = selection.node().clientHeight) > 10?v:300});
+	var $tmp = Objects.copyTo(options,{ width : (v = selection.node().clientWidth) > 10?v:400, height : (v = selection.node().clientHeight) > 10?v:300});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.Viz.line = function(el,query,options) {
+	$s.push("rg.Viz::line");
+	var $spos = $s.length;
 	var selection = rg.Viz.select(el);
 	var q = Objects.copyTo(query,rg.QueryOptionsUtil.emptyQuery());
 	var o = rg.Viz.sizeOptions(selection,options);
@@ -8659,39 +15338,70 @@ rg.Viz.line = function(el,query,options) {
 	loader.time.endLimit = rg.Viz.toDateLimit(o.end);
 	var space = new rg.svg.SvgSpace(o.width,o.height,selection);
 	space.svg.attr("class").string("rg");
-	var panel = space.createPanel(rg.layout.Disposition.Fill());
 	var x = new thx.math.scale.LinearTime();
 	var y = new thx.math.scale.Linear();
-	var chart = new rg.svg.SvgLineChart(panel,x,y);
+	var container = space.createContainer(rg.layout.Disposition.Fill(),rg.layout.Orientation.Horizontal);
+	var scalepanel = container.createPanel(rg.layout.Disposition.Fixed(50));
+	var scale = rg.svg.SvgScaleLabel.ofLinear(scalepanel,rg.svg.Anchor.Right,y);
+	var ticks = rg.svg.SvgScaleTick.ofLinear(scalepanel,rg.svg.Anchor.Right,y);
+	scale.padding(10);
+	var chartpanel = container.createPanel(rg.layout.Disposition.Fill());
+	var highlighter = new rg.svg.SvgLineChartHighlighter(chartpanel,x,y);
+	var chart = new rg.svg.SvgLineChart(chartpanel,x,y);
 	if(o.animated) thx.js.Timer.timer(function(t) {
+		$s.push("rg.Viz::line@273");
+		var $spos = $s.length;
 		loader.time.update();
 		x.domain([loader.time.start.getTime(),loader.time.end.getTime()]);
 		chart.updatex();
+		$s.pop();
 		return false;
+		$s.pop();
 	});
 	loader.onChange.add(function(v) {
+		$s.push("rg.Viz::line@282");
+		var $spos = $s.length;
 		y.domain([v.maxy * 1.2,0.0]);
+		scale.redraw();
+		ticks.redraw();
 		x.domain([null == loader.time.start?v.minx:loader.time.start.getTime(),null == loader.time.end?v.maxx:loader.time.end.getTime()]);
 		chart.data(v.data);
+		$s.pop();
 	});
-	chart.lineInterpolator(thx.svg.LineInterpolator.Cardinal());
+	chart.lineInterpolator(null == o.lineinterpolator?thx.svg.LineInterpolator.Linear:thx.svg.LineInterpolators.parse(o.lineinterpolator));
 	loader.onError.add(rg.Viz.error);
 	values.onError.add(rg.Viz.error);
 	values.onChange.add(function(v) {
+		$s.push("rg.Viz::line@295");
+		var $spos = $s.length;
 		loader.setValues(v.map(function(d,i) {
-			return d.label;
+			$s.push("rg.Viz::line@295@296");
+			var $spos = $s.length;
+			var $tmp = d.label;
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		}));
 		loader.load();
+		$s.pop();
 	});
 	var animated = null != o.refresh && o.refresh > 0;
 	if(animated) new rg.query.QueryTimerUpdate(values,o.refresh); else values.load();
+	$s.pop();
 }
 rg.Viz.stream = function(el,query,options) {
+	$s.push("rg.Viz::stream");
+	var $spos = $s.length;
 	var q = Objects.copyTo(query,rg.QueryOptionsUtil.emptyQuery());
 	var loader = rg.QueryOptionsUtil.toQueryInst(q);
-	return new rg.chart.StreamGraph(rg.Viz.select(el),loader,rg.Viz.makeoptions(options,{ lineinterpolation : "cardinal", left : rg.Viz.scale(false,false,0)}));
+	var $tmp = new rg.chart.StreamGraph(rg.Viz.select(el),loader,rg.Viz.makeoptions(options,{ lineinterpolation : "cardinal", left : rg.Viz.scale(false,false,0)}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.Viz.makeoptions = function(options,defaults) {
+	$s.push("rg.Viz::makeoptions");
+	var $spos = $s.length;
 	var o = Objects.clone(rg.Viz.defaultOptions);
 	Objects.copyTo(defaults,o);
 	Objects.copyTo(options,o);
@@ -8702,29 +15412,57 @@ rg.Viz.makeoptions = function(options,defaults) {
 		var e2 = o.end(DateTools.delta(Date.now(),DateTools.days(-366)));
 		if(e1 == null || e2 == null) o.animated = false; else o.animated = e1.getTime() != e2.getTime();
 	}
-	return o;
+	var $tmp = o;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.Viz.select = function(el) {
+	$s.push("rg.Viz::select");
+	var $spos = $s.length;
 	var el1 = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(el1.empty()) throw new thx.error.Error("invalid container",null,null,{ fileName : "Viz.hx", lineNumber : 315, className : "rg.Viz", methodName : "select"});
+	if(el1.empty()) throw new thx.error.Error("invalid container",null,null,{ fileName : "Viz.hx", lineNumber : 347, className : "rg.Viz", methodName : "select"});
+	$s.pop();
 	return el1;
+	$s.pop();
 }
 rg.Viz.scale = function(displayLabels,displayTicks,labellength) {
-	return { ticks : displayTicks, labels : displayLabels, ticklength : 5, labellength : labellength, spacing : 4};
+	$s.push("rg.Viz::scale");
+	var $spos = $s.length;
+	var $tmp = { ticks : displayTicks, labels : displayLabels, ticklength : 5, labellength : labellength, spacing : 4};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.Viz.prototype.__class__ = rg.Viz;
 thx.geom.layout.Pie = function(p) {
 	if( p === $_ ) return;
+	$s.push("thx.geom.layout.Pie::new");
+	var $spos = $s.length;
 	this._startAngle = function(_,_1) {
+		$s.push("thx.geom.layout.Pie::new@20");
+		var $spos = $s.length;
+		$s.pop();
 		return 0.0;
+		$s.pop();
 	};
 	this._endAngle = function(_,_1) {
+		$s.push("thx.geom.layout.Pie::new@21");
+		var $spos = $s.length;
+		$s.pop();
 		return 6.283185307179586477;
+		$s.pop();
 	};
 	this._sort = null;
 	this._value = function(d,_) {
-		return Number(d);
+		$s.push("thx.geom.layout.Pie::new@23");
+		var $spos = $s.length;
+		var $tmp = Number(d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
 }
 thx.geom.layout.Pie.__name__ = ["thx","geom","layout","Pie"];
 thx.geom.layout.Pie.prototype._startAngle = null;
@@ -8732,381 +15470,762 @@ thx.geom.layout.Pie.prototype._endAngle = null;
 thx.geom.layout.Pie.prototype._sort = null;
 thx.geom.layout.Pie.prototype._value = null;
 thx.geom.layout.Pie.prototype.pie = function(data,i) {
+	$s.push("thx.geom.layout.Pie::pie");
+	var $spos = $s.length;
 	var a = this._startAngle(data,i), k = this._endAngle(data,i) - a;
 	var index = Ints.range(data.length);
 	if(this._sort != null) {
 		var s = this._sort;
 		index.sort(function(i1,j) {
-			return s(data[i1],data[j]);
+			$s.push("thx.geom.layout.Pie::pie@35");
+			var $spos = $s.length;
+			var $tmp = s(data[i1],data[j]);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
 	}
 	var values = data.map(this._value);
 	k /= Iterators.reduce(values.iterator(),function(p,d,_) {
-		return p + d;
+		$s.push("thx.geom.layout.Pie::pie@42");
+		var $spos = $s.length;
+		var $tmp = p + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},0.0);
 	if(!Math.isFinite(k)) k = 0;
 	var d;
 	var arcs = index.map(function(_,i1) {
+		$s.push("thx.geom.layout.Pie::pie@46");
+		var $spos = $s.length;
 		d = values[i1];
-		return { value : d, startAngle : a, endAngle : a += d * k};
+		var $tmp = { value : d, startAngle : a, endAngle : a += d * k};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
-	return data.map(function(d1,i1) {
-		return arcs[index[i1]];
+	var $tmp = data.map(function(d1,i1) {
+		$s.push("thx.geom.layout.Pie::pie@55");
+		var $spos = $s.length;
+		var $tmp = arcs[index[i1]];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.getStartAngle = function() {
-	return this._startAngle;
+	$s.push("thx.geom.layout.Pie::getStartAngle");
+	var $spos = $s.length;
+	var $tmp = this._startAngle;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.startAngle = function(v) {
-	return this.startAnglef(function(_,_1) {
+	$s.push("thx.geom.layout.Pie::startAngle");
+	var $spos = $s.length;
+	var $tmp = this.startAnglef(function(_,_1) {
+		$s.push("thx.geom.layout.Pie::startAngle@61");
+		var $spos = $s.length;
+		$s.pop();
 		return v;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.startAnglef = function(v) {
+	$s.push("thx.geom.layout.Pie::startAnglef");
+	var $spos = $s.length;
 	this._startAngle = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.getEndAngle = function() {
-	return this._endAngle;
+	$s.push("thx.geom.layout.Pie::getEndAngle");
+	var $spos = $s.length;
+	var $tmp = this._endAngle;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.endAngle = function(v) {
-	return this.endAnglef(function(_,_1) {
+	$s.push("thx.geom.layout.Pie::endAngle");
+	var $spos = $s.length;
+	var $tmp = this.endAnglef(function(_,_1) {
+		$s.push("thx.geom.layout.Pie::endAngle@69");
+		var $spos = $s.length;
+		$s.pop();
 		return v;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.endAnglef = function(v) {
+	$s.push("thx.geom.layout.Pie::endAnglef");
+	var $spos = $s.length;
 	this._endAngle = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.getSort = function() {
-	return this._sort;
+	$s.push("thx.geom.layout.Pie::getSort");
+	var $spos = $s.length;
+	var $tmp = this._sort;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.sort = function(v) {
+	$s.push("thx.geom.layout.Pie::sort");
+	var $spos = $s.length;
 	this._sort = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.getValue = function() {
-	return this._value;
+	$s.push("thx.geom.layout.Pie::getValue");
+	var $spos = $s.length;
+	var $tmp = this._value;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.valuef = function(v) {
+	$s.push("thx.geom.layout.Pie::valuef");
+	var $spos = $s.length;
 	this._value = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.geom.layout.Pie.prototype.__class__ = thx.geom.layout.Pie;
 thx.js.AccessTween = function(transition,tweens) {
 	if( transition === $_ ) return;
+	$s.push("thx.js.AccessTween::new");
+	var $spos = $s.length;
 	this.transition = transition;
 	this.tweens = tweens;
+	$s.pop();
 }
 thx.js.AccessTween.__name__ = ["thx","js","AccessTween"];
 thx.js.AccessTween.prototype.transition = null;
 thx.js.AccessTween.prototype.tweens = null;
 thx.js.AccessTween.prototype.transitionColorTween = function(value) {
-	return function(d,i,a) {
-		return thx.color.Rgb.interpolatef(a,value);
+	$s.push("thx.js.AccessTween::transitionColorTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionColorTween@22");
+		var $spos = $s.length;
+		var $tmp = thx.color.Rgb.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTween.prototype.transitionColorTweenf = function(f) {
-	return function(d,i,a) {
-		return thx.color.Rgb.interpolatef(a,f(d,i));
+	$s.push("thx.js.AccessTween::transitionColorTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionColorTweenf@27");
+		var $spos = $s.length;
+		var $tmp = thx.color.Rgb.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTween.prototype.transitionStringTween = function(value) {
-	return function(d,i,a) {
-		return Strings.interpolatef(a,value);
+	$s.push("thx.js.AccessTween::transitionStringTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionStringTween@32");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTween.prototype.transitionStringTweenf = function(f) {
-	return function(d,i,a) {
-		return Strings.interpolatef(a,f(d,i));
+	$s.push("thx.js.AccessTween::transitionStringTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionStringTweenf@37");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTween.prototype.transitionFloatTween = function(value) {
-	return function(d,i,a) {
-		return Floats.interpolatef(a,value);
+	$s.push("thx.js.AccessTween::transitionFloatTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionFloatTween@42");
+		var $spos = $s.length;
+		var $tmp = Floats.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTween.prototype.transitionFloatTweenf = function(f) {
-	return function(d,i,a) {
-		return Floats.interpolatef(a,f(d,i));
+	$s.push("thx.js.AccessTween::transitionFloatTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionFloatTweenf@47");
+		var $spos = $s.length;
+		var $tmp = Floats.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTween.prototype._that = function() {
-	return this.transition;
+	$s.push("thx.js.AccessTween::_that");
+	var $spos = $s.length;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTween.prototype.__class__ = thx.js.AccessTween;
 thx.js.AccessTweenStyle = function(name,transition,tweens) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessTweenStyle::new");
+	var $spos = $s.length;
 	thx.js.AccessTween.call(this,transition,tweens);
 	this.name = name;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.__name__ = ["thx","js","AccessTweenStyle"];
 thx.js.AccessTweenStyle.__super__ = thx.js.AccessTween;
 for(var k in thx.js.AccessTween.prototype ) thx.js.AccessTweenStyle.prototype[k] = thx.js.AccessTween.prototype[k];
 thx.js.AccessTweenStyle.prototype.name = null;
 thx.js.AccessTweenStyle.prototype.floatNodef = function(f,priority) {
-	return this.floatTweenNodef(this.transitionFloatTweenf(f),priority);
+	$s.push("thx.js.AccessTweenStyle::floatNodef");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(f),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype["float"] = function(value,priority) {
-	return this.floatTweenNodef(this.transitionFloatTween(value),priority);
+	$s.push("thx.js.AccessTweenStyle::float");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTween(value),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.floatTweenNodef = function(tween,priority) {
+	$s.push("thx.js.AccessTweenStyle::floatTweenNodef");
+	var $spos = $s.length;
 	if(null == priority) priority = null;
 	var name = this.name;
 	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessTweenStyle::floatTweenNodef@38");
+		var $spos = $s.length;
 		var f = tween(d,i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenStyle::floatTweenNodef@38@41");
+			var $spos = $s.length;
 			d.style.setProperty(name,"" + f(t),priority);
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("style." + name,styleTween);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.stringNodef = function(f,priority) {
-	return this.stringTweenNodef(this.transitionStringTweenf(f),priority);
+	$s.push("thx.js.AccessTweenStyle::stringNodef");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(f),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.string = function(value,priority) {
-	return this.stringTweenNodef(this.transitionStringTween(value),priority);
+	$s.push("thx.js.AccessTweenStyle::string");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTween(value),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.stringTweenNodef = function(tween,priority) {
+	$s.push("thx.js.AccessTweenStyle::stringTweenNodef");
+	var $spos = $s.length;
 	if(null == priority) priority = null;
 	var name = this.name;
 	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessTweenStyle::stringTweenNodef@65");
+		var $spos = $s.length;
 		var f = tween(d,i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenStyle::stringTweenNodef@65@68");
+			var $spos = $s.length;
 			d.style.setProperty(name,f(t),priority);
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("style." + name,styleTween);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.colorNodef = function(f,priority) {
-	return this.colorTweenNodef(this.transitionColorTweenf(f),priority);
+	$s.push("thx.js.AccessTweenStyle::colorNodef");
+	var $spos = $s.length;
+	var $tmp = this.colorTweenNodef(this.transitionColorTweenf(f),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.color = function(value,priority) {
-	return this.colorTweenNodef(this.transitionColorTween(thx.color.Colors.parse(value)),priority);
+	$s.push("thx.js.AccessTweenStyle::color");
+	var $spos = $s.length;
+	var $tmp = this.colorTweenNodef(this.transitionColorTween(thx.color.Colors.parse(value)),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.colorTweenNodef = function(tween,priority) {
+	$s.push("thx.js.AccessTweenStyle::colorTweenNodef");
+	var $spos = $s.length;
 	if(null == priority) priority = null;
 	var name = this.name;
 	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessTweenStyle::colorTweenNodef@92");
+		var $spos = $s.length;
 		var f = tween(d,i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenStyle::colorTweenNodef@92@95");
+			var $spos = $s.length;
 			d.style.setProperty(name,f(t).toRgbString(),priority);
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("style." + name,styleTween);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenStyle.prototype.__class__ = thx.js.AccessTweenStyle;
 thx.js.AccessDataTweenStyle = function(name,transition,tweens) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataTweenStyle::new");
+	var $spos = $s.length;
 	thx.js.AccessTweenStyle.call(this,name,transition,tweens);
+	$s.pop();
 }
 thx.js.AccessDataTweenStyle.__name__ = ["thx","js","AccessDataTweenStyle"];
 thx.js.AccessDataTweenStyle.__super__ = thx.js.AccessTweenStyle;
 for(var k in thx.js.AccessTweenStyle.prototype ) thx.js.AccessDataTweenStyle.prototype[k] = thx.js.AccessTweenStyle.prototype[k];
 thx.js.AccessDataTweenStyle.prototype.floatf = function(f,priority) {
-	return this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
-		return f(Reflect.field(n,"__data__"),i);
+	$s.push("thx.js.AccessDataTweenStyle::floatf");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenStyle::floatf@114");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenStyle.prototype.floatTweenf = function(tween,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::floatTweenf");
+	var $spos = $s.length;
 	if(null == priority) priority = null;
 	var name = this.name;
 	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessDataTweenStyle::floatTweenf@122");
+		var $spos = $s.length;
 		var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenStyle::floatTweenf@122@125");
+			var $spos = $s.length;
 			d.style.setProperty(name,"" + f(t),priority);
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("style." + name,styleTween);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenStyle.prototype.stringf = function(f,priority) {
-	return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
-		return f(Reflect.field(n,"__data__"),i);
+	$s.push("thx.js.AccessDataTweenStyle::stringf");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenStyle::stringf@136");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenStyle.prototype.stringTweenf = function(tween,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::stringTweenf");
+	var $spos = $s.length;
 	if(null == priority) priority = null;
 	var name = this.name;
 	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessDataTweenStyle::stringTweenf@144");
+		var $spos = $s.length;
 		var f = tween(Reflect.field(d,"__data__"),i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenStyle::stringTweenf@144@147");
+			var $spos = $s.length;
 			d.style.setProperty(name,f(t),priority);
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("style." + name,styleTween);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenStyle.prototype.colorf = function(f,priority) {
-	return this.colorTweenNodef(this.transitionColorTweenf(function(n,i) {
-		return f(Reflect.field(n,"__data__"),i);
+	$s.push("thx.js.AccessDataTweenStyle::colorf");
+	var $spos = $s.length;
+	var $tmp = this.colorTweenNodef(this.transitionColorTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenStyle::colorf@158");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenStyle.prototype.colorTweenf = function(tween,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::colorTweenf");
+	var $spos = $s.length;
 	if(null == priority) priority = null;
 	var name = this.name;
 	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessDataTweenStyle::colorTweenf@166");
+		var $spos = $s.length;
 		var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenStyle::colorTweenf@166@169");
+			var $spos = $s.length;
 			d.style.setProperty(name,f(t).toRgbString(),priority);
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("style." + name,styleTween);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenStyle.prototype.__class__ = thx.js.AccessDataTweenStyle;
 rg.query.QueryValue = function(executor,path,event,property,value) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryValue::new");
+	var $spos = $s.length;
 	rg.query.QueryProperty.call(this,executor,path,event,property);
 	this.setValue(value);
+	$s.pop();
 }
 rg.query.QueryValue.__name__ = ["rg","query","QueryValue"];
 rg.query.QueryValue.__super__ = rg.query.QueryProperty;
 for(var k in rg.query.QueryProperty.prototype ) rg.query.QueryValue.prototype[k] = rg.query.QueryProperty.prototype[k];
 rg.query.QueryValue.prototype.value = null;
 rg.query.QueryValue.prototype.setValue = function(v) {
+	$s.push("rg.query.QueryValue::setValue");
+	var $spos = $s.length;
 	if(null == v) throw new thx.error.NullArgument("v",{ fileName : "Query.hx", lineNumber : 154, className : "rg.query.QueryValue", methodName : "setValue"}); else null;
-	return this.value = v;
+	var $tmp = this.value = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryValue.prototype.__class__ = rg.query.QueryValue;
 rg.query.QueryProperties = function(executor,path,event,properties) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryProperties::new");
+	var $spos = $s.length;
 	rg.query.QueryEvent.call(this,executor,path,event);
 	this.setProperties(properties);
+	$s.pop();
 }
 rg.query.QueryProperties.__name__ = ["rg","query","QueryProperties"];
 rg.query.QueryProperties.__super__ = rg.query.QueryEvent;
 for(var k in rg.query.QueryEvent.prototype ) rg.query.QueryProperties.prototype[k] = rg.query.QueryEvent.prototype[k];
 rg.query.QueryProperties.prototype.properties = null;
 rg.query.QueryProperties.prototype.setProperties = function(v) {
+	$s.push("rg.query.QueryProperties::setProperties");
+	var $spos = $s.length;
 	if(null == v || 0 == v.length) throw new thx.error.NullArgument("v",{ fileName : "Query.hx", lineNumber : 202, className : "rg.query.QueryProperties", methodName : "setProperties"}); else null;
-	return this.properties = v;
+	var $tmp = this.properties = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryProperties.prototype.__class__ = rg.query.QueryProperties;
 rg.query.QueryPropertiesPeriodicity = function(executor,path,event,properties) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryPropertiesPeriodicity::new");
+	var $spos = $s.length;
 	rg.query.QueryProperties.call(this,executor,path,event,properties);
 	this.time = new rg.query.TimeQuery();
+	$s.pop();
 }
 rg.query.QueryPropertiesPeriodicity.__name__ = ["rg","query","QueryPropertiesPeriodicity"];
 rg.query.QueryPropertiesPeriodicity.__super__ = rg.query.QueryProperties;
 for(var k in rg.query.QueryProperties.prototype ) rg.query.QueryPropertiesPeriodicity.prototype[k] = rg.query.QueryProperties.prototype[k];
 rg.query.QueryPropertiesPeriodicity.prototype.time = null;
 rg.query.QueryPropertiesPeriodicity.prototype.close = function() {
+	$s.push("rg.query.QueryPropertiesPeriodicity::close");
+	var $spos = $s.length;
 	rg.query.QueryProperties.prototype.close.call(this);
 	this.time.close();
+	$s.pop();
 }
 rg.query.QueryPropertiesPeriodicity.prototype.load = function() {
+	$s.push("rg.query.QueryPropertiesPeriodicity::load");
+	var $spos = $s.length;
 	this.time.update();
 	rg.query.QueryProperties.prototype.load.call(this);
+	$s.pop();
 }
 rg.query.QueryPropertiesPeriodicity.prototype.__class__ = rg.query.QueryPropertiesPeriodicity;
 rg.query.QueryPropertyPeridocity = function(executor,path,event,property) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryPropertyPeridocity::new");
+	var $spos = $s.length;
 	rg.query.QueryProperty.call(this,executor,path,event,property);
 	this.time = new rg.query.TimeQuery();
+	$s.pop();
 }
 rg.query.QueryPropertyPeridocity.__name__ = ["rg","query","QueryPropertyPeridocity"];
 rg.query.QueryPropertyPeridocity.__super__ = rg.query.QueryProperty;
 for(var k in rg.query.QueryProperty.prototype ) rg.query.QueryPropertyPeridocity.prototype[k] = rg.query.QueryProperty.prototype[k];
 rg.query.QueryPropertyPeridocity.prototype.time = null;
 rg.query.QueryPropertyPeridocity.prototype.close = function() {
+	$s.push("rg.query.QueryPropertyPeridocity::close");
+	var $spos = $s.length;
 	rg.query.QueryProperty.prototype.close.call(this);
 	this.time.close();
+	$s.pop();
 }
 rg.query.QueryPropertyPeridocity.prototype.load = function() {
+	$s.push("rg.query.QueryPropertyPeridocity::load");
+	var $spos = $s.length;
 	this.time.update();
 	rg.query.QueryProperty.prototype.load.call(this);
+	$s.pop();
 }
 rg.query.QueryPropertyPeridocity.prototype.__class__ = rg.query.QueryPropertyPeridocity;
 rg.query.QueryValuePeriodicity = function(executor,path,event,property,value) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryValuePeriodicity::new");
+	var $spos = $s.length;
 	rg.query.QueryValue.call(this,executor,path,event,property,value);
 	this.time = new rg.query.TimeQuery();
+	$s.pop();
 }
 rg.query.QueryValuePeriodicity.__name__ = ["rg","query","QueryValuePeriodicity"];
 rg.query.QueryValuePeriodicity.__super__ = rg.query.QueryValue;
 for(var k in rg.query.QueryValue.prototype ) rg.query.QueryValuePeriodicity.prototype[k] = rg.query.QueryValue.prototype[k];
 rg.query.QueryValuePeriodicity.prototype.time = null;
 rg.query.QueryValuePeriodicity.prototype.close = function() {
+	$s.push("rg.query.QueryValuePeriodicity::close");
+	var $spos = $s.length;
 	rg.query.QueryValue.prototype.close.call(this);
 	this.time.close();
+	$s.pop();
 }
 rg.query.QueryValuePeriodicity.prototype.load = function() {
+	$s.push("rg.query.QueryValuePeriodicity::load");
+	var $spos = $s.length;
 	this.time.update();
 	rg.query.QueryValue.prototype.load.call(this);
+	$s.pop();
 }
 rg.query.QueryValuePeriodicity.prototype.__class__ = rg.query.QueryValuePeriodicity;
 rg.query.QuerySearch = function(executor,path,event,where) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QuerySearch::new");
+	var $spos = $s.length;
 	rg.query.QueryEvent.call(this,executor,path,event);
 	this.setWhere(where);
+	$s.pop();
 }
 rg.query.QuerySearch.__name__ = ["rg","query","QuerySearch"];
 rg.query.QuerySearch.__super__ = rg.query.QueryEvent;
 for(var k in rg.query.QueryEvent.prototype ) rg.query.QuerySearch.prototype[k] = rg.query.QueryEvent.prototype[k];
 rg.query.QuerySearch.prototype.where = null;
 rg.query.QuerySearch.prototype.setWhere = function(v) {
+	$s.push("rg.query.QuerySearch::setWhere");
+	var $spos = $s.length;
 	if(null == v || 0 == v.length) throw new thx.error.NullArgument("v",{ fileName : "Query.hx", lineNumber : 313, className : "rg.query.QuerySearch", methodName : "setWhere"}); else null;
-	return this.where = v;
+	var $tmp = this.where = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QuerySearch.prototype.__class__ = rg.query.QuerySearch;
 rg.query.QuerySearchPeridocity = function(executor,path,event,where) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QuerySearchPeridocity::new");
+	var $spos = $s.length;
 	rg.query.QuerySearch.call(this,executor,path,event,where);
 	this.time = new rg.query.TimeQuery();
+	$s.pop();
 }
 rg.query.QuerySearchPeridocity.__name__ = ["rg","query","QuerySearchPeridocity"];
 rg.query.QuerySearchPeridocity.__super__ = rg.query.QuerySearch;
 for(var k in rg.query.QuerySearch.prototype ) rg.query.QuerySearchPeridocity.prototype[k] = rg.query.QuerySearch.prototype[k];
 rg.query.QuerySearchPeridocity.prototype.time = null;
 rg.query.QuerySearchPeridocity.prototype.close = function() {
+	$s.push("rg.query.QuerySearchPeridocity::close");
+	var $spos = $s.length;
 	rg.query.QuerySearch.prototype.close.call(this);
 	this.time.close();
+	$s.pop();
 }
 rg.query.QuerySearchPeridocity.prototype.load = function() {
+	$s.push("rg.query.QuerySearchPeridocity::load");
+	var $spos = $s.length;
 	this.time.update();
 	rg.query.QuerySearch.prototype.load.call(this);
+	$s.pop();
 }
 rg.query.QuerySearchPeridocity.prototype.__class__ = rg.query.QuerySearchPeridocity;
 hxevents.Dispatcher = function(p) {
 	if( p === $_ ) return;
+	$s.push("hxevents.Dispatcher::new");
+	var $spos = $s.length;
 	this.handlers = new Array();
+	$s.pop();
 }
 hxevents.Dispatcher.__name__ = ["hxevents","Dispatcher"];
 hxevents.Dispatcher.stop = function() {
+	$s.push("hxevents.Dispatcher::stop");
+	var $spos = $s.length;
 	throw hxevents.EventException.StopPropagation;
+	$s.pop();
 }
 hxevents.Dispatcher.prototype.handlers = null;
 hxevents.Dispatcher.prototype.add = function(h) {
+	$s.push("hxevents.Dispatcher::add");
+	var $spos = $s.length;
 	this.handlers.push(h);
+	$s.pop();
 	return h;
+	$s.pop();
 }
 hxevents.Dispatcher.prototype.addOnce = function(h) {
+	$s.push("hxevents.Dispatcher::addOnce");
+	var $spos = $s.length;
 	var me = this;
 	var _h = null;
 	_h = function(v) {
+		$s.push("hxevents.Dispatcher::addOnce@19");
+		var $spos = $s.length;
 		me.remove(_h);
 		h(v);
+		$s.pop();
 	};
 	this.add(_h);
+	$s.pop();
 	return _h;
+	$s.pop();
 }
 hxevents.Dispatcher.prototype.remove = function(h) {
+	$s.push("hxevents.Dispatcher::remove");
+	var $spos = $s.length;
 	var _g1 = 0, _g = this.handlers.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		if(Reflect.compareMethods(this.handlers[i],h)) return this.handlers.splice(i,1)[0];
+		if(Reflect.compareMethods(this.handlers[i],h)) {
+			var $tmp = this.handlers.splice(i,1)[0];
+			$s.pop();
+			return $tmp;
+		}
 	}
+	$s.pop();
 	return null;
+	$s.pop();
 }
 hxevents.Dispatcher.prototype.clear = function() {
+	$s.push("hxevents.Dispatcher::clear");
+	var $spos = $s.length;
 	this.handlers = new Array();
+	$s.pop();
 }
 hxevents.Dispatcher.prototype.dispatch = function(e) {
+	$s.push("hxevents.Dispatcher::dispatch");
+	var $spos = $s.length;
 	try {
 		var list = this.handlers.copy();
 		var _g = 0;
@@ -9115,28 +16234,47 @@ hxevents.Dispatcher.prototype.dispatch = function(e) {
 			++_g;
 			l(e);
 		}
+		$s.pop();
 		return true;
 	} catch( exc ) {
 		if( js.Boot.__instanceof(exc,hxevents.EventException) ) {
+			$e = [];
+			while($s.length >= $spos) $e.unshift($s.pop());
+			$s.push($e[0]);
+			$s.pop();
 			return false;
 		} else throw(exc);
 	}
+	$s.pop();
 }
 hxevents.Dispatcher.prototype.has = function(h) {
-	if(null == h) return this.handlers.length > 0; else {
+	$s.push("hxevents.Dispatcher::has");
+	var $spos = $s.length;
+	if(null == h) {
+		var $tmp = this.handlers.length > 0;
+		$s.pop();
+		return $tmp;
+	} else {
 		var _g = 0, _g1 = this.handlers;
 		while(_g < _g1.length) {
 			var handler = _g1[_g];
 			++_g;
-			if(h == handler) return true;
+			if(h == handler) {
+				$s.pop();
+				return true;
+			}
 		}
+		$s.pop();
 		return false;
 	}
+	$s.pop();
 }
 hxevents.Dispatcher.prototype.__class__ = hxevents.Dispatcher;
 thx.js.Svg = function() { }
 thx.js.Svg.__name__ = ["thx","js","Svg"];
 thx.js.Svg.mouse = function(dom) {
+	$s.push("thx.js.Svg::mouse");
+	var $spos = $s.length;
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
 	if(thx.js.Svg._usepage && (js.Lib.window.scrollX || js.Lib.window.scrollY)) {
 		var svg = thx.js.Dom.selectNode(js.Lib.document.body).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
@@ -9152,15 +16290,21 @@ thx.js.Svg.mouse = function(dom) {
 		point.y = thx.js.Dom.event.clientY;
 	}
 	point = point.matrixTransform(dom.getScreenCTM().inverse());
-	return [point.x,point.y];
+	var $tmp = [point.x,point.y];
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.Svg.prototype.__class__ = thx.js.Svg;
 rg.layout.Stack = function(width,height,orientation) {
 	if( width === $_ ) return;
+	$s.push("rg.layout.Stack::new");
+	var $spos = $s.length;
 	this.orientation = null == orientation?rg.layout.Orientation.Vertical:orientation;
 	this.children = [];
 	this.width = width;
 	this.height = height;
+	$s.pop();
 }
 rg.layout.Stack.__name__ = ["rg","layout","Stack"];
 rg.layout.Stack.prototype.children = null;
@@ -9168,15 +16312,24 @@ rg.layout.Stack.prototype.width = null;
 rg.layout.Stack.prototype.height = null;
 rg.layout.Stack.prototype.orientation = null;
 rg.layout.Stack.prototype.moreSpaceRequired = function(size) {
+	$s.push("rg.layout.Stack::moreSpaceRequired");
+	var $spos = $s.length;
+	$s.pop();
 }
 rg.layout.Stack.prototype.addChild = function(child) {
+	$s.push("rg.layout.Stack::addChild");
+	var $spos = $s.length;
 	this.children.push(child);
 	var f = child;
 	f.setParent(this);
 	this.reflow();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.layout.Stack.prototype.addMany = function(it) {
+	$s.push("rg.layout.Stack::addMany");
+	var $spos = $s.length;
 	var added = false;
 	var $it0 = it.iterator();
 	while( $it0.hasNext() ) {
@@ -9187,19 +16340,35 @@ rg.layout.Stack.prototype.addMany = function(it) {
 		f.setParent(this);
 	}
 	if(added) this.reflow();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.layout.Stack.prototype.removeChild = function(child) {
-	if(!this.children.remove(child)) return false;
+	$s.push("rg.layout.Stack::removeChild");
+	var $spos = $s.length;
+	if(!this.children.remove(child)) {
+		$s.pop();
+		return false;
+	}
 	var f = child;
 	f.setParent(null);
 	this.reflow();
+	$s.pop();
 	return true;
+	$s.pop();
 }
 rg.layout.Stack.prototype.iterator = function() {
-	return this.children.iterator();
+	$s.push("rg.layout.Stack::iterator");
+	var $spos = $s.length;
+	var $tmp = this.children.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.layout.Stack.prototype.reflow = function() {
+	$s.push("rg.layout.Stack::reflow");
+	var $spos = $s.length;
 	var available = (function($this) {
 		var $r;
 		switch( ($this.orientation)[1] ) {
@@ -9306,71 +16475,145 @@ rg.layout.Stack.prototype.reflow = function() {
 		break;
 	}
 	if(available < 0) this.moreSpaceRequired(required);
+	$s.pop();
 }
 rg.layout.Stack.prototype.setSize = function(width,height) {
-	if(this.width == width && this.height == height) return this;
+	$s.push("rg.layout.Stack::setSize");
+	var $spos = $s.length;
+	if(this.width == width && this.height == height) {
+		$s.pop();
+		return this;
+	}
 	this.width = width;
 	this.height = height;
 	this.reflow();
+	$s.pop();
 	return this;
+	$s.pop();
 }
 rg.layout.Stack.prototype.toString = function() {
-	return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
+	$s.push("rg.layout.Stack::toString");
+	var $spos = $s.length;
+	var $tmp = "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.layout.Stack.prototype.__class__ = rg.layout.Stack;
 Std = function() { }
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
-	return js.Boot.__instanceof(v,t);
+	$s.push("Std::is");
+	var $spos = $s.length;
+	var $tmp = js.Boot.__instanceof(v,t);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Std.string = function(s) {
-	return js.Boot.__string_rec(s,"");
+	$s.push("Std::string");
+	var $spos = $s.length;
+	var $tmp = js.Boot.__string_rec(s,"");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Std["int"] = function(x) {
-	if(x < 0) return Math.ceil(x);
-	return Math.floor(x);
+	$s.push("Std::int");
+	var $spos = $s.length;
+	if(x < 0) {
+		var $tmp = Math.ceil(x);
+		$s.pop();
+		return $tmp;
+	}
+	var $tmp = Math.floor(x);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Std.parseInt = function(x) {
+	$s.push("Std::parseInt");
+	var $spos = $s.length;
 	var v = parseInt(x,10);
 	if(v == 0 && x.charCodeAt(1) == 120) v = parseInt(x);
-	if(isNaN(v)) return null;
-	return v;
+	if(isNaN(v)) {
+		$s.pop();
+		return null;
+	}
+	var $tmp = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Std.parseFloat = function(x) {
-	return parseFloat(x);
+	$s.push("Std::parseFloat");
+	var $spos = $s.length;
+	var $tmp = parseFloat(x);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Std.random = function(x) {
-	return Math.floor(Math.random() * x);
+	$s.push("Std::random");
+	var $spos = $s.length;
+	var $tmp = Math.floor(Math.random() * x);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Std.prototype.__class__ = Std;
 haxe.Timer = function(time_ms) {
 	if( time_ms === $_ ) return;
+	$s.push("haxe.Timer::new");
+	var $spos = $s.length;
 	this.id = haxe.Timer.arr.length;
 	haxe.Timer.arr[this.id] = this;
 	this.timerId = window.setInterval("haxe.Timer.arr[" + this.id + "].run();",time_ms);
+	$s.pop();
 }
 haxe.Timer.__name__ = ["haxe","Timer"];
 haxe.Timer.delay = function(f,time_ms) {
+	$s.push("haxe.Timer::delay");
+	var $spos = $s.length;
 	var t = new haxe.Timer(time_ms);
 	t.run = function() {
+		$s.push("haxe.Timer::delay@78");
+		var $spos = $s.length;
 		t.stop();
 		f();
+		$s.pop();
 	};
+	$s.pop();
 	return t;
+	$s.pop();
 }
 haxe.Timer.measure = function(f,pos) {
+	$s.push("haxe.Timer::measure");
+	var $spos = $s.length;
 	var t0 = haxe.Timer.stamp();
 	var r = f();
 	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	$s.pop();
 	return r;
+	$s.pop();
 }
 haxe.Timer.stamp = function() {
-	return Date.now().getTime() / 1000;
+	$s.push("haxe.Timer::stamp");
+	var $spos = $s.length;
+	var $tmp = Date.now().getTime() / 1000;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 haxe.Timer.prototype.id = null;
 haxe.Timer.prototype.timerId = null;
 haxe.Timer.prototype.stop = function() {
-	if(this.id == null) return;
+	$s.push("haxe.Timer::stop");
+	var $spos = $s.length;
+	if(this.id == null) {
+		$s.pop();
+		return;
+	}
 	window.clearInterval(this.timerId);
 	haxe.Timer.arr[this.id] = null;
 	if(this.id > 100 && this.id == haxe.Timer.arr.length - 1) {
@@ -9379,109 +16622,221 @@ haxe.Timer.prototype.stop = function() {
 		haxe.Timer.arr = haxe.Timer.arr.slice(0,p + 1);
 	}
 	this.id = null;
+	$s.pop();
 }
 haxe.Timer.prototype.run = function() {
+	$s.push("haxe.Timer::run");
+	var $spos = $s.length;
+	$s.pop();
 }
 haxe.Timer.prototype.__class__ = haxe.Timer;
 rg.QueryOptionsUtil = function() { }
 rg.QueryOptionsUtil.__name__ = ["rg","QueryOptionsUtil"];
 rg.QueryOptionsUtil.emptyQuery = function() {
-	return { path : null, event : null, property : null, values : null, filter : null, top : 10, bottom : null, other : null};
+	$s.push("rg.QueryOptionsUtil::emptyQuery");
+	var $spos = $s.length;
+	var $tmp = { path : null, event : null, property : null, values : null, filter : null, top : 10, bottom : null, other : null};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.QueryOptionsUtil.emptyPivotTableQuery = function() {
-	return { path : null, event : null, availableProperties : null, properties : [], filter : null, top : null, bottom : null};
+	$s.push("rg.QueryOptionsUtil::emptyPivotTableQuery");
+	var $spos = $s.length;
+	var $tmp = { path : null, event : null, availableProperties : null, properties : [], filter : null, top : null, bottom : null};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.QueryOptionsUtil.toQueryInst = function(options) {
+	$s.push("rg.QueryOptionsUtil::toQueryInst");
+	var $spos = $s.length;
+	$s.pop();
 	return null;
+	$s.pop();
 }
 rg.QueryOptionsUtil.prototype.__class__ = rg.QueryOptionsUtil;
 thx.js.AccessText = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.AccessText::new");
+	var $spos = $s.length;
 	thx.js.Access.call(this,selection);
+	$s.pop();
 }
 thx.js.AccessText.__name__ = ["thx","js","AccessText"];
 thx.js.AccessText.__super__ = thx.js.Access;
 for(var k in thx.js.Access.prototype ) thx.js.AccessText.prototype[k] = thx.js.Access.prototype[k];
 thx.js.AccessText.prototype.get = function() {
-	return this.selection.firstNode(function(node) {
-		return node.textContent;
+	$s.push("thx.js.AccessText::get");
+	var $spos = $s.length;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessText::get@16");
+		var $spos = $s.length;
+		var $tmp = node.textContent;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessText.prototype.string = function(v) {
+	$s.push("thx.js.AccessText::string");
+	var $spos = $s.length;
 	this.clear();
 	this.selection.eachNode(function(node,_) {
+		$s.push("thx.js.AccessText::string@22");
+		var $spos = $s.length;
 		node.textContent = v;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessText.prototype.clear = function() {
+	$s.push("thx.js.AccessText::clear");
+	var $spos = $s.length;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessText::clear@28");
+		var $spos = $s.length;
 		node.textContent = "";
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessText.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessText::float");
+	var $spos = $s.length;
 	this.clear();
 	this.selection.eachNode(function(node,_) {
+		$s.push("thx.js.AccessText::float@35");
+		var $spos = $s.length;
 		node.textContent = "" + v;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessText.prototype.stringNodef = function(v) {
+	$s.push("thx.js.AccessText::stringNodef");
+	var $spos = $s.length;
 	this.clear();
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessText::stringNodef@42");
+		var $spos = $s.length;
 		var x = v(node,i);
 		if(null != x) node.textContent = x;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessText.prototype.floatNodef = function(v) {
+	$s.push("thx.js.AccessText::floatNodef");
+	var $spos = $s.length;
 	this.clear();
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessText::floatNodef@52");
+		var $spos = $s.length;
 		var x = v(node,i);
 		if(null != x) node.textContent = "" + x;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessText.prototype.__class__ = thx.js.AccessText;
 thx.js.AccessDataText = function(selection) {
 	if( selection === $_ ) return;
+	$s.push("thx.js.AccessDataText::new");
+	var $spos = $s.length;
 	thx.js.AccessText.call(this,selection);
+	$s.pop();
 }
 thx.js.AccessDataText.__name__ = ["thx","js","AccessDataText"];
 thx.js.AccessDataText.__super__ = thx.js.AccessText;
 for(var k in thx.js.AccessText.prototype ) thx.js.AccessDataText.prototype[k] = thx.js.AccessText.prototype[k];
 thx.js.AccessDataText.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataText::stringf");
+	var $spos = $s.length;
 	this.clear();
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataText::stringf@70");
+		var $spos = $s.length;
 		var x = v(Reflect.field(node,"__data__"),i);
 		if(null != x) node.textContent = x;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataText.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataText::floatf");
+	var $spos = $s.length;
 	this.clear();
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataText::floatf@80");
+		var $spos = $s.length;
 		var x = v(Reflect.field(node,"__data__"),i);
 		if(null != x) node.textContent = "" + x;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataText.prototype.data = function() {
-	return this.stringf(function(d,_) {
-		return "" + d;
+	$s.push("thx.js.AccessDataText::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataText::data@89");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataText.prototype.__class__ = thx.js.AccessDataText;
 Objects = function() { }
 Objects.__name__ = ["Objects"];
 Objects.field = function(o,fieldname,alt) {
-	return Reflect.hasField(o,fieldname)?Reflect.field(o,fieldname):alt;
+	$s.push("Objects::field");
+	var $spos = $s.length;
+	var $tmp = Reflect.hasField(o,fieldname)?Reflect.field(o,fieldname):alt;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Objects.keys = function(o) {
-	return Reflect.fields(o);
+	$s.push("Objects::keys");
+	var $spos = $s.length;
+	var $tmp = Reflect.fields(o);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Objects.values = function(o) {
+	$s.push("Objects::values");
+	var $spos = $s.length;
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(o);
 	while(_g < _g1.length) {
@@ -9489,9 +16844,13 @@ Objects.values = function(o) {
 		++_g;
 		arr.push(Reflect.field(o,key));
 	}
+	$s.pop();
 	return arr;
+	$s.pop();
 }
 Objects.entries = function(o) {
+	$s.push("Objects::entries");
+	var $spos = $s.length;
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(o);
 	while(_g < _g1.length) {
@@ -9499,29 +16858,51 @@ Objects.entries = function(o) {
 		++_g;
 		arr.push({ key : key, value : Reflect.field(o,key)});
 	}
+	$s.pop();
 	return arr;
+	$s.pop();
 }
 Objects["with"] = function(ob,f) {
+	$s.push("Objects::with");
+	var $spos = $s.length;
 	f(ob);
+	$s.pop();
 	return ob;
+	$s.pop();
 }
 Objects.toHash = function(ob) {
+	$s.push("Objects::toHash");
+	var $spos = $s.length;
 	var hash = new Hash();
-	return Objects.copyToHash(ob,hash);
+	var $tmp = Objects.copyToHash(ob,hash);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Objects.copyToHash = function(ob,hash) {
+	$s.push("Objects::copyToHash");
+	var $spos = $s.length;
 	var _g = 0, _g1 = Reflect.fields(ob);
 	while(_g < _g1.length) {
 		var field = _g1[_g];
 		++_g;
 		hash.set(field,Reflect.field(ob,field));
 	}
+	$s.pop();
 	return hash;
+	$s.pop();
 }
 Objects.interpolate = function(v,a,b,equation) {
-	return (Objects.interpolatef(a,b,equation))(v);
+	$s.push("Objects::interpolate");
+	var $spos = $s.length;
+	var $tmp = (Objects.interpolatef(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Objects.interpolatef = function(a,b,equation) {
+	$s.push("Objects::interpolatef");
+	var $spos = $s.length;
 	var i = { }, c = { }, keys = Reflect.fields(a);
 	var _g = 0;
 	while(_g < keys.length) {
@@ -9539,20 +16920,34 @@ Objects.interpolatef = function(a,b,equation) {
 		++_g;
 		if(!Reflect.hasField(a,key)) c[key] = Reflect.field(b,key);
 	}
-	return function(t) {
+	var $tmp = function(t) {
+		$s.push("Objects::interpolatef@82");
+		var $spos = $s.length;
 		var _g = 0, _g1 = Reflect.fields(i);
 		while(_g < _g1.length) {
 			var k = _g1[_g];
 			++_g;
 			c[k] = Reflect.field(i,k).apply(i,[t]);
 		}
+		$s.pop();
 		return c;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Objects.interpolateByName = function(k,v) {
-	return Std["is"](v,String) && Objects._reCheckKeyIsColor.match(k)?thx.color.Colors.interpolatef:Dynamics.interpolatef;
+	$s.push("Objects::interpolateByName");
+	var $spos = $s.length;
+	var $tmp = Std["is"](v,String) && Objects._reCheckKeyIsColor.match(k)?thx.color.Colors.interpolatef:Dynamics.interpolatef;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Objects.copyTo = function(src,dst) {
+	$s.push("Objects::copyTo");
+	var $spos = $s.length;
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
 		var field = _g1[_g];
@@ -9561,14 +16956,23 @@ Objects.copyTo = function(src,dst) {
 		var dv = Reflect.field(dst,field);
 		if(Reflect.isObject(sv) && null == Type.getClass(sv) && (Reflect.isObject(dv) && null == Type.getClass(dv))) Objects.copyTo(sv,dv); else dst[field] = sv;
 	}
+	$s.pop();
 	return dst;
+	$s.pop();
 }
 Objects.clone = function(src) {
+	$s.push("Objects::clone");
+	var $spos = $s.length;
 	var dst = { };
 	Objects.copyTo(src,dst);
-	return dst;
+	var $tmp = dst;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 Objects._flatten = function(src,cum,arr) {
+	$s.push("Objects::_flatten");
+	var $spos = $s.length;
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
 		var field = _g1[_g];
@@ -9581,8 +16985,11 @@ Objects._flatten = function(src,cum,arr) {
 			arr.push(clone);
 		}
 	}
+	$s.pop();
 }
 Objects.flatten = function(src) {
+	$s.push("Objects::flatten");
+	var $spos = $s.length;
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
@@ -9594,161 +17001,328 @@ Objects.flatten = function(src) {
 			Objects._flatten(v,item,arr);
 		} else arr.push({ fields : [field], value : v});
 	}
+	$s.pop();
 	return arr;
+	$s.pop();
 }
 Objects.prototype.__class__ = Objects;
 thx.js.AccessProperty = function(name,selection) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessProperty::new");
+	var $spos = $s.length;
 	thx.js.Access.call(this,selection);
 	this.name = name;
+	$s.pop();
 }
 thx.js.AccessProperty.__name__ = ["thx","js","AccessProperty"];
 thx.js.AccessProperty.__super__ = thx.js.Access;
 for(var k in thx.js.Access.prototype ) thx.js.AccessProperty.prototype[k] = thx.js.Access.prototype[k];
 thx.js.AccessProperty.prototype.name = null;
 thx.js.AccessProperty.prototype.get = function() {
+	$s.push("thx.js.AccessProperty::get");
+	var $spos = $s.length;
 	var n = this.name;
-	return this.selection.firstNode(function(node) {
-		return Reflect.field(node,n);
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessProperty::get@21");
+		var $spos = $s.length;
+		var $tmp = Reflect.field(node,n);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessProperty.prototype.remove = function() {
+	$s.push("thx.js.AccessProperty::remove");
+	var $spos = $s.length;
 	var n = this.name;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessProperty::remove@27");
+		var $spos = $s.length;
 		Reflect.deleteField(node,n);
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessProperty.prototype.string = function(v) {
+	$s.push("thx.js.AccessProperty::string");
+	var $spos = $s.length;
 	var n = this.name;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessProperty::string@33");
+		var $spos = $s.length;
 		node[n] = v;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessProperty.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessProperty::float");
+	var $spos = $s.length;
 	var s = "" + v;
 	var n = this.name;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessProperty::float@40");
+		var $spos = $s.length;
 		node[n] = s;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessProperty.prototype.__class__ = thx.js.AccessProperty;
 thx.js.AccessDataProperty = function(name,selection) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataProperty::new");
+	var $spos = $s.length;
 	thx.js.AccessProperty.call(this,name,selection);
+	$s.pop();
 }
 thx.js.AccessDataProperty.__name__ = ["thx","js","AccessDataProperty"];
 thx.js.AccessDataProperty.__super__ = thx.js.AccessProperty;
 for(var k in thx.js.AccessProperty.prototype ) thx.js.AccessDataProperty.prototype[k] = thx.js.AccessProperty.prototype[k];
 thx.js.AccessDataProperty.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataProperty::stringf");
+	var $spos = $s.length;
 	var n = this.name;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataProperty::stringf@55");
+		var $spos = $s.length;
 		var s = v(Reflect.field(node,"__data__"),i);
 		if(null == s) Reflect.deleteField(node,n); else node[n] = s;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataProperty.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataProperty::floatf");
+	var $spos = $s.length;
 	var n = this.name;
 	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataProperty::floatf@67");
+		var $spos = $s.length;
 		var s = v(Reflect.field(node,"__data__"),i);
 		if(null == s) Reflect.deleteField(node,n); else node[n] = "" + s;
+		$s.pop();
 	});
-	return this.selection;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataProperty.prototype.data = function() {
-	return this.stringf(function(d,_) {
-		return "" + d;
+	$s.push("thx.js.AccessDataProperty::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataProperty::data@79");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataProperty.prototype.__class__ = thx.js.AccessDataProperty;
 thx.math.Ease = function() { }
 thx.math.Ease.__name__ = ["thx","math","Ease"];
 thx.math.Ease.mode = function(easemode,f) {
+	$s.push("thx.math.Ease::mode");
+	var $spos = $s.length;
 	if(null == f) f = thx.math.Equations.cubic;
 	if(null == easemode) easemode = thx.math.EaseMode.EaseIn;
 	switch( (easemode)[1] ) {
 	case 0:
+		$s.pop();
 		return f;
 	case 1:
-		return function(t) {
-			return 1 - f(1 - t);
+		var $tmp = function(t) {
+			$s.push("thx.math.Ease::mode@18");
+			var $spos = $s.length;
+			var $tmp = 1 - f(1 - t);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case 2:
-		return function(t) {
-			return .5 * (t < .5?f(2 * t):2 - f(2 - 2 * t));
+		var $tmp = function(t) {
+			$s.push("thx.math.Ease::mode@20");
+			var $spos = $s.length;
+			var $tmp = .5 * (t < .5?f(2 * t):2 - f(2 - 2 * t));
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
 	case 3:
-		return thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Ease.mode(thx.math.EaseMode.EaseOut,f));
+		var $tmp = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Ease.mode(thx.math.EaseMode.EaseOut,f));
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 thx.math.Ease.prototype.__class__ = thx.math.Ease;
 thx.math.Equations = function() { }
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
+	$s.push("thx.math.Equations::linear");
+	var $spos = $s.length;
+	$s.pop();
 	return v;
+	$s.pop();
 }
 thx.math.Equations.polynomial = function(t,e) {
-	return Math.pow(t,e);
+	$s.push("thx.math.Equations::polynomial");
+	var $spos = $s.length;
+	var $tmp = Math.pow(t,e);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.quadratic = function(t) {
-	return thx.math.Equations.polynomial(t,2);
+	$s.push("thx.math.Equations::quadratic");
+	var $spos = $s.length;
+	var $tmp = thx.math.Equations.polynomial(t,2);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.cubic = function(t) {
-	return thx.math.Equations.polynomial(t,3);
+	$s.push("thx.math.Equations::cubic");
+	var $spos = $s.length;
+	var $tmp = thx.math.Equations.polynomial(t,3);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.sin = function(t) {
-	return 1 - Math.cos(t * Math.PI / 2);
+	$s.push("thx.math.Equations::sin");
+	var $spos = $s.length;
+	var $tmp = 1 - Math.cos(t * Math.PI / 2);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.exponential = function(t) {
-	return t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
+	$s.push("thx.math.Equations::exponential");
+	var $spos = $s.length;
+	var $tmp = t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.circle = function(t) {
-	return 1 - Math.sqrt(1 - t * t);
+	$s.push("thx.math.Equations::circle");
+	var $spos = $s.length;
+	var $tmp = 1 - Math.sqrt(1 - t * t);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.elastic = function(t,a,p) {
+	$s.push("thx.math.Equations::elastic");
+	var $spos = $s.length;
 	var s;
 	if(null == p) p = 0.45;
 	if(null == a) {
 		a = 1;
 		s = p / 4;
 	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
-	return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+	var $tmp = 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.elasticf = function(a,p) {
+	$s.push("thx.math.Equations::elasticf");
+	var $spos = $s.length;
 	var s;
 	if(null == p) p = 0.45;
 	if(null == a) {
 		a = 1;
 		s = p / 4;
 	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
-	return function(t) {
-		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+	var $tmp = function(t) {
+		$s.push("thx.math.Equations::elasticf@70");
+		var $spos = $s.length;
+		var $tmp = 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.back = function(t,s) {
+	$s.push("thx.math.Equations::back");
+	var $spos = $s.length;
 	if(null == s) s = 1.70158;
-	return t * t * ((s + 1) * t - s);
+	var $tmp = t * t * ((s + 1) * t - s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.backf = function(s) {
+	$s.push("thx.math.Equations::backf");
+	var $spos = $s.length;
 	if(null == s) s = 1.70158;
-	return function(t) {
-		return t * t * ((s + 1) * t - s);
+	var $tmp = function(t) {
+		$s.push("thx.math.Equations::backf@83");
+		var $spos = $s.length;
+		var $tmp = t * t * ((s + 1) * t - s);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.bounce = function(t) {
-	return t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
+	$s.push("thx.math.Equations::bounce");
+	var $spos = $s.length;
+	var $tmp = t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.polynomialf = function(e) {
-	return function(t) {
+	$s.push("thx.math.Equations::polynomialf");
+	var $spos = $s.length;
+	var $tmp = function(t) {
+		$s.push("thx.math.Equations::polynomialf@96");
+		var $spos = $s.length;
 		thx.math.Equations.polynomial(t,e);
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.math.Equations.prototype.__class__ = thx.math.Equations;
 rg.query.QueryValuesCount = function(executor,path,event,property,top,limit,others,othersLabel) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryValuesCount::new");
+	var $spos = $s.length;
 	if(othersLabel == null) othersLabel = "others";
 	if(others == null) others = true;
 	if(limit == null) limit = 10;
@@ -9758,6 +17332,7 @@ rg.query.QueryValuesCount = function(executor,path,event,property,top,limit,othe
 	this.limit = limit;
 	this.others = others;
 	this.othersLabel = othersLabel;
+	$s.pop();
 }
 rg.query.QueryValuesCount.__name__ = ["rg","query","QueryValuesCount"];
 rg.query.QueryValuesCount.__super__ = rg.query.QueryPropertyPeridocity;
@@ -9767,9 +17342,15 @@ rg.query.QueryValuesCount.prototype.limit = null;
 rg.query.QueryValuesCount.prototype.others = null;
 rg.query.QueryValuesCount.prototype.othersLabel = null;
 rg.query.QueryValuesCount.prototype.filter = function(value,count) {
+	$s.push("rg.query.QueryValuesCount::filter");
+	var $spos = $s.length;
+	$s.pop();
 	return true;
+	$s.pop();
 }
 rg.query.QueryValuesCount.prototype.transform = function(v) {
+	$s.push("rg.query.QueryValuesCount::transform");
+	var $spos = $s.length;
 	var labels = Reflect.fields(v);
 	var result = [];
 	var _g = 0;
@@ -9779,19 +17360,28 @@ rg.query.QueryValuesCount.prototype.transform = function(v) {
 		var value = Reflect.field(Reflect.field(Reflect.field(v,label),"eternity"),"0");
 		result.push({ label : Strings.rtrim(Strings.ltrim(label,"\""),"\""), value : value});
 	}
+	$s.pop();
 	return result;
+	$s.pop();
 }
 rg.query.QueryValuesCount.prototype.executeLoad = function(success,error) {
+	$s.push("rg.query.QueryValuesCount::executeLoad");
+	var $spos = $s.length;
 	var count = 0, total = 1, result = null, totalcount = 0, others = this.others, label = this.othersLabel, filter = $closure(this,"filter");
 	var _end = function() {
+		$s.push("rg.query.QueryValuesCount::executeLoad@57");
+		var $spos = $s.length;
 		if(others) {
 			var v = { };
 			v["0"] = totalcount;
 			result[label] = { eternity : v};
 		}
 		success(result);
+		$s.pop();
 	};
 	var _success = function(v) {
+		$s.push("rg.query.QueryValuesCount::executeLoad@68");
+		var $spos = $s.length;
 		result = v;
 		var labels = Reflect.fields(result);
 		var _g = 0;
@@ -9802,12 +17392,16 @@ rg.query.QueryValuesCount.prototype.executeLoad = function(success,error) {
 			if(filter(label1,value)) totalcount -= value; else Reflect.deleteField(result,label1);
 		}
 		if(++count == total) _end();
+		$s.pop();
 	};
 	if(others) {
 		total = 2;
 		var _successtotal = function(v) {
+			$s.push("rg.query.QueryValuesCount::executeLoad@87");
+			var $spos = $s.length;
 			totalcount += v;
 			if(++count == total) _end();
+			$s.pop();
 		};
 		this.executor.propertyCount(this.path,{ property : this.event + "." + this.property},_successtotal,error);
 	}
@@ -9815,37 +17409,65 @@ rg.query.QueryValuesCount.prototype.executeLoad = function(success,error) {
 	this.time.autosetPeriodicity = false;
 	this.time.setPeriodicity("eternity");
 	this.executor.intersect(this.path,{ start : this.time.start, end : this.time.end, periodicity : this.time.periodicity, properties : p},_success,error);
+	$s.pop();
 }
 rg.query.QueryValuesCount.prototype.__class__ = rg.query.QueryValuesCount;
 thx.color.Grey = function(value) {
 	if( value === $_ ) return;
+	$s.push("thx.color.Grey::new");
+	var $spos = $s.length;
 	this.grey = Floats.normalize(value);
 	var c = Ints.interpolate(this.grey,0,255,null);
 	thx.color.Rgb.call(this,c,c,c);
+	$s.pop();
 }
 thx.color.Grey.__name__ = ["thx","color","Grey"];
 thx.color.Grey.__super__ = thx.color.Rgb;
 for(var k in thx.color.Rgb.prototype ) thx.color.Grey.prototype[k] = thx.color.Rgb.prototype[k];
 thx.color.Grey.toGrey = function(rgb,luminance) {
+	$s.push("thx.color.Grey::toGrey");
+	var $spos = $s.length;
 	if(null == luminance) luminance = thx.color.PerceivedLuminance.Perceived;
 	switch( (luminance)[1] ) {
 	case 0:
-		return new thx.color.Grey(rgb.red / 255 * .2126 + rgb.green / 255 * .7152 + rgb.blue / 255 * .0722);
+		var $tmp = new thx.color.Grey(rgb.red / 255 * .2126 + rgb.green / 255 * .7152 + rgb.blue / 255 * .0722);
+		$s.pop();
+		return $tmp;
 	case 1:
-		return new thx.color.Grey(rgb.red / 255 * .299 + rgb.green / 255 * .587 + rgb.blue / 255 * .114);
+		var $tmp = new thx.color.Grey(rgb.red / 255 * .299 + rgb.green / 255 * .587 + rgb.blue / 255 * .114);
+		$s.pop();
+		return $tmp;
 	case 2:
-		return new thx.color.Grey(Math.sqrt(0.241 * Math.pow(rgb.red / 255,2) + 0.691 * Math.pow(rgb.green / 255,2) + 0.068 * Math.pow(rgb.blue / 255,2)));
+		var $tmp = new thx.color.Grey(Math.sqrt(0.241 * Math.pow(rgb.red / 255,2) + 0.691 * Math.pow(rgb.green / 255,2) + 0.068 * Math.pow(rgb.blue / 255,2)));
+		$s.pop();
+		return $tmp;
 	}
+	$s.pop();
 }
 thx.color.Grey.equals = function(a,b) {
-	return a.grey == b.grey;
+	$s.push("thx.color.Grey::equals");
+	var $spos = $s.length;
+	var $tmp = a.grey == b.grey;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Grey.darker = function(color,t,equation) {
+	$s.push("thx.color.Grey::darker");
+	var $spos = $s.length;
 	var v = t * color.grey;
-	return new thx.color.Grey(Floats.interpolate(v,0,1,equation));
+	var $tmp = new thx.color.Grey(Floats.interpolate(v,0,1,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Grey.interpolate = function(a,b,t,equation) {
-	return new thx.color.Grey(Floats.interpolate(t,a.grey,b.grey,equation));
+	$s.push("thx.color.Grey::interpolate");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Grey(Floats.interpolate(t,a.grey,b.grey,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Grey.prototype.grey = null;
 thx.color.Grey.prototype.__class__ = thx.color.Grey;
@@ -9861,14 +17483,19 @@ thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
 rg.query.QueryPropertyValues = function(executor,path,event,property,limit) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryPropertyValues::new");
+	var $spos = $s.length;
 	rg.query.QueryProperty.call(this,executor,path,event,property);
 	this.setLimit(null == limit?rg.query.QueryLimit.NoLimit:limit);
+	$s.pop();
 }
 rg.query.QueryPropertyValues.__name__ = ["rg","query","QueryPropertyValues"];
 rg.query.QueryPropertyValues.__super__ = rg.query.QueryProperty;
 for(var k in rg.query.QueryProperty.prototype ) rg.query.QueryPropertyValues.prototype[k] = rg.query.QueryProperty.prototype[k];
 rg.query.QueryPropertyValues.prototype.limit = null;
 rg.query.QueryPropertyValues.prototype.executeLoad = function(success,error) {
+	$s.push("rg.query.QueryPropertyValues::executeLoad");
+	var $spos = $s.length;
 	var options = { property : this.event + "." + this.property};
 	var $e = (this.limit);
 	switch( $e[1] ) {
@@ -9883,20 +17510,31 @@ rg.query.QueryPropertyValues.prototype.executeLoad = function(success,error) {
 	default:
 	}
 	this.executor.propertyValues(this.path,options,success,error);
+	$s.pop();
 }
 rg.query.QueryPropertyValues.prototype.setLimit = function(v) {
+	$s.push("rg.query.QueryPropertyValues::setLimit");
+	var $spos = $s.length;
 	if(null == v) throw new thx.error.NullArgument("v",{ fileName : "QueryPropertyValues.hx", lineNumber : 40, className : "rg.query.QueryPropertyValues", methodName : "setLimit"}); else null;
-	return this.limit = v;
+	var $tmp = this.limit = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.query.QueryPropertyValues.prototype.__class__ = rg.query.QueryPropertyValues;
 rg.query.QueryIntersect = function(executor,path,event,properties) {
 	if( executor === $_ ) return;
+	$s.push("rg.query.QueryIntersect::new");
+	var $spos = $s.length;
 	rg.query.QueryPropertiesPeriodicity.call(this,executor,path,event,properties);
+	$s.pop();
 }
 rg.query.QueryIntersect.__name__ = ["rg","query","QueryIntersect"];
 rg.query.QueryIntersect.__super__ = rg.query.QueryPropertiesPeriodicity;
 for(var k in rg.query.QueryPropertiesPeriodicity.prototype ) rg.query.QueryIntersect.prototype[k] = rg.query.QueryPropertiesPeriodicity.prototype[k];
 rg.query.QueryIntersect.prototype.executeLoad = function(success,error) {
+	$s.push("rg.query.QueryIntersect::executeLoad");
+	var $spos = $s.length;
 	var p = [];
 	var _g = 0, _g1 = this.properties;
 	while(_g < _g1.length) {
@@ -9905,14 +17543,20 @@ rg.query.QueryIntersect.prototype.executeLoad = function(success,error) {
 		p.push({ property : this.event + "." + prop.name, limit : prop.limit, order : prop.top?"descending":"ascending"});
 	}
 	this.executor.intersect(this.path,{ start : this.time.start, end : this.time.end, periodicity : this.time.periodicity, properties : p},success,error);
+	$s.pop();
 }
 rg.query.QueryIntersect.prototype.__class__ = rg.query.QueryIntersect;
 thx.js.Timer = function() { }
 thx.js.Timer.__name__ = ["thx","js","Timer"];
 thx.js.Timer.timer = function(f,delay) {
+	$s.push("thx.js.Timer::timer");
+	var $spos = $s.length;
 	if(delay == null) delay = 0.0;
 	var now = Date.now().getTime(), found = false, t0, t1 = thx.js.Timer.queue;
-	if(!Math.isFinite(delay)) return;
+	if(!Math.isFinite(delay)) {
+		$s.pop();
+		return;
+	}
 	while(null != t1) {
 		if(Reflect.compareMethods(f,t1.f)) {
 			t1.then = now;
@@ -9929,8 +17573,11 @@ thx.js.Timer.timer = function(f,delay) {
 		thx.js.Timer.interval = 1;
 		window.requestAnimationFrame(thx.js.Timer._step);
 	}
+	$s.pop();
 }
 thx.js.Timer.step = function() {
+	$s.push("thx.js.Timer::step");
+	var $spos = $s.length;
 	var elapsed, now = Date.now().getTime(), t1 = thx.js.Timer.queue;
 	while(null != t1) {
 		elapsed = now - t1.then;
@@ -9948,8 +17595,11 @@ thx.js.Timer.step = function() {
 		thx.js.Timer.interval = 1;
 		window.requestAnimationFrame(thx.js.Timer._step);
 	}
+	$s.pop();
 }
 thx.js.Timer.flush = function() {
+	$s.push("thx.js.Timer::flush");
+	var $spos = $s.length;
 	var elapsed, now = Date.now().getTime(), t1 = thx.js.Timer.queue;
 	while(null != t1) {
 		elapsed = now - t1.then;
@@ -9957,21 +17607,29 @@ thx.js.Timer.flush = function() {
 		t1 = t1.next;
 	}
 	thx.js.Timer._flush();
+	$s.pop();
 }
 thx.js.Timer._flush = function() {
+	$s.push("thx.js.Timer::_flush");
+	var $spos = $s.length;
 	var t0 = null, t1 = thx.js.Timer.queue, then = Math.POSITIVE_INFINITY;
 	while(null != t1) if(t1.flush) t1 = null != t0?t0.next = t1.next:thx.js.Timer.queue = t1.next; else {
 		then = Math.min(then,t1.then + t1.delay);
 		t1 = (t0 = t1).next;
 	}
+	$s.pop();
 	return then;
+	$s.pop();
 }
 thx.js.Timer.prototype.__class__ = thx.js.Timer;
 thx.js.AccessTweenAttribute = function(name,transition,tweens) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessTweenAttribute::new");
+	var $spos = $s.length;
 	thx.js.AccessTween.call(this,transition,tweens);
 	this.name = name;
 	this.qname = thx.xml.Namespace.qualify(name);
+	$s.pop();
 }
 thx.js.AccessTweenAttribute.__name__ = ["thx","js","AccessTweenAttribute"];
 thx.js.AccessTweenAttribute.__super__ = thx.js.AccessTween;
@@ -9979,107 +17637,237 @@ for(var k in thx.js.AccessTween.prototype ) thx.js.AccessTweenAttribute.prototyp
 thx.js.AccessTweenAttribute.prototype.name = null;
 thx.js.AccessTweenAttribute.prototype.qname = null;
 thx.js.AccessTweenAttribute.prototype.stringNodef = function(f) {
-	return this.stringTweenNodef(this.transitionStringTweenf(f));
+	$s.push("thx.js.AccessTweenAttribute::stringNodef");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(f));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenAttribute.prototype.string = function(value) {
-	return this.stringTweenNodef(this.transitionStringTween(value));
+	$s.push("thx.js.AccessTweenAttribute::string");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTween(value));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenAttribute.prototype.stringTweenNodef = function(tween) {
+	$s.push("thx.js.AccessTweenAttribute::stringTweenNodef");
+	var $spos = $s.length;
 	var name = this.name;
 	var attrTween = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@37");
+		var $spos = $s.length;
 		var f = tween(d,i,d.getAttribute(name));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@37@40");
+			var $spos = $s.length;
 			d.setAttribute(name,f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var attrTweenNS = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@45");
+		var $spos = $s.length;
 		var f = tween(d,i,d.getAttributeNS(name.space,name.local));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@45@48");
+			var $spos = $s.length;
 			d.setAttributeNS(name.space,name.local,f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenAttribute.prototype.floatNodef = function(f) {
-	return this.floatTweenNodef(this.transitionFloatTweenf(f));
+	$s.push("thx.js.AccessTweenAttribute::floatNodef");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(f));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenAttribute.prototype["float"] = function(value) {
-	return this.floatTweenNodef(this.transitionFloatTween(value));
+	$s.push("thx.js.AccessTweenAttribute::float");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTween(value));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenAttribute.prototype.floatTweenNodef = function(tween) {
+	$s.push("thx.js.AccessTweenAttribute::floatTweenNodef");
+	var $spos = $s.length;
 	var name = this.name;
 	var attrTween = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@71");
+		var $spos = $s.length;
 		var f = tween(d,i,Std.parseFloat(d.getAttribute(name)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@71@74");
+			var $spos = $s.length;
 			d.setAttribute(name,"" + f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var attrTweenNS = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@79");
+		var $spos = $s.length;
 		var f = tween(d,i,Std.parseFloat(d.getAttributeNS(name.space,name.local)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@79@82");
+			var $spos = $s.length;
 			d.setAttributeNS(name.space,name.local,"" + f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessTweenAttribute.prototype.__class__ = thx.js.AccessTweenAttribute;
 thx.js.AccessDataTweenAttribute = function(name,transition,tweens) {
 	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataTweenAttribute::new");
+	var $spos = $s.length;
 	thx.js.AccessTweenAttribute.call(this,name,transition,tweens);
+	$s.pop();
 }
 thx.js.AccessDataTweenAttribute.__name__ = ["thx","js","AccessDataTweenAttribute"];
 thx.js.AccessDataTweenAttribute.__super__ = thx.js.AccessTweenAttribute;
 for(var k in thx.js.AccessTweenAttribute.prototype ) thx.js.AccessDataTweenAttribute.prototype[k] = thx.js.AccessTweenAttribute.prototype[k];
 thx.js.AccessDataTweenAttribute.prototype.stringf = function(f) {
-	return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
-		return f(Reflect.field(n,"__data__"),i);
+	$s.push("thx.js.AccessDataTweenAttribute::stringf");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::stringf@101");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenAttribute.prototype.floatf = function(f) {
-	return this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
-		return f(Reflect.field(n,"__data__"),i);
+	$s.push("thx.js.AccessDataTweenAttribute::floatf");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::floatf@106");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenAttribute.prototype.stringTweenf = function(tween) {
+	$s.push("thx.js.AccessDataTweenAttribute::stringTweenf");
+	var $spos = $s.length;
 	var name = this.name;
 	var attrTween = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@113");
+		var $spos = $s.length;
 		var f = tween(Reflect.field(n,"__data__"),i,n.getAttribute(name));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@113@116");
+			var $spos = $s.length;
 			n.setAttribute(name,f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var attrTweenNS = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@121");
+		var $spos = $s.length;
 		var f = tween(Reflect.field(n,"__data__"),i,n.getAttributeNS(name.space,name.local));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@121@124");
+			var $spos = $s.length;
 			n.setAttributeNS(name.space,name.local,f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenAttribute.prototype.floatTweenf = function(tween) {
+	$s.push("thx.js.AccessDataTweenAttribute::floatTweenf");
+	var $spos = $s.length;
 	var name = this.name;
 	var attrTween = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@137");
+		var $spos = $s.length;
 		var f = tween(Reflect.field(n,"__data__"),i,Std.parseFloat(n.getAttribute(name)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@137@140");
+			var $spos = $s.length;
 			n.setAttribute(name,"" + f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	var attrTweenNS = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@145");
+		var $spos = $s.length;
 		var f = tween(Reflect.field(n,"__data__"),i,Std.parseFloat(n.getAttributeNS(name.space,name.local)));
-		return function(t) {
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@145@148");
+			var $spos = $s.length;
 			n.setAttributeNS(name.space,name.local,"" + f(t));
+			$s.pop();
 		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
-	return this.transition;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.js.AccessDataTweenAttribute.prototype.__class__ = thx.js.AccessDataTweenAttribute;
 thx.error.NullArgument = function(argumentName,posInfo) {
 	if( argumentName === $_ ) return;
+	$s.push("thx.error.NullArgument::new");
+	var $spos = $s.length;
 	thx.error.Error.call(this,"invalid null or empty argument {0} for method {1}.{2}()",[argumentName,posInfo.className,posInfo.methodName],posInfo,{ fileName : "NullArgument.hx", lineNumber : 14, className : "thx.error.NullArgument", methodName : "new"});
+	$s.pop();
 }
 thx.error.NullArgument.__name__ = ["thx","error","NullArgument"];
 thx.error.NullArgument.__super__ = thx.error.Error;
@@ -10087,12 +17875,15 @@ for(var k in thx.error.Error.prototype ) thx.error.NullArgument.prototype[k] = t
 thx.error.NullArgument.prototype.__class__ = thx.error.NullArgument;
 thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
 	if( decimals === $_ ) return;
+	$s.push("thx.culture.core.NumberInfo::new");
+	var $spos = $s.length;
 	this.decimals = decimals;
 	this.decimalsSeparator = decimalsSeparator;
 	this.groups = groups;
 	this.groupsSeparator = groupsSeparator;
 	this.patternNegative = patternNegative;
 	this.patternPositive = patternPositive;
+	$s.pop();
 }
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype.decimals = null;
@@ -10111,7 +17902,10 @@ rg.layout.Orientation.Horizontal.toString = $estr;
 rg.layout.Orientation.Horizontal.__enum__ = rg.layout.Orientation;
 thx.error.AbstractMethod = function(posInfo) {
 	if( posInfo === $_ ) return;
+	$s.push("thx.error.AbstractMethod::new");
+	var $spos = $s.length;
 	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 14, className : "thx.error.AbstractMethod", methodName : "new"});
+	$s.pop();
 }
 thx.error.AbstractMethod.__name__ = ["thx","error","AbstractMethod"];
 thx.error.AbstractMethod.__super__ = thx.error.Error;
@@ -10120,66 +17914,135 @@ thx.error.AbstractMethod.prototype.__class__ = thx.error.AbstractMethod;
 thx.color.Colors = function() { }
 thx.color.Colors.__name__ = ["thx","color","Colors"];
 thx.color.Colors.interpolatef = function(a,b,equation) {
+	$s.push("thx.color.Colors::interpolatef");
+	var $spos = $s.length;
 	var ca = thx.color.Colors.parse(a);
 	var cb = thx.color.Colors.parse(b);
 	var f = thx.color.Rgb.interpolatef(ca,cb,equation);
-	return function(v) {
-		return f(v).toString();
+	var $tmp = function(v) {
+		$s.push("thx.color.Colors::interpolatef@20");
+		var $spos = $s.length;
+		var $tmp = f(v).toString();
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Colors.interpolate = function(v,a,b,equation) {
-	return (thx.color.Colors.interpolatef(a,b,equation))(v);
+	$s.push("thx.color.Colors::interpolate");
+	var $spos = $s.length;
+	var $tmp = (thx.color.Colors.interpolatef(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Colors.parse = function(s) {
+	$s.push("thx.color.Colors::parse");
+	var $spos = $s.length;
 	if(!thx.color.Colors._reParse.match(s)) {
 		var v = thx.color.NamedColors.byName.get(s);
 		if(null == v) {
-			if("transparent" == s) return thx.color.Rgb.fromInt(16777215); else return (function($this) {
-				var $r;
-				throw new thx.error.Error("invalid color: '{0}'",null,s,{ fileName : "Colors.hx", lineNumber : 45, className : "thx.color.Colors", methodName : "parse"});
-				return $r;
-			}(this));
-		} else return v;
+			if("transparent" == s) {
+				var $tmp = thx.color.Rgb.fromInt(16777215);
+				$s.pop();
+				return $tmp;
+			} else {
+				var $tmp = (function($this) {
+					var $r;
+					throw new thx.error.Error("invalid color: '{0}'",null,s,{ fileName : "Colors.hx", lineNumber : 45, className : "thx.color.Colors", methodName : "parse"});
+					return $r;
+				}(this));
+				$s.pop();
+				return $tmp;
+			}
+		} else {
+			$s.pop();
+			return v;
+		}
 	}
 	var type = thx.color.Colors._reParse.matched(1);
 	if(!Strings.empty(type)) {
 		var values = thx.color.Colors._reParse.matched(2).split(",");
 		switch(type.toLowerCase()) {
 		case "rgb":case "rgba":
-			return new thx.color.Rgb(thx.color.Colors._c(values[0]),thx.color.Colors._c(values[1]),thx.color.Colors._c(values[2]));
+			var $tmp = new thx.color.Rgb(thx.color.Colors._c(values[0]),thx.color.Colors._c(values[1]),thx.color.Colors._c(values[2]));
+			$s.pop();
+			return $tmp;
 		case "hsl":
-			return new thx.color.Hsl(thx.color.Colors._d(values[0]),thx.color.Colors._p(values[1]),thx.color.Colors._p(values[2]));
+			var $tmp = new thx.color.Hsl(thx.color.Colors._d(values[0]),thx.color.Colors._p(values[1]),thx.color.Colors._p(values[2]));
+			$s.pop();
+			return $tmp;
 		case "cmyk":
-			return new thx.color.Cmyk(thx.color.Colors._p(values[0]),thx.color.Colors._p(values[1]),thx.color.Colors._p(values[2]),thx.color.Colors._p(values[3]));
+			var $tmp = new thx.color.Cmyk(thx.color.Colors._p(values[0]),thx.color.Colors._p(values[1]),thx.color.Colors._p(values[2]),thx.color.Colors._p(values[3]));
+			$s.pop();
+			return $tmp;
 		}
 	}
 	var color = thx.color.Colors._reParse.matched(3);
 	if(color.length == 3) color = color.split("").map(function(d,_) {
-		return d + d;
-	}).join(""); else if(color.length != 6) return (function($this) {
-		var $r;
-		throw new thx.error.Error("invalid color: '{0}'",null,s,{ fileName : "Colors.hx", lineNumber : 67, className : "thx.color.Colors", methodName : "parse"});
-		return $r;
-	}(this));
-	return thx.color.Rgb.fromInt(Std.parseInt("0x" + color));
+		$s.push("thx.color.Colors::parse@65");
+		var $spos = $s.length;
+		var $tmp = d + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).join(""); else if(color.length != 6) {
+		var $tmp = (function($this) {
+			var $r;
+			throw new thx.error.Error("invalid color: '{0}'",null,s,{ fileName : "Colors.hx", lineNumber : 67, className : "thx.color.Colors", methodName : "parse"});
+			return $r;
+		}(this));
+		$s.pop();
+		return $tmp;
+	}
+	var $tmp = thx.color.Rgb.fromInt(Std.parseInt("0x" + color));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Colors._c = function(s) {
-	return Std.parseInt(s);
+	$s.push("thx.color.Colors::_c");
+	var $spos = $s.length;
+	var $tmp = Std.parseInt(s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Colors._d = function(s) {
+	$s.push("thx.color.Colors::_d");
+	var $spos = $s.length;
 	var s1 = StringTools.trim(s);
 	if(s1.substr(-3) == "deg") s1 = s1.substr(0,-3); else if(s1.substr(-1) == "º") s1 = s1.substr(0,-1);
-	return Std.parseFloat(s1);
+	var $tmp = Std.parseFloat(s1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.color.Colors._p = function(s) {
+	$s.push("thx.color.Colors::_p");
+	var $spos = $s.length;
 	var s1 = StringTools.trim(s);
-	if(s1.substr(-1) == "%") return Std.parseFloat(s1.substr(0,-1)) / 100; else return Std.parseFloat(s1);
+	if(s1.substr(-1) == "%") {
+		var $tmp = Std.parseFloat(s1.substr(0,-1)) / 100;
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = Std.parseFloat(s1);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
 }
 thx.color.Colors.prototype.__class__ = thx.color.Colors;
 DateTools = function() { }
 DateTools.__name__ = ["DateTools"];
 DateTools.__format_get = function(d,e) {
-	return (function($this) {
+	$s.push("DateTools::__format_get");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
 		var $r;
 		switch(e) {
 		case "%":
@@ -10264,8 +18127,13 @@ DateTools.__format_get = function(d,e) {
 		}
 		return $r;
 	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.__format = function(d,f) {
+	$s.push("DateTools::__format");
+	var $spos = $s.length;
 	var r = new StringBuf();
 	var p = 0;
 	while(true) {
@@ -10276,54 +18144,108 @@ DateTools.__format = function(d,f) {
 		p = np + 2;
 	}
 	r.b[r.b.length] = f.substr(p,f.length - p);
-	return r.b.join("");
+	var $tmp = r.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.format = function(d,f) {
-	return DateTools.__format(d,f);
+	$s.push("DateTools::format");
+	var $spos = $s.length;
+	var $tmp = DateTools.__format(d,f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.delta = function(d,t) {
-	return Date.fromTime(d.getTime() + t);
+	$s.push("DateTools::delta");
+	var $spos = $s.length;
+	var $tmp = Date.fromTime(d.getTime() + t);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.getMonthDays = function(d) {
+	$s.push("DateTools::getMonthDays");
+	var $spos = $s.length;
 	var month = d.getMonth();
 	var year = d.getFullYear();
-	if(month != 1) return DateTools.DAYS_OF_MONTH[month];
+	if(month != 1) {
+		var $tmp = DateTools.DAYS_OF_MONTH[month];
+		$s.pop();
+		return $tmp;
+	}
 	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
-	return isB?29:28;
+	var $tmp = isB?29:28;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.seconds = function(n) {
-	return n * 1000.0;
+	$s.push("DateTools::seconds");
+	var $spos = $s.length;
+	var $tmp = n * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.minutes = function(n) {
-	return n * 60.0 * 1000.0;
+	$s.push("DateTools::minutes");
+	var $spos = $s.length;
+	var $tmp = n * 60.0 * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.hours = function(n) {
-	return n * 60.0 * 60.0 * 1000.0;
+	$s.push("DateTools::hours");
+	var $spos = $s.length;
+	var $tmp = n * 60.0 * 60.0 * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.days = function(n) {
-	return n * 24.0 * 60.0 * 60.0 * 1000.0;
+	$s.push("DateTools::days");
+	var $spos = $s.length;
+	var $tmp = n * 24.0 * 60.0 * 60.0 * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.parse = function(t) {
+	$s.push("DateTools::parse");
+	var $spos = $s.length;
 	var s = t / 1000;
 	var m = s / 60;
 	var h = m / 60;
-	return { ms : t % 1000, seconds : Std["int"](s % 60), minutes : Std["int"](m % 60), hours : Std["int"](h % 24), days : Std["int"](h / 24)};
+	var $tmp = { ms : t % 1000, seconds : Std["int"](s % 60), minutes : Std["int"](m % 60), hours : Std["int"](h % 24), days : Std["int"](h / 24)};
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.make = function(o) {
-	return o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
+	$s.push("DateTools::make");
+	var $spos = $s.length;
+	var $tmp = o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 DateTools.prototype.__class__ = DateTools;
 rg.svg.SvgLineChart = function(panel,x,y) {
 	if( panel === $_ ) return;
+	$s.push("rg.svg.SvgLineChart::new");
+	var $spos = $s.length;
 	this._cpid = "linechart_clip_path_" + ++rg.svg.SvgLineChart._pathid;
 	this._x = x;
 	this._y = y;
-	this._ease = thx.math.Equations.elasticf();
+	this._ease = thx.math.Ease.mode(thx.math.EaseMode.EaseOut,thx.math.Equations.exponential);
 	this._duration = 1500;
 	this._created = 0;
-	this._linewidth = [];
 	rg.svg.SvgLayer.call(this,panel);
 	this.redraw();
+	$s.pop();
 }
 rg.svg.SvgLineChart.__name__ = ["rg","svg","SvgLineChart"];
 rg.svg.SvgLineChart.__super__ = rg.svg.SvgLayer;
@@ -10336,113 +18258,236 @@ rg.svg.SvgLineChart.prototype._ease = null;
 rg.svg.SvgLineChart.prototype._duration = null;
 rg.svg.SvgLineChart.prototype._created = null;
 rg.svg.SvgLineChart.prototype._interpolator = null;
-rg.svg.SvgLineChart.prototype._linewidth = null;
 rg.svg.SvgLineChart.prototype.tooltip = function(label,x,y) {
+	$s.push("rg.svg.SvgLineChart::tooltip");
+	var $spos = $s.length;
 	var d = Date.fromTime(x);
-	return label + ": " + Ints.format(y) + " count, " + thx.culture.FormatDate.dateShort(d) + ", " + thx.culture.FormatDate.timeShort(d);
+	var $tmp = label + ", " + Ints.format(y);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype.init = function() {
+	$s.push("rg.svg.SvgLineChart::init");
+	var $spos = $s.length;
 	this.svg.classed().add("line-chart").append("svg:clipPath").attr("id").string(this._cpid).append("svg:rect").attr("x")["float"](0).attr("y")["float"](0).attr("width")["float"](0).attr("height")["float"](0);
 	this.svg.attr("clip-path").string("url(#" + this._cpid + ")");
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype.redraw = function() {
-	if(null == this._data || this._data.length == 0) return;
+	$s.push("rg.svg.SvgLineChart::redraw");
+	var $spos = $s.length;
+	if(null == this._data || this._data.length == 0) {
+		$s.pop();
+		return;
+	}
 	this._redraw();
+	$s.pop();
+}
+rg.svg.SvgLineChart.prototype.resize = function() {
+	$s.push("rg.svg.SvgLineChart::resize");
+	var $spos = $s.length;
+	this._x.range([0.0,this.width]);
+	this._y.range([0.0,this.height]);
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype.lineInterpolator = function(interpolator) {
+	$s.push("rg.svg.SvgLineChart::lineInterpolator");
+	var $spos = $s.length;
 	this._interpolator = interpolator;
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype.getData = function() {
-	return this._data;
+	$s.push("rg.svg.SvgLineChart::getData");
+	var $spos = $s.length;
+	var $tmp = this._data;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype.data = function(d) {
+	$s.push("rg.svg.SvgLineChart::data");
+	var $spos = $s.length;
 	this._data = d;
 	this.redraw();
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._path0 = function(d,i) {
+	$s.push("rg.svg.SvgLineChart::_path0");
+	var $spos = $s.length;
 	var x = this._x, y = this._y;
 	var line = new thx.svg.Line(function(d1,i1) {
-		return x.scale(d1.x);
+		$s.push("rg.svg.SvgLineChart::_path0@100");
+		var $spos = $s.length;
+		var $tmp = x.scale(d1.x);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d1,i1) {
-		return y.scale(0);
+		$s.push("rg.svg.SvgLineChart::_path0@101");
+		var $spos = $s.length;
+		var $tmp = y.scale(0);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	if(null != this._interpolator) line.interpolator(this._interpolator);
-	return line.shape(d.values);
+	var $tmp = line.shape(d.values);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._path = function(d,i) {
+	$s.push("rg.svg.SvgLineChart::_path");
+	var $spos = $s.length;
 	var x = this._x, y = this._y;
 	var line = new thx.svg.Line(function(d1,i1) {
-		return x.scale(d1.x);
+		$s.push("rg.svg.SvgLineChart::_path@113");
+		var $spos = $s.length;
+		var $tmp = x.scale(d1.x);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d1,i1) {
-		return y.scale(d1.y);
+		$s.push("rg.svg.SvgLineChart::_path@114");
+		var $spos = $s.length;
+		var $tmp = y.scale(d1.y);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
 	if(null != this._interpolator) line.interpolator(this._interpolator);
-	return line.shape(d.values);
+	var $tmp = line.shape(d.values);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype.updatex = function() {
-	this._x.range([0.0,this.panel.frame.width]);
+	$s.push("rg.svg.SvgLineChart::updatex");
+	var $spos = $s.length;
 	var s = this._x.scale(Date.now().getTime() - this._timedelta + this._x.getDomain()[0]);
 	var layer = this.svg.selectAll("g.group").attr("transform").string("translate(-" + s + ",0)");
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._timedelta = null;
 rg.svg.SvgLineChart.prototype._redraw = function() {
+	$s.push("rg.svg.SvgLineChart::_redraw");
+	var $spos = $s.length;
 	this._timedelta = Date.now().getTime();
-	this._x.range([0.0,this.panel.frame.width]);
-	this._y.range([0.0,this.panel.frame.height]);
-	this.svg.select("#" + this._cpid + " rect").attr("width")["float"](this.panel.frame.width).attr("height")["float"](this.panel.frame.height);
+	this.svg.select("#" + this._cpid + " rect").attr("width")["float"](this.width).attr("height")["float"](this.height);
 	var layer = this.svg.selectAll("g.group").attr("transform").string("translate(0,0)").data(this._data,function(d,i) {
-		return d.label;
+		$s.push("rg.svg.SvgLineChart::_redraw@139");
+		var $spos = $s.length;
+		var $tmp = d.label;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
-	layer.update().select("path.line").attr("d").stringf($closure(this,"_path"));
+	layer.update().select("path.line").transition().ease(this._ease).duration(null,this._duration).attr("d").stringf($closure(this,"_path"));
 	layer.enter().append("svg:g").attr("class").stringf(function(d,i) {
-		return "group group-" + i;
-	}).onNode("mouseover.animation",$closure(this,"_highlight")).onNode("mouseout.animation",$closure(this,"_backtonormal")).on("mousemove.tooltip",$closure(this,"_showtooltip")).on("mouseout.tooltip",$closure(this,"_hidetooltip")).append("svg:path").attr("class").string("line").attr("d").stringf($closure(this,"_path0")).style("opacity")["float"](0).eachNode($closure(this,"_popin"));
+		$s.push("rg.svg.SvgLineChart::_redraw@149");
+		var $spos = $s.length;
+		var $tmp = "group group-" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).onNode("mouseover.animation",$closure(this,"_highlight"),true).onNode("mouseout.animation",$closure(this,"_backtonormal"),true).on("mousemove.tooltip",$closure(this,"_showtooltip"),true).on("mouseout.tooltip",$closure(this,"_hidetooltip"),true).append("svg:path").attr("class").string("line").attr("d").stringf($closure(this,"_path0")).style("opacity")["float"](0).eachNode($closure(this,"_popin"));
 	layer.exit().remove();
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._highlight = function(d,i) {
+	$s.push("rg.svg.SvgLineChart::_highlight");
+	var $spos = $s.length;
 	thx.js.Dom.selectNode(d).select("path").classed().add("selected");
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._backtonormal = function(d,i) {
+	$s.push("rg.svg.SvgLineChart::_backtonormal");
+	var $spos = $s.length;
 	thx.js.Dom.selectNode(d).select("path").classed().remove("selected");
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._showtooltip = function(d,_) {
-	var i = 0;
-	var x = this._x.invert(thx.js.Dom.event.clientX);
-	var v = Arrays.nearest(d.values,x,function(d1) {
-		return d1.x;
+	$s.push("rg.svg.SvgLineChart::_showtooltip");
+	var $spos = $s.length;
+	var v = Arrays.nearest(d.values,this._x.invert(thx.js.Dom.event.clientX),function(d1) {
+		$s.push("rg.svg.SvgLineChart::_showtooltip@176");
+		var $spos = $s.length;
+		var $tmp = d1.x;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
-	var s = this.tooltip(d.label,v.x,v.y);
-	rg.chart.ToolTip.display(s);
+	rg.chart.ToolTip.display(this.tooltip(d.label,v.x,v.y));
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._hidetooltip = function(d,i) {
+	$s.push("rg.svg.SvgLineChart::_hidetooltip");
+	var $spos = $s.length;
 	rg.chart.ToolTip.display(null);
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype._popin = function(n,i) {
+	$s.push("rg.svg.SvgLineChart::_popin");
+	var $spos = $s.length;
 	var path = thx.js.Dom.selectNodeData(n);
 	path.transition().ease(this._ease).duration(null,this._duration).delay(null,150 * (i - this._created)).style("opacity")["float"](1.0).attr("d").stringf($closure(this,"_path"));
-	if(null == this._linewidth[i]) this._linewidth[i] = path.style("stroke-width").get();
 	if(i == this._data.length - 1) this._created = i;
+	$s.pop();
 }
 rg.svg.SvgLineChart.prototype.__class__ = rg.svg.SvgLineChart;
 if(!rg.util) rg.util = {}
 rg.util.Periodicity = function() { }
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.isValid = function(v) {
-	return Arrays.exists(rg.util.Periodicity.validPeriods,v);
+	$s.push("rg.util.Periodicity::isValid");
+	var $spos = $s.length;
+	var $tmp = Arrays.exists(rg.util.Periodicity.validPeriods,v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.util.Periodicity.calculateBetween = function(a,b,disc) {
+	$s.push("rg.util.Periodicity::calculateBetween");
+	var $spos = $s.length;
 	if(disc == null) disc = 2;
-	if(null == a || null == b) return "eternity";
+	if(null == a || null == b) {
+		$s.pop();
+		return "eternity";
+	}
 	var delta = Math.abs(b.getTime() - a.getTime());
-	if(delta >= DateTools.days(365 * disc)) return "year"; else if(delta >= DateTools.days(30 * disc)) return "month"; else if(delta >= DateTools.days(7 * disc)) return "week"; else if(delta >= DateTools.days(disc)) return "day"; else if(delta >= DateTools.hours(disc)) return "hour"; else return "minute";
+	if(delta >= DateTools.days(365 * disc)) {
+		$s.pop();
+		return "year";
+	} else if(delta >= DateTools.days(30 * disc)) {
+		$s.pop();
+		return "month";
+	} else if(delta >= DateTools.days(7 * disc)) {
+		$s.pop();
+		return "week";
+	} else if(delta >= DateTools.days(disc)) {
+		$s.pop();
+		return "day";
+	} else if(delta >= DateTools.hours(disc)) {
+		$s.pop();
+		return "hour";
+	} else {
+		$s.pop();
+		return "minute";
+	}
+	$s.pop();
 }
 rg.util.Periodicity.range = function(start,end,periodicity) {
+	$s.push("rg.util.Periodicity::range");
+	var $spos = $s.length;
 	var step = 1000;
 	start = Dates.snap(start,periodicity);
 	end = Dates.snap(end,periodicity);
 	switch(periodicity) {
 	case "eternity":
-		return [0.0];
+		var $tmp = [0.0];
+		$s.pop();
+		return $tmp;
 	case "minute":
 		step = 60000;
 		break;
@@ -10472,124 +18517,297 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 				result.push(new Date(y,m,1,0,0,0).getTime());
 			}
 		}
+		$s.pop();
 		return result;
 	case "year":
-		return Ints.range(Date.fromTime(start).getFullYear(),Date.fromTime(end).getFullYear(),1).map(function(d,i) {
-			return new Date(d,0,1,0,0,0).getTime();
+		var $tmp = Ints.range(Date.fromTime(start).getFullYear(),Date.fromTime(end).getFullYear(),1).map(function(d,i) {
+			$s.push("rg.util.Periodicity::range@77");
+			var $spos = $s.length;
+			var $tmp = new Date(d,0,1,0,0,0).getTime();
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
+		$s.pop();
+		return $tmp;
 	}
-	return Floats.range(start,end + step,step);
+	var $tmp = Floats.range(start,end + step,step);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
-	return Arrays.floatMin(arr,function(d) {
+	$s.push("rg.util.Periodicity::minForPeriodicityInSeries");
+	var $spos = $s.length;
+	var $tmp = Arrays.floatMin(arr,function(d) {
+		$s.push("rg.util.Periodicity::minForPeriodicityInSeries@86");
+		var $spos = $s.length;
 		var o = Reflect.field(d,periodicity);
-		return Arrays.floatMin(Reflect.fields(o),function(d1) {
-			return Std.parseFloat(d1);
+		var $tmp = Arrays.floatMin(Reflect.fields(o),function(d1) {
+			$s.push("rg.util.Periodicity::minForPeriodicityInSeries@86@88");
+			var $spos = $s.length;
+			var $tmp = Std.parseFloat(d1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
-	return Arrays.floatMax(arr,function(d) {
+	$s.push("rg.util.Periodicity::maxForPeriodicityInSeries");
+	var $spos = $s.length;
+	var $tmp = Arrays.floatMax(arr,function(d) {
+		$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@94");
+		var $spos = $s.length;
 		var o = Reflect.field(d,periodicity);
-		return Arrays.floatMax(Reflect.fields(o),function(d1) {
-			return Std.parseFloat(d1);
+		var $tmp = Arrays.floatMax(Reflect.fields(o),function(d1) {
+			$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@94@96");
+			var $spos = $s.length;
+			var $tmp = Std.parseFloat(d1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
 		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 rg.util.Periodicity.prototype.__class__ = rg.util.Periodicity;
 thx.svg.Area = function(x,y0,y1,interpolator) {
 	if( x === $_ ) return;
+	$s.push("thx.svg.Area::new");
+	var $spos = $s.length;
 	this._x = x;
 	this._y0 = y0;
 	this._y1 = y1;
 	this._interpolator = interpolator;
+	$s.pop();
 }
 thx.svg.Area.__name__ = ["thx","svg","Area"];
 thx.svg.Area.pointArray = function(interpolator) {
-	return new thx.svg.Area(function(d,_) {
-		return d[0];
+	$s.push("thx.svg.Area::pointArray");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointArray@62");
+		var $spos = $s.length;
+		var $tmp = d[0];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d,_) {
-		return d[1];
+		$s.push("thx.svg.Area::pointArray@62");
+		var $spos = $s.length;
+		var $tmp = d[1];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d,_) {
-		return d[2];
+		$s.push("thx.svg.Area::pointArray@62");
+		var $spos = $s.length;
+		var $tmp = d[2];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.pointObject = function(interpolator) {
-	return new thx.svg.Area(function(d,_) {
-		return d.x;
+	$s.push("thx.svg.Area::pointObject");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointObject@67");
+		var $spos = $s.length;
+		var $tmp = d.x;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d,_) {
-		return d.y0;
+		$s.push("thx.svg.Area::pointObject@67");
+		var $spos = $s.length;
+		var $tmp = d.y0;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(d,_) {
-		return d.y1;
+		$s.push("thx.svg.Area::pointObject@67");
+		var $spos = $s.length;
+		var $tmp = d.y1;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.pointArray2 = function(interpolator) {
-	return new thx.svg.Area(function(d,_) {
-		return d[0];
+	$s.push("thx.svg.Area::pointArray2");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointArray2@72");
+		var $spos = $s.length;
+		var $tmp = d[0];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(_,_1) {
+		$s.push("thx.svg.Area::pointArray2@72");
+		var $spos = $s.length;
+		$s.pop();
 		return 0.0;
+		$s.pop();
 	},function(d,_) {
-		return d[1];
+		$s.push("thx.svg.Area::pointArray2@72");
+		var $spos = $s.length;
+		var $tmp = d[1];
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.pointObjectXY = function(interpolator) {
-	return new thx.svg.Area(function(d,_) {
-		return d.x;
+	$s.push("thx.svg.Area::pointObjectXY");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointObjectXY@77");
+		var $spos = $s.length;
+		var $tmp = d.x;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},function(_,_1) {
+		$s.push("thx.svg.Area::pointObjectXY@77");
+		var $spos = $s.length;
+		$s.pop();
 		return 0.0;
+		$s.pop();
 	},function(d,_) {
-		return d.y;
+		$s.push("thx.svg.Area::pointObjectXY@77");
+		var $spos = $s.length;
+		var $tmp = d.y;
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.prototype._x = null;
 thx.svg.Area.prototype._y0 = null;
 thx.svg.Area.prototype._y1 = null;
 thx.svg.Area.prototype._interpolator = null;
 thx.svg.Area.prototype.shape = function(data,i) {
+	$s.push("thx.svg.Area::shape");
+	var $spos = $s.length;
 	var second = thx.svg.LineInternals.linePoints(data,this._x,this._y0);
 	second.reverse();
-	return data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y1),this._interpolator) + "L" + thx.svg.LineInternals.interpolatePoints(second,this._interpolator) + "Z";
+	var $tmp = data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y1),this._interpolator) + "L" + thx.svg.LineInternals.interpolatePoints(second,this._interpolator) + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.prototype.getInterpolator = function() {
-	return this._interpolator;
+	$s.push("thx.svg.Area::getInterpolator");
+	var $spos = $s.length;
+	var $tmp = this._interpolator;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.prototype.interpolator = function(type) {
+	$s.push("thx.svg.Area::interpolator");
+	var $spos = $s.length;
 	this._interpolator = type;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Area.prototype.getX = function() {
-	return this._x;
+	$s.push("thx.svg.Area::getX");
+	var $spos = $s.length;
+	var $tmp = this._x;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.prototype.x = function(v) {
+	$s.push("thx.svg.Area::x");
+	var $spos = $s.length;
 	this._x = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Area.prototype.getY0 = function() {
-	return this._y0;
+	$s.push("thx.svg.Area::getY0");
+	var $spos = $s.length;
+	var $tmp = this._y0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.prototype.y0 = function(v) {
+	$s.push("thx.svg.Area::y0");
+	var $spos = $s.length;
 	this._y0 = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Area.prototype.getY1 = function() {
-	return this._y1;
+	$s.push("thx.svg.Area::getY1");
+	var $spos = $s.length;
+	var $tmp = this._y1;
+	$s.pop();
+	return $tmp;
+	$s.pop();
 }
 thx.svg.Area.prototype.y1 = function(v) {
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
 	this._y1 = v;
+	$s.pop();
 	return this;
+	$s.pop();
 }
 thx.svg.Area.prototype.__class__ = thx.svg.Area;
 $_ = {}
 js.Boot.__res = {}
+$s = [];
+$e = [];
 js.Boot.__init();
 {
 	js.Lib.document = document;
 	js.Lib.window = window;
 	onerror = function(msg,url,line) {
+		var stack = $s.copy();
 		var f = js.Lib.onerror;
-		if( f == null )
+		$s.splice(0,$s.length);
+		if( f == null ) {
+			var i = stack.length;
+			var s = "";
+			while( --i >= 0 )
+				s += "Called from "+stack[i]+"\n";
+			alert(msg+"\n\n"+s);
 			return false;
-		return f(msg,[url+":"+line]);
+		}
+		return f(msg,stack);
 	}
 }
 thx.cultures.EnUS.getCulture();
@@ -10853,23 +19071,44 @@ thx.languages.En.getLanguage();
 	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
 	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
 	Math.isFinite = function(i) {
-		return isFinite(i);
+		$s.push("thx.svg.Area::y1");
+		var $spos = $s.length;
+		var $tmp = isFinite(i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	Math.isNaN = function(i) {
-		return isNaN(i);
+		$s.push("thx.svg.Area::y1");
+		var $spos = $s.length;
+		var $tmp = isNaN(i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 }
 {
 	var d = Date;
 	d.now = function() {
-		return new Date();
+		$s.push("thx.svg.Area::y1");
+		var $spos = $s.length;
+		var $tmp = new Date();
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	d.fromTime = function(t) {
+		$s.push("thx.svg.Area::y1");
+		var $spos = $s.length;
 		var d1 = new Date();
 		d1["setTime"](t);
+		$s.pop();
 		return d1;
+		$s.pop();
 	};
 	d.fromString = function(s) {
+		$s.push("thx.svg.Area::y1");
+		var $spos = $s.length;
 		switch(s.length) {
 		case 8:
 			var k = s.split(":");
@@ -10878,27 +19117,38 @@ thx.languages.En.getLanguage();
 			d1["setUTCHours"](k[0]);
 			d1["setUTCMinutes"](k[1]);
 			d1["setUTCSeconds"](k[2]);
+			$s.pop();
 			return d1;
 		case 10:
 			var k = s.split("-");
-			return new Date(k[0],k[1] - 1,k[2],0,0,0);
+			var $tmp = new Date(k[0],k[1] - 1,k[2],0,0,0);
+			$s.pop();
+			return $tmp;
 		case 19:
 			var k = s.split(" ");
 			var y = k[0].split("-");
 			var t = k[1].split(":");
-			return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
+			var $tmp = new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
+			$s.pop();
+			return $tmp;
 		default:
 			throw "Invalid date format : " + s;
 		}
+		$s.pop();
 	};
 	d.prototype["toString"] = function() {
+		$s.push("thx.svg.Area::y1");
+		var $spos = $s.length;
 		var date = this;
 		var m = date.getMonth() + 1;
 		var d1 = date.getDate();
 		var h = date.getHours();
 		var mi = date.getMinutes();
 		var s = date.getSeconds();
-		return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d1 < 10?"0" + d1:"" + d1) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
+		var $tmp = date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d1 < 10?"0" + d1:"" + d1) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
+		$s.pop();
+		return $tmp;
+		$s.pop();
 	};
 	d.prototype.__class__ = d;
 	d.__name__ = ["Date"];
@@ -10937,11 +19187,16 @@ Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 rg.query.mock.DefaultStructure.paths = [{ path : "/ad", sub : ["nike"], events : { }},{ path : "/ad/nike", sub : [], events : { impression : { target : { iphone : 50, ipad : 35, android : 40, symbian : 5, pc : 70, mac : 60}}}}];
 rg.svg.SvgPanel.transitionTime = 500;
+thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+))","");
 js.Lib.onerror = null;
 thx.js.Dom.doc = (function() {
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
 	var gs = thx.js.Selection.create([new thx.js.Group([js.Lib.document])]);
 	gs.parentNode = js.Lib.document.documentElement;
+	$s.pop();
 	return gs;
+	$s.pop();
 })();
 thx.js.Dom.selectionEngine = new thx.js.SizzleEngine();
 thx.math.Const.TWO_PI = 6.283185307179586477;
@@ -10951,30 +19206,55 @@ thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
 thx.xml.Namespace.prefix = (function() {
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
 	var h = new Hash();
 	h.set("svg","http://www.w3.org/2000/svg");
 	h.set("xhtml","http://www.w3.org/1999/xhtml");
 	h.set("xlink","http://www.w3.org/1999/xlink");
 	h.set("xml","http://www.w3.org/XML/1998/namespace");
 	h.set("xmlns","http://www.w3.org/2000/xmlns/");
+	$s.pop();
 	return h;
+	$s.pop();
 })();
 Ints._reparse = new EReg("^([+-])?\\d+$","");
+thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 rg.svg.SvgScaleTick.defaultTickLength = 6;
 rg.svg.SvgScaleTick.defaultTickPadding = 2;
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
 thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
-	return d.toLowerCase();
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 });
 thx.date.DateParser.shortmonths = thx.cultures.EnUS.getCulture().date.abbrMonths.slice(0,-1).map(function(d,i) {
-	return d.toLowerCase();
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 });
 thx.date.DateParser.days = thx.cultures.EnUS.getCulture().date.days.map(function(d,i) {
-	return d.toLowerCase();
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 });
 thx.date.DateParser.shortdays = thx.cultures.EnUS.getCulture().date.abbrDays.map(function(d,i) {
-	return d.toLowerCase();
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
 });
 thx.date.DateParser.sfullmonths = thx.date.DateParser.months.join("|");
 thx.date.DateParser.sshortmonths = thx.date.DateParser.shortmonths.join("|");
@@ -11006,7 +19286,7 @@ thx.svg.LineInternals._lineBasisBezier2 = [0,1 / 3,2 / 3,0];
 thx.svg.LineInternals._lineBasisBezier3 = [0,1 / 6,2 / 3,1 / 6];
 rg.svg.SvgStreamGraph._pathid = 0;
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
-rg.svg.SvgScaleLabel.defaultTextHeight = 12;
+rg.svg.SvgScaleLabel.defaultTexttextHeight = 12;
 rg.svg.SvgScaleLabel.defaultTextPadding = 2;
 Main.MAX_PER_CREATION = 50;
 Main.MIN_PER_CREATION = 10;

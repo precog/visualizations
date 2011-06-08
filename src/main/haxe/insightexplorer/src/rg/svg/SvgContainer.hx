@@ -3,6 +3,7 @@ import rg.layout.Frame;
 import rg.layout.Orientation;
 import rg.layout.StackFrame;
 import rg.layout.Stack;
+import rg.layout.Disposition;
 
 using Iterators;
 
@@ -56,6 +57,20 @@ class SvgContainer extends SvgPanel
 		var f : PanelFriend = panel;
 		f.setParent(null);
 		return this;
+	}
+	
+	public function createPanel(disp : Disposition)
+	{
+		var panel = new SvgPanel(new StackFrame(disp));
+		addPanel(panel);
+		return panel;
+	}
+	
+	public function createContainer(disp : Disposition, orientation : Orientation)
+	{
+		var panel = new SvgContainer(new StackFrame(disp), orientation);
+		addPanel(panel);
+		return panel;
 	}
 	
 	override public function redraw()

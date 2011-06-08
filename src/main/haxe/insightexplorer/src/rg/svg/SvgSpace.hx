@@ -45,6 +45,13 @@ class SvgSpace
 		workspace.addPanel(panel);
 		return panel;
 	}
+	
+	public function createContainer(disp : Disposition, orientation : Orientation)
+	{
+		var panel = new SvgContainer(new StackFrame(disp), orientation);
+		workspace.addPanel(panel);
+		return panel;
+	}
 }
 
 private class SvgSpaceContainer extends SvgContainer
