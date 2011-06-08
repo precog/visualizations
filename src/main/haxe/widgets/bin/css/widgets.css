@@ -10,7 +10,12 @@
 .rg line, .rg path
 {
 	stroke: #336;
-	stroke-width: 4;
+	stroke-width: 2;
+}
+
+.rg path.selected
+{
+	stroke-width: 10;
 }
 
 .rg text
@@ -44,12 +49,12 @@ font-size: 10pt;
 	transition: all 0.75s ease-in-out;
 }
 
-.group
+.group path
 {
 	opacity: 0.6;
 }
 
-.group:hover
+.group:hover path
 {
 	opacity: 1.0;
 }
@@ -111,11 +116,6 @@ border: 1px solid #ccc;
 {
 clear:left;
 border-spacing:0;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--o-user-select: none;
-user-select: none;
 }
 
 .pivot-table td
@@ -193,6 +193,13 @@ border: 1px solid #0026FF !important;
 {
 	fill: none;
 	stroke: none;
+	
+	
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
 }
 
 .rg g.group
@@ -323,13 +330,15 @@ border: 1px solid #0026FF !important;
 .rg text
 {
 	font-family: 'Verdana', arial, serif; 
-	font-size: 8px;
+	font-size: 10px;
 	fill: #000;
+/*	shape-rendering: crispEdges;
+	text-rendering: optimizeLegibility; */
 }
 
 .rg .pie-chart g.group, .rg .stream-chart g.group
 {
-	stroke-width:2;
+	stroke-width: 3;
 	stroke-miterjoin:miter;
 	stroke-miterlimit:1;
 }
@@ -342,4 +351,15 @@ border: 1px solid #0026FF !important;
 .rg .line-chart g.group path
 {
 	fill:none;
+}
+
+#tooltip
+{
+	text-align: center;
+	font-weight: bold;
+	background-color: #ffc;
+	border: 1px solid #ff9;
+	font-family: Verdana;
+	font-size: 10px;
+	padding: 3px 8px;
 }

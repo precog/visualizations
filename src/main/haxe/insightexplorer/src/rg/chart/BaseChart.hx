@@ -1,4 +1,6 @@
 package rg.chart;
+import rg.query.Query;
+import rg.QueryOptions;
 import rg.svg.SvgPanel;
 import rg.svg.SvgScaleLabel;
 import rg.svg.SvgScaleTick;
@@ -8,7 +10,7 @@ import rg.svg.SvgSpace3x3;
 import thx.js.Timer;
 import thx.math.scale.Linear;
 import rg.svg.Anchor;
-import rg.chart.ChartOptions;
+import rg.ChartOptions;
 import rg.svg.SvgLayer;
 import thx.svg.LineInterpolator;
 
@@ -17,7 +19,7 @@ import thx.svg.LineInterpolator;
  * @author Franco Ponticelli
  */
 
-class BaseChart 
+class BaseChart<TService, TData>
 {
 	public var container(default, null) : Selection;
 	public var width(default, null) : Int;
@@ -38,17 +40,25 @@ class BaseChart
 	
 	public var query(default, null) : { path : String, event : String, property : String, values : Array<String> }
 	
-	var layers : Array<SvgLayer<Dynamic>>;
+	var layers : Array<SvgLayer>;
 		
 	var start : Float;
 	var startdata : Float;
 	var end : Float;
+	var loader : Query<TService, TData>;
 	
-	public function new(container : Selection, options : ChartOptions) 
+	public function new(container : Selection, loader : Query<TService, TData>, options : ChartOptions) 
 	{
 		this.container = container;
+		this.loader = loader;
+		loader.onChange.add(onData);
 		layers = [];
 		initOptions(options, callback(init, options));
+	}
+	
+	function onData(v : TData)
+	{
+		trace("data is here");
 	}
 	
 	function onAnimationStep() { }
@@ -101,15 +111,26 @@ class BaseChart
 //		throw "abstract method";
 	}
 	
+	function initQuery(q : QueryOptions)
+	{
+		query.event = q.event;
+		query.path = q.path;
+		query.property = q.property;
+		// TODO
+//		query.values = q.values;
+	}
+	
 	function initOptions(options : ChartOptions, handler : Void -> Void)
 	{
 		width = options.width;
 		height = options.height;
-		query = options.query;
-		timerAnimationUpdate = options.timeranimationupdate;
-		timerDataUpdate = options.timerdataupdate;
+//		query = options.query;
+		// TODO
+		options.animated;
+		timerAnimationUpdate = options.animation.refresh;
+		timerDataUpdate = options.animation.dataupdate;
 		periodicity = "minute";
-		stacked = options.stacked == true;
+//		stacked = options.stacked == true;
 		var interp = null == options.lineinterpolation ? null : options.lineinterpolation.split("-")[0];
 		lineInterpolator = switch(interp)
 		{
@@ -135,9 +156,9 @@ class BaseChart
 			handler();
 	}
 	
-	function loadProperties(handler : Void -> Void, data : Array<String>)
+	function loadProperties(handler : Void -> Void, data : Array<Dynamic>)
 	{
-		query.values = data;
+		query.values = cast data;
 		handler();
 	}
 	

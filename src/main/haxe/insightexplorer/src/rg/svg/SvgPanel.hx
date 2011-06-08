@@ -20,7 +20,7 @@ class SvgPanel
 //	public var animatePosition : Null<Bool>;
 	public var parent(default, null) : SvgContainer;
 	
-	var _layers : Array<SvgLayer<Dynamic>>;
+	var _layers : Array<SvgLayer>;
 	public function new(frame : StackFrame)
 	{
 		this.frame = frame;
@@ -29,13 +29,13 @@ class SvgPanel
 		_layers = [];
 	}
 	
-	function addLayer(layer : SvgLayer<Dynamic>)
+	function addLayer(layer : SvgLayer)
 	{
 		_layers.remove(layer);
 		_layers.push(layer);
 	}
 	
-	function removeLayer(layer : SvgLayer<Dynamic>)
+	function removeLayer(layer : SvgLayer)
 	{
 		_layers.remove(layer);
 	}

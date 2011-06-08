@@ -19,11 +19,16 @@
 	<script type="text/javascript">
 $(document).ready(function() {
 	rg.Viz.pivot("#pivot", {
-		query : {
-				path : "/gluecon/all/",
-				event : "tweet"
-			},
-			properties : ["clout", "emotion", "followersCount", "friendsCount", "startup", "client"/*, "languages"*/]
+		path : "/gluecon/all/",
+		event : "tweet",
+		filter : function(v) { return v != "languages" && v != "startups"; },
+		properties : [{
+			name : "emotions"
+//			limit : Null<Int>, // todo, can be omitted?
+//			order : String,
+//			time : String
+		}]
+//		availableProperties : ["clout", "emotion", "followersCount", "friendsCount", "startup", "client"/*, "languages"*/]
 	});
 });
 	</script>

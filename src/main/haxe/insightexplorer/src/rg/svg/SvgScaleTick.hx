@@ -7,7 +7,7 @@ package rg.svg;
 
 import thx.math.scale.Linear;
 
-class SvgScaleTick extends SvgLayer<Float>
+class SvgScaleTick extends SvgLayer
 {
 	public static function ofLinear(panel : SvgPanel, anchor : Anchor, scale : Linear)
 	{

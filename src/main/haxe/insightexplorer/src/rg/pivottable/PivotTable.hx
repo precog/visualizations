@@ -18,8 +18,8 @@ using Arrays;
 
 class PivotTable 
 {
-	static var startColor = Hsl.ofRgb(Rgb.fromInt(0x99FFFF));
-	static var endColor = Hsl.ofRgb(Rgb.fromInt(0x0000FF));
+	static var startColor = Hsl.toHsl(Rgb.fromInt(0x99FFFF));
+	static var endColor = Hsl.toHsl(Rgb.fromInt(0x0000FF));
 	
 	static var nextid = 0;
 	
@@ -49,12 +49,15 @@ class PivotTable
 
 	public function init()
 	{
+		/*
 		if (null == availableProperties || 0 == availableProperties.length)
 		{
 			ReportGrid.children(path, { property : event, type : "property" }, _loadProperties);
 		} else 
+		*/
 			_init();
 	}
+
 	
 	public function query()
 	{
@@ -380,12 +383,17 @@ class PivotTable
 		return data;
 	}
 	
+	var wired : Bool;
 	function _init()
 	{
 		while (queryProperties.length < 3)
 			queryProperties.push(EmptyProperty);
 		container.node().innerHTML = buildContext(id);
-		wireDateControls();
+		if (wired != true)
+		{
+			wired = true;
+			wireDateControls();
+		}
 		refreshQueryProperties();
 	}
 	
@@ -393,12 +401,8 @@ class PivotTable
 	{
 		if (null == values)
 			values = [];
-		availableProperties = values.map(function(d, i) {
-			if (d.substr(0, 1) == ".")
-				return d.substr(1);
-			else
-				return d;
-		});
+		availableProperties = values;
+//		_init();
 		return values;
 	}
 	

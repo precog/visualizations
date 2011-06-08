@@ -11,7 +11,7 @@
 	<meta name="keywords" content="" />
 	<script src="js/jquery.js" type="text/javascript"></script>
 	<script src="js/infos.js" type="text/javascript"></script>
-	<script src="js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&amp;analyticsServer=http%3A%2F%2F10.0.0.90%3A8888%2F&amp;useJsonp=true" type="text/javascript"></script>
+	<script src="js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&amp;analyticsServer=http%3A%2F%2F127.0.0.1%3A8888%2F&amp;useJsonp=true" type="text/javascript"></script>
 	<script src="js/chart.js" type="text/javascript"></script>
 	<script type="text/javascript">
 $(document).ready(function() {
@@ -22,16 +22,24 @@ $(document).ready(function() {
 			height = 324; // 604
 		
 		rg.Viz.stream("#stream", { 
+			path : "/gluecon/all/",
+			event : "tweet",
+			property : "startup",
+			values : v 
+		}, { 
 			width: width,
 			height : height,
-			lineinterpolation : "cardinal",
-			query : { path : "/gluecon/top3/", event : "tweet", property : "startup", values : v } 
+			lineinterpolation : "cardinal" 
 		});
 		
-		rg.Viz.pie("#pie", { 
+		rg.Viz.pie("#pie", {
+			path : "/gluecon/all/",
+			event : "tweet",
+			property : "startup",
+			values : v
+		}, { 
 			width: width,
-			height : height - 9,
-			query : { path : "/gluecon/top3/", event : "tweet", property : "startup", values : v } 
+			height : height - 9
 		});
 	});
 });
@@ -43,7 +51,7 @@ $(document).ready(function() {
 		<div id="pie"></div>
 		<div id="stream"></div>
 		<div id="logos"></div>
-		<div id="haxe:trace" style="display:none"></div>
+		<div id="haxe:trace"></div>
 		<div id="footer">
 			<div id="left"><img src="images/gnip.png" width="60" height="30"></div>
 			<div id="right"><img src="images/rglogo.png" width="128" height="30"></div>

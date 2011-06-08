@@ -38,6 +38,13 @@ class SvgSpace
 	{
 		workspace.redraw();
 	}
+	
+	public function createPanel(disp : Disposition)
+	{
+		var panel = new SvgPanel(new StackFrame(disp));
+		workspace.addPanel(panel);
+		return panel;
+	}
 }
 
 private class SvgSpaceContainer extends SvgContainer

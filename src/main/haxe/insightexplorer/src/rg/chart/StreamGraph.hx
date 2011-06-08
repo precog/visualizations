@@ -12,7 +12,7 @@ import rg.js.ReportGrid;
 using thx.culture.FormatDate;
 using Arrays;
 
-class StreamGraph extends BaseChart
+class StreamGraph extends BaseChart<Dynamic, Dynamic>
 {
 	var data : Array<Array<{x:Float,y:Float}>>;
 	

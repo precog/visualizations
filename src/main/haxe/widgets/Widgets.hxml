@@ -2,6 +2,7 @@
 -cp ../insightexplorer/src
 -cp ../../../../../client-libraries/haxe/src
 -lib thx
+-lib hxevents
 -js bin/js/chart.js
 -D noEmbedJS
 -main Main

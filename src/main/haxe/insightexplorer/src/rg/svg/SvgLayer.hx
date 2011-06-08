@@ -7,7 +7,7 @@ package rg.svg;
 
 import thx.js.Selection;
 
-class SvgLayer<T>
+class SvgLayer
 {
 	var panel : SvgPanel;
 	var svg : Selection;
@@ -15,7 +15,7 @@ class SvgLayer<T>
 	public function new(panel : SvgPanel)
 	{
 		this.panel = panel;
-		var p : SvgPanelFriend<T> = panel;
+		var p : SvgPanelFriend = panel;
 		p.addLayer(this);
 		svg = cast panel.svg.append("svg:g");
 		svg.attr("class").string("layer");
@@ -29,7 +29,7 @@ class SvgLayer<T>
 	
 	public function destroy()
 	{
-		var p : SvgPanelFriend<T> = panel;
+		var p : SvgPanelFriend = panel;
 		p.removeLayer(this);
 		svg.remove();
 	}
@@ -40,7 +40,7 @@ class SvgLayer<T>
 	}
 }
 
-typedef SvgPanelFriend<T> = {
-	private function addLayer(layer : SvgLayer<T>) : Void;
-	private function removeLayer(layer : SvgLayer<T>) : Void;
+typedef SvgPanelFriend = {
+	private function addLayer(layer : SvgLayer) : Void;
+	private function removeLayer(layer : SvgLayer) : Void;
 }

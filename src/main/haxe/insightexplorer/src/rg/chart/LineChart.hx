@@ -6,14 +6,20 @@ import rg.js.ReportGrid;
 import thx.svg.LineInterpolator;
 using Arrays;
 using thx.culture.FormatDate;
+import thx.js.Selection;
+import rg.svg.SvgSpace3x3;
+import rg.svg.SvgLayer;
+import rg.query.Query;
+import rg.svg.SvgPanel;
+import rg.svg.Anchor;
+import rg.ScaleInfo;
+import rg.svg.SvgScaleTick;
+import rg.svg.SvgScaleLabel;
+import rg.svg.LineChartData;
 
-/**
- * ...
- * @author Franco Ponticelli
- */
-
-class LineChart extends BaseChart
+class LineChart
 {
+/*
 	var data : Array<Array<{x:Float,y:Float,y0:Float}>>;
 
 	
@@ -21,8 +27,66 @@ class LineChart extends BaseChart
 	var chart : SvgLineChart;
 	
 	var loading : Bool;
+	public var container(default, null) : Selection;
+	public var width(default, null) : Int;
+	public var height(default, null) : Int;
+	public var space(default, null) : SvgSpace3x3;
 	
-	override function initScales(options : ChartOptions)
+	public var x(default, null) : Linear;
+	public var y(default, null) : Linear;
+	
+	public var timerAnimationUpdate(default, null) : Int;
+	public var timerDataUpdate(default, null) : Int;
+	public var periodicity(default, null) : String;
+	
+	public var lineInterpolator(default, null) : LineInterpolator;
+	
+	public var stacked(default, null) : Bool;
+	
+	
+	public var query(default, null) : { path : String, event : String, property : String, values : Array<String> }
+	
+	var layers : Array<SvgLayer<Dynamic>>;
+		
+	var start : Float;
+	var startdata : Float;
+	var end : Float;
+	var loader : Query<Dynamic, LineChartData>;
+*/
+	public var space(default, null) : SvgSpace3x3;
+	public var container(default, null) : Selection;
+	public var width(default, null) : Int;
+	public var height(default, null) : Int;
+	
+	public var loader(default, null) : Query<Dynamic, LineChartData>;
+	
+	public var x(default, null) : Linear;
+	public var y(default, null) : Linear;
+	
+	var chart : SvgLineChart;
+
+	public function new(container : Selection, loader : Query<Dynamic, LineChartData>, width : Int, height : Int) 
+	{
+		this.container = container;
+		this.loader = loader;
+		this.width = width;
+		this.height = height;
+		
+		space = new SvgSpace3x3(width, height, container, 0);
+		space.svg.attr("class").string("rg");
+		
+		x = new Linear();
+		y = new Linear();
+		
+		chart = new SvgLineChart(space.center, x, y);
+//		loader.onChange.add(chart.data);
+		
+//		loader.onChange.add(onData);
+//		layers = [];
+//		initOptions(options, callback(init, options));
+	}
+/*
+	function initScales(options : ChartOptions)
 	{
 		x = xtime = new LinearTime();
 		x.range([0.0, width]);
@@ -30,13 +94,16 @@ class LineChart extends BaseChart
 		currentMax = 1.0;
 		loading = false;
 	}
-	
-	override function onAnimationStep()
+*/
+/*
+	function onAnimationStep()
 	{
 		x.domain([start, end]);
 		refresh();
 	}
-	override function onDataStep()
+*/
+/*
+	function onDataStep()
 	{
 		if (loading)
 			return;
@@ -50,8 +117,9 @@ class LineChart extends BaseChart
 			ReportGrid.propertyValueSeries(query.path, o, callback(updateData, i));
 		}
 	}
-	
-	override function initChart(options : ChartOptions)
+*/
+/*
+	function initChart(options : ChartOptions)
 	{
 		data = [];
 		for (i in 0...query.values.length)
@@ -60,7 +128,8 @@ class LineChart extends BaseChart
 		onAnimationStep();
 		onDataStep();
 	}
-	
+*/
+/*
 	var collectedData : Array<Array<Array<Float>>>;
 	var seriesCount : Int;
 	function updateData(pos : Int, d : Dynamic)
@@ -76,7 +145,8 @@ class LineChart extends BaseChart
 		
 		updateChart(results);
 	}
-	
+*/
+/*
 	function tooltip(d : { x : Float, y : Float, y0 : Float }, i : Int)
 	{
 		var date = Date.fromTime(d.x);
@@ -86,15 +156,17 @@ class LineChart extends BaseChart
 			+ date.dateShort() + " " + date.timeShort() +
 			"</span>");
 	}
-	
-	override function updateTimeDomain()
+*/
+/*
+	function updateTimeDomain()
 	{
 		var now = Date.now().getTime();
 		start = now - 1000 * 60 * 90;
 		startdata = now - 1000 * 60 * 91;
 		end = now - 1000 * 60 * .5;
 	}
-	
+*/
+/*
 	var currentMax : Float;
 	function updateChart(data : Array<Array<{x:Float,y:Float}>>)
 	{
@@ -244,7 +316,8 @@ class LineChart extends BaseChart
 		
 		return results;
 	}
-	
+*/
+/*
 	function normalizeData(data : Array<Array<Array<Float>>>)
 	{
 		var ticks = timeRange(data);
@@ -284,4 +357,144 @@ class LineChart extends BaseChart
 
 		return results;
 	}
+*/
+/*
+	function onData(v : LineChartData)
+	{
+		trace("data is here");
+	}
+*/
+/*
+	var _lastanimation : Float;
+	var _lastdata : Float;
+	function _stepanimation(t : Float)
+	{
+		if (t - _lastanimation < timerAnimationUpdate)
+			return false;
+		_lastanimation = t;
+		updateTimeDomain();
+		onAnimationStep();
+		return false;
+	}
+*/
+/*
+	function _stepdata(t : Float)
+	{
+		if (t - _lastdata < timerDataUpdate)
+			return false;
+		_lastdata = t;
+		onDataStep();
+		return false;
+	}
+*/
+/*
+	function init(options)
+	{
+		updateTimeDomain();
+		initScales(options);
+		initSpace(options);
+		initChart(options);
+		refresh();
+		
+		if (timerAnimationUpdate > 0)
+		{
+			_lastanimation = 0.0;
+//			Timer.timer(_stepanimation, timerAnimationUpdate);
+		}
+		
+		if (timerDataUpdate > 0)
+		{
+			_lastdata = 0.0;
+//			Timer.timer(_stepdata, timerDataUpdate);
+		}
+	}
+*/
+/*
+	function initQuery(q : QueryOptions)
+	{
+		query.event = q.event;
+		query.path = q.path;
+		query.property = q.property;
+		// TODO
+//		query.values = q.values;
+	}
+*/
+/*
+	function initOptions(options : ChartOptions, handler : Void -> Void)
+	{
+		width = options.width;
+		height = options.height;
+//		query = options.query;
+		// TODO
+		options.animated;
+		timerAnimationUpdate = options.animation.refresh;
+		timerDataUpdate = options.animation.dataupdate;
+		periodicity = "minute";
+//		stacked = options.stacked == true;
+		var interp = null == options.lineinterpolation ? null : options.lineinterpolation.split("-")[0];
+		lineInterpolator = switch(interp)
+		{
+			case "basis":
+				LineInterpolator.Basis;
+			case "cardinal":
+				var v = options.lineinterpolation.split("-")[1];
+				if(null == v)
+					LineInterpolator.Cardinal();
+				else
+					LineInterpolator.Cardinal(Std.parseFloat(v));
+			case "stepafter":
+				LineInterpolator.StepAfter;
+			case "stepbefore":
+				LineInterpolator.StepBefore;
+			default:
+				null;
+		}
+		if (null == query.values)
+		{
+			ReportGrid.propertyValues(query.path, { property : query.event + "." + query.property }, callback(loadProperties, handler));
+		} else
+			handler();
+	}
+*/
+/*
+	function initSpace(options : ChartOptions)
+	{
+		space = new SvgSpace3x3(width, height, container, 0);
+		space.svg.attr("class").string("rg");
+		
+		space.setLeft(	scalePanel(space.left, Right, y, options.left));
+		space.setRight(	scalePanel(space.right, Left, y, options.right));
+		space.setTop(	scalePanel(space.top, Bottom, x, options.top));
+		space.setBottom(scalePanel(space.bottom, Top, x, options.bottom));
+	}
+	
+	public function refreshPanels()
+	{
+		for (layer in layers)
+			layer.redraw();
+	}
+	
+	function scalePanel(panel : SvgPanel, anchor : Anchor, scale : Linear, options : ScaleInfo)
+	{
+		var len = 0;
+		if (options.ticks)
+		{
+			var tick = SvgScaleTick.ofLinear(panel, anchor, scale);
+			layers.push(tick);
+			tick.length(options.ticklength);
+			len += options.ticklength;
+		}
+		if (options.labels)
+		{
+			if (options.ticks)
+				len += options.spacing;
+				
+			var label = SvgScaleLabel.ofLinear(panel, anchor, scale);
+			label.padding(len);
+			layers.push(label);
+			len += options.labellength;
+		}
+		return len;
+	}
+*/
 }

@@ -13,7 +13,7 @@ import thx.js.Access;
 import js.Dom;
 using Arrays;
  
-class SvgStreamGraph extends SvgLayer<Array<XYY0>>
+class SvgStreamGraph extends SvgLayer
 {
 	static var _pathid = 0;
 	
