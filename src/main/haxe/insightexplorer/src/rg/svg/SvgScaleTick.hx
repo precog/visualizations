@@ -18,12 +18,18 @@ class SvgScaleTick extends SvgLayer
 			.key(scale.tickFormat);
 	}
 	
+	public static function boundsOfLinear(panel : SvgPanel, anchor : Anchor, scale : Linear)
+	{
+		return ofLinear(panel, anchor, scale)
+			.ticks(function() {
+			return scale.getDomain();
+		});
+	}
+	
 	public static var defaultTickLength : Float = 6;
-	public static var defaultTickPadding : Float = 2;
 	
 	var _anchor : Anchor;
-	
-	var _padding : Float;
+
 	var _length : Float;
 	var _pos : Void -> Float;
 	var _t : Float -> Int -> String;
@@ -40,7 +46,6 @@ class SvgScaleTick extends SvgLayer
 	{
 		super(panel);
 		_length = defaultTickLength;
-		_padding = defaultTickPadding;
 		this.anchor(anchor);
 		svg.attr("class").string("scale-ticks");
 	}
@@ -139,25 +144,17 @@ class SvgScaleTick extends SvgLayer
 		return this;
 	}
 	
-	public function getPadding() return _padding
-	public function padding(v : Float)
-	{
-		_padding = v;
-		adjustPositionFunction();
-		return this;
-	}
-	
 	function adjustPositionFunction()
 	{
 		var me = this;
 		switch(_anchor)
 		{
 			case Top, Left:
-				_pos = function() return me._padding;
+				_pos = function() return 0;
 			case Bottom:
-				_pos = function() return me.panel.frame.height - me._length - me._padding;
+				_pos = function() return me.panel.frame.height - me._length;
 			case Right:
-				_pos = function() return me.panel.frame.width - me._length - me._padding;
+				_pos = function() return me.panel.frame.width - me._length;
 		}
 	}
 }

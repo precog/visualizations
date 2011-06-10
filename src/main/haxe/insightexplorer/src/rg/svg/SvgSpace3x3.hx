@@ -39,27 +39,27 @@ class SvgSpace3x3 extends SvgSpace
 		frames = [];
 		
 		this.workspace.addPanels([
-			containers[0] = new SvgContainer(frames[0] = new StackFrame(Fixed(t)), Horizontal),
-			containers[1] = new SvgContainer(new StackFrame(Fill()), Horizontal),
-			containers[2] = new SvgContainer(frames[1] = new StackFrame(Fixed(b)), Horizontal),
+			containers[0] = new SvgContainer(frames[0] = new StackFrame(Fixed(0,0,t)), Horizontal),
+			containers[1] = new SvgContainer(new StackFrame(Fill(0,0)), Horizontal),
+			containers[2] = new SvgContainer(frames[1] = new StackFrame(Fixed(0,0,b)), Horizontal),
 		]);
 		
 		containers[0].addPanels([
-			topLeft  = new SvgPanel(frames[2] = new StackFrame(Fixed(l))),
-			top      = new SvgPanel(new StackFrame(Fill())),
-			topRight = new SvgPanel(frames[3] = new StackFrame(Fixed(r))),
+			topLeft  = new SvgPanel(frames[2] = new StackFrame(Fixed(0,0,l))),
+			top      = new SvgPanel(new StackFrame(Fill(0,0))),
+			topRight = new SvgPanel(frames[3] = new StackFrame(Fixed(0,0,r))),
 		]);
 		
 		containers[1].addPanels([
-			left   = new SvgPanel(frames[4] = new StackFrame(Fixed(l))),
-			center = new SvgPanel(new StackFrame(Fill())),
-			right  = new SvgPanel(frames[5] = new StackFrame(Fixed(r))),
+			left   = new SvgPanel(frames[4] = new StackFrame(Fixed(0,0,l))),
+			center = new SvgPanel(new StackFrame(Fill(0,0))),
+			right  = new SvgPanel(frames[5] = new StackFrame(Fixed(0,0,r))),
 		]);
 		
 		containers[2].addPanels([
-			bottomLeft  = new SvgPanel(frames[6]  = new StackFrame(Fixed(l))),
-			bottom      = new SvgPanel(new StackFrame(Fill())),
-			bottomRight = new SvgPanel(frames[7] = new StackFrame(Fixed(r))),
+			bottomLeft  = new SvgPanel(frames[6]  = new StackFrame(Fixed(0,0,l))),
+			bottom      = new SvgPanel(new StackFrame(Fill(0,0))),
+			bottomRight = new SvgPanel(frames[7] = new StackFrame(Fixed(0,0,r))),
 		]);
 	}
 	
@@ -67,7 +67,7 @@ class SvgSpace3x3 extends SvgSpace
 	{
 		if (v < 0)
 			v = 0;
-		frames[0].disposition = Fixed(v);
+		frames[0].disposition = Fixed(0,0,v);
 		return this;
 	}
 	
@@ -75,7 +75,7 @@ class SvgSpace3x3 extends SvgSpace
 	{
 		if (v < 0)
 			v = 0;
-		frames[1].disposition = Fixed(v);
+		frames[1].disposition = Fixed(0,0,v);
 		return this;
 	}
 	
@@ -83,9 +83,9 @@ class SvgSpace3x3 extends SvgSpace
 	{
 		if (v < 0)
 			v = 0;
-		frames[2].disposition = Fixed(v);
-		frames[4].disposition = Fixed(v);
-		frames[6].disposition = Fixed(v);
+		frames[2].disposition = Fixed(0,0,v);
+		frames[4].disposition = Fixed(0,0,v);
+		frames[6].disposition = Fixed(0,0,v);
 		return this;
 	}
 	
@@ -93,9 +93,9 @@ class SvgSpace3x3 extends SvgSpace
 	{
 		if (v < 0)
 			v = 0;
-		frames[3].disposition = Fixed(v);
-		frames[5].disposition = Fixed(v);
-		frames[7].disposition = Fixed(v);
+		frames[3].disposition = Fixed(0,0,v);
+		frames[5].disposition = Fixed(0,0,v);
+		frames[7].disposition = Fixed(0,0,v);
 		return this;
 	}
 }

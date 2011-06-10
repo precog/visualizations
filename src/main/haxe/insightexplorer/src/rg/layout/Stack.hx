@@ -71,25 +71,25 @@ class Stack
 		{
 			switch(child.disposition)
 			{
-				case Fixed(size):
-					required += size;
-					values.push(size);
-				case Variable(percent, min, max):
+				case Fixed(before, after, size):
+					required += size + before + after;
+					values.push(size + before + after);
+				case Variable(before, after, percent, min, max):
 					var size = Math.round(percent / 100 * available);
 					if (null != min && size < min)
 						size = min;
 					if (null != max && size > max)
 						size = max;
-					required += size;
-					values.push(size);
-				case Fill(min, max):
+					required += size + before + after;
+					values.push(size + before + after);
+				case Fill(before, after, min, max):
 					if (null == min)
 						min = 0;
 					if (null == max)
 						max = available;
-					required += min;
+					required += min + before + after;
 					variablespace += variables[i] = (max - min);
-					values.push(min);
+					values.push(min + before + after);
 				case Floating(x, y, w, h):
 					values.push(0);
 			}
@@ -104,7 +104,7 @@ class Stack
 			{
 				switch(child.disposition)
 				{
-					case Fill(_, _):
+					case Fill(_, _, _, _):
 						var size = Math.round(variables[i] /  variablespace * available);
 						values[i] += size;
 					default:
@@ -126,9 +126,13 @@ class Stack
 					switch(child.disposition)
 					{
 						case Floating(x, y, w, h):
-							sizeable.set(x, y, w, h);
-						default:
-							sizeable.set(0, pos, this.width, values[i]);
+							sizeable.setLayout(x, y, w, h);
+						case 
+							Fixed(before, after, _),
+							Variable(before, after, _, _, _),
+							Fill(before, after, _, _):
+							
+							sizeable.setLayout(0, pos + before, this.width, values[i] - after - before);
 					}
 					pos += values[i++];
 				}
@@ -139,9 +143,13 @@ class Stack
 					switch(child.disposition)
 					{
 						case Floating(x, y, w, h):
-							sizeable.set(x, y, w, h);
-						default:
-							sizeable.set(pos, 0, values[i], this.height);
+							sizeable.setLayout(x, y, w, h);
+						case 
+							Fixed(before, after, _),
+							Variable(before, after, _, _, _),
+							Fill(before, after, _, _):
+							
+							sizeable.setLayout(pos + before, 0, values[i] - after - before, this.height);
 					}
 					pos += values[i++];
 				}
@@ -169,5 +177,5 @@ typedef FriendPanel = {
 }
 
 typedef SizeableFriend = {
-	private function set(x : Int, y : Int, width : Int, height : Int) : Void;
+	private function setLayout(x : Int, y : Int, width : Int, height : Int) : Void;
 }

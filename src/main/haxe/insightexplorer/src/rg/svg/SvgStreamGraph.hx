@@ -61,9 +61,9 @@ class SvgStreamGraph extends SvgLayer
 		_redraw();
 	}
 
-	public function data(d : Array<Array<{ x : Float, y : Float }>>)
+	public function data(d : Array<{ label : String, values : Array<{ x : Float, y : Float}> }>)
 	{
-		_data = d;
+		_data = d.map(function(d, i) return d.values);
 		_prepareData();
 		_redraw();
 	}
@@ -150,6 +150,8 @@ class SvgStreamGraph extends SvgLayer
 	
 	function _redraw()
 	{
+		if (null == _data)
+			return;
 		svg.select("#" + _cpid + " rect")
 			.attr("width").float(_w)
 			.attr("height").float(_h);

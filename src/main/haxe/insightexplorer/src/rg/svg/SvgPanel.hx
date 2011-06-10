@@ -58,8 +58,7 @@ class SvgPanel
 	{
 		svg = container.append("svg:g")
 			.attr("class").string("panel")
-			.attr("transform").string("translate(0,0)");
-		
+			.attr("transform").string("translate(" + frame.x + "," + frame.y + ")");
 		svg.append("svg:rect")
 			.attr("class").string("panel-frame")
 			.attr("width").float(frame.width)
@@ -77,7 +76,8 @@ class SvgPanel
 			.attr("transform").string("translate(" + frame.x + "," + frame.y + ")")
 			.select(".panel-frame")
 				.attr("width").float(frame.width)
-				.attr("height").float(frame.height);
+				.attr("height").float(frame.height)
+			;
 		redraw();
 		onResize.dispatch();
 	}

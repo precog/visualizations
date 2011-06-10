@@ -16,7 +16,18 @@ class SvgScaleRule extends SvgLayer
 			.scale(scale.scale)
 			.range(scale.range)
 			.ticks(scale.ticks)
-			.key(scale.tickFormat);
+			.key(function(v, i) {
+	//			trace(scale.tickFormat(v, i));
+				return scale.tickFormat(v, i);
+			});
+	}
+	
+	public static function boundsOfLinear(panel : SvgPanel, orientation : Orientation, scale : Linear)
+	{
+		return ofLinear(panel, orientation, scale)
+			.ticks(function() {
+			return scale.getDomain();
+		});
 	}
 	
 	var _orientation : Orientation;
@@ -45,17 +56,19 @@ class SvgScaleRule extends SvgLayer
 	
 	override public function redraw()
 	{
+		if (null == _maxRange)
+			return;
 		_range([0.0, _maxRange()]);
 		
 		var g = svg.selectAll("g." + _axis)
-			.data(_ticks(), _key)
-			.update()
-			.attr("transform").stringf(_t);
+			.data(_ticks(), _key);
 
 		// REGEN
-		g.selectAll("line.rule")
-			.attr(_oaxis + "1").float(0)
-			.attr(_oaxis + "2").float(_length());
+		g.update()
+			.attr("transform").stringf(_t)
+				.selectAll("line.rule")
+					.attr(_oaxis + "1").float(0)
+					.attr(_oaxis + "2").float(_length());
 			
 		// ENTER
 		g.enter()
@@ -104,7 +117,7 @@ class SvgScaleRule extends SvgLayer
 	{
 		if (Type.enumEq(o, _orientation))
 			return this;
-		var panel = this.panel;
+		var me = this;
 		
 		switch(_orientation = o)
 		{
@@ -112,14 +125,14 @@ class SvgScaleRule extends SvgLayer
 				_axis = "x";
 				_oaxis = "y";
 				_t = translateX;
-				_maxRange = function() return panel.frame.width;
-				_length = function() return panel.frame.height;
+				_maxRange = function() return me.width;
+				_length = function() return me.height;
 			case Horizontal:
 				_axis = "y";
 				_oaxis = "x";
 				_t = translateY;
-				_maxRange = function() return panel.frame.height;
-				_length = function() return panel.frame.width;
+				_maxRange = function() return me.height;
+				_length = function() return me.width;
 		}
 		return this;
 	}

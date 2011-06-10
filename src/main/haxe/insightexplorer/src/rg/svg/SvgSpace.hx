@@ -15,10 +15,21 @@ class SvgSpace
 	public var svg(default, null) : Selection;
 	public var workspace(default, null) : SvgContainer;
 	var _stackFrame : StackFrame;
-	public function new(width : Int, height : Int, parentSelection : Selection)
+	var _paddingTop : Int;
+	var _paddingBottom : Int;
+	var _paddingLeft : Int;
+	var _paddingRight : Int;
+	
+	public function new(width : Int, height : Int, parentSelection : Selection, paddingTop = 0, ?paddingRight : Int, ?paddingBottom : Int, ?paddingLeft : Int)
 	{
 		svg = parentSelection.append("svg:svg");
-		_stackFrame = new StackFrame(Fill());
+		
+		_paddingTop = paddingTop;
+		_paddingRight = null == paddingRight ? _paddingTop : paddingRight;
+		_paddingBottom = null == paddingBottom ? _paddingTop : paddingBottom;
+		_paddingLeft = null == paddingLeft ? _paddingRight : paddingLeft;
+		
+		_stackFrame = new StackFrame(Fill(_paddingTop, _paddingBottom));
 		workspace = new SvgSpaceContainer(svg, _stackFrame);
 		resize(width, height);
 	}
@@ -31,7 +42,7 @@ class SvgSpace
 			.attr("width").float(width)
 			.attr("height").float(height);
 		var sf : FrameFriend = _stackFrame;
-		sf.set(0, 0, width, height);
+		sf.setLayout(_paddingLeft, _paddingTop, width - _paddingLeft - _paddingRight, height - _paddingTop - _paddingBottom);
 	}
 	
 	public function redraw()

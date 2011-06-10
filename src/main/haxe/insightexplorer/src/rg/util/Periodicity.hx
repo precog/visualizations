@@ -81,6 +81,62 @@ class Periodicity
 		return Floats.range(start, end + step, step); 
 	}
 	
+	public static function next(periodicity : String, ?date : Float) : Float
+	{
+		if (null == date)
+			date = Date.now().getTime();
+		return switch(periodicity)
+		{
+			case "eternity": 0.0;
+			case "minute": date + 60000;
+			case "hour": date + 60 * 60000;
+			case "day": date + 24 * 60 * 60000;
+			case "week": date + 7 * 24 * 60 * 60000;
+			case "month":
+				var d = Date.fromTime(date),
+					y = d.getFullYear(),
+					m = d.getMonth();
+				m++;
+				if (m == 12)
+				{
+					m = 0;
+					y++;
+				}
+				new Date(y, m, d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()).getTime();
+			case "year":
+				var d = Date.fromTime(date);
+				new Date(d.getFullYear() + 1, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()).getTime();
+		}
+	}
+	
+	public static function prev(periodicity : String, ?date : Float) : Float
+	{
+		if (null == date)
+			date = Date.now().getTime();
+		return switch(periodicity)
+		{
+			case "eternity": 0.0;
+			case "minute": date - 60000;
+			case "hour": date - 60 * 60000;
+			case "day": date - 24 * 60 * 60000;
+			case "week": date - 7 * 24 * 60 * 60000;
+			case "month":
+				var d = Date.fromTime(date),
+					y = d.getFullYear(),
+					m = d.getMonth();
+				m--;
+				if (m == -1)
+				{
+					m = 11;
+					y--;
+				}
+				new Date(y, m, d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()).getTime();
+			case "year":
+				var d = Date.fromTime(date);
+				new Date(d.getFullYear() - 1, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()).getTime();
+		}
+	}
+	
 	public static function minForPeriodicityInSeries(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
 	{
 		return Arrays.floatMin(arr, function(d) {

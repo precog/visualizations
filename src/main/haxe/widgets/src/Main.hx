@@ -1,3 +1,4 @@
+import haxe.Firebug;
 import haxe.Timer;
 import rg.Viz;
 import rg.js.ReportGrid;
@@ -13,6 +14,7 @@ class Main
 	// C49A058D-459D-415D-B41D-5805357FF874
 	static function main() 
 	{
+		Firebug.redirectTraces();
 		/*
 		ReportGrid.tokens();
 		ReportGrid.newToken({

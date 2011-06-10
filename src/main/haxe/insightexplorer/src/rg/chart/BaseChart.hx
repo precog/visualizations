@@ -200,7 +200,6 @@ class BaseChart<TService, TData>
 				len += options.spacing;
 				
 			var label = SvgScaleLabel.ofLinear(panel, anchor, scale);
-			label.padding(len);
 			layers.push(label);
 			len += options.labellength;
 		}

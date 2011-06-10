@@ -364,12 +364,24 @@ border: 1px solid #0026FF !important;
 	padding: 3px 8px;
 }
 
-.rg g.linechart-highlighter line
+.rg g.linechart-highlighter line, line.rule
 {
 	stroke-width: 1;
 	shape-rendering: crispEdges;
-	stroke-dasharray: 1, 1;
+	stroke-dasharray: 1, 1; 
 	stroke: #000;
+}
+
+.rg g.linechart-highlighter rect
+{
+	fill: #fff;
+	stroke: #999;
+	stroke-width: 2px;
+}
+
+.rg line.rule
+{
+	stroke: #999;
 }
 
 .rg line.tick

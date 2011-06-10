@@ -44,7 +44,7 @@ class SvgLineChart extends SvgLayer
 	public dynamic function tooltip(label : String, x : Float, y : Float)
 	{
 		var d = Date.fromTime(x);
-		return label + ", " + Ints.format(y);
+		return label + ": " + Ints.format(y);
 	}
 	
 	override function init()
@@ -140,7 +140,7 @@ class SvgLineChart extends SvgLayer
 		
 		// update
 		layer.update().select("path.line")
-			.transition().ease(_ease).duration(_duration)
+//			.transition().ease(_ease).duration(_duration)
 				.attr("d").stringf(_path);
 		
 		// enter
@@ -173,7 +173,8 @@ class SvgLineChart extends SvgLayer
 	
 	function _showtooltip(d : { label : String, values : Array<{ x : Float, y : Float}> }, _ : Int) 
 	{
-		var v = Arrays.nearest(d.values, _x.invert(Dom.event.clientX), function(d) return d.x);
+		var mouse = thx.js.Svg.mouse(svg.node());
+		var v = Arrays.nearest(d.values, _x.invert(mouse[0]), function(d) return d.x);
 		ToolTip.display(tooltip(d.label, v.x, v.y));
 	}
 	

@@ -90,7 +90,23 @@ class RandomExecutor implements IExecutor
 		if (null == event)
 			return go(success, { } );
 		else {
-			return go(error, "not implemented");
+			var periodicity = Reflect.field(options, "periodicity"),
+				start : Null<Float> = Reflect.field(options, "start"),
+				end : Null<Float> = Reflect.field(options, "end"),
+				property = Reflect.field(options, "property"),
+				event = extractEventFromProperty(property),
+				name = extractNameFromProperty(property)
+				;
+			
+			var result = { count : 0, series : {} };
+
+			var values = valuesforproperty(path, event, name);
+			for (value in values)
+			{
+				var key = valuekey(periodicity, path, event, name, value);
+				series(periodicity, start, end, path, event, name, key, result);
+			}
+			return go(success, result);
 		}
 	}
 	public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void)
@@ -100,7 +116,7 @@ class RandomExecutor implements IExecutor
 		if (null == event)
 			return go(success, { } );
 		else {
-			return go(error, "not implemented");
+			return go(error, "propertyValues: not implemented");
 		}
 	}
 	public function propertyValueCount(path : String, options : { }, success : Int -> Void, ?error : String -> Void)
@@ -110,7 +126,7 @@ class RandomExecutor implements IExecutor
 		if (null == event)
 			return go(success, { } );
 		else {
-			return go(error, "not implemented");
+			return go(error, "propertyValueCount: not implemented");
 		}
 	}
 	public function propertyValueSeries(path : String, options : { property : String, value : Dynamic }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
@@ -125,6 +141,8 @@ class RandomExecutor implements IExecutor
 				end : Null<Float> = Reflect.field(options, "end"),
 				event = extractEventFromProperty(options.property),
 				property = extractNameFromProperty(options.property);
+				
+			
 			var result = series(periodicity, start, end, path, event, property, options.value);
 			
 			return go(success, result.series);
@@ -137,7 +155,7 @@ class RandomExecutor implements IExecutor
 		if (null == event)
 			return go(success, { } );
 		else {
-			return go(error, "not implemented");
+			return go(error, "searchCount: not implemented");
 		}
 	}
 	public function searchSeries(path : String, options : { }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
@@ -147,7 +165,7 @@ class RandomExecutor implements IExecutor
 		if (null == event)
 			return go(success, { } );
 		else {
-			return go(error, "not implemented");
+			return go(error, "searchSeries: not implemented");
 		}
 	}
 	public function intersect(path : String, options : { }, success : Dynamic<Dynamic> -> Void, ?error : String -> Void)
@@ -184,6 +202,21 @@ class RandomExecutor implements IExecutor
 		}
 	}
 	
+	function valuesforproperty(path : String, event : String, property : String)
+	{
+		var events = structure.get(path);
+		if (null == events)
+			return [];
+		var e = events.events.get(event);
+		if (null == e)
+			return [];
+		var values = e.get(property);
+		if (null == values)
+			return [];
+		else
+			return values.keys().array();
+	}
+	
 	function topseries(periodicity : String, start : Null<Float>, end : Null<Float>, path : String, event : String, property : String, qt : Int, reverse : Bool)
 	{
 		var events = structure.get(path);
@@ -218,36 +251,35 @@ class RandomExecutor implements IExecutor
 		});
 	}
 	
-	function series(periodicity : String, start : Null<Float>, end : Null<Float>, path : String, event : String, property : String, value : String)
+	function series(periodicity : String, start : Null<Float>, end : Null<Float>, path : String, event : String, property : String, value : String, ?o : { count : Int, series : {}})
 	{
-		var series = { },
-			count = 0;
+		var result = null == o ? { count : 0, series : {}} : o,
+			series = result.series;
+			
+		trace("1: " + periodicity + ",2: " + start + ",3: " + end + ",4: " + path + ",5: " + event + ",6: " + property + ",7: " + value);
 		switch(periodicity)
 		{
 			case "eternity":
-				Reflect.setField(series, "0", count = countvalue(path, event, property, value));
+				Reflect.setField(series, "0", result.count += countvalue(path, event, property, value));
 			case "minute", "hour", "day", "week", "month", "year":
 				var si = getindex(periodicity, start, true, path, event),
 					ei = getindex(periodicity, end, false, path, event),
 					k = valuekey(periodicity, path, event, property, value),
 					values = cache.get(k);
-					
-				for (i in si...ei)
-				{
-					var time = "" + gettimeforindex(periodicity, i),
-						value = values[i];
-					count += value;
-					Reflect.setField(series, time, value);
-				}
+				if(null != values)
+					for (i in si...ei)
+					{
+						var time = "" + gettimeforindex(periodicity, i),
+							value = values[i];
+						result.count += value;
+						Reflect.setField(series, time, value);
+					}
 			default:
-				throw "not implemented";
+				throw "series for " + periodicity + " not implemented";
 		}
 		var s = { };
 		Reflect.setField(s, periodicity, series);
-		return {
-			count : count,
-			series : s
-		};
+		return result;
 	}
 	
 	function gettimeforindex(periodicity : String, i : Int)

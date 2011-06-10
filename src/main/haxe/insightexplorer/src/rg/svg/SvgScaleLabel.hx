@@ -20,13 +20,19 @@ class SvgScaleLabel extends SvgLayer
 			;
 	}
 	
+	public static function boundsOfLinear(panel : SvgPanel, anchor : Anchor, scale : Linear)
+	{
+		return ofLinear(panel, anchor, scale)
+			.ticks(function() {
+			return scale.getDomain();
+		});
+	}
+	
 	public static var defaultTexttextHeight : Float = 12;
-	public static var defaultTextPadding : Float = 2;
 	
 	var _anchor : Anchor;
 	
-	var _padding : Float;
-	var _texttextHeight : Float;
+	var _textTextHeight : Float;
 	var _pos : Void -> Float;
 	var _t : Float -> Int -> String;
 	var _maxRange : Void -> Int;
@@ -40,17 +46,19 @@ class SvgScaleLabel extends SvgLayer
 	var _label : Float -> Int -> String;
 	var _textAnchor : String;
 	var _textBaseline : String;
+	var _alwaysHorizontal : Bool;
 	
 	public function new(panel : SvgPanel, anchor : Anchor)
 	{
+		_alwaysHorizontal = true;
 		super(panel);
-		_texttextHeight = defaultTexttextHeight;
-		_padding = defaultTextPadding;
+		_textTextHeight = defaultTexttextHeight;
 		this.anchor(anchor);
 		svg.attr("class").string("scale-ticks");
 	}
 	
 	function translateX(d : Float, i : Int) return "translate(" + _scale(d, i) + ",0) rotate(-90)"
+	function translateXH(d : Float, i : Int) return "translate(" + _scale(d, i) + ",0)"
 	function translateY(d : Float, i : Int) return "translate(0," + _scale(d, i) + ")"
 	
 	override public function redraw()
@@ -136,7 +144,10 @@ class SvgScaleLabel extends SvgLayer
 			case Top, Bottom:
 				_axis = "x";
 				_oaxis = "x";
-				_t = translateX;
+				if(_alwaysHorizontal)
+					_t = translateXH;
+				else
+					_t = translateX;
 				_maxRange = function() return me.width;
 			case Left, Right:
 				_axis = "y";
@@ -147,11 +158,23 @@ class SvgScaleLabel extends SvgLayer
 		switch(_anchor)
 		{
 			case Top:
-				_textAnchor = "end";
-				_textBaseline = "middle";
+				if (_alwaysHorizontal)
+				{
+					_textAnchor = "middle";
+					_textBaseline = "hanging";
+				} else {
+					_textAnchor = "end";
+					_textBaseline = "middle";
+				}
 			case Bottom:
-				_textAnchor = "start";
-				_textBaseline = "middle";
+				if (_alwaysHorizontal)
+				{
+					_textAnchor = "middle";
+					_textBaseline = "baseline";
+				} else {
+					_textAnchor = "start";
+					_textBaseline = "middle";
+				}
 			case Left:
 				_textAnchor = "start";
 				_textBaseline = "central";
@@ -163,18 +186,18 @@ class SvgScaleLabel extends SvgLayer
 		return this;
 	}
 	
-	public function gettextHeight() return _texttextHeight
-	public function textHeight(v : Float)
+	public function getAlwaysHorizontal() return _alwaysHorizontal
+	public function alwaysHorizontal(v : Bool)
 	{
-		_texttextHeight = v;
+		_alwaysHorizontal = v;
 		adjustPositionFunction();
 		return this;
 	}
 	
-	public function getPadding() return _padding
-	public function padding(v : Float)
+	public function getTextHeight() return _textTextHeight
+	public function textHeight(v : Float)
 	{
-		_padding = v;
+		_textTextHeight = v;
 		adjustPositionFunction();
 		return this;
 	}
@@ -185,13 +208,13 @@ class SvgScaleLabel extends SvgLayer
 		switch(_anchor)
 		{
 			case Top:
-				_pos = function() return - me._padding;
+				_pos = function() return 0;
 			case Left:
-				_pos = function() return me._padding;
+				_pos = function() return 0;
 			case Bottom:
-				_pos = function() return me.height - me._padding;
+				_pos = function() return me.height;
 			case Right:
-				_pos = function() return me.width - me._padding;
+				_pos = function() return me.width;
 		}
 	}
 }

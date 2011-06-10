@@ -5,14 +5,16 @@ package rg.svg;
  * @author Franco Ponticelli
  */
 
+import thx.js.Dom;
 import js.Dom;
 import thx.js.behavior.Zoom;
 import thx.js.behavior.ZoomEvent;
 
-class SvgZoomZone extends SvgLayer<Dynamic>
+class SvgZoomZone extends SvgLayer
 {
 	var eventWired : Bool;
-	var _handler : ZoomEvent -> Void;
+	var _zoomHandler : ZoomEvent -> Void;
+	var _endHandler : ZoomEvent -> Void;
 	var _zoom : thx.js.behavior.Zoom<Dynamic>;
 	var _minx : Null<Int>;
 	var _maxx : Null<Int>;
@@ -24,23 +26,38 @@ class SvgZoomZone extends SvgLayer<Dynamic>
 	override public function destroy()
 	{
 		super.destroy();
-		_handler = function(_){}
+		_zoomHandler = function(_){}
 	}
 	
 	function wireZoom(n : HtmlDom, i)
 	{
-		_zoom = new thx.js.behavior.Zoom().zoom(_zoomh, n);
+		_zoom = new thx.js.behavior.Zoom();
+		_zoom.zoom(_zoomh)(n);
+		Dom.selectNode(n)
+			.onNode("mouseup", _endh);
 	}
 	
 	function _zoomh(n, i)
 	{
-		_handler(Zoom.event);
+		_zoomHandler(Zoom.event);
+	}
+	
+	function _endh(n, i)
+	{
+		_endHandler(Zoom.event);
 	}
 
-	public function getZoom() return _handler
+	public function getZoom() return _zoomHandler
 	public function zoom(f : ZoomEvent -> Void)
 	{
-		_handler = f;
+		_zoomHandler = f;
+		return this;
+	}
+	
+	public function getEnd() return _endHandler
+	public function end(f : ZoomEvent -> Void)
+	{
+		_endHandler = f;
 		return this;
 	}
 	
@@ -58,7 +75,7 @@ class SvgZoomZone extends SvgLayer<Dynamic>
 					.attr("transform").string("translate(0,1)")
 				.append("svg:rect")
 					.attr("class").string("zoom-zone")
-					.attr("stroke").string("#333")
+					.attr("stroke").string("none")
 					.attr("fill").string("none");
 		}
 		svg.select("svg")

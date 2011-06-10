@@ -1,7 +1,7 @@
 package rg;
 //import rg.chart.LineChart;
 import haxe.Timer;
-import rg.chart.StreamGraph;
+//import rg.chart.StreamGraph;
 import rg.ChartOptions;
 import rg.pivottable.PivotTable;
 import rg.pivottable.PivotTableProperty;
@@ -9,6 +9,7 @@ import rg.query.IExecutor;
 import rg.query.js.ReportGridExecutor;
 import rg.query.mock.RandomExecutor;
 import rg.query.QueryPropertyValues;
+import rg.query.QueryPropertySeries;
 import rg.query.QueryTimerUpdate;
 import rg.query.QueryValuesCount;
 import rg.svg.LineChartData;
@@ -18,6 +19,7 @@ import rg.svg.SvgLineChartHighlighter;
 import rg.svg.SvgPanel;
 import rg.svg.SvgScaleLabel;
 import rg.svg.SvgTitle;
+import rg.svg.SvgZoomZone;
 import thx.date.DateParser;
 import thx.error.Error;
 import thx.js.Dom;
@@ -42,6 +44,8 @@ import rg.layout.StackFrame;
 import rg.layout.Orientation;
 import rg.svg.SvgScaleTick;
 import rg.svg.SvgScaleRule;
+import rg.util.Periodicity;
+import rg.svg.SvgStreamGraph;
 
 using Objects;
 using Arrays;
@@ -164,7 +168,15 @@ class Viz
 	}
 	
 	public static var executor : IExecutor = new RandomExecutor(null, Date.fromString("2011-06-04")); // ReportGridExecutor();
-	
+/*
+	public static var executor : IExecutor = new StreamGraphExampleDataExecutor([{
+		property : "A",
+		values : [8,12,23,33,35,41,33,32,27,29,31,33,36,34,35,32,24,21,23,25,33,32,41,52,37,22]
+	}, {
+		property : "B",
+		values : [92,88,77,67,65,59,67,68,73,71,69,67,64,66,65,68,76,79,77,75,67,68,59,48,63,78]
+		}], Date.fromString("2011-01-01"), "day");
+*/
 	public static function pie(el : Dynamic, query : { }, ?options : { } )
 	{
 		var selection = select(el);
@@ -189,7 +201,7 @@ class Viz
 		var space = new SvgSpace(o.width, o.height, selection);
 		space.svg.attr("class").string("rg");
 		
-		var chart = new SvgPieChart(space.createPanel(Disposition.Fill()));		
+		var chart = new SvgPieChart(space.createPanel(Disposition.Fill(0,0)));		
 		loader.onChange.add(chart.data);
 		
 		var animated = (null != o.refresh && o.refresh > 0);
@@ -216,7 +228,127 @@ class Viz
 		});
 	}
 	
-	public static function line(el : Dynamic, query : { }, ?options : { } )
+	public static function yinfo(container, q, scale, left : Bool)
+	{
+		var labels, ticks;
+		if (left)
+		{
+			new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), q.event, Anchor.Right);
+			labels = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(2,0,20)), Anchor.Right, scale);
+			ticks = SvgScaleTick.ofLinear(container.createPanel(Disposition.Fixed(2, 0, 6)), Anchor.Right, scale);
+		} else {
+			ticks = SvgScaleTick.ofLinear(container.createPanel(Disposition.Fixed(2, 0, 6)), Anchor.Left, scale);
+			labels = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(2,0,20)), Anchor.Left, scale);
+			new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), q.event, Anchor.Left);
+		}
+	
+		return {
+			labels : labels,
+			ticks : ticks
+		};
+	}
+	
+	public static function line(el : Dynamic, _queries : Dynamic, ?options : { } )
+	{
+		trace("building");
+		var selection = select(el).html().clear();
+		
+		var o : Dynamic = cast sizeOptions(selection, options);
+		if (null == o.periodicity)
+			o.periodicity = "hour";
+		
+		var queries : Array<Dynamic> = Std.is(_queries, Array) ? _queries : [_queries];
+			
+		var space = new SvgSpace(o.width, o.height, selection, 10, 0);
+		space.svg.attr("class").string("rg");
+		
+		var x = new LinearTime();
+		var left = 0, right = 0;
+		var container = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal);
+		
+		var chartpanel = null,
+			highlighter;
+//		highlighter.approximator = function(c : { x : Float, y : Float } ) c.x = Dates.snap(c.x, o.periodicity);
+
+		var loaders = [], charts = [], isleft = true;
+		
+		for (i in 0...queries.length)
+		{
+			var q : QueryOptions = cast Objects.copyTo(queries[i], QueryOptionsUtil.emptyQuery());
+			var top = null == q.bottom && q.top > 0;
+			var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
+				
+//			var loader = QueryValuesSeries.forLineChart(executor, q.path, q.event, q.property, []);
+			var loader = QueryPropertySeries.forLineChart(executor, q.path, q.event, q.property);
+			loader.time.periodicity = o.periodicity;
+			loader.time.startLimit = toDateLimit(o.start);
+			loader.time.endLimit = toDateLimit(o.end);
+			loader.onError.add(error);
+			loaders.push(loader);
+			
+			var y = new Linear(), info;
+				
+			if (i == 0)
+			{
+				info = yinfo(container, q, y, true);
+				chartpanel = container.createPanel(Disposition.Fill(44, 44 * (queries.length - 1)));
+				highlighter = new SvgLineChartHighlighter(chartpanel, x);
+				container.addPanel(chartpanel);
+				isleft = false;
+			} else
+				info = yinfo(container, q, y, false);
+			
+			var chart = new SvgLineChart(chartpanel, x, y);
+			chart.lineInterpolator(null == o.lineinterpolator ? LineInterpolator.Linear : LineInterpolators.parse(o.lineinterpolator));
+			charts.push(chart);
+			
+			loader.onChange.add(function(v : LineChartData) {
+				y.domain([v.maxy * 1.2, 0.0]);
+				info.labels.redraw();
+				info.ticks.redraw();
+				chart.data(v.data);
+			});
+		}
+
+		var bottom = space.createContainer(Disposition.Fixed(0, 0, 20), Orientation.Horizontal);
+		var belowchart = bottom.createContainer(Disposition.Fill(left, right), Orientation.Vertical);
+		var xticks = SvgScaleTick.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(0,0,6)), Anchor.Top, x);
+		var xscale = SvgScaleLabel.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(2,0,12)), Anchor.Top, x);
+		xticks.redraw();
+
+		if (o.animated)
+		{
+			thx.js.Timer.timer(function(t) {
+				loaders.each(function(loader, _) {
+					loader.time.update();
+				});
+				x.domain([loaders[0].time.start.getTime(), loaders[0].time.end.getTime()]);
+				charts.each(function(chart, _) {
+					chart.updatex();
+				});
+				xscale.redraw();
+				return false;
+			});
+		}
+
+		loaders[0].onChange.add(function(v : LineChartData) {
+			x.domain([null == loaders[0].time.start ? v.minx : loaders[0].time.start.getTime(), null == loaders[0].time.end ? v.maxx : loaders[0].time.end.getTime()]);
+			xscale.redraw();
+		});
+
+		var animated = (null != o.refresh && o.refresh > 0);
+		
+		loaders.each(function(loader, _) {
+			if (animated)
+			{
+				new QueryTimerUpdate(loader, o.refresh);
+			} else {
+				loader.load();
+			}
+		});
+	}
+
+	public static function stream(el : Dynamic, query : Dynamic, ?options : { } )
 	{
 		var selection = select(el);
 		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
@@ -235,55 +367,122 @@ class Viz
 		loader.time.periodicity = o.periodicity;
 		loader.time.startLimit = toDateLimit(o.start);
 		loader.time.endLimit = toDateLimit(o.end);
-//		var chart = new LineChart(selection, loader, o.width, o.height);
 
-		var space = new SvgSpace(o.width, o.height, selection);
+		var space = new SvgSpace(o.width, o.height, selection, 10, 0);
 		space.svg.attr("class").string("rg");
 		
 		var x = new LinearTime();
 		var y = new Linear();
 		
-//		var panel = space.createPanel(Disposition.Fill());
-//		var chartpanel = panel;
-		
-		var container = space.createContainer(Disposition.Fill(), Orientation.Horizontal);
-		
-		var scalepanel = container.createPanel(Disposition.Fixed(50));
-		
-		var scale = SvgScaleLabel.ofLinear(scalepanel, Anchor.Right, y);
-		var ticks = SvgScaleTick.ofLinear(scalepanel, Anchor.Right, y);
-		scale.padding(10);
-		
-		var chartpanel = container.createPanel(Disposition.Fill());
+		var left = 0, right = 0;
 
-/*
-		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Top", Anchor.Top);
-		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Right", Anchor.Right);
-		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Bottom", Anchor.Bottom);
-		new SvgTitle(space.createPanel(Disposition.Fixed(20)), "Hello World Left", Anchor.Left);
-*/
+		var container = space.createContainer(Disposition.Fill(0,0), Orientation.Horizontal);
 		
-		var highlighter = new SvgLineChartHighlighter(chartpanel, x, y);
+		new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), q.event, Anchor.Right);
+		left += 14;
+//		var scale1 = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(2,0,20)), Anchor.Right, y);
+//		left += 22;
+//		var ticks1 = SvgScaleTick.ofLinear(container.createPanel(Disposition.Fixed(2, 0, 6)), Anchor.Right, y);
+//		left += 8;
+
+		var chartpanel = container.createPanel(Disposition.Fill(0, 0));
+		
+//		var ticks2 = SvgScaleTick.ofLinear(container.createPanel(Disposition.Fixed(0,2,6)), Anchor.Left, y);
+//		right += 8;
+//		var scale2 = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(0,2,20)), Anchor.Left, y);
+//		right += 22;
+//		new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), q.event, Anchor.Left);
+//		right += 14;
+		
+//		var yrule = SvgScaleRule.ofLinear(chartpanel, Orientation.Horizontal, y);
+		
+//		var zoomzone = new SvgZoomZone(chartpanel);
+		
+//		var highlighter = new SvgLineChartHighlighter(chartpanel, x, y);
 //		highlighter.approximator = function(c : { x : Float, y : Float } ) c.x = Dates.snap(c.x, loader.time.periodicity);
+
+
+		var chart = new SvgStreamGraph(chartpanel, x);
 		
-		var chart = new SvgLineChart(chartpanel, x, y);
+		var bottom = space.createContainer(Disposition.Fixed(0, 0, 20), Orientation.Horizontal);
 		
+		var belowchart = bottom.createContainer(Disposition.Fill(left, right), Orientation.Vertical);
+		
+		var xticks = SvgScaleTick.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(0,0,6)), Anchor.Top, x);
+//		var xscale = SvgScaleLabel.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(2,0,12)), Anchor.Top, x);
+		xticks.redraw();
+/*
+		var scale = 0.0, start = null, end = null;
+		zoomzone.zoom(function(e) {
+			if (null == start)
+			{
+				start = loader.time.start.getTime();
+				end = loader.time.end.getTime();
+			}
+			if (e.scale != scale)
+			{	
+				if (e.scale > scale)
+				{
+					loader.time.startLimit = FixedLimit(Date.fromTime(Periodicity.prev(loader.time.periodicity, start)));
+					loader.time.endLimit = FixedLimit(Date.fromTime(Periodicity.next(loader.time.periodicity, end)));
+				} else {
+					loader.time.startLimit = FixedLimit(Date.fromTime(Periodicity.next(loader.time.periodicity, start)));
+					loader.time.endLimit = FixedLimit(Date.fromTime(Periodicity.prev(loader.time.periodicity, end)));
+				}
+				scale = e.scale;
+				loader.time.update();
+				
+				x.domain([loader.time.start.getTime(), loader.time.end.getTime()]);
+				chart.redraw();
+				start = loader.time.start.getTime();
+				end = loader.time.end.getTime();
+				loader.load();
+			} else {
+				trace("panning: " + e.tx + " " + e.scale);
+				var t = x.invert(e.tx),
+					delta = start - t;
+				loader.time.startLimit = FixedLimit(Date.fromTime(start + delta));
+				loader.time.endLimit = FixedLimit(Date.fromTime(end + delta));
+				loader.time.update();
+				
+	//			trace(delta + " " + loader.time.start + " " + loader.time.end);
+				
+				x.domain([loader.time.start.getTime(), loader.time.end.getTime()]);
+				chart.redraw();
+//				chart.updatex();
+			}
+
+//			chart.updatex();
+		} ).end(function(e) { 
+			trace("out");
+			start = loader.time.start.getTime();
+			end = loader.time.end.getTime();
+			loader.load();
+//			trace("reload");
+		} );
+*/
+		/*
 		if (o.animated)
 		{
 			thx.js.Timer.timer(function(t) {
 				loader.time.update();
 				x.domain([loader.time.start.getTime(), loader.time.end.getTime()]);
-				chart.updatex();
+	//			chart.updatex();
+				xscale.redraw();
 	//			highlighter.redraw();
 				return false;
 			});
 		}
-
+*/
 		loader.onChange.add(function(v : LineChartData) {
 			y.domain([v.maxy * 1.2, 0.0]);
-			scale.redraw();
-			ticks.redraw();
 			x.domain([null == loader.time.start ? v.minx : loader.time.start.getTime(), null == loader.time.end ? v.maxx : loader.time.end.getTime()]);
+//			scale1.redraw();
+//			ticks1.redraw();
+//			scale2.redraw();
+//			ticks2.redraw();
+//			yrule.redraw();
+//			xscale.redraw();
 			chart.data(v.data);
 		});
 		
@@ -296,27 +495,17 @@ class Viz
 			loader.values = v.map(function(d, i) return d.label);
 			loader.load();
 		});
-		var animated = (null != o.refresh && o.refresh > 0);
-		if (animated)
-		{
-			new QueryTimerUpdate(values, o.refresh);
-		} else {
+//		var animated = (null != o.refresh && o.refresh > 0);
+//		if (animated)
+//		{
+//			new QueryTimerUpdate(values, o.refresh);
+//		} else {
 			values.load();
-		}
+//		}
 //		return line;
 		
 	}
 
-	public static function stream(el : Dynamic, query : { }, ?options : { } )
-	{
-		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
-		var loader = QueryOptionsUtil.toQueryInst(q);
-		return new StreamGraph(select(el), loader, makeoptions(options, {
-			lineinterpolation : "cardinal",
-			left : scale(false, false, 0),
-		}));
-	}
-	
 	static function makeoptions(?options : { }, defaults : { } ) : ChartOptions
 	{
 		var o = defaultOptions.clone();

@@ -177,10 +177,10 @@ class SvgPieChart extends SvgLayer
 				.attr("transform").string("translate(" + (_padding + _r) + "," + (_padding + _r) + ")");
 		
 		arcs
-			.onNode("mousemove.animation", _highlight)
+			.onNode("mouseover.animation", _highlight)
 			.onNode("mouseout.animation", _backtonormal);
 		arcs
-			.on("mouseover.tooltip", _showtooltip)
+			.on("mousemove.tooltip", _showtooltip)
 			.on("mouseout.tooltip", _hidetooltip);
 					
 		arcs.append("svg:path")

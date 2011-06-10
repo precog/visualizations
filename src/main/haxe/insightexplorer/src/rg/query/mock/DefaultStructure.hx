@@ -7,13 +7,37 @@ package rg.query.mock;
 
 class DefaultStructure 
 {
-	static var paths : Array<{ path : String, sub : Array<String>, events : Dynamic<Dynamic<Dynamic<Int>>> }>= cast [ 
+	static var paths : Array<{ path : String, sub : Array<String>, events : Dynamic<Dynamic<Dynamic<Int>>> }> = cast 
+	[ 
 		{ 
 			path : "/ad",
 			sub : ["nike"],
 			events : 
 			{
-			
+				impression : 
+				{
+					target : 
+					{
+						iphone  : 100,
+						ipad    : 70,
+						android : 80,
+						symbian : 10,
+						pc      : 140,
+						mac     : 120
+					}
+				},
+				click : 
+				{
+					target : 
+					{
+						iphone  : 2000,
+						ipad    : 1100,
+						android : 800,
+						symbian : 140,
+						pc      : 1400,
+						mac     : 1600
+					}
+				},
 			}
 		}, {
 			path : "/ad/nike",
@@ -31,7 +55,49 @@ class DefaultStructure
 						pc      : 70,
 						mac     : 60
 					}
-				}
+				},
+				click : 
+				{
+					target : 
+					{
+						iphone  : 1000,
+						ipad    : 550,
+						android : 400,
+						symbian : 70,
+						pc      : 700,
+						mac     : 800
+					}
+				},
+			}
+		}, {
+			path : "/ad/the_north_pole",
+			sub : [],
+			events : 
+			{
+				impression : 
+				{
+					target : 
+					{
+						iphone  : 40,
+						ipad    : 30,
+						android : 30,
+						symbian : 8,
+						pc      : 50,
+						mac     : 40
+					}
+				},
+				click : 
+				{
+					target : 
+					{
+						iphone  : 1200,
+						ipad    : 350,
+						android : 200,
+						symbian : 70,
+						pc      : 500,
+						mac     : 400
+					}
+				},
 			}
 		}
 	];
