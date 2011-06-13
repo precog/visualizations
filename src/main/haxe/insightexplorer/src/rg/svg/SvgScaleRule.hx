@@ -16,10 +16,8 @@ class SvgScaleRule extends SvgLayer
 			.scale(scale.scale)
 			.range(scale.range)
 			.ticks(scale.ticks)
-			.key(function(v, i) {
-	//			trace(scale.tickFormat(v, i));
-				return scale.tickFormat(v, i);
-			});
+			.key(function(d, i) return "" + d)
+		;
 	}
 	
 	public static function boundsOfLinear(panel : SvgPanel, orientation : Orientation, scale : Linear)

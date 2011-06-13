@@ -203,6 +203,29 @@ class QueryProperties<TService, TData> extends QueryEvent<TService, TData>
 	
 }
 
+class QueryEventPeriodicity<TService, TData> extends QueryEvent<TService, TData>
+{
+	public var time(default, null) : TimeQuery;
+	
+	public function new(executor : IExecutor, path : String, event : String) 
+	{
+		super(executor, path, event);
+		time = new TimeQuery();
+	}
+	
+	override function close()
+	{
+		super.close();
+		time.close();
+	}
+	
+	override function load()
+	{
+		time.update();
+		super.load();
+	}
+}
+
 class QueryPropertiesPeriodicity<TService, TData> extends QueryProperties<TService, TData>
 {
 	public var time(default, null) : TimeQuery;

@@ -63,6 +63,30 @@ class SvgSpace
 		workspace.addPanel(panel);
 		return panel;
 	}
+	
+	static var _filterid = 0;
+	var _filters : Selection;
+	function getFiltersContainer()
+	{
+		if (null == _filters)
+		{
+			_filters = svg.insert("svg:g", svg.node().firstChild)
+				.attr("id").string("filters");
+		}
+		return _filters;
+	}
+	
+	public function addEffect(effect : ISvgEffect) : String
+	{
+		var name = "rgeffect" + (++_filterid);
+		effect.appendTo(getFiltersContainer(), name);
+		return name;
+	}
+	
+	public function removeEffect(name : String)
+	{
+		svg.select("filter#" + name).remove();
+	}
 }
 
 private class SvgSpaceContainer extends SvgContainer

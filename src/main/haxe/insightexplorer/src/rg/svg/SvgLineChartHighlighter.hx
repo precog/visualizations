@@ -83,8 +83,8 @@ class SvgLineChartHighlighter extends SvgLayer
 		;
 		
 		container = selector.append("svg:rect")
-			.attr("rx").float(5)
-			.attr("ry").float(5);
+			.attr("rx").float(4)
+			.attr("ry").float(4);
 		
 		text = selector.append("svg:text")
 			.attr("dy").string("1em")
@@ -108,7 +108,11 @@ class SvgLineChartHighlighter extends SvgLayer
 	function _update()
 	{
 		if (null == mouse)
+		{
+			container.style("display").string("none");
 			return;
+		}
+		container.style("display").string("block");
 		var vx = x.invert(mouse[0]);
 //		coords.y = y.invert(mouse[1]);
 		

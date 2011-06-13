@@ -15,7 +15,7 @@ class SvgScaleLabel extends SvgLayer
 			.scale(scale.scale)
 			.range(scale.range)
 			.ticks(scale.ticks)
-			.key(scale.tickFormat)
+			.key(function(d,i) return "" + d)
 			.label(scale.tickFormat)
 			;
 	}
@@ -36,7 +36,7 @@ class SvgScaleLabel extends SvgLayer
 	var _pos : Void -> Float;
 	var _t : Float -> Int -> String;
 	var _maxRange : Void -> Int;
-	var _axis : String;
+	var _class : String;
 	var _oaxis : String;
 	
 	var _ticks : Void -> Array<Float>;
@@ -68,7 +68,7 @@ class SvgScaleLabel extends SvgLayer
 
 		_range([0.0, _maxRange()]);
 		
-		var g = svg.selectAll("g." + _axis)
+		var g = svg.selectAll("g")
 			.data(_ticks(), _key)
 			.update()
 			.attr("transform").stringf(_t);
@@ -84,7 +84,7 @@ class SvgScaleLabel extends SvgLayer
 		// ENTER
 		g.enter()
 			.append("svg:g")
-				.attr("class").string(_axis)
+				.attr("class").string(_class)
 				.attr("transform").stringf(_t)
 			.append("svg:text")
 				.attr("class").string("label")
@@ -142,7 +142,7 @@ class SvgScaleLabel extends SvgLayer
 		switch(_anchor = o)
 		{
 			case Top, Bottom:
-				_axis = "x";
+				_class = "xaxis";
 				_oaxis = "x";
 				if(_alwaysHorizontal)
 					_t = translateXH;
@@ -150,7 +150,7 @@ class SvgScaleLabel extends SvgLayer
 					_t = translateX;
 				_maxRange = function() return me.width;
 			case Left, Right:
-				_axis = "y";
+				_class = "xaxis";
 				_oaxis = "x";
 				_t = translateY;
 				_maxRange = function() return me.height;

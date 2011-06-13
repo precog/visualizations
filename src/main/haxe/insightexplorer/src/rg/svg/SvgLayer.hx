@@ -13,6 +13,8 @@ class SvgLayer
 	var svg : Selection;
 	var width : Int;
 	var height : Int;
+	
+	public var customClass(default, setCustomClass) : String;
 
 	public function new(panel : SvgPanel)
 	{
@@ -48,6 +50,14 @@ class SvgLayer
 	public function redraw()
 	{
 		
+	}
+	
+	function setCustomClass(v : String)
+	{
+		if (null != customClass)
+			svg.classed().remove(customClass);
+		svg.classed().add(v);
+		return this.customClass = v;
 	}
 }
 

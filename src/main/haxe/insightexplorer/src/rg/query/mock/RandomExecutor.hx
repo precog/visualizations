@@ -95,18 +95,29 @@ class RandomExecutor implements IExecutor
 				end : Null<Float> = Reflect.field(options, "end"),
 				property = Reflect.field(options, "property"),
 				event = extractEventFromProperty(property),
-				name = extractNameFromProperty(property)
-				;
+				name = extractNameFromProperty(property),
+				properties
+			;
 			
-			var result = { count : 0, series : {} };
-
-			var values = valuesforproperty(path, event, name);
-			for (value in values)
+			if (name == null)
 			{
-				var key = valuekey(periodicity, path, event, name, value);
-				series(periodicity, start, end, path, event, name, key, result);
+				properties = propertiesforevent(path, event);
+			} else {
+				properties = [name];
 			}
-			return go(success, result);
+			var result = { count : 0, series : [] };
+			for (name in properties)
+			{
+				var values = valuesforproperty(path, event, name);
+				for (value in values)
+				{
+		//			var key = valuekey(periodicity, path, event, name, value);
+					series(periodicity, start, end, path, event, name, value, result);
+				}
+			}
+			var s = { };
+			Reflect.setField(s, periodicity, result.series);
+			return go(success, s);
 		}
 	}
 	public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void)
@@ -217,6 +228,18 @@ class RandomExecutor implements IExecutor
 			return values.keys().array();
 	}
 	
+	function propertiesforevent(path : String, event : String)
+	{
+		var events = structure.get(path);
+		if (null == events)
+			return [];
+		var e = events.events.get(event);
+		if (null == e)
+			return [];
+		else
+			return e.keys().array();
+	}
+	
 	function topseries(periodicity : String, start : Null<Float>, end : Null<Float>, path : String, event : String, property : String, qt : Int, reverse : Bool)
 	{
 		var events = structure.get(path);
@@ -251,16 +274,17 @@ class RandomExecutor implements IExecutor
 		});
 	}
 	
-	function series(periodicity : String, start : Null<Float>, end : Null<Float>, path : String, event : String, property : String, value : String, ?o : { count : Int, series : {}})
+	function series(periodicity : String, start : Null<Float>, end : Null<Float>, path : String, event : String, property : String, value : String, ?o : { count : Int, series : Array<Array<Float>>})
 	{
-		var result = null == o ? { count : 0, series : {}} : o,
+		var result = null == o ? { count : 0, series : []} : o,
 			series = result.series;
 			
-		trace("1: " + periodicity + ",2: " + start + ",3: " + end + ",4: " + path + ",5: " + event + ",6: " + property + ",7: " + value);
+//		trace("1: " + periodicity + ",2: " + start + ",3: " + end + ",4: " + path + ",5: " + event + ",6: " + property + ",7: " + value);
 		switch(periodicity)
 		{
 			case "eternity":
-				Reflect.setField(series, "0", result.count += countvalue(path, event, property, value));
+				series.push([0.0, result.count += countvalue(path, event, property, value)]);
+//				Reflect.setField(series, "0", );
 			case "minute", "hour", "day", "week", "month", "year":
 				var si = getindex(periodicity, start, true, path, event),
 					ei = getindex(periodicity, end, false, path, event),
@@ -269,10 +293,13 @@ class RandomExecutor implements IExecutor
 				if(null != values)
 					for (i in si...ei)
 					{
-						var time = "" + gettimeforindex(periodicity, i),
+						var time = gettimeforindex(periodicity, i),
 							value = values[i];
+						if (null == value)
+							value = 0;
 						result.count += value;
-						Reflect.setField(series, time, value);
+						series.push([time, value]);
+//						Reflect.setField(series, time, value);
 					}
 			default:
 				throw "series for " + periodicity + " not implemented";
@@ -308,7 +335,7 @@ class RandomExecutor implements IExecutor
 			case "hour": 60 * 60000;
 			case "day": 24 * 60 * 60000;
 			case "week": 7 * 24 * 60 * 60000;
-			case "month": 30 * 24 * 60 * 60000;
+			case "month": 30.4 * 24 * 60 * 60000;
 			case "year": 365 * 24 * 60 * 60000;
 			default: 1;
 		};
@@ -345,12 +372,12 @@ class RandomExecutor implements IExecutor
 	
 	function extractEventFromProperty(p : String)
 	{
-		return Strings.ltrim(p, ".").split(".").shift();
+		return Strings.ltrim(p, ".").split('.')[0];
 	}
 	
 	function extractNameFromProperty(p : String)
 	{
-		return p.split(".").pop();
+		return Strings.ltrim(p, ".").split('.')[1];
 	}
 	
 	function countvalue(path : String, event : String, property : String, value : String)
@@ -369,7 +396,7 @@ class RandomExecutor implements IExecutor
 	
 	function eventkey(periodicity : String, path : String, event : String)
 	{
-		return switch(periodicity)
+		return path + ":" + switch(periodicity)
 		{
 			case "eternity": "e|" + event;
 			case "minute": "m|" + event;
@@ -415,6 +442,7 @@ class RandomExecutor implements IExecutor
 				eyvalues = cache.get(ekeyy),
 				ekeye = eventkey("eternity", path, eventname),
 				eevalues = cache.get(ekeye);
+				
 			if (null == eminvalues)
 			{
 				cache.set(ekeymin, eminvalues = []);
@@ -425,15 +453,17 @@ class RandomExecutor implements IExecutor
 				cache.set(ekeyy, eyvalues = []);
 				cache.set(ekeye, eevalues = [0]);
 			}
-			for (i in ehvalues.length...Math.round(time.minute / 60))
+			for (i in eminvalues.length...time.minute)
+				eminvalues[i] = 0;
+			for (i in ehvalues.length...Math.floor(time.minute / 60)+1)
 				ehvalues[i] = 0;
-			for (i in edvalues.length...Math.round(time.minute / (24 * 60)))
+			for (i in edvalues.length...Math.floor(time.minute / (24 * 60))+1)
 				edvalues[i] = 0;
-			for (i in ewvalues.length...Math.round(time.minute / (7 * 24 * 60)))
+			for (i in ewvalues.length...Math.floor(time.minute / (7 * 24 * 60))+1)
 				ewvalues[i] = 0;
-			for (i in emvalues.length...Math.round(time.minute / (30 * 24 * 60)))
+			for (i in emvalues.length...Math.floor(time.minute / (30.4 * 24 * 60))+1)
 				emvalues[i] = 0;
-			for (i in eyvalues.length...Math.round(time.minute / (365 * 24 * 60)))
+			for (i in eyvalues.length...Math.floor(time.minute / (365 * 24 * 60))+1)
 				eyvalues[i] = 0;
 				
 			for (propertyname in event.keys())
@@ -463,15 +493,17 @@ class RandomExecutor implements IExecutor
 					cache.set(pkeyy, pyvalues = []);
 					cache.set(pkeye, pevalues = [0]);
 				}
-				for (i in phvalues.length...Math.round(time.minute / 60))
+				for (i in pminvalues.length...time.minute)
+					pminvalues[i] = 0;
+				for (i in phvalues.length...Math.floor(time.minute / 60)+1)
 					phvalues[i] = 0;
-				for (i in pdvalues.length...Math.round(time.minute / (24 * 60)))
+				for (i in pdvalues.length...Math.floor(time.minute / (24 * 60))+1)
 					pdvalues[i] = 0;
-				for (i in pwvalues.length...Math.round(time.minute / (7 * 24 * 60)))
+				for (i in pwvalues.length...Math.floor(time.minute / (7 * 24 * 60))+1)
 					pwvalues[i] = 0;
-				for (i in pmvalues.length...Math.round(time.minute / (30 * 24 * 60)))
+				for (i in pmvalues.length...Math.floor(time.minute / (30.4 * 24 * 60))+1)
 					pmvalues[i] = 0;
-				for (i in pyvalues.length...Math.round(time.minute / (365 * 24 * 60)))
+				for (i in pyvalues.length...Math.floor(time.minute / (365 * 24 * 60))+1)
 					pyvalues[i] = 0;
 				for (countname in property.keys())
 				{
@@ -501,15 +533,17 @@ class RandomExecutor implements IExecutor
 						cache.set(keye, evalues = [0]);
 					}
 					var v, ix;
-					for (i in hvalues.length...Math.round(time.minute / 60))
+//					for (i in minvalues.length...time.minute)
+//						minvalues[i] = 0;
+					for (i in hvalues.length...Math.floor(time.minute / 60)+1)
 						hvalues[i] = 0;
-					for (i in dvalues.length...Math.round(time.minute / (24 * 60)))
+					for (i in dvalues.length...Math.floor(time.minute / (24 * 60))+1)
 						dvalues[i] = 0;
-					for (i in wvalues.length...Math.round(time.minute / (7 * 24 * 60)))
+					for (i in wvalues.length...Math.floor(time.minute / (7 * 24 * 60))+1)
 						wvalues[i] = 0;
-					for (i in mvalues.length...Math.round(time.minute / (30 * 24 * 60)))
+					for (i in mvalues.length...Math.floor(time.minute / (30.4 * 24 * 60))+1)
 						mvalues[i] = 0;
-					for (i in yvalues.length...Math.round(time.minute / (365 * 24 * 60)))
+					for (i in yvalues.length...Math.floor(time.minute / (365 * 24 * 60))+1)
 						yvalues[i] = 0;
 					for(i in minvalues.length...time.minute)
 					{
@@ -517,23 +551,23 @@ class RandomExecutor implements IExecutor
 						minvalues[i] = v;
 						eminvalues[i] += v;
 						pminvalues[i] += v;
-						ix = Math.round(i / 60);
+						ix = Math.floor(i / 60);
 						hvalues[ix] += v;
 						ehvalues[ix] += v;
 						phvalues[ix] += v;
-						ix = Math.round(i / (24 * 60));
+						ix = Math.floor(i / (24 * 60));
 						dvalues[ix] += v;
 						edvalues[ix] += v;
 						pdvalues[ix] += v;
-						ix = Math.round(i / (7 * 24 * 60));
+						ix = Math.floor(i / (7 * 24 * 60));
 						wvalues[ix] += v;
 						ewvalues[ix] += v;
 						pwvalues[ix] += v;
-						ix = Math.round(i / (30 * 7 * 24 * 60));
+						ix = Math.floor(i / (30.4 * 24 * 60));
 						mvalues[ix] += v;
 						emvalues[ix] += v;
 						pmvalues[ix] += v;
-						ix = Math.round(i / (365 * 24 * 60));
+						ix = Math.floor(i / (365 * 24 * 60));
 						yvalues[ix] += v;
 						eyvalues[ix] += v;
 						pyvalues[ix] += v;
@@ -544,29 +578,30 @@ class RandomExecutor implements IExecutor
 					}
 					v = Std.random(Math.floor(count * time.percent));
 					minvalues[time.minute] = v;
+		/*			
+					hvalues[hvalues.length] = v;
+					ehvalues[ehvalues.length] = v;
+					phvalues[phvalues.length] = v;
 					
-					hvalues[hvalues.length] += v;
-					ehvalues[ehvalues.length] += v;
-					phvalues[phvalues.length] += v;
+					dvalues[dvalues.length] = v;
+					edvalues[edvalues.length] = v;
+					pdvalues[pdvalues.length] = v;
 					
-					dvalues[dvalues.length] += v;
-					edvalues[edvalues.length] += v;
-					pdvalues[pdvalues.length] += v;
+					wvalues[wvalues.length] = v;
+					ewvalues[ewvalues.length] = v;
+					pwvalues[pwvalues.length] = v;
 					
-					wvalues[wvalues.length] += v;
-					ewvalues[ewvalues.length] += v;
-					pwvalues[pwvalues.length] += v;
+					mvalues[mvalues.length] = v;
+					emvalues[emvalues.length] = v;
+					pmvalues[pmvalues.length] = v;
 					
-					mvalues[mvalues.length] += v;
-					emvalues[emvalues.length] += v;
-					pmvalues[pmvalues.length] += v;
-					
-					yvalues[yvalues.length] += v;
-					eyvalues[eyvalues.length] += v;
-					pyvalues[pyvalues.length] += v;
+					yvalues[yvalues.length] = v;
+					eyvalues[eyvalues.length] = v;
+					pyvalues[pyvalues.length] = v;
 					evalues[0] += v;
 					eevalues[0] += v;
 					pevalues[0] += v;
+				*/
 				}
 			}
 		}

@@ -100,6 +100,7 @@ class SvgLineChart extends SvgLayer
 			function(d, i) return x.scale(d.x),
 			function(d, i) return y.scale(0)
 		);
+		
 		if (null != _interpolator)
 			line.interpolator(_interpolator);
 		return line.shape(d.values);
@@ -115,6 +116,7 @@ class SvgLineChart extends SvgLayer
 		);
 		if (null != _interpolator)
 			line.interpolator(_interpolator);
+
 		return line.shape(d.values);
 	}
 	
@@ -124,6 +126,12 @@ class SvgLineChart extends SvgLayer
 		var layer = svg.selectAll("g.group")
 			.attr("transform").string("translate(-" + s + ",0)")
 		;
+	}
+	
+	var _lineEffect : String;
+	public function setLineEffect(name : String)
+	{
+		_lineEffect = name;
 	}
 	
 	var _timedelta : Float;
@@ -140,18 +148,20 @@ class SvgLineChart extends SvgLayer
 		
 		// update
 		layer.update().select("path.line")
-//			.transition().ease(_ease).duration(_duration)
+			.transition().ease(_ease).duration(_duration)
 				.attr("d").stringf(_path);
 		
 		// enter
-		layer.enter()
+		var g = layer.enter()
 			.append("svg:g")
 			.attr("class").stringf(function(d, i) return "group group-" + i)
 			.onNode("mouseover.animation", _highlight, true)
 			.onNode("mouseout.animation", _backtonormal, true)
 			.on("mousemove.tooltip", _showtooltip, true)
-			.on("mouseout.tooltip", _hidetooltip, true)
-			.append("svg:path")
+			.on("mouseout.tooltip", _hidetooltip, true);
+		
+		
+		g.append("svg:path")
 				.attr("class").string("line")
 				.attr("d").stringf(_path0)
 				.style("opacity").float(0)
@@ -187,6 +197,8 @@ class SvgLineChart extends SvgLayer
 	function _popin(n, i)
 	{
 		var path = Dom.selectNodeData(n);
+		if(null != _lineEffect)
+			path.attr("filter").string("url(#"+_lineEffect+")");
 		path.transition().ease(_ease).duration(_duration)
 			.delay(150 * (i - _created))
 			.style("opacity").float(1.0)

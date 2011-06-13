@@ -10,11 +10,11 @@ class DefaultStructure
 	static var paths : Array<{ path : String, sub : Array<String>, events : Dynamic<Dynamic<Dynamic<Int>>> }> = cast 
 	[ 
 		{ 
-			path : "/ad",
-			sub : ["nike"],
+			path : "/prod",
+			sub : ["nike", "the_north_pole"],
 			events : 
 			{
-				impression : 
+				click : 
 				{
 					target : 
 					{
@@ -26,7 +26,7 @@ class DefaultStructure
 						mac     : 120
 					}
 				},
-				click : 
+				impression : 
 				{
 					target : 
 					{
@@ -40,11 +40,11 @@ class DefaultStructure
 				},
 			}
 		}, {
-			path : "/ad/nike",
+			path : "/prod/nike",
 			sub : [],
 			events : 
 			{
-				impression : 
+				click : 
 				{
 					target : 
 					{
@@ -56,7 +56,7 @@ class DefaultStructure
 						mac     : 60
 					}
 				},
-				click : 
+				impression : 
 				{
 					target : 
 					{
@@ -70,11 +70,11 @@ class DefaultStructure
 				},
 			}
 		}, {
-			path : "/ad/the_north_pole",
+			path : "/prod/the_north_pole",
 			sub : [],
 			events : 
 			{
-				impression : 
+				click : 
 				{
 					target : 
 					{
@@ -86,7 +86,7 @@ class DefaultStructure
 						mac     : 40
 					}
 				},
-				click : 
+				impression : 
 				{
 					target : 
 					{
