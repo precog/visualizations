@@ -7,7 +7,7 @@ package rg.query;
 
 import rg.query.Query;
  
-class QueryEventNames extends QueryPath<Array<String>>
+class QueryEventNames<TData> extends QueryPath<Array<String>, TData>
 {
 	override function executeLoad(success : Array<String> -> Void, error : String -> Void)
 	{

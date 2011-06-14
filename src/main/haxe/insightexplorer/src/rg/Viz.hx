@@ -1,63 +1,50 @@
-package rg;
-//import rg.chart.LineChart;
-import haxe.Timer;
-import rg.query.QuerySubPath;
-import rg.svg.effects.DropShadow;
-//import rg.chart.StreamGraph;
-import rg.ChartOptions;
-import rg.pivottable.PivotTable;
-import rg.pivottable.PivotTableProperty;
-import rg.query.IExecutor;
-import rg.query.js.ReportGridExecutor;
-import rg.query.mock.RandomExecutor;
-import rg.query.QueryPropertyValues;
-import rg.query.QueryEventSeries;
-import rg.query.QueryPropertySeries;
-import rg.query.QueryTimerUpdate;
-import rg.query.QueryValuesCount;
-import rg.query.QuerySubPath;
-import rg.svg.LineChartData;
-import rg.svg.SvgContainer;
-import rg.svg.SvgLineChart;
-import rg.svg.SvgLineChartHighlighter;
-import rg.svg.SvgPanel;
-import rg.svg.SvgScaleLabel;
-import rg.svg.SvgTitle;
-import rg.svg.SvgZoomZone;
-import thx.date.DateParser;
-import thx.error.Error;
-import thx.js.Dom;
-import rg.pivottable.QueryProperty;
-import rg.QueryOptions;
-import rg.js.ReportGrid;
-import rg.query.QueryLimit;
-import rg.query.QueryIntersect;
-import rg.query.DateLimit;
-import thx.js.Selection;
-import rg.query.QueryValuesSeries;
-import rg.svg.SvgSpace3x3;
-import rg.svg.SvgSpace;
-import rg.svg.SvgPieChart;
-import rg.layout.Disposition;
-import thx.math.scale.Linear;
-import thx.math.scale.LinearTime;
-import thx.svg.LineInterpolator;
-import thx.svg.LineInterpolators;
-import rg.svg.Anchor;
-import rg.layout.StackFrame;
-import rg.layout.Orientation;
-import rg.svg.SvgScaleTick;
-import rg.svg.SvgScaleRule;
-import rg.util.Periodicity;
-import rg.svg.SvgStreamGraph;
-
-using Objects;
-using Arrays;
-
 /**
  * ...
  * @author Franco Ponticelli
  */
+
+package rg;
+
+import rg.html.HtmlLeaderBoard;
+import rg.js.ReportGrid;
+import rg.layout.Disposition;
+import rg.layout.Orientation;
+import rg.pivottable.PivotTable;
+import rg.pivottable.QueryProperty;
+import rg.query.DateLimit;
+import rg.query.IExecutor;
+import rg.query.Query;
+import rg.query.QueryEventSeries;
+import rg.query.QueryEventsCount;
+import rg.query.QueryValuesCount;
+import rg.query.QueryValuesSeries;
+import rg.query.QueryPropertiesCount;
+import rg.query.QuerySubPath;
+import rg.query.QueryTimerUpdate;
+import rg.svg.effects.DropShadow;
+import rg.svg.Anchor;
+import rg.svg.LineChartData;
+import thx.svg.LineInterpolator;
+import thx.svg.LineInterpolators;
+import rg.svg.SvgLineChart;
+import rg.svg.SvgLineChartHighlighter;
+import rg.svg.SvgScaleLabel;
+import rg.svg.SvgScaleTick;
+import rg.svg.SvgSpace;
+import rg.svg.SvgPieChart;
+import rg.svg.SvgStreamGraph;
+import rg.svg.SvgTitle;
+import rg.QueryOptions;
+
+import thx.date.DateParser;
+import thx.error.Error;
+import thx.js.Dom;
+import thx.js.Selection;
+import thx.math.scale.Linear;
+import thx.math.scale.LinearTime;
+
+using Arrays;
+using Objects;
 
 class Viz 
 {
@@ -170,21 +157,76 @@ class Viz
 			return function(d) return DateParser.parse(v, d);
 		throw new Error("invalid date value '{0}'", v);
 	}
-	
-	public static var executor : IExecutor = new RandomExecutor(null, Date.fromString("2011-06-04")); 
-//	public static var executor : IExecutor = new  ReportGridExecutor();
-
-	public static function pie(el : Dynamic, query : { }, ?options : { } )
+#if release
+	public static var executor : IExecutor = new rg.query.js.ReportGridExecutor();
+#else
+//	public static var executor : IExecutor = new rg.query.mock.RandomExecutor(null, Date.fromString("2011-06-04")); 
+	public static var executor : IExecutor = new rg.query.js.ReportGridExecutor();
+#end
+	public static function leaderBoard(el : Dynamic, query : { }, ?options : { } )
 	{
-		var selection = select(el);
+		var selection = select(el).html().clear();
 		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
 
 		var top = null == q.bottom && q.top > 0;
 		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
 		
-		var loader = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
-		if(null != q.filter)
-			loader.filter = q.filter;
+		var loader : Query<Dynamic, Array<{ label : String, value : Float }>>;
+		if (null != q.property && "" != q.property)
+		{
+			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
+			loader = l;
+			if(null != q.filter)
+				l.filter = q.filter;
+		} else if(null != q.event && "" != q.event) {
+			loader = new QueryPropertiesCount(executor, q.path, q.event);
+		} else {
+			loader = new QueryEventsCount(executor, q.path);
+		}
+			
+		loader.onError.add(error);
+		
+		var o : Dynamic = (null == options) ? { } : options;
+			
+		loader.time.startLimit = toDateLimit(o.start);
+		loader.time.endLimit = toDateLimit(o.end);
+		
+		var chart = new HtmlLeaderBoard(selection);		
+		loader.onChange.add(chart.data);
+		
+		var animated = (null != o.refresh && o.refresh > 0);
+		if (animated)
+		{
+			new QueryTimerUpdate(loader, o.refresh);
+		} else {
+			loader.load();
+		}
+		
+		return chart;
+	}
+
+	public static function pie(el : Dynamic, query : { }, ?options : { } )
+	{
+		var selection = select(el).html().clear();
+		
+		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
+
+		var top = null == q.bottom && q.top > 0;
+		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
+		
+		var loader : Query<Dynamic, Array<{ label : String, value : Float }>>;
+		if (null != q.property && "" != q.property)
+		{
+			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
+			loader = l;
+			if(null != q.filter)
+				l.filter = q.filter;
+		} else if(null != q.event && "" != q.event) {
+			loader = new QueryPropertiesCount(executor, q.path, q.event);
+		} else {
+			loader = new QueryEventsCount(executor, q.path);
+		}
+			
 		loader.onError.add(error);
 		
 		if (null == options)
@@ -228,15 +270,18 @@ class Viz
 	public static function yinfo(container, q, scale, left : Bool, labelwidth : Int, pos : Int)
 	{
 		var labels, ticks, title;
+
+		var text = null == q.property ? q.event : q.event + " - " + q.property;
+		
 		if (left)
 		{
-			title = new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), q.event, Anchor.Right);
+			title = new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), text, Anchor.Right);
 			labels = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(2,0,labelwidth-24)), Anchor.Right, scale);
 			ticks = SvgScaleTick.ofLinear(container.createPanel(Disposition.Fixed(2, 0, 6)), Anchor.Right, scale);
 		} else {
 			ticks = SvgScaleTick.ofLinear(container.createPanel(Disposition.Fixed(2, 0, 6)), Anchor.Left, scale);
 			labels = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(2,0,labelwidth-24)), Anchor.Left, scale);
-			title = new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), q.event, Anchor.Left);
+			title = new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), text, Anchor.Left);
 		}
 		title.customClass = "dimension-" + pos;
 		labels.customClass = "dimension-" + pos;
@@ -245,13 +290,6 @@ class Viz
 			labels : labels,
 			ticks : ticks
 		};
-	}
-	
-	public static function sub(path : String, handler : Array<String> -> Void)
-	{
-		var loader = new QuerySubPath(executor, path);
-		loader.onData.add(handler);
-		loader.load();
 	}
 	
 	public static function line(el : Dynamic, _queries : Dynamic, ?options : { } )
@@ -270,7 +308,7 @@ class Viz
 		
 		var chartpanel = null,
 			highlighter,
-			labelwidth = 70;
+			labelwidth = 75;
 //		highlighter.approximator = function(c : { x : Float, y : Float } ) c.x = Dates.snap(c.x, o.periodicity);
 
 		var loaders = [], charts = [], isleft = true, xscale = null;
@@ -280,9 +318,14 @@ class Viz
 			var q : QueryOptions = cast Objects.copyTo(queries[i], QueryOptionsUtil.emptyQuery());
 			var top = null == q.bottom && q.top > 0;
 			var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
-				
-//			var loader = QueryValuesSeries.forLineChart(executor, q.path, q.event, q.property, []);
-			var loader = QueryEventSeries.forLineChart(executor, q.path, q.event);
+			var loader : Query<Dynamic, LineChartData>;
+			if (null != q.property)
+			{
+				loader = QueryValuesSeries.forLineChart(executor, q.path, q.event, q.property, []);
+			} else {
+				loader = QueryEventSeries.forLineChart(executor, q.path, q.event);
+			}
+
 			loader.time.periodicity = o.periodicity;
 			loader.time.startLimit = toDateLimit(o.start);
 			loader.time.endLimit = toDateLimit(o.end);
@@ -386,8 +429,10 @@ class Viz
 		var left = 0, right = 0;
 
 		var container = space.createContainer(Disposition.Fill(0,0), Orientation.Horizontal);
+	
+		var title = null == q.property ? q.event : q.event + " - " + q.property;
 		
-		new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), q.event, Anchor.Right);
+		new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), title, Anchor.Right);
 		left += 14;
 //		var scale1 = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(2,0,20)), Anchor.Right, y);
 //		left += 22;
@@ -579,5 +624,13 @@ class Viz
 			labellength : labellength,
 			spacing : 4
 		};
+	}
+	
+	static function __init__()
+	{
+		var r : Dynamic = untyped window.ReportGrid;
+		r.timeSeries = rg.Viz.line;
+		r.totals = rg.Viz.pie;
+		r.leaderBoard = rg.Viz.leaderBoard;
 	}
 }

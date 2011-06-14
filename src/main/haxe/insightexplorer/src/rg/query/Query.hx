@@ -11,10 +11,10 @@ using Arrays;
  * ...
  * @author Franco Ponticelli
  */
-
 class Query<TService, TData>
 {
 	public var data(default, null) : TData;
+	public var time(default, null) : TimeQuery;
 	var _data : TService;
 	
 	public var onLoading(default, null) : Notifier;
@@ -33,6 +33,7 @@ class Query<TService, TData>
 		this.onData = new Dispatcher();
 		this.onError = new Dispatcher();
 		this.executor = executor;
+		time = new TimeQuery();
 	}
 	
 	public function close()
@@ -42,6 +43,7 @@ class Query<TService, TData>
 		onData.clear();
 		onChange.clear();
 		onComplete.clear();
+		time.close();
 	}
 	
 	function executeLoad(success : TService -> Void, error : String -> Void)
@@ -51,6 +53,7 @@ class Query<TService, TData>
 	
 	public function load()
 	{
+		time.update();
 		onLoading.dispatch();
 		executeLoad(_success, _error);
 	}
@@ -202,7 +205,7 @@ class QueryProperties<TService, TData> extends QueryEvent<TService, TData>
 	}
 	
 }
-
+/*
 class QueryEventPeriodicity<TService, TData> extends QueryEvent<TService, TData>
 {
 	public var time(default, null) : TimeQuery;
@@ -225,7 +228,8 @@ class QueryEventPeriodicity<TService, TData> extends QueryEvent<TService, TData>
 		super.load();
 	}
 }
-
+*/
+/*
 class QueryPropertiesPeriodicity<TService, TData> extends QueryProperties<TService, TData>
 {
 	public var time(default, null) : TimeQuery;
@@ -317,7 +321,7 @@ class QueryValuesPeridocity<TValue, TService, TData> extends QueryValues<TValue,
 		super.load();
 	}
 }
-
+*/
 class QuerySearch<TValue, TService, TData> extends QueryEvent<TService, TData>
 {
 	public var where(default, setWhere) : Array<{ property : String, value : TValue}>;
@@ -334,7 +338,7 @@ class QuerySearch<TValue, TService, TData> extends QueryEvent<TService, TData>
 		return this.where = v;
 	}
 }
-
+/*
 class QuerySearchPeridocity<TValue, TService, TData> extends QuerySearch<TValue, TService, TData>
 {
 	public var time(default, null) : TimeQuery;
@@ -357,3 +361,4 @@ class QuerySearchPeridocity<TValue, TService, TData> extends QuerySearch<TValue,
 		super.load();
 	}
 }
+*/

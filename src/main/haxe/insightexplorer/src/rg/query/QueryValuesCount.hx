@@ -9,7 +9,7 @@ import rg.query.Query;
 import thx.error.NullArgument;
 using Arrays;
 
-class QueryValuesCount extends QueryPropertyPeridocity<Dynamic<Dynamic<Dynamic<Int>>>, Array<{ label : String, value : Float }>>
+class QueryValuesCount extends QueryProperty<Dynamic<Array<Array<Float>>>, Array<{ label : String, value : Float }>>
 {
 	public var top : Bool;
 	public var limit : Int;
@@ -30,22 +30,23 @@ class QueryValuesCount extends QueryPropertyPeridocity<Dynamic<Dynamic<Dynamic<I
 		this.othersLabel = othersLabel;
 	}
 	
-	override function transform(v : Dynamic<Dynamic<Dynamic<Int>>>) : Array<{ label : String, value : Float }>
+	override function transform(v : Dynamic<Array<Array<Float>>>) : Array<{ label : String, value : Float }>
 	{
-		var labels = Reflect.fields(v);
-		var result = [];
-		for (label in labels)
-		{
-			var value = Reflect.field(Reflect.field(Reflect.field(v, label), "eternity"), "0");
-			result.push( {
+		return Reflect.fields(v).map(function(label, i) { 
+			var value = 0.0;
+			var periods : Array<Array<Float>> = Reflect.field(v, label);
+			if (null == periods)
+					periods = [];
+			for (item in periods)
+				value += item[1];
+			return {
 				label : Strings.trim(label, '"'),
 				value : value
-			} );
-		}
-		return result;
+			};
+		} );
 	}
 	
-	override function executeLoad(success : Dynamic<Dynamic<Dynamic<Int>>> -> Void, error : String -> Void)
+	override function executeLoad(success : Dynamic<Array<Array<Float>>> -> Void, error : String -> Void)
 	{
 		var count = 0,
 			total = 1,
@@ -58,9 +59,7 @@ class QueryValuesCount extends QueryPropertyPeridocity<Dynamic<Dynamic<Dynamic<I
 		{
 			if (others)
 			{
-				var v = { };
-				Reflect.setField(v, "0", totalcount);
-				Reflect.setField(result, label, { eternity : v } );
+				Reflect.setField(result, '"' + label + '"', [[0.0, totalcount]] );
 			}
 			success(result);
 		}

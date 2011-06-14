@@ -47,6 +47,8 @@ class RandomExecutor implements IExecutor
 	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void)
 	{
 		var type = untyped options.type;
+		trace(type);
+		trace(options);
 		switch(type)
 		{
 			case "all":
@@ -64,6 +66,7 @@ class RandomExecutor implements IExecutor
 				return;
 			case "property":
 				var h = structure.get(path);
+				trace(path);
 				return if (null == h)
 					go(success, []);
 				else
@@ -71,7 +74,20 @@ class RandomExecutor implements IExecutor
 			default:
 				//
 		}
-		return go(error, "'property' option is not implemented in children()");
+		var property;
+		if (null != (property = untyped options.property))
+		{
+			var h = structure.get(path);
+			if (null == h)
+				return go(success, []);
+			else {
+				var labels = h.events.get(property);
+				if (null == labels)
+					return go(success, []);
+				return go(success, labels.keys().array()); 
+			}
+		} else
+			return go(error, "'property' option is not implemented in children()");
 	}
 	public function propertyCount(path : String, options : { property : String }, success : Int -> Void, ?error : String -> Void)
 	{
@@ -202,6 +218,7 @@ class RandomExecutor implements IExecutor
 				var event = extractEventFromProperty(property.property),
 					name = extractNameFromProperty(property.property);
 				var values = topseries(periodicity, start, end, path, event, name, property.limit, property.order == "ascending");
+//				trace(values);
 				for (value in values)
 				{
 					Reflect.setField(current, value.value, value.series);
@@ -389,7 +406,7 @@ class RandomExecutor implements IExecutor
 	
 	function countproperty(path : String, event : String, property : String)
 	{
-		var key = propertykey("eternity", path, event, property);
+		var key = (null == property) ? eventkey("eternity", path, event) : propertykey("eternity", path, event, property);
 		var v = cache.get(key);
 		return null == v ? 0 : v[0];
 	}

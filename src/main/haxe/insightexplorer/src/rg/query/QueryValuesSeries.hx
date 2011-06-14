@@ -10,7 +10,7 @@ import rg.svg.LineChartData;
 import thx.error.NullArgument;
 import rg.util.Periodicity;
 
-class QueryValuesSeries<TValue, TData> extends QueryValuesPeridocity<TValue, Array<Dynamic<Dynamic<Int>>>, TData>
+class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic<Dynamic<Int>>>, TData>
 {
 	override function executeLoad(success : Array<Dynamic<Dynamic<Int>>> -> Void, error : String -> Void)
 	{
@@ -54,8 +54,8 @@ class QueryValuesSeries<TValue, TData> extends QueryValuesPeridocity<TValue, Arr
 		
 		for (i in 0...values.length)
 			executor.propertyValueSeries(path, cast {
-				start : time.start,
-				end : time.end,
+				start : null != time.start ? time.start.getTime() : 0,
+				end : null != time.end ? time.end.getTime() : 0,
 				periodicity : time.periodicity,
 				property : event + "." + property,
 				value : values[i]
@@ -63,11 +63,27 @@ class QueryValuesSeries<TValue, TData> extends QueryValuesPeridocity<TValue, Arr
 		
 		if(others)
 			executor.propertySeries(path, {
-				start : time.start,
-				end : time.end,
+				start : null != time.start ? time.start.getTime() : 0,
+				end : null != time.end ? time.end.getTime() : 0,
 				periodicity : time.periodicity,
 				property : event + "." + property
 			}, _total, error);
+	}
+	
+	override function load()
+	{
+		if (null == values || 0 == values.length)
+		{
+			var loader = new QueryPropertyValues(executor, path, event, property, QueryLimit.Top(10)),
+				me = this;
+			loader.onData.add(function(v : Array<TValue>) {
+				me.values = v;
+				loader.close();
+				me.load();
+			});
+			loader.load();
+		} else 
+			super.load();
 	}
 	
 	public static function forLineChart(executor : IExecutor, path : String, event : String, property : String, values : Array<String>, ?others : Bool, ?otherslabel : String)
@@ -85,14 +101,21 @@ class QueryValuesSeries<TValue, TData> extends QueryValuesPeridocity<TValue, Arr
 			var labels = query.formattedValues(),
 				result = [],
 				range = Periodicity.range(start, end, query.time.periodicity),
-				values, d, y;
+				values, d : Array<Array<Dynamic>>, y;
 			for (i in 0...labels.length)
 			{
 				values = [];
 				d = Reflect.field(data[i], query.time.periodicity);
+				if (null == d)
+					d = [];
+				var map = new Hash();
+				for (v in d)
+				{
+					map.set("" + v[0], v[1]);
+				}
 				for (x in range)
 				{
-					y = Reflect.field(d, "" + x);
+					y = map.get("" + x);
 					if (null == y)
 						y = 0.0;
 					if (x < minx)

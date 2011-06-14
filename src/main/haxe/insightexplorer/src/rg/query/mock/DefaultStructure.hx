@@ -16,7 +16,7 @@ class DefaultStructure
 			{
 				click : 
 				{
-					target : 
+					platform : 
 					{
 						iphone  : 100,
 						ipad    : 70,
@@ -28,7 +28,7 @@ class DefaultStructure
 				},
 				impression : 
 				{
-					target : 
+					platform : 
 					{
 						iphone  : 2000,
 						ipad    : 1100,
@@ -46,7 +46,7 @@ class DefaultStructure
 			{
 				click : 
 				{
-					target : 
+					platform : 
 					{
 						iphone  : 50,
 						ipad    : 35,
@@ -58,7 +58,7 @@ class DefaultStructure
 				},
 				impression : 
 				{
-					target : 
+					platform : 
 					{
 						iphone  : 1000,
 						ipad    : 550,
@@ -76,7 +76,7 @@ class DefaultStructure
 			{
 				click : 
 				{
-					target : 
+					platform : 
 					{
 						iphone  : 40,
 						ipad    : 30,
@@ -88,7 +88,7 @@ class DefaultStructure
 				},
 				impression : 
 				{
-					target : 
+					platform : 
 					{
 						iphone  : 1200,
 						ipad    : 350,

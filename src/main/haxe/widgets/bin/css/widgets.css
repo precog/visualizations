@@ -12,9 +12,11 @@
 
 .rg text
 {
-	font-family: verdana, sans-serif;
-	font-size: 10px;
-	fill: #333;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+	color:#666;
+	font-size:11px;
+	line-height:14px;
+	fill:#666;
 	stroke: 0;
 }
 
@@ -180,7 +182,10 @@ border: 1px solid #0026FF !important;
 
 
 /* CHART DESIGN */
-
+#chart
+{
+	clear: left;
+}
 
 .rg
 {
@@ -201,7 +206,7 @@ border: 1px solid #0026FF !important;
 	stroke-miterjoin: miter;
 	stroke-miterlimit: 1;
 }
-/*
+
 .rg g.group-0 path, ul li.logo-0
 {
 	border-color: #1f77b4;
@@ -314,7 +319,7 @@ border: 1px solid #0026FF !important;
 	stroke: #c7c7c7;
 	fill: #c7c7c7;
 }
-*/
+
 .rg line, .rg path
 {
 	stroke: #999;
@@ -343,8 +348,11 @@ border: 1px solid #0026FF !important;
 	font-weight: bold;
 	background-color: #ffc;
 	border: 1px solid #cc6;
-	font-family: Verdana;
-	font-size: 10px;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+	color:#333;
+	font-size:11px;
+	line-height:14px;
+	fill:#333;
 	padding: 3px 8px;
 	
 	-webkit-border-radius: 4px;
@@ -399,6 +407,7 @@ border: 1px solid #0026FF !important;
 	stroke-width: 4.5;
 }
 
+/*
 .rg .line-chart.dimension-0 path.line
 {
 	stroke: #1f77b4 !important;
@@ -410,6 +419,7 @@ border: 1px solid #0026FF !important;
 	stroke-width: 0 !important;
 	font-weight: bold;
 }
+*/
 
 .rg .line-chart.dimension-1 path.line
 {
@@ -439,7 +449,7 @@ label
 	font-weight: bold;
 	font-size: 11px;
 	float: left;
-	min-width: 50px;
+	min-width: 60px;
 	padding-top: 4px;
 }
 

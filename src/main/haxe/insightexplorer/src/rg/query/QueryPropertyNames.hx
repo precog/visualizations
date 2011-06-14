@@ -7,10 +7,10 @@ package rg.query;
 
 import rg.query.Query;
 
-class QueryPropertyNames extends QueryProperty<Array<String>>
+class QueryPropertyNames extends QueryEvent<Array<String>, Array<String>>
 {
 	override function executeLoad(success : Array<String> -> Void, error : String -> Void)
 	{
-		executor.children(path, { property : event + "." + property }, success, error);
+		executor.children(path, { property : event }, success, error);
 	}
 }

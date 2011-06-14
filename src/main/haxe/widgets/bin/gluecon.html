@@ -18,14 +18,14 @@ $(document).ready(function() {
 	var width = 888, // 1240
 		height = 324; // 604
 			
-	rg.Viz.line("#line", { 
+	ReportGrid.timeSeries("#line", { 
 		width: width,
 		height : height,
 		lineinterpolation : "cardinal",
 		query : { path : "/gluecon/all/", event : "tweet", property : "startup", values : gluecons } 
 	});
 	
-	rg.Viz.pie("#pie", { 
+	ReportGrid.totals("#pie", { 
 		width: height,
 		height : height-9,
 		query : { path : "/gluecon/all/", event : "tweet", property : "startup", values : gluecons } 

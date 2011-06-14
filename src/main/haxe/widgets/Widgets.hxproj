@@ -21,9 +21,9 @@
   <build>
     <option directives="noEmbedJS" />
     <option flashStrict="False" />
-    <option mainClass="Main" />
+    <option mainClass="" />
     <option enabledebug="False" />
-    <option additional="" />
+    <option additional="rg.Viz" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

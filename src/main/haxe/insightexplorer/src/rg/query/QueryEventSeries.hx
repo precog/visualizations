@@ -8,7 +8,7 @@ import rg.query.Query;
 import rg.svg.LineChartData;
 import rg.util.Periodicity;
 
-class QueryEventSeries<TData> extends QueryEventPeriodicity<Dynamic<Dynamic<Int>>, TData>
+class QueryEventSeries<TData> extends QueryEvent<Dynamic<Dynamic<Int>>, TData>
 {
 	override function executeLoad(success : Dynamic<Dynamic<Int>> -> Void, error : String -> Void)
 	{

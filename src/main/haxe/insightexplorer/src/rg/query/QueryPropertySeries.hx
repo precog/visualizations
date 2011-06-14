@@ -10,7 +10,7 @@ import thx.error.NullArgument;
 import rg.svg.LineChartData;
 import rg.util.Periodicity;
 
-class QueryPropertySeries<TData> extends QueryPropertyPeridocity<Dynamic<Dynamic<Int>>, TData>
+class QueryPropertySeries<TData> extends QueryProperty<Dynamic<Dynamic<Int>>, TData>
 {
 	override function executeLoad(success : Dynamic<Dynamic<Int>> -> Void, error : String -> Void)
 	{
@@ -40,6 +40,7 @@ class QueryPropertySeries<TData> extends QueryPropertyPeridocity<Dynamic<Dynamic
 				d, y;
 
 			d = Reflect.field(data, query.time.periodicity);
+
 			for (x in range)
 			{
 				y = Reflect.field(d, "" + x);
