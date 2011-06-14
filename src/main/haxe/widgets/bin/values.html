@@ -88,19 +88,22 @@ $(document).ready(function() {
 	});
 	
 	event = $('#event').change(function() {
+		$("#property").val(property = null);
 		event = $(this).val();
 		feedOptionsProperty(path(), event, "#property");
 		buildChart();
 	}).val();
 	
-	property = $('#event').change(function() {
+	property = $('#property').change(function() {
 		property = $(this).val();
 		buildChart();
 	}).val();
 
 	function buildChart()
 	{
-		
+		if(!start || !end)
+			return;
+
 		var query = [];
 
 		if(!event || !property)
@@ -130,7 +133,7 @@ $(document).ready(function() {
 		var value = $('#select-date').val();
 		if(value == '-')
 		{
-			$('#dates').css('display', 'inline');
+			$('#dates').css('display', 'block');
 			start = $('#start').val();
 			end = $('#end').val();
 		} else 
@@ -158,7 +161,7 @@ $(document).ready(function() {
 	<div id="main">
 		<div id="control-panel">
 			<div>
-				<label>period:</label>
+				<label>period:
 				<select id="select-date">
 					<option value="-select-" selected>- select interval -</option>
 					<option value="1 hour ago/now">now</option>
@@ -169,28 +172,23 @@ $(document).ready(function() {
 					<option value="/today">campaign to date</option>
 					<option value="-">select dates</option>
 				</select>
-				
-				<span id="dates" style="display:none">
-					start: <input type="date" id="start"/>
-					end: <input type="date" id="end"/>
-				</span>
+				</label>
+			</div>
+			<div id="dates" style="display:none">
+				<label>start: <input type="date" id="start"/></label>
+				<label>end: <input type="date" id="end"/></label>
 			</div>
 			<div>
-				<label>path:</label>
-				<span id="breadcrumbs">
-					<span id="rootpath"></span>
-					<select id="rootoptions"></select>
-				</span>
+				<label>path:
+					<span id="breadcrumbs">
+						<span id="rootpath"></span>
+						<select id="rootoptions"></select>
+					</span>
+				</label>
 			</div>
 			<div>
-				<div>
-					<label for="event">event:</label>
-					<select id="event"></select>
-				</div>
-				<div>
-					<label for="property">property:</label>
-					<select id="property"></select>
-				</div>
+				<label>event: <select id="event"></select></label>
+				<label>property: <select id="property"></select></label>
 			</div>
 		</div>
 		<div id="chart" style="height:450px"></div>

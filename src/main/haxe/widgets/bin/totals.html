@@ -64,10 +64,11 @@ $(document).ready(function() {
 	
 	function updatePath()
 	{
-		ReportGird.children(path(), { type : "path" }, function(children) {
+		ReportGrid.children(path(), { type : "path" }, function(children) {
 			$('#rootpath').html(displaypath());
 			var options = children.map(function(v) { return '<option value="'+v+'">'+v+'</option>'; });
 			$('#rootoptions').html('<option value="">- select child -</option>' + options.join(''))
+			feedOptionsEvent(path(), "#event");
 		});
 	}
 	
@@ -83,12 +84,14 @@ $(document).ready(function() {
 		buildChart();
 	});
 	
-	event = $('#event').datepicker().change(function() {
+	event = $('#event').change(function() {
+		$("#property").val(property = null);
 		event = $(this).val();
+		feedOptionsProperty(path(), event, "#property");
 		buildChart();
 	}).val();
 	
-	property = $('#property').datepicker().change(function() {
+	property = $('#property').change(function() {
 		property = $(this).val();
 		buildChart();
 	}).val();
@@ -113,7 +116,7 @@ $(document).ready(function() {
 		var value = $('#select-date').val();
 		if(value == '-')
 		{
-			$('#dates').css('display', 'inline');
+			$('#dates').css('display', 'block');
 			start = $('#start').val();
 			end = $('#end').val();
 		} else {
@@ -141,7 +144,7 @@ $(document).ready(function() {
 	<div id="main">
 		<div id="control-panel">
 			<div>
-				<label>period:</label>
+				<label>period:
 				<select id="select-date">
 					<option value="-select-" selected>- select interval -</option>
 					<option value="1 hour ago/now">now</option>
@@ -152,41 +155,24 @@ $(document).ready(function() {
 					<option value="/today">campaign to date</option>
 					<option value="-">select dates</option>
 				</select>
-				
-				<span id="dates" style="display:none">
-					start: <input type="date" id="start"/>
-					end: <input type="date" id="end"/>
-				</span>
+				</label>
+			</div>
+			<div id="dates" style="display:none">
+				<label>start: <input type="date" id="start"/></label>
+				<label>end: <input type="date" id="end"/></label>
 			</div>
 			<div>
-				<label>metrics:</label>
-				<select id="event">
-					<option value="" selected>- select event -</option>
-					<option value="click">click</option>
-					<option value="impression">impression</option>
-				</select>
-				
-				<select id="property">
-					<option value="" selected>- select property -</option>
-					<option value="supplierId">supplier</option>
-					<option value="supplierPriceCpm">supplier price CPM</option>
-					<option value="platform">platform</option>
-					<option value="carrierId">carrier</option>
-					<option value="creativeId">creative</option>
-					<option value="placementId">placement</option>
-					<option value="contextId">context</option>
-				</select>
+				<label>path:
+					<span id="breadcrumbs">
+						<span id="rootpath"></span>
+						<select id="rootoptions"></select>
+					</span>
+				</label>
 			</div>
 			<div>
-				<label>path:</label>
-				<span id="breadcrumbs">
-					<span id="rootpath"></span>
-					<select id="rootoptions"></select>
-				</span>
+				<label>event: <select id="event"></select></label>
+				<label>property: <select id="property"></select></label>
 			</div>
-		<!--
-			<a href="#" id="refresh">refresh</a>
-		-->
 		</div>
 		<div id="chart" style="height:450px"></div>
 		<div id="logos"></div>

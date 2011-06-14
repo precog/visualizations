@@ -17,7 +17,8 @@
 	font-size:11px;
 	line-height:14px;
 	fill:#666;
-	stroke: 0;
+	stroke-width: 0;
+	text-rendering: optimizelegibility;
 }
 
 .rg .stream-chart path
@@ -90,12 +91,13 @@ margin: 0 4px 0 0;
 .property-panel .limit
 {
 width: 3em;
+padding: 0;
 text-align: center;
 }
 
-.time-controls input
+#dates input
 {
-width: 11em;
+width: 5em;
 text-align: center;
 }
 
@@ -421,6 +423,11 @@ border: 1px solid #0026FF !important;
 }
 */
 
+.rg .dimension-0 text
+{
+	font-weight: bold;
+}
+
 .rg .line-chart.dimension-1 path.line
 {
 	stroke: #d62728 !important;
@@ -442,6 +449,7 @@ border: 1px solid #0026FF !important;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	float: left;
+	min-height: 23px;
 }
 
 label
@@ -450,21 +458,71 @@ label
 	font-size: 11px;
 	float: left;
 	min-width: 60px;
-	padding-top: 4px;
+	margin-left: 10px;
+}
+
+label:first-child
+{
+	margin-left: 0px;
 }
 
 #rootpath a, #rootpath span.current
 {
 	border: 1px solid #ccc;
 	margin: 1px 2px 0 0;
-	padding: 2px 8px;
+	padding: 0px 8px;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
-	float: left;
+/*	float: left; */
 }
 
 #rootpath span.current
 {
 	background-color: #ffc;
+}
+
+ul.leaderboard
+{
+	list-style: none;
+	padding: 20px 0;
+	margin: 0;
+}
+
+ul.leaderboard li
+{
+	padding: 0;
+	margin: 0;
+	
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		right top,
+		color-stop(0.0, rgb(250,250,250)),
+		color-stop(1, rgb(97,155,255))
+	);
+	background-image: -moz-linear-gradient(
+		left center,
+		rgb(250,250,250) 0%,
+		rgb(97,155,255) 100%
+	);
+	
+	background-repeat: repeat-y;
+	
+	border: 1px solid #ccc;
+	margin: 0 0 4px 0;
+	max-width: 200px;
+	padding: 4px 6px;
+	
+	font-weight: bold;
+	font-size: 85%;
+	
+	-webkit-text-shadow: 0 1px 0 white;
+	-moz-text-shadow: 0 1px 0 white;
+	text-shadow: 0 1px 0 white;
+
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	
 }
