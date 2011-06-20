@@ -3,6 +3,6 @@
 -cp ../../../../../client-libraries/haxe/src
 -lib thx
 -lib hxevents
--js bin/js/chart.js
+-js bin/js/reportgrid-viz.js
 -D noEmbedJS
 rg.Viz

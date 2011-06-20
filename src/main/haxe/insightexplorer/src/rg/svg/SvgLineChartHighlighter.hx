@@ -4,6 +4,7 @@
  */
 
 package rg.svg;
+import haxe.Timer;
 import js.Dom;
 import thx.culture.FormatDate;
 import thx.js.Selection;
@@ -15,14 +16,12 @@ class SvgLineChartHighlighter extends SvgLayer
 	var text : Selection;
 	var container : Selection;
 	var x : Linear;
-//	var y : Linear;
 	
 	var selector : Selection;
 	
 	public function new(panel : SvgPanel, x : Linear/*, y : Linear*/) 
 	{
 		this.x = x;
-//		this.y = y;
 		super(panel);
 	}
 	
@@ -31,7 +30,7 @@ class SvgLineChartHighlighter extends SvgLayer
 		return x;
 	}
 	
-	override function init()
+	public function prepare()
 	{
 		var parent = svg;
 		while (parent.node().nodeName != "g" || parent.classed().get() != "panel")
@@ -39,41 +38,15 @@ class SvgLineChartHighlighter extends SvgLayer
 			parent = thx.js.Dom.selectNode(parent.node().parentNode);
 		}
 		parent
-//			.append("svg:rect")
-//			.style("fill").string("rgba(0,0,0,0)")
 			.onNode("mouseover.highlighter", _over)
 			.onNode("mousemove.highlighter", _move)
-			/*
-			.onNode("click", _eventForward)
-			.onNode("mousedown", _eventForward)
-			.onNode("mousemove", _eventForward)
-			.onNode("mouseover", _eventForward)
-			.onNode("mouseout", _eventForward)
-			*/
-//			.onNode("mouseout", _out)
 		;
-		_createHighlighter();
-	}
-	
-	function _eventForward(?_, ?_)
-	{
-		var e = thx.js.Dom.event;
-		var parent = svg.node().parentNode;
-		trace(e.target = parent);
-		untyped parent.fireEvent(e.type, e);
-	}
-	
-	public dynamic function label(x : Float)
-	{
-		return FormatDate.dateShort(Date.fromTime(x)) + ", " + FormatDate.timeShort(Date.fromTime(x));
-	}
-	
-	function _createHighlighter()
-	{
+		
 		selector = svg.append("svg:g")
 			.style("pointer-events").string("none")
 			.attr("class").string("linechart-highlighter")
-			.style("display").string("none");
+//			.style("display").string("none")
+		;
 			
 		selector.append("svg:line")
 			.attr("x1").float(0)
@@ -89,7 +62,13 @@ class SvgLineChartHighlighter extends SvgLayer
 		text = selector.append("svg:text")
 			.attr("dy").string("1em")
 			.attr("text-anchor").string("middle")
+			.attr("dominant-baseline").string("middle")
 		;
+	}
+
+	public dynamic function label(x : Float)
+	{
+		return FormatDate.dateShort(Date.fromTime(x)) + ", " + FormatDate.timeShort(Date.fromTime(x));
 	}
 	
 	function _over(d : HtmlDom, ?_)
@@ -105,31 +84,46 @@ class SvgLineChartHighlighter extends SvgLayer
 		_update();
 	}
 	
+	var lastlabel : String;
+	
 	function _update()
 	{
+		if (null == selector)
+			return;
 		if (null == mouse)
 		{
-			container.style("display").string("none");
+//			selector.style("display").string("none");
 			return;
 		}
-		container.style("display").string("block");
+
 		var vx = x.invert(mouse[0]);
-//		coords.y = y.invert(mouse[1]);
+		if (vx < 100)
+		{
+//			selector.style("display").string("none");
+			return;
+		}
+		var tl = label(vx);
+			
+		lastlabel = tl;
 		
 		vx = approximator(vx);
 		
-		var t = "translate(" + x.scale(vx) + ",0)";
-		selector.attr("transform").string(t);
-		text.text().string(label(vx));
+//		selector.style("display").string("block");
 		
-		var b : { width : Float, height : Float } = untyped text.node().getBBox();
-		var pw = 20;
-		var ph = 4;
+		var t = "translate(" + Math.round(x.scale(vx)) + ",0)";
+
+		selector
+			.attr("transform").string(t);
+		text.text().string(tl);
+		
+		var box : { width : Float, height : Float } = untyped text.node().getBBox();
+		var pw = 20 + Math.round(box.width);
+		var ph = 4 + Math.round(box.height);
 		container
-			.attr("width").float(b.width + pw)
-			.attr("height").float(b.height + ph)
-			.attr("x").float( - (b.width + pw) / 2)
-			.attr("y").float( - ph / 2)
+			.attr("width").float(pw)
+			.attr("height").float(ph)
+			.attr("x").float(0.5 - pw / 2)
+			.attr("y").float(0.5)
 		;
 	}
 	

@@ -4,7 +4,7 @@
   <output>
     <movie disabled="False" />
     <movie input="" />
-    <movie path="bin\js\chart.js" />
+    <movie path="bin\js\reportgrid-viz.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />

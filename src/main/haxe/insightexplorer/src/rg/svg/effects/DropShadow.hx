@@ -30,12 +30,12 @@ class DropShadow implements ISvgEffect
 	{
 		var filter = container
 			.append("svg:filter")
-			/*
+//			/*
 			.attr("x").string("-20%")
 			.attr("y").string("-20%")
 			.attr("width").string("140%")
 			.attr("height").string("140%")
-			*/
+//			*/
 			.attr("id").string(id)
 		;
 

@@ -6,9 +6,20 @@ package rg.svg;
  */
 
 import thx.math.scale.Linear;
+import thx.math.scale.LinearTime;
 
 class SvgScaleTick extends SvgLayer
 {
+	public static function ofLinearTime(panel : SvgPanel, anchor : Anchor, scale : LinearTime)
+	{
+		return new SvgScaleTick(panel, anchor)
+			.scale(scale.scale)
+			.range(scale.range)
+			.ticks(scale.timeTicks)
+			.key(function(d, i) return "" + d)
+		;
+	}
+	
 	public static function ofLinear(panel : SvgPanel, anchor : Anchor, scale : Linear)
 	{
 		return new SvgScaleTick(panel, anchor)

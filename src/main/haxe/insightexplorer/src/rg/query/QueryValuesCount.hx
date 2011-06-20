@@ -9,27 +9,58 @@ import rg.query.Query;
 import thx.error.NullArgument;
 using Arrays;
 
-class QueryValuesCount extends QueryProperty<Dynamic<Array<Array<Float>>>, Array<{ label : String, value : Float }>>
+class QueryValuesCount extends QueryProperty<Array<{ label : String, value : Float }>, Array<{ label : String, value : Float }>>
 {
 	public var top : Bool;
 	public var limit : Int;
 	public var others : Bool;
 	public var othersLabel : String;
+	public var values : Array<String>;
 	
 	public dynamic function filter(value : Dynamic, count : Int)
 	{
 		return true;
 	}
+	
+	override public dynamic function order(values : Array<{ label : String, value : Float }>)
+	{
+		if (top)
+		{
+			values.order(function(a, b) return Floats.compare(b.value, a.value));
+		} else {
+			values.order(function(a, b) return Floats.compare(a.value, b.value));
+		}
+		return values;
+	}
 
-	public function new(executor : IExecutor, path : String, event : String, property : String, top = true, limit = 10, others = true, othersLabel = "others")
+	public function new(executor : IExecutor, path : String, event : String, property : String, ?values : Array<String>, top = true, limit = 10, others = true, othersLabel = "others")
 	{
 		super(executor, path, event, property);
 		this.top = top;
 		this.limit = limit;
 		this.others = others;
 		this.othersLabel = othersLabel;
+		this.values = values;
 	}
 	
+	override function load()
+	{
+		if (null == values || 0 == values.length)
+		{
+			var loader = new QueryPropertyValues(executor, path, event, property, top ? QueryLimit.Top(limit) : QueryLimit.Bottom(limit)),
+				me = this;
+			loader.onData.add(function(d) {
+				me.values = d;
+				loader.close();
+				me.load();
+			});
+			loader.load();
+		} else {
+			super.load();
+		}
+	}
+	
+	/*
 	override function transform(v : Dynamic<Array<Array<Float>>>) : Array<{ label : String, value : Float }>
 	{
 		return Reflect.fields(v).map(function(label, i) { 
@@ -45,12 +76,12 @@ class QueryValuesCount extends QueryProperty<Dynamic<Array<Array<Float>>>, Array
 			};
 		} );
 	}
-	
-	override function executeLoad(success : Dynamic<Array<Array<Float>>> -> Void, error : String -> Void)
+	*/
+	override function executeLoad(success : Array<{ label : String, value : Float }> -> Void, error : String -> Void)
 	{
 		var count = 0,
-			total = 1,
-			result = null,
+			total = values.length,
+			result = [],
 			totalcount = 0,
 			others = this.others,
 			label = othersLabel,
@@ -59,22 +90,17 @@ class QueryValuesCount extends QueryProperty<Dynamic<Array<Array<Float>>>, Array
 		{
 			if (others)
 			{
-				Reflect.setField(result, '"' + label + '"', [[0.0, totalcount]] );
+				result.push( { label : label, value : 0.0 + totalcount } );
 			}
 			success(result);
 		}
 		
-		function _success(v)
+		function _success(label : String, v : Int)
 		{
-			result = v;
-			var labels = Reflect.fields(result);
-			for (label in labels)
+			if (filter(label, v))
 			{
-				var value = Reflect.field(Reflect.field(Reflect.field(result, label), "eternity"), "0");
-				if (filter(label, value))
-					totalcount -= value;
-				else
-					Reflect.deleteField(result, label);
+				result.push( { label : label, value : 0.0 + v } );
+				totalcount -= v;
 			}
 			if (++count == total)
 				_end();
@@ -82,7 +108,7 @@ class QueryValuesCount extends QueryProperty<Dynamic<Array<Array<Float>>>, Array
 		
 		if (others)
 		{
-			total = 2;
+			total++;
 			function _successtotal(v)
 			{
 				totalcount += v;
@@ -99,11 +125,10 @@ class QueryValuesCount extends QueryProperty<Dynamic<Array<Array<Float>>>, Array
 		
 		time.autosetPeriodicity = false;
 		time.periodicity = "eternity";
-		executor.intersect(path, {
-			start : time.start,
-			end : time.end,
-			periodicity : time.periodicity,
-			properties : p
-		}, _success, error);
+		
+		for (value in values)
+		{
+			executor.propertyValueCount(path, { property : event + "." + property, value : value }, callback(_success, value), error);
+		}
 	}
 }

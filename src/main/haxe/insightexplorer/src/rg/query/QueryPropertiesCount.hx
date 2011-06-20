@@ -17,6 +17,12 @@ class QueryPropertiesCount extends QueryEvent<Array<{ label : String, value : Fl
 	{
 		return true;
 	}
+	
+	override public dynamic function order(values : Array<{ label : String, value : Float }>)
+	{
+		values.order(function(a, b) return Floats.compare(b.value, a.value));
+		return values;
+	}
 
 	public function new(executor : IExecutor, path : String, event : String, ?properties : Array<String>)
 	{

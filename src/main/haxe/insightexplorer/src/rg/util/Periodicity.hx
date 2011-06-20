@@ -4,6 +4,7 @@
  */
 
 package rg.util;
+import thx.culture.FormatDate;
 using Arrays;
 
 class Periodicity 
@@ -151,5 +152,17 @@ class Periodicity
 			var o = Reflect.field(d, periodicity);
 			return Arrays.floatMax(Reflect.fields(o), function(d) return Std.parseFloat(d));
 		});
+	}
+	
+	public static function formatf(periodicity : String) : Float -> String
+	{
+		return switch(periodicity)
+		{
+			case "eternity": function(_ : Float) return "all time";
+			case "minute", "hour": function(v : Float) return FormatDate.timeShort(Date.fromTime(v));
+			case "day", "week": function(v : Float) return FormatDate.dateShort(Date.fromTime(v));
+			case "month": function(v : Float) return FormatDate.yearMonth(Date.fromTime(v));
+			case "year": function(v : Float) return FormatDate.year(Date.fromTime(v));
+		}
 	}
 }

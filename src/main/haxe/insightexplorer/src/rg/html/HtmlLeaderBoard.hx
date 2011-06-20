@@ -24,7 +24,8 @@ class HtmlLeaderBoard
 	public function new(container : Selection) 
 	{
 		this.container = container;
-		list = container.append("ul");
+		list = container.append("ul")
+			.classed().add("leaderboard");
 		_created = 0;
 		_ease = Equations.elasticf();
 		_duration = 1500;
@@ -44,17 +45,20 @@ class HtmlLeaderBoard
 		if (null == _data)
 			return;
 		
-		var choice = list.selectAll("li").data(_data, function(d,i) return d.label);
+		var choice = list.selectAll("li").data(_data, function(d, i) return d.label),
+			total = this._total;
 		choice.enter()
 			.append("li")
+				.style("background-size").stringf(function(d, i) return (100*d.value/total)+"%")
 				.text().stringf(_description)
 				.attr("title").stringf(_title)
 				.style("opacity").float(0)
 					.eachNode(_fadeIn)
 		;
-		
+
 		choice.update()
 			.select("li")
+				.style("background-size").stringf(function(d, i) return (100*d.value/total)+"%")
 				.text().stringf(_description)
 				.attr("title").stringf(_title);
 		
@@ -95,6 +99,6 @@ class HtmlLeaderBoard
 	
 	public dynamic function title(label : String, value : Float, total : Float, pos : Int)
 	{
-		return Floats.format(value, "I");
+		return "total: " + Floats.format(value, "I");
 	}
 }

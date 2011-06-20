@@ -17,6 +17,12 @@ class QueryEventsCount extends QueryPath<Array<{ label : String, value : Float }
 	{
 		return true;
 	}
+	
+	override public dynamic function order(values : Array<{ label : String, value : Float }>)
+	{
+		values.order(function(a, b) return Floats.compare(b.value, a.value));
+		return values;
+	}
 
 	public function new(executor : IExecutor, path : String, ?events : Array<String>)
 	{
@@ -52,7 +58,6 @@ class QueryEventsCount extends QueryPath<Array<{ label : String, value : Float }
 
 		function _success(p : String, v : Float)
 		{
-			trace(v);
 			result.push({
 				label : p,
 				value : v

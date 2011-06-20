@@ -19,6 +19,7 @@ class Query<TService, TData>
 	
 	public var onLoading(default, null) : Notifier;
 	public var onComplete(default, null) : Notifier;
+	public var onClose(default, null) : Notifier;
 	public var onChange(default, null) : Dispatcher<TData>;
 	public var onData(default, null) : Dispatcher<TData>;
 	public var onError(default, null) : Dispatcher<String>;
@@ -29,6 +30,7 @@ class Query<TService, TData>
 		data = null;
 		this.onLoading = new Notifier();
 		this.onComplete = new Notifier();
+		this.onClose = new Notifier();
 		this.onChange = new Dispatcher();
 		this.onData = new Dispatcher();
 		this.onError = new Dispatcher();
@@ -38,6 +40,8 @@ class Query<TService, TData>
 	
 	public function close()
 	{
+		onClose.dispatch();
+		onClose.clear();
 		onLoading.clear();
 		onError.clear();
 		onData.clear();
@@ -55,6 +59,7 @@ class Query<TService, TData>
 	{
 		time.update();
 		onLoading.dispatch();
+//		trace("... loading ...");
 		executeLoad(_success, _error);
 	}
 	
@@ -63,10 +68,15 @@ class Query<TService, TData>
 		return cast v;
 	}
 	
+	public dynamic function order(v : TData) : TData
+	{
+		return v;
+	}
+	
 	function _success(v : TService)
 	{
 		if (!Dynamics.same(v, _data))
-			onChange.dispatch(data = transform(_data = v));
+			onChange.dispatch(data = order(transform(_data = v)));
 		onData.dispatch(data);
 		onComplete.dispatch();
 	}
@@ -189,21 +199,20 @@ class QueryValues<TValue, TService, TData> extends QueryProperty<TService, TData
 	}
 }
 
-class QueryProperties<TService, TData> extends QueryEvent<TService, TData>
+class QueryProperties<TService, TData> extends QueryPath<TService, TData>
 {
-	public var properties(default, setProperties) : Array<{ name : String, top : Bool, limit : Int}>;
-	public function new(executor : IExecutor, path : String, event : String, properties : Array<{ name : String, top : Bool, limit : Int}>) 
+	public var properties(default, setProperties) : Array<{ event : String, property : String, top : Bool, limit : Int}>;
+	public function new(executor : IExecutor, path : String, properties : Array<{ event : String, property : String, top : Bool, limit : Int}>) 
 	{
-		super(executor, path, event);
+		super(executor, path);
 		this.properties = properties;
 	}
 	
-	function setProperties(v : Array<{ name : String, top : Bool, limit : Int}>)
+	function setProperties(v : Array<{ event : String, property : String, top : Bool, limit : Int}>)
 	{
 		NullArgument.throwIfNullOrEmpty(v);
 		return this.properties = v;
 	}
-	
 }
 /*
 class QueryEventPeriodicity<TService, TData> extends QueryEvent<TService, TData>

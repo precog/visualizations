@@ -55,23 +55,67 @@ class SvgLineChart extends SvgLayer
 				.attr("id").string(_cpid)
 				.append("svg:rect")
 					.attr("x").float(0)
-					.attr("y").float(0)
+					.attr("y").float(-50)
 					.attr("width").float(0)
 					.attr("height").float(0)
 		;
-		svg.attr("clip-path").string("url(#" + _cpid + ")");
+//		svg.attr("clip-path").string("url(#" + _cpid + ")");
 	}
 	
 	override public function redraw()
 	{
-//		_r = Math.min(panel.frame.width, panel.frame.height) / 2 - _padding;
-//		_pie = new Pie();
-//		_arc = Arc.fromAngleObject().innerRadius(_r * .2).outerRadius(_r);
-//		_startarc = Arc.fromAngleObject().innerRadius(_r * .2).outerRadius(_r * .2);
-//		_bigarc = Arc.fromAngleObject().innerRadius(_r * .4).outerRadius(_r + _padding * .9);
 		if (null == _data || _data.length == 0)
 			return;
-		_redraw();
+			
+		_timedelta = Date.now().getTime();
+		svg.select("#" + _cpid + " rect")
+			.attr("width").float(width)
+			.attr("height").float(height + 100);
+			
+		var layer = svg.selectAll("g.group")
+			.attr("transform").string("translate(0,0)")
+			.data(_data, function(d,i) return d.label);
+		
+		// update
+		layer.update().select("path.line")
+			.transition().ease(_ease).duration(_duration)
+				.attr("d").stringf(_path);
+		
+		// enter
+		var g = layer.enter()
+			.append("svg:g")
+			.attr("class").stringf(function(d, i) return "group group-" + i)
+			.onNode("mouseover.animation", _highlight, true)
+			.onNode("mouseout.animation", _backtonormal, true)
+			.on("mousemove.tooltip", _showtooltip, true)
+			.on("mouseout.tooltip", _hidetooltip, true);
+		
+		g.append("svg:path")
+				.attr("class").string("line")
+				.attr("d").stringf(_path0)
+				.style("stroke").string("#000")
+				.style("stroke-width").float(5)
+				.style("opacity").float(0.0)
+				.attr("transform").string("translate(1,1)")
+				.eachNode(_popinshadow);
+		g.append("svg:path")
+				.attr("class").string("line")
+				.attr("d").stringf(_path0)
+				.style("stroke").string("#000")
+				.style("stroke-width").float(3)
+				.style("opacity").float(0.0)
+				.attr("transform").string("translate(1,1)")
+				.eachNode(_popinshadow);
+				
+				
+		g.append("svg:path")
+				.attr("class").string("line")
+				.attr("d").stringf(_path0)
+				.style("opacity").float(0)
+				.eachNode(_popin);
+
+		// exit
+		layer.exit().remove();
 	}
 	
 	override function resize()
@@ -135,41 +179,6 @@ class SvgLineChart extends SvgLayer
 	}
 	
 	var _timedelta : Float;
-	function _redraw()
-	{
-		_timedelta = Date.now().getTime();
-		svg.select("#" + _cpid + " rect")
-			.attr("width").float(width)
-			.attr("height").float(height);
-			
-		var layer = svg.selectAll("g.group")
-			.attr("transform").string("translate(0,0)")
-			.data(_data, function(d,i) return d.label);
-		
-		// update
-		layer.update().select("path.line")
-			.transition().ease(_ease).duration(_duration)
-				.attr("d").stringf(_path);
-		
-		// enter
-		var g = layer.enter()
-			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "group group-" + i)
-			.onNode("mouseover.animation", _highlight, true)
-			.onNode("mouseout.animation", _backtonormal, true)
-			.on("mousemove.tooltip", _showtooltip, true)
-			.on("mouseout.tooltip", _hidetooltip, true);
-		
-		
-		g.append("svg:path")
-				.attr("class").string("line")
-				.attr("d").stringf(_path0)
-				.style("opacity").float(0)
-				.eachNode(_popin);
-
-		// exit
-		layer.exit().remove();
-	}
 
 	function _highlight(d, i : Int)
 	{
@@ -191,6 +200,19 @@ class SvgLineChart extends SvgLayer
 	function _hidetooltip(d, i : Int) 
 	{
 		ToolTip.display(null);
+	}
+	
+
+	function _popinshadow(n, i)
+	{
+		var path = Dom.selectNodeData(n);
+		if(null != _lineEffect)
+			path.attr("filter").string("url(#"+_lineEffect+")");
+		path.transition().ease(_ease).duration(_duration)
+			.delay(150 * (i - _created))
+			.style("opacity").float(0.25)
+			.attr("d").stringf(_path)
+		;
 	}
 	
 	

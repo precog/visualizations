@@ -6,9 +6,21 @@ package rg.svg;
  */
 
 import thx.math.scale.Linear;
+import thx.math.scale.LinearTime;
 
 class SvgScaleLabel extends SvgLayer
 {
+	public static function ofLinearTime(panel : SvgPanel, anchor : Anchor, scale : LinearTime)
+	{
+		return new SvgScaleLabel(panel, anchor)
+			.scale(scale.scale)
+			.range(scale.range)
+			.ticks(scale.timeTicks)
+			.key(function(d,i) return "" + d)
+			.label(scale.tickFormat)
+			;
+	}
+	
 	public static function ofLinear(panel : SvgPanel, anchor : Anchor, scale : Linear)
 	{
 		return new SvgScaleLabel(panel, anchor)
@@ -177,10 +189,10 @@ class SvgScaleLabel extends SvgLayer
 				}
 			case Left:
 				_textAnchor = "start";
-				_textBaseline = "central";
+				_textBaseline = "middle";
 			case Right:
 				_textAnchor = "end";
-				_textBaseline = "central";
+				_textBaseline = "middle";
 		}
 		adjustPositionFunction();
 		return this;

@@ -5,7 +5,7 @@ package rg;
  * @author Franco Ponticelli
  */
 
-import rg.pivottable.PivotTableProperty;
+import rg.html.PivotProperty;
 import rg.query.Query;
 
 typedef QueryOptions = {
@@ -23,7 +23,7 @@ typedef PivotTableQueryOptions = {
 	path : String,
 	event : String,
 	availableProperties : Null<Array<String>>,
-	properties : Null<Array<PivotTableProperty>>,
+	properties : Null<Array<PivotProperty>>,
 	filter : Null<String -> Bool>,
 	top : Null<Int>,
 	bottom : Null<Int>

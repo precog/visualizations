@@ -47,8 +47,6 @@ class RandomExecutor implements IExecutor
 	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void)
 	{
 		var type = untyped options.type;
-		trace(type);
-		trace(options);
 		switch(type)
 		{
 			case "all":
@@ -66,7 +64,6 @@ class RandomExecutor implements IExecutor
 				return;
 			case "property":
 				var h = structure.get(path);
-				trace(path);
 				return if (null == h)
 					go(success, []);
 				else

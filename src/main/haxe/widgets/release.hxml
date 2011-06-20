@@ -8,3 +8,4 @@
 -D release
 --no-traces
 rg.Viz
+-cmd deploy.bat

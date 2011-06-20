@@ -7,9 +7,20 @@ package rg.svg;
 
 import rg.layout.Orientation;
 import thx.math.scale.Linear;
+import thx.math.scale.LinearTime;
 
 class SvgScaleRule extends SvgLayer
 {
+	public static function ofLinearTime(panel : SvgPanel, orientation : Orientation, scale : LinearTime)
+	{
+		return new SvgScaleRule(panel, orientation)
+			.scale(scale.scale)
+			.range(scale.range)
+			.ticks(scale.timeTicks)
+			.key(function(d, i) return "" + d)
+		;
+	}
+	
 	public static function ofLinear(panel : SvgPanel, orientation : Orientation, scale : Linear)
 	{
 		return new SvgScaleRule(panel, orientation)
