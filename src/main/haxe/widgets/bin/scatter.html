@@ -1,10 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<title>Leader Board</title>
+	<title>Scatter Graph</title>
 	<link rel="stylesheet" type="text/css" href="css/tapad.css"/>
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.13.custom.css"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="language" content="en" />
 	<meta name="description" content="" />
@@ -12,16 +11,17 @@
 	<script src="js/jquery-1.5.1.min.js" type="text/javascript"></script>
 	<script src="js/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>
 	<script src="js/common.js" type="text/javascript"></script>
-<!--
-	<script src="js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&amp;analyticsServer=http%3A%2F%2F127.0.0.1%3A8888%2F&amp;useJsonp=true" type="text/javascript"></script>
--->
 	<script src="js/reportgrid-core.js?tokenId=C7A18C95-3619-415B-A89B-4CE47693E4CC" type="text/javascript"></script>
 	<script src="js/reportgrid-viz.js" type="text/javascript"></script>
 	<script type="text/javascript">
+
 $(document).ready(function() {
-	var basepath = "/rgadnet/";
-	
-	var start, end, event, propert, pathparts = [];
+	var basepath ="/rgadnet/",
+		start,
+		end,
+		event,
+		property,
+		pathparts = [];
 	
 	function path() {
 		return [basepath].concat(pathparts).join('/').replace('//', '/');
@@ -94,19 +94,21 @@ $(document).ready(function() {
 	
 	property = $('#property').change(function() {
 		property = $(this).val();
-		console.log(property);
 		buildChart();
 	}).val();
 
 	function buildChart()
 	{
-		ReportGrid.leaderBoard("#chart", {
+		if(null != property && null == event)
+			return;
+
+		ReportGrid.scatterGraph("#chart", {
 			path : path(),
 			event : event,
 			property : property,
 			other : false
 		}, {
-//			refresh : 20000
+//			refresh : 5000
 		});
 	}
 	
@@ -118,8 +120,7 @@ $(document).ready(function() {
 			$('#dates').css('display', 'block');
 			start = $('#start').val();
 			end = $('#end').val();
-		} else 
-		{
+		} else {
 			$('#dates').css('display', 'none');
 			var parts = value.split('/');
 			if('' == parts[0])
@@ -137,6 +138,7 @@ $(document).ready(function() {
 	});
 	pickDateRange();
 });
+
 	</script>
 </head>
 <body>
@@ -173,7 +175,7 @@ $(document).ready(function() {
 				<label>property: <select id="property"></select></label>
 			</div>
 		</div>
-		<div id="chart" style="height:450px"></div>
+		<div id="chart" style="height:300px"></div>
 		<div id="logos"></div>
 		<div id="haxe:trace"></div>
 	</div>

@@ -90,7 +90,7 @@ class QueryValuesCount extends QueryProperty<Array<{ label : String, value : Flo
 		{
 			if (others)
 			{
-				result.push( { label : label, value : 0.0 + totalcount } );
+				result.push( { label : label, value : (totalcount > 0 ? totalcount : 0.0) } );
 			}
 			success(result);
 		}

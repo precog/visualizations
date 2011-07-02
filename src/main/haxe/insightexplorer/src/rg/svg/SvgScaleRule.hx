@@ -7,27 +7,33 @@ package rg.svg;
 
 import rg.layout.Orientation;
 import thx.math.scale.Linear;
-import thx.math.scale.LinearTime;
+import thx.math.scale.Ordinal;
+import thx.math.scale.NumericScale;
 
-class SvgScaleRule extends SvgLayer
+class SvgScaleRule<TData> extends SvgLayer
 {
-	public static function ofLinearTime(panel : SvgPanel, orientation : Orientation, scale : LinearTime)
-	{
-		return new SvgScaleRule(panel, orientation)
-			.scale(scale.scale)
-			.range(scale.range)
-			.ticks(scale.timeTicks)
-			.key(function(d, i) return "" + d)
-		;
-	}
-	
-	public static function ofLinear(panel : SvgPanel, orientation : Orientation, scale : Linear)
+	public static function ofLinear(panel : SvgPanel, orientation : Orientation, scale : NumericScale<Dynamic>)
 	{
 		return new SvgScaleRule(panel, orientation)
 			.scale(scale.scale)
 			.range(scale.range)
 			.ticks(scale.ticks)
 			.key(function(d, i) return "" + d)
+		;
+	}
+	
+	public static function ofOrdinal<TData>(panel : SvgPanel, orientation : Orientation, scale : Ordinal<TData, Dynamic>)
+	{
+		var _scale = function(d : TData, i : Int)
+		{
+			var s = scale.rangePoints(0, panel.frame.width, 1);
+			return s.scale(d);
+		};
+		return new SvgScaleRule<TData>(panel, orientation)
+			.scale(_scale)
+			.range(scale.range)
+			.ticks(scale.getDomain)
+			.key(function(d,i) return "" + d)
 		;
 	}
 	
@@ -42,15 +48,15 @@ class SvgScaleRule extends SvgLayer
 	var _orientation : Orientation;
 	
 	var _pos : Void -> Float;
-	var _t : Float -> Int -> String;
+	var _t : TData -> Int -> String;
 	var _maxRange : Void -> Int;
 	var _axis : String;
 	var _oaxis : String;
 	
-	var _ticks : Void -> Array<Float>;
+	var _ticks : Void -> Array<TData>;
 	var _range : Array<Float> -> Dynamic;
-	var _scale : Float -> Int -> Float;
-	var _key : Float -> Int -> String;
+	var _scale : TData -> Int -> Float;
+	var _key : TData -> Int -> String;
 	var _length : Void -> Float;
 	
 	public function new(panel : SvgPanel, orientation : Orientation)
@@ -60,8 +66,8 @@ class SvgScaleRule extends SvgLayer
 		svg.attr("class").string("scale-rules");
 	}
 	
-	function translateX(d : Float, i : Int) return "translate(" + _scale(d, i) + ",0)"
-	function translateY(d : Float, i : Int) return "translate(0," + _scale(d, i) + ")"
+	function translateX(d : TData, i : Int) return "translate(" + _scale(d, i) + ",0)"
+	function translateY(d : TData, i : Int) return "translate(0," + _scale(d, i) + ")"
 	
 	override public function redraw()
 	{
@@ -101,21 +107,21 @@ class SvgScaleRule extends SvgLayer
 	}
 	
 	public function getScale() return _scale
-	public function scale(f : Float -> Int -> Float)
+	public function scale(f : TData -> Int -> Float)
 	{
 		_scale = f;
 		return this;
 	}
 	
 	public function getTicks() return _ticks
-	public function ticks(f : Void -> Array<Float>)
+	public function ticks(f : Void -> Array<TData>)
 	{
 		_ticks = f;
 		return this;
 	}
 	
 	public function getKey() return _key
-	public function key(f : Float -> Int -> String)
+	public function key(f : TData -> Int -> String)
 	{
 		_key = f;
 		return this;

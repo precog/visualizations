@@ -11,21 +11,17 @@ using Arrays;
  * ...
  * @author Franco Ponticelli
  */
-class Query<TService, TData>
+class Query<TData>
 {
 	public var data(default, null) : TData;
-	public var time(default, null) : TimeQuery;
-	var _data : TService;
-	
 	public var onLoading(default, null) : Notifier;
 	public var onComplete(default, null) : Notifier;
 	public var onClose(default, null) : Notifier;
 	public var onChange(default, null) : Dispatcher<TData>;
 	public var onData(default, null) : Dispatcher<TData>;
 	public var onError(default, null) : Dispatcher<String>;
-	public var executor : IExecutor;
 	
-	public function new(executor : IExecutor) 
+	public function new() 
 	{
 		data = null;
 		this.onLoading = new Notifier();
@@ -34,8 +30,6 @@ class Query<TService, TData>
 		this.onChange = new Dispatcher();
 		this.onData = new Dispatcher();
 		this.onError = new Dispatcher();
-		this.executor = executor;
-		time = new TimeQuery();
 	}
 	
 	public function close()
@@ -47,15 +41,44 @@ class Query<TService, TData>
 		onData.clear();
 		onChange.clear();
 		onComplete.clear();
-		time.close();
 	}
+
+	public function load()
+	{
+		throw new AbstractMethod();
+	}
+
+	static function normalizeName(s : String)
+	{
+		if (s == null)
+			return null;
+		if ('.' == s.substr(0, 1))
+			return s.substr(1);
+		else
+			return s;
+	}
+}
+
+class QueryExecutor<TService, TData> extends Query<TData>
+{
+	public var time(default, null) : TimeQuery;
+	public var executor : IExecutor;
+	var _data : TService;
+	
+	public function new(executor : IExecutor) 
+	{
+		super();
+		this.executor = executor;
+		time = new TimeQuery();
+	}
+	
 	
 	function executeLoad(success : TService -> Void, error : String -> Void)
 	{
 		throw new AbstractMethod();
 	}
 	
-	public function load()
+	override public function load()
 	{
 		time.update();
 		onLoading.dispatch();
@@ -73,6 +96,12 @@ class Query<TService, TData>
 		return v;
 	}
 	
+	override public function close()
+	{
+		super.close();
+		time.close();
+	}
+	
 	function _success(v : TService)
 	{
 		if (!Dynamics.same(v, _data))
@@ -86,19 +115,9 @@ class Query<TService, TData>
 		onError.dispatch(v);
 		onComplete.dispatch();
 	}
-	
-	static function normalizeName(s : String)
-	{
-		if (s == null)
-			return null;
-		if ('.' == s.substr(0, 1))
-			return s.substr(1);
-		else
-			return s;
-	}
 }
 
-class QueryPath<TService, TData> extends Query<TService, TData>
+class QueryPath<TService, TData> extends QueryExecutor<TService, TData>
 {
 	public var path(default, setPath) : String;
 		

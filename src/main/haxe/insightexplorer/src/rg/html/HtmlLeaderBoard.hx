@@ -24,6 +24,7 @@ class HtmlLeaderBoard
 	public function new(container : Selection) 
 	{
 		this.container = container;
+		container.classed().add("rg");
 		list = container.append("ul")
 			.classed().add("leaderboard");
 		_created = 0;

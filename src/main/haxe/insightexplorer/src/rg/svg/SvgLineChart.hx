@@ -59,7 +59,7 @@ class SvgLineChart extends SvgLayer
 					.attr("width").float(0)
 					.attr("height").float(0)
 		;
-//		svg.attr("clip-path").string("url(#" + _cpid + ")");
+		svg.attr("clip-path").string("url(#" + _cpid + ")");
 	}
 	
 	override public function redraw()
@@ -68,9 +68,6 @@ class SvgLineChart extends SvgLayer
 			return;
 			
 		_timedelta = Date.now().getTime();
-		svg.select("#" + _cpid + " rect")
-			.attr("width").float(width)
-			.attr("height").float(height + 100);
 			
 		var layer = svg.selectAll("g.group")
 			.attr("transform").string("translate(0,0)")
@@ -84,7 +81,7 @@ class SvgLineChart extends SvgLayer
 		// enter
 		var g = layer.enter()
 			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "group group-" + i)
+			.attr("class").string("group")
 			.onNode("mouseover.animation", _highlight, true)
 			.onNode("mouseout.animation", _backtonormal, true)
 			.on("mousemove.tooltip", _showtooltip, true)
@@ -111,6 +108,7 @@ class SvgLineChart extends SvgLayer
 		g.append("svg:path")
 				.attr("class").string("line")
 				.attr("d").stringf(_path0)
+				.attr("class").stringf(function(d, i) return "item-" + i)
 				.style("opacity").float(0)
 				.eachNode(_popin);
 
@@ -122,6 +120,9 @@ class SvgLineChart extends SvgLayer
 	{
 		_x.range([0.0, width]);
 		_y.range([0.0, height]);
+		svg.select("#" + _cpid + " rect")
+			.attr("width").float(width)
+			.attr("height").float(height + 100);
 	}
 	
 	public function lineInterpolator(interpolator : LineInterpolator)

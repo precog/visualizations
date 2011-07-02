@@ -26,33 +26,91 @@ import rg.query.QueryTimerUpdate;
 import rg.svg.effects.DropShadow;
 import rg.svg.Anchor;
 import rg.svg.LineChartData;
-import thx.svg.LineInterpolator;
-import thx.svg.LineInterpolators;
+import rg.svg.SvgBaloon;
+import rg.svg.SvgBarChart;
+import rg.svg.SvgFunnelChart;
+import rg.svg.SvgHeatGrid;
+import rg.svg.SvgStackChart;
+import rg.svg.SvgBorderLine;
 import rg.svg.SvgLineChart;
 import rg.svg.SvgLineChartHighlighter;
+import thx.math.scale.Log;
+import thx.math.scale.Pow;
+//import rg.svg.SvgOrdinalScaleLabel;
 import rg.svg.SvgScaleLabel;
 import rg.svg.SvgScaleTick;
 import rg.svg.SvgSpace;
 import rg.svg.SvgPieChart;
+import rg.svg.SvgScatterGraph;
 import rg.svg.SvgStreamGraph;
 import rg.svg.SvgTitle;
 import rg.QueryOptions;
 import rg.svg.SvgScaleRule;
 import rg.svg.SvgLayer;
+import rg.util.Periodicity;
 
+import thx.color.Colors;
+import thx.color.Hsl;
+import thx.color.NamedColors;
 import thx.date.DateParser;
 import thx.error.Error;
 import thx.js.Dom;
 import thx.js.Selection;
 import thx.math.scale.Linear;
+import thx.math.scale.Linears;
 import thx.math.scale.LinearInt;
 import thx.math.scale.LinearTime;
+import thx.math.scale.Ordinal;
+import thx.svg.LineInterpolator;
+import thx.svg.LineInterpolators;
+
+import haxe.Timer;
+
+import rg.query.ParallelQuery;
 
 using Arrays;
 using Objects;
 
 class Viz 
 {
+	static function createRandomHeatGridData(n = 20, m = 20, top = 100)
+	{
+		return Ints.range(n).map(
+			function(d, i) return Ints.range(m).map(
+			function(d, i) return Math.random() * top));
+	}
+	
+	public static function heatmap(el : Dynamic, options : { })
+	{
+		var selection = select(el),
+			scolors = ["#ff0", "#f00", "#0f0"],
+			colors = scolors.map(function(d,i) return Colors.parse(d));
+
+		if (null == options)
+			options = { };
+
+		var o = cast sizeOptions(selection, options);
+		
+		var space = new SvgSpace(o.width, o.height, selection);
+		space.svg.attr("class").string("rg");
+		
+		var color = Linears.forRgb().range(colors),
+			chart = new SvgHeatGrid(space.createPanel(Disposition.Fill(0, 0)), color),
+			timer = new Timer(3000);
+		function refresh() {
+			var data = createRandomHeatGridData(25, 25),
+				min = 0.0,
+				max = Arrays.floatMax(data, function(d) return Arrays.floatMax(d, function(d) return d)),
+				interpolator = Floats.interpolatef(min, max),
+				domain = colors.map(function(_, i) return interpolator(i / (colors.length-1)))
+			;
+			color.domain(domain);
+			chart.data(data);
+		}
+//		timer.run = refresh;
+		refresh();
+	}
+
 	public static function pivot(el : Dynamic, query : { path : String, properties : Array<Dynamic> }, ?options : { } )
 	{
 		var properties : Array<{ event : String, property : String, top : Bool, limit : Int }> = [];
@@ -78,21 +136,36 @@ class Viz
 
 		var o : Dynamic = (null == options) ? { } : options;
 
-		var loader = QueryIntersect.forPivotTable(executor, query.path, properties, 1);
+		var loader = QueryIntersect.forPivotTable(executor, query.path, properties, null == o.coldimensions ? 1 : o.coldimensions);
 		
-		setTimeLimits(loader, o);
-		
-		if (!properties.any(function(d) return "#timestamp" == d.property))
+		if (properties.any(function(d) return "#timestamp" == d.property))
 		{
-			loader.time.autosetPeriodicity = false;
-			loader.time.periodicity = "eternity";
+			if (null == o.periodicity)
+			{
+				loader.time.autosetPeriodicity = true;
+			} else {
+				loader.time.autosetPeriodicity = false;
+				loader.time.periodicity = o.periodicity;
+			}
 		} else if (null != o.periodicity) {
 			loader.time.autosetPeriodicity = false;
-			loader.time.periodicity = o.periodicity;
+			loader.time.periodicity = "eternity";
 		}
+		setTimeLimits(loader, o);
 		
 		var pivot = new HtmlPivotTable(select(el));
 		loader.onChange.add(pivot.data);
+		
+		if(null != o.displayColumnTotal)
+			pivot.displayColumnTotal = o.displayColumnTotal == true;
+		if(null != o.displayRowTotal)
+			pivot.displayRowTotal = o.displayRowTotal == true;
+		if(null != o.heatMap)
+			pivot.heatMap = o.heatMap == true;
+		if(null != o.startColor)
+			pivot.startColor = Hsl.toHsl(Colors.parse(o.startColor));
+		if(null != o.endColor)
+			pivot.endColor = Hsl.toHsl(Colors.parse(o.endColor));
 
 		executeQuery(loader, o);
 
@@ -127,7 +200,7 @@ class Viz
 		var top = null == q.bottom && q.top > 0;
 		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
 		
-		var loader : Query<Dynamic, Array<{ label : String, value : Float }>>;
+		var loader : QueryExecutor<Dynamic, Array<{ label : String, value : Float }>>;
 		if (null != q.property && "" != q.property)
 		{
 			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
@@ -154,7 +227,7 @@ class Viz
 		return chart;
 	}
 	
-	static function executeQuery(loader : Query<Dynamic, Dynamic>, options : Dynamic)
+	static function executeQuery(loader : Query<Dynamic>, options : Dynamic)
 	{
 		var animated = (null != options.refresh && options.refresh > 0);
 		if (animated)
@@ -165,10 +238,18 @@ class Viz
 		}
 	}
 	
-	static function setTimeLimits(loader : Query<Dynamic, Dynamic>, options : Dynamic)
+	static function setTimeLimits(loader : QueryExecutor<Dynamic, Dynamic>, options : Dynamic, forceValues = false)
 	{
+		if (forceValues)
+		{
+			if (null == options.end)
+				options.end = "now";
+			if (null == options.start)
+				options.start = "yesterday";
+		}
 		loader.time.startLimit = toDateLimit(options.start);
 		loader.time.endLimit = toDateLimit(options.end);
+		loader.time.update();
 	}
 
 	public static function pie(el : Dynamic, query : { }, ?options : { } )
@@ -180,7 +261,7 @@ class Viz
 		var top = null == q.bottom && q.top > 0;
 		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
 		
-		var loader : Query<Dynamic, Array<{ label : String, value : Float }>>;
+		var loader : QueryExecutor<Dynamic, Array<{ label : String, value : Float }>>;
 		if (null != q.property && "" != q.property)
 		{
 			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
@@ -213,6 +294,332 @@ class Viz
 		return chart;
 	}
 	
+	public static function bar(el : Dynamic, query : { }, ?options : { } )
+	{
+		var selection = select(el).html().clear();
+		
+		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
+
+		var top = null == q.bottom && q.top > 0;
+		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
+		
+		var loader : QueryExecutor<Dynamic, Array<{ label : String, value : Float }>>;
+		if (null != q.property && "" != q.property)
+		{
+			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
+			loader = l;
+			if(null != q.filter)
+				l.filter = q.filter;
+		} else if(null != q.event && "" != q.event) {
+			loader = new QueryPropertiesCount(executor, q.path, q.event);
+		} else {
+			loader = new QueryEventsCount(executor, q.path);
+		}
+			
+		loader.onError.add(error);
+		
+		if (null == options)
+			options = { };
+
+		var o = cast sizeOptions(selection, options);
+		
+		setTimeLimits(loader, o);
+		
+		var space = new SvgSpace(o.width, o.height, selection);
+		space.svg.attr("class").string("rg");
+		
+		var x = new Ordinal<String, Int>();
+		var y = new Linear();
+		var ylayers : Array<SvgLayer> = [];
+		var xlayers : Array<SvgLayer> = [];
+		
+		var top = space.createPanel(Disposition.Fixed(0, 0, 5)),
+			middle = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal),
+			left = 0;
+		
+		if (null == o.yaxis || o.yaxis.showlabels != false)
+		{
+			ylayers.push(SvgScaleLabel.ofLinear(middle.createPanel(Disposition.Fixed(0, 2, 50)), Anchor.Right, y));
+			left += 52;
+		}
+		
+		var chartpanel = middle.createPanel(Disposition.Fill(0,0));
+		if (null == o.yaxis || o.yaxis.showrulers != false)
+		{
+			ylayers.push(SvgScaleRule.ofLinear(chartpanel, Orientation.Horizontal, y));
+		}
+		
+				
+		var chart = new SvgBarChart(chartpanel, x, y);		
+		loader.onChange.add(function(d) {
+			
+			y.domain([(null != o.yscale && null != o.yscale.max) ? o.yscale.max : Arrays.floatMax(d, function(d) return d.value) * 1.2, 0.0]);
+			ylayers.each(function(layer, _) layer.redraw());
+			
+			x.domain(d.map(function(d, i) return d.label));
+			x.range(Ints.range(d.length));
+			xlayers.each(function(layer, _) layer.redraw());
+			
+			chart.data(d);
+		});
+		
+		new SvgBorderLine(chartpanel, Anchor.Bottom);
+	
+		var bottom = space.createContainer(Disposition.Fixed(0, 0, 20), Orientation.Horizontal);
+		xlayers.push(SvgScaleLabel.ofOrdinal(bottom.createPanel(Disposition.Fill(left, 0)), Anchor.Top, x));
+		
+//		var bottom = space.createPanel(Disposition.Fixed(0, 0, 10));
+		
+		executeQuery(loader, o);
+		
+		return chart;
+	}
+	
+	public static function funnel(el : Dynamic, query : { }, ?options : { } )
+	{
+		var selection = select(el).html().clear();
+		
+		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
+
+		var top = null == q.bottom && q.top > 0;
+		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
+	
+		var loader : QueryExecutor<Dynamic, Array<{ label : String, value : Float }>>;
+		if (null != q.property && "" != q.property)
+		{
+			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
+			loader = l;
+			if(null != q.filter)
+				l.filter = q.filter;
+		} else if(null != q.event && "" != q.event) {
+			loader = new QueryPropertiesCount(executor, q.path, q.event);
+		} else {
+			loader = new QueryEventsCount(executor, q.path);
+		}
+			
+		loader.onError.add(error);
+		
+		if (null == options)
+			options = { };
+	
+		var o = cast sizeOptions(selection, options);
+		
+		setTimeLimits(loader, o);
+		
+		var space = new SvgSpace(o.width, o.height, selection);
+		space.svg.attr("class").string("rg");
+
+		var top = space.createPanel(Disposition.Fixed(0, 0, 5)),
+			middle = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal);
+		var chartpanel = middle.createPanel(Disposition.Fill(0,0));
+			
+		var chart = new SvgFunnelChart(chartpanel);		
+		loader.onChange.add(function(d) {
+			chart.data(d);
+		});
+
+		executeQuery(loader, o);
+		
+		return chart;
+	}
+	
+	public static function baloon(el)
+	{
+		var svg = select(el).append("svg:svg")
+			.attr("width").float(450)
+			.attr("height").float(300)
+			.classed().add("rg");
+		svg.append("svg:rect")
+			.attr("width").float(450)
+			.attr("height").float(300)
+			.style("fill").string("#eee");
+		
+		var bb = { x : 120.0, y : 80.0, width : 200.0, height : 150.0 };
+		svg.append("svg:rect")
+			.attr("x").float(bb.x)
+			.attr("y").float(bb.y)
+			.attr("width").float(bb.width)
+			.attr("height").float(bb.height)
+			.style("fill").string("#ccc");
+		
+		var baloon = new SvgBaloon(svg);
+		
+		baloon.text = ["hello", "world", "this is a baloon", "another line"];
+//		baloon.moveTo(200, 100);
+		baloon.boundingBox = bb;
+/*		
+		haxe.Timer.delay(function() baloon.text = ["new", "text"], 2000);
+		haxe.Timer.delay(function() baloon.moveTo(-20, 50), 3000);
+		haxe.Timer.delay(function() baloon.text = ["one line"], 4000);
+		haxe.Timer.delay(function() baloon.moveTo(120, -50), 5000);
+		haxe.Timer.delay(function() baloon.text = ["many", "many", "many", "I mean many", "lines"], 6000);
+		haxe.Timer.delay(function() baloon.moveTo(50, 200), 7000);
+	*/	
+		svg.onNode("mousemove", function(n, i) {
+			var c = thx.js.Svg.mouse(n);
+			baloon.moveTo(c[0], c[1], false);
+		});
+	}
+	
+	public static function scatter(el : Dynamic, query : { }, ?options : { } )
+	{
+		var selection = select(el).html().clear();
+		
+		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
+
+		var top = null == q.bottom && q.top > 0;
+		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
+		
+		var loader : QueryExecutor<Dynamic, Array<{ label : String, value : Float }>>;
+		if (null != q.property && "" != q.property)
+		{
+			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
+			loader = l;
+			if(null != q.filter)
+				l.filter = q.filter;
+		} else if(null != q.event && "" != q.event) {
+			loader = new QueryPropertiesCount(executor, q.path, q.event);
+		} else {
+			loader = new QueryEventsCount(executor, q.path);
+		}
+			
+		loader.onError.add(error);
+		
+		if (null == options)
+			options = { };
+
+		var o = cast sizeOptions(selection, options);
+		
+		setTimeLimits(loader, o);
+		
+		var space = new SvgSpace(o.width, o.height, selection);
+		space.svg.attr("class").string("rg");
+		
+		var x = new Ordinal<String, Int>();
+		var y = new Linear();
+		var ylayers : Array<SvgLayer> = [];
+		var xlayers : Array<SvgLayer> = [];
+		
+		var top = space.createPanel(Disposition.Fixed(0, 0, 5)),
+			middle = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal),
+			left = 0;
+		
+		if (null == o.yaxis || o.yaxis.showlabels != false)
+		{
+			ylayers.push(SvgScaleLabel.ofLinear(middle.createPanel(Disposition.Fixed(0, 2, 50)), Anchor.Right, y));
+			left += 52;
+		}
+		
+		var chartpanel = middle.createPanel(Disposition.Fill(0,0));
+		if (null == o.yaxis || o.yaxis.showrulers != false)
+		{
+			ylayers.push(SvgScaleRule.ofLinear(chartpanel, Orientation.Horizontal, y));
+		}
+		
+		if (null == o.xaxis || o.xaxis.showrulers != false)
+		{
+			xlayers.push(SvgScaleRule.ofOrdinal(chartpanel, Orientation.Vertical, x));
+		}
+		
+				
+		var chart = new SvgScatterGraph(chartpanel, x, y);		
+		loader.onChange.add(function(d) {
+			
+			y.domain([(null != o.yscale && null != o.yscale.max) ? o.yscale.max : Arrays.floatMax(d, function(d) return d.value) * 1.2, 0.0]);
+			ylayers.each(function(layer, _) layer.redraw());
+			
+			x.domain(d.map(function(d, i) return d.label));
+			x.range(Ints.range(d.length));
+			xlayers.each(function(layer, _) layer.redraw());
+			
+			chart.data(d);
+		});
+		
+		new SvgBorderLine(chartpanel, Anchor.Bottom);
+	
+		var bottom = space.createContainer(Disposition.Fixed(0, 0, 20), Orientation.Horizontal);
+		xlayers.push(SvgScaleLabel.ofOrdinal(bottom.createPanel(Disposition.Fill(left, 0)), Anchor.Top, x));
+		
+//		var bottom = space.createPanel(Disposition.Fixed(0, 0, 10));
+		
+		executeQuery(loader, o);
+		
+		return chart;
+	}
+	
+	public static function stack(el : Dynamic, query : { }, ?options : { } )
+	{
+		var selection = select(el).html().clear();
+		
+		var q : QueryOptions = cast Objects.copyTo(query, QueryOptionsUtil.emptyQuery());
+
+		var top = null == q.bottom && q.top > 0;
+		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
+		
+		var loader : QueryExecutor<Dynamic, Array<{ label : String, value : Float }>>;
+		if (null != q.property && "" != q.property)
+		{
+			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
+			loader = l;
+			if(null != q.filter)
+				l.filter = q.filter;
+		} else if(null != q.event && "" != q.event) {
+			loader = new QueryPropertiesCount(executor, q.path, q.event);
+		} else {
+			loader = new QueryEventsCount(executor, q.path);
+		}
+			
+		loader.onError.add(error);
+		
+		if (null == options)
+			options = { };
+
+		var o = cast sizeOptions(selection, options);
+		
+		setTimeLimits(loader, o);
+		
+		var space = new SvgSpace(o.width, o.height, selection);
+		space.svg.attr("class").string("rg");
+		
+		var y = new Linear();
+		var ylayers : Array<SvgLayer> = [];
+		
+		var top = space.createPanel(Disposition.Fixed(0, 0, 5)),
+			middle = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal),
+			left = 0;
+		
+		if (null == o.yaxis || o.yaxis.showlabels != false)
+		{
+			ylayers.push(SvgScaleLabel.ofLinear(middle.createPanel(Disposition.Fixed(0, 2, 50)), Anchor.Right, y));
+			left += 52;
+		}
+		
+		var chartpanel = middle.createPanel(Disposition.Fill(0,0));
+		if (null == o.yaxis || o.yaxis.showrulers != false)
+		{
+			ylayers.push(SvgScaleRule.ofLinear(chartpanel, Orientation.Horizontal, y));
+		}
+		
+				
+		var chart = new SvgStackChart(chartpanel, y);		
+		loader.onChange.add(function(d) {
+			
+			y.domain([(null != o.yscale && null != o.yscale.max) ? o.yscale.max : Arrays.reduce(d, function(a, b, i) return a + b.value, 0) * 1.2, 0.0]);
+			ylayers.each(function(layer, _) layer.redraw());
+			chart.data(d);
+		});
+		
+		new SvgBorderLine(chartpanel, Anchor.Bottom);
+	
+		var bottom = space.createContainer(Disposition.Fixed(0, 0, 20), Orientation.Horizontal);
+		
+//		var bottom = space.createPanel(Disposition.Fixed(0, 0, 10));
+		
+		executeQuery(loader, o);
+		
+		return chart;
+	}
+	
 	static function error(e : String) trace("ERROR: " + e)
 	
 	public static function sizeOptions(selection : Selection, ?options : { } )
@@ -226,7 +633,7 @@ class Viz
 		});
 	}
 	
-	public static function yinfo(container, q, scale, left : Bool, labelwidth : Int, pos : Int, ylayers : Array<SvgLayer>)
+	public static function yinfo(container, q, scale, left : Bool, labelwidth : Int, pos : Int, ylayers : Array<SvgLayer>, usedimensionclass : Bool)
 	{
 		var labels, ticks, title;
 
@@ -242,9 +649,12 @@ class Viz
 			labels = SvgScaleLabel.ofLinear(container.createPanel(Disposition.Fixed(2,0,labelwidth-24)), Anchor.Left, scale);
 			title = new SvgTitle(container.createPanel(Disposition.Fixed(0, 0, 14)), text, Anchor.Left);
 		}
-		title.customClass = "dimension-" + pos;
-		labels.customClass = "dimension-" + pos;
-		ticks.customClass = "dimension-" + pos;
+		if (usedimensionclass)
+		{
+			title.customClass = "dimension-" + pos;
+			labels.customClass = "dimension-" + pos;
+			ticks.customClass = "dimension-" + pos;
+		}
 		ylayers.push(labels);
 		ylayers.push(ticks);
 	}
@@ -260,7 +670,7 @@ class Viz
 		var space = new SvgSpace(o.width, o.height, selection, 10, 0);
 		space.svg.attr("class").string("rg");
 		
-		var x = new LinearTime();
+		var x = new LinearTime().useTimeTicks(true);
 		var container = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal);
 		
 		var chartpanel = null,
@@ -273,7 +683,7 @@ class Viz
 			var q : QueryOptions = cast Objects.copyTo(queries[i], QueryOptionsUtil.emptyQuery());
 			var top = null == q.bottom && q.top > 0;
 			var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
-			var loader : Query<Dynamic, LineChartData>;
+			var loader : QueryExecutor<Dynamic, LineChartData>;
 			if (null != q.property)
 			{
 				loader = QueryValuesSeries.forLineChart(executor, q.path, q.event, q.property, []);
@@ -282,7 +692,7 @@ class Viz
 			}
 
 			loader.time.periodicity = o.periodicity;
-			setTimeLimits(loader, o);
+			setTimeLimits(loader, o, true);
 			loader.time.update();
 			loader.onError.add(error);
 			loaders.push(loader);
@@ -291,15 +701,19 @@ class Viz
 				
 			if (i == 0)
 			{
-				yinfo(container, q, y, true, labelwidth, i, ylayers);
+				yinfo(container, q, y, true, labelwidth, i, ylayers, queries.length > 1);
 				chartpanel = container.createPanel(Disposition.Fill(0, 0));
+				if ((null == o.yaxis || o.yaxis.showrulers != false) && queries.length == 1)
+				{
+					ylayers.push(SvgScaleRule.ofLinear(chartpanel, Orientation.Horizontal, y));
+				}
 				highlighter = new SvgLineChartHighlighter(chartpanel, x);
 				isleft = false;
 				loader.onData.addOnce(function(d) {
 					highlighter.prepare();
 				});
 			} else
-				yinfo(container, q, y, false, labelwidth, i, ylayers);
+				yinfo(container, q, y, false, labelwidth, i, ylayers, queries.length > 1);
 			
 			var chart = new SvgLineChart(chartpanel, x, y);
 //			chart.setLineEffect(dropshadow);
@@ -321,11 +735,6 @@ class Viz
 				ylayers.each(function(layer, i) layer.redraw());
 				chart.data(v.data);
 			});
-			
-			if ((null == o.yaxis || o.yaxis.showrulers != false) && queries.length == 1)
-			{
-				ylayers.push(SvgScaleRule.ofLinear(chartpanel, Orientation.Horizontal, y));
-			}
 		}
 
 		var bottom = space.createContainer(Disposition.Fixed(0, 0, 20), Orientation.Horizontal);
@@ -335,8 +744,8 @@ class Viz
 			xlayers.push(SvgScaleTick.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(0,0,6)), Anchor.Top, x));
 			xlayers.push(SvgScaleLabel.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(2,0,12)), Anchor.Top, x));		
 		} else {
-			xlayers.push(SvgScaleTick.ofLinearTime(belowchart.createPanel(Disposition.Fixed(0,0,6)), Anchor.Top, x));
-			xlayers.push(SvgScaleLabel.ofLinearTime(belowchart.createPanel(Disposition.Fixed(2,0,12)), Anchor.Top, x));	
+			xlayers.push(SvgScaleTick.ofLinear(belowchart.createPanel(Disposition.Fixed(0,0,6)), Anchor.Top, x));
+			xlayers.push(SvgScaleLabel.ofLinear(belowchart.createPanel(Disposition.Fixed(2,0,12)), Anchor.Top, x));	
 		}
 
 		if (o.animated)
@@ -377,5 +786,9 @@ class Viz
 		r.totals = rg.Viz.pie;
 		r.leaderBoard = rg.Viz.leaderBoard;
 		r.pivotTable = rg.Viz.pivot;
+		r.barChart = rg.Viz.bar;
+		r.stackChart = rg.Viz.stack;
+		r.scatterGraph = rg.Viz.scatter;
+		r.funnelChart = rg.Viz.funnel;
 	}
 }

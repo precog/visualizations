@@ -165,7 +165,7 @@ class SvgStreamGraph extends SvgLayer
 		// enter
 		layer.enter()
 			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "group group-" + i)
+			.attr("class").stringf(function(d, i) return "group item-" + i)
 			.onNode("mousemove", over)
 			.onNode("mouseout", out)
 			.append("svg:path")

@@ -6,27 +6,33 @@ package rg.svg;
  */
 
 import thx.math.scale.Linear;
-import thx.math.scale.LinearTime;
+import thx.math.scale.Ordinal;
+import thx.math.scale.NumericScale;
 
-class SvgScaleTick extends SvgLayer
+class SvgScaleTick<TData> extends SvgLayer
 {
-	public static function ofLinearTime(panel : SvgPanel, anchor : Anchor, scale : LinearTime)
-	{
-		return new SvgScaleTick(panel, anchor)
-			.scale(scale.scale)
-			.range(scale.range)
-			.ticks(scale.timeTicks)
-			.key(function(d, i) return "" + d)
-		;
-	}
-	
-	public static function ofLinear(panel : SvgPanel, anchor : Anchor, scale : Linear)
+	public static function ofLinear(panel : SvgPanel, anchor : Anchor, scale : NumericScale<Dynamic>)
 	{
 		return new SvgScaleTick(panel, anchor)
 			.scale(scale.scale)
 			.range(scale.range)
 			.ticks(scale.ticks)
 			.key(function(d, i) return "" + d)
+		;
+	}
+	
+	public static function ofOrdinal<TData>(panel : SvgPanel, anchor : Anchor, scale : Ordinal<TData, Dynamic>)
+	{
+		var _scale = function(d : TData, i : Int)
+		{
+			var s = scale.rangePoints(0, panel.frame.width, 1);
+			return s.scale(d);
+		};
+		return new SvgScaleTick<TData>(panel, anchor)
+			.scale(_scale)
+			.range(scale.range)
+			.ticks(scale.getDomain)
+			.key(function(d,i) return "" + d)
 		;
 	}
 	
@@ -44,15 +50,15 @@ class SvgScaleTick extends SvgLayer
 
 	var _length : Float;
 	var _pos : Void -> Float;
-	var _t : Float -> Int -> String;
+	var _t : TData -> Int -> String;
 	var _maxRange : Void -> Int;
 	var _axis : String;
 	var _oaxis : String;
 	
-	var _ticks : Void -> Array<Float>;
+	var _ticks : Void -> Array<TData>;
 	var _range : Array<Float> -> Dynamic;
-	var _scale : Float -> Int -> Float;
-	var _key : Float -> Int -> String;
+	var _scale : TData -> Int -> Float;
+	var _key : TData -> Int -> String;
 	
 	public function new(panel : SvgPanel, anchor : Anchor)
 	{
@@ -62,8 +68,8 @@ class SvgScaleTick extends SvgLayer
 		svg.attr("class").string("scale-ticks");
 	}
 	
-	function translateX(d : Float, i : Int) return "translate(" + _scale(d, i) + ",0)"
-	function translateY(d : Float, i : Int) return "translate(0," + _scale(d, i) + ")"
+	function translateX(d : TData, i : Int) return "translate(" + _scale(d, i) + ",0)"
+	function translateY(d : TData, i : Int) return "translate(0," + _scale(d, i) + ")"
 	
 	override public function redraw()
 	{
@@ -104,21 +110,21 @@ class SvgScaleTick extends SvgLayer
 	}
 	
 	public function getScale() return _scale
-	public function scale(f : Float -> Int -> Float)
+	public function scale(f : TData -> Int -> Float)
 	{
 		_scale = f;
 		return this;
 	}
 	
 	public function getTicks() return _ticks
-	public function ticks(f : Void -> Array<Float>)
+	public function ticks(f : Void -> Array<TData>)
 	{
 		_ticks = f;
 		return this;
 	}
 	
 	public function getKey() return _key
-	public function key(f : Float -> Int -> String)
+	public function key(f : TData -> Int -> String)
 	{
 		_key = f;
 		return this;

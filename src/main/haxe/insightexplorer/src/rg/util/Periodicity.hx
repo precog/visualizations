@@ -165,4 +165,17 @@ class Periodicity
 			case "year": function(v : Float) return FormatDate.year(Date.fromTime(v));
 		}
 	}
+	
+	public static function format(periodicity : String, v : Float) : String
+	{
+		switch(periodicity)
+		{
+			case "eternity": return "all time";
+			case "minute", "hour": return FormatDate.timeShort(Date.fromTime(v));
+			case "day", "week": return FormatDate.dateShort(Date.fromTime(v));
+			case "month": return FormatDate.yearMonth(Date.fromTime(v));
+			case "year": return FormatDate.year(Date.fromTime(v));
+			default: return periodicity + ": " + v;
+		}
+	}
 }

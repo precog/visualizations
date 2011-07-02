@@ -57,10 +57,4 @@ class QueryOptionsUtil
 			bottom : null
 		};
 	}
-	
-	public static function toQueryInst<TService, TData>(options : QueryOptions) : Query<TService, TData>
-	{
-		
-		return null;
-	}
 }

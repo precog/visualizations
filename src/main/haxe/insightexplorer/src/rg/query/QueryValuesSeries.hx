@@ -54,8 +54,8 @@ class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic
 		
 		for (i in 0...values.length)
 			executor.propertyValueSeries(path, cast {
-				start : null != time.start ? time.start.getTime() : 0,
-				end : null != time.end ? time.end.getTime() : 0,
+				start : time.startTime(),
+				end : time.endTime(),
 				periodicity : time.periodicity,
 				property : event + "." + property,
 				value : values[i]
@@ -63,8 +63,8 @@ class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic
 		
 		if(others)
 			executor.propertySeries(path, {
-				start : null != time.start ? time.start.getTime() : 0,
-				end : null != time.end ? time.end.getTime() : 0,
+				start : time.startTime(),
+				end : time.endTime(),
 				periodicity : time.periodicity,
 				property : event + "." + property
 			}, _total, error);

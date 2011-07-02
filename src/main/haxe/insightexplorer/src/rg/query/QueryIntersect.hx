@@ -24,8 +24,8 @@ class QueryIntersect<TData> extends QueryProperties<Dynamic<Dynamic>, TData>
 				});
 		}
 		executor.intersect(path, {
-			start : time.start,
-			end : time.end,
+			start : time.startTime(),
+			end : time.endTime(),
 			periodicity : time.periodicity,
 			properties : p
 		}, success, error);
@@ -70,8 +70,10 @@ private class PivotTableTransform<TData>
 		return -1;
 	}
 	
+	// TODO fill time gaps in interval if not by done on the server side
 	public function transform(src : Dynamic)
 	{
+//		trace(Dynamics.string(src));
 		var data : {
 				column_headers : Array<String>,
 				row_headers : Array<String>,
@@ -92,18 +94,20 @@ private class PivotTableTransform<TData>
 		{
 			var pos = timePropertyPosition(),
 				properties = query.properties.slice(0, pos).map(function(d,i) return d.property)
-					.concat([query.time.periodicity])
+					.concat(["#" + query.time.periodicity])
 					.concat(query.properties.slice(pos).map(function(d,i) return d.property)),
 				headers = data.column_headers;
 			for (i in 0...properties.length)
 			{
 				if (i == columns)
 					headers = data.row_headers;
+				if (properties[i] == "#timestamp")
+					continue;
 				headers.push(properties[i]);
 			}
 			
 			values = [];
-			
+
 			for (item in temp)
 			{
 				var arr : Array<Array<Dynamic>> = item.value;
@@ -184,7 +188,24 @@ private class PivotTableTransform<TData>
 			row.cells.push(item.value);
 		}
 
+		var toorder : Array<Array<Dynamic>> = [];
+		for (row in data.rows)
+			toorder = toorder.concat([row.cells]);
+		Arrays.orderMultiple(data.columns, orderColumns, toorder);
+		
+		data.rows.order(orderRows);
+		
 		return data;
+	}
+	
+	public dynamic function orderRows(a : { values : Array<Dynamic>, cells : Array<Dynamic>, calc : Calc}, b : { values : Array<Dynamic>, cells : Array<Dynamic>, calc : Calc})
+	{
+		return Arrays.compare(a.values, b.values);
+	}
+	
+	public dynamic function orderColumns(a : { values : Array<Dynamic>, calc : Calc}, b : { values : Array<Dynamic>, calc : Calc})
+	{
+		return Arrays.compare(a.values, b.values);
 	}
 	
 	static function emptyCalc()

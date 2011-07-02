@@ -11,9 +11,9 @@ class QueryTimerUpdate
 	public var elapse : Int;
 	public var paused(default, null) : Bool;
 	
-	var query : Query<Dynamic, Dynamic>;
+	var query : Query<Dynamic>;
 	
-	public function new(query : Query<Dynamic, Dynamic>, elapse = 5000) 
+	public function new(query : Query<Dynamic>, elapse = 5000) 
 	{
 		this.query = query;
 		query.onClose.add(pause);

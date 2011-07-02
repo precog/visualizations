@@ -4015,101 +4015,6 @@ rg.query.TimeQuery.prototype.setPeriodicity = function(v) {
 	$s.pop();
 }
 rg.query.TimeQuery.prototype.__class__ = rg.query.TimeQuery;
-thx.math.scale.Linears = function() { }
-thx.math.scale.Linears.__name__ = ["thx","math","scale","Linears"];
-thx.math.scale.Linears.forString = function() {
-	$s.push("thx.math.scale.Linears::forString");
-	var $spos = $s.length;
-	var $tmp = new thx.math.scale.LinearT().interpolatef(Strings.interpolatef);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.math.scale.Linears.forHsl = function() {
-	$s.push("thx.math.scale.Linears::forHsl");
-	var $spos = $s.length;
-	var $tmp = new thx.math.scale.LinearT().interpolatef(thx.color.Hsl.interpolatef);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.math.scale.Linears.forHslString = function() {
-	$s.push("thx.math.scale.Linears::forHslString");
-	var $spos = $s.length;
-	var $tmp = new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
-		$s.push("thx.math.scale.Linears::forHslString@28");
-		var $spos = $s.length;
-		if(Strings.empty(a) || Strings.empty(b)) {
-			var $tmp = function(_) {
-				$s.push("thx.math.scale.Linears::forHslString@28@30");
-				var $spos = $s.length;
-				$s.pop();
-				return "";
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-		}
-		var ca = thx.color.Hsl.toHsl(thx.color.Colors.parse(a)), cb = thx.color.Hsl.toHsl(thx.color.Colors.parse(b)), i = thx.color.Hsl.interpolatef(ca,cb,f);
-		var $tmp = function(t) {
-			$s.push("thx.math.scale.Linears::forHslString@28@34");
-			var $spos = $s.length;
-			var $tmp = i(t).toHslString();
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.math.scale.Linears.forRgb = function() {
-	$s.push("thx.math.scale.Linears::forRgb");
-	var $spos = $s.length;
-	var $tmp = new thx.math.scale.LinearT().interpolatef(thx.color.Rgb.interpolatef);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.math.scale.Linears.forRgbString = function() {
-	$s.push("thx.math.scale.Linears::forRgbString");
-	var $spos = $s.length;
-	var $tmp = new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
-		$s.push("thx.math.scale.Linears::forRgbString@46");
-		var $spos = $s.length;
-		if(Strings.empty(a) || Strings.empty(b)) {
-			var $tmp = function(_) {
-				$s.push("thx.math.scale.Linears::forRgbString@46@48");
-				var $spos = $s.length;
-				$s.pop();
-				return "";
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-		}
-		var ca = thx.color.Colors.parse(a), cb = thx.color.Colors.parse(b), i = thx.color.Rgb.interpolatef(ca,cb,f);
-		var $tmp = function(t) {
-			$s.push("thx.math.scale.Linears::forRgbString@46@52");
-			var $spos = $s.length;
-			var $tmp = i(t).toRgbString();
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.math.scale.Linears.prototype.__class__ = thx.math.scale.Linears;
 IntHash = function(p) {
 	if( p === $_ ) return;
 	$s.push("IntHash::new");
@@ -5838,14 +5743,10 @@ rg.svg.SvgHeatGrid.prototype.color = null;
 rg.svg.SvgHeatGrid.prototype._duration = null;
 rg.svg.SvgHeatGrid.prototype._m = null;
 rg.svg.SvgHeatGrid.prototype._n = null;
-rg.svg.SvgHeatGrid.prototype._tooltip = null;
-rg.svg.SvgHeatGrid.prototype._grid = null;
 rg.svg.SvgHeatGrid.prototype.init = function() {
 	$s.push("rg.svg.SvgHeatGrid::init");
 	var $spos = $s.length;
 	this.svg.classed().add("heat-grid");
-	this._grid = this.svg.append("svg:g");
-	this._tooltip = new rg.svg.SvgBaloon(this.svg);
 	$s.pop();
 }
 rg.svg.SvgHeatGrid.prototype.data = function(d) {
@@ -5898,13 +5799,6 @@ rg.svg.SvgHeatGrid.prototype.cellclass = function(_,i) {
 	return $tmp;
 	$s.pop();
 }
-rg.svg.SvgHeatGrid.prototype.mouseover = function(d,i) {
-	$s.push("rg.svg.SvgHeatGrid::mouseover");
-	var $spos = $s.length;
-	this._tooltip.setText(["value: " + Floats.format(d)]);
-	this._tooltip.moveTo(this.x(d,i) + this.width / this._m / 2,this.y(d,i) + this.height / this._m / 4);
-	$s.pop();
-}
 rg.svg.SvgHeatGrid.prototype.redraw = function() {
 	$s.push("rg.svg.SvgHeatGrid::redraw");
 	var $spos = $s.length;
@@ -5912,20 +5806,20 @@ rg.svg.SvgHeatGrid.prototype.redraw = function() {
 		$s.pop();
 		return;
 	}
-	var choice = this._grid.selectAll("rect").data(this._data);
-	choice.enter().append("svg:rect").attr("width")["float"](this.width / this._m).attr("height")["float"](this.height / this._n).style("fill").color(this.color.scale(0)).style("stroke").string("none").attr("class").stringf($closure(this,"cellclass")).attr("x").floatf($closure(this,"x")).attr("y").floatf($closure(this,"y")).style("fill-opacity")["float"](0).on("mouseover",$closure(this,"mouseover")).transition().duration(null,this._duration).style("fill-opacity")["float"](1).style("fill").colorf($closure(this.color,"scale"));
+	var choice = this.svg.selectAll("rect").data(this._data);
+	choice.enter().append("svg:rect").attr("width")["float"](this.width / this._m).attr("height")["float"](this.height / this._n).style("fill").color(this.color.scale(0)).style("stroke").string("none").attr("class").stringf($closure(this,"cellclass")).attr("x").floatf($closure(this,"x")).attr("y").floatf($closure(this,"y")).style("fill-opacity")["float"](0).transition().duration(null,this._duration).style("fill-opacity")["float"](1).style("fill").colorf($closure(this.color,"scale"));
 	var me = this;
 	choice.update().eachNode(function(n,i) {
-		$s.push("rg.svg.SvgHeatGrid::redraw@91");
+		$s.push("rg.svg.SvgHeatGrid::redraw@81");
 		var $spos = $s.length;
-		haxe.Log.trace(thx.js.Dom.selectNode(n).style("fill").get(),{ fileName : "SvgHeatGrid.hx", lineNumber : 92, className : "rg.svg.SvgHeatGrid", methodName : "redraw"});
+		haxe.Log.trace(thx.js.Dom.selectNode(n).style("fill").get(),{ fileName : "SvgHeatGrid.hx", lineNumber : 82, className : "rg.svg.SvgHeatGrid", methodName : "redraw"});
 		$s.pop();
 	});
 	choice.update().transition().duration(null,this._duration).style("fill").colorf(function(d,i) {
-		$s.push("rg.svg.SvgHeatGrid::redraw@96");
+		$s.push("rg.svg.SvgHeatGrid::redraw@86");
 		var $spos = $s.length;
 		var c = me.color.scale(d,i);
-		haxe.Log.trace(c,{ fileName : "SvgHeatGrid.hx", lineNumber : 98, className : "rg.svg.SvgHeatGrid", methodName : "redraw"});
+		haxe.Log.trace(c,{ fileName : "SvgHeatGrid.hx", lineNumber : 88, className : "rg.svg.SvgHeatGrid", methodName : "redraw"});
 		$s.pop();
 		return c;
 		$s.pop();
@@ -7769,11 +7663,103 @@ thx.math.scale.LinearT = function(p) {
 	$s.pop();
 }
 thx.math.scale.LinearT.__name__ = ["thx","math","scale","LinearT"];
+thx.math.scale.LinearT.forString = function() {
+	$s.push("thx.math.scale.LinearT::forString");
+	var $spos = $s.length;
+	var $tmp = new thx.math.scale.LinearT().interpolatef(Strings.interpolatef);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.math.scale.LinearT.forHsl = function() {
+	$s.push("thx.math.scale.LinearT::forHsl");
+	var $spos = $s.length;
+	var $tmp = new thx.math.scale.LinearT().interpolatef(thx.color.Hsl.interpolatef);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.math.scale.LinearT.forHslString = function() {
+	$s.push("thx.math.scale.LinearT::forHslString");
+	var $spos = $s.length;
+	var $tmp = new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		$s.push("thx.math.scale.LinearT::forHslString@30");
+		var $spos = $s.length;
+		if(Strings.empty(a) || Strings.empty(b)) {
+			var $tmp = function(_) {
+				$s.push("thx.math.scale.LinearT::forHslString@30@32");
+				var $spos = $s.length;
+				$s.pop();
+				return "";
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+		}
+		var ca = thx.color.Hsl.toHsl(thx.color.Colors.parse(a)), cb = thx.color.Hsl.toHsl(thx.color.Colors.parse(b)), i = thx.color.Hsl.interpolatef(ca,cb,f);
+		var $tmp = function(t) {
+			$s.push("thx.math.scale.LinearT::forHslString@30@36");
+			var $spos = $s.length;
+			var $tmp = i(t).toHslString();
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.math.scale.LinearT.forRgb = function() {
+	$s.push("thx.math.scale.LinearT::forRgb");
+	var $spos = $s.length;
+	var $tmp = new thx.math.scale.LinearT().interpolatef(thx.color.Rgb.interpolatef);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.math.scale.LinearT.forRgbString = function() {
+	$s.push("thx.math.scale.LinearT::forRgbString");
+	var $spos = $s.length;
+	var $tmp = new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		$s.push("thx.math.scale.LinearT::forRgbString@48");
+		var $spos = $s.length;
+		if(Strings.empty(a) || Strings.empty(b)) {
+			var $tmp = function(_) {
+				$s.push("thx.math.scale.LinearT::forRgbString@48@50");
+				var $spos = $s.length;
+				$s.pop();
+				return "";
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+		}
+		var ca = thx.color.Colors.parse(a), cb = thx.color.Colors.parse(b), i = thx.color.Rgb.interpolatef(ca,cb,f);
+		var $tmp = function(t) {
+			$s.push("thx.math.scale.LinearT::forRgbString@48@54");
+			var $spos = $s.length;
+			var $tmp = i(t).toRgbString();
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 thx.math.scale.LinearT._f = function(_,_1,_2) {
 	$s.push("thx.math.scale.LinearT::_f");
 	var $spos = $s.length;
 	var $tmp = function(_3) {
-		$s.push("thx.math.scale.LinearT::_f@12");
+		$s.push("thx.math.scale.LinearT::_f@60");
 		var $spos = $s.length;
 		$s.pop();
 		return null;
@@ -7788,7 +7774,7 @@ thx.math.scale.LinearT.scaleBilinear = function(domain,range,uninterpolate,inter
 	var $spos = $s.length;
 	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
 	var $tmp = function(x) {
-		$s.push("thx.math.scale.LinearT::scaleBilinear@110");
+		$s.push("thx.math.scale.LinearT::scaleBilinear@158");
 		var $spos = $s.length;
 		var $tmp = i(u(x));
 		$s.pop();
@@ -7810,7 +7796,7 @@ thx.math.scale.LinearT.scalePolylinear = function(domain,range,uninterpolate,int
 		i.push(interpolate(range[j - 1],range[j],null));
 	}
 	var $tmp = function(x) {
-		$s.push("thx.math.scale.LinearT::scalePolylinear@123");
+		$s.push("thx.math.scale.LinearT::scalePolylinear@171");
 		var $spos = $s.length;
 		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
 		var $tmp = i[j](u[j](x));
@@ -13541,7 +13527,6 @@ rg.svg.SvgBaloon = function(container) {
 	this.container = container;
 	this.visible = true;
 	this._duration = 1000;
-	this.minwidth = 30;
 	this.setPreferredSide(2);
 	this._ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
 	this._strokeWidth = 1;
@@ -13553,7 +13538,7 @@ rg.svg.SvgBaloon = function(container) {
 	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)").style("opacity")["float"](0.25).style("fill").string("none").style("stroke").string("#000").style("stroke-width")["float"](this._strokeWidth + 2);
 	this._connectorShapeV = thx.svg.Diagonal.forObject();
 	this._connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
-		$s.push("rg.svg.SvgBaloon::new@74");
+		$s.push("rg.svg.SvgBaloon::new@72");
 		var $spos = $s.length;
 		var $tmp = [d[1],d[0]];
 		$s.pop();
@@ -13561,7 +13546,7 @@ rg.svg.SvgBaloon = function(container) {
 		$s.pop();
 	});
 	this.connector = this.baloon.append("svg:path").attr("class").string("baloon-connector").style("fill").string("none").style("display").string("none").attr("transform").string("translate(0, 0)");
-	this.frame.append("svg:path").attr("class").string("bg").style("fill").string("#ff9").style("stroke").string("#fa0").style("fill-opacity")["float"](0.9).style("stroke-width")["float"](this._strokeWidth);
+	this.frame.append("svg:path").attr("class").string("bg").style("fill").string("#ff9").style("stroke").string("#fa0").style("fill-opacity")["float"](0.8).style("stroke-width")["float"](this._strokeWidth);
 	var r = Math.min(10,Math.max(3,this.roundedCorner));
 	this.setTextHeight(11);
 	$s.pop();
@@ -13577,7 +13562,6 @@ rg.svg.SvgBaloon.prototype.textHeight = null;
 rg.svg.SvgBaloon.prototype.roundedCorner = null;
 rg.svg.SvgBaloon.prototype.padding = null;
 rg.svg.SvgBaloon.prototype.preferredSide = null;
-rg.svg.SvgBaloon.prototype.minwidth = null;
 rg.svg.SvgBaloon.prototype.container = null;
 rg.svg.SvgBaloon.prototype.baloon = null;
 rg.svg.SvgBaloon.prototype.frame = null;
@@ -13659,7 +13643,7 @@ rg.svg.SvgBaloon.prototype.moveTo = function(x,y,animate) {
 	if(animate) {
 		var $int = thx.math.Equations.elasticf(), tid = ++this._transition_id, ix = Floats.interpolatef(this.x,x,$int), iy = Floats.interpolatef(this.y,y,$int), duration = 1000, mt = $closure(this,"_moveTo"), me = this;
 		thx.js.Timer.timer(function(t) {
-			$s.push("rg.svg.SvgBaloon::moveTo@194");
+			$s.push("rg.svg.SvgBaloon::moveTo@192");
 			var $spos = $s.length;
 			if(tid != me._transition_id) {
 				$s.pop();
@@ -13935,50 +13919,50 @@ rg.svg.SvgBaloon.prototype.redraw = function() {
 		return;
 	}
 	var key = function(d,i) {
-		$s.push("rg.svg.SvgBaloon::redraw@506");
+		$s.push("rg.svg.SvgBaloon::redraw@504");
 		var $spos = $s.length;
 		var $tmp = d + ":" + i;
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	};
-	var choice = this.frame.selectAll("text").data(this.text,key), th = this.textHeight, linewidth = this.minwidth, pad = this.padding;
+	var choice = this.frame.selectAll("text").data(this.text,key), th = this.textHeight, linewidth = 0.0, pad = this.padding;
 	var calculateLineWidth = function(n,i) {
-		$s.push("rg.svg.SvgBaloon::redraw@518");
+		$s.push("rg.svg.SvgBaloon::redraw@516");
 		var $spos = $s.length;
 		var v = n.getBBox().width;
 		if(v > linewidth) linewidth = v;
 		$s.pop();
 	};
 	choice.enter().append("svg:text").style("font-size").string(th + "px").style("font-weight").string("bold").style("fill").string("#000").text().stringf(function(d,i) {
-		$s.push("rg.svg.SvgBaloon::redraw@549");
+		$s.push("rg.svg.SvgBaloon::redraw@547");
 		var $spos = $s.length;
 		$s.pop();
 		return d;
 		$s.pop();
-	}).eachNode(calculateLineWidth).attr("x")["float"](pad).attr("y").floatf(function(_,i) {
-		$s.push("rg.svg.SvgBaloon::redraw@552");
+	}).attr("x")["float"](pad).attr("y").floatf(function(_,i) {
+		$s.push("rg.svg.SvgBaloon::redraw@549");
 		var $spos = $s.length;
 		var $tmp = Math.round((0.6 + i) * 1.2 * th + pad);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}).attr("opacity")["float"](0).transition().duration(null,this._duration).ease(this._ease).delay(null,this._duration / 3).attr("opacity")["float"](1);
+	}).attr("opacity")["float"](0).transition().duration(null,this._duration).ease(this._ease).delay(null,this._duration).attr("opacity")["float"](1);
 	choice.update().text().stringf(function(d,i) {
-		$s.push("rg.svg.SvgBaloon::redraw@561");
+		$s.push("rg.svg.SvgBaloon::redraw@558");
 		var $spos = $s.length;
 		$s.pop();
 		return d;
 		$s.pop();
 	}).eachNode(calculateLineWidth).transition().duration(null,this._duration).ease(this._ease).attr("opacity")["float"](1).attr("x")["float"](pad).attr("y").floatf(function(_,i) {
-		$s.push("rg.svg.SvgBaloon::redraw@567");
+		$s.push("rg.svg.SvgBaloon::redraw@564");
 		var $spos = $s.length;
 		var $tmp = Math.round((0.6 + i) * 1.2 * th + pad);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}).style("font-size").string(th + "px").style("font-weight").string("bold");
-	choice.exit().transition().ease(this._ease).duration(null,this._duration / 3).attr("opacity")["float"](0).remove();
+	choice.exit().transition().ease(this._ease).duration(null,this._duration).attr("opacity")["float"](0).remove();
 	this.boxWidth = linewidth + this.padding * 2;
 	this.boxHeight = th * this.text.length + this.padding * 2;
 	this.frame.selectAll(".bg").transition().ease(this._ease).delay(null,this._duration);
@@ -16178,8 +16162,8 @@ rg.Viz.createRandomHeatGridData = function(n,m,top) {
 rg.Viz.heatmap = function(el,options) {
 	$s.push("rg.Viz::heatmap");
 	var $spos = $s.length;
-	var selection = rg.Viz.select(el), scolors = ["#ff0","#f00","#0f0"], colors = scolors.map(function(d,i) {
-		$s.push("rg.Viz::heatmap@85");
+	var selection = rg.Viz.select(el), scolors = ["#ff0","#f00"], colors = scolors.map(function(d,i) {
+		$s.push("rg.Viz::heatmap@86");
 		var $spos = $s.length;
 		var $tmp = thx.color.Colors.parse(d);
 		$s.pop();
@@ -16190,15 +16174,15 @@ rg.Viz.heatmap = function(el,options) {
 	var o = rg.Viz.sizeOptions(selection,options);
 	var space = new rg.svg.SvgSpace(o.width,o.height,selection);
 	space.svg.attr("class").string("rg");
-	var color = thx.math.scale.Linears.forRgb().range(colors), chart = new rg.svg.SvgHeatGrid(space.createPanel(rg.layout.Disposition.Fill(0,0)),color), timer = new haxe.Timer(3000);
+	var color = thx.math.scale.LinearT.forRgb().range(colors), chart = new rg.svg.SvgHeatGrid(space.createPanel(rg.layout.Disposition.Fill(0,0)),color), timer = new haxe.Timer(3000);
 	var refresh = function() {
-		$s.push("rg.Viz::heatmap@98");
+		$s.push("rg.Viz::heatmap@103");
 		var $spos = $s.length;
-		var data = rg.Viz.createRandomHeatGridData(25,25), min = 0.0, max = Arrays.floatMax(data,function(d) {
-			$s.push("rg.Viz::heatmap@98@101");
+		var data = rg.Viz.createRandomHeatGridData(10,10), min = 0.0, max = Arrays.floatMax(data,function(d) {
+			$s.push("rg.Viz::heatmap@103@106");
 			var $spos = $s.length;
 			var $tmp = Arrays.floatMax(d,function(d1) {
-				$s.push("rg.Viz::heatmap@98@101@101");
+				$s.push("rg.Viz::heatmap@103@106@106");
 				var $spos = $s.length;
 				$s.pop();
 				return d1;
@@ -16208,7 +16192,7 @@ rg.Viz.heatmap = function(el,options) {
 			return $tmp;
 			$s.pop();
 		}), interpolator = Floats.interpolatef(min,max), domain = colors.map(function(_,i) {
-			$s.push("rg.Viz::heatmap@98@103");
+			$s.push("rg.Viz::heatmap@103@108");
 			var $spos = $s.length;
 			var $tmp = interpolator(i / (colors.length - 1));
 			$s.pop();
@@ -16219,6 +16203,7 @@ rg.Viz.heatmap = function(el,options) {
 		chart.data(data);
 		$s.pop();
 	};
+	timer.run = refresh;
 	refresh();
 	$s.pop();
 }
@@ -16226,20 +16211,20 @@ rg.Viz.pivot = function(el,query,options) {
 	$s.push("rg.Viz::pivot");
 	var $spos = $s.length;
 	var properties = [];
-	if(null == query.path || "" == query.path) throw new thx.error.Error("path cannot be null or empty",null,null,{ fileName : "Viz.hx", lineNumber : 117, className : "rg.Viz", methodName : "pivot"});
+	if(null == query.path || "" == query.path) throw new thx.error.Error("path cannot be null or empty",null,null,{ fileName : "Viz.hx", lineNumber : 122, className : "rg.Viz", methodName : "pivot"});
 	var _g = 0, _g1 = query.properties;
 	while(_g < _g1.length) {
 		var p = _g1[_g];
 		++_g;
-		if(null == p.event || "" == p.event) throw new thx.error.Error("event cannot be null or empty",null,null,{ fileName : "Viz.hx", lineNumber : 122, className : "rg.Viz", methodName : "pivot"});
-		if(null == p.property || "" == p.property) throw new thx.error.Error("property cannot be null or empty",null,null,{ fileName : "Viz.hx", lineNumber : 124, className : "rg.Viz", methodName : "pivot"});
+		if(null == p.event || "" == p.event) throw new thx.error.Error("event cannot be null or empty",null,null,{ fileName : "Viz.hx", lineNumber : 127, className : "rg.Viz", methodName : "pivot"});
+		if(null == p.property || "" == p.property) throw new thx.error.Error("property cannot be null or empty",null,null,{ fileName : "Viz.hx", lineNumber : 129, className : "rg.Viz", methodName : "pivot"});
 		var istop = null != p.top || null == p.top && null == p.bottom, limit = istop?null == p.top?10:p.top:p.bottom;
 		properties.push({ event : p.event, property : p.property, top : istop, limit : limit});
 	}
 	var o = null == options?{ }:options;
 	var loader = rg.query.QueryIntersect.forPivotTable(rg.Viz.executor,query.path,properties,null == o.coldimensions?1:o.coldimensions);
 	if(Iterators.any(properties.iterator(),function(d) {
-		$s.push("rg.Viz::pivot@139");
+		$s.push("rg.Viz::pivot@144");
 		var $spos = $s.length;
 		var $tmp = "#timestamp" == d.property;
 		$s.pop();
@@ -16290,7 +16275,7 @@ rg.Viz.toDateLimit = function(v) {
 	}
 	if(Std["is"](v,String)) {
 		var $tmp = rg.query.DateLimit.VariableLimit(function() {
-			$s.push("rg.Viz::toDateLimit@183");
+			$s.push("rg.Viz::toDateLimit@188");
 			var $spos = $s.length;
 			var $tmp = thx.date.DateParser.parse(v);
 			$s.pop();
@@ -16300,7 +16285,7 @@ rg.Viz.toDateLimit = function(v) {
 		$s.pop();
 		return $tmp;
 	}
-	throw new thx.error.Error("invalid date value '{0}'",v,null,{ fileName : "Viz.hx", lineNumber : 184, className : "rg.Viz", methodName : "toDateLimit"});
+	throw new thx.error.Error("invalid date value '{0}'",v,null,{ fileName : "Viz.hx", lineNumber : 189, className : "rg.Viz", methodName : "toDateLimit"});
 	$s.pop();
 }
 rg.Viz.leaderBoard = function(el,query,options) {
@@ -16404,10 +16389,10 @@ rg.Viz.bar = function(el,query,options) {
 	if(null == o.yaxis || o.yaxis.showrulers != false) ylayers.push(rg.svg.SvgScaleRule.ofLinear(chartpanel,rg.layout.Orientation.Horizontal,y));
 	var chart = new rg.svg.SvgBarChart(chartpanel,x,y);
 	loader.onChange.add(function(d) {
-		$s.push("rg.Viz::bar@352");
+		$s.push("rg.Viz::bar@357");
 		var $spos = $s.length;
 		y.domain([null != o.yscale && null != o.yscale.max?o.yscale.max:Arrays.floatMax(d,function(d1) {
-			$s.push("rg.Viz::bar@352@354");
+			$s.push("rg.Viz::bar@357@359");
 			var $spos = $s.length;
 			var $tmp = d1.value;
 			$s.pop();
@@ -16415,13 +16400,13 @@ rg.Viz.bar = function(el,query,options) {
 			$s.pop();
 		}) * 1.2,0.0]);
 		ylayers.forEach(function(layer,_) {
-			$s.push("rg.Viz::bar@352@355");
+			$s.push("rg.Viz::bar@357@360");
 			var $spos = $s.length;
 			layer.redraw();
 			$s.pop();
 		});
 		x.domain(d.map(function(d1,i) {
-			$s.push("rg.Viz::bar@352@357");
+			$s.push("rg.Viz::bar@357@362");
 			var $spos = $s.length;
 			var $tmp = d1.label;
 			$s.pop();
@@ -16430,7 +16415,7 @@ rg.Viz.bar = function(el,query,options) {
 		}));
 		x.range(Ints.range(d.length));
 		xlayers.forEach(function(layer,_) {
-			$s.push("rg.Viz::bar@352@359");
+			$s.push("rg.Viz::bar@357@364");
 			var $spos = $s.length;
 			layer.redraw();
 			$s.pop();
@@ -16469,7 +16454,7 @@ rg.Viz.funnel = function(el,query,options) {
 	var chartpanel = middle.createPanel(rg.layout.Disposition.Fill(0,0));
 	var chart = new rg.svg.SvgFunnelChart(chartpanel);
 	loader.onChange.add(function(d) {
-		$s.push("rg.Viz::funnel@415");
+		$s.push("rg.Viz::funnel@420");
 		var $spos = $s.length;
 		chart.data(d);
 		$s.pop();
@@ -16490,7 +16475,7 @@ rg.Viz.baloon = function(el) {
 	baloon.setText(["hello","world","this is a baloon","another line"]);
 	baloon.setBoundingBox(bb);
 	svg.onNode("mousemove",function(n,i) {
-		$s.push("rg.Viz::baloon@456");
+		$s.push("rg.Viz::baloon@461");
 		var $spos = $s.length;
 		var c = thx.js.Svg.mouse(n);
 		baloon.moveTo(c[0],c[1],false);
@@ -16531,10 +16516,10 @@ rg.Viz.scatter = function(el,query,options) {
 	if(null == o.xaxis || o.xaxis.showrulers != false) xlayers.push(rg.svg.SvgScaleRule.ofOrdinal(chartpanel,rg.layout.Orientation.Vertical,x));
 	var chart = new rg.svg.SvgScatterGraph(chartpanel,x,y);
 	loader.onChange.add(function(d) {
-		$s.push("rg.Viz::scatter@524");
+		$s.push("rg.Viz::scatter@529");
 		var $spos = $s.length;
 		y.domain([null != o.yscale && null != o.yscale.max?o.yscale.max:Arrays.floatMax(d,function(d1) {
-			$s.push("rg.Viz::scatter@524@526");
+			$s.push("rg.Viz::scatter@529@531");
 			var $spos = $s.length;
 			var $tmp = d1.value;
 			$s.pop();
@@ -16542,13 +16527,13 @@ rg.Viz.scatter = function(el,query,options) {
 			$s.pop();
 		}) * 1.2,0.0]);
 		ylayers.forEach(function(layer,_) {
-			$s.push("rg.Viz::scatter@524@527");
+			$s.push("rg.Viz::scatter@529@532");
 			var $spos = $s.length;
 			layer.redraw();
 			$s.pop();
 		});
 		x.domain(d.map(function(d1,i) {
-			$s.push("rg.Viz::scatter@524@529");
+			$s.push("rg.Viz::scatter@529@534");
 			var $spos = $s.length;
 			var $tmp = d1.label;
 			$s.pop();
@@ -16557,7 +16542,7 @@ rg.Viz.scatter = function(el,query,options) {
 		}));
 		x.range(Ints.range(d.length));
 		xlayers.forEach(function(layer,_) {
-			$s.push("rg.Viz::scatter@524@531");
+			$s.push("rg.Viz::scatter@529@536");
 			var $spos = $s.length;
 			layer.redraw();
 			$s.pop();
@@ -16603,10 +16588,10 @@ rg.Viz.stack = function(el,query,options) {
 	if(null == o.yaxis || o.yaxis.showrulers != false) ylayers.push(rg.svg.SvgScaleRule.ofLinear(chartpanel,rg.layout.Orientation.Horizontal,y));
 	var chart = new rg.svg.SvgStackChart(chartpanel,y);
 	loader.onChange.add(function(d) {
-		$s.push("rg.Viz::stack@603");
+		$s.push("rg.Viz::stack@608");
 		var $spos = $s.length;
 		y.domain([null != o.yscale && null != o.yscale.max?o.yscale.max:Iterators.reduce(d.iterator(),function(a,b,i) {
-			$s.push("rg.Viz::stack@603@605");
+			$s.push("rg.Viz::stack@608@610");
 			var $spos = $s.length;
 			var $tmp = a + b.value;
 			$s.pop();
@@ -16614,7 +16599,7 @@ rg.Viz.stack = function(el,query,options) {
 			$s.pop();
 		},0) * 1.2,0.0]);
 		ylayers.forEach(function(layer,_) {
-			$s.push("rg.Viz::stack@603@606");
+			$s.push("rg.Viz::stack@608@611");
 			var $spos = $s.length;
 			layer.redraw();
 			$s.pop();
@@ -16632,7 +16617,7 @@ rg.Viz.stack = function(el,query,options) {
 rg.Viz.error = function(e) {
 	$s.push("rg.Viz::error");
 	var $spos = $s.length;
-	haxe.Log.trace("ERROR: " + e,{ fileName : "Viz.hx", lineNumber : 621, className : "rg.Viz", methodName : "error"});
+	haxe.Log.trace("ERROR: " + e,{ fileName : "Viz.hx", lineNumber : 626, className : "rg.Viz", methodName : "error"});
 	$s.pop();
 }
 rg.Viz.sizeOptions = function(selection,options) {
@@ -16701,10 +16686,10 @@ rg.Viz.line = function(el,_queries,options) {
 			highlighter = new rg.svg.SvgLineChartHighlighter(chartpanel,x);
 			isleft = false;
 			loader[0].onData.addOnce((function() {
-				$s.push("rg.Viz::line@710");
+				$s.push("rg.Viz::line@715");
 				var $spos = $s.length;
 				var $tmp = function(d) {
-					$s.push("rg.Viz::line@710@710");
+					$s.push("rg.Viz::line@715@715");
 					var $spos = $s.length;
 					highlighter.prepare();
 					$s.pop();
@@ -16719,17 +16704,17 @@ rg.Viz.line = function(el,_queries,options) {
 		chart[0].lineInterpolator(null == o.lineinterpolator?thx.svg.LineInterpolator.Linear:thx.svg.LineInterpolators.parse(o.lineinterpolator));
 		charts.push(chart[0]);
 		if(i == 0) loader[0].onChange.add((function(loader) {
-			$s.push("rg.Viz::line@725");
+			$s.push("rg.Viz::line@730");
 			var $spos = $s.length;
 			var $tmp = function(v) {
-				$s.push("rg.Viz::line@725@725");
+				$s.push("rg.Viz::line@730@730");
 				var $spos = $s.length;
 				x.domain([null == loader[0].time.start?v.minx:loader[0].time.start.getTime(),null == loader[0].time.end?v.maxx:loader[0].time.end.getTime()]);
 				xlayers.forEach((function() {
-					$s.push("rg.Viz::line@725@725@727");
+					$s.push("rg.Viz::line@730@730@732");
 					var $spos = $s.length;
 					var $tmp = function(layer,i1) {
-						$s.push("rg.Viz::line@725@725@727@727");
+						$s.push("rg.Viz::line@730@730@732@732");
 						var $spos = $s.length;
 						layer.redraw();
 						$s.pop();
@@ -16745,17 +16730,17 @@ rg.Viz.line = function(el,_queries,options) {
 			$s.pop();
 		})(loader));
 		loader[0].onChange.add((function(y,chart) {
-			$s.push("rg.Viz::line@731");
+			$s.push("rg.Viz::line@736");
 			var $spos = $s.length;
 			var $tmp = function(v) {
-				$s.push("rg.Viz::line@731@731");
+				$s.push("rg.Viz::line@736@736");
 				var $spos = $s.length;
 				y[0].domain([v.maxy * 1.2,0.0]);
 				ylayers.forEach((function() {
-					$s.push("rg.Viz::line@731@731@733");
+					$s.push("rg.Viz::line@736@736@738");
 					var $spos = $s.length;
 					var $tmp = function(layer,i1) {
-						$s.push("rg.Viz::line@731@731@733@733");
+						$s.push("rg.Viz::line@736@736@738@738");
 						var $spos = $s.length;
 						layer.redraw();
 						$s.pop();
@@ -16782,23 +16767,23 @@ rg.Viz.line = function(el,_queries,options) {
 		xlayers.push(rg.svg.SvgScaleLabel.ofLinear(belowchart.createPanel(rg.layout.Disposition.Fixed(2,0,12)),rg.svg.Anchor.Top,x));
 	}
 	if(o.animated) thx.js.Timer.timer(function(t) {
-		$s.push("rg.Viz::line@751");
+		$s.push("rg.Viz::line@756");
 		var $spos = $s.length;
 		loaders.forEach(function(loader,_) {
-			$s.push("rg.Viz::line@751@752");
+			$s.push("rg.Viz::line@756@757");
 			var $spos = $s.length;
 			loader.time.update();
 			$s.pop();
 		});
 		x.domain([loaders[0].time.start.getTime(),loaders[0].time.end.getTime()]);
 		charts.forEach(function(chart,_) {
-			$s.push("rg.Viz::line@751@756");
+			$s.push("rg.Viz::line@756@761");
 			var $spos = $s.length;
 			chart.updatex();
 			$s.pop();
 		});
 		xlayers.forEach(function(layer,i) {
-			$s.push("rg.Viz::line@751@759");
+			$s.push("rg.Viz::line@756@764");
 			var $spos = $s.length;
 			layer.redraw();
 			$s.pop();
@@ -16808,7 +16793,7 @@ rg.Viz.line = function(el,_queries,options) {
 		$s.pop();
 	});
 	loaders.forEach(function(loader,_) {
-		$s.push("rg.Viz::line@766");
+		$s.push("rg.Viz::line@771");
 		var $spos = $s.length;
 		rg.Viz.executeQuery(loader,o);
 		$s.pop();
@@ -16819,7 +16804,7 @@ rg.Viz.select = function(el) {
 	$s.push("rg.Viz::select");
 	var $spos = $s.length;
 	var el1 = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(el1.empty()) throw new thx.error.Error("invalid container",null,null,{ fileName : "Viz.hx", lineNumber : 775, className : "rg.Viz", methodName : "select"});
+	if(el1.empty()) throw new thx.error.Error("invalid container",null,null,{ fileName : "Viz.hx", lineNumber : 780, className : "rg.Viz", methodName : "select"});
 	$s.pop();
 	return el1;
 	$s.pop();
@@ -21769,7 +21754,6 @@ thx.math.Const.HALF_PI = 1.570796326794896619;
 thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
-thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
 thx.xml.Namespace.prefix = (function() {
 	$s.push("thx.svg.Area::y1");
 	var $spos = $s.length;
@@ -21785,6 +21769,7 @@ thx.xml.Namespace.prefix = (function() {
 })();
 rg.html.HtmlPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
 rg.html.HtmlPivotTable.defaultEndColor = new thx.color.Hsl(210,1,0.5);
+thx.math.scale.LinearT._default_color = new thx.color.Hsl(0,0,0);
 Ints._reparse = new EReg("^([+-])?\\d+$","");
 rg.svg.SvgSpace._filterid = 0;
 thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");

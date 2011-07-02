@@ -15,6 +15,8 @@ import thx.math.Equations;
 import thx.svg.Arc;
 import rg.chart.ToolTip;
 import thx.js.Access;
+import thx.color.Hsl;
+import thx.color.Colors;
 
 class SvgPieChart extends SvgLayer
 {
@@ -63,6 +65,7 @@ class SvgPieChart extends SvgLayer
 	{
 		super.init();
 		svg.classed().add("pie-chart");
+		svg.append("svg:defs");
 		/*
 		svg
 			.classed().add("line-chart")
@@ -170,22 +173,54 @@ class SvgPieChart extends SvgLayer
 				.attr("transform").stringf(transformLabel)
 				.attr("display").stringf(function(d, i) return d.value > .15 ? null : "none")
 				;
-			
-		var arcs = selection.enter()
+/*
+		var shadowarcs = selection.enter()
 			.append("svg:g")
 				.attr("class").stringf(function(d, i) return "group group-" + i)
 				.attr("transform").string("translate(" + (_padding + _r) + "," + (_padding + _r) + ")");
-		
+*/
+				
+		var arcs = selection.enter()
+			.append("svg:g")
+				.attr("class").stringf(function(d, i) return "group item-" + i)
+				.attr("transform").string("translate(" + (_padding + _r) + "," + (_padding + _r) + ")");
+				
 		arcs
 			.onNode("mouseover.animation", _highlight)
 			.onNode("mouseout.animation", _backtonormal);
 		arcs
 			.on("mousemove.tooltip", _showtooltip)
 			.on("mouseout.tooltip", _hidetooltip);
-					
-		arcs.append("svg:path")
+/*				
+		// shadow
+		shadowarcs.append("svg:path")
+			.attr("class").string("shadow")
+			.attr("transform").string("translate(1,1)")
+			.style("stroke").string("#000")
+			.style("fill").string("#000")
+			.style("stroke-width").float(3)
+			.style("opacity").float(0.25)
 			.attr("d").stringf(_startarc.shape)
-			.eachNode(_arcinp);
+		;
+		
+		shadowarcs.append("svg:path")
+			.attr("class").string("shadow")
+			.attr("transform").string("translate(1,1)")
+			.style("stroke").string("#000")
+			.style("fill").string("#000")
+			.style("stroke-width").float(5)
+			.style("opacity").float(0.25)
+			.attr("z-index").float(1000)
+			.attr("d").stringf(_startarc.shape)
+		;
+		shadowarcs.eachNode(_arcshadowinp);
+*/
+		// slice
+		arcs.append("svg:path")
+			.attr("class").string("slice")
+			.attr("d").stringf(_startarc.shape)
+		;
+		arcs.eachNode(_arcinp);
 
 		arcs.append("svg:text")
 	//		.attr("filter").string("url(#label-filter)")
@@ -198,13 +233,61 @@ class SvgPieChart extends SvgLayer
 				.eachNode(_arcint)
 		;
 	}
-	
-	function _arcinp(n, i)
+/*
+	function _arcshadowinp(n, i : Int)
 	{
-		Dom.selectNodeData(n)
+		var g = Dom.selectNodeData(n);
+		
+		g.selectAll("path")
 			.transition().ease(_ease).duration(_duration)
 			.delay(150 * (i - _created))
 			.attr("d").stringf(_arc.shape)
+		;
+	}
+*/
+	function _arcinp(n, i : Int)
+	{
+		var g = Dom.selectNodeData(n),
+			slice = g.select("path.slice"),
+			shape = _arc.shape(Access.getData(n));
+		
+		var t = g.append("svg:path").attr("d").string(shape),
+			box : { x : Float, y : Float, width : Float, height : Float } = untyped t.node().getBBox()
+			;
+		t.remove();
+		var color = slice.style("fill").get();
+		// TODO, add update, make order
+		if (svg.select("defs").select("#rg_pie_gradient_" + i).empty())
+		{
+			
+			var max = Math.max(box.width, box.height),
+				min = Math.min(box.width, box.height),
+				cx = -box.x * 100 / box.width,
+				cy = -box.y * 100 / box.height;
+			var stops = svg.select("defs")
+				.append("svg:radialGradient")
+				.attr("id").string("rg_pie_gradient_" + i)
+				.attr("cx").string(cx + "%")
+				.attr("cy").string(cy + "%")
+//				.attr("fx").string((0.75*cx) + "%")
+//				.attr("fy").string((0.75*cy) + "%")
+				.attr("r").string((100 *_r /  min)+"%")
+			;
+			stops.append("svg:stop")
+				.attr("offset").string("0%")
+				.attr("stop-color").string(Hsl.darker(Hsl.toHsl(Colors.parse(color)), 1.5).toRgbString()) //currentColor
+				.attr("stop-opacity").float(1);
+			stops.append("svg:stop")
+				.attr("offset").string("90%")
+				.attr("stop-color").string(color)
+				.attr("stop-opacity").float(1);
+		}	
+		
+		g.selectAll("path.slice")
+			.attr("style").string("fill:url(#rg_pie_gradient_" + i + ")")
+			.transition().ease(_ease).duration(_duration)
+			.delay(150 * (i - _created))
+			.attr("d").string(shape)
 		;
 	}
 	
@@ -221,7 +304,7 @@ class SvgPieChart extends SvgLayer
 	
 	function _highlight(d, i : Int)
 	{
-		var slice = Dom.selectNodeData(d).select("path");
+		var slice = Dom.selectNodeData(d).selectAll("path");
 		slice
 			.transition().ease(_ease).duration(_duration)
 			.attr("d").stringf(_bigarc.shape);
@@ -229,7 +312,7 @@ class SvgPieChart extends SvgLayer
 	
 	function _backtonormal(d, i : Int)
 	{
-		var slice = Dom.selectNodeData(d).select("path");
+		var slice = Dom.selectNodeData(d).selectAll("path");
 		slice
 			.transition().ease(_ease).duration(_duration)
 			.attr("d").stringf(_arc.shape);

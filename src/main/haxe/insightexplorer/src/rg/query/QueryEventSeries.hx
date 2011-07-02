@@ -13,8 +13,8 @@ class QueryEventSeries<TData> extends QueryEvent<Dynamic<Dynamic<Int>>, TData>
 	override function executeLoad(success : Dynamic<Dynamic<Int>> -> Void, error : String -> Void)
 	{
 		executor.propertySeries(path, {
-			start : null != time.start ? time.start.getTime() : 0,
-			end : null != time.end ? time.end.getTime() : 0,
+			start : time.startTime(),
+			end : time.endTime(),
 			periodicity : time.periodicity,
 			property : event
 		}, success, error);
