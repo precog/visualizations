@@ -145,10 +145,19 @@ class SvgStackChart extends SvgLayer
 		
 		// reverse sequence for better shadow effect
 		be.sort(function(a, b) {
+			if (null == a && null == b)
+				return 0;
+			else if (null == a)
+				return 1;
+			else if (null == b)
+				return -1;
 			return Floats.compare(b.y0, a.y0);
 		});
 		
 		// update
+		bars.update()
+			.select("text")
+			.text().stringf(textLabel);
 		bars.update()
 			.attr("transform").stringf(function(d, i) return "translate(" + (width / 2) + ",0)")
 			.select("rect")

@@ -15,6 +15,7 @@ using Arrays;
  
 class SvgStreamGraph extends SvgLayer
 {
+	static var defaultClipPadding = 3;
 	static var _pathid = 0;
 	
 	var _data : Array<Array<{ x : Float, y : Float }>>;
@@ -23,9 +24,12 @@ class SvgStreamGraph extends SvgLayer
 	var _cpid : String;
 	var _interpolator : LineInterpolator;
 	var _area : thx.svg.Area<XYY0>;
+	var _timedelta : Float;
+	var _clipPadding : Float;
 	
 	public function new(panel : SvgPanel, xscale : Linear)
 	{
+		_clipPadding = defaultClipPadding;
 		this._cpid = "streamchart_clip_path_" + (++_pathid);
 		super(panel);
 		this._scalex = xscale;
@@ -42,7 +46,7 @@ class SvgStreamGraph extends SvgLayer
 				.attr("id").string(_cpid)
 				.append("svg:rect")
 					.attr("x").float(0)
-					.attr("y").float(0)
+					.attr("y").float(-_clipPadding)
 					.attr("width").float(0)
 					.attr("height").float(0)
 		;
@@ -94,6 +98,14 @@ class SvgStreamGraph extends SvgLayer
 			.x(function(d, i) return sx(d.x))
 			.y0(function(d, i) return h - d.y0 * h / my)
 			.y1(function(d, i) return h - (d.y + d.y0) * h / my);
+	}
+	
+	public function updatex()
+	{
+		var s = _scalex.scale(Date.now().getTime() - _timedelta + _scalex.getDomain()[0]);
+		var layer = svg.selectAll("g.group")
+			.attr("transform").string("translate(-" + s + ",0)")
+		;
 	}
 
 	function _transition()
@@ -152,24 +164,29 @@ class SvgStreamGraph extends SvgLayer
 	{
 		if (null == _data)
 			return;
+		_timedelta = Date.now().getTime();
+		
 		svg.select("#" + _cpid + " rect")
 			.attr("width").float(_w)
-			.attr("height").float(_h);
-		
+			.attr("height").float(_h + _clipPadding * 2);
+
 		// LAYER
-		var layer = svg.selectAll("g.group").data(_prepdata, function(d, i) return "" + i);
+		var layer = svg.selectAll("g.group").data(_prepdata);
 		
 		// update
-		layer.update().select("path.line").attr("d").stringf(_area.shape);
+		layer.update()
+			.attr("transform").string("translate(0,0)")
+			.select("path.line").attr("d").stringf(_area.shape);
 
 		// enter
 		layer.enter()
 			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "group item-" + i)
+			.attr("class").string("group")
+			.attr("transform").string("translate(0,0)")
 			.onNode("mousemove", over)
 			.onNode("mouseout", out)
 			.append("svg:path")
-				.attr("class").string("line")
+				.attr("class").stringf(function(d, i) return "line item-" + i)
 				.attr("d").stringf(_area.shape)
 				;
 		// exit

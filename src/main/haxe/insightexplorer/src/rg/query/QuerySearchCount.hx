@@ -9,14 +9,13 @@ class QuerySearchCount<TValue, TOut> extends QuerySearch<TValue, TOut>
 {
 	override function executeLoad(success : T -> Void, error : String -> Void)
 	{
-		var w = { };
+		var query = queryObject();
+		query.where = { };
 		for (item in where)
 		{
 			var field = event + "." + item.property;
-			Reflect.setField(field, item.value);
+			Reflect.setField(query.where, field, item.value);
 		}
-		ReportGrid.propertyValueCount(path, {
-			where : w
-		}, success, error);
+		ReportGrid.propertyValueCount(path, query, success, error);
 	}
 }

@@ -17,8 +17,24 @@
 -->
 	<script src="js/reportgrid-viz.js" type="text/javascript"></script>
 	<script type="text/javascript">
-$(document).ready(function() {s
-	rg.Viz.heatmap("#heatmap");
+$(document).ready(function() {
+	ReportGrid.heatGrid("#chart", {
+		path : "/rgadnet/",
+		properties : [{ 
+			event : "impression",
+			property : "#timestamp"
+//		}, {
+//			event : "impression",
+//			property : "ageRange"
+		}, { 
+			event : "impression",
+			property : "platform"
+		}]
+	}, {
+		start : "2011-06-25 20:00",
+		end : "2011-06-27 04:00",
+		periodicity : "hour"
+	});
 });
 	</script>
 </head>
@@ -26,7 +42,7 @@ $(document).ready(function() {s
 	<div id="main">
 		<div class="container flexible">
 			<h1 id="header">Heatgrid</h1>
-			<div id="heatmap" style="width:400px;height:400px"></div>
+			<div id="chart" style="width:800px;height:160px"></div>
 		</div>
 		<div id="haxe:trace"></div>
 	</div>

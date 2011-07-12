@@ -11,4 +11,5 @@ enum Disposition
 	Variable(before : Int, after : Int, percent : Float, ?min : Int, ?max : Int);
 	Fill(before : Int, after : Int, ?min : Int, ?max : Int);
 	Floating(x : Int, y : Int, width : Int, height : Int);
+	Proportional(before : Int, after : Int, ?ratio : Float);
 }

@@ -12,12 +12,9 @@ class QueryValueSeries<TValue, TOut> extends QueryValuePeridocity<TValue, TOut>
 {
 	override function executeLoad(success : TOut -> Void, error : String -> Void)
 	{
-		executor.propertyValueSeries(path, {
-			start : start,
-			end : end,
-			periodicity : periodicity,
-			property : event + "." + property,
-			value : value
-		}, success, error);
+		var query = queryObject();
+		query.property = event + "." + property;
+		query.value = value;
+		executor.propertyValueSeries(path, query, success, error);
 	}
 }

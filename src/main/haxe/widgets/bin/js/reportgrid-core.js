@@ -630,7 +630,7 @@ var ReportGrid = window.ReportGrid || {};
    * in events of the specified type.
    *
    * ReportGrid.propertySeries("/atm-events/", {property: "transaction", periodicity: "hour"});
-   * > {"hour":{"4512239238":2323}}
+   * > {"hour":[[4512239238,2323]]}
    */
   ReportGrid.propertySeries = function(path_, options, success, failure) {
     var path     = Util.sanitizePath(path_);

@@ -23,12 +23,9 @@ class QueryIntersect<TData> extends QueryProperties<Dynamic<Dynamic>, TData>
 					order : prop.top ? "descending" : "ascending"
 				});
 		}
-		executor.intersect(path, {
-			start : time.startTime(),
-			end : time.endTime(),
-			periodicity : time.periodicity,
-			properties : p
-		}, success, error);
+		var query = queryObject();
+		query.properties = p;
+		executor.intersect(path, query, success, error);
 	}
 
 	public static function forPivotTable(executor : IExecutor, path : String, properties : Array<{ event : String, property : String, top : Bool, limit : Int }>, propertiesForColumns : Int)

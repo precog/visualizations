@@ -11,6 +11,8 @@ class QuerySubPath<TData> extends QueryPath<Array<String>, TData>
 {
 	override function executeLoad(success : Array<String> -> Void, error : String -> Void)
 	{
-		executor.children(path, { type : "path" }, success, error);
+		var query = queryObject();
+		query.type = "path";
+		executor.children(path, query, success, error);
 	}
 }

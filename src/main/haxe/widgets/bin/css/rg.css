@@ -96,8 +96,7 @@
 
 .rg .stream-chart path
 {
-	stroke: none;
-	fill: #ccc;
+	
 }
 
 .rg .group, .rg .group path:hover
@@ -152,7 +151,7 @@
 	stroke-miterlimit:1;
 }
 
-.rg .pie-chart g.group path, .rg .stream-chart g.group path
+.rg .pie-chart g.group path
 {
 	stroke:none;
 }
@@ -295,6 +294,8 @@ ul.leaderboard li
 {
 clear:left;
 border-spacing:0;
+font-family:Tahoma,Arial,Helvetica,sans-serif;
+font-size: 10pt;
 }
 
 .rg.pivot-table td
@@ -445,3 +446,28 @@ font-size: 11px;
 	stroke-dasharray: 1, 1; 
 /*	shape-rendering: crispEdges; */
 }
+
+
+.rg .heat-grid rect
+{
+	shape-rendering: crispEdges;
+	stroke-width: 1;
+/*
+	stroke: #ccc;
+	stroke-width: 0;
+	stroke-opacity: 0.2;
+*/
+}
+
+/* DEBUG */
+/*
+.rg rect.panel-frame
+{
+	shape-rendering: crispEdges;
+	fill: #9f9;
+	fill-opacity: 0.4;
+	stroke: #393;
+	stroke-width: 0;
+	stroke-opacity: 0.4;
+}
+*/

@@ -1,0 +1,51 @@
+typedef JValue = Dynamic
+
+interface Tickmark<T> {
+ var delta (getPosition, null): Float;
+ 
+ var major (getMajor, null): Boolean;
+ 
+ var value (getValue, null): T;
+}
+interface Axis<T> {
+ function sample(start: T, end: T, upperBound: Int): Array<Tickmark<T>>;
+}
+interface AxisDiscrete extends Axis<T> {
+ var values (getValues, null): Array<T>;
+}
+interface AxisContinuous<T> extends Axis<T> {
+}
+class AxisOrdinal extends Axis<JValue> {
+ public var values      (auto, null): Array<JValue>;
+ public var frequencies (auto, null): Array<Int>;
+ 
+ public function new(values: Array<JValue>, frequencies: Array<Int) {
+   this.values      = values;
+   this.frequencies = frequencies;
+ }
+ 
+ public function sample(start: T, end: T, upperBound: Int): Array<Tickmark<T>> {
+   
+ }
+ 
+ public function increasingFrequency(): AxisOrdinal {
+   
+ }
+ 
+ public function decreasingFrquency(): AxisOrdinal {
+   
+ }
+ 
+ public function increasingAlphanumeric(): AxisOrdinal {
+ 
+ }
+ 
+ public function decreasingAlphanumeric(): AxisOrdinal {
+ 
+ }
+}
+class AxisTime<T: Float> extends AxisContinuous<T> {
+ public function sample(start: T, end: T, upperBound: Int): Array<Tickmark<T>> {
+   
+ }
+}

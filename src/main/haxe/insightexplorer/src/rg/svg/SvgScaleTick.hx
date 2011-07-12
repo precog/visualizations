@@ -25,7 +25,11 @@ class SvgScaleTick<TData> extends SvgLayer
 	{
 		var _scale = function(d : TData, i : Int)
 		{
-			var s = scale.rangePoints(0, panel.frame.width, 1);
+			var size = switch(anchor) {
+					case Top, Bottom: panel.frame.width;
+					case Left, Right: panel.frame.height;
+				},
+				s = scale.rangePoints(0, size, 1);
 			return s.scale(d);
 		};
 		return new SvgScaleTick<TData>(panel, anchor)

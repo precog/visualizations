@@ -73,6 +73,15 @@ class QueryExecutor<TService, TData> extends Query<TData>
 	}
 	
 	
+	function queryObject() : Dynamic
+	{
+		return {
+			start : time.queryStartTime(),
+			end : time.queryEndTime(),
+			periodicity : time.periodicity
+		};
+	}
+	
 	function executeLoad(success : TService -> Void, error : String -> Void)
 	{
 		throw new AbstractMethod();
@@ -82,7 +91,6 @@ class QueryExecutor<TService, TData> extends Query<TData>
 	{
 		time.update();
 		onLoading.dispatch();
-//		trace("... loading ...");
 		executeLoad(_success, _error);
 	}
 	

@@ -11,6 +11,8 @@ class QueryPropertyCount extends QueryProperty<Int>
 {
 	override function executeLoad(success : Array<String> -> Void, error : String -> Void)
 	{
-		executor.propertyCount(path, { property : event + "." + property }, success, error);
+		var query = queryObject();
+		query.property = event + "." + property;
+		executor.propertyCount(path, query, success, error);
 	}
 }

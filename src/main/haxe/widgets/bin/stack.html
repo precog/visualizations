@@ -108,7 +108,9 @@ $(document).ready(function() {
 			property : property,
 			other : false
 		}, {
-//			refresh : 5000
+//			refresh : 5000,
+			start : start,
+			end : end,
 		});
 	}
 	
@@ -147,7 +149,7 @@ $(document).ready(function() {
 			<div>
 				<label>period:
 				<select id="select-date">
-					<option value="-select-" selected>- select interval -</option>
+					<option value="" selected>- select interval -</option>
 					<option value="1 hour ago/now">now</option>
 					<option value="2 hour ago/1 hour ago">previous hour</option>
 					<option value="1 day ago/now">previous day</option>

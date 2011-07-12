@@ -94,7 +94,7 @@ class SvgBarChart extends SvgLayer
 		// enter
 		var be = bars.enter()
 			.append("svg:g")
-//			.attr("class").stringf(function(d, i) return "bar item-" + i)
+			.attr("class").string("bar")
 			.attr("transform").stringf(function(d, i) return "translate(" + bands.scale(d.label, i) + ",0)")
 		;
 		
@@ -157,6 +157,10 @@ class SvgBarChart extends SvgLayer
 					.attr("width").float(_barwidth)
 					.attr("height").floatf(hscale)
 					.attr("x").float(-_barwidth / 2)
+		;
+		bars.update()
+			.select("text")
+			.text().stringf(textLabel)
 		;
 
 		// exit

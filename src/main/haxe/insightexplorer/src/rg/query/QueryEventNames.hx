@@ -11,6 +11,8 @@ class QueryEventNames<TData> extends QueryPath<Array<String>, TData>
 {
 	override function executeLoad(success : Array<String> -> Void, error : String -> Void)
 	{
-		executor.children(path, { type : "property" }, success, error);
+		var query = queryObject();
+		query.type = "property";
+		executor.children(path, query, success, error);
 	}
 }

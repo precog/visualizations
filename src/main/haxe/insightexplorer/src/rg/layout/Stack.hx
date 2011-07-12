@@ -65,7 +65,8 @@ class Stack
 	
 	public function reflow()
 	{
-		var available = switch(orientation) { case Vertical: height; case Horizontal: width; };
+		var available = switch(orientation) { case Vertical: height; case Horizontal: width; },
+			otherdimension = switch(orientation) { case Vertical: width; case Horizontal: height; };
 		var required = 0, values = [], variables = [], i = 0, variablespace = 0;
 		for (child in children)
 		{
@@ -92,6 +93,12 @@ class Stack
 					values.push(min + before + after);
 				case Floating(x, y, w, h):
 					values.push(0);
+				case Proportional(before, after, ratio):
+					if (null == ratio)
+						ratio = 1;
+					var size = Math.round(otherdimension * ratio);
+					required += size + before + after;
+					values.push(size + before + after);
 			}
 			i++;
 		}
@@ -130,8 +137,8 @@ class Stack
 						case 
 							Fixed(before, after, _),
 							Variable(before, after, _, _, _),
-							Fill(before, after, _, _):
-							
+							Fill(before, after, _, _),
+							Proportional(before, after, _):
 							sizeable.setLayout(0, pos + before, this.width, values[i] - after - before);
 					}
 					pos += values[i++];
@@ -147,8 +154,8 @@ class Stack
 						case 
 							Fixed(before, after, _),
 							Variable(before, after, _, _, _),
-							Fill(before, after, _, _):
-							
+							Fill(before, after, _, _),
+							Proportional(before, after, _):
 							sizeable.setLayout(pos + before, 0, values[i] - after - before, this.height);
 					}
 					pos += values[i++];

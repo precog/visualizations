@@ -21,17 +21,19 @@ class QueryPropertyValues<TData> extends QueryProperty<Array<Dynamic>, Array<TDa
 	
 	override function executeLoad(success : Array<Dynamic> -> Void, error : String -> Void)
 	{
-		var options = { property : event + "." + property };
+		var query = queryObject();
+		query.property = event + "." + property;
 		switch(limit)
 		{
 			case Top(v):
-				Reflect.setField(options, "top", v);
+				Reflect.setField(query, "top", v);
 			case Bottom(v):
-				Reflect.setField(options, "bottom", v);
+				Reflect.setField(query, "bottom", v);
 			default:
 				//
 		}
-		executor.propertyValues(path, options, cast success, error);
+		
+		executor.propertyValues(path, query, cast success, error);
 	}
 	
 	function setLimit(v : QueryLimit)

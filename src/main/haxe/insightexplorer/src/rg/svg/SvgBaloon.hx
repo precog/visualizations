@@ -30,7 +30,6 @@ class SvgBaloon
 	var baloon : Selection;
 	var frame : Selection;
 	var connector : Selection;
-//	var pointer : Selection;
 	var _duration : Int;
 	var _ease : Float -> Float;
 	var _strokeWidth : Float;
@@ -41,7 +40,7 @@ class SvgBaloon
 	{
 		this.container = container;
 		visible = true;
-		_duration = 1000;
+		_duration = 500;
 		minwidth = 30;
 		preferredSide = 2;
 		_ease = Ease.mode(EaseMode.EaseInEaseOut, Equations.cubic);
@@ -59,14 +58,10 @@ class SvgBaloon
 			.attr("class").string("frame");
 		frame.append("svg:path")
 			.attr("class").string("shadow")
-//			.attr("width").float(0)
-//			.attr("height").float(0)
 			.attr("transform").string("translate(1, 1)")
 			.style("opacity").float(0.25)
 			.style("fill").string("none")
 			.style("stroke").string("#000")
-//			.attr("rx").string("0")
-//			.attr("ry").string("0")
 			.style("stroke-width").float(_strokeWidth+2)
 		;
 		
@@ -74,57 +69,20 @@ class SvgBaloon
 		_connectorShapeH = Diagonal.forObject().projection(function(d,i) return [d[1], d[0]]);
 		connector = baloon.append("svg:path")
 			.attr("class").string("baloon-connector")
-//			.style("stroke").string("#000")
 			.style("fill").string("none")
-//			.style("stroke-width").float(1)
 			.style("display").string("none")
 			.attr("transform").string("translate(0, 0)")
 		;
 		frame.append("svg:path")
 			.attr("class").string("bg")
-//			.attr("width").float(0)
-//			.attr("height").float(0)
-//			.attr("rx").string("0")
-//			.attr("ry").string("0")
 			.style("fill").string("#ff9")
 			.style("stroke").string("#fa0")
-	//		.style("opacity").string("1")
 			.style("fill-opacity").float(0.9)
 			.style("stroke-width").float(_strokeWidth)
 		;
-/*		
-		frame.append("svg:rect")
-			.attr("width").float(0)
-			.attr("height").float(0)
-			.style("fill").string("#eee")
-			.style("stroke").string("#f00")
-			.style("stroke-width").string("1")
-			.attr("opacity").float(0.5)
-		;
-*/		
-		var r = Math.min(10, Math.max(3, roundedCorner));
-	/*	
-		pointer = frame.append("svg:path")
-			.attr("class").string("arrow")
-			.attr("d").string(
-				  "M " + -r + " " + r + "  a " + r + " " + r + " 0 0 1 " + r + " " + -r
-				+ " a " + r + " " + r + " 0 0 1 " + -r + " " + -r)
-			.style("fill").string("#ffe")
-			.style("stroke").string("#996")
-			.style("opacity").string("1")
-			.style("stroke-width").float(_strokeWidth)
-		;
-	*/
 		
+		var r = Math.min(10, Math.max(3, roundedCorner));		
 		textHeight = 11;
-		
-	/*
-		// reference to remove
-		baloon.append("svg:path")
-			.attr("d").string(Symbol.cross(36))
-			.style("stroke").string("#000")
-		;
-		*/
 	}
 	
 	function setPreferredSide(v : Int)
@@ -183,11 +141,11 @@ class SvgBaloon
 	{
 		if (animate)
 		{
-			var int = Equations.elasticf(), //Ease.mode(EaseMode.EaseInEaseOut),
+			var int = Equations.elasticf(),
 				tid = ++_transition_id,
-				ix = Floats.interpolatef(this.x, x, int),
-				iy = Floats.interpolatef(this.y, y, int),
-				duration = 1000,
+				ix = Floats.interpolatef(this.x, x, _ease),
+				iy = Floats.interpolatef(this.y, y, _ease),
+				duration = _duration,
 				mt = _moveTo,
 				me = this;
 
@@ -219,7 +177,6 @@ class SvgBaloon
 			diagonal = 0; // 0: don't show, 1: vertical, 2: horizontal
 		
 		var	tx = 0.0, ty = 0.0, side = preferredSide, found = 1;
-//		side = 0;
 
 		while (found > 0 && found < 5)
 		{
@@ -503,6 +460,7 @@ class SvgBaloon
 	{
 		if (null == text || text.length == 0)
 			return;
+
 		function key(d : String, i : Int)
 		{
 			return d + ":" + i;
@@ -521,28 +479,9 @@ class SvgBaloon
 			if (v > linewidth)
 				linewidth = v;
 		}
-/*
+
 		choice.enter()
 			.append("svg:text")
-//			.attr("dominant-baseline").string("hanging")
-			.style("font-size").string(th + "px")
-			.style("font-weight").string("bold")
-			.attr("transform").string("translate(1, 1)")
-			.style("fill").string("#fff")
-			.text().stringf(function(d, i) return d)
-			.attr("x").float(pad)
-			.attr("y").floatf(function(_, i) return Math.round((1+i) * 0.9 * th + pad))
-			.attr("opacity").float(0)
-			.eachNode(calculateLineWidth)
-			.transition()
-				.duration(_duration).ease(_ease)
-				.delay(_duration)
-				.attr("opacity").float(1)
-		;
-*/
-		choice.enter()
-			.append("svg:text")
-//			.attr("dominant-baseline").string("hanging")
 			.style("font-size").string(th + "px")
 			.style("font-weight").string("bold")
 			.style("fill").string("#000")
@@ -582,17 +521,6 @@ class SvgBaloon
 		frame.selectAll(".bg")
 			.transition().ease(_ease)
 			.delay(_duration)
-//				.attr("width").float(boxWidth)
-//				.attr("height").float(boxHeight)
-//				.attr("rx").float(roundedCorner)
-//				.attr("ry").float(roundedCorner)
 		;
-//		moveTo(this.x, this.y);
-/*
-		frame.selectAll("rect")
-			.attr("width").float(boxWidth)
-			.attr("height").float(boxHeight)
-		;
-*/
 	}
 }

@@ -63,9 +63,11 @@ class QueryPropertiesCount extends QueryEvent<Array<{ label : String, value : Fl
 			if (++count == total)
 				success(result);
 		}
+		var query = queryObject();
 		for (property in properties)
 		{
-			executor.propertyCount(path, { property : event + "." + property }, callback(_success, property), error);
+			query.property = event + "." + property;
+			executor.propertyCount(path, query, callback(_success, property), error);
 		}
 	}
 }

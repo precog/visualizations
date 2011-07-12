@@ -115,7 +115,9 @@ class QueryValuesCount extends QueryProperty<Array<{ label : String, value : Flo
 				if (++count == total)
 					_end();
 			}
-			executor.propertyCount(path, { property : event + "." + property }, _successtotal, error);
+			var query = queryObject();
+			query.property = event + "." + property;
+			executor.propertyCount(path, query, _successtotal, error);
 		}
 		var p = [{
 			property : event + "." + property,
@@ -126,9 +128,12 @@ class QueryValuesCount extends QueryProperty<Array<{ label : String, value : Flo
 		time.autosetPeriodicity = false;
 		time.periodicity = "eternity";
 		
+		var query = queryObject();
+		query.property = event + "." + property;
 		for (value in values)
 		{
-			executor.propertyValueCount(path, { property : event + "." + property, value : value }, callback(_success, value), error);
+			query.value = value;
+			executor.propertyValueCount(path, query, callback(_success, value), error);
 		}
 	}
 }

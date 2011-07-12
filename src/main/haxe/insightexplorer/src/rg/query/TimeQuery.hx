@@ -65,8 +65,15 @@ class TimeQuery
 			periodicity = Periodicity.calculateBetween(start, end);
 	}
 	
-	public function startTime() return null == start ? 0 : start.getTime()
-	public function endTime() return null == end ? 0 : end.getTime()
+	public function queryStartTime() 
+	{
+		return null == start ? 0 : start.getTime();
+	}
+	
+	public function queryEndTime() 
+	{
+		return null == end ? 0 : end.getTime(); // Periodicity.next(periodicity, end.getTime());
+	}
 	
 	function getDateLimit(limit : DateLimit) : Null<Date>
 	{

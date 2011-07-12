@@ -11,6 +11,8 @@ class QueryPropertyNames extends QueryEvent<Array<String>, Array<String>>
 {
 	override function executeLoad(success : Array<String> -> Void, error : String -> Void)
 	{
-		executor.children(path, { property : event }, success, error);
+		var query = queryObject();
+		query.property = event;
+		executor.children(path, query, success, error);
 	}
 }

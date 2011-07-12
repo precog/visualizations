@@ -14,12 +14,9 @@ class QueryPropertySeries<TData> extends QueryProperty<Dynamic<Dynamic<Int>>, TD
 {
 	override function executeLoad(success : Dynamic<Dynamic<Int>> -> Void, error : String -> Void)
 	{
-		executor.propertySeries(path, {
-			start : time.startTime(),
-			end : time.endTime(),
-			periodicity : time.periodicity,
-			property : event + "." + property
-		}, success, error);
+		var query = queryObject();
+		query.property = event + "." + property;
+		executor.propertySeries(path, query, success, error);
 	}
 	
 	public static function forLineChart(executor : IExecutor, path : String, event : String, property : String, ?others : Bool, ?otherslabel : String)

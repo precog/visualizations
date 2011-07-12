@@ -26,7 +26,11 @@ class SvgScaleRule<TData> extends SvgLayer
 	{
 		var _scale = function(d : TData, i : Int)
 		{
-			var s = scale.rangePoints(0, panel.frame.width, 1);
+			var size = switch(orientation) {
+					case Vertical: panel.frame.width;
+					case Horizontal: panel.frame.height;
+				},
+				s = scale.rangePoints(0, size, 1);
 			return s.scale(d);
 		};
 		return new SvgScaleRule<TData>(panel, orientation)

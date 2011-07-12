@@ -20,7 +20,7 @@ class SvgHeatGrid<TColor : Rgb> extends SvgLayer
 	var _duration : Int;
 	var _m : Int;
 	var _n : Int;
-	var _tooltip : SvgBaloon;
+//	var _tooltip : SvgBaloon;
 	var _grid : Selection;
 	
 	public function new(panel : SvgPanel, color : IScale<Float, TColor>) 
@@ -35,8 +35,7 @@ class SvgHeatGrid<TColor : Rgb> extends SvgLayer
 	{
 		svg.classed().add("heat-grid");
 		_grid = svg.append("svg:g");
-		_tooltip = new SvgBaloon(svg);
-//		_tooltip.hide();
+//		_tooltip = new SvgBaloon(svg);
 	}
 	
 	public function data(d : Array<Array<Float>>)
@@ -57,11 +56,18 @@ class SvgHeatGrid<TColor : Rgb> extends SvgLayer
 	
 	function cellclass(_, i : Int) return "cell col-" + col(_,i) + " row-" + row(_,i)
 	
-	function mouseover(d : Float, i : Int)
+	public dynamic function over(x : Float, y : Float, d : Dynamic, pos : Int)
 	{
-//		_tooltip.show();
-		_tooltip.text = ["value: " + Floats.format(d)];
-		_tooltip.moveTo(x(d, i) + (width / _m) / 2, y(d, i) + (height / _m) / 4);
+		
+	}
+	
+	function _mouseover(d : Float, i : Int)
+	{
+		var x = Math.round(this.x(d, i) + (width / _m) / 2),
+			y = Math.round(this.y(d, i) + (height / _n) / 2);
+		over(x, y, d, i);
+//		_tooltip.text = ["count: " + Floats.format(d, "I")];
+//		_tooltip.moveTo(x(d, i) + (width / _m) / 2, y(d, i) + (height / _m) / 4);
 	}
 	
 	override function redraw()
@@ -76,28 +82,18 @@ class SvgHeatGrid<TColor : Rgb> extends SvgLayer
 			.attr("width").float(width / _m)
 			.attr("height").float(height / _n)
 			.style("fill").color(color.scale(0))
-			.style("stroke").string("none")
 			.attr("class").stringf(cellclass)
 			.attr("x").floatf(x)
 			.attr("y").floatf(y)
 			.style("fill-opacity").float(0)
-			.on("mouseover", mouseover)
+			.on("mouseover", _mouseover)
 			.transition().duration(_duration)
 				.style("fill-opacity").float(1)
 				.style("fill").colorf(color.scale)
 		;
-		var me = this;
-		choice.update()
-			.eachNode(function(n, i) {
-				trace(Dom.selectNode(n).style("fill").get());
-			});
 		choice.update()
 			.transition().duration(_duration)
-				.style("fill").colorf(function(d, i) {
-					var c = me.color.scale(d, i);
-					trace(c);
-					return c;
-				})
+				.style("fill").colorf(color.scale)
 				.attr("width").float(width / _m)
 				.attr("height").float(height / _n)
 				.attr("x").floatf(x)
@@ -109,85 +105,5 @@ class SvgHeatGrid<TColor : Rgb> extends SvgLayer
 				.style("opacity").float(0)
 				.remove()
 		;
-		
-/*
-		var renter = choice.enter()
-			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "row row-" + i)
-			.attr("transform").stringf(function(d, i) return "translate(0, " + (i * rh) + ")")
-			.style("opacity").float(0);
-			
-		renter
-			.transition().duration(_duration)
-			.style("opacity").float(1);
-				
-		var rchoice = renter.selectAll("g.col")
-			.dataf(function(d, i) return d);
-		choice.update()
-			.transition().duration(_duration)
-//			.attr("transform").stringf(function(d, i) return "translate(0, " + (i * rh) + ")")
-		;
-		
-		choice.exit()
-			.transition().duration(_duration)
-			.style("opacity").float(0).remove();
-				
-		rchoice.enter()
-			.append("svg:g")
-			.attr("fill").stringf(color.scale)
-			.attr("class").stringf(function(d, i) return "cell cell-" + i)
-			.attr("transform").stringf(function(d, i) return "translate(" + (i * cw) + ", 0)")
-			.append("svg:rect")
-				.attr("width").float(cw)
-				.attr("height").float(rh)
-				.attr("class").stringf(function(d, i) return "" + d)
-			;
-	
-		var cchoice = choice.update()
-			.selectAll("g.cell")
-			.dataf(function(d, i) return d);	
-		cchoice.enter()
-			.append("svg:g")
-			.attr("class").stringf(function(d, i) return "cell cell-" + i)
-			.attr("fill").stringf(color.scale)
-//			.attr("transform").stringf(function(d, i) return "translate(" + (i * cw) + ", 0)")
-			.append("svg:rect")
-				.attr("width").float(cw)
-				.attr("height").float(rh)
-				.attr("class").stringf(function(d, i) return "" + d)
-				.style("opacity").float(0)
-				.transition().duration(_duration)
-					.style("opacity").float(1)
-		;
-		cchoice.exit()
-			.transition().duration(_duration)
-			.style("opacity").float(0).remove();
-		cchoice.update()
-			.transition().duration(_duration)
-			.attr("transform").stringf(function(d, i) return "translate(" + (i * cw) + ", 0)")
-		;
-		cchoice.update()
-			.transition().duration(_duration)
-			.attr("fill").stringf(color.scale)
-			.select("rect")
-				.attr("width").float(cw+10)
-				.attr("height").float(rh)
-		;
-*/
 	}
-	/*
-	function getX()
-	{
-		if (null == x)
-		{
-			
-		}
-		return x;
-	}
-	
-	function setX(scale : IScale<XDomain, Float>)
-	{
-		return this.x = scale;
-	}
-	*/
 }

@@ -52,22 +52,20 @@ class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic
 				_end();
 		}		
 		
+		var query = queryObject();
+		query.property = event + "." + property;
 		for (i in 0...values.length)
-			executor.propertyValueSeries(path, cast {
-				start : time.startTime(),
-				end : time.endTime(),
-				periodicity : time.periodicity,
-				property : event + "." + property,
-				value : values[i]
-			}, callback(_collect, i), error);
+		{
+			query.value = values[i];
+			executor.propertyValueSeries(path, query, callback(_collect, i), error);
+		}
 		
-		if(others)
-			executor.propertySeries(path, {
-				start : time.startTime(),
-				end : time.endTime(),
-				periodicity : time.periodicity,
-				property : event + "." + property
-			}, _total, error);
+		if (others)
+		{
+			var query = queryObject();
+			query.property = event + "." + property;
+			executor.propertySeries(path, query, _total, error);
+		}
 	}
 	
 	override function load()

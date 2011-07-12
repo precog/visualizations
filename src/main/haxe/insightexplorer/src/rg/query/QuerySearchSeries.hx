@@ -9,15 +9,13 @@ class QuerySearchSeries<TValue, TOut> extends QuerySearchPeriodicity<TValue, TOu
 {
 	override function executeLoad(success : T -> Void, error : String -> Void)
 	{
-		var w = { };
+		var query = queryObject();
+		query.where = { };
 		for (item in where)
 		{
 			var field = event + "." + item.property;
-			Reflect.setField(field, item.value);
+			Reflect.setField(query.where, field, item.value);
 		}
-		
-		ReportGrid.searchSeries(path, {
-			where : w
-		}, success, error);
+		ReportGrid.searchSeries(path, query, success, error);
 	}
 }

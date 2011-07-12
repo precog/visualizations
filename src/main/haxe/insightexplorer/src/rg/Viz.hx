@@ -34,6 +34,7 @@ import rg.svg.SvgStackChart;
 import rg.svg.SvgBorderLine;
 import rg.svg.SvgLineChart;
 import rg.svg.SvgLineChartHighlighter;
+import rg.util.RGStrings;
 import thx.math.scale.Log;
 import thx.math.scale.Pow;
 //import rg.svg.SvgOrdinalScaleLabel;
@@ -63,6 +64,7 @@ import thx.math.scale.LinearTime;
 import thx.math.scale.Ordinal;
 import thx.svg.LineInterpolator;
 import thx.svg.LineInterpolators;
+import rg.layout.StackFrame;
 
 import haxe.Timer;
 
@@ -80,35 +82,176 @@ class Viz
 			function(d, i) return Math.random() * top));
 	}
 	
-	public static function heatmap(el : Dynamic, options : { })
+	public static function heatgrid(el : Dynamic, query : { path : String, properties : Array<Dynamic> }, ?options : { } )
 	{
 		var selection = select(el),
-			scolors = ["#ff0", "#f00", "#0f0"],
-			colors = scolors.map(function(d,i) return Colors.parse(d));
+			properties : Array<{ event : String, property : String, top : Bool, limit : Int }> = [];
+		
+		if (null == query.path || "" == query.path)
+				throw new Error("path cannot be null or empty");
+
+		for (i in 0...query.properties.length)
+		{
+			var p = query.properties[i];
+			if (null == p.event || "" == p.event)
+				throw new Error("event cannot be null or empty");
+			if (null == p.property || "" == p.property)
+				throw new Error("property cannot be null or empty");
+			var istop = (null != p.top || (null == p.top && null == p.bottom)),
+				limit = istop ? (null == p.top ? 10 : p.top) : p.bottom;
+			properties.push({
+				event : p.event,
+				property : p.property,
+				top : istop,
+				limit : limit
+			});
+		}
 
 		if (null == options)
 			options = { };
 
 		var o = cast sizeOptions(selection, options);
+
+		var loader = QueryIntersect.forPivotTable(executor, query.path, properties, 1);
 		
-		var space = new SvgSpace(o.width, o.height, selection);
+		if (properties.any(function(d) return "#timestamp" == d.property))
+		{
+			if (null == o.periodicity)
+			{
+				loader.time.autosetPeriodicity = true;
+			} else {
+				loader.time.autosetPeriodicity = false;
+				loader.time.periodicity = o.periodicity;
+			}
+		} else if (null != o.periodicity) {
+			loader.time.autosetPeriodicity = false;
+			loader.time.periodicity = "eternity";
+		}
+		setTimeLimits(loader, o);
+		loader.time.update();
+		
+		var scolors = null == o.colors ? ["#ff0", "#f00"] : o.colors,
+			colors = scolors.map(function(d, i) return Colors.parse(d)),
+			padding = 3;
+
+		var leftsize = 100,
+			space = new SvgSpace(o.width, o.height, selection),
+			top = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal),
+			bottom = space.createContainer(Disposition.Fixed(0, 0, 100), Orientation.Horizontal),
+			ypanel = top.createPanel(Disposition.Fixed(0, padding, leftsize)),
+			chartpanel = top.createPanel(Disposition.Fill(0, 0)),
+			xpanel = bottom.createPanel(Disposition.Fixed(leftsize + padding, 0, 100));
+		
+		var y = new Ordinal(),
+			yscale = SvgScaleLabel.ofOrdinal(ypanel, Anchor.Right, y),
+			x = new Ordinal(),
+			xscale = SvgScaleLabel.ofOrdinal(xpanel, Anchor.Top, x).alwaysHorizontal(false);
+	
 		space.svg.attr("class").string("rg");
 		
 		var color = Linears.forRgb().range(colors),
-			chart = new SvgHeatGrid(space.createPanel(Disposition.Fill(0, 0)), color),
-			timer = new Timer(3000);
-		function refresh() {
-			var data = createRandomHeatGridData(25, 25),
-				min = 0.0,
-				max = Arrays.floatMax(data, function(d) return Arrays.floatMax(d, function(d) return d)),
-				interpolator = Floats.interpolatef(min, max),
-				domain = colors.map(function(_, i) return interpolator(i / (colors.length-1)))
-			;
-			color.domain(domain);
-			chart.data(data);
+			chart = new SvgHeatGrid(chartpanel, color);
+		
+		var tooltip = new SvgBaloon(space.svg);
+		chart.over = function(x : Float, y : Float, d : Dynamic, ?_)
+		{
+			tooltip.text = ["count: " + Floats.format(d, "I")];
+			tooltip.moveTo(x + chartpanel.frame.x, y + chartpanel.frame.y + top.frame.y);
 		}
-//		timer.run = refresh;
-		refresh();
+
+		loader.onChange.add(function(data) {
+//			trace(data);
+/*
+			trace(data.columns.map(function(d, i) {
+				return { 
+					time : Date.fromTime(d.values[0]),
+					calc : d.calc
+				};
+			}));
+*/
+			var interpolator = Floats.interpolatef(0, data.calc.max),
+				domain = colors.map(function(_, i) return interpolator(i / (colors.length - 1))),
+				xdomain = data.columns.map(function(d, i) return d.values[0]),
+				ydomain = data.rows.map(function(d, i) return d.values[0]);
+			
+			color.domain(domain);
+			
+			x.domain(xdomain);
+			y.domain(ydomain);
+			
+			yscale.label(callback(labelValue, data.row_headers[0]));
+			xscale.label(callback(labelValue, data.column_headers[0]));
+			
+			xscale.redraw();
+			yscale.redraw();
+			
+//			var w = o.width - (leftsize = Math.ceil(yscale.idealSize)) - padding,
+//				h = o.height - xscale.idealSize - padding;
+			
+			cast(ypanel.frame, StackFrame).disposition = Disposition.Fixed(0, padding, Math.ceil(yscale.idealSize));
+			cast(xpanel.frame, StackFrame).disposition = Disposition.Fill(Math.ceil(padding + yscale.idealSize), 0);
+	//		cast(xpanel.frame, StackFrame).disposition = Disposition.Fixed(padding, 0, Math.ceil(xscale.idealSize));
+
+	
+			cast(bottom.frame, StackFrame).disposition = Disposition.Fixed(padding, 0, Math.ceil(xscale.idealSize));
+			/*
+			if (w > h)
+			{
+				if (xdomain.length > ydomain.length)
+				{
+					trace("CASE: 0");
+				} else {
+					trace("CASE: 1");
+					cast(chartpanel.frame, StackFrame).disposition = Disposition.Fill(0, 0);
+					cast(top.frame, StackFrame).disposition = Disposition.Fill(0, 0);
+				
+					cast(bottom.frame, StackFrame).disposition = Disposition.Fixed(padding, 0, Math.ceil(xscale.idealSize));
+					chart.data(data.rows.map(function(d, i) return cast d.cells));
+					cast(xpanel.frame, StackFrame).disposition = Disposition.Fixed(leftsize + padding, 0, w);
+				}
+			} else {
+				if (xdomain.length > ydomain.length)
+				{
+					trace("CASE: 2");
+				} else {
+					trace("CASE: 3");
+				}
+			}
+			*/
+			chart.data(data.rows.map(function(d, i) return cast d.cells));
+			
+			
+			xscale.redraw();
+			yscale.redraw();
+			
+			/*
+			if (w / h < ydomain.length / xdomain.length)
+			{
+				cast(chartpanel.frame, StackFrame).disposition = Disposition.Proportional(0, 0, xdomain.length / ydomain.length);
+				cast(top.frame, StackFrame).disposition = Disposition.Fill(0, 0);
+			} else {
+				cast(chartpanel.frame, StackFrame).disposition = Disposition.Fill(0, 0);
+				cast(top.frame, StackFrame).disposition = Disposition.Fill(Math.round(h - (w / xdomain.length * ydomain.length)), 0);
+			}
+			*/
+		});
+		executeQuery(loader, o);
+	}
+	
+	static function labelValue(header : Dynamic, value : Dynamic, ?_ : Int)
+	{
+		if (Std.is(value, String))
+		{
+			return RGStrings.humanize(Strings.trim(value, '"'));
+		} else if (Std.is(value, Int)) {
+			return Ints.format(value);
+		} else if (Std.is(value, Float)) {
+			if ('#' == header.substr(0, 1))
+				return Periodicity.format(header.substr(1), Std.parseFloat(value));
+			return Floats.format(value);
+		} else {
+			return Std.string(value);
+		}
 	}
 
 	public static function pivot(el : Dynamic, query : { path : String, properties : Array<Dynamic> }, ?options : { } )
@@ -120,7 +263,7 @@ class Viz
 
 		for (p in query.properties)
 		{
-			if (null == p.event || "" == p.event)
+			if ((null == p.event || "" == p.event) && p.property != "#timestamp")
 				throw new Error("event cannot be null or empty");
 			if (null == p.property || "" == p.property)
 				throw new Error("property cannot be null or empty");
@@ -769,6 +912,107 @@ class Viz
 			executeQuery(loader, o);
 		});
 	}
+	
+	public static function stream(el : Dynamic, _queries : Dynamic, ?options : { } )
+	{
+		var selection = select(el).html().clear();
+		
+		var o : Dynamic = cast sizeOptions(selection, options);
+		
+		var queries : Array<Dynamic> = Std.is(_queries, Array) ? _queries : [_queries];
+			
+		var space = new SvgSpace(o.width, o.height, selection, 10, 0);
+		space.svg.attr("class").string("rg");
+		
+		var x = new LinearTime().useTimeTicks(true);
+		var container = space.createContainer(Disposition.Fill(0, 0), Orientation.Horizontal);
+		
+		var chartpanel = null;
+		var xlayers = [], loaders = [], charts = [];
+		for (i in 0...queries.length)
+		{
+			var q : QueryOptions = cast Objects.copyTo(queries[i], QueryOptionsUtil.emptyQuery());
+			var top = null == q.bottom && q.top > 0;
+			var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
+			var loader : QueryExecutor<Dynamic, LineChartData>;
+			if (null != q.property)
+			{
+				loader = QueryValuesSeries.forLineChart(executor, q.path, q.event, q.property, []);
+			} else {
+				loader = QueryEventSeries.forLineChart(executor, q.path, q.event);
+			}
+
+			loader.time.periodicity = o.periodicity;
+			setTimeLimits(loader, o, true);
+			loader.time.update();
+			loader.onError.add(error);
+			loaders.push(loader);
+			
+			var y = new LinearInt(), info;
+				
+			if (i == 0)
+			{
+				chartpanel = container.createPanel(Disposition.Fill(0, 0));
+//				highlighter = new SvgLineChartHighlighter(chartpanel, x);
+//				loader.onData.addOnce(function(d) {
+//					highlighter.prepare();
+//				});
+			}
+			
+			var chart = new SvgStreamGraph(chartpanel, x);
+//			chart.setLineEffect(dropshadow);
+			chart.customClass = "dimension-" + i;
+
+			chart.lineInterpolator(null == o.lineinterpolator ? LineInterpolator.Linear : LineInterpolators.parse(o.lineinterpolator));
+			charts.push(chart);
+			
+			if (i == 0)
+			{
+				loader.onChange.add(function(v : LineChartData) {
+					x.domain([null == loader.time.start ? v.minx : loader.time.start.getTime(), null == loader.time.end ? v.maxx : loader.time.end.getTime()]);
+					xlayers.each(function(layer, i) layer.redraw());
+				});
+			}
+			
+			loader.onChange.add(function(v : LineChartData) {
+				trace("Data " + Std.random(1000));
+				y.domain([v.maxy * 1.2, 0.0]);
+				chart.data(v.data);
+			});
+		}
+
+		var bottom = space.createContainer(Disposition.Fixed(0, 0, 20), Orientation.Horizontal);
+		var belowchart = bottom.createContainer(Disposition.Fill(0, 0), Orientation.Vertical);
+		if (null != o.xaxis && o.xaxis.labelsonbounds == true)
+		{
+			xlayers.push(SvgScaleTick.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(0,0,6)), Anchor.Top, x));
+			xlayers.push(SvgScaleLabel.boundsOfLinear(belowchart.createPanel(Disposition.Fixed(2,0,12)), Anchor.Top, x));		
+		} else {
+			xlayers.push(SvgScaleTick.ofLinear(belowchart.createPanel(Disposition.Fixed(0,0,6)), Anchor.Top, x));
+			xlayers.push(SvgScaleLabel.ofLinear(belowchart.createPanel(Disposition.Fixed(2,0,12)), Anchor.Top, x));	
+		}
+
+		if (o.animated)
+		{
+			thx.js.Timer.timer(function(t) {
+				loaders.each(function(loader, _) {
+					loader.time.update();
+				});
+				x.domain([loaders[0].time.start.getTime(), loaders[0].time.end.getTime()]);
+				charts.each(function(chart, _) {
+					chart.updatex();
+				});
+				xlayers.each(function(layer, i) layer.redraw());
+				return false;
+			});
+		}
+//		else
+//			highlighter.approximator = function(x : Float) return Dates.snap(x, loaders[0].time.periodicity);
+
+		loaders.each(function(loader, _) {
+			executeQuery(loader, o);
+		});
+	}
 
 	static function select(el : Dynamic)
 	{
@@ -790,5 +1034,7 @@ class Viz
 		r.stackChart = rg.Viz.stack;
 		r.scatterGraph = rg.Viz.scatter;
 		r.funnelChart = rg.Viz.funnel;
+		r.heatGrid = rg.Viz.heatgrid;
+		r.streamGraph = Viz.stream;
 	}
 }

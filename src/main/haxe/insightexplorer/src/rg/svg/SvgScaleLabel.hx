@@ -26,7 +26,11 @@ class SvgScaleLabel<TData> extends SvgLayer
 	{
 		var _scale = function(d : TData, i : Int)
 		{
-			var s = scale.rangePoints(0, panel.frame.width, 1);
+			var size = switch(anchor) {
+					case Anchor.Top, Anchor.Bottom: panel.frame.width;
+					case Anchor.Left, Anchor.Right: panel.frame.height;
+				},
+				s = scale.rangePoints(0, size, 1);
 			return s.scale(d);
 		};
 		return new SvgScaleLabel<TData>(panel, anchor)
@@ -66,6 +70,8 @@ class SvgScaleLabel<TData> extends SvgLayer
 	var _textBaseline : String;
 	var _alwaysHorizontal : Bool;
 	
+	public var idealSize(default, null) : Float;
+	
 	function new(panel : SvgPanel, anchor : Anchor)
 	{
 		_alwaysHorizontal = true;
@@ -73,6 +79,7 @@ class SvgScaleLabel<TData> extends SvgLayer
 		_textTextHeight = defaultTexttextHeight;
 		this.anchor(anchor);
 		svg.attr("class").string("scale-ticks");
+		idealSize = 0;
 	}
 	
 	function translateX(d : TData, i : Int) return "translate(" + _scale(d, i) + ",0) rotate(-90)"
@@ -86,6 +93,27 @@ class SvgScaleLabel<TData> extends SvgLayer
 
 		_range([0.0, _maxRange()]);
 		
+		idealSize = 0.0;
+		var me = this;
+		
+		var calculate = (function() {
+			if (me.isHorizontal())
+			{
+				return function(n : js.Dom.HtmlDom, i) {
+					var box : { width : Float, height : Float } = untyped n.getBBox();
+					if (box.width > me.idealSize)
+						me.idealSize = box.width;
+				};
+			} else {
+				return function(n : js.Dom.HtmlDom, i) {
+					var box : { width : Float, height : Float } = untyped n.getBBox();
+					if (box.height > me.idealSize)
+						me.idealSize = box.height;
+				};
+			}
+			
+		})();
+		
 		var g = svg.selectAll("g")
 			.data(_ticks(), _key)
 			.update()
@@ -97,6 +125,7 @@ class SvgScaleLabel<TData> extends SvgLayer
 			.attr("text-anchor").string(_textAnchor)
 			.attr("dominant-baseline").string(_textBaseline)
 			.text().stringf(_label)
+			.eachNode(calculate)
 		;
 			
 		// ENTER
@@ -109,7 +138,9 @@ class SvgScaleLabel<TData> extends SvgLayer
 				.attr(_oaxis).float(_pos())
 				.attr("text-anchor").string(_textAnchor)
 				.attr("dominant-baseline").string(_textBaseline)
-				.text().stringf(_label);
+				.text().stringf(_label)
+				.eachNode(calculate)
+		;
 
 		// EXIT
 		g.exit().remove();
@@ -150,11 +181,20 @@ class SvgScaleLabel<TData> extends SvgLayer
 		return this;
 	}
 	
+	function isHorizontal()
+	{
+		return switch(_anchor)
+		{
+			case Left, Right: true;
+			case Top, Bottom: !_alwaysHorizontal;
+		}
+	}
+	
 	public function getAnchor() return _anchor
 	public function anchor(o : Anchor)
 	{
-		if (Type.enumEq(o, _anchor))
-			return this;
+//		if (Type.enumEq(o, _anchor))
+//			return this;
 		var me = this;
 		
 		switch(_anchor = o)
@@ -208,7 +248,8 @@ class SvgScaleLabel<TData> extends SvgLayer
 	public function alwaysHorizontal(v : Bool)
 	{
 		_alwaysHorizontal = v;
-		adjustPositionFunction();
+		anchor(_anchor);
+//		adjustPositionFunction();
 		return this;
 	}
 	
