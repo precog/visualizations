@@ -15,10 +15,8 @@ class TestCountTransform extends TestBase
 		var data = 39;
 		
 		assertDataPoints([{
-			unit : "count",
-			value : 39.0,
 			event : "impression",
-			properties : { }
+			properties : { count : 39.0 }
 		}], transform.transform(data));
 		
 		
@@ -27,10 +25,8 @@ class TestCountTransform extends TestBase
 		data = 7;
 		
 		assertDataPoints([{
-			unit : "otherunit",
-			value : 7.0,
 			event : "impression",
-			properties : { }
+			properties : { otherunit : 7.0 }
 		}], transform.transform(7));
 	}
 }

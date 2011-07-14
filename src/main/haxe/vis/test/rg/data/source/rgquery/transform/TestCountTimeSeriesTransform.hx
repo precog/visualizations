@@ -15,20 +15,14 @@ class TestCountTimeSeriesTransform extends TestBase
 		var data = { day : [[1310342400000, 0], [1310428800000, 1], [1310515200000, 2]] };
 		
 		assertDataPoints([{
-			unit : "count",
-			value : 0.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day"], [1310342400000])
+			properties : ( { count : 0 } ).addFields([".#time:day"], [1310342400000])
 		}, {
-			unit : "count",
-			value : 1.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day"], [1310428800000])
+			properties : ( { count : 1 } ).addFields([".#time:day"], [1310428800000])
 		}, {
-			unit : "count",
-			value : 2.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day"], [1310515200000])
+			properties : ( { count : 2 } ).addFields([".#time:day"], [1310515200000])
 		}], transform.transform(data));
 	}
 }

@@ -22,9 +22,7 @@ class TransformCount implements ITransform<Int>
 	public function transform(data : Int)
 	{
 		var dp : DataPoint = {
-			properties : properties, // TODO, should be a clone?
-			value : data,
-			unit : unit,
+			properties : Objects.addField(Objects.clone(properties), unit, data),
 			event : event
 		};
 		return [dp];

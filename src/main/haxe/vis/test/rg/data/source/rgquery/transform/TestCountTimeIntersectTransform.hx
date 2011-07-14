@@ -15,25 +15,17 @@ class TestCountTimeIntersectTransform extends TestBase
 		var data = ({ }).addFields(['"iphone"', '"android"'], [{ day: [[1310342400000,7],[1310428800000,5]]}, { day: [[1310342400000,1972],[1310428800000,2]]}]);
 		
 		assertDataPoints([{
-			unit : "count",
-			value : 7.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day", ".platform"], [1310342400000, "iphone"])
+			properties : ( { count : 7 } ).addFields([".#time:day", ".platform"], [1310342400000, "iphone"])
 		}, {
-			unit : "count",
-			value : 5.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day", ".platform"], [1310428800000, "iphone"])
+			properties : ( { count : 5 } ).addFields([".#time:day", ".platform"], [1310428800000, "iphone"])
 		}, {
-			unit : "count",
-			value : 1972.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day", ".platform"], [1310342400000, "android"])
+			properties : ( { count : 1972 } ).addFields([".#time:day", ".platform"], [1310342400000, "android"])
 		}, {
-			unit : "count",
-			value : 2.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day", ".platform"], [1310428800000, "android"])
+			properties : ( { count : 2 } ).addFields([".#time:day", ".platform"], [1310428800000, "android"])
 		}], transform.transform(data));
 	}
 	
@@ -44,15 +36,11 @@ class TestCountTimeIntersectTransform extends TestBase
 		var data = ({ }).addField("1.2", ({ }).addField("true", ({ }).addField('"iphone"', { day: [[1310342400000,7],[1310428800000,5]]})));
 		
 		assertDataPoints([{
-			unit : "count",
-			value : 7.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310342400000, "iphone", true, 1.2])
+			properties : ( { count : 7 } ).addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310342400000, "iphone", true, 1.2])
 		}, {
-			unit : "count",
-			value : 5.0,
 			event : "impression",
-			properties : ( {  } ).addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310428800000, "iphone", true, 1.2])
+			properties : ( { count : 5 } ).addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310428800000, "iphone", true, 1.2])
 		}], transform.transform(data));
 	}
 }

@@ -9,13 +9,11 @@ using Arrays;
 
 class DataSourceArray implements IDataSource
 {
-	public static function fromValues<TIn, TOut>(arr : Array<TIn>, unit : String, event : String, map : TIn -> Int -> {})
+	public static function fromValues<TIn, TOut>(arr : Array<TIn>, event : String, map : TIn -> Int -> {})
 	{
 		return new DataSourceArray(arr.map(map).map(function(properties, i) return {
 			properties : properties,
-			value : arr[i],
-			event : event,
-			unit : unit
+			event : event
 		}));
 	}
 	

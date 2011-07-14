@@ -47,19 +47,19 @@ class TransformCountTimeIntersect implements ITransform<Dynamic>
 					[arr[i][0]]
 				);
 				*/
-				var p = Objects.addField(Dynamics.clone(properties), 
-					".#time:" + periodicity,
-					arr[i][0]
-				);
-					
+				var p = Dynamics.clone(properties);
 				Objects.addFields(p,
 					fields,
 					values.map(typedValue)
 				);
+				Objects.addFields(p, 
+					[".#time:" + periodicity, unit],
+					[arr[i][0], arr[i][1]]
+				);
+					
+				
 				result.push({
 					properties : p,
-					value : arr[i][1],
-					unit : unit,
 					event : event
 				});
 			}

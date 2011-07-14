@@ -28,19 +28,21 @@ class TestTransform
 			defaultSegment = "default";
 
 		var src : Array<IDataSource> = [];
-		src.push(DataSourceArray.fromValues(vrange, "count", "impression", function(d, i) {
+		src.push(DataSourceArray.fromValues(vrange, "impression", function(d, i) {
 			return ( { } )
 				.addField(".#time:hour", trange[i])
 				.addField(".ageRange", ageRanges[i % ageRanges.length])
 				.addField(".gender", genders[i % genders.length])
+				.addField("count", d)
 			;
 		}));
 		vrange.reverse();
-		src.push(DataSourceArray.fromValues(vrange, "count", "impression", function(d, i) {
+		src.push(DataSourceArray.fromValues(vrange, "impression", function(d, i) {
 			return ( { } )
 				.addField(".#time:hour", trange[i])
 				.addField(".ageRange", ageRanges[i % ageRanges.length])
 				.addField(".gender", genders[i % genders.length])
+				.addField("count", d)
 			;
 		}));
 		
@@ -61,7 +63,6 @@ class TestTransform
 		
 		var sources = new Sources(src),
 			processor = new DataProcessor(sources);
-		processor.defaultAxis = "count";
 		processor.defaultSegment = "default";
 		processor.independentVariables = iv;
 		

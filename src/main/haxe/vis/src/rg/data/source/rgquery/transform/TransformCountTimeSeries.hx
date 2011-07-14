@@ -31,11 +31,12 @@ class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>
 		if (null == values)
 			return [];
 		return values.map(function(d, _) {
-			var p = Objects.addFields(Dynamics.clone(properties), [".#time:"+periodicity], [d[0]]);
+			var p = Objects.addFields(
+				Dynamics.clone(properties), 
+				[".#time:" + periodicity, unit], 
+				[d[0], d[1]]);
 			return {
 				properties : p,
-				value : d[1],
-				unit : unit,
 				event : event
 			}
 		});

@@ -18,7 +18,6 @@ class DataProcessor
 	public var onData(default, null) : Notifier;
 	public var independentVariables : Array<VariableIndependent<Dynamic>>;
 	public var dependentVariable : Array<VariableDependent<Dynamic>>;
-	public var defaultAxis : String;
 	public var defaultSegment : String;
 	
 	public function new(sources : Sources<Dynamic>) 
@@ -30,9 +29,7 @@ class DataProcessor
 	
 	public dynamic function transform(s : Array<Array<DataPoint>>) : Array<TransformItem>
 	{
-		return cast [{
-			value : s[0][0].value
-		}];
+		return cast [s[0][0]];
 	}
 
 	function filterSubset(subset : Array<DataPoint>, variables : Array<Dynamic>)
@@ -56,7 +53,7 @@ class DataProcessor
 //			buildIndependentVariables(data);
 
 		var variablesset = getVariableValues(),
-			axisData : Hash<HashList<Array<DataPoint>>> = new Hash();
+			segments : HashList<Array<DataPoint>> = new HashList();
 		
 		for (variables in variablesset)
 		{
@@ -71,23 +68,10 @@ class DataProcessor
 			{
 				var ds : Array<TransformItem> = transform(subsets),
 					first = subsets[0][0],
-					o, segment, axis, segments;
-				for (d in ds)
+					p, o, segment;
+				for (o in ds)
 				{
-					o = {
-						properties : first.properties,
-						unit : first.unit,
-						value : d.value,
-						event : first.event
-					};
-					segment = null == d.segment ? defaultSegment : d.segment;
-					axis = null == d.axis ? defaultAxis : d.axis;
-					segments = axisData.get(axis);
-					if (null == segments)
-					{
-						segments = new HashList();
-						axisData.set(axis, segments);
-					}
+					segment = null == o.segment ? defaultSegment : o.segment;
 					var segmentData = segments.get(segment);
 					if (null == segmentData)
 					{
@@ -99,14 +83,14 @@ class DataProcessor
 			}
 		}
 			
-//		buildDependentVariable(axisData);
+//		buildDependentVariable(segments);
 		
-		associateData(axisData);
+		associateData(segments);
 		
 		onData.dispatch();
 	}
 	
-	function associateData(data : Hash<HashList<Array<DataPoint>>>)
+	function associateData(data : HashList<Array<DataPoint>>)
 	{
 		// DO SOMETHING WITH THE FINAL DATA
 		trace(data);
@@ -130,8 +114,6 @@ class DataProcessor
 	}
 }
 
-typedef TransformItem = { 
-	value : Dynamic,
-	segment : String,
-	axis : String
+typedef TransformItem = { > DataPoint,
+	segment : String
 }
