@@ -4,7 +4,7 @@
  */
 
 package rg.data;
-import hxevents.Notifier;
+import hxevents.Dispatcher;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
 import thx.collections.HashList;
@@ -15,7 +15,8 @@ class DataProcessor
 {
 	var sources : Sources<Dynamic>;
 	
-	public var onData(default, null) : Notifier;
+	public var onData(default, null) : Dispatcher<HashList<Array<DataPoint>>>;
+	public var variablesToFill : Array<Bool>;
 	public var independentVariables : Array<VariableIndependent<Dynamic>>;
 	public var dependentVariable : Array<VariableDependent<Dynamic>>;
 	public var defaultSegment : String;
@@ -24,12 +25,13 @@ class DataProcessor
 	{
 		this.sources = sources;
 		sources.onLoad.add(process);
-		onData = new Notifier();
+		onData = new Dispatcher();
+		variablesToFill = [];
 	}
 	
 	public dynamic function transform(s : Array<Array<DataPoint>>) : Array<TransformItem>
 	{
-		return cast [s[0][0]];
+		return cast s[0];
 	}
 
 	function filterSubset(subset : Array<DataPoint>, variables : Array<Dynamic>)
@@ -49,8 +51,7 @@ class DataProcessor
 	
 	function process(data : Array<Array<DataPoint>>)
 	{
-//		if(null == independentVariables)
-//			buildIndependentVariables(data);
+		fillIndependentVariables(data);
 
 		var variablesset = getVariableValues(),
 			segments : HashList<Array<DataPoint>> = new HashList();
@@ -85,29 +86,52 @@ class DataProcessor
 			
 //		buildDependentVariable(segments);
 		
-		associateData(segments);
+//		associateData(segments);
 		
-		onData.dispatch();
+		onData.dispatch(segments);
 	}
-	
+	/*
 	function associateData(data : HashList<Array<DataPoint>>)
 	{
-		// DO SOMETHING WITH THE FINAL DATA
-		trace(data);
+		onData.dispatch(data);
 	}
-/*
-	function buildIndependentVariables(data : Array<Array<DataPoint>>)
+	*/
+	function fillIndependentVariables(data : Array<Array<DataPoint>>)
 	{
-		// TODO: build values if not available from the config
-		// TODO: guess limits if not availavle from the config
-		// instantiate variable classes
+		var toprocess = [];
+		for (i in 0...independentVariables.length)
+			if (variablesToFill[i] == true && Std.is(independentVariables[i].axis, AxisOrdinal))
+				toprocess.push(i);
+		if (toprocess.length > 0)
+		{
+			var flatten = data.flatten();
+			for(pos in toprocess)
+				fillIndependentVariable(independentVariables[pos], flatten);
+		}
 	}
 	
-	function buildDependentVariable(data : Hash<HashList<Array<DataPoint>>>)
+	function fillIndependentVariable(variable : VariableIndependent<Dynamic>, data : Array<DataPoint>)
 	{
-		// instantiate variable class
+		var axis : AxisOrdinal<Dynamic> = cast variable.axis,
+			property = variable.type,
+			values = axis.values,
+			value;
+		for (dp in data)
+		{
+			if (Reflect.hasField(dp.properties, property))
+			{
+				value = Reflect.field(dp.properties, property);
+				if (!values.exists(value))
+				{
+					if (values.length == 0)
+						variable.min = value;
+					values.add(value);
+					variable.max = value;
+				}
+			}
+		}
 	}
-*/
+
 	function getVariableValues()
 	{
 		return independentVariables.map(function(d,i) return d.range()).product();

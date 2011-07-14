@@ -7,14 +7,7 @@ package rg.data;
 
 interface IAxisDiscrete<T> implements IAxis<T>
 {
-//	public var first (getFirst, null): T;
-//	public var last  (getLast,  null): T;
-//	public var allTicks (getAllTicks, null): Array<ITickmark>;
 	public function range(start : T, end : T) : Array<T>;	
-	
-	// TODO: move this to IAXIS
-	// TODO: rename to "ticks"
-	public function sample(start : T, end : T, ?maxTicks : Int) : Array<ITickmark<T>>;
 }
 
 /*

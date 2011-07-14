@@ -410,6 +410,50 @@ Types.sameType = function(a,b) {
 	$s.pop();
 }
 Types.prototype.__class__ = Types;
+if(!rg.data.source) rg.data.source = {}
+rg.data.source.ITransform = function() { }
+rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
+rg.data.source.ITransform.prototype.transform = null;
+rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
+rg.data.IDataSource = function() { }
+rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
+rg.data.IDataSource.prototype.onLoad = null;
+rg.data.IDataSource.prototype.load = null;
+rg.data.IDataSource.prototype.__class__ = rg.data.IDataSource;
+rg.data.source.DataSourceArray = function(data) {
+	if( data === $_ ) return;
+	$s.push("rg.data.source.DataSourceArray::new");
+	var $spos = $s.length;
+	this.data = data;
+	this.onLoad = new hxevents.Dispatcher();
+	$s.pop();
+}
+rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
+rg.data.source.DataSourceArray.fromValues = function(arr,event,map) {
+	$s.push("rg.data.source.DataSourceArray::fromValues");
+	var $spos = $s.length;
+	var $tmp = new rg.data.source.DataSourceArray(arr.map(map).map(function(properties,i) {
+		$s.push("rg.data.source.DataSourceArray::fromValues@14");
+		var $spos = $s.length;
+		var $tmp = { properties : properties, event : event};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.source.DataSourceArray.prototype.data = null;
+rg.data.source.DataSourceArray.prototype.onLoad = null;
+rg.data.source.DataSourceArray.prototype.load = function() {
+	$s.push("rg.data.source.DataSourceArray::load");
+	var $spos = $s.length;
+	this.onLoad.dispatch(this.data);
+	$s.pop();
+}
+rg.data.source.DataSourceArray.prototype.__class__ = rg.data.source.DataSourceArray;
+rg.data.source.DataSourceArray.__interfaces__ = [rg.data.IDataSource];
 if(!thx.culture) thx.culture = {}
 thx.culture.Info = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
@@ -563,50 +607,6 @@ thx.cultures.EnUS.getCulture = function() {
 	$s.pop();
 }
 thx.cultures.EnUS.prototype.__class__ = thx.cultures.EnUS;
-if(!rg.data.source) rg.data.source = {}
-rg.data.source.ITransform = function() { }
-rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
-rg.data.source.ITransform.prototype.transform = null;
-rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
-rg.data.IDataSource = function() { }
-rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
-rg.data.IDataSource.prototype.onLoad = null;
-rg.data.IDataSource.prototype.load = null;
-rg.data.IDataSource.prototype.__class__ = rg.data.IDataSource;
-rg.data.source.DataSourceArray = function(data) {
-	if( data === $_ ) return;
-	$s.push("rg.data.source.DataSourceArray::new");
-	var $spos = $s.length;
-	this.data = data;
-	this.onLoad = new hxevents.Dispatcher();
-	$s.pop();
-}
-rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
-rg.data.source.DataSourceArray.fromValues = function(arr,event,map) {
-	$s.push("rg.data.source.DataSourceArray::fromValues");
-	var $spos = $s.length;
-	var $tmp = new rg.data.source.DataSourceArray(arr.map(map).map(function(properties,i) {
-		$s.push("rg.data.source.DataSourceArray::fromValues@14");
-		var $spos = $s.length;
-		var $tmp = { properties : properties, event : event};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.source.DataSourceArray.prototype.data = null;
-rg.data.source.DataSourceArray.prototype.onLoad = null;
-rg.data.source.DataSourceArray.prototype.load = function() {
-	$s.push("rg.data.source.DataSourceArray::load");
-	var $spos = $s.length;
-	this.onLoad.dispatch(this.data);
-	$s.pop();
-}
-rg.data.source.DataSourceArray.prototype.__class__ = rg.data.source.DataSourceArray;
-rg.data.source.DataSourceArray.__interfaces__ = [rg.data.IDataSource];
 List = function(p) {
 	if( p === $_ ) return;
 	$s.push("List::new");
@@ -793,116 +793,50 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
-if(typeof hxevents=='undefined') hxevents = {}
-hxevents.Notifier = function(p) {
-	if( p === $_ ) return;
-	$s.push("hxevents.Notifier::new");
+if(!thx.collections) thx.collections = {}
+thx.collections.Sets = function() { }
+thx.collections.Sets.__name__ = ["thx","collections","Sets"];
+thx.collections.Sets.indexOf = function(set,value) {
+	$s.push("thx.collections.Sets::indexOf");
 	var $spos = $s.length;
-	this.handlers = new Array();
+	var $tmp = set._v.indexOf(value);
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-hxevents.Notifier.__name__ = ["hxevents","Notifier"];
-hxevents.Notifier.stop = function() {
-	$s.push("hxevents.Notifier::stop");
+thx.collections.Sets.first = function(set) {
+	$s.push("thx.collections.Sets::first");
 	var $spos = $s.length;
-	throw hxevents.EventException.StopPropagation;
+	var $tmp = set._v[0];
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-hxevents.Notifier.prototype.handlers = null;
-hxevents.Notifier.prototype.add = function(h) {
-	$s.push("hxevents.Notifier::add");
+thx.collections.Sets.last = function(set) {
+	$s.push("thx.collections.Sets::last");
 	var $spos = $s.length;
-	this.handlers.push(h);
+	var $tmp = Arrays.last(set._v);
 	$s.pop();
-	return h;
+	return $tmp;
 	$s.pop();
 }
-hxevents.Notifier.prototype.addOnce = function(h) {
-	$s.push("hxevents.Notifier::addOnce");
+thx.collections.Sets.order = function(set,f) {
+	$s.push("thx.collections.Sets::order");
 	var $spos = $s.length;
-	var me = this;
-	var _h = null;
-	_h = function() {
-		$s.push("hxevents.Notifier::addOnce@19");
-		var $spos = $s.length;
-		me.remove(_h);
-		h();
-		$s.pop();
-	};
-	this.add(_h);
+	set._v.sort(null == f?Dynamics.compare:f);
 	$s.pop();
-	return _h;
+	return set;
 	$s.pop();
 }
-hxevents.Notifier.prototype.remove = function(h) {
-	$s.push("hxevents.Notifier::remove");
+thx.collections.Sets.arr = function(set) {
+	$s.push("thx.collections.Sets::arr");
 	var $spos = $s.length;
-	var _g1 = 0, _g = this.handlers.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		if(Reflect.compareMethods(this.handlers[i],h)) {
-			var $tmp = this.handlers.splice(i,1)[0];
-			$s.pop();
-			return $tmp;
-		}
-	}
+	var $tmp = set._v;
 	$s.pop();
-	return null;
+	return $tmp;
 	$s.pop();
 }
-hxevents.Notifier.prototype.clear = function() {
-	$s.push("hxevents.Notifier::clear");
-	var $spos = $s.length;
-	this.handlers = new Array();
-	$s.pop();
-}
-hxevents.Notifier.prototype.dispatch = function() {
-	$s.push("hxevents.Notifier::dispatch");
-	var $spos = $s.length;
-	try {
-		var list = this.handlers.copy();
-		var _g = 0;
-		while(_g < list.length) {
-			var l = list[_g];
-			++_g;
-			l();
-		}
-		$s.pop();
-		return true;
-	} catch( exc ) {
-		if( js.Boot.__instanceof(exc,hxevents.EventException) ) {
-			$e = [];
-			while($s.length >= $spos) $e.unshift($s.pop());
-			$s.push($e[0]);
-			$s.pop();
-			return false;
-		} else throw(exc);
-	}
-	$s.pop();
-}
-hxevents.Notifier.prototype.has = function(h) {
-	$s.push("hxevents.Notifier::has");
-	var $spos = $s.length;
-	if(null == h) {
-		var $tmp = this.handlers.length > 0;
-		$s.pop();
-		return $tmp;
-	} else {
-		var _g = 0, _g1 = this.handlers;
-		while(_g < _g1.length) {
-			var handler = _g1[_g];
-			++_g;
-			if(h == handler) {
-				$s.pop();
-				return true;
-			}
-		}
-		$s.pop();
-		return false;
-	}
-	$s.pop();
-}
-hxevents.Notifier.prototype.__class__ = hxevents.Notifier;
+thx.collections.Sets.prototype.__class__ = thx.collections.Sets;
 Iterables = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.indexOf = function(it,v,f) {
@@ -1463,11 +1397,12 @@ Ints.prototype.__class__ = Ints;
 rg.data.IAxis = function() { }
 rg.data.IAxis.__name__ = ["rg","data","IAxis"];
 rg.data.IAxis.prototype.scale = null;
+rg.data.IAxis.prototype.toTickmark = null;
+rg.data.IAxis.prototype.ticks = null;
 rg.data.IAxis.prototype.__class__ = rg.data.IAxis;
 rg.data.IAxisDiscrete = function() { }
 rg.data.IAxisDiscrete.__name__ = ["rg","data","IAxisDiscrete"];
 rg.data.IAxisDiscrete.prototype.range = null;
-rg.data.IAxisDiscrete.prototype.sample = null;
 rg.data.IAxisDiscrete.prototype.__class__ = rg.data.IAxisDiscrete;
 rg.data.IAxisDiscrete.__interfaces__ = [rg.data.IAxis];
 Dynamics = function() { }
@@ -2105,11 +2040,19 @@ rg.data.AxisTime = function(periodicity) {
 }
 rg.data.AxisTime.__name__ = ["rg","data","AxisTime"];
 rg.data.AxisTime.prototype.periodicity = null;
-rg.data.AxisTime.prototype.sample = function(start,end,upperBound) {
-	$s.push("rg.data.AxisTime::sample");
+rg.data.AxisTime.prototype.toTickmark = function(start,end,value) {
+	$s.push("rg.data.AxisTime::toTickmark");
+	var $spos = $s.length;
+	var $tmp = new rg.data.Tickmark(value,true,(value - start) / (end - start));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisTime.prototype.ticks = function(start,end,upperBound) {
+	$s.push("rg.data.AxisTime::ticks");
 	var $spos = $s.length;
 	var span = end - start, range = this.range(start,end).map(function(value,i) {
-		$s.push("rg.data.AxisTime::sample@20");
+		$s.push("rg.data.AxisTime::ticks@26");
 		var $spos = $s.length;
 		var $tmp = new rg.data.Tickmark(value,true,(value - start) / span);
 		$s.pop();
@@ -2453,6 +2396,7 @@ Iterators.isIterator = function(v) {
 	$s.pop();
 }
 Iterators.prototype.__class__ = Iterators;
+if(typeof hxevents=='undefined') hxevents = {}
 hxevents.EventException = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
 hxevents.EventException.StopPropagation = ["StopPropagation",0];
 hxevents.EventException.StopPropagation.toString = $estr;
@@ -4048,6 +3992,24 @@ rg.data.VariableIndependent = function(type,axis,min,max) {
 rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
 rg.data.VariableIndependent.__super__ = rg.data.Variable;
 for(var k in rg.data.Variable.prototype ) rg.data.VariableIndependent.prototype[k] = rg.data.Variable.prototype[k];
+rg.data.VariableIndependent.forTime = function(type,periodicity,min,max) {
+	$s.push("rg.data.VariableIndependent::forTime");
+	var $spos = $s.length;
+	var axis = new rg.data.AxisTime(periodicity);
+	var $tmp = new rg.data.VariableIndependent(type,axis,min,max);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.VariableIndependent.forOrdinal = function(type,values) {
+	$s.push("rg.data.VariableIndependent::forOrdinal");
+	var $spos = $s.length;
+	var axis = new rg.data.AxisOrdinal(values);
+	var $tmp = new rg.data.VariableIndependent(type,axis,axis.getFirst(),axis.getLast());
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.data.VariableIndependent.prototype.axis = null;
 rg.data.VariableIndependent.prototype.range = function() {
 	$s.push("rg.data.VariableIndependent::range");
@@ -4459,6 +4421,284 @@ Dates.compare = function(a,b) {
 	$s.pop();
 }
 Dates.prototype.__class__ = Dates;
+if(!thx.date) thx.date = {}
+thx.date.DateParser = function() { }
+thx.date.DateParser.__name__ = ["thx","date","DateParser"];
+thx.date.DateParser.parse = function(s,d) {
+	$s.push("thx.date.DateParser::parse");
+	var $spos = $s.length;
+	var time = thx.date.DateParser.parseTime(s), v;
+	if(null == d) d = Date.now();
+	s = StringTools.replace(s,time.matched,"");
+	var year = 0, month = 0, day = 0, found = null != time.matched;
+	if(thx.date.DateParser.dateexp.match(s)) {
+		found = true;
+		s = StringTools.replace(s,thx.date.DateParser.dateexp.matched(0),"");
+		if(null != (v = thx.date.DateParser.dateexp.matched(1))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(2));
+			month = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			year = null != (v = thx.date.DateParser.dateexp.matched(3))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(4))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(5));
+			month = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			year = null != (v = thx.date.DateParser.dateexp.matched(6))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(8))) {
+			month = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(7))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(9))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(11))) {
+			month = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(10))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(12))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(14))) {
+			month = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(13))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(15))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(17))) {
+			month = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(16))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(18))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(19))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(20));
+			month = Std.parseInt(v) - 1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(21))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(23))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(22));
+			month = Std.parseInt(v) - 1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(24))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(25))) {
+			year = thx.date.DateParser.fixyear(Std.parseInt(v));
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(27));
+			month = Std.parseInt(thx.date.DateParser.dateexp.matched(26)) - 1;
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(28))) {
+			year = d.getFullYear();
+			day = Std.parseInt(v);
+			month = d.getMonth();
+		}
+	} else if(thx.date.DateParser.absdateexp.match(s)) {
+		found = true;
+		s = StringTools.replace(s,thx.date.DateParser.absdateexp.matched(0),"");
+		year = d.getFullYear();
+		month = d.getMonth();
+		day = d.getDate();
+		if(null != (v = thx.date.DateParser.absdateexp.matched(1))) switch(v.toLowerCase()) {
+		case "now":case "this second":
+			if(null == time.matched) {
+				time.hour = d.getHours();
+				time.minute = d.getMinutes();
+				time.second = d.getSeconds();
+			}
+			break;
+		case "tomorrow":
+			day += 1;
+			break;
+		case "yesterday":
+			day -= 1;
+			break;
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(3))) {
+			var t = thx.date.DateParser.absdateexp.matched(2), v1 = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			if(v1 == month) year += thx.date.DateParser.last(t)?-1:thx.date.DateParser.next(t)?1:0; else if(v1 > month) year += thx.date.DateParser.last(t)?-1:0; else year += thx.date.DateParser.next(t)?1:0;
+			month = v1;
+			day = 1;
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(5))) {
+			var t = thx.date.DateParser.absdateexp.matched(4), v1 = thx.date.DateParser.days.indexOf(v.toLowerCase());
+			var wd = d.getDay();
+			if(v1 == wd) day += thx.date.DateParser.last(t)?-7:thx.date.DateParser.next(t)?7:0; else if(v1 > wd) day += v1 - wd + (thx.date.DateParser.last(t)?-7:0); else day += v1 - wd + (thx.date.DateParser.next(t)?7:0);
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(7))) {
+			var t = thx.date.DateParser.absdateexp.matched(6), v1 = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			if(v1 == month) year += thx.date.DateParser.last(t)?-1:thx.date.DateParser.next(t)?1:0; else if(v1 > month) year += thx.date.DateParser.last(t)?-1:0; else year += thx.date.DateParser.next(t)?1:0;
+			month = v1;
+			day = 1;
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(9))) {
+			var t = thx.date.DateParser.absdateexp.matched(8), v1 = thx.date.DateParser.shortdays.indexOf(v.toLowerCase());
+			var wd = d.getDay();
+			if(v1 == wd) day += thx.date.DateParser.last(t)?-7:thx.date.DateParser.next(t)?7:0; else if(v1 > wd) day += v1 - wd + (thx.date.DateParser.last(t)?-7:0); else day += v1 - wd + (thx.date.DateParser.next(t)?7:0);
+		}
+		if(null == time.matched) time.matched = "x";
+	} else {
+		year = d.getFullYear();
+		month = d.getMonth();
+		day = d.getDate();
+	}
+	while(thx.date.DateParser.relexp.match(s)) {
+		found = true;
+		s = StringTools.replace(s,thx.date.DateParser.relexp.matched(0),"");
+		var dir = thx.date.DateParser.relexp.matched(1), qt, period;
+		if(null != dir) {
+			qt = null != (v = thx.date.DateParser.relexp.matched(2))?Std.parseInt(v):1;
+			period = thx.date.DateParser.relexp.matched(3);
+		} else {
+			period = thx.date.DateParser.relexp.matched(5);
+			if(null == period) break;
+			qt = null != (v = thx.date.DateParser.relexp.matched(4))?Std.parseInt(v):1;
+			dir = null != (v = thx.date.DateParser.relexp.matched(6))?v:"after";
+		}
+		dir = dir.toLowerCase();
+		switch(dir) {
+		case "plus":case "+":case "from":case "hence":case "after":
+			break;
+		case "minus":case "-":case "before":case "ago":
+			qt = -qt;
+			break;
+		}
+		switch(dir) {
+		case "ago":case "in":
+			if(null == time.matched) {
+				time.hour = d.getHours();
+				time.minute = d.getMinutes();
+				time.second = d.getSeconds();
+				time.matched = "x";
+			}
+			break;
+		}
+		switch(period.toLowerCase()) {
+		case "second":case "seconds":
+			time.second += qt;
+			break;
+		case "minute":case "minutes":
+			time.minute += qt;
+			break;
+		case "hour":case "hours":
+			time.hour += qt;
+			break;
+		case "day":case "days":
+			day += qt;
+			break;
+		case "week":case "weeks":
+			day += qt * 7;
+			break;
+		case "month":case "months":
+			month += qt;
+			break;
+		case "year":case "years":
+			year += qt;
+			break;
+		}
+	}
+	if(!found) throw new thx.error.Error("no date information found in the string '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 338, className : "thx.date.DateParser", methodName : "parse"});
+	var $tmp = Date.fromTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.date.DateParser.parseTime = function(s) {
+	$s.push("thx.date.DateParser::parseTime");
+	var $spos = $s.length;
+	var result = { hour : 0, minute : 0, second : 0, millis : 0.0, matched : null};
+	if(!thx.date.DateParser.timeexp.match(s)) {
+		$s.pop();
+		return result;
+	}
+	result.matched = thx.date.DateParser.timeexp.matched(0);
+	var v;
+	if(null != (v = thx.date.DateParser.timeexp.matched(1))) {
+		result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(3));
+		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(2));
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(4))) {
+		result.hour = Std.parseInt(v);
+		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(5));
+		if(null != (v = thx.date.DateParser.timeexp.matched(6))) result.second = Std.parseInt(v);
+		if(null != (v = thx.date.DateParser.timeexp.matched(7))) result.millis = Std.parseFloat(v) / 1000;
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(8))) {
+		result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(10));
+		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(9));
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(11))) result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(12)); else if(null != (v = thx.date.DateParser.timeexp.matched(13))) switch(v.toLowerCase()) {
+	case "evening":
+		result.hour = 17;
+		break;
+	case "morning":
+		result.hour = 8;
+		break;
+	case "afternoon":
+		result.hour = 14;
+		break;
+	case "sunsrise":case "dawn":
+		result.hour = 6;
+		break;
+	case "sunset":case "dusk":
+		result.hour = 19;
+		break;
+	case "noon":case "midday":case "mid-day":
+		result.hour = 12;
+		break;
+	case "mid-night":case "midnight":
+		result.hour = 23;
+		result.minute = 59;
+		result.second = 59;
+		result.millis = 0.999;
+		break;
+	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 405, className : "thx.date.DateParser", methodName : "parseTime"});
+	$s.pop();
+	return result;
+	$s.pop();
+}
+thx.date.DateParser.fixyear = function(y) {
+	$s.push("thx.date.DateParser::fixyear");
+	var $spos = $s.length;
+	if(y < 70) {
+		var $tmp = 2000 + y;
+		$s.pop();
+		return $tmp;
+	} else if(y < 100) {
+		var $tmp = 1900 + y;
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return y;
+	}
+	$s.pop();
+}
+thx.date.DateParser.last = function(s) {
+	$s.push("thx.date.DateParser::last");
+	var $spos = $s.length;
+	if(null == s) {
+		$s.pop();
+		return false;
+	} else {
+		var $tmp = "last" == s.toLowerCase();
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.date.DateParser.next = function(s) {
+	$s.push("thx.date.DateParser::next");
+	var $spos = $s.length;
+	if(null == s) {
+		$s.pop();
+		return true;
+	} else {
+		var $tmp = "next" == s.toLowerCase();
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.date.DateParser.plusPm = function(s) {
+	$s.push("thx.date.DateParser::plusPm");
+	var $spos = $s.length;
+	if(null == s) {
+		$s.pop();
+		return 0;
+	} else {
+		var $tmp = (function($this) {
+			var $r;
+			switch(s.toLowerCase()) {
+			case "pm":case "evening":case "afternoon":
+				$r = 12;
+				break;
+			default:
+				$r = 0;
+			}
+			return $r;
+		}(this));
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.date.DateParser.prototype.__class__ = thx.date.DateParser;
 rg.data.source.TestRGDataSource = function(p) {
 	$s.push("rg.data.source.TestRGDataSource::new");
 	var $spos = $s.length;
@@ -5263,19 +5503,21 @@ rg.data.DataProcessor = function(sources) {
 	var $spos = $s.length;
 	this.sources = sources;
 	sources.onLoad.add($closure(this,"process"));
-	this.onData = new hxevents.Notifier();
+	this.onData = new hxevents.Dispatcher();
+	this.variablesToFill = [];
 	$s.pop();
 }
 rg.data.DataProcessor.__name__ = ["rg","data","DataProcessor"];
 rg.data.DataProcessor.prototype.sources = null;
 rg.data.DataProcessor.prototype.onData = null;
+rg.data.DataProcessor.prototype.variablesToFill = null;
 rg.data.DataProcessor.prototype.independentVariables = null;
 rg.data.DataProcessor.prototype.dependentVariable = null;
 rg.data.DataProcessor.prototype.defaultSegment = null;
 rg.data.DataProcessor.prototype.transform = function(s) {
 	$s.push("rg.data.DataProcessor::transform");
 	var $spos = $s.length;
-	var $tmp = [s[0][0]];
+	var $tmp = s[0];
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -5284,10 +5526,10 @@ rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 	$s.push("rg.data.DataProcessor::filterSubset");
 	var $spos = $s.length;
 	var $tmp = Arrays.filter(subset,(function(f,a1) {
-		$s.push("rg.data.DataProcessor::filterSubset@37");
+		$s.push("rg.data.DataProcessor::filterSubset@39");
 		var $spos = $s.length;
 		var $tmp = function(a2) {
-			$s.push("rg.data.DataProcessor::filterSubset@37@37");
+			$s.push("rg.data.DataProcessor::filterSubset@39@39");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2);
 			$s.pop();
@@ -5320,6 +5562,7 @@ rg.data.DataProcessor.prototype.filterDatapoint = function(variables,dp) {
 rg.data.DataProcessor.prototype.process = function(data) {
 	$s.push("rg.data.DataProcessor::process");
 	var $spos = $s.length;
+	this.fillIndependentVariables(data);
 	var variablesset = this.getVariableValues(), segments = new thx.collections.HashList();
 	var _g = 0;
 	while(_g < variablesset.length) {
@@ -5348,21 +5591,53 @@ rg.data.DataProcessor.prototype.process = function(data) {
 			}
 		}
 	}
-	this.associateData(segments);
-	this.onData.dispatch();
+	this.onData.dispatch(segments);
 	$s.pop();
 }
-rg.data.DataProcessor.prototype.associateData = function(data) {
-	$s.push("rg.data.DataProcessor::associateData");
+rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
+	$s.push("rg.data.DataProcessor::fillIndependentVariables");
 	var $spos = $s.length;
-	haxe.Log.trace(data,{ fileName : "DataProcessor.hx", lineNumber : 96, className : "rg.data.DataProcessor", methodName : "associateData"});
+	var toprocess = [];
+	var _g1 = 0, _g = this.independentVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(this.variablesToFill[i] == true && Std["is"](this.independentVariables[i].axis,rg.data.AxisOrdinal)) toprocess.push(i);
+	}
+	if(toprocess.length > 0) {
+		var flatten = Arrays.flatten(data);
+		var _g = 0;
+		while(_g < toprocess.length) {
+			var pos = toprocess[_g];
+			++_g;
+			this.fillIndependentVariable(this.independentVariables[pos],flatten);
+		}
+	}
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.fillIndependentVariable = function(variable,data) {
+	$s.push("rg.data.DataProcessor::fillIndependentVariable");
+	var $spos = $s.length;
+	var axis = variable.axis, property = variable.type, values = axis.getValues(), value;
+	var _g = 0;
+	while(_g < data.length) {
+		var dp = data[_g];
+		++_g;
+		if(Reflect.hasField(dp.properties,property)) {
+			value = Reflect.field(dp.properties,property);
+			if(!values.exists(value)) {
+				if(values.length == 0) variable.min = value;
+				values.add(value);
+				variable.max = value;
+			}
+		}
+	}
 	$s.pop();
 }
 rg.data.DataProcessor.prototype.getVariableValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableValues@113");
+		$s.push("rg.data.DataProcessor::getVariableValues@137");
 		var $spos = $s.length;
 		var $tmp = d.range();
 		$s.pop();
@@ -7200,20 +7475,35 @@ for(var k in thx.error.Error.prototype ) thx.error.AbstractMethod.prototype[k] =
 thx.error.AbstractMethod.prototype.__class__ = thx.error.AbstractMethod;
 rg.data.IAxisOrdinal = function() { }
 rg.data.IAxisOrdinal.__name__ = ["rg","data","IAxisOrdinal"];
+rg.data.IAxisOrdinal.prototype.first = null;
+rg.data.IAxisOrdinal.prototype.last = null;
+rg.data.IAxisOrdinal.prototype.allTicks = null;
 rg.data.IAxisOrdinal.prototype.values = null;
 rg.data.IAxisOrdinal.prototype.__class__ = rg.data.IAxisOrdinal;
 rg.data.IAxisOrdinal.__interfaces__ = [rg.data.IAxisDiscrete];
-rg.data.AxisOrdinal = function(values) {
-	if( values === $_ ) return;
+rg.data.AxisOrdinal = function(arr,set) {
+	if( arr === $_ ) return;
 	$s.push("rg.data.AxisOrdinal::new");
 	var $spos = $s.length;
-	this.values = values;
+	if(null != arr) this.values = thx.collections.Set.ofArray(arr); else if(null != set) this.values = set; else this.values = new thx.collections.Set();
 	$s.pop();
 }
 rg.data.AxisOrdinal.__name__ = ["rg","data","AxisOrdinal"];
+rg.data.AxisOrdinal.prototype.first = null;
+rg.data.AxisOrdinal.prototype.last = null;
 rg.data.AxisOrdinal.prototype.values = null;
-rg.data.AxisOrdinal.prototype.sample = function(start,end,upperBound) {
-	$s.push("rg.data.AxisOrdinal::sample");
+rg.data.AxisOrdinal.prototype.allTicks = null;
+rg.data.AxisOrdinal.prototype.toTickmark = function(start,end,value) {
+	$s.push("rg.data.AxisOrdinal::toTickmark");
+	var $spos = $s.length;
+	var r = this.range(start,end);
+	var $tmp = new rg.data.OrdinalTickmark(r.indexOf(value),r);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.ticks = function(start,end,upperBound) {
+	$s.push("rg.data.AxisOrdinal::ticks");
 	var $spos = $s.length;
 	if(0 == upperBound) {
 		var $tmp = [];
@@ -7229,10 +7519,10 @@ rg.data.AxisOrdinal.prototype.sample = function(start,end,upperBound) {
 rg.data.AxisOrdinal.prototype.range = function(start,end) {
 	$s.push("rg.data.AxisOrdinal::range");
 	var $spos = $s.length;
-	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 33, className : "rg.data.AxisOrdinal", methodName : "range"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 35, className : "rg.data.AxisOrdinal", methodName : "range"});
-	var $tmp = this.getValues().slice(s,e + 1);
+	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 50, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 52, className : "rg.data.AxisOrdinal", methodName : "range"});
+	var $tmp = this.getValues().array().slice(s,e + 1);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -7240,11 +7530,27 @@ rg.data.AxisOrdinal.prototype.range = function(start,end) {
 rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisOrdinal::scale");
 	var $spos = $s.length;
-	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end), p = this.getValues().indexOf(v);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 45, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 47, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 49, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end), p = this.getValues()._v.indexOf(v);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 62, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 66, className : "rg.data.AxisOrdinal", methodName : "scale"});
 	var $tmp = (p - s) / (e - s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.getFirst = function() {
+	$s.push("rg.data.AxisOrdinal::getFirst");
+	var $spos = $s.length;
+	var $tmp = this.getValues()._v[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.getLast = function() {
+	$s.push("rg.data.AxisOrdinal::getLast");
+	var $spos = $s.length;
+	var $tmp = Arrays.last(this.getValues()._v);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -7253,6 +7559,22 @@ rg.data.AxisOrdinal.prototype.getValues = function() {
 	$s.push("rg.data.AxisOrdinal::getValues");
 	var $spos = $s.length;
 	var $tmp = this.values;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.getAllTicks = function() {
+	$s.push("rg.data.AxisOrdinal::getAllTicks");
+	var $spos = $s.length;
+	var t = $closure(this,"toTickmark"), f = this.getFirst(), l = this.getLast();
+	var $tmp = this.range(f,l).map(function(d,i) {
+		$s.push("rg.data.AxisOrdinal::getAllTicks@78");
+		var $spos = $s.length;
+		var $tmp = t(f,l,d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -7272,7 +7594,7 @@ rg.data.OrdinalTickmark.fromArray = function(values) {
 	$s.push("rg.data.OrdinalTickmark::fromArray");
 	var $spos = $s.length;
 	var $tmp = values.map(function(_,i) {
-		$s.push("rg.data.OrdinalTickmark::fromArray@60");
+		$s.push("rg.data.OrdinalTickmark::fromArray@86");
 		var $spos = $s.length;
 		var $tmp = new rg.data.OrdinalTickmark(i,values);
 		$s.pop();
@@ -8048,7 +8370,7 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		return result;
 	case "year":
 		var $tmp = Ints.range(Date.fromTime(start).getFullYear(),Date.fromTime(end).getFullYear(),1).map(function(d,i) {
-			$s.push("rg.util.Periodicity::range@78");
+			$s.push("rg.util.Periodicity::range@79");
 			var $spos = $s.length;
 			var $tmp = new Date(d,0,1,0,0,0).getTime();
 			$s.pop();
@@ -8117,11 +8439,11 @@ rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
 	$s.push("rg.util.Periodicity::minForPeriodicityInSeries");
 	var $spos = $s.length;
 	var $tmp = Arrays.floatMin(arr,function(d) {
-		$s.push("rg.util.Periodicity::minForPeriodicityInSeries@111");
+		$s.push("rg.util.Periodicity::minForPeriodicityInSeries@112");
 		var $spos = $s.length;
 		var o = Reflect.field(d,periodicity);
 		var $tmp = Arrays.floatMin(Reflect.fields(o),function(d1) {
-			$s.push("rg.util.Periodicity::minForPeriodicityInSeries@111@113");
+			$s.push("rg.util.Periodicity::minForPeriodicityInSeries@112@114");
 			var $spos = $s.length;
 			var $tmp = Std.parseFloat(d1);
 			$s.pop();
@@ -8140,11 +8462,11 @@ rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
 	$s.push("rg.util.Periodicity::maxForPeriodicityInSeries");
 	var $spos = $s.length;
 	var $tmp = Arrays.floatMax(arr,function(d) {
-		$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@119");
+		$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@120");
 		var $spos = $s.length;
 		var o = Reflect.field(d,periodicity);
 		var $tmp = Arrays.floatMax(Reflect.fields(o),function(d1) {
-			$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@119@121");
+			$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@120@122");
 			var $spos = $s.length;
 			var $tmp = Std.parseFloat(d1);
 			$s.pop();
@@ -8167,7 +8489,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 		switch(periodicity) {
 		case "eternity":
 			$r = function(_) {
-				$s.push("rg.util.Periodicity::formatf@129");
+				$s.push("rg.util.Periodicity::formatf@130");
 				var $spos = $s.length;
 				$s.pop();
 				return "all time";
@@ -8176,7 +8498,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "minute":case "hour":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@130");
+				$s.push("rg.util.Periodicity::formatf@131");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.timeShort(Date.fromTime(v));
 				$s.pop();
@@ -8186,7 +8508,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "day":case "week":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@131");
+				$s.push("rg.util.Periodicity::formatf@132");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.dateShort(Date.fromTime(v));
 				$s.pop();
@@ -8196,7 +8518,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "month":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@132");
+				$s.push("rg.util.Periodicity::formatf@133");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.yearMonth(Date.fromTime(v));
 				$s.pop();
@@ -8206,7 +8528,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "year":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@133");
+				$s.push("rg.util.Periodicity::formatf@134");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.year(Date.fromTime(v));
 				$s.pop();
@@ -8249,6 +8571,48 @@ rg.util.Periodicity.format = function(periodicity,v) {
 		$s.pop();
 		return $tmp;
 	}
+	$s.pop();
+}
+rg.util.Periodicity.defaultRange = function(periodicity) {
+	$s.push("rg.util.Periodicity::defaultRange");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = [0.0,0.0];
+			break;
+		case "minute":
+			$r = rg.util.Periodicity.parsePair("6 hours ago","now");
+			break;
+		case "hour":
+			$r = rg.util.Periodicity.parsePair("2 days ago","now");
+			break;
+		case "day":
+			$r = rg.util.Periodicity.parsePair("14 days ago","today");
+			break;
+		case "week":
+			$r = rg.util.Periodicity.parsePair("6 weeks ago","today");
+			break;
+		case "month":
+			$r = rg.util.Periodicity.parsePair("6 months ago","today");
+			break;
+		case "year":
+			$r = rg.util.Periodicity.parsePair("6 years ago","today");
+			break;
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.parsePair = function(start,end) {
+	$s.push("rg.util.Periodicity::parsePair");
+	var $spos = $s.length;
+	var $tmp = [thx.date.DateParser.parse(start).getTime(),thx.date.DateParser.parse(end).getTime()];
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
 rg.util.Periodicity.prototype.__class__ = rg.util.Periodicity;
@@ -9022,6 +9386,14 @@ rg.data.Tickmarks.string = function(tick) {
 	return $tmp;
 	$s.pop();
 }
+rg.data.Tickmarks.forFloat = function(start,end,value) {
+	$s.push("rg.data.Tickmarks::forFloat");
+	var $spos = $s.length;
+	var $tmp = new rg.data.Tickmark(value,true,(value - start) / (end - start));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.data.Tickmarks.prototype.__class__ = rg.data.Tickmarks;
 rg.data.source.rgquery.transform.TestCountTimeSeriesTransform = function(p) {
 	if( p === $_ ) return;
@@ -9639,7 +10011,7 @@ Arrays.reduce = function(arr,f,initialValue) {
 Arrays.order = function(arr,f) {
 	$s.push("Arrays::order");
 	var $spos = $s.length;
-	arr.sort(null == f?Reflect.compare:f);
+	arr.sort(null == f?Dynamics.compare:f);
 	$s.pop();
 	return arr;
 	$s.pop();
@@ -11484,6 +11856,89 @@ rg.data.VariableDependent.__super__ = rg.data.Variable;
 for(var k in rg.data.Variable.prototype ) rg.data.VariableDependent.prototype[k] = rg.data.Variable.prototype[k];
 rg.data.VariableDependent.prototype.axis = null;
 rg.data.VariableDependent.prototype.__class__ = rg.data.VariableDependent;
+thx.collections.Set = function(p) {
+	if( p === $_ ) return;
+	$s.push("thx.collections.Set::new");
+	var $spos = $s.length;
+	this._v = [];
+	this.length = 0;
+	$s.pop();
+}
+thx.collections.Set.__name__ = ["thx","collections","Set"];
+thx.collections.Set.ofArray = function(arr) {
+	$s.push("thx.collections.Set::ofArray");
+	var $spos = $s.length;
+	var set = new thx.collections.Set();
+	var _g = 0;
+	while(_g < arr.length) {
+		var item = arr[_g];
+		++_g;
+		set.add(item);
+	}
+	$s.pop();
+	return set;
+	$s.pop();
+}
+thx.collections.Set.prototype.length = null;
+thx.collections.Set.prototype._v = null;
+thx.collections.Set.prototype.add = function(v) {
+	$s.push("thx.collections.Set::add");
+	var $spos = $s.length;
+	this._v.remove(v);
+	this._v.push(v);
+	this.length = this._v.length;
+	$s.pop();
+}
+thx.collections.Set.prototype.remove = function(v) {
+	$s.push("thx.collections.Set::remove");
+	var $spos = $s.length;
+	var t = this._v.remove(v);
+	this.length = this._v.length;
+	$s.pop();
+	return t;
+	$s.pop();
+}
+thx.collections.Set.prototype.exists = function(v) {
+	$s.push("thx.collections.Set::exists");
+	var $spos = $s.length;
+	var _g = 0, _g1 = this._v;
+	while(_g < _g1.length) {
+		var t = _g1[_g];
+		++_g;
+		if(t == v) {
+			$s.pop();
+			return true;
+		}
+	}
+	$s.pop();
+	return false;
+	$s.pop();
+}
+thx.collections.Set.prototype.iterator = function() {
+	$s.push("thx.collections.Set::iterator");
+	var $spos = $s.length;
+	var $tmp = this._v.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.Set.prototype.array = function() {
+	$s.push("thx.collections.Set::array");
+	var $spos = $s.length;
+	var $tmp = this._v.copy();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.Set.prototype.toString = function() {
+	$s.push("thx.collections.Set::toString");
+	var $spos = $s.length;
+	var $tmp = "{" + this._v.join(", ") + "}";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.Set.prototype.__class__ = thx.collections.Set;
 rg.data.source.rgquery.transform.TransformCount = function(properties,event,unit) {
 	if( properties === $_ ) return;
 	$s.push("rg.data.source.rgquery.transform.TransformCount::new");
@@ -11874,10 +12329,10 @@ rg.data.TestTransform.__name__ = ["rg","data","TestTransform"];
 rg.data.TestTransform.prototype.testTransform = function() {
 	$s.push("rg.data.TestTransform::testTransform");
 	var $spos = $s.length;
-	var samples = 10, start = Date.fromString("2011-07-12 00:00:00").getTime(), end = Date.fromString("2011-07-12 12:00:00").getTime(), trange = rg.util.Periodicity.range(start,end,"hour"), vrange = Ints.range(trange.length), ageRanges = ["1-13","14-17","18-20","21+"], genders = ["male","female"], defaultAxis = "count", defaultSegment = "default";
+	var samples = 10, start = Date.fromString("2011-07-12 00:00:00").getTime(), end = Date.fromString("2011-07-12 02:00:00").getTime(), trange = rg.util.Periodicity.range(start,end,"hour"), vrange = Ints.range(trange.length), ageRanges = ["1-12","13-20","21+"], genders = ["male","female"], defaultAxis = "count", defaultSegment = "default";
 	var src = [];
 	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
-		$s.push("rg.data.TestTransform::testTransform@31");
+		$s.push("rg.data.TestTransform::testTransform@30");
 		var $spos = $s.length;
 		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
 		$s.pop();
@@ -11886,20 +12341,45 @@ rg.data.TestTransform.prototype.testTransform = function() {
 	}));
 	vrange.reverse();
 	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
-		$s.push("rg.data.TestTransform::testTransform@40");
+		$s.push("rg.data.TestTransform::testTransform@39");
 		var $spos = $s.length;
 		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}));
-	var iv = [];
-	iv.push(new rg.data.VariableIndependent(".#time:hour",new rg.data.AxisTime("hour"),start,end));
-	iv.push(new rg.data.VariableIndependent(".ageRange",new rg.data.AxisOrdinal(["1-13","14-17","18-20","21+"]),"1-13","21+"));
-	iv.push(new rg.data.VariableIndependent(".gender",new rg.data.AxisOrdinal(["male","female"]),"male","female"));
+	var injectValues = [false,true,false], iv = [], periodicity = "hour";
+	iv.push(rg.data.VariableIndependent.forTime(".#time:hour",periodicity,start,end));
+	iv.push(rg.data.VariableIndependent.forOrdinal(".ageRange"));
+	iv.push(rg.data.VariableIndependent.forOrdinal(".gender",["male","female"]));
 	var sources = new rg.data.Sources(src), processor = new rg.data.DataProcessor(sources);
 	processor.defaultSegment = "default";
 	processor.independentVariables = iv;
+	processor.variablesToFill = injectValues;
+	processor.transform = function(sets) {
+		$s.push("rg.data.TestTransform::testTransform@62");
+		var $spos = $s.length;
+		var set = Arrays.flatten(sets);
+		var el = Objects.clone(set[0]);
+		el.properties.count = 0;
+		var _g = 0;
+		while(_g < set.length) {
+			var item = set[_g];
+			++_g;
+			el.properties.count += item.properties.count;
+		}
+		var $tmp = [el];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	processor.onData.add(function(data) {
+		$s.push("rg.data.TestTransform::testTransform@72");
+		var $spos = $s.length;
+		var expected = [{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310450400000,"1-12","male",2])},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310454000000,"13-20","female",2])},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310457600000,"21+","male",2])}];
+		utest.Assert.same(expected,data.get("default"),null,null,{ fileName : "TestTransform.hx", lineNumber : 83, className : "rg.data.TestTransform", methodName : "testTransform"});
+		$s.pop();
+	});
 	sources.load();
 	$s.pop();
 }
@@ -12246,15 +12726,15 @@ rg.data.TestAxisOrdinal.prototype.testOrdinal = function() {
 	$s.push("rg.data.TestAxisOrdinal::testOrdinal");
 	var $spos = $s.length;
 	var ordinal = new rg.data.AxisOrdinal(["a","b","c","d","e","f","g","h"]);
-	this.assertValues(["b","c","d"],ordinal.sample("b","d"),{ fileName : "TestAxisOrdinal.hx", lineNumber : 17, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues([],ordinal.sample("b","d",0),{ fileName : "TestAxisOrdinal.hx", lineNumber : 18, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues(["b"],ordinal.sample("b","d",1),{ fileName : "TestAxisOrdinal.hx", lineNumber : 19, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues(["b","d"],ordinal.sample("b","d",2),{ fileName : "TestAxisOrdinal.hx", lineNumber : 20, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues(["b","c","d"],ordinal.sample("b","d",3),{ fileName : "TestAxisOrdinal.hx", lineNumber : 21, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues(["b","c","d"],ordinal.sample("b","d",4),{ fileName : "TestAxisOrdinal.hx", lineNumber : 22, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues(["a","h"],ordinal.sample("a","h",2),{ fileName : "TestAxisOrdinal.hx", lineNumber : 23, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues(["a","d","g"],ordinal.sample("a","h",3),{ fileName : "TestAxisOrdinal.hx", lineNumber : 24, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
-	this.assertValues(["a","c","e","g"],ordinal.sample("a","h",4),{ fileName : "TestAxisOrdinal.hx", lineNumber : 25, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b","c","d"],ordinal.ticks("b","d"),{ fileName : "TestAxisOrdinal.hx", lineNumber : 17, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues([],ordinal.ticks("b","d",0),{ fileName : "TestAxisOrdinal.hx", lineNumber : 18, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b"],ordinal.ticks("b","d",1),{ fileName : "TestAxisOrdinal.hx", lineNumber : 19, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b","d"],ordinal.ticks("b","d",2),{ fileName : "TestAxisOrdinal.hx", lineNumber : 20, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b","c","d"],ordinal.ticks("b","d",3),{ fileName : "TestAxisOrdinal.hx", lineNumber : 21, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b","c","d"],ordinal.ticks("b","d",4),{ fileName : "TestAxisOrdinal.hx", lineNumber : 22, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["a","h"],ordinal.ticks("a","h",2),{ fileName : "TestAxisOrdinal.hx", lineNumber : 23, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["a","d","g"],ordinal.ticks("a","h",3),{ fileName : "TestAxisOrdinal.hx", lineNumber : 24, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["a","c","e","g"],ordinal.ticks("a","h",4),{ fileName : "TestAxisOrdinal.hx", lineNumber : 25, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
 	$s.pop();
 }
 rg.data.TestAxisOrdinal.prototype.assertValues = function(expected,test,pos) {
@@ -12272,34 +12752,6 @@ rg.data.TestAxisOrdinal.prototype.assertValues = function(expected,test,pos) {
 	$s.pop();
 }
 rg.data.TestAxisOrdinal.prototype.__class__ = rg.data.TestAxisOrdinal;
-js.Lib = function() { }
-js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
-js.Lib.document = null;
-js.Lib.window = null;
-js.Lib.alert = function(v) {
-	$s.push("js.Lib::alert");
-	var $spos = $s.length;
-	alert(js.Boot.__string_rec(v,""));
-	$s.pop();
-}
-js.Lib.eval = function(code) {
-	$s.push("js.Lib::eval");
-	var $spos = $s.length;
-	var $tmp = eval(code);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-js.Lib.setErrorHandler = function(f) {
-	$s.push("js.Lib::setErrorHandler");
-	var $spos = $s.length;
-	js.Lib.onerror = f;
-	$s.pop();
-}
-js.Lib.prototype.__class__ = js.Lib;
-if(!thx.collections) thx.collections = {}
 thx.collections.HashList = function(p) {
 	if( p === $_ ) return;
 	$s.push("thx.collections.HashList::new");
@@ -12477,6 +12929,33 @@ thx.collections.HashList.prototype.toString = function() {
 thx.collections.HashList.prototype.__keys = null;
 thx.collections.HashList.prototype.__hash = null;
 thx.collections.HashList.prototype.__class__ = thx.collections.HashList;
+js.Lib = function() { }
+js.Lib.__name__ = ["js","Lib"];
+js.Lib.isIE = null;
+js.Lib.isOpera = null;
+js.Lib.document = null;
+js.Lib.window = null;
+js.Lib.alert = function(v) {
+	$s.push("js.Lib::alert");
+	var $spos = $s.length;
+	alert(js.Boot.__string_rec(v,""));
+	$s.pop();
+}
+js.Lib.eval = function(code) {
+	$s.push("js.Lib::eval");
+	var $spos = $s.length;
+	var $tmp = eval(code);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+js.Lib.setErrorHandler = function(f) {
+	$s.push("js.Lib::setErrorHandler");
+	var $spos = $s.length;
+	js.Lib.onerror = f;
+	$s.pop();
+}
+js.Lib.prototype.__class__ = js.Lib;
 StringTools = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
@@ -13033,6 +13512,57 @@ thx.languages.En.getLanguage();
 Ints._reparse = new EReg("^([+-])?\\d+$","");
 thx.color.Colors._reParse = new EReg("^\\s*(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))\\s*$","i");
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
+thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
+thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
+	$s.push("StringTools::isEOF");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+});
+thx.date.DateParser.shortmonths = thx.cultures.EnUS.getCulture().date.abbrMonths.slice(0,-1).map(function(d,i) {
+	$s.push("StringTools::isEOF");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+});
+thx.date.DateParser.days = thx.cultures.EnUS.getCulture().date.days.map(function(d,i) {
+	$s.push("StringTools::isEOF");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+});
+thx.date.DateParser.shortdays = thx.cultures.EnUS.getCulture().date.abbrDays.map(function(d,i) {
+	$s.push("StringTools::isEOF");
+	var $spos = $s.length;
+	var $tmp = d.toLowerCase();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+});
+thx.date.DateParser.sfullmonths = thx.date.DateParser.months.join("|");
+thx.date.DateParser.sshortmonths = thx.date.DateParser.shortmonths.join("|");
+thx.date.DateParser.sfulldays = thx.date.DateParser.days.join("|");
+thx.date.DateParser.sshortdays = thx.date.DateParser.shortdays.join("|");
+thx.date.DateParser.day = "(0?[0-9]|[1-2][0-9]|3[0-1])(?:st|nd|rd|th)?";
+thx.date.DateParser.month = "(?:0?[1-9]|1[0-2])";
+thx.date.DateParser.hour = "(?:0?[0-9]|1[0-9]|2[0-3])";
+thx.date.DateParser.hhour = "(?:0[0-9]|1[0-2])";
+thx.date.DateParser.hohour = "(?:0?[0-9]|1[0-2])";
+thx.date.DateParser.fminsec = "(?:0[0-9]|[1-5][0-9])";
+thx.date.DateParser.minsec = "(?:0?[0-9]|[1-5][0-9])";
+thx.date.DateParser.ampm = "(?:(?:in\\s+the\\s+)?(am|pm|evening|morning|afternoon))";
+thx.date.DateParser.daypart = "(?:(?:in\\s+the\\s+)?(evening|morning|afternoon|sunsrise|sunset|dawn|dusk|noon|mid-day|midday|mid-night|midnight))";
+thx.date.DateParser.period = "minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years|second|seconds";
+thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.sfullmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.sshortmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,?\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sfullmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sshortmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.month + ")/" + thx.date.DateParser.day + "(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "/(" + thx.date.DateParser.month + ")(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b(\\d{2,4})-(" + thx.date.DateParser.month + ")-" + thx.date.DateParser.day + "\\b" + ")|(?:" + "^\\s*" + thx.date.DateParser.day + "\\s*$" + "))","i");
+thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
+thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
+thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
 haxe.Timer.arr = new Array();
 utest.ui.text.HtmlReport.platform = "javascript";
 utest.TestHandler.POLLING_TIME = 10;

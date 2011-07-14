@@ -14,7 +14,13 @@ class AxisTime implements IAxisDiscrete<Float>
 	{
 		this.periodicity = periodicity;
 	}
-	public function sample(start: Float, end: Float, ?upperBound: Int) : Array<ITickmark<Float>>
+	
+	public function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>
+	{
+		return Tickmarks.forFloat(start, end, value);
+	}
+	
+	public function ticks(start: Float, end: Float, ?upperBound: Int) : Array<ITickmark<Float>>
 	{
 		var span = end - start,
 			range = range(start, end).map(function(value, i) : ITickmark<Float> {

@@ -18,11 +18,10 @@ class TestTransform
 	{
 		var samples = 10,
 			start = Date.fromString("2011-07-12 00:00:00").getTime(),
-			end = Date.fromString("2011-07-12 12:00:00").getTime(),
+			end = Date.fromString("2011-07-12 02:00:00").getTime(),
 			trange = Periodicity.range(start, end, "hour"),
 			vrange = Ints.range(trange.length),
-			ageRanges = ["1-13", "14-17", "18-20", "21+"],
-//			ages = [8,14,15,20,25,39],
+			ageRanges = ["1-12", "13-20", "21+"],
 			genders = ["male", "female"],
 			defaultAxis = "count",
 			defaultSegment = "default";
@@ -46,25 +45,43 @@ class TestTransform
 			;
 		}));
 		
-		var iv : Array<VariableIndependent<Dynamic>> = [];
+		var injectValues = [false, true, false],
+			iv : Array<VariableIndependent<Dynamic>> = [],
+			periodicity = "hour";
 			
-			// TODO: build values if not available from the config
-			// TODO: guess limits if not availavle from the config
-			
-			iv.push(new VariableIndependent(".#time:hour",
-				new AxisTime("hour"),
-				start, end));
-			iv.push(new VariableIndependent(".ageRange",
-				new AxisOrdinal(["1-13", "14-17", "18-20", "21+"]),
-				"1-13", "21+"));
-			iv.push(new VariableIndependent(".gender",
-				new AxisOrdinal(["male", "female"]),
-				"male", "female"));
-		
+		iv.push(VariableIndependent.forTime(".#time:hour", periodicity, start, end));
+		iv.push(VariableIndependent.forOrdinal(".ageRange"));
+		iv.push(VariableIndependent.forOrdinal(".gender", ["male", "female"]));
+
 		var sources = new Sources(src),
 			processor = new DataProcessor(sources);
 		processor.defaultSegment = "default";
 		processor.independentVariables = iv;
+		processor.variablesToFill = injectValues;
+		
+		processor.transform = function(sets : Array<Array<DataPoint>>)
+		{
+			var set = Arrays.flatten(sets);
+			var el = set[0].clone();
+			el.properties.count = 0;
+			for (item in set)
+				el.properties.count += item.properties.count;
+			return cast [el];
+		}
+		
+		processor.onData.add(function(data) {
+			var expected = [{
+				event : "impression",
+				properties : ({}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310450400000, "1-12", "male", 2])
+			}, {
+				event : "impression",
+				properties : ({}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310454000000, "13-20", "female", 2])
+			}, {
+				event : "impression",
+				properties : ({}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310457600000, "21+", "male", 2])
+			}];
+			Assert.same(expected, data.get("default"));
+		});
 		
 		sources.load();
 	}

@@ -5,6 +5,7 @@
 
 package rg.util;
 import thx.culture.FormatDate;
+import thx.date.DateParser;
 using Arrays;
 
 class Periodicity 
@@ -145,5 +146,34 @@ class Periodicity
 			case "year": return FormatDate.year(Date.fromTime(v));
 			default: return periodicity + ": " + v;
 		}
+	}
+	
+	public static function defaultRange(periodicity : String) : Array<Float>
+	{
+		return switch(periodicity)
+		{
+			case "eternity":
+				[0.0, 0.0];
+			case "minute":
+				parsePair("6 hours ago", "now");
+			case "hour":
+				parsePair("2 days ago", "now");
+			case "day":
+				parsePair("14 days ago", "today");
+			case "week":
+				parsePair("6 weeks ago", "today");
+			case "month":
+				parsePair("6 months ago", "today");
+			case "year":
+				parsePair("6 years ago", "today");
+		}
+	}
+	
+	static function parsePair(start : String, end : String) : Array<Float>
+	{
+		return [
+			DateParser.parse(start).getTime(),
+			DateParser.parse(end).getTime()
+		];
 	}
 }

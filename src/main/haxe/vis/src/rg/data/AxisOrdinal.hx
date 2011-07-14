@@ -5,19 +5,36 @@
 
 package rg.data;
 import thx.error.Error;
+import thx.collections.Set;
 using Arrays;
+using thx.collections.Sets;
 
 class AxisOrdinal<T> implements IAxisOrdinal<T>
 {
-	public var values(getValues, null): Array<T>;
+	public var first(getFirst, null) : T;
+	public var last(getLast, null) : T;
+	public var values(getValues, null): Set<T>;
+	public var allTicks (getAllTicks, null): Array<ITickmark<T>>;
 // TODO, this should probably go outside this class, probably should affect the ITickmark collection
 // public var ordering(getOrdering, null): T -> T -> Int;
 
-	public function new(values: Array<T>) {
-		this.values = values;
+	public function new(?arr : Array<T>, ?set: Set<T>)
+	{
+		if (null != arr)
+			values = Set.ofArray(arr);
+		else if (null != set)
+			values = set;
+		else
+			values = new Set();
+	}
+	
+	public function toTickmark(start: T, end : T, value: T): ITickmark<T>
+	{
+		var r = range(start, end);
+		return new OrdinalTickmark(r.indexOf(value), r);
 	}
 
-	public function sample(start: T, end: T, ?upperBound: Int) : Array<ITickmark<T>>
+	public function ticks(start: T, end: T, ?upperBound: Int) : Array<ITickmark<T>>
 	{
 		if (0 == upperBound)
 			return [];	
@@ -33,7 +50,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 			throw new Error("the start bound '{0}' is not part of the acceptable values {1}", [start, values]);
 		if (e < 0)
 			throw new Error("the end bound '{0}' is not part of the acceptable values {1}", [end, values]);
-		return values.slice(s, e + 1);
+		return values.array().slice(s, e + 1);
 	}
 	
 	public function scale(start : T, end : T, v : T)
@@ -50,7 +67,16 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 		return (p - s) / (e - s);
 	}
 	
+	function getFirst() return values.first()
+	function getLast() return values.last()
 	function getValues() return values
+	function getAllTicks()
+	{
+		var t = toTickmark,
+			f = first,
+			l = last;
+		return range(f, l).map(function(d, i) return t(f, l, d));
+	}
 }
 
 class OrdinalTickmark<T> implements ITickmark<T>
