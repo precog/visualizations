@@ -1,9 +1,9 @@
 package rg.data;
 
-typedef DataPoint<T> =
+typedef DataPoint =
 {
 	properties : Dynamic,
-	value : T,
+	value : Dynamic,
 	unit : String,
 	event : String
 }

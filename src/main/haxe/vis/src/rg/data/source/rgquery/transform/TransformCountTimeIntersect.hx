@@ -7,7 +7,7 @@ package rg.data.source.rgquery.transform;
 import rg.data.DataPoint;
 using Arrays;
 
-class TransformCountTimeIntersect implements ITransform<Dynamic, Float>
+class TransformCountTimeIntersect implements ITransform<Dynamic>
 {
 	var properties : Dynamic;
 	var unit : String;
@@ -23,7 +23,7 @@ class TransformCountTimeIntersect implements ITransform<Dynamic, Float>
 		this.event = event;
 	}
 	
-	public function transform(data : Dynamic) : Array<DataPoint<Float>>
+	public function transform(data : Dynamic) : Array<DataPoint>
 	{
 		var values = Objects.flatten(data),
 			properties = this.properties,

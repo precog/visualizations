@@ -6,7 +6,7 @@
 package rg.data.source;
 import rg.data.DataPoint;
 
-interface ITransform<TIn, TOut>
+interface ITransform<T>
 {
-	public function transform(data : TIn) : Array<DataPoint<TOut>>;
+	public function transform(data : T) : Array<DataPoint>;
 }

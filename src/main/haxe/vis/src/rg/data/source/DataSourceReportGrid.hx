@@ -15,7 +15,7 @@ import thx.error.Error;
 import rg.data.source.ITransform;
 using Arrays;
 
-class DataSourceReportGrid implements IDataSource<Dynamic>
+class DataSourceReportGrid implements IDataSource
 {
 	var executor : IExecutorReportGrid;
 	
@@ -31,9 +31,9 @@ class DataSourceReportGrid implements IDataSource<Dynamic>
 	var start : Float;
 	var end : Float;
 	
-	var transform : ITransform<Dynamic, Dynamic>;
+	var transform : ITransform<Dynamic>;
 	
-	public var onLoad(default, null) : Dispatcher<Array<DataPoint<Dynamic>>>;
+	public var onLoad(default, null) : Dispatcher<Array<DataPoint>>;
 	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?start : Float, ?end : Float) 
 	{
 		this.executor = executor;

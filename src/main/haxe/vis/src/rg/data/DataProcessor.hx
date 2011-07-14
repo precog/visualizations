@@ -28,19 +28,19 @@ class DataProcessor
 		onData = new Notifier();
 	}
 	
-	public dynamic function transform(s : Array<Array<DataPoint<Dynamic>>>) : Array<TransformItem>
+	public dynamic function transform(s : Array<Array<DataPoint>>) : Array<TransformItem>
 	{
 		return cast [{
 			value : s[0][0].value
 		}];
 	}
 
-	function filterSubset(subset : Array<DataPoint<Dynamic>>, variables : Array<Dynamic>)
+	function filterSubset(subset : Array<DataPoint>, variables : Array<Dynamic>)
 	{
 		return subset.filter(callback(filterDatapoint, variables));
 	}
 	
-	function filterDatapoint(variables : Array<Dynamic>, dp : DataPoint<Dynamic>)
+	function filterDatapoint(variables : Array<Dynamic>, dp : DataPoint)
 	{
 		for (i in 0...independentVariables.length)
 		{
@@ -50,13 +50,13 @@ class DataProcessor
 		return true;
 	}
 	
-	function process(data : Array<Array<DataPoint<Dynamic>>>)
+	function process(data : Array<Array<DataPoint>>)
 	{
 //		if(null == independentVariables)
 //			buildIndependentVariables(data);
 
 		var variablesset = getVariableValues(),
-			axisData : Hash<HashList<Array<DataPoint<Dynamic>>>> = new Hash();
+			axisData : Hash<HashList<Array<DataPoint>>> = new Hash();
 		
 		for (variables in variablesset)
 		{
@@ -106,20 +106,20 @@ class DataProcessor
 		onData.dispatch();
 	}
 	
-	function associateData(data : Hash<HashList<Array<DataPoint<Dynamic>>>>)
+	function associateData(data : Hash<HashList<Array<DataPoint>>>)
 	{
 		// DO SOMETHING WITH THE FINAL DATA
 		trace(data);
 	}
 /*
-	function buildIndependentVariables(data : Array<Array<DataPoint<Dynamic>>>)
+	function buildIndependentVariables(data : Array<Array<DataPoint>>)
 	{
 		// TODO: build values if not available from the config
 		// TODO: guess limits if not availavle from the config
 		// instantiate variable classes
 	}
 	
-	function buildDependentVariable(data : Hash<HashList<Array<DataPoint<Dynamic>>>>)
+	function buildDependentVariable(data : Hash<HashList<Array<DataPoint>>>)
 	{
 		// instantiate variable class
 	}

@@ -27,7 +27,7 @@ class TestTransform
 			defaultAxis = "count",
 			defaultSegment = "default";
 
-		var src : Array<IDataSource<Dynamic>> = [];
+		var src : Array<IDataSource> = [];
 		src.push(DataSourceArray.fromValues(vrange, "count", "impression", function(d, i) {
 			return ( { } )
 				.addField(".#time:hour", trange[i])

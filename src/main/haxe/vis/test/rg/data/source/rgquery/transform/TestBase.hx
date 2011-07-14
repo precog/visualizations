@@ -12,7 +12,7 @@ class TestBase
 {
 	public function new() { }
 
-	function assertDataPoint<T>(expected : DataPoint<T>, test : DataPoint<T>, ?pos : PosInfos)
+	function assertDataPoint(expected : DataPoint, test : DataPoint, ?pos : PosInfos)
 	{
 		Assert.equals(expected.event, test.event, pos);
 		Assert.equals(expected.unit, test.unit, pos);
@@ -20,7 +20,7 @@ class TestBase
 		Assert.same(expected.properties, test.properties, pos);
 	}
 	
-	function assertDataPoints<T>(expected : Array<DataPoint<T>>, test : Array<DataPoint<T>>, ?pos : PosInfos)
+	function assertDataPoints(expected : Array<DataPoint>, test : Array<DataPoint>, ?pos : PosInfos)
 	{
 		for (i in 0...expected.length)
 			assertDataPoint(expected[i], test[i], pos);

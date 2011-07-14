@@ -9,13 +9,13 @@ using Arrays;
 
 class Sources<T>
 {
-	public var onLoad(default, null) : Dispatcher<Array<Array<DataPoint<T>>>>;
+	public var onLoad(default, null) : Dispatcher<Array<Array<DataPoint>>>;
 	
-	var sources : Array<IDataSource<T>>;
+	var sources : Array<IDataSource>;
 	var length : Int;
-	var data : Array<Array<DataPoint<T>>>;
+	var data : Array<Array<DataPoint>>;
 	var count : Int;
-	public function new(sources : Array<IDataSource<T>>) 
+	public function new(sources : Array<IDataSource>) 
 	{
 		this.sources = sources;
 		this.length = sources.length;
@@ -31,7 +31,7 @@ class Sources<T>
 		sources.each(function(source,_) source.load());
 	}
 	
-	function loaded(pos : Int, d : Array<DataPoint<T>>)
+	function loaded(pos : Int, d : Array<DataPoint>)
 	{
 		data[pos] = d;
 		count++;

@@ -7,7 +7,7 @@ package rg.data.source;
 import hxevents.Dispatcher;
 using Arrays;
 
-class DataSourceArray<T> implements IDataSource<T>
+class DataSourceArray implements IDataSource
 {
 	public static function fromValues<TIn, TOut>(arr : Array<TIn>, unit : String, event : String, map : TIn -> Int -> {})
 	{
@@ -19,10 +19,10 @@ class DataSourceArray<T> implements IDataSource<T>
 		}));
 	}
 	
-	var data : Array<DataPoint<T>>;
+	var data : Array<DataPoint>;
 	
-	public var onLoad(default, null) : Dispatcher<Array<DataPoint<T>>>;
-	public function new(data : Array<DataPoint<T>>) 
+	public var onLoad(default, null) : Dispatcher<Array<DataPoint>>;
+	public function new(data : Array<DataPoint>) 
 	{
 		this.data = data;
 		onLoad = new Dispatcher();

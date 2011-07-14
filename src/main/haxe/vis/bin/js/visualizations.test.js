@@ -11510,7 +11510,8 @@ rg.data.source.rgquery.transform.TransformCount.prototype.event = null;
 rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(data) {
 	$s.push("rg.data.source.rgquery.transform.TransformCount::transform");
 	var $spos = $s.length;
-	var $tmp = [{ properties : this.properties, value : 0.0 + data, unit : this.unit, event : this.event}];
+	var dp = { properties : this.properties, value : data, unit : this.unit, event : this.event};
+	var $tmp = [dp];
 	$s.pop();
 	return $tmp;
 	$s.pop();

@@ -7,7 +7,7 @@ package rg.data.source.rgquery.transform;
 import rg.data.DataPoint;
 using Arrays;
 
-class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>>, Float>
+class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>>>
 {
 	var properties : Dynamic;
 	var unit : String;
@@ -21,7 +21,7 @@ class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>
 		this.event = event;
 	}
 	
-	public function transform(data : Dynamic<Array<Array<Float>>>) : Array<DataPoint<Float>>
+	public function transform(data : Dynamic<Array<Array<Float>>>) : Array<DataPoint>
 	{
 		var values : Array<Array<Float>> = Reflect.field(data, periodicity),
 			properties = this.properties,

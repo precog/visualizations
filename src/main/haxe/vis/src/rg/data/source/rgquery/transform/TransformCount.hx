@@ -4,8 +4,10 @@
  */
 
 package rg.data.source.rgquery.transform;
+import Objects;
+import rg.data.DataPoint;
 
-class TransformCount implements ITransform<Int, Float>
+class TransformCount implements ITransform<Int>
 {
 	var properties : Dynamic;
 	var unit : String;
@@ -19,11 +21,12 @@ class TransformCount implements ITransform<Int, Float>
 	
 	public function transform(data : Int)
 	{
-		return [{
+		var dp : DataPoint = {
 			properties : properties, // TODO, should be a clone?
-			value : 0.0 + data,
+			value : data,
 			unit : unit,
 			event : event
-		}];
+		};
+		return [dp];
 	}
 }
