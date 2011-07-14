@@ -2,8 +2,8 @@ package rg.data;
 
 typedef DataPoint<T> =
 {
-	id : String,
-	predicates : Dynamic,
+	properties : Dynamic,
 	value : T,
-	unit : String
+	unit : String,
+	event : String
 }

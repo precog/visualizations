@@ -3,31 +3,30 @@
  * @author Franco Ponticelli
  */
 
-package rg.data.transform;
+package rg.data.source.rgquery.transform;
 import rg.data.DataPoint;
-import rg.data.Predicates;
 using Arrays;
 
-class CountTimeIntersectTransform implements ITransform<Dynamic, Float>
+class TransformCountTimeIntersect implements ITransform<Dynamic, Float>
 {
-	var predicates : Dynamic;
-	var id : String;
+	var properties : Dynamic;
 	var unit : String;
 	var periodicity : String;
 	var fields : Array<String>;
-	public function new(predicates : Dynamic, fields : Array<String>, ?unit = "count", ?periodicity : String) 
+	var event : String;
+	public function new(properties : Dynamic, fields : Array<String>, event : String, periodicity : String, unit : String) 
 	{
-		this.predicates = predicates;
-		this.id = Predicates.id(predicates);
+		this.properties = properties;
 		this.unit = unit;
-		this.periodicity = null == periodicity ? Predicates.periodicity(predicates) : periodicity;
+		this.periodicity = periodicity;
 		this.fields = fields;
+		this.event = event;
 	}
 	
 	public function transform(data : Dynamic) : Array<DataPoint<Float>>
 	{
 		var values = Objects.flatten(data),
-			predicates = this.predicates,
+			properties = this.properties,
 			unit = this.unit;
 		if (null == values || 0 == values.length)
 			return [];
@@ -42,9 +41,15 @@ class CountTimeIntersectTransform implements ITransform<Dynamic, Float>
 
 			for (i in 0...arr.length)
 			{
-				var p = Objects.addFields(Dynamics.clone(predicates), 
+				/*
+				var p = Objects.addFields(Dynamics.clone(properties), 
 					[".#timestamp"],
 					[arr[i][0]]
+				);
+				*/
+				var p = Objects.addField(Dynamics.clone(properties), 
+					".#time:" + periodicity,
+					arr[i][0]
 				);
 					
 				Objects.addFields(p,
@@ -52,10 +57,10 @@ class CountTimeIntersectTransform implements ITransform<Dynamic, Float>
 					values.map(typedValue)
 				);
 				result.push({
-					id : Predicates.id(p),
-					predicates : p,
+					properties : p,
 					value : arr[i][1],
-					unit : unit
+					unit : unit,
+					event : event
 				});
 			}
 		}

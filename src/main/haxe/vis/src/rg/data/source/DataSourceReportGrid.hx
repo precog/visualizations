@@ -6,18 +6,18 @@
 package rg.data.source;
 import hxevents.Dispatcher;
 import rg.data.IDataSource;
-import rg.data.source.rgquery.IRGExecutor;
+import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.QueryAst;
-import rg.data.transform.CountTransform;
-import rg.data.transform.CountTimeSeriesTransform;
-import rg.data.transform.CountTimeIntersectTransform;
+import rg.data.source.rgquery.transform.TransformCount;
+import rg.data.source.rgquery.transform.TransformCountTimeSeries;
+import rg.data.source.rgquery.transform.TransformCountTimeIntersect;
 import thx.error.Error;
-import rg.data.transform.ITransform;
+import rg.data.source.ITransform;
 using Arrays;
 
-class RGDataSource implements IDataSource<Dynamic>
+class DataSourceReportGrid implements IDataSource<Dynamic>
 {
-	var executor : IRGExecutor;
+	var executor : IExecutorReportGrid;
 	
 	// specific query stuff
 	var exp : Array<{ property : String, limit : Int, order : String }>;
@@ -26,6 +26,7 @@ class RGDataSource implements IDataSource<Dynamic>
 	var periodicity : String;
 	
 	// general query stuff
+	var event : String;
 	var path : String;
 	var start : Float;
 	var end : Float;
@@ -33,7 +34,7 @@ class RGDataSource implements IDataSource<Dynamic>
 	var transform : ITransform<Dynamic, Dynamic>;
 	
 	public var onLoad(default, null) : Dispatcher<Array<DataPoint<Dynamic>>>;
-	public function new(executor : IRGExecutor, path : String, query : Query, ?start : Float, ?end : Float) 
+	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?start : Float, ?end : Float) 
 	{
 		this.executor = executor;
 		var e = normalize(query.exp);
@@ -56,6 +57,7 @@ class RGDataSource implements IDataSource<Dynamic>
 		}
 		
 		this.path = path;
+		this.event = event;
 		this.start = start;
 		this.end = end;
 		
@@ -76,7 +78,7 @@ class RGDataSource implements IDataSource<Dynamic>
 		{
 			var w = { };
 			for (c in where)
-				Reflect.setField(w, c.property, c.value);
+				Reflect.setField(w, event + c.property, c.value);
 			Reflect.setField(o, "where", w);
 		}
 			
@@ -101,36 +103,36 @@ class RGDataSource implements IDataSource<Dynamic>
 		{
 			if (periodicity == "eternity")
 			{
-				transform = new CountTransform( { }, unit());
+				transform = new TransformCount( { }, event, unit());
 				var o : Dynamic = basicOptions(false);
 				if (where.length > 1)
 					executor.searchCount(path, o, success, error);
 				else if (where.length == 1)
 				{
-					o.property = exp[0].property;
+					o.property = event + exp[0].property;
 					o.value = where[0].value;
 					executor.propertyValueCount(path, o, success, error);
 				} else {
-					o.property = exp[0].property;
+					o.property = event + exp[0].property;
 					executor.propertyCount(path, o, success, error);
 				}
 			} else {
-				transform = new CountTimeSeriesTransform( { periodicity : periodicity }, unit());
+				transform = new TransformCountTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
 				var o : Dynamic = basicOptions(true);
 				if (where.length > 1)
 					executor.searchSeries(path, o, success, error);
 				else if (where.length == 1)
 				{
-					o.property = exp[0].property;
+					o.property = event + exp[0].property;
 					o.value = where[0].value;
 					executor.propertyValueSeries(path, o, success, error);
 				} else {
-					o.property = exp[0].property;
+					o.property = event + exp[0].property;
 					executor.propertySeries(path, o, success, error);
 				}
 			}
 		} else {
-			transform = new CountTimeIntersectTransform( { periodicity : periodicity }, exp.map(function(d, _) return d.property), unit());
+			transform = new TransformCountTimeIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			var o = basicOptions(true);
 			o.properties = exp;
 			executor.intersect(path, o, success, error);

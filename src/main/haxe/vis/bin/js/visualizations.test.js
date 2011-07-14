@@ -248,15 +248,6 @@ thx.color.Hsl.prototype.toHslString = function() {
 	$s.pop();
 }
 thx.color.Hsl.prototype.__class__ = thx.color.Hsl;
-if(typeof utest=='undefined') utest = {}
-if(!utest.ui) utest.ui = {}
-if(!utest.ui.common) utest.ui.common = {}
-utest.ui.common.IReport = function() { }
-utest.ui.common.IReport.__name__ = ["utest","ui","common","IReport"];
-utest.ui.common.IReport.prototype.displaySuccessResults = null;
-utest.ui.common.IReport.prototype.displayHeader = null;
-utest.ui.common.IReport.prototype.setHandler = null;
-utest.ui.common.IReport.prototype.__class__ = utest.ui.common.IReport;
 if(typeof rg=='undefined') rg = {}
 if(!rg.data) rg.data = {}
 rg.data.TestSources = function(p) {
@@ -268,25 +259,18 @@ rg.data.TestSources.__name__ = ["rg","data","TestSources"];
 rg.data.TestSources.prototype.testChain = function() {
 	$s.push("rg.data.TestSources::testChain");
 	var $spos = $s.length;
-	var data = [rg.data.source.ArrayDataSource.fromValues([1,2,3],function(d,i) {
-		$s.push("rg.data.TestSources::testChain@16");
-		var $spos = $s.length;
-		var $tmp = { id : null, predicates : { pos : i}, value : d, unit : "count"};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}),rg.data.source.ArrayDataSource.fromValues(["a","b","c"],function(d,i) {
-		$s.push("rg.data.TestSources::testChain@17");
-		var $spos = $s.length;
-		var $tmp = { id : null, predicates : { 'char' : d}, value : i, unit : "pos"};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	})];
-	var sources = new rg.data.ChartSources(data,"axis","segment");
 	$s.pop();
 }
 rg.data.TestSources.prototype.__class__ = rg.data.TestSources;
+if(typeof utest=='undefined') utest = {}
+if(!utest.ui) utest.ui = {}
+if(!utest.ui.common) utest.ui.common = {}
+utest.ui.common.IReport = function() { }
+utest.ui.common.IReport.__name__ = ["utest","ui","common","IReport"];
+utest.ui.common.IReport.prototype.displaySuccessResults = null;
+utest.ui.common.IReport.prototype.displayHeader = null;
+utest.ui.common.IReport.prototype.setHandler = null;
+utest.ui.common.IReport.prototype.__class__ = utest.ui.common.IReport;
 Types = function() { }
 Types.__name__ = ["Types"];
 Types.className = function(o) {
@@ -579,6 +563,50 @@ thx.cultures.EnUS.getCulture = function() {
 	$s.pop();
 }
 thx.cultures.EnUS.prototype.__class__ = thx.cultures.EnUS;
+if(!rg.data.source) rg.data.source = {}
+rg.data.source.ITransform = function() { }
+rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
+rg.data.source.ITransform.prototype.transform = null;
+rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
+rg.data.IDataSource = function() { }
+rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
+rg.data.IDataSource.prototype.onLoad = null;
+rg.data.IDataSource.prototype.load = null;
+rg.data.IDataSource.prototype.__class__ = rg.data.IDataSource;
+rg.data.source.DataSourceArray = function(data) {
+	if( data === $_ ) return;
+	$s.push("rg.data.source.DataSourceArray::new");
+	var $spos = $s.length;
+	this.data = data;
+	this.onLoad = new hxevents.Dispatcher();
+	$s.pop();
+}
+rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
+rg.data.source.DataSourceArray.fromValues = function(arr,unit,event,map) {
+	$s.push("rg.data.source.DataSourceArray::fromValues");
+	var $spos = $s.length;
+	var $tmp = new rg.data.source.DataSourceArray(arr.map(map).map(function(properties,i) {
+		$s.push("rg.data.source.DataSourceArray::fromValues@14");
+		var $spos = $s.length;
+		var $tmp = { properties : properties, value : arr[i], event : event, unit : unit};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.source.DataSourceArray.prototype.data = null;
+rg.data.source.DataSourceArray.prototype.onLoad = null;
+rg.data.source.DataSourceArray.prototype.load = function() {
+	$s.push("rg.data.source.DataSourceArray::load");
+	var $spos = $s.length;
+	this.onLoad.dispatch(this.data);
+	$s.pop();
+}
+rg.data.source.DataSourceArray.prototype.__class__ = rg.data.source.DataSourceArray;
+rg.data.source.DataSourceArray.__interfaces__ = [rg.data.IDataSource];
 List = function(p) {
 	if( p === $_ ) return;
 	$s.push("List::new");
@@ -765,64 +793,116 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
-rg.data.ChartSources = function(sources,defaultAxis,defaultSegment) {
-	if( sources === $_ ) return;
-	$s.push("rg.data.ChartSources::new");
+if(typeof hxevents=='undefined') hxevents = {}
+hxevents.Notifier = function(p) {
+	if( p === $_ ) return;
+	$s.push("hxevents.Notifier::new");
 	var $spos = $s.length;
-	this.sources = sources;
-	this.length = sources.length;
-	this.defaultAxis = defaultAxis;
-	this.defaultSegment = defaultSegment;
-	var _g1 = 0, _g = this.length;
+	this.handlers = new Array();
+	$s.pop();
+}
+hxevents.Notifier.__name__ = ["hxevents","Notifier"];
+hxevents.Notifier.stop = function() {
+	$s.push("hxevents.Notifier::stop");
+	var $spos = $s.length;
+	throw hxevents.EventException.StopPropagation;
+	$s.pop();
+}
+hxevents.Notifier.prototype.handlers = null;
+hxevents.Notifier.prototype.add = function(h) {
+	$s.push("hxevents.Notifier::add");
+	var $spos = $s.length;
+	this.handlers.push(h);
+	$s.pop();
+	return h;
+	$s.pop();
+}
+hxevents.Notifier.prototype.addOnce = function(h) {
+	$s.push("hxevents.Notifier::addOnce");
+	var $spos = $s.length;
+	var me = this;
+	var _h = null;
+	_h = function() {
+		$s.push("hxevents.Notifier::addOnce@19");
+		var $spos = $s.length;
+		me.remove(_h);
+		h();
+		$s.pop();
+	};
+	this.add(_h);
+	$s.pop();
+	return _h;
+	$s.pop();
+}
+hxevents.Notifier.prototype.remove = function(h) {
+	$s.push("hxevents.Notifier::remove");
+	var $spos = $s.length;
+	var _g1 = 0, _g = this.handlers.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		sources[i].onLoad.add((function(f,a1) {
-			$s.push("rg.data.ChartSources::new@27");
-			var $spos = $s.length;
-			var $tmp = function(a2) {
-				$s.push("rg.data.ChartSources::new@27@27");
-				var $spos = $s.length;
-				var $tmp = f(a1,a2);
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			};
+		if(Reflect.compareMethods(this.handlers[i],h)) {
+			var $tmp = this.handlers.splice(i,1)[0];
 			$s.pop();
 			return $tmp;
+		}
+	}
+	$s.pop();
+	return null;
+	$s.pop();
+}
+hxevents.Notifier.prototype.clear = function() {
+	$s.push("hxevents.Notifier::clear");
+	var $spos = $s.length;
+	this.handlers = new Array();
+	$s.pop();
+}
+hxevents.Notifier.prototype.dispatch = function() {
+	$s.push("hxevents.Notifier::dispatch");
+	var $spos = $s.length;
+	try {
+		var list = this.handlers.copy();
+		var _g = 0;
+		while(_g < list.length) {
+			var l = list[_g];
+			++_g;
+			l();
+		}
+		$s.pop();
+		return true;
+	} catch( exc ) {
+		if( js.Boot.__instanceof(exc,hxevents.EventException) ) {
+			$e = [];
+			while($s.length >= $spos) $e.unshift($s.pop());
+			$s.push($e[0]);
 			$s.pop();
-		})($closure(this,"loaded"),i));
+			return false;
+		} else throw(exc);
 	}
 	$s.pop();
 }
-rg.data.ChartSources.__name__ = ["rg","data","ChartSources"];
-rg.data.ChartSources.prototype.onLoad = null;
-rg.data.ChartSources.prototype.sources = null;
-rg.data.ChartSources.prototype.length = null;
-rg.data.ChartSources.prototype.data = null;
-rg.data.ChartSources.prototype.count = null;
-rg.data.ChartSources.prototype.defaultAxis = null;
-rg.data.ChartSources.prototype.defaultSegment = null;
-rg.data.ChartSources.prototype.load = function() {
-	$s.push("rg.data.ChartSources::load");
+hxevents.Notifier.prototype.has = function(h) {
+	$s.push("hxevents.Notifier::has");
 	var $spos = $s.length;
-	this.count = 0;
-	this.data = [];
+	if(null == h) {
+		var $tmp = this.handlers.length > 0;
+		$s.pop();
+		return $tmp;
+	} else {
+		var _g = 0, _g1 = this.handlers;
+		while(_g < _g1.length) {
+			var handler = _g1[_g];
+			++_g;
+			if(h == handler) {
+				$s.pop();
+				return true;
+			}
+		}
+		$s.pop();
+		return false;
+	}
 	$s.pop();
 }
-rg.data.ChartSources.prototype.loaded = function(pos,d) {
-	$s.push("rg.data.ChartSources::loaded");
-	var $spos = $s.length;
-	this.data[pos] = d;
-	this.count++;
-	if(this.count == this.length) this.complete();
-	$s.pop();
-}
-rg.data.ChartSources.prototype.complete = function() {
-	$s.push("rg.data.ChartSources::complete");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.data.ChartSources.prototype.__class__ = rg.data.ChartSources;
+hxevents.Notifier.prototype.__class__ = hxevents.Notifier;
 Iterables = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.indexOf = function(it,v,f) {
@@ -951,11 +1031,61 @@ Iterables.isIterable = function(v) {
 	$s.pop();
 }
 Iterables.prototype.__class__ = Iterables;
-if(!rg.data.transform) rg.data.transform = {}
-rg.data.transform.ITransform = function() { }
-rg.data.transform.ITransform.__name__ = ["rg","data","transform","ITransform"];
-rg.data.transform.ITransform.prototype.transform = null;
-rg.data.transform.ITransform.prototype.__class__ = rg.data.transform.ITransform;
+if(!rg.data.source.rgquery) rg.data.source.rgquery = {}
+if(!rg.data.source.rgquery.transform) rg.data.source.rgquery.transform = {}
+rg.data.source.rgquery.transform.TestBase = function(p) {
+	$s.push("rg.data.source.rgquery.transform.TestBase::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestBase.__name__ = ["rg","data","source","rgquery","transform","TestBase"];
+rg.data.source.rgquery.transform.TestBase.prototype.assertDataPoint = function(expected,test,pos) {
+	$s.push("rg.data.source.rgquery.transform.TestBase::assertDataPoint");
+	var $spos = $s.length;
+	utest.Assert.equals(expected.event,test.event,null,pos);
+	utest.Assert.equals(expected.unit,test.unit,null,pos);
+	utest.Assert.same(expected.value,test.value,null,null,pos);
+	utest.Assert.same(expected.properties,test.properties,null,null,pos);
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestBase.prototype.assertDataPoints = function(expected,test,pos) {
+	$s.push("rg.data.source.rgquery.transform.TestBase::assertDataPoints");
+	var $spos = $s.length;
+	var _g1 = 0, _g = expected.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.assertDataPoint(expected[i],test[i],pos);
+	}
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestBase.prototype.__class__ = rg.data.source.rgquery.transform.TestBase;
+rg.data.source.rgquery.transform.TestCountTimeIntersectTransform = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TestCountTimeIntersectTransform::new");
+	var $spos = $s.length;
+	rg.data.source.rgquery.transform.TestBase.call(this);
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.__name__ = ["rg","data","source","rgquery","transform","TestCountTimeIntersectTransform"];
+rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.__super__ = rg.data.source.rgquery.transform.TestBase;
+for(var k in rg.data.source.rgquery.transform.TestBase.prototype ) rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype[k] = rg.data.source.rgquery.transform.TestBase.prototype[k];
+rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testTransform = function() {
+	$s.push("rg.data.source.rgquery.transform.TestCountTimeIntersectTransform::testTransform");
+	var $spos = $s.length;
+	var transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },[".platform"],"impression","day","count");
+	var data = Objects.addFields({ },["\"iphone\"","\"android\""],[{ day : [[1310342400000,7],[1310428800000,5]]},{ day : [[1310342400000,1972],[1310428800000,2]]}]);
+	this.assertDataPoints([{ unit : "count", value : 7.0, event : "impression", properties : Objects.addFields({ },[".#time:day",".platform"],[1310342400000,"iphone"])},{ unit : "count", value : 5.0, event : "impression", properties : Objects.addFields({ },[".#time:day",".platform"],[1310428800000,"iphone"])},{ unit : "count", value : 1972.0, event : "impression", properties : Objects.addFields({ },[".#time:day",".platform"],[1310342400000,"android"])},{ unit : "count", value : 2.0, event : "impression", properties : Objects.addFields({ },[".#time:day",".platform"],[1310428800000,"android"])}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransform"});
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testTransformDeep = function() {
+	$s.push("rg.data.source.rgquery.transform.TestCountTimeIntersectTransform::testTransformDeep");
+	var $spos = $s.length;
+	var transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },[".floatValue",".boolValue",".platform"],"impression","day","count");
+	var data = Objects.addField({ },"1.2",Objects.addField({ },"true",Objects.addField({ },"\"iphone\"",{ day : [[1310342400000,7],[1310428800000,5]]})));
+	this.assertDataPoints([{ unit : "count", value : 7.0, event : "impression", properties : Objects.addFields({ },[".#time:day",".platform",".boolValue",".floatValue"],[1310342400000,"iphone",true,1.2])},{ unit : "count", value : 5.0, event : "impression", properties : Objects.addFields({ },[".#time:day",".platform",".boolValue",".floatValue"],[1310428800000,"iphone",true,1.2])}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 46, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransformDeep"});
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeIntersectTransform;
 utest.Runner = function(p) {
 	if( p === $_ ) return;
 	$s.push("utest.Runner::new");
@@ -1332,6 +1462,16 @@ Ints.compare = function(a,b) {
 	$s.pop();
 }
 Ints.prototype.__class__ = Ints;
+rg.data.IAxis = function() { }
+rg.data.IAxis.__name__ = ["rg","data","IAxis"];
+rg.data.IAxis.prototype.scale = null;
+rg.data.IAxis.prototype.__class__ = rg.data.IAxis;
+rg.data.IAxisDiscrete = function() { }
+rg.data.IAxisDiscrete.__name__ = ["rg","data","IAxisDiscrete"];
+rg.data.IAxisDiscrete.prototype.range = null;
+rg.data.IAxisDiscrete.prototype.sample = null;
+rg.data.IAxisDiscrete.prototype.__class__ = rg.data.IAxisDiscrete;
+rg.data.IAxisDiscrete.__interfaces__ = [rg.data.IAxis];
 Dynamics = function() { }
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
@@ -1618,6 +1758,68 @@ Dynamics.compare = function(a,b) {
 	}
 	$s.pop();
 }
+Dynamics.comparef = function(sample) {
+	$s.push("Dynamics::comparef");
+	var $spos = $s.length;
+	var $e = (Type["typeof"](sample));
+	switch( $e[1] ) {
+	case 1:
+		var $tmp = Ints.compare;
+		$s.pop();
+		return $tmp;
+	case 2:
+		var $tmp = Floats.compare;
+		$s.pop();
+		return $tmp;
+	case 3:
+		var $tmp = Bools.compare;
+		$s.pop();
+		return $tmp;
+	case 4:
+		var $tmp = Objects.compare;
+		$s.pop();
+		return $tmp;
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "Array":
+			var $tmp = Arrays.compare;
+			$s.pop();
+			return $tmp;
+		case "String":
+			var $tmp = Strings.compare;
+			$s.pop();
+			return $tmp;
+		case "Date":
+			var $tmp = Dates.compare;
+			$s.pop();
+			return $tmp;
+		default:
+			var $tmp = function(a,b) {
+				$s.push("Dynamics::comparef@179");
+				var $spos = $s.length;
+				var $tmp = Strings.compare(Std.string(a),Std.string(b));
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+		}
+		break;
+	case 7:
+		var e = $e[2];
+		var $tmp = Enums.compare;
+		$s.pop();
+		return $tmp;
+	default:
+		var $tmp = Dynamics.compare;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
 Dynamics.clone = function(v) {
 	$s.push("Dynamics::clone");
 	var $spos = $s.length;
@@ -1865,7 +2067,7 @@ Dynamics.same = function(a,b) {
 	}
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 334, className : "Dynamics", methodName : "same"});
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 362, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
 	$s.pop();
@@ -1890,6 +2092,55 @@ utest.Assertation.TeardownError = function(e,stack) { var $x = ["TeardownError",
 utest.Assertation.TimeoutError = function(missedAsyncs,stack) { var $x = ["TimeoutError",5,missedAsyncs,stack]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
 utest.Assertation.AsyncError = function(e,stack) { var $x = ["AsyncError",6,e,stack]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
 utest.Assertation.Warning = function(msg) { var $x = ["Warning",7,msg]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
+rg.data.ITickmark = function() { }
+rg.data.ITickmark.__name__ = ["rg","data","ITickmark"];
+rg.data.ITickmark.prototype.delta = null;
+rg.data.ITickmark.prototype.major = null;
+rg.data.ITickmark.prototype.value = null;
+rg.data.ITickmark.prototype.__class__ = rg.data.ITickmark;
+rg.data.AxisTime = function(periodicity) {
+	if( periodicity === $_ ) return;
+	$s.push("rg.data.AxisTime::new");
+	var $spos = $s.length;
+	this.periodicity = periodicity;
+	$s.pop();
+}
+rg.data.AxisTime.__name__ = ["rg","data","AxisTime"];
+rg.data.AxisTime.prototype.periodicity = null;
+rg.data.AxisTime.prototype.sample = function(start,end,upperBound) {
+	$s.push("rg.data.AxisTime::sample");
+	var $spos = $s.length;
+	var span = end - start, range = this.range(start,end).map(function(value,i) {
+		$s.push("rg.data.AxisTime::sample@20");
+		var $spos = $s.length;
+		var $tmp = new rg.data.Tickmark(value,true,(value - start) / span);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	var $tmp = rg.data.Tickmarks.bound(range,upperBound);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisTime.prototype.range = function(start,end) {
+	$s.push("rg.data.AxisTime::range");
+	var $spos = $s.length;
+	var $tmp = rg.util.Periodicity.range(start,end,this.periodicity);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisTime.prototype.scale = function(start,end,v) {
+	$s.push("rg.data.AxisTime::scale");
+	var $spos = $s.length;
+	var $tmp = Floats.interpolate(v,start,end);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisTime.prototype.__class__ = rg.data.AxisTime;
+rg.data.AxisTime.__interfaces__ = [rg.data.IAxisDiscrete];
 thx.color.Cmyk = function(cyan,magenta,yellow,black) {
 	if( cyan === $_ ) return;
 	$s.push("thx.color.Cmyk::new");
@@ -2204,7 +2455,6 @@ Iterators.isIterator = function(v) {
 	$s.pop();
 }
 Iterators.prototype.__class__ = Iterators;
-if(typeof hxevents=='undefined') hxevents = {}
 hxevents.EventException = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
 hxevents.EventException.StopPropagation = ["StopPropagation",0];
 hxevents.EventException.StopPropagation.toString = $estr;
@@ -2258,53 +2508,53 @@ thx.culture.core.DateTimeInfo.prototype.patternSortable = null;
 thx.culture.core.DateTimeInfo.prototype.patternTime = null;
 thx.culture.core.DateTimeInfo.prototype.patternTimeShort = null;
 thx.culture.core.DateTimeInfo.prototype.__class__ = thx.culture.core.DateTimeInfo;
-rg.data.transform.TestBase = function(p) {
-	$s.push("rg.data.transform.TestBase::new");
+rg.data.Tickmark = function(value,major,delta) {
+	if( value === $_ ) return;
+	$s.push("rg.data.Tickmark::new");
 	var $spos = $s.length;
+	this.value = value;
+	this.major = major;
+	this.delta = delta;
 	$s.pop();
 }
-rg.data.transform.TestBase.__name__ = ["rg","data","transform","TestBase"];
-rg.data.transform.TestBase.prototype.assertDataPoint = function(expected,test) {
-	$s.push("rg.data.transform.TestBase::assertDataPoint");
+rg.data.Tickmark.__name__ = ["rg","data","Tickmark"];
+rg.data.Tickmark.prototype.delta = null;
+rg.data.Tickmark.prototype.major = null;
+rg.data.Tickmark.prototype.value = null;
+rg.data.Tickmark.prototype.getDelta = function() {
+	$s.push("rg.data.Tickmark::getDelta");
 	var $spos = $s.length;
-	utest.Assert.equals(expected.unit,test.unit,null,{ fileName : "TestBase.hx", lineNumber : 16, className : "rg.data.transform.TestBase", methodName : "assertDataPoint"});
-	utest.Assert.same(expected.value,test.value,null,null,{ fileName : "TestBase.hx", lineNumber : 17, className : "rg.data.transform.TestBase", methodName : "assertDataPoint"});
-	utest.Assert.same(expected.predicates,test.predicates,null,null,{ fileName : "TestBase.hx", lineNumber : 18, className : "rg.data.transform.TestBase", methodName : "assertDataPoint"});
+	var $tmp = this.delta;
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-rg.data.transform.TestBase.prototype.assertDataPoints = function(expected,test) {
-	$s.push("rg.data.transform.TestBase::assertDataPoints");
+rg.data.Tickmark.prototype.getMajor = function() {
+	$s.push("rg.data.Tickmark::getMajor");
 	var $spos = $s.length;
-	var _g1 = 0, _g = expected.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		this.assertDataPoint(expected[i],test[i]);
-	}
+	var $tmp = this.major;
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-rg.data.transform.TestBase.prototype.__class__ = rg.data.transform.TestBase;
-rg.data.transform.TestCountTransform = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.data.transform.TestCountTransform::new");
+rg.data.Tickmark.prototype.getValue = function() {
+	$s.push("rg.data.Tickmark::getValue");
 	var $spos = $s.length;
-	rg.data.transform.TestBase.call(this);
+	var $tmp = this.value;
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-rg.data.transform.TestCountTransform.__name__ = ["rg","data","transform","TestCountTransform"];
-rg.data.transform.TestCountTransform.__super__ = rg.data.transform.TestBase;
-for(var k in rg.data.transform.TestBase.prototype ) rg.data.transform.TestCountTransform.prototype[k] = rg.data.transform.TestBase.prototype[k];
-rg.data.transform.TestCountTransform.prototype.testTransform = function() {
-	$s.push("rg.data.transform.TestCountTransform::testTransform");
+rg.data.Tickmark.prototype.toString = function() {
+	$s.push("rg.data.Tickmark::toString");
 	var $spos = $s.length;
-	var transform = new rg.data.transform.CountTransform({ });
-	var data = 39;
-	this.assertDataPoints([{ id : null, unit : "count", value : 39.0, predicates : { }}],transform.transform(data));
-	transform = new rg.data.transform.CountTransform({ },"otherunit");
-	data = 7;
-	this.assertDataPoints([{ id : null, unit : "otherunit", value : 7.0, predicates : { }}],transform.transform(7));
+	var $tmp = rg.data.Tickmarks.string(this);
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-rg.data.transform.TestCountTransform.prototype.__class__ = rg.data.transform.TestCountTransform;
+rg.data.Tickmark.prototype.__class__ = rg.data.Tickmark;
+rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
 utest.ui.common.FixtureResult = function(methodName) {
 	if( methodName === $_ ) return;
 	$s.push("utest.ui.common.FixtureResult::new");
@@ -2373,46 +2623,6 @@ utest.ui.common.FixtureResult.prototype.add = function(assertation) {
 	$s.pop();
 }
 utest.ui.common.FixtureResult.prototype.__class__ = utest.ui.common.FixtureResult;
-rg.data.IDataSource = function() { }
-rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
-rg.data.IDataSource.prototype.onLoad = null;
-rg.data.IDataSource.prototype.load = null;
-rg.data.IDataSource.prototype.__class__ = rg.data.IDataSource;
-if(!rg.data.source) rg.data.source = {}
-rg.data.source.ArrayDataSource = function(data) {
-	if( data === $_ ) return;
-	$s.push("rg.data.source.ArrayDataSource::new");
-	var $spos = $s.length;
-	this.data = data;
-	this.onLoad = new hxevents.Dispatcher();
-	$s.pop();
-}
-rg.data.source.ArrayDataSource.__name__ = ["rg","data","source","ArrayDataSource"];
-rg.data.source.ArrayDataSource.fromValues = function(arr,map) {
-	$s.push("rg.data.source.ArrayDataSource::fromValues");
-	var $spos = $s.length;
-	var a = arr.map(map);
-	a.forEach(function(d,i) {
-		$s.push("rg.data.source.ArrayDataSource::fromValues@15");
-		var $spos = $s.length;
-		if(null == d.id) d.id = rg.data.Predicates.id(d.predicates);
-		$s.pop();
-	});
-	var $tmp = new rg.data.source.ArrayDataSource(a);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.source.ArrayDataSource.prototype.data = null;
-rg.data.source.ArrayDataSource.prototype.onLoad = null;
-rg.data.source.ArrayDataSource.prototype.load = function() {
-	$s.push("rg.data.source.ArrayDataSource::load");
-	var $spos = $s.length;
-	this.onLoad.dispatch(this.data);
-	$s.pop();
-}
-rg.data.source.ArrayDataSource.prototype.__class__ = rg.data.source.ArrayDataSource;
-rg.data.source.ArrayDataSource.__interfaces__ = [rg.data.IDataSource];
 thx.culture.FormatParams = function() { }
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
@@ -2828,19 +3038,6 @@ thx.color.Colors._p = function(s) {
 	$s.pop();
 }
 thx.color.Colors.prototype.__class__ = thx.color.Colors;
-if(!rg.data.source.rgquery) rg.data.source.rgquery = {}
-rg.data.source.rgquery.IRGExecutor = function() { }
-rg.data.source.rgquery.IRGExecutor.__name__ = ["rg","data","source","rgquery","IRGExecutor"];
-rg.data.source.rgquery.IRGExecutor.prototype.children = null;
-rg.data.source.rgquery.IRGExecutor.prototype.propertyCount = null;
-rg.data.source.rgquery.IRGExecutor.prototype.propertySeries = null;
-rg.data.source.rgquery.IRGExecutor.prototype.propertyValues = null;
-rg.data.source.rgquery.IRGExecutor.prototype.propertyValueCount = null;
-rg.data.source.rgquery.IRGExecutor.prototype.propertyValueSeries = null;
-rg.data.source.rgquery.IRGExecutor.prototype.searchCount = null;
-rg.data.source.rgquery.IRGExecutor.prototype.searchSeries = null;
-rg.data.source.rgquery.IRGExecutor.prototype.intersect = null;
-rg.data.source.rgquery.IRGExecutor.prototype.__class__ = rg.data.source.rgquery.IRGExecutor;
 utest.ui.common.ResultStats = function(p) {
 	if( p === $_ ) return;
 	$s.push("utest.ui.common.ResultStats::new");
@@ -3510,8 +3707,7 @@ utest.Assert.q = function(v) {
 utest.Assert.same = function(expected,value,recursive,msg,pos) {
 	$s.push("utest.Assert::same");
 	var $spos = $s.length;
-	if(recursive == null) recursive = true;
-	var status = { recursive : recursive, path : "", error : null};
+	var status = { recursive : null == recursive?true:recursive, path : "", error : null};
 	if(utest.Assert.sameAs(expected,value,status)) utest.Assert.isTrue(true,msg,pos); else utest.Assert.fail(msg == null?status.error:msg,pos);
 	$s.pop();
 }
@@ -3829,6 +4025,41 @@ IntIter.prototype.next = function() {
 	$s.pop();
 }
 IntIter.prototype.__class__ = IntIter;
+rg.data.Variable = function(type,min,max) {
+	if( type === $_ ) return;
+	$s.push("rg.data.Variable::new");
+	var $spos = $s.length;
+	this.type = type;
+	this.min = min;
+	this.max = max;
+	$s.pop();
+}
+rg.data.Variable.__name__ = ["rg","data","Variable"];
+rg.data.Variable.prototype.type = null;
+rg.data.Variable.prototype.min = null;
+rg.data.Variable.prototype.max = null;
+rg.data.Variable.prototype.__class__ = rg.data.Variable;
+rg.data.VariableIndependent = function(type,axis,min,max) {
+	if( type === $_ ) return;
+	$s.push("rg.data.VariableIndependent::new");
+	var $spos = $s.length;
+	rg.data.Variable.call(this,type,min,max);
+	this.axis = axis;
+	$s.pop();
+}
+rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
+rg.data.VariableIndependent.__super__ = rg.data.Variable;
+for(var k in rg.data.Variable.prototype ) rg.data.VariableIndependent.prototype[k] = rg.data.Variable.prototype[k];
+rg.data.VariableIndependent.prototype.axis = null;
+rg.data.VariableIndependent.prototype.range = function() {
+	$s.push("rg.data.VariableIndependent::range");
+	var $spos = $s.length;
+	var $tmp = this.axis.range(this.min,this.max);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.VariableIndependent.prototype.__class__ = rg.data.VariableIndependent;
 Dates = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
@@ -4240,7 +4471,7 @@ rg.data.source.TestRGDataSource.prototype.profile = function(query) {
 	$s.push("rg.data.source.TestRGDataSource::profile");
 	var $spos = $s.length;
 	var executor = new rg.data.source.rgquery.MockRGExecutor();
-	new rg.data.source.RGDataSource(executor,"/",query).load();
+	new rg.data.source.DataSourceReportGrid(executor,"/","impression",query).load();
 	var $tmp = executor.callStack;
 	$s.pop();
 	return $tmp;
@@ -4249,65 +4480,65 @@ rg.data.source.TestRGDataSource.prototype.profile = function(query) {
 rg.data.source.TestRGDataSource.prototype.testEventCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testEventCount");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "propertyCount", args : ["/",{ property : ".impression"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".impression")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 24, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
+	utest.Assert.same([{ method : "propertyCount", args : ["/",{ property : "impression"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property("")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 24, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyCount");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "propertyCount", args : ["/",{ property : ".impression.unique"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".impression.unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 35, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyCount"});
+	utest.Assert.same([{ method : "propertyCount", args : ["/",{ property : "impression.unique"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 35, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testEventSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testEventSeries");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "propertySeries", args : ["/",{ property : ".impression", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time(".impression","day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 46, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
+	utest.Assert.same([{ method : "propertySeries", args : ["/",{ property : "impression", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("","day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 46, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertySeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertySeries");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "propertySeries", args : ["/",{ property : ".impression.unique", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time(".impression.unique","day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 57, className : "rg.data.source.TestRGDataSource", methodName : "testPropertySeries"});
+	utest.Assert.same([{ method : "propertySeries", args : ["/",{ property : "impression.unique", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time(".unique","day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 57, className : "rg.data.source.TestRGDataSource", methodName : "testPropertySeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValueCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValueCount");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "propertyValueCount", args : ["/",{ property : ".impression.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".impression.gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".impression.gender","female")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 68, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
+	utest.Assert.same([{ method : "propertyValueCount", args : ["/",{ property : "impression.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 68, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValueSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValueSeries");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "propertyValueSeries", args : ["/",{ property : ".impression.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".impression.gender"),rg.data.source.rgquery.QExp.Time(".impression.gender","day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".impression.gender","female")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 79, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
+	utest.Assert.same([{ method : "propertyValueSeries", args : ["/",{ property : "impression.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time(".gender","day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 79, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testSearchValueCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testSearchValueCount");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "searchCount", args : ["/",{ where : Objects.addFields({ },[".impression.gender",".impression.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".impression")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".impression.gender","female"),rg.data.source.rgquery.QCondition.Equality(".impression.ageRange","21-30")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 90, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
+	utest.Assert.same([{ method : "searchCount", args : ["/",{ where : Objects.addFields({ },["impression.gender","impression.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property("")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 90, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testSearchSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testSearchSeries");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : Objects.addFields({ },[".impression.gender",".impression.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".impression"),rg.data.source.rgquery.QExp.Time(".impression","day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".impression.gender","female"),rg.data.source.rgquery.QCondition.Equality(".impression.ageRange","21-30")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 104, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
+	utest.Assert.same([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : Objects.addFields({ },["impression.gender","impression.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(""),rg.data.source.rgquery.QExp.Time("","day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 104, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testIntersectOverTime = function() {
 	$s.push("rg.data.source.TestRGDataSource::testIntersectOverTime");
 	var $spos = $s.length;
-	utest.Assert.same([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".impression.gender", limit : 5, order : "descending"},{ property : ".impression.platform", limit : 7, order : "ascending"},{ property : ".impression.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".impression.gender",5,true),rg.data.source.rgquery.QExp.Property(".impression.platform",7,false),rg.data.source.rgquery.QExp.Property(".impression.ageRange"),rg.data.source.rgquery.QExp.Time(".impression","day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 118, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
+	utest.Assert.same([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".gender", limit : 5, order : "descending"},{ property : ".platform", limit : 7, order : "ascending"},{ property : ".ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("","day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 118, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testNormalization = function() {
 	$s.push("rg.data.source.TestRGDataSource::testNormalization");
 	var $spos = $s.length;
-	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".impression"),rg.data.source.rgquery.QExp.Time(".impression","eternity")],rg.data.source.RGDataSource.normalize([rg.data.source.rgquery.QExp.Property(".impression")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 148, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".impression"),rg.data.source.rgquery.QExp.Time(".impression","day")],rg.data.source.RGDataSource.normalize([rg.data.source.rgquery.QExp.Time(".impression","day")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 153, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".impression.unique"),rg.data.source.rgquery.QExp.Time(".impression.unique","day")],rg.data.source.RGDataSource.normalize([rg.data.source.rgquery.QExp.Time(".impression.unique","day")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 158, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".impression.platform"),rg.data.source.rgquery.QExp.Property(".impression.ageRange"),rg.data.source.rgquery.QExp.Time("","eternity")],rg.data.source.RGDataSource.normalize([rg.data.source.rgquery.QExp.Property(".impression.platform"),rg.data.source.rgquery.QExp.Property(".impression.ageRange")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 163, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".impression.platform"),rg.data.source.rgquery.QExp.Property(".impression.ageRange"),rg.data.source.rgquery.QExp.Time(".impression","eternity")],rg.data.source.RGDataSource.normalize([rg.data.source.rgquery.QExp.Time(".impression","eternity"),rg.data.source.rgquery.QExp.Property(".impression.platform"),rg.data.source.rgquery.QExp.Property(".impression.ageRange")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 175, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	utest.Assert.same([rg.data.source.rgquery.QExp.Property(""),rg.data.source.rgquery.QExp.Time("","eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property("")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 148, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	utest.Assert.same([rg.data.source.rgquery.QExp.Property(""),rg.data.source.rgquery.QExp.Time("","day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("","day")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 153, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time(".unique","day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time(".unique","day")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 158, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("","eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 163, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	utest.Assert.same([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("","eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("","eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),null,null,{ fileName : "TestRGDataSource.hx", lineNumber : 175, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.__class__ = rg.data.source.TestRGDataSource;
@@ -4376,6 +4607,259 @@ thx.languages.En.getLanguage = function() {
 	$s.pop();
 }
 thx.languages.En.prototype.__class__ = thx.languages.En;
+rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,end) {
+	if( executor === $_ ) return;
+	$s.push("rg.data.source.DataSourceReportGrid::new");
+	var $spos = $s.length;
+	this.executor = executor;
+	var e = rg.data.source.DataSourceReportGrid.normalize(query.exp);
+	this.periodicity = (function($this) {
+		var $r;
+		var $e = (e.pop());
+		switch( $e[1] ) {
+		case 0:
+			var p = $e[3];
+			$r = p;
+			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 41, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				return $r;
+			}($this));
+		}
+		return $r;
+	}(this));
+	this.exp = e.map(function(d,_) {
+		$s.push("rg.data.source.DataSourceReportGrid::new@42");
+		var $spos = $s.length;
+		var $tmp = (function($this) {
+			var $r;
+			var $e = (d);
+			switch( $e[1] ) {
+			case 1:
+				var descending = $e[4], limit = $e[3], name = $e[2];
+				$r = { property : name, limit : null == limit?10:limit, order : false == descending?"ascending":"descending"};
+				break;
+			default:
+				$r = (function($this) {
+					var $r;
+					throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 46, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					return $r;
+				}($this));
+			}
+			return $r;
+		}(this));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	this.where = query.where.map(function(d,i) {
+		$s.push("rg.data.source.DataSourceReportGrid::new@47");
+		var $spos = $s.length;
+		var $tmp = (function($this) {
+			var $r;
+			var $e = (d);
+			switch( $e[1] ) {
+			case 0:
+				var value = $e[3], property = $e[2];
+				$r = { property : property, value : value};
+				break;
+			default:
+				$r = (function($this) {
+					var $r;
+					throw new thx.error.Error("invalid data for Where",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 50, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					return $r;
+				}($this));
+			}
+			return $r;
+		}(this));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	this.operation = query.operation;
+	switch( (this.operation)[1] ) {
+	case 0:
+		break;
+	default:
+		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 56, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+	}
+	this.path = path;
+	this.event = event;
+	this.start = start;
+	this.end = end;
+	this.onLoad = new hxevents.Dispatcher();
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.__name__ = ["rg","data","source","DataSourceReportGrid"];
+rg.data.source.DataSourceReportGrid.normalize = function(exp) {
+	$s.push("rg.data.source.DataSourceReportGrid::normalize");
+	var $spos = $s.length;
+	if(exp.length > 1) {
+		var pos = -1;
+		var _g1 = 0, _g = exp.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 163, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				pos = i;
+			}
+		}
+		if(pos >= 0) {
+			var $tmp = exp.slice(0,pos).concat(exp.slice(pos + 1)).concat([exp[pos]]);
+			$s.pop();
+			return $tmp;
+		} else {
+			var $tmp = exp.copy().concat([rg.data.source.rgquery.QExp.Time("","eternity")]);
+			$s.pop();
+			return $tmp;
+		}
+	} else if(exp.length == 1) {
+		var $e = (exp[0]);
+		switch( $e[1] ) {
+		case 1:
+			var name = $e[2];
+			var $tmp = [exp[0],rg.data.source.rgquery.QExp.Time(name,"eternity")];
+			$s.pop();
+			return $tmp;
+		case 0:
+			var periodicity = $e[3], name = $e[2];
+			var $tmp = [rg.data.source.rgquery.QExp.Property(name),exp[0]];
+			$s.pop();
+			return $tmp;
+		}
+	} else {
+		$s.pop();
+		return exp;
+	}
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.isTimeProperty = function(exp) {
+	$s.push("rg.data.source.DataSourceReportGrid::isTimeProperty");
+	var $spos = $s.length;
+	switch( (exp)[1] ) {
+	case 0:
+		$s.pop();
+		return true;
+	default:
+		$s.pop();
+		return false;
+	}
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.prototype.executor = null;
+rg.data.source.DataSourceReportGrid.prototype.exp = null;
+rg.data.source.DataSourceReportGrid.prototype.operation = null;
+rg.data.source.DataSourceReportGrid.prototype.where = null;
+rg.data.source.DataSourceReportGrid.prototype.periodicity = null;
+rg.data.source.DataSourceReportGrid.prototype.event = null;
+rg.data.source.DataSourceReportGrid.prototype.path = null;
+rg.data.source.DataSourceReportGrid.prototype.start = null;
+rg.data.source.DataSourceReportGrid.prototype.end = null;
+rg.data.source.DataSourceReportGrid.prototype.transform = null;
+rg.data.source.DataSourceReportGrid.prototype.onLoad = null;
+rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeriodicity) {
+	$s.push("rg.data.source.DataSourceReportGrid::basicOptions");
+	var $spos = $s.length;
+	if(appendPeriodicity == null) appendPeriodicity = true;
+	var o = { };
+	if(null != this.start) o["start"] = this.start;
+	if(null != this.end) o["end"] = this.end;
+	if(appendPeriodicity) o["periodicity"] = this.periodicity;
+	if(this.where.length > 1) {
+		var w = { };
+		var _g = 0, _g1 = this.where;
+		while(_g < _g1.length) {
+			var c = _g1[_g];
+			++_g;
+			w[this.event + c.property] = c.value;
+		}
+		o["where"] = w;
+	}
+	$s.pop();
+	return o;
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.prototype.unit = function() {
+	$s.push("rg.data.source.DataSourceReportGrid::unit");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		switch( ($this.operation)[1] ) {
+		case 0:
+			$r = "count";
+			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 93, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
+				return $r;
+			}($this));
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.prototype.load = function() {
+	$s.push("rg.data.source.DataSourceReportGrid::load");
+	var $spos = $s.length;
+	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 101, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1) {
+		if(this.periodicity == "eternity") {
+			this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+			var o = this.basicOptions(false);
+			if(this.where.length > 1) this.executor.searchCount(this.path,o,$closure(this,"success"),$closure(this,"error")); else if(this.where.length == 1) {
+				o.property = this.event + this.exp[0].property;
+				o.value = this.where[0].value;
+				this.executor.propertyValueCount(this.path,o,$closure(this,"success"),$closure(this,"error"));
+			} else {
+				o.property = this.event + this.exp[0].property;
+				this.executor.propertyCount(this.path,o,$closure(this,"success"),$closure(this,"error"));
+			}
+		} else {
+			this.transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
+			var o = this.basicOptions(true);
+			if(this.where.length > 1) this.executor.searchSeries(this.path,o,$closure(this,"success"),$closure(this,"error")); else if(this.where.length == 1) {
+				o.property = this.event + this.exp[0].property;
+				o.value = this.where[0].value;
+				this.executor.propertyValueSeries(this.path,o,$closure(this,"success"),$closure(this,"error"));
+			} else {
+				o.property = this.event + this.exp[0].property;
+				this.executor.propertySeries(this.path,o,$closure(this,"success"),$closure(this,"error"));
+			}
+		}
+	} else {
+		this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },this.exp.map(function(d,_) {
+			$s.push("rg.data.source.DataSourceReportGrid::load@135");
+			var $spos = $s.length;
+			var $tmp = d.property;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}),this.event,this.periodicity,this.unit());
+		var o = this.basicOptions(true);
+		o.properties = this.exp;
+		this.executor.intersect(this.path,o,$closure(this,"success"),$closure(this,"error"));
+	}
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.prototype.error = function(msg) {
+	$s.push("rg.data.source.DataSourceReportGrid::error");
+	var $spos = $s.length;
+	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 144, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
+	$s.push("rg.data.source.DataSourceReportGrid::success");
+	var $spos = $s.length;
+	var data = this.transform.transform(src);
+	this.onLoad.dispatch(data);
+	$s.pop();
+}
+rg.data.source.DataSourceReportGrid.prototype.__class__ = rg.data.source.DataSourceReportGrid;
+rg.data.source.DataSourceReportGrid.__interfaces__ = [rg.data.IDataSource];
 ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -4775,6 +5259,131 @@ Enums.compare = function(a,b) {
 	$s.pop();
 }
 Enums.prototype.__class__ = Enums;
+rg.data.DataProcessor = function(sources) {
+	if( sources === $_ ) return;
+	$s.push("rg.data.DataProcessor::new");
+	var $spos = $s.length;
+	this.sources = sources;
+	sources.onLoad.add($closure(this,"process"));
+	this.onData = new hxevents.Notifier();
+	$s.pop();
+}
+rg.data.DataProcessor.__name__ = ["rg","data","DataProcessor"];
+rg.data.DataProcessor.prototype.sources = null;
+rg.data.DataProcessor.prototype.onData = null;
+rg.data.DataProcessor.prototype.independentVariables = null;
+rg.data.DataProcessor.prototype.dependentVariable = null;
+rg.data.DataProcessor.prototype.defaultAxis = null;
+rg.data.DataProcessor.prototype.defaultSegment = null;
+rg.data.DataProcessor.prototype.transform = function(s) {
+	$s.push("rg.data.DataProcessor::transform");
+	var $spos = $s.length;
+	var $tmp = [{ value : s[0][0].value}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
+	$s.push("rg.data.DataProcessor::filterSubset");
+	var $spos = $s.length;
+	var $tmp = Arrays.filter(subset,(function(f,a1) {
+		$s.push("rg.data.DataProcessor::filterSubset@40");
+		var $spos = $s.length;
+		var $tmp = function(a2) {
+			$s.push("rg.data.DataProcessor::filterSubset@40@40");
+			var $spos = $s.length;
+			var $tmp = f(a1,a2);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	})($closure(this,"filterDatapoint"),variables));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.filterDatapoint = function(variables,dp) {
+	$s.push("rg.data.DataProcessor::filterDatapoint");
+	var $spos = $s.length;
+	var _g1 = 0, _g = this.independentVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(Reflect.field(dp.properties,this.independentVariables[i].type) != variables[i]) {
+			$s.pop();
+			return false;
+		}
+	}
+	$s.pop();
+	return true;
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.process = function(data) {
+	$s.push("rg.data.DataProcessor::process");
+	var $spos = $s.length;
+	var variablesset = this.getVariableValues(), axisData = new Hash();
+	var _g = 0;
+	while(_g < variablesset.length) {
+		var variables = variablesset[_g];
+		++_g;
+		var subsets = [];
+		var _g1 = 0;
+		while(_g1 < data.length) {
+			var d = data[_g1];
+			++_g1;
+			subsets.push(this.filterSubset(d,variables));
+		}
+		if(subsets.length > 0 && subsets[0].length > 0) {
+			var ds = this.transform(subsets), first = subsets[0][0], o, segment, axis, segments;
+			var _g1 = 0;
+			while(_g1 < ds.length) {
+				var d = ds[_g1];
+				++_g1;
+				o = { properties : first.properties, unit : first.unit, value : d.value, event : first.event};
+				segment = null == d.segment?this.defaultSegment:d.segment;
+				axis = null == d.axis?this.defaultAxis:d.axis;
+				segments = axisData.get(axis);
+				if(null == segments) {
+					segments = new thx.collections.HashList();
+					axisData.set(axis,segments);
+				}
+				var segmentData = segments.get(segment);
+				if(null == segmentData) {
+					segmentData = [];
+					segments.set(segment,segmentData);
+				}
+				segmentData.push(o);
+			}
+		}
+	}
+	this.associateData(axisData);
+	this.onData.dispatch();
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.associateData = function(data) {
+	$s.push("rg.data.DataProcessor::associateData");
+	var $spos = $s.length;
+	haxe.Log.trace(data,{ fileName : "DataProcessor.hx", lineNumber : 112, className : "rg.data.DataProcessor", methodName : "associateData"});
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.getVariableValues = function() {
+	$s.push("rg.data.DataProcessor::getVariableValues");
+	var $spos = $s.length;
+	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
+		$s.push("rg.data.DataProcessor::getVariableValues@129");
+		var $spos = $s.length;
+		var $tmp = d.range();
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.__class__ = rg.data.DataProcessor;
 if(typeof js=='undefined') js = {}
 js.Boot = function() { }
 js.Boot.__name__ = ["js","Boot"];
@@ -5101,6 +5710,18 @@ js.Boot.__init = function() {
 	$s.pop();
 }
 js.Boot.prototype.__class__ = js.Boot;
+rg.data.source.rgquery.IExecutorReportGrid = function() { }
+rg.data.source.rgquery.IExecutorReportGrid.__name__ = ["rg","data","source","rgquery","IExecutorReportGrid"];
+rg.data.source.rgquery.IExecutorReportGrid.prototype.children = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.propertyCount = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.propertySeries = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.propertyValues = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.propertyValueCount = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.propertyValueSeries = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.searchCount = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.searchSeries = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.intersect = null;
+rg.data.source.rgquery.IExecutorReportGrid.prototype.__class__ = rg.data.source.rgquery.IExecutorReportGrid;
 haxe.Timer = function(time_ms) {
 	if( time_ms === $_ ) return;
 	$s.push("haxe.Timer::new");
@@ -6587,6 +7208,129 @@ thx.error.AbstractMethod.__name__ = ["thx","error","AbstractMethod"];
 thx.error.AbstractMethod.__super__ = thx.error.Error;
 for(var k in thx.error.Error.prototype ) thx.error.AbstractMethod.prototype[k] = thx.error.Error.prototype[k];
 thx.error.AbstractMethod.prototype.__class__ = thx.error.AbstractMethod;
+rg.data.IAxisOrdinal = function() { }
+rg.data.IAxisOrdinal.__name__ = ["rg","data","IAxisOrdinal"];
+rg.data.IAxisOrdinal.prototype.values = null;
+rg.data.IAxisOrdinal.prototype.__class__ = rg.data.IAxisOrdinal;
+rg.data.IAxisOrdinal.__interfaces__ = [rg.data.IAxisDiscrete];
+rg.data.AxisOrdinal = function(values) {
+	if( values === $_ ) return;
+	$s.push("rg.data.AxisOrdinal::new");
+	var $spos = $s.length;
+	this.values = values;
+	$s.pop();
+}
+rg.data.AxisOrdinal.__name__ = ["rg","data","AxisOrdinal"];
+rg.data.AxisOrdinal.prototype.values = null;
+rg.data.AxisOrdinal.prototype.sample = function(start,end,upperBound) {
+	$s.push("rg.data.AxisOrdinal::sample");
+	var $spos = $s.length;
+	if(0 == upperBound) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
+	var ticks = rg.data.OrdinalTickmark.fromArray(this.range(start,end));
+	var $tmp = rg.data.Tickmarks.bound(ticks,upperBound);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.range = function(start,end) {
+	$s.push("rg.data.AxisOrdinal::range");
+	var $spos = $s.length;
+	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 33, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 35, className : "rg.data.AxisOrdinal", methodName : "range"});
+	var $tmp = this.getValues().slice(s,e + 1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
+	$s.push("rg.data.AxisOrdinal::scale");
+	var $spos = $s.length;
+	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end), p = this.getValues().indexOf(v);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 45, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 47, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 49, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	var $tmp = (p - s) / (e - s);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.getValues = function() {
+	$s.push("rg.data.AxisOrdinal::getValues");
+	var $spos = $s.length;
+	var $tmp = this.values;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.__class__ = rg.data.AxisOrdinal;
+rg.data.AxisOrdinal.__interfaces__ = [rg.data.IAxisOrdinal];
+rg.data.OrdinalTickmark = function(pos,values) {
+	if( pos === $_ ) return;
+	$s.push("rg.data.OrdinalTickmark::new");
+	var $spos = $s.length;
+	this.pos = pos;
+	this.values = values;
+	$s.pop();
+}
+rg.data.OrdinalTickmark.__name__ = ["rg","data","OrdinalTickmark"];
+rg.data.OrdinalTickmark.fromArray = function(values) {
+	$s.push("rg.data.OrdinalTickmark::fromArray");
+	var $spos = $s.length;
+	var $tmp = values.map(function(_,i) {
+		$s.push("rg.data.OrdinalTickmark::fromArray@60");
+		var $spos = $s.length;
+		var $tmp = new rg.data.OrdinalTickmark(i,values);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.OrdinalTickmark.prototype.pos = null;
+rg.data.OrdinalTickmark.prototype.values = null;
+rg.data.OrdinalTickmark.prototype.delta = null;
+rg.data.OrdinalTickmark.prototype.getDelta = function() {
+	$s.push("rg.data.OrdinalTickmark::getDelta");
+	var $spos = $s.length;
+	var $tmp = this.pos / this.values.length;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.OrdinalTickmark.prototype.major = null;
+rg.data.OrdinalTickmark.prototype.getMajor = function() {
+	$s.push("rg.data.OrdinalTickmark::getMajor");
+	var $spos = $s.length;
+	$s.pop();
+	return true;
+	$s.pop();
+}
+rg.data.OrdinalTickmark.prototype.value = null;
+rg.data.OrdinalTickmark.prototype.getValue = function() {
+	$s.push("rg.data.OrdinalTickmark::getValue");
+	var $spos = $s.length;
+	var $tmp = this.values[this.pos];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.OrdinalTickmark.prototype.toString = function() {
+	$s.push("rg.data.OrdinalTickmark::toString");
+	var $spos = $s.length;
+	var $tmp = rg.data.Tickmarks.string(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.OrdinalTickmark.prototype.__class__ = rg.data.OrdinalTickmark;
+rg.data.OrdinalTickmark.__interfaces__ = [rg.data.ITickmark];
 Strings = function() { }
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
@@ -7229,6 +7973,295 @@ Strings.compare = function(a,b) {
 	$s.pop();
 }
 Strings.prototype.__class__ = Strings;
+if(!rg.util) rg.util = {}
+rg.util.Periodicity = function() { }
+rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
+rg.util.Periodicity.isValid = function(v) {
+	$s.push("rg.util.Periodicity::isValid");
+	var $spos = $s.length;
+	var $tmp = Arrays.exists(rg.util.Periodicity.validPeriods,v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.calculateBetween = function(a,b,disc) {
+	$s.push("rg.util.Periodicity::calculateBetween");
+	var $spos = $s.length;
+	if(disc == null) disc = 2;
+	if(null == a || null == b) {
+		$s.pop();
+		return "eternity";
+	}
+	var delta = Math.abs(b.getTime() - a.getTime());
+	if(delta >= DateTools.days(365 * disc)) {
+		$s.pop();
+		return "year";
+	} else if(delta >= DateTools.days(30 * disc)) {
+		$s.pop();
+		return "month";
+	} else if(delta >= DateTools.days(7 * disc)) {
+		$s.pop();
+		return "week";
+	} else if(delta >= DateTools.days(disc)) {
+		$s.pop();
+		return "day";
+	} else if(delta >= DateTools.hours(disc)) {
+		$s.pop();
+		return "hour";
+	} else {
+		$s.pop();
+		return "minute";
+	}
+	$s.pop();
+}
+rg.util.Periodicity.range = function(start,end,periodicity) {
+	$s.push("rg.util.Periodicity::range");
+	var $spos = $s.length;
+	var step = 1000;
+	start = Dates.snap(start,periodicity);
+	end = Dates.snap(end,periodicity);
+	switch(periodicity) {
+	case "eternity":
+		var $tmp = [0.0];
+		$s.pop();
+		return $tmp;
+	case "minute":
+		step = 60000;
+		break;
+	case "hour":
+		step = 3600000;
+		break;
+	case "day":
+		step = 86400000;
+		break;
+	case "week":
+		step = 604800000;
+		break;
+	case "month":
+		var s = Date.fromTime(start), e = Date.fromTime(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth();
+		var result = [];
+		var _g = sy;
+		while(_g < ey) {
+			var y = _g++;
+			var sr = 0, er = 12;
+			if(y == sy && y == ey) {
+				sr = sy;
+				er = ey;
+			} else if(y == sy) sr = sy; else if(y == ey) er = ey;
+			var _g1 = sr;
+			while(_g1 < er) {
+				var m = _g1++;
+				result.push(new Date(y,m,1,0,0,0).getTime());
+			}
+		}
+		$s.pop();
+		return result;
+	case "year":
+		var $tmp = Ints.range(Date.fromTime(start).getFullYear(),Date.fromTime(end).getFullYear(),1).map(function(d,i) {
+			$s.push("rg.util.Periodicity::range@78");
+			var $spos = $s.length;
+			var $tmp = new Date(d,0,1,0,0,0).getTime();
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		});
+		$s.pop();
+		return $tmp;
+	}
+	var $tmp = Floats.range(start,end + step,step);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.next = function(periodicity,date,step) {
+	$s.push("rg.util.Periodicity::next");
+	var $spos = $s.length;
+	if(step == null) step = 1;
+	if(null == date) date = Date.now().getTime();
+	if(0 == step) {
+		$s.pop();
+		return date;
+	}
+	var $tmp = (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = 0.0;
+			break;
+		case "minute":
+			$r = date + 60000 * step;
+			break;
+		case "hour":
+			$r = date + 3600000 * step;
+			break;
+		case "day":
+			$r = date + 86400000 * step;
+			break;
+		case "week":
+			$r = date + 604800000 * step;
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(date), y = d.getFullYear(), m = d.getMonth() + step;
+				$r = new Date(y,m,d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(date);
+				$r = new Date(d.getFullYear() + step,d.getMonth(),d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
+	$s.push("rg.util.Periodicity::minForPeriodicityInSeries");
+	var $spos = $s.length;
+	var $tmp = Arrays.floatMin(arr,function(d) {
+		$s.push("rg.util.Periodicity::minForPeriodicityInSeries@111");
+		var $spos = $s.length;
+		var o = Reflect.field(d,periodicity);
+		var $tmp = Arrays.floatMin(Reflect.fields(o),function(d1) {
+			$s.push("rg.util.Periodicity::minForPeriodicityInSeries@111@113");
+			var $spos = $s.length;
+			var $tmp = Std.parseFloat(d1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
+	$s.push("rg.util.Periodicity::maxForPeriodicityInSeries");
+	var $spos = $s.length;
+	var $tmp = Arrays.floatMax(arr,function(d) {
+		$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@119");
+		var $spos = $s.length;
+		var o = Reflect.field(d,periodicity);
+		var $tmp = Arrays.floatMax(Reflect.fields(o),function(d1) {
+			$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@119@121");
+			var $spos = $s.length;
+			var $tmp = Std.parseFloat(d1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		});
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.formatf = function(periodicity) {
+	$s.push("rg.util.Periodicity::formatf");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = function(_) {
+				$s.push("rg.util.Periodicity::formatf@129");
+				var $spos = $s.length;
+				$s.pop();
+				return "all time";
+				$s.pop();
+			};
+			break;
+		case "minute":case "hour":
+			$r = function(v) {
+				$s.push("rg.util.Periodicity::formatf@130");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.timeShort(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			break;
+		case "day":case "week":
+			$r = function(v) {
+				$s.push("rg.util.Periodicity::formatf@131");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.dateShort(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			break;
+		case "month":
+			$r = function(v) {
+				$s.push("rg.util.Periodicity::formatf@132");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.yearMonth(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			break;
+		case "year":
+			$r = function(v) {
+				$s.push("rg.util.Periodicity::formatf@133");
+				var $spos = $s.length;
+				var $tmp = thx.culture.FormatDate.year(Date.fromTime(v));
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			break;
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.format = function(periodicity,v) {
+	$s.push("rg.util.Periodicity::format");
+	var $spos = $s.length;
+	switch(periodicity) {
+	case "eternity":
+		$s.pop();
+		return "all time";
+	case "minute":case "hour":
+		var $tmp = thx.culture.FormatDate.timeShort(Date.fromTime(v));
+		$s.pop();
+		return $tmp;
+	case "day":case "week":
+		var $tmp = thx.culture.FormatDate.dateShort(Date.fromTime(v));
+		$s.pop();
+		return $tmp;
+	case "month":
+		var $tmp = thx.culture.FormatDate.yearMonth(Date.fromTime(v));
+		$s.pop();
+		return $tmp;
+	case "year":
+		var $tmp = thx.culture.FormatDate.year(Date.fromTime(v));
+		$s.pop();
+		return $tmp;
+	default:
+		var $tmp = periodicity + ": " + v;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.util.Periodicity.prototype.__class__ = rg.util.Periodicity;
 StringBuf = function(p) {
 	if( p === $_ ) return;
 	$s.push("StringBuf::new");
@@ -7265,6 +8298,68 @@ StringBuf.prototype.toString = function() {
 }
 StringBuf.prototype.b = null;
 StringBuf.prototype.__class__ = StringBuf;
+rg.data.Sources = function(sources) {
+	if( sources === $_ ) return;
+	$s.push("rg.data.Sources::new");
+	var $spos = $s.length;
+	this.sources = sources;
+	this.length = sources.length;
+	var _g1 = 0, _g = this.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		sources[i].onLoad.add((function(f,a1) {
+			$s.push("rg.data.Sources::new@23");
+			var $spos = $s.length;
+			var $tmp = function(a2) {
+				$s.push("rg.data.Sources::new@23@23");
+				var $spos = $s.length;
+				var $tmp = f(a1,a2);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})($closure(this,"loaded"),i));
+	}
+	this.onLoad = new hxevents.Dispatcher();
+	$s.pop();
+}
+rg.data.Sources.__name__ = ["rg","data","Sources"];
+rg.data.Sources.prototype.onLoad = null;
+rg.data.Sources.prototype.sources = null;
+rg.data.Sources.prototype.length = null;
+rg.data.Sources.prototype.data = null;
+rg.data.Sources.prototype.count = null;
+rg.data.Sources.prototype.load = function() {
+	$s.push("rg.data.Sources::load");
+	var $spos = $s.length;
+	this.count = 0;
+	this.data = [];
+	this.sources.forEach(function(source,_) {
+		$s.push("rg.data.Sources::load@31");
+		var $spos = $s.length;
+		source.load();
+		$s.pop();
+	});
+	$s.pop();
+}
+rg.data.Sources.prototype.loaded = function(pos,d) {
+	$s.push("rg.data.Sources::loaded");
+	var $spos = $s.length;
+	this.data[pos] = d;
+	this.count++;
+	if(this.count == this.length) this.complete();
+	$s.pop();
+}
+rg.data.Sources.prototype.complete = function() {
+	$s.push("rg.data.Sources::complete");
+	var $spos = $s.length;
+	this.onLoad.dispatch(this.data);
+	$s.pop();
+}
+rg.data.Sources.prototype.__class__ = rg.data.Sources;
 Lambda = function() { }
 Lambda.__name__ = ["Lambda"];
 Lambda.array = function(it) {
@@ -7481,11 +8576,13 @@ TestAll.__name__ = ["TestAll"];
 TestAll.addTest = function(runner) {
 	$s.push("TestAll::addTest");
 	var $spos = $s.length;
+	runner.addCase(new rg.data.TestAxisOrdinal());
+	runner.addCase(new rg.data.TestTransform());
 	runner.addCase(new rg.data.TestSources());
 	runner.addCase(new rg.data.source.TestRGDataSource());
-	runner.addCase(new rg.data.transform.TestCountTimeIntersectTransform());
-	runner.addCase(new rg.data.transform.TestCountTimeSeriesTransform());
-	runner.addCase(new rg.data.transform.TestCountTransform());
+	runner.addCase(new rg.data.source.rgquery.transform.TestCountTimeIntersectTransform());
+	runner.addCase(new rg.data.source.rgquery.transform.TestCountTimeSeriesTransform());
+	runner.addCase(new rg.data.source.rgquery.transform.TestCountTransform());
 	$s.pop();
 }
 TestAll.main = function() {
@@ -7562,7 +8659,7 @@ rg.data.source.rgquery.MockRGExecutor.prototype.intersect = function(path,option
 	$s.pop();
 }
 rg.data.source.rgquery.MockRGExecutor.prototype.__class__ = rg.data.source.rgquery.MockRGExecutor;
-rg.data.source.rgquery.MockRGExecutor.__interfaces__ = [rg.data.source.rgquery.IRGExecutor];
+rg.data.source.rgquery.MockRGExecutor.__interfaces__ = [rg.data.source.rgquery.IExecutorReportGrid];
 thx.culture.FormatDate = function() { }
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
@@ -7884,6 +8981,77 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 	$s.pop();
 }
 thx.culture.FormatDate.prototype.__class__ = thx.culture.FormatDate;
+rg.data.Tickmarks = function() { }
+rg.data.Tickmarks.__name__ = ["rg","data","Tickmarks"];
+rg.data.Tickmarks.bound = function(tickmarks,max) {
+	$s.push("rg.data.Tickmarks::bound");
+	var $spos = $s.length;
+	if(null == max || tickmarks.length <= (2 > max?2:max)) {
+		$s.pop();
+		return tickmarks;
+	}
+	if(max <= 2) {
+		var first = Arrays.firstf(tickmarks,function(tick) {
+			$s.push("rg.data.Tickmarks::bound@18");
+			var $spos = $s.length;
+			var $tmp = tick.getMajor();
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		});
+		if(null == first) first = tickmarks[0];
+		if(max == 2) {
+			var last = Arrays.lastf(tickmarks,function(tick) {
+				$s.push("rg.data.Tickmarks::bound@23");
+				var $spos = $s.length;
+				var $tmp = tick.getMajor();
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			});
+			if(null == last) last = tickmarks[tickmarks.length - 1];
+			var $tmp = [first,last];
+			$s.pop();
+			return $tmp;
+		}
+		var $tmp = [first];
+		$s.pop();
+		return $tmp;
+	}
+	var keep = Math.ceil(tickmarks.length / max), result = [], i = 0;
+	do result.push(tickmarks[keep * i++]); while(max > result.length);
+	$s.pop();
+	return result;
+	$s.pop();
+}
+rg.data.Tickmarks.string = function(tick) {
+	$s.push("rg.data.Tickmarks::string");
+	var $spos = $s.length;
+	var $tmp = Dynamics.string(tick.getValue()) + " (" + (tick.getMajor()?"Major":"minor") + ", " + Floats.format(tick.getDelta()) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.Tickmarks.prototype.__class__ = rg.data.Tickmarks;
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TestCountTimeSeriesTransform::new");
+	var $spos = $s.length;
+	rg.data.source.rgquery.transform.TestBase.call(this);
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.__name__ = ["rg","data","source","rgquery","transform","TestCountTimeSeriesTransform"];
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.__super__ = rg.data.source.rgquery.transform.TestBase;
+for(var k in rg.data.source.rgquery.transform.TestBase.prototype ) rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype[k] = rg.data.source.rgquery.transform.TestBase.prototype[k];
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.testTransform = function() {
+	$s.push("rg.data.source.rgquery.transform.TestCountTimeSeriesTransform::testTransform");
+	var $spos = $s.length;
+	var transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ },"impression","day","count");
+	var data = { day : [[1310342400000,0],[1310428800000,1],[1310515200000,2]]};
+	this.assertDataPoints([{ unit : "count", value : 0.0, event : "impression", properties : Objects.addFields({ },[".#time:day"],[1310342400000])},{ unit : "count", value : 1.0, event : "impression", properties : Objects.addFields({ },[".#time:day"],[1310428800000])},{ unit : "count", value : 2.0, event : "impression", properties : Objects.addFields({ },[".#time:day"],[1310515200000])}],transform.transform(data),{ fileName : "TestCountTimeSeriesTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTimeSeriesTransform", methodName : "testTransform"});
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeSeriesTransform;
 utest.ui.common.ClassResult = function(className,setupName,teardownName) {
 	if( className === $_ ) return;
 	$s.push("utest.ui.common.ClassResult::new");
@@ -7990,46 +9158,6 @@ utest.ui.common.ClassResult.prototype.methodNames = function(errorsHavePriority)
 	$s.pop();
 }
 utest.ui.common.ClassResult.prototype.__class__ = utest.ui.common.ClassResult;
-rg.data.transform.CountTimeSeriesTransform = function(predicates,unit,periodicity) {
-	if( predicates === $_ ) return;
-	$s.push("rg.data.transform.CountTimeSeriesTransform::new");
-	var $spos = $s.length;
-	if(unit == null) unit = "count";
-	this.predicates = predicates;
-	this.id = rg.data.Predicates.id(predicates);
-	this.unit = unit;
-	this.periodicity = null == periodicity?rg.data.Predicates.periodicity(predicates):periodicity;
-	$s.pop();
-}
-rg.data.transform.CountTimeSeriesTransform.__name__ = ["rg","data","transform","CountTimeSeriesTransform"];
-rg.data.transform.CountTimeSeriesTransform.prototype.predicates = null;
-rg.data.transform.CountTimeSeriesTransform.prototype.id = null;
-rg.data.transform.CountTimeSeriesTransform.prototype.unit = null;
-rg.data.transform.CountTimeSeriesTransform.prototype.periodicity = null;
-rg.data.transform.CountTimeSeriesTransform.prototype.transform = function(data) {
-	$s.push("rg.data.transform.CountTimeSeriesTransform::transform");
-	var $spos = $s.length;
-	var values = Reflect.field(data,this.periodicity), predicates = this.predicates, unit = this.unit;
-	if(null == values) {
-		var $tmp = [];
-		$s.pop();
-		return $tmp;
-	}
-	var $tmp = values.map(function(d,_) {
-		$s.push("rg.data.transform.CountTimeSeriesTransform::transform@32");
-		var $spos = $s.length;
-		var p = Objects.addFields(Dynamics.clone(predicates),[".#timestamp"],[d[0]]);
-		var $tmp = { id : rg.data.Predicates.id(p), predicates : p, value : d[1], unit : unit};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.transform.CountTimeSeriesTransform.prototype.__class__ = rg.data.transform.CountTimeSeriesTransform;
-rg.data.transform.CountTimeSeriesTransform.__interfaces__ = [rg.data.transform.ITransform];
 Bools = function() { }
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
@@ -8147,25 +9275,6 @@ Bools.compare = function(a,b) {
 	$s.pop();
 }
 Bools.prototype.__class__ = Bools;
-rg.data.transform.TestCountTimeSeriesTransform = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.data.transform.TestCountTimeSeriesTransform::new");
-	var $spos = $s.length;
-	rg.data.transform.TestBase.call(this);
-	$s.pop();
-}
-rg.data.transform.TestCountTimeSeriesTransform.__name__ = ["rg","data","transform","TestCountTimeSeriesTransform"];
-rg.data.transform.TestCountTimeSeriesTransform.__super__ = rg.data.transform.TestBase;
-for(var k in rg.data.transform.TestBase.prototype ) rg.data.transform.TestCountTimeSeriesTransform.prototype[k] = rg.data.transform.TestBase.prototype[k];
-rg.data.transform.TestCountTimeSeriesTransform.prototype.testTransform = function() {
-	$s.push("rg.data.transform.TestCountTimeSeriesTransform::testTransform");
-	var $spos = $s.length;
-	var transform = new rg.data.transform.CountTimeSeriesTransform({ periodicity : "day"});
-	var data = { day : [[1310342400000,0],[1310428800000,1],[1310515200000,2]]};
-	this.assertDataPoints([{ id : null, unit : "count", value : 0.0, predicates : Objects.addFields({ },["periodicity",".#timestamp"],["day",1310342400000])},{ id : null, unit : "count", value : 1.0, predicates : Objects.addFields({ },["periodicity",".#timestamp"],["day",1310428800000])},{ id : null, unit : "count", value : 2.0, predicates : Objects.addFields({ },["periodicity",".#timestamp"],["day",1310515200000])}],transform.transform(data));
-	$s.pop();
-}
-rg.data.transform.TestCountTimeSeriesTransform.prototype.__class__ = rg.data.transform.TestCountTimeSeriesTransform;
 thx.culture.FormatNumber = function() { }
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
@@ -8307,6 +9416,28 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 	$s.pop();
 }
 thx.culture.FormatNumber.prototype.__class__ = thx.culture.FormatNumber;
+rg.data.source.rgquery.transform.TestCountTransform = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TestCountTransform::new");
+	var $spos = $s.length;
+	rg.data.source.rgquery.transform.TestBase.call(this);
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTransform.__name__ = ["rg","data","source","rgquery","transform","TestCountTransform"];
+rg.data.source.rgquery.transform.TestCountTransform.__super__ = rg.data.source.rgquery.transform.TestBase;
+for(var k in rg.data.source.rgquery.transform.TestBase.prototype ) rg.data.source.rgquery.transform.TestCountTransform.prototype[k] = rg.data.source.rgquery.transform.TestBase.prototype[k];
+rg.data.source.rgquery.transform.TestCountTransform.prototype.testTransform = function() {
+	$s.push("rg.data.source.rgquery.transform.TestCountTransform::testTransform");
+	var $spos = $s.length;
+	var transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","count");
+	var data = 39;
+	this.assertDataPoints([{ unit : "count", value : 39.0, event : "impression", properties : { }}],transform.transform(data),{ fileName : "TestCountTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","otherunit");
+	data = 7;
+	this.assertDataPoints([{ unit : "otherunit", value : 7.0, event : "impression", properties : { }}],transform.transform(7),{ fileName : "TestCountTransform.hx", lineNumber : 29, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTransform;
 utest.ui.common.HeaderDisplayMode = { __ename__ : ["utest","ui","common","HeaderDisplayMode"], __constructs__ : ["AlwaysShowHeader","NeverShowHeader","ShowHeaderWithResults"] }
 utest.ui.common.HeaderDisplayMode.AlwaysShowHeader = ["AlwaysShowHeader",0];
 utest.ui.common.HeaderDisplayMode.AlwaysShowHeader.toString = $estr;
@@ -8341,73 +9472,6 @@ utest.ui.Report.create = function(runner,displaySuccessResults,headerDisplayMode
 	$s.pop();
 }
 utest.ui.Report.prototype.__class__ = utest.ui.Report;
-rg.data.transform.CountTimeIntersectTransform = function(predicates,fields,unit,periodicity) {
-	if( predicates === $_ ) return;
-	$s.push("rg.data.transform.CountTimeIntersectTransform::new");
-	var $spos = $s.length;
-	if(unit == null) unit = "count";
-	this.predicates = predicates;
-	this.id = rg.data.Predicates.id(predicates);
-	this.unit = unit;
-	this.periodicity = null == periodicity?rg.data.Predicates.periodicity(predicates):periodicity;
-	this.fields = fields;
-	$s.pop();
-}
-rg.data.transform.CountTimeIntersectTransform.__name__ = ["rg","data","transform","CountTimeIntersectTransform"];
-rg.data.transform.CountTimeIntersectTransform.typedValue = function(s,_) {
-	$s.push("rg.data.transform.CountTimeIntersectTransform::typedValue");
-	var $spos = $s.length;
-	if(s.substr(0,1) == "\"") {
-		var $tmp = StringTools.replace(s.substr(1,s.length - 2),"\\\"","\"");
-		$s.pop();
-		return $tmp;
-	} else if((s = s.toLowerCase()) == "true") {
-		$s.pop();
-		return true;
-	} else if(s == "false") {
-		$s.pop();
-		return false;
-	} else {
-		var $tmp = Std.parseFloat(s);
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-rg.data.transform.CountTimeIntersectTransform.prototype.predicates = null;
-rg.data.transform.CountTimeIntersectTransform.prototype.id = null;
-rg.data.transform.CountTimeIntersectTransform.prototype.unit = null;
-rg.data.transform.CountTimeIntersectTransform.prototype.periodicity = null;
-rg.data.transform.CountTimeIntersectTransform.prototype.fields = null;
-rg.data.transform.CountTimeIntersectTransform.prototype.transform = function(data) {
-	$s.push("rg.data.transform.CountTimeIntersectTransform::transform");
-	var $spos = $s.length;
-	var values = Objects.flatten(data), predicates = this.predicates, unit = this.unit;
-	if(null == values || 0 == values.length) {
-		var $tmp = [];
-		$s.pop();
-		return $tmp;
-	}
-	var result = [];
-	var _g = 0;
-	while(_g < values.length) {
-		var item = values[_g];
-		++_g;
-		var arr = item.value, values1 = item.fields.copy(), timestamp = values1.pop();
-		var _g2 = 0, _g1 = arr.length;
-		while(_g2 < _g1) {
-			var i = _g2++;
-			var p = Objects.addFields(Dynamics.clone(predicates),[".#timestamp"],[arr[i][0]]);
-			Objects.addFields(p,this.fields,values1.map(rg.data.transform.CountTimeIntersectTransform.typedValue));
-			result.push({ id : rg.data.Predicates.id(p), predicates : p, value : arr[i][1], unit : unit});
-		}
-	}
-	$s.pop();
-	return result;
-	$s.pop();
-}
-rg.data.transform.CountTimeIntersectTransform.prototype.__class__ = rg.data.transform.CountTimeIntersectTransform;
-rg.data.transform.CountTimeIntersectTransform.__interfaces__ = [rg.data.transform.ITransform];
 Arrays = function() { }
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
@@ -9065,11 +10129,14 @@ Arrays.last = function(arr) {
 Arrays.lastf = function(arr,f) {
 	$s.push("Arrays::lastf");
 	var $spos = $s.length;
-	var t = arr.copy();
-	t.reverse();
-	var $tmp = Arrays.firstf(arr,f);
+	var i = arr.length;
+	while(--i >= 0) if(f(arr[i])) {
+		var $tmp = arr[i];
+		$s.pop();
+		return $tmp;
+	}
 	$s.pop();
-	return $tmp;
+	return null;
 	$s.pop();
 }
 Arrays.first = function(arr) {
@@ -9141,7 +10208,7 @@ Arrays.nearest = function(a,x,f) {
 		delta.push({ i : i, v : Math.abs(f(a[i]) - x)});
 	}
 	delta.sort(function(a1,b) {
-		$s.push("Arrays::nearest@468");
+		$s.push("Arrays::nearest@470");
 		var $spos = $s.length;
 		var $tmp = Floats.compare(a1.v,b.v);
 		$s.pop();
@@ -9171,6 +10238,37 @@ Arrays.compare = function(a,b) {
 	}
 	$s.pop();
 	return 0;
+	$s.pop();
+}
+Arrays.product = function(a) {
+	$s.push("Arrays::product");
+	var $spos = $s.length;
+	var arr = a.copy(), result = [], temp;
+	var _g = 0, _g1 = arr[0];
+	while(_g < _g1.length) {
+		var value = _g1[_g];
+		++_g;
+		result.push([value]);
+	}
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		temp = [];
+		var _g2 = 0;
+		while(_g2 < result.length) {
+			var acc = result[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = arr[i];
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				temp.push(acc.copy().concat([value]));
+			}
+		}
+		result = temp;
+	}
+	$s.pop();
+	return result;
 	$s.pop();
 }
 Arrays.prototype.__class__ = Arrays;
@@ -9243,6 +10341,202 @@ utest.ui.common.ReportTools.hasOutput = function(report,stats) {
 	$s.pop();
 }
 utest.ui.common.ReportTools.prototype.__class__ = utest.ui.common.ReportTools;
+DateTools = function() { }
+DateTools.__name__ = ["DateTools"];
+DateTools.__format_get = function(d,e) {
+	$s.push("DateTools::__format_get");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		switch(e) {
+		case "%":
+			$r = "%";
+			break;
+		case "C":
+			$r = StringTools.lpad(Std.string(Std["int"](d.getFullYear() / 100)),"0",2);
+			break;
+		case "d":
+			$r = StringTools.lpad(Std.string(d.getDate()),"0",2);
+			break;
+		case "D":
+			$r = DateTools.__format(d,"%m/%d/%y");
+			break;
+		case "e":
+			$r = Std.string(d.getDate());
+			break;
+		case "H":case "k":
+			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+			break;
+		case "I":case "l":
+			$r = (function($this) {
+				var $r;
+				var hour = d.getHours() % 12;
+				$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+				return $r;
+			}($this));
+			break;
+		case "m":
+			$r = StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
+			break;
+		case "M":
+			$r = StringTools.lpad(Std.string(d.getMinutes()),"0",2);
+			break;
+		case "n":
+			$r = "\n";
+			break;
+		case "p":
+			$r = d.getHours() > 11?"PM":"AM";
+			break;
+		case "r":
+			$r = DateTools.__format(d,"%I:%M:%S %p");
+			break;
+		case "R":
+			$r = DateTools.__format(d,"%H:%M");
+			break;
+		case "s":
+			$r = Std.string(Std["int"](d.getTime() / 1000));
+			break;
+		case "S":
+			$r = StringTools.lpad(Std.string(d.getSeconds()),"0",2);
+			break;
+		case "t":
+			$r = "\t";
+			break;
+		case "T":
+			$r = DateTools.__format(d,"%H:%M:%S");
+			break;
+		case "u":
+			$r = (function($this) {
+				var $r;
+				var t = d.getDay();
+				$r = t == 0?"7":Std.string(t);
+				return $r;
+			}($this));
+			break;
+		case "w":
+			$r = Std.string(d.getDay());
+			break;
+		case "y":
+			$r = StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
+			break;
+		case "Y":
+			$r = Std.string(d.getFullYear());
+			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "Date.format %" + e + "- not implemented yet.";
+				return $r;
+			}($this));
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.__format = function(d,f) {
+	$s.push("DateTools::__format");
+	var $spos = $s.length;
+	var r = new StringBuf();
+	var p = 0;
+	while(true) {
+		var np = f.indexOf("%",p);
+		if(np < 0) break;
+		r.b[r.b.length] = f.substr(p,np - p);
+		r.b[r.b.length] = DateTools.__format_get(d,f.substr(np + 1,1));
+		p = np + 2;
+	}
+	r.b[r.b.length] = f.substr(p,f.length - p);
+	var $tmp = r.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.format = function(d,f) {
+	$s.push("DateTools::format");
+	var $spos = $s.length;
+	var $tmp = DateTools.__format(d,f);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.delta = function(d,t) {
+	$s.push("DateTools::delta");
+	var $spos = $s.length;
+	var $tmp = Date.fromTime(d.getTime() + t);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.getMonthDays = function(d) {
+	$s.push("DateTools::getMonthDays");
+	var $spos = $s.length;
+	var month = d.getMonth();
+	var year = d.getFullYear();
+	if(month != 1) {
+		var $tmp = DateTools.DAYS_OF_MONTH[month];
+		$s.pop();
+		return $tmp;
+	}
+	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+	var $tmp = isB?29:28;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.seconds = function(n) {
+	$s.push("DateTools::seconds");
+	var $spos = $s.length;
+	var $tmp = n * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.minutes = function(n) {
+	$s.push("DateTools::minutes");
+	var $spos = $s.length;
+	var $tmp = n * 60.0 * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.hours = function(n) {
+	$s.push("DateTools::hours");
+	var $spos = $s.length;
+	var $tmp = n * 60.0 * 60.0 * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.days = function(n) {
+	$s.push("DateTools::days");
+	var $spos = $s.length;
+	var $tmp = n * 24.0 * 60.0 * 60.0 * 1000.0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.parse = function(t) {
+	$s.push("DateTools::parse");
+	var $spos = $s.length;
+	var s = t / 1000;
+	var m = s / 60;
+	var h = m / 60;
+	var $tmp = { ms : t % 1000, seconds : Std["int"](s % 60), minutes : Std["int"](m % 60), hours : Std["int"](h % 24), days : Std["int"](h / 24)};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.make = function(o) {
+	$s.push("DateTools::make");
+	var $spos = $s.length;
+	var $tmp = o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+DateTools.prototype.__class__ = DateTools;
 haxe.Log = function() { }
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
@@ -9944,25 +11238,6 @@ Floats.round = function(x,n) {
 	$s.pop();
 }
 Floats.prototype.__class__ = Floats;
-rg.data.Predicates = function() { }
-rg.data.Predicates.__name__ = ["rg","data","Predicates"];
-rg.data.Predicates.id = function(o) {
-	$s.push("rg.data.Predicates::id");
-	var $spos = $s.length;
-	var $tmp = haxe.Md5.encode(Dynamics.string(o));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.Predicates.periodicity = function(o) {
-	$s.push("rg.data.Predicates::periodicity");
-	var $spos = $s.length;
-	var $tmp = Reflect.field(o,"periodicity");
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.Predicates.prototype.__class__ = rg.data.Predicates;
 if(!utest._Dispatcher) utest._Dispatcher = {}
 utest._Dispatcher.EventException = { __ename__ : ["utest","_Dispatcher","EventException"], __constructs__ : ["StopPropagation"] }
 utest._Dispatcher.EventException.StopPropagation = ["StopPropagation",0];
@@ -10206,33 +11481,42 @@ thx.culture.core.NumberInfo.prototype.groupsSeparator = null;
 thx.culture.core.NumberInfo.prototype.patternNegative = null;
 thx.culture.core.NumberInfo.prototype.patternPositive = null;
 thx.culture.core.NumberInfo.prototype.__class__ = thx.culture.core.NumberInfo;
-rg.data.transform.TestCountTimeIntersectTransform = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.data.transform.TestCountTimeIntersectTransform::new");
+rg.data.VariableDependent = function(type,axis,min,max) {
+	if( type === $_ ) return;
+	$s.push("rg.data.VariableDependent::new");
 	var $spos = $s.length;
-	rg.data.transform.TestBase.call(this);
+	rg.data.Variable.call(this,type,min,max);
+	this.axis = axis;
 	$s.pop();
 }
-rg.data.transform.TestCountTimeIntersectTransform.__name__ = ["rg","data","transform","TestCountTimeIntersectTransform"];
-rg.data.transform.TestCountTimeIntersectTransform.__super__ = rg.data.transform.TestBase;
-for(var k in rg.data.transform.TestBase.prototype ) rg.data.transform.TestCountTimeIntersectTransform.prototype[k] = rg.data.transform.TestBase.prototype[k];
-rg.data.transform.TestCountTimeIntersectTransform.prototype.testTransform = function() {
-	$s.push("rg.data.transform.TestCountTimeIntersectTransform::testTransform");
+rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
+rg.data.VariableDependent.__super__ = rg.data.Variable;
+for(var k in rg.data.Variable.prototype ) rg.data.VariableDependent.prototype[k] = rg.data.Variable.prototype[k];
+rg.data.VariableDependent.prototype.axis = null;
+rg.data.VariableDependent.prototype.__class__ = rg.data.VariableDependent;
+rg.data.source.rgquery.transform.TransformCount = function(properties,event,unit) {
+	if( properties === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TransformCount::new");
 	var $spos = $s.length;
-	var transform = new rg.data.transform.CountTimeIntersectTransform(Objects.addFields({ },[".#periodicity"],["day"]),[".platform"]);
-	var data = Objects.addFields({ },["\"iphone\"","\"android\""],[{ day : [[1310342400000,7],[1310428800000,5]]},{ day : [[1310342400000,1972],[1310428800000,2]]}]);
-	this.assertDataPoints([{ id : null, unit : "count", value : 7.0, predicates : Objects.addFields({ },[".#periodicity",".#timestamp",".platform"],["day",1310342400000,"iphone"])},{ id : null, unit : "count", value : 5.0, predicates : Objects.addFields({ },[".#periodicity",".#timestamp",".platform"],["day",1310428800000,"iphone"])},{ id : null, unit : "count", value : 1972.0, predicates : Objects.addFields({ },[".#periodicity",".#timestamp",".platform"],["day",1310342400000,"android"])},{ id : null, unit : "count", value : 2.0, predicates : Objects.addFields({ },[".#periodicity",".#timestamp",".platform"],["day",1310428800000,"android"])}],transform.transform(data));
+	this.properties = properties;
+	this.unit = unit;
+	this.event = event;
 	$s.pop();
 }
-rg.data.transform.TestCountTimeIntersectTransform.prototype.testTransformDeep = function() {
-	$s.push("rg.data.transform.TestCountTimeIntersectTransform::testTransformDeep");
+rg.data.source.rgquery.transform.TransformCount.__name__ = ["rg","data","source","rgquery","transform","TransformCount"];
+rg.data.source.rgquery.transform.TransformCount.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformCount.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformCount.prototype.event = null;
+rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(data) {
+	$s.push("rg.data.source.rgquery.transform.TransformCount::transform");
 	var $spos = $s.length;
-	var transform = new rg.data.transform.CountTimeIntersectTransform(Objects.addFields({ },[".#periodicity"],["day"]),[".floatValue",".boolValue",".platform"]);
-	var data = Objects.addField({ },"1.2",Objects.addField({ },"true",Objects.addField({ },"\"iphone\"",{ day : [[1310342400000,7],[1310428800000,5]]})));
-	this.assertDataPoints([{ id : null, unit : "count", value : 7.0, predicates : Objects.addFields({ },[".#periodicity",".#timestamp",".platform",".boolValue",".floatValue"],["day",1310342400000,"iphone",true,1.2])},{ id : null, unit : "count", value : 5.0, predicates : Objects.addFields({ },[".#periodicity",".#timestamp",".platform",".boolValue",".floatValue"],["day",1310428800000,"iphone",true,1.2])}],transform.transform(data));
+	var $tmp = [{ properties : this.properties, value : 0.0 + data, unit : this.unit, event : this.event}];
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-rg.data.transform.TestCountTimeIntersectTransform.prototype.__class__ = rg.data.transform.TestCountTimeIntersectTransform;
+rg.data.source.rgquery.transform.TransformCount.prototype.__class__ = rg.data.source.rgquery.transform.TransformCount;
+rg.data.source.rgquery.transform.TransformCount.__interfaces__ = [rg.data.source.ITransform];
 utest.ui.text.PlainTextReport = function(runner,outputHandler) {
 	if( runner === $_ ) return;
 	$s.push("utest.ui.text.PlainTextReport::new");
@@ -10411,240 +11695,6 @@ utest.ui.text.PlainTextReport.prototype.complete = function(result) {
 }
 utest.ui.text.PlainTextReport.prototype.__class__ = utest.ui.text.PlainTextReport;
 utest.ui.text.PlainTextReport.__interfaces__ = [utest.ui.common.IReport];
-haxe.Md5 = function(p) {
-	$s.push("haxe.Md5::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-haxe.Md5.__name__ = ["haxe","Md5"];
-haxe.Md5.encode = function(s) {
-	$s.push("haxe.Md5::encode");
-	var $spos = $s.length;
-	var $tmp = new haxe.Md5().doEncode(s);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.bitOR = function(a,b) {
-	$s.push("haxe.Md5::bitOR");
-	var $spos = $s.length;
-	var lsb = a & 1 | b & 1;
-	var msb31 = a >>> 1 | b >>> 1;
-	var $tmp = msb31 << 1 | lsb;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.bitXOR = function(a,b) {
-	$s.push("haxe.Md5::bitXOR");
-	var $spos = $s.length;
-	var lsb = a & 1 ^ b & 1;
-	var msb31 = a >>> 1 ^ b >>> 1;
-	var $tmp = msb31 << 1 | lsb;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.bitAND = function(a,b) {
-	$s.push("haxe.Md5::bitAND");
-	var $spos = $s.length;
-	var lsb = a & 1 & (b & 1);
-	var msb31 = a >>> 1 & b >>> 1;
-	var $tmp = msb31 << 1 | lsb;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.addme = function(x,y) {
-	$s.push("haxe.Md5::addme");
-	var $spos = $s.length;
-	var lsw = (x & 65535) + (y & 65535);
-	var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-	var $tmp = msw << 16 | lsw & 65535;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.rhex = function(num) {
-	$s.push("haxe.Md5::rhex");
-	var $spos = $s.length;
-	var str = "";
-	var hex_chr = "0123456789abcdef";
-	var _g = 0;
-	while(_g < 4) {
-		var j = _g++;
-		str += hex_chr.charAt(num >> j * 8 + 4 & 15) + hex_chr.charAt(num >> j * 8 & 15);
-	}
-	$s.pop();
-	return str;
-	$s.pop();
-}
-haxe.Md5.prototype.str2blks = function(str) {
-	$s.push("haxe.Md5::str2blks");
-	var $spos = $s.length;
-	var nblk = (str.length + 8 >> 6) + 1;
-	var blks = new Array();
-	var _g1 = 0, _g = nblk * 16;
-	while(_g1 < _g) {
-		var i = _g1++;
-		blks[i] = 0;
-	}
-	var i = 0;
-	while(i < str.length) {
-		blks[i >> 2] |= str.charCodeAt(i) << (str.length * 8 + i) % 4 * 8;
-		i++;
-	}
-	blks[i >> 2] |= 128 << (str.length * 8 + i) % 4 * 8;
-	var l = str.length * 8;
-	var k = nblk * 16 - 2;
-	blks[k] = l & 255;
-	blks[k] |= (l >>> 8 & 255) << 8;
-	blks[k] |= (l >>> 16 & 255) << 16;
-	blks[k] |= (l >>> 24 & 255) << 24;
-	$s.pop();
-	return blks;
-	$s.pop();
-}
-haxe.Md5.prototype.rol = function(num,cnt) {
-	$s.push("haxe.Md5::rol");
-	var $spos = $s.length;
-	var $tmp = num << cnt | num >>> 32 - cnt;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.cmn = function(q,a,b,x,s,t) {
-	$s.push("haxe.Md5::cmn");
-	var $spos = $s.length;
-	var $tmp = this.addme(this.rol(this.addme(this.addme(a,q),this.addme(x,t)),s),b);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.ff = function(a,b,c,d,x,s,t) {
-	$s.push("haxe.Md5::ff");
-	var $spos = $s.length;
-	var $tmp = this.cmn(this.bitOR(this.bitAND(b,c),this.bitAND(~b,d)),a,b,x,s,t);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.gg = function(a,b,c,d,x,s,t) {
-	$s.push("haxe.Md5::gg");
-	var $spos = $s.length;
-	var $tmp = this.cmn(this.bitOR(this.bitAND(b,d),this.bitAND(c,~d)),a,b,x,s,t);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.hh = function(a,b,c,d,x,s,t) {
-	$s.push("haxe.Md5::hh");
-	var $spos = $s.length;
-	var $tmp = this.cmn(this.bitXOR(this.bitXOR(b,c),d),a,b,x,s,t);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.ii = function(a,b,c,d,x,s,t) {
-	$s.push("haxe.Md5::ii");
-	var $spos = $s.length;
-	var $tmp = this.cmn(this.bitXOR(c,this.bitOR(b,~d)),a,b,x,s,t);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.doEncode = function(str) {
-	$s.push("haxe.Md5::doEncode");
-	var $spos = $s.length;
-	var x = this.str2blks(str);
-	var a = 1732584193;
-	var b = -271733879;
-	var c = -1732584194;
-	var d = 271733878;
-	var step;
-	var i = 0;
-	while(i < x.length) {
-		var olda = a;
-		var oldb = b;
-		var oldc = c;
-		var oldd = d;
-		step = 0;
-		a = this.ff(a,b,c,d,x[i],7,-680876936);
-		d = this.ff(d,a,b,c,x[i + 1],12,-389564586);
-		c = this.ff(c,d,a,b,x[i + 2],17,606105819);
-		b = this.ff(b,c,d,a,x[i + 3],22,-1044525330);
-		a = this.ff(a,b,c,d,x[i + 4],7,-176418897);
-		d = this.ff(d,a,b,c,x[i + 5],12,1200080426);
-		c = this.ff(c,d,a,b,x[i + 6],17,-1473231341);
-		b = this.ff(b,c,d,a,x[i + 7],22,-45705983);
-		a = this.ff(a,b,c,d,x[i + 8],7,1770035416);
-		d = this.ff(d,a,b,c,x[i + 9],12,-1958414417);
-		c = this.ff(c,d,a,b,x[i + 10],17,-42063);
-		b = this.ff(b,c,d,a,x[i + 11],22,-1990404162);
-		a = this.ff(a,b,c,d,x[i + 12],7,1804603682);
-		d = this.ff(d,a,b,c,x[i + 13],12,-40341101);
-		c = this.ff(c,d,a,b,x[i + 14],17,-1502002290);
-		b = this.ff(b,c,d,a,x[i + 15],22,1236535329);
-		a = this.gg(a,b,c,d,x[i + 1],5,-165796510);
-		d = this.gg(d,a,b,c,x[i + 6],9,-1069501632);
-		c = this.gg(c,d,a,b,x[i + 11],14,643717713);
-		b = this.gg(b,c,d,a,x[i],20,-373897302);
-		a = this.gg(a,b,c,d,x[i + 5],5,-701558691);
-		d = this.gg(d,a,b,c,x[i + 10],9,38016083);
-		c = this.gg(c,d,a,b,x[i + 15],14,-660478335);
-		b = this.gg(b,c,d,a,x[i + 4],20,-405537848);
-		a = this.gg(a,b,c,d,x[i + 9],5,568446438);
-		d = this.gg(d,a,b,c,x[i + 14],9,-1019803690);
-		c = this.gg(c,d,a,b,x[i + 3],14,-187363961);
-		b = this.gg(b,c,d,a,x[i + 8],20,1163531501);
-		a = this.gg(a,b,c,d,x[i + 13],5,-1444681467);
-		d = this.gg(d,a,b,c,x[i + 2],9,-51403784);
-		c = this.gg(c,d,a,b,x[i + 7],14,1735328473);
-		b = this.gg(b,c,d,a,x[i + 12],20,-1926607734);
-		a = this.hh(a,b,c,d,x[i + 5],4,-378558);
-		d = this.hh(d,a,b,c,x[i + 8],11,-2022574463);
-		c = this.hh(c,d,a,b,x[i + 11],16,1839030562);
-		b = this.hh(b,c,d,a,x[i + 14],23,-35309556);
-		a = this.hh(a,b,c,d,x[i + 1],4,-1530992060);
-		d = this.hh(d,a,b,c,x[i + 4],11,1272893353);
-		c = this.hh(c,d,a,b,x[i + 7],16,-155497632);
-		b = this.hh(b,c,d,a,x[i + 10],23,-1094730640);
-		a = this.hh(a,b,c,d,x[i + 13],4,681279174);
-		d = this.hh(d,a,b,c,x[i],11,-358537222);
-		c = this.hh(c,d,a,b,x[i + 3],16,-722521979);
-		b = this.hh(b,c,d,a,x[i + 6],23,76029189);
-		a = this.hh(a,b,c,d,x[i + 9],4,-640364487);
-		d = this.hh(d,a,b,c,x[i + 12],11,-421815835);
-		c = this.hh(c,d,a,b,x[i + 15],16,530742520);
-		b = this.hh(b,c,d,a,x[i + 2],23,-995338651);
-		a = this.ii(a,b,c,d,x[i],6,-198630844);
-		d = this.ii(d,a,b,c,x[i + 7],10,1126891415);
-		c = this.ii(c,d,a,b,x[i + 14],15,-1416354905);
-		b = this.ii(b,c,d,a,x[i + 5],21,-57434055);
-		a = this.ii(a,b,c,d,x[i + 12],6,1700485571);
-		d = this.ii(d,a,b,c,x[i + 3],10,-1894986606);
-		c = this.ii(c,d,a,b,x[i + 10],15,-1051523);
-		b = this.ii(b,c,d,a,x[i + 1],21,-2054922799);
-		a = this.ii(a,b,c,d,x[i + 8],6,1873313359);
-		d = this.ii(d,a,b,c,x[i + 15],10,-30611744);
-		c = this.ii(c,d,a,b,x[i + 6],15,-1560198380);
-		b = this.ii(b,c,d,a,x[i + 13],21,1309151649);
-		a = this.ii(a,b,c,d,x[i + 4],6,-145523070);
-		d = this.ii(d,a,b,c,x[i + 11],10,-1120210379);
-		c = this.ii(c,d,a,b,x[i + 2],15,718787259);
-		b = this.ii(b,c,d,a,x[i + 9],21,-343485551);
-		a = this.addme(a,olda);
-		b = this.addme(b,oldb);
-		c = this.addme(c,oldc);
-		d = this.addme(d,oldd);
-		i += 16;
-	}
-	var $tmp = this.rhex(a) + this.rhex(b) + this.rhex(c) + this.rhex(d);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Md5.prototype.__class__ = haxe.Md5;
 utest.TestFixture = function(target,method,setup,teardown) {
 	if( target === $_ ) return;
 	$s.push("utest.TestFixture::new");
@@ -10669,6 +11719,45 @@ utest.TestFixture.prototype.checkMethod = function(name,arg) {
 	$s.pop();
 }
 utest.TestFixture.prototype.__class__ = utest.TestFixture;
+rg.data.source.rgquery.transform.TransformCountTimeSeries = function(properties,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::new");
+	var $spos = $s.length;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.event = event;
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TransformCountTimeSeries.__name__ = ["rg","data","source","rgquery","transform","TransformCountTimeSeries"];
+rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.event = null;
+rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = function(data) {
+	$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::transform");
+	var $spos = $s.length;
+	var values = Reflect.field(data,this.periodicity), properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
+	if(null == values) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
+	var $tmp = values.map(function(d,_) {
+		$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::transform@33");
+		var $spos = $s.length;
+		var p = Objects.addFields(Dynamics.clone(properties),[".#time:" + periodicity],[d[0]]);
+		var $tmp = { properties : p, value : d[1], unit : unit, event : event};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeSeries;
+rg.data.source.rgquery.transform.TransformCountTimeSeries.__interfaces__ = [rg.data.source.ITransform];
 utest.ui.text.PrintReport = function(runner) {
 	if( runner === $_ ) return;
 	$s.push("utest.ui.text.PrintReport::new");
@@ -10709,257 +11798,72 @@ haxe.io.Error.OutsideBounds = ["OutsideBounds",2];
 haxe.io.Error.OutsideBounds.toString = $estr;
 haxe.io.Error.OutsideBounds.__enum__ = haxe.io.Error;
 haxe.io.Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe.io.Error; $x.toString = $estr; return $x; }
-rg.data.source.RGDataSource = function(executor,path,query,start,end) {
-	if( executor === $_ ) return;
-	$s.push("rg.data.source.RGDataSource::new");
+rg.data.source.rgquery.transform.TransformCountTimeIntersect = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TransformCountTimeIntersect::new");
 	var $spos = $s.length;
-	this.executor = executor;
-	var e = rg.data.source.RGDataSource.normalize(query.exp);
-	this.periodicity = (function($this) {
-		var $r;
-		var $e = (e.pop());
-		switch( $e[1] ) {
-		case 0:
-			var p = $e[3];
-			$r = p;
-			break;
-		default:
-			$r = (function($this) {
-				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "RGDataSource.hx", lineNumber : 40, className : "rg.data.source.RGDataSource", methodName : "new"});
-				return $r;
-			}($this));
-		}
-		return $r;
-	}(this));
-	this.exp = e.map(function(d,_) {
-		$s.push("rg.data.source.RGDataSource::new@41");
-		var $spos = $s.length;
-		var $tmp = (function($this) {
-			var $r;
-			var $e = (d);
-			switch( $e[1] ) {
-			case 1:
-				var descending = $e[4], limit = $e[3], name = $e[2];
-				$r = { property : name, limit : null == limit?10:limit, order : false == descending?"ascending":"descending"};
-				break;
-			default:
-				$r = (function($this) {
-					var $r;
-					throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "RGDataSource.hx", lineNumber : 45, className : "rg.data.source.RGDataSource", methodName : "new"});
-					return $r;
-				}($this));
-			}
-			return $r;
-		}(this));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	this.where = query.where.map(function(d,i) {
-		$s.push("rg.data.source.RGDataSource::new@46");
-		var $spos = $s.length;
-		var $tmp = (function($this) {
-			var $r;
-			var $e = (d);
-			switch( $e[1] ) {
-			case 0:
-				var value = $e[3], property = $e[2];
-				$r = { property : property, value : value};
-				break;
-			default:
-				$r = (function($this) {
-					var $r;
-					throw new thx.error.Error("invalid data for Where",null,null,{ fileName : "RGDataSource.hx", lineNumber : 49, className : "rg.data.source.RGDataSource", methodName : "new"});
-					return $r;
-				}($this));
-			}
-			return $r;
-		}(this));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	this.operation = query.operation;
-	switch( (this.operation)[1] ) {
-	case 0:
-		break;
-	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "RGDataSource.hx", lineNumber : 55, className : "rg.data.source.RGDataSource", methodName : "new"});
-	}
-	this.path = path;
-	this.start = start;
-	this.end = end;
-	this.onLoad = new hxevents.Dispatcher();
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
 	$s.pop();
 }
-rg.data.source.RGDataSource.__name__ = ["rg","data","source","RGDataSource"];
-rg.data.source.RGDataSource.normalize = function(exp) {
-	$s.push("rg.data.source.RGDataSource::normalize");
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformCountTimeIntersect"];
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue = function(s,_) {
+	$s.push("rg.data.source.rgquery.transform.TransformCountTimeIntersect::typedValue");
 	var $spos = $s.length;
-	if(exp.length > 1) {
-		var pos = -1;
-		var _g1 = 0, _g = exp.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(rg.data.source.RGDataSource.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "RGDataSource.hx", lineNumber : 161, className : "rg.data.source.RGDataSource", methodName : "normalize"});
-				pos = i;
-			}
-		}
-		if(pos >= 0) {
-			var $tmp = exp.slice(0,pos).concat(exp.slice(pos + 1)).concat([exp[pos]]);
-			$s.pop();
-			return $tmp;
-		} else {
-			var $tmp = exp.copy().concat([rg.data.source.rgquery.QExp.Time("","eternity")]);
-			$s.pop();
-			return $tmp;
-		}
-	} else if(exp.length == 1) {
-		var $e = (exp[0]);
-		switch( $e[1] ) {
-		case 1:
-			var name = $e[2];
-			var $tmp = [exp[0],rg.data.source.rgquery.QExp.Time(name,"eternity")];
-			$s.pop();
-			return $tmp;
-		case 0:
-			var periodicity = $e[3], name = $e[2];
-			var $tmp = [rg.data.source.rgquery.QExp.Property(name),exp[0]];
-			$s.pop();
-			return $tmp;
-		}
-	} else {
+	if(s.substr(0,1) == "\"") {
+		var $tmp = StringTools.replace(s.substr(1,s.length - 2),"\\\"","\"");
 		$s.pop();
-		return exp;
-	}
-	$s.pop();
-}
-rg.data.source.RGDataSource.isTimeProperty = function(exp) {
-	$s.push("rg.data.source.RGDataSource::isTimeProperty");
-	var $spos = $s.length;
-	switch( (exp)[1] ) {
-	case 0:
+		return $tmp;
+	} else if((s = s.toLowerCase()) == "true") {
 		$s.pop();
 		return true;
-	default:
+	} else if(s == "false") {
 		$s.pop();
 		return false;
-	}
-	$s.pop();
-}
-rg.data.source.RGDataSource.prototype.executor = null;
-rg.data.source.RGDataSource.prototype.exp = null;
-rg.data.source.RGDataSource.prototype.operation = null;
-rg.data.source.RGDataSource.prototype.where = null;
-rg.data.source.RGDataSource.prototype.periodicity = null;
-rg.data.source.RGDataSource.prototype.path = null;
-rg.data.source.RGDataSource.prototype.start = null;
-rg.data.source.RGDataSource.prototype.end = null;
-rg.data.source.RGDataSource.prototype.transform = null;
-rg.data.source.RGDataSource.prototype.onLoad = null;
-rg.data.source.RGDataSource.prototype.basicOptions = function(appendPeriodicity) {
-	$s.push("rg.data.source.RGDataSource::basicOptions");
-	var $spos = $s.length;
-	if(appendPeriodicity == null) appendPeriodicity = true;
-	var o = { };
-	if(null != this.start) o["start"] = this.start;
-	if(null != this.end) o["end"] = this.end;
-	if(appendPeriodicity) o["periodicity"] = this.periodicity;
-	if(this.where.length > 1) {
-		var w = { };
-		var _g = 0, _g1 = this.where;
-		while(_g < _g1.length) {
-			var c = _g1[_g];
-			++_g;
-			w[c.property] = c.value;
-		}
-		o["where"] = w;
-	}
-	$s.pop();
-	return o;
-	$s.pop();
-}
-rg.data.source.RGDataSource.prototype.unit = function() {
-	$s.push("rg.data.source.RGDataSource::unit");
-	var $spos = $s.length;
-	var $tmp = (function($this) {
-		var $r;
-		switch( ($this.operation)[1] ) {
-		case 0:
-			$r = "count";
-			break;
-		default:
-			$r = (function($this) {
-				var $r;
-				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "RGDataSource.hx", lineNumber : 91, className : "rg.data.source.RGDataSource", methodName : "unit"});
-				return $r;
-			}($this));
-		}
-		return $r;
-	}(this));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.source.RGDataSource.prototype.load = function() {
-	$s.push("rg.data.source.RGDataSource::load");
-	var $spos = $s.length;
-	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "RGDataSource.hx", lineNumber : 99, className : "rg.data.source.RGDataSource", methodName : "load"}); else if(this.exp.length == 1) {
-		if(this.periodicity == "eternity") {
-			this.transform = new rg.data.transform.CountTransform({ },this.unit());
-			var o = this.basicOptions(false);
-			if(this.where.length > 1) this.executor.searchCount(this.path,o,$closure(this,"success"),$closure(this,"error")); else if(this.where.length == 1) {
-				o.property = this.exp[0].property;
-				o.value = this.where[0].value;
-				this.executor.propertyValueCount(this.path,o,$closure(this,"success"),$closure(this,"error"));
-			} else {
-				o.property = this.exp[0].property;
-				this.executor.propertyCount(this.path,o,$closure(this,"success"),$closure(this,"error"));
-			}
-		} else {
-			this.transform = new rg.data.transform.CountTimeSeriesTransform({ periodicity : this.periodicity},this.unit());
-			var o = this.basicOptions(true);
-			if(this.where.length > 1) this.executor.searchSeries(this.path,o,$closure(this,"success"),$closure(this,"error")); else if(this.where.length == 1) {
-				o.property = this.exp[0].property;
-				o.value = this.where[0].value;
-				this.executor.propertyValueSeries(this.path,o,$closure(this,"success"),$closure(this,"error"));
-			} else {
-				o.property = this.exp[0].property;
-				this.executor.propertySeries(this.path,o,$closure(this,"success"),$closure(this,"error"));
-			}
-		}
 	} else {
-		this.transform = new rg.data.transform.CountTimeIntersectTransform({ periodicity : this.periodicity},this.exp.map(function(d,_) {
-			$s.push("rg.data.source.RGDataSource::load@133");
-			var $spos = $s.length;
-			var $tmp = d.property;
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		}),this.unit());
-		var o = this.basicOptions(true);
-		o.properties = this.exp;
-		this.executor.intersect(this.path,o,$closure(this,"success"),$closure(this,"error"));
+		var $tmp = Std.parseFloat(s);
+		$s.pop();
+		return $tmp;
 	}
 	$s.pop();
 }
-rg.data.source.RGDataSource.prototype.error = function(msg) {
-	$s.push("rg.data.source.RGDataSource::error");
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.event = null;
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.transform = function(data) {
+	$s.push("rg.data.source.rgquery.transform.TransformCountTimeIntersect::transform");
 	var $spos = $s.length;
-	throw new thx.error.Error(msg,null,null,{ fileName : "RGDataSource.hx", lineNumber : 142, className : "rg.data.source.RGDataSource", methodName : "error"});
+	var values = Objects.flatten(data), properties = this.properties, unit = this.unit;
+	if(null == values || 0 == values.length) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
+	var result = [];
+	var _g = 0;
+	while(_g < values.length) {
+		var item = values[_g];
+		++_g;
+		var arr = item.value, values1 = item.fields.copy(), timestamp = values1.pop();
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Objects.addField(Dynamics.clone(properties),".#time:" + this.periodicity,arr[i][0]);
+			Objects.addFields(p,this.fields,values1.map(rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue));
+			result.push({ properties : p, value : arr[i][1], unit : unit, event : this.event});
+		}
+	}
+	$s.pop();
+	return result;
 	$s.pop();
 }
-rg.data.source.RGDataSource.prototype.success = function(src) {
-	$s.push("rg.data.source.RGDataSource::success");
-	var $spos = $s.length;
-	var data = this.transform.transform(src);
-	this.onLoad.dispatch(data);
-	$s.pop();
-}
-rg.data.source.RGDataSource.prototype.__class__ = rg.data.source.RGDataSource;
-rg.data.source.RGDataSource.__interfaces__ = [rg.data.IDataSource];
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeIntersect;
+rg.data.source.rgquery.transform.TransformCountTimeIntersect.__interfaces__ = [rg.data.source.ITransform];
 rg.data.source.rgquery.QExp = { __ename__ : ["rg","data","source","rgquery","QExp"], __constructs__ : ["Time","Property"] }
 rg.data.source.rgquery.QExp.Time = function(name,periodicity) { var $x = ["Time",0,name,periodicity]; $x.__enum__ = rg.data.source.rgquery.QExp; $x.toString = $estr; return $x; }
 rg.data.source.rgquery.QExp.Property = function(name,limit,descending) { var $x = ["Property",1,name,limit,descending]; $x.__enum__ = rg.data.source.rgquery.QExp; $x.toString = $estr; return $x; }
@@ -10969,30 +11873,46 @@ rg.data.source.rgquery.QOperation = { __ename__ : ["rg","data","source","rgquery
 rg.data.source.rgquery.QOperation.Count = ["Count",0];
 rg.data.source.rgquery.QOperation.Count.toString = $estr;
 rg.data.source.rgquery.QOperation.Count.__enum__ = rg.data.source.rgquery.QOperation;
-rg.data.transform.CountTransform = function(predicates,unit) {
-	if( predicates === $_ ) return;
-	$s.push("rg.data.transform.CountTransform::new");
+rg.data.TestTransform = function(p) {
+	$s.push("rg.data.TestTransform::new");
 	var $spos = $s.length;
-	if(unit == null) unit = "count";
-	this.predicates = predicates;
-	this.id = rg.data.Predicates.id(predicates);
-	this.unit = unit;
 	$s.pop();
 }
-rg.data.transform.CountTransform.__name__ = ["rg","data","transform","CountTransform"];
-rg.data.transform.CountTransform.prototype.predicates = null;
-rg.data.transform.CountTransform.prototype.id = null;
-rg.data.transform.CountTransform.prototype.unit = null;
-rg.data.transform.CountTransform.prototype.transform = function(data) {
-	$s.push("rg.data.transform.CountTransform::transform");
+rg.data.TestTransform.__name__ = ["rg","data","TestTransform"];
+rg.data.TestTransform.prototype.testTransform = function() {
+	$s.push("rg.data.TestTransform::testTransform");
 	var $spos = $s.length;
-	var $tmp = [{ id : this.id, predicates : this.predicates, value : 0.0 + data, unit : this.unit}];
-	$s.pop();
-	return $tmp;
+	var samples = 10, start = Date.fromString("2011-07-12 00:00:00").getTime(), end = Date.fromString("2011-07-12 12:00:00").getTime(), trange = rg.util.Periodicity.range(start,end,"hour"), vrange = Ints.range(trange.length), ageRanges = ["1-13","14-17","18-20","21+"], genders = ["male","female"], defaultAxis = "count", defaultSegment = "default";
+	var src = [];
+	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"count","impression",function(d,i) {
+		$s.push("rg.data.TestTransform::testTransform@31");
+		var $spos = $s.length;
+		var $tmp = Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	vrange.reverse();
+	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"count","impression",function(d,i) {
+		$s.push("rg.data.TestTransform::testTransform@39");
+		var $spos = $s.length;
+		var $tmp = Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	var iv = [];
+	iv.push(new rg.data.VariableIndependent(".#time:hour",new rg.data.AxisTime("hour"),start,end));
+	iv.push(new rg.data.VariableIndependent(".ageRange",new rg.data.AxisOrdinal(["1-13","14-17","18-20","21+"]),"1-13","21+"));
+	iv.push(new rg.data.VariableIndependent(".gender",new rg.data.AxisOrdinal(["male","female"]),"male","female"));
+	var sources = new rg.data.Sources(src), processor = new rg.data.DataProcessor(sources);
+	processor.defaultAxis = "count";
+	processor.defaultSegment = "default";
+	processor.independentVariables = iv;
+	sources.load();
 	$s.pop();
 }
-rg.data.transform.CountTransform.prototype.__class__ = rg.data.transform.CountTransform;
-rg.data.transform.CountTransform.__interfaces__ = [rg.data.transform.ITransform];
+rg.data.TestTransform.prototype.__class__ = rg.data.TestTransform;
 haxe.io.Bytes = function(length,b) {
 	if( length === $_ ) return;
 	$s.push("haxe.io.Bytes::new");
@@ -11325,6 +12245,42 @@ thx.math.Equations.polynomialf = function(e) {
 	$s.pop();
 }
 thx.math.Equations.prototype.__class__ = thx.math.Equations;
+rg.data.TestAxisOrdinal = function(p) {
+	$s.push("rg.data.TestAxisOrdinal::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.data.TestAxisOrdinal.__name__ = ["rg","data","TestAxisOrdinal"];
+rg.data.TestAxisOrdinal.prototype.testOrdinal = function() {
+	$s.push("rg.data.TestAxisOrdinal::testOrdinal");
+	var $spos = $s.length;
+	var ordinal = new rg.data.AxisOrdinal(["a","b","c","d","e","f","g","h"]);
+	this.assertValues(["b","c","d"],ordinal.sample("b","d"),{ fileName : "TestAxisOrdinal.hx", lineNumber : 17, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues([],ordinal.sample("b","d",0),{ fileName : "TestAxisOrdinal.hx", lineNumber : 18, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b"],ordinal.sample("b","d",1),{ fileName : "TestAxisOrdinal.hx", lineNumber : 19, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b","d"],ordinal.sample("b","d",2),{ fileName : "TestAxisOrdinal.hx", lineNumber : 20, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b","c","d"],ordinal.sample("b","d",3),{ fileName : "TestAxisOrdinal.hx", lineNumber : 21, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["b","c","d"],ordinal.sample("b","d",4),{ fileName : "TestAxisOrdinal.hx", lineNumber : 22, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["a","h"],ordinal.sample("a","h",2),{ fileName : "TestAxisOrdinal.hx", lineNumber : 23, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["a","d","g"],ordinal.sample("a","h",3),{ fileName : "TestAxisOrdinal.hx", lineNumber : 24, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	this.assertValues(["a","c","e","g"],ordinal.sample("a","h",4),{ fileName : "TestAxisOrdinal.hx", lineNumber : 25, className : "rg.data.TestAxisOrdinal", methodName : "testOrdinal"});
+	$s.pop();
+}
+rg.data.TestAxisOrdinal.prototype.assertValues = function(expected,test,pos) {
+	$s.push("rg.data.TestAxisOrdinal::assertValues");
+	var $spos = $s.length;
+	var t = test.map(function(d,i) {
+		$s.push("rg.data.TestAxisOrdinal::assertValues@30");
+		var $spos = $s.length;
+		var $tmp = d.getValue();
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	utest.Assert.same(expected,t,null,null,pos);
+	$s.pop();
+}
+rg.data.TestAxisOrdinal.prototype.__class__ = rg.data.TestAxisOrdinal;
 js.Lib = function() { }
 js.Lib.__name__ = ["js","Lib"];
 js.Lib.isIE = null;
@@ -11352,6 +12308,184 @@ js.Lib.setErrorHandler = function(f) {
 	$s.pop();
 }
 js.Lib.prototype.__class__ = js.Lib;
+if(!thx.collections) thx.collections = {}
+thx.collections.HashList = function(p) {
+	if( p === $_ ) return;
+	$s.push("thx.collections.HashList::new");
+	var $spos = $s.length;
+	this.length = 0;
+	this.__keys = [];
+	this.__hash = new Hash();
+	$s.pop();
+}
+thx.collections.HashList.__name__ = ["thx","collections","HashList"];
+thx.collections.HashList.prototype.length = null;
+thx.collections.HashList.prototype.set = function(key,value) {
+	$s.push("thx.collections.HashList::set");
+	var $spos = $s.length;
+	if(!this.__hash.exists(key)) {
+		this.__keys.push(key);
+		this.length++;
+	}
+	this.__hash.set(key,value);
+	$s.pop();
+}
+thx.collections.HashList.prototype.setAt = function(index,key,value) {
+	$s.push("thx.collections.HashList::setAt");
+	var $spos = $s.length;
+	this.remove(key);
+	this.__keys.insert(index,key);
+	this.__hash.set(key,value);
+	this.length++;
+	$s.pop();
+}
+thx.collections.HashList.prototype.get = function(key) {
+	$s.push("thx.collections.HashList::get");
+	var $spos = $s.length;
+	var $tmp = this.__hash.get(key);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.getAt = function(index) {
+	$s.push("thx.collections.HashList::getAt");
+	var $spos = $s.length;
+	var $tmp = this.__hash.get(this.__keys[index]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.indexOf = function(key) {
+	$s.push("thx.collections.HashList::indexOf");
+	var $spos = $s.length;
+	if(!this.__hash.exists(key)) {
+		$s.pop();
+		return -1;
+	}
+	var _g1 = 0, _g = this.__keys.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(this.__keys[i] == key) {
+			$s.pop();
+			return i;
+		}
+	}
+	var $tmp = (function($this) {
+		var $r;
+		throw "this should never happen";
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.exists = function(key) {
+	$s.push("thx.collections.HashList::exists");
+	var $spos = $s.length;
+	var $tmp = this.__hash.exists(key);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.remove = function(key) {
+	$s.push("thx.collections.HashList::remove");
+	var $spos = $s.length;
+	var item = this.__hash.get(key);
+	if(item == null) {
+		$s.pop();
+		return null;
+	}
+	this.__hash.remove(key);
+	this.__keys.remove(key);
+	this.length--;
+	$s.pop();
+	return item;
+	$s.pop();
+}
+thx.collections.HashList.prototype.removeAt = function(index) {
+	$s.push("thx.collections.HashList::removeAt");
+	var $spos = $s.length;
+	var key = this.__keys[index];
+	if(key == null) {
+		$s.pop();
+		return null;
+	}
+	var item = this.__hash.get(key);
+	this.__hash.remove(key);
+	this.__keys.remove(key);
+	this.length--;
+	$s.pop();
+	return item;
+	$s.pop();
+}
+thx.collections.HashList.prototype.keyAt = function(index) {
+	$s.push("thx.collections.HashList::keyAt");
+	var $spos = $s.length;
+	var $tmp = this.__keys[index];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.keys = function() {
+	$s.push("thx.collections.HashList::keys");
+	var $spos = $s.length;
+	var $tmp = this.__keys.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.iterator = function() {
+	$s.push("thx.collections.HashList::iterator");
+	var $spos = $s.length;
+	var $tmp = this.array().iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.clear = function() {
+	$s.push("thx.collections.HashList::clear");
+	var $spos = $s.length;
+	this.__hash = new Hash();
+	this.__keys = [];
+	this.length = 0;
+	$s.pop();
+}
+thx.collections.HashList.prototype.array = function() {
+	$s.push("thx.collections.HashList::array");
+	var $spos = $s.length;
+	var values = [];
+	var _g = 0, _g1 = this.__keys;
+	while(_g < _g1.length) {
+		var k = _g1[_g];
+		++_g;
+		values.push(this.__hash.get(k));
+	}
+	$s.pop();
+	return values;
+	$s.pop();
+}
+thx.collections.HashList.prototype.toString = function() {
+	$s.push("thx.collections.HashList::toString");
+	var $spos = $s.length;
+	var s = new StringBuf();
+	s.b[s.b.length] = "{";
+	var it = this.keys();
+	while( it.hasNext() ) {
+		var i = it.next();
+		s.b[s.b.length] = i;
+		s.b[s.b.length] = " => ";
+		s.b[s.b.length] = Std.string(this.get(i));
+		if(it.hasNext()) s.b[s.b.length] = ", ";
+	}
+	s.b[s.b.length] = "}";
+	var $tmp = s.b.join("");
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.HashList.prototype.__keys = null;
+thx.collections.HashList.prototype.__hash = null;
+thx.collections.HashList.prototype.__class__ = thx.collections.HashList;
 StringTools = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
@@ -11822,6 +12956,24 @@ thx.languages.En.getLanguage();
 	Void = { __ename__ : ["Void"]};
 }
 {
+	js.Lib.document = document;
+	js.Lib.window = window;
+	onerror = function(msg,url,line) {
+		var stack = $s.copy();
+		var f = js.Lib.onerror;
+		$s.splice(0,$s.length);
+		if( f == null ) {
+			var i = stack.length;
+			var s = "";
+			while( --i >= 0 )
+				s += "Called from "+stack[i]+"\n";
+			alert(msg+"\n\n"+s);
+			return false;
+		}
+		return f(msg,stack);
+	}
+}
+{
 	var d = Date;
 	d.now = function() {
 		$s.push("StringTools::isEOF");
@@ -11887,24 +13039,6 @@ thx.languages.En.getLanguage();
 	d.prototype.__class__ = d;
 	d.__name__ = ["Date"];
 }
-{
-	js.Lib.document = document;
-	js.Lib.window = window;
-	onerror = function(msg,url,line) {
-		var stack = $s.copy();
-		var f = js.Lib.onerror;
-		$s.splice(0,$s.length);
-		if( f == null ) {
-			var i = stack.length;
-			var s = "";
-			while( --i >= 0 )
-				s += "Called from "+stack[i]+"\n";
-			alert(msg+"\n\n"+s);
-			return false;
-		}
-		return f(msg,stack);
-	}
-}
 Ints._reparse = new EReg("^([+-])?\\d+$","");
 thx.color.Colors._reParse = new EReg("^\\s*(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))\\s*$","i");
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
@@ -11922,6 +13056,8 @@ Strings.__ucwordswsPattern = new EReg("\\s([a-z])","");
 Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
 Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
+rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
+DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 js.Lib.onerror = null;

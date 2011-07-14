@@ -3,5 +3,5 @@
 -lib thx
 -lib hxevents
 -lib utest
--js bin/ReportGridVisualizations.js
+-js bin/js/visualizations.test.js
 -main TestAll

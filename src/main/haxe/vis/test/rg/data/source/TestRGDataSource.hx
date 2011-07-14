@@ -15,16 +15,16 @@ class TestRGDataSource
 	function profile(query : Query)
 	{
 		var executor = new MockRGExecutor();
-		new RGDataSource(executor, "/", query).load();
+		new DataSourceReportGrid(executor, "/", "impression", query).load();
 		return executor.callStack;
 	}
 	
 	public function testEventCount()
 	{
 		Assert.same([{
-			{ method : "propertyCount", args : ["/", { property : ".impression"}] } 
+			{ method : "propertyCount", args : ["/", { property : "impression"}] } 
 		}], profile( {
-			exp : [Property(".impression")],
+			exp : [Property("")],
 			operation : Count,
 			where : []
 		}));
@@ -33,9 +33,9 @@ class TestRGDataSource
 	public function testPropertyCount()
 	{
 		Assert.same([{
-			{ method : "propertyCount", args : ["/", { property : ".impression.unique"}] } 
+			{ method : "propertyCount", args : ["/", { property : "impression.unique"}] } 
 		}], profile( {
-			exp : [Property(".impression.unique")],
+			exp : [Property(".unique")],
 			operation : Count,
 			where : []
 		}));
@@ -44,9 +44,9 @@ class TestRGDataSource
 	public function testEventSeries()
 	{
 		Assert.same([{
-			{ method : "propertySeries", args : ["/", { property : ".impression", periodicity : "day"}] } 
+			{ method : "propertySeries", args : ["/", { property : "impression", periodicity : "day"}] } 
 		}], profile( {
-			exp : [Time(".impression", "day")],
+			exp : [Time("", "day")],
 			operation : Count,
 			where : []
 		}));
@@ -55,9 +55,9 @@ class TestRGDataSource
 	public function testPropertySeries()
 	{
 		Assert.same([{
-			{ method : "propertySeries", args : ["/", { property : ".impression.unique", periodicity : "day"}] } 
+			{ method : "propertySeries", args : ["/", { property : "impression.unique", periodicity : "day"}] } 
 		}], profile( {
-			exp : [Time(".impression.unique", "day")],
+			exp : [Time(".unique", "day")],
 			operation : Count,
 			where : []
 		}));
@@ -66,35 +66,35 @@ class TestRGDataSource
 	public function testPropertyValueCount()
 	{
 		Assert.same([{
-			{ method : "propertyValueCount", args : ["/", { property : ".impression.gender", value : "female"}] } 
+			{ method : "propertyValueCount", args : ["/", { property : "impression.gender", value : "female"}] } 
 		}], profile( {
-			exp : [Property(".impression.gender")],
+			exp : [Property(".gender")],
 			operation : Count,
-			where : [Equality(".impression.gender", "female")]
+			where : [Equality(".gender", "female")]
 		}));
 	}
 	
 	public function testPropertyValueSeries()
 	{
 		Assert.same([{
-			{ method : "propertyValueSeries", args : ["/", { property : ".impression.gender", value : "female", periodicity : "day"}] } 
+			{ method : "propertyValueSeries", args : ["/", { property : "impression.gender", value : "female", periodicity : "day"}] } 
 		}], profile( {
-			exp : [Property(".impression.gender"), Time(".impression.gender", "day")],
+			exp : [Property(".gender"), Time(".gender", "day")],
 			operation : Count,
-			where : [Equality(".impression.gender", "female")]
+			where : [Equality(".gender", "female")]
 		}));
 	}
 	
 	public function testSearchValueCount()
 	{
 		Assert.same([{
-			{ method : "searchCount", args : ["/", { where : ({}).addFields([".impression.gender", ".impression.ageRange"], ["female", "21-30"]) }] } 
+			{ method : "searchCount", args : ["/", { where : ({}).addFields(["impression.gender", "impression.ageRange"], ["female", "21-30"]) }] } 
 		}], profile( {
-			exp : [Property(".impression")], 
+			exp : [Property("")], 
 			operation : Count,
 			where : [
-				Equality(".impression.gender", "female"),
-				Equality(".impression.ageRange", "21-30")
+				Equality(".gender", "female"),
+				Equality(".ageRange", "21-30")
 			]
 		}));
 	}
@@ -102,13 +102,13 @@ class TestRGDataSource
 	public function testSearchSeries()
 	{
 		Assert.same([{
-			{ method : "searchSeries", args : ["/", { periodicity : "day", where : ({}).addFields([".impression.gender", ".impression.ageRange"], ["female", "21-30"]) }] } 
+			{ method : "searchSeries", args : ["/", { periodicity : "day", where : ({}).addFields(["impression.gender", "impression.ageRange"], ["female", "21-30"]) }] } 
 		}], profile( {
-			exp : [Property(".impression"), Time(".impression", "day")],
+			exp : [Property(""), Time("", "day")],
 			operation : Count,
 			where : [
-				Equality(".impression.gender", "female"),
-				Equality(".impression.ageRange", "21-30")
+				Equality(".gender", "female"),
+				Equality(".ageRange", "21-30")
 			]
 		}));
 	}
@@ -120,24 +120,24 @@ class TestRGDataSource
 			args : ["/", { 
 				periodicity : "day", 
 				properties : [{
-					property : ".impression.gender",
+					property : ".gender",
 					limit : 5,
 					order : "descending"
 				}, {
-					property : ".impression.platform",
+					property : ".platform",
 					limit : 7,
 					order : "ascending"
 				}, {
-					property : ".impression.ageRange",
+					property : ".ageRange",
 					limit : 10,
 					order : "descending"
 			}] }]
 		}], profile( {
 			exp : [
-				Property(".impression.gender", 5, true),
-				Property(".impression.platform", 7, false),
-				Property(".impression.ageRange"),
-				Time(".impression", "day")],
+				Property(".gender", 5, true),
+				Property(".platform", 7, false),
+				Property(".ageRange"),
+				Time("", "day")],
 			operation : Count,
 			where : []
 		}));
@@ -146,42 +146,42 @@ class TestRGDataSource
 	public function testNormalization()
 	{
 		Assert.same(
-			[Property(".impression"), Time(".impression", "eternity")],
-			RGDataSource.normalize([Property(".impression")])
+			[Property(""), Time("", "eternity")],
+			DataSourceReportGrid.normalize([Property("")])
 		);
 		
 		Assert.same(
-			[Property(".impression"), Time(".impression", "day")],
-			RGDataSource.normalize([Time(".impression", "day")])
+			[Property(""), Time("", "day")],
+			DataSourceReportGrid.normalize([Time("", "day")])
 		);
 		
 		Assert.same(
-			[Property(".impression.unique"), Time(".impression.unique", "day")],
-			RGDataSource.normalize([Time(".impression.unique", "day")])
+			[Property(".unique"), Time(".unique", "day")],
+			DataSourceReportGrid.normalize([Time(".unique", "day")])
 		);
 		
 		Assert.same(
 			[
-				Property(".impression.platform"),
-				Property(".impression.ageRange"),
+				Property(".platform"),
+				Property(".ageRange"),
 				Time("", "eternity")
 			],
-			RGDataSource.normalize([
-				Property(".impression.platform"),
-				Property(".impression.ageRange")
+			DataSourceReportGrid.normalize([
+				Property(".platform"),
+				Property(".ageRange")
 			])
 		);
 		
 		Assert.same(
 			[
-				Property(".impression.platform"),
-				Property(".impression.ageRange"),
-				Time(".impression", "eternity")
+				Property(".platform"),
+				Property(".ageRange"),
+				Time("", "eternity")
 			],
-			RGDataSource.normalize([
-				Time(".impression", "eternity"),
-				Property(".impression.platform"),
-				Property(".impression.ageRange")
+			DataSourceReportGrid.normalize([
+				Time("", "eternity"),
+				Property(".platform"),
+				Property(".ageRange")
 			])
 		);
 	}

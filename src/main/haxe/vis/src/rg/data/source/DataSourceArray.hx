@@ -7,13 +7,16 @@ package rg.data.source;
 import hxevents.Dispatcher;
 using Arrays;
 
-class ArrayDataSource<T> implements IDataSource<T>
+class DataSourceArray<T> implements IDataSource<T>
 {
-	public static function fromValues<TIn, TOut>(arr : Array<TIn>, map : TIn -> Int -> DataPoint<TOut>)
+	public static function fromValues<TIn, TOut>(arr : Array<TIn>, unit : String, event : String, map : TIn -> Int -> {})
 	{
-		var a : Array<DataPoint<TOut>> = arr.map(map);
-		a.each(function(d, i) if (null == d.id) d.id = Predicates.id(d.predicates));
-		return new ArrayDataSource(a);
+		return new DataSourceArray(arr.map(map).map(function(properties, i) return {
+			properties : properties,
+			value : arr[i],
+			event : event,
+			unit : unit
+		}));
 	}
 	
 	var data : Array<DataPoint<T>>;

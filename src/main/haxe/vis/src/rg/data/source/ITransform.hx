@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.data.transform;
+package rg.data.source;
 import rg.data.DataPoint;
 
 interface ITransform<TIn, TOut>

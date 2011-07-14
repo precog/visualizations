@@ -5,7 +5,7 @@
 
 package rg.data.source.rgquery;
 
-interface IRGExecutor 
+interface IExecutorReportGrid 
 {
 	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void) : Void;
 	public function propertyCount(path : String, options : { property : String }, success : Int -> Void, ?error : String -> Void) : Void;

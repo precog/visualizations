@@ -3,34 +3,34 @@
  * @author Franco Ponticelli
  */
 
-package rg.data.transform;
+package rg.data.source.rgquery.transform;
 using Objects;
 
 class TestCountTransform extends TestBase
 {
 	public function testTransform()
 	{
-		var transform = new CountTransform({ });
+		var transform = new TransformCount({ }, "impression", "count");
 		
 		var data = 39;
 		
 		assertDataPoints([{
-			id : null,
 			unit : "count",
 			value : 39.0,
-			predicates : { }
+			event : "impression",
+			properties : { }
 		}], transform.transform(data));
 		
 		
-		transform = new CountTransform({ }, "otherunit");
+		transform = new TransformCount({ }, "impression", "otherunit");
 		
 		data = 7;
 		
 		assertDataPoints([{
-			id : null,
 			unit : "otherunit",
 			value : 7.0,
-			predicates : { }
+			event : "impression",
+			properties : { }
 		}], transform.transform(7));
 	}
 }

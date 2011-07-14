@@ -5,7 +5,7 @@
 
 package rg.data.source.rgquery;
 
-class MockRGExecutor implements IRGExecutor
+class MockRGExecutor implements IExecutorReportGrid
 {
 	public var callStack : Array<{ method : String, args : Array<Dynamic> }>;
 	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void) 

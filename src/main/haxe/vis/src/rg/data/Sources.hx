@@ -7,40 +7,33 @@ package rg.data;
 import hxevents.Dispatcher;
 using Arrays;
 
-class ChartSources<T>
+class Sources<T>
 {
-	public var onLoad(default, null) : Array<Array<DataPoint<T>>>;
+	public var onLoad(default, null) : Dispatcher<Array<Array<DataPoint<T>>>>;
 	
 	var sources : Array<IDataSource<T>>;
 	var length : Int;
 	var data : Array<Array<DataPoint<T>>>;
 	var count : Int;
-	var defaultAxis : String;
-	var defaultSegment : String;
-	public function new(sources : Array<IDataSource<T>>, defaultAxis : String, defaultSegment : String) 
+	public function new(sources : Array<IDataSource<T>>) 
 	{
 		this.sources = sources;
 		this.length = sources.length;
-		this.defaultAxis = defaultAxis;
-		this.defaultSegment = defaultSegment;
 		for (i in 0...length)
 			sources[i].onLoad.add(callback(loaded, i));
+		onLoad = new Dispatcher();
 	}
-/*
-	public dynamic function transform(data : Array<Array<DataPoint<T>>>)
-	{
-		return data[0];
-	}
-*/
+
 	public function load()
 	{
 		count = 0;
 		data = [];
+		sources.each(function(source,_) source.load());
 	}
 	
 	function loaded(pos : Int, d : Array<DataPoint<T>>)
 	{
-		this.data[pos] = d;
+		data[pos] = d;
 		count++;
 		if (count == length)
 			complete();
@@ -48,6 +41,6 @@ class ChartSources<T>
 	
 	function complete()
 	{
-
+		onLoad.dispatch(data);
 	}
 }

@@ -1249,6 +1249,68 @@ Dynamics.compare = function(a,b) {
 	}
 	$s.pop();
 }
+Dynamics.comparef = function(sample) {
+	$s.push("Dynamics::comparef");
+	var $spos = $s.length;
+	var $e = (Type["typeof"](sample));
+	switch( $e[1] ) {
+	case 1:
+		var $tmp = Ints.compare;
+		$s.pop();
+		return $tmp;
+	case 2:
+		var $tmp = Floats.compare;
+		$s.pop();
+		return $tmp;
+	case 3:
+		var $tmp = Bools.compare;
+		$s.pop();
+		return $tmp;
+	case 4:
+		var $tmp = Objects.compare;
+		$s.pop();
+		return $tmp;
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "Array":
+			var $tmp = Arrays.compare;
+			$s.pop();
+			return $tmp;
+		case "String":
+			var $tmp = Strings.compare;
+			$s.pop();
+			return $tmp;
+		case "Date":
+			var $tmp = Dates.compare;
+			$s.pop();
+			return $tmp;
+		default:
+			var $tmp = function(a,b) {
+				$s.push("Dynamics::comparef@179");
+				var $spos = $s.length;
+				var $tmp = Strings.compare(Std.string(a),Std.string(b));
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+		}
+		break;
+	case 7:
+		var e = $e[2];
+		var $tmp = Enums.compare;
+		$s.pop();
+		return $tmp;
+	default:
+		var $tmp = Dynamics.compare;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
 Dynamics.clone = function(v) {
 	$s.push("Dynamics::clone");
 	var $spos = $s.length;
@@ -1496,7 +1558,7 @@ Dynamics.same = function(a,b) {
 	}
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 334, className : "Dynamics", methodName : "same"});
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 362, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
 	$s.pop();
@@ -6963,7 +7025,7 @@ Arrays.format = function(v,param,params,culture) {
 		if(null != max && max < v.length) {
 			var elipsis = null == params[4]?" ...":params[4];
 			var $tmp = v.copy().splice(0,max).map(function(d,i) {
-				$s.push("Arrays::format@213");
+				$s.push("Arrays::format@216");
 				var $spos = $s.length;
 				var $tmp = Dynamics.format(d,params[0],null,null,culture);
 				$s.pop();
@@ -6974,7 +7036,7 @@ Arrays.format = function(v,param,params,culture) {
 			return $tmp;
 		} else {
 			var $tmp = v.map(function(d,i) {
-				$s.push("Arrays::format@215");
+				$s.push("Arrays::format@218");
 				var $spos = $s.length;
 				var $tmp = Dynamics.format(d,params[0],null,null,culture);
 				$s.pop();
@@ -7002,7 +7064,7 @@ Arrays.formatf = function(param,params,culture) {
 	switch(format) {
 	case "J":
 		var $tmp = function(v) {
-			$s.push("Arrays::formatf@230");
+			$s.push("Arrays::formatf@233");
 			var $spos = $s.length;
 			if(v.length == 0) {
 				var empty = null == params[1]?"[]":params[1];
@@ -7014,7 +7076,7 @@ Arrays.formatf = function(param,params,culture) {
 			if(null != max && max < v.length) {
 				var elipsis = null == params[4]?" ...":params[4];
 				var $tmp = v.copy().splice(0,max).map(function(d,i) {
-					$s.push("Arrays::formatf@230@243");
+					$s.push("Arrays::formatf@233@246");
 					var $spos = $s.length;
 					var $tmp = Dynamics.format(d,params[0],null,null,culture);
 					$s.pop();
@@ -7025,7 +7087,7 @@ Arrays.formatf = function(param,params,culture) {
 				return $tmp;
 			} else {
 				var $tmp = v.map(function(d,i) {
-					$s.push("Arrays::formatf@230@245");
+					$s.push("Arrays::formatf@233@248");
 					var $spos = $s.length;
 					var $tmp = Dynamics.format(d,params[0],null,null,culture);
 					$s.pop();
@@ -7042,7 +7104,7 @@ Arrays.formatf = function(param,params,culture) {
 	case "C":
 		var f = Ints.formatf("I",[],culture);
 		var $tmp = function(v) {
-			$s.push("Arrays::formatf@249");
+			$s.push("Arrays::formatf@252");
 			var $spos = $s.length;
 			var $tmp = f(v.length);
 			$s.pop();
@@ -7072,10 +7134,10 @@ Arrays.interpolatef = function(a,b,equation) {
 		if(a[i] == b[i]) {
 			var v = [b[i]];
 			functions.push((function(v) {
-				$s.push("Arrays::interpolatef@271");
+				$s.push("Arrays::interpolatef@274");
 				var $spos = $s.length;
 				var $tmp = function(_) {
-					$s.push("Arrays::interpolatef@271@271");
+					$s.push("Arrays::interpolatef@274@274");
 					var $spos = $s.length;
 					var $tmp = v[0];
 					$s.pop();
@@ -7092,10 +7154,10 @@ Arrays.interpolatef = function(a,b,equation) {
 	while(i < b.length) {
 		var v = [b[i]];
 		functions.push((function(v) {
-			$s.push("Arrays::interpolatef@279");
+			$s.push("Arrays::interpolatef@282");
 			var $spos = $s.length;
 			var $tmp = function(_) {
-				$s.push("Arrays::interpolatef@279@279");
+				$s.push("Arrays::interpolatef@282@282");
 				var $spos = $s.length;
 				var $tmp = v[0];
 				$s.pop();
@@ -7109,10 +7171,10 @@ Arrays.interpolatef = function(a,b,equation) {
 		i++;
 	}
 	var $tmp = function(t) {
-		$s.push("Arrays::interpolatef@282");
+		$s.push("Arrays::interpolatef@285");
 		var $spos = $s.length;
 		var $tmp = functions.map(function(f,_) {
-			$s.push("Arrays::interpolatef@282@282");
+			$s.push("Arrays::interpolatef@285@285");
 			var $spos = $s.length;
 			var $tmp = f(t);
 			$s.pop();
@@ -7143,10 +7205,10 @@ Arrays.interpolateStringsf = function(a,b,equation) {
 		if(a[i] == b[i]) {
 			var v = [b[i]];
 			functions.push((function(v) {
-				$s.push("Arrays::interpolateStringsf@301");
+				$s.push("Arrays::interpolateStringsf@304");
 				var $spos = $s.length;
 				var $tmp = function(_) {
-					$s.push("Arrays::interpolateStringsf@301@301");
+					$s.push("Arrays::interpolateStringsf@304@304");
 					var $spos = $s.length;
 					var $tmp = v[0];
 					$s.pop();
@@ -7163,10 +7225,10 @@ Arrays.interpolateStringsf = function(a,b,equation) {
 	while(i < b.length) {
 		var v = [b[i]];
 		functions.push((function(v) {
-			$s.push("Arrays::interpolateStringsf@309");
+			$s.push("Arrays::interpolateStringsf@312");
 			var $spos = $s.length;
 			var $tmp = function(_) {
-				$s.push("Arrays::interpolateStringsf@309@309");
+				$s.push("Arrays::interpolateStringsf@312@312");
 				var $spos = $s.length;
 				var $tmp = v[0];
 				$s.pop();
@@ -7180,10 +7242,10 @@ Arrays.interpolateStringsf = function(a,b,equation) {
 		i++;
 	}
 	var $tmp = function(t) {
-		$s.push("Arrays::interpolateStringsf@312");
+		$s.push("Arrays::interpolateStringsf@315");
 		var $spos = $s.length;
 		var $tmp = functions.map(function(f,_) {
-			$s.push("Arrays::interpolateStringsf@312@312");
+			$s.push("Arrays::interpolateStringsf@315@315");
 			var $spos = $s.length;
 			var $tmp = f(t);
 			$s.pop();
@@ -7214,10 +7276,10 @@ Arrays.interpolateIntsf = function(a,b,equation) {
 		if(a[i] == b[i]) {
 			var v = [b[i]];
 			functions.push((function(v) {
-				$s.push("Arrays::interpolateIntsf@331");
+				$s.push("Arrays::interpolateIntsf@334");
 				var $spos = $s.length;
 				var $tmp = function(_) {
-					$s.push("Arrays::interpolateIntsf@331@331");
+					$s.push("Arrays::interpolateIntsf@334@334");
 					var $spos = $s.length;
 					var $tmp = v[0];
 					$s.pop();
@@ -7234,10 +7296,10 @@ Arrays.interpolateIntsf = function(a,b,equation) {
 	while(i < b.length) {
 		var v = [b[i]];
 		functions.push((function(v) {
-			$s.push("Arrays::interpolateIntsf@339");
+			$s.push("Arrays::interpolateIntsf@342");
 			var $spos = $s.length;
 			var $tmp = function(_) {
-				$s.push("Arrays::interpolateIntsf@339@339");
+				$s.push("Arrays::interpolateIntsf@342@342");
 				var $spos = $s.length;
 				var $tmp = v[0];
 				$s.pop();
@@ -7251,10 +7313,10 @@ Arrays.interpolateIntsf = function(a,b,equation) {
 		i++;
 	}
 	var $tmp = function(t) {
-		$s.push("Arrays::interpolateIntsf@342");
+		$s.push("Arrays::interpolateIntsf@345");
 		var $spos = $s.length;
 		var $tmp = functions.map(function(f,_) {
-			$s.push("Arrays::interpolateIntsf@342@342");
+			$s.push("Arrays::interpolateIntsf@345@345");
 			var $spos = $s.length;
 			var $tmp = f(t);
 			$s.pop();
@@ -7319,7 +7381,7 @@ Arrays.string = function(arr) {
 	$s.push("Arrays::string");
 	var $spos = $s.length;
 	var $tmp = "[" + arr.map(function(v,_) {
-		$s.push("Arrays::string@397");
+		$s.push("Arrays::string@400");
 		var $spos = $s.length;
 		var $tmp = Dynamics.string(v);
 		$s.pop();
@@ -7341,11 +7403,14 @@ Arrays.last = function(arr) {
 Arrays.lastf = function(arr,f) {
 	$s.push("Arrays::lastf");
 	var $spos = $s.length;
-	var t = arr.copy();
-	t.reverse();
-	var $tmp = Arrays.firstf(arr,f);
+	var i = arr.length;
+	while(--i >= 0) if(f(arr[i])) {
+		var $tmp = arr[i];
+		$s.pop();
+		return $tmp;
+	}
 	$s.pop();
-	return $tmp;
+	return null;
 	$s.pop();
 }
 Arrays.first = function(arr) {
@@ -7417,7 +7482,7 @@ Arrays.nearest = function(a,x,f) {
 		delta.push({ i : i, v : Math.abs(f(a[i]) - x)});
 	}
 	delta.sort(function(a1,b) {
-		$s.push("Arrays::nearest@465");
+		$s.push("Arrays::nearest@470");
 		var $spos = $s.length;
 		var $tmp = Floats.compare(a1.v,b.v);
 		$s.pop();
@@ -7447,6 +7512,37 @@ Arrays.compare = function(a,b) {
 	}
 	$s.pop();
 	return 0;
+	$s.pop();
+}
+Arrays.product = function(a) {
+	$s.push("Arrays::product");
+	var $spos = $s.length;
+	var arr = a.copy(), result = [], temp;
+	var _g = 0, _g1 = arr[0];
+	while(_g < _g1.length) {
+		var value = _g1[_g];
+		++_g;
+		result.push([value]);
+	}
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		temp = [];
+		var _g2 = 0;
+		while(_g2 < result.length) {
+			var acc = result[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = arr[i];
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				temp.push(acc.copy().concat([value]));
+			}
+		}
+		result = temp;
+	}
+	$s.pop();
+	return result;
 	$s.pop();
 }
 Arrays.prototype.__class__ = Arrays;
@@ -17928,7 +18024,7 @@ thx.js.Svg.mouse = function(dom) {
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
 	if(thx.js.Svg._usepage && (js.Lib.window.scrollX || js.Lib.window.scrollY)) {
 		var svg = thx.js.Dom.selectNode(js.Lib.document.body).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
-		var ctm = svg.node().dom.getScreenCTM();
+		var ctm = svg.node().getScreenCTM();
 		thx.js.Svg._usepage = !(ctm.f || ctm.e);
 		svg.remove();
 	}
@@ -19266,6 +19362,26 @@ Objects.compare = function(a,b) {
 	}
 	$s.pop();
 	return 0;
+	$s.pop();
+}
+Objects.addFields = function(o,fields,values) {
+	$s.push("Objects::addFields");
+	var $spos = $s.length;
+	var _g1 = 0, _g = fields.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		Objects.addField(o,fields[i],values[i]);
+	}
+	$s.pop();
+	return o;
+	$s.pop();
+}
+Objects.addField = function(o,field,value) {
+	$s.push("Objects::addField");
+	var $spos = $s.length;
+	o[field] = value;
+	$s.pop();
+	return o;
 	$s.pop();
 }
 Objects.prototype.__class__ = Objects;
