@@ -9,10 +9,11 @@ import rg.query.Query;
 import rg.svg.LineChartData;
 import thx.error.NullArgument;
 import rg.util.Periodicity;
+import rg.util.TimeSeriesType;
 
-class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic<Dynamic<Int>>>, TData>
+class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<TimeSeriesType>, TData>
 {
-	override function executeLoad(success : Array<Dynamic<Dynamic<Int>>> -> Void, error : String -> Void)
+	override function executeLoad(success : Array<TimeSeriesType> -> Void, error : String -> Void)
 	{
 		var count = 0,
 			total = values.length + (others ? 1 : 0),
@@ -36,7 +37,7 @@ class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic
 			success(data);
 		}
 		
-		function _total(value : Dynamic<Dynamic<Int>>)
+		function _total(value : TimeSeriesType)
 		{
 			trace(value);
 			data[total - 1] = value;
@@ -44,7 +45,7 @@ class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic
 				_end();
 		}
 		
-		function _collect(pos : Int, value : Dynamic<Dynamic<Int>>)
+		function _collect(pos : Int, value : TimeSeriesType)
 		{
 //			trace(value);
 			data[pos] = value;
@@ -87,6 +88,8 @@ class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic
 	public static function forLineChart(executor : IExecutor, path : String, event : String, property : String, values : Array<String>, ?others : Bool, ?otherslabel : String)
 	{
 		var query = new QueryValuesSeries<Dynamic, LineChartData>(executor, path, event, property, values, others, otherslabel);
+		query.transform = Transform.arrayTimeSeries(query, query.formattedValues);
+/*
 		query.transform = function(data : Array<Dynamic<Dynamic<Int>>>) : LineChartData
 		{
 			var start = null != query.time.start ? query.time.start.getTime() : Periodicity.minForPeriodicityInSeries(data, query.time.periodicity),
@@ -143,6 +146,7 @@ class QueryValuesSeries<TValue, TData> extends QueryValues<TValue, Array<Dynamic
 				data : result
 			};
 		};
+*/
 		return query;
 	}
 }

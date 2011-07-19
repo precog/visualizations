@@ -5,6 +5,7 @@
 
 package rg.data.source.rgquery.transform;
 import rg.data.DataPoint;
+import rg.util.Properties;
 using Arrays;
 
 class TransformCountTimeIntersect implements ITransform<Dynamic>
@@ -53,7 +54,7 @@ class TransformCountTimeIntersect implements ITransform<Dynamic>
 					values.map(typedValue)
 				);
 				Objects.addFields(p, 
-					[".#time:" + periodicity, unit],
+					[Properties.timeProperty(periodicity), unit],
 					[arr[i][0], arr[i][1]]
 				);
 					

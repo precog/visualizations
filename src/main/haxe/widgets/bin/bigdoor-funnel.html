@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>BigDoor</title>
+	<!-- THIS CSS ONLY CONTAINS CONTEXT DEFINITIONS AND SHOULD NOT BE INCLUDED IN YOUR DASHBOARD -->
+	<link rel="stylesheet" href="css/demo.css" type="text/css"/>
+	
+	<!-- CONTAINS THE MAIN CSS DEFINITIONS FOR THE ReportGrid VISUALIZATIONS -->
+	<link rel="stylesheet" type="text/css" href="http://www.reportgrid.com/api/css/rg.css"/>
+	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
+<!--
+	<link rel="stylesheet" href="http://www.reportgrid.com/api/css/rg-colors20.css" type="text/css"/>
+	<link rel="stylesheet" href="http://www.reportgrid.com/api/css/rg-colors20b.css" type="text/css"/>
+	<link rel="stylesheet" href="http://www.reportgrid.com/api/css/rg-colors20c.css" type="text/css"/>
+	<link rel="stylesheet" href="http://www.reportgrid.com/api/css/rg-colors-mono-blue.css" type="text/css"/>
+	<link rel="stylesheet" href="http://www.reportgrid.com/api/css/rg-colors-mono-green.css" type="text/css"/>
+	<link rel="stylesheet" href="http://www.reportgrid.com/api/css/rg-colors-mono-red.css" type="text/css"/>
+-->
+	<!-- REQUIRED JUST FOR THE ON READY EVENT -->
+	<script src="js/jquery-1.5.1.min.js" type="text/javascript"></script>
+	<!-- BOTH THE FOLLOWING FILES ARE REQUIRED TO DISPLAY VISUALIZATIONS -->
+	<script src="http://www.reportgrid.com/api/js/reportgrid-core.js?tokenId=39C65DA6-922B-4D94-8736-F516A01B9FC6" type="text/javascript"></script>
+	<script src="js/reportgrid-viz.js" type="text/javascript"></script>
+	<script type="text/javascript">
+$(document).ready(function() {
+	function label(d)
+	{
+		return d.label.split("_").join(" ").replace("engagement", "engage");
+	}
+	ReportGrid.funnelChart("#chart1", {
+		path : "/bigdoor",
+		events : ["bar_engagement", "login", "logout"]
+	}, { label : label });
+	
+	ReportGrid.funnelChart("#chart2", {
+		path : "/bigdoor",
+		events : ["bar_engagement", "checkin_engagement", "checkin_click"]
+	}, { label : label });
+	
+	ReportGrid.funnelChart("#chart3", {
+		path : "/bigdoor",
+		events : ["bar_engagement", "share_engagement", "share_click"]
+	}, { label : label });
+});
+	</script>
+</head>
+<body>
+	<div id="main">
+		<div class="container funnel">
+			<h1>Login/Logout</h1>
+			<div id="chart1"></div>
+		</div>
+		
+		<div class="container funnel">
+			<h1>Checkin</h1>
+			<div id="chart2"></div>
+		</div>
+		
+		<div class="container funnel">
+			<h1>Share</h1>
+			<div id="chart3"></div>
+		</div>
+	</div>
+</body>
+</html>

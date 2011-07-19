@@ -7,10 +7,11 @@ package rg.query;
 import rg.query.Query;
 import rg.svg.LineChartData;
 import rg.util.Periodicity;
+import rg.util.TimeSeriesType;
 
-class QueryEventSeries<TData> extends QueryEvent<Dynamic<Dynamic<Int>>, TData>
+class QueryEventSeries<TData> extends QueryEvent<TimeSeriesType, TData>
 {
-	override function executeLoad(success : Dynamic<Dynamic<Int>> -> Void, error : String -> Void)
+	override function executeLoad(success : TimeSeriesType -> Void, error : String -> Void)
 	{
 		var query = queryObject();
 		query.property = event;
@@ -20,7 +21,14 @@ class QueryEventSeries<TData> extends QueryEvent<Dynamic<Dynamic<Int>>, TData>
 	public static function forLineChart(executor : IExecutor, path : String, event : String)
 	{
 		var query = new QueryEventSeries<LineChartData>(executor, path, event);
-		query.transform = function(data : Dynamic<Dynamic<Int>>) : LineChartData
+		query.transform = Transform.timeSeries(query, event);
+		return query;
+	}
+/*
+	public static function forLineChart(executor : IExecutor, path : String, event : String)
+	{
+		var query = new QueryEventSeries<LineChartData>(executor, path, event);
+		query.transform = function(data : TimeSeriesType) : LineChartData
 		{
 			var start = null != query.time.start ? query.time.start.getTime() : Periodicity.minForPeriodicityInSeries([data], query.time.periodicity),
 				end = null != query.time.end ? query.time.end.getTime() : Periodicity.maxForPeriodicityInSeries([data], query.time.periodicity),
@@ -82,4 +90,5 @@ class QueryEventSeries<TData> extends QueryEvent<Dynamic<Dynamic<Int>>, TData>
 		};
 		return query;
 	}
+*/
 }

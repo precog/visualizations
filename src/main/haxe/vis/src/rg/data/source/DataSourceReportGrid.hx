@@ -33,21 +33,42 @@ class DataSourceReportGrid implements IDataSource
 	
 	var transform : ITransform<Dynamic>;
 	
+	public var query(default, null) : Query;
 	public var onLoad(default, null) : Dispatcher<Array<DataPoint>>;
+	
+	function mapProperties(d, _)
+	{
+		switch(d) 
+		{ 
+			case Property(name, limit, descending): 
+				return { 
+					property : event + name, 
+					limit : null == limit ? 10 : limit, 
+					order : false == descending ? "ascending" : "descending"
+				};
+			case Event: 
+				return { 
+					property : event, 
+					limit : null, 
+					order : null
+				};
+			default:
+				throw new Error("normalization failed, only Property values should be allowed");
+		}
+	}
+	
 	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?start : Float, ?end : Float) 
 	{
+		this.query = query;
 		this.executor = executor;
 		var e = normalize(query.exp);
-		this.periodicity = switch(e.pop()) { case Time(_, p): p; default: throw new Error("normalization failed, the last value should always be a Time expression"); };
-		this.exp = e.map(function(d, _) return switch(d) { case Property(name, limit, descending): { 
-			property : name, 
-			limit : null == limit ? 10 : limit, 
-			order : false == descending ? "ascending" : "descending"
-		}; default: throw new Error("normalization failed, only Property values should be allowed"); } );
+		this.event = event;
+		this.periodicity = switch(e.pop()) { case Time(p): p; default: throw new Error("normalization failed, the last value should always be a Time expression"); };
+		this.exp = e.map(mapProperties);
 		this.where = query.where.map(function(d, i) return switch(d) { case Equality(property, value): {
-			property : property,
+			property : event + property,
 			value : value
-		}; default: throw new Error("invalid data for Where"); } );
+		}; default: throw new Error("invalid data for 'where' condition"); } );
 		this.operation = query.operation;
 		
 		switch(operation)
@@ -57,7 +78,6 @@ class DataSourceReportGrid implements IDataSource
 		}
 		
 		this.path = path;
-		this.event = event;
 		this.start = start;
 		this.end = end;
 		
@@ -78,7 +98,7 @@ class DataSourceReportGrid implements IDataSource
 		{
 			var w = { };
 			for (c in where)
-				Reflect.setField(w, event + c.property, c.value);
+				Reflect.setField(w, c.property, c.value);
 			Reflect.setField(o, "where", w);
 		}
 			
@@ -109,11 +129,11 @@ class DataSourceReportGrid implements IDataSource
 					executor.searchCount(path, o, success, error);
 				else if (where.length == 1)
 				{
-					o.property = event + exp[0].property;
+					o.property = exp[0].property;
 					o.value = where[0].value;
 					executor.propertyValueCount(path, o, success, error);
 				} else {
-					o.property = event + exp[0].property;
+					o.property = exp[0].property;
 					executor.propertyCount(path, o, success, error);
 				}
 			} else {
@@ -123,11 +143,11 @@ class DataSourceReportGrid implements IDataSource
 					executor.searchSeries(path, o, success, error);
 				else if (where.length == 1)
 				{
-					o.property = event + exp[0].property;
+					o.property = exp[0].property;
 					o.value = where[0].value;
 					executor.propertyValueSeries(path, o, success, error);
 				} else {
-					o.property = event + exp[0].property;
+					o.property = exp[0].property;
 					executor.propertySeries(path, o, success, error);
 				}
 			}
@@ -168,19 +188,21 @@ class DataSourceReportGrid implements IDataSource
 			{
 				return exp.slice(0, pos).concat(exp.slice(pos + 1)).concat([exp[pos]]);
 			} else {
-				return exp.copy().concat([Time("", "eternity")]);
+				return exp.copy().concat([Time("eternity")]);
 			}
 		} else if (exp.length == 1)
 		{
 			switch(exp[0])
 			{
 				case Property(name, _, _):
-					return [exp[0], Time(name, "eternity")];
-				case Time(name, periodicity):
-					return [Property(name), exp[0]];
+					return [exp[0], Time("eternity")];
+				case Time(periodicity):
+					return [Event, exp[0]];
+				case Event:
+					return [Event, Time("eternity")];
 			}
 		} else {
-			return exp;
+			return [Event, Time("eternity")];
 		}
 		/*
 		switch(exp)
@@ -210,7 +232,7 @@ class DataSourceReportGrid implements IDataSource
 	{
 		switch(exp)
 		{
-			case Time(_, _):
+			case Time(_):
 				return true;
 			default:
 				return false;

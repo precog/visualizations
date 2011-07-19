@@ -5,6 +5,7 @@
 
 package rg.data.source.rgquery.transform;
 import rg.data.DataPoint;
+import rg.util.Properties;
 using Arrays;
 
 class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>>>
@@ -33,7 +34,7 @@ class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>
 		return values.map(function(d, _) {
 			var p = Objects.addFields(
 				Dynamics.clone(properties), 
-				[".#time:" + periodicity, unit], 
+				[Properties.timeProperty(periodicity), unit], 
 				[d[0], d[1]]);
 			return {
 				properties : p,

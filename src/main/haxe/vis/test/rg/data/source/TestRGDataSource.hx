@@ -5,6 +5,7 @@
 
 package rg.data.source;
 
+import haxe.PosInfos;
 import rg.data.source.rgquery.MockRGExecutor;
 import rg.data.source.rgquery.QueryAst;
 import utest.Assert;
@@ -15,14 +16,19 @@ class TestRGDataSource
 	function profile(query : Query)
 	{
 		var executor = new MockRGExecutor();
-		new DataSourceReportGrid(executor, "/", "impression", query).load();
+		new DataSourceReportGrid(executor, "/", "click", query).load();
 		return executor.callStack;
+	}
+	
+	function assert(a : Dynamic, b : Dynamic, ?pos : PosInfos)
+	{
+		Assert.same(a, b, "expected " + Dynamics.string(a) + " but was " + Dynamics.string(b), pos);
 	}
 	
 	public function testEventCount()
 	{
-		Assert.same([{
-			{ method : "propertyCount", args : ["/", { property : "impression"}] } 
+		assert([{
+			{ method : "propertyCount", args : ["/", { property : "click"}] } 
 		}], profile( {
 			exp : [Property("")],
 			operation : Count,
@@ -32,8 +38,8 @@ class TestRGDataSource
 	
 	public function testPropertyCount()
 	{
-		Assert.same([{
-			{ method : "propertyCount", args : ["/", { property : "impression.unique"}] } 
+		assert([{
+			{ method : "propertyCount", args : ["/", { property : "click.unique"}] } 
 		}], profile( {
 			exp : [Property(".unique")],
 			operation : Count,
@@ -43,10 +49,10 @@ class TestRGDataSource
 
 	public function testEventSeries()
 	{
-		Assert.same([{
-			{ method : "propertySeries", args : ["/", { property : "impression", periodicity : "day"}] } 
+		assert([{
+			{ method : "propertySeries", args : ["/", { property : "click", periodicity : "day"}] } 
 		}], profile( {
-			exp : [Time("", "day")],
+			exp : [Time("day")],
 			operation : Count,
 			where : []
 		}));
@@ -54,10 +60,10 @@ class TestRGDataSource
 	
 	public function testPropertySeries()
 	{
-		Assert.same([{
-			{ method : "propertySeries", args : ["/", { property : "impression.unique", periodicity : "day"}] } 
+		assert([{
+			{ method : "propertySeries", args : ["/", { property : "click.unique", periodicity : "day"}] } 
 		}], profile( {
-			exp : [Time(".unique", "day")],
+			exp : [Property(".unique"), Time("day")],
 			operation : Count,
 			where : []
 		}));
@@ -65,8 +71,8 @@ class TestRGDataSource
 	
 	public function testPropertyValueCount()
 	{
-		Assert.same([{
-			{ method : "propertyValueCount", args : ["/", { property : "impression.gender", value : "female"}] } 
+		assert([{
+			{ method : "propertyValueCount", args : ["/", { property : "click.gender", value : "female"}] } 
 		}], profile( {
 			exp : [Property(".gender")],
 			operation : Count,
@@ -76,10 +82,10 @@ class TestRGDataSource
 	
 	public function testPropertyValueSeries()
 	{
-		Assert.same([{
-			{ method : "propertyValueSeries", args : ["/", { property : "impression.gender", value : "female", periodicity : "day"}] } 
+		assert([{
+			{ method : "propertyValueSeries", args : ["/", { property : "click.gender", value : "female", periodicity : "day"}] } 
 		}], profile( {
-			exp : [Property(".gender"), Time(".gender", "day")],
+			exp : [Property(".gender"), Time("day")],
 			operation : Count,
 			where : [Equality(".gender", "female")]
 		}));
@@ -87,8 +93,8 @@ class TestRGDataSource
 	
 	public function testSearchValueCount()
 	{
-		Assert.same([{
-			{ method : "searchCount", args : ["/", { where : ({}).addFields(["impression.gender", "impression.ageRange"], ["female", "21-30"]) }] } 
+		assert([{
+			{ method : "searchCount", args : ["/", { where : ({}).addFields(["click.gender", "click.ageRange"], ["female", "21-30"]) }] } 
 		}], profile( {
 			exp : [Property("")], 
 			operation : Count,
@@ -101,10 +107,10 @@ class TestRGDataSource
 	
 	public function testSearchSeries()
 	{
-		Assert.same([{
-			{ method : "searchSeries", args : ["/", { periodicity : "day", where : ({}).addFields(["impression.gender", "impression.ageRange"], ["female", "21-30"]) }] } 
+		assert([{
+			{ method : "searchSeries", args : ["/", { periodicity : "day", where : ({}).addFields(["click.gender", "click.ageRange"], ["female", "21-30"]) }] } 
 		}], profile( {
-			exp : [Property(""), Time("", "day")],
+			exp : [Property(""), Time("day")],
 			operation : Count,
 			where : [
 				Equality(".gender", "female"),
@@ -115,20 +121,20 @@ class TestRGDataSource
 	
 	public function testIntersectOverTime()
 	{
-		Assert.same([{
+		assert([{
 			method : "intersect", 
 			args : ["/", { 
 				periodicity : "day", 
 				properties : [{
-					property : ".gender",
+					property : "click.gender",
 					limit : 5,
 					order : "descending"
 				}, {
-					property : ".platform",
+					property : "click.platform",
 					limit : 7,
 					order : "ascending"
 				}, {
-					property : ".ageRange",
+					property : "click.ageRange",
 					limit : 10,
 					order : "descending"
 			}] }]
@@ -137,7 +143,7 @@ class TestRGDataSource
 				Property(".gender", 5, true),
 				Property(".platform", 7, false),
 				Property(".ageRange"),
-				Time("", "day")],
+				Time("day")],
 			operation : Count,
 			where : []
 		}));
@@ -145,26 +151,26 @@ class TestRGDataSource
 	
 	public function testNormalization()
 	{
-		Assert.same(
-			[Property(""), Time("", "eternity")],
-			DataSourceReportGrid.normalize([Property("")])
+		assert(
+			[Event, Time("eternity")],
+			DataSourceReportGrid.normalize([Event])
 		);
 		
-		Assert.same(
-			[Property(""), Time("", "day")],
-			DataSourceReportGrid.normalize([Time("", "day")])
+		assert(
+			[Event, Time("day")],
+			DataSourceReportGrid.normalize([Time("day")])
 		);
 		
-		Assert.same(
-			[Property(".unique"), Time(".unique", "day")],
-			DataSourceReportGrid.normalize([Time(".unique", "day")])
+		assert(
+			[Event, Time("eternity")],
+			DataSourceReportGrid.normalize([])
 		);
 		
-		Assert.same(
+		assert(
 			[
 				Property(".platform"),
 				Property(".ageRange"),
-				Time("", "eternity")
+				Time("eternity")
 			],
 			DataSourceReportGrid.normalize([
 				Property(".platform"),
@@ -172,14 +178,14 @@ class TestRGDataSource
 			])
 		);
 		
-		Assert.same(
+		assert(
 			[
 				Property(".platform"),
 				Property(".ageRange"),
-				Time("", "eternity")
+				Time("eternity")
 			],
 			DataSourceReportGrid.normalize([
-				Time("", "eternity"),
+				Time("eternity"),
 				Property(".platform"),
 				Property(".ageRange")
 			])

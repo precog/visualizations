@@ -11,6 +11,7 @@ import rg.query.Query;
 typedef QueryOptions = {
 	path : String,
 	event : String,
+	events : Array<String>,
 	property : Null<String>,
 	values : Null<Bool>,
 	filter : Null<String -> Int -> Bool>,
@@ -36,6 +37,7 @@ class QueryOptionsUtil
 		return {
 			path : null,
 			event : null,
+			events : null,
 			property : null,
 			values : null,
 			filter : null,

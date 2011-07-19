@@ -48,6 +48,11 @@ class SvgFunnelChart extends SvgLayer
 		*/
 	}
 	
+	public dynamic function label(d : {label:String,value:Float}, i : Int)
+	{
+		return RGStrings.humanize(d.label);
+	}
+	
 	override public function redraw()
 	{
 		if (null == _data || 0 == _data.length)
@@ -98,7 +103,8 @@ class SvgFunnelChart extends SvgLayer
 			conjr = function(d, i)
 			{
 				return " M " + fx1(d.value) + " 0 " +conj(d.value, 0) + conj(d.value, 0, true, 1);
-			}
+			},
+			me = this
 		;
 
 		var top = svg.selectAll("svg:g").data([d[0]]).enter()
@@ -134,7 +140,7 @@ class SvgFunnelChart extends SvgLayer
 				.style("fill").string(bgcolor)
 				.style("font-weight").string("bold")
 				.style("font-size").string(fontsize + "px")
-				.text().stringf(function(d, i) return RGStrings.humanize(d.label))
+				.text().stringf(label)
 		;
 		t.append("svg:text")
 			.attr("text-anchor").string("middle")
@@ -150,7 +156,7 @@ class SvgFunnelChart extends SvgLayer
 				.style("fill").string(frcolor)
 				.style("font-weight").string("bold")
 				.style("font-size").string(fontsize + "px")
-				.text().stringf(function(d, i) return RGStrings.humanize(d.label))
+				.text().stringf(label)
 		;
 
 		var g = choice.enter()
@@ -167,7 +173,7 @@ class SvgFunnelChart extends SvgLayer
 			});
 		g.eachNode(callback(_externalSection, max));
 		var baloonContainer = svg,
-			bb = { x : 0.0 + Math.round(tw / 3 * 2), y : 0.0, width : 0.0 + tw / 3, height : 0.0 + this.height },
+			bb = { x : 0.0 + Math.round(tw / 5 * 3), y : 0.0, width : 0.0 + tw / 3, height : 0.0 + this.height },
 			arrowsize = Math.min(30, h/3*2),
 			arrowdata = _data.slice(1).map(function(o,i) return 100 * o.value / max /*d[i].value*/);
 			
@@ -177,7 +183,7 @@ class SvgFunnelChart extends SvgLayer
 				return;
 			var baloon = new SvgBaloon(baloonContainer);
 			baloon.preferredSide = 3;
-			baloon.text = [RGStrings.humanize(d.label), Floats.format(d.value, "I")];
+			baloon.text = [me.label(d, 0), Floats.format(d.value, "I")];
 			baloon.boundingBox = bb;
 			baloon.moveTo(tw / 2, Math.round(th * (0.5 + i) + arrowsize) + 0.5, false);
 		});
@@ -255,7 +261,8 @@ class SvgFunnelChart extends SvgLayer
 			v = (i + 1) < _data.length ? (_data[i].value - _data[i + 1].value) / _data[i].value : 0,
 			percent = max / _data[i].value;
 			
-			
+		if (null == color)
+			color = new Hsl(0, 0, 0.8);
 		var stops = svg.select("defs")
 			.append("svg:radialGradient")
 			.attr("id").string("rg_funnel_ext_gradient_" + i)

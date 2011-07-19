@@ -13,8 +13,9 @@ typedef Query = {
 
 enum QExp
 {
-	Time(name : String, periodicity : String);
+	Time(periodicity : String);
 	Property(name : String, ?limit : Int, ?descending : Bool);
+	Event;
 }
 
 enum QCondition

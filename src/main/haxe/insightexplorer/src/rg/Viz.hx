@@ -17,6 +17,7 @@ import rg.query.PropertyType;
 import rg.query.Query;
 import rg.query.QueryEventSeries;
 import rg.query.QueryEventsCount;
+import rg.query.QueryEventsSeries;
 import rg.query.QueryIntersect;
 import rg.query.QueryValuesCount;
 import rg.query.QueryValuesSeries;
@@ -527,7 +528,8 @@ class Viz
 		var top = null == q.bottom && q.top > 0;
 		var limit = null != q.bottom ? q.bottom : (null == q.top ? 10 : q.top);
 	
-		var loader : QueryExecutor<Dynamic, Array<{ label : String, value : Float }>>;
+		var loader : QueryExecutor < Dynamic, Array<{ label : String, value : Float }> > ;
+		
 		if (null != q.property && "" != q.property)
 		{
 			var l = new QueryValuesCount(executor, q.path, q.event, q.property, top, limit, q.other);
@@ -537,7 +539,13 @@ class Viz
 		} else if(null != q.event && "" != q.event) {
 			loader = new QueryPropertiesCount(executor, q.path, q.event);
 		} else {
-			loader = new QueryEventsCount(executor, q.path);
+			var eloader = new QueryEventsCount(executor, q.path);
+			loader = eloader;
+			if (null != q.events)
+			{
+				eloader.order = function(d) return d;
+				eloader.events = q.events.copy();
+			}
 		}
 			
 		loader.onError.add(error);
@@ -560,6 +568,10 @@ class Viz
 		loader.onChange.add(function(d) {
 			chart.data(d);
 		});
+		if (null != o.label)
+		{
+			chart.label = o.label;
+		}
 
 		executeQuery(loader, o);
 		
@@ -830,8 +842,15 @@ class Viz
 			if (null != q.property)
 			{
 				loader = QueryValuesSeries.forLineChart(executor, q.path, q.event, q.property, []);
-			} else {
+			} else if(null != q.event) {
 				loader = QueryEventSeries.forLineChart(executor, q.path, q.event);
+			} else {
+				var eloader = QueryEventsSeries.forLineChart(executor, q.path);
+				loader = eloader;
+				if (null != q.events)
+				{
+					eloader.events = q.events.copy();
+				}
 			}
 
 			loader.time.periodicity = o.periodicity;

@@ -1,6 +1,7 @@
 package rg.query.js;
 import rg.query.IExecutor;
 import rg.js.ReportGrid;
+import rg.util.TimeSeriesType;
 
 /**
  * ...
@@ -19,7 +20,7 @@ class ReportGridExecutor implements IExecutor
 	{
 		ReportGrid.propertyCount(path, options, success, error);
 	}
-	public function propertySeries(path : String, options : { }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
+	public function propertySeries(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void)
 	{
 		ReportGrid.propertySeries(path, options, success, error);
 	}
@@ -31,7 +32,7 @@ class ReportGridExecutor implements IExecutor
 	{
 		ReportGrid.propertyValueCount(path, options, success, error);
 	}
-	public function propertyValueSeries(path : String, options : { property : String, value : Dynamic }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
+	public function propertyValueSeries(path : String, options : { property : String, value : Dynamic }, success : TimeSeriesType -> Void, ?error : String -> Void)
 	{
 		ReportGrid.propertyValueSeries(path, options, success, error);
 	}
@@ -39,7 +40,7 @@ class ReportGridExecutor implements IExecutor
 	{
 		ReportGrid.searchCount(path, options, success, error);
 	}
-	public function searchSeries(path : String, options : { }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
+	public function searchSeries(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void)
 	{
 		ReportGrid.searchSeries(path, options, success, error);
 	}

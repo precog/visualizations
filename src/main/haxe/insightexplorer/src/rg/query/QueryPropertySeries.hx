@@ -10,9 +10,9 @@ import thx.error.NullArgument;
 import rg.svg.LineChartData;
 import rg.util.Periodicity;
 
-class QueryPropertySeries<TData> extends QueryProperty<Dynamic<Dynamic<Int>>, TData>
+class QueryPropertySeries<TData> extends QueryProperty<TimeSeriesType, TData>
 {
-	override function executeLoad(success : Dynamic<Dynamic<Int>> -> Void, error : String -> Void)
+	override function executeLoad(success : TimeSeriesType -> Void, error : String -> Void)
 	{
 		var query = queryObject();
 		query.property = event + "." + property;
@@ -22,6 +22,8 @@ class QueryPropertySeries<TData> extends QueryProperty<Dynamic<Dynamic<Int>>, TD
 	public static function forLineChart(executor : IExecutor, path : String, event : String, property : String, ?others : Bool, ?otherslabel : String)
 	{
 		var query = new QueryPropertySeries<LineChartData>(executor, path, event, property);
+		query.transform = Transform.timeSeries(query, event); 
+/*
 		query.transform = function(data : Dynamic<Dynamic<Int>>) : LineChartData
 		{
 			trace(data);
@@ -68,6 +70,7 @@ class QueryPropertySeries<TData> extends QueryProperty<Dynamic<Dynamic<Int>>, TD
 				}]
 			};
 		};
+*/
 		return query;
 	}
 }

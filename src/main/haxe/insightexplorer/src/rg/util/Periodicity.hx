@@ -138,7 +138,21 @@ class Periodicity
 		}
 	}
 	
-	public static function minForPeriodicityInSeries(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
+	public static function minForPeriodicityInSeries(arr : Array<TimeSeriesType>)
+	{
+		return Arrays.floatMin(arr, function(d : TimeSeriesType) {
+			return Arrays.floatMin(d.data, function(d : Array<Float>) return d[1]);
+		});
+	}
+	
+	public static function maxForPeriodicityInSeries(arr : Array<TimeSeriesType>)
+	{
+		return Arrays.floatMax(arr, function(d : TimeSeriesType) {
+			return Arrays.floatMax(d.data, function(d : Array<Float>) return d[1]);
+		});
+	}
+	
+	public static function minForPeriodicityInSeriesObject(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
 	{
 		return Arrays.floatMin(arr, function(d) {
 			var o = Reflect.field(d, periodicity);
@@ -146,7 +160,7 @@ class Periodicity
 		});
 	}
 	
-	public static function maxForPeriodicityInSeries(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
+	public static function maxForPeriodicityInSeriesObject(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
 	{
 		return Arrays.floatMax(arr, function(d) {
 			var o = Reflect.field(d, periodicity);

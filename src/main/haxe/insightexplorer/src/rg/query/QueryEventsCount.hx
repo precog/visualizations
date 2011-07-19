@@ -56,21 +56,24 @@ class QueryEventsCount extends QueryPath<Array<{ label : String, value : Float }
 			result = [],
 			totalcount = 0;
 
-		function _success(p : String, v : Float)
+		function _success(pos : Int, p : String, v : Float)
 		{
-			result.push({
+			result[pos] = {
 				label : p,
 				value : v
-			});
+			};
 			if (++count == total)
+			{
 				success(result);
+			}
 
 		}
 		var query = queryObject();
-		for (event in events)
+		for (i in 0...events.length)
 		{
+			var event = events[i];
 			query.property = event;
-			executor.propertyCount(path, { property : event }, callback(_success, event), error);
+			executor.propertyCount(path, query, callback(_success, i, event), error);
 		}
 	}
 }
