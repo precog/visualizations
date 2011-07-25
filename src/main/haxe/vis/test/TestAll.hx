@@ -13,7 +13,7 @@ class TestAll
 		runner.addCase(new rg.controller.factory.TestFactoryVariableIndependent());
 		runner.addCase(new rg.controller.info.TestInfoDataContext());
 		runner.addCase(new rg.controller.info.TestInfoDataSource());
-		runner.addCase(new rg.controller.info.TestInfoSvgOption());
+		runner.addCase(new rg.controller.info.TestInfoLayout());
 		runner.addCase(new rg.controller.info.TestInfoVariable());
 		runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
 		runner.addCase(new rg.data.TestAxisOrdinal());

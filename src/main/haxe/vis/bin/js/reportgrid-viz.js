@@ -1600,6 +1600,45 @@ Dynamics.number = function(v) {
 	$s.pop();
 }
 Dynamics.prototype.__class__ = Dynamics;
+if(!rg.controller) rg.controller = {}
+if(!rg.controller.info) rg.controller.info = {}
+rg.controller.info.InfoDomType = function(p) {
+	$s.push("rg.controller.info.InfoDomType::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoDomType.__name__ = ["rg","controller","info","InfoDomType"];
+rg.controller.info.InfoDomType.filters = function() {
+	$s.push("rg.controller.info.InfoDomType::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "visualization", validator : function(v) {
+		$s.push("rg.controller.info.InfoDomType::filters@18");
+		var $spos = $s.length;
+		var $tmp = Arrays.exists(rg.controller.Visualizations.visualizations,v.toLowerCase());
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoDomType::filters@19");
+		var $spos = $s.length;
+		var $tmp = [{ value : Arrays.exists(rg.controller.Visualizations.html,v.toLowerCase())?rg.controller.info.DomKind.Html:rg.controller.info.DomKind.Svg, field : "kind"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoDomType.prototype.kind = null;
+rg.controller.info.InfoDomType.prototype.__class__ = rg.controller.info.InfoDomType;
+rg.controller.info.DomKind = { __ename__ : ["rg","controller","info","DomKind"], __constructs__ : ["Html","Svg"] }
+rg.controller.info.DomKind.Html = ["Html",0];
+rg.controller.info.DomKind.Html.toString = $estr;
+rg.controller.info.DomKind.Html.__enum__ = rg.controller.info.DomKind;
+rg.controller.info.DomKind.Svg = ["Svg",1];
+rg.controller.info.DomKind.Svg.toString = $estr;
+rg.controller.info.DomKind.Svg.__enum__ = rg.controller.info.DomKind;
 rg.data.IAxis = function() { }
 rg.data.IAxis.__name__ = ["rg","data","IAxis"];
 rg.data.IAxis.prototype.scale = null;
@@ -1787,6 +1826,15 @@ rg.data.OrdinalTickmark.prototype.toString = function() {
 }
 rg.data.OrdinalTickmark.prototype.__class__ = rg.data.OrdinalTickmark;
 rg.data.OrdinalTickmark.__interfaces__ = [rg.data.ITickmark];
+if(!rg.view) rg.view = {}
+if(!rg.view.frame) rg.view.frame = {}
+rg.view.frame.Orientation = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
+rg.view.frame.Orientation.Vertical = ["Vertical",0];
+rg.view.frame.Orientation.Vertical.toString = $estr;
+rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
+rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
+rg.view.frame.Orientation.Horizontal.toString = $estr;
+rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
 if(!thx.collections) thx.collections = {}
 thx.collections.Sets = function() { }
 thx.collections.Sets.__name__ = ["thx","collections","Sets"];
@@ -1831,8 +1879,6 @@ thx.collections.Sets.arr = function(set) {
 	$s.pop();
 }
 thx.collections.Sets.prototype.__class__ = thx.collections.Sets;
-if(!rg.controller) rg.controller = {}
-if(!rg.controller.info) rg.controller.info = {}
 rg.controller.info.Info = function() { }
 rg.controller.info.Info.__name__ = ["rg","controller","info","Info"];
 rg.controller.info.Info.feed = function(info,o) {
@@ -2051,6 +2097,59 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
+if(!rg.view.svg) rg.view.svg = {}
+if(!rg.view.svg.panel) rg.view.svg.panel = {}
+rg.view.svg.panel.Layer = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.panel.Layer::new");
+	var $spos = $s.length;
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.svg = panel.svg.append("svg:g");
+	this.svg.attr("class").string("layer");
+	this._resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
+rg.view.svg.panel.Layer.prototype.panel = null;
+rg.view.svg.panel.Layer.prototype.frame = null;
+rg.view.svg.panel.Layer.prototype.svg = null;
+rg.view.svg.panel.Layer.prototype.width = null;
+rg.view.svg.panel.Layer.prototype.height = null;
+rg.view.svg.panel.Layer.prototype.customClass = null;
+rg.view.svg.panel.Layer.prototype._resize = function() {
+	$s.push("rg.view.svg.panel.Layer::_resize");
+	var $spos = $s.length;
+	this.width = this.frame.width;
+	this.height = this.frame.height;
+	this.resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.resize = function() {
+	$s.push("rg.view.svg.panel.Layer::resize");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.destroy = function() {
+	$s.push("rg.view.svg.panel.Layer::destroy");
+	var $spos = $s.length;
+	var p = this.panel;
+	p.removeLayer(this);
+	this.svg.remove();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
+	$s.push("rg.view.svg.panel.Layer::setCustomClass");
+	var $spos = $s.length;
+	if(null != this.customClass) this.svg.classed().remove(this.customClass);
+	this.svg.classed().add(v);
+	var $tmp = this.customClass = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
 if(!thx.js) thx.js = {}
 thx.js.Access = function(selection) {
 	if( selection === $_ ) return;
@@ -3398,6 +3497,109 @@ thx.js.Dom.selectNodeData = function(node) {
 }
 thx.js.Dom.event = null;
 thx.js.Dom.prototype.__class__ = thx.js.Dom;
+thx.color.Hsl = function(h,s,l) {
+	if( h === $_ ) return;
+	$s.push("thx.color.Hsl::new");
+	var $spos = $s.length;
+	this.hue = h = Floats.circularWrap(h,360);
+	this.saturation = s = Floats.normalize(s);
+	this.lightness = l = Floats.normalize(l);
+	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
+	$s.pop();
+}
+thx.color.Hsl.__name__ = ["thx","color","Hsl"];
+thx.color.Hsl.__super__ = thx.color.Rgb;
+for(var k in thx.color.Rgb.prototype ) thx.color.Hsl.prototype[k] = thx.color.Rgb.prototype[k];
+thx.color.Hsl._c = function(d,s,l) {
+	$s.push("thx.color.Hsl::_c");
+	var $spos = $s.length;
+	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
+	var m1 = 2 * l - m2;
+	d = Floats.circularWrap(d,360);
+	if(d < 60) {
+		var $tmp = m1 + (m2 - m1) * d / 60;
+		$s.pop();
+		return $tmp;
+	} else if(d < 180) {
+		$s.pop();
+		return m2;
+	} else if(d < 240) {
+		var $tmp = m1 + (m2 - m1) * (240 - d) / 60;
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return m1;
+	}
+	$s.pop();
+}
+thx.color.Hsl.toHsl = function(c) {
+	$s.push("thx.color.Hsl::toHsl");
+	var $spos = $s.length;
+	var r = c.red / 255.0;
+	var g = c.green / 255.0, b = c.blue / 255.0, min = Floats.min(r < g?r:g,b), max = Floats.max(r > g?r:g,b), delta = max - min, h, s, l = (max + min) / 2;
+	if(delta == 0.0) s = h = 0.0; else {
+		s = l < 0.5?delta / (max + min):delta / (2 - max - min);
+		if(r == max) h = (g - b) / delta + (g < b?6:0); else if(g == max) h = (b - r) / delta + 2; else h = (r - g) / delta + 4;
+		h *= 60;
+	}
+	var $tmp = new thx.color.Hsl(h,s,l);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.color.Hsl.equals = function(a,b) {
+	$s.push("thx.color.Hsl::equals");
+	var $spos = $s.length;
+	var $tmp = a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.color.Hsl.darker = function(color,t,equation) {
+	$s.push("thx.color.Hsl::darker");
+	var $spos = $s.length;
+	var v = color.lightness * t;
+	var $tmp = new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(v,0,1,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.color.Hsl.interpolate = function(a,b,t,equation) {
+	$s.push("thx.color.Hsl::interpolate");
+	var $spos = $s.length;
+	var $tmp = new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.color.Hsl.interpolatef = function(a,b,equation) {
+	$s.push("thx.color.Hsl::interpolatef");
+	var $spos = $s.length;
+	var $tmp = function(t) {
+		$s.push("thx.color.Hsl::interpolatef@101");
+		var $spos = $s.length;
+		var $tmp = new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.color.Hsl.prototype.hue = null;
+thx.color.Hsl.prototype.saturation = null;
+thx.color.Hsl.prototype.lightness = null;
+thx.color.Hsl.prototype.toHslString = function() {
+	$s.push("thx.color.Hsl::toHslString");
+	var $spos = $s.length;
+	var $tmp = "hsl(" + this.hue + "," + this.saturation * 100 + "%," + this.lightness * 100 + "%)";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.color.Hsl.prototype.__class__ = thx.color.Hsl;
 Hash = function(p) {
 	if( p === $_ ) return;
 	$s.push("Hash::new");
@@ -3508,109 +3710,81 @@ Hash.prototype.toString = function() {
 	$s.pop();
 }
 Hash.prototype.__class__ = Hash;
-thx.color.Hsl = function(h,s,l) {
-	if( h === $_ ) return;
-	$s.push("thx.color.Hsl::new");
+rg.controller.info.InfoLayout = function(p) {
+	$s.push("rg.controller.info.InfoLayout::new");
 	var $spos = $s.length;
-	this.hue = h = Floats.circularWrap(h,360);
-	this.saturation = s = Floats.normalize(s);
-	this.lightness = l = Floats.normalize(l);
-	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
 	$s.pop();
 }
-thx.color.Hsl.__name__ = ["thx","color","Hsl"];
-thx.color.Hsl.__super__ = thx.color.Rgb;
-for(var k in thx.color.Rgb.prototype ) thx.color.Hsl.prototype[k] = thx.color.Rgb.prototype[k];
-thx.color.Hsl._c = function(d,s,l) {
-	$s.push("thx.color.Hsl::_c");
+rg.controller.info.InfoLayout.__name__ = ["rg","controller","info","InfoLayout"];
+rg.controller.info.InfoLayout.filters = function() {
+	$s.push("rg.controller.info.InfoLayout::filters");
 	var $spos = $s.length;
-	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
-	var m1 = 2 * l - m2;
-	d = Floats.circularWrap(d,360);
-	if(d < 60) {
-		var $tmp = m1 + (m2 - m1) * d / 60;
-		$s.pop();
-		return $tmp;
-	} else if(d < 180) {
-		$s.pop();
-		return m2;
-	} else if(d < 240) {
-		var $tmp = m1 + (m2 - m1) * (240 - d) / 60;
-		$s.pop();
-		return $tmp;
-	} else {
-		$s.pop();
-		return m1;
-	}
-	$s.pop();
-}
-thx.color.Hsl.toHsl = function(c) {
-	$s.push("thx.color.Hsl::toHsl");
-	var $spos = $s.length;
-	var r = c.red / 255.0;
-	var g = c.green / 255.0, b = c.blue / 255.0, min = Floats.min(r < g?r:g,b), max = Floats.max(r > g?r:g,b), delta = max - min, h, s, l = (max + min) / 2;
-	if(delta == 0.0) s = h = 0.0; else {
-		s = l < 0.5?delta / (max + min):delta / (2 - max - min);
-		if(r == max) h = (g - b) / delta + (g < b?6:0); else if(g == max) h = (b - r) / delta + 2; else h = (r - g) / delta + 4;
-		h *= 60;
-	}
-	var $tmp = new thx.color.Hsl(h,s,l);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.color.Hsl.equals = function(a,b) {
-	$s.push("thx.color.Hsl::equals");
-	var $spos = $s.length;
-	var $tmp = a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.color.Hsl.darker = function(color,t,equation) {
-	$s.push("thx.color.Hsl::darker");
-	var $spos = $s.length;
-	var v = color.lightness * t;
-	var $tmp = new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(v,0,1,equation));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.color.Hsl.interpolate = function(a,b,t,equation) {
-	$s.push("thx.color.Hsl::interpolate");
-	var $spos = $s.length;
-	var $tmp = new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.color.Hsl.interpolatef = function(a,b,equation) {
-	$s.push("thx.color.Hsl::interpolatef");
-	var $spos = $s.length;
-	var $tmp = function(t) {
-		$s.push("thx.color.Hsl::interpolatef@101");
+	var $tmp = [{ field : "layout", validator : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@20");
 		var $spos = $s.length;
-		var $tmp = new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+		var $tmp = Std["is"](v,String) && Arrays.exists(rg.controller.Visualizations.layouts,v.toLowerCase());
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	};
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@21");
+		var $spos = $s.length;
+		var $tmp = [{ field : "layout", value : v.toLowerCase()}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "width", validator : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@29");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@30");
+		var $spos = $s.length;
+		var $tmp = [{ value : Math.round(v), field : "width"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "height", validator : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@36");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@37");
+		var $spos = $s.length;
+		var $tmp = [{ value : Math.round(v), field : "height"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "visualization", validator : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@43");
+		var $spos = $s.length;
+		var $tmp = Arrays.exists(rg.controller.Visualizations.svg,v.toLowerCase());
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@44");
+		var $spos = $s.length;
+		var $tmp = [{ value : v.toLowerCase(), field : "type"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-thx.color.Hsl.prototype.hue = null;
-thx.color.Hsl.prototype.saturation = null;
-thx.color.Hsl.prototype.lightness = null;
-thx.color.Hsl.prototype.toHslString = function() {
-	$s.push("thx.color.Hsl::toHslString");
-	var $spos = $s.length;
-	var $tmp = "hsl(" + this.hue + "," + this.saturation * 100 + "%," + this.lightness * 100 + "%)";
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.color.Hsl.prototype.__class__ = thx.color.Hsl;
+rg.controller.info.InfoLayout.prototype.layout = null;
+rg.controller.info.InfoLayout.prototype.width = null;
+rg.controller.info.InfoLayout.prototype.height = null;
+rg.controller.info.InfoLayout.prototype.type = null;
+rg.controller.info.InfoLayout.prototype.__class__ = rg.controller.info.InfoLayout;
 IntHash = function(p) {
 	if( p === $_ ) return;
 	$s.push("IntHash::new");
@@ -4965,10 +5139,6 @@ thx.js.UpdateSelection.prototype.exit = function() {
 	$s.pop();
 }
 thx.js.UpdateSelection.prototype.__class__ = thx.js.UpdateSelection;
-rg.data.source.ITransform = function() { }
-rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
-rg.data.source.ITransform.prototype.transform = null;
-rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
 thx.culture.Culture = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__super__ = thx.culture.Info;
@@ -5104,6 +5274,10 @@ thx.cultures.EnUS.getCulture = function() {
 	$s.pop();
 }
 thx.cultures.EnUS.prototype.__class__ = thx.cultures.EnUS;
+rg.data.source.ITransform = function() { }
+rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
+rg.data.source.ITransform.prototype.transform = null;
+rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
 if(!thx.error) thx.error = {}
 thx.error.Error = function(message,params,param,pos) {
 	if( message === $_ ) return;
@@ -5950,6 +6124,46 @@ Arrays.product = function(a) {
 	$s.pop();
 }
 Arrays.prototype.__class__ = Arrays;
+rg.view.frame.Frame = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.view.frame.Frame::new");
+	var $spos = $s.length;
+	this.x = this.y = this.width = this.height = 0;
+	$s.pop();
+}
+rg.view.frame.Frame.__name__ = ["rg","view","frame","Frame"];
+rg.view.frame.Frame.prototype.x = null;
+rg.view.frame.Frame.prototype.y = null;
+rg.view.frame.Frame.prototype.width = null;
+rg.view.frame.Frame.prototype.height = null;
+rg.view.frame.Frame.prototype.change = function() {
+	$s.push("rg.view.frame.Frame::change");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.frame.Frame.prototype.setLayout = function(x,y,width,height) {
+	$s.push("rg.view.frame.Frame::setLayout");
+	var $spos = $s.length;
+	if(this.x == x && this.y == y && this.width == width && this.height == height) {
+		$s.pop();
+		return;
+	}
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.change();
+	$s.pop();
+}
+rg.view.frame.Frame.prototype.toString = function() {
+	$s.push("rg.view.frame.Frame::toString");
+	var $spos = $s.length;
+	var $tmp = "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Frame.prototype.__class__ = rg.view.frame.Frame;
 rg.data.IDataSource = function() { }
 rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
 rg.data.IDataSource.prototype.onLoad = null;
@@ -6728,6 +6942,279 @@ thx.color.NamedColors.yellow = null;
 thx.color.NamedColors.yellowgreen = null;
 thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype.__class__ = thx.color.NamedColors;
+rg.view.frame.FrameLayout = { __ename__ : ["rg","view","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
+rg.view.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.Stack = function(width,height,orientation) {
+	if( width === $_ ) return;
+	$s.push("rg.view.frame.Stack::new");
+	var $spos = $s.length;
+	this.orientation = null == orientation?rg.view.frame.Orientation.Vertical:orientation;
+	this.children = [];
+	this.width = width;
+	this.height = height;
+	$s.pop();
+}
+rg.view.frame.Stack.__name__ = ["rg","view","frame","Stack"];
+rg.view.frame.Stack.prototype.children = null;
+rg.view.frame.Stack.prototype.width = null;
+rg.view.frame.Stack.prototype.height = null;
+rg.view.frame.Stack.prototype.orientation = null;
+rg.view.frame.Stack.prototype.length = null;
+rg.view.frame.Stack.prototype.moreSpaceRequired = function(size) {
+	$s.push("rg.view.frame.Stack::moreSpaceRequired");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.insertItem = function(pos,child) {
+	$s.push("rg.view.frame.Stack::insertItem");
+	var $spos = $s.length;
+	if(null == child) {
+		$s.pop();
+		return this;
+	}
+	if(pos >= this.children.length) {
+		var $tmp = this.addItem(child);
+		$s.pop();
+		return $tmp;
+	}
+	if(pos < 0) pos = 0;
+	this.children.insert(pos,child);
+	var f = child;
+	f.setParent(this);
+	this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.addItem = function(child) {
+	$s.push("rg.view.frame.Stack::addItem");
+	var $spos = $s.length;
+	if(null == child) {
+		$s.pop();
+		return this;
+	}
+	this.children.push(child);
+	var f = child;
+	f.setParent(this);
+	this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.addItems = function(it) {
+	$s.push("rg.view.frame.Stack::addItems");
+	var $spos = $s.length;
+	var added = false;
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var child = $it0.next();
+		if(null == child) continue;
+		added = true;
+		this.children.push(child);
+		var f = child;
+		f.setParent(this);
+	}
+	if(added) this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.removeChild = function(child) {
+	$s.push("rg.view.frame.Stack::removeChild");
+	var $spos = $s.length;
+	if(!this.children.remove(child)) {
+		$s.pop();
+		return false;
+	}
+	var f = child;
+	f.setParent(null);
+	this.reflow();
+	$s.pop();
+	return true;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.iterator = function() {
+	$s.push("rg.view.frame.Stack::iterator");
+	var $spos = $s.length;
+	var $tmp = this.children.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.reflow = function() {
+	$s.push("rg.view.frame.Stack::reflow");
+	var $spos = $s.length;
+	var available = (function($this) {
+		var $r;
+		switch( ($this.orientation)[1] ) {
+		case 0:
+			$r = $this.height;
+			break;
+		case 1:
+			$r = $this.width;
+			break;
+		}
+		return $r;
+	}(this)), otherdimension = (function($this) {
+		var $r;
+		switch( ($this.orientation)[1] ) {
+		case 0:
+			$r = $this.width;
+			break;
+		case 1:
+			$r = $this.height;
+			break;
+		}
+		return $r;
+	}(this));
+	var required = 0, values = [], variables = [], i = 0, variablespace = 0;
+	var _g = 0, _g1 = this.children;
+	while(_g < _g1.length) {
+		var child = _g1[_g];
+		++_g;
+		var $e = (child.disposition);
+		switch( $e[1] ) {
+		case 0:
+			var max = $e[5], min = $e[4], after = $e[3], before = $e[2];
+			if(null == min) min = 0;
+			if(null == max) max = available;
+			required += min + before + after;
+			variablespace += variables[i] = max - min;
+			values.push(min + before + after);
+			break;
+		case 1:
+			var max = $e[6], min = $e[5], percent = $e[4], after = $e[3], before = $e[2];
+			var size = Math.round(percent * available);
+			if(null != min && size < min) size = min;
+			if(null != max && size > max) size = max;
+			required += size + before + after;
+			values.push(size + before + after);
+			break;
+		case 2:
+			var ratio = $e[4], after = $e[3], before = $e[2];
+			if(null == ratio) ratio = 1;
+			var size = Math.round(otherdimension * ratio);
+			required += size + before + after;
+			values.push(size + before + after);
+			break;
+		case 3:
+			var size = $e[4], after = $e[3], before = $e[2];
+			required += size + before + after;
+			values.push(size + before + after);
+			break;
+		case 4:
+			var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+			values.push(0);
+			break;
+		}
+		i++;
+	}
+	available -= required;
+	if(available > 0) {
+		i = 0;
+		var _g = 0, _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			switch( (child.disposition)[1] ) {
+			case 0:
+				var size = Math.round(variables[i] / variablespace * available);
+				values[i] += size;
+				break;
+			default:
+			}
+			i++;
+		}
+	}
+	i = 0;
+	var sizeable;
+	var pos = 0;
+	switch( (this.orientation)[1] ) {
+	case 0:
+		var _g = 0, _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			sizeable = child;
+			var $e = (child.disposition);
+			switch( $e[1] ) {
+			case 4:
+				var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+				sizeable.setLayout(x,y,w,h);
+				break;
+			case 3:
+			case 0:
+			case 1:
+			case 2:
+				var after = $e[3], before = $e[2];
+				sizeable.setLayout(0,pos + before,this.width,values[i] - after - before);
+				break;
+			}
+			pos += values[i++];
+		}
+		break;
+	case 1:
+		var _g = 0, _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			sizeable = child;
+			var $e = (child.disposition);
+			switch( $e[1] ) {
+			case 4:
+				var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+				sizeable.setLayout(x,y,w,h);
+				break;
+			case 3:
+			case 0:
+			case 1:
+			case 2:
+				var after = $e[3], before = $e[2];
+				sizeable.setLayout(pos + before,0,values[i] - after - before,this.height);
+				break;
+			}
+			pos += values[i++];
+		}
+		break;
+	}
+	if(available < 0) this.moreSpaceRequired(required);
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.getLength = function() {
+	$s.push("rg.view.frame.Stack::getLength");
+	var $spos = $s.length;
+	var $tmp = this.children.length;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.setSize = function(width,height) {
+	$s.push("rg.view.frame.Stack::setSize");
+	var $spos = $s.length;
+	if(this.width == width && this.height == height) {
+		$s.pop();
+		return this;
+	}
+	this.width = width;
+	this.height = height;
+	this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.toString = function() {
+	$s.push("rg.view.frame.Stack::toString");
+	var $spos = $s.length;
+	var $tmp = "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.__class__ = rg.view.frame.Stack;
 thx.js.AccessStyle = function(name,selection) {
 	if( name === $_ ) return;
 	$s.push("thx.js.AccessStyle::new");
@@ -8845,6 +9332,231 @@ Lambda.concat = function(a,b) {
 	$s.pop();
 }
 Lambda.prototype.__class__ = Lambda;
+rg.view.svg.panel.Panel = function(frame) {
+	if( frame === $_ ) return;
+	$s.push("rg.view.svg.panel.Panel::new");
+	var $spos = $s.length;
+	this.frame = frame;
+	frame.change = $closure(this,"reframe");
+	this._layers = [];
+	$s.pop();
+}
+rg.view.svg.panel.Panel.__name__ = ["rg","view","svg","panel","Panel"];
+rg.view.svg.panel.Panel.prototype.frame = null;
+rg.view.svg.panel.Panel.prototype.svg = null;
+rg.view.svg.panel.Panel.prototype.parent = null;
+rg.view.svg.panel.Panel.prototype._layers = null;
+rg.view.svg.panel.Panel.prototype.addLayer = function(layer) {
+	$s.push("rg.view.svg.panel.Panel::addLayer");
+	var $spos = $s.length;
+	this._layers.remove(layer);
+	this._layers.push(layer);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.removeLayer = function(layer) {
+	$s.push("rg.view.svg.panel.Panel::removeLayer");
+	var $spos = $s.length;
+	this._layers.remove(layer);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.setParent = function(container) {
+	$s.push("rg.view.svg.panel.Panel::setParent");
+	var $spos = $s.length;
+	if(null != this.svg) this.svg.remove();
+	if(null == container) {
+		$s.pop();
+		return;
+	}
+	this.init(container.svg);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.init = function(container) {
+	$s.push("rg.view.svg.panel.Panel::init");
+	var $spos = $s.length;
+	this.svg = container.append("svg:g").attr("class").string("panel").attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
+	this.svg.append("svg:rect").attr("class").string("panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.reframe = function() {
+	$s.push("rg.view.svg.panel.Panel::reframe");
+	var $spos = $s.length;
+	this.svg.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")").select(".panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
+	var layer;
+	var _g1 = 0, _g = this._layers.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		layer = this._layers[i];
+		layer._resize();
+	}
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.__class__ = rg.view.svg.panel.Panel;
+rg.view.svg.panel.Container = function(frame,orientation) {
+	if( frame === $_ ) return;
+	$s.push("rg.view.svg.panel.Container::new");
+	var $spos = $s.length;
+	this.stack = new rg.view.frame.Stack(frame.width,frame.height,orientation);
+	this.panels = [];
+	rg.view.svg.panel.Panel.call(this,frame);
+	$s.pop();
+}
+rg.view.svg.panel.Container.__name__ = ["rg","view","svg","panel","Container"];
+rg.view.svg.panel.Container.__super__ = rg.view.svg.panel.Panel;
+for(var k in rg.view.svg.panel.Panel.prototype ) rg.view.svg.panel.Container.prototype[k] = rg.view.svg.panel.Panel.prototype[k];
+rg.view.svg.panel.Container.prototype.stack = null;
+rg.view.svg.panel.Container.prototype.panels = null;
+rg.view.svg.panel.Container.prototype.insertPanel = function(pos,panel) {
+	$s.push("rg.view.svg.panel.Container::insertPanel");
+	var $spos = $s.length;
+	if(null == panel) {
+		$s.pop();
+		return this;
+	}
+	if(pos >= this.stack.getLength()) {
+		var $tmp = this.addPanel(panel);
+		$s.pop();
+		return $tmp;
+	} else if(pos < 0) pos = 0;
+	if(null != panel.parent) panel.parent.removePanel(panel);
+	this.panels.insert(pos,panel);
+	var f = panel;
+	f.setParent(this);
+	this.stack.insertItem(pos,(function($this) {
+		var $r;
+		var $t = panel.frame;
+		if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this)));
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.addPanel = function(panel) {
+	$s.push("rg.view.svg.panel.Container::addPanel");
+	var $spos = $s.length;
+	var $tmp = this.addPanels([panel]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.addPanels = function(it) {
+	$s.push("rg.view.svg.panel.Container::addPanels");
+	var $spos = $s.length;
+	var frames = [];
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var panel = $it0.next();
+		if(null == panel) continue;
+		if(null != panel.parent) panel.parent.removePanel(panel);
+		this.panels.push(panel);
+		var f = panel;
+		f.setParent(this);
+		frames.push((function($this) {
+			var $r;
+			var $t = panel.frame;
+			if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this)));
+	}
+	this.stack.addItems(frames);
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.removePanel = function(panel) {
+	$s.push("rg.view.svg.panel.Container::removePanel");
+	var $spos = $s.length;
+	if(!this.panels.remove(panel)) {
+		$s.pop();
+		return this;
+	}
+	this.stack.removeChild((function($this) {
+		var $r;
+		var $t = panel.frame;
+		if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this)));
+	var f = panel;
+	f.setParent(null);
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createPanel = function(layout) {
+	$s.push("rg.view.svg.panel.Container::createPanel");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Panel(new rg.view.frame.StackItem(layout));
+	this.addPanel(panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createContainer = function(layout,orientation) {
+	$s.push("rg.view.svg.panel.Container::createContainer");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Container(new rg.view.frame.StackItem(layout),orientation);
+	this.addPanel(panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createPanelAt = function(pos,layout) {
+	$s.push("rg.view.svg.panel.Container::createPanelAt");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Panel(new rg.view.frame.StackItem(layout));
+	this.insertPanel(pos,panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createContainerAt = function(pos,layout,orientation) {
+	$s.push("rg.view.svg.panel.Container::createContainerAt");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Container(new rg.view.frame.StackItem(layout),orientation);
+	this.insertPanel(pos,panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.reframe = function() {
+	$s.push("rg.view.svg.panel.Container::reframe");
+	var $spos = $s.length;
+	rg.view.svg.panel.Panel.prototype.reframe.call(this);
+	this.stack.setSize(this.frame.width,this.frame.height);
+	this.stack.reflow();
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.__class__ = rg.view.svg.panel.Container;
+rg.view.svg.panel.Space = function(width,height,domcontainer) {
+	if( width === $_ ) return;
+	$s.push("rg.view.svg.panel.Space::new");
+	var $spos = $s.length;
+	this.panel = new rg.view.frame.StackItem(rg.view.frame.FrameLayout.Fill(0,0));
+	rg.view.svg.panel.Container.call(this,this.panel,rg.view.frame.Orientation.Vertical);
+	this.init(domcontainer.append("svg:svg"));
+	this.resize(width,height);
+	$s.pop();
+}
+rg.view.svg.panel.Space.__name__ = ["rg","view","svg","panel","Space"];
+rg.view.svg.panel.Space.__super__ = rg.view.svg.panel.Container;
+for(var k in rg.view.svg.panel.Container.prototype ) rg.view.svg.panel.Space.prototype[k] = rg.view.svg.panel.Container.prototype[k];
+rg.view.svg.panel.Space.prototype.panel = null;
+rg.view.svg.panel.Space.prototype.resize = function(width,height) {
+	$s.push("rg.view.svg.panel.Space::resize");
+	var $spos = $s.length;
+	if(this.panel.width == width && this.panel.height == height) {
+		$s.pop();
+		return;
+	}
+	this.svg.attr("width")["float"](width).attr("height")["float"](height);
+	var sf = this.panel;
+	sf.setLayout(0,0,width,height);
+	$s.pop();
+}
+rg.view.svg.panel.Space.prototype.__class__ = rg.view.svg.panel.Space;
 Dates = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
@@ -9444,7 +10156,8 @@ rg.JSBridge.chartopt = function(o,viz) {
 	$s.push("rg.JSBridge::chartopt");
 	var $spos = $s.length;
 	o = null == o?{ }:o;
-	if(null != viz) o.visualization = viz;
+	o.options = rg.JSBridge.opt(o.options);
+	if(null != viz) o.options.visualization = viz;
 	$s.pop();
 	return o;
 	$s.pop();
@@ -10501,20 +11214,33 @@ rg.controller.App = function(executor) {
 	$s.push("rg.controller.App::new");
 	var $spos = $s.length;
 	this.executor = executor;
+	this.layouts = new Hash();
 	$s.pop();
 }
 rg.controller.App.__name__ = ["rg","controller","App"];
+rg.controller.App.nextid = function() {
+	$s.push("rg.controller.App::nextid");
+	var $spos = $s.length;
+	var $tmp = ":RGVIZ-" + ++rg.controller.App.lastid;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.controller.App.prototype.executor = null;
+rg.controller.App.prototype.layouts = null;
 rg.controller.App.prototype.visualization = function(el,jsoptions) {
 	$s.push("rg.controller.App::visualization");
 	var $spos = $s.length;
+	var node = el.node();
+	var id = node.id;
+	if(null == id) node.id = id = rg.controller.App.nextid();
 	var cache = new Hash();
-	var options = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions);
-	haxe.Log.trace(options.data,{ fileName : "App.hx", lineNumber : 32, className : "rg.controller.App", methodName : "visualization"});
+	haxe.Log.trace(jsoptions,{ fileName : "App.hx", lineNumber : 51, className : "rg.controller.App", methodName : "visualization"});
+	var params = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions);
 	var factoryDataSource = new rg.controller.factory.FactoryDataSource(cache,this.executor);
 	var factoryDataContext = new rg.controller.factory.FactoryDataContext(factoryDataSource);
-	var datacontexts = options.data.map(function(d,_) {
-		$s.push("rg.controller.App::visualization@35");
+	var datacontexts = params.data.map(function(d,_) {
+		$s.push("rg.controller.App::visualization@55");
 		var $spos = $s.length;
 		var $tmp = factoryDataContext.create(d);
 		$s.pop();
@@ -10522,25 +11248,48 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		$s.pop();
 	});
 	var factoryVariableContexts = rg.controller.factory.FactoryVariableContexts.createFromDataContexts(datacontexts);
-	var independentVariables = factoryVariableContexts.createIndependents(options.variables);
-	var dependentVariables = factoryVariableContexts.createDependents(options.variables);
+	var independentVariables = factoryVariableContexts.createIndependents(params.variables);
+	var dependentVariables = factoryVariableContexts.createDependents(params.variables);
 	var _g = 0;
 	while(_g < datacontexts.length) {
 		var context = datacontexts[_g];
 		++_g;
-		haxe.Log.trace(independentVariables,{ fileName : "App.hx", lineNumber : 41, className : "rg.controller.App", methodName : "visualization"});
 		context.data.independentVariables = independentVariables;
 		context.data.dependentVariables = dependentVariables;
-		haxe.Log.trace(context.data.independentVariables,{ fileName : "App.hx", lineNumber : 44, className : "rg.controller.App", methodName : "visualization"});
 	}
 	var request = new rg.data.DataRequest(cache,datacontexts);
 	request.onData = function(datapoints) {
-		$s.push("rg.controller.App::visualization@49");
+		$s.push("rg.controller.App::visualization@66");
 		var $spos = $s.length;
-		haxe.Log.trace(datapoints,{ fileName : "App.hx", lineNumber : 50, className : "rg.controller.App", methodName : "visualization"});
+		haxe.Log.trace(datapoints,{ fileName : "App.hx", lineNumber : 67, className : "rg.controller.App", methodName : "visualization"});
 		$s.pop();
 	};
+	switch( (rg.controller.info.Info.feed(new rg.controller.info.InfoDomType(),params.options).kind)[1] ) {
+	case 1:
+		var layout = this.getLayout(id,params.options,el);
+		break;
+	case 0:
+		throw new thx.error.NotImplemented({ fileName : "App.hx", lineNumber : 77, className : "rg.controller.App", methodName : "visualization"});
+		break;
+	}
 	request.request();
+	$s.pop();
+}
+rg.controller.App.prototype.getLayout = function(id,options,container) {
+	$s.push("rg.controller.App::getLayout");
+	var $spos = $s.length;
+	if(this.layouts.exists(id)) {
+		var $tmp = this.layouts.get(id);
+		$s.pop();
+		return $tmp;
+	}
+	haxe.Log.trace(options,{ fileName : "App.hx", lineNumber : 87, className : "rg.controller.App", methodName : "getLayout"});
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),options);
+	haxe.Log.trace(info,{ fileName : "App.hx", lineNumber : 89, className : "rg.controller.App", methodName : "getLayout"});
+	var layout = new rg.controller.factory.FactoryLayout().create(info,container);
+	this.layouts.set(id,layout);
+	$s.pop();
+	return layout;
 	$s.pop();
 }
 rg.controller.App.prototype.__class__ = rg.controller.App;
@@ -11307,42 +12056,49 @@ rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
 }
 rg.data.source.DataSourceReportGrid.prototype.__class__ = rg.data.source.DataSourceReportGrid;
 rg.data.source.DataSourceReportGrid.__interfaces__ = [rg.data.IDataSource];
-rg.data.AxisNumeric = function(p) {
-	$s.push("rg.data.AxisNumeric::new");
+if(!rg.view.layout) rg.view.layout = {}
+rg.view.layout.Layout = function(width,height,container) {
+	if( width === $_ ) return;
+	$s.push("rg.view.layout.Layout::new");
 	var $spos = $s.length;
+	container.classed().add("rg");
+	this.space = new rg.view.svg.panel.Space(width,height,container);
 	$s.pop();
 }
-rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
-rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
-	$s.push("rg.data.AxisNumeric::scale");
+rg.view.layout.Layout.__name__ = ["rg","view","layout","Layout"];
+rg.view.layout.Layout.prototype.space = null;
+rg.view.layout.Layout.prototype.getPanel = function(name) {
+	$s.push("rg.view.layout.Layout::getPanel");
 	var $spos = $s.length;
-	var $tmp = Floats.interpolate(v,start,end);
+	$s.pop();
+	return null;
+	$s.pop();
+}
+rg.view.layout.Layout.prototype.__class__ = rg.view.layout.Layout;
+rg.view.layout.SimpleLayout = function(width,height,container) {
+	if( width === $_ ) return;
+	$s.push("rg.view.layout.SimpleLayout::new");
+	var $spos = $s.length;
+	rg.view.layout.Layout.call(this,width,height,container);
+	$s.pop();
+}
+rg.view.layout.SimpleLayout.__name__ = ["rg","view","layout","SimpleLayout"];
+rg.view.layout.SimpleLayout.__super__ = rg.view.layout.Layout;
+for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.SimpleLayout.prototype[k] = rg.view.layout.Layout.prototype[k];
+rg.view.layout.SimpleLayout.prototype.__class__ = rg.view.layout.SimpleLayout;
+rg.controller.Visualizations = function() { }
+rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
+rg.controller.Visualizations.layoutDefault = null;
+rg.controller.Visualizations.layoutType = null;
+rg.controller.Visualizations.instantiateLayout = function(name,width,height,container) {
+	$s.push("rg.controller.Visualizations::instantiateLayout");
+	var $spos = $s.length;
+	var $tmp = Type.createInstance(rg.controller.Visualizations.layoutType.get(name),[width,height,container]);
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisNumeric.prototype.toTickmark = function(start,end,value) {
-	$s.push("rg.data.AxisNumeric::toTickmark");
-	var $spos = $s.length;
-	var $tmp = new rg.data.Tickmark(value,true,(value - start) / (end - start));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
-	$s.push("rg.data.AxisNumeric::ticks");
-	var $spos = $s.length;
-	var $tmp = (function($this) {
-		var $r;
-		throw new thx.error.NotImplemented({ fileName : "AxisNumeric.hx", lineNumber : 24, className : "rg.data.AxisNumeric", methodName : "ticks"});
-		return $r;
-	}(this));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.__class__ = rg.data.AxisNumeric;
-rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
+rg.controller.Visualizations.prototype.__class__ = rg.controller.Visualizations;
 rg.data.Tickmark = function(value,major,delta) {
 	if( value === $_ ) return;
 	$s.push("rg.data.Tickmark::new");
@@ -11390,6 +12146,42 @@ rg.data.Tickmark.prototype.toString = function() {
 }
 rg.data.Tickmark.prototype.__class__ = rg.data.Tickmark;
 rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
+rg.data.AxisNumeric = function(p) {
+	$s.push("rg.data.AxisNumeric::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
+rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
+	$s.push("rg.data.AxisNumeric::scale");
+	var $spos = $s.length;
+	var $tmp = Floats.interpolate(v,start,end);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.toTickmark = function(start,end,value) {
+	$s.push("rg.data.AxisNumeric::toTickmark");
+	var $spos = $s.length;
+	var $tmp = new rg.data.Tickmark(value,true,(value - start) / (end - start));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
+	$s.push("rg.data.AxisNumeric::ticks");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		throw new thx.error.NotImplemented({ fileName : "AxisNumeric.hx", lineNumber : 24, className : "rg.data.AxisNumeric", methodName : "ticks"});
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.__class__ = rg.data.AxisNumeric;
+rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
 Std = function() { }
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
@@ -12412,6 +13204,38 @@ thx.js.AccessDataProperty.prototype.data = function() {
 	$s.pop();
 }
 thx.js.AccessDataProperty.prototype.__class__ = thx.js.AccessDataProperty;
+rg.view.frame.StackItem = function(disposition) {
+	if( disposition === $_ ) return;
+	$s.push("rg.view.frame.StackItem::new");
+	var $spos = $s.length;
+	rg.view.frame.Frame.call(this);
+	this.setDisposition(disposition);
+	$s.pop();
+}
+rg.view.frame.StackItem.__name__ = ["rg","view","frame","StackItem"];
+rg.view.frame.StackItem.__super__ = rg.view.frame.Frame;
+for(var k in rg.view.frame.Frame.prototype ) rg.view.frame.StackItem.prototype[k] = rg.view.frame.Frame.prototype[k];
+rg.view.frame.StackItem.prototype.disposition = null;
+rg.view.frame.StackItem.prototype.parent = null;
+rg.view.frame.StackItem.prototype.setParent = function(v) {
+	$s.push("rg.view.frame.StackItem::setParent");
+	var $spos = $s.length;
+	if(null != this.parent) this.parent.removeChild(this);
+	var $tmp = this.parent = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.StackItem.prototype.setDisposition = function(v) {
+	$s.push("rg.view.frame.StackItem::setDisposition");
+	var $spos = $s.length;
+	this.disposition = v;
+	if(null != this.parent) this.parent.reflow();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.frame.StackItem.prototype.__class__ = rg.view.frame.StackItem;
 rg.controller.info.InfoDataSource = function(p) {
 	$s.push("rg.controller.info.InfoDataSource::new");
 	var $spos = $s.length;
@@ -12748,6 +13572,25 @@ rg.controller.info.InfoVisualizationOption.prototype.variables = null;
 rg.controller.info.InfoVisualizationOption.prototype.data = null;
 rg.controller.info.InfoVisualizationOption.prototype.options = null;
 rg.controller.info.InfoVisualizationOption.prototype.__class__ = rg.controller.info.InfoVisualizationOption;
+rg.controller.factory.FactoryLayout = function(p) {
+	$s.push("rg.controller.factory.FactoryLayout::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactoryLayout.__name__ = ["rg","controller","factory","FactoryLayout"];
+rg.controller.factory.FactoryLayout.prototype.create = function(info,container) {
+	$s.push("rg.controller.factory.FactoryLayout::create");
+	var $spos = $s.length;
+	var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height;
+	var layout = info.layout;
+	if(null == layout) layout = rg.controller.Visualizations.layoutDefault.get(info.type);
+	if(null == layout) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
+	var $tmp = rg.controller.Visualizations.instantiateLayout(layout,width,height,container);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryLayout.prototype.__class__ = rg.controller.factory.FactoryLayout;
 thx.error.NotImplemented = function(posInfo) {
 	if( posInfo === $_ ) return;
 	$s.push("thx.error.NotImplemented::new");
@@ -15986,6 +16829,13 @@ thx.languages.En.getLanguage();
 	d.__name__ = ["Date"];
 }
 {
+	rg.controller.Visualizations.layoutDefault = new Hash();
+	rg.controller.Visualizations.layoutDefault.set("linechart","simple");
+	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
+	rg.controller.Visualizations.layoutType = new Hash();
+	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.SimpleLayout);
+}
+{
 	Math.__name__ = ["Math"];
 	Math.NaN = Number["NaN"];
 	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
@@ -16129,8 +16979,17 @@ thx.text.ERegs._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
+rg.controller.App.lastid = 0;
+rg.controller.Visualizations.html = ["pivottable"];
+rg.controller.Visualizations.svg = ["linechart","piechart"];
+rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
+rg.controller.Visualizations.layouts = ["simple"];
 rg.data.source.rgquery.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
+rg.controller.factory.FactoryLayout.LIMIT_WIDTH = 10;
+rg.controller.factory.FactoryLayout.LIMIT_HEIGHT = 10;
+rg.controller.factory.FactoryLayout.DEFAULT_WIDTH = 400;
+rg.controller.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 thx.js.Timer.timeout = 0;
 thx.js.Timer.queue = null;
 thx.js.Timer.interval = 0;

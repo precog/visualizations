@@ -43,8 +43,9 @@ class JSBridge
 	static function chartopt(o : Dynamic, ?viz : String)
 	{
 		o = opt(o);
+		o.options = opt(o.options);
 		if(null != viz)
-			o.visualization =  viz;
+			o.options.visualization =  viz;
 		return o;
 	}
 }

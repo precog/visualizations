@@ -12,15 +12,13 @@
 document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.lineChart("#chart", {
 		axes : [{
-			type: ".gender"
+			type: "count"
 		}, {
 			type: ".#time:day",
 			view: ["7 days ago", "now"]
-		}, {
-			type: "count"
 		}],
 		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".gender * .#time:day" }
+			src: { path : "/rgadnet", event : "impression", query : ".#time:day" }
 		},
 		options : {
 			
