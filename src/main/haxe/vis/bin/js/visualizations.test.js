@@ -111,33 +111,11 @@ Strings.format = function(pattern,values,nullstring,culture) {
 	$s.push("Strings::format");
 	var $spos = $s.length;
 	if(nullstring == null) nullstring = "null";
-	var $tmp = (Strings.formatf(pattern,nullstring,culture))(values);
-	$s.pop();
-	return $tmp;
-	if(null == values) values = [];
-	var buf = new StringBuf();
-	while(true) {
-		if(!Strings._reFormat.match(pattern)) {
-			buf.b[buf.b.length] = pattern;
-			break;
-		}
-		var pos = Std.parseInt(Strings._reFormat.matched(1));
-		var f = Strings._reFormat.matched(2);
-		if(f == "") f = null;
-		var p = null;
-		var params = [];
-		var _g = 3;
-		while(_g < 20) {
-			var i = _g++;
-			p = Strings._reFormat.matched(i);
-			if(p == null || p == "") break;
-			params.push(thx.culture.FormatParams.cleanQuotes(p));
-		}
-		pattern = Strings._reFormat.matchedRight();
-		buf.b[buf.b.length] = Strings._reFormat.matchedLeft();
-		buf.b[buf.b.length] = Dynamics.format(values[pos],f,params,nullstring,culture);
+	if(null == values || 0 == values.length) {
+		$s.pop();
+		return pattern;
 	}
-	var $tmp = buf.b.join("");
+	var $tmp = (Strings.formatf(pattern,nullstring,culture))(values);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -150,10 +128,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 	while(true) {
 		if(!Strings._reFormat.match(pattern)) {
 			buf.push((function() {
-				$s.push("Strings::formatf@147");
+				$s.push("Strings::formatf@122");
 				var $spos = $s.length;
 				var $tmp = function(_) {
-					$s.push("Strings::formatf@147@147");
+					$s.push("Strings::formatf@122@122");
 					var $spos = $s.length;
 					$s.pop();
 					return pattern;
@@ -179,10 +157,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		}
 		var left = [Strings._reFormat.matchedLeft()];
 		buf.push((function(left) {
-			$s.push("Strings::formatf@165");
+			$s.push("Strings::formatf@140");
 			var $spos = $s.length;
 			var $tmp = function(_) {
-				$s.push("Strings::formatf@165@165");
+				$s.push("Strings::formatf@140@140");
 				var $spos = $s.length;
 				var $tmp = left[0];
 				$s.pop();
@@ -195,16 +173,16 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		})(left));
 		var df = [Dynamics.formatf(format,params,nullstring,culture)];
 		buf.push(((function() {
-			$s.push("Strings::formatf@167");
+			$s.push("Strings::formatf@142");
 			var $spos = $s.length;
 			var $tmp = function(f,a1) {
-				$s.push("Strings::formatf@167@167");
+				$s.push("Strings::formatf@142@142");
 				var $spos = $s.length;
 				var $tmp = (function() {
-					$s.push("Strings::formatf@167@167@167");
+					$s.push("Strings::formatf@142@142@142");
 					var $spos = $s.length;
 					var $tmp = function(a2) {
-						$s.push("Strings::formatf@167@167@167@167");
+						$s.push("Strings::formatf@142@142@142@142");
 						var $spos = $s.length;
 						var $tmp = f(a1,a2);
 						$s.pop();
@@ -223,10 +201,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 			return $tmp;
 			$s.pop();
 		})())((function(df) {
-			$s.push("Strings::formatf@167");
+			$s.push("Strings::formatf@142");
 			var $spos = $s.length;
 			var $tmp = function(i,v) {
-				$s.push("Strings::formatf@167@167");
+				$s.push("Strings::formatf@142@142");
 				var $spos = $s.length;
 				var $tmp = df[0](v[i]);
 				$s.pop();
@@ -240,11 +218,11 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		pattern = Strings._reFormat.matchedRight();
 	}
 	var $tmp = function(values) {
-		$s.push("Strings::formatf@170");
+		$s.push("Strings::formatf@145");
 		var $spos = $s.length;
 		if(null == values) values = [];
 		var $tmp = buf.map(function(df,_) {
-			$s.push("Strings::formatf@170@174");
+			$s.push("Strings::formatf@145@149");
 			var $spos = $s.length;
 			var $tmp = df(values);
 			$s.pop();
@@ -275,7 +253,7 @@ Strings.formatOnef = function(param,params,culture) {
 	switch(format) {
 	case "S":
 		var $tmp = function(v) {
-			$s.push("Strings::formatOnef@190");
+			$s.push("Strings::formatOnef@165");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -293,7 +271,7 @@ Strings.formatOnef = function(param,params,culture) {
 		var len = params.length < 1?10:Std.parseInt(params[0]);
 		var pad = params.length < 2?" ":params[1];
 		var $tmp = function(v) {
-			$s.push("Strings::formatOnef@198");
+			$s.push("Strings::formatOnef@173");
 			var $spos = $s.length;
 			var $tmp = StringTools.rpad(v,pad,len);
 			$s.pop();
@@ -306,7 +284,7 @@ Strings.formatOnef = function(param,params,culture) {
 		var len = params.length < 1?10:Std.parseInt(params[0]);
 		var pad = params.length < 2?" ":params[1];
 		var $tmp = function(v) {
-			$s.push("Strings::formatOnef@202");
+			$s.push("Strings::formatOnef@177");
 			var $spos = $s.length;
 			var $tmp = StringTools.lpad(v,pad,len);
 			$s.pop();
@@ -589,7 +567,7 @@ Strings.interpolatef = function(a,b,equation) {
 	$s.push("Strings::interpolatef");
 	var $spos = $s.length;
 	var extract = function(value,s,f) {
-		$s.push("Strings::interpolatef@453");
+		$s.push("Strings::interpolatef@428");
 		var $spos = $s.length;
 		while(Strings._reInterpolateNumber.match(value)) {
 			var left = Strings._reInterpolateNumber.matchedLeft();
@@ -618,10 +596,10 @@ Strings.interpolatef = function(a,b,equation) {
 			if(fa[i] == fb[i]) {
 				var s = ["" + fa[i]];
 				functions.push((function(s) {
-					$s.push("Strings::interpolatef@491");
+					$s.push("Strings::interpolatef@466");
 					var $spos = $s.length;
 					var $tmp = function(_) {
-						$s.push("Strings::interpolatef@491@491");
+						$s.push("Strings::interpolatef@466@466");
 						var $spos = $s.length;
 						var $tmp = s[0];
 						$s.pop();
@@ -635,10 +613,10 @@ Strings.interpolatef = function(a,b,equation) {
 			} else {
 				var f = [Floats.interpolatef(fa[i],fb[i],equation)];
 				functions.push((function(f) {
-					$s.push("Strings::interpolatef@494");
+					$s.push("Strings::interpolatef@469");
 					var $spos = $s.length;
 					var $tmp = function(t) {
-						$s.push("Strings::interpolatef@494@494");
+						$s.push("Strings::interpolatef@469@469");
 						var $spos = $s.length;
 						var $tmp = "" + f[0](t);
 						$s.pop();
@@ -653,10 +631,10 @@ Strings.interpolatef = function(a,b,equation) {
 		} else {
 			var s = [sa[i]];
 			functions.push((function(s) {
-				$s.push("Strings::interpolatef@498");
+				$s.push("Strings::interpolatef@473");
 				var $spos = $s.length;
 				var $tmp = function(_) {
-					$s.push("Strings::interpolatef@498@498");
+					$s.push("Strings::interpolatef@473@473");
 					var $spos = $s.length;
 					var $tmp = s[0];
 					$s.pop();
@@ -676,17 +654,17 @@ Strings.interpolatef = function(a,b,equation) {
 		i++;
 	}
 	if("" != rest) functions.push(function(_) {
-		$s.push("Strings::interpolatef@512");
+		$s.push("Strings::interpolatef@487");
 		var $spos = $s.length;
 		$s.pop();
 		return rest;
 		$s.pop();
 	});
 	var $tmp = function(t) {
-		$s.push("Strings::interpolatef@513");
+		$s.push("Strings::interpolatef@488");
 		var $spos = $s.length;
 		var $tmp = functions.map(function(f,_) {
-			$s.push("Strings::interpolatef@513@514");
+			$s.push("Strings::interpolatef@488@489");
 			var $spos = $s.length;
 			var $tmp = f(t);
 			$s.pop();
@@ -722,7 +700,7 @@ Strings.ellipsisf = function(maxlen,symbol) {
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
 	var $tmp = function(s) {
-		$s.push("Strings::ellipsisf@528");
+		$s.push("Strings::ellipsisf@503");
 		var $spos = $s.length;
 		if(s.length > maxlen) {
 			var $tmp = s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol;
@@ -1727,6 +1705,15 @@ Dynamics.number = function(v) {
 	$s.pop();
 }
 Dynamics.prototype.__class__ = Dynamics;
+if(!rg.view) rg.view = {}
+if(!rg.view.frame) rg.view.frame = {}
+rg.view.frame.Orientation = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
+rg.view.frame.Orientation.Vertical = ["Vertical",0];
+rg.view.frame.Orientation.Vertical.toString = $estr;
+rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
+rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
+rg.view.frame.Orientation.Horizontal.toString = $estr;
+rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
 rg.data.IAxis = function() { }
 rg.data.IAxis.__name__ = ["rg","data","IAxis"];
 rg.data.IAxis.prototype.scale = null;
@@ -1960,94 +1947,91 @@ thx.collections.Sets.arr = function(set) {
 thx.collections.Sets.prototype.__class__ = thx.collections.Sets;
 if(!rg.controller) rg.controller = {}
 if(!rg.controller.info) rg.controller.info = {}
-rg.controller.info.Info = function(o) {
-	if( o === $_ ) return;
-	$s.push("rg.controller.info.Info::new");
-	var $spos = $s.length;
-	if(null != o) this.feedOptions(o);
-	$s.pop();
-}
+rg.controller.info.Info = function() { }
 rg.controller.info.Info.__name__ = ["rg","controller","info","Info"];
-rg.controller.info.Info.prototype.filters = function() {
-	$s.push("rg.controller.info.Info::filters");
+rg.controller.info.Info.feed = function(info,o) {
+	$s.push("rg.controller.info.Info::feed");
 	var $spos = $s.length;
-	var $tmp = (function($this) {
-		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "Info.hx", lineNumber : 20, className : "rg.controller.info.Info", methodName : "filters"});
-		return $r;
-	}(this));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.Info.prototype.feedOptions = function(o) {
-	$s.push("rg.controller.info.Info::feedOptions");
-	var $spos = $s.length;
-	var value;
-	var _g = 0, _g1 = this.filters();
-	while(_g < _g1.length) {
-		var filter = _g1[_g];
+	var cl = Type.getClass(info), method = Reflect.field(cl,"filters");
+	if(null == method) {
+		Objects.copyTo(o,info);
+		$s.pop();
+		return info;
+	}
+	var filters = method.apply(cl,[]), value;
+	var _g = 0;
+	while(_g < filters.length) {
+		var filter = filters[_g];
 		++_g;
 		if(Reflect.hasField(o,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(o,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 31, className : "rg.controller.info.Info", methodName : "feedOptions"});
+			if(null != filter.validator && !filter.validator(value = Reflect.field(o,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 29, className : "rg.controller.info.Info", methodName : "feed"});
 			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
-			var _g2 = 0;
-			while(_g2 < items.length) {
-				var item = items[_g2];
-				++_g2;
-				this[item.field] = item.value;
+			var _g1 = 0;
+			while(_g1 < items.length) {
+				var item = items[_g1];
+				++_g1;
+				info[item.field] = item.value;
 			}
 		}
 	}
 	$s.pop();
+	return info;
+	$s.pop();
 }
 rg.controller.info.Info.prototype.__class__ = rg.controller.info.Info;
-if(!rg.controller.build) rg.controller.build = {}
-rg.controller.build.TestBuilderVariableIndependent = function(p) {
-	$s.push("rg.controller.build.TestBuilderVariableIndependent::new");
+if(!rg.view.svg) rg.view.svg = {}
+if(!rg.view.svg.panel) rg.view.svg.panel = {}
+rg.view.svg.panel.Layer = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.panel.Layer::new");
+	var $spos = $s.length;
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.svg = panel.svg.append("svg:g");
+	this.svg.attr("class").string("layer");
+	this._resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
+rg.view.svg.panel.Layer.prototype.panel = null;
+rg.view.svg.panel.Layer.prototype.frame = null;
+rg.view.svg.panel.Layer.prototype.svg = null;
+rg.view.svg.panel.Layer.prototype.width = null;
+rg.view.svg.panel.Layer.prototype.height = null;
+rg.view.svg.panel.Layer.prototype.customClass = null;
+rg.view.svg.panel.Layer.prototype._resize = function() {
+	$s.push("rg.view.svg.panel.Layer::_resize");
+	var $spos = $s.length;
+	this.width = this.frame.width;
+	this.height = this.frame.height;
+	this.resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.resize = function() {
+	$s.push("rg.view.svg.panel.Layer::resize");
 	var $spos = $s.length;
 	$s.pop();
 }
-rg.controller.build.TestBuilderVariableIndependent.__name__ = ["rg","controller","build","TestBuilderVariableIndependent"];
-rg.controller.build.TestBuilderVariableIndependent.prototype.testIncompleteInfo = function() {
-	$s.push("rg.controller.build.TestBuilderVariableIndependent::testIncompleteInfo");
+rg.view.svg.panel.Layer.prototype.destroy = function() {
+	$s.push("rg.view.svg.panel.Layer::destroy");
 	var $spos = $s.length;
-	utest.Assert.isNull(new rg.controller.build.BuilderVariableIndependent().build(new rg.controller.info.InfoVariable({ })),null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 18, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testIncompleteInfo"});
+	var p = this.panel;
+	p.removeLayer(this);
+	this.svg.remove();
 	$s.pop();
 }
-rg.controller.build.TestBuilderVariableIndependent.prototype.testSimpleParameters = function() {
-	$s.push("rg.controller.build.TestBuilderVariableIndependent::testSimpleParameters");
+rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
+	$s.push("rg.view.svg.panel.Layer::setCustomClass");
 	var $spos = $s.length;
-	var info = new rg.controller.info.InfoVariable({ view : [1.0,10.0], type : ".impression"}), builder = new rg.controller.build.BuilderVariableIndependent(), variable = builder.build(info);
-	utest.Assert.notNull(variable,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 29, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.same(1.0,variable.min,null,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 30, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.same(10.0,variable.max,null,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 31, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 32, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
-	info = new rg.controller.info.InfoVariable({ type : ".impression"});
-	variable = builder.build(info);
-	utest.Assert.isNull(variable.min,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 38, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.isNull(variable.max,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 39, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 40, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
-	info = new rg.controller.info.InfoVariable({ });
-	variable = builder.build(info);
-	utest.Assert.isNull(variable,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 44, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testSimpleParameters"});
+	if(null != this.customClass) this.svg.classed().remove(this.customClass);
+	this.svg.classed().add(v);
+	var $tmp = this.customClass = v;
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-rg.controller.build.TestBuilderVariableIndependent.prototype.testAxisType = function() {
-	$s.push("rg.controller.build.TestBuilderVariableIndependent::testAxisType");
-	var $spos = $s.length;
-	var info = new rg.controller.info.InfoVariable({ view : [1.0,10.0], type : ".impression"}), builder = new rg.controller.build.BuilderVariableIndependent(), variable = builder.build(info);
-	utest.Assert["is"](variable.axis,rg.data.AxisOrdinal,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 55, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testAxisType"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderVariableIndependent.prototype.testValues = function() {
-	$s.push("rg.controller.build.TestBuilderVariableIndependent::testValues");
-	var $spos = $s.length;
-	var info = new rg.controller.info.InfoVariable({ view : [1.0,10.0], values : [1.0,5.0,10.0], type : ".impression"}), builder = new rg.controller.build.BuilderVariableIndependent(), variable = builder.build(info);
-	utest.Assert.same([1.0,5.0,10.0],variable.range(),null,null,{ fileName : "TestBuilderVariableIndependent.hx", lineNumber : 67, className : "rg.controller.build.TestBuilderVariableIndependent", methodName : "testValues"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderVariableIndependent.prototype.__class__ = rg.controller.build.TestBuilderVariableIndependent;
+rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
 rg.controller.info.TestInfoVariable = function(p) {
 	$s.push("rg.controller.info.TestInfoVariable::new");
 	var $spos = $s.length;
@@ -2058,36 +2042,36 @@ rg.controller.info.TestInfoVariable.prototype.testFeed = function() {
 	$s.push("rg.controller.info.TestInfoVariable::testFeed");
 	var $spos = $s.length;
 	var info = new rg.controller.info.InfoVariable();
-	utest.Assert.isNull(info.type,null,{ fileName : "TestInfoVariable.hx", lineNumber : 17, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
-	utest.Assert.isNull(info.min,null,{ fileName : "TestInfoVariable.hx", lineNumber : 18, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
-	utest.Assert.isNull(info.max,null,{ fileName : "TestInfoVariable.hx", lineNumber : 19, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
-	utest.Assert.isNull(info.values,null,{ fileName : "TestInfoVariable.hx", lineNumber : 20, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	utest.Assert.isNull(info.type,null,{ fileName : "TestInfoVariable.hx", lineNumber : 18, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	utest.Assert.isNull(info.min,null,{ fileName : "TestInfoVariable.hx", lineNumber : 19, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	utest.Assert.isNull(info.max,null,{ fileName : "TestInfoVariable.hx", lineNumber : 20, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	utest.Assert.isNull(info.values,null,{ fileName : "TestInfoVariable.hx", lineNumber : 21, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
 	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoVariable::testFeed@23");
+		$s.push("rg.controller.info.TestInfoVariable::testFeed@24");
 		var $spos = $s.length;
-		info.feedOptions({ type : 1});
+		rg.controller.info.Info.feed(info,{ type : 1});
 		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 23, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
-	info.feedOptions({ type : ".#time:hour"});
-	utest.Assert.equals(rg.util.Properties.timeProperty("hour"),info.type,null,{ fileName : "TestInfoVariable.hx", lineNumber : 27, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
-	info.feedOptions({ view : [1]});
-	utest.Assert.equals(1,info.min,null,{ fileName : "TestInfoVariable.hx", lineNumber : 31, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	},thx.error.Error,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 24, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	rg.controller.info.Info.feed(info,{ type : ".#time:hour"});
+	utest.Assert.equals(rg.util.Properties.timeProperty("hour"),info.type,null,{ fileName : "TestInfoVariable.hx", lineNumber : 28, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	rg.controller.info.Info.feed(info,{ view : [1]});
+	utest.Assert.equals(1,info.min,null,{ fileName : "TestInfoVariable.hx", lineNumber : 32, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
 	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoVariable::testFeed@34");
+		$s.push("rg.controller.info.TestInfoVariable::testFeed@35");
 		var $spos = $s.length;
-		info.feedOptions({ view : { }});
+		rg.controller.info.Info.feed(info,{ view : { }});
 		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 34, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
-	info.feedOptions({ view : [1,3]});
-	utest.Assert.equals(3,info.max,null,{ fileName : "TestInfoVariable.hx", lineNumber : 38, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	},thx.error.Error,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 35, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	rg.controller.info.Info.feed(info,{ view : [1,3]});
+	utest.Assert.equals(3,info.max,null,{ fileName : "TestInfoVariable.hx", lineNumber : 39, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
 	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoVariable::testFeed@41");
+		$s.push("rg.controller.info.TestInfoVariable::testFeed@42");
 		var $spos = $s.length;
-		info.feedOptions({ values : { }});
+		rg.controller.info.Info.feed(info,{ values : { }});
 		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 41, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
-	info.feedOptions({ values : [1,2,3]});
-	utest.Assert.same([1,2,3],info.values,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 45, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	},thx.error.Error,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 42, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	rg.controller.info.Info.feed(info,{ values : [1,2,3]});
+	utest.Assert.same([1,2,3],info.values,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 46, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
 	$s.pop();
 }
 rg.controller.info.TestInfoVariable.prototype.__class__ = rg.controller.info.TestInfoVariable;
@@ -2438,89 +2422,371 @@ utest.Notifier.prototype.has = function() {
 	$s.pop();
 }
 utest.Notifier.prototype.__class__ = utest.Notifier;
-thx.collections.Set = function(p) {
-	if( p === $_ ) return;
-	$s.push("thx.collections.Set::new");
+if(!thx.js) thx.js = {}
+thx.js.Access = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.Access::new");
 	var $spos = $s.length;
-	this._v = [];
-	this.length = 0;
+	this.selection = selection;
 	$s.pop();
 }
-thx.collections.Set.__name__ = ["thx","collections","Set"];
-thx.collections.Set.ofArray = function(arr) {
-	$s.push("thx.collections.Set::ofArray");
+thx.js.Access.__name__ = ["thx","js","Access"];
+thx.js.Access.getData = function(d) {
+	$s.push("thx.js.Access::getData");
 	var $spos = $s.length;
-	var set = new thx.collections.Set();
-	var _g = 0;
-	while(_g < arr.length) {
-		var item = arr[_g];
-		++_g;
-		set.add(item);
+	var $tmp = Reflect.field(d,"__data__");
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Access.setData = function(d,v) {
+	$s.push("thx.js.Access::setData");
+	var $spos = $s.length;
+	d["__data__"] = v;
+	$s.pop();
+}
+thx.js.Access.emptyHtmlDom = function(v) {
+	$s.push("thx.js.Access::emptyHtmlDom");
+	var $spos = $s.length;
+	var $tmp = { __data__ : v};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Access.eventName = function(event) {
+	$s.push("thx.js.Access::eventName");
+	var $spos = $s.length;
+	var $tmp = "__on" + event;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Access.getEvent = function(d,event) {
+	$s.push("thx.js.Access::getEvent");
+	var $spos = $s.length;
+	var $tmp = Reflect.field(d,"__on" + event);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Access.hasEvent = function(d,event) {
+	$s.push("thx.js.Access::hasEvent");
+	var $spos = $s.length;
+	var $tmp = null != Reflect.field(d,"__on" + event);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Access.addEvent = function(d,event,listener) {
+	$s.push("thx.js.Access::addEvent");
+	var $spos = $s.length;
+	d["__on" + event] = listener;
+	$s.pop();
+}
+thx.js.Access.removeEvent = function(d,event) {
+	$s.push("thx.js.Access::removeEvent");
+	var $spos = $s.length;
+	Reflect.deleteField(d,"__on" + event);
+	$s.pop();
+}
+thx.js.Access.setTransition = function(d,id) {
+	$s.push("thx.js.Access::setTransition");
+	var $spos = $s.length;
+	if(Reflect.hasField(d,"__transition__")) Reflect.field(d,"__transition__").owner = id; else d["__transition__"] = { owner : id};
+	$s.pop();
+}
+thx.js.Access.getTransition = function(d) {
+	$s.push("thx.js.Access::getTransition");
+	var $spos = $s.length;
+	var $tmp = Reflect.field(d,"__transition__");
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Access.resetTransition = function(d) {
+	$s.push("thx.js.Access::resetTransition");
+	var $spos = $s.length;
+	Reflect.deleteField(d,"__transition__");
+	$s.pop();
+}
+thx.js.Access.prototype.selection = null;
+thx.js.Access.prototype._that = function() {
+	$s.push("thx.js.Access::_that");
+	var $spos = $s.length;
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Access.prototype.__class__ = thx.js.Access;
+thx.js.AccessAttribute = function(name,selection) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessAttribute::new");
+	var $spos = $s.length;
+	thx.js.Access.call(this,selection);
+	this.name = name;
+	this.qname = thx.xml.Namespace.qualify(name);
+	$s.pop();
+}
+thx.js.AccessAttribute.__name__ = ["thx","js","AccessAttribute"];
+thx.js.AccessAttribute.__super__ = thx.js.Access;
+for(var k in thx.js.Access.prototype ) thx.js.AccessAttribute.prototype[k] = thx.js.Access.prototype[k];
+thx.js.AccessAttribute.prototype.name = null;
+thx.js.AccessAttribute.prototype.qname = null;
+thx.js.AccessAttribute.prototype.get = function() {
+	$s.push("thx.js.AccessAttribute::get");
+	var $spos = $s.length;
+	var n = this.name, q = this.qname;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessAttribute::get@25");
+		var $spos = $s.length;
+		var $tmp = q == null?node.getAttribute(n):node.getAttributeNS(q.space,q.local);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessAttribute.prototype.getFloat = function() {
+	$s.push("thx.js.AccessAttribute::getFloat");
+	var $spos = $s.length;
+	var v = this.get();
+	if(thx.js.AccessAttribute.refloat.match(v)) {
+		var $tmp = Std.parseFloat(thx.js.AccessAttribute.refloat.matched(1));
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = Math.NaN;
+		$s.pop();
+		return $tmp;
 	}
 	$s.pop();
-	return set;
-	$s.pop();
 }
-thx.collections.Set.prototype.length = null;
-thx.collections.Set.prototype._v = null;
-thx.collections.Set.prototype.add = function(v) {
-	$s.push("thx.collections.Set::add");
+thx.js.AccessAttribute.prototype.remove = function() {
+	$s.push("thx.js.AccessAttribute::remove");
 	var $spos = $s.length;
-	this._v.remove(v);
-	this._v.push(v);
-	this.length = this._v.length;
-	$s.pop();
-}
-thx.collections.Set.prototype.remove = function(v) {
-	$s.push("thx.collections.Set::remove");
-	var $spos = $s.length;
-	var t = this._v.remove(v);
-	this.length = this._v.length;
-	$s.pop();
-	return t;
-	$s.pop();
-}
-thx.collections.Set.prototype.exists = function(v) {
-	$s.push("thx.collections.Set::exists");
-	var $spos = $s.length;
-	var _g = 0, _g1 = this._v;
-	while(_g < _g1.length) {
-		var t = _g1[_g];
-		++_g;
-		if(t == v) {
+	if(null == this.qname) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::remove@43");
+			var $spos = $s.length;
+			node.removeAttribute(n);
 			$s.pop();
-			return true;
-		}
+		});
+	} else {
+		var q = this.qname;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::remove@46");
+			var $spos = $s.length;
+			node.removeAttributeNS(q.space,q.local);
+			$s.pop();
+		});
 	}
-	$s.pop();
-	return false;
-	$s.pop();
-}
-thx.collections.Set.prototype.iterator = function() {
-	$s.push("thx.collections.Set::iterator");
-	var $spos = $s.length;
-	var $tmp = this._v.iterator();
+	var $tmp = this.selection;
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-thx.collections.Set.prototype.array = function() {
-	$s.push("thx.collections.Set::array");
+thx.js.AccessAttribute.prototype.string = function(v) {
+	$s.push("thx.js.AccessAttribute::string");
 	var $spos = $s.length;
-	var $tmp = this._v.copy();
+	if(null == this.qname) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::string@55");
+			var $spos = $s.length;
+			node.setAttribute(n,v);
+			$s.pop();
+		});
+	} else {
+		var q = this.qname;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::string@58");
+			var $spos = $s.length;
+			node.setAttributeNS(q.space,q.local,v);
+			$s.pop();
+		});
+	}
+	var $tmp = this.selection;
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-thx.collections.Set.prototype.toString = function() {
-	$s.push("thx.collections.Set::toString");
+thx.js.AccessAttribute.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessAttribute::float");
 	var $spos = $s.length;
-	var $tmp = "{" + this._v.join(", ") + "}";
+	var s = "" + v;
+	if(null == this.qname) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::float@68");
+			var $spos = $s.length;
+			node.setAttribute(n,s);
+			$s.pop();
+		});
+	} else {
+		var q = this.qname;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessAttribute::float@71");
+			var $spos = $s.length;
+			node.setAttributeNS(q.space,q.local,s);
+			$s.pop();
+		});
+	}
+	var $tmp = this.selection;
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-thx.collections.Set.prototype.__class__ = thx.collections.Set;
+thx.js.AccessAttribute.prototype.__class__ = thx.js.AccessAttribute;
+thx.js.AccessDataAttribute = function(name,selection) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataAttribute::new");
+	var $spos = $s.length;
+	thx.js.AccessAttribute.call(this,name,selection);
+	$s.pop();
+}
+thx.js.AccessDataAttribute.__name__ = ["thx","js","AccessDataAttribute"];
+thx.js.AccessDataAttribute.__super__ = thx.js.AccessAttribute;
+for(var k in thx.js.AccessAttribute.prototype ) thx.js.AccessDataAttribute.prototype[k] = thx.js.AccessAttribute.prototype[k];
+thx.js.AccessDataAttribute.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataAttribute::stringf");
+	var $spos = $s.length;
+	if(null == this.qname) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::stringf@89");
+			var $spos = $s.length;
+			var s = v(Reflect.field(node,"__data__"),i);
+			if(null == s) node.removeAttribute(n); else node.setAttribute(n,s);
+			$s.pop();
+		});
+	} else {
+		var q = this.qname;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::stringf@98");
+			var $spos = $s.length;
+			var s = v(Reflect.field(node,"__data__"),i);
+			if(null == s) node.removeAttributeNS(n); else node.setAttributeNS(q.space,q.local,s);
+			$s.pop();
+		});
+	}
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataAttribute.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataAttribute::floatf");
+	var $spos = $s.length;
+	if(null == this.qname) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::floatf@113");
+			var $spos = $s.length;
+			var s = v(Reflect.field(node,"__data__"),i);
+			if(null == s) node.removeAttribute(n); else node.setAttribute(n,"" + s);
+			$s.pop();
+		});
+	} else {
+		var q = this.qname;
+		this.selection.eachNode(function(node,i) {
+			$s.push("thx.js.AccessDataAttribute::floatf@122");
+			var $spos = $s.length;
+			var s = v(Reflect.field(node,"__data__"),i);
+			if(null == s) node.removeAttributeNS(n); else node.setAttributeNS(q.space,q.local,"" + s);
+			$s.pop();
+		});
+	}
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataAttribute.prototype.data = function() {
+	$s.push("thx.js.AccessDataAttribute::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataAttribute::data@135");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataAttribute.prototype.__class__ = thx.js.AccessDataAttribute;
+rg.controller.info.InfoOption = function(p) {
+	$s.push("rg.controller.info.InfoOption::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoOption.__name__ = ["rg","controller","info","InfoOption"];
+rg.controller.info.InfoOption.__super__ = rg.controller.info.Info;
+for(var k in rg.controller.info.Info.prototype ) rg.controller.info.InfoOption.prototype[k] = rg.controller.info.Info.prototype[k];
+rg.controller.info.InfoOption.filters = function() {
+	$s.push("rg.controller.info.InfoOption::filters");
+	var $spos = $s.length;
+	var $tmp = [];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoOption.prototype.__class__ = rg.controller.info.InfoOption;
+rg.controller.info.InfoSvgOption = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoSvgOption::new");
+	var $spos = $s.length;
+	rg.controller.info.InfoOption.call(this);
+	$s.pop();
+}
+rg.controller.info.InfoSvgOption.__name__ = ["rg","controller","info","InfoSvgOption"];
+rg.controller.info.InfoSvgOption.__super__ = rg.controller.info.InfoOption;
+for(var k in rg.controller.info.InfoOption.prototype ) rg.controller.info.InfoSvgOption.prototype[k] = rg.controller.info.InfoOption.prototype[k];
+rg.controller.info.InfoSvgOption.filters = function() {
+	$s.push("rg.controller.info.InfoSvgOption::filters");
+	var $spos = $s.length;
+	var $tmp = rg.controller.info.InfoOption.filters().concat([{ field : "width", validator : function(v) {
+		$s.push("rg.controller.info.InfoSvgOption::filters@17");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoSvgOption::filters@18");
+		var $spos = $s.length;
+		var $tmp = [{ value : Math.round(v), field : "width"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "height", validator : function(v) {
+		$s.push("rg.controller.info.InfoSvgOption::filters@24");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoSvgOption::filters@25");
+		var $spos = $s.length;
+		var $tmp = [{ value : Math.round(v), field : "height"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoSvgOption.prototype.width = null;
+rg.controller.info.InfoSvgOption.prototype.height = null;
+rg.controller.info.InfoSvgOption.prototype.__class__ = rg.controller.info.InfoSvgOption;
 Bools = function() { }
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
@@ -2666,6 +2932,957 @@ IntIter.prototype.next = function() {
 	$s.pop();
 }
 IntIter.prototype.__class__ = IntIter;
+thx.js.AccessHtml = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.AccessHtml::new");
+	var $spos = $s.length;
+	thx.js.Access.call(this,selection);
+	$s.pop();
+}
+thx.js.AccessHtml.__name__ = ["thx","js","AccessHtml"];
+thx.js.AccessHtml.__super__ = thx.js.Access;
+for(var k in thx.js.Access.prototype ) thx.js.AccessHtml.prototype[k] = thx.js.Access.prototype[k];
+thx.js.AccessHtml.prototype.get = function() {
+	$s.push("thx.js.AccessHtml::get");
+	var $spos = $s.length;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessHtml::get@14");
+		var $spos = $s.length;
+		var $tmp = node.innerHTML;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessHtml.prototype.string = function(v) {
+	$s.push("thx.js.AccessHtml::string");
+	var $spos = $s.length;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessHtml::string@19");
+		var $spos = $s.length;
+		node.innerHTML = v;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessHtml.prototype.clear = function() {
+	$s.push("thx.js.AccessHtml::clear");
+	var $spos = $s.length;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessHtml::clear@25");
+		var $spos = $s.length;
+		node.innerHTML = "";
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessHtml.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessHtml::float");
+	var $spos = $s.length;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessHtml::float@31");
+		var $spos = $s.length;
+		node.innerHTML = "" + v;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessHtml.prototype.__class__ = thx.js.AccessHtml;
+thx.js.AccessDataHtml = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.AccessDataHtml::new");
+	var $spos = $s.length;
+	thx.js.AccessHtml.call(this,selection);
+	$s.pop();
+}
+thx.js.AccessDataHtml.__name__ = ["thx","js","AccessDataHtml"];
+thx.js.AccessDataHtml.__super__ = thx.js.AccessHtml;
+for(var k in thx.js.AccessHtml.prototype ) thx.js.AccessDataHtml.prototype[k] = thx.js.AccessHtml.prototype[k];
+thx.js.AccessDataHtml.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataHtml::stringf");
+	var $spos = $s.length;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataHtml::stringf@45");
+		var $spos = $s.length;
+		var s = v(Reflect.field(node,"__data__"),i);
+		if(null == s) s = "";
+		node.innerHTML = s;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataHtml.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataHtml::floatf");
+	var $spos = $s.length;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataHtml::floatf@56");
+		var $spos = $s.length;
+		var f = v(Reflect.field(node,"__data__"),i);
+		if(null == f) node.innerHTML = ""; else node.innerHTML = "" + f;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataHtml.prototype.data = function() {
+	$s.push("thx.js.AccessDataHtml::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataHtml::data@69");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataHtml.prototype.__class__ = thx.js.AccessDataHtml;
+thx.collections.Set = function(p) {
+	if( p === $_ ) return;
+	$s.push("thx.collections.Set::new");
+	var $spos = $s.length;
+	this._v = [];
+	this.length = 0;
+	$s.pop();
+}
+thx.collections.Set.__name__ = ["thx","collections","Set"];
+thx.collections.Set.ofArray = function(arr) {
+	$s.push("thx.collections.Set::ofArray");
+	var $spos = $s.length;
+	var set = new thx.collections.Set();
+	var _g = 0;
+	while(_g < arr.length) {
+		var item = arr[_g];
+		++_g;
+		set.add(item);
+	}
+	$s.pop();
+	return set;
+	$s.pop();
+}
+thx.collections.Set.prototype.length = null;
+thx.collections.Set.prototype._v = null;
+thx.collections.Set.prototype.add = function(v) {
+	$s.push("thx.collections.Set::add");
+	var $spos = $s.length;
+	this._v.remove(v);
+	this._v.push(v);
+	this.length = this._v.length;
+	$s.pop();
+}
+thx.collections.Set.prototype.remove = function(v) {
+	$s.push("thx.collections.Set::remove");
+	var $spos = $s.length;
+	var t = this._v.remove(v);
+	this.length = this._v.length;
+	$s.pop();
+	return t;
+	$s.pop();
+}
+thx.collections.Set.prototype.exists = function(v) {
+	$s.push("thx.collections.Set::exists");
+	var $spos = $s.length;
+	var _g = 0, _g1 = this._v;
+	while(_g < _g1.length) {
+		var t = _g1[_g];
+		++_g;
+		if(t == v) {
+			$s.pop();
+			return true;
+		}
+	}
+	$s.pop();
+	return false;
+	$s.pop();
+}
+thx.collections.Set.prototype.iterator = function() {
+	$s.push("thx.collections.Set::iterator");
+	var $spos = $s.length;
+	var $tmp = this._v.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.Set.prototype.array = function() {
+	$s.push("thx.collections.Set::array");
+	var $spos = $s.length;
+	var $tmp = this._v.copy();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.Set.prototype.toString = function() {
+	$s.push("thx.collections.Set::toString");
+	var $spos = $s.length;
+	var $tmp = "{" + this._v.join(", ") + "}";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.collections.Set.prototype.__class__ = thx.collections.Set;
+if(typeof js=='undefined') js = {}
+js.Lib = function() { }
+js.Lib.__name__ = ["js","Lib"];
+js.Lib.isIE = null;
+js.Lib.isOpera = null;
+js.Lib.document = null;
+js.Lib.window = null;
+js.Lib.alert = function(v) {
+	$s.push("js.Lib::alert");
+	var $spos = $s.length;
+	alert(js.Boot.__string_rec(v,""));
+	$s.pop();
+}
+js.Lib.eval = function(code) {
+	$s.push("js.Lib::eval");
+	var $spos = $s.length;
+	var $tmp = eval(code);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+js.Lib.setErrorHandler = function(f) {
+	$s.push("js.Lib::setErrorHandler");
+	var $spos = $s.length;
+	js.Lib.onerror = f;
+	$s.pop();
+}
+js.Lib.prototype.__class__ = js.Lib;
+thx.js.Group = function(nodes) {
+	if( nodes === $_ ) return;
+	$s.push("thx.js.Group::new");
+	var $spos = $s.length;
+	this.nodes = nodes;
+	$s.pop();
+}
+thx.js.Group.__name__ = ["thx","js","Group"];
+thx.js.Group.prototype.parentNode = null;
+thx.js.Group.prototype.nodes = null;
+thx.js.Group.prototype.each = function(f) {
+	$s.push("thx.js.Group::each");
+	var $spos = $s.length;
+	var _g1 = 0, _g = this.nodes.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(null != this.nodes[i]) f(this.nodes[i],i);
+	}
+	$s.pop();
+}
+thx.js.Group.prototype.iterator = function() {
+	$s.push("thx.js.Group::iterator");
+	var $spos = $s.length;
+	var $tmp = this.nodes.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Group.prototype.get = function(i) {
+	$s.push("thx.js.Group::get");
+	var $spos = $s.length;
+	var $tmp = this.nodes[i];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Group.prototype.count = function() {
+	$s.push("thx.js.Group::count");
+	var $spos = $s.length;
+	var $tmp = this.nodes.length;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Group.prototype.push = function(node) {
+	$s.push("thx.js.Group::push");
+	var $spos = $s.length;
+	this.nodes.push(node);
+	$s.pop();
+}
+thx.js.Group.prototype.sort = function(comparator) {
+	$s.push("thx.js.Group::sort");
+	var $spos = $s.length;
+	this.nodes.sort(comparator);
+	$s.pop();
+}
+thx.js.Group.prototype.__class__ = thx.js.Group;
+thx.js.BaseSelection = function(groups) {
+	if( groups === $_ ) return;
+	$s.push("thx.js.BaseSelection::new");
+	var $spos = $s.length;
+	this.groups = groups;
+	$s.pop();
+}
+thx.js.BaseSelection.__name__ = ["thx","js","BaseSelection"];
+thx.js.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
+	$s.push("thx.js.BaseSelection::bindJoin");
+	var $spos = $s.length;
+	var n = group.nodes.length, m = groupData.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
+	var nodeByKey = new Hash(), keys = [], key, j = groupData.length;
+	var _g = 0;
+	while(_g < n) {
+		var i = _g++;
+		node = group.nodes[i];
+		key = join(Reflect.field(node,"__data__"),i);
+		if(nodeByKey.exists(key)) exitHtmlDoms[j++] = node; else nodeByKey.set(key,node);
+		keys.push(key);
+	}
+	var _g = 0;
+	while(_g < m) {
+		var i = _g++;
+		node = nodeByKey.get(key = join(nodeData = groupData[i],i));
+		if(null != node) {
+			node["__data__"] = nodeData;
+			updateHtmlDoms[i] = node;
+			enterHtmlDoms[i] = exitHtmlDoms[i] = null;
+		} else {
+			node = { __data__ : nodeData};
+			enterHtmlDoms[i] = node;
+			updateHtmlDoms[i] = exitHtmlDoms[i] = null;
+		}
+		nodeByKey.remove(key);
+	}
+	var _g = 0;
+	while(_g < n) {
+		var i = _g++;
+		if(nodeByKey.exists(keys[i])) exitHtmlDoms[i] = group.nodes[i];
+	}
+	var enterGroup = new thx.js.Group(enterHtmlDoms);
+	enterGroup.parentNode = group.parentNode;
+	enter.push(enterGroup);
+	var updateGroup = new thx.js.Group(updateHtmlDoms);
+	updateGroup.parentNode = group.parentNode;
+	update.push(updateGroup);
+	var exitGroup = new thx.js.Group(exitHtmlDoms);
+	exitGroup.parentNode = group.parentNode;
+	exit.push(exitGroup);
+	$s.pop();
+}
+thx.js.BaseSelection.bind = function(group,groupData,update,enter,exit) {
+	$s.push("thx.js.BaseSelection::bind");
+	var $spos = $s.length;
+	var n0 = Ints.min(group.nodes.length,groupData.length), n1 = Ints.max(group.nodes.length,groupData.length), updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
+	var _g = 0;
+	while(_g < n0) {
+		var i = _g++;
+		node = group.nodes[i];
+		nodeData = groupData[i];
+		if(null != node) {
+			node["__data__"] = nodeData;
+			updateHtmlDoms[i] = node;
+			enterHtmlDoms[i] = exitHtmlDoms[i] = null;
+		} else {
+			enterHtmlDoms[i] = { __data__ : nodeData};
+			updateHtmlDoms[i] = exitHtmlDoms[i] = null;
+		}
+	}
+	var _g1 = n0, _g = groupData.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		node = { __data__ : groupData[i]};
+		enterHtmlDoms[i] = node;
+		updateHtmlDoms[i] = exitHtmlDoms[i] = null;
+	}
+	var _g = groupData.length;
+	while(_g < n1) {
+		var i = _g++;
+		exitHtmlDoms[i] = group.nodes[i];
+		enterHtmlDoms[i] = updateHtmlDoms[i] = null;
+	}
+	var enterGroup = new thx.js.Group(enterHtmlDoms);
+	enterGroup.parentNode = group.parentNode;
+	enter.push(enterGroup);
+	var updateGroup = new thx.js.Group(updateHtmlDoms);
+	updateGroup.parentNode = group.parentNode;
+	update.push(updateGroup);
+	var exitGroup = new thx.js.Group(exitHtmlDoms);
+	exitGroup.parentNode = group.parentNode;
+	exit.push(exitGroup);
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.parentNode = null;
+thx.js.BaseSelection.prototype.groups = null;
+thx.js.BaseSelection.prototype.select = function(selector) {
+	$s.push("thx.js.BaseSelection::select");
+	var $spos = $s.length;
+	var $tmp = this._select(function(el) {
+		$s.push("thx.js.BaseSelection::select@361");
+		var $spos = $s.length;
+		var $tmp = thx.js.Dom.selectionEngine.select(selector,el);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.selectAll = function(selector) {
+	$s.push("thx.js.BaseSelection::selectAll");
+	var $spos = $s.length;
+	var $tmp = this._selectAll(function(el) {
+		$s.push("thx.js.BaseSelection::selectAll@368");
+		var $spos = $s.length;
+		var $tmp = thx.js.Dom.selectionEngine.selectAll(selector,el);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype._this = function() {
+	$s.push("thx.js.BaseSelection::_this");
+	var $spos = $s.length;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.append = function(name) {
+	$s.push("thx.js.BaseSelection::append");
+	var $spos = $s.length;
+	var qname = thx.xml.Namespace.qualify(name);
+	var append = function(node) {
+		$s.push("thx.js.BaseSelection::append@379");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElement(name);
+		node.appendChild(n);
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var appendNS = function(node) {
+		$s.push("thx.js.BaseSelection::append@386");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElementNS(qname.space,qname.local);
+		node.appendChild(n);
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var $tmp = this._select(null == qname?append:appendNS);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.remove = function() {
+	$s.push("thx.js.BaseSelection::remove");
+	var $spos = $s.length;
+	var $tmp = this.eachNode(function(node,i) {
+		$s.push("thx.js.BaseSelection::remove@398");
+		var $spos = $s.length;
+		var parent = node.parentNode;
+		if(null != parent) parent.removeChild(node);
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.eachNode = function(f) {
+	$s.push("thx.js.BaseSelection::eachNode");
+	var $spos = $s.length;
+	var _g = 0, _g1 = this.groups;
+	while(_g < _g1.length) {
+		var group = _g1[_g];
+		++_g;
+		group.each(f);
+	}
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.insert = function(name,before,beforeSelector) {
+	$s.push("thx.js.BaseSelection::insert");
+	var $spos = $s.length;
+	var qname = thx.xml.Namespace.qualify(name);
+	var insertDom = function(node) {
+		$s.push("thx.js.BaseSelection::insert@415");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElement(name);
+		node.insertBefore(n,null != before?before:thx.js.Dom.select(beforeSelector).node());
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var insertNsDom = function(node) {
+		$s.push("thx.js.BaseSelection::insert@421");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElementNS(qname.space,qname.local);
+		node.insertBefore(n,null != before?before:thx.js.Dom.select(beforeSelector).node());
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var $tmp = this._select(null == qname?insertDom:insertNsDom);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.sortNode = function(comparator) {
+	$s.push("thx.js.BaseSelection::sortNode");
+	var $spos = $s.length;
+	var m = this.groups.length;
+	var _g = 0;
+	while(_g < m) {
+		var i = _g++;
+		var group = this.groups[i];
+		group.nodes.sort(comparator);
+		var n = group.nodes.length;
+		var prev = group.nodes[0];
+		var _g1 = 1;
+		while(_g1 < n) {
+			var j = _g1++;
+			var node = group.nodes[j];
+			if(null != node) {
+				if(null != prev) prev.parentNode.insertBefore(node,prev.nextSibling);
+				prev = node;
+			}
+		}
+	}
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.firstNode = function(f) {
+	$s.push("thx.js.BaseSelection::firstNode");
+	var $spos = $s.length;
+	var _g = 0, _g1 = this.groups;
+	while(_g < _g1.length) {
+		var group = _g1[_g];
+		++_g;
+		var $it0 = group.nodes.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			if(null != node) {
+				var $tmp = f(node);
+				$s.pop();
+				return $tmp;
+			}
+		}
+	}
+	$s.pop();
+	return null;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.node = function() {
+	$s.push("thx.js.BaseSelection::node");
+	var $spos = $s.length;
+	var $tmp = this.firstNode(function(n) {
+		$s.push("thx.js.BaseSelection::node@465");
+		var $spos = $s.length;
+		$s.pop();
+		return n;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.empty = function() {
+	$s.push("thx.js.BaseSelection::empty");
+	var $spos = $s.length;
+	var $tmp = null == this.firstNode(function(n) {
+		$s.push("thx.js.BaseSelection::empty@470");
+		var $spos = $s.length;
+		$s.pop();
+		return n;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.filterNode = function(f) {
+	$s.push("thx.js.BaseSelection::filterNode");
+	var $spos = $s.length;
+	var subgroups = [], subgroup;
+	var _g = 0, _g1 = this.groups;
+	while(_g < _g1.length) {
+		var group = _g1[_g];
+		++_g;
+		var sg = new thx.js.Group(subgroup = []);
+		sg.parentNode = group.parentNode;
+		subgroups.push(sg);
+		var i = -1;
+		var $it0 = group.nodes.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			if(null != node && f(node,++i)) subgroup.push(node);
+		}
+	}
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.onNode = function(type,listener,capture) {
+	$s.push("thx.js.BaseSelection::onNode");
+	var $spos = $s.length;
+	if(capture == null) capture = false;
+	var i = type.indexOf("."), typo = i < 0?type:type.substr(0,i);
+	var $tmp = this.eachNode(function(n,i1) {
+		$s.push("thx.js.BaseSelection::onNode@500");
+		var $spos = $s.length;
+		var l = function(e) {
+			$s.push("thx.js.BaseSelection::onNode@500@501");
+			var $spos = $s.length;
+			var o = thx.js.Dom.event;
+			thx.js.Dom.event = e;
+			try {
+				listener(n,i1);
+			} catch( e1 ) {
+				$e = [];
+				while($s.length >= $spos) $e.unshift($s.pop());
+				$s.push($e[0]);
+			}
+			thx.js.Dom.event = o;
+			$s.pop();
+		};
+		if(null != Reflect.field(n,"__on" + type)) {
+			n.removeEventListener(typo,Reflect.field(n,"__on" + type),capture);
+			Reflect.deleteField(n,"__on" + type);
+		}
+		if(null != listener) {
+			n["__on" + type] = l;
+			n.addEventListener(typo,l,capture);
+		}
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.createSelection = function(groups) {
+	$s.push("thx.js.BaseSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 526, className : "thx.js.BaseSelection", methodName : "createSelection"});
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype._select = function(selectf) {
+	$s.push("thx.js.BaseSelection::_select");
+	var $spos = $s.length;
+	var subgroups = [], subgroup, subnode, node;
+	var _g = 0, _g1 = this.groups;
+	while(_g < _g1.length) {
+		var group = _g1[_g];
+		++_g;
+		subgroups.push(subgroup = new thx.js.Group([]));
+		subgroup.parentNode = group.parentNode;
+		var $it0 = group.nodes.iterator();
+		while( $it0.hasNext() ) {
+			var node1 = $it0.next();
+			if(null != node1) {
+				subgroup.parentNode = node1;
+				subgroup.nodes.push(subnode = selectf(node1));
+				if(null != subnode) subnode["__data__"] = Reflect.field(node1,"__data__");
+			} else subgroup.nodes.push(null);
+		}
+	}
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype._selectAll = function(selectallf) {
+	$s.push("thx.js.BaseSelection::_selectAll");
+	var $spos = $s.length;
+	var subgroups = [], subgroup;
+	var _g = 0, _g1 = this.groups;
+	while(_g < _g1.length) {
+		var group = _g1[_g];
+		++_g;
+		var $it0 = group.nodes.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			if(null != node) {
+				subgroups.push(subgroup = new thx.js.Group(selectallf(node)));
+				subgroup.parentNode = node;
+			}
+		}
+	}
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseSelection.prototype.__class__ = thx.js.BaseSelection;
+thx.js.UnboundSelection = function(groups) {
+	if( groups === $_ ) return;
+	$s.push("thx.js.UnboundSelection::new");
+	var $spos = $s.length;
+	thx.js.BaseSelection.call(this,groups);
+	$s.pop();
+}
+thx.js.UnboundSelection.__name__ = ["thx","js","UnboundSelection"];
+thx.js.UnboundSelection.__super__ = thx.js.BaseSelection;
+for(var k in thx.js.BaseSelection.prototype ) thx.js.UnboundSelection.prototype[k] = thx.js.BaseSelection.prototype[k];
+thx.js.UnboundSelection.prototype.html = function() {
+	$s.push("thx.js.UnboundSelection::html");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessHtml(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.text = function() {
+	$s.push("thx.js.UnboundSelection::text");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessText(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.attr = function(name) {
+	$s.push("thx.js.UnboundSelection::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessAttribute(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.classed = function() {
+	$s.push("thx.js.UnboundSelection::classed");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessClassed(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.property = function(name) {
+	$s.push("thx.js.UnboundSelection::property");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessProperty(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.style = function(name) {
+	$s.push("thx.js.UnboundSelection::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessStyle(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.transition = function() {
+	$s.push("thx.js.UnboundSelection::transition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UnboundTransition(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.data = function(d,join) {
+	$s.push("thx.js.UnboundSelection::data");
+	var $spos = $s.length;
+	var update = [], enter = [], exit = [];
+	if(null == join) {
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			thx.js.BaseSelection.bind(group,d,update,enter,exit);
+		}
+	} else {
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			thx.js.BaseSelection.bindJoin(join,group,d,update,enter,exit);
+		}
+	}
+	var $tmp = new thx.js.DataChoice(update,enter,exit);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.selectAllData = function(selector) {
+	$s.push("thx.js.UnboundSelection::selectAllData");
+	var $spos = $s.length;
+	var selection = this.selectAll(selector);
+	var $tmp = new thx.js.ResumeSelection(selection.groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundSelection.prototype.__class__ = thx.js.UnboundSelection;
+thx.js.Selection = function(groups) {
+	if( groups === $_ ) return;
+	$s.push("thx.js.Selection::new");
+	var $spos = $s.length;
+	thx.js.UnboundSelection.call(this,groups);
+	$s.pop();
+}
+thx.js.Selection.__name__ = ["thx","js","Selection"];
+thx.js.Selection.__super__ = thx.js.UnboundSelection;
+for(var k in thx.js.UnboundSelection.prototype ) thx.js.Selection.prototype[k] = thx.js.UnboundSelection.prototype[k];
+thx.js.Selection.create = function(groups) {
+	$s.push("thx.js.Selection::create");
+	var $spos = $s.length;
+	var $tmp = new thx.js.Selection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Selection.prototype.createSelection = function(groups) {
+	$s.push("thx.js.Selection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.Selection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Selection.prototype.__class__ = thx.js.Selection;
+thx.js.ISelectorEngine = function() { }
+thx.js.ISelectorEngine.__name__ = ["thx","js","ISelectorEngine"];
+thx.js.ISelectorEngine.prototype.select = null;
+thx.js.ISelectorEngine.prototype.selectAll = null;
+thx.js.ISelectorEngine.prototype.__class__ = thx.js.ISelectorEngine;
+thx.js.SizzleEngine = function(p) {
+	$s.push("thx.js.SizzleEngine::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+thx.js.SizzleEngine.__name__ = ["thx","js","SizzleEngine"];
+thx.js.SizzleEngine.prototype.select = function(selector,node) {
+	$s.push("thx.js.SizzleEngine::select");
+	var $spos = $s.length;
+	var $tmp = thx.js.Sizzle.select(selector,node)[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.SizzleEngine.prototype.selectNode = function(n,p) {
+	$s.push("thx.js.SizzleEngine::selectNode");
+	var $spos = $s.length;
+	var $tmp = thx.js.Sizzle.select(n,p)[0];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.SizzleEngine.prototype.selectAll = function(selector,node) {
+	$s.push("thx.js.SizzleEngine::selectAll");
+	var $spos = $s.length;
+	var $tmp = thx.js.Sizzle.uniqueSort(thx.js.Sizzle.select(selector,node));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.SizzleEngine.prototype.__class__ = thx.js.SizzleEngine;
+thx.js.SizzleEngine.__interfaces__ = [thx.js.ISelectorEngine];
+thx.js.Dom = function() { }
+thx.js.Dom.__name__ = ["thx","js","Dom"];
+thx.js.Dom.select = function(selector) {
+	$s.push("thx.js.Dom::select");
+	var $spos = $s.length;
+	var $tmp = thx.js.Dom.doc.select(selector);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Dom.selectAll = function(selector) {
+	$s.push("thx.js.Dom::selectAll");
+	var $spos = $s.length;
+	var $tmp = thx.js.Dom.doc.selectAll(selector);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Dom.selectNode = function(node) {
+	$s.push("thx.js.Dom::selectNode");
+	var $spos = $s.length;
+	var $tmp = thx.js.Selection.create([new thx.js.Group([node])]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Dom.selectNodeData = function(node) {
+	$s.push("thx.js.Dom::selectNodeData");
+	var $spos = $s.length;
+	var $tmp = thx.js.ResumeSelection.create([new thx.js.Group([node])]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Dom.event = null;
+thx.js.Dom.prototype.__class__ = thx.js.Dom;
+if(!rg.controller.factory) rg.controller.factory = {}
+rg.controller.factory.TestFactoryVariableDependent = function(p) {
+	$s.push("rg.controller.factory.TestFactoryVariableDependent::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableDependent.__name__ = ["rg","controller","factory","TestFactoryVariableDependent"];
+rg.controller.factory.TestFactoryVariableDependent.prototype.testIncompleteInfo = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableDependent::testIncompleteInfo");
+	var $spos = $s.length;
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.factory.TestFactoryVariableDependent::testIncompleteInfo@21");
+		var $spos = $s.length;
+		new rg.controller.factory.FactoryVariableDependent().create(new rg.controller.info.InfoVariable(),false);
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 21, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testIncompleteInfo"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableDependent.prototype.testSimpleParameters = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableDependent::testSimpleParameters");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], type : "count"}), factory = new rg.controller.factory.FactoryVariableDependent(), variable = factory.create(info,true);
+	utest.Assert.notNull(variable,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 32, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testSimpleParameters"});
+	utest.Assert.same(1.0,variable.min,null,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 33, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testSimpleParameters"});
+	utest.Assert.same(10.0,variable.max,null,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 34, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testSimpleParameters"});
+	utest.Assert.equals("count",variable.type,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 35, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testSimpleParameters"});
+	info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : "count"});
+	variable = factory.create(info,true);
+	utest.Assert.isNull(variable.min,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 41, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testSimpleParameters"});
+	utest.Assert.isNull(variable.max,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 42, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testSimpleParameters"});
+	utest.Assert.equals("count",variable.type,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 43, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testSimpleParameters"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableDependent.prototype.testAxisType = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableDependent::testAxisType");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableDependent(), variable = factory.create(info,true);
+	utest.Assert["is"](variable.axis,rg.data.AxisNumeric,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 54, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testAxisType"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableDependent.prototype.testValues = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableDependent::testValues");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], values : [1.0,5.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableDependent(), variable = factory.create(info,true);
+	utest.Assert.same([1.0,5.0,10.0],Types["as"](variable.axis,rg.data.AxisOrdinal).getValues().array(),null,null,{ fileName : "TestFactoryVariableDependent.hx", lineNumber : 66, className : "rg.controller.factory.TestFactoryVariableDependent", methodName : "testValues"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableDependent.prototype.__class__ = rg.controller.factory.TestFactoryVariableDependent;
 thx.color.Hsl = function(h,s,l) {
 	if( h === $_ ) return;
 	$s.push("thx.color.Hsl::new");
@@ -2769,25 +3986,6 @@ thx.color.Hsl.prototype.toHslString = function() {
 	$s.pop();
 }
 thx.color.Hsl.prototype.__class__ = thx.color.Hsl;
-rg.controller.build.TestBuilderDataSource = function(p) {
-	$s.push("rg.controller.build.TestBuilderDataSource::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.build.TestBuilderDataSource.__name__ = ["rg","controller","build","TestBuilderDataSource"];
-rg.controller.build.TestBuilderDataSource.prototype.testRGQuery = function() {
-	$s.push("rg.controller.build.TestBuilderDataSource::testRGQuery");
-	var $spos = $s.length;
-	var builder = new rg.controller.build.BuilderDataSource(), info = new rg.controller.info.InfoDataSource({ });
-	haxe.Log.trace(builder.build(info),{ fileName : "TestBuilderDataSource.hx", lineNumber : 17, className : "rg.controller.build.TestBuilderDataSource", methodName : "testRGQuery"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderDataSource.prototype.testArraySource = function() {
-	$s.push("rg.controller.build.TestBuilderDataSource::testArraySource");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.build.TestBuilderDataSource.prototype.__class__ = rg.controller.build.TestBuilderDataSource;
 Hash = function(p) {
 	if( p === $_ ) return;
 	$s.push("Hash::new");
@@ -2898,6 +4096,22 @@ Hash.prototype.toString = function() {
 	$s.pop();
 }
 Hash.prototype.__class__ = Hash;
+rg.util.TestProperties = function(p) {
+	$s.push("rg.util.TestProperties::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.util.TestProperties.__name__ = ["rg","util","TestProperties"];
+rg.util.TestProperties.prototype.testIsTime = function() {
+	$s.push("rg.util.TestProperties::testIsTime");
+	var $spos = $s.length;
+	utest.Assert.isTrue(rg.util.Properties.isTime(".#time:hour"),null,{ fileName : "TestProperties.hx", lineNumber : 14, className : "rg.util.TestProperties", methodName : "testIsTime"});
+	utest.Assert.isTrue(rg.util.Properties.isTime(".#time:day"),null,{ fileName : "TestProperties.hx", lineNumber : 15, className : "rg.util.TestProperties", methodName : "testIsTime"});
+	utest.Assert.isFalse(rg.util.Properties.isTime("time:hour"),null,{ fileName : "TestProperties.hx", lineNumber : 16, className : "rg.util.TestProperties", methodName : "testIsTime"});
+	utest.Assert.isFalse(rg.util.Properties.isTime("count"),null,{ fileName : "TestProperties.hx", lineNumber : 17, className : "rg.util.TestProperties", methodName : "testIsTime"});
+	$s.pop();
+}
+rg.util.TestProperties.prototype.__class__ = rg.util.TestProperties;
 IntHash = function(p) {
 	if( p === $_ ) return;
 	$s.push("IntHash::new");
@@ -3198,6 +4412,38 @@ Iterators.isIterator = function(v) {
 	$s.pop();
 }
 Iterators.prototype.__class__ = Iterators;
+if(!thx.xml) thx.xml = {}
+thx.xml.Namespace = function() { }
+thx.xml.Namespace.__name__ = ["thx","xml","Namespace"];
+thx.xml.Namespace.qualify = function(name) {
+	$s.push("thx.xml.Namespace::qualify");
+	var $spos = $s.length;
+	var i = name.indexOf(":");
+	if(i < 0) {
+		$s.pop();
+		return null;
+	} else {
+		var space = thx.xml.Namespace.prefix.get(name.substr(0,i));
+		if(null == space) throw new thx.error.Error("unable to find a namespace for {0}",[space],null,{ fileName : "Namespace.hx", lineNumber : 29, className : "thx.xml.Namespace", methodName : "qualify"});
+		var $tmp = new thx.xml.NSQualifier(space,name.substr(i + 1));
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.xml.Namespace.prototype.__class__ = thx.xml.Namespace;
+thx.xml.NSQualifier = function(space,local) {
+	if( space === $_ ) return;
+	$s.push("thx.xml.NSQualifier::new");
+	var $spos = $s.length;
+	this.space = space;
+	this.local = local;
+	$s.pop();
+}
+thx.xml.NSQualifier.__name__ = ["thx","xml","NSQualifier"];
+thx.xml.NSQualifier.prototype.space = null;
+thx.xml.NSQualifier.prototype.local = null;
+thx.xml.NSQualifier.prototype.__class__ = thx.xml.NSQualifier;
 StringTools = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
@@ -3685,55 +4931,102 @@ thx.util.Message.prototype.translate = function(translator,domain) {
 	$s.pop();
 }
 thx.util.Message.prototype.__class__ = thx.util.Message;
-rg.controller.info.InfoOption = function(o) {
-	if( o === $_ ) return;
-	$s.push("rg.controller.info.InfoOption::new");
+rg.data.VariableDependentContext = function(variable,partial) {
+	if( variable === $_ ) return;
+	$s.push("rg.data.VariableDependentContext::new");
 	var $spos = $s.length;
-	rg.controller.info.Info.call(this,o);
+	this.variable = variable;
+	this.partial = partial;
 	$s.pop();
 }
-rg.controller.info.InfoOption.__name__ = ["rg","controller","info","InfoOption"];
-rg.controller.info.InfoOption.__super__ = rg.controller.info.Info;
-for(var k in rg.controller.info.Info.prototype ) rg.controller.info.InfoOption.prototype[k] = rg.controller.info.Info.prototype[k];
-rg.controller.info.InfoOption.prototype.width = null;
-rg.controller.info.InfoOption.prototype.height = null;
-rg.controller.info.InfoOption.prototype.filters = function() {
-	$s.push("rg.controller.info.InfoOption::filters");
+rg.data.VariableDependentContext.__name__ = ["rg","data","VariableDependentContext"];
+rg.data.VariableDependentContext.prototype.partial = null;
+rg.data.VariableDependentContext.prototype.variable = null;
+rg.data.VariableDependentContext.prototype.__class__ = rg.data.VariableDependentContext;
+rg.controller.factory.FactoryDataContext = function(factoryDataSource) {
+	if( factoryDataSource === $_ ) return;
+	$s.push("rg.controller.factory.FactoryDataContext::new");
 	var $spos = $s.length;
-	var $tmp = [{ field : "width", validator : function(v) {
-		$s.push("rg.controller.info.InfoOption::filters@16");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Float);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoOption::filters@17");
-		var $spos = $s.length;
-		var $tmp = [{ value : Math.round(v), field : "width"}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "height", validator : function(v) {
-		$s.push("rg.controller.info.InfoOption::filters@23");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Float);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoOption::filters@24");
-		var $spos = $s.length;
-		var $tmp = [{ value : Math.round(v), field : "height"}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}}];
+	this.factoryDataSource = factoryDataSource;
+	$s.pop();
+}
+rg.controller.factory.FactoryDataContext.__name__ = ["rg","controller","factory","FactoryDataContext"];
+rg.controller.factory.FactoryDataContext.prototype.factoryDataSource = null;
+rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
+	$s.push("rg.controller.factory.FactoryDataContext::create");
+	var $spos = $s.length;
+	if(info.sources.length == 0) throw new thx.error.Error("the data object does not contain valid data sources information",null,null,{ fileName : "FactoryDataContext.hx", lineNumber : 26, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
+	var sources = [];
+	var _g = 0, _g1 = info.sources;
+	while(_g < _g1.length) {
+		var src = _g1[_g];
+		++_g;
+		sources.push(this.factoryDataSource.create(src));
+	}
+	var processor = new rg.data.DataProcessor(new rg.data.Sources(sources));
+	var $tmp = new rg.data.DataContext(info.name,processor,info.transform);
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.controller.info.InfoOption.prototype.__class__ = rg.controller.info.InfoOption;
+rg.controller.factory.FactoryDataContext.prototype.__class__ = rg.controller.factory.FactoryDataContext;
+rg.controller.factory.TestFactoryVariableContexts = function(p) {
+	$s.push("rg.controller.factory.TestFactoryVariableContexts::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableContexts.__name__ = ["rg","controller","factory","TestFactoryVariableContexts"];
+rg.controller.factory.TestFactoryVariableContexts.prototype.testCreateIndependentContextsNotPartialWithTime = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableContexts::testCreateIndependentContextsNotPartialWithTime");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryVariableContexts(thx.collections.Set.ofArray([".#time:hour"])), iv = [rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour"})], inds = factory.createIndependents(iv), ctx = inds[0];
+	utest.Assert.notNull(ctx,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 22, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartialWithTime"});
+	utest.Assert.notNull(ctx.variable,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 23, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartialWithTime"});
+	utest.Assert.isFalse(ctx.partial,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 24, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartialWithTime"});
+	utest.Assert.notNull(ctx.variable.axis,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 25, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartialWithTime"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableContexts.prototype.testCreateIndependentContextsPartial = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableContexts::testCreateIndependentContextsPartial");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryVariableContexts(thx.collections.Set.ofArray(["count"])), iv = [rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : "count"})], inds = factory.createIndependents(iv), ctx = inds[0];
+	utest.Assert.notNull(ctx,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 34, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsPartial"});
+	utest.Assert.notNull(ctx.variable,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 35, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsPartial"});
+	utest.Assert.isTrue(ctx.partial,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 36, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsPartial"});
+	utest.Assert.notNull(ctx.variable.axis,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 37, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsPartial"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableContexts.prototype.testCreateDependentContextsPartial = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableContexts::testCreateDependentContextsPartial");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryVariableContexts(thx.collections.Set.ofArray([".#time:hour"])), dv = [rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : "count"})], deps = factory.createDependents(dv), ctx = deps[0];
+	utest.Assert.notNull(ctx,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 46, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsPartial"});
+	utest.Assert.notNull(ctx.variable,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 47, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsPartial"});
+	utest.Assert.isTrue(ctx.partial,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 48, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsPartial"});
+	utest.Assert.isNull(ctx.variable.axis,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 49, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsPartial"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableContexts.prototype.testCreateIndependentContextsNotPartial = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableContexts::testCreateIndependentContextsNotPartial");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryVariableContexts(thx.collections.Set.ofArray([".#time:hour"])), iv = [rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : ["yesterday","now"]})], inds = factory.createIndependents(iv), ctx = inds[0];
+	utest.Assert.notNull(ctx,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 61, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartial"});
+	utest.Assert.notNull(ctx.variable,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 62, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartial"});
+	utest.Assert.isFalse(ctx.partial,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 63, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartial"});
+	utest.Assert.notNull(ctx.variable.axis,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 64, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateIndependentContextsNotPartial"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableContexts.prototype.testCreateDependentContextsNotPartial = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableContexts::testCreateDependentContextsNotPartial");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryVariableContexts(thx.collections.Set.ofArray([".#time:hour"])), dv = [rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : "count", view : [0,100]})], deps = factory.createDependents(dv), ctx = deps[0];
+	utest.Assert.notNull(ctx,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 76, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsNotPartial"});
+	utest.Assert.notNull(ctx.variable,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 77, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsNotPartial"});
+	utest.Assert.isFalse(ctx.partial,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 78, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsNotPartial"});
+	utest.Assert.notNull(ctx.variable.axis,null,{ fileName : "TestFactoryVariableContexts.hx", lineNumber : 79, className : "rg.controller.factory.TestFactoryVariableContexts", methodName : "testCreateDependentContextsNotPartial"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableContexts.prototype.__class__ = rg.controller.factory.TestFactoryVariableContexts;
 rg.data.Variable = function(type,min,max) {
 	if( type === $_ ) return;
 	$s.push("rg.data.Variable::new");
@@ -3906,8 +5199,8 @@ rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.testTran
 	$s.push("rg.data.source.rgquery.transform.TestCountTimeSeriesTransform::testTransform");
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ },"impression","day","count");
-	var data = { day : [[1310342400000,0],[1310428800000,1],[1310515200000,2]]};
-	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 0},[".#time:day"],[1310342400000])},{ event : "impression", properties : Objects.addFields({ count : 1},[".#time:day"],[1310428800000])},{ event : "impression", properties : Objects.addFields({ count : 2},[".#time:day"],[1310515200000])}],transform.transform(data),{ fileName : "TestCountTimeSeriesTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTimeSeriesTransform", methodName : "testTransform"});
+	var data = { type : "timeseries", periodicity : "day", data : [[1310342400000,0],[1310428800000,1],[1310515200000,2]]};
+	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 0},[".#time:day"],[1310342400000]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 1},[".#time:day"],[1310428800000]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 2},[".#time:day"],[1310515200000]), segment : null}],transform.transform(data),{ fileName : "TestCountTimeSeriesTransform.hx", lineNumber : 18, className : "rg.data.source.rgquery.transform.TestCountTimeSeriesTransform", methodName : "testTransform"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeSeriesTransform;
@@ -4053,10 +5346,509 @@ utest.ui.Report.create = function(runner,displaySuccessResults,headerDisplayMode
 	$s.pop();
 }
 utest.ui.Report.prototype.__class__ = utest.ui.Report;
-rg.data.source.ITransform = function() { }
-rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
-rg.data.source.ITransform.prototype.transform = null;
-rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
+thx.js.DataChoice = function(update,enter,exit) {
+	if( update === $_ ) return;
+	$s.push("thx.js.DataChoice::new");
+	var $spos = $s.length;
+	this._update = update;
+	this._enter = enter;
+	this._exit = exit;
+	$s.pop();
+}
+thx.js.DataChoice.__name__ = ["thx","js","DataChoice"];
+thx.js.DataChoice.prototype._update = null;
+thx.js.DataChoice.prototype._enter = null;
+thx.js.DataChoice.prototype._exit = null;
+thx.js.DataChoice.prototype.enter = function() {
+	$s.push("thx.js.DataChoice::enter");
+	var $spos = $s.length;
+	var $tmp = new thx.js.PreEnterSelection(this._enter,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.DataChoice.prototype.exit = function() {
+	$s.push("thx.js.DataChoice::exit");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ExitSelection(this._exit,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.DataChoice.prototype.update = function() {
+	$s.push("thx.js.DataChoice::update");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UpdateSelection(this._update,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.DataChoice.prototype.__class__ = thx.js.DataChoice;
+thx.js.BoundSelection = function(groups) {
+	if( groups === $_ ) return;
+	$s.push("thx.js.BoundSelection::new");
+	var $spos = $s.length;
+	thx.js.BaseSelection.call(this,groups);
+	$s.pop();
+}
+thx.js.BoundSelection.__name__ = ["thx","js","BoundSelection"];
+thx.js.BoundSelection.__super__ = thx.js.BaseSelection;
+for(var k in thx.js.BaseSelection.prototype ) thx.js.BoundSelection.prototype[k] = thx.js.BaseSelection.prototype[k];
+thx.js.BoundSelection.prototype.html = function() {
+	$s.push("thx.js.BoundSelection::html");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataHtml(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.text = function() {
+	$s.push("thx.js.BoundSelection::text");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataText(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.attr = function(name) {
+	$s.push("thx.js.BoundSelection::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataAttribute(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.classed = function() {
+	$s.push("thx.js.BoundSelection::classed");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataClassed(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.property = function(name) {
+	$s.push("thx.js.BoundSelection::property");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataProperty(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.style = function(name) {
+	$s.push("thx.js.BoundSelection::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataStyle(name,this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.transition = function() {
+	$s.push("thx.js.BoundSelection::transition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.BoundTransition(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.data = function(d,join) {
+	$s.push("thx.js.BoundSelection::data");
+	var $spos = $s.length;
+	var update = [], enter = [], exit = [];
+	if(null == join) {
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			thx.js.BaseSelection.bind(group,d,update,enter,exit);
+		}
+	} else {
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			thx.js.BaseSelection.bindJoin(join,group,d,update,enter,exit);
+		}
+	}
+	var $tmp = new thx.js.DataChoice(update,enter,exit);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.dataf = function(fd,join) {
+	$s.push("thx.js.BoundSelection::dataf");
+	var $spos = $s.length;
+	if(null == join) {
+		var update = [], enter = [], exit = [], i = 0;
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			thx.js.BaseSelection.bind(group,fd(Reflect.field(group.parentNode,"__data__"),i++),update,enter,exit);
+		}
+		var $tmp = new thx.js.DataChoice(update,enter,exit);
+		$s.pop();
+		return $tmp;
+	} else {
+		var update = [], enter = [], exit = [], i = 0;
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			thx.js.BaseSelection.bindJoin(join,group,fd(Reflect.field(group.parentNode,"__data__"),i++),update,enter,exit);
+		}
+		var $tmp = new thx.js.DataChoice(update,enter,exit);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.selfData = function() {
+	$s.push("thx.js.BoundSelection::selfData");
+	var $spos = $s.length;
+	var $tmp = this.dataf(function(d,_) {
+		$s.push("thx.js.BoundSelection::selfData@164");
+		var $spos = $s.length;
+		var $tmp = d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.each = function(f) {
+	$s.push("thx.js.BoundSelection::each");
+	var $spos = $s.length;
+	var $tmp = this.eachNode(function(n,i) {
+		$s.push("thx.js.BoundSelection::each@169");
+		var $spos = $s.length;
+		f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.sort = function(comparator) {
+	$s.push("thx.js.BoundSelection::sort");
+	var $spos = $s.length;
+	var $tmp = this.sortNode(function(a,b) {
+		$s.push("thx.js.BoundSelection::sort@174");
+		var $spos = $s.length;
+		var $tmp = comparator(Reflect.field(a,"__data__"),Reflect.field(b,"__data__"));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.filter = function(f) {
+	$s.push("thx.js.BoundSelection::filter");
+	var $spos = $s.length;
+	var $tmp = this.filterNode(function(n,i) {
+		$s.push("thx.js.BoundSelection::filter@179");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.map = function(f) {
+	$s.push("thx.js.BoundSelection::map");
+	var $spos = $s.length;
+	var ngroups = [];
+	var _g = 0, _g1 = this.groups;
+	while(_g < _g1.length) {
+		var group = _g1[_g];
+		++_g;
+		var ngroup = new thx.js.Group([]);
+		var i = 0;
+		var $it0 = group.nodes.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			if(null != node) node["__data__"] = f(Reflect.field(node,"__data__"),i++);
+			ngroup.nodes.push(node);
+		}
+		ngroups.push(ngroup);
+	}
+	var $tmp = this.createSelection(ngroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.first = function(f) {
+	$s.push("thx.js.BoundSelection::first");
+	var $spos = $s.length;
+	var $tmp = this.firstNode(function(n) {
+		$s.push("thx.js.BoundSelection::first@202");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.on = function(type,listener,capture) {
+	$s.push("thx.js.BoundSelection::on");
+	var $spos = $s.length;
+	if(capture == null) capture = false;
+	var $tmp = this.onNode(type,null == listener?null:function(n,i) {
+		$s.push("thx.js.BoundSelection::on@207");
+		var $spos = $s.length;
+		listener(Reflect.field(n,"__data__"),i);
+		$s.pop();
+	},capture);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundSelection.prototype.__class__ = thx.js.BoundSelection;
+thx.js.ResumeSelection = function(groups) {
+	if( groups === $_ ) return;
+	$s.push("thx.js.ResumeSelection::new");
+	var $spos = $s.length;
+	thx.js.BoundSelection.call(this,groups);
+	$s.pop();
+}
+thx.js.ResumeSelection.__name__ = ["thx","js","ResumeSelection"];
+thx.js.ResumeSelection.__super__ = thx.js.BoundSelection;
+for(var k in thx.js.BoundSelection.prototype ) thx.js.ResumeSelection.prototype[k] = thx.js.BoundSelection.prototype[k];
+thx.js.ResumeSelection.create = function(groups) {
+	$s.push("thx.js.ResumeSelection::create");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ResumeSelection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.ResumeSelection.prototype.createSelection = function(groups) {
+	$s.push("thx.js.ResumeSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ResumeSelection(groups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.ResumeSelection.prototype.__class__ = thx.js.ResumeSelection;
+thx.js.PreEnterSelection = function(enter,choice) {
+	if( enter === $_ ) return;
+	$s.push("thx.js.PreEnterSelection::new");
+	var $spos = $s.length;
+	this.groups = enter;
+	this._choice = choice;
+	$s.pop();
+}
+thx.js.PreEnterSelection.__name__ = ["thx","js","PreEnterSelection"];
+thx.js.PreEnterSelection.prototype.groups = null;
+thx.js.PreEnterSelection.prototype._choice = null;
+thx.js.PreEnterSelection.prototype.append = function(name) {
+	$s.push("thx.js.PreEnterSelection::append");
+	var $spos = $s.length;
+	var qname = thx.xml.Namespace.qualify(name);
+	var append = function(node) {
+		$s.push("thx.js.PreEnterSelection::append@226");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElement(name);
+		node.appendChild(n);
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var appendNS = function(node) {
+		$s.push("thx.js.PreEnterSelection::append@233");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElementNS(qname.space,qname.local);
+		node.appendChild(n);
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var $tmp = this._select(null == qname?append:appendNS);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.PreEnterSelection.prototype.insert = function(name,before,beforeSelector) {
+	$s.push("thx.js.PreEnterSelection::insert");
+	var $spos = $s.length;
+	var qname = thx.xml.Namespace.qualify(name);
+	var insertDom = function(node) {
+		$s.push("thx.js.PreEnterSelection::insert@246");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElement(name), bf = null != before?before:thx.js.Dom.selectNode(node).select(beforeSelector).node();
+		node.insertBefore(n,bf);
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var insertNsDom = function(node) {
+		$s.push("thx.js.PreEnterSelection::insert@253");
+		var $spos = $s.length;
+		var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:thx.js.Dom.selectNode(node).select(beforeSelector).node();
+		node.insertBefore(n,bf);
+		$s.pop();
+		return n;
+		$s.pop();
+	};
+	var $tmp = this._select(null == qname?insertDom:insertNsDom);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.PreEnterSelection.prototype.createSelection = function(groups) {
+	$s.push("thx.js.PreEnterSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.EnterSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.PreEnterSelection.prototype._select = function(selectf) {
+	$s.push("thx.js.PreEnterSelection::_select");
+	var $spos = $s.length;
+	var subgroups = [], subgroup, subnode, node;
+	var _g = 0, _g1 = this.groups;
+	while(_g < _g1.length) {
+		var group = _g1[_g];
+		++_g;
+		subgroups.push(subgroup = new thx.js.Group([]));
+		subgroup.parentNode = group.parentNode;
+		var $it0 = group.nodes.iterator();
+		while( $it0.hasNext() ) {
+			var node1 = $it0.next();
+			if(null != node1) {
+				subgroup.nodes.push(subnode = selectf(group.parentNode));
+				subnode["__data__"] = Reflect.field(node1,"__data__");
+			} else subgroup.nodes.push(null);
+		}
+	}
+	var $tmp = this.createSelection(subgroups);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.PreEnterSelection.prototype.__class__ = thx.js.PreEnterSelection;
+thx.js.EnterSelection = function(enter,choice) {
+	if( enter === $_ ) return;
+	$s.push("thx.js.EnterSelection::new");
+	var $spos = $s.length;
+	thx.js.BoundSelection.call(this,enter);
+	this._choice = choice;
+	$s.pop();
+}
+thx.js.EnterSelection.__name__ = ["thx","js","EnterSelection"];
+thx.js.EnterSelection.__super__ = thx.js.BoundSelection;
+for(var k in thx.js.BoundSelection.prototype ) thx.js.EnterSelection.prototype[k] = thx.js.BoundSelection.prototype[k];
+thx.js.EnterSelection.prototype._choice = null;
+thx.js.EnterSelection.prototype.createSelection = function(groups) {
+	$s.push("thx.js.EnterSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.EnterSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.EnterSelection.prototype.exit = function() {
+	$s.push("thx.js.EnterSelection::exit");
+	var $spos = $s.length;
+	var $tmp = this._choice.exit();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.EnterSelection.prototype.update = function() {
+	$s.push("thx.js.EnterSelection::update");
+	var $spos = $s.length;
+	var $tmp = this._choice.update();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.EnterSelection.prototype.__class__ = thx.js.EnterSelection;
+thx.js.ExitSelection = function(exit,choice) {
+	if( exit === $_ ) return;
+	$s.push("thx.js.ExitSelection::new");
+	var $spos = $s.length;
+	thx.js.UnboundSelection.call(this,exit);
+	this._choice = choice;
+	$s.pop();
+}
+thx.js.ExitSelection.__name__ = ["thx","js","ExitSelection"];
+thx.js.ExitSelection.__super__ = thx.js.UnboundSelection;
+for(var k in thx.js.UnboundSelection.prototype ) thx.js.ExitSelection.prototype[k] = thx.js.UnboundSelection.prototype[k];
+thx.js.ExitSelection.prototype._choice = null;
+thx.js.ExitSelection.prototype.createSelection = function(groups) {
+	$s.push("thx.js.ExitSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.ExitSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.ExitSelection.prototype.enter = function() {
+	$s.push("thx.js.ExitSelection::enter");
+	var $spos = $s.length;
+	var $tmp = this._choice.enter();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.ExitSelection.prototype.update = function() {
+	$s.push("thx.js.ExitSelection::update");
+	var $spos = $s.length;
+	var $tmp = this._choice.update();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.ExitSelection.prototype.__class__ = thx.js.ExitSelection;
+thx.js.UpdateSelection = function(update,choice) {
+	if( update === $_ ) return;
+	$s.push("thx.js.UpdateSelection::new");
+	var $spos = $s.length;
+	thx.js.BoundSelection.call(this,update);
+	this._choice = choice;
+	$s.pop();
+}
+thx.js.UpdateSelection.__name__ = ["thx","js","UpdateSelection"];
+thx.js.UpdateSelection.__super__ = thx.js.BoundSelection;
+for(var k in thx.js.BoundSelection.prototype ) thx.js.UpdateSelection.prototype[k] = thx.js.BoundSelection.prototype[k];
+thx.js.UpdateSelection.prototype._choice = null;
+thx.js.UpdateSelection.prototype.createSelection = function(groups) {
+	$s.push("thx.js.UpdateSelection::createSelection");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UpdateSelection(groups,this._choice);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UpdateSelection.prototype.enter = function() {
+	$s.push("thx.js.UpdateSelection::enter");
+	var $spos = $s.length;
+	var $tmp = this._choice.enter();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UpdateSelection.prototype.exit = function() {
+	$s.push("thx.js.UpdateSelection::exit");
+	var $spos = $s.length;
+	var $tmp = this._choice.exit();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UpdateSelection.prototype.__class__ = thx.js.UpdateSelection;
 thx.culture.Culture = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__super__ = thx.culture.Info;
@@ -4192,6 +5984,10 @@ thx.cultures.EnUS.getCulture = function() {
 	$s.pop();
 }
 thx.cultures.EnUS.prototype.__class__ = thx.cultures.EnUS;
+rg.data.source.ITransform = function() { }
+rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
+rg.data.source.ITransform.prototype.transform = null;
+rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
 if(!thx.error) thx.error = {}
 thx.error.Error = function(message,params,param,pos) {
 	if( message === $_ ) return;
@@ -4233,6 +6029,142 @@ thx.error.Error.prototype.toString = function() {
 	$s.pop();
 }
 thx.error.Error.prototype.__class__ = thx.error.Error;
+rg.view.frame.TestStack = function(p) {
+	$s.push("rg.view.frame.TestStack::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.frame.TestStack.__name__ = ["rg","view","frame","TestStack"];
+rg.view.frame.TestStack.prototype.count = null;
+rg.view.frame.TestStack.prototype.setup = function() {
+	$s.push("rg.view.frame.TestStack::setup");
+	var $spos = $s.length;
+	this.count = 0;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.increment = function() {
+	$s.push("rg.view.frame.TestStack::increment");
+	var $spos = $s.length;
+	this.count++;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.item = function(layout) {
+	$s.push("rg.view.frame.TestStack::item");
+	var $spos = $s.length;
+	var i = new rg.view.frame.StackItem(layout);
+	i.change = $closure(this,"increment");
+	$s.pop();
+	return i;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.assertReflows = function(expected,pos) {
+	$s.push("rg.view.frame.TestStack::assertReflows");
+	var $spos = $s.length;
+	utest.Assert.equals(expected,this.count,null,pos);
+	this.count = 0;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testAddMany = function() {
+	$s.push("rg.view.frame.TestStack::testAddMany");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), items = [this.item(rg.view.frame.FrameLayout.Fill(0,0)),this.item(rg.view.frame.FrameLayout.Fixed(0,0,40)),this.item(rg.view.frame.FrameLayout.Fill(0,0))];
+	stack.addItems(items);
+	utest.Assert.equals(0,items[0].y,null,{ fileName : "TestStack.hx", lineNumber : 47, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(30,items[0].height,null,{ fileName : "TestStack.hx", lineNumber : 48, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(30,items[1].y,null,{ fileName : "TestStack.hx", lineNumber : 50, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(40,items[1].height,null,{ fileName : "TestStack.hx", lineNumber : 51, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(70,items[2].y,null,{ fileName : "TestStack.hx", lineNumber : 53, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(30,items[2].height,null,{ fileName : "TestStack.hx", lineNumber : 54, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testAdd = function() {
+	$s.push("rg.view.frame.TestStack::testAdd");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10));
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 61, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.y,null,{ fileName : "TestStack.hx", lineNumber : 62, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.width,null,{ fileName : "TestStack.hx", lineNumber : 63, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.height,null,{ fileName : "TestStack.hx", lineNumber : 64, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	stack.addItem(first);
+	this.assertReflows(1,{ fileName : "TestStack.hx", lineNumber : 68, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 70, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 71, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 72, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(85,first.height,null,{ fileName : "TestStack.hx", lineNumber : 73, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	var second = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20));
+	stack.addItem(second);
+	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 79, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 81, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 82, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 83, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.height,null,{ fileName : "TestStack.hx", lineNumber : 84, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,second.x,null,{ fileName : "TestStack.hx", lineNumber : 86, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(70,second.y,null,{ fileName : "TestStack.hx", lineNumber : 87, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,second.width,null,{ fileName : "TestStack.hx", lineNumber : 88, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 89, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	var third = this.item(rg.view.frame.FrameLayout.FillPercent(5,10,0.1));
+	stack.addItem(third);
+	this.assertReflows(3,{ fileName : "TestStack.hx", lineNumber : 94, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 96, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,second.x,null,{ fileName : "TestStack.hx", lineNumber : 97, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,third.x,null,{ fileName : "TestStack.hx", lineNumber : 98, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 99, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,second.width,null,{ fileName : "TestStack.hx", lineNumber : 100, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,third.width,null,{ fileName : "TestStack.hx", lineNumber : 101, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 103, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(25,first.height,null,{ fileName : "TestStack.hx", lineNumber : 104, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(45,second.y,null,{ fileName : "TestStack.hx", lineNumber : 105, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 106, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(80,third.y,null,{ fileName : "TestStack.hx", lineNumber : 107, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(10,third.height,null,{ fileName : "TestStack.hx", lineNumber : 108, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testInsert = function() {
+	$s.push("rg.view.frame.TestStack::testInsert");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10)), second = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20)), third = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20)), size;
+	stack.addItem(first);
+	stack.insertItem(0,second);
+	this.assertReflows(3,{ fileName : "TestStack.hx", lineNumber : 121, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(40,first.y,null,{ fileName : "TestStack.hx", lineNumber : 123, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(50,first.height,null,{ fileName : "TestStack.hx", lineNumber : 124, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(5,second.y,null,{ fileName : "TestStack.hx", lineNumber : 126, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 127, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	stack.insertItem(1,third);
+	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 130, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(75,first.y,null,{ fileName : "TestStack.hx", lineNumber : 132, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(15,first.height,null,{ fileName : "TestStack.hx", lineNumber : 133, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(5,second.y,null,{ fileName : "TestStack.hx", lineNumber : 135, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 136, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(40,third.y,null,{ fileName : "TestStack.hx", lineNumber : 138, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(20,third.height,null,{ fileName : "TestStack.hx", lineNumber : 139, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testHorizontal = function() {
+	$s.push("rg.view.frame.TestStack::testHorizontal");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Horizontal), first = this.item(rg.view.frame.FrameLayout.Fill(5,10));
+	stack.addItem(first);
+	utest.Assert.equals(5,first.x,null,{ fileName : "TestStack.hx", lineNumber : 149, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	utest.Assert.equals(0,first.y,null,{ fileName : "TestStack.hx", lineNumber : 150, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	utest.Assert.equals(35,first.width,null,{ fileName : "TestStack.hx", lineNumber : 151, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	utest.Assert.equals(100,first.height,null,{ fileName : "TestStack.hx", lineNumber : 152, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testFloating = function() {
+	$s.push("rg.view.frame.TestStack::testFloating");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10)), second = this.item(rg.view.frame.FrameLayout.Floating(20,25,30,35));
+	stack.addItem(first);
+	stack.addItem(second);
+	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 163, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 165, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(85,first.height,null,{ fileName : "TestStack.hx", lineNumber : 166, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(25,second.y,null,{ fileName : "TestStack.hx", lineNumber : 168, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(35,second.height,null,{ fileName : "TestStack.hx", lineNumber : 169, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.__class__ = rg.view.frame.TestStack;
 Arrays = function() { }
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
@@ -5004,6 +6936,11 @@ Arrays.compare = function(a,b) {
 Arrays.product = function(a) {
 	$s.push("Arrays::product");
 	var $spos = $s.length;
+	if(a.length == 0) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var arr = a.copy(), result = [], temp;
 	var _g = 0, _g1 = arr[0];
 	while(_g < _g1.length) {
@@ -5033,6 +6970,46 @@ Arrays.product = function(a) {
 	$s.pop();
 }
 Arrays.prototype.__class__ = Arrays;
+rg.view.frame.Frame = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.view.frame.Frame::new");
+	var $spos = $s.length;
+	this.x = this.y = this.width = this.height = 0;
+	$s.pop();
+}
+rg.view.frame.Frame.__name__ = ["rg","view","frame","Frame"];
+rg.view.frame.Frame.prototype.x = null;
+rg.view.frame.Frame.prototype.y = null;
+rg.view.frame.Frame.prototype.width = null;
+rg.view.frame.Frame.prototype.height = null;
+rg.view.frame.Frame.prototype.change = function() {
+	$s.push("rg.view.frame.Frame::change");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.frame.Frame.prototype.setLayout = function(x,y,width,height) {
+	$s.push("rg.view.frame.Frame::setLayout");
+	var $spos = $s.length;
+	if(this.x == x && this.y == y && this.width == width && this.height == height) {
+		$s.pop();
+		return;
+	}
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.change();
+	$s.pop();
+}
+rg.view.frame.Frame.prototype.toString = function() {
+	$s.push("rg.view.frame.Frame::toString");
+	var $spos = $s.length;
+	var $tmp = "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Frame.prototype.__class__ = rg.view.frame.Frame;
 rg.data.IDataSource = function() { }
 rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
 rg.data.IDataSource.prototype.onLoad = null;
@@ -5635,42 +7612,6 @@ Ints.compare = function(a,b) {
 	$s.pop();
 }
 Ints.prototype.__class__ = Ints;
-rg.controller.build.BuilderAxis = function(p) {
-	$s.push("rg.controller.build.BuilderAxis::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.build.BuilderAxis.__name__ = ["rg","controller","build","BuilderAxis"];
-rg.controller.build.BuilderAxis.prototype.build = function(type,isnumeric,samples) {
-	$s.push("rg.controller.build.BuilderAxis::build");
-	var $spos = $s.length;
-	if(null != samples) {
-		var $tmp = new rg.data.AxisOrdinal(samples);
-		$s.pop();
-		return $tmp;
-	} else if(isnumeric) {
-		var $tmp = new rg.data.AxisNumeric();
-		$s.pop();
-		return $tmp;
-	} else throw new thx.error.Error("can't build dependant variable that is not numeric or without a complete set of values",null,null,{ fileName : "BuilderAxis.hx", lineNumber : 27, className : "rg.controller.build.BuilderAxis", methodName : "build"});
-	$s.pop();
-}
-rg.controller.build.BuilderAxis.prototype.buildDiscrete = function(type,samples) {
-	$s.push("rg.controller.build.BuilderAxis::buildDiscrete");
-	var $spos = $s.length;
-	var pos;
-	if(rg.util.Properties.isTime(type)) {
-		var $tmp = new rg.data.AxisTime(rg.util.Properties.periodicity(type));
-		$s.pop();
-		return $tmp;
-	} else {
-		var $tmp = new rg.data.AxisOrdinal(samples);
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-rg.controller.build.BuilderAxis.prototype.__class__ = rg.controller.build.BuilderAxis;
 rg.data.Sources = function(sources) {
 	if( sources === $_ ) return;
 	$s.push("rg.data.Sources::new");
@@ -5705,13 +7646,21 @@ rg.data.Sources.prototype.sources = null;
 rg.data.Sources.prototype.length = null;
 rg.data.Sources.prototype.data = null;
 rg.data.Sources.prototype.count = null;
+rg.data.Sources.prototype.iterator = function() {
+	$s.push("rg.data.Sources::iterator");
+	var $spos = $s.length;
+	var $tmp = this.sources.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.data.Sources.prototype.load = function() {
 	$s.push("rg.data.Sources::load");
 	var $spos = $s.length;
 	this.count = 0;
 	this.data = [];
 	this.sources.forEach(function(source,_) {
-		$s.push("rg.data.Sources::load@31");
+		$s.push("rg.data.Sources::load@33");
 		var $spos = $s.length;
 		source.load();
 		$s.pop();
@@ -5733,7 +7682,6 @@ rg.data.Sources.prototype.complete = function() {
 	$s.pop();
 }
 rg.data.Sources.prototype.__class__ = rg.data.Sources;
-if(typeof js=='undefined') js = {}
 js.Boot = function() { }
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__unhtml = function(s) {
@@ -6059,6 +8007,73 @@ js.Boot.__init = function() {
 	$s.pop();
 }
 js.Boot.prototype.__class__ = js.Boot;
+rg.controller.factory.FactoryDataSource = function(cache,executor) {
+	if( cache === $_ ) return;
+	$s.push("rg.controller.factory.FactoryDataSource::new");
+	var $spos = $s.length;
+	this.cache = cache;
+	this.parser = new rg.data.source.rgquery.QueryParser();
+	this.executor = executor;
+	$s.pop();
+}
+rg.controller.factory.FactoryDataSource.__name__ = ["rg","controller","factory","FactoryDataSource"];
+rg.controller.factory.FactoryDataSource.prototype.cache = null;
+rg.controller.factory.FactoryDataSource.prototype.parser = null;
+rg.controller.factory.FactoryDataSource.prototype.executor = null;
+rg.controller.factory.FactoryDataSource.prototype.create = function(info) {
+	$s.push("rg.controller.factory.FactoryDataSource::create");
+	var $spos = $s.length;
+	if(null != info.namedData) {
+		var data = this.cache.get(info.namedData);
+		if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.name,{ fileName : "FactoryDataSource.hx", lineNumber : 40, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+		$s.pop();
+		return data;
+	}
+	if(null != info.data && null != info.name) {
+		var $tmp = this.createFromData(info.data);
+		$s.pop();
+		return $tmp;
+	}
+	if(null != info.path && null != info.event) {
+		var $tmp = this.createFromQuery(info.path,info.event,info.query);
+		$s.pop();
+		return $tmp;
+	}
+	throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 50, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+	$s.pop();
+}
+rg.controller.factory.FactoryDataSource.prototype.createFromData = function(data) {
+	$s.push("rg.controller.factory.FactoryDataSource::createFromData");
+	var $spos = $s.length;
+	var $tmp = new rg.data.source.DataSourceArray(data);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryDataSource.prototype.createFromQuery = function(path,event,query) {
+	$s.push("rg.controller.factory.FactoryDataSource::createFromQuery");
+	var $spos = $s.length;
+	if(null == query) query = "";
+	var $tmp = new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryDataSource.prototype.__class__ = rg.controller.factory.FactoryDataSource;
+rg.data.DataContext = function(name,data,transform) {
+	if( name === $_ ) return;
+	$s.push("rg.data.DataContext::new");
+	var $spos = $s.length;
+	this.name = name;
+	this.data = data;
+	this.transform = transform;
+	$s.pop();
+}
+rg.data.DataContext.__name__ = ["rg","data","DataContext"];
+rg.data.DataContext.prototype.name = null;
+rg.data.DataContext.prototype.data = null;
+rg.data.DataContext.prototype.transform = null;
+rg.data.DataContext.prototype.__class__ = rg.data.DataContext;
 utest.ui.common.ResultStats = function(p) {
 	if( p === $_ ) return;
 	$s.push("utest.ui.common.ResultStats::new");
@@ -6336,6 +8351,279 @@ thx.color.NamedColors.yellow = null;
 thx.color.NamedColors.yellowgreen = null;
 thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype.__class__ = thx.color.NamedColors;
+rg.view.frame.FrameLayout = { __ename__ : ["rg","view","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
+rg.view.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.frame.Stack = function(width,height,orientation) {
+	if( width === $_ ) return;
+	$s.push("rg.view.frame.Stack::new");
+	var $spos = $s.length;
+	this.orientation = null == orientation?rg.view.frame.Orientation.Vertical:orientation;
+	this.children = [];
+	this.width = width;
+	this.height = height;
+	$s.pop();
+}
+rg.view.frame.Stack.__name__ = ["rg","view","frame","Stack"];
+rg.view.frame.Stack.prototype.children = null;
+rg.view.frame.Stack.prototype.width = null;
+rg.view.frame.Stack.prototype.height = null;
+rg.view.frame.Stack.prototype.orientation = null;
+rg.view.frame.Stack.prototype.length = null;
+rg.view.frame.Stack.prototype.moreSpaceRequired = function(size) {
+	$s.push("rg.view.frame.Stack::moreSpaceRequired");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.insertItem = function(pos,child) {
+	$s.push("rg.view.frame.Stack::insertItem");
+	var $spos = $s.length;
+	if(null == child) {
+		$s.pop();
+		return this;
+	}
+	if(pos >= this.children.length) {
+		var $tmp = this.addItem(child);
+		$s.pop();
+		return $tmp;
+	}
+	if(pos < 0) pos = 0;
+	this.children.insert(pos,child);
+	var f = child;
+	f.setParent(this);
+	this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.addItem = function(child) {
+	$s.push("rg.view.frame.Stack::addItem");
+	var $spos = $s.length;
+	if(null == child) {
+		$s.pop();
+		return this;
+	}
+	this.children.push(child);
+	var f = child;
+	f.setParent(this);
+	this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.addItems = function(it) {
+	$s.push("rg.view.frame.Stack::addItems");
+	var $spos = $s.length;
+	var added = false;
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var child = $it0.next();
+		if(null == child) continue;
+		added = true;
+		this.children.push(child);
+		var f = child;
+		f.setParent(this);
+	}
+	if(added) this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.removeChild = function(child) {
+	$s.push("rg.view.frame.Stack::removeChild");
+	var $spos = $s.length;
+	if(!this.children.remove(child)) {
+		$s.pop();
+		return false;
+	}
+	var f = child;
+	f.setParent(null);
+	this.reflow();
+	$s.pop();
+	return true;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.iterator = function() {
+	$s.push("rg.view.frame.Stack::iterator");
+	var $spos = $s.length;
+	var $tmp = this.children.iterator();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.reflow = function() {
+	$s.push("rg.view.frame.Stack::reflow");
+	var $spos = $s.length;
+	var available = (function($this) {
+		var $r;
+		switch( ($this.orientation)[1] ) {
+		case 0:
+			$r = $this.height;
+			break;
+		case 1:
+			$r = $this.width;
+			break;
+		}
+		return $r;
+	}(this)), otherdimension = (function($this) {
+		var $r;
+		switch( ($this.orientation)[1] ) {
+		case 0:
+			$r = $this.width;
+			break;
+		case 1:
+			$r = $this.height;
+			break;
+		}
+		return $r;
+	}(this));
+	var required = 0, values = [], variables = [], i = 0, variablespace = 0;
+	var _g = 0, _g1 = this.children;
+	while(_g < _g1.length) {
+		var child = _g1[_g];
+		++_g;
+		var $e = (child.disposition);
+		switch( $e[1] ) {
+		case 0:
+			var max = $e[5], min = $e[4], after = $e[3], before = $e[2];
+			if(null == min) min = 0;
+			if(null == max) max = available;
+			required += min + before + after;
+			variablespace += variables[i] = max - min;
+			values.push(min + before + after);
+			break;
+		case 1:
+			var max = $e[6], min = $e[5], percent = $e[4], after = $e[3], before = $e[2];
+			var size = Math.round(percent * available);
+			if(null != min && size < min) size = min;
+			if(null != max && size > max) size = max;
+			required += size + before + after;
+			values.push(size + before + after);
+			break;
+		case 2:
+			var ratio = $e[4], after = $e[3], before = $e[2];
+			if(null == ratio) ratio = 1;
+			var size = Math.round(otherdimension * ratio);
+			required += size + before + after;
+			values.push(size + before + after);
+			break;
+		case 3:
+			var size = $e[4], after = $e[3], before = $e[2];
+			required += size + before + after;
+			values.push(size + before + after);
+			break;
+		case 4:
+			var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+			values.push(0);
+			break;
+		}
+		i++;
+	}
+	available -= required;
+	if(available > 0) {
+		i = 0;
+		var _g = 0, _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			switch( (child.disposition)[1] ) {
+			case 0:
+				var size = Math.round(variables[i] / variablespace * available);
+				values[i] += size;
+				break;
+			default:
+			}
+			i++;
+		}
+	}
+	i = 0;
+	var sizeable;
+	var pos = 0;
+	switch( (this.orientation)[1] ) {
+	case 0:
+		var _g = 0, _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			sizeable = child;
+			var $e = (child.disposition);
+			switch( $e[1] ) {
+			case 4:
+				var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+				sizeable.setLayout(x,y,w,h);
+				break;
+			case 3:
+			case 0:
+			case 1:
+			case 2:
+				var after = $e[3], before = $e[2];
+				sizeable.setLayout(0,pos + before,this.width,values[i] - after - before);
+				break;
+			}
+			pos += values[i++];
+		}
+		break;
+	case 1:
+		var _g = 0, _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			sizeable = child;
+			var $e = (child.disposition);
+			switch( $e[1] ) {
+			case 4:
+				var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+				sizeable.setLayout(x,y,w,h);
+				break;
+			case 3:
+			case 0:
+			case 1:
+			case 2:
+				var after = $e[3], before = $e[2];
+				sizeable.setLayout(pos + before,0,values[i] - after - before,this.height);
+				break;
+			}
+			pos += values[i++];
+		}
+		break;
+	}
+	if(available < 0) this.moreSpaceRequired(required);
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.getLength = function() {
+	$s.push("rg.view.frame.Stack::getLength");
+	var $spos = $s.length;
+	var $tmp = this.children.length;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.setSize = function(width,height) {
+	$s.push("rg.view.frame.Stack::setSize");
+	var $spos = $s.length;
+	if(this.width == width && this.height == height) {
+		$s.pop();
+		return this;
+	}
+	this.width = width;
+	this.height = height;
+	this.reflow();
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.toString = function() {
+	$s.push("rg.view.frame.Stack::toString");
+	var $spos = $s.length;
+	var $tmp = "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.Stack.prototype.__class__ = rg.view.frame.Stack;
 rg.data.source.rgquery.transform.TestCountTransform = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.data.source.rgquery.transform.TestCountTransform::new");
@@ -6351,10 +8639,10 @@ rg.data.source.rgquery.transform.TestCountTransform.prototype.testTransform = fu
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","count");
 	var data = 39;
-	this.assertDataPoints([{ event : "impression", properties : { count : 39.0}}],transform.transform(data),{ fileName : "TestCountTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	this.assertDataPoints([{ event : "impression", properties : { count : 39.0}, segment : null}],transform.transform(data),{ fileName : "TestCountTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
 	transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","otherunit");
 	data = 7;
-	this.assertDataPoints([{ event : "impression", properties : { otherunit : 7.0}}],transform.transform(7),{ fileName : "TestCountTransform.hx", lineNumber : 27, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	this.assertDataPoints([{ event : "impression", properties : { otherunit : 7.0}, segment : null}],transform.transform(7),{ fileName : "TestCountTransform.hx", lineNumber : 28, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTransform;
@@ -6575,33 +8863,190 @@ haxe.Stack.makeStack = function(s) {
 	$s.pop();
 }
 haxe.Stack.prototype.__class__ = haxe.Stack;
-js.Lib = function() { }
-js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
-js.Lib.document = null;
-js.Lib.window = null;
-js.Lib.alert = function(v) {
-	$s.push("js.Lib::alert");
+thx.js.AccessStyle = function(name,selection) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessStyle::new");
 	var $spos = $s.length;
-	alert(js.Boot.__string_rec(v,""));
+	thx.js.Access.call(this,selection);
+	this.name = name;
 	$s.pop();
 }
-js.Lib.eval = function(code) {
-	$s.push("js.Lib::eval");
+thx.js.AccessStyle.__name__ = ["thx","js","AccessStyle"];
+thx.js.AccessStyle.__super__ = thx.js.Access;
+for(var k in thx.js.Access.prototype ) thx.js.AccessStyle.prototype[k] = thx.js.Access.prototype[k];
+thx.js.AccessStyle.prototype.name = null;
+thx.js.AccessStyle.prototype.get = function() {
+	$s.push("thx.js.AccessStyle::get");
 	var $spos = $s.length;
-	var $tmp = eval(code);
+	var n = this.name;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessStyle::get@21");
+		var $spos = $s.length;
+		var $tmp = js.Lib.window.getComputedStyle(node,null).getPropertyValue(n);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-js.Lib.setErrorHandler = function(f) {
-	$s.push("js.Lib::setErrorHandler");
+thx.js.AccessStyle.prototype.getFloat = function() {
+	$s.push("thx.js.AccessStyle::getFloat");
 	var $spos = $s.length;
-	js.Lib.onerror = f;
+	var v = this.get();
+	if(thx.js.AccessStyle.refloat.match(v)) {
+		var $tmp = Std.parseFloat(thx.js.AccessStyle.refloat.matched(1));
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = Math.NaN;
+		$s.pop();
+		return $tmp;
+	}
 	$s.pop();
 }
-js.Lib.prototype.__class__ = js.Lib;
+thx.js.AccessStyle.prototype.remove = function() {
+	$s.push("thx.js.AccessStyle::remove");
+	var $spos = $s.length;
+	var n = this.name;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::remove@37");
+		var $spos = $s.length;
+		node.style.removeProperty(n);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessStyle.prototype.string = function(v,priority) {
+	$s.push("thx.js.AccessStyle::string");
+	var $spos = $s.length;
+	var n = this.name;
+	if(null == priority) priority = "";
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::string@45");
+		var $spos = $s.length;
+		node.style.setProperty(n,v,priority);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessStyle.prototype["float"] = function(v,priority) {
+	$s.push("thx.js.AccessStyle::float");
+	var $spos = $s.length;
+	var s = "" + v, n = this.name;
+	if(null == priority) priority = "";
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::float@54");
+		var $spos = $s.length;
+		node.style.setProperty(n,s,priority);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessStyle.prototype.color = function(v,priority) {
+	$s.push("thx.js.AccessStyle::color");
+	var $spos = $s.length;
+	var s = v.toRgbString(), n = this.name;
+	if(null == priority) priority = "";
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessStyle::color@63");
+		var $spos = $s.length;
+		node.style.setProperty(n,s,priority);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessStyle.prototype.__class__ = thx.js.AccessStyle;
+thx.js.AccessDataStyle = function(name,selection) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataStyle::new");
+	var $spos = $s.length;
+	thx.js.AccessStyle.call(this,name,selection);
+	$s.pop();
+}
+thx.js.AccessDataStyle.__name__ = ["thx","js","AccessDataStyle"];
+thx.js.AccessDataStyle.__super__ = thx.js.AccessStyle;
+for(var k in thx.js.AccessStyle.prototype ) thx.js.AccessDataStyle.prototype[k] = thx.js.AccessStyle.prototype[k];
+thx.js.AccessDataStyle.prototype.stringf = function(v,priority) {
+	$s.push("thx.js.AccessDataStyle::stringf");
+	var $spos = $s.length;
+	var n = this.name;
+	if(null == priority) priority = "";
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataStyle::stringf@80");
+		var $spos = $s.length;
+		var s = v(Reflect.field(node,"__data__"),i);
+		if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,s,priority);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataStyle.prototype.floatf = function(v,priority) {
+	$s.push("thx.js.AccessDataStyle::floatf");
+	var $spos = $s.length;
+	var n = this.name;
+	if(null == priority) priority = "";
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataStyle::floatf@94");
+		var $spos = $s.length;
+		var s = v(Reflect.field(node,"__data__"),i);
+		if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s,priority);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataStyle.prototype.colorf = function(v,priority) {
+	$s.push("thx.js.AccessDataStyle::colorf");
+	var $spos = $s.length;
+	var n = this.name;
+	if(null == priority) priority = "";
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataStyle::colorf@108");
+		var $spos = $s.length;
+		var s = v(Reflect.field(node,"__data__"),i);
+		if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s.toRgbString(),priority);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataStyle.prototype.data = function() {
+	$s.push("thx.js.AccessDataStyle::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataStyle::data@120");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataStyle.prototype.__class__ = thx.js.AccessDataStyle;
 ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -7269,181 +9714,368 @@ Floats.round = function(x,n) {
 	$s.pop();
 }
 Floats.prototype.__class__ = Floats;
-rg.controller.info.InfoData = function(o) {
-	if( o === $_ ) return;
-	$s.push("rg.controller.info.InfoData::new");
+if(!thx.math) thx.math = {}
+thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
+thx.math.EaseMode.EaseIn = ["EaseIn",0];
+thx.math.EaseMode.EaseIn.toString = $estr;
+thx.math.EaseMode.EaseIn.__enum__ = thx.math.EaseMode;
+thx.math.EaseMode.EaseOut = ["EaseOut",1];
+thx.math.EaseMode.EaseOut.toString = $estr;
+thx.math.EaseMode.EaseOut.__enum__ = thx.math.EaseMode;
+thx.math.EaseMode.EaseInEaseOut = ["EaseInEaseOut",2];
+thx.math.EaseMode.EaseInEaseOut.toString = $estr;
+thx.math.EaseMode.EaseInEaseOut.__enum__ = thx.math.EaseMode;
+thx.math.EaseMode.EaseOutEaseIn = ["EaseOutEaseIn",3];
+thx.math.EaseMode.EaseOutEaseIn.toString = $estr;
+thx.math.EaseMode.EaseOutEaseIn.__enum__ = thx.math.EaseMode;
+rg.controller.info.TestInfoDataContext = function(p) {
+	$s.push("rg.controller.info.TestInfoDataContext::new");
 	var $spos = $s.length;
-	this.sources = [];
-	rg.controller.info.Info.call(this,o);
 	$s.pop();
 }
-rg.controller.info.InfoData.__name__ = ["rg","controller","info","InfoData"];
-rg.controller.info.InfoData.__super__ = rg.controller.info.Info;
-for(var k in rg.controller.info.Info.prototype ) rg.controller.info.InfoData.prototype[k] = rg.controller.info.Info.prototype[k];
-rg.controller.info.InfoData.prototype.name = null;
-rg.controller.info.InfoData.prototype.transform = null;
-rg.controller.info.InfoData.prototype.sources = null;
-rg.controller.info.InfoData.prototype.filters = function() {
-	$s.push("rg.controller.info.InfoData::filters");
+rg.controller.info.TestInfoDataContext.__name__ = ["rg","controller","info","TestInfoDataContext"];
+rg.controller.info.TestInfoDataContext.prototype.testInfoDataContext = function() {
+	$s.push("rg.controller.info.TestInfoDataContext::testInfoDataContext");
 	var $spos = $s.length;
-	var $tmp = [{ field : "name", validator : function(v) {
-		$s.push("rg.controller.info.InfoData::filters@24");
+	var info = new rg.controller.info.InfoDataContext();
+	utest.Assert.isNull(info.name,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 18, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	utest.Assert.isNull(info.transform,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 19, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	utest.Assert.equals(0,info.sources.length,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 20, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.info.TestInfoDataContext::testInfoDataContext@24");
 		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
+		rg.controller.info.Info.feed(info,{ name : []});
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 24, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	rg.controller.info.Info.feed(info,{ name : "total"});
+	utest.Assert.equals("total",info.name,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 28, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.info.TestInfoDataContext::testInfoDataContext@32");
+		var $spos = $s.length;
+		rg.controller.info.Info.feed(info,{ transform : "doSomething"});
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 32, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	rg.controller.info.Info.feed(info,{ transform : function(_) {
+		$s.push("rg.controller.info.TestInfoDataContext::testInfoDataContext@35");
+		var $spos = $s.length;
+		$s.pop();
+		return null;
+		$s.pop();
+	}});
+	utest.Assert.isTrue(Reflect.isFunction(Reflect.field(info,"transform")),null,{ fileName : "TestInfoDataContext.hx", lineNumber : 36, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.info.TestInfoDataContext::testInfoDataContext@40");
+		var $spos = $s.length;
+		rg.controller.info.Info.feed(info,{ src : "mysource"});
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 40, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	rg.controller.info.Info.feed(info,{ src : [{ data : "A"},{ data : "B"}]});
+	utest.Assert.equals(2,info.sources.length,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 44, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	var _g = 0, _g1 = info.sources;
+	while(_g < _g1.length) {
+		var src = _g1[_g];
+		++_g;
+		utest.Assert["is"](src,rg.controller.info.InfoDataSource,null,{ fileName : "TestInfoDataContext.hx", lineNumber : 46, className : "rg.controller.info.TestInfoDataContext", methodName : "testInfoDataContext"});
+	}
+	$s.pop();
+}
+rg.controller.info.TestInfoDataContext.prototype.__class__ = rg.controller.info.TestInfoDataContext;
+rg.controller.factory.TestFactoryDataContext = function(p) {
+	$s.push("rg.controller.factory.TestFactoryDataContext::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataContext.__name__ = ["rg","controller","factory","TestFactoryDataContext"];
+rg.controller.factory.TestFactoryDataContext.prototype.testBuild = function() {
+	$s.push("rg.controller.factory.TestFactoryDataContext::testBuild");
+	var $spos = $s.length;
+	var cache = new Hash(), executor = new rg.data.source.rgquery.MockRGExecutor(), factoryDataSource = new rg.controller.factory.FactoryDataSource(cache,executor), factory = new rg.controller.factory.FactoryDataContext(factoryDataSource), info = new rg.controller.info.InfoDataContext(), dc;
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.factory.TestFactoryDataContext::testBuild@29");
+		var $spos = $s.length;
+		dc = factory.create(info);
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestFactoryDataContext.hx", lineNumber : 29, className : "rg.controller.factory.TestFactoryDataContext", methodName : "testBuild"});
+	rg.controller.info.Info.feed(info,{ name : "total", src : [{ event : ".sale", query : ".amount * .#time:day", path : "/seller/1"},{ event : ".sale", query : ".amount * .#time:day", path : "/seller/2"}]});
+	dc = factory.create(info);
+	utest.Assert.notNull(dc,null,{ fileName : "TestFactoryDataContext.hx", lineNumber : 42, className : "rg.controller.factory.TestFactoryDataContext", methodName : "testBuild"});
+	utest.Assert.equals("total",dc.name,null,{ fileName : "TestFactoryDataContext.hx", lineNumber : 43, className : "rg.controller.factory.TestFactoryDataContext", methodName : "testBuild"});
+	utest.Assert.isNull(dc.transform,null,{ fileName : "TestFactoryDataContext.hx", lineNumber : 44, className : "rg.controller.factory.TestFactoryDataContext", methodName : "testBuild"});
+	utest.Assert.equals(2,dc.data.sources.length,null,{ fileName : "TestFactoryDataContext.hx", lineNumber : 46, className : "rg.controller.factory.TestFactoryDataContext", methodName : "testBuild"});
+	rg.controller.info.Info.feed(info,{ transform : function() {
+		$s.push("rg.controller.factory.TestFactoryDataContext::testBuild@48");
+		var $spos = $s.length;
+		var $tmp = [];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null},{ field : "transform", validator : function(v) {
-		$s.push("rg.controller.info.InfoData::filters@28");
-		var $spos = $s.length;
-		var $tmp = null == v || Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "src", validator : function(v) {
-		$s.push("rg.controller.info.InfoData::filters@32");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoData::filters@32@32");
-			var $spos = $s.length;
-			var $tmp = Reflect.isObject(v1) && null == Type.getClass(v1);
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		});
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoData::filters@33");
-		var $spos = $s.length;
-		var $tmp = [{ field : "sources", value : v.map(function(v1,i) {
-			$s.push("rg.controller.info.InfoData::filters@33@33");
-			var $spos = $s.length;
-			var $tmp = new rg.controller.info.InfoDataSource(v1);
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}}];
+	}});
+	dc = factory.create(info);
+	utest.Assert.notNull(dc.transform,null,{ fileName : "TestFactoryDataContext.hx", lineNumber : 50, className : "rg.controller.factory.TestFactoryDataContext", methodName : "testBuild"});
+	utest.Assert.isTrue(Reflect.isFunction(dc.transform),null,{ fileName : "TestFactoryDataContext.hx", lineNumber : 51, className : "rg.controller.factory.TestFactoryDataContext", methodName : "testBuild"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataContext.prototype.__class__ = rg.controller.factory.TestFactoryDataContext;
+thx.js.AccessClassed = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.AccessClassed::new");
+	var $spos = $s.length;
+	thx.js.Access.call(this,selection);
+	$s.pop();
+}
+thx.js.AccessClassed.__name__ = ["thx","js","AccessClassed"];
+thx.js.AccessClassed.__super__ = thx.js.Access;
+for(var k in thx.js.Access.prototype ) thx.js.AccessClassed.prototype[k] = thx.js.Access.prototype[k];
+thx.js.AccessClassed.getRe = function(name) {
+	$s.push("thx.js.AccessClassed::getRe");
+	var $spos = $s.length;
+	var $tmp = new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.controller.info.InfoData.prototype.__class__ = rg.controller.info.InfoData;
-utest.Runner = function(p) {
-	if( p === $_ ) return;
-	$s.push("utest.Runner::new");
+thx.js.AccessClassed.prototype.exists = function(name) {
+	$s.push("thx.js.AccessClassed::exists");
 	var $spos = $s.length;
-	this.fixtures = new Array();
-	this.onProgress = new utest.Dispatcher();
-	this.onStart = new utest.Dispatcher();
-	this.onComplete = new utest.Dispatcher();
-	this.length = 0;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessClassed::exists@22");
+		var $spos = $s.length;
+		var list = node.classList;
+		if(null != list) {
+			var $tmp = list.contains(name);
+			$s.pop();
+			return $tmp;
+		}
+		var cls = node.className;
+		var re = new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
+		var bv = cls.baseVal;
+		var $tmp = re.match(null != bv?bv:cls);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-utest.Runner.__name__ = ["utest","Runner"];
-utest.Runner.prototype.fixtures = null;
-utest.Runner.prototype.onProgress = null;
-utest.Runner.prototype.onStart = null;
-utest.Runner.prototype.onComplete = null;
-utest.Runner.prototype.length = null;
-utest.Runner.prototype.addCase = function(test,setup,teardown,prefix,pattern) {
-	$s.push("utest.Runner::addCase");
+thx.js.AccessClassed.prototype.remove = function(name) {
+	$s.push("thx.js.AccessClassed::remove");
 	var $spos = $s.length;
-	if(prefix == null) prefix = "test";
-	if(teardown == null) teardown = "teardown";
-	if(setup == null) setup = "setup";
-	if(!Reflect.isObject(test)) throw "can't add a null object as a test case";
-	if(!this.isMethod(test,setup)) setup = null;
-	if(!this.isMethod(test,teardown)) teardown = null;
-	var fields = Type.getInstanceFields(Type.getClass(test));
-	if(pattern == null) {
-		var _g = 0;
-		while(_g < fields.length) {
-			var field = fields[_g];
-			++_g;
-			if(!StringTools.startsWith(field,prefix)) continue;
-			if(!this.isMethod(test,field)) continue;
-			this.addFixture(new utest.TestFixture(test,field,setup,teardown));
-		}
+	this.selection.eachNode((function(f,a1) {
+		$s.push("thx.js.AccessClassed::remove@35");
+		var $spos = $s.length;
+		var $tmp = function(a2,a3) {
+			$s.push("thx.js.AccessClassed::remove@35@35");
+			var $spos = $s.length;
+			var $tmp = f(a1,a2,a3);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	})($closure(this,"_remove"),name));
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessClassed.prototype._remove = function(name,node,i) {
+	$s.push("thx.js.AccessClassed::_remove");
+	var $spos = $s.length;
+	var list = node.classList;
+	if(null != list) {
+		list.remove(name);
+		$s.pop();
+		return;
+	}
+	var cls = node.className, clsb = null != cls.baseVal, clsv = clsb?cls.baseVal:cls;
+	var re = new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
+	clsv = Strings.collapse(re.replace(clsv," "));
+	if(clsb) cls.baseVal = clsv; else node.className = clsv;
+	$s.pop();
+}
+thx.js.AccessClassed.prototype.add = function(name) {
+	$s.push("thx.js.AccessClassed::add");
+	var $spos = $s.length;
+	this.selection.eachNode((function(f,a1) {
+		$s.push("thx.js.AccessClassed::add@64");
+		var $spos = $s.length;
+		var $tmp = function(a2,a3) {
+			$s.push("thx.js.AccessClassed::add@64@64");
+			var $spos = $s.length;
+			var $tmp = f(a1,a2,a3);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	})($closure(this,"_add"),name));
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessClassed.prototype._add = function(name,node,i) {
+	$s.push("thx.js.AccessClassed::_add");
+	var $spos = $s.length;
+	var list = node.classList;
+	if(null != list) {
+		list.add(name);
+		$s.pop();
+		return;
+	}
+	var cls = node.className, clsb = null != cls.baseVal, clsv = clsb?cls.baseVal:cls;
+	var re = new EReg("(^|\\s+)" + thx.text.ERegs.escapeERegChars(name) + "(\\s+|$)","g");
+	if(!re.match(clsv)) {
+		clsv = Strings.collapse(clsv + " " + name);
+		if(clsb) cls.baseVal = clsv; else node.className = clsv;
+	}
+	$s.pop();
+}
+thx.js.AccessClassed.prototype.get = function() {
+	$s.push("thx.js.AccessClassed::get");
+	var $spos = $s.length;
+	var node = this.selection.node(), list = node.classList;
+	if(null != list) {
+		var $tmp = Ints.range(list.length).map(function(_,i) {
+			$s.push("thx.js.AccessClassed::get@98");
+			var $spos = $s.length;
+			var $tmp = list.item(i);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}).join(" ");
+		$s.pop();
+		return $tmp;
+	}
+	var cls = node.className, clsb = null != cls.baseVal;
+	if(clsb) {
+		var $tmp = cls.baseVal;
+		$s.pop();
+		return $tmp;
 	} else {
-		var _g = 0;
-		while(_g < fields.length) {
-			var field = fields[_g];
-			++_g;
-			if(!pattern.match(field)) continue;
-			if(!this.isMethod(test,field)) continue;
-			this.addFixture(new utest.TestFixture(test,field,setup,teardown));
-		}
+		$s.pop();
+		return cls;
 	}
 	$s.pop();
 }
-utest.Runner.prototype.addFixture = function(fixture) {
-	$s.push("utest.Runner::addFixture");
+thx.js.AccessClassed.prototype.__class__ = thx.js.AccessClassed;
+thx.js.AccessDataClassed = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.AccessDataClassed::new");
 	var $spos = $s.length;
-	this.fixtures.push(fixture);
-	this.length++;
+	thx.js.AccessClassed.call(this,selection);
 	$s.pop();
 }
-utest.Runner.prototype.getFixture = function(index) {
-	$s.push("utest.Runner::getFixture");
+thx.js.AccessDataClassed.__name__ = ["thx","js","AccessDataClassed"];
+thx.js.AccessDataClassed.__super__ = thx.js.AccessClassed;
+for(var k in thx.js.AccessClassed.prototype ) thx.js.AccessDataClassed.prototype[k] = thx.js.AccessClassed.prototype[k];
+thx.js.AccessDataClassed.prototype.removef = function(v) {
+	$s.push("thx.js.AccessDataClassed::removef");
 	var $spos = $s.length;
-	var $tmp = this.fixtures[index];
+	var f = $closure(this,"_remove");
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataClassed::removef@126");
+		var $spos = $s.length;
+		var c = v(Reflect.field(node,"__data__"),i);
+		if(null != c) f(c,node,i);
+		$s.pop();
+	});
+	var $tmp = this.selection;
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-utest.Runner.prototype.isMethod = function(test,name) {
-	$s.push("utest.Runner::isMethod");
+thx.js.AccessDataClassed.prototype.addf = function(v) {
+	$s.push("thx.js.AccessDataClassed::addf");
 	var $spos = $s.length;
-	try {
-		var $tmp = Reflect.isFunction(Reflect.field(test,name));
+	var f = $closure(this,"_add");
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataClassed::addf@137");
+		var $spos = $s.length;
+		var c = v(Reflect.field(node,"__data__"),i);
+		if(null != c) f(c,node,i);
 		$s.pop();
-		return $tmp;
-	} catch( e ) {
-		$e = [];
-		while($s.length >= $spos) $e.unshift($s.pop());
-		$s.push($e[0]);
-		$s.pop();
-		return false;
-	}
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-utest.Runner.prototype.pos = null;
-utest.Runner.prototype.run = function() {
-	$s.push("utest.Runner::run");
+thx.js.AccessDataClassed.prototype.__class__ = thx.js.AccessDataClassed;
+rg.controller.factory.TestFactoryVariableIndependent = function(p) {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::new");
 	var $spos = $s.length;
-	this.pos = 0;
-	this.onStart.dispatch(this);
-	this.runNext();
 	$s.pop();
 }
-utest.Runner.prototype.runNext = function() {
-	$s.push("utest.Runner::runNext");
+rg.controller.factory.TestFactoryVariableIndependent.__name__ = ["rg","controller","factory","TestFactoryVariableIndependent"];
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testIncompleteInfo = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testIncompleteInfo");
 	var $spos = $s.length;
-	if(this.fixtures.length > this.pos) this.runFixture(this.fixtures[this.pos++]); else this.onComplete.dispatch(this);
+	utest.Assert.isNull(new rg.controller.factory.FactoryVariableIndependent().create(new rg.controller.info.InfoVariable()),null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 19, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testIncompleteInfo"});
 	$s.pop();
 }
-utest.Runner.prototype.runFixture = function(fixture) {
-	$s.push("utest.Runner::runFixture");
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testSimpleParameters = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testSimpleParameters");
 	var $spos = $s.length;
-	var handler = new utest.TestHandler(fixture);
-	handler.onComplete.add($closure(this,"testComplete"));
-	handler.execute();
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
+	utest.Assert.notNull(variable,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 30, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.same(1.0,variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 31, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.same(10.0,variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 32, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 33, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".impression"});
+	variable = factory.create(info);
+	utest.Assert.isNull(variable.min,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 39, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.isNull(variable.max,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 40, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 41, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	info = new rg.controller.info.InfoVariable();
+	variable = factory.create(info);
+	utest.Assert.isNull(variable,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 45, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
 	$s.pop();
 }
-utest.Runner.prototype.testComplete = function(h) {
-	$s.push("utest.Runner::testComplete");
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testAxisType = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testAxisType");
 	var $spos = $s.length;
-	this.onProgress.dispatch({ result : utest.TestResult.ofHandler(h), done : this.pos, totals : this.length});
-	this.runNext();
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
+	utest.Assert["is"](variable.axis,rg.data.AxisOrdinal,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 56, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testAxisType"});
 	$s.pop();
 }
-utest.Runner.prototype.__class__ = utest.Runner;
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testValues = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testValues");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], values : [1.0,5.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
+	utest.Assert.same([1.0,5.0,10.0],variable.range(),null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 68, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testValues"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testTimeWithStringView = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testTimeWithStringView");
+	var $spos = $s.length;
+	var min = "2011-01-01", max = "2011-02-02", info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : [min,max]}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
+	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 81, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithStringView"});
+	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 82, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithStringView"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testTimeWithFloatView = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testTimeWithFloatView");
+	var $spos = $s.length;
+	var min = "2011-01-01", max = "2011-02-02", info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : [Date.fromString(min).getTime(),Date.fromString(max).getTime()]}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
+	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 95, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithFloatView"});
+	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 96, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithFloatView"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testTimeWithDateView = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testTimeWithDateView");
+	var $spos = $s.length;
+	var min = "2011-01-01", max = "2011-02-02", info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : [Date.fromString(min),Date.fromString(max)]}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
+	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 109, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithDateView"});
+	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 110, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithDateView"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableIndependent.prototype.__class__ = rg.controller.factory.TestFactoryVariableIndependent;
 Types = function() { }
 Types.__name__ = ["Types"];
 Types.className = function(o) {
@@ -7613,6 +10245,116 @@ Types.isPrimitive = function(v) {
 	$s.pop();
 }
 Types.prototype.__class__ = Types;
+utest.Runner = function(p) {
+	if( p === $_ ) return;
+	$s.push("utest.Runner::new");
+	var $spos = $s.length;
+	this.fixtures = new Array();
+	this.onProgress = new utest.Dispatcher();
+	this.onStart = new utest.Dispatcher();
+	this.onComplete = new utest.Dispatcher();
+	this.length = 0;
+	$s.pop();
+}
+utest.Runner.__name__ = ["utest","Runner"];
+utest.Runner.prototype.fixtures = null;
+utest.Runner.prototype.onProgress = null;
+utest.Runner.prototype.onStart = null;
+utest.Runner.prototype.onComplete = null;
+utest.Runner.prototype.length = null;
+utest.Runner.prototype.addCase = function(test,setup,teardown,prefix,pattern) {
+	$s.push("utest.Runner::addCase");
+	var $spos = $s.length;
+	if(prefix == null) prefix = "test";
+	if(teardown == null) teardown = "teardown";
+	if(setup == null) setup = "setup";
+	if(!Reflect.isObject(test)) throw "can't add a null object as a test case";
+	if(!this.isMethod(test,setup)) setup = null;
+	if(!this.isMethod(test,teardown)) teardown = null;
+	var fields = Type.getInstanceFields(Type.getClass(test));
+	if(pattern == null) {
+		var _g = 0;
+		while(_g < fields.length) {
+			var field = fields[_g];
+			++_g;
+			if(!StringTools.startsWith(field,prefix)) continue;
+			if(!this.isMethod(test,field)) continue;
+			this.addFixture(new utest.TestFixture(test,field,setup,teardown));
+		}
+	} else {
+		var _g = 0;
+		while(_g < fields.length) {
+			var field = fields[_g];
+			++_g;
+			if(!pattern.match(field)) continue;
+			if(!this.isMethod(test,field)) continue;
+			this.addFixture(new utest.TestFixture(test,field,setup,teardown));
+		}
+	}
+	$s.pop();
+}
+utest.Runner.prototype.addFixture = function(fixture) {
+	$s.push("utest.Runner::addFixture");
+	var $spos = $s.length;
+	this.fixtures.push(fixture);
+	this.length++;
+	$s.pop();
+}
+utest.Runner.prototype.getFixture = function(index) {
+	$s.push("utest.Runner::getFixture");
+	var $spos = $s.length;
+	var $tmp = this.fixtures[index];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+utest.Runner.prototype.isMethod = function(test,name) {
+	$s.push("utest.Runner::isMethod");
+	var $spos = $s.length;
+	try {
+		var $tmp = Reflect.isFunction(Reflect.field(test,name));
+		$s.pop();
+		return $tmp;
+	} catch( e ) {
+		$e = [];
+		while($s.length >= $spos) $e.unshift($s.pop());
+		$s.push($e[0]);
+		$s.pop();
+		return false;
+	}
+	$s.pop();
+}
+utest.Runner.prototype.pos = null;
+utest.Runner.prototype.run = function() {
+	$s.push("utest.Runner::run");
+	var $spos = $s.length;
+	this.pos = 0;
+	this.onStart.dispatch(this);
+	this.runNext();
+	$s.pop();
+}
+utest.Runner.prototype.runNext = function() {
+	$s.push("utest.Runner::runNext");
+	var $spos = $s.length;
+	if(this.fixtures.length > this.pos) this.runFixture(this.fixtures[this.pos++]); else this.onComplete.dispatch(this);
+	$s.pop();
+}
+utest.Runner.prototype.runFixture = function(fixture) {
+	$s.push("utest.Runner::runFixture");
+	var $spos = $s.length;
+	var handler = new utest.TestHandler(fixture);
+	handler.onComplete.add($closure(this,"testComplete"));
+	handler.execute();
+	$s.pop();
+}
+utest.Runner.prototype.testComplete = function(h) {
+	$s.push("utest.Runner::testComplete");
+	var $spos = $s.length;
+	this.onProgress.dispatch({ result : utest.TestResult.ofHandler(h), done : this.pos, totals : this.length});
+	this.runNext();
+	$s.pop();
+}
+utest.Runner.prototype.__class__ = utest.Runner;
 rg.data.source.TestRGDataSource = function(p) {
 	$s.push("rg.data.source.TestRGDataSource::new");
 	var $spos = $s.length;
@@ -7638,68 +10380,73 @@ rg.data.source.TestRGDataSource.prototype.assert = function(a,b,pos) {
 rg.data.source.TestRGDataSource.prototype.testEventCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testEventCount");
 	var $spos = $s.length;
-	this.assert([{ method : "propertyCount", args : ["/",{ property : "click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property("")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 30, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
+	this.assert([{ method : "propertyCount", args : ["/",{ property : "click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 30, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
 	$s.pop();
 }
-rg.data.source.TestRGDataSource.prototype.testPropertyCount = function() {
-	$s.push("rg.data.source.TestRGDataSource::testPropertyCount");
+rg.data.source.TestRGDataSource.prototype.testPropertyValuesCount = function() {
+	$s.push("rg.data.source.TestRGDataSource::testPropertyValuesCount");
 	var $spos = $s.length;
-	this.assert([{ method : "propertyCount", args : ["/",{ property : "click.unique"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 41, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyCount"});
+	this.assert([{ method : "intersect", args : ["/",{ periodicity : "eternity", properties : [{ property : "click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 41, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testEventSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testEventSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "propertySeries", args : ["/",{ property : "click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 52, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
+	this.assert([{ method : "propertySeries", args : ["/",{ property : "click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 59, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
 	$s.pop();
 }
-rg.data.source.TestRGDataSource.prototype.testPropertySeries = function() {
-	$s.push("rg.data.source.TestRGDataSource::testPropertySeries");
+rg.data.source.TestRGDataSource.prototype.testPropertyValuesSeries = function() {
+	$s.push("rg.data.source.TestRGDataSource::testPropertyValuesSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "propertySeries", args : ["/",{ property : "click.unique", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 63, className : "rg.data.source.TestRGDataSource", methodName : "testPropertySeries"});
+	this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : "click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 70, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValueCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValueCount");
 	var $spos = $s.length;
-	this.assert([{ method : "propertyValueCount", args : ["/",{ property : "click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 74, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
+	this.assert([{ method : "propertyValueCount", args : ["/",{ property : "click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 88, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValueSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValueSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "propertyValueSeries", args : ["/",{ property : "click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 85, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
+	this.assert([{ method : "propertyValueSeries", args : ["/",{ property : "click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 99, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testSearchValueCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testSearchValueCount");
 	var $spos = $s.length;
-	this.assert([{ method : "searchCount", args : ["/",{ where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property("")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 96, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
+	this.assert([{ method : "searchCount", args : ["/",{ where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 110, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testSearchSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testSearchSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(""),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 110, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
+	this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 124, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testIntersectOverTime = function() {
 	$s.push("rg.data.source.TestRGDataSource::testIntersectOverTime");
 	var $spos = $s.length;
-	this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : "click.gender", limit : 5, order : "descending"},{ property : "click.platform", limit : 7, order : "ascending"},{ property : "click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 124, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
+	this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : "click.gender", limit : 5, order : "descending"},{ property : "click.platform", limit : 7, order : "ascending"},{ property : "click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 138, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testNormalization = function() {
 	$s.push("rg.data.source.TestRGDataSource::testNormalization");
 	var $spos = $s.length;
-	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 154, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 159, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 164, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 169, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 181, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 169, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 174, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 179, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 184, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 196, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.__class__ = rg.data.source.TestRGDataSource;
+if(typeof hxevents=='undefined') hxevents = {}
+hxevents.EventException = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
+hxevents.EventException.StopPropagation = ["StopPropagation",0];
+hxevents.EventException.StopPropagation.toString = $estr;
+hxevents.EventException.StopPropagation.__enum__ = hxevents.EventException;
 Reflect = function() { }
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
@@ -7874,11 +10621,6 @@ Reflect.makeVarArgs = function(f) {
 	$s.pop();
 }
 Reflect.prototype.__class__ = Reflect;
-if(typeof hxevents=='undefined') hxevents = {}
-hxevents.EventException = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
-hxevents.EventException.StopPropagation = ["StopPropagation",0];
-hxevents.EventException.StopPropagation.toString = $estr;
-hxevents.EventException.StopPropagation.__enum__ = hxevents.EventException;
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	if( months === $_ ) return;
@@ -7998,22 +10740,27 @@ TestAll.__name__ = ["TestAll"];
 TestAll.addTest = function(runner) {
 	$s.push("TestAll::addTest");
 	var $spos = $s.length;
-	runner.addCase(new rg.controller.build.TestBuilderAxis());
-	runner.addCase(new rg.controller.build.TestBuilderDataContext());
-	runner.addCase(new rg.controller.build.TestBuilderDataSource());
-	runner.addCase(new rg.controller.build.TestBuilderVariableDependent());
-	runner.addCase(new rg.controller.build.TestBuilderVariableIndependent());
-	runner.addCase(new rg.controller.info.TestInfoData());
+	runner.addCase(new rg.controller.factory.TestFactoryAxis());
+	runner.addCase(new rg.controller.factory.TestFactoryDataContext());
+	runner.addCase(new rg.controller.factory.TestFactoryDataSource());
+	runner.addCase(new rg.controller.factory.TestFactoryVariableContexts());
+	runner.addCase(new rg.controller.factory.TestFactoryVariableDependent());
+	runner.addCase(new rg.controller.factory.TestFactoryVariableIndependent());
+	runner.addCase(new rg.controller.info.TestInfoDataContext());
 	runner.addCase(new rg.controller.info.TestInfoDataSource());
-	runner.addCase(new rg.controller.info.TestInfoOption());
+	runner.addCase(new rg.controller.info.TestInfoSvgOption());
 	runner.addCase(new rg.controller.info.TestInfoVariable());
+	runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
 	runner.addCase(new rg.data.TestAxisOrdinal());
-	runner.addCase(new rg.data.TestTransform());
+	runner.addCase(new rg.data.TestDataProcessor());
 	runner.addCase(new rg.data.source.TestRGDataSource());
 	runner.addCase(new rg.data.source.rgquery.TestQueryParser());
 	runner.addCase(new rg.data.source.rgquery.transform.TestCountTimeIntersectTransform());
 	runner.addCase(new rg.data.source.rgquery.transform.TestCountTimeSeriesTransform());
 	runner.addCase(new rg.data.source.rgquery.transform.TestCountTransform());
+	runner.addCase(new rg.util.TestProperties());
+	runner.addCase(new rg.view.frame.TestStack());
+	runner.addCase(new rg.view.svg.panel.TestSpace());
 	$s.pop();
 }
 TestAll.main = function() {
@@ -8026,39 +10773,33 @@ TestAll.main = function() {
 	$s.pop();
 }
 TestAll.prototype.__class__ = TestAll;
-rg.controller.info.InfoVariable = function(o) {
-	if( o === $_ ) return;
+rg.controller.info.InfoVariable = function(p) {
 	$s.push("rg.controller.info.InfoVariable::new");
 	var $spos = $s.length;
-	rg.controller.info.Info.call(this,o);
 	$s.pop();
 }
 rg.controller.info.InfoVariable.__name__ = ["rg","controller","info","InfoVariable"];
 rg.controller.info.InfoVariable.__super__ = rg.controller.info.Info;
 for(var k in rg.controller.info.Info.prototype ) rg.controller.info.InfoVariable.prototype[k] = rg.controller.info.Info.prototype[k];
-rg.controller.info.InfoVariable.prototype.type = null;
-rg.controller.info.InfoVariable.prototype.min = null;
-rg.controller.info.InfoVariable.prototype.max = null;
-rg.controller.info.InfoVariable.prototype.values = null;
-rg.controller.info.InfoVariable.prototype.filters = function() {
+rg.controller.info.InfoVariable.filters = function() {
 	$s.push("rg.controller.info.InfoVariable::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "type", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@19");
+		$s.push("rg.controller.info.InfoVariable::filters@20");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "view", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@23");
+		$s.push("rg.controller.info.InfoVariable::filters@24");
 		var $spos = $s.length;
-		var $tmp = Std["is"](v,Array) && (v[0] == null || Types.isPrimitive(v[0])) && (v[1] == null || Types.isPrimitive(v[1]));
+		var $tmp = Std["is"](v,Array) && rg.controller.info.InfoVariable.testViewValue(v[0]) && rg.controller.info.InfoVariable.testViewValue(v[1]);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@24");
+		$s.push("rg.controller.info.InfoVariable::filters@25");
 		var $spos = $s.length;
 		var result = [];
 		if(null != v[0]) result.push({ field : "min", value : v[0]});
@@ -8067,10 +10808,10 @@ rg.controller.info.InfoVariable.prototype.filters = function() {
 		return result;
 		$s.pop();
 	}},{ field : "values", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@34");
+		$s.push("rg.controller.info.InfoVariable::filters@35");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoVariable::filters@34@34");
+			$s.push("rg.controller.info.InfoVariable::filters@35@35");
 			var $spos = $s.length;
 			var $tmp = Types.isPrimitive(v1);
 			$s.pop();
@@ -8085,6 +10826,18 @@ rg.controller.info.InfoVariable.prototype.filters = function() {
 	return $tmp;
 	$s.pop();
 }
+rg.controller.info.InfoVariable.testViewValue = function(v) {
+	$s.push("rg.controller.info.InfoVariable::testViewValue");
+	var $spos = $s.length;
+	var $tmp = v == null || Types.isPrimitive(v) || Std["is"](v,Date);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoVariable.prototype.type = null;
+rg.controller.info.InfoVariable.prototype.min = null;
+rg.controller.info.InfoVariable.prototype.max = null;
+rg.controller.info.InfoVariable.prototype.values = null;
 rg.controller.info.InfoVariable.prototype.__class__ = rg.controller.info.InfoVariable;
 if(!thx.date) thx.date = {}
 thx.date.DateParser = function() { }
@@ -8364,58 +11117,25 @@ thx.date.DateParser.plusPm = function(s) {
 	$s.pop();
 }
 thx.date.DateParser.prototype.__class__ = thx.date.DateParser;
-rg.controller.info.TestInfoData = function(p) {
-	$s.push("rg.controller.info.TestInfoData::new");
+if(!thx.text) thx.text = {}
+thx.text.ERegs = function() { }
+thx.text.ERegs.__name__ = ["thx","text","ERegs"];
+thx.text.ERegs.escapeERegChars = function(s) {
+	$s.push("thx.text.ERegs::escapeERegChars");
 	var $spos = $s.length;
+	var $tmp = thx.text.ERegs._escapePattern.customReplace(s,function(e) {
+		$s.push("thx.text.ERegs::escapeERegChars@8");
+		var $spos = $s.length;
+		var $tmp = "\\" + e.matched(0);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
-rg.controller.info.TestInfoData.__name__ = ["rg","controller","info","TestInfoData"];
-rg.controller.info.TestInfoData.prototype.testDataInfo = function() {
-	$s.push("rg.controller.info.TestInfoData::testDataInfo");
-	var $spos = $s.length;
-	var info = new rg.controller.info.InfoData();
-	utest.Assert.isNull(info.name,null,{ fileName : "TestInfoData.hx", lineNumber : 17, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	utest.Assert.isNull(info.transform,null,{ fileName : "TestInfoData.hx", lineNumber : 18, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	utest.Assert.equals(0,info.sources.length,null,{ fileName : "TestInfoData.hx", lineNumber : 19, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoData::testDataInfo@23");
-		var $spos = $s.length;
-		info.feedOptions({ name : []});
-		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoData.hx", lineNumber : 23, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	info.feedOptions({ name : "total"});
-	utest.Assert.equals("total",info.name,null,{ fileName : "TestInfoData.hx", lineNumber : 27, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoData::testDataInfo@31");
-		var $spos = $s.length;
-		info.feedOptions({ transform : "doSomething"});
-		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoData.hx", lineNumber : 31, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	info.feedOptions({ transform : function(_) {
-		$s.push("rg.controller.info.TestInfoData::testDataInfo@34");
-		var $spos = $s.length;
-		$s.pop();
-		return null;
-		$s.pop();
-	}});
-	utest.Assert.isTrue(Reflect.isFunction(Reflect.field(info,"transform")),null,{ fileName : "TestInfoData.hx", lineNumber : 35, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoData::testDataInfo@39");
-		var $spos = $s.length;
-		info.feedOptions({ src : "mysource"});
-		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoData.hx", lineNumber : 39, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	info.feedOptions({ src : [{ data : "A"},{ data : "B"}]});
-	utest.Assert.equals(2,info.sources.length,null,{ fileName : "TestInfoData.hx", lineNumber : 43, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	var _g = 0, _g1 = info.sources;
-	while(_g < _g1.length) {
-		var src = _g1[_g];
-		++_g;
-		utest.Assert["is"](src,rg.controller.info.InfoDataSource,null,{ fileName : "TestInfoData.hx", lineNumber : 46, className : "rg.controller.info.TestInfoData", methodName : "testDataInfo"});
-	}
-	$s.pop();
-}
-rg.controller.info.TestInfoData.prototype.__class__ = rg.controller.info.TestInfoData;
+thx.text.ERegs.prototype.__class__ = thx.text.ERegs;
 thx.culture.Language = function() { }
 thx.culture.Language.__name__ = ["thx","culture","Language"];
 thx.culture.Language.__super__ = thx.culture.Info;
@@ -8687,18 +11407,110 @@ utest.ui.text.PrintReport.prototype._trace = function(s) {
 	$s.pop();
 }
 utest.ui.text.PrintReport.prototype.__class__ = utest.ui.text.PrintReport;
-rg.controller.build.TestBuilderDataContext = function(p) {
-	$s.push("rg.controller.build.TestBuilderDataContext::new");
+rg.controller.factory.TestFactoryDataSource = function(p) {
+	$s.push("rg.controller.factory.TestFactoryDataSource::new");
 	var $spos = $s.length;
 	$s.pop();
 }
-rg.controller.build.TestBuilderDataContext.__name__ = ["rg","controller","build","TestBuilderDataContext"];
-rg.controller.build.TestBuilderDataContext.prototype.test = function() {
-	$s.push("rg.controller.build.TestBuilderDataContext::test");
+rg.controller.factory.TestFactoryDataSource.__name__ = ["rg","controller","factory","TestFactoryDataSource"];
+rg.controller.factory.TestFactoryDataSource.prototype.executor = null;
+rg.controller.factory.TestFactoryDataSource.prototype.cache = null;
+rg.controller.factory.TestFactoryDataSource.prototype.factory = null;
+rg.controller.factory.TestFactoryDataSource.prototype.testIncompleteRGQuery = function() {
+	$s.push("rg.controller.factory.TestFactoryDataSource::testIncompleteRGQuery");
 	var $spos = $s.length;
+	var info = new rg.controller.info.InfoDataSource(), b = this.factory;
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.factory.TestFactoryDataSource::testIncompleteRGQuery@29");
+		var $spos = $s.length;
+		b.create(info);
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 29, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testIncompleteRGQuery"});
+	rg.controller.info.Info.feed(info,{ query : ""});
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.factory.TestFactoryDataSource::testIncompleteRGQuery@31");
+		var $spos = $s.length;
+		b.create(info);
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 31, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testIncompleteRGQuery"});
+	rg.controller.info.Info.feed(info,{ path : "/"});
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.factory.TestFactoryDataSource::testIncompleteRGQuery@33");
+		var $spos = $s.length;
+		b.create(info);
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 33, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testIncompleteRGQuery"});
+	rg.controller.info.Info.feed(info,{ event : "click"});
+	utest.Assert.notNull(b.create(info),null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 35, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testIncompleteRGQuery"});
 	$s.pop();
 }
-rg.controller.build.TestBuilderDataContext.prototype.__class__ = rg.controller.build.TestBuilderDataContext;
+rg.controller.factory.TestFactoryDataSource.prototype.testRGQueryWithEmptyQuery = function() {
+	$s.push("rg.controller.factory.TestFactoryDataSource::testRGQueryWithEmptyQuery");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ path : "/", event : "click"}), ds = this.factory.create(info);
+	utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 43, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
+	utest.Assert["is"](ds,rg.data.source.DataSourceReportGrid,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 44, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
+	var r = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
+	utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 46, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
+	utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 47, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
+	utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 48, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataSource.prototype.testRGQuery = function() {
+	$s.push("rg.controller.factory.TestFactoryDataSource::testRGQuery");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ path : "/", event : "click", query : ".#time:hour"}), ds = this.factory.create(info);
+	utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 59, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+	utest.Assert["is"](ds,rg.data.source.DataSourceReportGrid,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 60, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+	var r = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
+	utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 62, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+	utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 63, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+	utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Time("hour")], operation : rg.data.source.rgquery.QOperation.Count, where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 64, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataSource.prototype.testArraySource = function() {
+	$s.push("rg.controller.factory.TestFactoryDataSource::testArraySource");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : [{ event : "click", properties : { count : 10}}], name : "sample"}), ds = this.factory.create(info);
+	ds.onLoad.add(function(data) {
+		$s.push("rg.controller.factory.TestFactoryDataSource::testArraySource@78");
+		var $spos = $s.length;
+		utest.Assert.same([{ event : "click", properties : { count : 10}}],data,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 79, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testArraySource"});
+		$s.pop();
+	});
+	ds.load();
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataSource.prototype.testNamedSource = function() {
+	$s.push("rg.controller.factory.TestFactoryDataSource::testNamedSource");
+	var $spos = $s.length;
+	this.cache.set("sample",new rg.data.source.DataSourceArray([]));
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : "sample"}), ds = this.factory.create(info);
+	utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 92, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
+	utest.Assert["is"](ds,rg.data.source.DataSourceArray,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 93, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataSource.prototype.testNamedSourceForNotExistingSource = function() {
+	$s.push("rg.controller.factory.TestFactoryDataSource::testNamedSourceForNotExistingSource");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : "sample"}), b = this.factory;
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.factory.TestFactoryDataSource::testNamedSourceForNotExistingSource@100");
+		var $spos = $s.length;
+		b.create(info);
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 100, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSourceForNotExistingSource"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataSource.prototype.setup = function() {
+	$s.push("rg.controller.factory.TestFactoryDataSource::setup");
+	var $spos = $s.length;
+	this.cache = new Hash();
+	this.executor = new rg.data.source.rgquery.MockRGExecutor();
+	this.factory = new rg.controller.factory.FactoryDataSource(this.cache,this.executor);
+	$s.pop();
+}
+rg.controller.factory.TestFactoryDataSource.prototype.__class__ = rg.controller.factory.TestFactoryDataSource;
 rg.data.source.rgquery.transform.TransformCount = function(properties,event,unit) {
 	if( properties === $_ ) return;
 	$s.push("rg.data.source.rgquery.transform.TransformCount::new");
@@ -8715,7 +11527,7 @@ rg.data.source.rgquery.transform.TransformCount.prototype.event = null;
 rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(data) {
 	$s.push("rg.data.source.rgquery.transform.TransformCount::transform");
 	var $spos = $s.length;
-	var dp = { properties : Objects.addField(Objects.clone(this.properties),this.unit,data), event : this.event};
+	var dp = { properties : Objects.addField(Objects.clone(this.properties),this.unit,data), event : this.event, segment : null};
 	var $tmp = [dp];
 	$s.pop();
 	return $tmp;
@@ -8934,6 +11746,335 @@ Lambda.concat = function(a,b) {
 	$s.pop();
 }
 Lambda.prototype.__class__ = Lambda;
+rg.data.TestDataProcessor = function(p) {
+	$s.push("rg.data.TestDataProcessor::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.data.TestDataProcessor.__name__ = ["rg","data","TestDataProcessor"];
+rg.data.TestDataProcessor.prototype.testOnData = function() {
+	$s.push("rg.data.TestDataProcessor::testOnData");
+	var $spos = $s.length;
+	var cache = new Hash();
+	var datasources = [new rg.data.source.DataSourceArray([{ properties : Objects.addField({ },"count",100), event : "click", segment : null}])];
+	var sources = new rg.data.Sources(datasources);
+	var processor = new rg.data.DataProcessor(sources);
+	var transform = null;
+	var datacontexts = [new rg.data.DataContext("count",processor,transform)];
+	var request = new rg.data.DataRequest(cache,datacontexts);
+	processor.independentVariables = [];
+	processor.dependentVariables = [new rg.data.VariableDependentContext(new rg.data.VariableDependent("count"),true)];
+	processor.onData.add(function(d) {
+		$s.push("rg.data.TestDataProcessor::testOnData@29");
+		var $spos = $s.length;
+		utest.Assert.same([{ properties : { count : 100}, event : "click", segment : null}],d,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 30, className : "rg.data.TestDataProcessor", methodName : "testOnData"});
+		$s.pop();
+	});
+	sources.load();
+	$s.pop();
+}
+rg.data.TestDataProcessor.prototype.testFillVariable = function() {
+	$s.push("rg.data.TestDataProcessor::testFillVariable");
+	var $spos = $s.length;
+	var ds = new rg.data.source.DataSourceArray([{ properties : { gender : "male", count : 2}, event : "click", segment : null},{ properties : { gender : "female", count : 3}, event : "click", segment : null}]), sources = new rg.data.Sources([ds]), processor = new rg.data.DataProcessor(sources), vi, vd;
+	processor.independentVariables = [new rg.data.VariableIndependentContext(vi = new rg.data.VariableIndependent("gender",new rg.data.AxisOrdinal()),true)];
+	processor.dependentVariables = [new rg.data.VariableDependentContext(vd = new rg.data.VariableDependent("count",new rg.data.AxisNumeric()),true)];
+	processor.onData.add(function(d) {
+		$s.push("rg.data.TestDataProcessor::testFillVariable@56");
+		var $spos = $s.length;
+		utest.Assert.equals("male",vi.min,null,{ fileName : "TestDataProcessor.hx", lineNumber : 57, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.equals("female",vi.max,null,{ fileName : "TestDataProcessor.hx", lineNumber : 58, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.same(["male","female"],vi.range(),null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 59, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.equals(2,vd.min,null,{ fileName : "TestDataProcessor.hx", lineNumber : 61, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.equals(3,vd.max,null,{ fileName : "TestDataProcessor.hx", lineNumber : 62, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		$s.pop();
+	});
+	sources.load();
+	$s.pop();
+}
+rg.data.TestDataProcessor.prototype.testTransform = function() {
+	$s.push("rg.data.TestDataProcessor::testTransform");
+	var $spos = $s.length;
+	var samples = 10, start = Date.fromString("2011-07-12 00:00:00").getTime(), end = Date.fromString("2011-07-12 02:00:00").getTime(), trange = rg.util.Periodicity.range(start,end,"hour"), vrange = Ints.range(trange.length), ageRanges = ["1-12","13-20","21+"], genders = ["male","female"], defaultAxis = "count", defaultSegment = "default";
+	var src = [];
+	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
+		$s.push("rg.data.TestDataProcessor::testTransform@80");
+		var $spos = $s.length;
+		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	vrange.reverse();
+	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
+		$s.push("rg.data.TestDataProcessor::testTransform@89");
+		var $spos = $s.length;
+		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	var iv = [], dv = [], periodicity = "hour";
+	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forTime(".#time:hour",periodicity,start,end),false));
+	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forOrdinal(".ageRange"),true));
+	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forOrdinal(".gender",["male","female"]),false));
+	dv.push(new rg.data.VariableDependentContext(new rg.data.VariableDependent("count",new rg.data.AxisNumeric(),0,10),false));
+	var sources = new rg.data.Sources(src), processor = new rg.data.DataProcessor(sources);
+	processor.independentVariables = iv;
+	processor.dependentVariables = dv;
+	processor.transform = function(sets) {
+		$s.push("rg.data.TestDataProcessor::testTransform@113");
+		var $spos = $s.length;
+		var set = Arrays.flatten(sets);
+		var el = Objects.clone(set[0]);
+		el.properties.count = 0;
+		var _g = 0;
+		while(_g < set.length) {
+			var item = set[_g];
+			++_g;
+			el.properties.count += item.properties.count;
+		}
+		var $tmp = [el];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	processor.onData.add(function(data) {
+		$s.push("rg.data.TestDataProcessor::testTransform@123");
+		var $spos = $s.length;
+		var expected = [{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310450400000,"1-12","male",2]), segment : null},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310454000000,"13-20","female",2]), segment : null},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310457600000,"21+","male",2]), segment : null}];
+		utest.Assert.same(expected,data,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 137, className : "rg.data.TestDataProcessor", methodName : "testTransform"});
+		$s.pop();
+	});
+	sources.load();
+	$s.pop();
+}
+rg.data.TestDataProcessor.prototype.__class__ = rg.data.TestDataProcessor;
+rg.view.svg.panel.Panel = function(frame) {
+	if( frame === $_ ) return;
+	$s.push("rg.view.svg.panel.Panel::new");
+	var $spos = $s.length;
+	this.frame = frame;
+	frame.change = $closure(this,"reframe");
+	this._layers = [];
+	$s.pop();
+}
+rg.view.svg.panel.Panel.__name__ = ["rg","view","svg","panel","Panel"];
+rg.view.svg.panel.Panel.prototype.frame = null;
+rg.view.svg.panel.Panel.prototype.svg = null;
+rg.view.svg.panel.Panel.prototype.parent = null;
+rg.view.svg.panel.Panel.prototype._layers = null;
+rg.view.svg.panel.Panel.prototype.addLayer = function(layer) {
+	$s.push("rg.view.svg.panel.Panel::addLayer");
+	var $spos = $s.length;
+	this._layers.remove(layer);
+	this._layers.push(layer);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.removeLayer = function(layer) {
+	$s.push("rg.view.svg.panel.Panel::removeLayer");
+	var $spos = $s.length;
+	this._layers.remove(layer);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.setParent = function(container) {
+	$s.push("rg.view.svg.panel.Panel::setParent");
+	var $spos = $s.length;
+	if(null != this.svg) this.svg.remove();
+	if(null == container) {
+		$s.pop();
+		return;
+	}
+	this.init(container.svg);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.init = function(container) {
+	$s.push("rg.view.svg.panel.Panel::init");
+	var $spos = $s.length;
+	this.svg = container.append("svg:g").attr("class").string("panel").attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
+	this.svg.append("svg:rect").attr("class").string("panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.reframe = function() {
+	$s.push("rg.view.svg.panel.Panel::reframe");
+	var $spos = $s.length;
+	this.svg.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")").select(".panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
+	var layer;
+	var _g1 = 0, _g = this._layers.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		layer = this._layers[i];
+		layer._resize();
+	}
+	$s.pop();
+}
+rg.view.svg.panel.Panel.prototype.__class__ = rg.view.svg.panel.Panel;
+rg.view.svg.panel.Container = function(frame,orientation) {
+	if( frame === $_ ) return;
+	$s.push("rg.view.svg.panel.Container::new");
+	var $spos = $s.length;
+	this.stack = new rg.view.frame.Stack(frame.width,frame.height,orientation);
+	this.panels = [];
+	rg.view.svg.panel.Panel.call(this,frame);
+	$s.pop();
+}
+rg.view.svg.panel.Container.__name__ = ["rg","view","svg","panel","Container"];
+rg.view.svg.panel.Container.__super__ = rg.view.svg.panel.Panel;
+for(var k in rg.view.svg.panel.Panel.prototype ) rg.view.svg.panel.Container.prototype[k] = rg.view.svg.panel.Panel.prototype[k];
+rg.view.svg.panel.Container.prototype.stack = null;
+rg.view.svg.panel.Container.prototype.panels = null;
+rg.view.svg.panel.Container.prototype.insertPanel = function(pos,panel) {
+	$s.push("rg.view.svg.panel.Container::insertPanel");
+	var $spos = $s.length;
+	if(null == panel) {
+		$s.pop();
+		return this;
+	}
+	if(pos >= this.stack.getLength()) {
+		var $tmp = this.addPanel(panel);
+		$s.pop();
+		return $tmp;
+	} else if(pos < 0) pos = 0;
+	if(null != panel.parent) panel.parent.removePanel(panel);
+	this.panels.insert(pos,panel);
+	var f = panel;
+	f.setParent(this);
+	this.stack.insertItem(pos,(function($this) {
+		var $r;
+		var $t = panel.frame;
+		if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this)));
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.addPanel = function(panel) {
+	$s.push("rg.view.svg.panel.Container::addPanel");
+	var $spos = $s.length;
+	var $tmp = this.addPanels([panel]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.addPanels = function(it) {
+	$s.push("rg.view.svg.panel.Container::addPanels");
+	var $spos = $s.length;
+	var frames = [];
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var panel = $it0.next();
+		if(null == panel) continue;
+		if(null != panel.parent) panel.parent.removePanel(panel);
+		this.panels.push(panel);
+		var f = panel;
+		f.setParent(this);
+		frames.push((function($this) {
+			var $r;
+			var $t = panel.frame;
+			if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this)));
+	}
+	this.stack.addItems(frames);
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.removePanel = function(panel) {
+	$s.push("rg.view.svg.panel.Container::removePanel");
+	var $spos = $s.length;
+	if(!this.panels.remove(panel)) {
+		$s.pop();
+		return this;
+	}
+	this.stack.removeChild((function($this) {
+		var $r;
+		var $t = panel.frame;
+		if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this)));
+	var f = panel;
+	f.setParent(null);
+	$s.pop();
+	return this;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createPanel = function(layout) {
+	$s.push("rg.view.svg.panel.Container::createPanel");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Panel(new rg.view.frame.StackItem(layout));
+	this.addPanel(panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createContainer = function(layout,orientation) {
+	$s.push("rg.view.svg.panel.Container::createContainer");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Container(new rg.view.frame.StackItem(layout),orientation);
+	this.addPanel(panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createPanelAt = function(pos,layout) {
+	$s.push("rg.view.svg.panel.Container::createPanelAt");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Panel(new rg.view.frame.StackItem(layout));
+	this.insertPanel(pos,panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.createContainerAt = function(pos,layout,orientation) {
+	$s.push("rg.view.svg.panel.Container::createContainerAt");
+	var $spos = $s.length;
+	var panel = new rg.view.svg.panel.Container(new rg.view.frame.StackItem(layout),orientation);
+	this.insertPanel(pos,panel);
+	$s.pop();
+	return panel;
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.reframe = function() {
+	$s.push("rg.view.svg.panel.Container::reframe");
+	var $spos = $s.length;
+	rg.view.svg.panel.Panel.prototype.reframe.call(this);
+	this.stack.setSize(this.frame.width,this.frame.height);
+	this.stack.reflow();
+	$s.pop();
+}
+rg.view.svg.panel.Container.prototype.__class__ = rg.view.svg.panel.Container;
+rg.view.svg.panel.Space = function(width,height,domcontainer) {
+	if( width === $_ ) return;
+	$s.push("rg.view.svg.panel.Space::new");
+	var $spos = $s.length;
+	this.panel = new rg.view.frame.StackItem(rg.view.frame.FrameLayout.Fill(0,0));
+	rg.view.svg.panel.Container.call(this,this.panel,rg.view.frame.Orientation.Vertical);
+	this.init(domcontainer.append("svg:svg"));
+	this.resize(width,height);
+	$s.pop();
+}
+rg.view.svg.panel.Space.__name__ = ["rg","view","svg","panel","Space"];
+rg.view.svg.panel.Space.__super__ = rg.view.svg.panel.Container;
+for(var k in rg.view.svg.panel.Container.prototype ) rg.view.svg.panel.Space.prototype[k] = rg.view.svg.panel.Container.prototype[k];
+rg.view.svg.panel.Space.prototype.panel = null;
+rg.view.svg.panel.Space.prototype.resize = function(width,height) {
+	$s.push("rg.view.svg.panel.Space::resize");
+	var $spos = $s.length;
+	if(this.panel.width == width && this.panel.height == height) {
+		$s.pop();
+		return;
+	}
+	this.svg.attr("width")["float"](width).attr("height")["float"](height);
+	var sf = this.panel;
+	sf.setLayout(0,0,width,height);
+	$s.pop();
+}
+rg.view.svg.panel.Space.prototype.__class__ = rg.view.svg.panel.Space;
 Dates = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
@@ -9335,6 +12476,92 @@ Dates.compare = function(a,b) {
 	$s.pop();
 }
 Dates.prototype.__class__ = Dates;
+rg.controller.factory.FactoryVariableContexts = function(knownproperties) {
+	if( knownproperties === $_ ) return;
+	$s.push("rg.controller.factory.FactoryVariableContexts::new");
+	var $spos = $s.length;
+	this.knownProperties = knownproperties;
+	this.independentFactory = new rg.controller.factory.FactoryVariableIndependent();
+	this.dependentFactory = new rg.controller.factory.FactoryVariableDependent();
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableContexts.__name__ = ["rg","controller","factory","FactoryVariableContexts"];
+rg.controller.factory.FactoryVariableContexts.createFromDataContexts = function(contexts) {
+	$s.push("rg.controller.factory.FactoryVariableContexts::createFromDataContexts");
+	var $spos = $s.length;
+	var kp = new thx.collections.Set();
+	var _g = 0;
+	while(_g < contexts.length) {
+		var ctx = contexts[_g];
+		++_g;
+		var $it0 = ctx.data.sources.iterator();
+		while( $it0.hasNext() ) {
+			var ds = $it0.next();
+			var query = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
+			if(null == query) continue;
+			var _g1 = 0, _g2 = query.query.exp;
+			while(_g1 < _g2.length) {
+				var exp = _g2[_g1];
+				++_g1;
+				var $e = (exp);
+				switch( $e[1] ) {
+				case 0:
+					var p = $e[2];
+					kp.add(rg.util.Properties.timeProperty(p));
+					break;
+				case 1:
+					var n = $e[2];
+					kp.add(n);
+					break;
+				case 2:
+					continue;
+					break;
+				}
+			}
+		}
+	}
+	var $tmp = new rg.controller.factory.FactoryVariableContexts(kp);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableContexts.prototype.knownProperties = null;
+rg.controller.factory.FactoryVariableContexts.prototype.independentFactory = null;
+rg.controller.factory.FactoryVariableContexts.prototype.dependentFactory = null;
+rg.controller.factory.FactoryVariableContexts.prototype.createIndependents = function(info) {
+	$s.push("rg.controller.factory.FactoryVariableContexts::createIndependents");
+	var $spos = $s.length;
+	var result = [], ordinal, v, ctx;
+	var _g = 0;
+	while(_g < info.length) {
+		var i = info[_g];
+		++_g;
+		if(!this.knownProperties.exists(i.type)) continue;
+		v = this.independentFactory.create(i);
+		if(null != (ordinal = Std["is"](v,rg.data.AxisOrdinal)?v:null)) ctx = new rg.data.VariableIndependentContext(v,0 == ordinal.getValues().length); else if(Std["is"](v.axis,rg.data.AxisTime)) ctx = new rg.data.VariableIndependentContext(v,false); else ctx = new rg.data.VariableIndependentContext(v,null == v.max || null == v.min);
+		result.push(ctx);
+	}
+	$s.pop();
+	return result;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableContexts.prototype.createDependents = function(info) {
+	$s.push("rg.controller.factory.FactoryVariableContexts::createDependents");
+	var $spos = $s.length;
+	var result = [], ordinal;
+	var _g = 0;
+	while(_g < info.length) {
+		var i = info[_g];
+		++_g;
+		if(this.knownProperties.exists(i.type)) continue;
+		var isnumeric = null != i.min?Std["is"](i.min,Float):i.max?Std["is"](i.max,Float):false, v = this.dependentFactory.create(i,isnumeric);
+		result.push(new rg.data.VariableDependentContext(v,null == v.max || null == v.min || null == v.axis || null != (ordinal = Std["is"](v,rg.data.AxisOrdinal)?v:null) && 0 == ordinal.getValues().length));
+	}
+	$s.pop();
+	return result;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableContexts.prototype.__class__ = rg.controller.factory.FactoryVariableContexts;
 rg.data.AxisTime = function(periodicity) {
 	if( periodicity === $_ ) return;
 	$s.push("rg.data.AxisTime::new");
@@ -9386,18 +12613,6 @@ rg.data.AxisTime.prototype.scale = function(start,end,v) {
 }
 rg.data.AxisTime.prototype.__class__ = rg.data.AxisTime;
 rg.data.AxisTime.__interfaces__ = [rg.data.IAxisDiscrete];
-rg.data.source.rgquery.QExp = { __ename__ : ["rg","data","source","rgquery","QExp"], __constructs__ : ["Time","Property","Event"] }
-rg.data.source.rgquery.QExp.Time = function(periodicity) { var $x = ["Time",0,periodicity]; $x.__enum__ = rg.data.source.rgquery.QExp; $x.toString = $estr; return $x; }
-rg.data.source.rgquery.QExp.Property = function(name,limit,descending) { var $x = ["Property",1,name,limit,descending]; $x.__enum__ = rg.data.source.rgquery.QExp; $x.toString = $estr; return $x; }
-rg.data.source.rgquery.QExp.Event = ["Event",2];
-rg.data.source.rgquery.QExp.Event.toString = $estr;
-rg.data.source.rgquery.QExp.Event.__enum__ = rg.data.source.rgquery.QExp;
-rg.data.source.rgquery.QCondition = { __ename__ : ["rg","data","source","rgquery","QCondition"], __constructs__ : ["Equality"] }
-rg.data.source.rgquery.QCondition.Equality = function(property,v) { var $x = ["Equality",0,property,v]; $x.__enum__ = rg.data.source.rgquery.QCondition; $x.toString = $estr; return $x; }
-rg.data.source.rgquery.QOperation = { __ename__ : ["rg","data","source","rgquery","QOperation"], __constructs__ : ["Count"] }
-rg.data.source.rgquery.QOperation.Count = ["Count",0];
-rg.data.source.rgquery.QOperation.Count.toString = $estr;
-rg.data.source.rgquery.QOperation.Count.__enum__ = rg.data.source.rgquery.QOperation;
 rg.data.source.rgquery.transform.TestCountTimeIntersectTransform = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.data.source.rgquery.transform.TestCountTimeIntersectTransform::new");
@@ -9412,83 +12627,86 @@ rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testT
 	$s.push("rg.data.source.rgquery.transform.TestCountTimeIntersectTransform::testTransform");
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },[".platform"],"impression","day","count");
-	var data = Objects.addFields({ },["\"iphone\"","\"android\""],[{ day : [[1310342400000,7],[1310428800000,5]]},{ day : [[1310342400000,1972],[1310428800000,2]]}]);
-	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 7},[".#time:day",".platform"],[1310342400000,"iphone"])},{ event : "impression", properties : Objects.addFields({ count : 5},[".#time:day",".platform"],[1310428800000,"iphone"])},{ event : "impression", properties : Objects.addFields({ count : 1972},[".#time:day",".platform"],[1310342400000,"android"])},{ event : "impression", properties : Objects.addFields({ count : 2},[".#time:day",".platform"],[1310428800000,"android"])}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransform"});
+	var data = Objects.addFields({ },["\"iphone\"","\"android\""],[{ type : "timeseries", periodicity : "day", data : [[1310342400000,7],[1310428800000,5]]},{ type : "timeseries", periodicity : "day", data : [[1310342400000,1972],[1310428800000,2]]}]);
+	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 7},[".#time:day",".platform"],[1310342400000,"iphone"]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 5},[".#time:day",".platform"],[1310428800000,"iphone"]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 1972},[".#time:day",".platform"],[1310342400000,"android"]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 2},[".#time:day",".platform"],[1310428800000,"android"]), segment : null}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 27, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransform"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testTransformDeep = function() {
 	$s.push("rg.data.source.rgquery.transform.TestCountTimeIntersectTransform::testTransformDeep");
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },[".floatValue",".boolValue",".platform"],"impression","day","count");
-	var data = Objects.addField({ },"1.2",Objects.addField({ },"true",Objects.addField({ },"\"iphone\"",{ day : [[1310342400000,7],[1310428800000,5]]})));
-	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 7},[".#time:day",".platform",".boolValue",".floatValue"],[1310342400000,"iphone",true,1.2])},{ event : "impression", properties : Objects.addFields({ count : 5},[".#time:day",".platform",".boolValue",".floatValue"],[1310428800000,"iphone",true,1.2])}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 38, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransformDeep"});
+	var data = Objects.addField({ },"1.2",Objects.addField({ },"true",Objects.addField({ },"\"iphone\"",{ type : "timeseries", periodicity : "day", data : [[1310342400000,7],[1310428800000,5]]})));
+	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 7},[".#time:day",".platform",".boolValue",".floatValue"],[1310342400000,"iphone",true,1.2]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 5},[".#time:day",".platform",".boolValue",".floatValue"],[1310428800000,"iphone",true,1.2]), segment : null}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 56, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransformDeep"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeIntersectTransform;
-rg.data.TestTransform = function(p) {
-	$s.push("rg.data.TestTransform::new");
+rg.data.source.rgquery.QExp = { __ename__ : ["rg","data","source","rgquery","QExp"], __constructs__ : ["Time","Property","Event"] }
+rg.data.source.rgquery.QExp.Time = function(periodicity) { var $x = ["Time",0,periodicity]; $x.__enum__ = rg.data.source.rgquery.QExp; $x.toString = $estr; return $x; }
+rg.data.source.rgquery.QExp.Property = function(name,limit,descending) { var $x = ["Property",1,name,limit,descending]; $x.__enum__ = rg.data.source.rgquery.QExp; $x.toString = $estr; return $x; }
+rg.data.source.rgquery.QExp.Event = ["Event",2];
+rg.data.source.rgquery.QExp.Event.toString = $estr;
+rg.data.source.rgquery.QExp.Event.__enum__ = rg.data.source.rgquery.QExp;
+rg.data.source.rgquery.QCondition = { __ename__ : ["rg","data","source","rgquery","QCondition"], __constructs__ : ["Equality"] }
+rg.data.source.rgquery.QCondition.Equality = function(property,v) { var $x = ["Equality",0,property,v]; $x.__enum__ = rg.data.source.rgquery.QCondition; $x.toString = $estr; return $x; }
+rg.data.source.rgquery.QOperation = { __ename__ : ["rg","data","source","rgquery","QOperation"], __constructs__ : ["Count"] }
+rg.data.source.rgquery.QOperation.Count = ["Count",0];
+rg.data.source.rgquery.QOperation.Count.toString = $estr;
+rg.data.source.rgquery.QOperation.Count.__enum__ = rg.data.source.rgquery.QOperation;
+rg.JSBridge = function() { }
+rg.JSBridge.__name__ = ["rg","JSBridge"];
+rg.JSBridge.main = function() {
+	$s.push("rg.JSBridge::main");
 	var $spos = $s.length;
-	$s.pop();
-}
-rg.data.TestTransform.__name__ = ["rg","data","TestTransform"];
-rg.data.TestTransform.prototype.testTransform = function() {
-	$s.push("rg.data.TestTransform::testTransform");
-	var $spos = $s.length;
-	var samples = 10, start = Date.fromString("2011-07-12 00:00:00").getTime(), end = Date.fromString("2011-07-12 02:00:00").getTime(), trange = rg.util.Periodicity.range(start,end,"hour"), vrange = Ints.range(trange.length), ageRanges = ["1-12","13-20","21+"], genders = ["male","female"], defaultAxis = "count", defaultSegment = "default";
-	var src = [];
-	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
-		$s.push("rg.data.TestTransform::testTransform@30");
+	var o = window.ReportGrid;
+	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 19, className : "rg.JSBridge", methodName : "main"});
+	var app = new rg.controller.App(o);
+	o.viz = function(el,options,type) {
+		$s.push("rg.JSBridge::main@25");
 		var $spos = $s.length;
-		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}));
-	vrange.reverse();
-	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
-		$s.push("rg.data.TestTransform::testTransform@39");
-		var $spos = $s.length;
-		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}));
-	var injectValues = [false,true,false], iv = [], periodicity = "hour";
-	iv.push(rg.data.VariableIndependent.forTime(".#time:hour",periodicity,start,end));
-	iv.push(rg.data.VariableIndependent.forOrdinal(".ageRange"));
-	iv.push(rg.data.VariableIndependent.forOrdinal(".gender",["male","female"]));
-	var sources = new rg.data.Sources(src), processor = new rg.data.DataProcessor(sources);
-	processor.defaultSegment = "default";
-	processor.independentVariables = iv;
-	processor.variablesToFill = injectValues;
-	processor.transform = function(sets) {
-		$s.push("rg.data.TestTransform::testTransform@62");
-		var $spos = $s.length;
-		var set = Arrays.flatten(sets);
-		var el = Objects.clone(set[0]);
-		el.properties.count = 0;
-		var _g = 0;
-		while(_g < set.length) {
-			var item = set[_g];
-			++_g;
-			el.properties.count += item.properties.count;
-		}
-		var $tmp = [el];
-		$s.pop();
-		return $tmp;
+		app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
 		$s.pop();
 	};
-	processor.onData.add(function(data) {
-		$s.push("rg.data.TestTransform::testTransform@72");
+	o.lineChart = function(el,options) {
+		$s.push("rg.JSBridge::main@29");
 		var $spos = $s.length;
-		var expected = [{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310450400000,"1-12","male",2])},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310454000000,"13-20","female",2])},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310457600000,"21+","male",2])}];
-		utest.Assert.same(expected,data.get("default"),null,null,{ fileName : "TestTransform.hx", lineNumber : 83, className : "rg.data.TestTransform", methodName : "testTransform"});
+		o.viz(el,options,"linechart");
 		$s.pop();
-	});
-	sources.load();
+	};
+	o.pieChart = function(el,options) {
+		$s.push("rg.JSBridge::main@30");
+		var $spos = $s.length;
+		o.viz(el,options,"piechart");
+		$s.pop();
+	};
 	$s.pop();
 }
-rg.data.TestTransform.prototype.__class__ = rg.data.TestTransform;
+rg.JSBridge.select = function(el) {
+	$s.push("rg.JSBridge::select");
+	var $spos = $s.length;
+	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 38, className : "rg.JSBridge", methodName : "select"});
+	$s.pop();
+	return s;
+	$s.pop();
+}
+rg.JSBridge.opt = function(o) {
+	$s.push("rg.JSBridge::opt");
+	var $spos = $s.length;
+	var $tmp = null == o?{ }:o;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.JSBridge.chartopt = function(o,viz) {
+	$s.push("rg.JSBridge::chartopt");
+	var $spos = $s.length;
+	o = null == o?{ }:o;
+	if(null != viz) o.visualization = viz;
+	$s.pop();
+	return o;
+	$s.pop();
+}
+rg.JSBridge.prototype.__class__ = rg.JSBridge;
 utest.TestResult = function(p) {
 	$s.push("utest.TestResult::new");
 	var $spos = $s.length;
@@ -9717,26 +12935,100 @@ thx.collections.HashList.prototype.toString = function() {
 thx.collections.HashList.prototype.__keys = null;
 thx.collections.HashList.prototype.__hash = null;
 thx.collections.HashList.prototype.__class__ = thx.collections.HashList;
-rg.controller.build.BuilderVariableIndependent = function(p) {
-	$s.push("rg.controller.build.BuilderVariableIndependent::new");
+rg.controller.info.InfoDataContext = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoDataContext::new");
 	var $spos = $s.length;
+	this.sources = [];
 	$s.pop();
 }
-rg.controller.build.BuilderVariableIndependent.__name__ = ["rg","controller","build","BuilderVariableIndependent"];
-rg.controller.build.BuilderVariableIndependent.prototype.build = function(info) {
-	$s.push("rg.controller.build.BuilderVariableIndependent::build");
+rg.controller.info.InfoDataContext.__name__ = ["rg","controller","info","InfoDataContext"];
+rg.controller.info.InfoDataContext.filters = function() {
+	$s.push("rg.controller.info.InfoDataContext::filters");
 	var $spos = $s.length;
-	if(null == info.type) {
+	var $tmp = [{ field : "name", validator : function(v) {
+		$s.push("rg.controller.info.InfoDataContext::filters@24");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
 		$s.pop();
-		return null;
-	}
-	var axisbuilder = new rg.controller.build.BuilderAxis(), axis = axisbuilder.buildDiscrete(info.type,info.values);
-	var $tmp = new rg.data.VariableIndependent(info.type,axis,info.min,info.max);
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "transform", validator : function(v) {
+		$s.push("rg.controller.info.InfoDataContext::filters@28");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "src", validator : function(v) {
+		$s.push("rg.controller.info.InfoDataContext::filters@32");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
+			$s.push("rg.controller.info.InfoDataContext::filters@32@32");
+			var $spos = $s.length;
+			var $tmp = Reflect.isObject(v1) && null == Type.getClass(v1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}) || Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoDataContext::filters@33");
+		var $spos = $s.length;
+		var $tmp = [{ field : "sources", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			$s.push("rg.controller.info.InfoDataContext::filters@33@36");
+			var $spos = $s.length;
+			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),v1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),v)]}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.controller.build.BuilderVariableIndependent.prototype.__class__ = rg.controller.build.BuilderVariableIndependent;
+rg.controller.info.InfoDataContext.prototype.name = null;
+rg.controller.info.InfoDataContext.prototype.transform = null;
+rg.controller.info.InfoDataContext.prototype.sources = null;
+rg.controller.info.InfoDataContext.prototype.__class__ = rg.controller.info.InfoDataContext;
+Enums = function() { }
+Enums.__name__ = ["Enums"];
+Enums.string = function(e) {
+	$s.push("Enums::string");
+	var $spos = $s.length;
+	var cons = e[0];
+	var params = [];
+	var _g = 0, _g1 = e.slice(2);
+	while(_g < _g1.length) {
+		var param = _g1[_g];
+		++_g;
+		params.push(Dynamics.string(param));
+	}
+	var $tmp = cons + (params.length == 0?"":"(" + params.join(", ") + ")");
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+Enums.compare = function(a,b) {
+	$s.push("Enums::compare");
+	var $spos = $s.length;
+	var v;
+	if((v = a[1] - b[1]) != 0) {
+		$s.pop();
+		return v;
+	}
+	var $tmp = Arrays.compare(a.slice(2),b.slice(2));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+Enums.prototype.__class__ = Enums;
 StringBuf = function(p) {
 	if( p === $_ ) return;
 	$s.push("StringBuf::new");
@@ -9773,38 +13065,6 @@ StringBuf.prototype.toString = function() {
 }
 StringBuf.prototype.b = null;
 StringBuf.prototype.__class__ = StringBuf;
-Enums = function() { }
-Enums.__name__ = ["Enums"];
-Enums.string = function(e) {
-	$s.push("Enums::string");
-	var $spos = $s.length;
-	var cons = e[0];
-	var params = [];
-	var _g = 0, _g1 = e.slice(2);
-	while(_g < _g1.length) {
-		var param = _g1[_g];
-		++_g;
-		params.push(Dynamics.string(param));
-	}
-	var $tmp = cons + (params.length == 0?"":"(" + params.join(", ") + ")");
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Enums.compare = function(a,b) {
-	$s.push("Enums::compare");
-	var $spos = $s.length;
-	var v;
-	if((v = a[1] - b[1]) != 0) {
-		$s.pop();
-		return v;
-	}
-	var $tmp = Arrays.compare(a.slice(2),b.slice(2));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Enums.prototype.__class__ = Enums;
 rg.data.source.rgquery.TestQueryParser = function(p) {
 	$s.push("rg.data.source.rgquery.TestQueryParser::new");
 	var $spos = $s.length;
@@ -9814,12 +13074,13 @@ rg.data.source.rgquery.TestQueryParser.__name__ = ["rg","data","source","rgquery
 rg.data.source.rgquery.TestQueryParser.prototype.test = function() {
 	$s.push("rg.data.source.rgquery.TestQueryParser::test");
 	var $spos = $s.length;
-	this.assertParse([rg.data.source.rgquery.QExp.Property(".click")],rg.data.source.rgquery.QOperation.Count,[],".click",{ fileName : "TestQueryParser.hx", lineNumber : 16, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-	this.assertParse([rg.data.source.rgquery.QExp.Property(".click.gender")],rg.data.source.rgquery.QOperation.Count,[rg.data.source.rgquery.QCondition.Equality(".click.gender","female")],".click.gender = 'female'",{ fileName : "TestQueryParser.hx", lineNumber : 23, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-	this.assertParse([rg.data.source.rgquery.QExp.Property(".click"),rg.data.source.rgquery.QExp.Time("hour")],rg.data.source.rgquery.QOperation.Count,[],".click * .#time:hour",{ fileName : "TestQueryParser.hx", lineNumber : 30, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-	this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10)],rg.data.source.rgquery.QOperation.Count,[],".click(10)",{ fileName : "TestQueryParser.hx", lineNumber : 37, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-	this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,false)],rg.data.source.rgquery.QOperation.Count,[],".click(10, asc)",{ fileName : "TestQueryParser.hx", lineNumber : 44, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-	this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,true)],rg.data.source.rgquery.QOperation.Count,[],".click(10,desc)",{ fileName : "TestQueryParser.hx", lineNumber : 51, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+	this.assertParse([rg.data.source.rgquery.QExp.Event],rg.data.source.rgquery.QOperation.Count,[],"",{ fileName : "TestQueryParser.hx", lineNumber : 16, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+	this.assertParse([rg.data.source.rgquery.QExp.Property(".click")],rg.data.source.rgquery.QOperation.Count,[],".click",{ fileName : "TestQueryParser.hx", lineNumber : 22, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+	this.assertParse([rg.data.source.rgquery.QExp.Property(".click.gender")],rg.data.source.rgquery.QOperation.Count,[rg.data.source.rgquery.QCondition.Equality(".click.gender","female")],".click.gender = 'female'",{ fileName : "TestQueryParser.hx", lineNumber : 29, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+	this.assertParse([rg.data.source.rgquery.QExp.Property(".click"),rg.data.source.rgquery.QExp.Time("hour")],rg.data.source.rgquery.QOperation.Count,[],".click * .#time:hour",{ fileName : "TestQueryParser.hx", lineNumber : 36, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+	this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10)],rg.data.source.rgquery.QOperation.Count,[],".click(10)",{ fileName : "TestQueryParser.hx", lineNumber : 43, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+	this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,false)],rg.data.source.rgquery.QOperation.Count,[],".click(10, asc)",{ fileName : "TestQueryParser.hx", lineNumber : 50, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+	this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,true)],rg.data.source.rgquery.QOperation.Count,[],".click(10,desc)",{ fileName : "TestQueryParser.hx", lineNumber : 57, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
 	$s.pop();
 }
 rg.data.source.rgquery.TestQueryParser.prototype.assertParse = function(exp,operation,where,s,pos) {
@@ -9846,6 +13107,393 @@ haxe.Log.clear = function() {
 	$s.pop();
 }
 haxe.Log.prototype.__class__ = haxe.Log;
+thx.js.BaseTransition = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.BaseTransition::new");
+	var $spos = $s.length;
+	this.selection = selection;
+	var tid = this._transitionId = thx.js.BaseTransition._inheritid > 0?thx.js.BaseTransition._inheritid:++thx.js.BaseTransition._id;
+	this._tweens = new Hash();
+	this._interpolators = [];
+	this._remove = false;
+	this._stage = [];
+	this._delay = [];
+	this._duration = [];
+	this._ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
+	this._step = $closure(this,"step");
+	selection.eachNode(function(n,_) {
+		$s.push("thx.js.BaseTransition::new@54");
+		var $spos = $s.length;
+		if(Reflect.hasField(n,"__transition__")) Reflect.field(n,"__transition__").owner = tid; else n["__transition__"] = { owner : tid};
+		$s.pop();
+	});
+	this.delay(null,0);
+	this.duration(null,250);
+	$s.pop();
+}
+thx.js.BaseTransition.__name__ = ["thx","js","BaseTransition"];
+thx.js.BaseTransition.prototype._transitionId = null;
+thx.js.BaseTransition.prototype._tweens = null;
+thx.js.BaseTransition.prototype._interpolators = null;
+thx.js.BaseTransition.prototype._remove = null;
+thx.js.BaseTransition.prototype._stage = null;
+thx.js.BaseTransition.prototype._delay = null;
+thx.js.BaseTransition.prototype._duration = null;
+thx.js.BaseTransition.prototype._durationMax = null;
+thx.js.BaseTransition.prototype._ease = null;
+thx.js.BaseTransition.prototype._step = null;
+thx.js.BaseTransition.prototype._start = null;
+thx.js.BaseTransition.prototype._end = null;
+thx.js.BaseTransition.prototype.selection = null;
+thx.js.BaseTransition.prototype.step = function(elapsed) {
+	$s.push("thx.js.BaseTransition::step");
+	var $spos = $s.length;
+	var clear = true, k = -1, me = this;
+	this.selection.eachNode(function(n,i) {
+		$s.push("thx.js.BaseTransition::step@67");
+		var $spos = $s.length;
+		if(2 == me._stage[++k]) {
+			$s.pop();
+			return;
+		}
+		var t = (elapsed - me._delay[k]) / me._duration[k], tx = Reflect.field(n,"__transition__"), te, tk, ik = me._interpolators[k];
+		if(t < 1) {
+			clear = false;
+			if(t < 0) {
+				$s.pop();
+				return;
+			}
+		} else t = 1;
+		if(null != me._stage[k]) {
+			if(null == tx || tx.active != me._transitionId) {
+				me._stage[k] = 2;
+				$s.pop();
+				return;
+			}
+		} else if(null == tx || tx.active > me._transitionId) {
+			me._stage[k] = 2;
+			$s.pop();
+			return;
+		} else {
+			me._stage[k] = 1;
+			if(null != me._start) me._start(n,i);
+			ik = me._interpolators[k] = new Hash();
+			tx.active = me._transitionId;
+			var $it0 = me._tweens.keys();
+			while( $it0.hasNext() ) {
+				var tk1 = $it0.next();
+				var f = me._tweens.get(tk1);
+				ik.set(tk1,f(n,i));
+			}
+		}
+		te = me._ease(t);
+		var $it1 = me._tweens.keys();
+		while( $it1.hasNext() ) {
+			var tk1 = $it1.next();
+			(ik.get(tk1))(te);
+		}
+		if(1 == t) {
+			me._stage[k] = 2;
+			if(tx.active == me._transitionId) {
+				var owner = tx.owner;
+				if(owner == me._transitionId) {
+					Reflect.deleteField(n,"__transition__");
+					if(me._remove) n.parentNode.removeChild(n);
+				}
+				thx.js.BaseTransition._inheritid = me._transitionId;
+				if(null != me._end) me._end(n,i);
+				thx.js.BaseTransition._inheritid = 0;
+				tx.owner = owner;
+			}
+		}
+		$s.pop();
+	});
+	$s.pop();
+	return clear;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.startNode = function(f) {
+	$s.push("thx.js.BaseTransition::startNode");
+	var $spos = $s.length;
+	this._start = f;
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.endNode = function(f) {
+	$s.push("thx.js.BaseTransition::endNode");
+	var $spos = $s.length;
+	this._end = f;
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.stop = function() {
+	$s.push("thx.js.BaseTransition::stop");
+	var $spos = $s.length;
+	var k = -1, me = this;
+	this.selection.eachNode(function(n,i) {
+		$s.push("thx.js.BaseTransition::stop@156");
+		var $spos = $s.length;
+		me._stage[++k] = 2;
+		Reflect.deleteField(n,"__transition__");
+		$s.pop();
+	});
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.delay = function(f,v) {
+	$s.push("thx.js.BaseTransition::delay");
+	var $spos = $s.length;
+	if(v == null) v = 0.0;
+	var delayMin = Math.POSITIVE_INFINITY, k = -1, me = this;
+	if(null != f) this.selection.eachNode(function(n,i) {
+		$s.push("thx.js.BaseTransition::delay@170");
+		var $spos = $s.length;
+		var x = me._delay[++k] = f(n,i);
+		if(x < delayMin) delayMin = x;
+		$s.pop();
+	}); else {
+		delayMin = v;
+		this.selection.eachNode(function(n,i) {
+			$s.push("thx.js.BaseTransition::delay@177");
+			var $spos = $s.length;
+			me._delay[++k] = delayMin;
+			$s.pop();
+		});
+	}
+	thx.js.Timer.timer(this._step,delayMin);
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.duration = function(f,v) {
+	$s.push("thx.js.BaseTransition::duration");
+	var $spos = $s.length;
+	if(v == null) v = 0.0;
+	var k = -1, me = this;
+	if(null != f) {
+		this._durationMax = 0;
+		this.selection.eachNode(function(n,i) {
+			$s.push("thx.js.BaseTransition::duration@192");
+			var $spos = $s.length;
+			var x = me._duration[++k] = f(n,i);
+			if(x > me._durationMax) me._durationMax = x;
+			$s.pop();
+		});
+	} else {
+		this._durationMax = v;
+		this.selection.eachNode(function(n,i) {
+			$s.push("thx.js.BaseTransition::duration@199");
+			var $spos = $s.length;
+			me._duration[++k] = me._durationMax;
+			$s.pop();
+		});
+	}
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.ease = function(f,easemode) {
+	$s.push("thx.js.BaseTransition::ease");
+	var $spos = $s.length;
+	this._ease = thx.math.Ease.mode(easemode,f);
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.remove = function(v) {
+	$s.push("thx.js.BaseTransition::remove");
+	var $spos = $s.length;
+	if(v == null) v = true;
+	this._remove = v;
+	var $tmp = this._this();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.select = function(selector) {
+	$s.push("thx.js.BaseTransition::select");
+	var $spos = $s.length;
+	var k, t = this.createTransition(this.selection.select(selector));
+	t._ease = this._ease;
+	var delay = this._delay;
+	var duration = this._duration;
+	k = -1;
+	t.delay(function(d,i) {
+		$s.push("thx.js.BaseTransition::select@224");
+		var $spos = $s.length;
+		var $tmp = delay[++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	k = -1;
+	t.delay(function(d,i) {
+		$s.push("thx.js.BaseTransition::select@225");
+		var $spos = $s.length;
+		var $tmp = duration[++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return t;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.selectAll = function(selector) {
+	$s.push("thx.js.BaseTransition::selectAll");
+	var $spos = $s.length;
+	var k, t = this.createTransition(this.selection.selectAll(selector));
+	t._ease = this._ease;
+	var delay = this._delay;
+	var duration = this._duration;
+	k = -1;
+	t.delay(function(d,i) {
+		$s.push("thx.js.BaseTransition::selectAll@235");
+		var $spos = $s.length;
+		var $tmp = delay[i > 0?k:++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	k = -1;
+	t.delay(function(d,i) {
+		$s.push("thx.js.BaseTransition::selectAll@236");
+		var $spos = $s.length;
+		var $tmp = duration[i > 0?k:++k];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return t;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.createTransition = function(selection) {
+	$s.push("thx.js.BaseTransition::createTransition");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 242, className : "thx.js.BaseTransition", methodName : "createTransition"});
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype._this = function() {
+	$s.push("thx.js.BaseTransition::_this");
+	var $spos = $s.length;
+	var $tmp = this;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BaseTransition.prototype.__class__ = thx.js.BaseTransition;
+thx.js.UnboundTransition = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.UnboundTransition::new");
+	var $spos = $s.length;
+	thx.js.BaseTransition.call(this,selection);
+	$s.pop();
+}
+thx.js.UnboundTransition.__name__ = ["thx","js","UnboundTransition"];
+thx.js.UnboundTransition.__super__ = thx.js.BaseTransition;
+for(var k in thx.js.BaseTransition.prototype ) thx.js.UnboundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
+thx.js.UnboundTransition.prototype.style = function(name) {
+	$s.push("thx.js.UnboundTransition::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessTweenStyle(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundTransition.prototype.attr = function(name) {
+	$s.push("thx.js.UnboundTransition::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessTweenAttribute(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundTransition.prototype.createTransition = function(selection) {
+	$s.push("thx.js.UnboundTransition::createTransition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.UnboundTransition(selection);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.UnboundTransition.prototype.__class__ = thx.js.UnboundTransition;
+thx.js.BoundTransition = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.BoundTransition::new");
+	var $spos = $s.length;
+	thx.js.BaseTransition.call(this,selection);
+	$s.pop();
+}
+thx.js.BoundTransition.__name__ = ["thx","js","BoundTransition"];
+thx.js.BoundTransition.__super__ = thx.js.BaseTransition;
+for(var k in thx.js.BaseTransition.prototype ) thx.js.BoundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
+thx.js.BoundTransition.prototype.style = function(name) {
+	$s.push("thx.js.BoundTransition::style");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataTweenStyle(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundTransition.prototype.attr = function(name) {
+	$s.push("thx.js.BoundTransition::attr");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataTweenAttribute(name,this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundTransition.prototype.start = function(f) {
+	$s.push("thx.js.BoundTransition::start");
+	var $spos = $s.length;
+	var $tmp = this.startNode(function(n,i) {
+		$s.push("thx.js.BoundTransition::start@271");
+		var $spos = $s.length;
+		f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundTransition.prototype.end = function(f) {
+	$s.push("thx.js.BoundTransition::end");
+	var $spos = $s.length;
+	var $tmp = this.endNode(function(n,i) {
+		$s.push("thx.js.BoundTransition::end@276");
+		var $spos = $s.length;
+		f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundTransition.prototype.createTransition = function(selection) {
+	$s.push("thx.js.BoundTransition::createTransition");
+	var $spos = $s.length;
+	var $tmp = new thx.js.BoundTransition(selection);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.BoundTransition.prototype.__class__ = thx.js.BoundTransition;
 thx.culture.FormatDate = function() { }
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
@@ -10182,7 +13830,7 @@ rg.data.source.DataSourceArray.fromValues = function(arr,event,map) {
 	var $tmp = new rg.data.source.DataSourceArray(arr.map(map).map(function(properties,i) {
 		$s.push("rg.data.source.DataSourceArray::fromValues@14");
 		var $spos = $s.length;
-		var $tmp = { properties : properties, event : event};
+		var $tmp = { properties : properties, event : event, segment : null};
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -10342,6 +13990,478 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 	$s.pop();
 }
 thx.culture.FormatNumber.prototype.__class__ = thx.culture.FormatNumber;
+rg.controller.factory.TestFactoryAxis = function(p) {
+	$s.push("rg.controller.factory.TestFactoryAxis::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.TestFactoryAxis.__name__ = ["rg","controller","factory","TestFactoryAxis"];
+rg.controller.factory.TestFactoryAxis.prototype.testAxisTime = function() {
+	$s.push("rg.controller.factory.TestFactoryAxis::testAxisTime");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryAxis();
+	var axis = Types["as"](factory.createDiscrete(rg.util.Properties.timeProperty("hour"),[1,2,3]),rg.data.AxisTime);
+	utest.Assert.notNull(axis,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 20, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisTime"});
+	utest.Assert.equals("hour",axis.periodicity,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 21, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisTime"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryAxis.prototype.testAxisOrdinal = function() {
+	$s.push("rg.controller.factory.TestFactoryAxis::testAxisOrdinal");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryAxis();
+	var axis = Types["as"](factory.createDiscrete("count",[1,2,3]),rg.data.AxisOrdinal);
+	utest.Assert.equals(1,axis.getFirst(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 28, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.equals(3,axis.getLast(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 29, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.same(thx.collections.Set.ofArray([1,2,3]),axis.getValues(),null,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 30, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	axis = Types["as"](factory.createDiscrete("count",null),rg.data.AxisOrdinal);
+	utest.Assert.isNull(axis.getFirst(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 33, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.isNull(axis.getLast(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 34, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.equals(0,axis.getValues().length,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 35, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryAxis.prototype.__class__ = rg.controller.factory.TestFactoryAxis;
+rg.controller.factory.FactoryVariableDependent = function(p) {
+	$s.push("rg.controller.factory.FactoryVariableDependent::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableDependent.__name__ = ["rg","controller","factory","FactoryVariableDependent"];
+rg.controller.factory.FactoryVariableDependent.prototype.create = function(info,isnumeric) {
+	$s.push("rg.controller.factory.FactoryVariableDependent::create");
+	var $spos = $s.length;
+	if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 19, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
+	var axiscreator = new rg.controller.factory.FactoryAxis(), axis = axiscreator.create(info.type,isnumeric,info.values);
+	var $tmp = new rg.data.VariableDependent(info.type,axis,info.min,info.max);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableDependent.prototype.__class__ = rg.controller.factory.FactoryVariableDependent;
+rg.controller.App = function(executor) {
+	if( executor === $_ ) return;
+	$s.push("rg.controller.App::new");
+	var $spos = $s.length;
+	this.executor = executor;
+	$s.pop();
+}
+rg.controller.App.__name__ = ["rg","controller","App"];
+rg.controller.App.prototype.executor = null;
+rg.controller.App.prototype.visualization = function(el,jsoptions) {
+	$s.push("rg.controller.App::visualization");
+	var $spos = $s.length;
+	var cache = new Hash();
+	var options = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions);
+	haxe.Log.trace(options.data,{ fileName : "App.hx", lineNumber : 32, className : "rg.controller.App", methodName : "visualization"});
+	var factoryDataSource = new rg.controller.factory.FactoryDataSource(cache,this.executor);
+	var factoryDataContext = new rg.controller.factory.FactoryDataContext(factoryDataSource);
+	var datacontexts = options.data.map(function(d,_) {
+		$s.push("rg.controller.App::visualization@35");
+		var $spos = $s.length;
+		var $tmp = factoryDataContext.create(d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	var factoryVariableContexts = rg.controller.factory.FactoryVariableContexts.createFromDataContexts(datacontexts);
+	var independentVariables = factoryVariableContexts.createIndependents(options.variables);
+	var dependentVariables = factoryVariableContexts.createDependents(options.variables);
+	var _g = 0;
+	while(_g < datacontexts.length) {
+		var context = datacontexts[_g];
+		++_g;
+		haxe.Log.trace(independentVariables,{ fileName : "App.hx", lineNumber : 41, className : "rg.controller.App", methodName : "visualization"});
+		context.data.independentVariables = independentVariables;
+		context.data.dependentVariables = dependentVariables;
+		haxe.Log.trace(context.data.independentVariables,{ fileName : "App.hx", lineNumber : 44, className : "rg.controller.App", methodName : "visualization"});
+	}
+	var request = new rg.data.DataRequest(cache,datacontexts);
+	request.onData = function(datapoints) {
+		$s.push("rg.controller.App::visualization@49");
+		var $spos = $s.length;
+		haxe.Log.trace(datapoints,{ fileName : "App.hx", lineNumber : 50, className : "rg.controller.App", methodName : "visualization"});
+		$s.pop();
+	};
+	request.request();
+	$s.pop();
+}
+rg.controller.App.prototype.__class__ = rg.controller.App;
+thx.js.AccessTween = function(transition,tweens) {
+	if( transition === $_ ) return;
+	$s.push("thx.js.AccessTween::new");
+	var $spos = $s.length;
+	this.transition = transition;
+	this.tweens = tweens;
+	$s.pop();
+}
+thx.js.AccessTween.__name__ = ["thx","js","AccessTween"];
+thx.js.AccessTween.prototype.transition = null;
+thx.js.AccessTween.prototype.tweens = null;
+thx.js.AccessTween.prototype.transitionColorTween = function(value) {
+	$s.push("thx.js.AccessTween::transitionColorTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionColorTween@22");
+		var $spos = $s.length;
+		var $tmp = thx.color.Rgb.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionColorTweenf = function(f) {
+	$s.push("thx.js.AccessTween::transitionColorTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionColorTweenf@27");
+		var $spos = $s.length;
+		var $tmp = thx.color.Rgb.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionStringTween = function(value) {
+	$s.push("thx.js.AccessTween::transitionStringTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionStringTween@32");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionStringTweenf = function(f) {
+	$s.push("thx.js.AccessTween::transitionStringTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionStringTweenf@37");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionFloatTween = function(value) {
+	$s.push("thx.js.AccessTween::transitionFloatTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionFloatTween@42");
+		var $spos = $s.length;
+		var $tmp = Floats.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionFloatTweenf = function(f) {
+	$s.push("thx.js.AccessTween::transitionFloatTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionFloatTweenf@47");
+		var $spos = $s.length;
+		var $tmp = Floats.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype._that = function() {
+	$s.push("thx.js.AccessTween::_that");
+	var $spos = $s.length;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.__class__ = thx.js.AccessTween;
+thx.js.AccessTweenStyle = function(name,transition,tweens) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessTweenStyle::new");
+	var $spos = $s.length;
+	thx.js.AccessTween.call(this,transition,tweens);
+	this.name = name;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.__name__ = ["thx","js","AccessTweenStyle"];
+thx.js.AccessTweenStyle.__super__ = thx.js.AccessTween;
+for(var k in thx.js.AccessTween.prototype ) thx.js.AccessTweenStyle.prototype[k] = thx.js.AccessTween.prototype[k];
+thx.js.AccessTweenStyle.prototype.name = null;
+thx.js.AccessTweenStyle.prototype.floatNodef = function(f,priority) {
+	$s.push("thx.js.AccessTweenStyle::floatNodef");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(f),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype["float"] = function(value,priority) {
+	$s.push("thx.js.AccessTweenStyle::float");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTween(value),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.floatTweenNodef = function(tween,priority) {
+	$s.push("thx.js.AccessTweenStyle::floatTweenNodef");
+	var $spos = $s.length;
+	if(null == priority) priority = null;
+	var name = this.name;
+	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessTweenStyle::floatTweenNodef@38");
+		var $spos = $s.length;
+		var f = tween(d,i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenStyle::floatTweenNodef@38@41");
+			var $spos = $s.length;
+			d.style.setProperty(name,"" + f(t),priority);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("style." + name,styleTween);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.stringNodef = function(f,priority) {
+	$s.push("thx.js.AccessTweenStyle::stringNodef");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(f),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.string = function(value,priority) {
+	$s.push("thx.js.AccessTweenStyle::string");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTween(value),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.stringTweenNodef = function(tween,priority) {
+	$s.push("thx.js.AccessTweenStyle::stringTweenNodef");
+	var $spos = $s.length;
+	if(null == priority) priority = null;
+	var name = this.name;
+	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessTweenStyle::stringTweenNodef@65");
+		var $spos = $s.length;
+		var f = tween(d,i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenStyle::stringTweenNodef@65@68");
+			var $spos = $s.length;
+			d.style.setProperty(name,f(t),priority);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("style." + name,styleTween);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.colorNodef = function(f,priority) {
+	$s.push("thx.js.AccessTweenStyle::colorNodef");
+	var $spos = $s.length;
+	var $tmp = this.colorTweenNodef(this.transitionColorTweenf(f),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.color = function(value,priority) {
+	$s.push("thx.js.AccessTweenStyle::color");
+	var $spos = $s.length;
+	var $tmp = this.colorTweenNodef(this.transitionColorTween(thx.color.Colors.parse(value)),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.colorTweenNodef = function(tween,priority) {
+	$s.push("thx.js.AccessTweenStyle::colorTweenNodef");
+	var $spos = $s.length;
+	if(null == priority) priority = null;
+	var name = this.name;
+	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessTweenStyle::colorTweenNodef@92");
+		var $spos = $s.length;
+		var f = tween(d,i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenStyle::colorTweenNodef@92@95");
+			var $spos = $s.length;
+			d.style.setProperty(name,f(t).toRgbString(),priority);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("style." + name,styleTween);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenStyle.prototype.__class__ = thx.js.AccessTweenStyle;
+thx.js.AccessDataTweenStyle = function(name,transition,tweens) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataTweenStyle::new");
+	var $spos = $s.length;
+	thx.js.AccessTweenStyle.call(this,name,transition,tweens);
+	$s.pop();
+}
+thx.js.AccessDataTweenStyle.__name__ = ["thx","js","AccessDataTweenStyle"];
+thx.js.AccessDataTweenStyle.__super__ = thx.js.AccessTweenStyle;
+for(var k in thx.js.AccessTweenStyle.prototype ) thx.js.AccessDataTweenStyle.prototype[k] = thx.js.AccessTweenStyle.prototype[k];
+thx.js.AccessDataTweenStyle.prototype.floatf = function(f,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::floatf");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenStyle::floatf@114");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenStyle.prototype.floatTweenf = function(tween,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::floatTweenf");
+	var $spos = $s.length;
+	if(null == priority) priority = null;
+	var name = this.name;
+	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessDataTweenStyle::floatTweenf@122");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenStyle::floatTweenf@122@125");
+			var $spos = $s.length;
+			d.style.setProperty(name,"" + f(t),priority);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("style." + name,styleTween);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenStyle.prototype.stringf = function(f,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::stringf");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenStyle::stringf@136");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenStyle.prototype.stringTweenf = function(tween,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::stringTweenf");
+	var $spos = $s.length;
+	if(null == priority) priority = null;
+	var name = this.name;
+	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessDataTweenStyle::stringTweenf@144");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(d,"__data__"),i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenStyle::stringTweenf@144@147");
+			var $spos = $s.length;
+			d.style.setProperty(name,f(t),priority);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("style." + name,styleTween);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenStyle.prototype.colorf = function(f,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::colorf");
+	var $spos = $s.length;
+	var $tmp = this.colorTweenNodef(this.transitionColorTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenStyle::colorf@158");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}),priority);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenStyle.prototype.colorTweenf = function(tween,priority) {
+	$s.push("thx.js.AccessDataTweenStyle::colorTweenf");
+	var $spos = $s.length;
+	if(null == priority) priority = null;
+	var name = this.name;
+	var styleTween = function(d,i) {
+		$s.push("thx.js.AccessDataTweenStyle::colorTweenf@166");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenStyle::colorTweenf@166@169");
+			var $spos = $s.length;
+			d.style.setProperty(name,f(t).toRgbString(),priority);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("style." + name,styleTween);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenStyle.prototype.__class__ = thx.js.AccessDataTweenStyle;
 hxevents.Dispatcher = function(p) {
 	if( p === $_ ) return;
 	$s.push("hxevents.Dispatcher::new");
@@ -10490,7 +14610,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 66, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 69, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -10498,7 +14618,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 	}(this));
 	this.exp = e.map($closure(this,"mapProperties"));
 	this.where = query.where.map(function(d,i) {
-		$s.push("rg.data.source.DataSourceReportGrid::new@68");
+		$s.push("rg.data.source.DataSourceReportGrid::new@71");
 		var $spos = $s.length;
 		var $tmp = (function($this) {
 			var $r;
@@ -10506,12 +14626,12 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 			switch( $e[1] ) {
 			case 0:
 				var value = $e[3], property = $e[2];
-				$r = { property : event + property, value : value};
+				$r = { event : event, property : property, value : value};
 				break;
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 71, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 75, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
@@ -10526,7 +14646,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 	case 0:
 		break;
 	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 77, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 81, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 	}
 	this.path = path;
 	this.start = start;
@@ -10544,7 +14664,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 183, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 192, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -10582,6 +14702,20 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 	}
 	$s.pop();
 }
+rg.data.source.DataSourceReportGrid.propertyName = function(p) {
+	$s.push("rg.data.source.DataSourceReportGrid::propertyName");
+	var $spos = $s.length;
+	if(null == p.property) {
+		var $tmp = p.event;
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = p.event + p.property;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
 rg.data.source.DataSourceReportGrid.isTimeProperty = function(exp) {
 	$s.push("rg.data.source.DataSourceReportGrid::isTimeProperty");
 	var $spos = $s.length;
@@ -10614,15 +14748,15 @@ rg.data.source.DataSourceReportGrid.prototype.mapProperties = function(d,_) {
 	switch( $e[1] ) {
 	case 1:
 		var descending = $e[4], limit = $e[3], name = $e[2];
-		var $tmp = { property : this.event + name, limit : null == limit?10:limit, order : false == descending?"ascending":"descending"};
+		var $tmp = { event : this.event, property : name, limit : null == limit?10:limit, order : false == descending?"ascending":"descending"};
 		$s.pop();
 		return $tmp;
 	case 2:
-		var $tmp = { property : this.event, limit : null, order : null};
+		var $tmp = { event : this.event, property : null, limit : null, order : null};
 		$s.pop();
 		return $tmp;
 	default:
-		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 56, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 59, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 	}
 	$s.pop();
 }
@@ -10640,7 +14774,7 @@ rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeri
 		while(_g < _g1.length) {
 			var c = _g1[_g];
 			++_g;
-			w[c.property] = c.value;
+			w[rg.data.source.DataSourceReportGrid.propertyName(c)] = c.value;
 		}
 		o["where"] = w;
 	}
@@ -10660,7 +14794,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 113, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
+				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 116, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
 				return $r;
 			}($this));
 		}
@@ -10673,33 +14807,33 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 rg.data.source.DataSourceReportGrid.prototype.load = function() {
 	$s.push("rg.data.source.DataSourceReportGrid::load");
 	var $spos = $s.length;
-	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 121, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1) {
+	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 124, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 		if(this.periodicity == "eternity") {
 			this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 			var o = this.basicOptions(false);
 			if(this.where.length > 1) this.executor.searchCount(this.path,o,$closure(this,"success"),$closure(this,"error")); else if(this.where.length == 1) {
-				o.property = this.exp[0].property;
+				o.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
 				o.value = this.where[0].value;
 				this.executor.propertyValueCount(this.path,o,$closure(this,"success"),$closure(this,"error"));
 			} else {
-				o.property = this.exp[0].property;
+				o.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
 				this.executor.propertyCount(this.path,o,$closure(this,"success"),$closure(this,"error"));
 			}
 		} else {
 			this.transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
 			var o = this.basicOptions(true);
 			if(this.where.length > 1) this.executor.searchSeries(this.path,o,$closure(this,"success"),$closure(this,"error")); else if(this.where.length == 1) {
-				o.property = this.exp[0].property;
+				o.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
 				o.value = this.where[0].value;
 				this.executor.propertyValueSeries(this.path,o,$closure(this,"success"),$closure(this,"error"));
 			} else {
-				o.property = this.exp[0].property;
+				o.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
 				this.executor.propertySeries(this.path,o,$closure(this,"success"),$closure(this,"error"));
 			}
 		}
 	} else {
 		this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },this.exp.map(function(d,_) {
-			$s.push("rg.data.source.DataSourceReportGrid::load@155");
+			$s.push("rg.data.source.DataSourceReportGrid::load@158");
 			var $spos = $s.length;
 			var $tmp = d.property;
 			$s.pop();
@@ -10707,7 +14841,14 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 			$s.pop();
 		}),this.event,this.periodicity,this.unit());
 		var o = this.basicOptions(true);
-		o.properties = this.exp;
+		o.properties = this.exp.map(function(p,i) {
+			$s.push("rg.data.source.DataSourceReportGrid::load@160");
+			var $spos = $s.length;
+			var $tmp = { property : rg.data.source.DataSourceReportGrid.propertyName(p), limit : p.limit, order : p.order};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		});
 		this.executor.intersect(this.path,o,$closure(this,"success"),$closure(this,"error"));
 	}
 	$s.pop();
@@ -10715,7 +14856,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 rg.data.source.DataSourceReportGrid.prototype.error = function(msg) {
 	$s.push("rg.data.source.DataSourceReportGrid::error");
 	var $spos = $s.length;
-	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 164, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 173, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	$s.pop();
 }
 rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
@@ -10974,6 +15115,30 @@ utest.ui.common.PackageResult.prototype.getOrCreatePackage = function(pack,flat,
 	$s.pop();
 }
 utest.ui.common.PackageResult.prototype.__class__ = utest.ui.common.PackageResult;
+rg.controller.info.TestInfoVisualizationOption = function(p) {
+	$s.push("rg.controller.info.TestInfoVisualizationOption::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.TestInfoVisualizationOption.__name__ = ["rg","controller","info","TestInfoVisualizationOption"];
+rg.controller.info.TestInfoVisualizationOption.prototype.testFeedOptions = function() {
+	$s.push("rg.controller.info.TestInfoVisualizationOption::testFeedOptions");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),{ axes : [{ type : "count"}], data : [{ name : "count", src : [{ event : "click", path : "/"}]}], options : { test : "option"}});
+	utest.Assert.notNull(info.data,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 23, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	utest.Assert["is"](info.data,Array,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 24, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	var axis = info.variables[0];
+	utest.Assert["is"](axis,rg.controller.info.InfoVariable,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 26, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	utest.Assert.equals("count",axis.type,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 27, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	utest.Assert.notNull(info.variables,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 29, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	utest.Assert["is"](info.variables,Array,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 30, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	var ctx = info.data[0];
+	utest.Assert["is"](ctx,rg.controller.info.InfoDataContext,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 32, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	utest.Assert.equals("count",ctx.name,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 33, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	utest.Assert.equals("option",info.options.test,null,{ fileName : "TestInfoVisualizationOption.hx", lineNumber : 34, className : "rg.controller.info.TestInfoVisualizationOption", methodName : "testFeedOptions"});
+	$s.pop();
+}
+rg.controller.info.TestInfoVisualizationOption.prototype.__class__ = rg.controller.info.TestInfoVisualizationOption;
 utest.TestHandler = function(fixture) {
 	if( fixture === $_ ) return;
 	$s.push("utest.TestHandler::new");
@@ -11293,6 +15458,102 @@ utest.TestFixture.prototype.checkMethod = function(name,arg) {
 	$s.pop();
 }
 utest.TestFixture.prototype.__class__ = utest.TestFixture;
+rg.view.svg.panel.TestSpace = function(p) {
+	$s.push("rg.view.svg.panel.TestSpace::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.__name__ = ["rg","view","svg","panel","TestSpace"];
+rg.view.svg.panel.TestSpace.prototype.container = null;
+rg.view.svg.panel.TestSpace.prototype.setup = function() {
+	$s.push("rg.view.svg.panel.TestSpace::setup");
+	var $spos = $s.length;
+	this.container = thx.js.Dom.select("body").append("div");
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.prototype.teardown = function() {
+	$s.push("rg.view.svg.panel.TestSpace::teardown");
+	var $spos = $s.length;
+	this.container.remove();
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.prototype.testCreatePanelAppend = function() {
+	$s.push("rg.view.svg.panel.TestSpace::testCreatePanelAppend");
+	var $spos = $s.length;
+	var space = new rg.view.svg.panel.Space(100,100,this.container), fixed = space.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,20));
+	utest.Assert.equals(0,fixed.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 32, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelAppend"});
+	utest.Assert.equals(20,fixed.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 33, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelAppend"});
+	var fill = space.createPanel(rg.view.frame.FrameLayout.Fill(0,0));
+	utest.Assert.equals(20,fill.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 36, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelAppend"});
+	utest.Assert.equals(80,fill.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 37, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelAppend"});
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.prototype.testCreatePanelInsert = function() {
+	$s.push("rg.view.svg.panel.TestSpace::testCreatePanelInsert");
+	var $spos = $s.length;
+	var space = new rg.view.svg.panel.Space(100,100,this.container), fixed = space.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,20));
+	utest.Assert.equals(0,fixed.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 44, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelInsert"});
+	utest.Assert.equals(20,fixed.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 45, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelInsert"});
+	var fill = space.createPanelAt(0,rg.view.frame.FrameLayout.Fill(0,0));
+	utest.Assert.equals(0,fill.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 49, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelInsert"});
+	utest.Assert.equals(80,fill.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 50, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelInsert"});
+	utest.Assert.equals(80,fixed.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 52, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelInsert"});
+	utest.Assert.equals(20,fixed.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 53, className : "rg.view.svg.panel.TestSpace", methodName : "testCreatePanelInsert"});
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.prototype.testResize = function() {
+	$s.push("rg.view.svg.panel.TestSpace::testResize");
+	var $spos = $s.length;
+	var space = new rg.view.svg.panel.Space(50,100,this.container), fill = space.createPanel(rg.view.frame.FrameLayout.Fill(0,0));
+	utest.Assert.equals(50,fill.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 60, className : "rg.view.svg.panel.TestSpace", methodName : "testResize"});
+	utest.Assert.equals(100,fill.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 61, className : "rg.view.svg.panel.TestSpace", methodName : "testResize"});
+	space.resize(100,200);
+	utest.Assert.equals(100,fill.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 63, className : "rg.view.svg.panel.TestSpace", methodName : "testResize"});
+	utest.Assert.equals(200,fill.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 64, className : "rg.view.svg.panel.TestSpace", methodName : "testResize"});
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.prototype.testLayerSize = function() {
+	$s.push("rg.view.svg.panel.TestSpace::testLayerSize");
+	var $spos = $s.length;
+	var space = new rg.view.svg.panel.Space(50,100,this.container), panel = space.createPanel(rg.view.frame.FrameLayout.Fill(0,0)), layer = new rg.view.svg.panel.Layer(panel);
+	utest.Assert.equals(50,panel.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 73, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	utest.Assert.equals(100,panel.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 74, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	utest.Assert.equals(50,layer.width,null,{ fileName : "TestSpace.hx", lineNumber : 76, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	utest.Assert.equals(100,layer.height,null,{ fileName : "TestSpace.hx", lineNumber : 77, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	space.createPanel(rg.view.frame.FrameLayout.Fill(0,0));
+	utest.Assert.equals(50,layer.height,null,{ fileName : "TestSpace.hx", lineNumber : 81, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	space.resize(100,200);
+	utest.Assert.equals(100,panel.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 84, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	utest.Assert.equals(100,panel.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 85, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	utest.Assert.equals(100,layer.height,null,{ fileName : "TestSpace.hx", lineNumber : 87, className : "rg.view.svg.panel.TestSpace", methodName : "testLayerSize"});
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.prototype.testContainer = function() {
+	$s.push("rg.view.svg.panel.TestSpace::testContainer");
+	var $spos = $s.length;
+	var space = new rg.view.svg.panel.Space(200,200,this.container);
+	space.createPanel(rg.view.frame.FrameLayout.FillPercent(0,0,.5));
+	var cont = space.createContainer(rg.view.frame.FrameLayout.FillPercent(0,0,.5),rg.view.frame.Orientation.Horizontal);
+	cont.createPanel(rg.view.frame.FrameLayout.FillPercent(0,0,.5));
+	var sub = cont.createContainer(rg.view.frame.FrameLayout.FillPercent(0,0,.5),rg.view.frame.Orientation.Vertical);
+	var panel1 = sub.createPanel(rg.view.frame.FrameLayout.Fill(0,0)), panel2 = sub.createPanel(rg.view.frame.FrameLayout.Fill(0,0));
+	utest.Assert.equals(0,panel1.frame.x,null,{ fileName : "TestSpace.hx", lineNumber : 102, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(0,panel1.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 103, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(100,panel1.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 105, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(50,panel1.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 106, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(0,panel2.frame.x,null,{ fileName : "TestSpace.hx", lineNumber : 108, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(50,panel2.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 109, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(100,panel2.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 111, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(50,panel2.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 112, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	space.resize(400,400);
+	utest.Assert.equals(200,panel1.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 116, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(100,panel1.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 117, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(100,panel2.frame.y,null,{ fileName : "TestSpace.hx", lineNumber : 119, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(200,panel2.frame.width,null,{ fileName : "TestSpace.hx", lineNumber : 121, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	utest.Assert.equals(100,panel2.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 122, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
+	$s.pop();
+}
+rg.view.svg.panel.TestSpace.prototype.__class__ = rg.view.svg.panel.TestSpace;
 Std = function() { }
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
@@ -11355,6 +15616,139 @@ Std.random = function(x) {
 	$s.pop();
 }
 Std.prototype.__class__ = Std;
+rg.controller.factory.FactoryVariableIndependent = function(p) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.__name__ = ["rg","controller","factory","FactoryVariableIndependent"];
+rg.controller.factory.FactoryVariableIndependent.prototype.create = function(info) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::create");
+	var $spos = $s.length;
+	if(null == info.type) {
+		$s.pop();
+		return null;
+	}
+	var axiscreateer = new rg.controller.factory.FactoryAxis(), axis = axiscreateer.createDiscrete(info.type,info.values), min = info.min, max = info.max;
+	if(Std["is"](axis,rg.data.AxisTime)) {
+		var periodicity = ((function($this) {
+			var $r;
+			var $t = axis;
+			if(Std["is"]($t,rg.data.AxisTime)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).periodicity;
+		min = this.defaultMin(this.normalizeTime(info.min),periodicity);
+		max = this.defaultMax(this.normalizeTime(info.max),periodicity);
+	}
+	var $tmp = new rg.data.VariableIndependent(info.type,axis,min,max);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = function(v) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::normalizeTime");
+	var $spos = $s.length;
+	if(null == v || Std["is"](v,Float)) {
+		$s.pop();
+		return v;
+	}
+	if(Std["is"](v,Date)) {
+		var $tmp = ((function($this) {
+			var $r;
+			var $t = v;
+			if(Std["is"]($t,Date)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).getTime();
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](v,String)) {
+		var $tmp = thx.date.DateParser.parse(v).getTime();
+		$s.pop();
+		return $tmp;
+	}
+	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 43, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::defaultMin");
+	var $spos = $s.length;
+	if(null != min) {
+		$s.pop();
+		return min;
+	}
+	switch(periodicity) {
+	case "eternity":
+		$s.pop();
+		return null;
+	case "minute":
+		var $tmp = thx.date.DateParser.parse("360 minutes ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "hour":
+		var $tmp = thx.date.DateParser.parse("24 hours ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "day":
+		var $tmp = thx.date.DateParser.parse("30 days ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "week":
+		var $tmp = thx.date.DateParser.parse("16 weeks ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "month":
+		var $tmp = thx.date.DateParser.parse("12 months ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "year":
+		var $tmp = thx.date.DateParser.parse("6 years ago").getTime();
+		$s.pop();
+		return $tmp;
+	default:
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 67, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function(max,periodicity) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::defaultMax");
+	var $spos = $s.length;
+	if(null != max) {
+		$s.pop();
+		return max;
+	}
+	switch(periodicity) {
+	case "eternity":
+		$s.pop();
+		return null;
+	case "minute":case "hour":
+		var $tmp = thx.date.DateParser.parse("now").getTime();
+		$s.pop();
+		return $tmp;
+	case "day":case "week":case "month":case "year":
+		var $tmp = thx.date.DateParser.parse("today").getTime();
+		$s.pop();
+		return $tmp;
+	default:
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 84, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;
+rg.data.VariableIndependentContext = function(variable,partial) {
+	if( variable === $_ ) return;
+	$s.push("rg.data.VariableIndependentContext::new");
+	var $spos = $s.length;
+	this.variable = variable;
+	this.partial = partial;
+	$s.pop();
+}
+rg.data.VariableIndependentContext.__name__ = ["rg","data","VariableIndependentContext"];
+rg.data.VariableIndependentContext.prototype.partial = null;
+rg.data.VariableIndependentContext.prototype.variable = null;
+rg.data.VariableIndependentContext.prototype.__class__ = rg.data.VariableIndependentContext;
 rg.controller.info.TestInfoDataSource = function(p) {
 	$s.push("rg.controller.info.TestInfoDataSource::new");
 	var $spos = $s.length;
@@ -11366,58 +15760,49 @@ rg.controller.info.TestInfoDataSource.prototype.testDataSourceInfo = function() 
 	var $spos = $s.length;
 	var info = new rg.controller.info.InfoDataSource();
 	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@19");
+		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@21");
 		var $spos = $s.length;
-		info.feedOptions({ query : []});
+		rg.controller.info.Info.feed(info,{ query : []});
 		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 19, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
-	info.feedOptions({ query : ".impression"});
-	utest.Assert.equals(".impression",info.query,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 23, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 21, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	rg.controller.info.Info.feed(info,{ query : ".impression"});
+	utest.Assert.equals(".impression",info.query,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 25, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
 	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@27");
+		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@29");
 		var $spos = $s.length;
-		info.feedOptions({ path : []});
+		rg.controller.info.Info.feed(info,{ path : []});
 		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 27, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
-	info.feedOptions({ path : "/"});
-	utest.Assert.equals("/",info.path,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 31, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 29, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	rg.controller.info.Info.feed(info,{ path : "/"});
+	utest.Assert.equals("/",info.path,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 33, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
 	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@35");
+		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@37");
 		var $spos = $s.length;
-		info.feedOptions({ event : []});
+		rg.controller.info.Info.feed(info,{ event : []});
 		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 35, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
-	info.feedOptions({ event : "click"});
-	utest.Assert.equals("click",info.event,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 39, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 37, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	rg.controller.info.Info.feed(info,{ event : "click"});
+	utest.Assert.equals("click",info.event,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 41, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
 	utest.Assert.raises(function() {
-		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@43");
+		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@45");
 		var $spos = $s.length;
-		info.feedOptions({ data : 1});
+		rg.controller.info.Info.feed(info,{ data : 1});
 		$s.pop();
-	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 43, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
-	info.feedOptions({ data : "name"});
-	utest.Assert.equals("name",info.namedData,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 47, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
-	utest.Assert.isNull(info.data,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 48, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
-	info.feedOptions({ data : [1,2,3]});
-	utest.Assert.same([1,2,3],info.data,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 53, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 45, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	rg.controller.info.Info.feed(info,{ data : "name"});
+	utest.Assert.equals("name",info.namedData,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 49, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	utest.Assert.isNull(info.data,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 50, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	utest.Assert.raises(function() {
+		$s.push("rg.controller.info.TestInfoDataSource::testDataSourceInfo@54");
+		var $spos = $s.length;
+		rg.controller.info.Info.feed(info,{ data : [1,2,3]});
+		$s.pop();
+	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 54, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	rg.controller.info.Info.feed(info,{ data : [{ event : "click", properties : { count : 10}}]});
+	utest.Assert.same([{ event : "click", properties : { count : 10}}],info.data,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 57, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
 	$s.pop();
 }
 rg.controller.info.TestInfoDataSource.prototype.__class__ = rg.controller.info.TestInfoDataSource;
-rg.controller.info.TestInfoOption = function(p) {
-	$s.push("rg.controller.info.TestInfoOption::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.info.TestInfoOption.__name__ = ["rg","controller","info","TestInfoOption"];
-rg.controller.info.TestInfoOption.prototype.testSize = function() {
-	$s.push("rg.controller.info.TestInfoOption::testSize");
-	var $spos = $s.length;
-	var info = new rg.controller.info.InfoOption({ width : 10.3, height : 5});
-	utest.Assert.equals(10,info.width,null,{ fileName : "TestInfoOption.hx", lineNumber : 15, className : "rg.controller.info.TestInfoOption", methodName : "testSize"});
-	utest.Assert.equals(5,info.height,null,{ fileName : "TestInfoOption.hx", lineNumber : 16, className : "rg.controller.info.TestInfoOption", methodName : "testSize"});
-	$s.pop();
-}
-rg.controller.info.TestInfoOption.prototype.__class__ = rg.controller.info.TestInfoOption;
 haxe.Timer = function(time_ms) {
 	if( time_ms === $_ ) return;
 	$s.push("haxe.Timer::new");
@@ -11486,13 +15871,55 @@ haxe.Timer.prototype.run = function() {
 	$s.pop();
 }
 haxe.Timer.prototype.__class__ = haxe.Timer;
+rg.controller.factory.FactoryAxis = function(p) {
+	$s.push("rg.controller.factory.FactoryAxis::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactoryAxis.__name__ = ["rg","controller","factory","FactoryAxis"];
+rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,samples) {
+	$s.push("rg.controller.factory.FactoryAxis::create");
+	var $spos = $s.length;
+	if(null != samples) {
+		var $tmp = new rg.data.AxisOrdinal(samples);
+		$s.pop();
+		return $tmp;
+	} else if(isnumeric) {
+		var $tmp = new rg.data.AxisNumeric();
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return null;
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,samples) {
+	$s.push("rg.controller.factory.FactoryAxis::createDiscrete");
+	var $spos = $s.length;
+	if(rg.util.Properties.isTime(type)) {
+		var $tmp = new rg.data.AxisTime(rg.util.Properties.periodicity(type));
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = new rg.data.AxisOrdinal(samples);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryAxis.prototype.__class__ = rg.controller.factory.FactoryAxis;
+rg.controller.factory.AxisHint = { __ename__ : ["rg","controller","factory","AxisHint"], __constructs__ : ["Unknown","Numeric","Samples"] }
+rg.controller.factory.AxisHint.Unknown = ["Unknown",0];
+rg.controller.factory.AxisHint.Unknown.toString = $estr;
+rg.controller.factory.AxisHint.Unknown.__enum__ = rg.controller.factory.AxisHint;
+rg.controller.factory.AxisHint.Numeric = ["Numeric",1];
+rg.controller.factory.AxisHint.Numeric.toString = $estr;
+rg.controller.factory.AxisHint.Numeric.__enum__ = rg.controller.factory.AxisHint;
+rg.controller.factory.AxisHint.Samples = function(values) { var $x = ["Samples",2,values]; $x.__enum__ = rg.controller.factory.AxisHint; $x.toString = $estr; return $x; }
 rg.data.source.rgquery.QueryParser = function(p) {
-	if( p === $_ ) return;
 	$s.push("rg.data.source.rgquery.QueryParser::new");
 	var $spos = $s.length;
-	this.exp = [];
-	this.operation = rg.data.source.rgquery.QOperation.Count;
-	this.where = [];
 	$s.pop();
 }
 rg.data.source.rgquery.QueryParser.__name__ = ["rg","data","source","rgquery","QueryParser"];
@@ -11525,7 +15952,7 @@ rg.data.source.rgquery.QueryParser.parseValue = function(s) {
 	}
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 148, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
+		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 150, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
 		return $r;
 	}(this));
 	$s.pop();
@@ -11538,6 +15965,9 @@ rg.data.source.rgquery.QueryParser.prototype.where = null;
 rg.data.source.rgquery.QueryParser.prototype.parse = function(s) {
 	$s.push("rg.data.source.rgquery.QueryParser::parse");
 	var $spos = $s.length;
+	this.exp = [];
+	this.operation = rg.data.source.rgquery.QOperation.Count;
+	this.where = [];
 	this.parseExp(s);
 	var $tmp = { exp : this.exp, operation : this.operation, where : this.where};
 	$s.pop();
@@ -11548,13 +15978,18 @@ rg.data.source.rgquery.QueryParser.prototype.parseExp = function(e) {
 	$s.push("rg.data.source.rgquery.QueryParser::parseExp");
 	var $spos = $s.length;
 	var tokens = e.split("*").map(function(d,_) {
-		$s.push("rg.data.source.rgquery.QueryParser::parseExp@38");
+		$s.push("rg.data.source.rgquery.QueryParser::parseExp@37");
 		var $spos = $s.length;
 		var $tmp = StringTools.trim(d);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	});
+	if(tokens.length == 1 && "" == tokens[0]) {
+		this.exp.push(rg.data.source.rgquery.QExp.Event);
+		$s.pop();
+		return;
+	}
 	var _g = 0;
 	while(_g < tokens.length) {
 		var token = tokens[_g];
@@ -11585,13 +16020,13 @@ rg.data.source.rgquery.QueryParser.prototype.processProperty = function(token) {
 	if("(" == token.substr(0,1)) token = token.substr(1,token.length - 2);
 	var parts = rg.data.source.rgquery.QueryParser.TOKEN_SPLIT.split(token), name = null, limit = null, descending = null;
 	if(parts.length == 1) {
-		if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 82, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+		if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 84, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 		name = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1);
 		if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2));
 		if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3).toLowerCase() == "desc";
 		if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4)) this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(5));
 	} else {
-		if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 99, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+		if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 101, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 		name = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(1);
 		if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2));
 		if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3).toLowerCase() == "desc";
@@ -11599,7 +16034,7 @@ rg.data.source.rgquery.QueryParser.prototype.processProperty = function(token) {
 		var _g1 = 1, _g = parts.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 115, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 117, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(2),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(3));
 		}
 	}
@@ -11616,11 +16051,171 @@ rg.data.source.rgquery.QueryParser.prototype.addWhereCondition = function(name,o
 		this.where.push(rg.data.source.rgquery.QCondition.Equality(name,rg.data.source.rgquery.QueryParser.parseValue(StringTools.rtrim(value))));
 		break;
 	default:
-		throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 133, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
+		throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 135, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
 	}
 	$s.pop();
 }
 rg.data.source.rgquery.QueryParser.prototype.__class__ = rg.data.source.rgquery.QueryParser;
+thx.js.AccessText = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.AccessText::new");
+	var $spos = $s.length;
+	thx.js.Access.call(this,selection);
+	$s.pop();
+}
+thx.js.AccessText.__name__ = ["thx","js","AccessText"];
+thx.js.AccessText.__super__ = thx.js.Access;
+for(var k in thx.js.Access.prototype ) thx.js.AccessText.prototype[k] = thx.js.Access.prototype[k];
+thx.js.AccessText.prototype.get = function() {
+	$s.push("thx.js.AccessText::get");
+	var $spos = $s.length;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessText::get@16");
+		var $spos = $s.length;
+		var $tmp = node.textContent;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessText.prototype.string = function(v) {
+	$s.push("thx.js.AccessText::string");
+	var $spos = $s.length;
+	this.clear();
+	this.selection.eachNode(function(node,_) {
+		$s.push("thx.js.AccessText::string@22");
+		var $spos = $s.length;
+		node.textContent = v;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessText.prototype.clear = function() {
+	$s.push("thx.js.AccessText::clear");
+	var $spos = $s.length;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessText::clear@28");
+		var $spos = $s.length;
+		node.textContent = "";
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessText.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessText::float");
+	var $spos = $s.length;
+	this.clear();
+	this.selection.eachNode(function(node,_) {
+		$s.push("thx.js.AccessText::float@35");
+		var $spos = $s.length;
+		node.textContent = "" + v;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessText.prototype.stringNodef = function(v) {
+	$s.push("thx.js.AccessText::stringNodef");
+	var $spos = $s.length;
+	this.clear();
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessText::stringNodef@42");
+		var $spos = $s.length;
+		var x = v(node,i);
+		if(null != x) node.textContent = x;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessText.prototype.floatNodef = function(v) {
+	$s.push("thx.js.AccessText::floatNodef");
+	var $spos = $s.length;
+	this.clear();
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessText::floatNodef@52");
+		var $spos = $s.length;
+		var x = v(node,i);
+		if(null != x) node.textContent = "" + x;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessText.prototype.__class__ = thx.js.AccessText;
+thx.js.AccessDataText = function(selection) {
+	if( selection === $_ ) return;
+	$s.push("thx.js.AccessDataText::new");
+	var $spos = $s.length;
+	thx.js.AccessText.call(this,selection);
+	$s.pop();
+}
+thx.js.AccessDataText.__name__ = ["thx","js","AccessDataText"];
+thx.js.AccessDataText.__super__ = thx.js.AccessText;
+for(var k in thx.js.AccessText.prototype ) thx.js.AccessDataText.prototype[k] = thx.js.AccessText.prototype[k];
+thx.js.AccessDataText.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataText::stringf");
+	var $spos = $s.length;
+	this.clear();
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataText::stringf@70");
+		var $spos = $s.length;
+		var x = v(Reflect.field(node,"__data__"),i);
+		if(null != x) node.textContent = x;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataText.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataText::floatf");
+	var $spos = $s.length;
+	this.clear();
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataText::floatf@80");
+		var $spos = $s.length;
+		var x = v(Reflect.field(node,"__data__"),i);
+		if(null != x) node.textContent = "" + x;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataText.prototype.data = function() {
+	$s.push("thx.js.AccessDataText::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataText::data@89");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataText.prototype.__class__ = thx.js.AccessDataText;
 utest.Assertation = { __ename__ : ["utest","Assertation"], __constructs__ : ["Success","Failure","Error","SetupError","TeardownError","TimeoutError","AsyncError","Warning"] }
 utest.Assertation.Success = function(pos) { var $x = ["Success",0,pos]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
 utest.Assertation.Failure = function(msg,pos) { var $x = ["Failure",1,msg,pos]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
@@ -11630,6 +16225,101 @@ utest.Assertation.TeardownError = function(e,stack) { var $x = ["TeardownError",
 utest.Assertation.TimeoutError = function(missedAsyncs,stack) { var $x = ["TimeoutError",5,missedAsyncs,stack]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
 utest.Assertation.AsyncError = function(e,stack) { var $x = ["AsyncError",6,e,stack]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
 utest.Assertation.Warning = function(msg) { var $x = ["Warning",7,msg]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
+rg.data.DataRequest = function(cache,datacontexts) {
+	if( cache === $_ ) return;
+	$s.push("rg.data.DataRequest::new");
+	var $spos = $s.length;
+	this.cache = cache;
+	this.datacontexts = datacontexts;
+	$s.pop();
+}
+rg.data.DataRequest.__name__ = ["rg","data","DataRequest"];
+rg.data.DataRequest.prototype.queue = null;
+rg.data.DataRequest.prototype.cache = null;
+rg.data.DataRequest.prototype.datacontexts = null;
+rg.data.DataRequest.prototype.collectedData = null;
+rg.data.DataRequest.prototype.onData = function(data) {
+	$s.push("rg.data.DataRequest::onData");
+	var $spos = $s.length;
+	haxe.Log.trace(data,{ fileName : "DataRequest.hx", lineNumber : 26, className : "rg.data.DataRequest", methodName : "onData"});
+	$s.pop();
+}
+rg.data.DataRequest.prototype.request = function() {
+	$s.push("rg.data.DataRequest::request");
+	var $spos = $s.length;
+	this.collectedData = [];
+	this.queue = this.datacontexts.copy();
+	this.processQueue();
+	$s.pop();
+}
+rg.data.DataRequest.prototype.processQueue = function() {
+	$s.push("rg.data.DataRequest::processQueue");
+	var $spos = $s.length;
+	var next = this.queue.shift();
+	if(null == next) {
+		this.onData(this.collectedData);
+		$s.pop();
+		return;
+	}
+	next.data.onData.addOnce((function(f,a1) {
+		$s.push("rg.data.DataRequest::processQueue@44");
+		var $spos = $s.length;
+		var $tmp = function(a2) {
+			$s.push("rg.data.DataRequest::processQueue@44@44");
+			var $spos = $s.length;
+			var $tmp = f(a1,a2);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	})($closure(this,"receiveData"),next.name));
+	next.data.load();
+	$s.pop();
+}
+rg.data.DataRequest.prototype.receiveData = function(name,data) {
+	$s.push("rg.data.DataRequest::receiveData");
+	var $spos = $s.length;
+	if(null == name) this.cache.set(name,new rg.data.source.DataSourceArray(data));
+	this.collectedData = this.collectedData.concat(data);
+	this.processQueue();
+	$s.pop();
+}
+rg.data.DataRequest.prototype.__class__ = rg.data.DataRequest;
+rg.view.frame.StackItem = function(disposition) {
+	if( disposition === $_ ) return;
+	$s.push("rg.view.frame.StackItem::new");
+	var $spos = $s.length;
+	rg.view.frame.Frame.call(this);
+	this.setDisposition(disposition);
+	$s.pop();
+}
+rg.view.frame.StackItem.__name__ = ["rg","view","frame","StackItem"];
+rg.view.frame.StackItem.__super__ = rg.view.frame.Frame;
+for(var k in rg.view.frame.Frame.prototype ) rg.view.frame.StackItem.prototype[k] = rg.view.frame.Frame.prototype[k];
+rg.view.frame.StackItem.prototype.disposition = null;
+rg.view.frame.StackItem.prototype.parent = null;
+rg.view.frame.StackItem.prototype.setParent = function(v) {
+	$s.push("rg.view.frame.StackItem::setParent");
+	var $spos = $s.length;
+	if(null != this.parent) this.parent.removeChild(this);
+	var $tmp = this.parent = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.frame.StackItem.prototype.setDisposition = function(v) {
+	$s.push("rg.view.frame.StackItem::setDisposition");
+	var $spos = $s.length;
+	this.disposition = v;
+	if(null != this.parent) this.parent.reflow();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.frame.StackItem.prototype.__class__ = rg.view.frame.StackItem;
 Objects = function() { }
 Objects.__name__ = ["Objects"];
 Objects.field = function(o,fieldname,alt) {
@@ -11784,7 +16474,7 @@ Objects.clone = function(src) {
 	return $tmp;
 	$s.pop();
 }
-Objects._flatten = function(src,cum,arr) {
+Objects._flatten = function(src,cum,arr,levels,level) {
 	$s.push("Objects::_flatten");
 	var $spos = $s.length;
 	var _g = 0, _g1 = Reflect.fields(src);
@@ -11794,25 +16484,26 @@ Objects._flatten = function(src,cum,arr) {
 		var clone = Objects.clone(cum);
 		var v = Reflect.field(src,field);
 		clone.fields.push(field);
-		if(Reflect.isObject(v) && null == Type.getClass(v)) Objects._flatten(v,clone,arr); else {
+		if(Reflect.isObject(v) && null == Type.getClass(v) && (levels == 0 || level + 1 < levels)) Objects._flatten(v,clone,arr,levels,level + 1); else {
 			clone.value = v;
 			arr.push(clone);
 		}
 	}
 	$s.pop();
 }
-Objects.flatten = function(src) {
+Objects.flatten = function(src,levels) {
 	$s.push("Objects::flatten");
 	var $spos = $s.length;
+	if(levels == null) levels = 0;
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
 		var field = _g1[_g];
 		++_g;
 		var v = Reflect.field(src,field);
-		if(Reflect.isObject(v) && null == Type.getClass(v)) {
+		if(Reflect.isObject(v) && null == Type.getClass(v) && levels != 1) {
 			var item = { fields : [field], value : null};
-			Objects._flatten(v,item,arr);
+			Objects._flatten(v,item,arr,levels,1);
 		} else arr.push({ fields : [field], value : v});
 	}
 	$s.pop();
@@ -11915,54 +16606,207 @@ Objects.formatf = function(param,params,culture) {
 	$s.pop();
 }
 Objects.prototype.__class__ = Objects;
-rg.controller.info.InfoDataSource = function(o) {
-	if( o === $_ ) return;
+thx.js.AccessProperty = function(name,selection) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessProperty::new");
+	var $spos = $s.length;
+	thx.js.Access.call(this,selection);
+	this.name = name;
+	$s.pop();
+}
+thx.js.AccessProperty.__name__ = ["thx","js","AccessProperty"];
+thx.js.AccessProperty.__super__ = thx.js.Access;
+for(var k in thx.js.Access.prototype ) thx.js.AccessProperty.prototype[k] = thx.js.Access.prototype[k];
+thx.js.AccessProperty.prototype.name = null;
+thx.js.AccessProperty.prototype.get = function() {
+	$s.push("thx.js.AccessProperty::get");
+	var $spos = $s.length;
+	var n = this.name;
+	var $tmp = this.selection.firstNode(function(node) {
+		$s.push("thx.js.AccessProperty::get@21");
+		var $spos = $s.length;
+		var $tmp = Reflect.field(node,n);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessProperty.prototype.remove = function() {
+	$s.push("thx.js.AccessProperty::remove");
+	var $spos = $s.length;
+	var n = this.name;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessProperty::remove@27");
+		var $spos = $s.length;
+		Reflect.deleteField(node,n);
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessProperty.prototype.string = function(v) {
+	$s.push("thx.js.AccessProperty::string");
+	var $spos = $s.length;
+	var n = this.name;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessProperty::string@33");
+		var $spos = $s.length;
+		node[n] = v;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessProperty.prototype["float"] = function(v) {
+	$s.push("thx.js.AccessProperty::float");
+	var $spos = $s.length;
+	var s = "" + v;
+	var n = this.name;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessProperty::float@40");
+		var $spos = $s.length;
+		node[n] = s;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessProperty.prototype.__class__ = thx.js.AccessProperty;
+thx.js.AccessDataProperty = function(name,selection) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataProperty::new");
+	var $spos = $s.length;
+	thx.js.AccessProperty.call(this,name,selection);
+	$s.pop();
+}
+thx.js.AccessDataProperty.__name__ = ["thx","js","AccessDataProperty"];
+thx.js.AccessDataProperty.__super__ = thx.js.AccessProperty;
+for(var k in thx.js.AccessProperty.prototype ) thx.js.AccessDataProperty.prototype[k] = thx.js.AccessProperty.prototype[k];
+thx.js.AccessDataProperty.prototype.stringf = function(v) {
+	$s.push("thx.js.AccessDataProperty::stringf");
+	var $spos = $s.length;
+	var n = this.name;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataProperty::stringf@55");
+		var $spos = $s.length;
+		var s = v(Reflect.field(node,"__data__"),i);
+		if(null == s) Reflect.deleteField(node,n); else node[n] = s;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataProperty.prototype.floatf = function(v) {
+	$s.push("thx.js.AccessDataProperty::floatf");
+	var $spos = $s.length;
+	var n = this.name;
+	this.selection.eachNode(function(node,i) {
+		$s.push("thx.js.AccessDataProperty::floatf@67");
+		var $spos = $s.length;
+		var s = v(Reflect.field(node,"__data__"),i);
+		if(null == s) Reflect.deleteField(node,n); else node[n] = "" + s;
+		$s.pop();
+	});
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataProperty.prototype.data = function() {
+	$s.push("thx.js.AccessDataProperty::data");
+	var $spos = $s.length;
+	var $tmp = this.stringf(function(d,_) {
+		$s.push("thx.js.AccessDataProperty::data@79");
+		var $spos = $s.length;
+		var $tmp = "" + d;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataProperty.prototype.__class__ = thx.js.AccessDataProperty;
+rg.controller.info.TestInfoSvgOption = function(p) {
+	$s.push("rg.controller.info.TestInfoSvgOption::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.TestInfoSvgOption.__name__ = ["rg","controller","info","TestInfoSvgOption"];
+rg.controller.info.TestInfoSvgOption.prototype.testSize = function() {
+	$s.push("rg.controller.info.TestInfoSvgOption::testSize");
+	var $spos = $s.length;
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoSvgOption(),{ width : 10.3, height : 5});
+	utest.Assert.equals(10,info.width,null,{ fileName : "TestInfoSvgOption.hx", lineNumber : 16, className : "rg.controller.info.TestInfoSvgOption", methodName : "testSize"});
+	utest.Assert.equals(5,info.height,null,{ fileName : "TestInfoSvgOption.hx", lineNumber : 17, className : "rg.controller.info.TestInfoSvgOption", methodName : "testSize"});
+	$s.pop();
+}
+rg.controller.info.TestInfoSvgOption.prototype.__class__ = rg.controller.info.TestInfoSvgOption;
+rg.controller.info.InfoDataSource = function(p) {
 	$s.push("rg.controller.info.InfoDataSource::new");
 	var $spos = $s.length;
-	rg.controller.info.Info.call(this,o);
 	$s.pop();
 }
 rg.controller.info.InfoDataSource.__name__ = ["rg","controller","info","InfoDataSource"];
-rg.controller.info.InfoDataSource.__super__ = rg.controller.info.Info;
-for(var k in rg.controller.info.Info.prototype ) rg.controller.info.InfoDataSource.prototype[k] = rg.controller.info.Info.prototype[k];
-rg.controller.info.InfoDataSource.prototype.query = null;
-rg.controller.info.InfoDataSource.prototype.path = null;
-rg.controller.info.InfoDataSource.prototype.event = null;
-rg.controller.info.InfoDataSource.prototype.namedData = null;
-rg.controller.info.InfoDataSource.prototype.data = null;
-rg.controller.info.InfoDataSource.prototype.filters = function() {
+rg.controller.info.InfoDataSource.filters = function() {
 	$s.push("rg.controller.info.InfoDataSource::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "query", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@19");
+		$s.push("rg.controller.info.InfoDataSource::filters@24");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "path", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@23");
+		$s.push("rg.controller.info.InfoDataSource::filters@28");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "event", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@27");
+		$s.push("rg.controller.info.InfoDataSource::filters@32");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "name", validator : function(v) {
+		$s.push("rg.controller.info.InfoDataSource::filters@36");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "data", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@31");
+		$s.push("rg.controller.info.InfoDataSource::filters@40");
 		var $spos = $s.length;
-		var $tmp = Std["is"](v,String) || Std["is"](v,Array);
+		var $tmp = Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
+			$s.push("rg.controller.info.InfoDataSource::filters@40@40");
+			var $spos = $s.length;
+			var $tmp = Types.isAnonymous(v1.properties) && Std["is"](v1.event,String);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		});
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@32");
+		$s.push("rg.controller.info.InfoDataSource::filters@41");
 		var $spos = $s.length;
 		if(Std["is"](v,Array)) {
 			var $tmp = [{ field : "data", value : v}];
@@ -11979,6 +16823,12 @@ rg.controller.info.InfoDataSource.prototype.filters = function() {
 	return $tmp;
 	$s.pop();
 }
+rg.controller.info.InfoDataSource.prototype.query = null;
+rg.controller.info.InfoDataSource.prototype.path = null;
+rg.controller.info.InfoDataSource.prototype.event = null;
+rg.controller.info.InfoDataSource.prototype.namedData = null;
+rg.controller.info.InfoDataSource.prototype.data = null;
+rg.controller.info.InfoDataSource.prototype.name = null;
 rg.controller.info.InfoDataSource.prototype.__class__ = rg.controller.info.InfoDataSource;
 rg.data.VariableDependent = function(type,axis,min,max) {
 	if( type === $_ ) return;
@@ -11993,52 +16843,47 @@ rg.data.VariableDependent.__super__ = rg.data.Variable;
 for(var k in rg.data.Variable.prototype ) rg.data.VariableDependent.prototype[k] = rg.data.Variable.prototype[k];
 rg.data.VariableDependent.prototype.axis = null;
 rg.data.VariableDependent.prototype.__class__ = rg.data.VariableDependent;
-rg.controller.build.TestBuilderVariableDependent = function(p) {
-	$s.push("rg.controller.build.TestBuilderVariableDependent::new");
+thx.math.Ease = function() { }
+thx.math.Ease.__name__ = ["thx","math","Ease"];
+thx.math.Ease.mode = function(easemode,f) {
+	$s.push("thx.math.Ease::mode");
 	var $spos = $s.length;
+	if(null == f) f = thx.math.Equations.cubic;
+	if(null == easemode) easemode = thx.math.EaseMode.EaseIn;
+	switch( (easemode)[1] ) {
+	case 0:
+		$s.pop();
+		return f;
+	case 1:
+		var $tmp = function(t) {
+			$s.push("thx.math.Ease::mode@18");
+			var $spos = $s.length;
+			var $tmp = 1 - f(1 - t);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	case 2:
+		var $tmp = function(t) {
+			$s.push("thx.math.Ease::mode@20");
+			var $spos = $s.length;
+			var $tmp = .5 * (t < .5?f(2 * t):2 - f(2 - 2 * t));
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	case 3:
+		var $tmp = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Ease.mode(thx.math.EaseMode.EaseOut,f));
+		$s.pop();
+		return $tmp;
+	}
 	$s.pop();
 }
-rg.controller.build.TestBuilderVariableDependent.__name__ = ["rg","controller","build","TestBuilderVariableDependent"];
-rg.controller.build.TestBuilderVariableDependent.prototype.testIncompleteInfo = function() {
-	$s.push("rg.controller.build.TestBuilderVariableDependent::testIncompleteInfo");
-	var $spos = $s.length;
-	utest.Assert.isNull(new rg.controller.build.BuilderVariableDependent().build(new rg.controller.info.InfoVariable({ }),false),null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 19, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testIncompleteInfo"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderVariableDependent.prototype.testSimpleParameters = function() {
-	$s.push("rg.controller.build.TestBuilderVariableDependent::testSimpleParameters");
-	var $spos = $s.length;
-	var info = new rg.controller.info.InfoVariable({ view : [1.0,10.0], type : "count"}), builder = new rg.controller.build.BuilderVariableDependent(), variable = builder.build(info,true);
-	utest.Assert.notNull(variable,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 30, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	utest.Assert.same(1.0,variable.min,null,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 31, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	utest.Assert.same(10.0,variable.max,null,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 32, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	utest.Assert.equals("count",variable.type,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 33, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	info = new rg.controller.info.InfoVariable({ type : "count"});
-	variable = builder.build(info,true);
-	utest.Assert.isNull(variable.min,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 39, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	utest.Assert.isNull(variable.max,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 40, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	utest.Assert.equals("count",variable.type,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 41, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	info = new rg.controller.info.InfoVariable({ });
-	variable = builder.build(info,false);
-	utest.Assert.isNull(variable,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 45, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testSimpleParameters"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderVariableDependent.prototype.testAxisType = function() {
-	$s.push("rg.controller.build.TestBuilderVariableDependent::testAxisType");
-	var $spos = $s.length;
-	var info = new rg.controller.info.InfoVariable({ view : [1.0,10.0], type : ".impression"}), builder = new rg.controller.build.BuilderVariableDependent(), variable = builder.build(info,true);
-	utest.Assert["is"](variable.axis,rg.data.AxisNumeric,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 56, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testAxisType"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderVariableDependent.prototype.testValues = function() {
-	$s.push("rg.controller.build.TestBuilderVariableDependent::testValues");
-	var $spos = $s.length;
-	var info = new rg.controller.info.InfoVariable({ view : [1.0,10.0], values : [1.0,5.0,10.0], type : ".impression"}), builder = new rg.controller.build.BuilderVariableDependent(), variable = builder.build(info,true);
-	utest.Assert.same([1.0,5.0,10.0],Types["as"](variable.axis,rg.data.AxisOrdinal).getValues().array(),null,null,{ fileName : "TestBuilderVariableDependent.hx", lineNumber : 68, className : "rg.controller.build.TestBuilderVariableDependent", methodName : "testValues"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderVariableDependent.prototype.__class__ = rg.controller.build.TestBuilderVariableDependent;
-if(!thx.math) thx.math = {}
+thx.math.Ease.prototype.__class__ = thx.math.Ease;
 thx.math.Equations = function() { }
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
@@ -12178,6 +17023,73 @@ thx.math.Equations.polynomialf = function(e) {
 	$s.pop();
 }
 thx.math.Equations.prototype.__class__ = thx.math.Equations;
+rg.controller.info.InfoVisualizationOption = function(p) {
+	$s.push("rg.controller.info.InfoVisualizationOption::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoVisualizationOption.__name__ = ["rg","controller","info","InfoVisualizationOption"];
+rg.controller.info.InfoVisualizationOption.filters = function() {
+	$s.push("rg.controller.info.InfoVisualizationOption::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "axes", validator : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@22");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Array) || Reflect.isObject(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@23");
+		var $spos = $s.length;
+		var $tmp = [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			$s.push("rg.controller.info.InfoVisualizationOption::filters@23@28");
+			var $spos = $s.length;
+			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v)]}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "data", validator : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@34");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Array) || Reflect.isObject(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@35");
+		var $spos = $s.length;
+		var $tmp = [{ field : "data", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			$s.push("rg.controller.info.InfoVisualizationOption::filters@35@40");
+			var $spos = $s.length;
+			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v)]}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "options", validator : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@46");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoVisualizationOption.prototype.variables = null;
+rg.controller.info.InfoVisualizationOption.prototype.data = null;
+rg.controller.info.InfoVisualizationOption.prototype.options = null;
+rg.controller.info.InfoVisualizationOption.prototype.__class__ = rg.controller.info.InfoVisualizationOption;
 haxe.io.Error = { __ename__ : ["haxe","io","Error"], __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] }
 haxe.io.Error.Blocked = ["Blocked",0];
 haxe.io.Error.Blocked.toString = $estr;
@@ -12260,36 +17172,6 @@ rg.data.Tickmarks.forFloat = function(start,end,value) {
 	$s.pop();
 }
 rg.data.Tickmarks.prototype.__class__ = rg.data.Tickmarks;
-rg.controller.build.TestBuilderAxis = function(p) {
-	$s.push("rg.controller.build.TestBuilderAxis::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.build.TestBuilderAxis.__name__ = ["rg","controller","build","TestBuilderAxis"];
-rg.controller.build.TestBuilderAxis.prototype.testAxisTime = function() {
-	$s.push("rg.controller.build.TestBuilderAxis::testAxisTime");
-	var $spos = $s.length;
-	var builder = new rg.controller.build.BuilderAxis();
-	var axis = Types["as"](builder.buildDiscrete(rg.util.Properties.timeProperty("hour"),[1,2,3]),rg.data.AxisTime);
-	utest.Assert.notNull(axis,null,{ fileName : "TestBuilderAxis.hx", lineNumber : 20, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisTime"});
-	utest.Assert.equals("hour",axis.periodicity,null,{ fileName : "TestBuilderAxis.hx", lineNumber : 21, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisTime"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderAxis.prototype.testAxisOrdinal = function() {
-	$s.push("rg.controller.build.TestBuilderAxis::testAxisOrdinal");
-	var $spos = $s.length;
-	var builder = new rg.controller.build.BuilderAxis();
-	var axis = Types["as"](builder.buildDiscrete("count",[1,2,3]),rg.data.AxisOrdinal);
-	utest.Assert.equals(1,axis.getFirst(),null,{ fileName : "TestBuilderAxis.hx", lineNumber : 28, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.equals(3,axis.getLast(),null,{ fileName : "TestBuilderAxis.hx", lineNumber : 29, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.same(thx.collections.Set.ofArray([1,2,3]),axis.getValues(),null,null,{ fileName : "TestBuilderAxis.hx", lineNumber : 30, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisOrdinal"});
-	axis = Types["as"](builder.buildDiscrete("count",null),rg.data.AxisOrdinal);
-	utest.Assert.isNull(axis.getFirst(),null,{ fileName : "TestBuilderAxis.hx", lineNumber : 33, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.isNull(axis.getLast(),null,{ fileName : "TestBuilderAxis.hx", lineNumber : 34, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.equals(0,axis.getValues().length,null,{ fileName : "TestBuilderAxis.hx", lineNumber : 35, className : "rg.controller.build.TestBuilderAxis", methodName : "testAxisOrdinal"});
-	$s.pop();
-}
-rg.controller.build.TestBuilderAxis.prototype.__class__ = rg.controller.build.TestBuilderAxis;
 rg.data.DataProcessor = function(sources) {
 	if( sources === $_ ) return;
 	$s.push("rg.data.DataProcessor::new");
@@ -12297,16 +17179,13 @@ rg.data.DataProcessor = function(sources) {
 	this.sources = sources;
 	sources.onLoad.add($closure(this,"process"));
 	this.onData = new hxevents.Dispatcher();
-	this.variablesToFill = [];
 	$s.pop();
 }
 rg.data.DataProcessor.__name__ = ["rg","data","DataProcessor"];
 rg.data.DataProcessor.prototype.sources = null;
 rg.data.DataProcessor.prototype.onData = null;
-rg.data.DataProcessor.prototype.variablesToFill = null;
 rg.data.DataProcessor.prototype.independentVariables = null;
-rg.data.DataProcessor.prototype.dependentVariable = null;
-rg.data.DataProcessor.prototype.defaultSegment = null;
+rg.data.DataProcessor.prototype.dependentVariables = null;
 rg.data.DataProcessor.prototype.transform = function(s) {
 	$s.push("rg.data.DataProcessor::transform");
 	var $spos = $s.length;
@@ -12315,14 +17194,41 @@ rg.data.DataProcessor.prototype.transform = function(s) {
 	return $tmp;
 	$s.pop();
 }
+rg.data.DataProcessor.prototype.load = function() {
+	$s.push("rg.data.DataProcessor::load");
+	var $spos = $s.length;
+	var tmin = null, tmax = null;
+	var _g = 0, _g1 = this.independentVariables;
+	while(_g < _g1.length) {
+		var variable = _g1[_g];
+		++_g;
+		var axis = Types["as"](variable.variable.axis,rg.data.AxisTime);
+		if(null == axis) continue;
+		tmin = variable.variable.min;
+		tmax = variable.variable.max;
+		break;
+	}
+	if(null != tmin || null != tmax) {
+		var $it0 = this.sources.iterator();
+		while( $it0.hasNext() ) {
+			var ds = $it0.next();
+			var query = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
+			if(null == query) continue;
+			query.start = tmin;
+			query.end = tmax;
+		}
+	}
+	this.sources.load();
+	$s.pop();
+}
 rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 	$s.push("rg.data.DataProcessor::filterSubset");
 	var $spos = $s.length;
 	var $tmp = Arrays.filter(subset,(function(f,a1) {
-		$s.push("rg.data.DataProcessor::filterSubset@39");
+		$s.push("rg.data.DataProcessor::filterSubset@63");
 		var $spos = $s.length;
 		var $tmp = function(a2) {
-			$s.push("rg.data.DataProcessor::filterSubset@39@39");
+			$s.push("rg.data.DataProcessor::filterSubset@63@63");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2);
 			$s.pop();
@@ -12343,7 +17249,7 @@ rg.data.DataProcessor.prototype.filterDatapoint = function(variables,dp) {
 	var _g1 = 0, _g = this.independentVariables.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		if(Reflect.field(dp.properties,this.independentVariables[i].type) != variables[i]) {
+		if(Reflect.field(dp.properties,this.independentVariables[i].variable.type) != variables[i]) {
 			$s.pop();
 			return false;
 		}
@@ -12355,54 +17261,136 @@ rg.data.DataProcessor.prototype.filterDatapoint = function(variables,dp) {
 rg.data.DataProcessor.prototype.process = function(data) {
 	$s.push("rg.data.DataProcessor::process");
 	var $spos = $s.length;
+	if(null == data || data.length == 0 || data[0].length == 0) {
+		this.onData.dispatch([]);
+		$s.pop();
+		return;
+	}
 	this.fillIndependentVariables(data);
-	var variablesset = this.getVariableValues(), segments = new thx.collections.HashList();
-	var _g = 0;
-	while(_g < variablesset.length) {
-		var variables = variablesset[_g];
-		++_g;
+	var dataPoints = [];
+	if(0 == this.independentVariables.length) {
 		var subsets = [];
-		var _g1 = 0;
-		while(_g1 < data.length) {
-			var d = data[_g1];
-			++_g1;
-			subsets.push(this.filterSubset(d,variables));
+		var _g = 0;
+		while(_g < data.length) {
+			var d = data[_g];
+			++_g;
+			subsets.push(d);
 		}
-		if(subsets.length > 0 && subsets[0].length > 0) {
-			var ds = this.transform(subsets), first = subsets[0][0], p, o, segment;
+		dataPoints = this.pushDataPoints(subsets,dataPoints);
+	} else {
+		var variablesset = this.getVariableIndependentValues();
+		var _g = 0;
+		while(_g < variablesset.length) {
+			var values = variablesset[_g];
+			++_g;
+			var subsets = [];
 			var _g1 = 0;
-			while(_g1 < ds.length) {
-				var o1 = ds[_g1];
+			while(_g1 < data.length) {
+				var d = data[_g1];
 				++_g1;
-				segment = null == o1.segment?this.defaultSegment:o1.segment;
-				var segmentData = segments.get(segment);
-				if(null == segmentData) {
-					segmentData = [];
-					segments.set(segment,segmentData);
+				subsets.push(this.filterSubset(d,values));
+			}
+			dataPoints = this.pushDataPoints(subsets,dataPoints);
+		}
+	}
+	this.fillDependentVariables(dataPoints);
+	this.onData.dispatch(dataPoints);
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.pushDataPoints = function(subsets,dataPoints) {
+	$s.push("rg.data.DataProcessor::pushDataPoints");
+	var $spos = $s.length;
+	if(subsets.length == 0 || subsets[0].length == 0) {
+		$s.pop();
+		return dataPoints;
+	}
+	var $tmp = dataPoints.concat(this.transform(subsets));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
+	$s.push("rg.data.DataProcessor::fillDependentVariables");
+	var $spos = $s.length;
+	var _g = 0, _g1 = this.dependentVariables;
+	while(_g < _g1.length) {
+		var ctx = _g1[_g];
+		++_g;
+		if(ctx.partial) {
+			var variable = [ctx.variable], values = Arrays.filter(data.map((function(variable) {
+				$s.push("rg.data.DataProcessor::fillDependentVariables@127");
+				var $spos = $s.length;
+				var $tmp = function(dp,_) {
+					$s.push("rg.data.DataProcessor::fillDependentVariables@127@127");
+					var $spos = $s.length;
+					var $tmp = Reflect.field(dp.properties,variable[0].type);
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(variable)),(function() {
+				$s.push("rg.data.DataProcessor::fillDependentVariables@127");
+				var $spos = $s.length;
+				var $tmp = function(v) {
+					$s.push("rg.data.DataProcessor::fillDependentVariables@127@127");
+					var $spos = $s.length;
+					var $tmp = null != v;
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})());
+			if(values.length == 0) continue;
+			var value, compare = Dynamics.comparef(value = values[0]);
+			if(null == variable[0].axis) variable[0] = ctx.variable = new rg.data.VariableDependent(variable[0].type,new rg.controller.factory.FactoryAxis().create(variable[0].type,Std["is"](value,Float)),variable[0].min,variable[0].max);
+			if(null == variable[0].min) {
+				variable[0].min = value;
+				var _g3 = 1, _g2 = values.length;
+				while(_g3 < _g2) {
+					var j = _g3++;
+					value = values[j];
+					if(compare(variable[0].min,value) > 0) variable[0].min = value;
 				}
-				segmentData.push(o1);
+			}
+			if(null == variable[0].max) {
+				variable[0].max = value;
+				var _g3 = 1, _g2 = values.length;
+				while(_g3 < _g2) {
+					var j = _g3++;
+					value = values[j];
+					if(compare(variable[0].max,value) < 0) variable[0].max = value;
+				}
 			}
 		}
 	}
-	this.onData.dispatch(segments);
 	$s.pop();
 }
 rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
 	$s.push("rg.data.DataProcessor::fillIndependentVariables");
 	var $spos = $s.length;
-	var toprocess = [];
-	var _g1 = 0, _g = this.independentVariables.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		if(this.variablesToFill[i] == true && Std["is"](this.independentVariables[i].axis,rg.data.AxisOrdinal)) toprocess.push(i);
+	var toprocess = false;
+	var _g = 0, _g1 = this.independentVariables;
+	while(_g < _g1.length) {
+		var ctx = _g1[_g];
+		++_g;
+		if(ctx.partial) {
+			toprocess = true;
+			break;
+		}
 	}
-	if(toprocess.length > 0) {
+	if(toprocess) {
 		var flatten = Arrays.flatten(data);
-		var _g = 0;
-		while(_g < toprocess.length) {
-			var pos = toprocess[_g];
+		var _g = 0, _g1 = this.independentVariables;
+		while(_g < _g1.length) {
+			var ctx = _g1[_g];
 			++_g;
-			this.fillIndependentVariable(this.independentVariables[pos],flatten);
+			if(ctx.partial) this.fillIndependentVariable(ctx.variable,flatten);
 		}
 	}
 	$s.pop();
@@ -12426,13 +17414,13 @@ rg.data.DataProcessor.prototype.fillIndependentVariable = function(variable,data
 	}
 	$s.pop();
 }
-rg.data.DataProcessor.prototype.getVariableValues = function() {
-	$s.push("rg.data.DataProcessor::getVariableValues");
+rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
+	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableValues@137");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@212");
 		var $spos = $s.length;
-		var $tmp = d.range();
+		var $tmp = d.variable.range();
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -12511,20 +17499,6 @@ thx.color.PerceivedLuminance.Perceived.__enum__ = thx.color.PerceivedLuminance;
 thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
 thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
-rg.controller.build.BuilderDataSource = function(p) {
-	$s.push("rg.controller.build.BuilderDataSource::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.build.BuilderDataSource.__name__ = ["rg","controller","build","BuilderDataSource"];
-rg.controller.build.BuilderDataSource.prototype.build = function(info) {
-	$s.push("rg.controller.build.BuilderDataSource::build");
-	var $spos = $s.length;
-	$s.pop();
-	return null;
-	$s.pop();
-}
-rg.controller.build.BuilderDataSource.prototype.__class__ = rg.controller.build.BuilderDataSource;
 utest.Assert = function() { }
 utest.Assert.__name__ = ["utest","Assert"];
 utest.Assert.results = null;
@@ -12553,7 +17527,7 @@ utest.Assert.isNull = function(value,msg,pos) {
 utest.Assert.notNull = function(value,msg,pos) {
 	$s.push("utest.Assert::notNull");
 	var $spos = $s.length;
-	if(null == msg) msg = "expected false";
+	if(null == msg) msg = "expected not null but was null";
 	utest.Assert.isTrue(value != null,msg,pos);
 	$s.pop();
 }
@@ -13246,6 +18220,322 @@ utest.Assert.typeToString = function(t) {
 	$s.pop();
 }
 utest.Assert.prototype.__class__ = utest.Assert;
+thx.js.Timer = function() { }
+thx.js.Timer.__name__ = ["thx","js","Timer"];
+thx.js.Timer.timer = function(f,delay) {
+	$s.push("thx.js.Timer::timer");
+	var $spos = $s.length;
+	if(delay == null) delay = 0.0;
+	var now = Date.now().getTime(), found = false, t0, t1 = thx.js.Timer.queue;
+	if(!Math.isFinite(delay)) {
+		$s.pop();
+		return;
+	}
+	while(null != t1) {
+		if(Reflect.compareMethods(f,t1.f)) {
+			t1.then = now;
+			t1.delay = delay;
+			found = true;
+			break;
+		}
+		t0 = t1;
+		t1 = t1.next;
+	}
+	if(!found) thx.js.Timer.queue = { f : f, then : now, delay : delay, next : thx.js.Timer.queue, flush : false};
+	if(0 == thx.js.Timer.interval) {
+		thx.js.Timer.timeout = clearTimeout(thx.js.Timer.timeout);
+		thx.js.Timer.interval = 1;
+		window.requestAnimationFrame(thx.js.Timer._step);
+	}
+	$s.pop();
+}
+thx.js.Timer.step = function() {
+	$s.push("thx.js.Timer::step");
+	var $spos = $s.length;
+	var elapsed, now = Date.now().getTime(), t1 = thx.js.Timer.queue;
+	while(null != t1) {
+		elapsed = now - t1.then;
+		if(elapsed > t1.delay) t1.flush = t1.f(elapsed);
+		t1 = t1.next;
+	}
+	var delay = thx.js.Timer._flush() - now;
+	if(delay > 24) {
+		if(Math.isFinite(delay)) {
+			clearTimeout(thx.js.Timer.timeout);
+			thx.js.Timer.timeout = setTimeout(thx.js.Timer._step,delay);
+		}
+		thx.js.Timer.interval = 0;
+	} else {
+		thx.js.Timer.interval = 1;
+		window.requestAnimationFrame(thx.js.Timer._step);
+	}
+	$s.pop();
+}
+thx.js.Timer.flush = function() {
+	$s.push("thx.js.Timer::flush");
+	var $spos = $s.length;
+	var elapsed, now = Date.now().getTime(), t1 = thx.js.Timer.queue;
+	while(null != t1) {
+		elapsed = now - t1.then;
+		if(t1.delay == 0) t1.flush = t1.f(elapsed);
+		t1 = t1.next;
+	}
+	thx.js.Timer._flush();
+	$s.pop();
+}
+thx.js.Timer._flush = function() {
+	$s.push("thx.js.Timer::_flush");
+	var $spos = $s.length;
+	var t0 = null, t1 = thx.js.Timer.queue, then = Math.POSITIVE_INFINITY;
+	while(null != t1) if(t1.flush) t1 = null != t0?t0.next = t1.next:thx.js.Timer.queue = t1.next; else {
+		then = Math.min(then,t1.then + t1.delay);
+		t1 = (t0 = t1).next;
+	}
+	$s.pop();
+	return then;
+	$s.pop();
+}
+thx.js.Timer.prototype.__class__ = thx.js.Timer;
+thx.js.AccessTweenAttribute = function(name,transition,tweens) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessTweenAttribute::new");
+	var $spos = $s.length;
+	thx.js.AccessTween.call(this,transition,tweens);
+	this.name = name;
+	this.qname = thx.xml.Namespace.qualify(name);
+	$s.pop();
+}
+thx.js.AccessTweenAttribute.__name__ = ["thx","js","AccessTweenAttribute"];
+thx.js.AccessTweenAttribute.__super__ = thx.js.AccessTween;
+for(var k in thx.js.AccessTween.prototype ) thx.js.AccessTweenAttribute.prototype[k] = thx.js.AccessTween.prototype[k];
+thx.js.AccessTweenAttribute.prototype.name = null;
+thx.js.AccessTweenAttribute.prototype.qname = null;
+thx.js.AccessTweenAttribute.prototype.stringNodef = function(f) {
+	$s.push("thx.js.AccessTweenAttribute::stringNodef");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(f));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenAttribute.prototype.string = function(value) {
+	$s.push("thx.js.AccessTweenAttribute::string");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTween(value));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenAttribute.prototype.stringTweenNodef = function(tween) {
+	$s.push("thx.js.AccessTweenAttribute::stringTweenNodef");
+	var $spos = $s.length;
+	var name = this.name;
+	var attrTween = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@37");
+		var $spos = $s.length;
+		var f = tween(d,i,d.getAttribute(name));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@37@40");
+			var $spos = $s.length;
+			d.setAttribute(name,f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	var attrTweenNS = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@45");
+		var $spos = $s.length;
+		var f = tween(d,i,d.getAttributeNS(name.space,name.local));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::stringTweenNodef@45@48");
+			var $spos = $s.length;
+			d.setAttributeNS(name.space,name.local,f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenAttribute.prototype.floatNodef = function(f) {
+	$s.push("thx.js.AccessTweenAttribute::floatNodef");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(f));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenAttribute.prototype["float"] = function(value) {
+	$s.push("thx.js.AccessTweenAttribute::float");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTween(value));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenAttribute.prototype.floatTweenNodef = function(tween) {
+	$s.push("thx.js.AccessTweenAttribute::floatTweenNodef");
+	var $spos = $s.length;
+	var name = this.name;
+	var attrTween = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@71");
+		var $spos = $s.length;
+		var f = tween(d,i,Std.parseFloat(d.getAttribute(name)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@71@74");
+			var $spos = $s.length;
+			d.setAttribute(name,"" + f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	var attrTweenNS = function(d,i) {
+		$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@79");
+		var $spos = $s.length;
+		var f = tween(d,i,Std.parseFloat(d.getAttributeNS(name.space,name.local)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenAttribute::floatTweenNodef@79@82");
+			var $spos = $s.length;
+			d.setAttributeNS(name.space,name.local,"" + f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenAttribute.prototype.__class__ = thx.js.AccessTweenAttribute;
+thx.js.AccessDataTweenAttribute = function(name,transition,tweens) {
+	if( name === $_ ) return;
+	$s.push("thx.js.AccessDataTweenAttribute::new");
+	var $spos = $s.length;
+	thx.js.AccessTweenAttribute.call(this,name,transition,tweens);
+	$s.pop();
+}
+thx.js.AccessDataTweenAttribute.__name__ = ["thx","js","AccessDataTweenAttribute"];
+thx.js.AccessDataTweenAttribute.__super__ = thx.js.AccessTweenAttribute;
+for(var k in thx.js.AccessTweenAttribute.prototype ) thx.js.AccessDataTweenAttribute.prototype[k] = thx.js.AccessTweenAttribute.prototype[k];
+thx.js.AccessDataTweenAttribute.prototype.stringf = function(f) {
+	$s.push("thx.js.AccessDataTweenAttribute::stringf");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::stringf@101");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenAttribute.prototype.floatf = function(f) {
+	$s.push("thx.js.AccessDataTweenAttribute::floatf");
+	var $spos = $s.length;
+	var $tmp = this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::floatf@106");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenAttribute.prototype.stringTweenf = function(tween) {
+	$s.push("thx.js.AccessDataTweenAttribute::stringTweenf");
+	var $spos = $s.length;
+	var name = this.name;
+	var attrTween = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@113");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(n,"__data__"),i,n.getAttribute(name));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@113@116");
+			var $spos = $s.length;
+			n.setAttribute(name,f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	var attrTweenNS = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@121");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(n,"__data__"),i,n.getAttributeNS(name.space,name.local));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::stringTweenf@121@124");
+			var $spos = $s.length;
+			n.setAttributeNS(name.space,name.local,f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenAttribute.prototype.floatTweenf = function(tween) {
+	$s.push("thx.js.AccessDataTweenAttribute::floatTweenf");
+	var $spos = $s.length;
+	var name = this.name;
+	var attrTween = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@137");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(n,"__data__"),i,Std.parseFloat(n.getAttribute(name)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@137@140");
+			var $spos = $s.length;
+			n.setAttribute(name,"" + f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	var attrTweenNS = function(n,i) {
+		$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@145");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(n,"__data__"),i,Std.parseFloat(n.getAttributeNS(name.space,name.local)));
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenAttribute::floatTweenf@145@148");
+			var $spos = $s.length;
+			n.setAttributeNS(name.space,name.local,"" + f(t));
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenAttribute.prototype.__class__ = thx.js.AccessDataTweenAttribute;
 thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
 	if( decimals === $_ ) return;
 	$s.push("thx.culture.core.NumberInfo::new");
@@ -13995,25 +19285,25 @@ rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.event = n
 rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.transform = function(data) {
 	$s.push("rg.data.source.rgquery.transform.TransformCountTimeIntersect::transform");
 	var $spos = $s.length;
-	var values = Objects.flatten(data), properties = this.properties, unit = this.unit;
-	if(null == values || 0 == values.length) {
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) {
 		var $tmp = [];
 		$s.pop();
 		return $tmp;
 	}
 	var result = [];
 	var _g = 0;
-	while(_g < values.length) {
-		var item = values[_g];
+	while(_g < items.length) {
+		var item = items[_g];
 		++_g;
-		var arr = item.value, values1 = item.fields.copy(), timestamp = values1.pop();
+		var arr = item.value.data;
 		var _g2 = 0, _g1 = arr.length;
 		while(_g2 < _g1) {
 			var i = _g2++;
 			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,values1.map(rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue));
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue));
 			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[arr[i][0],arr[i][1]]);
-			result.push({ properties : p, event : this.event});
+			result.push({ properties : p, event : this.event, segment : null});
 		}
 	}
 	$s.pop();
@@ -14040,17 +19330,17 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.event = null
 rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = function(data) {
 	$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::transform");
 	var $spos = $s.length;
-	var values = Reflect.field(data,this.periodicity), properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
-	if(null == values) {
+	var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
+	if(null == data.data) {
 		var $tmp = [];
 		$s.pop();
 		return $tmp;
 	}
-	var $tmp = values.map(function(d,_) {
+	var $tmp = data.data.map(function(d,_) {
 		$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::transform@34");
 		var $spos = $s.length;
 		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit],[d[0],d[1]]);
-		var $tmp = { properties : p, event : event};
+		var $tmp = { properties : p, event : event, segment : null};
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -14061,26 +19351,6 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = 
 }
 rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeSeries;
 rg.data.source.rgquery.transform.TransformCountTimeSeries.__interfaces__ = [rg.data.source.ITransform];
-rg.controller.build.BuilderVariableDependent = function(p) {
-	$s.push("rg.controller.build.BuilderVariableDependent::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.build.BuilderVariableDependent.__name__ = ["rg","controller","build","BuilderVariableDependent"];
-rg.controller.build.BuilderVariableDependent.prototype.build = function(info,isnumeric) {
-	$s.push("rg.controller.build.BuilderVariableDependent::build");
-	var $spos = $s.length;
-	if(null == info.type) {
-		$s.pop();
-		return null;
-	}
-	var axisbuilder = new rg.controller.build.BuilderAxis(), axis = axisbuilder.build(info.type,isnumeric,info.values);
-	var $tmp = new rg.data.VariableDependent(info.type,axis,info.min,info.max);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.build.BuilderVariableDependent.prototype.__class__ = rg.controller.build.BuilderVariableDependent;
 utest.ui.common.FixtureResult = function(methodName) {
 	if( methodName === $_ ) return;
 	$s.push("utest.ui.common.FixtureResult::new");
@@ -14154,6 +19424,24 @@ js.Boot.__res = {}
 $s = [];
 $e = [];
 js.Boot.__init();
+{
+	js.Lib.document = document;
+	js.Lib.window = window;
+	onerror = function(msg,url,line) {
+		var stack = $s.copy();
+		var f = js.Lib.onerror;
+		$s.splice(0,$s.length);
+		if( f == null ) {
+			var i = stack.length;
+			var s = "";
+			while( --i >= 0 )
+				s += "Called from "+stack[i]+"\n";
+			alert(msg+"\n\n"+s);
+			return false;
+		}
+		return f(msg,stack);
+	}
+}
 thx.cultures.EnUS.getCulture();
 {
 	thx.color.NamedColors.byName = new Hash();
@@ -14404,22 +19692,1409 @@ thx.cultures.EnUS.getCulture();
 	thx.color.NamedColors.byName.set("yellow green",thx.color.NamedColors.yellowgreen);
 }
 {
-	js.Lib.document = document;
-	js.Lib.window = window;
-	onerror = function(msg,url,line) {
-		var stack = $s.copy();
-		var f = js.Lib.onerror;
-		$s.splice(0,$s.length);
-		if( f == null ) {
-			var i = stack.length;
-			var s = "";
-			while( --i >= 0 )
-				s += "Called from "+stack[i]+"\n";
-			alert(msg+"\n\n"+s);
-			return false;
-		}
-		return f(msg,stack);
+	/*!
+ * Sizzle CSS Selector Engine
+ *  Copyright 2011, The Dojo Foundation
+ *  Released under the MIT, BSD, and GPL Licenses.
+ *  More information: http://sizzlejs.com/
+ */
+(function(){
+
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
+	done = 0,
+	toString = Object.prototype.toString,
+	hasDuplicate = false,
+	baseHasDuplicate = true,
+	rBackslash = /\\/g,
+	rNonWord = /\W/;
+
+// Here we check if the JavaScript engine is using some sort of
+// optimization where it does not always call our comparision
+// function. If that is the case, discard the hasDuplicate value.
+//   Thus far that includes Google Chrome.
+[0, 0].sort(function() {
+	baseHasDuplicate = false;
+	return 0;
+});
+
+var Sizzle = function( selector, context, results, seed ) {
+	results = results || [];
+	context = context || document;
+
+	var origContext = context;
+
+	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
+		return [];
 	}
+	
+	if ( !selector || typeof selector !== "string" ) {
+		return results;
+	}
+
+	var m, set, checkSet, extra, ret, cur, pop, i,
+		prune = true,
+		contextXML = Sizzle.isXML( context ),
+		parts = [],
+		soFar = selector;
+	
+	// Reset the position of the chunker regexp (start from head)
+	do {
+		chunker.exec( "" );
+		m = chunker.exec( soFar );
+
+		if ( m ) {
+			soFar = m[3];
+		
+			parts.push( m[1] );
+		
+			if ( m[2] ) {
+				extra = m[3];
+				break;
+			}
+		}
+	} while ( m );
+
+	if ( parts.length > 1 && origPOS.exec( selector ) ) {
+
+		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
+			set = posProcess( parts[0] + parts[1], context );
+
+		} else {
+			set = Expr.relative[ parts[0] ] ?
+				[ context ] :
+				Sizzle( parts.shift(), context );
+
+			while ( parts.length ) {
+				selector = parts.shift();
+
+				if ( Expr.relative[ selector ] ) {
+					selector += parts.shift();
+				}
+				
+				set = posProcess( selector, set );
+			}
+		}
+
+	} else {
+		// Take a shortcut and set the context if the root selector is an ID
+		// (but not if it'll be faster if the inner selector is an ID)
+		if ( !seed && parts.length > 1 && context.nodeType === 9 && !contextXML &&
+				Expr.match.ID.test(parts[0]) && !Expr.match.ID.test(parts[parts.length - 1]) ) {
+
+			ret = Sizzle.find( parts.shift(), context, contextXML );
+			context = ret.expr ?
+				Sizzle.filter( ret.expr, ret.set )[0] :
+				ret.set[0];
+		}
+
+		if ( context ) {
+			ret = seed ?
+				{ expr: parts.pop(), set: makeArray(seed) } :
+				Sizzle.find( parts.pop(), parts.length === 1 && (parts[0] === "~" || parts[0] === "+") && context.parentNode ? context.parentNode : context, contextXML );
+
+			set = ret.expr ?
+				Sizzle.filter( ret.expr, ret.set ) :
+				ret.set;
+
+			if ( parts.length > 0 ) {
+				checkSet = makeArray( set );
+
+			} else {
+				prune = false;
+			}
+
+			while ( parts.length ) {
+				cur = parts.pop();
+				pop = cur;
+
+				if ( !Expr.relative[ cur ] ) {
+					cur = "";
+				} else {
+					pop = parts.pop();
+				}
+
+				if ( pop == null ) {
+					pop = context;
+				}
+
+				Expr.relative[ cur ]( checkSet, pop, contextXML );
+			}
+
+		} else {
+			checkSet = parts = [];
+		}
+	}
+
+	if ( !checkSet ) {
+		checkSet = set;
+	}
+
+	if ( !checkSet ) {
+		Sizzle.error( cur || selector );
+	}
+
+	if ( toString.call(checkSet) === "[object Array]" ) {
+		if ( !prune ) {
+			results.push.apply( results, checkSet );
+
+		} else if ( context && context.nodeType === 1 ) {
+			for ( i = 0; checkSet[i] != null; i++ ) {
+				if ( checkSet[i] && (checkSet[i] === true || checkSet[i].nodeType === 1 && Sizzle.contains(context, checkSet[i])) ) {
+					results.push( set[i] );
+				}
+			}
+
+		} else {
+			for ( i = 0; checkSet[i] != null; i++ ) {
+				if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
+					results.push( set[i] );
+				}
+			}
+		}
+
+	} else {
+		makeArray( checkSet, results );
+	}
+
+	if ( extra ) {
+		Sizzle( extra, origContext, results, seed );
+		Sizzle.uniqueSort( results );
+	}
+
+	return results;
+};
+
+Sizzle.uniqueSort = function( results ) {
+	if ( sortOrder ) {
+		hasDuplicate = baseHasDuplicate;
+		results.sort( sortOrder );
+
+		if ( hasDuplicate ) {
+			for ( var i = 1; i < results.length; i++ ) {
+				if ( results[i] === results[ i - 1 ] ) {
+					results.splice( i--, 1 );
+				}
+			}
+		}
+	}
+
+	return results;
+};
+
+Sizzle.matches = function( expr, set ) {
+	return Sizzle( expr, null, null, set );
+};
+
+Sizzle.matchesSelector = function( node, expr ) {
+	return Sizzle( expr, null, null, [node] ).length > 0;
+};
+
+Sizzle.find = function( expr, context, isXML ) {
+	var set;
+
+	if ( !expr ) {
+		return [];
+	}
+
+	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
+		var match,
+			type = Expr.order[i];
+		
+		if ( (match = Expr.leftMatch[ type ].exec( expr )) ) {
+			var left = match[1];
+			match.splice( 1, 1 );
+
+			if ( left.substr( left.length - 1 ) !== "\\" ) {
+				match[1] = (match[1] || "").replace( rBackslash, "" );
+				set = Expr.find[ type ]( match, context, isXML );
+
+				if ( set != null ) {
+					expr = expr.replace( Expr.match[ type ], "" );
+					break;
+				}
+			}
+		}
+	}
+
+	if ( !set ) {
+		set = typeof context.getElementsByTagName !== "undefined" ?
+			context.getElementsByTagName( "*" ) :
+			[];
+	}
+
+	return { set: set, expr: expr };
+};
+
+Sizzle.filter = function( expr, set, inplace, not ) {
+	var match, anyFound,
+		old = expr,
+		result = [],
+		curLoop = set,
+		isXMLFilter = set && set[0] && Sizzle.isXML( set[0] );
+
+	while ( expr && set.length ) {
+		for ( var type in Expr.filter ) {
+			if ( (match = Expr.leftMatch[ type ].exec( expr )) != null && match[2] ) {
+				var found, item,
+					filter = Expr.filter[ type ],
+					left = match[1];
+
+				anyFound = false;
+
+				match.splice(1,1);
+
+				if ( left.substr( left.length - 1 ) === "\\" ) {
+					continue;
+				}
+
+				if ( curLoop === result ) {
+					result = [];
+				}
+
+				if ( Expr.preFilter[ type ] ) {
+					match = Expr.preFilter[ type ]( match, curLoop, inplace, result, not, isXMLFilter );
+
+					if ( !match ) {
+						anyFound = found = true;
+
+					} else if ( match === true ) {
+						continue;
+					}
+				}
+
+				if ( match ) {
+					for ( var i = 0; (item = curLoop[i]) != null; i++ ) {
+						if ( item ) {
+							found = filter( item, match, i, curLoop );
+							var pass = not ^ !!found;
+
+							if ( inplace && found != null ) {
+								if ( pass ) {
+									anyFound = true;
+
+								} else {
+									curLoop[i] = false;
+								}
+
+							} else if ( pass ) {
+								result.push( item );
+								anyFound = true;
+							}
+						}
+					}
+				}
+
+				if ( found !== undefined ) {
+					if ( !inplace ) {
+						curLoop = result;
+					}
+
+					expr = expr.replace( Expr.match[ type ], "" );
+
+					if ( !anyFound ) {
+						return [];
+					}
+
+					break;
+				}
+			}
+		}
+
+		// Improper expression
+		if ( expr === old ) {
+			if ( anyFound == null ) {
+				Sizzle.error( expr );
+
+			} else {
+				break;
+			}
+		}
+
+		old = expr;
+	}
+
+	return curLoop;
+};
+
+Sizzle.error = function( msg ) {
+	throw "Syntax error, unrecognized expression: " + msg;
+};
+
+var Expr = Sizzle.selectors = {
+	order: [ "ID", "NAME", "TAG" ],
+
+	match: {
+		ID: /#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
+		CLASS: /\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
+		NAME: /\[name=['"]*((?:[\w\u00c0-\uFFFF\-]|\\.)+)['"]*\]/,
+		ATTR: /\[\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?=)\s*(?:(['"])(.*?)\3|(#?(?:[\w\u00c0-\uFFFF\-]|\\.)*)|)|)\s*\]/,
+		TAG: /^((?:[\w\u00c0-\uFFFF\*\-]|\\.)+)/,
+		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
+		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/,
+		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/
+	},
+
+	leftMatch: {},
+
+	attrMap: {
+		"class": "className",
+		"for": "htmlFor"
+	},
+
+	attrHandle: {
+		href: function( elem ) {
+			return elem.getAttribute( "href" );
+		},
+		type: function( elem ) {
+			return elem.getAttribute( "type" );
+		}
+	},
+
+	relative: {
+		"+": function(checkSet, part){
+			var isPartStr = typeof part === "string",
+				isTag = isPartStr && !rNonWord.test( part ),
+				isPartStrNotTag = isPartStr && !isTag;
+
+			if ( isTag ) {
+				part = part.toLowerCase();
+			}
+
+			for ( var i = 0, l = checkSet.length, elem; i < l; i++ ) {
+				if ( (elem = checkSet[i]) ) {
+					while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {}
+
+					checkSet[i] = isPartStrNotTag || elem && elem.nodeName.toLowerCase() === part ?
+						elem || false :
+						elem === part;
+				}
+			}
+
+			if ( isPartStrNotTag ) {
+				Sizzle.filter( part, checkSet, true );
+			}
+		},
+
+		">": function( checkSet, part ) {
+			var elem,
+				isPartStr = typeof part === "string",
+				i = 0,
+				l = checkSet.length;
+
+			if ( isPartStr && !rNonWord.test( part ) ) {
+				part = part.toLowerCase();
+
+				for ( ; i < l; i++ ) {
+					elem = checkSet[i];
+
+					if ( elem ) {
+						var parent = elem.parentNode;
+						checkSet[i] = parent.nodeName.toLowerCase() === part ? parent : false;
+					}
+				}
+
+			} else {
+				for ( ; i < l; i++ ) {
+					elem = checkSet[i];
+
+					if ( elem ) {
+						checkSet[i] = isPartStr ?
+							elem.parentNode :
+							elem.parentNode === part;
+					}
+				}
+
+				if ( isPartStr ) {
+					Sizzle.filter( part, checkSet, true );
+				}
+			}
+		},
+
+		"": function(checkSet, part, isXML){
+			var nodeCheck,
+				doneName = done++,
+				checkFn = dirCheck;
+
+			if ( typeof part === "string" && !rNonWord.test( part ) ) {
+				part = part.toLowerCase();
+				nodeCheck = part;
+				checkFn = dirNodeCheck;
+			}
+
+			checkFn( "parentNode", part, doneName, checkSet, nodeCheck, isXML );
+		},
+
+		"~": function( checkSet, part, isXML ) {
+			var nodeCheck,
+				doneName = done++,
+				checkFn = dirCheck;
+
+			if ( typeof part === "string" && !rNonWord.test( part ) ) {
+				part = part.toLowerCase();
+				nodeCheck = part;
+				checkFn = dirNodeCheck;
+			}
+
+			checkFn( "previousSibling", part, doneName, checkSet, nodeCheck, isXML );
+		}
+	},
+
+	find: {
+		ID: function( match, context, isXML ) {
+			if ( typeof context.getElementById !== "undefined" && !isXML ) {
+				var m = context.getElementById(match[1]);
+				// Check parentNode to catch when Blackberry 4.6 returns
+				// nodes that are no longer in the document #6963
+				return m && m.parentNode ? [m] : [];
+			}
+		},
+
+		NAME: function( match, context ) {
+			if ( typeof context.getElementsByName !== "undefined" ) {
+				var ret = [],
+					results = context.getElementsByName( match[1] );
+
+				for ( var i = 0, l = results.length; i < l; i++ ) {
+					if ( results[i].getAttribute("name") === match[1] ) {
+						ret.push( results[i] );
+					}
+				}
+
+				return ret.length === 0 ? null : ret;
+			}
+		},
+
+		TAG: function( match, context ) {
+			if ( typeof context.getElementsByTagName !== "undefined" ) {
+				return context.getElementsByTagName( match[1] );
+			}
+		}
+	},
+	preFilter: {
+		CLASS: function( match, curLoop, inplace, result, not, isXML ) {
+			match = " " + match[1].replace( rBackslash, "" ) + " ";
+
+			if ( isXML ) {
+				return match;
+			}
+
+			for ( var i = 0, elem; (elem = curLoop[i]) != null; i++ ) {
+				if ( elem ) {
+					if ( not ^ (elem.className && (" " + elem.className + " ").replace(/[\t\n\r]/g, " ").indexOf(match) >= 0) ) {
+						if ( !inplace ) {
+							result.push( elem );
+						}
+
+					} else if ( inplace ) {
+						curLoop[i] = false;
+					}
+				}
+			}
+
+			return false;
+		},
+
+		ID: function( match ) {
+			return match[1].replace( rBackslash, "" );
+		},
+
+		TAG: function( match, curLoop ) {
+			return match[1].replace( rBackslash, "" ).toLowerCase();
+		},
+
+		CHILD: function( match ) {
+			if ( match[1] === "nth" ) {
+				if ( !match[2] ) {
+					Sizzle.error( match[0] );
+				}
+
+				match[2] = match[2].replace(/^\+|\s*/g, '');
+
+				// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
+				var test = /(-?)(\d*)(?:n([+\-]?\d*))?/.exec(
+					match[2] === "even" && "2n" || match[2] === "odd" && "2n+1" ||
+					!/\D/.test( match[2] ) && "0n+" + match[2] || match[2]);
+
+				// calculate the numbers (first)n+(last) including if they are negative
+				match[2] = (test[1] + (test[2] || 1)) - 0;
+				match[3] = test[3] - 0;
+			}
+			else if ( match[2] ) {
+				Sizzle.error( match[0] );
+			}
+
+			// TODO: Move to normal caching system
+			match[0] = done++;
+
+			return match;
+		},
+
+		ATTR: function( match, curLoop, inplace, result, not, isXML ) {
+			var name = match[1] = match[1].replace( rBackslash, "" );
+			
+			if ( !isXML && Expr.attrMap[name] ) {
+				match[1] = Expr.attrMap[name];
+			}
+
+			// Handle if an un-quoted value was used
+			match[4] = ( match[4] || match[5] || "" ).replace( rBackslash, "" );
+
+			if ( match[2] === "~=" ) {
+				match[4] = " " + match[4] + " ";
+			}
+
+			return match;
+		},
+
+		PSEUDO: function( match, curLoop, inplace, result, not ) {
+			if ( match[1] === "not" ) {
+				// If we're dealing with a complex expression, or a simple one
+				if ( ( chunker.exec(match[3]) || "" ).length > 1 || /^\w/.test(match[3]) ) {
+					match[3] = Sizzle(match[3], null, null, curLoop);
+
+				} else {
+					var ret = Sizzle.filter(match[3], curLoop, inplace, true ^ not);
+
+					if ( !inplace ) {
+						result.push.apply( result, ret );
+					}
+
+					return false;
+				}
+
+			} else if ( Expr.match.POS.test( match[0] ) || Expr.match.CHILD.test( match[0] ) ) {
+				return true;
+			}
+			
+			return match;
+		},
+
+		POS: function( match ) {
+			match.unshift( true );
+
+			return match;
+		}
+	},
+	
+	filters: {
+		enabled: function( elem ) {
+			return elem.disabled === false && elem.type !== "hidden";
+		},
+
+		disabled: function( elem ) {
+			return elem.disabled === true;
+		},
+
+		checked: function( elem ) {
+			return elem.checked === true;
+		},
+		
+		selected: function( elem ) {
+			// Accessing this property makes selected-by-default
+			// options in Safari work properly
+			if ( elem.parentNode ) {
+				elem.parentNode.selectedIndex;
+			}
+			
+			return elem.selected === true;
+		},
+
+		parent: function( elem ) {
+			return !!elem.firstChild;
+		},
+
+		empty: function( elem ) {
+			return !elem.firstChild;
+		},
+
+		has: function( elem, i, match ) {
+			return !!Sizzle( match[3], elem ).length;
+		},
+
+		header: function( elem ) {
+			return (/h\d/i).test( elem.nodeName );
+		},
+
+		text: function( elem ) {
+			var attr = elem.getAttribute( "type" ), type = elem.type;
+			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
+			// use getAttribute instead to test this case
+			return "text" === type && ( attr === type || attr === null );
+		},
+
+		radio: function( elem ) {
+			return "radio" === elem.type;
+		},
+
+		checkbox: function( elem ) {
+			return "checkbox" === elem.type;
+		},
+
+		file: function( elem ) {
+			return "file" === elem.type;
+		},
+		password: function( elem ) {
+			return "password" === elem.type;
+		},
+
+		submit: function( elem ) {
+			return "submit" === elem.type;
+		},
+
+		image: function( elem ) {
+			return "image" === elem.type;
+		},
+
+		reset: function( elem ) {
+			return "reset" === elem.type;
+		},
+
+		button: function( elem ) {
+			return "button" === elem.type || elem.nodeName.toLowerCase() === "button";
+		},
+
+		input: function( elem ) {
+			return (/input|select|textarea|button/i).test( elem.nodeName );
+		}
+	},
+	setFilters: {
+		first: function( elem, i ) {
+			return i === 0;
+		},
+
+		last: function( elem, i, match, array ) {
+			return i === array.length - 1;
+		},
+
+		even: function( elem, i ) {
+			return i % 2 === 0;
+		},
+
+		odd: function( elem, i ) {
+			return i % 2 === 1;
+		},
+
+		lt: function( elem, i, match ) {
+			return i < match[3] - 0;
+		},
+
+		gt: function( elem, i, match ) {
+			return i > match[3] - 0;
+		},
+
+		nth: function( elem, i, match ) {
+			return match[3] - 0 === i;
+		},
+
+		eq: function( elem, i, match ) {
+			return match[3] - 0 === i;
+		}
+	},
+	filter: {
+		PSEUDO: function( elem, match, i, array ) {
+			var name = match[1],
+				filter = Expr.filters[ name ];
+
+			if ( filter ) {
+				return filter( elem, i, match, array );
+
+			} else if ( name === "contains" ) {
+				return (elem.textContent || elem.innerText || Sizzle.getText([ elem ]) || "").indexOf(match[3]) >= 0;
+
+			} else if ( name === "not" ) {
+				var not = match[3];
+
+				for ( var j = 0, l = not.length; j < l; j++ ) {
+					if ( not[j] === elem ) {
+						return false;
+					}
+				}
+
+				return true;
+
+			} else {
+				Sizzle.error( name );
+			}
+		},
+
+		CHILD: function( elem, match ) {
+			var type = match[1],
+				node = elem;
+
+			switch ( type ) {
+				case "only":
+				case "first":
+					while ( (node = node.previousSibling) )	 {
+						if ( node.nodeType === 1 ) {
+							return false;
+						}
+					}
+
+					if ( type === "first" ) {
+						return true;
+					}
+
+					node = elem;
+
+				case "last":
+					while ( (node = node.nextSibling) )	 {
+						if ( node.nodeType === 1 ) {
+							return false;
+						}
+					}
+
+					return true;
+
+				case "nth":
+					var first = match[2],
+						last = match[3];
+
+					if ( first === 1 && last === 0 ) {
+						return true;
+					}
+					
+					var doneName = match[0],
+						parent = elem.parentNode;
+	
+					if ( parent && (parent.sizcache !== doneName || !elem.nodeIndex) ) {
+						var count = 0;
+						
+						for ( node = parent.firstChild; node; node = node.nextSibling ) {
+							if ( node.nodeType === 1 ) {
+								node.nodeIndex = ++count;
+							}
+						}
+
+						parent.sizcache = doneName;
+					}
+					
+					var diff = elem.nodeIndex - last;
+
+					if ( first === 0 ) {
+						return diff === 0;
+
+					} else {
+						return ( diff % first === 0 && diff / first >= 0 );
+					}
+			}
+		},
+
+		ID: function( elem, match ) {
+			return elem.nodeType === 1 && elem.getAttribute("id") === match;
+		},
+
+		TAG: function( elem, match ) {
+			return (match === "*" && elem.nodeType === 1) || elem.nodeName.toLowerCase() === match;
+		},
+		
+		CLASS: function( elem, match ) {
+			return (" " + (elem.className || elem.getAttribute("class")) + " ")
+				.indexOf( match ) > -1;
+		},
+
+		ATTR: function( elem, match ) {
+			var name = match[1],
+				result = Expr.attrHandle[ name ] ?
+					Expr.attrHandle[ name ]( elem ) :
+					elem[ name ] != null ?
+						elem[ name ] :
+						elem.getAttribute( name ),
+				value = result + "",
+				type = match[2],
+				check = match[4];
+
+			return result == null ?
+				type === "!=" :
+				type === "=" ?
+				value === check :
+				type === "*=" ?
+				value.indexOf(check) >= 0 :
+				type === "~=" ?
+				(" " + value + " ").indexOf(check) >= 0 :
+				!check ?
+				value && result !== false :
+				type === "!=" ?
+				value !== check :
+				type === "^=" ?
+				value.indexOf(check) === 0 :
+				type === "$=" ?
+				value.substr(value.length - check.length) === check :
+				type === "|=" ?
+				value === check || value.substr(0, check.length + 1) === check + "-" :
+				false;
+		},
+
+		POS: function( elem, match, i, array ) {
+			var name = match[2],
+				filter = Expr.setFilters[ name ];
+
+			if ( filter ) {
+				return filter( elem, i, match, array );
+			}
+		}
+	}
+};
+
+var origPOS = Expr.match.POS,
+	fescape = function(all, num){
+		return "\\" + (num - 0 + 1);
+	};
+
+for ( var type in Expr.match ) {
+	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + (/(?![^\[]*\])(?![^\(]*\))/.source) );
+	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, fescape) );
+}
+
+var makeArray = function( array, results ) {
+	array = Array.prototype.slice.call( array, 0 );
+
+	if ( results ) {
+		results.push.apply( results, array );
+		return results;
+	}
+	
+	return array;
+};
+
+// Perform a simple check to determine if the browser is capable of
+// converting a NodeList to an array using builtin methods.
+// Also verifies that the returned array holds DOM nodes
+// (which is not the case in the Blackberry browser)
+try {
+	Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
+
+// Provide a fallback method if it does not work
+} catch( e ) {
+	makeArray = function( array, results ) {
+		var i = 0,
+			ret = results || [];
+
+		if ( toString.call(array) === "[object Array]" ) {
+			Array.prototype.push.apply( ret, array );
+
+		} else {
+			if ( typeof array.length === "number" ) {
+				for ( var l = array.length; i < l; i++ ) {
+					ret.push( array[i] );
+				}
+
+			} else {
+				for ( ; array[i]; i++ ) {
+					ret.push( array[i] );
+				}
+			}
+		}
+
+		return ret;
+	};
+}
+
+var sortOrder, siblingCheck;
+
+if ( document.documentElement.compareDocumentPosition ) {
+	sortOrder = function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+
+		if ( !a.compareDocumentPosition || !b.compareDocumentPosition ) {
+			return a.compareDocumentPosition ? -1 : 1;
+		}
+
+		return a.compareDocumentPosition(b) & 4 ? -1 : 1;
+	};
+
+} else {
+	sortOrder = function( a, b ) {
+		var al, bl,
+			ap = [],
+			bp = [],
+			aup = a.parentNode,
+			bup = b.parentNode,
+			cur = aup;
+
+		// The nodes are identical, we can exit early
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+
+		// If the nodes are siblings (or identical) we can do a quick check
+		} else if ( aup === bup ) {
+			return siblingCheck( a, b );
+
+		// If no parents were found then the nodes are disconnected
+		} else if ( !aup ) {
+			return -1;
+
+		} else if ( !bup ) {
+			return 1;
+		}
+
+		// Otherwise they're somewhere else in the tree so we need
+		// to build up a full list of the parentNodes for comparison
+		while ( cur ) {
+			ap.unshift( cur );
+			cur = cur.parentNode;
+		}
+
+		cur = bup;
+
+		while ( cur ) {
+			bp.unshift( cur );
+			cur = cur.parentNode;
+		}
+
+		al = ap.length;
+		bl = bp.length;
+
+		// Start walking down the tree looking for a discrepancy
+		for ( var i = 0; i < al && i < bl; i++ ) {
+			if ( ap[i] !== bp[i] ) {
+				return siblingCheck( ap[i], bp[i] );
+			}
+		}
+
+		// We ended someplace up the tree so do a sibling check
+		return i === al ?
+			siblingCheck( a, bp[i], -1 ) :
+			siblingCheck( ap[i], b, 1 );
+	};
+
+	siblingCheck = function( a, b, ret ) {
+		if ( a === b ) {
+			return ret;
+		}
+
+		var cur = a.nextSibling;
+
+		while ( cur ) {
+			if ( cur === b ) {
+				return -1;
+			}
+
+			cur = cur.nextSibling;
+		}
+
+		return 1;
+	};
+}
+
+// Utility function for retreiving the text value of an array of DOM nodes
+Sizzle.getText = function( elems ) {
+	var ret = "", elem;
+
+	for ( var i = 0; elems[i]; i++ ) {
+		elem = elems[i];
+
+		// Get the text from text nodes and CDATA nodes
+		if ( elem.nodeType === 3 || elem.nodeType === 4 ) {
+			ret += elem.nodeValue;
+
+		// Traverse everything else, except comment nodes
+		} else if ( elem.nodeType !== 8 ) {
+			ret += Sizzle.getText( elem.childNodes );
+		}
+	}
+
+	return ret;
+};
+
+// Check to see if the browser returns elements by name when
+// querying by getElementById (and provide a workaround)
+(function(){
+	// We're going to inject a fake input element with a specified name
+	var form = document.createElement("div"),
+		id = "script" + (new Date()).getTime(),
+		root = document.documentElement;
+
+	form.innerHTML = "<a name='" + id + "'/>";
+
+	// Inject it into the root element, check its status, and remove it quickly
+	root.insertBefore( form, root.firstChild );
+
+	// The workaround has to do additional checks after a getElementById
+	// Which slows things down for other browsers (hence the branching)
+	if ( document.getElementById( id ) ) {
+		Expr.find.ID = function( match, context, isXML ) {
+			if ( typeof context.getElementById !== "undefined" && !isXML ) {
+				var m = context.getElementById(match[1]);
+
+				return m ?
+					m.id === match[1] || typeof m.getAttributeNode !== "undefined" && m.getAttributeNode("id").nodeValue === match[1] ?
+						[m] :
+						undefined :
+					[];
+			}
+		};
+
+		Expr.filter.ID = function( elem, match ) {
+			var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
+
+			return elem.nodeType === 1 && node && node.nodeValue === match;
+		};
+	}
+
+	root.removeChild( form );
+
+	// release memory in IE
+	root = form = null;
+})();
+
+(function(){
+	// Check to see if the browser returns only elements
+	// when doing getElementsByTagName("*")
+
+	// Create a fake element
+	var div = document.createElement("div");
+	div.appendChild( document.createComment("") );
+
+	// Make sure no comments are found
+	if ( div.getElementsByTagName("*").length > 0 ) {
+		Expr.find.TAG = function( match, context ) {
+			var results = context.getElementsByTagName( match[1] );
+
+			// Filter out possible comments
+			if ( match[1] === "*" ) {
+				var tmp = [];
+
+				for ( var i = 0; results[i]; i++ ) {
+					if ( results[i].nodeType === 1 ) {
+						tmp.push( results[i] );
+					}
+				}
+
+				results = tmp;
+			}
+
+			return results;
+		};
+	}
+
+	// Check to see if an attribute returns normalized href attributes
+	div.innerHTML = "<a href='#'></a>";
+
+	if ( div.firstChild && typeof div.firstChild.getAttribute !== "undefined" &&
+			div.firstChild.getAttribute("href") !== "#" ) {
+
+		Expr.attrHandle.href = function( elem ) {
+			return elem.getAttribute( "href", 2 );
+		};
+	}
+
+	// release memory in IE
+	div = null;
+})();
+
+if ( document.querySelectorAll ) {
+	(function(){
+		var oldSizzle = Sizzle,
+			div = document.createElement("div"),
+			id = "__sizzle__";
+
+		div.innerHTML = "<p class='TEST'></p>";
+
+		// Safari can't handle uppercase or unicode characters when
+		// in quirks mode.
+		if ( div.querySelectorAll && div.querySelectorAll(".TEST").length === 0 ) {
+			return;
+		}
+	
+		Sizzle = function( query, context, extra, seed ) {
+			context = context || document;
+
+			// Only use querySelectorAll on non-XML documents
+			// (ID selectors don't work in non-HTML documents)
+			if ( !seed && !Sizzle.isXML(context) ) {
+				// See if we find a selector to speed up
+				var match = /^(\w+$)|^\.([\w\-]+$)|^#([\w\-]+$)/.exec( query );
+				
+				if ( match && (context.nodeType === 1 || context.nodeType === 9) ) {
+					// Speed-up: Sizzle("TAG")
+					if ( match[1] ) {
+						return makeArray( context.getElementsByTagName( query ), extra );
+					
+					// Speed-up: Sizzle(".CLASS")
+					} else if ( match[2] && Expr.find.CLASS && context.getElementsByClassName ) {
+						return makeArray( context.getElementsByClassName( match[2] ), extra );
+					}
+				}
+				
+				if ( context.nodeType === 9 ) {
+					// Speed-up: Sizzle("body")
+					// The body element only exists once, optimize finding it
+					if ( query === "body" && context.body ) {
+						return makeArray( [ context.body ], extra );
+						
+					// Speed-up: Sizzle("#ID")
+					} else if ( match && match[3] ) {
+						var elem = context.getElementById( match[3] );
+
+						// Check parentNode to catch when Blackberry 4.6 returns
+						// nodes that are no longer in the document #6963
+						if ( elem && elem.parentNode ) {
+							// Handle the case where IE and Opera return items
+							// by name instead of ID
+							if ( elem.id === match[3] ) {
+								return makeArray( [ elem ], extra );
+							}
+							
+						} else {
+							return makeArray( [], extra );
+						}
+					}
+					
+					try {
+						return makeArray( context.querySelectorAll(query), extra );
+					} catch(qsaError) {}
+
+				// qSA works strangely on Element-rooted queries
+				// We can work around this by specifying an extra ID on the root
+				// and working up from there (Thanks to Andrew Dupont for the technique)
+				// IE 8 doesn't work on object elements
+				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
+					var oldContext = context,
+						old = context.getAttribute( "id" ),
+						nid = old || id,
+						hasParent = context.parentNode,
+						relativeHierarchySelector = /^\s*[+~]/.test( query );
+
+					if ( !old ) {
+						context.setAttribute( "id", nid );
+					} else {
+						nid = nid.replace( /'/g, "\\$&" );
+					}
+					if ( relativeHierarchySelector && hasParent ) {
+						context = context.parentNode;
+					}
+
+					try {
+						if ( !relativeHierarchySelector || hasParent ) {
+							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + query ), extra );
+						}
+
+					} catch(pseudoError) {
+					} finally {
+						if ( !old ) {
+							oldContext.removeAttribute( "id" );
+						}
+					}
+				}
+			}
+		
+			return oldSizzle(query, context, extra, seed);
+		};
+
+		for ( var prop in oldSizzle ) {
+			Sizzle[ prop ] = oldSizzle[ prop ];
+		}
+
+		// release memory in IE
+		div = null;
+	})();
+}
+
+(function(){
+	var html = document.documentElement,
+		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msMatchesSelector;
+
+	if ( matches ) {
+		// Check to see if it's possible to do matchesSelector
+		// on a disconnected node (IE 9 fails this)
+		var disconnectedMatch = !matches.call( document.createElement( "div" ), "div" ),
+			pseudoWorks = false;
+
+		try {
+			// This should fail with an exception
+			// Gecko does not error, returns false instead
+			matches.call( document.documentElement, "[test!='']:sizzle" );
+	
+		} catch( pseudoError ) {
+			pseudoWorks = true;
+		}
+
+		Sizzle.matchesSelector = function( node, expr ) {
+			// Make sure that attribute selectors are quoted
+			expr = expr.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
+
+			if ( !Sizzle.isXML( node ) ) {
+				try {
+					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
+						var ret = matches.call( node, expr );
+
+						// IE 9's matchesSelector returns false on disconnected nodes
+						if ( ret || !disconnectedMatch ||
+								// As well, disconnected nodes are said to be in a document
+								// fragment in IE 9, so check for that
+								node.document && node.document.nodeType !== 11 ) {
+							return ret;
+						}
+					}
+				} catch(e) {}
+			}
+
+			return Sizzle(expr, null, null, [node]).length > 0;
+		};
+	}
+})();
+
+(function(){
+	var div = document.createElement("div");
+
+	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
+
+	// Opera can't find a second classname (in 9.6)
+	// Also, make sure that getElementsByClassName actually exists
+	if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
+		return;
+	}
+
+	// Safari caches class attributes, doesn't catch changes (in 3.2)
+	div.lastChild.className = "e";
+
+	if ( div.getElementsByClassName("e").length === 1 ) {
+		return;
+	}
+	
+	Expr.order.splice(1, 0, "CLASS");
+	Expr.find.CLASS = function( match, context, isXML ) {
+		if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
+			return context.getElementsByClassName(match[1]);
+		}
+	};
+
+	// release memory in IE
+	div = null;
+})();
+
+function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+
+		if ( elem ) {
+			var match = false;
+
+			elem = elem[dir];
+
+			while ( elem ) {
+				if ( elem.sizcache === doneName ) {
+					match = checkSet[elem.sizset];
+					break;
+				}
+
+				if ( elem.nodeType === 1 && !isXML ){
+					elem.sizcache = doneName;
+					elem.sizset = i;
+				}
+
+				if ( elem.nodeName.toLowerCase() === cur ) {
+					match = elem;
+					break;
+				}
+
+				elem = elem[dir];
+			}
+
+			checkSet[i] = match;
+		}
+	}
+}
+
+function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+
+		if ( elem ) {
+			var match = false;
+			
+			elem = elem[dir];
+
+			while ( elem ) {
+				if ( elem.sizcache === doneName ) {
+					match = checkSet[elem.sizset];
+					break;
+				}
+
+				if ( elem.nodeType === 1 ) {
+					if ( !isXML ) {
+						elem.sizcache = doneName;
+						elem.sizset = i;
+					}
+
+					if ( typeof cur !== "string" ) {
+						if ( elem === cur ) {
+							match = true;
+							break;
+						}
+
+					} else if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
+						match = elem;
+						break;
+					}
+				}
+
+				elem = elem[dir];
+			}
+
+			checkSet[i] = match;
+		}
+	}
+}
+
+if ( document.documentElement.contains ) {
+	Sizzle.contains = function( a, b ) {
+		return a !== b && (a.contains ? a.contains(b) : true);
+	};
+
+} else if ( document.documentElement.compareDocumentPosition ) {
+	Sizzle.contains = function( a, b ) {
+		return !!(a.compareDocumentPosition(b) & 16);
+	};
+
+} else {
+	Sizzle.contains = function() {
+		return false;
+	};
+}
+
+Sizzle.isXML = function( elem ) {
+	// documentElement is verified for cases where it doesn't yet exist
+	// (such as loading iframes in IE - #4833)
+	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
+
+	return documentElement ? documentElement.nodeName !== "HTML" : false;
+};
+
+var posProcess = function( selector, context ) {
+	var match,
+		tmpSet = [],
+		later = "",
+		root = context.nodeType ? [context] : context;
+
+	// Position selectors must be done after the filter
+	// And so must :not(positional) so we move all PSEUDOs to the end
+	while ( (match = Expr.match.PSEUDO.exec( selector )) ) {
+		later += match[0];
+		selector = selector.replace( Expr.match.PSEUDO, "" );
+	}
+
+	selector = Expr.relative[selector] ? selector + "*" : selector;
+
+	for ( var i = 0, l = root.length; i < l; i++ ) {
+		Sizzle( selector, root[i], tmpSet );
+	}
+
+	return Sizzle.filter( later, tmpSet );
+};
+
+// EXPOSE
+
+window.Sizzle = Sizzle;
+
+})();;
+	var s = (window.Sizzle || jQuery.find || $.find);
+	thx.js.Sizzle = s;
+	thx.js.Sizzle.select = s;
 }
 thx.languages.En.getLanguage();
 {
@@ -14525,11 +21200,17 @@ thx.languages.En.getLanguage();
 	Void = { __ename__ : ["Void"]};
 }
 {
-	var _PNAME = "((?:\\.?\\w+)+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+))";
+	var _PNAME = "((?:\\.?#?\\w+)+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+))";
 	rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "?" + "$","i");
 	rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "$","i");
 	rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE = new EReg("^" + _PNAME + _COND + "$","i");
 }
+window.requestAnimationFrame = window.requestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.oRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || function(callback) { setTimeout(callback, 1000 / 60); } ;
 Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
 Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
 Strings._reReduceWS = new EReg("\\s+","");
@@ -14543,9 +21224,34 @@ Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
 rg.util.Properties.TIME_TOKEN = "#time:";
+thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+))","");
+js.Lib.onerror = null;
+thx.js.Dom.doc = (function() {
+	$s.push("utest.ui.common.FixtureResult::add");
+	var $spos = $s.length;
+	var g = new thx.js.Group([js.Lib.document]), gs = thx.js.Selection.create([g]);
+	g.parentNode = gs.parentNode = js.Lib.document.documentElement;
+	$s.pop();
+	return gs;
+	$s.pop();
+})();
+thx.js.Dom.selectionEngine = new thx.js.SizzleEngine();
+thx.xml.Namespace.prefix = (function() {
+	$s.push("utest.ui.common.FixtureResult::add");
+	var $spos = $s.length;
+	var h = new Hash();
+	h.set("svg","http://www.w3.org/2000/svg");
+	h.set("xhtml","http://www.w3.org/1999/xhtml");
+	h.set("xlink","http://www.w3.org/1999/xlink");
+	h.set("xml","http://www.w3.org/XML/1998/namespace");
+	h.set("xmlns","http://www.w3.org/2000/xmlns/");
+	$s.pop();
+	return h;
+	$s.pop();
+})();
 utest.ui.text.HtmlReport.platform = "javascript";
 Ints._reparse = new EReg("^([+-])?\\d+$","");
-js.Lib.onerror = null;
+thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
 thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
@@ -14598,11 +21304,18 @@ thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.s
 thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
+thx.text.ERegs._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
+thx.js.BaseTransition._id = 0;
+thx.js.BaseTransition._inheritid = 0;
 utest.TestHandler.POLLING_TIME = 10;
 haxe.Timer.arr = new Array();
 rg.data.source.rgquery.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
+thx.js.Timer.timeout = 0;
+thx.js.Timer.queue = null;
+thx.js.Timer.interval = 0;
+thx.js.Timer._step = thx.js.Timer.step;
 thx.color.Colors._reParse = new EReg("^\\s*(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))\\s*$","i");
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];

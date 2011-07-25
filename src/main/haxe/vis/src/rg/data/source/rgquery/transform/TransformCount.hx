@@ -23,7 +23,8 @@ class TransformCount implements ITransform<Int>
 	{
 		var dp : DataPoint = {
 			properties : Objects.addField(Objects.clone(properties), unit, data),
-			event : event
+			event : event,
+			segment : null
 		};
 		return [dp];
 	}

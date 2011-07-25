@@ -11,8 +11,9 @@ class InfoVariable extends Info
 	public var min : Null<Dynamic>;
 	public var max : Null<Dynamic>;
 	public var values : Null<Array<Dynamic>>;
+	public function new() {}
 
-	override function filters() : Array<FieldFilter>
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "type",
@@ -20,7 +21,7 @@ class InfoVariable extends Info
 			filter : null
 		}, {
 			field : "view",
-			validator : function(v) return Std.is(v, Array) && (v[0] == null || Types.isPrimitive(v[0])) && (v[1] == null || Types.isPrimitive(v[1])),
+			validator : function(v) return Std.is(v, Array) && testViewValue(v[0]) && testViewValue(v[1]),
 			filter : function(v) {
 				var result = [];
 				if (null != v[0])
@@ -34,5 +35,10 @@ class InfoVariable extends Info
 			validator : function(v) return Std.is(v, Array) && Arrays.all(v, function(v) return Types.isPrimitive(v)),
 			filter : null
 		}];
+	}
+	
+	static function testViewValue(v : Dynamic)
+	{
+		return v == null || Types.isPrimitive(v) || Std.is(v, Date);
 	}
 }

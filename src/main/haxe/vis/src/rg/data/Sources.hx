@@ -12,7 +12,7 @@ class Sources<T>
 	public var onLoad(default, null) : Dispatcher<Array<Array<DataPoint>>>;
 	
 	var sources : Array<IDataSource>;
-	var length : Int;
+	public var length(default, null) : Int;
 	var data : Array<Array<DataPoint>>;
 	var count : Int;
 	public function new(sources : Array<IDataSource>) 
@@ -23,6 +23,8 @@ class Sources<T>
 			sources[i].onLoad.add(callback(loaded, i));
 		onLoad = new Dispatcher();
 	}
+	
+	public function iterator() return sources.iterator()
 
 	public function load()
 	{

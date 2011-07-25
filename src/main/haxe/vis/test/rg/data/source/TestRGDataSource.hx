@@ -30,16 +30,23 @@ class TestRGDataSource
 		assert([{
 			{ method : "propertyCount", args : ["/", { property : "click"}] } 
 		}], profile( {
-			exp : [Property("")],
+			exp : [Event],
 			operation : Count,
 			where : []
 		}));
 	}
 	
-	public function testPropertyCount()
+	public function testPropertyValuesCount()
 	{
 		assert([{
-			{ method : "propertyCount", args : ["/", { property : "click.unique"}] } 
+			method : "intersect", args : ["/", {
+				periodicity : "eternity", 
+				properties : [{
+					property : "click.unique",
+					limit : 10,
+					order : "descending"
+				}]
+			}]
 		}], profile( {
 			exp : [Property(".unique")],
 			operation : Count,
@@ -58,10 +65,17 @@ class TestRGDataSource
 		}));
 	}
 	
-	public function testPropertySeries()
+	public function testPropertyValuesSeries()
 	{
 		assert([{
-			{ method : "propertySeries", args : ["/", { property : "click.unique", periodicity : "day"}] } 
+			method : "intersect", args : ["/", {
+				periodicity : "day", 
+				properties : [{
+					property : "click.unique",
+					limit : 10,
+					order : "descending"
+				}]
+			}] 
 		}], profile( {
 			exp : [Property(".unique"), Time("day")],
 			operation : Count,
@@ -96,7 +110,7 @@ class TestRGDataSource
 		assert([{
 			{ method : "searchCount", args : ["/", { where : ({}).addFields(["click.gender", "click.ageRange"], ["female", "21-30"]) }] } 
 		}], profile( {
-			exp : [Property("")], 
+			exp : [Event], 
 			operation : Count,
 			where : [
 				Equality(".gender", "female"),
@@ -110,7 +124,7 @@ class TestRGDataSource
 		assert([{
 			{ method : "searchSeries", args : ["/", { periodicity : "day", where : ({}).addFields(["click.gender", "click.ageRange"], ["female", "21-30"]) }] } 
 		}], profile( {
-			exp : [Property(""), Time("day")],
+			exp : [Event, Time("day")],
 			operation : Count,
 			where : [
 				Equality(".gender", "female"),
@@ -137,7 +151,8 @@ class TestRGDataSource
 					property : "click.ageRange",
 					limit : 10,
 					order : "descending"
-			}] }]
+				}]
+			}]
 		}], profile( {
 			exp : [
 				Property(".gender", 5, true),

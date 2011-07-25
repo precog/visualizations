@@ -8,6 +8,7 @@ package rg.controller.info;
 import thx.error.Error;
 import utest.Assert;
 import rg.util.Properties;
+using rg.controller.info.Info;
 
 class TestInfoVariable
 {
@@ -20,28 +21,28 @@ class TestInfoVariable
 		Assert.isNull(info.values);
 
 		// invalid type
-		Assert.raises(function() info.feedOptions( { type : 1 } ), Error);
+		Assert.raises(function() info.feed( { type : 1 } ), Error);
 		
 		// valid type
-		info.feedOptions( { type : ".#time:hour" } );
+		info.feed( { type : ".#time:hour" } );
 		Assert.equals(Properties.timeProperty("hour"), info.type);
 		
 		// valid min
-		info.feedOptions( { view : [1] } );
+		info.feed( { view : [1] } );
 		Assert.equals(1, info.min);
 		
 		// invalid max
-		Assert.raises(function() info.feedOptions( { view : {} } ), Error);
+		Assert.raises(function() info.feed( { view : {} } ), Error);
 		
 		// valid max
-		info.feedOptions( { view : [1,3] } );
+		info.feed( { view : [1,3] } );
 		Assert.equals(3, info.max);
 		
 		// invalid values
-		Assert.raises(function() info.feedOptions( { values : { } } ), Error);
+		Assert.raises(function() info.feed( { values : { } } ), Error);
 		
 		// valid values
-		info.feedOptions( { values : [1,2,3] } );
+		info.feed( { values : [1,2,3] } );
 		Assert.same([1,2,3], info.values);
 	}
 	

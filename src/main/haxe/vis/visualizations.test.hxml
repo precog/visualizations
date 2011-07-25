@@ -5,3 +5,5 @@
 -lib utest
 -js bin/js/visualizations.test.js
 -main TestAll
+rg.JSBridge
+rg.controller.App

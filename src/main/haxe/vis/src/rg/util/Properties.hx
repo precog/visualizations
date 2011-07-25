@@ -18,6 +18,7 @@ class Properties
 		return EVENT_PATTERN.matched(1);
 	}
 	*/
+	
 	public static function isTime(s : String)
 	{
 		return s.indexOf(TIME_TOKEN) >= 0;

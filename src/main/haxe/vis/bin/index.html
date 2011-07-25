@@ -6,10 +6,31 @@
 	<meta name="language" content="en" />
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
+	<script src="js/reportgrid-core.js?tokenId=C7A18C95-3619-415B-A89B-4CE47693E4CC"></script>
+	<script src="js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+	ReportGrid.lineChart("#chart", {
+		axes : [{
+			type: ".gender"
+		}, {
+			type: ".#time:day",
+			view: ["7 days ago", "now"]
+		}, {
+			type: "count"
+		}],
+		data : {
+			src: { path : "/rgadnet", event : "impression", query : ".gender * .#time:day" }
+		},
+		options : {
+			
+		}
+	});
+}, false)
+</script>
 </head>
 <body>
-
+	<div id="chart"></div>
 	<div id="haxe:trace"></div>
-	<script src="js/reportgrid-core.js"></script>
 </body>
 </html>

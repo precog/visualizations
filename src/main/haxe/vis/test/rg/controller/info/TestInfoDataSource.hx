@@ -8,6 +8,8 @@ package rg.controller.info;
 import thx.error.Error;
 import utest.Assert;
 
+using rg.controller.info.Info;
+
 class TestInfoDataSource
 {
 	public function testDataSourceInfo() 
@@ -16,41 +18,43 @@ class TestInfoDataSource
 		
 		// QUERY
 		// invalid
-		Assert.raises(function() info.feedOptions( { query : [] } ), Error);
+		Assert.raises(function() info.feed( { query : [] } ), Error);
 		
 		// valid
-		info.feedOptions( { query : ".impression" } );
+		info.feed( { query : ".impression" } );
 		Assert.equals(".impression", info.query);
 		
 		// PATH
 		// invalid
-		Assert.raises(function() info.feedOptions( { path : [] } ), Error);
+		Assert.raises(function() info.feed( { path : [] } ), Error);
 		
 		// valid
-		info.feedOptions( { path : "/" } );
+		info.feed( { path : "/" } );
 		Assert.equals("/", info.path);
 		
 		// EVENT
 		// invalid
-		Assert.raises(function() info.feedOptions( { event : [] } ), Error);
+		Assert.raises(function() info.feed( { event : [] } ), Error);
 		
 		// valid
-		info.feedOptions( { event : "click" } );
+		info.feed( { event : "click" } );
 		Assert.equals("click", info.event);
 		
 		// NAMED DATA
 		// invalid
-		Assert.raises(function() info.feedOptions( { data : 1 } ), Error);
+		Assert.raises(function() info.feed( { data : 1 } ), Error);
 		
 		// valid
-		info.feedOptions( { data : "name" } );
+		info.feed( { data : "name" } );
 		Assert.equals("name", info.namedData);
 		Assert.isNull(info.data);
 		
 		// DATA
 		// valid
-		info.feedOptions( { data : [1,2,3] } );
-		Assert.same([1,2,3], info.data);
+		Assert.raises(function() info.feed( { data : [1,2,3] } ), Error);
+		
+		info.feed( { data : [{ event : "click", properties : { count : 10 }}] } );
+		Assert.same([ { event : "click", properties : { count : 10 } } ], info.data);
 	}
 	
 	public function new() { }

@@ -3,5 +3,6 @@ package rg.data;
 typedef DataPoint =
 {
 	properties : Dynamic,
-	event : String
+	event : String,
+	segment : Null<String>
 }

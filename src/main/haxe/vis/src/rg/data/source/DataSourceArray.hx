@@ -13,7 +13,8 @@ class DataSourceArray implements IDataSource
 	{
 		return new DataSourceArray(arr.map(map).map(function(properties, i) return {
 			properties : properties,
-			event : event
+			event : event,
+			segment : null
 		}));
 	}
 	

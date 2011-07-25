@@ -1,0 +1,96 @@
+/**
+ * ...
+ * @author Franco Ponticelli
+ */
+
+package rg.controller.factory;
+import rg.controller.info.InfoVariable;
+import rg.data.source.rgquery.QueryAst;
+import rg.data.IDataSource;
+import rg.data.source.DataSourceReportGrid;
+import rg.util.Properties;
+import thx.collections.Set;
+import rg.data.VariableDependentContext;
+import rg.data.VariableIndependentContext;
+import rg.data.AxisOrdinal;
+import rg.data.AxisTime;
+import rg.data.DataContext;
+
+class FactoryVariableContexts 
+{
+	var knownProperties : Set<String>;
+	var independentFactory : FactoryVariableIndependent;
+	var dependentFactory : FactoryVariableDependent;
+	public function new(knownproperties : Set<String>) 
+	{
+		knownProperties = knownproperties;
+		independentFactory = new FactoryVariableIndependent();
+		dependentFactory = new FactoryVariableDependent();
+	}
+	
+	public function createIndependents(info : Array<InfoVariable>) : Array<VariableIndependentContext<Dynamic>>
+	{
+		var result = [], ordinal, v, ctx;
+		for (i in info)
+		{
+			if (!knownProperties.exists(i.type))
+				continue;
+			v = independentFactory.create(i);
+			if (null != (ordinal = Types.as(v, AxisOrdinal)))
+			{
+				ctx = new VariableIndependentContext(v, 0 == ordinal.values.length);
+			} else if (Std.is(v.axis, AxisTime)) {
+				ctx = new VariableIndependentContext(v, false);
+			} else {
+				ctx = new VariableIndependentContext(v, null == v.max || null == v.min );
+			}
+			result.push(ctx);
+		}
+		return result;
+	}
+	
+	public function createDependents(info : Array<InfoVariable>) : Array<VariableDependentContext<Dynamic>>
+	{
+		var result = [], ordinal;
+		for (i in info)
+		{
+			if (knownProperties.exists(i.type))
+				continue;
+			var isnumeric = null != i.min ? Std.is(i.min, Float) : (i.max ? Std.is(i.max, Float) : false),
+				v = dependentFactory.create(i, isnumeric);
+			result.push(new VariableDependentContext(v, 
+				   null == v.max 
+				|| null == v.min
+				|| null == v.axis
+				|| (null != (ordinal = Types.as(v, AxisOrdinal)) && 0 == ordinal.values.length)));
+		}
+		return result;
+	}
+	
+	public static function createFromDataContexts(contexts : Array<DataContext>)
+	{
+		var kp = new Set();
+		for (ctx in contexts)
+		{
+			for (ds in ctx.data.sources)
+			{
+				var query = Types.as(ds, DataSourceReportGrid);
+				if (null == query)
+					continue;
+				for (exp in query.query.exp)
+				{
+					switch(exp)
+					{
+						case Time(p):
+							kp.add(Properties.timeProperty(p));
+						case Property(n, _, _):
+							kp.add(n);
+						case Event:
+							continue;
+					}
+				}
+			}
+		}
+		return new FactoryVariableContexts(kp);
+	}
+}

@@ -14,6 +14,12 @@ class TestQueryParser
 	public function test() 
 	{
 		assertParse(
+			[Event],
+			QOperation.Count,
+			[],
+			""
+		);
+		assertParse(
 			[Property(".click")],
 			QOperation.Count,
 			[],

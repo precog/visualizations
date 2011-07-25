@@ -13,6 +13,7 @@ import rg.data.source.rgquery.transform.TransformCountTimeSeries;
 import rg.data.source.rgquery.transform.TransformCountTimeIntersect;
 import thx.error.Error;
 import rg.data.source.ITransform;
+import rg.util.Properties;
 using Arrays;
 
 class DataSourceReportGrid implements IDataSource
@@ -20,16 +21,16 @@ class DataSourceReportGrid implements IDataSource
 	var executor : IExecutorReportGrid;
 	
 	// specific query stuff
-	var exp : Array<{ property : String, limit : Int, order : String }>;
+	var exp : Array<{ property : String, event : String, limit : Int, order : String }>;
 	var operation : QOperation;
-	var where : Array<{ property : String, value : Dynamic }>;
+	var where : Array<{ property : String, event : String, value : Dynamic }>;
 	var periodicity : String;
 	
 	// general query stuff
-	var event : String;
-	var path : String;
-	var start : Float;
-	var end : Float;
+	public var event(default, null) : String;
+	public var path(default, null) : String;
+	public var start : Float;
+	public var end : Float;
 	
 	var transform : ITransform<Dynamic>;
 	
@@ -38,18 +39,20 @@ class DataSourceReportGrid implements IDataSource
 	
 	function mapProperties(d, _)
 	{
-		switch(d) 
-		{ 
-			case Property(name, limit, descending): 
-				return { 
-					property : event + name, 
-					limit : null == limit ? 10 : limit, 
+		switch(d)
+		{
+			case Property(name, limit, descending):
+				return {
+					event : event,
+					property : name,
+					limit : null == limit ? 10 : limit,
 					order : false == descending ? "ascending" : "descending"
 				};
-			case Event: 
-				return { 
-					property : event, 
-					limit : null, 
+			case Event:
+				return {
+					event : event,
+					property : null,
+					limit : null,
 					order : null
 				};
 			default:
@@ -57,7 +60,7 @@ class DataSourceReportGrid implements IDataSource
 		}
 	}
 	
-	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?start : Float, ?end : Float) 
+	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?start : Float, ?end : Float)
 	{
 		this.query = query;
 		this.executor = executor;
@@ -66,7 +69,8 @@ class DataSourceReportGrid implements IDataSource
 		this.periodicity = switch(e.pop()) { case Time(p): p; default: throw new Error("normalization failed, the last value should always be a Time expression"); };
 		this.exp = e.map(mapProperties);
 		this.where = query.where.map(function(d, i) return switch(d) { case Equality(property, value): {
-			property : event + property,
+			event : event,
+			property : property,
 			value : value
 		}; default: throw new Error("invalid data for 'where' condition"); } );
 		this.operation = query.operation;
@@ -90,7 +94,7 @@ class DataSourceReportGrid implements IDataSource
 		if (null != start)
 			Reflect.setField(o, "start", start);
 		if (null != end)
-			Reflect.setField(o, "end", end);	
+			Reflect.setField(o, "end", end);
 		if (appendPeriodicity)
 			Reflect.setField(o, "periodicity", periodicity);
 			
@@ -98,10 +102,9 @@ class DataSourceReportGrid implements IDataSource
 		{
 			var w = { };
 			for (c in where)
-				Reflect.setField(w, c.property, c.value);
+				Reflect.setField(w, propertyName(c), c.value);
 			Reflect.setField(o, "where", w);
 		}
-			
 		return o;
 	}
 	
@@ -119,7 +122,7 @@ class DataSourceReportGrid implements IDataSource
 		if (0 == exp.length)
 		{
 			throw new Error("invalid empty query");
-		} else if (exp.length == 1)
+		} else if (exp.length == 1 && null == exp[0].property || where.length > 0)
 		{
 			if (periodicity == "eternity")
 			{
@@ -129,11 +132,11 @@ class DataSourceReportGrid implements IDataSource
 					executor.searchCount(path, o, success, error);
 				else if (where.length == 1)
 				{
-					o.property = exp[0].property;
+					o.property = propertyName(exp[0]);
 					o.value = where[0].value;
 					executor.propertyValueCount(path, o, success, error);
 				} else {
-					o.property = exp[0].property;
+					o.property = propertyName(exp[0]);
 					executor.propertyCount(path, o, success, error);
 				}
 			} else {
@@ -143,18 +146,24 @@ class DataSourceReportGrid implements IDataSource
 					executor.searchSeries(path, o, success, error);
 				else if (where.length == 1)
 				{
-					o.property = exp[0].property;
+					o.property = propertyName(exp[0]);
 					o.value = where[0].value;
 					executor.propertyValueSeries(path, o, success, error);
 				} else {
-					o.property = exp[0].property;
+					o.property = propertyName(exp[0]);
 					executor.propertySeries(path, o, success, error);
 				}
 			}
 		} else {
 			transform = new TransformCountTimeIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			var o = basicOptions(true);
-			o.properties = exp;
+			o.properties = exp.map(function(p, i) {
+				return {
+					property : propertyName(p),
+					limit : p.limit,
+					order : p.order
+				};
+			});
 			executor.intersect(path, o, success, error);
 		}
 	}
@@ -226,6 +235,14 @@ class DataSourceReportGrid implements IDataSource
 				//
 		}
 		*/
+	}
+	
+	static function propertyName(p : { property : String, event : String } )
+	{
+		if (null == p.property)
+			return p.event;
+		else
+			return p.event + p.property;
 	}
 
 	static function isTimeProperty(exp : QExp) : Bool

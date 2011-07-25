@@ -6,9 +6,10 @@
 package rg.data.source.rgquery.transform;
 import rg.data.DataPoint;
 import rg.util.Properties;
+import rg.data.source.rgquery.IExecutorReportGrid;
 using Arrays;
 
-class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>>>
+class TransformCountTimeSeries implements ITransform<TimeSeriesType>
 {
 	var properties : Dynamic;
 	var unit : String;
@@ -22,23 +23,23 @@ class TransformCountTimeSeries implements ITransform<Dynamic<Array<Array<Float>>
 		this.event = event;
 	}
 	
-	public function transform(data : Dynamic<Array<Array<Float>>>) : Array<DataPoint>
+	public function transform(data : TimeSeriesType) : Array<DataPoint>
 	{
-		var values : Array<Array<Float>> = Reflect.field(data, periodicity),
-			properties = this.properties,
+		var properties = this.properties,
 			unit = this.unit,
 			event = this.event,
 			periodicity = this.periodicity;
-		if (null == values)
+		if (null == data.data)
 			return [];
-		return values.map(function(d, _) {
+		return data.data.map(function(d, _) {
 			var p = Objects.addFields(
 				Dynamics.clone(properties), 
 				[Properties.timeProperty(periodicity), unit], 
 				[d[0], d[1]]);
 			return {
 				properties : p,
-				event : event
+				event : event,
+				segment : null
 			}
 		});
 	}

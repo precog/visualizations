@@ -1,508 +1,879 @@
-$estr = function() { return js.Boot.__string_rec(this,''); }
-Std = function() { }
-Std.__name__ = ["Std"];
-Std["is"] = function(v,t) {
-	$s.push("Std::is");
-	var $spos = $s.length;
-	var $tmp = js.Boot.__instanceof(v,t);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Std.string = function(s) {
-	$s.push("Std::string");
-	var $spos = $s.length;
-	var $tmp = js.Boot.__string_rec(s,"");
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Std["int"] = function(x) {
-	$s.push("Std::int");
-	var $spos = $s.length;
-	if(x < 0) {
-		var $tmp = Math.ceil(x);
-		$s.pop();
-		return $tmp;
-	}
-	var $tmp = Math.floor(x);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Std.parseInt = function(x) {
-	$s.push("Std::parseInt");
-	var $spos = $s.length;
-	var v = parseInt(x,10);
-	if(v == 0 && x.charCodeAt(1) == 120) v = parseInt(x);
-	if(isNaN(v)) {
-		$s.pop();
-		return null;
-	}
-	var $tmp = v;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Std.parseFloat = function(x) {
-	$s.push("Std::parseFloat");
-	var $spos = $s.length;
-	var $tmp = parseFloat(x);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Std.random = function(x) {
-	$s.push("Std::random");
-	var $spos = $s.length;
-	var $tmp = Math.floor(Math.random() * x);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-Std.prototype.__class__ = Std;
-IntIter = function(min,max) {
-	if( min === $_ ) return;
-	$s.push("IntIter::new");
-	var $spos = $s.length;
-	this.min = min;
-	this.max = max;
-	$s.pop();
-}
-IntIter.__name__ = ["IntIter"];
-IntIter.prototype.min = null;
-IntIter.prototype.max = null;
-IntIter.prototype.hasNext = function() {
-	$s.push("IntIter::hasNext");
-	var $spos = $s.length;
-	var $tmp = this.min < this.max;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-IntIter.prototype.next = function() {
-	$s.push("IntIter::next");
-	var $spos = $s.length;
-	var $tmp = this.min++;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-IntIter.prototype.__class__ = IntIter;
-if(typeof rg=='undefined') rg = {}
-rg.VisualizationSetup = function() { }
-rg.VisualizationSetup.__name__ = ["rg","VisualizationSetup"];
-rg.VisualizationSetup.prototype.__class__ = rg.VisualizationSetup;
-if(typeof js=='undefined') js = {}
-js.Lib = function() { }
-js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
-js.Lib.document = null;
-js.Lib.window = null;
-js.Lib.alert = function(v) {
-	$s.push("js.Lib::alert");
-	var $spos = $s.length;
-	alert(js.Boot.__string_rec(v,""));
-	$s.pop();
-}
-js.Lib.eval = function(code) {
-	$s.push("js.Lib::eval");
-	var $spos = $s.length;
-	var $tmp = eval(code);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-js.Lib.setErrorHandler = function(f) {
-	$s.push("js.Lib::setErrorHandler");
-	var $spos = $s.length;
-	js.Lib.onerror = f;
-	$s.pop();
-}
-js.Lib.prototype.__class__ = js.Lib;
-js.Boot = function() { }
-js.Boot.__name__ = ["js","Boot"];
-js.Boot.__unhtml = function(s) {
-	$s.push("js.Boot::__unhtml");
-	var $spos = $s.length;
-	var $tmp = s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-js.Boot.__trace = function(v,i) {
-	$s.push("js.Boot::__trace");
-	var $spos = $s.length;
-	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
-	msg += js.Boot.__unhtml(js.Boot.__string_rec(v,"")) + "<br/>";
-	var d = document.getElementById("haxe:trace");
-	if(d == null) alert("No haxe:trace element defined\n" + msg); else d.innerHTML += msg;
-	$s.pop();
-}
-js.Boot.__clear_trace = function() {
-	$s.push("js.Boot::__clear_trace");
-	var $spos = $s.length;
-	var d = document.getElementById("haxe:trace");
-	if(d != null) d.innerHTML = "";
-	$s.pop();
-}
-js.Boot.__closure = function(o,f) {
-	$s.push("js.Boot::__closure");
-	var $spos = $s.length;
-	var m = o[f];
-	if(m == null) {
-		$s.pop();
-		return null;
-	}
-	var f1 = function() {
-		$s.push("js.Boot::__closure@67");
-		var $spos = $s.length;
-		var $tmp = m.apply(o,arguments);
-		$s.pop();
-		return $tmp;
-		$s.pop();
+/* Copyright (C) 2011 by ReportGrid, Inc. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * No portion of this Software shall be used in any application which does not
+ * use the ReportGrid platform to provide some subset of its functionality.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+// JSON parsing & stringification:
+var JSON;
+if(!JSON)JSON={};
+(function(){"use strict";function f(n){return n<10?'0'+n:n;}
+if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(key){return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+
+f(this.getUTCMonth()+1)+'-'+
+f(this.getUTCDate())+'T'+
+f(this.getUTCHours())+':'+
+f(this.getUTCMinutes())+':'+
+f(this.getUTCSeconds())+'Z':null;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf();};}
+var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}
+function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}
+if(typeof rep==='function'){value=rep.call(holder,key,value);}
+switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}
+gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}
+v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}
+if(rep&&typeof rep==='object'){length=rep.length;for(i=0;i<length;i+=1){k=rep[i];if(typeof k==='string'){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
+v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}
+if(typeof JSON.stringify!=='function'){JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
+rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}
+return str('',{'':value});};}
+if(typeof JSON.parse!=='function'){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}
+return reviver.call(holder,key,value);}
+text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+
+('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}
+if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}
+throw new SyntaxError('JSON.parse');};}}());
+
+// ReportGrid core:
+var ReportGrid = window.ReportGrid || {};
+
+(function() {
+  var Util = {
+    getConfiguration: function() {
+      var findThisScript = function() {
+        var scripts = document.getElementsByTagName('SCRIPT');
+
+        for (var i = 0; i < scripts.length; i++) {
+          var script = scripts[i];
+          var src = script.getAttribute('src');
+
+          if (src && src.indexOf('reportgrid-core.js') != -1) {
+            return script;
+          }
+        }
+
+        return undefined;
+      };
+
+      return Util.parseQueryParameters(findThisScript().getAttribute('src'));
+    },
+
+    parseQueryParameters: function(url) {
+      var index = url.indexOf('?');
+
+      if (index < 0) return {};
+
+      var query = url.substr(index + 1);
+
+      var keyValuePairs = query.split('&');
+
+      var parameters = {};
+
+      for (var i = 0; i < keyValuePairs.length; i++) {
+        var keyValuePair = keyValuePairs[i];
+
+        var split = keyValuePair.split('=');
+
+        var key = split[0];
+        var value = '';
+
+        if (split.length >= 2) {
+          value = decodeURIComponent(split[1]);
+        }
+
+        parameters[key] = value;
+      }
+
+      return parameters;
+    },
+
+    addQueryParameters: function(url, query) {
+      var suffix = url.indexOf('?') == -1 ? '?' : '&';
+
+      var queries = [];
+
+      for (var name in query) {
+        var value = (query[name] || '').toString();
+
+        queries.push(name + '=' + encodeURIComponent(value));
+      }
+
+      if (queries.length == 0) return url;
+      else return url + suffix + queries.join('&');
+    },
+
+    getConsole: function(enabled) {
+      var console = enabled ? window.console : undefined;
+      if (!console) {
+        console = {};
+
+        console.log   = function() {}
+        console.debug = function() {}
+        console.info  = function() {}
+        console.warn  = function() {}
+        console.error = function() {}
+      }
+
+      return console;
+    },
+
+    createCallbacks: function(success, failure, msg) {
+      var successFn = function(fn, msg) {
+        if (fn) return fn;
+        else return function(result) {
+          if (result !== undefined) {
+            $.Log.debug('Success: ' + msg + ': ' + JSON.stringify(result));
+          }
+          else {
+            $.Log.debug('Success: ' + msg);
+          }
+        }
+      }
+
+      var failureFn = function(fn, msg) {
+        if (fn) return fn;
+        else return function(code, reason) {
+          $.Log.error('Failure: ' + msg + ': code = ' + code + ', reason = ' + reason);
+        }
+      }
+
+      return {
+        success: successFn(success, msg),
+        failure: failureFn(failure, msg)
+      };
+    },
+
+    removeLeadingSlash: function(path) {
+      if (path.length == 0) return path;
+      else if (path.substr(0, 1) == '/') return path.substr(1);
+      else return path;
+    },
+
+    removeTrailingSlash: function(path) {
+      if (path.length == 0) return path;
+      else if (path.substr(path.length - 1) == "/") return path.substr(0, path.length - 1);
+      else return path;
+    },
+
+    removeDuplicateSlashes: function(path) {
+      return path.replace(/[/]+/g, "/");
+    },
+
+    sanitizePath: function(path) {
+      if (path === undefined) throw Error("path cannot be undefined");
+      else return Util.removeDuplicateSlashes("/" + path + "/");
+    },
+
+    sanitizeProperty: function(property) {
+      if (property === undefined) throw Error("Property cannot be undefined");
+      else if (property.length == 0) return property;
+      else if (property.substr(0, 1) == ".") return property;
+      else return "." + property;
+    },
+
+    splitPathVar: function(pathVar) {
+      if (pathVar.length == 0) return ["/", ""];
+      if (pathVar.substr(0, 1) == ".") return ["/", pathVar]
+
+      var index = pathVar.indexOf('/.');
+
+      if (index <  0) return [Util.sanitizePath(pathVar), ""];
+
+      return [Util.sanitizePath(pathVar.substr(0, index + 1)), pathVar.substr(index + 1)];
+    },
+
+    filter: function(c, f) {
+      var result = c;
+
+      if (c instanceof Array) {
+        result = [];
+
+        for (var i = 0; i < c.length; i++) {
+          var e = c[i];
+
+          if (f(e)) result.push(e);
+        }
+      }
+      else if (c instanceof Object) {
+        result = {};
+
+        for (var key in c) {
+          var value = c[key];
+
+          if (f(key, value)) result[key] = value;
+        }
+      }
+
+      return result;
+    },
+
+    normalizeTime: function(o, name) {
+      if (name === undefined) {
+        if (o instanceof Date) {
+           return o.getUTCMilliseconds();
+        }
+
+        return o;
+      }
+      else {
+        var time = o[name];
+
+        if (time != null) {
+          if (time instanceof Date) {
+            o[name] = time.getUTCMilliseconds();
+          }
+          else if (time instanceof String) {
+            o[name] = 0 + time
+          }
+        }
+
+        return o[name];
+      }
+    },
+
+    rangeHeaderFromStartEnd: function(options) {
+      var headers = {};
+
+      if (options.start !== undefined || options.end !== undefined) {
+        var start = Util.normalizeTime(options.start) || ReportGrid.Time.Zero;
+        var end   = Util.normalizeTime(options.end)   || ReportGrid.Time.Inf;
+
+        headers.Range = 'time=' + start + '-' + end;
+      }
+
+      return headers;
+    }
+  }
+
+  var Network = {
+    doAjaxRequest: function(options) {
+      var method   = options.method || 'GET';
+      var query    = options.query || {};
+      var path     = Util.addQueryParameters(options.path, query);
+      var content  = options.content;
+      var headers  = options.headers || {};
+      var success  = options.success;
+      var failure  = options.failure || function() {};
+
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+
+      var createNewXmlHttpRequest = function() {
+        if (window.XMLHttpRequest) {
+          return new XMLHttpRequest();
+        }
+        else {
+          return new ActiveXObject("Microsoft.XMLHTTP");
+        }
+      }
+
+      var request = createNewXmlHttpRequest();
+
+      request.open(method, path);
+
+      request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+          if (request.status == 200) {
+            if (request.responseText !== null && request.responseText.length > 0) {
+              success(JSON.parse(this.responseText));
+            }
+            else {
+              success(undefined);
+            }
+          }
+          else {
+            failure(request.status, request.statusText);
+          }
+        }
+      }
+
+      for (var name in headers) {
+        var value = headers[name];
+
+        request.setRequestHeader(name, value);
+      }
+
+      if (content !== undefined) {
+        request.setRequestHeader('Content-Type', 'application/json');
+
+        request.send(JSON.stringify(content));
+      }
+      else {
+        request.send(null);
+      }
+    },
+
+    doJsonpRequest: function(options) {
+      var method   = options.method || 'GET';
+      var query    = options.query || {};
+      var path     = Util.addQueryParameters(options.path, query);
+      var content  = options.content;
+      var headers  = options.headers || {};
+      var success  = options.success;
+      var failure  = options.failure || function() {};
+
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+
+      var random   = Math.floor(Math.random() * 214748363);
+      var funcName = 'ReportGridJsonpCallback' + random.toString();
+
+      window[funcName] = function(content, meta) {
+        if (meta.status.code === 200) {
+          success(content);
+        }
+        else {
+          failure(meta.status.code, meta.status.reason);
+        }
+
+        document.head.removeChild(document.getElementById(funcName));
+
+        delete window[funcName];
+      }
+
+      var extraQuery = {};
+
+      extraQuery.method   = method;
+
+      for (_ in headers) { extraQuery.headers = JSON.stringify(headers); break; }
+
+      extraQuery.callback = funcName;
+
+      if (content !== undefined) {
+        extraQuery.content = JSON.stringify(content);
+      }
+
+      var fullUrl = Util.addQueryParameters(path, extraQuery);
+
+      var script = document.createElement('SCRIPT');
+
+      script.setAttribute('type', 'text/javascript');
+      script.setAttribute('src',  fullUrl);
+      script.setAttribute('id',   funcName);
+
+      document.head.appendChild(script);
+    },
+
+    createHttpInterface: function(doRequest) {
+      return {
+        get: function(path, callbacks, query, headers) {
+          doRequest(
+            {
+              method:   'GET',
+              path:     path,
+              headers:  headers,
+              success:  callbacks.success,
+              failure:  callbacks.failure,
+              query:    query
+            }
+          );
+        },
+
+        put: function(path, content, callbacks, query, headers) {
+          doRequest(
+            {
+              method:   'PUT',
+              path:     path,
+              content:  content,
+              headers:  headers,
+              success:  callbacks.success,
+              failure:  callbacks.failure,
+              query:    query
+            }
+          );
+        },
+
+        post: function(path, content, callbacks, query, headers) {
+          doRequest(
+            {
+              method:   'POST',
+              path:     path,
+              content:  content,
+              headers:  headers,
+              success:  callbacks.success,
+              failure:  callbacks.failure,
+              query:    query
+            }
+          );
+        },
+
+        remove: function(path, callbacks, query, headers) {
+          doRequest(
+            {
+              method:   'DELETE',
+              path:     path,
+              headers:  headers,
+              success:  callbacks.success,
+              failure:  callbacks.failure,
+              query:    query
+            }
+          );
+        }
+      }
+    }
+  }
+
+  ReportGrid.$ = {};
+
+  var $ = ReportGrid.$;
+
+  $.Config = Util.getConfiguration();
+
+  $.Extend = function(object, extensions) {
+    for (var name in extensions) {
+      if (object[name] === undefined) {
+        object[name] = extensions[name];
+      }
+    }
+  }
+  
+  $.Bool = function(v) {
+    return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
+  }
+
+  $.Extend($.Config,
+    {
+      analyticsServer: "http://api.reportgrid.com/services/analytics/v0/",
+	  useJsonp : "true",
+	  enableLog : "false"
+    }
+  );
+  
+  $.Config.analyticsServer = Util.removeTrailingSlash($.Config.analyticsServer);
+
+  $.Http = function() {
+    return $.Bool(ReportGrid.$.Config.useJsonp) ? ReportGrid.$.Http.Jsonp : ReportGrid.$.Http.Ajax;
+  }
+
+  $.Http.Ajax  = Network.createHttpInterface(Network.doAjaxRequest);
+  $.Http.Jsonp = Network.createHttpInterface(Network.doJsonpRequest);
+
+  var console = Util.getConsole($.Bool($.Config.enableLog));
+
+  $.Log = {
+    log:    function(text) { console.log(text);   },
+    debug:  function(text) { console.debug(text); },
+    info:   function(text) { console.info(text);  },
+    warn:   function(text) { console.warn(text);  },
+    error:  function(text) { console.error(text); }
+  }
+
+  /** Constants */
+  ReportGrid.Minute   = 'minute';
+  ReportGrid.Hour     = 'hour';
+  ReportGrid.Day      = 'day';
+  ReportGrid.Week     = 'week';
+  ReportGrid.Month    = 'month';
+  ReportGrid.Year     = 'year';
+  ReportGrid.Eternity = 'eternity';
+
+  var http = $.Http();
+
+  /** Periodicity constants. */
+  ReportGrid.Periodicity = {
+    Minute:   "minute",
+    Hour:     "hour",
+    Day:      "day",
+    Week:     "week",
+    Year:     "year",
+    Eternity: "eternity"
+  }
+
+  /** Time constants. */
+  ReportGrid.Time = {
+    Zero:  0,
+    Inf:   2147483647
+  }
+
+  /** Tracks an event. If no timestamp is specified, the current time is used.
+   *
+   * The options.count and options.timestamp are optional, and default to 1 and
+   * the current time, respectively.
+   *
+   * ReportGrid.track("/merchants/Starbucks/locations/USA_CO_Boulder/1/", {
+   *   "event": {
+   *     "purchase": {
+   *       "item": "Americano",
+   *       "size": "Grande"
+   *     }
+   *   }
+   * });
+   */
+  ReportGrid.track = function(path_, options, success, failure) {
+    var path = Util.sanitizePath(path_);
+
+    // Handle "event" instead of "events":
+    if (options.event != null) {
+      options.events = options.event;
+
+      delete options.event;
+    }
+    else if (options.events == null) throw Error("Options must contain 'event' property")
+
+    // Allow user to specify Date for timestamp:
+    Util.normalizeTime(options, 'timestamp');
+
+    // Extract out first event for logging:
+    var firstEventName, firstEventProperties;
+
+    for (var eventName in options.events) {
+      firstEventName       = eventName;
+      firstEventProperties = options.events[eventName];
+
+      break;
+    }
+
+    var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (options.timestamp || "current time");
+    http.post(
+      $.Config.analyticsServer + '/vfs' + path,
+      options,
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+  /**
+   * Lists children of the specified path and optional property. You can use this
+   * method to list all the path children, all the events at the specified
+   * path, or both the path children and the events.
+   *
+   * Event names are preceded with the dot character ".", while path names are
+   * suffixed with the forward slash character "/".
+   *
+   * @param path      The path to the data.
+   * @param options   An object that contains an optional type
+   *                  ("all", "path" or "property") and an optional
+   *                  property (e.g. "transaction.sender").
+   *
+   * ReportGrid.children("/", {"type":"all"});
+   * > ["foo/", ".baz"]
+   *
+   * ReportGrid.children("/", {"type":"path"});
+   * > ["foo/"]
+   *
+   * ReportGrid.children("/", {"type":"property"});
+   * > [".baz"]
+   *
+   * ReportGrid.children("/", {"property":"baz"});
+   * > [".bar"]
+   */
+  ReportGrid.children = function(path_, options_, success, failure) {
+    var options = options_ || {};
+
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property || "");
+    var type     = (property != "") ? "property" : (options.type || "all").toLowerCase();
+
+    var description = 'List children of ' + path + property;
+
+    var callbacks = Util.createCallbacks(success, failure, description);
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property),
+      {
+        success: function(content) {
+          var noDotFilter = function(e) { return e.charAt(0) != '.'; };
+          var dotFilter   = function(e) { return e.charAt(0) == '.'; };
+          var allFilter   = function(e) { return true; }
+
+          var typeToFilter = {
+            "path":   noDotFilter,
+            "property":  dotFilter,
+            "all":    allFilter
+          };
+
+          return callbacks.success(Util.filter(content, typeToFilter[type]));
+        },
+
+        failure: callbacks.failure
+      },
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+  /**
+   * Retrieves total counts of how often the specified property appeared in events
+   * of the specified type.
+   *
+   * ReportGrid.propertyCount("/account/jdoe/emails/", {property: "delivery.status"});
+   * > 2392
+   */
+  ReportGrid.propertyCount = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+
+    var description = 'Get total count for ' + path + property;
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/count',
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+  /**
+   * Retrieves time series counts of how often the specified property appeared
+   * in events of the specified type.
+   *
+   * ReportGrid.propertySeries("/atm-events/", {property: "transaction", periodicity: "hour"});
+   * > {"hour":[[4512239238,2323]]}
+   */
+  ReportGrid.propertySeries = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+    var peri     = options.periodicity || "eternity";
+
+    var headers = Util.rangeHeaderFromStartEnd(options);
+
+    var description = 'Get series for property ' + path + property + ' (periodicity = ' + peri + ')';
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/series/' + peri,
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId },
+      headers
+    );
+  }
+
+  /**
+   * Retrieves all values of the specified property throughout all time.
+   *
+   * ReportGrid.propertyValues("/customers/jdoe/blog-posts/1/", {property: "click.gender"});
+   * > ["male", "female", "unknown"]
+   */
+  ReportGrid.propertyValues = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+
+    var description = 'Get all values of property ' + path + property;
+	var top = options.top ? 'top/' + options.top : (options.bottom ? 'bottom/' + options.bottom : '');
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + top,
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+  /**
+   * Retrieves the total number of times the property was equal to the specified
+   * value.
+   *
+   * ReportGrid.propertyValueCount("/customers/jdoe/blog-posts/1/", {property: "click.gender", value: "male"});
+   * > 12329
+   */
+  ReportGrid.propertyValueCount = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+    var value    = options.value;
+
+    var valueJson = JSON.stringify(value);
+
+    var description = 'Get the count for ' + path + property + ' == ' + valueJson;
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + encodeURIComponent(valueJson) + '/count',
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+  /**
+   * Retrieves the time series count of when the property was equal to the
+   * specified value.
+   *
+   * ReportGrid.propertyValueSeries("/transactions/", {property: "click.gender", value: "male" periodicity: "hour"});
+   * > {"hour":{"1239232323":293}}
+   */
+  ReportGrid.propertyValueSeries = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+    var value    = options.value;
+    var peri     = options.periodicity || "eternity";
+
+    var headers = Util.rangeHeaderFromStartEnd(options);
+
+    var valueJson = JSON.stringify(value);
+
+    var description = 'Get the time series for ' + path + property + ' = ' + valueJson + ' (periodicity = ' + peri + ')';
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + encodeURIComponent(valueJson) + '/series/' + peri,
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId },
+      headers
+    );
+  }
+
+  /**
+   * Searches across a range of conditions to retrieve a total count.
+   *
+   * ReportGrid.searchCount("/advertisers/Nike", {where: {"impression.carrier": "AT&T"}});
+   * > 10
+   */
+  ReportGrid.searchCount = function(path_, options, success, failure) {
+    var path = Util.sanitizePath(path_);
+
+    var description = 'Select count from ' + path + ' where ' + JSON.stringify(options.where);
+
+    http.post(
+      $.Config.analyticsServer + '/search',
+      {
+        select: "count",
+        from:   path,
+        where:  options.where
+      },
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+
+  /**
+   * Searches time series for events that meet the specified constraint. Note
+   * that constraints may involve at most one event.
+   *
+   * Options:
+   *
+   *  * periodicity
+   *  * start
+   *  * end
+   *
+   *
+   * ReportGrid.searchSeries("/advertisers/Nike", {periodicity: "hour", where: {".impression.carrier": "AT&T"}});
+   * > {"hour":{"1239232323":293}}
+   */
+  ReportGrid.searchSeries = function(path_, options, success, failure) {
+    var path  = Util.sanitizePath(path_);
+    var peri  = options.periodicity || "eternity";
+
+    var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
+
+	var ob = {
+	  select: "series/" + peri,
+      from:   path,
+      where:  options.where
 	};
-	f1.scope = o;
-	f1.method = m;
-	$s.pop();
-	return f1;
-	$s.pop();
-}
-js.Boot.__string_rec = function(o,s) {
-	$s.push("js.Boot::__string_rec");
-	var $spos = $s.length;
-	if(o == null) {
-		$s.pop();
-		return "null";
-	}
-	if(s.length >= 5) {
-		$s.pop();
-		return "<...>";
-	}
-	var t = typeof(o);
-	if(t == "function" && (o.__name__ != null || o.__ename__ != null)) t = "object";
-	switch(t) {
-	case "object":
-		if(o instanceof Array) {
-			if(o.__enum__ != null) {
-				if(o.length == 2) {
-					var $tmp = o[0];
-					$s.pop();
-					return $tmp;
-				}
-				var str = o[0] + "(";
-				s += "\t";
-				var _g1 = 2, _g = o.length;
-				while(_g1 < _g) {
-					var i = _g1++;
-					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
-				}
-				var $tmp = str + ")";
-				$s.pop();
-				return $tmp;
-			}
-			var l = o.length;
-			var i;
-			var str = "[";
-			s += "\t";
-			var _g = 0;
-			while(_g < l) {
-				var i1 = _g++;
-				str += (i1 > 0?",":"") + js.Boot.__string_rec(o[i1],s);
-			}
-			str += "]";
-			$s.pop();
-			return str;
-		}
-		var tostr;
-		try {
-			tostr = o.toString;
-		} catch( e ) {
-			$e = [];
-			while($s.length >= $spos) $e.unshift($s.pop());
-			$s.push($e[0]);
-			$s.pop();
-			return "???";
-		}
-		if(tostr != null && tostr != Object.toString) {
-			var s2 = o.toString();
-			if(s2 != "[object Object]") {
-				$s.pop();
-				return s2;
-			}
-		}
-		var k = null;
-		var str = "{\n";
-		s += "\t";
-		var hasp = o.hasOwnProperty != null;
-		for( var k in o ) { ;
-		if(hasp && !o.hasOwnProperty(k)) {
-			continue;
-		}
-		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__") {
-			continue;
-		}
-		if(str.length != 2) str += ", \n";
-		str += s + k + " : " + js.Boot.__string_rec(o[k],s);
-		}
-		s = s.substring(1);
-		str += "\n" + s + "}";
-		$s.pop();
-		return str;
-	case "function":
-		$s.pop();
-		return "<function>";
-	case "string":
-		$s.pop();
-		return o;
-	default:
-		var $tmp = String(o);
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-js.Boot.__interfLoop = function(cc,cl) {
-	$s.push("js.Boot::__interfLoop");
-	var $spos = $s.length;
-	if(cc == null) {
-		$s.pop();
-		return false;
-	}
-	if(cc == cl) {
-		$s.pop();
-		return true;
-	}
-	var intf = cc.__interfaces__;
-	if(intf != null) {
-		var _g1 = 0, _g = intf.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var i1 = intf[i];
-			if(i1 == cl || js.Boot.__interfLoop(i1,cl)) {
-				$s.pop();
-				return true;
-			}
-		}
-	}
-	var $tmp = js.Boot.__interfLoop(cc.__super__,cl);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-js.Boot.__instanceof = function(o,cl) {
-	$s.push("js.Boot::__instanceof");
-	var $spos = $s.length;
-	try {
-		if(o instanceof cl) {
-			if(cl == Array) {
-				var $tmp = o.__enum__ == null;
-				$s.pop();
-				return $tmp;
-			}
-			$s.pop();
-			return true;
-		}
-		if(js.Boot.__interfLoop(o.__class__,cl)) {
-			$s.pop();
-			return true;
-		}
-	} catch( e ) {
-		$e = [];
-		while($s.length >= $spos) $e.unshift($s.pop());
-		$s.push($e[0]);
-		if(cl == null) {
-			$s.pop();
-			return false;
-		}
-	}
-	switch(cl) {
-	case Int:
-		var $tmp = Math.ceil(o%2147483648.0) === o;
-		$s.pop();
-		return $tmp;
-	case Float:
-		var $tmp = typeof(o) == "number";
-		$s.pop();
-		return $tmp;
-	case Bool:
-		var $tmp = o === true || o === false;
-		$s.pop();
-		return $tmp;
-	case String:
-		var $tmp = typeof(o) == "string";
-		$s.pop();
-		return $tmp;
-	case Dynamic:
-		$s.pop();
-		return true;
-	default:
-		if(o == null) {
-			$s.pop();
-			return false;
-		}
-		var $tmp = o.__enum__ == cl || cl == Class && o.__name__ != null || cl == Enum && o.__ename__ != null;
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-js.Boot.__init = function() {
-	$s.push("js.Boot::__init");
-	var $spos = $s.length;
-	js.Lib.isIE = typeof document!='undefined' && document.all != null && typeof window!='undefined' && window.opera == null;
-	js.Lib.isOpera = typeof window!='undefined' && window.opera != null;
-	Array.prototype.copy = Array.prototype.slice;
-	Array.prototype.insert = function(i,x) {
-		$s.push("js.Boot::__init@205");
-		var $spos = $s.length;
-		this.splice(i,0,x);
-		$s.pop();
+	
+    var start = Util.normalizeTime(options, 'start');
+    var end = Util.normalizeTime(options, 'end');
+	
+	if(start) ob.start = start;
+	if(end) ob.end = end;
+	
+    http.post(
+      $.Config.analyticsServer + '/search',
+      ob,
+      Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+  
+  /**
+   * Intersect time series for events that meet the specified constraint. Note
+   * that constraints may involve at most one event.
+   *
+   * Options:
+   *
+   *  * properties
+   *  * periodicity
+   *  * start
+   *  * end
+   *
+   *
+   * ReportGrid.intersect("/advertisers/Nike", {periodicity: "hour", properties: [{"property" : ".impression.platform", "limit" : 3, "order" : "descending"}]});
+   * > {"iphone":{"hour":{"1239232323":293}},"android":{"hour":{"1239232323":155}},"blackberry":{"hour":{"1239232323":65}}}
+   */
+  ReportGrid.intersect = function(path_, options, success, failure) {
+	var path = Util.sanitizePath(path_);
+	var peri = options.periodicity || "eternity";
+
+	var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
+	
+	var ob = {
+	  select:     "series/" + peri,
+	  from:       path,
+	  properties: options.properties
 	};
-	Array.prototype.remove = Array.prototype.indexOf?function(obj) {
-		$s.push("js.Boot::__init@208");
-		var $spos = $s.length;
-		var idx = this.indexOf(obj);
-		if(idx == -1) {
-			$s.pop();
-			return false;
-		}
-		this.splice(idx,1);
-		$s.pop();
-		return true;
-		$s.pop();
-	}:function(obj) {
-		$s.push("js.Boot::__init@213");
-		var $spos = $s.length;
-		var i = 0;
-		var l = this.length;
-		while(i < l) {
-			if(this[i] == obj) {
-				this.splice(i,1);
-				$s.pop();
-				return true;
-			}
-			i++;
-		}
-		$s.pop();
-		return false;
-		$s.pop();
-	};
-	Array.prototype.iterator = function() {
-		$s.push("js.Boot::__init@225");
-		var $spos = $s.length;
-		var $tmp = { cur : 0, arr : this, hasNext : function() {
-			$s.push("js.Boot::__init@225@229");
-			var $spos = $s.length;
-			var $tmp = this.cur < this.arr.length;
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		}, next : function() {
-			$s.push("js.Boot::__init@225@232");
-			var $spos = $s.length;
-			var $tmp = this.arr[this.cur++];
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		}};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	if(String.prototype.cca == null) String.prototype.cca = String.prototype.charCodeAt;
-	String.prototype.charCodeAt = function(i) {
-		$s.push("js.Boot::__init@239");
-		var $spos = $s.length;
-		var x = this.cca(i);
-		if(x != x) {
-			$s.pop();
-			return null;
-		}
-		$s.pop();
-		return x;
-		$s.pop();
-	};
-	var oldsub = String.prototype.substr;
-	String.prototype.substr = function(pos,len) {
-		$s.push("js.Boot::__init@246");
-		var $spos = $s.length;
-		if(pos != null && pos != 0 && len != null && len < 0) {
-			$s.pop();
-			return "";
-		}
-		if(len == null) len = this.length;
-		if(pos < 0) {
-			pos = this.length + pos;
-			if(pos < 0) pos = 0;
-		} else if(len < 0) len = this.length + len - pos;
-		var $tmp = oldsub.apply(this,[pos,len]);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$closure = js.Boot.__closure;
-	$s.pop();
-}
-js.Boot.prototype.__class__ = js.Boot;
-$_ = {}
-js.Boot.__res = {}
-$s = [];
-$e = [];
-js.Boot.__init();
-{
-	String.prototype.__class__ = String;
-	String.__name__ = ["String"];
-	Array.prototype.__class__ = Array;
-	Array.__name__ = ["Array"];
-	Int = { __name__ : ["Int"]};
-	Dynamic = { __name__ : ["Dynamic"]};
-	Float = Number;
-	Float.__name__ = ["Float"];
-	Bool = { __ename__ : ["Bool"]};
-	Class = { __name__ : ["Class"]};
-	Enum = { };
-	Void = { __ename__ : ["Void"]};
-}
-{
-	Math.__name__ = ["Math"];
-	Math.NaN = Number["NaN"];
-	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
-	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
-	Math.isFinite = function(i) {
-		$s.push("js.Boot::__init");
-		var $spos = $s.length;
-		var $tmp = isFinite(i);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	Math.isNaN = function(i) {
-		$s.push("js.Boot::__init");
-		var $spos = $s.length;
-		var $tmp = isNaN(i);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-}
-{
-	js.Lib.document = document;
-	js.Lib.window = window;
-	onerror = function(msg,url,line) {
-		var stack = $s.copy();
-		var f = js.Lib.onerror;
-		$s.splice(0,$s.length);
-		if( f == null ) {
-			var i = stack.length;
-			var s = "";
-			while( --i >= 0 )
-				s += "Called from "+stack[i]+"\n";
-			alert(msg+"\n\n"+s);
-			return false;
-		}
-		return f(msg,stack);
+
+    var start = Util.normalizeTime(options, 'start');
+    var end = Util.normalizeTime(options, 'end');
+
+	if(start) ob.start = start;
+	if(end) ob.end = end;
+	
+	http.post(
+	  $.Config.analyticsServer + '/intersect',
+	  ob,
+	  Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+	);
+  }
+
+  /** Lists all tokens.
+   */
+  ReportGrid.tokens = function(success, failure) {
+    var http = $.Http();
+
+    http.get(
+      $.Config.analyticsServer + '/tokens/',
+      Util.createCallbacks(success, failure, 'List all tokens'),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+  
+  ReportGrid.token = function(token, success, failure) {
+    var http = $.Http();
+	if(typeof(token) != "string")
+	{
+		failure = success;
+		success = token;
+		token = $.Config.tokenId;
 	}
-}
-js.Lib.onerror = null;
+    http.get(
+      $.Config.analyticsServer + '/tokens/' + token,
+      Util.createCallbacks(success, failure, 'List all tokens'),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+  /** Creates a new token.
+   */
+  ReportGrid.newToken = function(newToken, success, failure) {
+    var http = $.Http();
+
+    http.post(
+      $.Config.analyticsServer + '/tokens/',
+      newToken,
+      Util.createCallbacks(success, failure, 'Create a token (' + JSON.stringify(newToken) + ')'),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+
+  /** Deletes the token with the specified id.
+   */
+  ReportGrid.deleteToken = function(tokenId, success, failure) {
+    var http = $.Http();
+
+    http.remove(
+      $.Config.analyticsServer + '/tokens/' + tokenId,
+      Util.createCallbacks(success, failure, 'Delete token ' + tokenId),
+      {tokenId: $.Config.tokenId }
+    );
+  }
+})();
+
+

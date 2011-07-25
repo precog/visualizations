@@ -16,15 +16,14 @@ class QueryParser
 	var operation : QOperation;
 	var where : Array<QCondition>;
 	
-	public function new()
+	public function new() { }
+	
+	public function parse(s : String) : Query
 	{
 		exp = [];
 		operation = Count;
 		where = [];
-	}
-	
-	public function parse(s : String) : Query
-	{
+		
 		parseExp(s);
 		return {
 			exp : exp,
@@ -36,6 +35,11 @@ class QueryParser
 	function parseExp(e : String)
 	{
 		var tokens = e.split("*").map(function(d, _) return StringTools.trim(d));
+		if (tokens.length == 1 && "" == tokens[0])
+		{
+			exp.push(Event);
+			return;
+		}
 		for (token in tokens)
 		{
 			var etoken = parseToken(token);
@@ -44,13 +48,11 @@ class QueryParser
 		}
 	}
 	
-	
-	
 	static var TOKEN_SPLIT = ~/and/gi;
 	
 	static function __init__()
 	{
-		var _PNAME = "((?:\\.?\\w+)+)",
+		var _PNAME = "((?:\\.?#?\\w+)+)",
 			_LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?",
 			_COND  = "(?:\\s*([=])\\s*(.+))";
 		TOKEN_INDIVIDUAL_PARSE = new EReg('^' + _PNAME + _LIMIT + _COND+"?" + "$", "i");

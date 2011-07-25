@@ -4,6 +4,7 @@
  */
 
 package rg.data.source.rgquery.transform;
+import rg.data.source.rgquery.IExecutorReportGrid;
 using Objects;
 
 class TestCountTimeSeriesTransform extends TestBase
@@ -12,17 +13,20 @@ class TestCountTimeSeriesTransform extends TestBase
 	{
 		var transform = new TransformCountTimeSeries({ }, "impression", "day", "count");
 		
-		var data = { day : [[1310342400000, 0], [1310428800000, 1], [1310515200000, 2]] };
+		var data : TimeSeriesType = { type : "timeseries", periodicity : "day", data : [[1310342400000, 0], [1310428800000, 1], [1310515200000, 2]] };
 		
 		assertDataPoints([{
 			event : "impression",
-			properties : ( { count : 0 } ).addFields([".#time:day"], [1310342400000])
+			properties : ( { count : 0 } ).addFields([".#time:day"], [1310342400000]),
+			segment : null
 		}, {
 			event : "impression",
-			properties : ( { count : 1 } ).addFields([".#time:day"], [1310428800000])
+			properties : ( { count : 1 } ).addFields([".#time:day"], [1310428800000]),
+			segment : null
 		}, {
 			event : "impression",
-			properties : ( { count : 2 } ).addFields([".#time:day"], [1310515200000])
+			properties : ( { count : 2 } ).addFields([".#time:day"], [1310515200000]),
+			segment : null
 		}], transform.transform(data));
 	}
 }

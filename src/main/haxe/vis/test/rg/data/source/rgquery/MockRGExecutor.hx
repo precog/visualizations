@@ -4,6 +4,7 @@
  */
 
 package rg.data.source.rgquery;
+import rg.data.source.rgquery.IExecutorReportGrid;
 
 class MockRGExecutor implements IExecutorReportGrid
 {
@@ -16,7 +17,7 @@ class MockRGExecutor implements IExecutorReportGrid
 	{
 		callStack.push({ method : "propertyCount", args : [path, options] });
 	}
-	public function propertySeries(path : String, options : { }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
+	public function propertySeries(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void)
 	{
 		callStack.push({ method : "propertySeries", args : [path, options] });
 	}
@@ -28,7 +29,7 @@ class MockRGExecutor implements IExecutorReportGrid
 	{
 		callStack.push({ method : "propertyValueCount", args : [path, options] });
 	}
-	public function propertyValueSeries(path : String, options : { property : String, value : Dynamic }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
+	public function propertyValueSeries(path : String, options : { property : String, value : Dynamic }, success : TimeSeriesType -> Void, ?error : String -> Void)
 	{
 		callStack.push({ method : "propertyValueSeries", args : [path, options] });
 	}
@@ -36,7 +37,7 @@ class MockRGExecutor implements IExecutorReportGrid
 	{
 		callStack.push({ method : "searchCount", args : [path, options] });
 	}
-	public function searchSeries(path : String, options : { }, success : Dynamic<Dynamic<Int>> -> Void, ?error : String -> Void)
+	public function searchSeries(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void)
 	{
 		callStack.push({ method : "searchSeries", args : [path, options] });
 	}

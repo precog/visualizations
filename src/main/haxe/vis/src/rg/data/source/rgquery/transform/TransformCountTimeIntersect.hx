@@ -26,42 +26,32 @@ class TransformCountTimeIntersect implements ITransform<Dynamic>
 	
 	public function transform(data : Dynamic) : Array<DataPoint>
 	{
-		var values = Objects.flatten(data),
+		var items = Objects.flatten(data, fields.length),
 			properties = this.properties,
 			unit = this.unit;
-		if (null == values || 0 == values.length)
+		if (null == items || 0 == items.length)
 			return [];
 		
-			var result = [];
-		
-		for (item in values)
+		var result = [];
+		for (item in items)
 		{
-			var arr : Array<Array<Float>> = item.value,
-				values = item.fields.copy(),
-				timestamp = values.pop();
-
+			var arr : Array<Array<Float>> = item.value.data;
 			for (i in 0...arr.length)
 			{
-				/*
-				var p = Objects.addFields(Dynamics.clone(properties), 
-					[".#timestamp"],
-					[arr[i][0]]
-				);
-				*/
 				var p = Dynamics.clone(properties);
 				Objects.addFields(p,
 					fields,
-					values.map(typedValue)
+					item.fields.map(typedValue)
 				);
 				Objects.addFields(p, 
 					[Properties.timeProperty(periodicity), unit],
 					[arr[i][0], arr[i][1]]
 				);
-					
-				
+
 				result.push({
 					properties : p,
-					event : event
+					event : event,
+					segment : null
 				});
 			}
 		}
