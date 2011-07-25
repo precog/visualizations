@@ -9,6 +9,8 @@ import rg.controller.factory.FactoryVariableContexts;
 import rg.controller.info.InfoDataContext;
 import rg.controller.info.InfoDomType;
 import rg.controller.info.InfoLayout;
+import rg.controller.info.InfoVisualizationType;
+import rg.controller.visualization.Visualization;
 import rg.data.DataRequest;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import thx.error.Error;
@@ -20,6 +22,8 @@ import rg.controller.factory.FactoryDataSource;
 import rg.data.DataPoint;
 import rg.data.source.DataSourceReportGrid;
 import rg.view.layout.Layout;
+import rg.controller.factory.FactoryHtmlVisualization;
+import rg.controller.factory.FactorySvgVisualization;
 using rg.controller.info.Info;
 using Arrays;
 
@@ -61,22 +65,26 @@ class App
 			context.data.independentVariables = independentVariables;
 			context.data.dependentVariables = dependentVariables;
 		}
-		
-		var request = new DataRequest(cache, datacontexts);
-		request.onData = function(datapoints : Array<DataPoint>) {
-			trace(datapoints);
-		};
-		
-		
+
+		var visualization : Visualization = null;
+		var infoviz = new InfoVisualizationType().feed(params.options);
 		switch(new InfoDomType().feed(params.options).kind)
 		{
 			case Svg:
 				var layout = getLayout(id, params.options, el);
-				
+				visualization = new FactorySvgVisualization().create(infoviz.type, layout, params.options);
 			case Html:
-				throw new NotImplemented();
+				visualization = new FactoryHtmlVisualization().create(infoviz.type, params.options);
 		}
+		visualization.setVariables(
+			independentVariables.map(function(c, _) return c.variable),
+			dependentVariables.map(function(c, _) return c.variable));
+		visualization.init();
 		
+		var request = new DataRequest(cache, datacontexts);
+		request.onData = function(datapoints : Array<DataPoint>) {
+			visualization.feedData(datapoints);
+		};
 		request.request();
 	}
 	
@@ -100,7 +108,7 @@ import rg.controller.factory.FactoryDataSource;
 import rg.controller.info.InfoDataContext;
 import rg.controller.info.InfoSvgOption;
 import rg.controller.info.InfoVisualizationOption;
-//import rg.controller.viz.SvgVisualization;
+//import rg.controller.viz.VisualizationSvg;
 import rg.data.DataContext;
 import rg.data.DataRequest;
 import rg.data.source.rgquery.IExecutorReportGrid;
@@ -149,7 +157,7 @@ class App
 		switch(jsoptions.type)
 		{
 			case "linechart":
-//				viz = ApplySvgOption.apply(new SvgVisualization(el), jsoptions);
+//				viz = ApplySvgOption.apply(new VisualizationSvg(el), jsoptions);
 //				var chart = new LineChart(el, context);
 			default:
 //				throw new Error("the visualization of type '{0}' is not available (yet)", type);

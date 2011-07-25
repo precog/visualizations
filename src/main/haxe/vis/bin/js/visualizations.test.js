@@ -1705,6 +1705,24 @@ Dynamics.number = function(v) {
 	$s.pop();
 }
 Dynamics.prototype.__class__ = Dynamics;
+if(!rg.view) rg.view = {}
+if(!rg.view.layout) rg.view.layout = {}
+rg.view.layout.Anchor = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["None","Top","Bottom","Left","Right"] }
+rg.view.layout.Anchor.None = ["None",0];
+rg.view.layout.Anchor.None.toString = $estr;
+rg.view.layout.Anchor.None.__enum__ = rg.view.layout.Anchor;
+rg.view.layout.Anchor.Top = ["Top",1];
+rg.view.layout.Anchor.Top.toString = $estr;
+rg.view.layout.Anchor.Top.__enum__ = rg.view.layout.Anchor;
+rg.view.layout.Anchor.Bottom = ["Bottom",2];
+rg.view.layout.Anchor.Bottom.toString = $estr;
+rg.view.layout.Anchor.Bottom.__enum__ = rg.view.layout.Anchor;
+rg.view.layout.Anchor.Left = ["Left",3];
+rg.view.layout.Anchor.Left.toString = $estr;
+rg.view.layout.Anchor.Left.__enum__ = rg.view.layout.Anchor;
+rg.view.layout.Anchor.Right = ["Right",4];
+rg.view.layout.Anchor.Right.toString = $estr;
+rg.view.layout.Anchor.Right.__enum__ = rg.view.layout.Anchor;
 if(!rg.controller) rg.controller = {}
 if(!rg.controller.info) rg.controller.info = {}
 rg.controller.info.InfoDomType = function(p) {
@@ -1744,7 +1762,6 @@ rg.controller.info.DomKind.Html.__enum__ = rg.controller.info.DomKind;
 rg.controller.info.DomKind.Svg = ["Svg",1];
 rg.controller.info.DomKind.Svg.toString = $estr;
 rg.controller.info.DomKind.Svg.__enum__ = rg.controller.info.DomKind;
-if(!rg.view) rg.view = {}
 if(!rg.view.frame) rg.view.frame = {}
 rg.view.frame.Orientation = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
 rg.view.frame.Orientation.Vertical = ["Vertical",0];
@@ -8692,6 +8709,28 @@ rg.data.source.rgquery.transform.TestCountTransform.prototype.testTransform = fu
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTransform;
+rg.controller.factory.FactoryHtmlVisualization = function(p) {
+	$s.push("rg.controller.factory.FactoryHtmlVisualization::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactoryHtmlVisualization.__name__ = ["rg","controller","factory","FactoryHtmlVisualization"];
+rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,options) {
+	$s.push("rg.controller.factory.FactoryHtmlVisualization::create");
+	var $spos = $s.length;
+	throw new thx.error.NotImplemented({ fileName : "FactoryHtmlVisualization.hx", lineNumber : 19, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
+	$s.pop();
+	return null;
+	$s.pop();
+}
+rg.controller.factory.FactoryHtmlVisualization.prototype.__class__ = rg.controller.factory.FactoryHtmlVisualization;
+rg.controller.info.InfoLineChart = function(p) {
+	$s.push("rg.controller.info.InfoLineChart::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
+rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
 utest.ui.common.ClassResult = function(className,setupName,teardownName) {
 	if( className === $_ ) return;
 	$s.push("utest.ui.common.ClassResult::new");
@@ -11163,6 +11202,18 @@ thx.date.DateParser.plusPm = function(s) {
 	$s.pop();
 }
 thx.date.DateParser.prototype.__class__ = thx.date.DateParser;
+rg.view.layout.PanelContext = function(panel,anchor) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.layout.PanelContext::new");
+	var $spos = $s.length;
+	this.panel = panel;
+	this.anchor = anchor;
+	$s.pop();
+}
+rg.view.layout.PanelContext.__name__ = ["rg","view","layout","PanelContext"];
+rg.view.layout.PanelContext.prototype.panel = null;
+rg.view.layout.PanelContext.prototype.anchor = null;
+rg.view.layout.PanelContext.prototype.__class__ = rg.view.layout.PanelContext;
 if(!thx.text) thx.text = {}
 thx.text.ERegs = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
@@ -11557,6 +11608,36 @@ rg.controller.factory.TestFactoryDataSource.prototype.setup = function() {
 	$s.pop();
 }
 rg.controller.factory.TestFactoryDataSource.prototype.__class__ = rg.controller.factory.TestFactoryDataSource;
+rg.controller.info.InfoVisualizationType = function(p) {
+	$s.push("rg.controller.info.InfoVisualizationType::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoVisualizationType.__name__ = ["rg","controller","info","InfoVisualizationType"];
+rg.controller.info.InfoVisualizationType.filters = function() {
+	$s.push("rg.controller.info.InfoVisualizationType::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "visualization", validator : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationType::filters@17");
+		var $spos = $s.length;
+		var $tmp = Arrays.exists(rg.controller.Visualizations.visualizations,v.toLowerCase());
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationType::filters@18");
+		var $spos = $s.length;
+		var $tmp = [{ value : v.toLowerCase(), field : "type"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoVisualizationType.prototype.type = null;
+rg.controller.info.InfoVisualizationType.prototype.__class__ = rg.controller.info.InfoVisualizationType;
 rg.data.source.rgquery.transform.TransformCount = function(properties,event,unit) {
 	if( properties === $_ ) return;
 	$s.push("rg.data.source.rgquery.transform.TransformCount::new");
@@ -13154,6 +13235,36 @@ haxe.Log.clear = function() {
 	$s.pop();
 }
 haxe.Log.prototype.__class__ = haxe.Log;
+rg.controller.factory.FactorySvgVisualization = function(p) {
+	$s.push("rg.controller.factory.FactorySvgVisualization::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactorySvgVisualization.__name__ = ["rg","controller","factory","FactorySvgVisualization"];
+rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,layout,options) {
+	$s.push("rg.controller.factory.FactorySvgVisualization::create");
+	var $spos = $s.length;
+	switch(type) {
+	case "linechart":
+		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLineChart(),options);
+		break;
+	case "piechart":
+		break;
+	default:
+		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 27, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+	}
+	$s.pop();
+	return null;
+	$s.pop();
+}
+rg.controller.factory.FactorySvgVisualization.prototype.createLineChart = function(info,layout) {
+	$s.push("rg.controller.factory.FactorySvgVisualization::createLineChart");
+	var $spos = $s.length;
+	$s.pop();
+	return null;
+	$s.pop();
+}
+rg.controller.factory.FactorySvgVisualization.prototype.__class__ = rg.controller.factory.FactorySvgVisualization;
 thx.js.BaseTransition = function(selection) {
 	if( selection === $_ ) return;
 	$s.push("thx.js.BaseTransition::new");
@@ -14110,12 +14221,12 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 	var id = node.id;
 	if(null == id) node.id = id = rg.controller.App.nextid();
 	var cache = new Hash();
-	haxe.Log.trace(jsoptions,{ fileName : "App.hx", lineNumber : 51, className : "rg.controller.App", methodName : "visualization"});
+	haxe.Log.trace(jsoptions,{ fileName : "App.hx", lineNumber : 55, className : "rg.controller.App", methodName : "visualization"});
 	var params = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions);
 	var factoryDataSource = new rg.controller.factory.FactoryDataSource(cache,this.executor);
 	var factoryDataContext = new rg.controller.factory.FactoryDataContext(factoryDataSource);
 	var datacontexts = params.data.map(function(d,_) {
-		$s.push("rg.controller.App::visualization@55");
+		$s.push("rg.controller.App::visualization@59");
 		var $spos = $s.length;
 		var $tmp = factoryDataContext.create(d);
 		$s.pop();
@@ -14132,21 +14243,40 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		context.data.independentVariables = independentVariables;
 		context.data.dependentVariables = dependentVariables;
 	}
-	var request = new rg.data.DataRequest(cache,datacontexts);
-	request.onData = function(datapoints) {
-		$s.push("rg.controller.App::visualization@66");
-		var $spos = $s.length;
-		haxe.Log.trace(datapoints,{ fileName : "App.hx", lineNumber : 67, className : "rg.controller.App", methodName : "visualization"});
-		$s.pop();
-	};
+	var visualization = null;
+	var infoviz = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationType(),params.options);
 	switch( (rg.controller.info.Info.feed(new rg.controller.info.InfoDomType(),params.options).kind)[1] ) {
 	case 1:
 		var layout = this.getLayout(id,params.options,el);
+		visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
 		break;
 	case 0:
-		throw new thx.error.NotImplemented({ fileName : "App.hx", lineNumber : 77, className : "rg.controller.App", methodName : "visualization"});
+		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,params.options);
 		break;
 	}
+	visualization.setVariables(independentVariables.map(function(c,_) {
+		$s.push("rg.controller.App::visualization@80");
+		var $spos = $s.length;
+		var $tmp = c.variable;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}),dependentVariables.map(function(c,_) {
+		$s.push("rg.controller.App::visualization@81");
+		var $spos = $s.length;
+		var $tmp = c.variable;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	visualization.init();
+	var request = new rg.data.DataRequest(cache,datacontexts);
+	request.onData = function(datapoints) {
+		$s.push("rg.controller.App::visualization@85");
+		var $spos = $s.length;
+		visualization.feedData(datapoints);
+		$s.pop();
+	};
 	request.request();
 	$s.pop();
 }
@@ -14158,9 +14288,9 @@ rg.controller.App.prototype.getLayout = function(id,options,container) {
 		$s.pop();
 		return $tmp;
 	}
-	haxe.Log.trace(options,{ fileName : "App.hx", lineNumber : 87, className : "rg.controller.App", methodName : "getLayout"});
+	haxe.Log.trace(options,{ fileName : "App.hx", lineNumber : 95, className : "rg.controller.App", methodName : "getLayout"});
 	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),options);
-	haxe.Log.trace(info,{ fileName : "App.hx", lineNumber : 89, className : "rg.controller.App", methodName : "getLayout"});
+	haxe.Log.trace(info,{ fileName : "App.hx", lineNumber : 97, className : "rg.controller.App", methodName : "getLayout"});
 	var layout = new rg.controller.factory.FactoryLayout().create(info,container);
 	this.layouts.set(id,layout);
 	$s.pop();
@@ -15251,17 +15381,18 @@ rg.controller.info.TestInfoVisualizationOption.prototype.testFeedOptions = funct
 	$s.pop();
 }
 rg.controller.info.TestInfoVisualizationOption.prototype.__class__ = rg.controller.info.TestInfoVisualizationOption;
-if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.Layout = function(width,height,container) {
 	if( width === $_ ) return;
 	$s.push("rg.view.layout.Layout::new");
 	var $spos = $s.length;
+	this.container = container;
 	container.classed().add("rg");
 	this.space = new rg.view.svg.panel.Space(width,height,container);
 	$s.pop();
 }
 rg.view.layout.Layout.__name__ = ["rg","view","layout","Layout"];
 rg.view.layout.Layout.prototype.space = null;
+rg.view.layout.Layout.prototype.container = null;
 rg.view.layout.Layout.prototype.getPanel = function(name) {
 	$s.push("rg.view.layout.Layout::getPanel");
 	var $spos = $s.length;
@@ -15280,6 +15411,28 @@ rg.view.layout.SimpleLayout = function(width,height,container) {
 rg.view.layout.SimpleLayout.__name__ = ["rg","view","layout","SimpleLayout"];
 rg.view.layout.SimpleLayout.__super__ = rg.view.layout.Layout;
 for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.SimpleLayout.prototype[k] = rg.view.layout.Layout.prototype[k];
+rg.view.layout.SimpleLayout.prototype.main = null;
+rg.view.layout.SimpleLayout.prototype.title = null;
+rg.view.layout.SimpleLayout.prototype.getPanel = function(name) {
+	$s.push("rg.view.layout.SimpleLayout::getPanel");
+	var $spos = $s.length;
+	switch(name) {
+	case "main":
+		if(null == this.main) this.main = new rg.view.layout.PanelContext(this.space.createPanel(rg.view.frame.FrameLayout.Fill(0,0)),rg.view.layout.Anchor.None);
+		var $tmp = this.main;
+		$s.pop();
+		return $tmp;
+	case "title":
+		if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,20)),rg.view.layout.Anchor.Bottom);
+		var $tmp = this.title;
+		$s.pop();
+		return $tmp;
+	default:
+		$s.pop();
+		return null;
+	}
+	$s.pop();
+}
 rg.view.layout.SimpleLayout.prototype.__class__ = rg.view.layout.SimpleLayout;
 rg.controller.Visualizations = function() { }
 rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
@@ -16026,52 +16179,43 @@ haxe.Timer.prototype.run = function() {
 	$s.pop();
 }
 haxe.Timer.prototype.__class__ = haxe.Timer;
-rg.controller.factory.FactoryAxis = function(p) {
-	$s.push("rg.controller.factory.FactoryAxis::new");
+if(!rg.controller.visualization) rg.controller.visualization = {}
+rg.controller.visualization.Visualization = function() { }
+rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
+rg.controller.visualization.Visualization.prototype.independentVariables = null;
+rg.controller.visualization.Visualization.prototype.dependentVariables = null;
+rg.controller.visualization.Visualization.prototype.setVariables = function(independentVariables,dependentVariables) {
+	$s.push("rg.controller.visualization.Visualization::setVariables");
 	var $spos = $s.length;
+	this.independentVariables = independentVariables;
+	this.dependentVariables = dependentVariables;
 	$s.pop();
 }
-rg.controller.factory.FactoryAxis.__name__ = ["rg","controller","factory","FactoryAxis"];
-rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,samples) {
-	$s.push("rg.controller.factory.FactoryAxis::create");
+rg.controller.visualization.Visualization.prototype.init = function() {
+	$s.push("rg.controller.visualization.Visualization::init");
 	var $spos = $s.length;
-	if(null != samples) {
-		var $tmp = new rg.data.AxisOrdinal(samples);
-		$s.pop();
-		return $tmp;
-	} else if(isnumeric) {
-		var $tmp = new rg.data.AxisNumeric();
-		$s.pop();
-		return $tmp;
-	} else {
-		$s.pop();
-		return null;
-	}
+	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 25, className : "rg.controller.visualization.Visualization", methodName : "init"});
 	$s.pop();
 }
-rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,samples) {
-	$s.push("rg.controller.factory.FactoryAxis::createDiscrete");
+rg.controller.visualization.Visualization.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.Visualization::feedData");
 	var $spos = $s.length;
-	if(rg.util.Properties.isTime(type)) {
-		var $tmp = new rg.data.AxisTime(rg.util.Properties.periodicity(type));
-		$s.pop();
-		return $tmp;
-	} else {
-		var $tmp = new rg.data.AxisOrdinal(samples);
-		$s.pop();
-		return $tmp;
-	}
+	haxe.Log.trace("DATA FEED " + data,{ fileName : "Visualization.hx", lineNumber : 30, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
 	$s.pop();
 }
-rg.controller.factory.FactoryAxis.prototype.__class__ = rg.controller.factory.FactoryAxis;
-rg.controller.factory.AxisHint = { __ename__ : ["rg","controller","factory","AxisHint"], __constructs__ : ["Unknown","Numeric","Samples"] }
-rg.controller.factory.AxisHint.Unknown = ["Unknown",0];
-rg.controller.factory.AxisHint.Unknown.toString = $estr;
-rg.controller.factory.AxisHint.Unknown.__enum__ = rg.controller.factory.AxisHint;
-rg.controller.factory.AxisHint.Numeric = ["Numeric",1];
-rg.controller.factory.AxisHint.Numeric.toString = $estr;
-rg.controller.factory.AxisHint.Numeric.__enum__ = rg.controller.factory.AxisHint;
-rg.controller.factory.AxisHint.Samples = function(values) { var $x = ["Samples",2,values]; $x.__enum__ = rg.controller.factory.AxisHint; $x.toString = $estr; return $x; }
+rg.controller.visualization.Visualization.prototype.__class__ = rg.controller.visualization.Visualization;
+rg.controller.visualization.VisualizationSvg = function(layout) {
+	if( layout === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationSvg::new");
+	var $spos = $s.length;
+	this.layout = layout;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationSvg.__name__ = ["rg","controller","visualization","VisualizationSvg"];
+rg.controller.visualization.VisualizationSvg.__super__ = rg.controller.visualization.Visualization;
+for(var k in rg.controller.visualization.Visualization.prototype ) rg.controller.visualization.VisualizationSvg.prototype[k] = rg.controller.visualization.Visualization.prototype[k];
+rg.controller.visualization.VisualizationSvg.prototype.layout = null;
+rg.controller.visualization.VisualizationSvg.prototype.__class__ = rg.controller.visualization.VisualizationSvg;
 rg.data.source.rgquery.QueryParser = function(p) {
 	$s.push("rg.data.source.rgquery.QueryParser::new");
 	var $spos = $s.length;
@@ -16211,6 +16355,52 @@ rg.data.source.rgquery.QueryParser.prototype.addWhereCondition = function(name,o
 	$s.pop();
 }
 rg.data.source.rgquery.QueryParser.prototype.__class__ = rg.data.source.rgquery.QueryParser;
+rg.controller.factory.FactoryAxis = function(p) {
+	$s.push("rg.controller.factory.FactoryAxis::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactoryAxis.__name__ = ["rg","controller","factory","FactoryAxis"];
+rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,samples) {
+	$s.push("rg.controller.factory.FactoryAxis::create");
+	var $spos = $s.length;
+	if(null != samples) {
+		var $tmp = new rg.data.AxisOrdinal(samples);
+		$s.pop();
+		return $tmp;
+	} else if(isnumeric) {
+		var $tmp = new rg.data.AxisNumeric();
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return null;
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,samples) {
+	$s.push("rg.controller.factory.FactoryAxis::createDiscrete");
+	var $spos = $s.length;
+	if(rg.util.Properties.isTime(type)) {
+		var $tmp = new rg.data.AxisTime(rg.util.Properties.periodicity(type));
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = new rg.data.AxisOrdinal(samples);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryAxis.prototype.__class__ = rg.controller.factory.FactoryAxis;
+rg.controller.factory.AxisHint = { __ename__ : ["rg","controller","factory","AxisHint"], __constructs__ : ["Unknown","Numeric","Samples"] }
+rg.controller.factory.AxisHint.Unknown = ["Unknown",0];
+rg.controller.factory.AxisHint.Unknown.toString = $estr;
+rg.controller.factory.AxisHint.Unknown.__enum__ = rg.controller.factory.AxisHint;
+rg.controller.factory.AxisHint.Numeric = ["Numeric",1];
+rg.controller.factory.AxisHint.Numeric.toString = $estr;
+rg.controller.factory.AxisHint.Numeric.__enum__ = rg.controller.factory.AxisHint;
+rg.controller.factory.AxisHint.Samples = function(values) { var $x = ["Samples",2,values]; $x.__enum__ = rg.controller.factory.AxisHint; $x.toString = $estr; return $x; }
 thx.js.AccessText = function(selection) {
 	if( selection === $_ ) return;
 	$s.push("thx.js.AccessText::new");
@@ -17240,8 +17430,10 @@ rg.controller.factory.FactoryLayout.prototype.create = function(info,container) 
 	$s.push("rg.controller.factory.FactoryLayout::create");
 	var $spos = $s.length;
 	var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height;
-	haxe.Log.trace(info,{ fileName : "FactoryLayout.hx", lineNumber : 29, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
-	var $tmp = rg.controller.Visualizations.instantiateLayout(info.type,width,height,container);
+	var layout = info.layout;
+	if(null == layout) layout = rg.controller.Visualizations.layoutDefault.get(info.type);
+	if(null == layout) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
+	var $tmp = rg.controller.Visualizations.instantiateLayout(layout,width,height,container);
 	$s.pop();
 	return $tmp;
 	$s.pop();

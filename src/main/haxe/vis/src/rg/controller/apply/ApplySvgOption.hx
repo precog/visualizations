@@ -4,19 +4,19 @@
  */
 /*
 package rg.controller.apply;
-import rg.controller.viz.SvgVisualization;
+import rg.controller.viz.VisualizationSvg;
 import rg.controller.info.InfoSvgOption;
 
 class ApplySvgOption 
 {
-	public static function apply(svg : SvgVisualization, jsoptions : Dynamic)
+	public static function apply(svg : VisualizationSvg, jsoptions : Dynamic)
 	{
 		new ApplySvgOption(svg).applySvg(new InfoSvgOption(jsoptions));
 		return svg;
 	}
 	
-	var svg : SvgVisualization;
-	public function new(svg : SvgVisualization) 
+	var svg : VisualizationSvg;
+	public function new(svg : VisualizationSvg) 
 	{
 		this.svg = svg;
 	}
