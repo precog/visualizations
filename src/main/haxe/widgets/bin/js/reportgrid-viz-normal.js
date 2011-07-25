@@ -11124,7 +11124,7 @@ Objects.clone = function(src) {
 	Objects.copyTo(src,dst);
 	return dst;
 }
-Objects._flatten = function(src,cum,arr) {
+Objects._flatten = function(src,cum,arr,levels,level) {
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
 		var field = _g1[_g];
@@ -11132,22 +11132,23 @@ Objects._flatten = function(src,cum,arr) {
 		var clone = Objects.clone(cum);
 		var v = Reflect.field(src,field);
 		clone.fields.push(field);
-		if(Reflect.isObject(v) && null == Type.getClass(v)) Objects._flatten(v,clone,arr); else {
+		if(Reflect.isObject(v) && null == Type.getClass(v) && (levels == 0 || level + 1 < levels)) Objects._flatten(v,clone,arr,levels,level + 1); else {
 			clone.value = v;
 			arr.push(clone);
 		}
 	}
 }
-Objects.flatten = function(src) {
+Objects.flatten = function(src,levels) {
+	if(levels == null) levels = 0;
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
 		var field = _g1[_g];
 		++_g;
 		var v = Reflect.field(src,field);
-		if(Reflect.isObject(v) && null == Type.getClass(v)) {
+		if(Reflect.isObject(v) && null == Type.getClass(v) && levels != 1) {
 			var item = { fields : [field], value : null};
-			Objects._flatten(v,item,arr);
+			Objects._flatten(v,item,arr,levels,1);
 		} else arr.push({ fields : [field], value : v});
 	}
 	return arr;
@@ -11662,7 +11663,7 @@ rg.query._QueryIntersect.PivotTableTransform.prototype.timePropertyPosition = fu
 	return -1;
 }
 rg.query._QueryIntersect.PivotTableTransform.prototype.transform = function(src) {
-	var data = { column_headers : [], row_headers : [], columns : [], rows : [], calc : rg.query._QueryIntersect.PivotTableTransform.emptyCalc()}, temp = Objects.flatten(src), values;
+	var data = { column_headers : [], row_headers : [], columns : [], rows : [], calc : rg.query._QueryIntersect.PivotTableTransform.emptyCalc()}, temp, values;
 	if(this.queryHasTimeProperty()) {
 		var pos = this.timePropertyPosition(), properties = this.query.properties.slice(0,pos).map(function(d,i) {
 			return d.property;
@@ -11677,11 +11678,12 @@ rg.query._QueryIntersect.PivotTableTransform.prototype.transform = function(src)
 			headers.push(properties[i]);
 		}
 		values = [];
+		temp = Objects.flatten(src,headers.length);
 		var _g = 0;
 		while(_g < temp.length) {
 			var item = temp[_g];
 			++_g;
-			var arr = item.value;
+			var arr = item.value.data;
 			var _g1 = 0;
 			while(_g1 < arr.length) {
 				var pair = arr[_g1];
@@ -11697,8 +11699,9 @@ rg.query._QueryIntersect.PivotTableTransform.prototype.transform = function(src)
 		data.row_headers = this.query.properties.slice(this.columns).map(function(d,i) {
 			return d.property;
 		});
+		temp = Objects.flatten(src,this.query.properties.length);
 		values = temp.map(function(d,i) {
-			return { fields : d.fields.slice(0,-1), value : d.value.length > 0?d.value[0][1]:0};
+			return { fields : d.fields, value : d.value.data.length > 0?d.value.data[0][1]:0};
 		});
 	}
 	var rmap = new Hash(), cmap = new Hash(), rkey, ckey, rvalues, cvalues, item, row, col, value;
