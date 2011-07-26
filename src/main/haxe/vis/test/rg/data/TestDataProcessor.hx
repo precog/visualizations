@@ -19,8 +19,7 @@ class TestDataProcessor
 		var datasources : Array<IDataSource> = cast [new DataSourceArray([{ properties : ({}).addField("count", 100), event : "click", segment : null }])];
 		var sources = new Sources(datasources);
 		var processor = new DataProcessor(sources);
-		var transform = null;
-		var datacontexts = [new DataContext("count", processor, transform)];
+		var datacontexts = [new DataContext("count", processor)];
 		var request = new DataRequest(cache, datacontexts);
 
 		processor.independentVariables = [];

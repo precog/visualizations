@@ -753,6 +753,14 @@ rg.util.Properties.timeProperty = function(periodicity) {
 	return $tmp;
 	$s.pop();
 }
+rg.util.Properties.humanize = function(s) {
+	$s.push("rg.util.Properties::humanize");
+	var $spos = $s.length;
+	var $tmp = rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(s,"."),"."));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.util.Properties.prototype.__class__ = rg.util.Properties;
 if(!rg.data) rg.data = {}
 if(!rg.data.source) rg.data.source = {}
@@ -1602,20 +1610,17 @@ Dynamics.number = function(v) {
 Dynamics.prototype.__class__ = Dynamics;
 if(!rg.view) rg.view = {}
 if(!rg.view.layout) rg.view.layout = {}
-rg.view.layout.Anchor = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["None","Top","Bottom","Left","Right"] }
-rg.view.layout.Anchor.None = ["None",0];
-rg.view.layout.Anchor.None.toString = $estr;
-rg.view.layout.Anchor.None.__enum__ = rg.view.layout.Anchor;
-rg.view.layout.Anchor.Top = ["Top",1];
+rg.view.layout.Anchor = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
+rg.view.layout.Anchor.Top = ["Top",0];
 rg.view.layout.Anchor.Top.toString = $estr;
 rg.view.layout.Anchor.Top.__enum__ = rg.view.layout.Anchor;
-rg.view.layout.Anchor.Bottom = ["Bottom",2];
+rg.view.layout.Anchor.Bottom = ["Bottom",1];
 rg.view.layout.Anchor.Bottom.toString = $estr;
 rg.view.layout.Anchor.Bottom.__enum__ = rg.view.layout.Anchor;
-rg.view.layout.Anchor.Left = ["Left",3];
+rg.view.layout.Anchor.Left = ["Left",2];
 rg.view.layout.Anchor.Left.toString = $estr;
 rg.view.layout.Anchor.Left.__enum__ = rg.view.layout.Anchor;
-rg.view.layout.Anchor.Right = ["Right",4];
+rg.view.layout.Anchor.Right = ["Right",3];
 rg.view.layout.Anchor.Right.toString = $estr;
 rg.view.layout.Anchor.Right.__enum__ = rg.view.layout.Anchor;
 if(!rg.controller) rg.controller = {}
@@ -1928,6 +1933,170 @@ rg.controller.info.Info.feed = function(info,o) {
 	$s.pop();
 }
 rg.controller.info.Info.prototype.__class__ = rg.controller.info.Info;
+if(!rg.view.svg) rg.view.svg = {}
+if(!rg.view.svg.panel) rg.view.svg.panel = {}
+rg.view.svg.panel.Layer = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.panel.Layer::new");
+	var $spos = $s.length;
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.g = panel.g.append("svg:g");
+	this.g.attr("class").string("layer");
+	this._resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
+rg.view.svg.panel.Layer.prototype.panel = null;
+rg.view.svg.panel.Layer.prototype.frame = null;
+rg.view.svg.panel.Layer.prototype.g = null;
+rg.view.svg.panel.Layer.prototype.width = null;
+rg.view.svg.panel.Layer.prototype.height = null;
+rg.view.svg.panel.Layer.prototype.customClass = null;
+rg.view.svg.panel.Layer.prototype.addClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::addClass");
+	var $spos = $s.length;
+	this.g.classed().add(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.removeClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::removeClass");
+	var $spos = $s.length;
+	this.g.classed().remove(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.toggleClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::toggleClass");
+	var $spos = $s.length;
+	this.g.classed().toggle(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype._resize = function() {
+	$s.push("rg.view.svg.panel.Layer::_resize");
+	var $spos = $s.length;
+	this.width = this.frame.width;
+	this.height = this.frame.height;
+	this.resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.resize = function() {
+	$s.push("rg.view.svg.panel.Layer::resize");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.destroy = function() {
+	$s.push("rg.view.svg.panel.Layer::destroy");
+	var $spos = $s.length;
+	var p = this.panel;
+	p.removeLayer(this);
+	this.g.remove();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
+	$s.push("rg.view.svg.panel.Layer::setCustomClass");
+	var $spos = $s.length;
+	if(null != this.customClass) this.g.classed().remove(this.customClass);
+	this.g.classed().add(v);
+	var $tmp = this.customClass = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
+if(!rg.view.svg.widget) rg.view.svg.widget = {}
+rg.view.svg.widget.Title = function(panel,text,anchor,padding,className) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.widget.Title::new");
+	var $spos = $s.length;
+	if(className == null) className = "title";
+	if(padding == null) padding = 1;
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.setText(text);
+	this.setAnchor(anchor);
+	this.setPadding(padding);
+	this.addClass(className);
+	this.nodeGroup = this.g.append("svg:g");
+	this.nodeText = this.nodeGroup.append("svg:text").attr("text-anchor").string("middle");
+	this.resize();
+	$s.pop();
+}
+rg.view.svg.widget.Title.__name__ = ["rg","view","svg","widget","Title"];
+rg.view.svg.widget.Title.__super__ = rg.view.svg.panel.Layer;
+for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.Title.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.widget.Title.prototype.text = null;
+rg.view.svg.widget.Title.prototype.anchor = null;
+rg.view.svg.widget.Title.prototype.padding = null;
+rg.view.svg.widget.Title.prototype.nodeText = null;
+rg.view.svg.widget.Title.prototype.nodeGroup = null;
+rg.view.svg.widget.Title.prototype.idealHeight = function() {
+	$s.push("rg.view.svg.widget.Title::idealHeight");
+	var $spos = $s.length;
+	if(Strings.empty(this.text)) {
+		$s.pop();
+		return 0;
+	}
+	var bbox = this.nodeText.node().getBBox();
+	var $tmp = Math.round(bbox.height);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.Title.prototype.resize = function() {
+	$s.push("rg.view.svg.widget.Title::resize");
+	var $spos = $s.length;
+	if(null == this.nodeText || null == this.anchor || null == this.width || this.padding == null) {
+		$s.pop();
+		return;
+	}
+	switch( (this.anchor)[1] ) {
+	case 0:
+		this.nodeText.attr("transform").string("rotate(0)").attr("dominant-baseline").string("hanging");
+		this.nodeGroup.attr("transform").string("translate(" + this.width / 2 + "," + this.padding + ")");
+		break;
+	case 3:
+		this.nodeText.attr("transform").string("rotate(-90)").attr("dominant-baseline").string("baseline");
+		this.nodeGroup.attr("transform").string("translate(" + (this.width - this.padding) + "," + this.height / 2 + ")");
+		break;
+	case 2:
+		this.nodeText.attr("transform").string("rotate(90)").attr("dominant-baseline").string("baseline");
+		this.nodeGroup.attr("transform").string("translate(" + this.padding + "," + this.height / 2 + ")");
+		break;
+	case 1:
+		this.nodeText.attr("transform").string("rotate(0)").attr("dominant-baseline").string("baseline");
+		this.nodeGroup.attr("transform").string("translate(" + this.width / 2 + "," + (this.height - this.padding) + ")");
+		break;
+	}
+	$s.pop();
+}
+rg.view.svg.widget.Title.prototype.setText = function(v) {
+	$s.push("rg.view.svg.widget.Title::setText");
+	var $spos = $s.length;
+	this.text = v;
+	if(null != this.nodeText) this.nodeText.text().string(this.text);
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Title.prototype.setAnchor = function(v) {
+	$s.push("rg.view.svg.widget.Title::setAnchor");
+	var $spos = $s.length;
+	this.anchor = v;
+	this.resize();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Title.prototype.setPadding = function(v) {
+	$s.push("rg.view.svg.widget.Title::setPadding");
+	var $spos = $s.length;
+	this.padding = v;
+	this.resize();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Title.prototype.__class__ = rg.view.svg.widget.Title;
 List = function(p) {
 	if( p === $_ ) return;
 	$s.push("List::new");
@@ -2114,59 +2283,6 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
-if(!rg.view.svg) rg.view.svg = {}
-if(!rg.view.svg.panel) rg.view.svg.panel = {}
-rg.view.svg.panel.Layer = function(panel) {
-	if( panel === $_ ) return;
-	$s.push("rg.view.svg.panel.Layer::new");
-	var $spos = $s.length;
-	this.frame = (this.panel = panel).frame;
-	var p = panel;
-	p.addLayer(this);
-	this.g = panel.g.append("svg:g");
-	this.g.attr("class").string("layer");
-	this._resize();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
-rg.view.svg.panel.Layer.prototype.panel = null;
-rg.view.svg.panel.Layer.prototype.frame = null;
-rg.view.svg.panel.Layer.prototype.g = null;
-rg.view.svg.panel.Layer.prototype.width = null;
-rg.view.svg.panel.Layer.prototype.height = null;
-rg.view.svg.panel.Layer.prototype.customClass = null;
-rg.view.svg.panel.Layer.prototype._resize = function() {
-	$s.push("rg.view.svg.panel.Layer::_resize");
-	var $spos = $s.length;
-	this.width = this.frame.width;
-	this.height = this.frame.height;
-	this.resize();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.resize = function() {
-	$s.push("rg.view.svg.panel.Layer::resize");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.destroy = function() {
-	$s.push("rg.view.svg.panel.Layer::destroy");
-	var $spos = $s.length;
-	var p = this.panel;
-	p.removeLayer(this);
-	this.g.remove();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
-	$s.push("rg.view.svg.panel.Layer::setCustomClass");
-	var $spos = $s.length;
-	if(null != this.customClass) this.g.classed().remove(this.customClass);
-	this.g.classed().add(v);
-	var $tmp = this.customClass = v;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
 if(!thx.js) thx.js = {}
 thx.js.Access = function(selection) {
 	if( selection === $_ ) return;
@@ -3514,6 +3630,37 @@ thx.js.Dom.selectNodeData = function(node) {
 }
 thx.js.Dom.event = null;
 thx.js.Dom.prototype.__class__ = thx.js.Dom;
+rg.util.RGStrings = function() { }
+rg.util.RGStrings.__name__ = ["rg","util","RGStrings"];
+rg.util.RGStrings.humanize = function(d) {
+	$s.push("rg.util.RGStrings::humanize");
+	var $spos = $s.length;
+	if(Std["is"](d,Int)) {
+		var $tmp = Ints.format(d);
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](d,Float)) {
+		var $tmp = Floats.format(d);
+		$s.pop();
+		return $tmp;
+	}
+	var s = Std.string(d);
+	if(rg.util.RGStrings.range.match(s)) {
+		var v1 = rg.util.RGStrings.range.matched(1), v2 = rg.util.RGStrings.range.matched(2);
+		if(null != v1) v1 = Ints.canParse(v1)?Ints.format(Ints.parse(v1)):Floats.format(Floats.parse(v1)); else v1 = "";
+		if(null != v2) v2 = Ints.canParse(v2)?Ints.format(Ints.parse(v2)):Floats.format(Floats.parse(v2)); else v2 = "";
+		var $tmp = rg.util.RGStrings.range.matchedLeft() + v1 + "-" + v2 + rg.util.RGStrings.range.matchedRight();
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = Strings.humanize(s);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.util.RGStrings.prototype.__class__ = rg.util.RGStrings;
 thx.color.Hsl = function(h,s,l) {
 	if( h === $_ ) return;
 	$s.push("thx.color.Hsl::new");
@@ -4387,7 +4534,7 @@ rg.controller.factory.FactoryDataContext.prototype.factoryDataSource = null;
 rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	$s.push("rg.controller.factory.FactoryDataContext::create");
 	var $spos = $s.length;
-	if(info.sources.length == 0) throw new thx.error.Error("the data object does not contain valid data sources information",null,null,{ fileName : "FactoryDataContext.hx", lineNumber : 26, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
+	if(info.sources.length == 0) throw new thx.error.Error("the data object does not contain valid data sources information",null,null,{ fileName : "FactoryDataContext.hx", lineNumber : 27, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
 	var sources = [];
 	var _g = 0, _g1 = info.sources;
 	while(_g < _g1.length) {
@@ -4396,7 +4543,17 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 		sources.push(this.factoryDataSource.create(src));
 	}
 	var processor = new rg.data.DataProcessor(new rg.data.Sources(sources));
-	var $tmp = new rg.data.DataContext(info.name,processor,info.transform);
+	if(null != info.transform) processor.transform = function(dps) {
+		$s.push("rg.controller.factory.FactoryDataContext::create@35");
+		var $spos = $s.length;
+		haxe.Log.trace(dps,{ fileName : "FactoryDataContext.hx", lineNumber : 37, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
+		var res = info.transform.apply(this,dps);
+		haxe.Log.trace(res,{ fileName : "FactoryDataContext.hx", lineNumber : 39, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
+		$s.pop();
+		return res;
+		$s.pop();
+	};
+	var $tmp = new rg.data.DataContext(info.name,processor);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -6149,47 +6306,85 @@ rg.controller.info.InfoPieChart = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoPieChart::new");
 	var $spos = $s.length;
-	this.padding = 30;
 	this.innerRadius = 0.0;
+	this.outerRadius = 0.9;
+	this.overRadius = 0.95;
 	this.animation = new rg.controller.info.InfoAnimation();
+	this.label = new rg.controller.info.InfoLabel();
+	this.gradientLightness = 1.5;
 	$s.pop();
 }
 rg.controller.info.InfoPieChart.__name__ = ["rg","controller","info","InfoPieChart"];
 rg.controller.info.InfoPieChart.filters = function() {
 	$s.push("rg.controller.info.InfoPieChart::filters");
 	var $spos = $s.length;
-	var $tmp = [{ field : "innerRadius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@26");
+	var $tmp = [{ field : "gradientLightness", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@34");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null},{ field : "padding", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@30");
+	}, filter : null},{ field : "innerRadius", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@38");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@31");
+	}, filter : null},{ field : "outerRadius", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@42");
 		var $spos = $s.length;
-		var $tmp = [{ field : "padding", value : Math.round(v)}];
+		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@37");
+	}, filter : null},{ field : "overRadius", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@46");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "animation", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@50");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@38");
+		$s.push("rg.controller.info.InfoPieChart::filters@51");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@57");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@58");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "sort", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@64");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@65");
+		var $spos = $s.length;
+		var $tmp = [{ field : "sortDataPoint", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -6198,9 +6393,13 @@ rg.controller.info.InfoPieChart.filters = function() {
 	return $tmp;
 	$s.pop();
 }
-rg.controller.info.InfoPieChart.prototype.padding = null;
 rg.controller.info.InfoPieChart.prototype.innerRadius = null;
+rg.controller.info.InfoPieChart.prototype.outerRadius = null;
+rg.controller.info.InfoPieChart.prototype.overRadius = null;
 rg.controller.info.InfoPieChart.prototype.animation = null;
+rg.controller.info.InfoPieChart.prototype.label = null;
+rg.controller.info.InfoPieChart.prototype.gradientLightness = null;
+rg.controller.info.InfoPieChart.prototype.sortDataPoint = null;
 rg.controller.info.InfoPieChart.prototype.__class__ = rg.controller.info.InfoPieChart;
 rg.view.frame.Frame = function(p) {
 	if( p === $_ ) return;
@@ -6252,6 +6451,7 @@ rg.controller.visualization.Visualization = function() { }
 rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
 rg.controller.visualization.Visualization.prototype.independentVariables = null;
 rg.controller.visualization.Visualization.prototype.dependentVariables = null;
+rg.controller.visualization.Visualization.prototype.variables = null;
 rg.controller.visualization.Visualization.prototype.setVariables = function(independentVariables,dependentVariables) {
 	$s.push("rg.controller.visualization.Visualization::setVariables");
 	var $spos = $s.length;
@@ -6262,13 +6462,33 @@ rg.controller.visualization.Visualization.prototype.setVariables = function(inde
 rg.controller.visualization.Visualization.prototype.init = function() {
 	$s.push("rg.controller.visualization.Visualization::init");
 	var $spos = $s.length;
-	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 25, className : "rg.controller.visualization.Visualization", methodName : "init"});
+	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 28, className : "rg.controller.visualization.Visualization", methodName : "init"});
 	$s.pop();
 }
 rg.controller.visualization.Visualization.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.Visualization::feedData");
 	var $spos = $s.length;
-	haxe.Log.trace("DATA FEED " + data,{ fileName : "Visualization.hx", lineNumber : 30, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+	haxe.Log.trace("DATA FEED " + data,{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.getVariables = function() {
+	$s.push("rg.controller.visualization.Visualization::getVariables");
+	var $spos = $s.length;
+	var $tmp = this.independentVariables.map(function(d,i) {
+		$s.push("rg.controller.visualization.Visualization::getVariables@39");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}).concat(this.dependentVariables.map(function(d,i) {
+		$s.push("rg.controller.visualization.Visualization::getVariables@40");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
 rg.controller.visualization.Visualization.prototype.__class__ = rg.controller.visualization.Visualization;
@@ -6294,26 +6514,61 @@ rg.controller.visualization.VisualizationPieChart = function(layout) {
 rg.controller.visualization.VisualizationPieChart.__name__ = ["rg","controller","visualization","VisualizationPieChart"];
 rg.controller.visualization.VisualizationPieChart.__super__ = rg.controller.visualization.VisualizationSvg;
 for(var k in rg.controller.visualization.VisualizationSvg.prototype ) rg.controller.visualization.VisualizationPieChart.prototype[k] = rg.controller.visualization.VisualizationSvg.prototype[k];
-rg.controller.visualization.VisualizationPieChart.prototype.chartpanel = null;
-rg.controller.visualization.VisualizationPieChart.prototype.piechart = null;
+rg.controller.visualization.VisualizationPieChart.defaultTitle = function(axes,dps) {
+	$s.push("rg.controller.visualization.VisualizationPieChart::defaultTitle");
+	var $spos = $s.length;
+	var _g = 0;
+	while(_g < axes.length) {
+		var axis = axes[_g];
+		++_g;
+		if(Std["is"](axis,rg.data.VariableIndependent)) {
+			var $tmp = Strings.ucwords(rg.util.Properties.humanize(axis.type));
+			$s.pop();
+			return $tmp;
+		}
+	}
+	$s.pop();
+	return null;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPieChart.prototype.chart = null;
+rg.controller.visualization.VisualizationPieChart.prototype.panelContextTitle = null;
+rg.controller.visualization.VisualizationPieChart.prototype.title = null;
 rg.controller.visualization.VisualizationPieChart.prototype.info = null;
 rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	$s.push("rg.controller.visualization.VisualizationPieChart::init");
 	var $spos = $s.length;
-	this.chartpanel = this.layout.getPanel("main").panel;
-	this.piechart = new rg.view.svg.widget.PieChart(this.chartpanel);
-	this.piechart.setPadding(this.info.padding);
-	this.piechart.setInnerRadius(this.info.innerRadius);
-	this.piechart.propertyValue = this.dependentVariables[0].type;
-	this.piechart.animated = this.info.animation.animated;
-	this.piechart.animationDuration = this.info.animation.duration;
-	this.piechart.animationEase = this.info.animation.ease;
+	var panelChart = this.layout.getPanel("main").panel;
+	this.chart = new rg.view.svg.widget.PieChart(panelChart);
+	this.chart.propertyValue = this.dependentVariables[0].type;
+	haxe.Log.trace(this.dependentVariables,{ fileName : "VisualizationPieChart.hx", lineNumber : 30, className : "rg.controller.visualization.VisualizationPieChart", methodName : "init"});
+	haxe.Log.trace(this.independentVariables,{ fileName : "VisualizationPieChart.hx", lineNumber : 31, className : "rg.controller.visualization.VisualizationPieChart", methodName : "init"});
+	this.chart.innerRadius = this.info.innerRadius;
+	this.chart.outerRadius = this.info.outerRadius;
+	this.chart.overRadius = this.info.overRadius;
+	this.chart.gradientLightness = this.info.gradientLightness;
+	this.chart.animated = this.info.animation.animated;
+	this.chart.animationDuration = this.info.animation.duration;
+	this.chart.animationEase = this.info.animation.ease;
+	this.chart.animationDelay = this.info.animation.delay;
+	this.panelContextTitle = this.layout.getPanel("title");
+	if(null == this.panelContextTitle) {
+		$s.pop();
+		return;
+	}
+	this.title = new rg.view.svg.widget.Title(this.panelContextTitle.panel,null,this.panelContextTitle.anchor);
 	$s.pop();
 }
 rg.controller.visualization.VisualizationPieChart.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.VisualizationPieChart::feedData");
 	var $spos = $s.length;
-	this.piechart.data(data);
+	if(null != this.title) {
+		if(null == this.info.label.title) this.title.setText(rg.controller.visualization.VisualizationPieChart.defaultTitle(this.getVariables(),data)); else this.title.setText(this.info.label.title(this.getVariables(),data));
+		this.layout.suggestSize("title",this.title.idealHeight());
+	}
+	if(null != this.info.sortDataPoint) data.sort(this.info.sortDataPoint);
+	this.chart.init();
+	this.chart.data(data);
 	$s.pop();
 }
 rg.controller.visualization.VisualizationPieChart.prototype.__class__ = rg.controller.visualization.VisualizationPieChart;
@@ -6925,19 +7180,17 @@ rg.controller.factory.FactoryDataSource.prototype.createFromQuery = function(pat
 	$s.pop();
 }
 rg.controller.factory.FactoryDataSource.prototype.__class__ = rg.controller.factory.FactoryDataSource;
-rg.data.DataContext = function(name,data,transform) {
+rg.data.DataContext = function(name,data) {
 	if( name === $_ ) return;
 	$s.push("rg.data.DataContext::new");
 	var $spos = $s.length;
 	this.name = name;
 	this.data = data;
-	this.transform = transform;
 	$s.pop();
 }
 rg.data.DataContext.__name__ = ["rg","data","DataContext"];
 rg.data.DataContext.prototype.name = null;
 rg.data.DataContext.prototype.data = null;
-rg.data.DataContext.prototype.transform = null;
 rg.data.DataContext.prototype.__class__ = rg.data.DataContext;
 thx.color.NamedColors = function() { }
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
@@ -8276,6 +8529,7 @@ rg.controller.info.InfoAnimation = function(p) {
 	var $spos = $s.length;
 	this.animated = true;
 	this.duration = 1500;
+	this.delay = 150;
 	this.ease = thx.math.Equations.elasticf();
 	$s.pop();
 }
@@ -8284,21 +8538,28 @@ rg.controller.info.InfoAnimation.filters = function() {
 	$s.push("rg.controller.info.InfoAnimation::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "animated", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@27");
+		$s.push("rg.controller.info.InfoAnimation::filters@29");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "duration", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@31");
+		$s.push("rg.controller.info.InfoAnimation::filters@33");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Int);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "delay", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@37");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Int);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "ease", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@35");
+		$s.push("rg.controller.info.InfoAnimation::filters@41");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
@@ -8312,6 +8573,7 @@ rg.controller.info.InfoAnimation.filters = function() {
 rg.controller.info.InfoAnimation.prototype.animated = null;
 rg.controller.info.InfoAnimation.prototype.duration = null;
 rg.controller.info.InfoAnimation.prototype.ease = null;
+rg.controller.info.InfoAnimation.prototype.delay = null;
 rg.controller.info.InfoAnimation.prototype.__class__ = rg.controller.info.InfoAnimation;
 thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
@@ -8579,11 +8841,20 @@ thx.js.AccessClassed.getRe = function(name) {
 	return $tmp;
 	$s.pop();
 }
+thx.js.AccessClassed.prototype.toggle = function(name) {
+	$s.push("thx.js.AccessClassed::toggle");
+	var $spos = $s.length;
+	if(this.exists(name)) this.remove(name); else this.add(name);
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 thx.js.AccessClassed.prototype.exists = function(name) {
 	$s.push("thx.js.AccessClassed::exists");
 	var $spos = $s.length;
 	var $tmp = this.selection.firstNode(function(node) {
-		$s.push("thx.js.AccessClassed::exists@22");
+		$s.push("thx.js.AccessClassed::exists@31");
 		var $spos = $s.length;
 		var list = node.classList;
 		if(null != list) {
@@ -8607,10 +8878,10 @@ thx.js.AccessClassed.prototype.remove = function(name) {
 	$s.push("thx.js.AccessClassed::remove");
 	var $spos = $s.length;
 	this.selection.eachNode((function(f,a1) {
-		$s.push("thx.js.AccessClassed::remove@35");
+		$s.push("thx.js.AccessClassed::remove@44");
 		var $spos = $s.length;
 		var $tmp = function(a2,a3) {
-			$s.push("thx.js.AccessClassed::remove@35@35");
+			$s.push("thx.js.AccessClassed::remove@44@44");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2,a3);
 			$s.pop();
@@ -8645,10 +8916,10 @@ thx.js.AccessClassed.prototype.add = function(name) {
 	$s.push("thx.js.AccessClassed::add");
 	var $spos = $s.length;
 	this.selection.eachNode((function(f,a1) {
-		$s.push("thx.js.AccessClassed::add@64");
+		$s.push("thx.js.AccessClassed::add@73");
 		var $spos = $s.length;
 		var $tmp = function(a2,a3) {
-			$s.push("thx.js.AccessClassed::add@64@64");
+			$s.push("thx.js.AccessClassed::add@73@73");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2,a3);
 			$s.pop();
@@ -8687,7 +8958,7 @@ thx.js.AccessClassed.prototype.get = function() {
 	var node = this.selection.node(), list = node.classList;
 	if(null != list) {
 		var $tmp = Ints.range(list.length).map(function(_,i) {
-			$s.push("thx.js.AccessClassed::get@98");
+			$s.push("thx.js.AccessClassed::get@107");
 			var $spos = $s.length;
 			var $tmp = list.item(i);
 			$s.pop();
@@ -8724,7 +8995,7 @@ thx.js.AccessDataClassed.prototype.removef = function(v) {
 	var $spos = $s.length;
 	var f = $closure(this,"_remove");
 	this.selection.eachNode(function(node,i) {
-		$s.push("thx.js.AccessDataClassed::removef@126");
+		$s.push("thx.js.AccessDataClassed::removef@135");
 		var $spos = $s.length;
 		var c = v(Reflect.field(node,"__data__"),i);
 		if(null != c) f(c,node,i);
@@ -8740,7 +9011,7 @@ thx.js.AccessDataClassed.prototype.addf = function(v) {
 	var $spos = $s.length;
 	var f = $closure(this,"_add");
 	this.selection.eachNode(function(node,i) {
-		$s.push("thx.js.AccessDataClassed::addf@137");
+		$s.push("thx.js.AccessDataClassed::addf@146");
 		var $spos = $s.length;
 		var c = v(Reflect.field(node,"__data__"),i);
 		if(null != c) f(c,node,i);
@@ -9161,21 +9432,21 @@ rg.controller.info.InfoVariable.filters = function() {
 	$s.push("rg.controller.info.InfoVariable::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "type", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@20");
+		$s.push("rg.controller.info.InfoVariable::filters@24");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "view", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@24");
+		$s.push("rg.controller.info.InfoVariable::filters@35");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && rg.controller.info.InfoVariable.testViewValue(v[0]) && rg.controller.info.InfoVariable.testViewValue(v[1]);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@25");
+		$s.push("rg.controller.info.InfoVariable::filters@36");
 		var $spos = $s.length;
 		var result = [];
 		if(null != v[0]) result.push({ field : "min", value : v[0]});
@@ -9184,10 +9455,10 @@ rg.controller.info.InfoVariable.filters = function() {
 		return result;
 		$s.pop();
 	}},{ field : "values", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@35");
+		$s.push("rg.controller.info.InfoVariable::filters@46");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoVariable::filters@35@35");
+			$s.push("rg.controller.info.InfoVariable::filters@46@46");
 			var $spos = $s.length;
 			var $tmp = Types.isPrimitive(v1);
 			$s.pop();
@@ -10776,7 +11047,7 @@ rg.controller.factory.FactoryVariableContexts.createFromDataContexts = function(
 					kp.add(n);
 					break;
 				case 2:
-					continue;
+					kp.add("event");
 					break;
 				}
 			}
@@ -11310,63 +11581,54 @@ Enums.compare = function(a,b) {
 	$s.pop();
 }
 Enums.prototype.__class__ = Enums;
-if(!rg.view.svg.widget) rg.view.svg.widget = {}
 rg.view.svg.widget.PieChart = function(panel) {
 	if( panel === $_ ) return;
 	$s.push("rg.view.svg.widget.PieChart::new");
 	var $spos = $s.length;
 	rg.view.svg.panel.Layer.call(this,panel);
-	this.setPadding(0);
-	this.g.classed().add("pie-chart");
+	this.addClass("pie-chart");
 	this.g.append("svg:defs");
 	this.pie = new thx.geom.layout.Pie();
 	this.animated = false;
 	this.animationDuration = 0;
-	this.created = 0;
+	this.gradientLightness = 1.5;
+	this.animationDelay = 0;
+	this.innerRadius = 0.0;
+	this.outerRadius = 0.9;
+	this.overRadius = 0.95;
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.__name__ = ["rg","view","svg","widget","PieChart"];
 rg.view.svg.widget.PieChart.__super__ = rg.view.svg.panel.Layer;
 for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.PieChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
-rg.view.svg.widget.PieChart.prototype.padding = null;
 rg.view.svg.widget.PieChart.prototype.innerRadius = null;
+rg.view.svg.widget.PieChart.prototype.outerRadius = null;
+rg.view.svg.widget.PieChart.prototype.overRadius = null;
 rg.view.svg.widget.PieChart.prototype.arcNormal = null;
 rg.view.svg.widget.PieChart.prototype.arcStart = null;
 rg.view.svg.widget.PieChart.prototype.arcBig = null;
 rg.view.svg.widget.PieChart.prototype.pie = null;
 rg.view.svg.widget.PieChart.prototype.radius = null;
-rg.view.svg.widget.PieChart.prototype.created = null;
 rg.view.svg.widget.PieChart.prototype.propertyValue = null;
 rg.view.svg.widget.PieChart.prototype.animated = null;
 rg.view.svg.widget.PieChart.prototype.animationDuration = null;
 rg.view.svg.widget.PieChart.prototype.animationEase = null;
-rg.view.svg.widget.PieChart.prototype.setPadding = function(v) {
-	$s.push("rg.view.svg.widget.PieChart::setPadding");
+rg.view.svg.widget.PieChart.prototype.gradientLightness = null;
+rg.view.svg.widget.PieChart.prototype.animationDelay = null;
+rg.view.svg.widget.PieChart.prototype.init = function() {
+	$s.push("rg.view.svg.widget.PieChart::init");
 	var $spos = $s.length;
-	this.padding = v;
 	this.resize();
-	var $tmp = this.padding;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.setInnerRadius = function(v) {
-	$s.push("rg.view.svg.widget.PieChart::setInnerRadius");
-	var $spos = $s.length;
-	this.innerRadius = v;
-	this.resize();
-	var $tmp = this.innerRadius;
-	$s.pop();
-	return $tmp;
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.resize = function() {
 	$s.push("rg.view.svg.widget.PieChart::resize");
 	var $spos = $s.length;
-	this.radius = Math.min(this.width,this.height) / 2 - this.padding;
+	this.radius = Math.min(this.width,this.height) / 2;
 	this.arcStart = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.innerRadius);
-	this.arcNormal = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius);
-	this.arcBig = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * (2 * this.innerRadius)).outerRadius(this.radius + this.padding * .9);
+	this.arcNormal = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.outerRadius);
+	this.arcBig = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.overRadius);
+	if(this.width > this.height) this.g.attr("transform").string("translate(" + (this.width / 2 - this.height / 2) + ",0)"); else this.g.attr("transform").string("translate(0," + (this.height / 2 - this.width / 2) + ")");
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.data = function(dp) {
@@ -11375,19 +11637,21 @@ rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@77");
+		$s.push("rg.view.svg.widget.PieChart::data@85");
 		var $spos = $s.length;
 		var $tmp = "group item-" + i;
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}).attr("transform").string("translate(" + (this.padding + this.radius) + "," + (this.padding + this.radius) + ")");
+	}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
 	var path = arc.append("svg:path").attr("class").string("slice");
 	arc.eachNode($closure(this,"applyGradient"));
 	if(this.animated) {
 		path.attr("d").stringf($closure(this.arcStart,"shape"));
-		arc.eachNode($closure(this,"fadein"));
+		arc.eachNode($closure(this,"fadein")).onNode("mouseover.animation",$closure(this,"highlight")).onNode("mouseout.animation",$closure(this,"backtonormal"));
 	} else path.attr("d").stringf($closure(this.arcNormal,"shape"));
+	choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf($closure(this.arcNormal,"shape"));
+	choice.exit().remove();
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.applyGradient = function(n,i) {
@@ -11399,9 +11663,9 @@ rg.view.svg.widget.PieChart.prototype.applyGradient = function(n,i) {
 		t.remove();
 		var color = slice.style("fill").get();
 		if(null == color) color = "#cccccc";
-		var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(thx.color.Colors.parse(color)),1.5).toRgbString();
+		var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(thx.color.Colors.parse(color)),this.gradientLightness).toRgbString();
 		var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
-		var r = 100 * (box.width > box.height?Math.min(1,this.radius / box.width):Math.max(1,this.radius / box.width));
+		var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
 		var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
 		stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
 		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color).attr("stop-opacity")["float"](1);
@@ -11413,7 +11677,21 @@ rg.view.svg.widget.PieChart.prototype.fadein = function(n,i) {
 	$s.push("rg.view.svg.widget.PieChart::fadein");
 	var $spos = $s.length;
 	var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
-	gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,150 * (i - this.created)).attr("d").string(shape);
+	gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay).attr("d").string(shape);
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.highlight = function(d,i) {
+	$s.push("rg.view.svg.widget.PieChart::highlight");
+	var $spos = $s.length;
+	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf($closure(this.arcBig,"shape"));
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.backtonormal = function(d,i) {
+	$s.push("rg.view.svg.widget.PieChart::backtonormal");
+	var $spos = $s.length;
+	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf($closure(this.arcNormal,"shape"));
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.id = function(o,i) {
@@ -11437,14 +11715,18 @@ rg.view.svg.widget.PieChart.prototype.makeid = function(dp) {
 rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::pief");
 	var $spos = $s.length;
-	var name = this.propertyValue, arr = this.pie.pie(dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@168");
+	var name = this.propertyValue, temp = dp.map(function(d,i) {
+		$s.push("rg.view.svg.widget.PieChart::pief@201");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(d.properties,name);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}));
+	}), arr = this.pie.pie(temp);
+	haxe.Log.trace(name,{ fileName : "PieChart.hx", lineNumber : 203, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
+	haxe.Log.trace(dp,{ fileName : "PieChart.hx", lineNumber : 204, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
+	haxe.Log.trace(temp,{ fileName : "PieChart.hx", lineNumber : 205, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
+	haxe.Log.trace(arr,{ fileName : "PieChart.hx", lineNumber : 206, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
 	var _g1 = 0, _g = arr.length;
 	while(_g1 < _g) {
 		var i = _g1++;
@@ -12416,105 +12698,6 @@ rg.controller.factory.FactoryVariableDependent.prototype.create = function(info,
 	$s.pop();
 }
 rg.controller.factory.FactoryVariableDependent.prototype.__class__ = rg.controller.factory.FactoryVariableDependent;
-rg.controller.App = function(executor) {
-	if( executor === $_ ) return;
-	$s.push("rg.controller.App::new");
-	var $spos = $s.length;
-	this.executor = executor;
-	this.layouts = new Hash();
-	$s.pop();
-}
-rg.controller.App.__name__ = ["rg","controller","App"];
-rg.controller.App.nextid = function() {
-	$s.push("rg.controller.App::nextid");
-	var $spos = $s.length;
-	var $tmp = ":RGVIZ-" + ++rg.controller.App.lastid;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.App.prototype.executor = null;
-rg.controller.App.prototype.layouts = null;
-rg.controller.App.prototype.visualization = function(el,jsoptions) {
-	$s.push("rg.controller.App::visualization");
-	var $spos = $s.length;
-	var node = el.node();
-	var id = node.id;
-	if(null == id) node.id = id = rg.controller.App.nextid();
-	var cache = new Hash();
-	var params = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions);
-	var factoryDataSource = new rg.controller.factory.FactoryDataSource(cache,this.executor);
-	var factoryDataContext = new rg.controller.factory.FactoryDataContext(factoryDataSource);
-	var datacontexts = params.data.map(function(d,_) {
-		$s.push("rg.controller.App::visualization@58");
-		var $spos = $s.length;
-		var $tmp = factoryDataContext.create(d);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	var factoryVariableContexts = rg.controller.factory.FactoryVariableContexts.createFromDataContexts(datacontexts);
-	var independentVariables = factoryVariableContexts.createIndependents(params.variables);
-	var dependentVariables = factoryVariableContexts.createDependents(params.variables);
-	var _g = 0;
-	while(_g < datacontexts.length) {
-		var context = datacontexts[_g];
-		++_g;
-		context.data.independentVariables = independentVariables;
-		context.data.dependentVariables = dependentVariables;
-	}
-	var visualization = null;
-	var infoviz = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationType(),params.options);
-	switch( (rg.controller.info.Info.feed(new rg.controller.info.InfoDomType(),params.options).kind)[1] ) {
-	case 1:
-		var layout = this.getLayout(id,params.options,el);
-		visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
-		break;
-	case 0:
-		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,params.options);
-		break;
-	}
-	visualization.setVariables(independentVariables.map(function(c,_) {
-		$s.push("rg.controller.App::visualization@79");
-		var $spos = $s.length;
-		var $tmp = c.variable;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}),dependentVariables.map(function(c,_) {
-		$s.push("rg.controller.App::visualization@80");
-		var $spos = $s.length;
-		var $tmp = c.variable;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}));
-	visualization.init();
-	var request = new rg.data.DataRequest(cache,datacontexts);
-	request.onData = function(datapoints) {
-		$s.push("rg.controller.App::visualization@84");
-		var $spos = $s.length;
-		visualization.feedData(datapoints);
-		$s.pop();
-	};
-	request.request();
-	$s.pop();
-}
-rg.controller.App.prototype.getLayout = function(id,options,container) {
-	$s.push("rg.controller.App::getLayout");
-	var $spos = $s.length;
-	if(this.layouts.exists(id)) {
-		var $tmp = this.layouts.get(id);
-		$s.pop();
-		return $tmp;
-	}
-	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),options), layout = new rg.controller.factory.FactoryLayout().create(info,container);
-	this.layouts.set(id,layout);
-	$s.pop();
-	return layout;
-	$s.pop();
-}
-rg.controller.App.prototype.__class__ = rg.controller.App;
 if(!thx.geom) thx.geom = {}
 if(!thx.geom.layout) thx.geom.layout = {}
 thx.geom.layout.Pie = function(p) {
@@ -12692,6 +12875,105 @@ thx.geom.layout.Pie.prototype.valuef = function(v) {
 	$s.pop();
 }
 thx.geom.layout.Pie.prototype.__class__ = thx.geom.layout.Pie;
+rg.controller.App = function(executor) {
+	if( executor === $_ ) return;
+	$s.push("rg.controller.App::new");
+	var $spos = $s.length;
+	this.executor = executor;
+	this.layouts = new Hash();
+	$s.pop();
+}
+rg.controller.App.__name__ = ["rg","controller","App"];
+rg.controller.App.nextid = function() {
+	$s.push("rg.controller.App::nextid");
+	var $spos = $s.length;
+	var $tmp = ":RGVIZ-" + ++rg.controller.App.lastid;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.App.prototype.executor = null;
+rg.controller.App.prototype.layouts = null;
+rg.controller.App.prototype.visualization = function(el,jsoptions) {
+	$s.push("rg.controller.App::visualization");
+	var $spos = $s.length;
+	var node = el.node();
+	var id = node.id;
+	if(null == id) node.id = id = rg.controller.App.nextid();
+	var cache = new Hash();
+	var params = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions);
+	var factoryDataSource = new rg.controller.factory.FactoryDataSource(cache,this.executor);
+	var factoryDataContext = new rg.controller.factory.FactoryDataContext(factoryDataSource);
+	var datacontexts = params.data.map(function(d,_) {
+		$s.push("rg.controller.App::visualization@58");
+		var $spos = $s.length;
+		var $tmp = factoryDataContext.create(d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	var factoryVariableContexts = rg.controller.factory.FactoryVariableContexts.createFromDataContexts(datacontexts);
+	var independentVariables = factoryVariableContexts.createIndependents(params.variables);
+	var dependentVariables = factoryVariableContexts.createDependents(params.variables);
+	var _g = 0;
+	while(_g < datacontexts.length) {
+		var context = datacontexts[_g];
+		++_g;
+		context.data.independentVariables = independentVariables;
+		context.data.dependentVariables = dependentVariables;
+	}
+	var visualization = null;
+	var infoviz = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationType(),params.options);
+	switch( (rg.controller.info.Info.feed(new rg.controller.info.InfoDomType(),params.options).kind)[1] ) {
+	case 1:
+		var layout = this.getLayout(id,params.options,el);
+		visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
+		break;
+	case 0:
+		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,params.options);
+		break;
+	}
+	visualization.setVariables(independentVariables.map(function(c,_) {
+		$s.push("rg.controller.App::visualization@79");
+		var $spos = $s.length;
+		var $tmp = c.variable;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}),dependentVariables.map(function(c,_) {
+		$s.push("rg.controller.App::visualization@80");
+		var $spos = $s.length;
+		var $tmp = c.variable;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	visualization.init();
+	var request = new rg.data.DataRequest(cache,datacontexts);
+	request.onData = function(datapoints) {
+		$s.push("rg.controller.App::visualization@84");
+		var $spos = $s.length;
+		visualization.feedData(datapoints);
+		$s.pop();
+	};
+	request.request();
+	$s.pop();
+}
+rg.controller.App.prototype.getLayout = function(id,options,container) {
+	$s.push("rg.controller.App::getLayout");
+	var $spos = $s.length;
+	if(this.layouts.exists(id)) {
+		var $tmp = this.layouts.get(id);
+		$s.pop();
+		return $tmp;
+	}
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),options), layout = new rg.controller.factory.FactoryLayout().create(info,container);
+	this.layouts.set(id,layout);
+	$s.pop();
+	return layout;
+	$s.pop();
+}
+rg.controller.App.prototype.__class__ = rg.controller.App;
 thx.js.AccessTween = function(transition,tweens) {
 	if( transition === $_ ) return;
 	$s.push("thx.js.AccessTween::new");
@@ -13474,31 +13756,61 @@ rg.view.layout.Layout.prototype.getPanel = function(name) {
 	return null;
 	$s.pop();
 }
+rg.view.layout.Layout.prototype.suggestSize = function(name,size) {
+	$s.push("rg.view.layout.Layout::suggestSize");
+	var $spos = $s.length;
+	var context = this.getPanel(name);
+	if(null == context) {
+		$s.pop();
+		return;
+	}
+	var stackitem = Types["as"](context.panel.frame,rg.view.frame.StackItem);
+	if(null == stackitem) {
+		$s.pop();
+		return;
+	}
+	var $e = (stackitem.disposition);
+	switch( $e[1] ) {
+	case 3:
+		var a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(b,a,size));
+		break;
+	default:
+	}
+	$s.pop();
+}
 rg.view.layout.Layout.prototype.__class__ = rg.view.layout.Layout;
-rg.view.layout.SimpleLayout = function(width,height,container) {
+rg.view.layout.SimpleLayout = function(width,height,container,titleontop) {
 	if( width === $_ ) return;
 	$s.push("rg.view.layout.SimpleLayout::new");
 	var $spos = $s.length;
 	rg.view.layout.Layout.call(this,width,height,container);
+	this.titleUsed = false;
+	this.titleOnTop = titleontop;
 	$s.pop();
 }
 rg.view.layout.SimpleLayout.__name__ = ["rg","view","layout","SimpleLayout"];
 rg.view.layout.SimpleLayout.__super__ = rg.view.layout.Layout;
 for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.SimpleLayout.prototype[k] = rg.view.layout.Layout.prototype[k];
 rg.view.layout.SimpleLayout.prototype.main = null;
-rg.view.layout.SimpleLayout.prototype.title = null;
+rg.view.layout.SimpleLayout.prototype.titleUsed = null;
+rg.view.layout.SimpleLayout.prototype.titleOnTop = null;
 rg.view.layout.SimpleLayout.prototype.getPanel = function(name) {
 	$s.push("rg.view.layout.SimpleLayout::getPanel");
 	var $spos = $s.length;
 	switch(name) {
 	case "main":
-		if(null == this.main) this.main = new rg.view.layout.PanelContext(this.space.createPanel(rg.view.frame.FrameLayout.Fill(0,0)),rg.view.layout.Anchor.None);
+		if(null == this.main) this.main = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0)),this.titleOnTop?rg.view.layout.Anchor.Top:rg.view.layout.Anchor.Bottom);
 		var $tmp = this.main;
 		$s.pop();
 		return $tmp;
 	case "title":
-		if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,20)),rg.view.layout.Anchor.Bottom);
-		var $tmp = this.title;
+		if(this.titleUsed) {
+			$s.pop();
+			return null;
+		}
+		this.titleUsed = true;
+		var $tmp = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,20)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
 		$s.pop();
 		return $tmp;
 	default:
@@ -13512,10 +13824,30 @@ rg.controller.Visualizations = function() { }
 rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
 rg.controller.Visualizations.layoutDefault = null;
 rg.controller.Visualizations.layoutType = null;
+rg.controller.Visualizations.layoutArgs = null;
 rg.controller.Visualizations.instantiateLayout = function(name,width,height,container) {
 	$s.push("rg.controller.Visualizations::instantiateLayout");
 	var $spos = $s.length;
-	var $tmp = Type.createInstance(rg.controller.Visualizations.layoutType.get(name),[width,height,container]);
+	var $tmp = Type.createInstance(rg.controller.Visualizations.getType(name),rg.controller.Visualizations.getArgs(name,width,height,container));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.Visualizations.getType = function(name) {
+	$s.push("rg.controller.Visualizations::getType");
+	var $spos = $s.length;
+	var $tmp = rg.controller.Visualizations.layoutType.get(name);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.Visualizations.getArgs = function(name,width,height,container) {
+	$s.push("rg.controller.Visualizations::getArgs");
+	var $spos = $s.length;
+	var extra = rg.controller.Visualizations.layoutArgs.get(name);
+	if(null == extra) extra = [];
+	var args = [];
+	var $tmp = args.concat([width,height,container]).concat(extra);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -14734,6 +15066,42 @@ rg.controller.info.InfoDataSource.prototype.namedData = null;
 rg.controller.info.InfoDataSource.prototype.data = null;
 rg.controller.info.InfoDataSource.prototype.name = null;
 rg.controller.info.InfoDataSource.prototype.__class__ = rg.controller.info.InfoDataSource;
+rg.controller.info.InfoLabel = function(p) {
+	$s.push("rg.controller.info.InfoLabel::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
+rg.controller.info.InfoLabel.filters = function() {
+	$s.push("rg.controller.info.InfoLabel::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "title", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@19");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@20");
+		var $spos = $s.length;
+		var $tmp = [{ field : "title", value : Std["is"](v,String)?function() {
+			$s.push("rg.controller.info.InfoLabel::filters@20@22");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.prototype.title = null;
+rg.controller.info.InfoLabel.prototype.__class__ = rg.controller.info.InfoLabel;
 rg.data.VariableDependent = function(type,axis,min,max) {
 	if( type === $_ ) return;
 	$s.push("rg.data.VariableDependent::new");
@@ -18274,10 +18642,14 @@ thx.languages.En.getLanguage();
 }
 {
 	rg.controller.Visualizations.layoutDefault = new Hash();
+	rg.controller.Visualizations.layoutType = new Hash();
+	rg.controller.Visualizations.layoutArgs = new Hash();
 	rg.controller.Visualizations.layoutDefault.set("linechart","simple");
 	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
-	rg.controller.Visualizations.layoutType = new Hash();
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.SimpleLayout);
+	rg.controller.Visualizations.layoutArgs.set("simple",[true]);
+	rg.controller.Visualizations.layoutType.set("simplereverse",rg.view.layout.SimpleLayout);
+	rg.controller.Visualizations.layoutArgs.set("simplereverse",[false]);
 }
 {
 	String.prototype.__class__ = String;
@@ -18330,6 +18702,7 @@ thx.js.Dom.doc = (function() {
 	$s.pop();
 })();
 thx.js.Dom.selectionEngine = new thx.js.SizzleEngine();
+rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
 thx.math.Const.TWO_PI = 6.283185307179586477;
 thx.math.Const.PI = 3.141592653589793238;
 thx.math.Const.HALF_PI = 1.570796326794896619;
@@ -18416,7 +18789,7 @@ rg.controller.App.lastid = 0;
 rg.controller.Visualizations.html = ["pivottable"];
 rg.controller.Visualizations.svg = ["linechart","piechart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
-rg.controller.Visualizations.layouts = ["simple"];
+rg.controller.Visualizations.layouts = ["simple","simplereverse"];
 rg.data.source.rgquery.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
 rg.controller.factory.FactoryLayout.LIMIT_WIDTH = 10;

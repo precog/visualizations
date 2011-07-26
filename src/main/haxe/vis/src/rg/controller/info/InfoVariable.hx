@@ -11,7 +11,11 @@ class InfoVariable extends Info
 	public var min : Null<Dynamic>;
 	public var max : Null<Dynamic>;
 	public var values : Null<Array<Dynamic>>;
-	public function new() {}
+//	public var variableType : VariableType;
+	public function new()
+	{
+//		variableType = Unknwon;
+	}
 
 	public static function filters() : Array<FieldFilter>
 	{
@@ -19,7 +23,14 @@ class InfoVariable extends Info
 			field : "type",
 			validator : function(v) return Std.is(v, String),
 			filter : null
-		}, {
+		}, /*{
+			field : "variable",
+			validator : function(v) return Std.is(v, String) && (v = v.toLowerCase()) == "indepented" || v == "dependent",
+			filter : [ {
+				field : "variableType",
+				value : v.toLowerCase()) == "indepented" ? Independent : Dependent
+			}]
+		}, */{
 			field : "view",
 			validator : function(v) return Std.is(v, Array) && testViewValue(v[0]) && testViewValue(v[1]),
 			filter : function(v) {
@@ -42,3 +53,11 @@ class InfoVariable extends Info
 		return v == null || Types.isPrimitive(v) || Std.is(v, Date);
 	}
 }
+/*
+enum VariableType
+{
+	Unknwon;
+	Independent;
+	Dependent;
+}
+*/

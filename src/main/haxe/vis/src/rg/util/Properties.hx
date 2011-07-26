@@ -33,4 +33,9 @@ class Properties
 	{
 		return "." + TIME_TOKEN + periodicity;
 	}
+	
+	public static function humanize(s : String)
+	{
+		return RGStrings.humanize(Strings.trim(s, "."));
+	}
 }

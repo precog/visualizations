@@ -11,11 +11,14 @@ import rg.view.layout.Anchor;
 class SimpleLayout extends Layout
 {
 	var main : PanelContext;
-	var title : PanelContext;
+	var titleUsed : Bool;
+	var titleOnTop : Bool;
 
-	public function new(width : Int, height : Int, container : Selection) 
+	public function new(width : Int, height : Int, container : Selection, titleontop : Bool ) 
 	{
 		super(width, height, container);
+		titleUsed = false;
+		this.titleOnTop = titleontop;
 	}
 	
 	override public function getPanel(name : String) : PanelContext
@@ -24,12 +27,13 @@ class SimpleLayout extends Layout
 		{
 			case "main":
 				if (null == main)
-					main = new PanelContext(space.createPanel(FrameLayout.Fill(0, 0)), None);
+					main = new PanelContext(space.createPanelAt(titleOnTop ? 1 : 0, FrameLayout.Fill(0, 0)), titleOnTop ? Top : Bottom);
 				return main;
 			case "title":
-				if (null == title)
-					title = new PanelContext(space.createPanelAt(0, FrameLayout.Fixed(0, 0, 20)), Bottom);
-				return title;
+				if (titleUsed)
+					return null;
+				titleUsed = true;
+				return new PanelContext(space.createPanelAt(titleOnTop ? 0 : 1, FrameLayout.Fixed(0, 0, 20)), titleOnTop ? Bottom : Top);
 			default:
 				return null;
 		}

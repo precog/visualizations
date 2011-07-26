@@ -26,6 +26,9 @@ class TestInfoLayout
 	{
 		var info = new InfoLayout().feed( { layout : "simple" } );
 		Assert.equals("simple", info.layout);
+		
+		info = new InfoLayout().feed( { layout : "simpleReverse" } );
+		Assert.equals("simplereverse", info.layout);
 	}
 	
 	public function new() { }

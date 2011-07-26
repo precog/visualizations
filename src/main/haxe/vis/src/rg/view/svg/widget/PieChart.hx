@@ -18,52 +18,60 @@ using Arrays;
 
 class PieChart extends Layer
 {
-	public var padding(default, setPadding) : Int;
-	public var innerRadius(default, setInnerRadius) : Float;
+	public var innerRadius : Float;
+	public var outerRadius : Float;
+	public var overRadius : Float;
 	
 	var arcNormal : Arc<{ startAngle : Float, endAngle : Float }>;
 	var arcStart : Arc<{ startAngle : Float, endAngle : Float }>;
 	var arcBig : Arc<{ startAngle : Float, endAngle : Float }>;
 	var pie : Pie<Float>;
 	var radius : Float;
-	var created : Int; // TODO, remove?
 	public var propertyValue : String;
 	public var animated : Bool;
 	public var animationDuration : Int;
 	public var animationEase : Float -> Float;
+	public var gradientLightness : Float;
+	public var animationDelay : Int;
 	
 	public function new(panel : Panel) 
 	{
 		super(panel);
-		padding = 0;
-		g.classed().add("pie-chart");
+		addClass("pie-chart");
 		g.append("svg:defs");
 		pie = new Pie();
 		animated = false;
 		animationDuration = 0;
-		created = 0;
+		gradientLightness = 1.5;
+		animationDelay = 0;
+		innerRadius = 0.0;
+		outerRadius = 0.9;
+		overRadius = 0.95;
 	}
 	
-	function setPadding(v : Int)
+	public function init()
 	{
-		this.padding = v;
 		resize();
-		return padding;
-	}
-	
-	function setInnerRadius(v : Float)
-	{
-		this.innerRadius = v;
-		resize();
-		return innerRadius;
 	}
 	
 	override function resize()
 	{
-		radius = Math.min(width, height) / 2 - padding;
-		arcStart = Arc.fromAngleObject().innerRadius(radius * innerRadius).outerRadius(radius * innerRadius);
-		arcNormal = Arc.fromAngleObject().innerRadius(radius * innerRadius).outerRadius(radius);
-		arcBig = Arc.fromAngleObject().innerRadius(radius * (2 * innerRadius)).outerRadius(radius + padding * .9);
+		radius = Math.min(width, height) / 2;
+		arcStart = Arc.fromAngleObject()
+			.innerRadius(radius * innerRadius)
+			.outerRadius(radius * innerRadius);
+		arcNormal = Arc.fromAngleObject()
+			.innerRadius(radius * innerRadius)
+			.outerRadius(radius * outerRadius);
+		arcBig = Arc.fromAngleObject()
+			.innerRadius(radius * innerRadius)
+			.outerRadius(radius * overRadius);
+		
+		// recenter the chart
+		if (width > height)
+			g.attr("transform").string("translate(" + (width/2-height/2) + ",0)");
+		else
+			g.attr("transform").string("translate(0," + (height/2-width/2) + ")");
 	}
 	
 	public function data(dp : Array<DataPoint>)
@@ -75,7 +83,7 @@ class PieChart extends Layer
 		var enter = choice.enter();
 		var arc = enter.append("svg:g")
 			.attr("class").stringf(function(d, i) return "group item-" + i)
-			.attr("transform").string("translate(" + (padding + radius) + "," + (padding + radius) + ")");
+			.attr("transform").string("translate(" + radius + "," + radius + ")");
 		var path = arc
 			.append("svg:path")
 			.attr("class").string("slice");
@@ -83,15 +91,24 @@ class PieChart extends Layer
 		if (animated)
 		{
 			path.attr("d").stringf(arcStart.shape);
-			arc.eachNode(fadein);
+			arc
+				.eachNode(fadein)
+				.onNode("mouseover.animation", highlight)
+				.onNode("mouseout.animation", backtonormal);
 		} else {
 			path.attr("d").stringf(arcNormal.shape);
 		}
-//			
-		;
+
 		// update
+		choice.update()
+			.select("path")
+			.transition()
+				.ease(animationEase)
+				.duration(animationDuration)
+				.attr("d").stringf(arcNormal.shape);
 		
 		// exit
+		choice.exit().remove();
 	}
 	
 	function applyGradient(n, i : Int)
@@ -110,15 +127,15 @@ class PieChart extends Layer
 			if (null == color)
 				color = "#cccccc";
 			
-			var scolor = Hsl.darker(Hsl.toHsl(Colors.parse(color)), 1.5).toRgbString();
+			var scolor = Hsl.darker(Hsl.toHsl(Colors.parse(color)), gradientLightness).toRgbString();
 				
 			var ratio = box.width / box.height,
 				cx = -box.x * 100 / box.width / ratio,
 				cy = -box.y * 100 / box.height / ratio;
 			
 			var r = 100 * (box.width > box.height 
-				? Math.min(1, radius / box.width)
-				: Math.max(1, radius / box.width));
+				? Math.min(1, radius * outerRadius / box.width)
+				: Math.max(1, radius * outerRadius / box.width));
 			
 			var stops = g.select("defs")
 				.append("svg:radialGradient")
@@ -148,9 +165,25 @@ class PieChart extends Layer
 
 		gn.selectAll("path.slice")
 			.transition().ease(animationEase).duration(animationDuration)
-			.delay(150 * (i - created))
+			.delay(animationDelay)
 			.attr("d").string(shape)
 		;
+	}
+	
+	function highlight(d, i : Int)
+	{
+		var slice = Dom.selectNodeData(d).selectAll("path");
+		slice
+			.transition().ease(animationEase).duration(animationDuration)
+			.attr("d").stringf(arcBig.shape);
+	}
+	
+	function backtonormal(d, i : Int)
+	{
+		var slice = Dom.selectNodeData(d).selectAll("path");
+		slice
+			.transition().ease(animationEase).duration(animationDuration)
+			.attr("d").stringf(arcNormal.shape);
 	}
 	
 	function id(o : Dynamic, i : Int) return o.id
@@ -165,7 +198,12 @@ class PieChart extends Layer
 	function pief(dp : Array<DataPoint>)
 	{
 		var name = propertyValue,
-			arr = pie.pie(dp.map(function(d, i) return Reflect.field(d.properties, name)));
+			temp = dp.map(function(d, i) return Reflect.field(d.properties, name)),
+			arr = pie.pie(temp);
+		trace(name);
+		trace(dp);
+		trace(temp);
+		trace(arr);
 		for (i in 0...arr.length)
 		{
 			var id = makeid(dp[i]);
@@ -173,17 +211,4 @@ class PieChart extends Layer
 		}
 		return arr;
 	}
-/*	
-	function arc(inst : Arc<{ startAngle : Float, endAngle : Float }>)
-	{
-		var name = propertyValue,
-			pie = this.pie;
-		return function(dp : DataPoint, i : Int)
-		{
-			var value = Reflect.field(dp.properties, name);
-			trace(pie.pie(value));
-			return inst.shape(pie.pie(value), i);
-		}
-	}
-*/
 }

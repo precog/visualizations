@@ -11,6 +11,7 @@ import rg.data.IDataSource;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.Sources;
 import thx.error.Error;
+import rg.data.DataPoint;
 
 class FactoryDataContext 
 {
@@ -29,6 +30,16 @@ class FactoryDataContext
 		for (src in info.sources)
 			sources.push(factoryDataSource.create(src));
 		var processor = new DataProcessor(new Sources(sources));
-		return new DataContext(info.name, processor, info.transform);
+		if (null != info.transform)
+		{
+			processor.transform = function(dps : Array<Array<DataPoint>>)
+			{
+				trace(dps);
+				var res = untyped info.transform.apply(this, dps);
+				trace(res);
+				return res;
+			}
+		}
+		return new DataContext(info.name, processor);
 	}
 }

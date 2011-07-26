@@ -7,7 +7,10 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
+<!--
 	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
+-->
 	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
 <!--
 	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
@@ -21,8 +24,11 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
+/*
 	ReportGrid.pieChart("#chart", {
 		axes : [{
+			type: ".ageRange"
+		}, {
 			type: "count"
 		}],
 		data : {
@@ -33,7 +39,54 @@ document.addEventListener("DOMContentLoaded", function(){
 //				animated : false
 			},
 			height : 400,
-			innerRadius : 0.0
+			innerRadius : 0.5,
+			label : {
+//				title : function() { return "age range" }
+			},
+			layout : "simple",
+//			sort : function(a, b) { return a.properties.count - b.properties.count; }
+		}
+	});
+	
+	ReportGrid.pieChart("#chart", {
+		axes : [{
+			type: ".platform"
+		}, {
+			type: "count"
+		}],
+		data : {
+			src: { path : "/rgadnet", event : "impression", query : ".platform" }
+		},
+		options : {
+			innerRadius : 0.25,
+			outerRadius : 0.4,
+			overRadius : 0.45,
+		}
+	});
+*/
+	ReportGrid.pieChart("#chart2", {
+		axes : [{
+			type : "event"
+		}, {
+			type: "count"
+		}],
+		data : {
+			src: [
+				{ path : "/rgadnet", event : "impression" },
+				{ path : "/rgadnet", event : "click" },
+				{ path : "/rgadnet", event : "conversion" }
+			],
+			transform : function(dps1, dps2, dps3) {
+				dps1[0].properties.event = dps1[0].event;
+				dps2[0].properties.event = dps2[0].event;
+				dps3[0].properties.event = dps3[0].event;
+				return [dps1[0], dps2[0], dps3[0]];
+			}
+		},
+		options : {
+			innerRadius : 0.0,
+			outerRadius : 0.2,
+			overRadius : 0.25,
 		}
 	});
 }, false)
@@ -41,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </head>
 <body>
 	<div id="chart"></div>
+	<div id="chart2"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

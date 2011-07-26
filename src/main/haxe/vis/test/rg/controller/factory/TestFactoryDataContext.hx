@@ -41,14 +41,8 @@ class TestFactoryDataContext
 		
 		Assert.notNull(dc);
 		Assert.equals("total", dc.name);
-		Assert.isNull(dc.transform);
 		
 		Assert.equals(2, dc.data.sources.length);
-		
-		Info.feed(info, { transform : function() return [] } );
-		dc = factory.create(info);
-		Assert.notNull(dc.transform);
-		Assert.isTrue(Reflect.isFunction(dc.transform));
 	}
 	
 	public function new() { }

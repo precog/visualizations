@@ -28,6 +28,21 @@ class Layer
 		_resize();
 	}
 	
+	public function addClass(name : String)
+	{
+		g.classed().add(name);
+	}
+	
+	public function removeClass(name : String)
+	{
+		g.classed().remove(name);
+	}
+	
+	public function toggleClass(name : String)
+	{
+		g.classed().toggle(name);
+	}
+	
 	function _resize()
 	{
 		width = frame.width;

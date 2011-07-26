@@ -94,6 +94,12 @@
 	text-rendering: optimizelegibility;
 }
 
+.rg .title text
+{
+	font-weight: bold;
+	font-size: 24px;
+}
+
 .rg .stream-chart path
 {
 	
@@ -153,7 +159,8 @@
 
 .rg .pie-chart g.group path
 {
-	stroke:none;
+	stroke: #333;
+	stroke-opacity: 0.4;
 }
 
 .rg .line-chart g.group path

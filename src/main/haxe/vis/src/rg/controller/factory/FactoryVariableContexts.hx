@@ -86,7 +86,7 @@ class FactoryVariableContexts
 						case Property(n, _, _):
 							kp.add(n);
 						case Event:
-							continue;
+							kp.add("event");
 					}
 				}
 			}
