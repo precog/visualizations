@@ -52,7 +52,6 @@ class App
 			node.id = id = nextid();
 		}
 		var cache = new Hash();
-		trace(jsoptions);
 		var params = new InfoVisualizationOption().feed(jsoptions);
 		var factoryDataSource = new FactoryDataSource(cache, executor);
 		var factoryDataContext = new FactoryDataContext(factoryDataSource);
@@ -92,10 +91,8 @@ class App
 	{
 		if (layouts.exists(id))
 			return layouts.get(id);
-		trace(options);
-		var info = new InfoLayout().feed(options);
-		trace(info);
-		var layout = new FactoryLayout().create(info, container);
+		var info = new InfoLayout().feed(options),
+			layout = new FactoryLayout().create(info, container);
 		layouts.set(id, layout);
 		return layout;
 	}

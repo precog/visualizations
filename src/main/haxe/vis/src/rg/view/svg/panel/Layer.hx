@@ -12,7 +12,7 @@ class Layer
 {
 	var panel : Panel;
 	var frame : Frame;
-	var svg : Selection;
+	var g : Selection;
 	public var width(default, null) : Int;
 	public var height(default, null) : Int;
 	
@@ -23,8 +23,8 @@ class Layer
 		this.frame = (this.panel = panel).frame;
 		var p : SvgPanelFriend = panel;
 		p.addLayer(this);
-		svg = panel.svg.append("svg:g");
-		svg.attr("class").string("layer");
+		g = panel.g.append("svg:g");
+		g.attr("class").string("layer");
 		_resize();
 	}
 	
@@ -41,14 +41,14 @@ class Layer
 	{
 		var p : SvgPanelFriend = panel;
 		p.removeLayer(this);
-		svg.remove();
+		g.remove();
 	}
 
 	function setCustomClass(v : String)
 	{
 		if (null != customClass)
-			svg.classed().remove(customClass);
-		svg.classed().add(v);
+			g.classed().remove(customClass);
+		g.classed().add(v);
 		return this.customClass = v;
 	}
 }

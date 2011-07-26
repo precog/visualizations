@@ -111,33 +111,11 @@ Strings.format = function(pattern,values,nullstring,culture) {
 	$s.push("Strings::format");
 	var $spos = $s.length;
 	if(nullstring == null) nullstring = "null";
-	var $tmp = (Strings.formatf(pattern,nullstring,culture))(values);
-	$s.pop();
-	return $tmp;
-	if(null == values) values = [];
-	var buf = new StringBuf();
-	while(true) {
-		if(!Strings._reFormat.match(pattern)) {
-			buf.b[buf.b.length] = pattern;
-			break;
-		}
-		var pos = Std.parseInt(Strings._reFormat.matched(1));
-		var f = Strings._reFormat.matched(2);
-		if(f == "") f = null;
-		var p = null;
-		var params = [];
-		var _g = 3;
-		while(_g < 20) {
-			var i = _g++;
-			p = Strings._reFormat.matched(i);
-			if(p == null || p == "") break;
-			params.push(thx.culture.FormatParams.cleanQuotes(p));
-		}
-		pattern = Strings._reFormat.matchedRight();
-		buf.b[buf.b.length] = Strings._reFormat.matchedLeft();
-		buf.b[buf.b.length] = Dynamics.format(values[pos],f,params,nullstring,culture);
+	if(null == values || 0 == values.length) {
+		$s.pop();
+		return pattern;
 	}
-	var $tmp = buf.b.join("");
+	var $tmp = (Strings.formatf(pattern,nullstring,culture))(values);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -150,10 +128,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 	while(true) {
 		if(!Strings._reFormat.match(pattern)) {
 			buf.push((function() {
-				$s.push("Strings::formatf@147");
+				$s.push("Strings::formatf@122");
 				var $spos = $s.length;
 				var $tmp = function(_) {
-					$s.push("Strings::formatf@147@147");
+					$s.push("Strings::formatf@122@122");
 					var $spos = $s.length;
 					$s.pop();
 					return pattern;
@@ -179,10 +157,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		}
 		var left = [Strings._reFormat.matchedLeft()];
 		buf.push((function(left) {
-			$s.push("Strings::formatf@165");
+			$s.push("Strings::formatf@140");
 			var $spos = $s.length;
 			var $tmp = function(_) {
-				$s.push("Strings::formatf@165@165");
+				$s.push("Strings::formatf@140@140");
 				var $spos = $s.length;
 				var $tmp = left[0];
 				$s.pop();
@@ -195,16 +173,16 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		})(left));
 		var df = [Dynamics.formatf(format,params,nullstring,culture)];
 		buf.push(((function() {
-			$s.push("Strings::formatf@167");
+			$s.push("Strings::formatf@142");
 			var $spos = $s.length;
 			var $tmp = function(f,a1) {
-				$s.push("Strings::formatf@167@167");
+				$s.push("Strings::formatf@142@142");
 				var $spos = $s.length;
 				var $tmp = (function() {
-					$s.push("Strings::formatf@167@167@167");
+					$s.push("Strings::formatf@142@142@142");
 					var $spos = $s.length;
 					var $tmp = function(a2) {
-						$s.push("Strings::formatf@167@167@167@167");
+						$s.push("Strings::formatf@142@142@142@142");
 						var $spos = $s.length;
 						var $tmp = f(a1,a2);
 						$s.pop();
@@ -223,10 +201,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 			return $tmp;
 			$s.pop();
 		})())((function(df) {
-			$s.push("Strings::formatf@167");
+			$s.push("Strings::formatf@142");
 			var $spos = $s.length;
 			var $tmp = function(i,v) {
-				$s.push("Strings::formatf@167@167");
+				$s.push("Strings::formatf@142@142");
 				var $spos = $s.length;
 				var $tmp = df[0](v[i]);
 				$s.pop();
@@ -240,11 +218,11 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		pattern = Strings._reFormat.matchedRight();
 	}
 	var $tmp = function(values) {
-		$s.push("Strings::formatf@170");
+		$s.push("Strings::formatf@145");
 		var $spos = $s.length;
 		if(null == values) values = [];
 		var $tmp = buf.map(function(df,_) {
-			$s.push("Strings::formatf@170@174");
+			$s.push("Strings::formatf@145@149");
 			var $spos = $s.length;
 			var $tmp = df(values);
 			$s.pop();
@@ -275,7 +253,7 @@ Strings.formatOnef = function(param,params,culture) {
 	switch(format) {
 	case "S":
 		var $tmp = function(v) {
-			$s.push("Strings::formatOnef@190");
+			$s.push("Strings::formatOnef@165");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -293,7 +271,7 @@ Strings.formatOnef = function(param,params,culture) {
 		var len = params.length < 1?10:Std.parseInt(params[0]);
 		var pad = params.length < 2?" ":params[1];
 		var $tmp = function(v) {
-			$s.push("Strings::formatOnef@198");
+			$s.push("Strings::formatOnef@173");
 			var $spos = $s.length;
 			var $tmp = StringTools.rpad(v,pad,len);
 			$s.pop();
@@ -306,7 +284,7 @@ Strings.formatOnef = function(param,params,culture) {
 		var len = params.length < 1?10:Std.parseInt(params[0]);
 		var pad = params.length < 2?" ":params[1];
 		var $tmp = function(v) {
-			$s.push("Strings::formatOnef@202");
+			$s.push("Strings::formatOnef@177");
 			var $spos = $s.length;
 			var $tmp = StringTools.lpad(v,pad,len);
 			$s.pop();
@@ -589,7 +567,7 @@ Strings.interpolatef = function(a,b,equation) {
 	$s.push("Strings::interpolatef");
 	var $spos = $s.length;
 	var extract = function(value,s,f) {
-		$s.push("Strings::interpolatef@453");
+		$s.push("Strings::interpolatef@428");
 		var $spos = $s.length;
 		while(Strings._reInterpolateNumber.match(value)) {
 			var left = Strings._reInterpolateNumber.matchedLeft();
@@ -618,10 +596,10 @@ Strings.interpolatef = function(a,b,equation) {
 			if(fa[i] == fb[i]) {
 				var s = ["" + fa[i]];
 				functions.push((function(s) {
-					$s.push("Strings::interpolatef@491");
+					$s.push("Strings::interpolatef@466");
 					var $spos = $s.length;
 					var $tmp = function(_) {
-						$s.push("Strings::interpolatef@491@491");
+						$s.push("Strings::interpolatef@466@466");
 						var $spos = $s.length;
 						var $tmp = s[0];
 						$s.pop();
@@ -635,10 +613,10 @@ Strings.interpolatef = function(a,b,equation) {
 			} else {
 				var f = [Floats.interpolatef(fa[i],fb[i],equation)];
 				functions.push((function(f) {
-					$s.push("Strings::interpolatef@494");
+					$s.push("Strings::interpolatef@469");
 					var $spos = $s.length;
 					var $tmp = function(t) {
-						$s.push("Strings::interpolatef@494@494");
+						$s.push("Strings::interpolatef@469@469");
 						var $spos = $s.length;
 						var $tmp = "" + f[0](t);
 						$s.pop();
@@ -653,10 +631,10 @@ Strings.interpolatef = function(a,b,equation) {
 		} else {
 			var s = [sa[i]];
 			functions.push((function(s) {
-				$s.push("Strings::interpolatef@498");
+				$s.push("Strings::interpolatef@473");
 				var $spos = $s.length;
 				var $tmp = function(_) {
-					$s.push("Strings::interpolatef@498@498");
+					$s.push("Strings::interpolatef@473@473");
 					var $spos = $s.length;
 					var $tmp = s[0];
 					$s.pop();
@@ -676,17 +654,17 @@ Strings.interpolatef = function(a,b,equation) {
 		i++;
 	}
 	if("" != rest) functions.push(function(_) {
-		$s.push("Strings::interpolatef@512");
+		$s.push("Strings::interpolatef@487");
 		var $spos = $s.length;
 		$s.pop();
 		return rest;
 		$s.pop();
 	});
 	var $tmp = function(t) {
-		$s.push("Strings::interpolatef@513");
+		$s.push("Strings::interpolatef@488");
 		var $spos = $s.length;
 		var $tmp = functions.map(function(f,_) {
-			$s.push("Strings::interpolatef@513@514");
+			$s.push("Strings::interpolatef@488@489");
 			var $spos = $s.length;
 			var $tmp = f(t);
 			$s.pop();
@@ -722,7 +700,7 @@ Strings.ellipsisf = function(maxlen,symbol) {
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
 	var $tmp = function(s) {
-		$s.push("Strings::ellipsisf@528");
+		$s.push("Strings::ellipsisf@503");
 		var $spos = $s.length;
 		if(s.length > maxlen) {
 			var $tmp = s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol;
@@ -7591,6 +7569,11 @@ Arrays.compare = function(a,b) {
 Arrays.product = function(a) {
 	$s.push("Arrays::product");
 	var $spos = $s.length;
+	if(a.length == 0) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
 	var arr = a.copy(), result = [], temp;
 	var _g = 0, _g1 = arr[0];
 	while(_g < _g1.length) {

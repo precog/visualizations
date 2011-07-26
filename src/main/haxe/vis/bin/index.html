@@ -6,22 +6,34 @@
 	<meta name="language" content="en" />
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
+	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
+<!--
+	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
+-->
 	<script src="js/reportgrid-core.js?tokenId=C7A18C95-3619-415B-A89B-4CE47693E4CC"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-	ReportGrid.lineChart("#chart", {
+	ReportGrid.pieChart("#chart", {
 		axes : [{
 			type: "count"
-		}, {
-			type: ".#time:day",
-			view: ["7 days ago", "now"]
 		}],
 		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".#time:day" }
+			src: { path : "/rgadnet", event : "impression", query : ".ageRange" }
 		},
 		options : {
-			
+			animation : {
+//				animated : false
+			},
+			height : 400,
+			innerRadius : 0.0
 		}
 	});
 }, false)

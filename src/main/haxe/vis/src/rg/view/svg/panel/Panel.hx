@@ -12,7 +12,7 @@ using Arrays;
 class Panel
 {
 	public var frame(default, null) : Frame;
-	public var svg(default, null) : Selection;
+	public var g(default, null) : Selection;
 	public var parent(default, null) : Container;
 	var _layers : Array<Layer>;
 
@@ -36,21 +36,21 @@ class Panel
 	
 	function setParent(container : Container)
 	{
-		if (null != svg)
-			svg.remove();
+		if (null != g)
+			g.remove();
 
 		if (null == container)
 			return;
 			
-		init(container.svg);
+		init(container.g);
 	}
 	
 	function init(container : Selection)
 	{
-		svg = container.append("svg:g")
+		g = container.append("svg:g")
 			.attr("class").string("panel")
 			.attr("transform").string("translate(" + frame.x + "," + frame.y + ")");
-		svg.append("svg:rect")
+		g.append("svg:rect")
 			.attr("class").string("panel-frame")
 			.attr("width").float(frame.width)
 			.attr("height").float(frame.height);
@@ -58,9 +58,9 @@ class Panel
 	
 	function reframe()
 	{
-		svg
+		g
 			.attr("transform").string("translate(" + frame.x + "," + frame.y + ")")
-			.select(".panel-frame")
+			.select("rect.panel-frame")
 				.attr("width").float(frame.width)
 				.attr("height").float(frame.height);
 

@@ -70,7 +70,6 @@ private class PivotTableTransform<TData>
 	// TODO fill time gaps in interval if not by done on the server side
 	public function transform(src : Dynamic)
 	{
-//		trace(Dynamics.string(src));
 		var data : {
 				column_headers : Array<String>,
 				row_headers : Array<String>,
@@ -84,9 +83,10 @@ private class PivotTableTransform<TData>
 				rows : [],
 				calc : emptyCalc()
 			},
-			temp = Objects.flatten(src),
+			temp : Array<{ fields : Array<Dynamic>, value : { type : String, periodicity : String, data : Array<Array<Float>> } }>,
 			values;
 
+//		trace(temp);
 		if (queryHasTimeProperty())
 		{
 			var pos = timePropertyPosition(),
@@ -94,6 +94,7 @@ private class PivotTableTransform<TData>
 					.concat(["#" + query.time.periodicity])
 					.concat(query.properties.slice(pos).map(function(d,i) return d.property)),
 				headers = data.column_headers;
+			
 			for (i in 0...properties.length)
 			{
 				if (i == columns)
@@ -104,10 +105,10 @@ private class PivotTableTransform<TData>
 			}
 			
 			values = [];
-
+			temp = cast Objects.flatten(src, headers.length);
 			for (item in temp)
 			{
-				var arr : Array<Array<Dynamic>> = item.value;
+				var arr : Array<Array<Dynamic>> = item.value.data;
 				for (pair in arr)
 				{
 					var fields = item.fields.slice(0, pos)
@@ -122,12 +123,12 @@ private class PivotTableTransform<TData>
 		} else {
 			data.column_headers = query.properties.slice(0, columns).map(function(d,i) return d.property);
 			data.row_headers = query.properties.slice(columns).map(function(d,i) return d.property);
-		
+			temp = cast Objects.flatten(src, query.properties.length);
 			values = temp.map(function(d, i) {
 				return {
-					fields : d.fields.slice(0, -1),
+					fields : d.fields,
 					// TODO: remove conditional once server is fixed
-					value : d.value.length > 0 ? d.value[0][1] : 0
+					value : d.value.data.length > 0 ? d.value.data[0][1] : 0
 				};
 			});
 		}

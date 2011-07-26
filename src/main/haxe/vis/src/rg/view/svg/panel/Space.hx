@@ -13,12 +13,13 @@ import rg.view.frame.Frame;
 class Space extends Container
 {
 	var panel : StackItem;
+	var svg : Selection;
 	
 	public function new(width : Int, height : Int, domcontainer : Selection) 
 	{
 		panel = new StackItem(Fill(0, 0));
 		super(panel, Vertical);
-		init(domcontainer.append("svg:svg"));
+		init(svg = domcontainer.append("svg:svg"));
 		resize(width, height);
 	}
 	
