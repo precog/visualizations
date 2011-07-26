@@ -17,16 +17,13 @@ class TestCountTimeSeriesTransform extends TestBase
 		
 		assertDataPoints([{
 			event : "impression",
-			properties : ( { count : 0 } ).addFields([".#time:day"], [1310342400000]),
-			segment : null
-		}, {
+			count : 0
+		}.addFields([".#time:day"], [1310342400000]), {
 			event : "impression",
-			properties : ( { count : 1 } ).addFields([".#time:day"], [1310428800000]),
-			segment : null
-		}, {
+			count : 1
+		}.addFields([".#time:day"], [1310428800000]), {
 			event : "impression",
-			properties : ( { count : 2 } ).addFields([".#time:day"], [1310515200000]),
-			segment : null
-		}], transform.transform(data));
+			count : 2
+		}.addFields([".#time:day"], [1310515200000])], transform.transform(data));
 	}
 }

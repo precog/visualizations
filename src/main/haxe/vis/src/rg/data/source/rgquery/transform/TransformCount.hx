@@ -19,13 +19,11 @@ class TransformCount implements ITransform<Int>
 		this.event = event;
 	}
 	
-	public function transform(data : Int)
+	public function transform(data : Int) : Array<DataPoint>
 	{
-		var dp : DataPoint = {
-			properties : Objects.addField(Objects.clone(properties), unit, data),
-			event : event,
-			segment : null
-		};
+		var dp = { event : event };
+		Objects.copyTo(properties, dp);
+		Objects.addField(dp, unit, data);
 		return [dp];
 	}
 }

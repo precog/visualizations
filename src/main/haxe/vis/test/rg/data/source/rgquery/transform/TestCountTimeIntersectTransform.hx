@@ -26,21 +26,17 @@ class TestCountTimeIntersectTransform extends TestBase
 		
 		assertDataPoints([{
 			event : "impression",
-			properties : ( { count : 7 } ).addFields([".#time:day", ".platform"], [1310342400000, "iphone"]),
-			segment : null
-		}, {
+			count : 7
+		}.addFields([".#time:day", ".platform"], [1310342400000, "iphone"]), {
 			event : "impression",
-			properties : ( { count : 5 } ).addFields([".#time:day", ".platform"], [1310428800000, "iphone"]),
-			segment : null
-		}, {
+			count : 5
+		}.addFields([".#time:day", ".platform"], [1310428800000, "iphone"]), {
 			event : "impression",
-			properties : ( { count : 1972 } ).addFields([".#time:day", ".platform"], [1310342400000, "android"]),
-			segment : null
-		}, {
+			count : 1972,
+		}.addFields([".#time:day", ".platform"], [1310342400000, "android"]), {
 			event : "impression",
-			properties : ( { count : 2 } ).addFields([".#time:day", ".platform"], [1310428800000, "android"]),
-			segment : null
-		}], transform.transform(data));
+			count : 2,
+		}.addFields([".#time:day", ".platform"], [1310428800000, "android"])], transform.transform(data));
 	}
 	
 	public function testTransformDeep()
@@ -55,12 +51,10 @@ class TestCountTimeIntersectTransform extends TestBase
 		
 		assertDataPoints([{
 			event : "impression",
-			properties : ( { count : 7 } ).addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310342400000, "iphone", true, 1.2]),
-			segment : null
-		}, {
+			count : 7
+		}.addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310342400000, "iphone", true, 1.2]), {
 			event : "impression",
-			properties : ( { count : 5 } ).addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310428800000, "iphone", true, 1.2]),
-			segment : null
-		}], transform.transform(data));
+			count : 5
+		}.addFields([".#time:day", ".platform", ".boolValue", ".floatValue"], [1310428800000, "iphone", true, 1.2])], transform.transform(data));
 	}
 }

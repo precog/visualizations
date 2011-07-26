@@ -6541,8 +6541,6 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	var panelChart = this.layout.getPanel("main").panel;
 	this.chart = new rg.view.svg.widget.PieChart(panelChart);
 	this.chart.propertyValue = this.dependentVariables[0].type;
-	haxe.Log.trace(this.dependentVariables,{ fileName : "VisualizationPieChart.hx", lineNumber : 30, className : "rg.controller.visualization.VisualizationPieChart", methodName : "init"});
-	haxe.Log.trace(this.independentVariables,{ fileName : "VisualizationPieChart.hx", lineNumber : 31, className : "rg.controller.visualization.VisualizationPieChart", methodName : "init"});
 	this.chart.innerRadius = this.info.innerRadius;
 	this.chart.outerRadius = this.info.outerRadius;
 	this.chart.overRadius = this.info.overRadius;
@@ -9907,7 +9905,9 @@ rg.data.source.rgquery.transform.TransformCount.prototype.event = null;
 rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(data) {
 	$s.push("rg.data.source.rgquery.transform.TransformCount::transform");
 	var $spos = $s.length;
-	var dp = { properties : Objects.addField(Objects.clone(this.properties),this.unit,data), event : this.event, segment : null};
+	var dp = { event : this.event};
+	Objects.copyTo(this.properties,dp);
+	Objects.addField(dp,this.unit,data);
 	var $tmp = [dp];
 	$s.pop();
 	return $tmp;
@@ -11706,7 +11706,7 @@ rg.view.svg.widget.PieChart.prototype.makeid = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::makeid");
 	var $spos = $s.length;
 	var o = Objects.clone(dp);
-	Reflect.deleteField(o.properties,this.propertyValue);
+	Reflect.deleteField(o,this.propertyValue);
 	var $tmp = haxe.Md5.encode(Dynamics.string(o));
 	$s.pop();
 	return $tmp;
@@ -11718,15 +11718,11 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	var name = this.propertyValue, temp = dp.map(function(d,i) {
 		$s.push("rg.view.svg.widget.PieChart::pief@201");
 		var $spos = $s.length;
-		var $tmp = Reflect.field(d.properties,name);
+		var $tmp = Reflect.field(d,name);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}), arr = this.pie.pie(temp);
-	haxe.Log.trace(name,{ fileName : "PieChart.hx", lineNumber : 203, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
-	haxe.Log.trace(dp,{ fileName : "PieChart.hx", lineNumber : 204, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
-	haxe.Log.trace(temp,{ fileName : "PieChart.hx", lineNumber : 205, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
-	haxe.Log.trace(arr,{ fileName : "PieChart.hx", lineNumber : 206, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
 	var _g1 = 0, _g = arr.length;
 	while(_g1 < _g) {
 		var i = _g1++;
@@ -12515,21 +12511,6 @@ rg.data.source.DataSourceArray = function(data) {
 	$s.pop();
 }
 rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
-rg.data.source.DataSourceArray.fromValues = function(arr,event,map) {
-	$s.push("rg.data.source.DataSourceArray::fromValues");
-	var $spos = $s.length;
-	var $tmp = new rg.data.source.DataSourceArray(arr.map(map).map(function(properties,i) {
-		$s.push("rg.data.source.DataSourceArray::fromValues@14");
-		var $spos = $s.length;
-		var $tmp = { properties : properties, event : event, segment : null};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
 rg.data.source.DataSourceArray.prototype.data = null;
 rg.data.source.DataSourceArray.prototype.onLoad = null;
 rg.data.source.DataSourceArray.prototype.load = function() {
@@ -15033,7 +15014,7 @@ rg.controller.info.InfoDataSource.filters = function() {
 		var $tmp = Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
 			$s.push("rg.controller.info.InfoDataSource::filters@40@40");
 			var $spos = $s.length;
-			var $tmp = Types.isAnonymous(v1.properties) && Std["is"](v1.event,String);
+			var $tmp = Reflect.isObject(v1) && null == Type.getClass(v1) && Std["is"](v1.event,String);
 			$s.pop();
 			return $tmp;
 			$s.pop();
@@ -15526,10 +15507,12 @@ rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 rg.data.DataProcessor.prototype.filterDatapoint = function(variables,dp) {
 	$s.push("rg.data.DataProcessor::filterDatapoint");
 	var $spos = $s.length;
+	var name;
 	var _g1 = 0, _g = this.independentVariables.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		if(Reflect.field(dp.properties,this.independentVariables[i].variable.type) != variables[i]) {
+		name = this.independentVariables[i].variable.type;
+		if(Reflect.field(dp,name) != variables[i]) {
 			$s.pop();
 			return false;
 		}
@@ -15548,30 +15531,20 @@ rg.data.DataProcessor.prototype.process = function(data) {
 	}
 	this.fillIndependentVariables(data);
 	var dataPoints = [];
-	if(0 == this.independentVariables.length) {
+	var variablesset = this.getVariableIndependentValues();
+	var _g = 0;
+	while(_g < variablesset.length) {
+		var values = variablesset[_g];
+		++_g;
 		var subsets = [];
-		var _g = 0;
-		while(_g < data.length) {
-			var d = data[_g];
-			++_g;
-			subsets.push(d);
+		var _g1 = 0;
+		while(_g1 < data.length) {
+			var d = data[_g1];
+			++_g1;
+			var subset = this.filterSubset(d,values);
+			if(subset.length > 0) subsets.push(subset);
 		}
 		dataPoints = this.pushDataPoints(subsets,dataPoints);
-	} else {
-		var variablesset = this.getVariableIndependentValues();
-		var _g = 0;
-		while(_g < variablesset.length) {
-			var values = variablesset[_g];
-			++_g;
-			var subsets = [];
-			var _g1 = 0;
-			while(_g1 < data.length) {
-				var d = data[_g1];
-				++_g1;
-				subsets.push(this.filterSubset(d,values));
-			}
-			dataPoints = this.pushDataPoints(subsets,dataPoints);
-		}
 	}
 	this.fillDependentVariables(dataPoints);
 	this.onData.dispatch(dataPoints);
@@ -15584,7 +15557,8 @@ rg.data.DataProcessor.prototype.pushDataPoints = function(subsets,dataPoints) {
 		$s.pop();
 		return dataPoints;
 	}
-	var $tmp = dataPoints.concat(this.transform(subsets));
+	var transformed = this.transform(subsets);
+	var $tmp = dataPoints.concat(transformed);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -15598,12 +15572,12 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 		++_g;
 		if(ctx.partial) {
 			var variable = [ctx.variable], values = Arrays.filter(data.map((function(variable) {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@127");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@133");
 				var $spos = $s.length;
 				var $tmp = function(dp,_) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@127@127");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@133@133");
 					var $spos = $s.length;
-					var $tmp = Reflect.field(dp.properties,variable[0].type);
+					var $tmp = Reflect.field(dp,variable[0].type);
 					$s.pop();
 					return $tmp;
 					$s.pop();
@@ -15612,10 +15586,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 				return $tmp;
 				$s.pop();
 			})(variable)),(function() {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@127");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@133");
 				var $spos = $s.length;
 				var $tmp = function(v) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@127@127");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@133@133");
 					var $spos = $s.length;
 					var $tmp = null != v;
 					$s.pop();
@@ -15683,8 +15657,8 @@ rg.data.DataProcessor.prototype.fillIndependentVariable = function(variable,data
 	while(_g < data.length) {
 		var dp = data[_g];
 		++_g;
-		if(Reflect.hasField(dp.properties,property)) {
-			value = Reflect.field(dp.properties,property);
+		if(Reflect.hasField(dp,property)) {
+			value = Reflect.field(dp,property);
 			if(!values.exists(value)) {
 				if(values.length == 0) variable.min = value;
 				values.add(value);
@@ -15698,7 +15672,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@212");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@218");
 		var $spos = $s.length;
 		var $tmp = d.variable.range();
 		$s.pop();
@@ -16826,7 +16800,8 @@ rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.transform
 			var p = Dynamics.clone(properties);
 			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue));
 			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[arr[i][0],arr[i][1]]);
-			result.push({ properties : p, event : this.event, segment : null});
+			p.event = this.event;
+			result.push(p);
 		}
 	}
 	$s.pop();
@@ -16862,10 +16837,9 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = 
 	var $tmp = data.data.map(function(d,_) {
 		$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::transform@34");
 		var $spos = $s.length;
-		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit],[d[0],d[1]]);
-		var $tmp = { properties : p, event : event, segment : null};
+		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0],d[1],event]);
 		$s.pop();
-		return $tmp;
+		return p;
 		$s.pop();
 	});
 	$s.pop();

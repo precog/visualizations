@@ -24,7 +24,6 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-/*
 	ReportGrid.pieChart("#chart", {
 		axes : [{
 			type: ".ageRange"
@@ -35,19 +34,15 @@ document.addEventListener("DOMContentLoaded", function(){
 			src: { path : "/rgadnet", event : "impression", query : ".ageRange" }
 		},
 		options : {
-			animation : {
-//				animated : false
-			},
 			height : 400,
 			innerRadius : 0.5,
 			label : {
-//				title : function() { return "age range" }
+				title : "The Eye"
 			},
-			layout : "simple",
-//			sort : function(a, b) { return a.properties.count - b.properties.count; }
+			layout : "simple"
 		}
 	});
-	
+
 	ReportGrid.pieChart("#chart", {
 		axes : [{
 			type: ".platform"
@@ -59,12 +54,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		},
 		options : {
 			innerRadius : 0.25,
-			outerRadius : 0.4,
-			overRadius : 0.45,
+			outerRadius : 0.45,
+			overRadius : 0.49,
 		}
 	});
-*/
-	ReportGrid.pieChart("#chart2", {
+
+	ReportGrid.pieChart("#chart", {
 		axes : [{
 			type : "event"
 		}, {
@@ -75,18 +70,12 @@ document.addEventListener("DOMContentLoaded", function(){
 				{ path : "/rgadnet", event : "impression" },
 				{ path : "/rgadnet", event : "click" },
 				{ path : "/rgadnet", event : "conversion" }
-			],
-			transform : function(dps1, dps2, dps3) {
-				dps1[0].properties.event = dps1[0].event;
-				dps2[0].properties.event = dps2[0].event;
-				dps3[0].properties.event = dps3[0].event;
-				return [dps1[0], dps2[0], dps3[0]];
-			}
+			]
 		},
 		options : {
 			innerRadius : 0.0,
 			outerRadius : 0.2,
-			overRadius : 0.25,
+			overRadius  : 0.24,
 		}
 	});
 }, false)

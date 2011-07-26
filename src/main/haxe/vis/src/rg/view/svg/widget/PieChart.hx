@@ -191,19 +191,15 @@ class PieChart extends Layer
 	function makeid(dp : DataPoint)
 	{
 		var o = Objects.clone(dp);
-		Reflect.deleteField(o.properties, propertyValue);
+		Reflect.deleteField(o, propertyValue);
 		return Md5.encode(Dynamics.string(o));
 	}
 	
 	function pief(dp : Array<DataPoint>)
 	{
 		var name = propertyValue,
-			temp = dp.map(function(d, i) return Reflect.field(d.properties, name)),
+			temp = dp.map(function(d, i) return Reflect.field(d, name)),
 			arr = pie.pie(temp);
-		trace(name);
-		trace(dp);
-		trace(temp);
-		trace(arr);
 		for (i in 0...arr.length)
 		{
 			var id = makeid(dp[i]);

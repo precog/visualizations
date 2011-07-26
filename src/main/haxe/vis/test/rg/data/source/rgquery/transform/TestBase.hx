@@ -14,8 +14,7 @@ class TestBase
 
 	function assertDataPoint(expected : DataPoint, test : DataPoint, ?pos : PosInfos)
 	{
-		Assert.equals(expected.event, test.event, pos);
-		Assert.same(expected.properties, test.properties, pos);
+		Assert.same(expected, test, pos);
 	}
 	
 	function assertDataPoints(expected : Array<DataPoint>, test : Array<DataPoint>, ?pos : PosInfos)

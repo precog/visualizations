@@ -72,13 +72,13 @@ class TestFactoryDataSource
 	{
 		var info = new InfoDataSource().feed( { data : [ {
 				event : "click",
-				properties : { count : 10 }
+				count : 10
 			}], name : "sample" } ),
 			ds = factory.create(info);
 		ds.onLoad.add(function(data) {
 			Assert.same([ {
 				event : "click",
-				properties : { count : 10 }
+				count : 10
 			}], data);
 		});
 		ds.load();

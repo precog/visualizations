@@ -10,28 +10,26 @@ import rg.data.source.DataSourceArray;
 import thx.collections.HashList;
 import utest.Assert;
 using Objects;
+using Arrays;
 
 class TestDataProcessor 
 {
 	public function testOnData()
 	{
 		var cache = new Hash();
-		var datasources : Array<IDataSource> = cast [new DataSourceArray([{ properties : ({}).addField("count", 100), event : "click", segment : null }])];
+		var datasources : Array<IDataSource> = cast [new DataSourceArray([{ count : 100, event : "click" }])];
 		var sources = new Sources(datasources);
 		var processor = new DataProcessor(sources);
 		var datacontexts = [new DataContext("count", processor)];
 		var request = new DataRequest(cache, datacontexts);
 
-		processor.independentVariables = [];
+		processor.independentVariables = [new VariableIndependentContext(new VariableIndependent("event", new AxisOrdinal()), true)];
 		processor.dependentVariables = [new VariableDependentContext(new VariableDependent("count"), true)];
 
 		processor.onData.add(function(d) {
 			Assert.same([{
-				properties : {
-					count : 100,
-				},
-				event : "click",
-				segment : null
+				count : 100,
+				event : "click"
 			}], d);
 		});
 		sources.load();
@@ -40,8 +38,8 @@ class TestDataProcessor
 	public function testFillVariable()
 	{
 		var ds = new DataSourceArray([
-			{ properties : { gender : "male", count : 2 }, event : "click", segment : null },
-			{ properties : { gender : "female", count : 3 }, event : "click", segment : null }
+			{ gender : "male", count : 2, event : "click" },
+			{ gender : "female", count : 3, event : "click" }
 		]),
 			sources = new Sources(cast [ds]),
 			processor = new DataProcessor(sources),
@@ -63,6 +61,30 @@ class TestDataProcessor
 		sources.load();
 	}
 	
+	public function testEvents()
+	{
+		var cache = new Hash();
+		var datasources : Array<IDataSource> = cast [new DataSourceArray([{ count : 100, event : "click" }, { count : 10, event : "impression" }])];
+		var sources = new Sources(datasources);
+		var processor = new DataProcessor(sources);
+		var datacontexts = [new DataContext("count", processor)];
+		var request = new DataRequest(cache, datacontexts);
+
+		processor.independentVariables = [new VariableIndependentContext(new VariableIndependent("event", new AxisOrdinal()), true)];
+		processor.dependentVariables = [new VariableDependentContext(new VariableDependent("count"), true)];
+
+		processor.onData.add(function(d) {
+			Assert.same([{
+				count : 100,
+				event : "click"
+			}, {
+				count : 10,
+				event : "impression"
+			}], d);
+		});
+		sources.load();
+	}
+	
 	public function testTransform()
 	{
 		var samples = 10,
@@ -76,23 +98,21 @@ class TestDataProcessor
 			defaultSegment = "default";
 
 		var src : Array<IDataSource> = [];
-		src.push(DataSourceArray.fromValues(vrange, "impression", function(d, i) {
-			return ( { } )
-				.addField(".#time:hour", trange[i])
-				.addField(".ageRange", ageRanges[i % ageRanges.length])
-				.addField(".gender", genders[i % genders.length])
-				.addField("count", d)
-			;
-		}));
+		src.push(new DataSourceArray(vrange.map(function(d, i) return ( { } )
+			.addField(".#time:hour", trange[i])
+			.addField(".ageRange", ageRanges[i % ageRanges.length])
+			.addField(".gender", genders[i % genders.length])
+			.addField("count", d)
+			.addField("event", "impression")
+		)));
 		vrange.reverse();
-		src.push(DataSourceArray.fromValues(vrange, "impression", function(d, i) {
-			return ( { } )
-				.addField(".#time:hour", trange[i])
-				.addField(".ageRange", ageRanges[i % ageRanges.length])
-				.addField(".gender", genders[i % genders.length])
-				.addField("count", d)
-			;
-		}));
+		src.push(new DataSourceArray(vrange.map(function(d, i) return ( { } )
+			.addField(".#time:hour", trange[i])
+			.addField(".ageRange", ageRanges[i % ageRanges.length])
+			.addField(".gender", genders[i % genders.length])
+			.addField("count", d)
+			.addField("event", "impression")
+		)));
 		
 		var iv : Array<VariableIndependentContext<Dynamic>> = [],
 			dv : Array<VariableDependentContext<Dynamic>> = [],
@@ -113,26 +133,18 @@ class TestDataProcessor
 		{
 			var set = Arrays.flatten(sets);
 			var el = set[0].clone();
-			el.properties.count = 0;
+			el.count = 0;
 			for (item in set)
-				el.properties.count += item.properties.count;
-			return cast [el];
+				el.count += item.count;
+			return [el];
 		}
 		
 		processor.onData.add(function(data) {
-			var expected = [{
-				event : "impression",
-				properties : ({}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310450400000, "1-12", "male", 2]),
-				segment : null
-			}, {
-				event : "impression",
-				properties : ({}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310454000000, "13-20", "female", 2]),
-				segment : null
-			}, {
-				event : "impression",
-				properties : ({}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310457600000, "21+", "male", 2]),
-				segment : null
-			}];
+			var expected = [
+				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310450400000, "1-12", "male", 2]),
+				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310454000000, "13-20", "female", 2]),
+				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310457600000, "21+", "male", 2])
+			];
 			Assert.same(expected, data);
 		});
 		

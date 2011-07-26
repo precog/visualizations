@@ -5394,8 +5394,7 @@ rg.data.source.rgquery.transform.TestBase.__name__ = ["rg","data","source","rgqu
 rg.data.source.rgquery.transform.TestBase.prototype.assertDataPoint = function(expected,test,pos) {
 	$s.push("rg.data.source.rgquery.transform.TestBase::assertDataPoint");
 	var $spos = $s.length;
-	utest.Assert.equals(expected.event,test.event,null,pos);
-	utest.Assert.same(expected.properties,test.properties,null,null,pos);
+	utest.Assert.same(expected,test,null,null,pos);
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestBase.prototype.assertDataPoints = function(expected,test,pos) {
@@ -5424,7 +5423,7 @@ rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.testTran
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ },"impression","day","count");
 	var data = { type : "timeseries", periodicity : "day", data : [[1310342400000,0],[1310428800000,1],[1310515200000,2]]};
-	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 0},[".#time:day"],[1310342400000]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 1},[".#time:day"],[1310428800000]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 2},[".#time:day"],[1310515200000]), segment : null}],transform.transform(data),{ fileName : "TestCountTimeSeriesTransform.hx", lineNumber : 18, className : "rg.data.source.rgquery.transform.TestCountTimeSeriesTransform", methodName : "testTransform"});
+	this.assertDataPoints([Objects.addFields({ event : "impression", count : 0},[".#time:day"],[1310342400000]),Objects.addFields({ event : "impression", count : 1},[".#time:day"],[1310428800000]),Objects.addFields({ event : "impression", count : 2},[".#time:day"],[1310515200000])],transform.transform(data),{ fileName : "TestCountTimeSeriesTransform.hx", lineNumber : 18, className : "rg.data.source.rgquery.transform.TestCountTimeSeriesTransform", methodName : "testTransform"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeSeriesTransform;
@@ -7870,8 +7869,6 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	var panelChart = this.layout.getPanel("main").panel;
 	this.chart = new rg.view.svg.widget.PieChart(panelChart);
 	this.chart.propertyValue = this.dependentVariables[0].type;
-	haxe.Log.trace(this.dependentVariables,{ fileName : "VisualizationPieChart.hx", lineNumber : 30, className : "rg.controller.visualization.VisualizationPieChart", methodName : "init"});
-	haxe.Log.trace(this.independentVariables,{ fileName : "VisualizationPieChart.hx", lineNumber : 31, className : "rg.controller.visualization.VisualizationPieChart", methodName : "init"});
 	this.chart.innerRadius = this.info.innerRadius;
 	this.chart.outerRadius = this.info.outerRadius;
 	this.chart.overRadius = this.info.overRadius;
@@ -9112,10 +9109,10 @@ rg.data.source.rgquery.transform.TestCountTransform.prototype.testTransform = fu
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","count");
 	var data = 39;
-	this.assertDataPoints([{ event : "impression", properties : { count : 39.0}, segment : null}],transform.transform(data),{ fileName : "TestCountTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	this.assertDataPoints([{ event : "impression", count : 39.0}],transform.transform(data),{ fileName : "TestCountTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
 	transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","otherunit");
 	data = 7;
-	this.assertDataPoints([{ event : "impression", properties : { otherunit : 7.0}, segment : null}],transform.transform(7),{ fileName : "TestCountTransform.hx", lineNumber : 28, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	this.assertDataPoints([{ event : "impression", otherunit : 7.0}],transform.transform(7),{ fileName : "TestCountTransform.hx", lineNumber : 27, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTransform;
@@ -12268,11 +12265,11 @@ rg.controller.factory.TestFactoryDataSource.prototype.testRGQuery = function() {
 rg.controller.factory.TestFactoryDataSource.prototype.testArraySource = function() {
 	$s.push("rg.controller.factory.TestFactoryDataSource::testArraySource");
 	var $spos = $s.length;
-	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : [{ event : "click", properties : { count : 10}}], name : "sample"}), ds = this.factory.create(info);
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : [{ event : "click", count : 10}], name : "sample"}), ds = this.factory.create(info);
 	ds.onLoad.add(function(data) {
 		$s.push("rg.controller.factory.TestFactoryDataSource::testArraySource@78");
 		var $spos = $s.length;
-		utest.Assert.same([{ event : "click", properties : { count : 10}}],data,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 79, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testArraySource"});
+		utest.Assert.same([{ event : "click", count : 10}],data,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 79, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testArraySource"});
 		$s.pop();
 	});
 	ds.load();
@@ -12354,7 +12351,9 @@ rg.data.source.rgquery.transform.TransformCount.prototype.event = null;
 rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(data) {
 	$s.push("rg.data.source.rgquery.transform.TransformCount::transform");
 	var $spos = $s.length;
-	var dp = { properties : Objects.addField(Objects.clone(this.properties),this.unit,data), event : this.event, segment : null};
+	var dp = { event : this.event};
+	Objects.copyTo(this.properties,dp);
+	Objects.addField(dp,this.unit,data);
 	var $tmp = [dp];
 	$s.pop();
 	return $tmp;
@@ -12372,17 +12371,17 @@ rg.data.TestDataProcessor.prototype.testOnData = function() {
 	$s.push("rg.data.TestDataProcessor::testOnData");
 	var $spos = $s.length;
 	var cache = new Hash();
-	var datasources = [new rg.data.source.DataSourceArray([{ properties : Objects.addField({ },"count",100), event : "click", segment : null}])];
+	var datasources = [new rg.data.source.DataSourceArray([{ count : 100, event : "click"}])];
 	var sources = new rg.data.Sources(datasources);
 	var processor = new rg.data.DataProcessor(sources);
 	var datacontexts = [new rg.data.DataContext("count",processor)];
 	var request = new rg.data.DataRequest(cache,datacontexts);
-	processor.independentVariables = [];
+	processor.independentVariables = [new rg.data.VariableIndependentContext(new rg.data.VariableIndependent("event",new rg.data.AxisOrdinal()),true)];
 	processor.dependentVariables = [new rg.data.VariableDependentContext(new rg.data.VariableDependent("count"),true)];
 	processor.onData.add(function(d) {
-		$s.push("rg.data.TestDataProcessor::testOnData@28");
+		$s.push("rg.data.TestDataProcessor::testOnData@29");
 		var $spos = $s.length;
-		utest.Assert.same([{ properties : { count : 100}, event : "click", segment : null}],d,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 29, className : "rg.data.TestDataProcessor", methodName : "testOnData"});
+		utest.Assert.same([{ count : 100, event : "click"}],d,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 30, className : "rg.data.TestDataProcessor", methodName : "testOnData"});
 		$s.pop();
 	});
 	sources.load();
@@ -12391,17 +12390,37 @@ rg.data.TestDataProcessor.prototype.testOnData = function() {
 rg.data.TestDataProcessor.prototype.testFillVariable = function() {
 	$s.push("rg.data.TestDataProcessor::testFillVariable");
 	var $spos = $s.length;
-	var ds = new rg.data.source.DataSourceArray([{ properties : { gender : "male", count : 2}, event : "click", segment : null},{ properties : { gender : "female", count : 3}, event : "click", segment : null}]), sources = new rg.data.Sources([ds]), processor = new rg.data.DataProcessor(sources), vi, vd;
+	var ds = new rg.data.source.DataSourceArray([{ gender : "male", count : 2, event : "click"},{ gender : "female", count : 3, event : "click"}]), sources = new rg.data.Sources([ds]), processor = new rg.data.DataProcessor(sources), vi, vd;
 	processor.independentVariables = [new rg.data.VariableIndependentContext(vi = new rg.data.VariableIndependent("gender",new rg.data.AxisOrdinal()),true)];
 	processor.dependentVariables = [new rg.data.VariableDependentContext(vd = new rg.data.VariableDependent("count",new rg.data.AxisNumeric()),true)];
 	processor.onData.add(function(d) {
-		$s.push("rg.data.TestDataProcessor::testFillVariable@55");
+		$s.push("rg.data.TestDataProcessor::testFillVariable@53");
 		var $spos = $s.length;
-		utest.Assert.equals("male",vi.min,null,{ fileName : "TestDataProcessor.hx", lineNumber : 56, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
-		utest.Assert.equals("female",vi.max,null,{ fileName : "TestDataProcessor.hx", lineNumber : 57, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
-		utest.Assert.same(["male","female"],vi.range(),null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 58, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
-		utest.Assert.equals(2,vd.min,null,{ fileName : "TestDataProcessor.hx", lineNumber : 60, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
-		utest.Assert.equals(3,vd.max,null,{ fileName : "TestDataProcessor.hx", lineNumber : 61, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.equals("male",vi.min,null,{ fileName : "TestDataProcessor.hx", lineNumber : 54, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.equals("female",vi.max,null,{ fileName : "TestDataProcessor.hx", lineNumber : 55, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.same(["male","female"],vi.range(),null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 56, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.equals(2,vd.min,null,{ fileName : "TestDataProcessor.hx", lineNumber : 58, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		utest.Assert.equals(3,vd.max,null,{ fileName : "TestDataProcessor.hx", lineNumber : 59, className : "rg.data.TestDataProcessor", methodName : "testFillVariable"});
+		$s.pop();
+	});
+	sources.load();
+	$s.pop();
+}
+rg.data.TestDataProcessor.prototype.testEvents = function() {
+	$s.push("rg.data.TestDataProcessor::testEvents");
+	var $spos = $s.length;
+	var cache = new Hash();
+	var datasources = [new rg.data.source.DataSourceArray([{ count : 100, event : "click"},{ count : 10, event : "impression"}])];
+	var sources = new rg.data.Sources(datasources);
+	var processor = new rg.data.DataProcessor(sources);
+	var datacontexts = [new rg.data.DataContext("count",processor)];
+	var request = new rg.data.DataRequest(cache,datacontexts);
+	processor.independentVariables = [new rg.data.VariableIndependentContext(new rg.data.VariableIndependent("event",new rg.data.AxisOrdinal()),true)];
+	processor.dependentVariables = [new rg.data.VariableDependentContext(new rg.data.VariableDependent("count"),true)];
+	processor.onData.add(function(d) {
+		$s.push("rg.data.TestDataProcessor::testEvents@76");
+		var $spos = $s.length;
+		utest.Assert.same([{ count : 100, event : "click"},{ count : 10, event : "impression"}],d,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 77, className : "rg.data.TestDataProcessor", methodName : "testEvents"});
 		$s.pop();
 	});
 	sources.load();
@@ -12412,23 +12431,23 @@ rg.data.TestDataProcessor.prototype.testTransform = function() {
 	var $spos = $s.length;
 	var samples = 10, start = Date.fromString("2011-07-12 00:00:00").getTime(), end = Date.fromString("2011-07-12 02:00:00").getTime(), trange = rg.util.Periodicity.range(start,end,"hour"), vrange = Ints.range(trange.length), ageRanges = ["1-12","13-20","21+"], genders = ["male","female"], defaultAxis = "count", defaultSegment = "default";
 	var src = [];
-	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
-		$s.push("rg.data.TestDataProcessor::testTransform@79");
+	src.push(new rg.data.source.DataSourceArray(vrange.map(function(d,i) {
+		$s.push("rg.data.TestDataProcessor::testTransform@101");
 		var $spos = $s.length;
-		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
+		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d),"event","impression");
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}));
+	})));
 	vrange.reverse();
-	src.push(rg.data.source.DataSourceArray.fromValues(vrange,"impression",function(d,i) {
-		$s.push("rg.data.TestDataProcessor::testTransform@88");
+	src.push(new rg.data.source.DataSourceArray(vrange.map(function(d,i) {
+		$s.push("rg.data.TestDataProcessor::testTransform@109");
 		var $spos = $s.length;
-		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d);
+		var $tmp = Objects.addField(Objects.addField(Objects.addField(Objects.addField(Objects.addField({ },".#time:hour",trange[i]),".ageRange",ageRanges[i % ageRanges.length]),".gender",genders[i % genders.length]),"count",d),"event","impression");
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}));
+	})));
 	var iv = [], dv = [], periodicity = "hour";
 	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forTime(".#time:hour",periodicity,start,end),false));
 	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forOrdinal(".ageRange"),true));
@@ -12438,16 +12457,16 @@ rg.data.TestDataProcessor.prototype.testTransform = function() {
 	processor.independentVariables = iv;
 	processor.dependentVariables = dv;
 	processor.transform = function(sets) {
-		$s.push("rg.data.TestDataProcessor::testTransform@112");
+		$s.push("rg.data.TestDataProcessor::testTransform@132");
 		var $spos = $s.length;
 		var set = Arrays.flatten(sets);
 		var el = Objects.clone(set[0]);
-		el.properties.count = 0;
+		el.count = 0;
 		var _g = 0;
 		while(_g < set.length) {
 			var item = set[_g];
 			++_g;
-			el.properties.count += item.properties.count;
+			el.count += item.count;
 		}
 		var $tmp = [el];
 		$s.pop();
@@ -12455,10 +12474,10 @@ rg.data.TestDataProcessor.prototype.testTransform = function() {
 		$s.pop();
 	};
 	processor.onData.add(function(data) {
-		$s.push("rg.data.TestDataProcessor::testTransform@122");
+		$s.push("rg.data.TestDataProcessor::testTransform@142");
 		var $spos = $s.length;
-		var expected = [{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310450400000,"1-12","male",2]), segment : null},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310454000000,"13-20","female",2]), segment : null},{ event : "impression", properties : Objects.addFields({ },[".#time:hour",".ageRange",".gender","count"],[1310457600000,"21+","male",2]), segment : null}];
-		utest.Assert.same(expected,data,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 136, className : "rg.data.TestDataProcessor", methodName : "testTransform"});
+		var expected = [Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310450400000,"1-12","male",2]),Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310454000000,"13-20","female",2]),Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310457600000,"21+","male",2])];
+		utest.Assert.same(expected,data,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 148, className : "rg.data.TestDataProcessor", methodName : "testTransform"});
 		$s.pop();
 	});
 	sources.load();
@@ -13711,7 +13730,7 @@ rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testT
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },[".platform"],"impression","day","count");
 	var data = Objects.addFields({ },["\"iphone\"","\"android\""],[{ type : "timeseries", periodicity : "day", data : [[1310342400000,7],[1310428800000,5]]},{ type : "timeseries", periodicity : "day", data : [[1310342400000,1972],[1310428800000,2]]}]);
-	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 7},[".#time:day",".platform"],[1310342400000,"iphone"]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 5},[".#time:day",".platform"],[1310428800000,"iphone"]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 1972},[".#time:day",".platform"],[1310342400000,"android"]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 2},[".#time:day",".platform"],[1310428800000,"android"]), segment : null}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 27, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransform"});
+	this.assertDataPoints([Objects.addFields({ event : "impression", count : 7},[".#time:day",".platform"],[1310342400000,"iphone"]),Objects.addFields({ event : "impression", count : 5},[".#time:day",".platform"],[1310428800000,"iphone"]),Objects.addFields({ event : "impression", count : 1972},[".#time:day",".platform"],[1310342400000,"android"]),Objects.addFields({ event : "impression", count : 2},[".#time:day",".platform"],[1310428800000,"android"])],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 27, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransform"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testTransformDeep = function() {
@@ -13719,7 +13738,7 @@ rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testT
 	var $spos = $s.length;
 	var transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },[".floatValue",".boolValue",".platform"],"impression","day","count");
 	var data = Objects.addField({ },"1.2",Objects.addField({ },"true",Objects.addField({ },"\"iphone\"",{ type : "timeseries", periodicity : "day", data : [[1310342400000,7],[1310428800000,5]]})));
-	this.assertDataPoints([{ event : "impression", properties : Objects.addFields({ count : 7},[".#time:day",".platform",".boolValue",".floatValue"],[1310342400000,"iphone",true,1.2]), segment : null},{ event : "impression", properties : Objects.addFields({ count : 5},[".#time:day",".platform",".boolValue",".floatValue"],[1310428800000,"iphone",true,1.2]), segment : null}],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 56, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransformDeep"});
+	this.assertDataPoints([Objects.addFields({ event : "impression", count : 7},[".#time:day",".platform",".boolValue",".floatValue"],[1310342400000,"iphone",true,1.2]),Objects.addFields({ event : "impression", count : 5},[".#time:day",".platform",".boolValue",".floatValue"],[1310428800000,"iphone",true,1.2])],transform.transform(data),{ fileName : "TestCountTimeIntersectTransform.hx", lineNumber : 52, className : "rg.data.source.rgquery.transform.TestCountTimeIntersectTransform", methodName : "testTransformDeep"});
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeIntersectTransform;
@@ -14511,7 +14530,7 @@ rg.view.svg.widget.PieChart.prototype.makeid = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::makeid");
 	var $spos = $s.length;
 	var o = Objects.clone(dp);
-	Reflect.deleteField(o.properties,this.propertyValue);
+	Reflect.deleteField(o,this.propertyValue);
 	var $tmp = haxe.Md5.encode(Dynamics.string(o));
 	$s.pop();
 	return $tmp;
@@ -14523,15 +14542,11 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	var name = this.propertyValue, temp = dp.map(function(d,i) {
 		$s.push("rg.view.svg.widget.PieChart::pief@201");
 		var $spos = $s.length;
-		var $tmp = Reflect.field(d.properties,name);
+		var $tmp = Reflect.field(d,name);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}), arr = this.pie.pie(temp);
-	haxe.Log.trace(name,{ fileName : "PieChart.hx", lineNumber : 203, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
-	haxe.Log.trace(dp,{ fileName : "PieChart.hx", lineNumber : 204, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
-	haxe.Log.trace(temp,{ fileName : "PieChart.hx", lineNumber : 205, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
-	haxe.Log.trace(arr,{ fileName : "PieChart.hx", lineNumber : 206, className : "rg.view.svg.widget.PieChart", methodName : "pief"});
 	var _g1 = 0, _g = arr.length;
 	while(_g1 < _g) {
 		var i = _g1++;
@@ -15347,21 +15362,6 @@ rg.data.source.DataSourceArray = function(data) {
 	$s.pop();
 }
 rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
-rg.data.source.DataSourceArray.fromValues = function(arr,event,map) {
-	$s.push("rg.data.source.DataSourceArray::fromValues");
-	var $spos = $s.length;
-	var $tmp = new rg.data.source.DataSourceArray(arr.map(map).map(function(properties,i) {
-		$s.push("rg.data.source.DataSourceArray::fromValues@14");
-		var $spos = $s.length;
-		var $tmp = { properties : properties, event : event, segment : null};
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
 rg.data.source.DataSourceArray.prototype.data = null;
 rg.data.source.DataSourceArray.prototype.onLoad = null;
 rg.data.source.DataSourceArray.prototype.load = function() {
@@ -17696,8 +17696,8 @@ rg.controller.info.TestInfoDataSource.prototype.testDataSourceInfo = function() 
 		rg.controller.info.Info.feed(info,{ data : [1,2,3]});
 		$s.pop();
 	},thx.error.Error,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 54, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
-	rg.controller.info.Info.feed(info,{ data : [{ event : "click", properties : { count : 10}}]});
-	utest.Assert.same([{ event : "click", properties : { count : 10}}],info.data,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 57, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
+	rg.controller.info.Info.feed(info,{ data : [{ event : "click", count : 10}]});
+	utest.Assert.same([{ event : "click", count : 10}],info.data,null,null,{ fileName : "TestInfoDataSource.hx", lineNumber : 57, className : "rg.controller.info.TestInfoDataSource", methodName : "testDataSourceInfo"});
 	$s.pop();
 }
 rg.controller.info.TestInfoDataSource.prototype.__class__ = rg.controller.info.TestInfoDataSource;
@@ -18716,7 +18716,7 @@ rg.controller.info.InfoDataSource.filters = function() {
 		var $tmp = Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
 			$s.push("rg.controller.info.InfoDataSource::filters@40@40");
 			var $spos = $s.length;
-			var $tmp = Types.isAnonymous(v1.properties) && Std["is"](v1.event,String);
+			var $tmp = Reflect.isObject(v1) && null == Type.getClass(v1) && Std["is"](v1.event,String);
 			$s.pop();
 			return $tmp;
 			$s.pop();
@@ -19184,10 +19184,12 @@ rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 rg.data.DataProcessor.prototype.filterDatapoint = function(variables,dp) {
 	$s.push("rg.data.DataProcessor::filterDatapoint");
 	var $spos = $s.length;
+	var name;
 	var _g1 = 0, _g = this.independentVariables.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		if(Reflect.field(dp.properties,this.independentVariables[i].variable.type) != variables[i]) {
+		name = this.independentVariables[i].variable.type;
+		if(Reflect.field(dp,name) != variables[i]) {
 			$s.pop();
 			return false;
 		}
@@ -19206,30 +19208,20 @@ rg.data.DataProcessor.prototype.process = function(data) {
 	}
 	this.fillIndependentVariables(data);
 	var dataPoints = [];
-	if(0 == this.independentVariables.length) {
+	var variablesset = this.getVariableIndependentValues();
+	var _g = 0;
+	while(_g < variablesset.length) {
+		var values = variablesset[_g];
+		++_g;
 		var subsets = [];
-		var _g = 0;
-		while(_g < data.length) {
-			var d = data[_g];
-			++_g;
-			subsets.push(d);
+		var _g1 = 0;
+		while(_g1 < data.length) {
+			var d = data[_g1];
+			++_g1;
+			var subset = this.filterSubset(d,values);
+			if(subset.length > 0) subsets.push(subset);
 		}
 		dataPoints = this.pushDataPoints(subsets,dataPoints);
-	} else {
-		var variablesset = this.getVariableIndependentValues();
-		var _g = 0;
-		while(_g < variablesset.length) {
-			var values = variablesset[_g];
-			++_g;
-			var subsets = [];
-			var _g1 = 0;
-			while(_g1 < data.length) {
-				var d = data[_g1];
-				++_g1;
-				subsets.push(this.filterSubset(d,values));
-			}
-			dataPoints = this.pushDataPoints(subsets,dataPoints);
-		}
 	}
 	this.fillDependentVariables(dataPoints);
 	this.onData.dispatch(dataPoints);
@@ -19242,7 +19234,8 @@ rg.data.DataProcessor.prototype.pushDataPoints = function(subsets,dataPoints) {
 		$s.pop();
 		return dataPoints;
 	}
-	var $tmp = dataPoints.concat(this.transform(subsets));
+	var transformed = this.transform(subsets);
+	var $tmp = dataPoints.concat(transformed);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -19256,12 +19249,12 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 		++_g;
 		if(ctx.partial) {
 			var variable = [ctx.variable], values = Arrays.filter(data.map((function(variable) {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@127");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@133");
 				var $spos = $s.length;
 				var $tmp = function(dp,_) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@127@127");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@133@133");
 					var $spos = $s.length;
-					var $tmp = Reflect.field(dp.properties,variable[0].type);
+					var $tmp = Reflect.field(dp,variable[0].type);
 					$s.pop();
 					return $tmp;
 					$s.pop();
@@ -19270,10 +19263,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 				return $tmp;
 				$s.pop();
 			})(variable)),(function() {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@127");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@133");
 				var $spos = $s.length;
 				var $tmp = function(v) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@127@127");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@133@133");
 					var $spos = $s.length;
 					var $tmp = null != v;
 					$s.pop();
@@ -19341,8 +19334,8 @@ rg.data.DataProcessor.prototype.fillIndependentVariable = function(variable,data
 	while(_g < data.length) {
 		var dp = data[_g];
 		++_g;
-		if(Reflect.hasField(dp.properties,property)) {
-			value = Reflect.field(dp.properties,property);
+		if(Reflect.hasField(dp,property)) {
+			value = Reflect.field(dp,property);
 			if(!values.exists(value)) {
 				if(values.length == 0) variable.min = value;
 				values.add(value);
@@ -19356,7 +19349,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@212");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@218");
 		var $spos = $s.length;
 		var $tmp = d.variable.range();
 		$s.pop();
@@ -21241,7 +21234,8 @@ rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.transform
 			var p = Dynamics.clone(properties);
 			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue));
 			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[arr[i][0],arr[i][1]]);
-			result.push({ properties : p, event : this.event, segment : null});
+			p.event = this.event;
+			result.push(p);
 		}
 	}
 	$s.pop();
@@ -21277,10 +21271,9 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = 
 	var $tmp = data.data.map(function(d,_) {
 		$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::transform@34");
 		var $spos = $s.length;
-		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit],[d[0],d[1]]);
-		var $tmp = { properties : p, event : event, segment : null};
+		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0],d[1],event]);
 		$s.pop();
-		return $tmp;
+		return p;
 		$s.pop();
 	});
 	$s.pop();

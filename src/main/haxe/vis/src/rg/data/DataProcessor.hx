@@ -29,7 +29,7 @@ class DataProcessor
 	
 	public dynamic function transform(s : Array<Array<DataPoint>>) : Array<DataPoint>
 	{
-		return cast s[0];
+		return s[0];
 	}
 	
 	public function load()
@@ -65,9 +65,11 @@ class DataProcessor
 	
 	function filterDatapoint(variables : Array<Dynamic>, dp : DataPoint)
 	{
+		var name;
 		for (i in 0...independentVariables.length)
 		{
-			if (Reflect.field(dp.properties, independentVariables[i].variable.type) != variables[i])
+			name = independentVariables[i].variable.type;
+			if (Reflect.field(dp, name) != variables[i])
 				return false;
 		}
 		return true;
@@ -84,7 +86,7 @@ class DataProcessor
 		fillIndependentVariables(data);
 
 		var dataPoints : Array<DataPoint> = [];
-
+/*
 		if (0 == independentVariables.length)
 		{
 			var subsets = [];
@@ -92,18 +94,21 @@ class DataProcessor
 				subsets.push(d);
 			dataPoints = pushDataPoints(subsets, dataPoints);
 		} else {
-			var variablesset = getVariableIndependentValues();
-			for (values in variablesset)
+*/
+		var variablesset = getVariableIndependentValues();
+		for (values in variablesset)
+		{
+			var subsets = [];
+			for (d in data)
 			{
-				var subsets = [];
-				for (d in data)
-				{
-					// generalize this and possibly integrate with rescale()
-					subsets.push(filterSubset(d, values));
-				}
-				dataPoints = pushDataPoints(subsets, dataPoints);
+				// generalize this and possibly integrate with rescale()
+				var subset = filterSubset(d, values);
+				if(subset.length > 0)
+					subsets.push(subset);
 			}
+			dataPoints = pushDataPoints(subsets, dataPoints);
 		}
+//		}
 			
 		fillDependentVariables(dataPoints);
 		
@@ -114,7 +119,8 @@ class DataProcessor
 	{
 		if (subsets.length == 0 || subsets[0].length == 0)
 			return dataPoints;
-		return dataPoints.concat(transform(subsets));
+		var transformed = transform(subsets);
+		return dataPoints.concat(transformed);
 	}
 
 	function fillDependentVariables(data : Array<DataPoint>)
@@ -124,7 +130,7 @@ class DataProcessor
 			if (ctx.partial)
 			{
 				var variable = ctx.variable,
-					values = data.map(function(dp, _) return Reflect.field(dp.properties, variable.type)).filter(function(v) return null != v);
+					values = data.map(function(dp, _) return Reflect.field(dp, variable.type)).filter(function(v) return null != v);
 				if (values.length == 0)
 					continue;
 				var value,
@@ -193,9 +199,9 @@ class DataProcessor
 			value;
 		for (dp in data)
 		{
-			if (Reflect.hasField(dp.properties, property))
+			if (Reflect.hasField(dp, property))
 			{
-				value = Reflect.field(dp.properties, property);
+				value = Reflect.field(dp, property);
 				if (!values.exists(value))
 				{
 					if (values.length == 0)

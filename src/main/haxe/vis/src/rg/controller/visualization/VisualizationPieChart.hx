@@ -27,8 +27,6 @@ class VisualizationPieChart extends VisualizationSvg
 		var panelChart = layout.getPanel("main").panel;
 		chart = new PieChart(panelChart);
 		chart.propertyValue = dependentVariables[0].type;
-		trace(dependentVariables);
-		trace(independentVariables);
 		
 		// aesthetic
 		chart.innerRadius = info.innerRadius;

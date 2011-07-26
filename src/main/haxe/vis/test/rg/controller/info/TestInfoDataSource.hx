@@ -53,8 +53,8 @@ class TestInfoDataSource
 		// valid
 		Assert.raises(function() info.feed( { data : [1,2,3] } ), Error);
 		
-		info.feed( { data : [{ event : "click", properties : { count : 10 }}] } );
-		Assert.same([ { event : "click", properties : { count : 10 } } ], info.data);
+		info.feed( { data : [{ event : "click", count : 10 }] } );
+		Assert.same([ { event : "click", count : 10 } ], info.data);
 	}
 	
 	public function new() { }
