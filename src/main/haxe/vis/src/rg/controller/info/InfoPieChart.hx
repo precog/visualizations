@@ -25,6 +25,8 @@ class InfoPieChart
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var dontfliplabel : Bool;
 	
+	public var click : DataPoint -> Float -> Float -> Void;
+	
 	public function new()
 	{
 		innerradius = 0.0;
@@ -127,6 +129,10 @@ class InfoPieChart
 				field : "sortDataPoint",
 				value : v
 			}]
+		}, {
+			field : "click",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
 		}];
 	}
 }

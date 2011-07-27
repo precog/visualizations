@@ -85,6 +85,7 @@ class App
 			visualization.feedData(datapoints);
 		};
 		request.request();
+		return visualization;
 	}
 	
 	public function getLayout(id : String, options : Dynamic, container : Selection)

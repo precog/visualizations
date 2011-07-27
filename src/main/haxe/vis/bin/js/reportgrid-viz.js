@@ -6343,7 +6343,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	switch(name) {
 	case "fixed":
 		var v = Std.parseFloat(s.split("-")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 56, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 58, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 		var $tmp = rg.view.svg.widget.LabelOrientation.FixedAngle(v);
 		$s.pop();
 		return $tmp;
@@ -6360,7 +6360,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 		$s.pop();
 		return $tmp;
 	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 65, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 67, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 	}
 	$s.pop();
 }
@@ -6368,118 +6368,125 @@ rg.controller.info.InfoPieChart.filters = function() {
 	$s.push("rg.controller.info.InfoPieChart::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "gradientlightness", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@73");
+		$s.push("rg.controller.info.InfoPieChart::filters@75");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "labelradius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@77");
+		$s.push("rg.controller.info.InfoPieChart::filters@79");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "dontfliplabel", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@81");
+		$s.push("rg.controller.info.InfoPieChart::filters@83");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "displaylabels", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@85");
+		$s.push("rg.controller.info.InfoPieChart::filters@87");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@86");
+		$s.push("rg.controller.info.InfoPieChart::filters@88");
 		var $spos = $s.length;
 		var $tmp = [{ field : "labeldisplay", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "labelorientation", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@92");
+		$s.push("rg.controller.info.InfoPieChart::filters@94");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && rg.controller.info.InfoPieChart.validateOrientation(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@93");
+		$s.push("rg.controller.info.InfoPieChart::filters@95");
 		var $spos = $s.length;
 		var $tmp = [{ field : "labelorientation", value : rg.controller.info.InfoPieChart.filterOrientation(v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "innerradius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@99");
+		$s.push("rg.controller.info.InfoPieChart::filters@101");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "outerradius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@103");
+		$s.push("rg.controller.info.InfoPieChart::filters@105");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "overradius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@107");
+		$s.push("rg.controller.info.InfoPieChart::filters@109");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@111");
+		$s.push("rg.controller.info.InfoPieChart::filters@113");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@112");
+		$s.push("rg.controller.info.InfoPieChart::filters@114");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "label", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@118");
+		$s.push("rg.controller.info.InfoPieChart::filters@120");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@119");
+		$s.push("rg.controller.info.InfoPieChart::filters@121");
 		var $spos = $s.length;
 		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "sort", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@125");
+		$s.push("rg.controller.info.InfoPieChart::filters@127");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@126");
+		$s.push("rg.controller.info.InfoPieChart::filters@128");
 		var $spos = $s.length;
 		var $tmp = [{ field : "sortDataPoint", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}}];
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@134");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -6495,6 +6502,7 @@ rg.controller.info.InfoPieChart.prototype.label = null;
 rg.controller.info.InfoPieChart.prototype.gradientlightness = null;
 rg.controller.info.InfoPieChart.prototype.sortDataPoint = null;
 rg.controller.info.InfoPieChart.prototype.dontfliplabel = null;
+rg.controller.info.InfoPieChart.prototype.click = null;
 rg.controller.info.InfoPieChart.prototype.__class__ = rg.controller.info.InfoPieChart;
 rg.view.frame.Frame = function(p) {
 	if( p === $_ ) return;
@@ -6586,6 +6594,11 @@ rg.controller.visualization.Visualization.prototype.getVariables = function() {
 	return $tmp;
 	$s.pop();
 }
+rg.controller.visualization.Visualization.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.Visualization::destroy");
+	var $spos = $s.length;
+	$s.pop();
+}
 rg.controller.visualization.Visualization.prototype.__class__ = rg.controller.visualization.Visualization;
 rg.controller.visualization.VisualizationSvg = function(layout) {
 	if( layout === $_ ) return;
@@ -6650,6 +6663,7 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	this.chart.animationDuration = this.info.animation.duration;
 	this.chart.animationEase = this.info.animation.ease;
 	this.chart.animationDelay = this.info.animation.delay;
+	if(null != this.info.click) this.chart.mouseClick = this.info.click;
 	this.panelContextTitle = this.layout.getPanel("title");
 	if(null == this.panelContextTitle) {
 		$s.pop();
@@ -6668,6 +6682,14 @@ rg.controller.visualization.VisualizationPieChart.prototype.feedData = function(
 	if(null != this.info.sortDataPoint) data.sort(this.info.sortDataPoint);
 	this.chart.init();
 	this.chart.data(data);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPieChart.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.VisualizationPieChart::destroy");
+	var $spos = $s.length;
+	this.chart.destroy();
+	if(null != this.title) this.title.destroy();
+	rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
 	$s.pop();
 }
 rg.controller.visualization.VisualizationPieChart.prototype.__class__ = rg.controller.visualization.VisualizationPieChart;
@@ -8510,6 +8532,12 @@ rg.view.svg.widget.Label.prototype.reanchor = function() {
 	this.tbg.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
 	this.t.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
 	this.s.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.destroy = function() {
+	$s.push("rg.view.svg.widget.Label::destroy");
+	var $spos = $s.length;
+	this.g.remove();
 	$s.pop();
 }
 rg.view.svg.widget.Label.prototype.__class__ = rg.view.svg.widget.Label;
@@ -11744,19 +11772,25 @@ rg.JSBridge.main = function() {
 	o.viz = function(el,options,type) {
 		$s.push("rg.JSBridge::main@25");
 		var $spos = $s.length;
-		app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
+		var $tmp = app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
+		$s.pop();
+		return $tmp;
 		$s.pop();
 	};
 	o.lineChart = function(el,options) {
 		$s.push("rg.JSBridge::main@29");
 		var $spos = $s.length;
-		o.viz(el,options,"linechart");
+		var $tmp = o.viz(el,options,"linechart");
+		$s.pop();
+		return $tmp;
 		$s.pop();
 	};
 	o.pieChart = function(el,options) {
 		$s.push("rg.JSBridge::main@30");
 		var $spos = $s.length;
-		o.viz(el,options,"piechart");
+		var $tmp = o.viz(el,options,"piechart");
+		$s.pop();
+		return $tmp;
 		$s.pop();
 	};
 	o.format = Dynamics.format;
@@ -12045,7 +12079,7 @@ rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@154");
+		$s.push("rg.view.svg.widget.PieChart::data@151");
 		var $spos = $s.length;
 		var $tmp = "group item-" + i;
 		$s.pop();
@@ -12077,6 +12111,8 @@ rg.view.svg.widget.PieChart.prototype.removeLabel = function(dom,i) {
 	$s.push("rg.view.svg.widget.PieChart::removeLabel");
 	var $spos = $s.length;
 	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
+	var label = this.labels.get(d.id);
+	label.destroy();
 	this.labels.remove(d.id);
 	$s.pop();
 }
@@ -12171,7 +12207,7 @@ rg.view.svg.widget.PieChart.prototype.arcShape = function(a) {
 	$s.push("rg.view.svg.widget.PieChart::arcShape");
 	var $spos = $s.length;
 	var $tmp = function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::arcShape@331");
+		$s.push("rg.view.svg.widget.PieChart::arcShape@330");
 		var $spos = $s.length;
 		var $tmp = a.shape(d);
 		$s.pop();
@@ -12186,7 +12222,7 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::pief");
 	var $spos = $s.length;
 	var name = this.propertyValue, temp = dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@340");
+		$s.push("rg.view.svg.widget.PieChart::pief@339");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(d,name);
 		$s.pop();
@@ -12202,6 +12238,17 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	}
 	$s.pop();
 	return arr;
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.destroy = function() {
+	$s.push("rg.view.svg.widget.PieChart::destroy");
+	var $spos = $s.length;
+	var $it0 = this.labels.iterator();
+	while( $it0.hasNext() ) {
+		var label = $it0.next();
+		label.destroy();
+	}
+	rg.view.svg.panel.Layer.prototype.destroy.call(this);
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.__class__ = rg.view.svg.widget.PieChart;
@@ -13409,6 +13456,8 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		$s.pop();
 	};
 	request.request();
+	$s.pop();
+	return visualization;
 	$s.pop();
 }
 rg.controller.App.prototype.getLayout = function(id,options,container) {

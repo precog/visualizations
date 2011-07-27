@@ -109,6 +109,76 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		}
 	});
+	
+	ReportGrid.pieChart("#chart2", {
+		axes : [{
+			type : "event"
+		}, {
+			type: "count"
+		}],
+		data : {
+			src: [
+				{ path : "/rgadnet", event : "impression" },
+				{ path : "/rgadnet", event : "click" },
+				{ path : "/rgadnet", event : "conversion" }
+			]
+		},
+		options : {
+			height : 400,
+			innerradius : 0.5,
+			outerradius : 0.9,
+			overradius : 0.95,
+			labelradius : 0.70,
+			displaylabels : true,
+			labelorientation : "horizontal",
+			label : {
+				title : "Event: Drilldown",
+				datapoint : function(dp) { 
+					var v = dp["count"];
+					return dp["event"] + ": " + ReportGrid.format(v);
+				}
+			},
+			layout : "simple",
+			click : function(dp) {
+				drillEvent(dp.event, dp.count);
+			}
+		}
+	});
+	
+	var last;
+	function drillEvent(name, total)
+	{
+		if(last) last.destroy();
+		last = ReportGrid.pieChart("#chart2", {
+			axes : [{
+				type: ".platform"
+			}, {
+				type: "count"
+			}],
+			data : {
+				src: { path : "/rgadnet", event : name, query : ".platform" }
+			},
+			options : {
+				innerradius : 0.25,
+				outerradius : 0.45,
+				overradius : 0.49,
+				labelradius : 0.35,
+				labelorientation : "horizontal",
+				dontfliplabel : false,
+				label : {
+					datapoint : function(dp) { 
+						var v = dp["count"];
+						if(v / total < 0.05)
+							return null;
+						if(v / total < 0.1)
+							return dp[".platform"];
+						else
+							return dp[".platform"] + ": " + Math.round(v/1000) + "k";
+					}
+				}
+			}
+		});
+	}
 
 }, false)
 </script>

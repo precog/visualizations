@@ -39,4 +39,9 @@ class Visualization
 			independentVariables.map(function(d, i) : Variable<Dynamic> return d)
 				.concat(dependentVariables.map(function(d, i) : Variable<Dynamic> return d));
 	}
+	
+	public function destroy()
+	{
+		
+	}
 }

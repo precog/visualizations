@@ -30,7 +30,8 @@ class Label
 	
 	public function new(container : Selection, dontflip = true) 
 	{
-		g = container.append("svg:g").attr("class").string("label");
+		g = container.append("svg:g")
+			.attr("class").string("label");
 		gs = g.append("svg:g").attr("transform").string("translate(0,0)");
 		gr = gs.append("svg:g");
 		r = g.append("svg:g");
@@ -198,5 +199,10 @@ class Label
 		t.attr("x").float(x+0.5).attr("y").float(y-1.5);
 		s.attr("x").float(x+0.5).attr("y").float(y-1.5);
 //		b.attr("x").float(x).attr("y").float(y-bb.height);
+	}
+	
+	public function destroy()
+	{
+		g.remove();
 	}
 }

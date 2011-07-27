@@ -23,11 +23,11 @@ class JSBridge
 		
 		// define bridge function
 		o.viz = function(el : Dynamic, options : Dynamic, ?type : String)
-			app.visualization(select(el), chartopt(options, type));
+			return app.visualization(select(el), chartopt(options, type));
 		
 		// define public visualization constrcutors
-		o.lineChart = function(el, options) o.viz(el, options, "linechart");
-		o.pieChart = function(el, options) o.viz(el, options, "piechart");
+		o.lineChart = function(el, options) return o.viz(el, options, "linechart");
+		o.pieChart = function(el, options) return o.viz(el, options, "piechart");
 		
 		// utility functions
 		o.format = Dynamics.format;

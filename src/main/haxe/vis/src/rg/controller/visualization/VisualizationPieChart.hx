@@ -52,6 +52,10 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.animationEase = info.animation.ease;
 		chart.animationDelay = info.animation.delay;
 		
+		// events
+		if(null != info.click)
+			chart.mouseClick = info.click;
+		
 		// TITLE
 		panelContextTitle = layout.getPanel("title");
 		if (null == panelContextTitle)
@@ -83,5 +87,13 @@ class VisualizationPieChart extends VisualizationSvg
 		}
 		chart.init();
 		chart.data(data);
+	}
+	
+	override public function destroy()
+	{
+		chart.destroy();
+		if (null != title)
+			title.destroy();
+		super.destroy();
 	}
 }

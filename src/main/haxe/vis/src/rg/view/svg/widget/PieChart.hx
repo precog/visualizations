@@ -30,7 +30,8 @@ class PieChart extends Layer
 	var arcStart : Arc<{ startAngle : Float, endAngle : Float }>;
 	var arcBig : Arc<{ startAngle : Float, endAngle : Float }>;
 	var pie : Pie<Float>;
-	var radius : Float; 	public var propertyValue : String;
+	var radius : Float;
+	public var propertyValue : String;
 	var total : Float;
 	public var animated : Bool;
 	public var animationDuration : Int;
@@ -196,6 +197,8 @@ class PieChart extends Layer
 	{
 		var n = Dom.selectNode(dom),
 			d : { id : String } = Access.getData(dom);
+		var label = labels.get(d.id);
+		label.destroy();
 		labels.remove(d.id);
 	}
 	
@@ -342,5 +345,12 @@ class PieChart extends Layer
 			Reflect.setField(arr[i], "dp", dp[i]);
 		}
 		return arr;
+	}
+	
+	override function destroy()
+	{
+		for (label in labels)
+			label.destroy();
+		super.destroy();
 	}
 }
