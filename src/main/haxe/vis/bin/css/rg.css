@@ -402,8 +402,24 @@ font-size: 11px;
 
 .rg .bar-chart text, .rg .pie-chart text, .rg .stack-chart text, .rg .scatter-graph	 text
 {
-	fill: #000;
+	font-family: Impact;
 	font-weight: bold;
+	font-size: 12px;
+	fill: #ffffff;
+	text-rendering: geometricPrecision;
+	stroke-width: 1px;
+	stroke: #000000;
+	stroke-opacity: 0.5;
+	stroke-linecap: butt;
+}
+
+.rg .bar-chart text.shadow, .rg .pie-chart text.shadow, .rg .stack-chart text.shadow, .rg .scatter-graph text.shadow
+{
+	fill: #000000;
+	stroke-width: 3px;
+	stroke: #000000;
+	fill-opacity: 0.6;
+	stroke-opacity: 0.4;
 }
 
 .rg .scatter-graph text

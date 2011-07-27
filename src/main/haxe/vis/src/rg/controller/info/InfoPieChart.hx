@@ -5,10 +5,17 @@
 
 package rg.controller.info;
 import rg.data.DataPoint;
+import rg.view.svg.widget.LabelOrientation;
+import thx.error.Error;
 using rg.controller.info.Info;
+using Arrays;
 
 class InfoPieChart 
 {
+	public var labelRadius : Float;
+	public var labelDisplay : Bool;
+	public var labelOrientation : LabelOrientation;
+	
 	public var innerRadius : Float;
 	public var outerRadius : Float;
 	public var overRadius : Float;
@@ -20,11 +27,41 @@ class InfoPieChart
 	public function new()
 	{
 		innerRadius = 0.0;
+		labelRadius = 0.45;
+		labelDisplay = true;
+		labelOrientation = LabelOrientation.Orthogonal;
 		outerRadius = 0.9;
 		overRadius = 0.95;
 		animation = new InfoAnimation();
 		label = new InfoLabel();
 		gradientLightness = 1.5;
+	}
+	
+	static function validateOrientation(s : String)
+	{
+		var name = s.split("-")[0].toLowerCase();
+		return ["fixed", "ortho", "orthogonal", "align", "aligned", "horizontal"].exists(name);
+	}
+	
+	static function filterOrientation(s : String)
+	{
+		var name = s.split("-")[0].toLowerCase();
+		switch(name)
+		{
+			case "fixed":
+				var v = Std.parseFloat(s.split("-")[1]);
+				if (null == v || !Math.isFinite(v))
+					throw new Error("when 'fixed' is used a number should follow the 'dash' character");
+				return LabelOrientation.FixedAngle(v);
+			case "ortho", "orthogonal":
+				return LabelOrientation.Orthogonal;
+			case "align", "aligned":
+				return LabelOrientation.Aligned;
+			case "horizontal":
+				return LabelOrientation.FixedAngle(0);
+			default:
+				throw new Error("invalid filter orientation '{0}'", s);
+		}
 	}
 	
 	public static function filters()
@@ -33,6 +70,24 @@ class InfoPieChart
 			field : "gradientLightness",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
+		}, {
+			field : "labelRadius",
+			validator : function(v) return Std.is(v, Float),
+			filter : null
+		}, {
+			field : "displayLabels",
+			validator : function(v) return Std.is(v, Bool),
+			filter : function(v) return [{
+				field : "labelDisplay",
+				value : v
+			}]
+		}, {
+			field : "labelOrientation",
+			validator : function(v) return Std.is(v, String) && validateOrientation(v),
+			filter : function(v) return [{
+				field : "labelOrientation",
+				value : filterOrientation(v)
+			}]
 		}, {
 			field : "innerRadius",
 			validator : function(v) return Std.is(v, Float),
@@ -48,14 +103,14 @@ class InfoPieChart
 		}, {
 			field : "animation",
 			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [ {
+			filter : function(v) return [{
 				field : "animation",
 				value : new InfoAnimation().feed(v)
 			}]
 		}, {
 			field : "label",
 			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [ {
+			filter : function(v) return [{
 				field : "label",
 				value : new InfoLabel().feed(v)
 			}]

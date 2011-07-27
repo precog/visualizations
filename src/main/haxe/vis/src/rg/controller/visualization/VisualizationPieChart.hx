@@ -34,6 +34,10 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.overRadius  = info.overRadius;
 		chart.gradientLightness = info.gradientLightness;
 		
+		chart.labelRadius = info.labelRadius;
+		chart.labelDisplay = info.labelDisplay;
+		chart.labelOrientation = info.labelOrientation;
+
 		// animation
 		chart.animated = info.animation.animated;
 		chart.animationDuration = info.animation.duration;
