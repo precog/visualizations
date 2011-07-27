@@ -28,6 +28,9 @@ class JSBridge
 		// define public visualization constrcutors
 		o.lineChart = function(el, options) o.viz(el, options, "linechart");
 		o.pieChart = function(el, options) o.viz(el, options, "piechart");
+		
+		// utility functions
+		o.format = Dynamics.format;
 	}
 	
 	// make sure a thx.js.Selection is passed

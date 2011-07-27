@@ -12,29 +12,31 @@ using Arrays;
 
 class InfoPieChart 
 {
-	public var labelRadius : Float;
-	public var labelDisplay : Bool;
-	public var labelOrientation : LabelOrientation;
+	public var labelradius : Float;
+	public var labeldisplay : Bool;
+	public var labelorientation : LabelOrientation;
 	
-	public var innerRadius : Float;
-	public var outerRadius : Float;
-	public var overRadius : Float;
+	public var innerradius : Float;
+	public var outerradius : Float;
+	public var overradius : Float;
 	public var animation : InfoAnimation;
 	public var label : InfoLabel;
-	public var gradientLightness : Float;
+	public var gradientlightness : Float;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
+	public var dontfliplabel : Bool;
 	
 	public function new()
 	{
-		innerRadius = 0.0;
-		labelRadius = 0.45;
-		labelDisplay = true;
-		labelOrientation = LabelOrientation.Orthogonal;
-		outerRadius = 0.9;
-		overRadius = 0.95;
+		innerradius = 0.0;
+		labelradius = 0.45;
+		labeldisplay = true;
+		labelorientation = LabelOrientation.Orthogonal;
+		outerradius = 0.9;
+		overradius = 0.95;
 		animation = new InfoAnimation();
 		label = new InfoLabel();
-		gradientLightness = 1.5;
+		gradientlightness = 1.5;
+		dontfliplabel = true;
 	}
 	
 	static function validateOrientation(s : String)
@@ -67,37 +69,41 @@ class InfoPieChart
 	public static function filters()
 	{
 		return [{
-			field : "gradientLightness",
+			field : "gradientlightness",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {
-			field : "labelRadius",
+			field : "labelradius",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {
-			field : "displayLabels",
+			field : "dontfliplabel",
+			validator : function(v) return Std.is(v, Bool),
+			filter : null
+		}, {
+			field : "displaylabels",
 			validator : function(v) return Std.is(v, Bool),
 			filter : function(v) return [{
-				field : "labelDisplay",
+				field : "labeldisplay",
 				value : v
 			}]
 		}, {
-			field : "labelOrientation",
+			field : "labelorientation",
 			validator : function(v) return Std.is(v, String) && validateOrientation(v),
 			filter : function(v) return [{
-				field : "labelOrientation",
+				field : "labelorientation",
 				value : filterOrientation(v)
 			}]
 		}, {
-			field : "innerRadius",
+			field : "innerradius",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {
-			field : "outerRadius",
+			field : "outerradius",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {
-			field : "overRadius",
+			field : "overradius",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {

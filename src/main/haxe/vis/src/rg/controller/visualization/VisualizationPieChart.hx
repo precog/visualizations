@@ -29,14 +29,22 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.propertyValue = dependentVariables[0].type;
 		
 		// aesthetic
-		chart.innerRadius = info.innerRadius;
-		chart.outerRadius = info.outerRadius;
-		chart.overRadius  = info.overRadius;
-		chart.gradientLightness = info.gradientLightness;
+		chart.innerRadius = info.innerradius;
+		chart.outerRadius = info.outerradius;
+		chart.overRadius  = info.overradius;
+		chart.gradientLightness = info.gradientlightness;
 		
-		chart.labelRadius = info.labelRadius;
-		chart.labelDisplay = info.labelDisplay;
-		chart.labelOrientation = info.labelOrientation;
+		// labels
+
+		if(null != info.label.value)
+			chart.labelFormatValue = info.label.value;
+		if(null != info.label.datapoint)
+			chart.labelFormatDataPoint = info.label.datapoint;
+
+		chart.labelRadius = info.labelradius;
+		chart.labelDisplay = info.labeldisplay;
+		chart.labelOrientation = info.labelorientation;
+		chart.labelDontFlip = info.dontfliplabel;
 
 		// animation
 		chart.animated = info.animation.animated;

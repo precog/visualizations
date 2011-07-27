@@ -10,6 +10,7 @@ import rg.view.svg.panel.Layer;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
 import thx.geom.layout.Pie;
+import thx.js.Svg;
 import thx.math.Const;
 import thx.svg.Arc;
 import thx.js.Dom;
@@ -39,7 +40,11 @@ class PieChart extends Layer
 	
 	public var labelDisplay : Bool;
 	public var labelOrientation : LabelOrientation;
-	public var dataPoints : Array<DataPoint>;
+	public var labelDontFlip : Bool;
+	
+	var labels : Hash<Label>;
+	
+	public var mouseClick : DataPoint -> Float -> Float -> Void;
 	
 	public function new(panel : Panel) 
 	{
@@ -55,15 +60,22 @@ class PieChart extends Layer
 		outerRadius = 0.9;
 		overRadius = 0.95;
 		labelRadius = 0.45;
+		labels = new Hash();
 		
 		labelDisplay = true;
 		labelOrientation = LabelOrientation.Orthogonal;
+		labelDontFlip = true;
+	}
+
+//		return FormatNumber.percent(100 * value) / total, 1);
+	public dynamic function labelFormatValue(value : Float, total : Float)
+	{
+		return Ints.format(value);
 	}
 	
-	public dynamic function labelDataPoint(dp : DataPoint)
+	public dynamic function labelFormatDataPoint(dp : DataPoint, name : String)
 	{
-		return Ints.format(Reflect.field(dp, propertyValue));
-//		return FormatNumber.percent(100 * Reflect.field(dp, propertyValue) / total, 1);
+		return labelFormatValue(Reflect.field(dp, name), total);
 	}
 /*
 	function createSampleLabel(orientation, anchor, angle : Float)
@@ -83,7 +95,7 @@ class PieChart extends Layer
 			.attr("y2").float(y2)
 			.style("stroke").string("#FF0000");
 		
-		var sample = new Label(g);
+		var sample = new Label(g, false);
 		sample.text = (angle % 360) + "º";
 		sample.orientation = orientation;
 		sample.anchor = anchor;
@@ -129,7 +141,6 @@ class PieChart extends Layer
 	public function data(dp : Array<DataPoint>)
 	{
 		calculateTotal(dp);
-		dataPoints = dp;
 		// data
 		var choice = g.selectAll("g.group").data(pief(dp), id);
 		
@@ -144,18 +155,18 @@ class PieChart extends Layer
 		arc.eachNode(applyGradient);
 		if (animated)
 		{
-			path.attr("d").stringf(arcStart.shape);
+			path.attr("d").stringf(arcShape(arcStart));
 			arc
 				.eachNode(fadein)
 				.onNode("mouseover.animation", highlight)
 				.onNode("mouseout.animation", backtonormal);
 		} else {
-			path.attr("d").stringf(arcNormal.shape);
+			path.attr("d").stringf(arcShape(arcNormal));
 		}
 		if (labelDisplay)
-		{
 			arc.eachNode(appendLabel);
-		}
+		if (null != mouseClick)
+			arc.onNode("click.user", onMouseClick);
 
 		// update
 		choice.update()
@@ -163,17 +174,50 @@ class PieChart extends Layer
 			.transition()
 				.ease(animationEase)
 				.duration(animationDuration)
-				.attr("d").stringf(arcNormal.shape);
+				.attr("d").stringf(arcShape(arcNormal));
+		if (labelDisplay)
+			choice.update().eachNode(updateLabel);
 		
 		// exit
-		choice.exit().remove();
+		choice.exit()
+			.eachNode(removeLabel)
+			.remove();
+	}
+	
+	function onMouseClick(dom, i)
+	{
+		var n = Dom.selectNode(dom),
+			d : { dp : DataPoint } = Access.getData(dom);
+		var coords = Svg.mouse(g.node());
+		mouseClick(d.dp, coords[0], coords[1]);
+	}
+	
+	function removeLabel(dom, i)
+	{
+		var n = Dom.selectNode(dom),
+			d : { id : String } = Access.getData(dom);
+		labels.remove(d.id);
+	}
+	
+	function updateLabel(dom, i)
+	{
+		var n = Dom.selectNode(dom),
+			d : { startAngle : Float, endAngle : Float, id : String, dp : DataPoint } = Access.getData(dom),
+			label = labels.get(d.id),
+			r = radius * labelRadius,
+			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+		label.text = labelFormatDataPoint(d.dp, propertyValue);
+		label.place(
+			-2.5 + Math.cos(a) * r, 
+			-2.5 + Math.sin(a) * r,
+			Const.TO_DEGREE * a);
 	}
 	
 	function appendLabel(dom, i : Int)
 	{
 		var n = Dom.selectNode(dom),
-			label = new Label(n),
-			d : { startAngle : Float, endAngle : Float } = Access.getData(dom),
+			label = new Label(n, labelDontFlip),
+			d : { startAngle : Float, endAngle : Float, id : String, dp : DataPoint } = Access.getData(dom),
 			r = radius * labelRadius,
 			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 		label.orientation = labelOrientation;
@@ -186,11 +230,12 @@ class PieChart extends Layer
 			case Orthogonal:
 				label.anchor = GridAnchor.Top;
 		}
-		label.text = labelDataPoint(dataPoints[i]);
+		label.text = labelFormatDataPoint(d.dp, propertyValue);
 		label.place(
 			-2.5 + Math.cos(a) * r, 
 			-2.5 + Math.sin(a) * r,
 			Const.TO_DEGREE * a);
+		labels.set(d.id, label);
 	}
 	
 	function applyGradient(n, i : Int)
@@ -257,7 +302,7 @@ class PieChart extends Layer
 		var slice = Dom.selectNodeData(d).selectAll("path");
 		slice
 			.transition().ease(animationEase).duration(animationDuration)
-			.attr("d").stringf(arcBig.shape);
+			.attr("d").stringf(arcShape(arcBig));
 	}
 	
 	function backtonormal(d, i : Int)
@@ -265,7 +310,7 @@ class PieChart extends Layer
 		var slice = Dom.selectNodeData(d).selectAll("path");
 		slice
 			.transition().ease(animationEase).duration(animationDuration)
-			.attr("d").stringf(arcNormal.shape);
+			.attr("d").stringf(arcShape(arcNormal));
 	}
 	
 	function id(o : Dynamic, i : Int) return o.id
@@ -277,15 +322,24 @@ class PieChart extends Layer
 		return Md5.encode(Dynamics.string(o));
 	}
 	
-	function pief(dp : Array<DataPoint>)
+	function arcShape(a : Arc<{ startAngle : Float, endAngle : Float }>)
+	{
+		return function(d : { startAngle : Float, endEngle : Float, id : String, dp : DataPoint }, i : Int)
+		{
+			return a.shape(cast d);
+		}
+	}
+	
+	function pief(dp : Array<DataPoint>) : Array<{ startAngle : Float, endEngle : Float, id : String, dp : DataPoint }>
 	{
 		var name = propertyValue,
 			temp = dp.map(function(d, i) return Reflect.field(d, name)),
-			arr = pie.pie(temp);
+			arr : Dynamic = pie.pie(temp);
 		for (i in 0...arr.length)
 		{
 			var id = makeid(dp[i]);
 			Reflect.setField(arr[i], "id", id);
+			Reflect.setField(arr[i], "dp", dp[i]);
 		}
 		return arr;
 	}

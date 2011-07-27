@@ -9,14 +9,14 @@ import rg.view.svg.widget.LabelOrientation;
 import rg.view.svg.widget.GridAnchor;
 
 class Label 
-{
+{	
 	public var text(default, setText) : String;
 	public var orientation(default, setOrientation) : LabelOrientation;
 	public var anchor(default, setAnchor) : GridAnchor;
 	public var x(default, null) : Float;
 	public var y(default, null) : Float;
 	public var angle(default, null) : Float;
-	public var dontFlip : Bool;
+	public var dontFlip(default, null) : Bool;
 	public var shadowOffset(default, setShadowOffset) : Float;
 	
 	var g : Selection;
@@ -24,12 +24,13 @@ class Label
 	var r : Selection;
 	var gr : Selection;
 	var t : Selection;
+	var tbg : Selection;
 	var s : Selection;
 //	var b : Selection;
 	
-	public function new(container : Selection) 
+	public function new(container : Selection, dontflip = true) 
 	{
-		g = container.append("svg:g");
+		g = container.append("svg:g").attr("class").string("label");
 		gs = g.append("svg:g").attr("transform").string("translate(0,0)");
 		gr = gs.append("svg:g");
 		r = g.append("svg:g");
@@ -37,9 +38,10 @@ class Label
 //		b.style("stroke").string("#333");
 		
 		s = gr.append("svg:text").attr("class").string("shadow");
+		tbg = r.append("svg:text").attr("class").string("bg");
 		t = r.append("svg:text");
 		
-		dontFlip = true;
+		this.dontFlip = dontflip;
 		shadowOffset = 1.25;
 		x = 0;
 		y = 0;
@@ -83,6 +85,7 @@ class Label
 	function setText(v : String)
 	{
 		this.text = v;
+		tbg.text().string(v);
 		t.text().string(v);
 		s.text().string(v);
 		reanchor();
@@ -191,6 +194,7 @@ class Label
 				x = -bb.width;
 				y = 0;
 		}
+		tbg.attr("x").float(x+0.5).attr("y").float(y-1.5);
 		t.attr("x").float(x+0.5).attr("y").float(y-1.5);
 		s.attr("x").float(x+0.5).attr("y").float(y-1.5);
 //		b.attr("x").float(x).attr("y").float(y-bb.height);

@@ -4426,6 +4426,14 @@ IntHash.prototype.toString = function() {
 	$s.pop();
 }
 IntHash.prototype.__class__ = IntHash;
+rg.view.svg.widget.LabelOrientation = { __ename__ : ["rg","view","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
+rg.view.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.view.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
+rg.view.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
+rg.view.svg.widget.LabelOrientation.Aligned.toString = $estr;
+rg.view.svg.widget.LabelOrientation.Aligned.__enum__ = rg.view.svg.widget.LabelOrientation;
+rg.view.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
+rg.view.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
+rg.view.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.view.svg.widget.LabelOrientation;
 if(!thx.translation) thx.translation = {}
 thx.translation.ITranslation = function() { }
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
@@ -7198,6 +7206,9 @@ rg.controller.info.InfoPieChart = function(p) {
 	$s.push("rg.controller.info.InfoPieChart::new");
 	var $spos = $s.length;
 	this.innerRadius = 0.0;
+	this.labelRadius = 0.45;
+	this.labelDisplay = true;
+	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
 	this.outerRadius = 0.9;
 	this.overRadius = 0.95;
 	this.animation = new rg.controller.info.InfoAnimation();
@@ -7206,74 +7217,146 @@ rg.controller.info.InfoPieChart = function(p) {
 	$s.pop();
 }
 rg.controller.info.InfoPieChart.__name__ = ["rg","controller","info","InfoPieChart"];
+rg.controller.info.InfoPieChart.validateOrientation = function(s) {
+	$s.push("rg.controller.info.InfoPieChart::validateOrientation");
+	var $spos = $s.length;
+	var name = s.split("-")[0].toLowerCase();
+	var $tmp = Arrays.exists(["fixed","ortho","orthogonal","align","aligned","horizontal"],name);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoPieChart.filterOrientation = function(s) {
+	$s.push("rg.controller.info.InfoPieChart::filterOrientation");
+	var $spos = $s.length;
+	var name = s.split("-")[0].toLowerCase();
+	switch(name) {
+	case "fixed":
+		var v = Std.parseFloat(s.split("-")[1]);
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 54, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		var $tmp = rg.view.svg.widget.LabelOrientation.FixedAngle(v);
+		$s.pop();
+		return $tmp;
+	case "ortho":case "orthogonal":
+		var $tmp = rg.view.svg.widget.LabelOrientation.Orthogonal;
+		$s.pop();
+		return $tmp;
+	case "align":case "aligned":
+		var $tmp = rg.view.svg.widget.LabelOrientation.Aligned;
+		$s.pop();
+		return $tmp;
+	case "horizontal":
+		var $tmp = rg.view.svg.widget.LabelOrientation.FixedAngle(0);
+		$s.pop();
+		return $tmp;
+	default:
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 63, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+	}
+	$s.pop();
+}
 rg.controller.info.InfoPieChart.filters = function() {
 	$s.push("rg.controller.info.InfoPieChart::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "gradientLightness", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@34");
+		$s.push("rg.controller.info.InfoPieChart::filters@71");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null},{ field : "innerRadius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@38");
+	}, filter : null},{ field : "labelRadius", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@75");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "displayLabels", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@79");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@80");
+		var $spos = $s.length;
+		var $tmp = [{ field : "labelDisplay", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "labelOrientation", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@86");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String) && rg.controller.info.InfoPieChart.validateOrientation(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@87");
+		var $spos = $s.length;
+		var $tmp = [{ field : "labelOrientation", value : rg.controller.info.InfoPieChart.filterOrientation(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "innerRadius", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@93");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "outerRadius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@42");
+		$s.push("rg.controller.info.InfoPieChart::filters@97");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "overRadius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@46");
+		$s.push("rg.controller.info.InfoPieChart::filters@101");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@50");
+		$s.push("rg.controller.info.InfoPieChart::filters@105");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@51");
+		$s.push("rg.controller.info.InfoPieChart::filters@106");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "label", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@57");
+		$s.push("rg.controller.info.InfoPieChart::filters@112");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@58");
+		$s.push("rg.controller.info.InfoPieChart::filters@113");
 		var $spos = $s.length;
 		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "sort", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@64");
+		$s.push("rg.controller.info.InfoPieChart::filters@119");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@65");
+		$s.push("rg.controller.info.InfoPieChart::filters@120");
 		var $spos = $s.length;
 		var $tmp = [{ field : "sortDataPoint", value : v}];
 		$s.pop();
@@ -7284,6 +7367,9 @@ rg.controller.info.InfoPieChart.filters = function() {
 	return $tmp;
 	$s.pop();
 }
+rg.controller.info.InfoPieChart.prototype.labelRadius = null;
+rg.controller.info.InfoPieChart.prototype.labelDisplay = null;
+rg.controller.info.InfoPieChart.prototype.labelOrientation = null;
 rg.controller.info.InfoPieChart.prototype.innerRadius = null;
 rg.controller.info.InfoPieChart.prototype.outerRadius = null;
 rg.controller.info.InfoPieChart.prototype.overRadius = null;
@@ -7873,6 +7959,9 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	this.chart.outerRadius = this.info.outerRadius;
 	this.chart.overRadius = this.info.overRadius;
 	this.chart.gradientLightness = this.info.gradientLightness;
+	this.chart.labelRadius = this.info.labelRadius;
+	this.chart.labelDisplay = this.info.labelDisplay;
+	this.chart.labelOrientation = this.info.labelOrientation;
 	this.chart.animated = this.info.animation.animated;
 	this.chart.animationDuration = this.info.animation.duration;
 	this.chart.animationEase = this.info.animation.ease;
@@ -9547,6 +9636,238 @@ thx.js.AccessDataStyle.prototype.data = function() {
 	$s.pop();
 }
 thx.js.AccessDataStyle.prototype.__class__ = thx.js.AccessDataStyle;
+rg.view.svg.widget.Label = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.view.svg.widget.Label::new");
+	var $spos = $s.length;
+	this.g = container.append("svg:g");
+	this.gs = this.g.append("svg:g").attr("transform").string("translate(0,0)");
+	this.gr = this.gs.append("svg:g");
+	this.r = this.g.append("svg:g");
+	this.s = this.gr.append("svg:text").attr("class").string("shadow");
+	this.t = this.r.append("svg:text");
+	this.dontFlip = true;
+	this.setShadowOffset(1.25);
+	this.x = 0;
+	this.y = 0;
+	this.angle = 0;
+	this["orientation"] = rg.view.svg.widget.LabelOrientation.FixedAngle(0);
+	this["anchor"] = rg.view.svg.widget.GridAnchor.Center;
+	$s.pop();
+}
+rg.view.svg.widget.Label.__name__ = ["rg","view","svg","widget","Label"];
+rg.view.svg.widget.Label.prototype.text = null;
+rg.view.svg.widget.Label.prototype.orientation = null;
+rg.view.svg.widget.Label.prototype.anchor = null;
+rg.view.svg.widget.Label.prototype.x = null;
+rg.view.svg.widget.Label.prototype.y = null;
+rg.view.svg.widget.Label.prototype.angle = null;
+rg.view.svg.widget.Label.prototype.dontFlip = null;
+rg.view.svg.widget.Label.prototype.shadowOffset = null;
+rg.view.svg.widget.Label.prototype.g = null;
+rg.view.svg.widget.Label.prototype.gs = null;
+rg.view.svg.widget.Label.prototype.r = null;
+rg.view.svg.widget.Label.prototype.gr = null;
+rg.view.svg.widget.Label.prototype.t = null;
+rg.view.svg.widget.Label.prototype.s = null;
+rg.view.svg.widget.Label.prototype.place = function(x,y,angle) {
+	$s.push("rg.view.svg.widget.Label::place");
+	var $spos = $s.length;
+	this.x = x;
+	this.y = y;
+	this.angle = angle % 360;
+	if(this.angle < 0) this.angle += 360;
+	this.g.attr("transform").string("translate(" + x + "," + y + ")");
+	var $e = (this.orientation);
+	switch( $e[1] ) {
+	case 0:
+		var a = $e[2];
+		this.r.attr("transform").string("rotate(" + a + ")");
+		break;
+	case 1:
+		if(this.dontFlip && this.angle > 90 && this.angle < 270) angle += 180;
+		this.r.attr("transform").string("rotate(" + angle + ")");
+		break;
+	case 2:
+		if(this.dontFlip && this.angle > 180) angle -= 180;
+		this.r.attr("transform").string("rotate(" + (-90 + angle) + ")");
+		break;
+	}
+	this.gr.attr("transform").string(this.r.attr("transform").get());
+	this.reanchor();
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setShadowOffset = function(v) {
+	$s.push("rg.view.svg.widget.Label::setShadowOffset");
+	var $spos = $s.length;
+	this.shadowOffset = v;
+	this.gs.attr("transform").string("translate(" + v + "," + v + ")");
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setText = function(v) {
+	$s.push("rg.view.svg.widget.Label::setText");
+	var $spos = $s.length;
+	this.text = v;
+	this.t.text().string(v);
+	this.s.text().string(v);
+	this.reanchor();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setOrientation = function(v) {
+	$s.push("rg.view.svg.widget.Label::setOrientation");
+	var $spos = $s.length;
+	this.orientation = v;
+	this.place(this.x,this.y,this.angle);
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setAnchor = function(v) {
+	$s.push("rg.view.svg.widget.Label::setAnchor");
+	var $spos = $s.length;
+	this.anchor = v;
+	this.reanchor();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.getBB = function() {
+	$s.push("rg.view.svg.widget.Label::getBB");
+	var $spos = $s.length;
+	var h = this.t.style("font-size").getFloat();
+	if(null == h || 0 >= h) h = this.t.node().getExtentOfChar("A").height;
+	var $tmp = { width : this.t.node().getComputedTextLength(), height : h};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.reanchor = function() {
+	$s.push("rg.view.svg.widget.Label::reanchor");
+	var $spos = $s.length;
+	var bb = this.getBB(), x, y;
+	var a = this.anchor;
+	if(this.dontFlip) {
+		switch( (this.orientation)[1] ) {
+		case 1:
+			if(this.angle > 90 && this.angle < 270) a = (function($this) {
+				var $r;
+				switch( (a)[1] ) {
+				case 0:
+					$r = rg.view.svg.widget.GridAnchor.BottomRight;
+					break;
+				case 1:
+					$r = rg.view.svg.widget.GridAnchor.Bottom;
+					break;
+				case 2:
+					$r = rg.view.svg.widget.GridAnchor.BottomLeft;
+					break;
+				case 3:
+					$r = rg.view.svg.widget.GridAnchor.Right;
+					break;
+				case 4:
+					$r = rg.view.svg.widget.GridAnchor.Center;
+					break;
+				case 5:
+					$r = rg.view.svg.widget.GridAnchor.Left;
+					break;
+				case 6:
+					$r = rg.view.svg.widget.GridAnchor.TopRight;
+					break;
+				case 7:
+					$r = rg.view.svg.widget.GridAnchor.Top;
+					break;
+				case 8:
+					$r = rg.view.svg.widget.GridAnchor.TopLeft;
+					break;
+				}
+				return $r;
+			}(this));
+			break;
+		case 2:
+			if(this.angle > 180) a = (function($this) {
+				var $r;
+				switch( (a)[1] ) {
+				case 0:
+					$r = rg.view.svg.widget.GridAnchor.BottomRight;
+					break;
+				case 1:
+					$r = rg.view.svg.widget.GridAnchor.Bottom;
+					break;
+				case 2:
+					$r = rg.view.svg.widget.GridAnchor.BottomLeft;
+					break;
+				case 3:
+					$r = rg.view.svg.widget.GridAnchor.Right;
+					break;
+				case 4:
+					$r = rg.view.svg.widget.GridAnchor.Center;
+					break;
+				case 5:
+					$r = rg.view.svg.widget.GridAnchor.Left;
+					break;
+				case 6:
+					$r = rg.view.svg.widget.GridAnchor.TopRight;
+					break;
+				case 7:
+					$r = rg.view.svg.widget.GridAnchor.Top;
+					break;
+				case 8:
+					$r = rg.view.svg.widget.GridAnchor.TopLeft;
+					break;
+				}
+				return $r;
+			}(this));
+			break;
+		default:
+		}
+	}
+	switch( (a)[1] ) {
+	case 0:
+		x = 0;
+		y = bb.height;
+		break;
+	case 1:
+		x = -bb.width / 2;
+		y = bb.height;
+		break;
+	case 2:
+		x = -bb.width;
+		y = bb.height;
+		break;
+	case 3:
+		x = 0;
+		y = bb.height / 2;
+		break;
+	case 4:
+		x = -bb.width / 2;
+		y = bb.height / 2;
+		break;
+	case 5:
+		x = -bb.width;
+		y = bb.height / 2;
+		break;
+	case 6:
+		x = 0;
+		y = 0;
+		break;
+	case 7:
+		x = -bb.width / 2;
+		y = 0;
+		break;
+	case 8:
+		x = -bb.width;
+		y = 0;
+		break;
+	}
+	this.t.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+	this.s.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.__class__ = rg.view.svg.widget.Label;
 ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -14337,6 +14658,34 @@ rg.controller.info.InfoDataContext.prototype.name = null;
 rg.controller.info.InfoDataContext.prototype.transform = null;
 rg.controller.info.InfoDataContext.prototype.sources = null;
 rg.controller.info.InfoDataContext.prototype.__class__ = rg.controller.info.InfoDataContext;
+rg.view.svg.widget.GridAnchor = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
+rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
+rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;
+rg.view.svg.widget.GridAnchor.TopLeft.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Top = ["Top",1];
+rg.view.svg.widget.GridAnchor.Top.toString = $estr;
+rg.view.svg.widget.GridAnchor.Top.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.TopRight = ["TopRight",2];
+rg.view.svg.widget.GridAnchor.TopRight.toString = $estr;
+rg.view.svg.widget.GridAnchor.TopRight.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Left = ["Left",3];
+rg.view.svg.widget.GridAnchor.Left.toString = $estr;
+rg.view.svg.widget.GridAnchor.Left.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Center = ["Center",4];
+rg.view.svg.widget.GridAnchor.Center.toString = $estr;
+rg.view.svg.widget.GridAnchor.Center.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Right = ["Right",5];
+rg.view.svg.widget.GridAnchor.Right.toString = $estr;
+rg.view.svg.widget.GridAnchor.Right.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.BottomLeft = ["BottomLeft",6];
+rg.view.svg.widget.GridAnchor.BottomLeft.toString = $estr;
+rg.view.svg.widget.GridAnchor.BottomLeft.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Bottom = ["Bottom",7];
+rg.view.svg.widget.GridAnchor.Bottom.toString = $estr;
+rg.view.svg.widget.GridAnchor.Bottom.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
+rg.view.svg.widget.GridAnchor.BottomRight.toString = $estr;
+rg.view.svg.widget.GridAnchor.BottomRight.__enum__ = rg.view.svg.widget.GridAnchor;
 Enums = function() { }
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
@@ -14420,6 +14769,9 @@ rg.view.svg.widget.PieChart = function(panel) {
 	this.innerRadius = 0.0;
 	this.outerRadius = 0.9;
 	this.overRadius = 0.95;
+	this.labelRadius = 0.45;
+	this.labelDisplay = true;
+	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.__name__ = ["rg","view","svg","widget","PieChart"];
@@ -14428,21 +14780,46 @@ for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.PieChart.pro
 rg.view.svg.widget.PieChart.prototype.innerRadius = null;
 rg.view.svg.widget.PieChart.prototype.outerRadius = null;
 rg.view.svg.widget.PieChart.prototype.overRadius = null;
+rg.view.svg.widget.PieChart.prototype.labelRadius = null;
 rg.view.svg.widget.PieChart.prototype.arcNormal = null;
 rg.view.svg.widget.PieChart.prototype.arcStart = null;
 rg.view.svg.widget.PieChart.prototype.arcBig = null;
 rg.view.svg.widget.PieChart.prototype.pie = null;
 rg.view.svg.widget.PieChart.prototype.radius = null;
 rg.view.svg.widget.PieChart.prototype.propertyValue = null;
+rg.view.svg.widget.PieChart.prototype.total = null;
 rg.view.svg.widget.PieChart.prototype.animated = null;
 rg.view.svg.widget.PieChart.prototype.animationDuration = null;
 rg.view.svg.widget.PieChart.prototype.animationEase = null;
 rg.view.svg.widget.PieChart.prototype.gradientLightness = null;
 rg.view.svg.widget.PieChart.prototype.animationDelay = null;
+rg.view.svg.widget.PieChart.prototype.labelDisplay = null;
+rg.view.svg.widget.PieChart.prototype.labelOrientation = null;
+rg.view.svg.widget.PieChart.prototype.dataPoints = null;
+rg.view.svg.widget.PieChart.prototype.labelDataPoint = function(dp) {
+	$s.push("rg.view.svg.widget.PieChart::labelDataPoint");
+	var $spos = $s.length;
+	var $tmp = Ints.format(Reflect.field(dp,this.propertyValue));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.view.svg.widget.PieChart.prototype.init = function() {
 	$s.push("rg.view.svg.widget.PieChart::init");
 	var $spos = $s.length;
 	this.resize();
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.calculateTotal = function(dps) {
+	$s.push("rg.view.svg.widget.PieChart::calculateTotal");
+	var $spos = $s.length;
+	this.total = 0;
+	var _g = 0;
+	while(_g < dps.length) {
+		var dp = dps[_g];
+		++_g;
+		this.total += Reflect.field(dp,this.propertyValue);
+	}
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.resize = function() {
@@ -14458,10 +14835,12 @@ rg.view.svg.widget.PieChart.prototype.resize = function() {
 rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::data");
 	var $spos = $s.length;
+	this.calculateTotal(dp);
+	this.dataPoints = dp;
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@85");
+		$s.push("rg.view.svg.widget.PieChart::data@139");
 		var $spos = $s.length;
 		var $tmp = "group item-" + i;
 		$s.pop();
@@ -14474,8 +14853,29 @@ rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 		path.attr("d").stringf($closure(this.arcStart,"shape"));
 		arc.eachNode($closure(this,"fadein")).onNode("mouseover.animation",$closure(this,"highlight")).onNode("mouseout.animation",$closure(this,"backtonormal"));
 	} else path.attr("d").stringf($closure(this.arcNormal,"shape"));
+	if(this.labelDisplay) arc.eachNode($closure(this,"appendLabel"));
 	choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf($closure(this.arcNormal,"shape"));
 	choice.exit().remove();
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.appendLabel = function(dom,i) {
+	$s.push("rg.view.svg.widget.PieChart::appendLabel");
+	var $spos = $s.length;
+	var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+	label.setOrientation(this.labelOrientation);
+	switch( (this.labelOrientation)[1] ) {
+	case 0:
+		label.setAnchor(rg.view.svg.widget.GridAnchor.Center);
+		break;
+	case 1:
+		label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
+		break;
+	case 2:
+		label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
+		break;
+	}
+	label.setText(this.labelDataPoint(this.dataPoints[i]));
+	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.applyGradient = function(n,i) {
@@ -14540,7 +14940,7 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::pief");
 	var $spos = $s.length;
 	var name = this.propertyValue, temp = dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@201");
+		$s.push("rg.view.svg.widget.PieChart::pief@283");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(d,name);
 		$s.pop();

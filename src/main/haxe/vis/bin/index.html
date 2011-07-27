@@ -35,14 +35,26 @@ document.addEventListener("DOMContentLoaded", function(){
 		},
 		options : {
 			height : 400,
-			innerRadius : 0.5,
-			outerRadius : 0.9,
-			overRadius : 0.95,
-			labelRadius : 0.70,
-			displayLabels : true,
-			labelOrientation : "ortho",
+			innerradius : 0.5,
+			outerradius : 0.9,
+			overradius : 0.95,
+			labelradius : 0.70,
+			displaylabels : true,
+			labelorientation : "horizontal",
+			sort : function(a,b) { 
+				var av = parseInt(a[".ageRange"].split("-")[0]),
+					bv = parseInt(b[".ageRange"].split("-")[0]);
+				return av - bv;
+			},
 			label : {
-				title : "The Eye"
+				title : "The Eye",
+				datapoint : function(dp) { 
+					var v = dp["count"];
+					if(v < 6500)
+						return null;
+					else
+						return "age " + dp[".ageRange"] + ": " + ReportGrid.format(v);
+				}
 			},
 			layout : "simple"
 		}
@@ -58,11 +70,15 @@ document.addEventListener("DOMContentLoaded", function(){
 			src: { path : "/rgadnet", event : "impression", query : ".platform" }
 		},
 		options : {
-			innerRadius : 0.25,
-			outerRadius : 0.45,
-			overRadius : 0.49,
-			labelRadius : 0.27,
-			labelOrientation : "align"
+			innerradius : 0.25,
+			outerradius : 0.45,
+			overradius : 0.49,
+			labelradius : 0.27,
+			labelorientation : "ortho",
+			dontfliplabel : false,
+			label : {
+				value : function(v) { return Math.round(v/100) + "k"; }
+			}
 		}
 	});
 
@@ -80,11 +96,17 @@ document.addEventListener("DOMContentLoaded", function(){
 			]
 		},
 		options : {
-			innerRadius : 0.0,
-			outerRadius : 0.2,
-			overRadius  : 0.24,
-			labelRadius : 0.03,
-			labelOrientation : "align"
+			innerradius : 0.0,
+			outerradius : 0.2,
+			overradius  : 0.24,
+			labelradius : 0.03,
+			labelorientation : "align",
+			// click
+			// label format
+			// value format
+			label : {
+				value : function(v,t) { return Math.round(100 * v / t) + "%";  }
+			}
 		}
 	});
 
