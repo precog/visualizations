@@ -73,7 +73,7 @@ class App
 				var layout = getLayout(id, params.options, el);
 				visualization = new FactorySvgVisualization().create(infoviz.type, layout, params.options);
 			case Html:
-				visualization = new FactoryHtmlVisualization().create(infoviz.type, params.options);
+				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
 		}
 		visualization.setVariables(
 			independentVariables.map(function(c, _) return c.variable),
@@ -98,76 +98,3 @@ class App
 		return layout;
 	}
 }
-
-/*
-//import rg.controller.apply.ApplySvgOption;
-import rg.controller.factory.FactoryDataContext;
-import rg.controller.factory.FactoryDataSource;
-import rg.controller.info.InfoDataContext;
-import rg.controller.info.InfoSvgOption;
-import rg.controller.info.InfoVisualizationOption;
-//import rg.controller.viz.VisualizationSvg;
-import rg.data.DataContext;
-import rg.data.DataRequest;
-import rg.data.source.rgquery.IExecutorReportGrid;
-import rg.data.IDataSource;
-import rg.view.svg.panel.Container;
-import rg.view.svg.panel.Space;
-import thx.error.Error;
-//import rg.controller.viz.LineChart;
-//import rg.controller.viz.Visualization;
-import thx.js.Selection;
-import rg.data.DataRequest;
-using Arrays;
-using rg.controller.info.Info;
-
-class App 
-{
-	var factoryDataContext : FactoryDataContext;
-	var request : DataRequest;
-//	var layouts : Hash<VisualizationLayout>;
-	public function new(executor : IExecutorReportGrid) 
-	{
-//		layouts = new Hash();
-		var cache = new Hash(),
-			factoryDataSource = new FactoryDataSource(cache, executor);
-		factoryDataContext = new FactoryDataContext(factoryDataSource);
-		request = new DataRequest(cache);
-	}
-	
-	public function visualization(el : Selection, jsoptions : Dynamic)
-	{
-		var options = new InfoVisualizationOption().feed(jsoptions),
-			create = factoryDataContext.create;
-		var datacontext = options.data.map(function(d, _) return create(new InfoDataContext().feed(d)));
-		
-		
-		request.request(datacontext, function(data) {
-			trace(data);
-		});
-		
-		
-		
-		var context = new VisualizationContext(datacontext);
-
-		var space = new Space(100, 100, el);
-		
-		switch(jsoptions.type)
-		{
-			case "linechart":
-//				viz = ApplySvgOption.apply(new VisualizationSvg(el), jsoptions);
-//				var chart = new LineChart(el, context);
-			default:
-//				throw new Error("the visualization of type '{0}' is not available (yet)", type);
-		}
-//		viz.init();
-		context.execute();
-		
-	}
-	
-	public function layout(el : Selection, jsoptions : Dynamic)
-	{
-		
-	}
-}
-*/

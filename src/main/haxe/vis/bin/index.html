@@ -24,23 +24,19 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-	ReportGrid.pieChart("#chart", {
+	ReportGrid.pivotTable("#chart", {
 		axes : [{
 			type: ".ageRange"
+		}, {
+			type: ".gender"
 		}, {
 			type: "count"
 		}],
 		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".ageRange" }
+			src: { path : "/rgadnet", event : "impression", query : ".ageRange * .gender" }
 		},
 		options : {
-			height : 400,
-			innerradius : 0.5,
-			outerradius : 0.9,
-			overradius : 0.95,
-			labelradius : 0.70,
-			displaylabels : true,
-			labelorientation : "horizontal",
+/*
 			sort : function(a,b) { 
 				var av = parseInt(a[".ageRange"].split("-")[0]),
 					bv = parseInt(b[".ageRange"].split("-")[0]);
@@ -55,130 +51,10 @@ document.addEventListener("DOMContentLoaded", function(){
 					else
 						return "age " + dp[".ageRange"] + ": " + ReportGrid.format(v);
 				}
-			},
-			layout : "simple"
+			}
+*/
 		}
 	});
-
-	ReportGrid.pieChart("#chart", {
-		axes : [{
-			type: ".platform"
-		}, {
-			type: "count"
-		}],
-		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".platform" }
-		},
-		options : {
-			innerradius : 0.25,
-			outerradius : 0.45,
-			overradius : 0.49,
-			labelradius : 0.27,
-			labelorientation : "ortho",
-			dontfliplabel : false,
-			label : {
-				value : function(v) { return Math.round(v/100) + "k"; }
-			}
-		}
-	});
-
-	ReportGrid.pieChart("#chart", {
-		axes : [{
-			type : "event"
-		}, {
-			type: "count"
-		}],
-		data : {
-			src: [
-				{ path : "/rgadnet", event : "impression" },
-				{ path : "/rgadnet", event : "click" },
-				{ path : "/rgadnet", event : "conversion" }
-			]
-		},
-		options : {
-			innerradius : 0.0,
-			outerradius : 0.2,
-			overradius  : 0.24,
-			labelradius : 0.03,
-			labelorientation : "align",
-			// click
-			// label format
-			// value format
-			label : {
-				value : function(v,t) { return Math.round(100 * v / t) + "%";  }
-			}
-		}
-	});
-	
-	ReportGrid.pieChart("#chart2", {
-		axes : [{
-			type : "event"
-		}, {
-			type: "count"
-		}],
-		data : {
-			src: [
-				{ path : "/rgadnet", event : "impression" },
-				{ path : "/rgadnet", event : "click" },
-				{ path : "/rgadnet", event : "conversion" }
-			]
-		},
-		options : {
-			height : 400,
-			innerradius : 0.5,
-			outerradius : 0.9,
-			overradius : 0.95,
-			labelradius : 0.70,
-			displaylabels : true,
-			labelorientation : "horizontal",
-			label : {
-				title : "Event: Drilldown",
-				datapoint : function(dp) { 
-					var v = dp["count"];
-					return dp["event"] + ": " + ReportGrid.format(v);
-				}
-			},
-			layout : "simple",
-			click : function(dp) {
-				drillEvent(dp.event, dp.count);
-			}
-		}
-	});
-	
-	var last;
-	function drillEvent(name, total)
-	{
-		if(last) last.destroy();
-		last = ReportGrid.pieChart("#chart2", {
-			axes : [{
-				type: ".platform"
-			}, {
-				type: "count"
-			}],
-			data : {
-				src: { path : "/rgadnet", event : name, query : ".platform" }
-			},
-			options : {
-				innerradius : 0.25,
-				outerradius : 0.45,
-				overradius : 0.49,
-				labelradius : 0.35,
-				labelorientation : "horizontal",
-				dontfliplabel : false,
-				label : {
-					datapoint : function(dp) { 
-						var v = dp["count"];
-						if(v / total < 0.05)
-							return null;
-						if(v / total < 0.1)
-							return dp[".platform"];
-						else
-							return dp[".platform"] + ": " + Math.round(v/1000) + "k";
-					}
-				}
-			}
-		});
-	}
 
 }, false)
 </script>

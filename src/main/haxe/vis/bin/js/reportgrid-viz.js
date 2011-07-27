@@ -6571,7 +6571,7 @@ rg.controller.visualization.Visualization.prototype.init = function() {
 rg.controller.visualization.Visualization.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.Visualization::feedData");
 	var $spos = $s.length;
-	haxe.Log.trace("DATA FEED " + data,{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+	haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
 	$s.pop();
 }
 rg.controller.visualization.Visualization.prototype.getVariables = function() {
@@ -7769,12 +7769,28 @@ rg.controller.factory.FactoryHtmlVisualization = function(p) {
 	$s.pop();
 }
 rg.controller.factory.FactoryHtmlVisualization.__name__ = ["rg","controller","factory","FactoryHtmlVisualization"];
-rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,options) {
+rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,container,options) {
 	$s.push("rg.controller.factory.FactoryHtmlVisualization::create");
 	var $spos = $s.length;
-	throw new thx.error.NotImplemented({ fileName : "FactoryHtmlVisualization.hx", lineNumber : 19, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
+	switch(type) {
+	case "pivottable":
+		var $tmp = this.createPivotTable(rg.controller.info.Info.feed(new rg.controller.info.InfoPivotTable(),options),container);
+		$s.pop();
+		return $tmp;
+	default:
+		throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 27, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
+	}
 	$s.pop();
 	return null;
+	$s.pop();
+}
+rg.controller.factory.FactoryHtmlVisualization.prototype.createPivotTable = function(info,container) {
+	$s.push("rg.controller.factory.FactoryHtmlVisualization::createPivotTable");
+	var $spos = $s.length;
+	var chart = new rg.controller.visualization.VisualizationPivotTable(container);
+	chart.info = info;
+	$s.pop();
+	return chart;
 	$s.pop();
 }
 rg.controller.factory.FactoryHtmlVisualization.prototype.__class__ = rg.controller.factory.FactoryHtmlVisualization;
@@ -10140,6 +10156,13 @@ rg.view.layout.PanelContext.__name__ = ["rg","view","layout","PanelContext"];
 rg.view.layout.PanelContext.prototype.panel = null;
 rg.view.layout.PanelContext.prototype.anchor = null;
 rg.view.layout.PanelContext.prototype.__class__ = rg.view.layout.PanelContext;
+rg.controller.info.InfoPivotTable = function(p) {
+	$s.push("rg.controller.info.InfoPivotTable::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoPivotTable.__name__ = ["rg","controller","info","InfoPivotTable"];
+rg.controller.info.InfoPivotTable.prototype.__class__ = rg.controller.info.InfoPivotTable;
 if(!thx.text) thx.text = {}
 thx.text.ERegs = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
@@ -11793,6 +11816,14 @@ rg.JSBridge.main = function() {
 		return $tmp;
 		$s.pop();
 	};
+	o.pivotTable = function(el,options) {
+		$s.push("rg.JSBridge::main@31");
+		var $spos = $s.length;
+		var $tmp = o.viz(el,options,"pivottable");
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
 	o.format = Dynamics.format;
 	$s.pop();
 }
@@ -11800,7 +11831,7 @@ rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 41, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 42, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();
@@ -13429,7 +13460,7 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
 		break;
 	case 0:
-		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,params.options);
+		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
 		break;
 	}
 	visualization.setVariables(independentVariables.map(function(c,_) {
@@ -15003,6 +15034,35 @@ thx.js.AccessDataText.prototype.data = function() {
 	$s.pop();
 }
 thx.js.AccessDataText.prototype.__class__ = thx.js.AccessDataText;
+rg.controller.visualization.VisualizationHtml = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationHtml::new");
+	var $spos = $s.length;
+	this.container = container;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationHtml.__name__ = ["rg","controller","visualization","VisualizationHtml"];
+rg.controller.visualization.VisualizationHtml.__super__ = rg.controller.visualization.Visualization;
+for(var k in rg.controller.visualization.Visualization.prototype ) rg.controller.visualization.VisualizationHtml.prototype[k] = rg.controller.visualization.Visualization.prototype[k];
+rg.controller.visualization.VisualizationHtml.prototype.container = null;
+rg.controller.visualization.VisualizationHtml.prototype.__class__ = rg.controller.visualization.VisualizationHtml;
+rg.controller.visualization.VisualizationPivotTable = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationPivotTable::new");
+	var $spos = $s.length;
+	rg.controller.visualization.VisualizationHtml.call(this,container);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.__name__ = ["rg","controller","visualization","VisualizationPivotTable"];
+rg.controller.visualization.VisualizationPivotTable.__super__ = rg.controller.visualization.VisualizationHtml;
+for(var k in rg.controller.visualization.VisualizationHtml.prototype ) rg.controller.visualization.VisualizationPivotTable.prototype[k] = rg.controller.visualization.VisualizationHtml.prototype[k];
+rg.controller.visualization.VisualizationPivotTable.prototype.info = null;
+rg.controller.visualization.VisualizationPivotTable.prototype.init = function() {
+	$s.push("rg.controller.visualization.VisualizationPivotTable::init");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.prototype.__class__ = rg.controller.visualization.VisualizationPivotTable;
 rg.data.DataRequest = function(cache,datacontexts) {
 	if( cache === $_ ) return;
 	$s.push("rg.data.DataRequest::new");
@@ -15517,6 +15577,58 @@ rg.view.frame.StackItem.prototype.setDisposition = function(v) {
 	$s.pop();
 }
 rg.view.frame.StackItem.prototype.__class__ = rg.view.frame.StackItem;
+rg.controller.info.InfoLabel = function(p) {
+	$s.push("rg.controller.info.InfoLabel::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
+rg.controller.info.InfoLabel.filters = function() {
+	$s.push("rg.controller.info.InfoLabel::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "title", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@21");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@22");
+		var $spos = $s.length;
+		var $tmp = [{ field : "title", value : Std["is"](v,String)?function() {
+			$s.push("rg.controller.info.InfoLabel::filters@22@24");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "value", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@28");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "datapoint", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@32");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.prototype.title = null;
+rg.controller.info.InfoLabel.prototype.value = null;
+rg.controller.info.InfoLabel.prototype.datapoint = null;
+rg.controller.info.InfoLabel.prototype.__class__ = rg.controller.info.InfoLabel;
 rg.controller.info.InfoDataSource = function(p) {
 	$s.push("rg.controller.info.InfoDataSource::new");
 	var $spos = $s.length;
@@ -15593,58 +15705,6 @@ rg.controller.info.InfoDataSource.prototype.namedData = null;
 rg.controller.info.InfoDataSource.prototype.data = null;
 rg.controller.info.InfoDataSource.prototype.name = null;
 rg.controller.info.InfoDataSource.prototype.__class__ = rg.controller.info.InfoDataSource;
-rg.controller.info.InfoLabel = function(p) {
-	$s.push("rg.controller.info.InfoLabel::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
-rg.controller.info.InfoLabel.filters = function() {
-	$s.push("rg.controller.info.InfoLabel::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "title", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@21");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@22");
-		var $spos = $s.length;
-		var $tmp = [{ field : "title", value : Std["is"](v,String)?function() {
-			$s.push("rg.controller.info.InfoLabel::filters@22@24");
-			var $spos = $s.length;
-			$s.pop();
-			return v;
-			$s.pop();
-		}:v}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "value", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@28");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "datapoint", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@32");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoLabel.prototype.title = null;
-rg.controller.info.InfoLabel.prototype.value = null;
-rg.controller.info.InfoLabel.prototype.datapoint = null;
-rg.controller.info.InfoLabel.prototype.__class__ = rg.controller.info.InfoLabel;
 rg.data.VariableDependent = function(type,axis,min,max) {
 	if( type === $_ ) return;
 	$s.push("rg.data.VariableDependent::new");

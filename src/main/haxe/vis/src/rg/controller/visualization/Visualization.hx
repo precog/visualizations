@@ -30,7 +30,7 @@ class Visualization
 	
 	public function feedData(data : Array<DataPoint>)
 	{
-		trace("DATA FEED " + data);
+		trace("DATA FEED " + Dynamics.string(data));
 	}
 	
 	function getVariables() : Array<Variable<Dynamic>>

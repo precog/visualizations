@@ -28,6 +28,7 @@ class JSBridge
 		// define public visualization constrcutors
 		o.lineChart = function(el, options) return o.viz(el, options, "linechart");
 		o.pieChart = function(el, options) return o.viz(el, options, "piechart");
+		o.pivotTable = function(el, options) return o.viz(el, options, "pivottable");
 		
 		// utility functions
 		o.format = Dynamics.format;
