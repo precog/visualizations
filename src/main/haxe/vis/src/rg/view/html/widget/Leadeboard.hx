@@ -16,6 +16,7 @@ import thx.math.Equations;
 import thx.js.Dom;
 using Arrays;
 
+// TODO MOVE SORTING TO AXIS
 class Leadeboard 
 {
 	public var variableIndependent : VariableIndependent<Dynamic>;
@@ -26,7 +27,7 @@ class Leadeboard
 	public var animationDelay : Int;
 	public var animationEase : Float -> Float;
 	public var click : DataPoint -> Void;
-	public var sort : DataPoint -> DataPoint -> Int;
+	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	
 	var container : Selection;
 	var list : Selection;
@@ -67,8 +68,8 @@ class Leadeboard
 	{
 		var filtered = DataPoints.filterByVariable(dps, [variableIndependent]),
 			name = variableDependent.type;
-		if (null != sort)
-			filtered.sort(sort);
+		if (null != sortDataPoint)
+			filtered.sort(sortDataPoint);
 		
 		var stats = this.stats = DataPoints.stats(filtered, variableDependent.type);
 			

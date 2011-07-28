@@ -9,9 +9,6 @@ import rg.view.html.widget.Leadeboard;
 import thx.js.Selection;
 import rg.data.DataPoint;
 
-// TODO wire animations paramaters
-// TODO wire label functions
-
 class VisualizationLeaderboard extends VisualizationHtml
 {
 	public var info : InfoLeaderboard;
@@ -29,8 +26,8 @@ class VisualizationLeaderboard extends VisualizationHtml
 		
 		if (null != info.label.datapoint)
 			chart.labelDataPoint = info.label.datapoint;
-		if (null != info.label.datapointOver)
-			chart.labelDataPointOver = info.label.datapointOver;
+		if (null != info.label.datapointover)
+			chart.labelDataPointOver = info.label.datapointover;
 			
 		chart.animated = info.animation.animated;
 		chart.animationDuration = info.animation.duration;
@@ -39,8 +36,8 @@ class VisualizationLeaderboard extends VisualizationHtml
 		
 		if (null != info.click)
 			chart.click = info.click;
-		if (null != info.sort)
-			chart.sort = info.sort;
+		if (null != info.sortDataPoint)
+			chart.sortDataPoint = info.sortDataPoint;
 		
 		chart.init();
 	}

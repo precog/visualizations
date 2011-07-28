@@ -4,6 +4,7 @@
  */
 
 package rg.controller.info;
+import rg.data.DataPoint;
 import thx.color.Hsl;
 import thx.color.Colors;
 import thx.color.NamedColors;
@@ -11,7 +12,7 @@ using rg.controller.info.Info;
 
 class InfoPivotTable 
 {
-	public var label : InfoLabel;
+	public var label : InfoLabelPivotTable;
 	
 	public var heatmapColorStart : Hsl;
 	public var heatmapColorEnd : Hsl;
@@ -22,9 +23,11 @@ class InfoPivotTable
 	
 	public var columnAxes : Int;
 	
+	public var click : DataPoint -> Void;
+	
 	public function new() 
 	{
-		label = new InfoLabel();
+		label = new InfoLabelPivotTable();
 		
 		heatmapColorStart = new Hsl(210, 1, 1);
 		heatmapColorEnd = new Hsl(210, 1, 0.5);
@@ -93,8 +96,12 @@ class InfoPivotTable
 			validator : function(v) return Types.isAnonymous(v),
 			filter : function(v) return [{
 				field : "label",
-				value : new InfoLabel().feed(v)
+				value : new InfoLabelPivotTable().feed(v)
 			}]
+		}, {
+			field : "click",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
 		}];
 	}
 }

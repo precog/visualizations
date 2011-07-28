@@ -12,7 +12,7 @@ class InfoLabel
 {
 	public var title : Array<Variable<Dynamic>> -> Array<DataPoint> -> String;
 	public var datapoint : DataPoint -> Stats -> String;
-	public var datapointOver : DataPoint -> Stats -> String;
+	public var datapointover : DataPoint -> Stats -> String;
 	
 	public function new() { }
 	
@@ -34,7 +34,7 @@ class InfoLabel
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
 		}, {
-			field : "datapointOver",
+			field : "datapointover",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
 		}];

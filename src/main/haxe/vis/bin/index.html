@@ -62,7 +62,18 @@ document.addEventListener("DOMContentLoaded", function(){
 			src: { path : "/rgadnet", event : "impression", query : ".ageRange * .gender" /* * .#time:week */ }
 		},
 		options : {
-			columnaxes : 1
+			columnaxes : 1,
+			startcolor : "#ff0000",
+			endcolor : "#000000",
+			displayheatmap : true,
+			click : function(dp) { alert(ReportGrid.dump(dp)) },
+			label : {
+				datapoint : function(dp, stats) { return ReportGrid.dump(dp) + " " + ReportGrid.dump(stats) },
+				datapointover : function(dp, stats) { return ReportGrid.dump(dp) + " " + ReportGrid.dump(stats) },
+				axis : function(axis) { return axis },
+				axisvalue : function(value, axis) { return value + ": " + axis },
+				total : function(v, stats) { return v + " " + stats }
+			}
 /*
 			sort : function(a,b) { 
 				var av = parseInt(a[".ageRange"].split("-")[0]),

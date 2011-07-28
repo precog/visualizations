@@ -38,7 +38,7 @@ class VisualizationPieChart extends VisualizationSvg
 		if(null != info.label.datapoint)
 			chart.labelFormatDataPoint = info.label.datapoint;
 		if(null != info.label.datapoint)
-			chart.labelFormatDataPointOver = info.label.datapointOver;
+			chart.labelFormatDataPointOver = info.label.datapointover;
 
 		chart.labelRadius = info.labelradius;
 		chart.labelDisplay = info.labeldisplay;
@@ -70,6 +70,8 @@ class VisualizationPieChart extends VisualizationSvg
 		return null;
 	}
 	
+	// TODO add filter here or inside the chart
+	// TODO move sort to axis
 	override function feedData(data : Array<DataPoint>)
 	{
 		if (null != title)

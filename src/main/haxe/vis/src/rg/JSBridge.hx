@@ -34,6 +34,7 @@ class JSBridge
 		// utility functions
 		o.format = Dynamics.format;
 		o.compare = Dynamics.compare;
+		o.dump = Dynamics.string;
 	}
 	
 	// make sure a thx.js.Selection is passed

@@ -64,7 +64,7 @@ class HtmlPivotTable
 		calc : Calc
 	})
 	{
-
+		trace(d);
 		container.html().string("");
 		
 		var table = container.append("table"),

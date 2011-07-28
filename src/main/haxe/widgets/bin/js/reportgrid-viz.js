@@ -5491,6 +5491,7 @@ rg.html.HtmlPivotTable.prototype.loader = null;
 rg.html.HtmlPivotTable.prototype.data = function(d) {
 	$s.push("rg.html.HtmlPivotTable::data");
 	var $spos = $s.length;
+	haxe.Log.trace(d,{ fileName : "HtmlPivotTable.hx", lineNumber : 67, className : "rg.html.HtmlPivotTable", methodName : "data"});
 	this.container.html().string("");
 	var table = this.container.append("table"), thead = table.append("thead"), leftspan = d.rows.length > 0?d.rows[0].values.length:0, color = this.heatMap?thx.color.Hsl.interpolatef(this.startColor,this.endColor):null;
 	if(d.columns.length > 0) {
@@ -10962,11 +10963,20 @@ thx.js.AccessClassed.getRe = function(name) {
 	return $tmp;
 	$s.pop();
 }
+thx.js.AccessClassed.prototype.toggle = function(name) {
+	$s.push("thx.js.AccessClassed::toggle");
+	var $spos = $s.length;
+	if(this.exists(name)) this.remove(name); else this.add(name);
+	var $tmp = this.selection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 thx.js.AccessClassed.prototype.exists = function(name) {
 	$s.push("thx.js.AccessClassed::exists");
 	var $spos = $s.length;
 	var $tmp = this.selection.firstNode(function(node) {
-		$s.push("thx.js.AccessClassed::exists@22");
+		$s.push("thx.js.AccessClassed::exists@31");
 		var $spos = $s.length;
 		var list = node.classList;
 		if(null != list) {
@@ -10990,10 +11000,10 @@ thx.js.AccessClassed.prototype.remove = function(name) {
 	$s.push("thx.js.AccessClassed::remove");
 	var $spos = $s.length;
 	this.selection.eachNode((function(f,a1) {
-		$s.push("thx.js.AccessClassed::remove@35");
+		$s.push("thx.js.AccessClassed::remove@44");
 		var $spos = $s.length;
 		var $tmp = function(a2,a3) {
-			$s.push("thx.js.AccessClassed::remove@35@35");
+			$s.push("thx.js.AccessClassed::remove@44@44");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2,a3);
 			$s.pop();
@@ -11028,10 +11038,10 @@ thx.js.AccessClassed.prototype.add = function(name) {
 	$s.push("thx.js.AccessClassed::add");
 	var $spos = $s.length;
 	this.selection.eachNode((function(f,a1) {
-		$s.push("thx.js.AccessClassed::add@64");
+		$s.push("thx.js.AccessClassed::add@73");
 		var $spos = $s.length;
 		var $tmp = function(a2,a3) {
-			$s.push("thx.js.AccessClassed::add@64@64");
+			$s.push("thx.js.AccessClassed::add@73@73");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2,a3);
 			$s.pop();
@@ -11070,7 +11080,7 @@ thx.js.AccessClassed.prototype.get = function() {
 	var node = this.selection.node(), list = node.classList;
 	if(null != list) {
 		var $tmp = Ints.range(list.length).map(function(_,i) {
-			$s.push("thx.js.AccessClassed::get@98");
+			$s.push("thx.js.AccessClassed::get@107");
 			var $spos = $s.length;
 			var $tmp = list.item(i);
 			$s.pop();
@@ -11107,7 +11117,7 @@ thx.js.AccessDataClassed.prototype.removef = function(v) {
 	var $spos = $s.length;
 	var f = $closure(this,"_remove");
 	this.selection.eachNode(function(node,i) {
-		$s.push("thx.js.AccessDataClassed::removef@126");
+		$s.push("thx.js.AccessDataClassed::removef@135");
 		var $spos = $s.length;
 		var c = v(Reflect.field(node,"__data__"),i);
 		if(null != c) f(c,node,i);
@@ -11123,7 +11133,7 @@ thx.js.AccessDataClassed.prototype.addf = function(v) {
 	var $spos = $s.length;
 	var f = $closure(this,"_add");
 	this.selection.eachNode(function(node,i) {
-		$s.push("thx.js.AccessDataClassed::addf@137");
+		$s.push("thx.js.AccessDataClassed::addf@146");
 		var $spos = $s.length;
 		var c = v(Reflect.field(node,"__data__"),i);
 		if(null != c) f(c,node,i);
