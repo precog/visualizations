@@ -29,6 +29,7 @@ class JSBridge
 		o.lineChart = function(el, options) return o.viz(el, options, "linechart");
 		o.pieChart = function(el, options) return o.viz(el, options, "piechart");
 		o.pivotTable = function(el, options) return o.viz(el, options, "pivottable");
+		o.leaderBoard = function(el, options) return o.viz(el, options, "leaderboard");
 		
 		// utility functions
 		o.format = Dynamics.format;

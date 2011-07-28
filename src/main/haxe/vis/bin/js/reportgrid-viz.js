@@ -1662,6 +1662,98 @@ rg.controller.info.DomKind.Html.__enum__ = rg.controller.info.DomKind;
 rg.controller.info.DomKind.Svg = ["Svg",1];
 rg.controller.info.DomKind.Svg.toString = $estr;
 rg.controller.info.DomKind.Svg.__enum__ = rg.controller.info.DomKind;
+if(!rg.view.html) rg.view.html = {}
+if(!rg.view.html.widget) rg.view.html.widget = {}
+rg.view.html.widget.Leadeboard = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.view.html.widget.Leadeboard::new");
+	var $spos = $s.length;
+	this.container = container;
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.elasticf();
+	this.animationDelay = 150;
+	this._created = 0;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.__name__ = ["rg","view","html","widget","Leadeboard"];
+rg.view.html.widget.Leadeboard.prototype.variableIndependent = null;
+rg.view.html.widget.Leadeboard.prototype.variableDependent = null;
+rg.view.html.widget.Leadeboard.prototype.animated = null;
+rg.view.html.widget.Leadeboard.prototype.animationDuration = null;
+rg.view.html.widget.Leadeboard.prototype.animationDelay = null;
+rg.view.html.widget.Leadeboard.prototype.animationEase = null;
+rg.view.html.widget.Leadeboard.prototype.container = null;
+rg.view.html.widget.Leadeboard.prototype.list = null;
+rg.view.html.widget.Leadeboard.prototype.stats = null;
+rg.view.html.widget.Leadeboard.prototype._created = null;
+rg.view.html.widget.Leadeboard.prototype.init = function() {
+	$s.push("rg.view.html.widget.Leadeboard::init");
+	var $spos = $s.length;
+	this.list = this.container.append("ul").attr("class").string("leaderboard");
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
+	$s.push("rg.view.html.widget.Leadeboard::data");
+	var $spos = $s.length;
+	var filtered = rg.util.DataPoints.filterByVariable(dps,[this.variableIndependent]), name = this.variableDependent.type, stats = rg.util.DataPoints.stats(filtered,this.variableDependent.type);
+	var choice = this.list.selectAll("li").data(filtered,$closure(this,"id"));
+	choice.enter().append("li").style("background-size").stringf(function(d,i) {
+		$s.push("rg.view.html.widget.Leadeboard::data@61");
+		var $spos = $s.length;
+		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title")).style("opacity")["float"](0).eachNode($closure(this,"fadeIn"));
+	choice.update().select("li").style("background-size").stringf(function(d,i) {
+		$s.push("rg.view.html.widget.Leadeboard::data@71");
+		var $spos = $s.length;
+		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
+	choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](1).remove();
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.fadeIn = function(n,i) {
+	$s.push("rg.view.html.widget.Leadeboard::fadeIn");
+	var $spos = $s.length;
+	var me = this;
+	thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
+		$s.push("rg.view.html.widget.Leadeboard::fadeIn@91");
+		var $spos = $s.length;
+		me._created++;
+		$s.pop();
+	});
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.description = function(dp,i) {
+	$s.push("rg.view.html.widget.Leadeboard::description");
+	var $spos = $s.length;
+	var $tmp = Dynamics.string(dp);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.title = function(dp,i) {
+	$s.push("rg.view.html.widget.Leadeboard::title");
+	var $spos = $s.length;
+	var $tmp = Dynamics.string(dp);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.id = function(dp,_) {
+	$s.push("rg.view.html.widget.Leadeboard::id");
+	var $spos = $s.length;
+	var $tmp = rg.util.DataPoints.id(dp,[this.variableDependent.type]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.__class__ = rg.view.html.widget.Leadeboard;
 rg.data.IAxis = function() { }
 rg.data.IAxis.__name__ = ["rg","data","IAxis"];
 rg.data.IAxis.prototype.scale = null;
@@ -4694,6 +4786,98 @@ thx.culture.Info.prototype.toString = function() {
 	$s.pop();
 }
 thx.culture.Info.prototype.__class__ = thx.culture.Info;
+if(!rg.controller.visualization) rg.controller.visualization = {}
+rg.controller.visualization.Visualization = function() { }
+rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
+rg.controller.visualization.Visualization.prototype.independentVariables = null;
+rg.controller.visualization.Visualization.prototype.dependentVariables = null;
+rg.controller.visualization.Visualization.prototype.variables = null;
+rg.controller.visualization.Visualization.prototype.setVariables = function(independentVariables,dependentVariables) {
+	$s.push("rg.controller.visualization.Visualization::setVariables");
+	var $spos = $s.length;
+	this.independentVariables = independentVariables;
+	this.dependentVariables = dependentVariables;
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.init = function() {
+	$s.push("rg.controller.visualization.Visualization::init");
+	var $spos = $s.length;
+	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 28, className : "rg.controller.visualization.Visualization", methodName : "init"});
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.Visualization::feedData");
+	var $spos = $s.length;
+	haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.getVariables = function() {
+	$s.push("rg.controller.visualization.Visualization::getVariables");
+	var $spos = $s.length;
+	var $tmp = this.independentVariables.map(function(d,i) {
+		$s.push("rg.controller.visualization.Visualization::getVariables@39");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}).concat(this.dependentVariables.map(function(d,i) {
+		$s.push("rg.controller.visualization.Visualization::getVariables@40");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.Visualization::destroy");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.__class__ = rg.controller.visualization.Visualization;
+rg.controller.visualization.VisualizationHtml = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationHtml::new");
+	var $spos = $s.length;
+	this.container = container;
+	container.classed().add("rg");
+	$s.pop();
+}
+rg.controller.visualization.VisualizationHtml.__name__ = ["rg","controller","visualization","VisualizationHtml"];
+rg.controller.visualization.VisualizationHtml.__super__ = rg.controller.visualization.Visualization;
+for(var k in rg.controller.visualization.Visualization.prototype ) rg.controller.visualization.VisualizationHtml.prototype[k] = rg.controller.visualization.Visualization.prototype[k];
+rg.controller.visualization.VisualizationHtml.prototype.container = null;
+rg.controller.visualization.VisualizationHtml.prototype.__class__ = rg.controller.visualization.VisualizationHtml;
+rg.controller.visualization.VisualizationLeaderboard = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationLeaderboard::new");
+	var $spos = $s.length;
+	rg.controller.visualization.VisualizationHtml.call(this,container);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLeaderboard.__name__ = ["rg","controller","visualization","VisualizationLeaderboard"];
+rg.controller.visualization.VisualizationLeaderboard.__super__ = rg.controller.visualization.VisualizationHtml;
+for(var k in rg.controller.visualization.VisualizationHtml.prototype ) rg.controller.visualization.VisualizationLeaderboard.prototype[k] = rg.controller.visualization.VisualizationHtml.prototype[k];
+rg.controller.visualization.VisualizationLeaderboard.prototype.info = null;
+rg.controller.visualization.VisualizationLeaderboard.prototype.chart = null;
+rg.controller.visualization.VisualizationLeaderboard.prototype.init = function() {
+	$s.push("rg.controller.visualization.VisualizationLeaderboard::init");
+	var $spos = $s.length;
+	this.chart = new rg.view.html.widget.Leadeboard(this.container);
+	this.chart.variableIndependent = this.independentVariables[0];
+	this.chart.variableDependent = this.dependentVariables[0];
+	this.chart.init();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLeaderboard.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.VisualizationLeaderboard::feedData");
+	var $spos = $s.length;
+	this.chart.data(data);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLeaderboard.prototype.__class__ = rg.controller.visualization.VisualizationLeaderboard;
 Iterables = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.indexOf = function(it,v,f) {
@@ -6549,57 +6733,6 @@ rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
 rg.data.IDataSource.prototype.onLoad = null;
 rg.data.IDataSource.prototype.load = null;
 rg.data.IDataSource.prototype.__class__ = rg.data.IDataSource;
-if(!rg.controller.visualization) rg.controller.visualization = {}
-rg.controller.visualization.Visualization = function() { }
-rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
-rg.controller.visualization.Visualization.prototype.independentVariables = null;
-rg.controller.visualization.Visualization.prototype.dependentVariables = null;
-rg.controller.visualization.Visualization.prototype.variables = null;
-rg.controller.visualization.Visualization.prototype.setVariables = function(independentVariables,dependentVariables) {
-	$s.push("rg.controller.visualization.Visualization::setVariables");
-	var $spos = $s.length;
-	this.independentVariables = independentVariables;
-	this.dependentVariables = dependentVariables;
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.init = function() {
-	$s.push("rg.controller.visualization.Visualization::init");
-	var $spos = $s.length;
-	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 28, className : "rg.controller.visualization.Visualization", methodName : "init"});
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.feedData = function(data) {
-	$s.push("rg.controller.visualization.Visualization::feedData");
-	var $spos = $s.length;
-	haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.getVariables = function() {
-	$s.push("rg.controller.visualization.Visualization::getVariables");
-	var $spos = $s.length;
-	var $tmp = this.independentVariables.map(function(d,i) {
-		$s.push("rg.controller.visualization.Visualization::getVariables@39");
-		var $spos = $s.length;
-		$s.pop();
-		return d;
-		$s.pop();
-	}).concat(this.dependentVariables.map(function(d,i) {
-		$s.push("rg.controller.visualization.Visualization::getVariables@40");
-		var $spos = $s.length;
-		$s.pop();
-		return d;
-		$s.pop();
-	}));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.destroy = function() {
-	$s.push("rg.controller.visualization.Visualization::destroy");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.__class__ = rg.controller.visualization.Visualization;
 rg.controller.visualization.VisualizationSvg = function(layout) {
 	if( layout === $_ ) return;
 	$s.push("rg.controller.visualization.VisualizationSvg::new");
@@ -6693,6 +6826,84 @@ rg.controller.visualization.VisualizationPieChart.prototype.destroy = function()
 	$s.pop();
 }
 rg.controller.visualization.VisualizationPieChart.prototype.__class__ = rg.controller.visualization.VisualizationPieChart;
+rg.util.DataPoints = function() { }
+rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
+rg.util.DataPoints.filterByVariable = function(dps,variables) {
+	$s.push("rg.util.DataPoints::filterByVariable");
+	var $spos = $s.length;
+	var _g = 0;
+	while(_g < variables.length) {
+		var variable = [variables[_g]];
+		++_g;
+		var values = [variable[0].range()];
+		dps = Arrays.filter(dps,(function(values,variable) {
+			$s.push("rg.util.DataPoints::filterByVariable@20");
+			var $spos = $s.length;
+			var $tmp = function(dp) {
+				$s.push("rg.util.DataPoints::filterByVariable@20@20");
+				var $spos = $s.length;
+				var v = Reflect.field(dp,variable[0].type);
+				if(null == v) {
+					$s.pop();
+					return false;
+				}
+				var $tmp = Arrays.exists(values[0],v);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(values,variable));
+	}
+	$s.pop();
+	return dps;
+	$s.pop();
+}
+rg.util.DataPoints.value = function(dp,property) {
+	$s.push("rg.util.DataPoints::value");
+	var $spos = $s.length;
+	var $tmp = Reflect.field(dp,property);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.DataPoints.stats = function(dps,property) {
+	$s.push("rg.util.DataPoints::stats");
+	var $spos = $s.length;
+	var min = Math.POSITIVE_INFINITY, max = Math.NEGATIVE_INFINITY, tot = 0.0;
+	var _g = 0;
+	while(_g < dps.length) {
+		var dp = dps[_g];
+		++_g;
+		var v = Reflect.field(dp,property);
+		if(null == v) continue;
+		if(v < min) min = v;
+		if(v > max) max = v;
+		tot += v;
+	}
+	var $tmp = { min : min, max : max, tot : tot};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.DataPoints.id = function(dp,dependentProperties) {
+	$s.push("rg.util.DataPoints::id");
+	var $spos = $s.length;
+	var o = Objects.clone(dp);
+	var _g = 0;
+	while(_g < dependentProperties.length) {
+		var p = dependentProperties[_g];
+		++_g;
+		Reflect.deleteField(o,p);
+	}
+	var $tmp = haxe.Md5.encode(Dynamics.string(o));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.DataPoints.prototype.__class__ = rg.util.DataPoints;
 Ints = function() { }
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
@@ -7777,8 +7988,12 @@ rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,
 		var $tmp = this.createPivotTable(rg.controller.info.Info.feed(new rg.controller.info.InfoPivotTable(),options),container);
 		$s.pop();
 		return $tmp;
+	case "leaderboard":
+		var $tmp = this.createLeaderboard(rg.controller.info.Info.feed(new rg.controller.info.InfoLeaderboard(),options),container);
+		$s.pop();
+		return $tmp;
 	default:
-		throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 27, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
+		throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 31, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
 	}
 	$s.pop();
 	return null;
@@ -7788,6 +8003,15 @@ rg.controller.factory.FactoryHtmlVisualization.prototype.createPivotTable = func
 	$s.push("rg.controller.factory.FactoryHtmlVisualization::createPivotTable");
 	var $spos = $s.length;
 	var chart = new rg.controller.visualization.VisualizationPivotTable(container);
+	chart.info = info;
+	$s.pop();
+	return chart;
+	$s.pop();
+}
+rg.controller.factory.FactoryHtmlVisualization.prototype.createLeaderboard = function(info,container) {
+	$s.push("rg.controller.factory.FactoryHtmlVisualization::createLeaderboard");
+	var $spos = $s.length;
+	var chart = new rg.controller.visualization.VisualizationLeaderboard(container);
 	chart.info = info;
 	$s.pop();
 	return chart;
@@ -8557,6 +8781,58 @@ rg.view.svg.widget.Label.prototype.destroy = function() {
 	$s.pop();
 }
 rg.view.svg.widget.Label.prototype.__class__ = rg.view.svg.widget.Label;
+rg.controller.info.InfoAnimation = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoAnimation::new");
+	var $spos = $s.length;
+	this.animated = true;
+	this.duration = 1500;
+	this.delay = 150;
+	this.ease = thx.math.Equations.elasticf();
+	$s.pop();
+}
+rg.controller.info.InfoAnimation.__name__ = ["rg","controller","info","InfoAnimation"];
+rg.controller.info.InfoAnimation.filters = function() {
+	$s.push("rg.controller.info.InfoAnimation::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "animated", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@29");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "duration", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@33");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Int);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "delay", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@37");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Int);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "ease", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@41");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoAnimation.prototype.animated = null;
+rg.controller.info.InfoAnimation.prototype.duration = null;
+rg.controller.info.InfoAnimation.prototype.ease = null;
+rg.controller.info.InfoAnimation.prototype.delay = null;
+rg.controller.info.InfoAnimation.prototype.__class__ = rg.controller.info.InfoAnimation;
 Floats = function() { }
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
@@ -8903,58 +9179,6 @@ Floats.round = function(x,n) {
 	$s.pop();
 }
 Floats.prototype.__class__ = Floats;
-rg.controller.info.InfoAnimation = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.controller.info.InfoAnimation::new");
-	var $spos = $s.length;
-	this.animated = true;
-	this.duration = 1500;
-	this.delay = 150;
-	this.ease = thx.math.Equations.elasticf();
-	$s.pop();
-}
-rg.controller.info.InfoAnimation.__name__ = ["rg","controller","info","InfoAnimation"];
-rg.controller.info.InfoAnimation.filters = function() {
-	$s.push("rg.controller.info.InfoAnimation::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "animated", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@29");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Bool);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "duration", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@33");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Int);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "delay", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@37");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Int);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "ease", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@41");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoAnimation.prototype.animated = null;
-rg.controller.info.InfoAnimation.prototype.duration = null;
-rg.controller.info.InfoAnimation.prototype.ease = null;
-rg.controller.info.InfoAnimation.prototype.delay = null;
-rg.controller.info.InfoAnimation.prototype.__class__ = rg.controller.info.InfoAnimation;
 thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
 thx.math.EaseMode.EaseIn.toString = $estr;
@@ -10157,11 +10381,126 @@ rg.view.layout.PanelContext.prototype.panel = null;
 rg.view.layout.PanelContext.prototype.anchor = null;
 rg.view.layout.PanelContext.prototype.__class__ = rg.view.layout.PanelContext;
 rg.controller.info.InfoPivotTable = function(p) {
+	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoPivotTable::new");
 	var $spos = $s.length;
+	this.heatmapColorStart = new thx.color.Hsl(210,1,1);
+	this.heatmapColorEnd = new thx.color.Hsl(210,1,0.5);
+	this.displayHeatmap = true;
+	this.displayColumnTotal = true;
+	this.displayRowTotal = true;
+	this.columnAxes = 1;
 	$s.pop();
 }
 rg.controller.info.InfoPivotTable.__name__ = ["rg","controller","info","InfoPivotTable"];
+rg.controller.info.InfoPivotTable.parseColor = function(s) {
+	$s.push("rg.controller.info.InfoPivotTable::parseColor");
+	var $spos = $s.length;
+	var rgb = thx.color.Colors.parse(s);
+	if(null == s) rgb = thx.color.NamedColors.black;
+	var $tmp = thx.color.Hsl.toHsl(rgb);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoPivotTable.filters = function() {
+	$s.push("rg.controller.info.InfoPivotTable::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "columnaxes", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@46");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Int);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@47");
+		var $spos = $s.length;
+		var $tmp = [{ field : "columnAxes", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displayheatmap", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@53");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@54");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayHeatmap", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displaycolumntotal", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@60");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@61");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayColumnTotal", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displayrowtotal", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@67");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@68");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayRowTotal", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "startcolor", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@74");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@75");
+		var $spos = $s.length;
+		var $tmp = [{ field : "heatmapColorStart", value : rg.controller.info.InfoPivotTable.parseColor(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "endcolor", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@81");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@82");
+		var $spos = $s.length;
+		var $tmp = [{ field : "heatmapColorEnd", value : rg.controller.info.InfoPivotTable.parseColor(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoPivotTable.prototype.heatmapColorStart = null;
+rg.controller.info.InfoPivotTable.prototype.heatmapColorEnd = null;
+rg.controller.info.InfoPivotTable.prototype.displayHeatmap = null;
+rg.controller.info.InfoPivotTable.prototype.displayColumnTotal = null;
+rg.controller.info.InfoPivotTable.prototype.displayRowTotal = null;
+rg.controller.info.InfoPivotTable.prototype.columnAxes = null;
 rg.controller.info.InfoPivotTable.prototype.__class__ = rg.controller.info.InfoPivotTable;
 if(!thx.text) thx.text = {}
 thx.text.ERegs = function() { }
@@ -10304,6 +10643,21 @@ rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(d
 }
 rg.data.source.rgquery.transform.TransformCount.prototype.__class__ = rg.data.source.rgquery.transform.TransformCount;
 rg.data.source.rgquery.transform.TransformCount.__interfaces__ = [rg.data.source.ITransform];
+rg.controller.info.InfoLeaderboard = function(p) {
+	$s.push("rg.controller.info.InfoLeaderboard::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoLeaderboard.__name__ = ["rg","controller","info","InfoLeaderboard"];
+rg.controller.info.InfoLeaderboard.filters = function() {
+	$s.push("rg.controller.info.InfoLeaderboard::filters");
+	var $spos = $s.length;
+	var $tmp = [];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLeaderboard.prototype.__class__ = rg.controller.info.InfoLeaderboard;
 Lambda = function() { }
 Lambda.__name__ = ["Lambda"];
 Lambda.array = function(it) {
@@ -11824,6 +12178,14 @@ rg.JSBridge.main = function() {
 		return $tmp;
 		$s.pop();
 	};
+	o.leaderBoard = function(el,options) {
+		$s.push("rg.JSBridge::main@32");
+		var $spos = $s.length;
+		var $tmp = o.viz(el,options,"leaderboard");
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
 	o.format = Dynamics.format;
 	$s.pop();
 }
@@ -11831,7 +12193,7 @@ rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 42, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 43, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();
@@ -12048,7 +12410,7 @@ rg.view.svg.widget.PieChart.prototype.arcBig = null;
 rg.view.svg.widget.PieChart.prototype.pie = null;
 rg.view.svg.widget.PieChart.prototype.radius = null;
 rg.view.svg.widget.PieChart.prototype.propertyValue = null;
-rg.view.svg.widget.PieChart.prototype.total = null;
+rg.view.svg.widget.PieChart.prototype.stats = null;
 rg.view.svg.widget.PieChart.prototype.animated = null;
 rg.view.svg.widget.PieChart.prototype.animationDuration = null;
 rg.view.svg.widget.PieChart.prototype.animationEase = null;
@@ -12070,7 +12432,7 @@ rg.view.svg.widget.PieChart.prototype.labelFormatValue = function(value,total) {
 rg.view.svg.widget.PieChart.prototype.labelFormatDataPoint = function(dp,name) {
 	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPoint");
 	var $spos = $s.length;
-	var $tmp = this.labelFormatValue(Reflect.field(dp,name),this.total);
+	var $tmp = this.labelFormatValue(Reflect.field(dp,name),this.stats.tot);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -12079,18 +12441,6 @@ rg.view.svg.widget.PieChart.prototype.init = function() {
 	$s.push("rg.view.svg.widget.PieChart::init");
 	var $spos = $s.length;
 	this.resize();
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.calculateTotal = function(dps) {
-	$s.push("rg.view.svg.widget.PieChart::calculateTotal");
-	var $spos = $s.length;
-	this.total = 0;
-	var _g = 0;
-	while(_g < dps.length) {
-		var dp = dps[_g];
-		++_g;
-		this.total += Reflect.field(dp,this.propertyValue);
-	}
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.resize = function() {
@@ -12106,11 +12456,11 @@ rg.view.svg.widget.PieChart.prototype.resize = function() {
 rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::data");
 	var $spos = $s.length;
-	this.calculateTotal(dp);
+	this.stats = rg.util.DataPoints.stats(dp,this.propertyValue);
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@151");
+		$s.push("rg.view.svg.widget.PieChart::data@147");
 		var $spos = $s.length;
 		var $tmp = "group item-" + i;
 		$s.pop();
@@ -12238,7 +12588,7 @@ rg.view.svg.widget.PieChart.prototype.arcShape = function(a) {
 	$s.push("rg.view.svg.widget.PieChart::arcShape");
 	var $spos = $s.length;
 	var $tmp = function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::arcShape@330");
+		$s.push("rg.view.svg.widget.PieChart::arcShape@326");
 		var $spos = $s.length;
 		var $tmp = a.shape(d);
 		$s.pop();
@@ -12253,7 +12603,7 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::pief");
 	var $spos = $s.length;
 	var name = this.propertyValue, temp = dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@339");
+		$s.push("rg.view.svg.widget.PieChart::pief@335");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(d,name);
 		$s.pop();
@@ -15034,18 +15384,6 @@ thx.js.AccessDataText.prototype.data = function() {
 	$s.pop();
 }
 thx.js.AccessDataText.prototype.__class__ = thx.js.AccessDataText;
-rg.controller.visualization.VisualizationHtml = function(container) {
-	if( container === $_ ) return;
-	$s.push("rg.controller.visualization.VisualizationHtml::new");
-	var $spos = $s.length;
-	this.container = container;
-	$s.pop();
-}
-rg.controller.visualization.VisualizationHtml.__name__ = ["rg","controller","visualization","VisualizationHtml"];
-rg.controller.visualization.VisualizationHtml.__super__ = rg.controller.visualization.Visualization;
-for(var k in rg.controller.visualization.Visualization.prototype ) rg.controller.visualization.VisualizationHtml.prototype[k] = rg.controller.visualization.Visualization.prototype[k];
-rg.controller.visualization.VisualizationHtml.prototype.container = null;
-rg.controller.visualization.VisualizationHtml.prototype.__class__ = rg.controller.visualization.VisualizationHtml;
 rg.controller.visualization.VisualizationPivotTable = function(container) {
 	if( container === $_ ) return;
 	$s.push("rg.controller.visualization.VisualizationPivotTable::new");
@@ -15057,9 +15395,33 @@ rg.controller.visualization.VisualizationPivotTable.__name__ = ["rg","controller
 rg.controller.visualization.VisualizationPivotTable.__super__ = rg.controller.visualization.VisualizationHtml;
 for(var k in rg.controller.visualization.VisualizationHtml.prototype ) rg.controller.visualization.VisualizationPivotTable.prototype[k] = rg.controller.visualization.VisualizationHtml.prototype[k];
 rg.controller.visualization.VisualizationPivotTable.prototype.info = null;
+rg.controller.visualization.VisualizationPivotTable.prototype.chart = null;
 rg.controller.visualization.VisualizationPivotTable.prototype.init = function() {
 	$s.push("rg.controller.visualization.VisualizationPivotTable::init");
 	var $spos = $s.length;
+	this.chart = new rg.view.html.widget.PivotTable(this.container);
+	this.chart.displayColumnTotal = this.info.displayColumnTotal;
+	this.chart.displayHeatMap = this.info.displayHeatmap;
+	this.chart.displayRowTotal = this.info.displayRowTotal;
+	this.chart.colorStart = this.info.heatmapColorStart;
+	this.chart.colorEnd = this.info.heatmapColorEnd;
+	var incolumns = Ints.min(this.info.columnAxes,this.independentVariables.length);
+	this.chart.columnVariables = this.independentVariables.slice(0,incolumns);
+	this.chart.rowVariables = this.independentVariables.slice(incolumns);
+	this.chart.cellVariable = this.dependentVariables[0];
+	this.chart.init();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.VisualizationPivotTable::feedData");
+	var $spos = $s.length;
+	this.chart.data(data);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.VisualizationPivotTable::destroy");
+	var $spos = $s.length;
+	this.chart.destroy();
 	$s.pop();
 }
 rg.controller.visualization.VisualizationPivotTable.prototype.__class__ = rg.controller.visualization.VisualizationPivotTable;
@@ -16375,6 +16737,381 @@ thx.color.PerceivedLuminance.Perceived.__enum__ = thx.color.PerceivedLuminance;
 thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
 thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
+rg.view.html.widget.PivotTable = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.view.html.widget.PivotTable::new");
+	var $spos = $s.length;
+	this.container = container;
+	this.displayColumnTotal = true;
+	this.displayRowTotal = true;
+	this.displayHeatMap = true;
+	this.colorStart = rg.view.html.widget.PivotTable.defaultColorStart;
+	this.colorEnd = rg.view.html.widget.PivotTable.defaultColorEnd;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.__name__ = ["rg","view","html","widget","PivotTable"];
+rg.view.html.widget.PivotTable.prototype.displayColumnTotal = null;
+rg.view.html.widget.PivotTable.prototype.displayRowTotal = null;
+rg.view.html.widget.PivotTable.prototype.displayHeatMap = null;
+rg.view.html.widget.PivotTable.prototype.colorStart = null;
+rg.view.html.widget.PivotTable.prototype.colorEnd = null;
+rg.view.html.widget.PivotTable.prototype.columnVariables = null;
+rg.view.html.widget.PivotTable.prototype.rowVariables = null;
+rg.view.html.widget.PivotTable.prototype.cellVariable = null;
+rg.view.html.widget.PivotTable.prototype.container = null;
+rg.view.html.widget.PivotTable.prototype.data = function(dps) {
+	$s.push("rg.view.html.widget.PivotTable::data");
+	var $spos = $s.length;
+	var d = this.transformData(dps), table = this.container.append("table").classed().add("pivot-table"), thead = table.append("thead"), leftspan = d.rows.length > 0?d.rows[0].values.length:0, color = this.displayHeatMap?thx.color.Hsl.interpolatef(this.colorStart,this.colorEnd):null;
+	if(d.columns.length > 0) {
+		var _g1 = 0, _g = d.column_headers.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var tr = thead.append("tr");
+			this.prependSpacer(leftspan,tr);
+			var header = tr.append("th").attr("class").string("col-header").text().string(this.formatHeader(d.column_headers[i]));
+			if(d.columns.length > 1) header.attr("colspan")["float"](d.columns.length);
+			var counter = 1, last = d.columns[0].values[i];
+			tr = thead.append("tr");
+			if(i == d.column_headers.length - 1) {
+				var _g2 = 0, _g3 = d.row_headers;
+				while(_g2 < _g3.length) {
+					var h = _g3[_g2];
+					++_g2;
+					tr.append("th").attr("class").string("row-header").text().string(this.formatHeader(h));
+				}
+			} else this.prependSpacer(leftspan,tr);
+			var _g3 = 1, _g2 = d.columns.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var value = d.columns[j].values[i];
+				if(last == value) counter++; else {
+					this.buildValue(last,d.column_headers[i],counter,tr);
+					counter = 1;
+					last = value;
+				}
+			}
+			if(null != last) this.buildValue(last,d.column_headers[i],counter,tr);
+		}
+	}
+	if(d.column_headers.length == 0) {
+		var tr = thead.append("tr");
+		var _g = 0, _g1 = d.row_headers;
+		while(_g < _g1.length) {
+			var h = _g1[_g];
+			++_g;
+			tr.append("th").attr("class").string("row header").text().string(this.formatHeader(h));
+		}
+	}
+	var tbody = table.append("tbody"), last = [];
+	var _g = 0, _g1 = d.rows;
+	while(_g < _g1.length) {
+		var row = _g1[_g];
+		++_g;
+		var tr = tbody.append("tr"), len = row.values.length;
+		var _g2 = 0;
+		while(_g2 < len) {
+			var i = _g2++;
+			var v = row.values[i], rep = v == last[i];
+			if(!rep) {
+				last[i] = v;
+				var _g3 = i + 1;
+				while(_g3 < len) {
+					var j = _g3++;
+					last[j] = null;
+				}
+			}
+			tr.append("th").attr("class").string(rep?"row value empty":"row value").text().string(rep?"":this.formatValue(v,d.row_headers[i]));
+		}
+		var _g2 = 0, _g3 = row.cells;
+		while(_g2 < _g3.length) {
+			var cell = _g3[_g2];
+			++_g2;
+			var td = tr.append("td").text().string(this.formatCell(cell));
+			if(this.displayHeatMap) {
+				var c = color(cell / d.calc.max);
+				td.style("background-color").color(c).style("color").color(thx.color.Rgb.contrastBW(c));
+			}
+		}
+		if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("row total").text().string(this.formatCell(row.calc.total));
+	}
+	var tfoot = table.append("tfoot");
+	if(this.displayColumnTotal && d.rows.length > 1) {
+		var tr = tfoot.append("tr");
+		this.prependSpacer(leftspan,tr);
+		var _g = 0, _g1 = d.columns;
+		while(_g < _g1.length) {
+			var col = _g1[_g];
+			++_g;
+			tr.append("th").attr("class").string("column total").text().string(this.formatCell(col.calc.total));
+		}
+		if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("table total").text().string(this.formatCell(d.calc.total));
+	}
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.buildValue = function(value,header,counter,tr) {
+	$s.push("rg.view.html.widget.PivotTable::buildValue");
+	var $spos = $s.length;
+	var th = tr.append("th").attr("class").string("column value").text().string(this.formatValue(value,header));
+	if(counter > 1) th.attr("colspan")["float"](counter);
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.prependSpacer = function(counter,tr) {
+	$s.push("rg.view.html.widget.PivotTable::prependSpacer");
+	var $spos = $s.length;
+	if(counter == 0) {
+		$s.pop();
+		return;
+	}
+	var th = tr.append("th").attr("class").string("spacer");
+	if(counter > 1) th.attr("colspan")["float"](counter);
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.formatCell = function(value) {
+	$s.push("rg.view.html.widget.PivotTable::formatCell");
+	var $spos = $s.length;
+	var $tmp = Floats.format(value,"I");
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.formatHeader = function(value) {
+	$s.push("rg.view.html.widget.PivotTable::formatHeader");
+	var $spos = $s.length;
+	var $tmp = rg.util.RGStrings.humanize(Strings.ltrim(value,"#"));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.formatValue = function(value,header) {
+	$s.push("rg.view.html.widget.PivotTable::formatValue");
+	var $spos = $s.length;
+	if(Std["is"](value,String)) {
+		var $tmp = Strings.rtrim(Strings.ltrim(value,"\""),"\"");
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](value,Float)) {
+		if("#" == header.substr(0,1)) {
+			var $tmp = rg.util.Periodicity.format(header.substr(1),Std.parseFloat(value));
+			$s.pop();
+			return $tmp;
+		}
+		var $tmp = Floats.format(value);
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](value,Int)) {
+		var $tmp = Ints.format(value);
+		$s.pop();
+		return $tmp;
+	}
+	var $tmp = Dynamics.string(value);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.init = function() {
+	$s.push("rg.view.html.widget.PivotTable::init");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.destroy = function() {
+	$s.push("rg.view.html.widget.PivotTable::destroy");
+	var $spos = $s.length;
+	this.container.html().string("");
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
+	$s.push("rg.view.html.widget.PivotTable::transformData");
+	var $spos = $s.length;
+	var column_headers = [], row_headers = [], columns = [], rows = [], tcalc = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, total : 0.0};
+	var variable;
+	var _g1 = 0, _g = Ints.min(1,this.columnVariables.length);
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.columnVariables[i];
+		column_headers.push(variable.type);
+		var _g2 = 0, _g3 = variable.range();
+		while(_g2 < _g3.length) {
+			var value = _g3[_g2];
+			++_g2;
+			columns.push({ values : [value], calc : null});
+		}
+	}
+	var _g1 = 1, _g = this.columnVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.columnVariables[i];
+		column_headers.push(variable.type);
+		var tmp = columns.copy();
+		columns = [];
+		var _g2 = 0;
+		while(_g2 < tmp.length) {
+			var src = tmp[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = variable.range();
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				var column = Objects.clone(src);
+				column.values.push(value);
+				columns.push(column);
+			}
+		}
+	}
+	var name, headers = column_headers;
+	var _g1 = 0, _g = columns.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var column = [columns[i]], ccalc = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, total : 0.0};
+		column[0].calc = ccalc;
+		var _g2 = 0, _g3 = Arrays.filter(dps,(function(column) {
+			$s.push("rg.view.html.widget.PivotTable::transformData@308");
+			var $spos = $s.length;
+			var $tmp = function(dp) {
+				$s.push("rg.view.html.widget.PivotTable::transformData@308@308");
+				var $spos = $s.length;
+				var _g3 = 0, _g21 = headers.length;
+				while(_g3 < _g21) {
+					var j = _g3++;
+					name = headers[j];
+					if(Reflect.field(dp,name) != column[0].values[j]) {
+						$s.pop();
+						return false;
+					}
+				}
+				$s.pop();
+				return true;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(column));
+		while(_g2 < _g3.length) {
+			var dp = _g3[_g2];
+			++_g2;
+			var v = Reflect.field(dp,this.cellVariable.type);
+			if(null == v) continue;
+			if(v < ccalc.min) {
+				ccalc.min = v;
+				if(v < tcalc.min) tcalc.min = v;
+			}
+			if(v > ccalc.max) {
+				ccalc.max = v;
+				if(v > tcalc.max) tcalc.max = v;
+			}
+			ccalc.total += v;
+		}
+		tcalc.total += ccalc.total;
+	}
+	var _g1 = 0, _g = Ints.min(1,this.rowVariables.length);
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.rowVariables[i];
+		row_headers.push(variable.type);
+		var _g2 = 0, _g3 = variable.range();
+		while(_g2 < _g3.length) {
+			var value = _g3[_g2];
+			++_g2;
+			rows.push({ values : [value], calc : null, cells : null});
+		}
+	}
+	var _g1 = 1, _g = this.rowVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.rowVariables[i];
+		row_headers.push(variable.type);
+		var tmp = rows.copy();
+		rows = [];
+		var _g2 = 0;
+		while(_g2 < tmp.length) {
+			var src = tmp[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = variable.range();
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				var row = Objects.clone(src);
+				row.values.push(value);
+				rows.push(row);
+			}
+		}
+	}
+	var name1, headers1 = row_headers;
+	var _g = 0;
+	while(_g < rows.length) {
+		var row = [rows[_g]];
+		++_g;
+		row[0].calc = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, total : 0.0};
+		row[0].cells = [];
+		var rdps = Arrays.filter(dps,(function(row) {
+			$s.push("rg.view.html.widget.PivotTable::transformData@377");
+			var $spos = $s.length;
+			var $tmp = function(d) {
+				$s.push("rg.view.html.widget.PivotTable::transformData@377@377");
+				var $spos = $s.length;
+				var _g2 = 0, _g1 = headers1.length;
+				while(_g2 < _g1) {
+					var j = _g2++;
+					name1 = headers1[j];
+					if(Reflect.field(d,name1) != row[0].values[j]) {
+						$s.pop();
+						return false;
+					}
+				}
+				$s.pop();
+				return true;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(row));
+		var _g1 = 0;
+		while(_g1 < columns.length) {
+			var column = [columns[_g1]];
+			++_g1;
+			var dp = Arrays.firstf(rdps,(function(column) {
+				$s.push("rg.view.html.widget.PivotTable::transformData@389");
+				var $spos = $s.length;
+				var $tmp = function(dp) {
+					$s.push("rg.view.html.widget.PivotTable::transformData@389@389");
+					var $spos = $s.length;
+					var _g3 = 0, _g2 = column[0].values.length;
+					while(_g3 < _g2) {
+						var i = _g3++;
+						if(Reflect.field(dp,column_headers[i]) != column[0].values[i]) {
+							$s.pop();
+							return false;
+						}
+					}
+					$s.pop();
+					return true;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(column));
+			var v = Reflect.field(dp,this.cellVariable.type);
+			if(null == v) {
+				row[0].cells.push(0);
+				continue;
+			}
+			row[0].cells.push(v);
+			if(v < row[0].calc.min) row[0].calc.min = v;
+			if(v > row[0].calc.max) row[0].calc.max = v;
+			row[0].calc.total += v;
+		}
+	}
+	var $tmp = { column_headers : column_headers, row_headers : row_headers, columns : columns, rows : rows, calc : tcalc};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.__class__ = rg.view.html.widget.PivotTable;
 thx.js.Timer = function() { }
 thx.js.Timer.__name__ = ["thx","js","Timer"];
 thx.js.Timer.timer = function(f,delay) {
@@ -19383,7 +20120,7 @@ thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
 rg.controller.App.lastid = 0;
 thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
-rg.controller.Visualizations.html = ["pivottable"];
+rg.controller.Visualizations.html = ["pivottable","leaderboard"];
 rg.controller.Visualizations.svg = ["linechart","piechart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","simplereverse"];
@@ -19393,6 +20130,8 @@ rg.controller.factory.FactoryLayout.LIMIT_WIDTH = 10;
 rg.controller.factory.FactoryLayout.LIMIT_HEIGHT = 10;
 rg.controller.factory.FactoryLayout.DEFAULT_WIDTH = 400;
 rg.controller.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
+rg.view.html.widget.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
+rg.view.html.widget.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 thx.js.Timer.timeout = 0;
 thx.js.Timer.queue = null;
 thx.js.Timer.interval = 0;

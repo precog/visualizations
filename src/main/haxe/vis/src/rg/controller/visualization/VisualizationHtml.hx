@@ -12,5 +12,6 @@ class VisualizationHtml extends Visualization
 	public function new(container : Selection) 
 	{
 		this.container = container;
+		container.classed().add("rg");
 	}
 }

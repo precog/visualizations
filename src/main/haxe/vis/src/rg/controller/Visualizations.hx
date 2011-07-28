@@ -9,7 +9,7 @@ import thx.js.Selection;
 
 class Visualizations 
 {
-	public static var html = ["pivottable"];
+	public static var html = ["pivottable", "leaderboard"];
 	public static var svg = ["linechart", "piechart"];
 	public static var visualizations = svg.concat(html);
 	public static var layouts = ["simple", "simplereverse"];

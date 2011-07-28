@@ -24,18 +24,35 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-	ReportGrid.pivotTable("#chart", {
+	ReportGrid.leaderBoard("#chart", {
+		axes : [{
+			type : ".platform"
+		}, {
+			type : "count"
+		}],
+		data : {
+			src : { path : "/rgadnet", event : "impression", query : ".platform" }
+		},
+		options : {
+		
+		}
+	});
+	ReportGrid.pivotTable("#chart2", {
 		axes : [{
 			type: ".ageRange"
 		}, {
 			type: ".gender"
-		}, {
+		}/*, {
+			type: ".#time:week",
+			view : ["4 weeks ago", "now"]
+		}*/, {
 			type: "count"
 		}],
 		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".ageRange * .gender" }
+			src: { path : "/rgadnet", event : "impression", query : ".ageRange * .gender" /* * .#time:week */ }
 		},
 		options : {
+			columnaxes : 1
 /*
 			sort : function(a,b) { 
 				var av = parseInt(a[".ageRange"].split("-")[0]),

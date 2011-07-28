@@ -17,8 +17,11 @@ import thx.js.Dom;
 import thx.js.Access;
 import thx.color.Hsl;
 import thx.color.Colors;
+import rg.util.DataPoints;
 using Arrays;
 
+// TODO filter data to be sure that they are in the AXIS
+// TODO add overDataPoint
 class PieChart extends Layer
 {
 	public var innerRadius : Float;
@@ -32,7 +35,7 @@ class PieChart extends Layer
 	var pie : Pie<Float>;
 	var radius : Float;
 	public var propertyValue : String;
-	var total : Float;
+	var stats : { min : Float, max : Float, tot : Float };
 	public var animated : Bool;
 	public var animationDuration : Int;
 	public var animationEase : Float -> Float;
@@ -76,7 +79,7 @@ class PieChart extends Layer
 	
 	public dynamic function labelFormatDataPoint(dp : DataPoint, name : String)
 	{
-		return labelFormatValue(Reflect.field(dp, name), total);
+		return labelFormatValue(Reflect.field(dp, name), stats.tot);
 	}
 /*
 	function createSampleLabel(orientation, anchor, angle : Float)
@@ -111,14 +114,7 @@ class PieChart extends Layer
 //		for (i in 0...steps)
 //			createSampleLabel(LabelOrientation.Orthogonal, GridAnchor.Top, 90 + i * 360 / steps);
 	}
-	
-	function calculateTotal(dps : Array<DataPoint>)
-	{
-		total = 0;
-		for (dp in dps)
-			total += Reflect.field(dp, propertyValue);
-	}
-	
+
 	override function resize()
 	{
 		radius = Math.min(width, height) / 2;
@@ -141,7 +137,7 @@ class PieChart extends Layer
 	
 	public function data(dp : Array<DataPoint>)
 	{
-		calculateTotal(dp);
+		stats = DataPoints.stats(dp, propertyValue);
 		// data
 		var choice = g.selectAll("g.group").data(pief(dp), id);
 		
