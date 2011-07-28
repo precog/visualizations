@@ -14,8 +14,8 @@ import rg.data.DataPoint;
 import rg.util.DataPoints;
 import thx.math.Equations;
 import thx.js.Dom;
+using Arrays;
 
-// TODO add sort function
 class Leadeboard 
 {
 	public var variableIndependent : VariableIndependent<Dynamic>;
@@ -26,6 +26,7 @@ class Leadeboard
 	public var animationDelay : Int;
 	public var animationEase : Float -> Float;
 	public var click : DataPoint -> Void;
+	public var sort : DataPoint -> DataPoint -> Int;
 	
 	var container : Selection;
 	var list : Selection;
@@ -66,6 +67,9 @@ class Leadeboard
 	{
 		var filtered = DataPoints.filterByVariable(dps, [variableIndependent]),
 			name = variableDependent.type;
+		if (null != sort)
+			filtered.sort(sort);
+		
 		var stats = this.stats = DataPoints.stats(filtered, variableDependent.type);
 			
 		var choice = list.selectAll("li").data(filtered, id);

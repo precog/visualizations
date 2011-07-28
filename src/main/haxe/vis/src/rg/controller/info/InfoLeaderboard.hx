@@ -12,6 +12,7 @@ class InfoLeaderboard
 	public var animation : InfoAnimation;
 	public var label : InfoLabel;
 	public var click : DataPoint -> Void;
+	public var sort : DataPoint -> DataPoint -> Int;
 	public function new() 
 	{
 		animation = new InfoAnimation();
@@ -36,6 +37,10 @@ class InfoLeaderboard
 			}]
 		}, {
 			field : "click",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
+		}, {
+			field : "sort",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
 		}];

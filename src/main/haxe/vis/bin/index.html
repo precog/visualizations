@@ -43,7 +43,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			label : {
 				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
 			},
-			click : function(dp) { alert(dp[".platform"]); }
+			click : function(dp) { alert(dp[".platform"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
 		}
 	});
 	ReportGrid.pivotTable("#chart2", {

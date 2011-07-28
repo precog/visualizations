@@ -1684,6 +1684,7 @@ rg.view.html.widget.Leadeboard.prototype.animationDuration = null;
 rg.view.html.widget.Leadeboard.prototype.animationDelay = null;
 rg.view.html.widget.Leadeboard.prototype.animationEase = null;
 rg.view.html.widget.Leadeboard.prototype.click = null;
+rg.view.html.widget.Leadeboard.prototype.sort = null;
 rg.view.html.widget.Leadeboard.prototype.container = null;
 rg.view.html.widget.Leadeboard.prototype.list = null;
 rg.view.html.widget.Leadeboard.prototype._created = null;
@@ -1718,6 +1719,7 @@ rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
 	$s.push("rg.view.html.widget.Leadeboard::data");
 	var $spos = $s.length;
 	var filtered = rg.util.DataPoints.filterByVariable(dps,[this.variableIndependent]), name = this.variableDependent.type;
+	if(null != this.sort) filtered.sort(this.sort);
 	var stats = this.stats = rg.util.DataPoints.stats(filtered,this.variableDependent.type);
 	var choice = this.list.selectAll("li").data(filtered,$closure(this,"id"));
 	var enter = choice.enter().append("li").style("background-size").stringf(function(d,i) {
@@ -4905,6 +4907,7 @@ rg.controller.visualization.VisualizationLeaderboard.prototype.init = function()
 	this.chart.animationDelay = this.info.animation.delay;
 	this.chart.animationEase = this.info.animation.ease;
 	if(null != this.info.click) this.chart.click = this.info.click;
+	if(null != this.info.sort) this.chart.sort = this.info.sort;
 	this.chart.init();
 	$s.pop();
 }
@@ -10709,35 +10712,42 @@ rg.controller.info.InfoLeaderboard.filters = function() {
 	$s.push("rg.controller.info.InfoLeaderboard::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoLeaderboard::filters@25");
+		$s.push("rg.controller.info.InfoLeaderboard::filters@26");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLeaderboard::filters@26");
+		$s.push("rg.controller.info.InfoLeaderboard::filters@27");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "label", validator : function(v) {
-		$s.push("rg.controller.info.InfoLeaderboard::filters@32");
+		$s.push("rg.controller.info.InfoLeaderboard::filters@33");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLeaderboard::filters@33");
+		$s.push("rg.controller.info.InfoLeaderboard::filters@34");
 		var $spos = $s.length;
 		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "click", validator : function(v) {
-		$s.push("rg.controller.info.InfoLeaderboard::filters@39");
+		$s.push("rg.controller.info.InfoLeaderboard::filters@40");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "sort", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@44");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
@@ -10751,6 +10761,7 @@ rg.controller.info.InfoLeaderboard.filters = function() {
 rg.controller.info.InfoLeaderboard.prototype.animation = null;
 rg.controller.info.InfoLeaderboard.prototype.label = null;
 rg.controller.info.InfoLeaderboard.prototype.click = null;
+rg.controller.info.InfoLeaderboard.prototype.sort = null;
 rg.controller.info.InfoLeaderboard.prototype.__class__ = rg.controller.info.InfoLeaderboard;
 Lambda = function() { }
 Lambda.__name__ = ["Lambda"];
@@ -12281,13 +12292,14 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.format = Dynamics.format;
+	o.compare = Dynamics.compare;
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 43, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 44, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();

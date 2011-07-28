@@ -39,6 +39,8 @@ class VisualizationLeaderboard extends VisualizationHtml
 		
 		if (null != info.click)
 			chart.click = info.click;
+		if (null != info.sort)
+			chart.sort = info.sort;
 		
 		chart.init();
 	}
