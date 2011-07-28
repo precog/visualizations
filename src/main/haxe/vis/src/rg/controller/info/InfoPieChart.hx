@@ -25,7 +25,7 @@ class InfoPieChart
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var dontfliplabel : Bool;
 	
-	public var click : DataPoint -> Float -> Float -> Void;
+	public var click : DataPoint -> Void;
 	
 	public function new()
 	{

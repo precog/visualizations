@@ -6,12 +6,14 @@
 package rg.controller.info;
 import rg.data.Variable;
 import rg.data.DataPoint;
+import rg.data.Stats;
 
 class InfoLabel 
 {
 	public var title : Array<Variable<Dynamic>> -> Array<DataPoint> -> String;
-	public var value : Float -> Float -> String;
-	public var datapoint : DataPoint -> String -> String;
+	public var datapoint : DataPoint -> Stats -> String;
+	public var datapointOver : DataPoint -> Stats -> String;
+	
 	public function new() { }
 	
 	public static function filters()
@@ -29,6 +31,10 @@ class InfoLabel
 			filter : null
 		}, {
 			field : "datapoint",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
+		}, {
+			field : "datapointOver",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
 		}];

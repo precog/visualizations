@@ -27,7 +27,7 @@ class DataPoints
 		return dps;
 	}
 	
-	public inline static function value(dp : DataPoint, property : String) return Reflect.field(dp, property)
+	public inline static function value(dp : DataPoint, property : String) : Dynamic return Reflect.field(dp, property)
 	
 	public static function stats(dps : Array<DataPoint>, property : String) 
 	{

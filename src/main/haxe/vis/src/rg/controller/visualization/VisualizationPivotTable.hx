@@ -10,6 +10,9 @@ import thx.error.NotImplemented;
 import thx.js.Selection;
 import rg.data.DataPoint;
 
+// TODO wire color paramaters
+// TODO wire label functions
+
 class VisualizationPivotTable extends VisualizationHtml
 {
 	public var info : InfoPivotTable;

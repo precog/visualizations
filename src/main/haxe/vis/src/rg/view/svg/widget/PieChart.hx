@@ -5,6 +5,7 @@
 
 package rg.view.svg.widget;
 import haxe.Md5;
+import thx.culture.FormatNumber;
 import thx.js.Selection;
 import rg.view.svg.panel.Layer;
 import rg.view.svg.panel.Panel;
@@ -18,6 +19,7 @@ import thx.js.Access;
 import thx.color.Hsl;
 import thx.color.Colors;
 import rg.util.DataPoints;
+import rg.data.Stats;
 using Arrays;
 
 // TODO filter data to be sure that they are in the AXIS
@@ -48,7 +50,7 @@ class PieChart extends Layer
 	
 	var labels : Hash<Label>;
 	
-	public var mouseClick : DataPoint -> Float -> Float -> Void;
+	public var mouseClick : DataPoint -> Void;
 	
 	public function new(panel : Panel) 
 	{
@@ -71,15 +73,14 @@ class PieChart extends Layer
 		labelDontFlip = true;
 	}
 
-//		return FormatNumber.percent(100 * value) / total, 1);
-	public dynamic function labelFormatValue(value : Float, total : Float)
+	public dynamic function labelFormatDataPoint(dp : DataPoint, stats : Stats)
 	{
-		return Ints.format(value);
+		return FormatNumber.percent(100 * Reflect.field(dp, propertyValue) / stats.tot, 1);
 	}
 	
-	public dynamic function labelFormatDataPoint(dp : DataPoint, name : String)
+	public dynamic function labelFormatDataPointOver(dp : DataPoint, stats : Stats)
 	{
-		return labelFormatValue(Reflect.field(dp, name), stats.tot);
+		return Ints.format(Reflect.field(dp, propertyValue));
 	}
 /*
 	function createSampleLabel(orientation, anchor, angle : Float)
@@ -183,10 +184,8 @@ class PieChart extends Layer
 	
 	function onMouseClick(dom, i)
 	{
-		var n = Dom.selectNode(dom),
-			d : { dp : DataPoint } = Access.getData(dom);
-		var coords = Svg.mouse(g.node());
-		mouseClick(d.dp, coords[0], coords[1]);
+		var d : { dp : DataPoint } = Access.getData(dom);
+		mouseClick(d.dp);
 	}
 	
 	function removeLabel(dom, i)
@@ -205,7 +204,7 @@ class PieChart extends Layer
 			label = labels.get(d.id),
 			r = radius * labelRadius,
 			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-		label.text = labelFormatDataPoint(d.dp, propertyValue);
+		label.text = labelFormatDataPoint(d.dp, stats);
 		label.place(
 			-2.5 + Math.cos(a) * r, 
 			-2.5 + Math.sin(a) * r,
@@ -229,7 +228,7 @@ class PieChart extends Layer
 			case Orthogonal:
 				label.anchor = GridAnchor.Top;
 		}
-		label.text = labelFormatDataPoint(d.dp, propertyValue);
+		label.text = labelFormatDataPoint(d.dp, stats);
 		label.place(
 			-2.5 + Math.cos(a) * r, 
 			-2.5 + Math.sin(a) * r,

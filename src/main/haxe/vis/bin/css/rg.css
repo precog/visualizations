@@ -336,7 +336,7 @@ font-weight: normal;
 color: #000000;
 }
 
-.rg .pivot-table tfoot th.column.total, .rg .pivot-table tbody th.row.total, .rg .pivot-table tfoot th.table-total
+.rg .pivot-table tfoot th.column.total, .rg .pivot-table tbody th.row.total, .rg .pivot-table tfoot th.table.total
 {
 font-weight: bold;
 font-size: 10px;
@@ -460,7 +460,9 @@ font-size: 11px;
 
 .rg ul.leaderboard li
 {
-	color: #000;	
+	color: #000;
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
+	font-size: 10pt;
 }
 
 .rg .symbol path

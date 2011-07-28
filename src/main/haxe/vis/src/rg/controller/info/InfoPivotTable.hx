@@ -7,9 +7,12 @@ package rg.controller.info;
 import thx.color.Hsl;
 import thx.color.Colors;
 import thx.color.NamedColors;
+using rg.controller.info.Info;
 
 class InfoPivotTable 
 {
+	public var label : InfoLabel;
+	
 	public var heatmapColorStart : Hsl;
 	public var heatmapColorEnd : Hsl;
 	
@@ -21,6 +24,8 @@ class InfoPivotTable
 	
 	public function new() 
 	{
+		label = new InfoLabel();
+		
 		heatmapColorStart = new Hsl(210, 1, 1);
 		heatmapColorEnd = new Hsl(210, 1, 0.5);
 		
@@ -82,6 +87,13 @@ class InfoPivotTable
 			filter : function(v) return [{
 				field : "heatmapColorEnd",
 				value : parseColor(v)
+			}]
+		}, {
+			field : "label",
+			validator : function(v) return Types.isAnonymous(v),
+			filter : function(v) return [{
+				field : "label",
+				value : new InfoLabel().feed(v)
 			}]
 		}];
 	}

@@ -34,7 +34,16 @@ document.addEventListener("DOMContentLoaded", function(){
 			src : { path : "/rgadnet", event : "impression", query : ".platform" }
 		},
 		options : {
-		
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			label : {
+				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+			},
+			click : function(dp) { alert(dp[".platform"]); }
 		}
 	});
 	ReportGrid.pivotTable("#chart2", {

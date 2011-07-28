@@ -1683,10 +1683,31 @@ rg.view.html.widget.Leadeboard.prototype.animated = null;
 rg.view.html.widget.Leadeboard.prototype.animationDuration = null;
 rg.view.html.widget.Leadeboard.prototype.animationDelay = null;
 rg.view.html.widget.Leadeboard.prototype.animationEase = null;
+rg.view.html.widget.Leadeboard.prototype.click = null;
 rg.view.html.widget.Leadeboard.prototype.container = null;
 rg.view.html.widget.Leadeboard.prototype.list = null;
-rg.view.html.widget.Leadeboard.prototype.stats = null;
 rg.view.html.widget.Leadeboard.prototype._created = null;
+rg.view.html.widget.Leadeboard.prototype.stats = null;
+rg.view.html.widget.Leadeboard.prototype.labelDataPoint = function(dp,stats) {
+	$s.push("rg.view.html.widget.Leadeboard::labelDataPoint");
+	var $spos = $s.length;
+	var p = Reflect.field(dp,this.variableIndependent.type);
+	var v = Reflect.field(dp,this.variableDependent.type);
+	var $tmp = rg.util.Properties.humanize(p) + ": " + thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.labelDataPointOver = function(dp,stats) {
+	$s.push("rg.view.html.widget.Leadeboard::labelDataPointOver");
+	var $spos = $s.length;
+	var p = this.variableDependent.type;
+	var v = Reflect.field(dp,this.variableDependent.type);
+	var $tmp = rg.util.Properties.humanize(p) + ": " + thx.culture.FormatNumber["int"](v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.view.html.widget.Leadeboard.prototype.init = function() {
 	$s.push("rg.view.html.widget.Leadeboard::init");
 	var $spos = $s.length;
@@ -1696,25 +1717,34 @@ rg.view.html.widget.Leadeboard.prototype.init = function() {
 rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
 	$s.push("rg.view.html.widget.Leadeboard::data");
 	var $spos = $s.length;
-	var filtered = rg.util.DataPoints.filterByVariable(dps,[this.variableIndependent]), name = this.variableDependent.type, stats = rg.util.DataPoints.stats(filtered,this.variableDependent.type);
+	var filtered = rg.util.DataPoints.filterByVariable(dps,[this.variableIndependent]), name = this.variableDependent.type;
+	var stats = this.stats = rg.util.DataPoints.stats(filtered,this.variableDependent.type);
 	var choice = this.list.selectAll("li").data(filtered,$closure(this,"id"));
-	choice.enter().append("li").style("background-size").stringf(function(d,i) {
-		$s.push("rg.view.html.widget.Leadeboard::data@61");
-		var $spos = $s.length;
-		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title")).style("opacity")["float"](0).eachNode($closure(this,"fadeIn"));
-	choice.update().select("li").style("background-size").stringf(function(d,i) {
-		$s.push("rg.view.html.widget.Leadeboard::data@71");
+	var enter = choice.enter().append("li").style("background-size").stringf(function(d,i) {
+		$s.push("rg.view.html.widget.Leadeboard::data@80");
 		var $spos = $s.length;
 		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
-	choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](1).remove();
+	if(null != this.click) enter.on("click.user",$closure(this,"onClick"));
+	if(this.animated) enter.style("opacity")["float"](0).eachNode($closure(this,"fadeIn")); else enter.style("opacity")["float"](1);
+	choice.update().select("li").style("background-size").stringf(function(d,i) {
+		$s.push("rg.view.html.widget.Leadeboard::data@96");
+		var $spos = $s.length;
+		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
+	if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.onClick = function(dp,_) {
+	$s.push("rg.view.html.widget.Leadeboard::onClick");
+	var $spos = $s.length;
+	this.click(dp);
 	$s.pop();
 }
 rg.view.html.widget.Leadeboard.prototype.fadeIn = function(n,i) {
@@ -1722,7 +1752,7 @@ rg.view.html.widget.Leadeboard.prototype.fadeIn = function(n,i) {
 	var $spos = $s.length;
 	var me = this;
 	thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
-		$s.push("rg.view.html.widget.Leadeboard::fadeIn@91");
+		$s.push("rg.view.html.widget.Leadeboard::fadeIn@124");
 		var $spos = $s.length;
 		me._created++;
 		$s.pop();
@@ -1732,7 +1762,7 @@ rg.view.html.widget.Leadeboard.prototype.fadeIn = function(n,i) {
 rg.view.html.widget.Leadeboard.prototype.description = function(dp,i) {
 	$s.push("rg.view.html.widget.Leadeboard::description");
 	var $spos = $s.length;
-	var $tmp = Dynamics.string(dp);
+	var $tmp = this.labelDataPoint(dp,this.stats);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -1740,7 +1770,7 @@ rg.view.html.widget.Leadeboard.prototype.description = function(dp,i) {
 rg.view.html.widget.Leadeboard.prototype.title = function(dp,i) {
 	$s.push("rg.view.html.widget.Leadeboard::title");
 	var $spos = $s.length;
-	var $tmp = Dynamics.string(dp);
+	var $tmp = this.labelDataPointOver(dp,this.stats);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4868,6 +4898,13 @@ rg.controller.visualization.VisualizationLeaderboard.prototype.init = function()
 	this.chart = new rg.view.html.widget.Leadeboard(this.container);
 	this.chart.variableIndependent = this.independentVariables[0];
 	this.chart.variableDependent = this.dependentVariables[0];
+	if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
+	if(null != this.info.label.datapointOver) this.chart.labelDataPointOver = this.info.label.datapointOver;
+	this.chart.animated = this.info.animation.animated;
+	this.chart.animationDuration = this.info.animation.duration;
+	this.chart.animationDelay = this.info.animation.delay;
+	this.chart.animationEase = this.info.animation.ease;
+	if(null != this.info.click) this.chart.click = this.info.click;
 	this.chart.init();
 	$s.pop();
 }
@@ -6786,8 +6823,8 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	this.chart.outerRadius = this.info.outerradius;
 	this.chart.overRadius = this.info.overradius;
 	this.chart.gradientLightness = this.info.gradientlightness;
-	if(null != this.info.label.value) this.chart.labelFormatValue = this.info.label.value;
 	if(null != this.info.label.datapoint) this.chart.labelFormatDataPoint = this.info.label.datapoint;
+	if(null != this.info.label.datapoint) this.chart.labelFormatDataPointOver = this.info.label.datapointOver;
 	this.chart.labelRadius = this.info.labelradius;
 	this.chart.labelDisplay = this.info.labeldisplay;
 	this.chart.labelOrientation = this.info.labelorientation;
@@ -8781,58 +8818,6 @@ rg.view.svg.widget.Label.prototype.destroy = function() {
 	$s.pop();
 }
 rg.view.svg.widget.Label.prototype.__class__ = rg.view.svg.widget.Label;
-rg.controller.info.InfoAnimation = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.controller.info.InfoAnimation::new");
-	var $spos = $s.length;
-	this.animated = true;
-	this.duration = 1500;
-	this.delay = 150;
-	this.ease = thx.math.Equations.elasticf();
-	$s.pop();
-}
-rg.controller.info.InfoAnimation.__name__ = ["rg","controller","info","InfoAnimation"];
-rg.controller.info.InfoAnimation.filters = function() {
-	$s.push("rg.controller.info.InfoAnimation::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "animated", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@29");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Bool);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "duration", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@33");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Int);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "delay", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@37");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Int);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "ease", validator : function(v) {
-		$s.push("rg.controller.info.InfoAnimation::filters@41");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoAnimation.prototype.animated = null;
-rg.controller.info.InfoAnimation.prototype.duration = null;
-rg.controller.info.InfoAnimation.prototype.ease = null;
-rg.controller.info.InfoAnimation.prototype.delay = null;
-rg.controller.info.InfoAnimation.prototype.__class__ = rg.controller.info.InfoAnimation;
 Floats = function() { }
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
@@ -9179,6 +9164,58 @@ Floats.round = function(x,n) {
 	$s.pop();
 }
 Floats.prototype.__class__ = Floats;
+rg.controller.info.InfoAnimation = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoAnimation::new");
+	var $spos = $s.length;
+	this.animated = true;
+	this.duration = 1500;
+	this.delay = 150;
+	this.ease = thx.math.Equations.elasticf();
+	$s.pop();
+}
+rg.controller.info.InfoAnimation.__name__ = ["rg","controller","info","InfoAnimation"];
+rg.controller.info.InfoAnimation.filters = function() {
+	$s.push("rg.controller.info.InfoAnimation::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "animated", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@29");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "duration", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@33");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Int);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "delay", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@37");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Int);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "ease", validator : function(v) {
+		$s.push("rg.controller.info.InfoAnimation::filters@41");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoAnimation.prototype.animated = null;
+rg.controller.info.InfoAnimation.prototype.duration = null;
+rg.controller.info.InfoAnimation.prototype.ease = null;
+rg.controller.info.InfoAnimation.prototype.delay = null;
+rg.controller.info.InfoAnimation.prototype.__class__ = rg.controller.info.InfoAnimation;
 thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
 thx.math.EaseMode.EaseIn.toString = $estr;
@@ -10384,6 +10421,7 @@ rg.controller.info.InfoPivotTable = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoPivotTable::new");
 	var $spos = $s.length;
+	this.label = new rg.controller.info.InfoLabel();
 	this.heatmapColorStart = new thx.color.Hsl(210,1,1);
 	this.heatmapColorEnd = new thx.color.Hsl(210,1,0.5);
 	this.displayHeatmap = true;
@@ -10407,86 +10445,100 @@ rg.controller.info.InfoPivotTable.filters = function() {
 	$s.push("rg.controller.info.InfoPivotTable::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "columnaxes", validator : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@46");
+		$s.push("rg.controller.info.InfoPivotTable::filters@51");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Int);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@47");
+		$s.push("rg.controller.info.InfoPivotTable::filters@52");
 		var $spos = $s.length;
 		var $tmp = [{ field : "columnAxes", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayheatmap", validator : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@53");
+		$s.push("rg.controller.info.InfoPivotTable::filters@58");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@54");
+		$s.push("rg.controller.info.InfoPivotTable::filters@59");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayHeatmap", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "displaycolumntotal", validator : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@60");
+		$s.push("rg.controller.info.InfoPivotTable::filters@65");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@61");
+		$s.push("rg.controller.info.InfoPivotTable::filters@66");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayColumnTotal", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayrowtotal", validator : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@67");
+		$s.push("rg.controller.info.InfoPivotTable::filters@72");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@68");
+		$s.push("rg.controller.info.InfoPivotTable::filters@73");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayRowTotal", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "startcolor", validator : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@74");
+		$s.push("rg.controller.info.InfoPivotTable::filters@79");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@75");
+		$s.push("rg.controller.info.InfoPivotTable::filters@80");
 		var $spos = $s.length;
 		var $tmp = [{ field : "heatmapColorStart", value : rg.controller.info.InfoPivotTable.parseColor(v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "endcolor", validator : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@81");
+		$s.push("rg.controller.info.InfoPivotTable::filters@86");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPivotTable::filters@82");
+		$s.push("rg.controller.info.InfoPivotTable::filters@87");
 		var $spos = $s.length;
 		var $tmp = [{ field : "heatmapColorEnd", value : rg.controller.info.InfoPivotTable.parseColor(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@93");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@94");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -10495,6 +10547,7 @@ rg.controller.info.InfoPivotTable.filters = function() {
 	return $tmp;
 	$s.pop();
 }
+rg.controller.info.InfoPivotTable.prototype.label = null;
 rg.controller.info.InfoPivotTable.prototype.heatmapColorStart = null;
 rg.controller.info.InfoPivotTable.prototype.heatmapColorEnd = null;
 rg.controller.info.InfoPivotTable.prototype.displayHeatmap = null;
@@ -10644,19 +10697,60 @@ rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(d
 rg.data.source.rgquery.transform.TransformCount.prototype.__class__ = rg.data.source.rgquery.transform.TransformCount;
 rg.data.source.rgquery.transform.TransformCount.__interfaces__ = [rg.data.source.ITransform];
 rg.controller.info.InfoLeaderboard = function(p) {
+	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoLeaderboard::new");
 	var $spos = $s.length;
+	this.animation = new rg.controller.info.InfoAnimation();
+	this.label = new rg.controller.info.InfoLabel();
 	$s.pop();
 }
 rg.controller.info.InfoLeaderboard.__name__ = ["rg","controller","info","InfoLeaderboard"];
 rg.controller.info.InfoLeaderboard.filters = function() {
 	$s.push("rg.controller.info.InfoLeaderboard::filters");
 	var $spos = $s.length;
-	var $tmp = [];
+	var $tmp = [{ field : "animation", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@25");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@26");
+		var $spos = $s.length;
+		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@32");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@33");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@39");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
+rg.controller.info.InfoLeaderboard.prototype.animation = null;
+rg.controller.info.InfoLeaderboard.prototype.label = null;
+rg.controller.info.InfoLeaderboard.prototype.click = null;
 rg.controller.info.InfoLeaderboard.prototype.__class__ = rg.controller.info.InfoLeaderboard;
 Lambda = function() { }
 Lambda.__name__ = ["Lambda"];
@@ -12421,18 +12515,18 @@ rg.view.svg.widget.PieChart.prototype.labelOrientation = null;
 rg.view.svg.widget.PieChart.prototype.labelDontFlip = null;
 rg.view.svg.widget.PieChart.prototype.labels = null;
 rg.view.svg.widget.PieChart.prototype.mouseClick = null;
-rg.view.svg.widget.PieChart.prototype.labelFormatValue = function(value,total) {
-	$s.push("rg.view.svg.widget.PieChart::labelFormatValue");
+rg.view.svg.widget.PieChart.prototype.labelFormatDataPoint = function(dp,stats) {
+	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPoint");
 	var $spos = $s.length;
-	var $tmp = Ints.format(value);
+	var $tmp = thx.culture.FormatNumber.percent(100 * Reflect.field(dp,this.propertyValue) / stats.tot,1);
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.view.svg.widget.PieChart.prototype.labelFormatDataPoint = function(dp,name) {
-	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPoint");
+rg.view.svg.widget.PieChart.prototype.labelFormatDataPointOver = function(dp,stats) {
+	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPointOver");
 	var $spos = $s.length;
-	var $tmp = this.labelFormatValue(Reflect.field(dp,name),this.stats.tot);
+	var $tmp = Ints.format(Reflect.field(dp,this.propertyValue));
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -12460,7 +12554,7 @@ rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@147");
+		$s.push("rg.view.svg.widget.PieChart::data@148");
 		var $spos = $s.length;
 		var $tmp = "group item-" + i;
 		$s.pop();
@@ -12483,9 +12577,8 @@ rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 rg.view.svg.widget.PieChart.prototype.onMouseClick = function(dom,i) {
 	$s.push("rg.view.svg.widget.PieChart::onMouseClick");
 	var $spos = $s.length;
-	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
-	var coords = thx.js.Svg.mouse(this.g.node());
-	this.mouseClick(d.dp,coords[0],coords[1]);
+	var d = Reflect.field(dom,"__data__");
+	this.mouseClick(d.dp);
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.removeLabel = function(dom,i) {
@@ -12501,7 +12594,7 @@ rg.view.svg.widget.PieChart.prototype.updateLabel = function(dom,i) {
 	$s.push("rg.view.svg.widget.PieChart::updateLabel");
 	var $spos = $s.length;
 	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-	label.setText(this.labelFormatDataPoint(d.dp,this.propertyValue));
+	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
 	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 	$s.pop();
 }
@@ -12521,7 +12614,7 @@ rg.view.svg.widget.PieChart.prototype.appendLabel = function(dom,i) {
 		label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
 		break;
 	}
-	label.setText(this.labelFormatDataPoint(d.dp,this.propertyValue));
+	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
 	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 	this.labels.set(d.id,label);
 	$s.pop();
@@ -12588,7 +12681,7 @@ rg.view.svg.widget.PieChart.prototype.arcShape = function(a) {
 	$s.push("rg.view.svg.widget.PieChart::arcShape");
 	var $spos = $s.length;
 	var $tmp = function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::arcShape@326");
+		$s.push("rg.view.svg.widget.PieChart::arcShape@325");
 		var $spos = $s.length;
 		var $tmp = a.shape(d);
 		$s.pop();
@@ -12603,7 +12696,7 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::pief");
 	var $spos = $s.length;
 	var name = this.propertyValue, temp = dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@335");
+		$s.push("rg.view.svg.widget.PieChart::pief@334");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(d,name);
 		$s.pop();
@@ -15939,58 +16032,6 @@ rg.view.frame.StackItem.prototype.setDisposition = function(v) {
 	$s.pop();
 }
 rg.view.frame.StackItem.prototype.__class__ = rg.view.frame.StackItem;
-rg.controller.info.InfoLabel = function(p) {
-	$s.push("rg.controller.info.InfoLabel::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
-rg.controller.info.InfoLabel.filters = function() {
-	$s.push("rg.controller.info.InfoLabel::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "title", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@21");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@22");
-		var $spos = $s.length;
-		var $tmp = [{ field : "title", value : Std["is"](v,String)?function() {
-			$s.push("rg.controller.info.InfoLabel::filters@22@24");
-			var $spos = $s.length;
-			$s.pop();
-			return v;
-			$s.pop();
-		}:v}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "value", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@28");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "datapoint", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@32");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoLabel.prototype.title = null;
-rg.controller.info.InfoLabel.prototype.value = null;
-rg.controller.info.InfoLabel.prototype.datapoint = null;
-rg.controller.info.InfoLabel.prototype.__class__ = rg.controller.info.InfoLabel;
 rg.controller.info.InfoDataSource = function(p) {
 	$s.push("rg.controller.info.InfoDataSource::new");
 	var $spos = $s.length;
@@ -16067,6 +16108,65 @@ rg.controller.info.InfoDataSource.prototype.namedData = null;
 rg.controller.info.InfoDataSource.prototype.data = null;
 rg.controller.info.InfoDataSource.prototype.name = null;
 rg.controller.info.InfoDataSource.prototype.__class__ = rg.controller.info.InfoDataSource;
+rg.controller.info.InfoLabel = function(p) {
+	$s.push("rg.controller.info.InfoLabel::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
+rg.controller.info.InfoLabel.filters = function() {
+	$s.push("rg.controller.info.InfoLabel::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "title", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@23");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@24");
+		var $spos = $s.length;
+		var $tmp = [{ field : "title", value : Std["is"](v,String)?function() {
+			$s.push("rg.controller.info.InfoLabel::filters@24@26");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "value", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@30");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "datapoint", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@34");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "datapointOver", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@38");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.prototype.title = null;
+rg.controller.info.InfoLabel.prototype.datapoint = null;
+rg.controller.info.InfoLabel.prototype.datapointOver = null;
+rg.controller.info.InfoLabel.prototype.__class__ = rg.controller.info.InfoLabel;
 rg.data.VariableDependent = function(type,axis,min,max) {
 	if( type === $_ ) return;
 	$s.push("rg.data.VariableDependent::new");
