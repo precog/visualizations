@@ -5,6 +5,7 @@
 
 package rg.controller.info;
 import rg.data.DataPoint;
+import thx.math.Equations;
 using rg.controller.info.Info;
 
 class InfoLeaderboard 
@@ -24,10 +25,14 @@ class InfoLeaderboard
 		return [{
 			field : "animation",
 			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "animation",
-				value : new InfoAnimation().feed(v)
-			}]
+			filter : function(v) {
+				var animation = new InfoAnimation();
+				animation.ease = Equations.linear;
+				return [{
+					field : "animation",
+					value : animation.feed(v)
+				}];
+			}
 		}, {
 			field : "label",
 			validator : function(v) return Types.isAnonymous(v),

@@ -36,9 +36,9 @@ document.addEventListener("DOMContentLoaded", function(){
 		options : {
 			animation : {
 				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
+				duration : 250,
+//				ease : function(f) { return f; },
+				delay : 250
 			},
 			label : {
 				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
@@ -47,52 +47,12 @@ document.addEventListener("DOMContentLoaded", function(){
 			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
 		}
 	});
-	ReportGrid.pivotTable("#chart2", {
-		axes : [{
-			type: ".ageRange"
-		}, {
-			type: ".gender"
-		}/*, {
-			type: ".#time:week",
-			view : ["4 weeks ago", "now"]
-		}*/, {
-			type: "count"
-		}],
-		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".ageRange * .gender" /* * .#time:week */ }
-		},
-		options : {
-			columnaxes : 1,
-			startcolor : "#ff0000",
-			endcolor : "#000000",
-			displayheatmap : true,
-			click : function(dp) { alert(ReportGrid.dump(dp)) },
-/*
-			sort : function(a,b) { 
-				var av = parseInt(a[".ageRange"].split("-")[0]),
-					bv = parseInt(b[".ageRange"].split("-")[0]);
-				return av - bv;
-			},
-			label : {
-				title : "The Eye",
-				datapoint : function(dp) { 
-					var v = dp["count"];
-					if(v < 6500)
-						return null;
-					else
-						return "age " + dp[".ageRange"] + ": " + ReportGrid.format(v);
-				}
-			}
-*/
-		}
-	});
 
 }, false)
 </script>
 </head>
 <body>
 	<div id="chart"></div>
-	<div id="chart2"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

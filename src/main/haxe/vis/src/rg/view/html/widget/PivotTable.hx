@@ -20,12 +20,8 @@ import rg.util.Properties;
 using Strings;
 using Arrays;
 
-// TODO FUNCTION FORMAT AXES
-// TODO FUNCTION FORMAT AXES VALUES
-// TODO FUNCTION FORMAT CELL VALUES
-// TODO VALUE CLICK
 // TODO add axis filter
-// TODO add overDataPoint
+// TODO add sorting (probably in VisualizationPivotTable)
 class PivotTable 
 {
 	static var defaultColorStart = new Hsl(210, 1, 1);

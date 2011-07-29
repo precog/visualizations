@@ -24,30 +24,7 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-	ReportGrid.leaderBoard("#chart", {
-		axes : [{
-			type : ".platform"
-		}, {
-			type : "count"
-		}],
-		data : {
-			src : { path : "/rgadnet", event : "impression", query : ".platform" }
-		},
-		options : {
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
-			},
-			label : {
-				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
-			},
-			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
-		}
-	});
-	ReportGrid.pivotTable("#chart2", {
+	ReportGrid.pivotTable("#chart", {
 		axes : [{
 			type: ".ageRange"
 		}, {
@@ -66,24 +43,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			startcolor : "#ff0000",
 			endcolor : "#000000",
 			displayheatmap : true,
-			click : function(dp) { alert(ReportGrid.dump(dp)) },
-/*
-			sort : function(a,b) { 
-				var av = parseInt(a[".ageRange"].split("-")[0]),
-					bv = parseInt(b[".ageRange"].split("-")[0]);
-				return av - bv;
-			},
-			label : {
-				title : "The Eye",
-				datapoint : function(dp) { 
-					var v = dp["count"];
-					if(v < 6500)
-						return null;
-					else
-						return "age " + dp[".ageRange"] + ": " + ReportGrid.format(v);
-				}
-			}
-*/
+			click : function(dp) { alert(ReportGrid.dump(dp)) }
 		}
 	});
 
@@ -92,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function(){
 </head>
 <body>
 	<div id="chart"></div>
-	<div id="chart2"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

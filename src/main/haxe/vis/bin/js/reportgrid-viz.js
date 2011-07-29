@@ -6139,7 +6139,9 @@ rg.controller.info.InfoLeaderboard.filters = function() {
 	return [{ field : "animation", validator : function(v) {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
-		return [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
+		var animation = new rg.controller.info.InfoAnimation();
+		animation.ease = thx.math.Equations.linear;
+		return [{ field : "animation", value : rg.controller.info.Info.feed(animation,v)}];
 	}},{ field : "label", validator : function(v) {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
