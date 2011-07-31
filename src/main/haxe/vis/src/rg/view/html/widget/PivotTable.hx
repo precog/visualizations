@@ -20,7 +20,6 @@ import rg.util.Properties;
 using Strings;
 using Arrays;
 
-// TODO add axis filter
 // TODO add sorting (probably in VisualizationPivotTable)
 class PivotTable 
 {

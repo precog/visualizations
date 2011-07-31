@@ -6,6 +6,7 @@
 package rg.controller.factory;
 import rg.controller.info.InfoVariable;
 import rg.data.AxisTime;
+import rg.data.AxisGroupByTime;
 import rg.data.IAxis;
 import rg.data.VariableIndependent;
 import thx.date.DateParser;
@@ -20,12 +21,17 @@ class FactoryVariableIndependent
 		if (null == info.type)
 			return null;
 		var axiscreateer = new FactoryAxis(),
-			axis = axiscreateer.createDiscrete(info.type, info.values),
+			axis = axiscreateer.createDiscrete(info.type, info.values, info.groupBy),
 			min = info.min,
 			max = info.max;
 		if (Std.is(axis, AxisTime))
 		{
 			var periodicity = cast(axis, AxisTime).periodicity;
+			min = defaultMin(normalizeTime(info.min), periodicity);
+			max = defaultMax(normalizeTime(info.max), periodicity);
+		} else if (Std.is(axis, AxisGroupByTime))
+		{
+			var periodicity = cast(axis, AxisGroupByTime).groupBy;
 			min = defaultMin(normalizeTime(info.min), periodicity);
 			max = defaultMax(normalizeTime(info.max), periodicity);
 		}

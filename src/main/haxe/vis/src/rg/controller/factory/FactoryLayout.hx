@@ -27,11 +27,13 @@ class FactoryLayout
 			height = null == info.height 
 				? ((v = container.node().clientHeight) > LIMIT_HEIGHT ? v : DEFAULT_HEIGHT)
 				: info.height;
-		var layout = info.layout;
-		if (null == layout)
-			layout = Visualizations.layoutDefault.get(info.type);
-		if (null == layout)
+		var layoutName = info.layout;
+		if (null == layoutName)
+			layoutName = Visualizations.layoutDefault.get(info.type);
+		if (null == layoutName)
 			throw new Error("unable to find a suitable layout for '{0}'", info.type);
-		return Visualizations.instantiateLayout(layout, width, height, container);
+		var layout = Visualizations.instantiateLayout(layoutName, width, height, container);
+		layout.mainPanelName = info.main;
+		return layout;
 	}
 }

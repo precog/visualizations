@@ -24,14 +24,43 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-	ReportGrid.leaderBoard("#chart", {
+	ReportGrid.lineChart("#chart1", {
 		axes : [{
+			type : ".#time:hour",
+			view : ["2011-07-21 09:00:00", "2011-07-21 23:59:59"]
+		}, {
 			type : ".platform"
 		}, {
 			type : "count"
 		}],
 		data : {
-			src : { path : "/rgadnet", event : "impression", query : ".platform" }
+			src : { path : "/rgadnet", event : "impression", query : ".platform * .#time:hour" }
+		},
+		options : {
+			segmenton : ".platform", 
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			label : {
+				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+			},
+			click : function(dp) { alert(dp[".platform"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
+		}
+	});
+	
+	ReportGrid.lineChart("#chart2", {
+		axes : [{
+			type : ".#time:hour",
+			view : ["2011-07-21 09:00:00", "2011-07-21 23:59:59"]
+		}, {
+			type : "count"
+		}],
+		data : {
+			src : { path : "/rgadnet", event : "impression", query : ".#time:hour" }
 		},
 		options : {
 			animation : {
@@ -47,52 +76,41 @@ document.addEventListener("DOMContentLoaded", function(){
 			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
 		}
 	});
-	ReportGrid.pivotTable("#chart2", {
+	
+	ReportGrid.lineChart("#chart3", {
 		axes : [{
-			type: ".ageRange"
+			type : ".#time:hour",
+			view : ["2011-07-21 09:00:00", "2011-07-21 23:59:59"]
 		}, {
-			type: ".gender"
-		}/*, {
-			type: ".#time:week",
-			view : ["4 weeks ago", "now"]
-		}*/, {
-			type: "count"
+			type : "count"
 		}],
-		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".ageRange * .gender" /* * .#time:week */ }
-		},
+		data : [{
+			src : { path : "/rgadnet", event : "impression", query : ".#time:hour" }
+		}, {
+			src : { path : "/rgadnet", event : "click", query : ".#time:hour" }
+		}],
 		options : {
-			columnaxes : 1,
-			startcolor : "#ff0000",
-			endcolor : "#000000",
-			displayheatmap : true,
-			click : function(dp) { alert(ReportGrid.dump(dp)) },
-/*
-			sort : function(a,b) { 
-				var av = parseInt(a[".ageRange"].split("-")[0]),
-					bv = parseInt(b[".ageRange"].split("-")[0]);
-				return av - bv;
+			segmenton : "event",
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
 			},
 			label : {
-				title : "The Eye",
-				datapoint : function(dp) { 
-					var v = dp["count"];
-					if(v < 6500)
-						return null;
-					else
-						return "age " + dp[".ageRange"] + ": " + ReportGrid.format(v);
-				}
-			}
-*/
+				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+			},
+			click : function(dp) { alert(dp[".platform"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
 		}
 	});
-
 }, false)
 </script>
 </head>
 <body>
-	<div id="chart"></div>
+	<div id="chart1"></div>
 	<div id="chart2"></div>
+	<div id="chart3"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

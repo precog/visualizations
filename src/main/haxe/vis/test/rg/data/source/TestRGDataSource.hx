@@ -13,10 +13,12 @@ using Objects;
 
 class TestRGDataSource 
 {
-	function profile(query : Query)
+	function profile(query : Query, ?groupby : String)
 	{
 		var executor = new MockRGExecutor();
-		new DataSourceReportGrid(executor, "/", "click", query).load();
+		var ds = new DataSourceReportGrid(executor, "/", "click", query);
+		ds.groupBy = groupby;
+		ds.load();
 		return executor.callStack;
 	}
 	
@@ -63,6 +65,17 @@ class TestRGDataSource
 			operation : Count,
 			where : []
 		}));
+	}
+	
+	public function testGroupByOption()
+	{
+		assert([{
+			{ method : "propertySeries", args : ["/", { property : "click", periodicity : "day", groupBy : "week" }] } 
+		}], profile( {
+			exp : [Time("day")],
+			operation : Count,
+			where : []
+		}, "week"));
 	}
 	
 	public function testPropertyValuesSeries()

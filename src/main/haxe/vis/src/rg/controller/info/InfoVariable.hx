@@ -5,12 +5,15 @@
 
 package rg.controller.info;
 
+import rg.util.Periodicity;
+
 class InfoVariable extends Info
 {
 	public var type : Null<String>;
 	public var min : Null<Dynamic>;
 	public var max : Null<Dynamic>;
 	public var values : Null<Array<Dynamic>>;
+	public var groupBy : Null<String>;
 //	public var variableType : VariableType;
 	public function new()
 	{
@@ -23,14 +26,7 @@ class InfoVariable extends Info
 			field : "type",
 			validator : function(v) return Std.is(v, String),
 			filter : null
-		}, /*{
-			field : "variable",
-			validator : function(v) return Std.is(v, String) && (v = v.toLowerCase()) == "indepented" || v == "dependent",
-			filter : [ {
-				field : "variableType",
-				value : v.toLowerCase()) == "indepented" ? Independent : Dependent
-			}]
-		}, */{
+		}, {
 			field : "view",
 			validator : function(v) return Std.is(v, Array) && testViewValue(v[0]) && testViewValue(v[1]),
 			filter : function(v) {
@@ -45,6 +41,15 @@ class InfoVariable extends Info
 			field : "values",
 			validator : function(v) return Std.is(v, Array) && Arrays.all(v, function(v) return Types.isPrimitive(v)),
 			filter : null
+		}, {
+			field : "groupby",
+			validator : function(v : Dynamic) return Std.is(v, String) && Periodicity.isValidGroupBy(v),
+			filter : function(v : Dynamic) {
+				return [{
+					field : "groupBy",
+					value : v
+				}];
+			}
 		}];
 	}
 	

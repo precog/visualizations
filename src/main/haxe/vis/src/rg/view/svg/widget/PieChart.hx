@@ -22,8 +22,8 @@ import rg.util.DataPoints;
 import rg.data.Stats;
 using Arrays;
 
-// TODO filter data to be sure that they are in the AXIS
 // TODO add overDataPoint
+// TODO improve automatic title when the axis is time
 class PieChart extends Layer
 {
 	public var innerRadius : Float;
@@ -138,6 +138,12 @@ class PieChart extends Layer
 	
 	public function data(dp : Array<DataPoint>)
 	{
+		var pv = propertyValue;
+		// filter out dp with zero values
+		dp = dp.filter(function(dp) {
+			return DataPoints.value(dp, pv) > 0;
+		});
+		
 		stats = DataPoints.stats(dp, propertyValue);
 		// data
 		var choice = g.selectAll("g.group").data(pief(dp), id);

@@ -26,8 +26,15 @@ class VariableIndependent<T> extends Variable<T>
 		this.axis = axis;
 	}
 	
-	public function range()
+	public function range() : Array<T>
 	{
-		return axis.range(min, max);
+		// TODO dirty hack ... the view parameters should not affect the query or at least they should bem mediated
+		var a = Types.as(axis, AxisGroupByTime);
+		if (null != a)
+		{
+			return cast a.range(a.first, a.last);
+		} else {
+			return axis.range(min, max);
+		}
 	}
 }

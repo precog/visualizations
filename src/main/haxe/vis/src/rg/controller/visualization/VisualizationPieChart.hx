@@ -24,7 +24,7 @@ class VisualizationPieChart extends VisualizationSvg
 	override function init()
 	{
 		// CHART
-		var panelChart = layout.getPanel("main").panel;
+		var panelChart = layout.getPanel(layout.mainPanelName).panel;
 		chart = new PieChart(panelChart);
 		chart.propertyValue = dependentVariables[0].type;
 		
@@ -70,7 +70,6 @@ class VisualizationPieChart extends VisualizationSvg
 		return null;
 	}
 	
-	// TODO add filter here or inside the chart
 	// TODO move sort to axis
 	override function feedData(data : Array<DataPoint>)
 	{

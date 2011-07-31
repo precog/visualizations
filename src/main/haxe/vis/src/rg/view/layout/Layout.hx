@@ -12,6 +12,7 @@ import rg.view.frame.FrameLayout;
 
 class Layout 
 {
+	public var mainPanelName : String;
 	var space : Space;
 	var container : Selection;
 	public function new(width : Int, height : Int, container : Selection) 

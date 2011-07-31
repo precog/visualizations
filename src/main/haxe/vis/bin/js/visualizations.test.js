@@ -1767,14 +1767,130 @@ rg.controller.info.DomKind.Html.__enum__ = rg.controller.info.DomKind;
 rg.controller.info.DomKind.Svg = ["Svg",1];
 rg.controller.info.DomKind.Svg.toString = $estr;
 rg.controller.info.DomKind.Svg.__enum__ = rg.controller.info.DomKind;
-if(!rg.view.frame) rg.view.frame = {}
-rg.view.frame.Orientation = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
-rg.view.frame.Orientation.Vertical = ["Vertical",0];
-rg.view.frame.Orientation.Vertical.toString = $estr;
-rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
-rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
-rg.view.frame.Orientation.Horizontal.toString = $estr;
-rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
+if(!rg.view.html) rg.view.html = {}
+if(!rg.view.html.widget) rg.view.html.widget = {}
+rg.view.html.widget.Leadeboard = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.view.html.widget.Leadeboard::new");
+	var $spos = $s.length;
+	this.container = container;
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.elasticf();
+	this.animationDelay = 150;
+	this._created = 0;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.__name__ = ["rg","view","html","widget","Leadeboard"];
+rg.view.html.widget.Leadeboard.prototype.variableIndependent = null;
+rg.view.html.widget.Leadeboard.prototype.variableDependent = null;
+rg.view.html.widget.Leadeboard.prototype.animated = null;
+rg.view.html.widget.Leadeboard.prototype.animationDuration = null;
+rg.view.html.widget.Leadeboard.prototype.animationDelay = null;
+rg.view.html.widget.Leadeboard.prototype.animationEase = null;
+rg.view.html.widget.Leadeboard.prototype.click = null;
+rg.view.html.widget.Leadeboard.prototype.sortDataPoint = null;
+rg.view.html.widget.Leadeboard.prototype.container = null;
+rg.view.html.widget.Leadeboard.prototype.list = null;
+rg.view.html.widget.Leadeboard.prototype._created = null;
+rg.view.html.widget.Leadeboard.prototype.stats = null;
+rg.view.html.widget.Leadeboard.prototype.labelDataPoint = function(dp,stats) {
+	$s.push("rg.view.html.widget.Leadeboard::labelDataPoint");
+	var $spos = $s.length;
+	var p = Reflect.field(dp,this.variableIndependent.type);
+	var v = Reflect.field(dp,this.variableDependent.type);
+	var $tmp = rg.util.Properties.humanize(p) + ": " + thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.labelDataPointOver = function(dp,stats) {
+	$s.push("rg.view.html.widget.Leadeboard::labelDataPointOver");
+	var $spos = $s.length;
+	var p = this.variableDependent.type;
+	var v = Reflect.field(dp,this.variableDependent.type);
+	var $tmp = rg.util.Properties.humanize(p) + ": " + thx.culture.FormatNumber["int"](v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.init = function() {
+	$s.push("rg.view.html.widget.Leadeboard::init");
+	var $spos = $s.length;
+	this.list = this.container.append("ul").attr("class").string("leaderboard");
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
+	$s.push("rg.view.html.widget.Leadeboard::data");
+	var $spos = $s.length;
+	var name = this.variableDependent.type;
+	if(null != this.sortDataPoint) dps.sort(this.sortDataPoint);
+	var stats = this.stats = rg.util.DataPoints.stats(dps,this.variableDependent.type);
+	var choice = this.list.selectAll("li").data(dps,$closure(this,"id"));
+	var enter = choice.enter().append("li").style("background-size").stringf(function(d,i) {
+		$s.push("rg.view.html.widget.Leadeboard::data@80");
+		var $spos = $s.length;
+		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
+	if(null != this.click) enter.on("click.user",$closure(this,"onClick"));
+	if(this.animated) enter.style("opacity")["float"](0).eachNode($closure(this,"fadeIn")); else enter.style("opacity")["float"](1);
+	choice.update().select("li").style("background-size").stringf(function(d,i) {
+		$s.push("rg.view.html.widget.Leadeboard::data@96");
+		var $spos = $s.length;
+		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
+	if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.onClick = function(dp,_) {
+	$s.push("rg.view.html.widget.Leadeboard::onClick");
+	var $spos = $s.length;
+	this.click(dp);
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.fadeIn = function(n,i) {
+	$s.push("rg.view.html.widget.Leadeboard::fadeIn");
+	var $spos = $s.length;
+	var me = this;
+	thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
+		$s.push("rg.view.html.widget.Leadeboard::fadeIn@124");
+		var $spos = $s.length;
+		me._created++;
+		$s.pop();
+	});
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.description = function(dp,i) {
+	$s.push("rg.view.html.widget.Leadeboard::description");
+	var $spos = $s.length;
+	var $tmp = this.labelDataPoint(dp,this.stats);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.title = function(dp,i) {
+	$s.push("rg.view.html.widget.Leadeboard::title");
+	var $spos = $s.length;
+	var $tmp = this.labelDataPointOver(dp,this.stats);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.id = function(dp,_) {
+	$s.push("rg.view.html.widget.Leadeboard::id");
+	var $spos = $s.length;
+	var $tmp = rg.util.DataPoints.id(dp,[this.variableDependent.type]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.Leadeboard.prototype.__class__ = rg.view.html.widget.Leadeboard;
 rg.data.IAxis = function() { }
 rg.data.IAxis.__name__ = ["rg","data","IAxis"];
 rg.data.IAxis.prototype.scale = null;
@@ -1962,6 +2078,14 @@ rg.data.OrdinalTickmark.prototype.toString = function() {
 }
 rg.data.OrdinalTickmark.prototype.__class__ = rg.data.OrdinalTickmark;
 rg.data.OrdinalTickmark.__interfaces__ = [rg.data.ITickmark];
+if(!rg.view.frame) rg.view.frame = {}
+rg.view.frame.Orientation = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
+rg.view.frame.Orientation.Vertical = ["Vertical",0];
+rg.view.frame.Orientation.Vertical.toString = $estr;
+rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
+rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
+rg.view.frame.Orientation.Horizontal.toString = $estr;
+rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
 if(!thx.collections) thx.collections = {}
 thx.collections.Sets = function() { }
 thx.collections.Sets.__name__ = ["thx","collections","Sets"];
@@ -2242,6 +2366,8 @@ rg.controller.info.TestInfoVariable.prototype.testFeed = function() {
 	},thx.error.Error,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 42, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
 	rg.controller.info.Info.feed(info,{ values : [1,2,3]});
 	utest.Assert.same([1,2,3],info.values,null,null,{ fileName : "TestInfoVariable.hx", lineNumber : 46, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
+	rg.controller.info.Info.feed(info,{ groupby : "week"});
+	utest.Assert.equals("week",info.groupBy,null,{ fileName : "TestInfoVariable.hx", lineNumber : 49, className : "rg.controller.info.TestInfoVariable", methodName : "testFeed"});
 	$s.pop();
 }
 rg.controller.info.TestInfoVariable.prototype.__class__ = rg.controller.info.TestInfoVariable;
@@ -4247,13 +4373,117 @@ rg.util.TestProperties.prototype.testIsTime = function() {
 	$s.pop();
 }
 rg.util.TestProperties.prototype.__class__ = rg.util.TestProperties;
+if(!rg.controller.visualization) rg.controller.visualization = {}
+rg.controller.visualization.Visualization = function() { }
+rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
+rg.controller.visualization.Visualization.prototype.independentVariables = null;
+rg.controller.visualization.Visualization.prototype.dependentVariables = null;
+rg.controller.visualization.Visualization.prototype.variables = null;
+rg.controller.visualization.Visualization.prototype.setVariables = function(independentVariables,dependentVariables) {
+	$s.push("rg.controller.visualization.Visualization::setVariables");
+	var $spos = $s.length;
+	this.independentVariables = independentVariables;
+	this.dependentVariables = dependentVariables;
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.init = function() {
+	$s.push("rg.controller.visualization.Visualization::init");
+	var $spos = $s.length;
+	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 28, className : "rg.controller.visualization.Visualization", methodName : "init"});
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.Visualization::feedData");
+	var $spos = $s.length;
+	haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.getVariables = function() {
+	$s.push("rg.controller.visualization.Visualization::getVariables");
+	var $spos = $s.length;
+	var $tmp = this.independentVariables.map(function(d,i) {
+		$s.push("rg.controller.visualization.Visualization::getVariables@39");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}).concat(this.dependentVariables.map(function(d,i) {
+		$s.push("rg.controller.visualization.Visualization::getVariables@40");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.Visualization::destroy");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.visualization.Visualization.prototype.__class__ = rg.controller.visualization.Visualization;
+rg.controller.visualization.VisualizationSvg = function(layout) {
+	if( layout === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationSvg::new");
+	var $spos = $s.length;
+	this.layout = layout;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationSvg.__name__ = ["rg","controller","visualization","VisualizationSvg"];
+rg.controller.visualization.VisualizationSvg.__super__ = rg.controller.visualization.Visualization;
+for(var k in rg.controller.visualization.Visualization.prototype ) rg.controller.visualization.VisualizationSvg.prototype[k] = rg.controller.visualization.Visualization.prototype[k];
+rg.controller.visualization.VisualizationSvg.prototype.layout = null;
+rg.controller.visualization.VisualizationSvg.prototype.__class__ = rg.controller.visualization.VisualizationSvg;
+rg.controller.visualization.VisualizationLineChart = function(layout) {
+	if( layout === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationLineChart::new");
+	var $spos = $s.length;
+	rg.controller.visualization.VisualizationSvg.call(this,layout);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLineChart.__name__ = ["rg","controller","visualization","VisualizationLineChart"];
+rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.visualization.VisualizationSvg;
+for(var k in rg.controller.visualization.VisualizationSvg.prototype ) rg.controller.visualization.VisualizationLineChart.prototype[k] = rg.controller.visualization.VisualizationSvg.prototype[k];
+rg.controller.visualization.VisualizationLineChart.prototype.info = null;
+rg.controller.visualization.VisualizationLineChart.prototype.chart = null;
+rg.controller.visualization.VisualizationLineChart.prototype.init = function() {
+	$s.push("rg.controller.visualization.VisualizationLineChart::init");
+	var $spos = $s.length;
+	var main = this.layout.getPanel(this.layout.mainPanelName).panel;
+	this.chart = new rg.view.svg.widget.LineChart(main);
+	this.chart.variableIndependents = this.independentVariables;
+	this.chart.variableDependent = this.dependentVariables[0];
+	this.chart.animated = this.info.animation.animated;
+	this.chart.animationDuration = this.info.animation.duration;
+	this.chart.animationEase = this.info.animation.ease;
+	this.chart.segmenton = this.info.segmenton;
+	this.chart.init();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLineChart.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.VisualizationLineChart::feedData");
+	var $spos = $s.length;
+	this.chart.data(data);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLineChart.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.VisualizationLineChart::destroy");
+	var $spos = $s.length;
+	this.chart.destroy();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLineChart.prototype.__class__ = rg.controller.visualization.VisualizationLineChart;
 if(!thx.math) thx.math = {}
 thx.math.Const = function() { }
 thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype.__class__ = thx.math.Const;
 rg.controller.info.InfoLayout = function(p) {
+	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoLayout::new");
 	var $spos = $s.length;
+	this.main = "main";
 	$s.pop();
 }
 rg.controller.info.InfoLayout.__name__ = ["rg","controller","info","InfoLayout"];
@@ -4261,62 +4491,69 @@ rg.controller.info.InfoLayout.filters = function() {
 	$s.push("rg.controller.info.InfoLayout::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "layout", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@20");
+		$s.push("rg.controller.info.InfoLayout::filters@24");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && Arrays.exists(rg.controller.Visualizations.layouts,v.toLowerCase());
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@21");
+		$s.push("rg.controller.info.InfoLayout::filters@25");
 		var $spos = $s.length;
 		var $tmp = [{ field : "layout", value : v.toLowerCase()}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "width", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@29");
+		$s.push("rg.controller.info.InfoLayout::filters@33");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@30");
+		$s.push("rg.controller.info.InfoLayout::filters@34");
 		var $spos = $s.length;
 		var $tmp = [{ value : Math.round(v), field : "width"}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "height", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@36");
+		$s.push("rg.controller.info.InfoLayout::filters@40");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@37");
+		$s.push("rg.controller.info.InfoLayout::filters@41");
 		var $spos = $s.length;
 		var $tmp = [{ value : Math.round(v), field : "height"}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "visualization", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@43");
+		$s.push("rg.controller.info.InfoLayout::filters@47");
 		var $spos = $s.length;
 		var $tmp = Arrays.exists(rg.controller.Visualizations.svg,v.toLowerCase());
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@44");
+		$s.push("rg.controller.info.InfoLayout::filters@48");
 		var $spos = $s.length;
 		var $tmp = [{ value : v.toLowerCase(), field : "type"}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}}];
+	}},{ field : "main", validator : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@54");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4325,6 +4562,7 @@ rg.controller.info.InfoLayout.prototype.layout = null;
 rg.controller.info.InfoLayout.prototype.width = null;
 rg.controller.info.InfoLayout.prototype.height = null;
 rg.controller.info.InfoLayout.prototype.type = null;
+rg.controller.info.InfoLayout.prototype.main = null;
 rg.controller.info.InfoLayout.prototype.__class__ = rg.controller.info.InfoLayout;
 IntHash = function(p) {
 	if( p === $_ ) return;
@@ -4441,6 +4679,38 @@ thx.translation.ITranslation.prototype.domain = null;
 thx.translation.ITranslation.prototype._ = null;
 thx.translation.ITranslation.prototype.__ = null;
 thx.translation.ITranslation.prototype.__class__ = thx.translation.ITranslation;
+if(!thx.xml) thx.xml = {}
+thx.xml.Namespace = function() { }
+thx.xml.Namespace.__name__ = ["thx","xml","Namespace"];
+thx.xml.Namespace.qualify = function(name) {
+	$s.push("thx.xml.Namespace::qualify");
+	var $spos = $s.length;
+	var i = name.indexOf(":");
+	if(i < 0) {
+		$s.pop();
+		return null;
+	} else {
+		var space = thx.xml.Namespace.prefix.get(name.substr(0,i));
+		if(null == space) throw new thx.error.Error("unable to find a namespace for {0}",[space],null,{ fileName : "Namespace.hx", lineNumber : 29, className : "thx.xml.Namespace", methodName : "qualify"});
+		var $tmp = new thx.xml.NSQualifier(space,name.substr(i + 1));
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.xml.Namespace.prototype.__class__ = thx.xml.Namespace;
+thx.xml.NSQualifier = function(space,local) {
+	if( space === $_ ) return;
+	$s.push("thx.xml.NSQualifier::new");
+	var $spos = $s.length;
+	this.space = space;
+	this.local = local;
+	$s.pop();
+}
+thx.xml.NSQualifier.__name__ = ["thx","xml","NSQualifier"];
+thx.xml.NSQualifier.prototype.space = null;
+thx.xml.NSQualifier.prototype.local = null;
+thx.xml.NSQualifier.prototype.__class__ = thx.xml.NSQualifier;
 Iterators = function() { }
 Iterators.__name__ = ["Iterators"];
 Iterators.indexOf = function(it,v,f) {
@@ -4634,38 +4904,6 @@ Iterators.isIterator = function(v) {
 	$s.pop();
 }
 Iterators.prototype.__class__ = Iterators;
-if(!thx.xml) thx.xml = {}
-thx.xml.Namespace = function() { }
-thx.xml.Namespace.__name__ = ["thx","xml","Namespace"];
-thx.xml.Namespace.qualify = function(name) {
-	$s.push("thx.xml.Namespace::qualify");
-	var $spos = $s.length;
-	var i = name.indexOf(":");
-	if(i < 0) {
-		$s.pop();
-		return null;
-	} else {
-		var space = thx.xml.Namespace.prefix.get(name.substr(0,i));
-		if(null == space) throw new thx.error.Error("unable to find a namespace for {0}",[space],null,{ fileName : "Namespace.hx", lineNumber : 29, className : "thx.xml.Namespace", methodName : "qualify"});
-		var $tmp = new thx.xml.NSQualifier(space,name.substr(i + 1));
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-thx.xml.Namespace.prototype.__class__ = thx.xml.Namespace;
-thx.xml.NSQualifier = function(space,local) {
-	if( space === $_ ) return;
-	$s.push("thx.xml.NSQualifier::new");
-	var $spos = $s.length;
-	this.space = space;
-	this.local = local;
-	$s.pop();
-}
-thx.xml.NSQualifier.__name__ = ["thx","xml","NSQualifier"];
-thx.xml.NSQualifier.prototype.space = null;
-thx.xml.NSQualifier.prototype.local = null;
-thx.xml.NSQualifier.prototype.__class__ = thx.xml.NSQualifier;
 StringTools = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
@@ -5153,18 +5391,52 @@ thx.util.Message.prototype.translate = function(translator,domain) {
 	$s.pop();
 }
 thx.util.Message.prototype.__class__ = thx.util.Message;
-rg.data.VariableDependentContext = function(variable,partial) {
-	if( variable === $_ ) return;
-	$s.push("rg.data.VariableDependentContext::new");
+rg.data.AxisGroupByTime = function(groupby) {
+	if( groupby === $_ ) return;
+	$s.push("rg.data.AxisGroupByTime::new");
 	var $spos = $s.length;
-	this.variable = variable;
-	this.partial = partial;
+	rg.data.AxisOrdinal.call(this,rg.data.AxisGroupByTime.valuesByGroup(groupby));
+	this.groupBy = groupby;
 	$s.pop();
 }
-rg.data.VariableDependentContext.__name__ = ["rg","data","VariableDependentContext"];
-rg.data.VariableDependentContext.prototype.partial = null;
-rg.data.VariableDependentContext.prototype.variable = null;
-rg.data.VariableDependentContext.prototype.__class__ = rg.data.VariableDependentContext;
+rg.data.AxisGroupByTime.__name__ = ["rg","data","AxisGroupByTime"];
+rg.data.AxisGroupByTime.__super__ = rg.data.AxisOrdinal;
+for(var k in rg.data.AxisOrdinal.prototype ) rg.data.AxisGroupByTime.prototype[k] = rg.data.AxisOrdinal.prototype[k];
+rg.data.AxisGroupByTime.valuesByGroup = function(groupby) {
+	$s.push("rg.data.AxisGroupByTime::valuesByGroup");
+	var $spos = $s.length;
+	switch(groupby) {
+	case "minute":
+		var $tmp = Ints.range(1,60);
+		$s.pop();
+		return $tmp;
+	case "hour":
+		var $tmp = Ints.range(1,24);
+		$s.pop();
+		return $tmp;
+	case "day":
+		var $tmp = Ints.range(1,31);
+		$s.pop();
+		return $tmp;
+	case "week":
+		var $tmp = Ints.range(1,7);
+		$s.pop();
+		return $tmp;
+	case "month":
+		var $tmp = Ints.range(1,12);
+		$s.pop();
+		return $tmp;
+	case "year":
+		var $tmp = Ints.range(1,365);
+		$s.pop();
+		return $tmp;
+	default:
+		throw new thx.error.Error("invalid groupby value '{0}'",null,groupby,{ fileName : "AxisGroupByTime.hx", lineNumber : 29, className : "rg.data.AxisGroupByTime", methodName : "valuesByGroup"});
+	}
+	$s.pop();
+}
+rg.data.AxisGroupByTime.prototype.groupBy = null;
+rg.data.AxisGroupByTime.prototype.__class__ = rg.data.AxisGroupByTime;
 rg.controller.factory.FactoryDataContext = function(factoryDataSource) {
 	if( factoryDataSource === $_ ) return;
 	$s.push("rg.controller.factory.FactoryDataContext::new");
@@ -5202,6 +5474,18 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	$s.pop();
 }
 rg.controller.factory.FactoryDataContext.prototype.__class__ = rg.controller.factory.FactoryDataContext;
+rg.data.VariableDependentContext = function(variable,partial) {
+	if( variable === $_ ) return;
+	$s.push("rg.data.VariableDependentContext::new");
+	var $spos = $s.length;
+	this.variable = variable;
+	this.partial = partial;
+	$s.pop();
+}
+rg.data.VariableDependentContext.__name__ = ["rg","data","VariableDependentContext"];
+rg.data.VariableDependentContext.prototype.partial = null;
+rg.data.VariableDependentContext.prototype.variable = null;
+rg.data.VariableDependentContext.prototype.__class__ = rg.data.VariableDependentContext;
 rg.controller.factory.TestFactoryVariableContexts = function(p) {
 	$s.push("rg.controller.factory.TestFactoryVariableContexts::new");
 	var $spos = $s.length;
@@ -5306,9 +5590,16 @@ rg.data.VariableIndependent.prototype.axis = null;
 rg.data.VariableIndependent.prototype.range = function() {
 	$s.push("rg.data.VariableIndependent::range");
 	var $spos = $s.length;
-	var $tmp = this.axis.range(this.min,this.max);
-	$s.pop();
-	return $tmp;
+	var a = Types["as"](this.axis,rg.data.AxisGroupByTime);
+	if(null != a) {
+		var $tmp = a.range(a.getFirst(),a.getLast());
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = this.axis.range(this.min,this.max);
+		$s.pop();
+		return $tmp;
+	}
 	$s.pop();
 }
 rg.data.VariableIndependent.prototype.__class__ = rg.data.VariableIndependent;
@@ -5435,6 +5726,55 @@ rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.testTran
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeSeriesTransform;
+rg.controller.visualization.VisualizationHtml = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationHtml::new");
+	var $spos = $s.length;
+	this.container = container;
+	container.classed().add("rg");
+	$s.pop();
+}
+rg.controller.visualization.VisualizationHtml.__name__ = ["rg","controller","visualization","VisualizationHtml"];
+rg.controller.visualization.VisualizationHtml.__super__ = rg.controller.visualization.Visualization;
+for(var k in rg.controller.visualization.Visualization.prototype ) rg.controller.visualization.VisualizationHtml.prototype[k] = rg.controller.visualization.Visualization.prototype[k];
+rg.controller.visualization.VisualizationHtml.prototype.container = null;
+rg.controller.visualization.VisualizationHtml.prototype.__class__ = rg.controller.visualization.VisualizationHtml;
+rg.controller.visualization.VisualizationLeaderboard = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationLeaderboard::new");
+	var $spos = $s.length;
+	rg.controller.visualization.VisualizationHtml.call(this,container);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLeaderboard.__name__ = ["rg","controller","visualization","VisualizationLeaderboard"];
+rg.controller.visualization.VisualizationLeaderboard.__super__ = rg.controller.visualization.VisualizationHtml;
+for(var k in rg.controller.visualization.VisualizationHtml.prototype ) rg.controller.visualization.VisualizationLeaderboard.prototype[k] = rg.controller.visualization.VisualizationHtml.prototype[k];
+rg.controller.visualization.VisualizationLeaderboard.prototype.info = null;
+rg.controller.visualization.VisualizationLeaderboard.prototype.chart = null;
+rg.controller.visualization.VisualizationLeaderboard.prototype.init = function() {
+	$s.push("rg.controller.visualization.VisualizationLeaderboard::init");
+	var $spos = $s.length;
+	this.chart = new rg.view.html.widget.Leadeboard(this.container);
+	this.chart.variableIndependent = this.independentVariables[0];
+	this.chart.variableDependent = this.dependentVariables[0];
+	if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
+	if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
+	this.chart.animated = this.info.animation.animated;
+	this.chart.animationDuration = this.info.animation.duration;
+	this.chart.animationDelay = this.info.animation.delay;
+	this.chart.animationEase = this.info.animation.ease;
+	if(null != this.info.click) this.chart.click = this.info.click;
+	if(null != this.info.sortDataPoint) this.chart.sortDataPoint = this.info.sortDataPoint;
+	this.chart.init();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLeaderboard.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.VisualizationLeaderboard::feedData");
+	var $spos = $s.length;
+	this.chart.data(data);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLeaderboard.prototype.__class__ = rg.controller.visualization.VisualizationLeaderboard;
 Iterables = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.indexOf = function(it,v,f) {
@@ -6080,6 +6420,10 @@ thx.js.UpdateSelection.prototype.exit = function() {
 	$s.pop();
 }
 thx.js.UpdateSelection.prototype.__class__ = thx.js.UpdateSelection;
+rg.data.source.ITransform = function() { }
+rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
+rg.data.source.ITransform.prototype.transform = null;
+rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
 thx.culture.Culture = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__super__ = thx.culture.Info;
@@ -6215,10 +6559,6 @@ thx.cultures.EnUS.getCulture = function() {
 	$s.pop();
 }
 thx.cultures.EnUS.prototype.__class__ = thx.cultures.EnUS;
-rg.data.source.ITransform = function() { }
-rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
-rg.data.source.ITransform.prototype.transform = null;
-rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
 if(!thx.error) thx.error = {}
 thx.error.Error = function(message,params,param,pos) {
 	if( message === $_ ) return;
@@ -7205,15 +7545,16 @@ rg.controller.info.InfoPieChart = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoPieChart::new");
 	var $spos = $s.length;
-	this.innerRadius = 0.0;
-	this.labelRadius = 0.45;
-	this.labelDisplay = true;
-	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
-	this.outerRadius = 0.9;
-	this.overRadius = 0.95;
+	this.innerradius = 0.0;
+	this.labelradius = 0.45;
+	this.labeldisplay = true;
+	this.labelorientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
+	this.outerradius = 0.9;
+	this.overradius = 0.95;
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabel();
-	this.gradientLightness = 1.5;
+	this.gradientlightness = 1.5;
+	this.dontfliplabel = true;
 	$s.pop();
 }
 rg.controller.info.InfoPieChart.__name__ = ["rg","controller","info","InfoPieChart"];
@@ -7233,7 +7574,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	switch(name) {
 	case "fixed":
 		var v = Std.parseFloat(s.split("-")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 54, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 58, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 		var $tmp = rg.view.svg.widget.LabelOrientation.FixedAngle(v);
 		$s.pop();
 		return $tmp;
@@ -7250,133 +7591,149 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 		$s.pop();
 		return $tmp;
 	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 63, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 67, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 	}
 	$s.pop();
 }
 rg.controller.info.InfoPieChart.filters = function() {
 	$s.push("rg.controller.info.InfoPieChart::filters");
 	var $spos = $s.length;
-	var $tmp = [{ field : "gradientLightness", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@71");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Float);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "labelRadius", validator : function(v) {
+	var $tmp = [{ field : "gradientlightness", validator : function(v) {
 		$s.push("rg.controller.info.InfoPieChart::filters@75");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null},{ field : "displayLabels", validator : function(v) {
+	}, filter : null},{ field : "labelradius", validator : function(v) {
 		$s.push("rg.controller.info.InfoPieChart::filters@79");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "dontfliplabel", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@83");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "displaylabels", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@87");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@80");
+		$s.push("rg.controller.info.InfoPieChart::filters@88");
 		var $spos = $s.length;
-		var $tmp = [{ field : "labelDisplay", value : v}];
+		var $tmp = [{ field : "labeldisplay", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "labelOrientation", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@86");
+	}},{ field : "labelorientation", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@94");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && rg.controller.info.InfoPieChart.validateOrientation(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@87");
+		$s.push("rg.controller.info.InfoPieChart::filters@95");
 		var $spos = $s.length;
-		var $tmp = [{ field : "labelOrientation", value : rg.controller.info.InfoPieChart.filterOrientation(v)}];
+		var $tmp = [{ field : "labelorientation", value : rg.controller.info.InfoPieChart.filterOrientation(v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "innerRadius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@93");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Float);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "outerRadius", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@97");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Float);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "overRadius", validator : function(v) {
+	}},{ field : "innerradius", validator : function(v) {
 		$s.push("rg.controller.info.InfoPieChart::filters@101");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null},{ field : "animation", validator : function(v) {
+	}, filter : null},{ field : "outerradius", validator : function(v) {
 		$s.push("rg.controller.info.InfoPieChart::filters@105");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "overradius", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@109");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "animation", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@113");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@106");
+		$s.push("rg.controller.info.InfoPieChart::filters@114");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "label", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@112");
+		$s.push("rg.controller.info.InfoPieChart::filters@120");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@113");
+		$s.push("rg.controller.info.InfoPieChart::filters@121");
 		var $spos = $s.length;
 		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "sort", validator : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@119");
+		$s.push("rg.controller.info.InfoPieChart::filters@127");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoPieChart::filters@120");
+		$s.push("rg.controller.info.InfoPieChart::filters@128");
 		var $spos = $s.length;
 		var $tmp = [{ field : "sortDataPoint", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}}];
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoPieChart::filters@134");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.controller.info.InfoPieChart.prototype.labelRadius = null;
-rg.controller.info.InfoPieChart.prototype.labelDisplay = null;
-rg.controller.info.InfoPieChart.prototype.labelOrientation = null;
-rg.controller.info.InfoPieChart.prototype.innerRadius = null;
-rg.controller.info.InfoPieChart.prototype.outerRadius = null;
-rg.controller.info.InfoPieChart.prototype.overRadius = null;
+rg.controller.info.InfoPieChart.prototype.labelradius = null;
+rg.controller.info.InfoPieChart.prototype.labeldisplay = null;
+rg.controller.info.InfoPieChart.prototype.labelorientation = null;
+rg.controller.info.InfoPieChart.prototype.innerradius = null;
+rg.controller.info.InfoPieChart.prototype.outerradius = null;
+rg.controller.info.InfoPieChart.prototype.overradius = null;
 rg.controller.info.InfoPieChart.prototype.animation = null;
 rg.controller.info.InfoPieChart.prototype.label = null;
-rg.controller.info.InfoPieChart.prototype.gradientLightness = null;
+rg.controller.info.InfoPieChart.prototype.gradientlightness = null;
 rg.controller.info.InfoPieChart.prototype.sortDataPoint = null;
+rg.controller.info.InfoPieChart.prototype.dontfliplabel = null;
+rg.controller.info.InfoPieChart.prototype.click = null;
 rg.controller.info.InfoPieChart.prototype.__class__ = rg.controller.info.InfoPieChart;
 rg.view.frame.Frame = function(p) {
 	if( p === $_ ) return;
@@ -7860,64 +8217,6 @@ utest.ui.text.HtmlReport.prototype._handler = function(report) {
 }
 utest.ui.text.HtmlReport.prototype.__class__ = utest.ui.text.HtmlReport;
 utest.ui.text.HtmlReport.__interfaces__ = [utest.ui.common.IReport];
-if(!rg.controller.visualization) rg.controller.visualization = {}
-rg.controller.visualization.Visualization = function() { }
-rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
-rg.controller.visualization.Visualization.prototype.independentVariables = null;
-rg.controller.visualization.Visualization.prototype.dependentVariables = null;
-rg.controller.visualization.Visualization.prototype.variables = null;
-rg.controller.visualization.Visualization.prototype.setVariables = function(independentVariables,dependentVariables) {
-	$s.push("rg.controller.visualization.Visualization::setVariables");
-	var $spos = $s.length;
-	this.independentVariables = independentVariables;
-	this.dependentVariables = dependentVariables;
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.init = function() {
-	$s.push("rg.controller.visualization.Visualization::init");
-	var $spos = $s.length;
-	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 28, className : "rg.controller.visualization.Visualization", methodName : "init"});
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.feedData = function(data) {
-	$s.push("rg.controller.visualization.Visualization::feedData");
-	var $spos = $s.length;
-	haxe.Log.trace("DATA FEED " + data,{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.getVariables = function() {
-	$s.push("rg.controller.visualization.Visualization::getVariables");
-	var $spos = $s.length;
-	var $tmp = this.independentVariables.map(function(d,i) {
-		$s.push("rg.controller.visualization.Visualization::getVariables@39");
-		var $spos = $s.length;
-		$s.pop();
-		return d;
-		$s.pop();
-	}).concat(this.dependentVariables.map(function(d,i) {
-		$s.push("rg.controller.visualization.Visualization::getVariables@40");
-		var $spos = $s.length;
-		$s.pop();
-		return d;
-		$s.pop();
-	}));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.visualization.Visualization.prototype.__class__ = rg.controller.visualization.Visualization;
-rg.controller.visualization.VisualizationSvg = function(layout) {
-	if( layout === $_ ) return;
-	$s.push("rg.controller.visualization.VisualizationSvg::new");
-	var $spos = $s.length;
-	this.layout = layout;
-	$s.pop();
-}
-rg.controller.visualization.VisualizationSvg.__name__ = ["rg","controller","visualization","VisualizationSvg"];
-rg.controller.visualization.VisualizationSvg.__super__ = rg.controller.visualization.Visualization;
-for(var k in rg.controller.visualization.Visualization.prototype ) rg.controller.visualization.VisualizationSvg.prototype[k] = rg.controller.visualization.Visualization.prototype[k];
-rg.controller.visualization.VisualizationSvg.prototype.layout = null;
-rg.controller.visualization.VisualizationSvg.prototype.__class__ = rg.controller.visualization.VisualizationSvg;
 rg.controller.visualization.VisualizationPieChart = function(layout) {
 	if( layout === $_ ) return;
 	$s.push("rg.controller.visualization.VisualizationPieChart::new");
@@ -7952,20 +8251,24 @@ rg.controller.visualization.VisualizationPieChart.prototype.info = null;
 rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	$s.push("rg.controller.visualization.VisualizationPieChart::init");
 	var $spos = $s.length;
-	var panelChart = this.layout.getPanel("main").panel;
+	var panelChart = this.layout.getPanel(this.layout.mainPanelName).panel;
 	this.chart = new rg.view.svg.widget.PieChart(panelChart);
 	this.chart.propertyValue = this.dependentVariables[0].type;
-	this.chart.innerRadius = this.info.innerRadius;
-	this.chart.outerRadius = this.info.outerRadius;
-	this.chart.overRadius = this.info.overRadius;
-	this.chart.gradientLightness = this.info.gradientLightness;
-	this.chart.labelRadius = this.info.labelRadius;
-	this.chart.labelDisplay = this.info.labelDisplay;
-	this.chart.labelOrientation = this.info.labelOrientation;
+	this.chart.innerRadius = this.info.innerradius;
+	this.chart.outerRadius = this.info.outerradius;
+	this.chart.overRadius = this.info.overradius;
+	this.chart.gradientLightness = this.info.gradientlightness;
+	if(null != this.info.label.datapoint) this.chart.labelFormatDataPoint = this.info.label.datapoint;
+	if(null != this.info.label.datapoint) this.chart.labelFormatDataPointOver = this.info.label.datapointover;
+	this.chart.labelRadius = this.info.labelradius;
+	this.chart.labelDisplay = this.info.labeldisplay;
+	this.chart.labelOrientation = this.info.labelorientation;
+	this.chart.labelDontFlip = this.info.dontfliplabel;
 	this.chart.animated = this.info.animation.animated;
 	this.chart.animationDuration = this.info.animation.duration;
 	this.chart.animationEase = this.info.animation.ease;
 	this.chart.animationDelay = this.info.animation.delay;
+	if(null != this.info.click) this.chart.mouseClick = this.info.click;
 	this.panelContextTitle = this.layout.getPanel("title");
 	if(null == this.panelContextTitle) {
 		$s.pop();
@@ -7986,7 +8289,154 @@ rg.controller.visualization.VisualizationPieChart.prototype.feedData = function(
 	this.chart.data(data);
 	$s.pop();
 }
+rg.controller.visualization.VisualizationPieChart.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.VisualizationPieChart::destroy");
+	var $spos = $s.length;
+	this.chart.destroy();
+	if(null != this.title) this.title.destroy();
+	rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
+	$s.pop();
+}
 rg.controller.visualization.VisualizationPieChart.prototype.__class__ = rg.controller.visualization.VisualizationPieChart;
+rg.util.DataPoints = function() { }
+rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
+rg.util.DataPoints.partition = function(dps,property,def) {
+	$s.push("rg.util.DataPoints::partition");
+	var $spos = $s.length;
+	if(def == null) def = "default";
+	var map = new Hash();
+	var getBucket = function(n) {
+		$s.push("rg.util.DataPoints::partition@19");
+		var $spos = $s.length;
+		var bucket = map.get(n);
+		if(null == bucket) {
+			bucket = [];
+			map.set(n,bucket);
+		}
+		$s.pop();
+		return bucket;
+		$s.pop();
+	};
+	var v, name, bucket;
+	var _g = 0;
+	while(_g < dps.length) {
+		var dp = dps[_g];
+		++_g;
+		v = Reflect.field(dp,property);
+		if(null == v) name = def; else name = Dynamics.string(v);
+		getBucket(name).push(dp);
+	}
+	$s.pop();
+	return map;
+	$s.pop();
+}
+rg.util.DataPoints.filterByIndependents = function(dps,variables) {
+	$s.push("rg.util.DataPoints::filterByIndependents");
+	var $spos = $s.length;
+	var _g = 0;
+	while(_g < variables.length) {
+		var variable = [variables[_g]];
+		++_g;
+		var values = [variable[0].range()];
+		dps = Arrays.filter(dps,(function(values,variable) {
+			$s.push("rg.util.DataPoints::filterByIndependents@47");
+			var $spos = $s.length;
+			var $tmp = function(dp) {
+				$s.push("rg.util.DataPoints::filterByIndependents@47@47");
+				var $spos = $s.length;
+				var v = Reflect.field(dp,variable[0].type);
+				if(null == v) {
+					$s.pop();
+					return false;
+				}
+				var $tmp = Arrays.exists(values[0],v);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(values,variable));
+	}
+	$s.pop();
+	return dps;
+	$s.pop();
+}
+rg.util.DataPoints.filterByDependents = function(dps,variables) {
+	$s.push("rg.util.DataPoints::filterByDependents");
+	var $spos = $s.length;
+	var _g = 0;
+	while(_g < variables.length) {
+		var variable = [variables[_g]];
+		++_g;
+		dps = Arrays.filter(dps,(function(variable) {
+			$s.push("rg.util.DataPoints::filterByDependents@61");
+			var $spos = $s.length;
+			var $tmp = function(dp) {
+				$s.push("rg.util.DataPoints::filterByDependents@61@61");
+				var $spos = $s.length;
+				if(null == Reflect.field(dp,variable[0].type)) {
+					$s.pop();
+					return false;
+				} else {
+					$s.pop();
+					return true;
+				}
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(variable));
+	}
+	$s.pop();
+	return dps;
+	$s.pop();
+}
+rg.util.DataPoints.value = function(dp,property) {
+	$s.push("rg.util.DataPoints::value");
+	var $spos = $s.length;
+	var $tmp = Reflect.field(dp,property);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.DataPoints.stats = function(dps,property) {
+	$s.push("rg.util.DataPoints::stats");
+	var $spos = $s.length;
+	var min = Math.POSITIVE_INFINITY, max = Math.NEGATIVE_INFINITY, tot = 0.0;
+	var _g = 0;
+	while(_g < dps.length) {
+		var dp = dps[_g];
+		++_g;
+		var v = Reflect.field(dp,property);
+		if(null == v) continue;
+		if(v < min) min = v;
+		if(v > max) max = v;
+		tot += v;
+	}
+	var $tmp = { min : min, max : max, tot : tot};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.DataPoints.id = function(dp,dependentProperties) {
+	$s.push("rg.util.DataPoints::id");
+	var $spos = $s.length;
+	var o = Objects.clone(dp);
+	var _g = 0;
+	while(_g < dependentProperties.length) {
+		var p = dependentProperties[_g];
+		++_g;
+		Reflect.deleteField(o,p);
+	}
+	var $tmp = haxe.Md5.encode(Dynamics.string(o));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.DataPoints.prototype.__class__ = rg.util.DataPoints;
 Ints = function() { }
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
@@ -8570,7 +9020,7 @@ rg.controller.factory.FactoryDataSource.prototype.create = function(info) {
 		return $tmp;
 	}
 	if(null != info.path && null != info.event) {
-		var $tmp = this.createFromQuery(info.path,info.event,info.query);
+		var $tmp = this.createFromQuery(info.path,info.event,info.query,info.groupBy);
 		$s.pop();
 		return $tmp;
 	}
@@ -8585,11 +9035,11 @@ rg.controller.factory.FactoryDataSource.prototype.createFromData = function(data
 	return $tmp;
 	$s.pop();
 }
-rg.controller.factory.FactoryDataSource.prototype.createFromQuery = function(path,event,query) {
+rg.controller.factory.FactoryDataSource.prototype.createFromQuery = function(path,event,query,groupby) {
 	$s.push("rg.controller.factory.FactoryDataSource::createFromQuery");
 	var $spos = $s.length;
 	if(null == query) query = "";
-	var $tmp = new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query));
+	var $tmp = new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),groupby);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -9211,30 +9661,197 @@ rg.controller.factory.FactoryHtmlVisualization = function(p) {
 	$s.pop();
 }
 rg.controller.factory.FactoryHtmlVisualization.__name__ = ["rg","controller","factory","FactoryHtmlVisualization"];
-rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,options) {
+rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,container,options) {
 	$s.push("rg.controller.factory.FactoryHtmlVisualization::create");
 	var $spos = $s.length;
-	throw new thx.error.NotImplemented({ fileName : "FactoryHtmlVisualization.hx", lineNumber : 19, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
+	switch(type) {
+	case "pivottable":
+		var chart = new rg.controller.visualization.VisualizationPivotTable(container);
+		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoPivotTable(),options);
+		$s.pop();
+		return chart;
+	case "leaderboard":
+		var chart = new rg.controller.visualization.VisualizationLeaderboard(container);
+		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoLeaderboard(),options);
+		$s.pop();
+		return chart;
+	default:
+		throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 35, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
+	}
 	$s.pop();
 	return null;
 	$s.pop();
 }
 rg.controller.factory.FactoryHtmlVisualization.prototype.__class__ = rg.controller.factory.FactoryHtmlVisualization;
 rg.controller.info.InfoLineChart = function(p) {
+	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoLineChart::new");
 	var $spos = $s.length;
+	this.animation = new rg.controller.info.InfoAnimation();
 	$s.pop();
 }
 rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
 rg.controller.info.InfoLineChart.filters = function() {
 	$s.push("rg.controller.info.InfoLineChart::filters");
 	var $spos = $s.length;
-	var $tmp = [];
+	var $tmp = [{ field : "animation", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@23");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@24");
+		var $spos = $s.length;
+		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "segmenton", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@30");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
+rg.controller.info.InfoLineChart.prototype.animation = null;
+rg.controller.info.InfoLineChart.prototype.segmenton = null;
 rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
+rg.controller.info.InfoLabel = function(p) {
+	$s.push("rg.controller.info.InfoLabel::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
+rg.controller.info.InfoLabel.filters = function() {
+	$s.push("rg.controller.info.InfoLabel::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "title", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@23");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@24");
+		var $spos = $s.length;
+		var $tmp = [{ field : "title", value : Std["is"](v,String)?function() {
+			$s.push("rg.controller.info.InfoLabel::filters@24@26");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "value", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@30");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "datapoint", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@34");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "datapointover", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabel::filters@38");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLabel.prototype.title = null;
+rg.controller.info.InfoLabel.prototype.datapoint = null;
+rg.controller.info.InfoLabel.prototype.datapointover = null;
+rg.controller.info.InfoLabel.prototype.__class__ = rg.controller.info.InfoLabel;
+rg.controller.info.InfoLabelAxis = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoLabelAxis::new");
+	var $spos = $s.length;
+	rg.controller.info.InfoLabel.call(this);
+	$s.pop();
+}
+rg.controller.info.InfoLabelAxis.__name__ = ["rg","controller","info","InfoLabelAxis"];
+rg.controller.info.InfoLabelAxis.__super__ = rg.controller.info.InfoLabel;
+for(var k in rg.controller.info.InfoLabel.prototype ) rg.controller.info.InfoLabelAxis.prototype[k] = rg.controller.info.InfoLabel.prototype[k];
+rg.controller.info.InfoLabelAxis.filters = function() {
+	$s.push("rg.controller.info.InfoLabelAxis::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "axis", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabelAxis::filters@20");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "axisvalue", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabelAxis::filters@24");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLabelAxis.prototype.axis = null;
+rg.controller.info.InfoLabelAxis.prototype.axisvalue = null;
+rg.controller.info.InfoLabelAxis.prototype.__class__ = rg.controller.info.InfoLabelAxis;
+rg.controller.info.InfoLabelPivotTable = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoLabelPivotTable::new");
+	var $spos = $s.length;
+	rg.controller.info.InfoLabelAxis.call(this);
+	$s.pop();
+}
+rg.controller.info.InfoLabelPivotTable.__name__ = ["rg","controller","info","InfoLabelPivotTable"];
+rg.controller.info.InfoLabelPivotTable.__super__ = rg.controller.info.InfoLabelAxis;
+for(var k in rg.controller.info.InfoLabelAxis.prototype ) rg.controller.info.InfoLabelPivotTable.prototype[k] = rg.controller.info.InfoLabelAxis.prototype[k];
+rg.controller.info.InfoLabelPivotTable.filters = function() {
+	$s.push("rg.controller.info.InfoLabelPivotTable::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "total", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabelPivotTable::filters@20");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "totalover", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabelPivotTable::filters@24");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}].concat(rg.controller.info.InfoLabelAxis.filters());
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLabelPivotTable.prototype.total = null;
+rg.controller.info.InfoLabelPivotTable.prototype.totalover = null;
+rg.controller.info.InfoLabelPivotTable.prototype.__class__ = rg.controller.info.InfoLabelPivotTable;
 utest.ui.common.ClassResult = function(className,setupName,teardownName) {
 	if( className === $_ ) return;
 	$s.push("utest.ui.common.ClassResult::new");
@@ -9636,238 +10253,6 @@ thx.js.AccessDataStyle.prototype.data = function() {
 	$s.pop();
 }
 thx.js.AccessDataStyle.prototype.__class__ = thx.js.AccessDataStyle;
-rg.view.svg.widget.Label = function(container) {
-	if( container === $_ ) return;
-	$s.push("rg.view.svg.widget.Label::new");
-	var $spos = $s.length;
-	this.g = container.append("svg:g");
-	this.gs = this.g.append("svg:g").attr("transform").string("translate(0,0)");
-	this.gr = this.gs.append("svg:g");
-	this.r = this.g.append("svg:g");
-	this.s = this.gr.append("svg:text").attr("class").string("shadow");
-	this.t = this.r.append("svg:text");
-	this.dontFlip = true;
-	this.setShadowOffset(1.25);
-	this.x = 0;
-	this.y = 0;
-	this.angle = 0;
-	this["orientation"] = rg.view.svg.widget.LabelOrientation.FixedAngle(0);
-	this["anchor"] = rg.view.svg.widget.GridAnchor.Center;
-	$s.pop();
-}
-rg.view.svg.widget.Label.__name__ = ["rg","view","svg","widget","Label"];
-rg.view.svg.widget.Label.prototype.text = null;
-rg.view.svg.widget.Label.prototype.orientation = null;
-rg.view.svg.widget.Label.prototype.anchor = null;
-rg.view.svg.widget.Label.prototype.x = null;
-rg.view.svg.widget.Label.prototype.y = null;
-rg.view.svg.widget.Label.prototype.angle = null;
-rg.view.svg.widget.Label.prototype.dontFlip = null;
-rg.view.svg.widget.Label.prototype.shadowOffset = null;
-rg.view.svg.widget.Label.prototype.g = null;
-rg.view.svg.widget.Label.prototype.gs = null;
-rg.view.svg.widget.Label.prototype.r = null;
-rg.view.svg.widget.Label.prototype.gr = null;
-rg.view.svg.widget.Label.prototype.t = null;
-rg.view.svg.widget.Label.prototype.s = null;
-rg.view.svg.widget.Label.prototype.place = function(x,y,angle) {
-	$s.push("rg.view.svg.widget.Label::place");
-	var $spos = $s.length;
-	this.x = x;
-	this.y = y;
-	this.angle = angle % 360;
-	if(this.angle < 0) this.angle += 360;
-	this.g.attr("transform").string("translate(" + x + "," + y + ")");
-	var $e = (this.orientation);
-	switch( $e[1] ) {
-	case 0:
-		var a = $e[2];
-		this.r.attr("transform").string("rotate(" + a + ")");
-		break;
-	case 1:
-		if(this.dontFlip && this.angle > 90 && this.angle < 270) angle += 180;
-		this.r.attr("transform").string("rotate(" + angle + ")");
-		break;
-	case 2:
-		if(this.dontFlip && this.angle > 180) angle -= 180;
-		this.r.attr("transform").string("rotate(" + (-90 + angle) + ")");
-		break;
-	}
-	this.gr.attr("transform").string(this.r.attr("transform").get());
-	this.reanchor();
-	$s.pop();
-}
-rg.view.svg.widget.Label.prototype.setShadowOffset = function(v) {
-	$s.push("rg.view.svg.widget.Label::setShadowOffset");
-	var $spos = $s.length;
-	this.shadowOffset = v;
-	this.gs.attr("transform").string("translate(" + v + "," + v + ")");
-	$s.pop();
-	return v;
-	$s.pop();
-}
-rg.view.svg.widget.Label.prototype.setText = function(v) {
-	$s.push("rg.view.svg.widget.Label::setText");
-	var $spos = $s.length;
-	this.text = v;
-	this.t.text().string(v);
-	this.s.text().string(v);
-	this.reanchor();
-	$s.pop();
-	return v;
-	$s.pop();
-}
-rg.view.svg.widget.Label.prototype.setOrientation = function(v) {
-	$s.push("rg.view.svg.widget.Label::setOrientation");
-	var $spos = $s.length;
-	this.orientation = v;
-	this.place(this.x,this.y,this.angle);
-	$s.pop();
-	return v;
-	$s.pop();
-}
-rg.view.svg.widget.Label.prototype.setAnchor = function(v) {
-	$s.push("rg.view.svg.widget.Label::setAnchor");
-	var $spos = $s.length;
-	this.anchor = v;
-	this.reanchor();
-	$s.pop();
-	return v;
-	$s.pop();
-}
-rg.view.svg.widget.Label.prototype.getBB = function() {
-	$s.push("rg.view.svg.widget.Label::getBB");
-	var $spos = $s.length;
-	var h = this.t.style("font-size").getFloat();
-	if(null == h || 0 >= h) h = this.t.node().getExtentOfChar("A").height;
-	var $tmp = { width : this.t.node().getComputedTextLength(), height : h};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.Label.prototype.reanchor = function() {
-	$s.push("rg.view.svg.widget.Label::reanchor");
-	var $spos = $s.length;
-	var bb = this.getBB(), x, y;
-	var a = this.anchor;
-	if(this.dontFlip) {
-		switch( (this.orientation)[1] ) {
-		case 1:
-			if(this.angle > 90 && this.angle < 270) a = (function($this) {
-				var $r;
-				switch( (a)[1] ) {
-				case 0:
-					$r = rg.view.svg.widget.GridAnchor.BottomRight;
-					break;
-				case 1:
-					$r = rg.view.svg.widget.GridAnchor.Bottom;
-					break;
-				case 2:
-					$r = rg.view.svg.widget.GridAnchor.BottomLeft;
-					break;
-				case 3:
-					$r = rg.view.svg.widget.GridAnchor.Right;
-					break;
-				case 4:
-					$r = rg.view.svg.widget.GridAnchor.Center;
-					break;
-				case 5:
-					$r = rg.view.svg.widget.GridAnchor.Left;
-					break;
-				case 6:
-					$r = rg.view.svg.widget.GridAnchor.TopRight;
-					break;
-				case 7:
-					$r = rg.view.svg.widget.GridAnchor.Top;
-					break;
-				case 8:
-					$r = rg.view.svg.widget.GridAnchor.TopLeft;
-					break;
-				}
-				return $r;
-			}(this));
-			break;
-		case 2:
-			if(this.angle > 180) a = (function($this) {
-				var $r;
-				switch( (a)[1] ) {
-				case 0:
-					$r = rg.view.svg.widget.GridAnchor.BottomRight;
-					break;
-				case 1:
-					$r = rg.view.svg.widget.GridAnchor.Bottom;
-					break;
-				case 2:
-					$r = rg.view.svg.widget.GridAnchor.BottomLeft;
-					break;
-				case 3:
-					$r = rg.view.svg.widget.GridAnchor.Right;
-					break;
-				case 4:
-					$r = rg.view.svg.widget.GridAnchor.Center;
-					break;
-				case 5:
-					$r = rg.view.svg.widget.GridAnchor.Left;
-					break;
-				case 6:
-					$r = rg.view.svg.widget.GridAnchor.TopRight;
-					break;
-				case 7:
-					$r = rg.view.svg.widget.GridAnchor.Top;
-					break;
-				case 8:
-					$r = rg.view.svg.widget.GridAnchor.TopLeft;
-					break;
-				}
-				return $r;
-			}(this));
-			break;
-		default:
-		}
-	}
-	switch( (a)[1] ) {
-	case 0:
-		x = 0;
-		y = bb.height;
-		break;
-	case 1:
-		x = -bb.width / 2;
-		y = bb.height;
-		break;
-	case 2:
-		x = -bb.width;
-		y = bb.height;
-		break;
-	case 3:
-		x = 0;
-		y = bb.height / 2;
-		break;
-	case 4:
-		x = -bb.width / 2;
-		y = bb.height / 2;
-		break;
-	case 5:
-		x = -bb.width;
-		y = bb.height / 2;
-		break;
-	case 6:
-		x = 0;
-		y = 0;
-		break;
-	case 7:
-		x = -bb.width / 2;
-		y = 0;
-		break;
-	case 8:
-		x = -bb.width;
-		y = 0;
-		break;
-	}
-	this.t.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
-	this.s.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
-	$s.pop();
-}
-rg.view.svg.widget.Label.prototype.__class__ = rg.view.svg.widget.Label;
 ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -10189,6 +10574,249 @@ Type.enumIndex = function(e) {
 	$s.pop();
 }
 Type.prototype.__class__ = Type;
+rg.view.svg.widget.Label = function(container,dontflip) {
+	if( container === $_ ) return;
+	$s.push("rg.view.svg.widget.Label::new");
+	var $spos = $s.length;
+	if(dontflip == null) dontflip = true;
+	this.g = container.append("svg:g").attr("class").string("label");
+	this.gs = this.g.append("svg:g").attr("transform").string("translate(0,0)");
+	this.gr = this.gs.append("svg:g");
+	this.r = this.g.append("svg:g");
+	this.s = this.gr.append("svg:text").attr("class").string("shadow");
+	this.tbg = this.r.append("svg:text").attr("class").string("bg");
+	this.t = this.r.append("svg:text");
+	this.dontFlip = dontflip;
+	this.setShadowOffset(1.25);
+	this.x = 0;
+	this.y = 0;
+	this.angle = 0;
+	this["orientation"] = rg.view.svg.widget.LabelOrientation.FixedAngle(0);
+	this["anchor"] = rg.view.svg.widget.GridAnchor.Center;
+	$s.pop();
+}
+rg.view.svg.widget.Label.__name__ = ["rg","view","svg","widget","Label"];
+rg.view.svg.widget.Label.prototype.text = null;
+rg.view.svg.widget.Label.prototype.orientation = null;
+rg.view.svg.widget.Label.prototype.anchor = null;
+rg.view.svg.widget.Label.prototype.x = null;
+rg.view.svg.widget.Label.prototype.y = null;
+rg.view.svg.widget.Label.prototype.angle = null;
+rg.view.svg.widget.Label.prototype.dontFlip = null;
+rg.view.svg.widget.Label.prototype.shadowOffset = null;
+rg.view.svg.widget.Label.prototype.g = null;
+rg.view.svg.widget.Label.prototype.gs = null;
+rg.view.svg.widget.Label.prototype.r = null;
+rg.view.svg.widget.Label.prototype.gr = null;
+rg.view.svg.widget.Label.prototype.t = null;
+rg.view.svg.widget.Label.prototype.tbg = null;
+rg.view.svg.widget.Label.prototype.s = null;
+rg.view.svg.widget.Label.prototype.place = function(x,y,angle) {
+	$s.push("rg.view.svg.widget.Label::place");
+	var $spos = $s.length;
+	this.x = x;
+	this.y = y;
+	this.angle = angle % 360;
+	if(this.angle < 0) this.angle += 360;
+	this.g.attr("transform").string("translate(" + x + "," + y + ")");
+	var $e = (this.orientation);
+	switch( $e[1] ) {
+	case 0:
+		var a = $e[2];
+		this.r.attr("transform").string("rotate(" + a + ")");
+		break;
+	case 1:
+		if(this.dontFlip && this.angle > 90 && this.angle < 270) angle += 180;
+		this.r.attr("transform").string("rotate(" + angle + ")");
+		break;
+	case 2:
+		if(this.dontFlip && this.angle > 180) angle -= 180;
+		this.r.attr("transform").string("rotate(" + (-90 + angle) + ")");
+		break;
+	}
+	this.gr.attr("transform").string(this.r.attr("transform").get());
+	this.reanchor();
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setShadowOffset = function(v) {
+	$s.push("rg.view.svg.widget.Label::setShadowOffset");
+	var $spos = $s.length;
+	this.shadowOffset = v;
+	this.gs.attr("transform").string("translate(" + v + "," + v + ")");
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setText = function(v) {
+	$s.push("rg.view.svg.widget.Label::setText");
+	var $spos = $s.length;
+	this.text = v;
+	this.tbg.text().string(v);
+	this.t.text().string(v);
+	this.s.text().string(v);
+	this.reanchor();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setOrientation = function(v) {
+	$s.push("rg.view.svg.widget.Label::setOrientation");
+	var $spos = $s.length;
+	this.orientation = v;
+	this.place(this.x,this.y,this.angle);
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.setAnchor = function(v) {
+	$s.push("rg.view.svg.widget.Label::setAnchor");
+	var $spos = $s.length;
+	this.anchor = v;
+	this.reanchor();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.getBB = function() {
+	$s.push("rg.view.svg.widget.Label::getBB");
+	var $spos = $s.length;
+	var h = this.t.style("font-size").getFloat();
+	if(null == h || 0 >= h) h = this.t.node().getExtentOfChar("A").height;
+	var $tmp = { width : this.t.node().getComputedTextLength(), height : h};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.reanchor = function() {
+	$s.push("rg.view.svg.widget.Label::reanchor");
+	var $spos = $s.length;
+	var bb = this.getBB(), x, y;
+	var a = this.anchor;
+	if(this.dontFlip) {
+		switch( (this.orientation)[1] ) {
+		case 1:
+			if(this.angle > 90 && this.angle < 270) a = (function($this) {
+				var $r;
+				switch( (a)[1] ) {
+				case 0:
+					$r = rg.view.svg.widget.GridAnchor.BottomRight;
+					break;
+				case 1:
+					$r = rg.view.svg.widget.GridAnchor.Bottom;
+					break;
+				case 2:
+					$r = rg.view.svg.widget.GridAnchor.BottomLeft;
+					break;
+				case 3:
+					$r = rg.view.svg.widget.GridAnchor.Right;
+					break;
+				case 4:
+					$r = rg.view.svg.widget.GridAnchor.Center;
+					break;
+				case 5:
+					$r = rg.view.svg.widget.GridAnchor.Left;
+					break;
+				case 6:
+					$r = rg.view.svg.widget.GridAnchor.TopRight;
+					break;
+				case 7:
+					$r = rg.view.svg.widget.GridAnchor.Top;
+					break;
+				case 8:
+					$r = rg.view.svg.widget.GridAnchor.TopLeft;
+					break;
+				}
+				return $r;
+			}(this));
+			break;
+		case 2:
+			if(this.angle > 180) a = (function($this) {
+				var $r;
+				switch( (a)[1] ) {
+				case 0:
+					$r = rg.view.svg.widget.GridAnchor.BottomRight;
+					break;
+				case 1:
+					$r = rg.view.svg.widget.GridAnchor.Bottom;
+					break;
+				case 2:
+					$r = rg.view.svg.widget.GridAnchor.BottomLeft;
+					break;
+				case 3:
+					$r = rg.view.svg.widget.GridAnchor.Right;
+					break;
+				case 4:
+					$r = rg.view.svg.widget.GridAnchor.Center;
+					break;
+				case 5:
+					$r = rg.view.svg.widget.GridAnchor.Left;
+					break;
+				case 6:
+					$r = rg.view.svg.widget.GridAnchor.TopRight;
+					break;
+				case 7:
+					$r = rg.view.svg.widget.GridAnchor.Top;
+					break;
+				case 8:
+					$r = rg.view.svg.widget.GridAnchor.TopLeft;
+					break;
+				}
+				return $r;
+			}(this));
+			break;
+		default:
+		}
+	}
+	switch( (a)[1] ) {
+	case 0:
+		x = 0;
+		y = bb.height;
+		break;
+	case 1:
+		x = -bb.width / 2;
+		y = bb.height;
+		break;
+	case 2:
+		x = -bb.width;
+		y = bb.height;
+		break;
+	case 3:
+		x = 0;
+		y = bb.height / 2;
+		break;
+	case 4:
+		x = -bb.width / 2;
+		y = bb.height / 2;
+		break;
+	case 5:
+		x = -bb.width;
+		y = bb.height / 2;
+		break;
+	case 6:
+		x = 0;
+		y = 0;
+		break;
+	case 7:
+		x = -bb.width / 2;
+		y = 0;
+		break;
+	case 8:
+		x = -bb.width;
+		y = 0;
+		break;
+	}
+	this.tbg.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+	this.t.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+	this.s.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.destroy = function() {
+	$s.push("rg.view.svg.widget.Label::destroy");
+	var $spos = $s.length;
+	this.g.remove();
+	$s.pop();
+}
+rg.view.svg.widget.Label.prototype.__class__ = rg.view.svg.widget.Label;
 rg.controller.info.InfoAnimation = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoAnimation::new");
@@ -10600,6 +11228,55 @@ thx.math.EaseMode.EaseInEaseOut.__enum__ = thx.math.EaseMode;
 thx.math.EaseMode.EaseOutEaseIn = ["EaseOutEaseIn",3];
 thx.math.EaseMode.EaseOutEaseIn.toString = $estr;
 thx.math.EaseMode.EaseOutEaseIn.__enum__ = thx.math.EaseMode;
+rg.data.TestAxisGroupByTime = function(p) {
+	$s.push("rg.data.TestAxisGroupByTime::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.data.TestAxisGroupByTime.__name__ = ["rg","data","TestAxisGroupByTime"];
+rg.data.TestAxisGroupByTime.prototype.testYear = function() {
+	$s.push("rg.data.TestAxisGroupByTime::testYear");
+	var $spos = $s.length;
+	var values = rg.data.AxisGroupByTime.valuesByGroup("year");
+	utest.Assert.same(Ints.range(1,365),values,null,null,{ fileName : "TestAxisGroupByTime.hx", lineNumber : 15, className : "rg.data.TestAxisGroupByTime", methodName : "testYear"});
+	$s.pop();
+}
+rg.data.TestAxisGroupByTime.prototype.testMonth = function() {
+	$s.push("rg.data.TestAxisGroupByTime::testMonth");
+	var $spos = $s.length;
+	var values = rg.data.AxisGroupByTime.valuesByGroup("month");
+	utest.Assert.same(Ints.range(1,12),values,null,null,{ fileName : "TestAxisGroupByTime.hx", lineNumber : 21, className : "rg.data.TestAxisGroupByTime", methodName : "testMonth"});
+	$s.pop();
+}
+rg.data.TestAxisGroupByTime.prototype.testWeek = function() {
+	$s.push("rg.data.TestAxisGroupByTime::testWeek");
+	var $spos = $s.length;
+	var values = rg.data.AxisGroupByTime.valuesByGroup("week");
+	utest.Assert.same(Ints.range(1,7),values,null,null,{ fileName : "TestAxisGroupByTime.hx", lineNumber : 27, className : "rg.data.TestAxisGroupByTime", methodName : "testWeek"});
+	$s.pop();
+}
+rg.data.TestAxisGroupByTime.prototype.testDay = function() {
+	$s.push("rg.data.TestAxisGroupByTime::testDay");
+	var $spos = $s.length;
+	var values = rg.data.AxisGroupByTime.valuesByGroup("day");
+	utest.Assert.same(Ints.range(1,31),values,null,null,{ fileName : "TestAxisGroupByTime.hx", lineNumber : 33, className : "rg.data.TestAxisGroupByTime", methodName : "testDay"});
+	$s.pop();
+}
+rg.data.TestAxisGroupByTime.prototype.testHour = function() {
+	$s.push("rg.data.TestAxisGroupByTime::testHour");
+	var $spos = $s.length;
+	var values = rg.data.AxisGroupByTime.valuesByGroup("hour");
+	utest.Assert.same(Ints.range(1,24),values,null,null,{ fileName : "TestAxisGroupByTime.hx", lineNumber : 39, className : "rg.data.TestAxisGroupByTime", methodName : "testHour"});
+	$s.pop();
+}
+rg.data.TestAxisGroupByTime.prototype.testMinute = function() {
+	$s.push("rg.data.TestAxisGroupByTime::testMinute");
+	var $spos = $s.length;
+	var values = rg.data.AxisGroupByTime.valuesByGroup("minute");
+	utest.Assert.same(Ints.range(1,60),values,null,null,{ fileName : "TestAxisGroupByTime.hx", lineNumber : 45, className : "rg.data.TestAxisGroupByTime", methodName : "testMinute"});
+	$s.pop();
+}
+rg.data.TestAxisGroupByTime.prototype.__class__ = rg.data.TestAxisGroupByTime;
 rg.controller.info.TestInfoDataContext = function(p) {
 	$s.push("rg.controller.info.TestInfoDataContext::new");
 	var $spos = $s.length;
@@ -11119,63 +11796,72 @@ rg.controller.factory.TestFactoryVariableIndependent.__name__ = ["rg","controlle
 rg.controller.factory.TestFactoryVariableIndependent.prototype.testIncompleteInfo = function() {
 	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testIncompleteInfo");
 	var $spos = $s.length;
-	utest.Assert.isNull(new rg.controller.factory.FactoryVariableIndependent().create(new rg.controller.info.InfoVariable()),null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 19, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testIncompleteInfo"});
+	utest.Assert.isNull(new rg.controller.factory.FactoryVariableIndependent().create(new rg.controller.info.InfoVariable()),null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 20, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testIncompleteInfo"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableIndependent.prototype.testSimpleParameters = function() {
 	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testSimpleParameters");
 	var $spos = $s.length;
 	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
-	utest.Assert.notNull(variable,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 30, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.same(1.0,variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 31, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.same(10.0,variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 32, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 33, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.notNull(variable,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 31, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.same(1.0,variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 32, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.same(10.0,variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 33, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 34, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
 	info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".impression"});
 	variable = factory.create(info);
-	utest.Assert.isNull(variable.min,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 39, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.isNull(variable.max,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 40, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
-	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 41, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.isNull(variable.min,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 40, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.isNull(variable.max,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 41, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.equals(".impression",variable.type,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 42, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
 	info = new rg.controller.info.InfoVariable();
 	variable = factory.create(info);
-	utest.Assert.isNull(variable,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 45, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
+	utest.Assert.isNull(variable,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 46, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testSimpleParameters"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableIndependent.prototype.testAxisType = function() {
 	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testAxisType");
 	var $spos = $s.length;
 	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
-	utest.Assert["is"](variable.axis,rg.data.AxisOrdinal,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 56, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testAxisType"});
+	utest.Assert["is"](variable.axis,rg.data.AxisOrdinal,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 57, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testAxisType"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableIndependent.prototype.testValues = function() {
 	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testValues");
 	var $spos = $s.length;
 	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ view : [1.0,10.0], values : [1.0,5.0,10.0], type : ".impression"}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
-	utest.Assert.same([1.0,5.0,10.0],variable.range(),null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 68, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testValues"});
+	utest.Assert.same([1.0,5.0,10.0],variable.range(),null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 69, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testValues"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableIndependent.prototype.testTimeWithStringView = function() {
 	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testTimeWithStringView");
 	var $spos = $s.length;
 	var min = "2011-01-01", max = "2011-02-02", info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : [min,max]}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
-	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 81, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithStringView"});
-	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 82, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithStringView"});
+	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 82, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithStringView"});
+	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 83, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithStringView"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableIndependent.prototype.testTimeWithFloatView = function() {
 	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testTimeWithFloatView");
 	var $spos = $s.length;
 	var min = "2011-01-01", max = "2011-02-02", info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : [Date.fromString(min).getTime(),Date.fromString(max).getTime()]}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
-	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 95, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithFloatView"});
-	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 96, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithFloatView"});
+	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 96, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithFloatView"});
+	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 97, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithFloatView"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableIndependent.prototype.testTimeWithDateView = function() {
 	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testTimeWithDateView");
 	var $spos = $s.length;
 	var min = "2011-01-01", max = "2011-02-02", info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : [Date.fromString(min),Date.fromString(max)]}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
-	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 109, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithDateView"});
-	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 110, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithDateView"});
+	utest.Assert.floatEquals(Date.fromString(min).getTime(),variable.min,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 110, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithDateView"});
+	utest.Assert.floatEquals(Date.fromString(max).getTime(),variable.max,null,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 111, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeWithDateView"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryVariableIndependent.prototype.testTimeGroupBy = function() {
+	$s.push("rg.controller.factory.TestFactoryVariableIndependent::testTimeGroupBy");
+	var $spos = $s.length;
+	var min = "2011-01-01", max = "2011-02-02", info = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),{ type : ".#time:hour", view : [Date.fromString(min),Date.fromString(max)], groupby : "day"}), factory = new rg.controller.factory.FactoryVariableIndependent(), variable = factory.create(info);
+	utest.Assert["is"](variable.axis,rg.data.AxisGroupByTime,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 125, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeGroupBy"});
+	var axis = Types["as"](variable.axis,rg.data.AxisGroupByTime);
+	utest.Assert.equals("day",axis.groupBy,null,{ fileName : "TestFactoryVariableIndependent.hx", lineNumber : 127, className : "rg.controller.factory.TestFactoryVariableIndependent", methodName : "testTimeGroupBy"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableIndependent.prototype.__class__ = rg.controller.factory.TestFactoryVariableIndependent;
@@ -11464,11 +12150,13 @@ rg.data.source.TestRGDataSource = function(p) {
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.__name__ = ["rg","data","source","TestRGDataSource"];
-rg.data.source.TestRGDataSource.prototype.profile = function(query) {
+rg.data.source.TestRGDataSource.prototype.profile = function(query,groupby) {
 	$s.push("rg.data.source.TestRGDataSource::profile");
 	var $spos = $s.length;
 	var executor = new rg.data.source.rgquery.MockRGExecutor();
-	new rg.data.source.DataSourceReportGrid(executor,"/","click",query).load();
+	var ds = new rg.data.source.DataSourceReportGrid(executor,"/","click",query);
+	ds.groupBy = groupby;
+	ds.load();
 	var $tmp = executor.callStack;
 	$s.pop();
 	return $tmp;
@@ -11483,65 +12171,71 @@ rg.data.source.TestRGDataSource.prototype.assert = function(a,b,pos) {
 rg.data.source.TestRGDataSource.prototype.testEventCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testEventCount");
 	var $spos = $s.length;
-	this.assert([{ method : "propertyCount", args : ["/",{ property : "click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 30, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
+	this.assert([{ method : "propertyCount", args : ["/",{ property : "click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 32, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValuesCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValuesCount");
 	var $spos = $s.length;
-	this.assert([{ method : "intersect", args : ["/",{ periodicity : "eternity", properties : [{ property : "click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 41, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesCount"});
+	this.assert([{ method : "intersect", args : ["/",{ periodicity : "eternity", properties : [{ property : "click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 43, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testEventSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testEventSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "propertySeries", args : ["/",{ property : "click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 59, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
+	this.assert([{ method : "propertySeries", args : ["/",{ property : "click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 61, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
+	$s.pop();
+}
+rg.data.source.TestRGDataSource.prototype.testGroupByOption = function() {
+	$s.push("rg.data.source.TestRGDataSource::testGroupByOption");
+	var $spos = $s.length;
+	this.assert([{ method : "propertySeries", args : ["/",{ property : "click", periodicity : "day", groupBy : "week"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []},"week"),{ fileName : "TestRGDataSource.hx", lineNumber : 72, className : "rg.data.source.TestRGDataSource", methodName : "testGroupByOption"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValuesSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValuesSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : "click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 70, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesSeries"});
+	this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : "click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 83, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValueCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValueCount");
 	var $spos = $s.length;
-	this.assert([{ method : "propertyValueCount", args : ["/",{ property : "click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 88, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
+	this.assert([{ method : "propertyValueCount", args : ["/",{ property : "click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 101, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testPropertyValueSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testPropertyValueSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "propertyValueSeries", args : ["/",{ property : "click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 99, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
+	this.assert([{ method : "propertyValueSeries", args : ["/",{ property : "click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 112, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testSearchValueCount = function() {
 	$s.push("rg.data.source.TestRGDataSource::testSearchValueCount");
 	var $spos = $s.length;
-	this.assert([{ method : "searchCount", args : ["/",{ where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 110, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
+	this.assert([{ method : "searchCount", args : ["/",{ where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 123, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testSearchSeries = function() {
 	$s.push("rg.data.source.TestRGDataSource::testSearchSeries");
 	var $spos = $s.length;
-	this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 124, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
+	this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : Objects.addFields({ },["click.gender","click.ageRange"],["female","21-30"])}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 137, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testIntersectOverTime = function() {
 	$s.push("rg.data.source.TestRGDataSource::testIntersectOverTime");
 	var $spos = $s.length;
-	this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : "click.gender", limit : 5, order : "descending"},{ property : "click.platform", limit : 7, order : "ascending"},{ property : "click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 138, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
+	this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : "click.gender", limit : 5, order : "descending"},{ property : "click.platform", limit : 7, order : "ascending"},{ property : "click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 151, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.testNormalization = function() {
 	$s.push("rg.data.source.TestRGDataSource::testNormalization");
 	var $spos = $s.length;
-	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 169, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 174, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 179, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 184, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 196, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 182, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 187, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 192, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 197, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+	this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 209, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
 	$s.pop();
 }
 rg.data.source.TestRGDataSource.prototype.__class__ = rg.data.source.TestRGDataSource;
@@ -11864,6 +12558,7 @@ TestAll.addTest = function(runner) {
 	runner.addCase(new rg.util.TestProperties());
 	runner.addCase(new rg.view.frame.TestStack());
 	runner.addCase(new rg.view.svg.panel.TestSpace());
+	runner.addCase(new rg.data.TestAxisGroupByTime());
 	$s.pop();
 }
 TestAll.main = function() {
@@ -11888,21 +12583,21 @@ rg.controller.info.InfoVariable.filters = function() {
 	$s.push("rg.controller.info.InfoVariable::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "type", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@24");
+		$s.push("rg.controller.info.InfoVariable::filters@27");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "view", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@35");
+		$s.push("rg.controller.info.InfoVariable::filters@31");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && rg.controller.info.InfoVariable.testViewValue(v[0]) && rg.controller.info.InfoVariable.testViewValue(v[1]);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@36");
+		$s.push("rg.controller.info.InfoVariable::filters@32");
 		var $spos = $s.length;
 		var result = [];
 		if(null != v[0]) result.push({ field : "min", value : v[0]});
@@ -11911,10 +12606,10 @@ rg.controller.info.InfoVariable.filters = function() {
 		return result;
 		$s.pop();
 	}},{ field : "values", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@46");
+		$s.push("rg.controller.info.InfoVariable::filters@42");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoVariable::filters@46@46");
+			$s.push("rg.controller.info.InfoVariable::filters@42@42");
 			var $spos = $s.length;
 			var $tmp = Types.isPrimitive(v1);
 			$s.pop();
@@ -11924,7 +12619,21 @@ rg.controller.info.InfoVariable.filters = function() {
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null}];
+	}, filter : null},{ field : "groupby", validator : function(v) {
+		$s.push("rg.controller.info.InfoVariable::filters@46");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String) && rg.util.Periodicity.isValidGroupBy(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoVariable::filters@47");
+		var $spos = $s.length;
+		var $tmp = [{ field : "groupBy", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -11941,6 +12650,7 @@ rg.controller.info.InfoVariable.prototype.type = null;
 rg.controller.info.InfoVariable.prototype.min = null;
 rg.controller.info.InfoVariable.prototype.max = null;
 rg.controller.info.InfoVariable.prototype.values = null;
+rg.controller.info.InfoVariable.prototype.groupBy = null;
 rg.controller.info.InfoVariable.prototype.__class__ = rg.controller.info.InfoVariable;
 if(!thx.date) thx.date = {}
 thx.date.DateParser = function() { }
@@ -12232,6 +12942,152 @@ rg.view.layout.PanelContext.__name__ = ["rg","view","layout","PanelContext"];
 rg.view.layout.PanelContext.prototype.panel = null;
 rg.view.layout.PanelContext.prototype.anchor = null;
 rg.view.layout.PanelContext.prototype.__class__ = rg.view.layout.PanelContext;
+rg.controller.info.InfoPivotTable = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoPivotTable::new");
+	var $spos = $s.length;
+	this.label = new rg.controller.info.InfoLabelPivotTable();
+	this.heatmapColorStart = new thx.color.Hsl(210,1,1);
+	this.heatmapColorEnd = new thx.color.Hsl(210,1,0.5);
+	this.displayHeatmap = true;
+	this.displayColumnTotal = true;
+	this.displayRowTotal = true;
+	this.columnAxes = 1;
+	$s.pop();
+}
+rg.controller.info.InfoPivotTable.__name__ = ["rg","controller","info","InfoPivotTable"];
+rg.controller.info.InfoPivotTable.parseColor = function(s) {
+	$s.push("rg.controller.info.InfoPivotTable::parseColor");
+	var $spos = $s.length;
+	var rgb = thx.color.Colors.parse(s);
+	if(null == s) rgb = thx.color.NamedColors.black;
+	var $tmp = thx.color.Hsl.toHsl(rgb);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoPivotTable.filters = function() {
+	$s.push("rg.controller.info.InfoPivotTable::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "columnaxes", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@54");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Int);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@55");
+		var $spos = $s.length;
+		var $tmp = [{ field : "columnAxes", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displayheatmap", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@61");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@62");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayHeatmap", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displaycolumntotal", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@68");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@69");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayColumnTotal", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displayrowtotal", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@75");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@76");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayRowTotal", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "startcolor", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@82");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@83");
+		var $spos = $s.length;
+		var $tmp = [{ field : "heatmapColorStart", value : rg.controller.info.InfoPivotTable.parseColor(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "endcolor", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@89");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@90");
+		var $spos = $s.length;
+		var $tmp = [{ field : "heatmapColorEnd", value : rg.controller.info.InfoPivotTable.parseColor(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@96");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@97");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelPivotTable(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoPivotTable::filters@103");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoPivotTable.prototype.label = null;
+rg.controller.info.InfoPivotTable.prototype.heatmapColorStart = null;
+rg.controller.info.InfoPivotTable.prototype.heatmapColorEnd = null;
+rg.controller.info.InfoPivotTable.prototype.displayHeatmap = null;
+rg.controller.info.InfoPivotTable.prototype.displayColumnTotal = null;
+rg.controller.info.InfoPivotTable.prototype.displayRowTotal = null;
+rg.controller.info.InfoPivotTable.prototype.columnAxes = null;
+rg.controller.info.InfoPivotTable.prototype.click = null;
+rg.controller.info.InfoPivotTable.prototype.__class__ = rg.controller.info.InfoPivotTable;
 if(!thx.text) thx.text = {}
 thx.text.ERegs = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
@@ -12682,6 +13538,79 @@ rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(d
 }
 rg.data.source.rgquery.transform.TransformCount.prototype.__class__ = rg.data.source.rgquery.transform.TransformCount;
 rg.data.source.rgquery.transform.TransformCount.__interfaces__ = [rg.data.source.ITransform];
+rg.controller.info.InfoLeaderboard = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoLeaderboard::new");
+	var $spos = $s.length;
+	this.animation = new rg.controller.info.InfoAnimation();
+	this.label = new rg.controller.info.InfoLabel();
+	$s.pop();
+}
+rg.controller.info.InfoLeaderboard.__name__ = ["rg","controller","info","InfoLeaderboard"];
+rg.controller.info.InfoLeaderboard.filters = function() {
+	$s.push("rg.controller.info.InfoLeaderboard::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "animation", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@27");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@28");
+		var $spos = $s.length;
+		var animation = new rg.controller.info.InfoAnimation();
+		animation.ease = thx.math.Equations.linear;
+		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(animation,v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@38");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@39");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@45");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "sort", validator : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@49");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLeaderboard::filters@50");
+		var $spos = $s.length;
+		var $tmp = [{ field : "sortDataPoint", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLeaderboard.prototype.animation = null;
+rg.controller.info.InfoLeaderboard.prototype.label = null;
+rg.controller.info.InfoLeaderboard.prototype.click = null;
+rg.controller.info.InfoLeaderboard.prototype.sortDataPoint = null;
+rg.controller.info.InfoLeaderboard.prototype.__class__ = rg.controller.info.InfoLeaderboard;
 rg.data.TestDataProcessor = function(p) {
 	$s.push("rg.data.TestDataProcessor::new");
 	var $spos = $s.length;
@@ -14323,28 +15252,53 @@ rg.JSBridge.main = function() {
 	o.viz = function(el,options,type) {
 		$s.push("rg.JSBridge::main@25");
 		var $spos = $s.length;
-		app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
+		var $tmp = app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
+		$s.pop();
+		return $tmp;
 		$s.pop();
 	};
 	o.lineChart = function(el,options) {
 		$s.push("rg.JSBridge::main@29");
 		var $spos = $s.length;
-		o.viz(el,options,"linechart");
+		var $tmp = o.viz(el,options,"linechart");
+		$s.pop();
+		return $tmp;
 		$s.pop();
 	};
 	o.pieChart = function(el,options) {
 		$s.push("rg.JSBridge::main@30");
 		var $spos = $s.length;
-		o.viz(el,options,"piechart");
+		var $tmp = o.viz(el,options,"piechart");
+		$s.pop();
+		return $tmp;
 		$s.pop();
 	};
+	o.pivotTable = function(el,options) {
+		$s.push("rg.JSBridge::main@31");
+		var $spos = $s.length;
+		var $tmp = o.viz(el,options,"pivottable");
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	o.leaderBoard = function(el,options) {
+		$s.push("rg.JSBridge::main@32");
+		var $spos = $s.length;
+		var $tmp = o.viz(el,options,"leaderboard");
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	o.format = Dynamics.format;
+	o.compare = Dynamics.compare;
+	o.dump = Dynamics.string;
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 38, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 45, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();
@@ -14658,34 +15612,6 @@ rg.controller.info.InfoDataContext.prototype.name = null;
 rg.controller.info.InfoDataContext.prototype.transform = null;
 rg.controller.info.InfoDataContext.prototype.sources = null;
 rg.controller.info.InfoDataContext.prototype.__class__ = rg.controller.info.InfoDataContext;
-rg.view.svg.widget.GridAnchor = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
-rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
-rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;
-rg.view.svg.widget.GridAnchor.TopLeft.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Top = ["Top",1];
-rg.view.svg.widget.GridAnchor.Top.toString = $estr;
-rg.view.svg.widget.GridAnchor.Top.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.TopRight = ["TopRight",2];
-rg.view.svg.widget.GridAnchor.TopRight.toString = $estr;
-rg.view.svg.widget.GridAnchor.TopRight.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Left = ["Left",3];
-rg.view.svg.widget.GridAnchor.Left.toString = $estr;
-rg.view.svg.widget.GridAnchor.Left.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Center = ["Center",4];
-rg.view.svg.widget.GridAnchor.Center.toString = $estr;
-rg.view.svg.widget.GridAnchor.Center.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Right = ["Right",5];
-rg.view.svg.widget.GridAnchor.Right.toString = $estr;
-rg.view.svg.widget.GridAnchor.Right.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.BottomLeft = ["BottomLeft",6];
-rg.view.svg.widget.GridAnchor.BottomLeft.toString = $estr;
-rg.view.svg.widget.GridAnchor.BottomLeft.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Bottom = ["Bottom",7];
-rg.view.svg.widget.GridAnchor.Bottom.toString = $estr;
-rg.view.svg.widget.GridAnchor.Bottom.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
-rg.view.svg.widget.GridAnchor.BottomRight.toString = $estr;
-rg.view.svg.widget.GridAnchor.BottomRight.__enum__ = rg.view.svg.widget.GridAnchor;
 Enums = function() { }
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
@@ -14718,6 +15644,34 @@ Enums.compare = function(a,b) {
 	$s.pop();
 }
 Enums.prototype.__class__ = Enums;
+rg.view.svg.widget.GridAnchor = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
+rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
+rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;
+rg.view.svg.widget.GridAnchor.TopLeft.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Top = ["Top",1];
+rg.view.svg.widget.GridAnchor.Top.toString = $estr;
+rg.view.svg.widget.GridAnchor.Top.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.TopRight = ["TopRight",2];
+rg.view.svg.widget.GridAnchor.TopRight.toString = $estr;
+rg.view.svg.widget.GridAnchor.TopRight.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Left = ["Left",3];
+rg.view.svg.widget.GridAnchor.Left.toString = $estr;
+rg.view.svg.widget.GridAnchor.Left.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Center = ["Center",4];
+rg.view.svg.widget.GridAnchor.Center.toString = $estr;
+rg.view.svg.widget.GridAnchor.Center.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Right = ["Right",5];
+rg.view.svg.widget.GridAnchor.Right.toString = $estr;
+rg.view.svg.widget.GridAnchor.Right.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.BottomLeft = ["BottomLeft",6];
+rg.view.svg.widget.GridAnchor.BottomLeft.toString = $estr;
+rg.view.svg.widget.GridAnchor.BottomLeft.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.Bottom = ["Bottom",7];
+rg.view.svg.widget.GridAnchor.Bottom.toString = $estr;
+rg.view.svg.widget.GridAnchor.Bottom.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.view.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
+rg.view.svg.widget.GridAnchor.BottomRight.toString = $estr;
+rg.view.svg.widget.GridAnchor.BottomRight.__enum__ = rg.view.svg.widget.GridAnchor;
 StringBuf = function(p) {
 	if( p === $_ ) return;
 	$s.push("StringBuf::new");
@@ -14770,8 +15724,10 @@ rg.view.svg.widget.PieChart = function(panel) {
 	this.outerRadius = 0.9;
 	this.overRadius = 0.95;
 	this.labelRadius = 0.45;
+	this.labels = new Hash();
 	this.labelDisplay = true;
 	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
+	this.labelDontFlip = true;
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.__name__ = ["rg","view","svg","widget","PieChart"];
@@ -14787,7 +15743,7 @@ rg.view.svg.widget.PieChart.prototype.arcBig = null;
 rg.view.svg.widget.PieChart.prototype.pie = null;
 rg.view.svg.widget.PieChart.prototype.radius = null;
 rg.view.svg.widget.PieChart.prototype.propertyValue = null;
-rg.view.svg.widget.PieChart.prototype.total = null;
+rg.view.svg.widget.PieChart.prototype.stats = null;
 rg.view.svg.widget.PieChart.prototype.animated = null;
 rg.view.svg.widget.PieChart.prototype.animationDuration = null;
 rg.view.svg.widget.PieChart.prototype.animationEase = null;
@@ -14795,9 +15751,19 @@ rg.view.svg.widget.PieChart.prototype.gradientLightness = null;
 rg.view.svg.widget.PieChart.prototype.animationDelay = null;
 rg.view.svg.widget.PieChart.prototype.labelDisplay = null;
 rg.view.svg.widget.PieChart.prototype.labelOrientation = null;
-rg.view.svg.widget.PieChart.prototype.dataPoints = null;
-rg.view.svg.widget.PieChart.prototype.labelDataPoint = function(dp) {
-	$s.push("rg.view.svg.widget.PieChart::labelDataPoint");
+rg.view.svg.widget.PieChart.prototype.labelDontFlip = null;
+rg.view.svg.widget.PieChart.prototype.labels = null;
+rg.view.svg.widget.PieChart.prototype.mouseClick = null;
+rg.view.svg.widget.PieChart.prototype.labelFormatDataPoint = function(dp,stats) {
+	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPoint");
+	var $spos = $s.length;
+	var $tmp = thx.culture.FormatNumber.percent(100 * Reflect.field(dp,this.propertyValue) / stats.tot,1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.labelFormatDataPointOver = function(dp,stats) {
+	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPointOver");
 	var $spos = $s.length;
 	var $tmp = Ints.format(Reflect.field(dp,this.propertyValue));
 	$s.pop();
@@ -14808,18 +15774,6 @@ rg.view.svg.widget.PieChart.prototype.init = function() {
 	$s.push("rg.view.svg.widget.PieChart::init");
 	var $spos = $s.length;
 	this.resize();
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.calculateTotal = function(dps) {
-	$s.push("rg.view.svg.widget.PieChart::calculateTotal");
-	var $spos = $s.length;
-	this.total = 0;
-	var _g = 0;
-	while(_g < dps.length) {
-		var dp = dps[_g];
-		++_g;
-		this.total += Reflect.field(dp,this.propertyValue);
-	}
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.resize = function() {
@@ -14835,12 +15789,20 @@ rg.view.svg.widget.PieChart.prototype.resize = function() {
 rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::data");
 	var $spos = $s.length;
-	this.calculateTotal(dp);
-	this.dataPoints = dp;
+	var pv = this.propertyValue;
+	dp = Arrays.filter(dp,function(dp1) {
+		$s.push("rg.view.svg.widget.PieChart::data@143");
+		var $spos = $s.length;
+		var $tmp = Reflect.field(dp1,pv) > 0;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	this.stats = rg.util.DataPoints.stats(dp,this.propertyValue);
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@139");
+		$s.push("rg.view.svg.widget.PieChart::data@154");
 		var $spos = $s.length;
 		var $tmp = "group item-" + i;
 		$s.pop();
@@ -14850,18 +15812,44 @@ rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	var path = arc.append("svg:path").attr("class").string("slice");
 	arc.eachNode($closure(this,"applyGradient"));
 	if(this.animated) {
-		path.attr("d").stringf($closure(this.arcStart,"shape"));
+		path.attr("d").stringf(this.arcShape(this.arcStart));
 		arc.eachNode($closure(this,"fadein")).onNode("mouseover.animation",$closure(this,"highlight")).onNode("mouseout.animation",$closure(this,"backtonormal"));
-	} else path.attr("d").stringf($closure(this.arcNormal,"shape"));
+	} else path.attr("d").stringf(this.arcShape(this.arcNormal));
 	if(this.labelDisplay) arc.eachNode($closure(this,"appendLabel"));
-	choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf($closure(this.arcNormal,"shape"));
-	choice.exit().remove();
+	if(null != this.mouseClick) arc.onNode("click.user",$closure(this,"onMouseClick"));
+	choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
+	if(this.labelDisplay) choice.update().eachNode($closure(this,"updateLabel"));
+	choice.exit().eachNode($closure(this,"removeLabel")).remove();
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.onMouseClick = function(dom,i) {
+	$s.push("rg.view.svg.widget.PieChart::onMouseClick");
+	var $spos = $s.length;
+	var d = Reflect.field(dom,"__data__");
+	this.mouseClick(d.dp);
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.removeLabel = function(dom,i) {
+	$s.push("rg.view.svg.widget.PieChart::removeLabel");
+	var $spos = $s.length;
+	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
+	var label = this.labels.get(d.id);
+	label.destroy();
+	this.labels.remove(d.id);
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.updateLabel = function(dom,i) {
+	$s.push("rg.view.svg.widget.PieChart::updateLabel");
+	var $spos = $s.length;
+	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
+	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.appendLabel = function(dom,i) {
 	$s.push("rg.view.svg.widget.PieChart::appendLabel");
 	var $spos = $s.length;
-	var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+	var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n,this.labelDontFlip), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 	label.setOrientation(this.labelOrientation);
 	switch( (this.labelOrientation)[1] ) {
 	case 0:
@@ -14874,8 +15862,9 @@ rg.view.svg.widget.PieChart.prototype.appendLabel = function(dom,i) {
 		label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
 		break;
 	}
-	label.setText(this.labelDataPoint(this.dataPoints[i]));
+	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
 	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
+	this.labels.set(d.id,label);
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.applyGradient = function(n,i) {
@@ -14908,14 +15897,14 @@ rg.view.svg.widget.PieChart.prototype.highlight = function(d,i) {
 	$s.push("rg.view.svg.widget.PieChart::highlight");
 	var $spos = $s.length;
 	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
-	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf($closure(this.arcBig,"shape"));
+	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcBig));
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.backtonormal = function(d,i) {
 	$s.push("rg.view.svg.widget.PieChart::backtonormal");
 	var $spos = $s.length;
 	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
-	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf($closure(this.arcNormal,"shape"));
+	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.id = function(o,i) {
@@ -14936,11 +15925,26 @@ rg.view.svg.widget.PieChart.prototype.makeid = function(dp) {
 	return $tmp;
 	$s.pop();
 }
+rg.view.svg.widget.PieChart.prototype.arcShape = function(a) {
+	$s.push("rg.view.svg.widget.PieChart::arcShape");
+	var $spos = $s.length;
+	var $tmp = function(d,i) {
+		$s.push("rg.view.svg.widget.PieChart::arcShape@331");
+		var $spos = $s.length;
+		var $tmp = a.shape(d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::pief");
 	var $spos = $s.length;
 	var name = this.propertyValue, temp = dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@283");
+		$s.push("rg.view.svg.widget.PieChart::pief@340");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(d,name);
 		$s.pop();
@@ -14952,9 +15956,21 @@ rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 		var i = _g1++;
 		var id = this.makeid(dp[i]);
 		arr[i]["id"] = id;
+		arr[i]["dp"] = dp[i];
 	}
 	$s.pop();
 	return arr;
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.destroy = function() {
+	$s.push("rg.view.svg.widget.PieChart::destroy");
+	var $spos = $s.length;
+	var $it0 = this.labels.iterator();
+	while( $it0.hasNext() ) {
+		var label = $it0.next();
+		label.destroy();
+	}
+	rg.view.svg.panel.Layer.prototype.destroy.call(this);
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.__class__ = rg.view.svg.widget.PieChart;
@@ -15011,40 +16027,40 @@ rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,l
 	var $spos = $s.length;
 	switch(type) {
 	case "linechart":
-		var $tmp = this.createLineChart(rg.controller.info.Info.feed(new rg.controller.info.InfoLineChart(),options),layout);
+		var chart = new rg.controller.visualization.VisualizationLineChart(layout);
+		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoLineChart(),options);
 		$s.pop();
-		return $tmp;
+		return chart;
 	case "piechart":
-		var $tmp = this.createPieChart(rg.controller.info.Info.feed(new rg.controller.info.InfoPieChart(),options),layout);
+		var chart = new rg.controller.visualization.VisualizationPieChart(layout);
+		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoPieChart(),options);
 		$s.pop();
-		return $tmp;
+		return chart;
 	default:
-		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 30, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 35, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 	}
 	$s.pop();
 }
-rg.controller.factory.FactorySvgVisualization.prototype.createLineChart = function(info,layout) {
-	$s.push("rg.controller.factory.FactorySvgVisualization::createLineChart");
-	var $spos = $s.length;
-	var $tmp = (function($this) {
-		var $r;
-		throw new thx.error.NotImplemented({ fileName : "FactorySvgVisualization.hx", lineNumber : 36, className : "rg.controller.factory.FactorySvgVisualization", methodName : "createLineChart"});
-		return $r;
-	}(this));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.factory.FactorySvgVisualization.prototype.createPieChart = function(info,layout) {
-	$s.push("rg.controller.factory.FactorySvgVisualization::createPieChart");
-	var $spos = $s.length;
-	var chart = new rg.controller.visualization.VisualizationPieChart(layout);
-	chart.info = info;
-	$s.pop();
-	return chart;
-	$s.pop();
-}
 rg.controller.factory.FactorySvgVisualization.prototype.__class__ = rg.controller.factory.FactorySvgVisualization;
+rg.data.source.DataSourceArray = function(data) {
+	if( data === $_ ) return;
+	$s.push("rg.data.source.DataSourceArray::new");
+	var $spos = $s.length;
+	this.data = data;
+	this.onLoad = new hxevents.Dispatcher();
+	$s.pop();
+}
+rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
+rg.data.source.DataSourceArray.prototype.data = null;
+rg.data.source.DataSourceArray.prototype.onLoad = null;
+rg.data.source.DataSourceArray.prototype.load = function() {
+	$s.push("rg.data.source.DataSourceArray::load");
+	var $spos = $s.length;
+	this.onLoad.dispatch(this.data);
+	$s.pop();
+}
+rg.data.source.DataSourceArray.prototype.__class__ = rg.data.source.DataSourceArray;
+rg.data.source.DataSourceArray.__interfaces__ = [rg.data.IDataSource];
 thx.js.BaseTransition = function(selection) {
 	if( selection === $_ ) return;
 	$s.push("thx.js.BaseTransition::new");
@@ -15753,25 +16769,6 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 	$s.pop();
 }
 thx.culture.FormatDate.prototype.__class__ = thx.culture.FormatDate;
-rg.data.source.DataSourceArray = function(data) {
-	if( data === $_ ) return;
-	$s.push("rg.data.source.DataSourceArray::new");
-	var $spos = $s.length;
-	this.data = data;
-	this.onLoad = new hxevents.Dispatcher();
-	$s.pop();
-}
-rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
-rg.data.source.DataSourceArray.prototype.data = null;
-rg.data.source.DataSourceArray.prototype.onLoad = null;
-rg.data.source.DataSourceArray.prototype.load = function() {
-	$s.push("rg.data.source.DataSourceArray::load");
-	var $spos = $s.length;
-	this.onLoad.dispatch(this.data);
-	$s.pop();
-}
-rg.data.source.DataSourceArray.prototype.__class__ = rg.data.source.DataSourceArray;
-rg.data.source.DataSourceArray.__interfaces__ = [rg.data.IDataSource];
 thx.culture.FormatNumber = function() { }
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
@@ -15923,23 +16920,32 @@ rg.controller.factory.TestFactoryAxis.prototype.testAxisTime = function() {
 	$s.push("rg.controller.factory.TestFactoryAxis::testAxisTime");
 	var $spos = $s.length;
 	var factory = new rg.controller.factory.FactoryAxis();
-	var axis = Types["as"](factory.createDiscrete(rg.util.Properties.timeProperty("hour"),[1,2,3]),rg.data.AxisTime);
-	utest.Assert.notNull(axis,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 20, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisTime"});
-	utest.Assert.equals("hour",axis.periodicity,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 21, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisTime"});
+	var axis = Types["as"](factory.createDiscrete(rg.util.Properties.timeProperty("hour"),[1,2,3],null),rg.data.AxisTime);
+	utest.Assert.notNull(axis,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 21, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisTime"});
+	utest.Assert.equals("hour",axis.periodicity,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 22, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisTime"});
+	$s.pop();
+}
+rg.controller.factory.TestFactoryAxis.prototype.testAxisGroupByTime = function() {
+	$s.push("rg.controller.factory.TestFactoryAxis::testAxisGroupByTime");
+	var $spos = $s.length;
+	var factory = new rg.controller.factory.FactoryAxis();
+	var axis = Types["as"](factory.createDiscrete(rg.util.Properties.timeProperty("hour"),[1,2,3],"day"),rg.data.AxisGroupByTime);
+	utest.Assert.notNull(axis,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 29, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisGroupByTime"});
+	utest.Assert.equals("day",axis.groupBy,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 30, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisGroupByTime"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryAxis.prototype.testAxisOrdinal = function() {
 	$s.push("rg.controller.factory.TestFactoryAxis::testAxisOrdinal");
 	var $spos = $s.length;
 	var factory = new rg.controller.factory.FactoryAxis();
-	var axis = Types["as"](factory.createDiscrete("count",[1,2,3]),rg.data.AxisOrdinal);
-	utest.Assert.equals(1,axis.getFirst(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 28, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.equals(3,axis.getLast(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 29, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.same(thx.collections.Set.ofArray([1,2,3]),axis.getValues(),null,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 30, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
-	axis = Types["as"](factory.createDiscrete("count",null),rg.data.AxisOrdinal);
-	utest.Assert.isNull(axis.getFirst(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 33, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.isNull(axis.getLast(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 34, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
-	utest.Assert.equals(0,axis.getValues().length,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 35, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	var axis = Types["as"](factory.createDiscrete("count",[1,2,3],null),rg.data.AxisOrdinal);
+	utest.Assert.equals(1,axis.getFirst(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 37, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.equals(3,axis.getLast(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 38, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.same(thx.collections.Set.ofArray([1,2,3]),axis.getValues(),null,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 39, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	axis = Types["as"](factory.createDiscrete("count",null,null),rg.data.AxisOrdinal);
+	utest.Assert.isNull(axis.getFirst(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 42, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.isNull(axis.getLast(),null,{ fileName : "TestFactoryAxis.hx", lineNumber : 43, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
+	utest.Assert.equals(0,axis.getValues().length,null,{ fileName : "TestFactoryAxis.hx", lineNumber : 44, className : "rg.controller.factory.TestFactoryAxis", methodName : "testAxisOrdinal"});
 	$s.pop();
 }
 rg.controller.factory.TestFactoryAxis.prototype.__class__ = rg.controller.factory.TestFactoryAxis;
@@ -16192,7 +17198,7 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
 		break;
 	case 0:
-		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,params.options);
+		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
 		break;
 	}
 	visualization.setVariables(independentVariables.map(function(c,_) {
@@ -16219,6 +17225,8 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		$s.pop();
 	};
 	request.request();
+	$s.pop();
+	return visualization;
 	$s.pop();
 }
 rg.controller.App.prototype.getLayout = function(id,options,container) {
@@ -16773,12 +17781,13 @@ utest.ui.common.SuccessResultsDisplayMode.NeverShowSuccessResults.__enum__ = ute
 utest.ui.common.SuccessResultsDisplayMode.ShowSuccessResultsWithNoErrors = ["ShowSuccessResultsWithNoErrors",2];
 utest.ui.common.SuccessResultsDisplayMode.ShowSuccessResultsWithNoErrors.toString = $estr;
 utest.ui.common.SuccessResultsDisplayMode.ShowSuccessResultsWithNoErrors.__enum__ = utest.ui.common.SuccessResultsDisplayMode;
-rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,end) {
+rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby,start,end) {
 	if( executor === $_ ) return;
 	$s.push("rg.data.source.DataSourceReportGrid::new");
 	var $spos = $s.length;
 	this.query = query;
 	this.executor = executor;
+	this.groupBy = groupby;
 	var e = rg.data.source.DataSourceReportGrid.normalize(query.exp);
 	this.event = event;
 	this.periodicity = (function($this) {
@@ -16792,7 +17801,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 69, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 71, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -16800,7 +17809,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 	}(this));
 	this.exp = e.map($closure(this,"mapProperties"));
 	this.where = query.where.map(function(d,i) {
-		$s.push("rg.data.source.DataSourceReportGrid::new@71");
+		$s.push("rg.data.source.DataSourceReportGrid::new@73");
 		var $spos = $s.length;
 		var $tmp = (function($this) {
 			var $r;
@@ -16813,7 +17822,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 75, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 77, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
@@ -16828,7 +17837,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,start,e
 	case 0:
 		break;
 	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 81, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 83, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 	}
 	this.path = path;
 	this.start = start;
@@ -16846,7 +17855,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 192, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 198, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -16920,6 +17929,7 @@ rg.data.source.DataSourceReportGrid.prototype.event = null;
 rg.data.source.DataSourceReportGrid.prototype.path = null;
 rg.data.source.DataSourceReportGrid.prototype.start = null;
 rg.data.source.DataSourceReportGrid.prototype.end = null;
+rg.data.source.DataSourceReportGrid.prototype.groupBy = null;
 rg.data.source.DataSourceReportGrid.prototype.transform = null;
 rg.data.source.DataSourceReportGrid.prototype.query = null;
 rg.data.source.DataSourceReportGrid.prototype.onLoad = null;
@@ -16938,7 +17948,7 @@ rg.data.source.DataSourceReportGrid.prototype.mapProperties = function(d,_) {
 		$s.pop();
 		return $tmp;
 	default:
-		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 59, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 60, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 	}
 	$s.pop();
 }
@@ -16949,7 +17959,10 @@ rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeri
 	var o = { };
 	if(null != this.start) o["start"] = this.start;
 	if(null != this.end) o["end"] = this.end;
-	if(appendPeriodicity) o["periodicity"] = this.periodicity;
+	if(appendPeriodicity) {
+		o["periodicity"] = this.periodicity;
+		if(null != this.groupBy) o["groupBy"] = this.groupBy;
+	}
 	if(this.where.length > 1) {
 		var w = { };
 		var _g = 0, _g1 = this.where;
@@ -16976,7 +17989,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 116, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
+				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 122, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
 				return $r;
 			}($this));
 		}
@@ -16989,7 +18002,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 rg.data.source.DataSourceReportGrid.prototype.load = function() {
 	$s.push("rg.data.source.DataSourceReportGrid::load");
 	var $spos = $s.length;
-	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 124, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 130, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 		if(this.periodicity == "eternity") {
 			this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 			var o = this.basicOptions(false);
@@ -17015,7 +18028,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 		}
 	} else {
 		this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },this.exp.map(function(d,_) {
-			$s.push("rg.data.source.DataSourceReportGrid::load@158");
+			$s.push("rg.data.source.DataSourceReportGrid::load@164");
 			var $spos = $s.length;
 			var $tmp = d.property;
 			$s.pop();
@@ -17024,7 +18037,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 		}),this.event,this.periodicity,this.unit());
 		var o = this.basicOptions(true);
 		o.properties = this.exp.map(function(p,i) {
-			$s.push("rg.data.source.DataSourceReportGrid::load@160");
+			$s.push("rg.data.source.DataSourceReportGrid::load@166");
 			var $spos = $s.length;
 			var $tmp = { property : rg.data.source.DataSourceReportGrid.propertyName(p), limit : p.limit, order : p.order};
 			$s.pop();
@@ -17038,7 +18051,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 rg.data.source.DataSourceReportGrid.prototype.error = function(msg) {
 	$s.push("rg.data.source.DataSourceReportGrid::error");
 	var $spos = $s.length;
-	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 173, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 179, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	$s.pop();
 }
 rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
@@ -17050,6 +18063,32 @@ rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
 }
 rg.data.source.DataSourceReportGrid.prototype.__class__ = rg.data.source.DataSourceReportGrid;
 rg.data.source.DataSourceReportGrid.__interfaces__ = [rg.data.IDataSource];
+thx.js.Svg = function() { }
+thx.js.Svg.__name__ = ["thx","js","Svg"];
+thx.js.Svg.mouse = function(dom) {
+	$s.push("thx.js.Svg::mouse");
+	var $spos = $s.length;
+	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
+	if(thx.js.Svg._usepage && (js.Lib.window.scrollX || js.Lib.window.scrollY)) {
+		var svg = thx.js.Dom.selectNode(js.Lib.document.body).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
+		var ctm = svg.node().getScreenCTM();
+		thx.js.Svg._usepage = !(ctm.f || ctm.e);
+		svg.remove();
+	}
+	if(thx.js.Svg._usepage) {
+		point.x = thx.js.Dom.event.pageX;
+		point.y = thx.js.Dom.event.pageY;
+	} else {
+		point.x = thx.js.Dom.event.clientX;
+		point.y = thx.js.Dom.event.clientY;
+	}
+	point = point.matrixTransform(dom.getScreenCTM().inverse());
+	var $tmp = [point.x,point.y];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.Svg.prototype.__class__ = thx.js.Svg;
 utest.ui.common.PackageResult = function(packageName) {
 	if( packageName === $_ ) return;
 	$s.push("utest.ui.common.PackageResult::new");
@@ -17331,6 +18370,7 @@ rg.view.layout.Layout = function(width,height,container) {
 	$s.pop();
 }
 rg.view.layout.Layout.__name__ = ["rg","view","layout","Layout"];
+rg.view.layout.Layout.prototype.mainPanelName = null;
 rg.view.layout.Layout.prototype.space = null;
 rg.view.layout.Layout.prototype.container = null;
 rg.view.layout.Layout.prototype.getPanel = function(name) {
@@ -17852,6 +18892,137 @@ rg.view.svg.panel.TestSpace.prototype.testContainer = function() {
 	$s.pop();
 }
 rg.view.svg.panel.TestSpace.prototype.__class__ = rg.view.svg.panel.TestSpace;
+rg.controller.factory.FactoryVariableIndependent = function(p) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.__name__ = ["rg","controller","factory","FactoryVariableIndependent"];
+rg.controller.factory.FactoryVariableIndependent.prototype.create = function(info) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::create");
+	var $spos = $s.length;
+	if(null == info.type) {
+		$s.pop();
+		return null;
+	}
+	var axiscreateer = new rg.controller.factory.FactoryAxis(), axis = axiscreateer.createDiscrete(info.type,info.values,info.groupBy), min = info.min, max = info.max;
+	if(Std["is"](axis,rg.data.AxisTime)) {
+		var periodicity = ((function($this) {
+			var $r;
+			var $t = axis;
+			if(Std["is"]($t,rg.data.AxisTime)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).periodicity;
+		min = this.defaultMin(this.normalizeTime(info.min),periodicity);
+		max = this.defaultMax(this.normalizeTime(info.max),periodicity);
+	} else if(Std["is"](axis,rg.data.AxisGroupByTime)) {
+		var periodicity = ((function($this) {
+			var $r;
+			var $t = axis;
+			if(Std["is"]($t,rg.data.AxisGroupByTime)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).groupBy;
+		min = this.defaultMin(this.normalizeTime(info.min),periodicity);
+		max = this.defaultMax(this.normalizeTime(info.max),periodicity);
+	}
+	var $tmp = new rg.data.VariableIndependent(info.type,axis,min,max);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = function(v) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::normalizeTime");
+	var $spos = $s.length;
+	if(null == v || Std["is"](v,Float)) {
+		$s.pop();
+		return v;
+	}
+	if(Std["is"](v,Date)) {
+		var $tmp = ((function($this) {
+			var $r;
+			var $t = v;
+			if(Std["is"]($t,Date)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).getTime();
+		$s.pop();
+		return $tmp;
+	}
+	if(Std["is"](v,String)) {
+		var $tmp = thx.date.DateParser.parse(v).getTime();
+		$s.pop();
+		return $tmp;
+	}
+	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 49, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::defaultMin");
+	var $spos = $s.length;
+	if(null != min) {
+		$s.pop();
+		return min;
+	}
+	switch(periodicity) {
+	case "eternity":
+		$s.pop();
+		return null;
+	case "minute":
+		var $tmp = thx.date.DateParser.parse("360 minutes ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "hour":
+		var $tmp = thx.date.DateParser.parse("24 hours ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "day":
+		var $tmp = thx.date.DateParser.parse("30 days ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "week":
+		var $tmp = thx.date.DateParser.parse("16 weeks ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "month":
+		var $tmp = thx.date.DateParser.parse("12 months ago").getTime();
+		$s.pop();
+		return $tmp;
+	case "year":
+		var $tmp = thx.date.DateParser.parse("6 years ago").getTime();
+		$s.pop();
+		return $tmp;
+	default:
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 73, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function(max,periodicity) {
+	$s.push("rg.controller.factory.FactoryVariableIndependent::defaultMax");
+	var $spos = $s.length;
+	if(null != max) {
+		$s.pop();
+		return max;
+	}
+	switch(periodicity) {
+	case "eternity":
+		$s.pop();
+		return null;
+	case "minute":case "hour":
+		var $tmp = thx.date.DateParser.parse("now").getTime();
+		$s.pop();
+		return $tmp;
+	case "day":case "week":case "month":case "year":
+		var $tmp = thx.date.DateParser.parse("today").getTime();
+		$s.pop();
+		return $tmp;
+	default:
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 90, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
+	}
+	$s.pop();
+}
+rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;
 Std = function() { }
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
@@ -17914,127 +19085,6 @@ Std.random = function(x) {
 	$s.pop();
 }
 Std.prototype.__class__ = Std;
-rg.controller.factory.FactoryVariableIndependent = function(p) {
-	$s.push("rg.controller.factory.FactoryVariableIndependent::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableIndependent.__name__ = ["rg","controller","factory","FactoryVariableIndependent"];
-rg.controller.factory.FactoryVariableIndependent.prototype.create = function(info) {
-	$s.push("rg.controller.factory.FactoryVariableIndependent::create");
-	var $spos = $s.length;
-	if(null == info.type) {
-		$s.pop();
-		return null;
-	}
-	var axiscreateer = new rg.controller.factory.FactoryAxis(), axis = axiscreateer.createDiscrete(info.type,info.values), min = info.min, max = info.max;
-	if(Std["is"](axis,rg.data.AxisTime)) {
-		var periodicity = ((function($this) {
-			var $r;
-			var $t = axis;
-			if(Std["is"]($t,rg.data.AxisTime)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this))).periodicity;
-		min = this.defaultMin(this.normalizeTime(info.min),periodicity);
-		max = this.defaultMax(this.normalizeTime(info.max),periodicity);
-	}
-	var $tmp = new rg.data.VariableIndependent(info.type,axis,min,max);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = function(v) {
-	$s.push("rg.controller.factory.FactoryVariableIndependent::normalizeTime");
-	var $spos = $s.length;
-	if(null == v || Std["is"](v,Float)) {
-		$s.pop();
-		return v;
-	}
-	if(Std["is"](v,Date)) {
-		var $tmp = ((function($this) {
-			var $r;
-			var $t = v;
-			if(Std["is"]($t,Date)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this))).getTime();
-		$s.pop();
-		return $tmp;
-	}
-	if(Std["is"](v,String)) {
-		var $tmp = thx.date.DateParser.parse(v).getTime();
-		$s.pop();
-		return $tmp;
-	}
-	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 43, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
-	$s.push("rg.controller.factory.FactoryVariableIndependent::defaultMin");
-	var $spos = $s.length;
-	if(null != min) {
-		$s.pop();
-		return min;
-	}
-	switch(periodicity) {
-	case "eternity":
-		$s.pop();
-		return null;
-	case "minute":
-		var $tmp = thx.date.DateParser.parse("360 minutes ago").getTime();
-		$s.pop();
-		return $tmp;
-	case "hour":
-		var $tmp = thx.date.DateParser.parse("24 hours ago").getTime();
-		$s.pop();
-		return $tmp;
-	case "day":
-		var $tmp = thx.date.DateParser.parse("30 days ago").getTime();
-		$s.pop();
-		return $tmp;
-	case "week":
-		var $tmp = thx.date.DateParser.parse("16 weeks ago").getTime();
-		$s.pop();
-		return $tmp;
-	case "month":
-		var $tmp = thx.date.DateParser.parse("12 months ago").getTime();
-		$s.pop();
-		return $tmp;
-	case "year":
-		var $tmp = thx.date.DateParser.parse("6 years ago").getTime();
-		$s.pop();
-		return $tmp;
-	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 67, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
-	}
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function(max,periodicity) {
-	$s.push("rg.controller.factory.FactoryVariableIndependent::defaultMax");
-	var $spos = $s.length;
-	if(null != max) {
-		$s.pop();
-		return max;
-	}
-	switch(periodicity) {
-	case "eternity":
-		$s.pop();
-		return null;
-	case "minute":case "hour":
-		var $tmp = thx.date.DateParser.parse("now").getTime();
-		$s.pop();
-		return $tmp;
-	case "day":case "week":case "month":case "year":
-		var $tmp = thx.date.DateParser.parse("today").getTime();
-		$s.pop();
-		return $tmp;
-	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 84, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
-	}
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;
 rg.data.VariableIndependentContext = function(variable,partial) {
 	if( variable === $_ ) return;
 	$s.push("rg.data.VariableIndependentContext::new");
@@ -18331,13 +19381,19 @@ rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,sam
 	}
 	$s.pop();
 }
-rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,samples) {
+rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,samples,groupBy) {
 	$s.push("rg.controller.factory.FactoryAxis::createDiscrete");
 	var $spos = $s.length;
 	if(rg.util.Properties.isTime(type)) {
-		var $tmp = new rg.data.AxisTime(rg.util.Properties.periodicity(type));
-		$s.pop();
-		return $tmp;
+		if(null != groupBy) {
+			var $tmp = new rg.data.AxisGroupByTime(groupBy);
+			$s.pop();
+			return $tmp;
+		} else {
+			var $tmp = new rg.data.AxisTime(rg.util.Properties.periodicity(type));
+			$s.pop();
+			return $tmp;
+		}
 	} else {
 		var $tmp = new rg.data.AxisOrdinal(samples);
 		$s.pop();
@@ -18514,6 +19570,54 @@ thx.js.AccessDataText.prototype.data = function() {
 	$s.pop();
 }
 thx.js.AccessDataText.prototype.__class__ = thx.js.AccessDataText;
+rg.controller.visualization.VisualizationPivotTable = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationPivotTable::new");
+	var $spos = $s.length;
+	rg.controller.visualization.VisualizationHtml.call(this,container);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.__name__ = ["rg","controller","visualization","VisualizationPivotTable"];
+rg.controller.visualization.VisualizationPivotTable.__super__ = rg.controller.visualization.VisualizationHtml;
+for(var k in rg.controller.visualization.VisualizationHtml.prototype ) rg.controller.visualization.VisualizationPivotTable.prototype[k] = rg.controller.visualization.VisualizationHtml.prototype[k];
+rg.controller.visualization.VisualizationPivotTable.prototype.info = null;
+rg.controller.visualization.VisualizationPivotTable.prototype.chart = null;
+rg.controller.visualization.VisualizationPivotTable.prototype.init = function() {
+	$s.push("rg.controller.visualization.VisualizationPivotTable::init");
+	var $spos = $s.length;
+	this.chart = new rg.view.html.widget.PivotTable(this.container);
+	this.chart.displayColumnTotal = this.info.displayColumnTotal;
+	this.chart.displayHeatMap = this.info.displayHeatmap;
+	this.chart.displayRowTotal = this.info.displayRowTotal;
+	this.chart.colorStart = this.info.heatmapColorStart;
+	this.chart.colorEnd = this.info.heatmapColorEnd;
+	var incolumns = Ints.min(this.info.columnAxes,this.independentVariables.length);
+	this.chart.columnVariables = this.independentVariables.slice(0,incolumns);
+	this.chart.rowVariables = this.independentVariables.slice(incolumns);
+	this.chart.cellVariable = this.dependentVariables[0];
+	if(null != this.info.click) this.chart.click = this.info.click;
+	if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
+	if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
+	if(null != this.info.label.axis) this.chart.labelAxis = this.info.label.axis;
+	if(null != this.info.label.axisvalue) this.chart.labelAxisValue = this.info.label.axisvalue;
+	if(null != this.info.label.total) this.chart.labelTotal = this.info.label.total;
+	if(null != this.info.label.totalover) this.chart.labelTotalOver = this.info.label.totalover;
+	this.chart.init();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.VisualizationPivotTable::feedData");
+	var $spos = $s.length;
+	this.chart.data(data);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.VisualizationPivotTable::destroy");
+	var $spos = $s.length;
+	this.chart.destroy();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationPivotTable.prototype.__class__ = rg.controller.visualization.VisualizationPivotTable;
 utest.Assertation = { __ename__ : ["utest","Assertation"], __constructs__ : ["Success","Failure","Error","SetupError","TeardownError","TimeoutError","AsyncError","Warning"] }
 utest.Assertation.Success = function(pos) { var $x = ["Success",0,pos]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
 utest.Assertation.Failure = function(msg,pos) { var $x = ["Failure",1,msg,pos]; $x.__enum__ = utest.Assertation; $x.toString = $estr; return $x; }
@@ -18586,38 +19690,6 @@ rg.data.DataRequest.prototype.receiveData = function(name,data) {
 	$s.pop();
 }
 rg.data.DataRequest.prototype.__class__ = rg.data.DataRequest;
-rg.view.frame.StackItem = function(disposition) {
-	if( disposition === $_ ) return;
-	$s.push("rg.view.frame.StackItem::new");
-	var $spos = $s.length;
-	rg.view.frame.Frame.call(this);
-	this.setDisposition(disposition);
-	$s.pop();
-}
-rg.view.frame.StackItem.__name__ = ["rg","view","frame","StackItem"];
-rg.view.frame.StackItem.__super__ = rg.view.frame.Frame;
-for(var k in rg.view.frame.Frame.prototype ) rg.view.frame.StackItem.prototype[k] = rg.view.frame.Frame.prototype[k];
-rg.view.frame.StackItem.prototype.disposition = null;
-rg.view.frame.StackItem.prototype.parent = null;
-rg.view.frame.StackItem.prototype.setParent = function(v) {
-	$s.push("rg.view.frame.StackItem::setParent");
-	var $spos = $s.length;
-	if(null != this.parent) this.parent.removeChild(this);
-	var $tmp = this.parent = v;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.frame.StackItem.prototype.setDisposition = function(v) {
-	$s.push("rg.view.frame.StackItem::setDisposition");
-	var $spos = $s.length;
-	this.disposition = v;
-	if(null != this.parent) this.parent.reflow();
-	$s.pop();
-	return v;
-	$s.pop();
-}
-rg.view.frame.StackItem.prototype.__class__ = rg.view.frame.StackItem;
 Objects = function() { }
 Objects.__name__ = ["Objects"];
 Objects.field = function(o,fieldname,alt) {
@@ -19037,42 +20109,101 @@ thx.js.AccessDataProperty.prototype.data = function() {
 	$s.pop();
 }
 thx.js.AccessDataProperty.prototype.__class__ = thx.js.AccessDataProperty;
-rg.controller.info.InfoLabel = function(p) {
-	$s.push("rg.controller.info.InfoLabel::new");
+rg.view.frame.StackItem = function(disposition) {
+	if( disposition === $_ ) return;
+	$s.push("rg.view.frame.StackItem::new");
 	var $spos = $s.length;
+	rg.view.frame.Frame.call(this);
+	this.setDisposition(disposition);
 	$s.pop();
 }
-rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
-rg.controller.info.InfoLabel.filters = function() {
-	$s.push("rg.controller.info.InfoLabel::filters");
+rg.view.frame.StackItem.__name__ = ["rg","view","frame","StackItem"];
+rg.view.frame.StackItem.__super__ = rg.view.frame.Frame;
+for(var k in rg.view.frame.Frame.prototype ) rg.view.frame.StackItem.prototype[k] = rg.view.frame.Frame.prototype[k];
+rg.view.frame.StackItem.prototype.disposition = null;
+rg.view.frame.StackItem.prototype.parent = null;
+rg.view.frame.StackItem.prototype.setParent = function(v) {
+	$s.push("rg.view.frame.StackItem::setParent");
 	var $spos = $s.length;
-	var $tmp = [{ field : "title", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@19");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLabel::filters@20");
-		var $spos = $s.length;
-		var $tmp = [{ field : "title", value : Std["is"](v,String)?function() {
-			$s.push("rg.controller.info.InfoLabel::filters@20@22");
-			var $spos = $s.length;
-			$s.pop();
-			return v;
-			$s.pop();
-		}:v}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}}];
+	if(null != this.parent) this.parent.removeChild(this);
+	var $tmp = this.parent = v;
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.controller.info.InfoLabel.prototype.title = null;
-rg.controller.info.InfoLabel.prototype.__class__ = rg.controller.info.InfoLabel;
+rg.view.frame.StackItem.prototype.setDisposition = function(v) {
+	$s.push("rg.view.frame.StackItem::setDisposition");
+	var $spos = $s.length;
+	this.disposition = v;
+	if(null != this.parent) this.parent.reflow();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.frame.StackItem.prototype.__class__ = rg.view.frame.StackItem;
+rg.view.svg.widget.LineChart = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.widget.LineChart::new");
+	var $spos = $s.length;
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.addClass("line-chart");
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.linear;
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.__name__ = ["rg","view","svg","widget","LineChart"];
+rg.view.svg.widget.LineChart.__super__ = rg.view.svg.panel.Layer;
+for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.LineChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.widget.LineChart.prototype.variableDependent = null;
+rg.view.svg.widget.LineChart.prototype.variableIndependents = null;
+rg.view.svg.widget.LineChart.prototype.animated = null;
+rg.view.svg.widget.LineChart.prototype.animationDuration = null;
+rg.view.svg.widget.LineChart.prototype.animationEase = null;
+rg.view.svg.widget.LineChart.prototype.segmenton = null;
+rg.view.svg.widget.LineChart.prototype.init = function() {
+	$s.push("rg.view.svg.widget.LineChart::init");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.data = function(input) {
+	$s.push("rg.view.svg.widget.LineChart::data");
+	var $spos = $s.length;
+	var dps = this.transformData(input);
+	var axisgroup = this.g.selectAll("g.axis-group").data(dps);
+	axisgroup.enter().append("g").attr("class").stringf(function(_,i) {
+		$s.push("rg.view.svg.widget.LineChart::data@51");
+		var $spos = $s.length;
+		var $tmp = "axis-group group-" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	haxe.Log.trace(dps,{ fileName : "LineChart.hx", lineNumber : 53, className : "rg.view.svg.widget.LineChart", methodName : "data"});
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.transformData = function(dps) {
+	$s.push("rg.view.svg.widget.LineChart::transformData");
+	var $spos = $s.length;
+	var results = [];
+	if(this.variableIndependents.length == 1) {
+		var map = rg.util.DataPoints.partition(dps,this.segmenton);
+		results.push(map);
+	} else {
+		var _g1 = 1, _g = this.variableIndependents.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var variable = this.variableIndependents[i];
+			var values = rg.util.DataPoints.filterByIndependents(dps,[variable]);
+			var map = rg.util.DataPoints.partition(values,this.segmenton);
+			results.push(map);
+		}
+	}
+	$s.pop();
+	return results;
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.__class__ = rg.view.svg.widget.LineChart;
 rg.controller.info.InfoDataSource = function(p) {
 	$s.push("rg.controller.info.InfoDataSource::new");
 	var $spos = $s.length;
@@ -19083,38 +20214,38 @@ rg.controller.info.InfoDataSource.filters = function() {
 	$s.push("rg.controller.info.InfoDataSource::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "query", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@24");
+		$s.push("rg.controller.info.InfoDataSource::filters@26");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "path", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@28");
+		$s.push("rg.controller.info.InfoDataSource::filters@30");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "event", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@32");
+		$s.push("rg.controller.info.InfoDataSource::filters@34");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "name", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@36");
+		$s.push("rg.controller.info.InfoDataSource::filters@38");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "data", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@40");
+		$s.push("rg.controller.info.InfoDataSource::filters@42");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoDataSource::filters@40@40");
+			$s.push("rg.controller.info.InfoDataSource::filters@42@42");
 			var $spos = $s.length;
 			var $tmp = Reflect.isObject(v1) && null == Type.getClass(v1) && Std["is"](v1.event,String);
 			$s.pop();
@@ -19125,7 +20256,7 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@41");
+		$s.push("rg.controller.info.InfoDataSource::filters@43");
 		var $spos = $s.length;
 		if(Std["is"](v,Array)) {
 			var $tmp = [{ field : "data", value : v}];
@@ -19136,6 +20267,20 @@ rg.controller.info.InfoDataSource.filters = function() {
 			$s.pop();
 			return $tmp;
 		}
+		$s.pop();
+	}},{ field : "groupby", validator : function(v) {
+		$s.push("rg.controller.info.InfoDataSource::filters@52");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String) && rg.util.Periodicity.isValid(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoDataSource::filters@53");
+		var $spos = $s.length;
+		var $tmp = [{ field : "groupBy", value : v}];
+		$s.pop();
+		return $tmp;
 		$s.pop();
 	}}];
 	$s.pop();
@@ -19148,6 +20293,7 @@ rg.controller.info.InfoDataSource.prototype.event = null;
 rg.controller.info.InfoDataSource.prototype.namedData = null;
 rg.controller.info.InfoDataSource.prototype.data = null;
 rg.controller.info.InfoDataSource.prototype.name = null;
+rg.controller.info.InfoDataSource.prototype.groupBy = null;
 rg.controller.info.InfoDataSource.prototype.__class__ = rg.controller.info.InfoDataSource;
 rg.data.VariableDependent = function(type,axis,min,max) {
 	if( type === $_ ) return;
@@ -19203,6 +20349,73 @@ thx.math.Ease.mode = function(easemode,f) {
 	$s.pop();
 }
 thx.math.Ease.prototype.__class__ = thx.math.Ease;
+rg.controller.info.InfoVisualizationOption = function(p) {
+	$s.push("rg.controller.info.InfoVisualizationOption::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoVisualizationOption.__name__ = ["rg","controller","info","InfoVisualizationOption"];
+rg.controller.info.InfoVisualizationOption.filters = function() {
+	$s.push("rg.controller.info.InfoVisualizationOption::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "axes", validator : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@22");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Array) || Reflect.isObject(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@23");
+		var $spos = $s.length;
+		var $tmp = [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			$s.push("rg.controller.info.InfoVisualizationOption::filters@23@28");
+			var $spos = $s.length;
+			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v)]}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "data", validator : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@34");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Array) || Reflect.isObject(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@35");
+		var $spos = $s.length;
+		var $tmp = [{ field : "data", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			$s.push("rg.controller.info.InfoVisualizationOption::filters@35@40");
+			var $spos = $s.length;
+			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v1);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v)]}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "options", validator : function(v) {
+		$s.push("rg.controller.info.InfoVisualizationOption::filters@46");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoVisualizationOption.prototype.variables = null;
+rg.controller.info.InfoVisualizationOption.prototype.data = null;
+rg.controller.info.InfoVisualizationOption.prototype.options = null;
+rg.controller.info.InfoVisualizationOption.prototype.__class__ = rg.controller.info.InfoVisualizationOption;
 thx.math.Equations = function() { }
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
@@ -19342,73 +20555,6 @@ thx.math.Equations.polynomialf = function(e) {
 	$s.pop();
 }
 thx.math.Equations.prototype.__class__ = thx.math.Equations;
-rg.controller.info.InfoVisualizationOption = function(p) {
-	$s.push("rg.controller.info.InfoVisualizationOption::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.info.InfoVisualizationOption.__name__ = ["rg","controller","info","InfoVisualizationOption"];
-rg.controller.info.InfoVisualizationOption.filters = function() {
-	$s.push("rg.controller.info.InfoVisualizationOption::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "axes", validator : function(v) {
-		$s.push("rg.controller.info.InfoVisualizationOption::filters@22");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Array) || Reflect.isObject(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVisualizationOption::filters@23");
-		var $spos = $s.length;
-		var $tmp = [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			$s.push("rg.controller.info.InfoVisualizationOption::filters@23@28");
-			var $spos = $s.length;
-			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v1);
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v)]}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "data", validator : function(v) {
-		$s.push("rg.controller.info.InfoVisualizationOption::filters@34");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,Array) || Reflect.isObject(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVisualizationOption::filters@35");
-		var $spos = $s.length;
-		var $tmp = [{ field : "data", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			$s.push("rg.controller.info.InfoVisualizationOption::filters@35@40");
-			var $spos = $s.length;
-			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v1);
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v)]}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "options", validator : function(v) {
-		$s.push("rg.controller.info.InfoVisualizationOption::filters@46");
-		var $spos = $s.length;
-		var $tmp = Reflect.isObject(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoVisualizationOption.prototype.variables = null;
-rg.controller.info.InfoVisualizationOption.prototype.data = null;
-rg.controller.info.InfoVisualizationOption.prototype.options = null;
-rg.controller.info.InfoVisualizationOption.prototype.__class__ = rg.controller.info.InfoVisualizationOption;
 rg.controller.factory.FactoryLayout = function(p) {
 	$s.push("rg.controller.factory.FactoryLayout::new");
 	var $spos = $s.length;
@@ -19419,12 +20565,13 @@ rg.controller.factory.FactoryLayout.prototype.create = function(info,container) 
 	$s.push("rg.controller.factory.FactoryLayout::create");
 	var $spos = $s.length;
 	var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height;
-	var layout = info.layout;
-	if(null == layout) layout = rg.controller.Visualizations.layoutDefault.get(info.type);
-	if(null == layout) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
-	var $tmp = rg.controller.Visualizations.instantiateLayout(layout,width,height,container);
+	var layoutName = info.layout;
+	if(null == layoutName) layoutName = rg.controller.Visualizations.layoutDefault.get(info.type);
+	if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
+	var layout = rg.controller.Visualizations.instantiateLayout(layoutName,width,height,container);
+	layout.mainPanelName = info.main;
 	$s.pop();
-	return $tmp;
+	return layout;
 	$s.pop();
 }
 rg.controller.factory.FactoryLayout.prototype.__class__ = rg.controller.factory.FactoryLayout;
@@ -19540,8 +20687,7 @@ rg.data.DataProcessor.prototype.load = function() {
 	while(_g < _g1.length) {
 		var variable = _g1[_g];
 		++_g;
-		var axis = Types["as"](variable.variable.axis,rg.data.AxisTime);
-		if(null == axis) continue;
+		if(!Std["is"](variable.variable.axis,rg.data.AxisTime) && !Std["is"](variable.variable.axis,rg.data.AxisGroupByTime)) continue;
 		tmin = variable.variable.min;
 		tmax = variable.variable.max;
 		break;
@@ -19563,10 +20709,10 @@ rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 	$s.push("rg.data.DataProcessor::filterSubset");
 	var $spos = $s.length;
 	var $tmp = Arrays.filter(subset,(function(f,a1) {
-		$s.push("rg.data.DataProcessor::filterSubset@63");
+		$s.push("rg.data.DataProcessor::filterSubset@62");
 		var $spos = $s.length;
 		var $tmp = function(a2) {
-			$s.push("rg.data.DataProcessor::filterSubset@63@63");
+			$s.push("rg.data.DataProcessor::filterSubset@62@62");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2);
 			$s.pop();
@@ -19649,10 +20795,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 		++_g;
 		if(ctx.partial) {
 			var variable = [ctx.variable], values = Arrays.filter(data.map((function(variable) {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@133");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@120");
 				var $spos = $s.length;
 				var $tmp = function(dp,_) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@133@133");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@120@120");
 					var $spos = $s.length;
 					var $tmp = Reflect.field(dp,variable[0].type);
 					$s.pop();
@@ -19663,10 +20809,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 				return $tmp;
 				$s.pop();
 			})(variable)),(function() {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@133");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@120");
 				var $spos = $s.length;
 				var $tmp = function(v) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@133@133");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@120@120");
 					var $spos = $s.length;
 					var $tmp = null != v;
 					$s.pop();
@@ -19749,7 +20895,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@218");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@205");
 		var $spos = $s.length;
 		var $tmp = d.variable.range();
 		$s.pop();
@@ -20551,6 +21697,450 @@ utest.Assert.typeToString = function(t) {
 	$s.pop();
 }
 utest.Assert.prototype.__class__ = utest.Assert;
+rg.view.html.widget.PivotTable = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.view.html.widget.PivotTable::new");
+	var $spos = $s.length;
+	this.container = container;
+	this.displayColumnTotal = true;
+	this.displayRowTotal = true;
+	this.displayHeatMap = true;
+	this.colorStart = rg.view.html.widget.PivotTable.defaultColorStart;
+	this.colorEnd = rg.view.html.widget.PivotTable.defaultColorEnd;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.__name__ = ["rg","view","html","widget","PivotTable"];
+rg.view.html.widget.PivotTable.prototype.displayColumnTotal = null;
+rg.view.html.widget.PivotTable.prototype.displayRowTotal = null;
+rg.view.html.widget.PivotTable.prototype.displayHeatMap = null;
+rg.view.html.widget.PivotTable.prototype.colorStart = null;
+rg.view.html.widget.PivotTable.prototype.colorEnd = null;
+rg.view.html.widget.PivotTable.prototype.columnVariables = null;
+rg.view.html.widget.PivotTable.prototype.rowVariables = null;
+rg.view.html.widget.PivotTable.prototype.cellVariable = null;
+rg.view.html.widget.PivotTable.prototype.click = null;
+rg.view.html.widget.PivotTable.prototype.container = null;
+rg.view.html.widget.PivotTable.prototype.stats = null;
+rg.view.html.widget.PivotTable.prototype.labelDataPoint = function(dp,stats) {
+	$s.push("rg.view.html.widget.PivotTable::labelDataPoint");
+	var $spos = $s.length;
+	var v = Reflect.field(dp,this.cellVariable.type);
+	var $tmp = thx.culture.FormatNumber["int"](v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.labelDataPointOver = function(dp,stats) {
+	$s.push("rg.view.html.widget.PivotTable::labelDataPointOver");
+	var $spos = $s.length;
+	var v = Reflect.field(dp,this.cellVariable.type);
+	var $tmp = thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.labelAxis = function(v) {
+	$s.push("rg.view.html.widget.PivotTable::labelAxis");
+	var $spos = $s.length;
+	var $tmp = rg.util.Properties.humanize(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.labelAxisValue = function(v,axis) {
+	$s.push("rg.view.html.widget.PivotTable::labelAxisValue");
+	var $spos = $s.length;
+	if(rg.util.Properties.isTime(axis)) {
+		var p = rg.util.Properties.periodicity(axis);
+		var $tmp = rg.util.Periodicity.format(p,v);
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = rg.util.RGStrings.humanize(v);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.labelTotal = function(v,stats) {
+	$s.push("rg.view.html.widget.PivotTable::labelTotal");
+	var $spos = $s.length;
+	var $tmp = thx.culture.FormatNumber["int"](v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.labelTotalOver = function(v,stats) {
+	$s.push("rg.view.html.widget.PivotTable::labelTotalOver");
+	var $spos = $s.length;
+	var $tmp = thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.data = function(dps) {
+	$s.push("rg.view.html.widget.PivotTable::data");
+	var $spos = $s.length;
+	var d = this.transformData(dps), table = this.container.append("table").classed().add("pivot-table"), thead = table.append("thead"), leftspan = d.rows.length > 0?d.rows[0].values.length:0, color = thx.color.Hsl.interpolatef(this.colorStart,this.colorEnd);
+	this.stats = d.stats;
+	if(d.columns.length > 0) {
+		var _g1 = 0, _g = d.column_headers.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var tr = thead.append("tr");
+			this.prependSpacer(leftspan,tr);
+			var header = tr.append("th").attr("class").string("col-header").text().string(this.labelAxis(d.column_headers[i]));
+			if(d.columns.length > 1) header.attr("colspan")["float"](d.columns.length);
+			var counter = 1, last = d.columns[0].values[i];
+			tr = thead.append("tr");
+			if(i == d.column_headers.length - 1) {
+				var _g2 = 0, _g3 = d.row_headers;
+				while(_g2 < _g3.length) {
+					var h = _g3[_g2];
+					++_g2;
+					tr.append("th").attr("class").string("row-header").text().string(this.labelAxis(h));
+				}
+			} else this.prependSpacer(leftspan,tr);
+			var _g3 = 1, _g2 = d.columns.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var value = d.columns[j].values[i];
+				if(last == value) counter++; else {
+					this.buildValue(last,d.column_headers[i],counter,tr);
+					counter = 1;
+					last = value;
+				}
+			}
+			if(null != last) this.buildValue(last,d.column_headers[i],counter,tr);
+		}
+	}
+	if(d.column_headers.length == 0) {
+		var tr = thead.append("tr");
+		var _g = 0, _g1 = d.row_headers;
+		while(_g < _g1.length) {
+			var h = _g1[_g];
+			++_g;
+			tr.append("th").attr("class").string("row header").text().string(this.labelAxis(h));
+		}
+	}
+	var tbody = table.append("tbody"), last = [];
+	var _g = 0, _g1 = d.rows;
+	while(_g < _g1.length) {
+		var row = _g1[_g];
+		++_g;
+		var tr = tbody.append("tr"), len = row.values.length;
+		var _g2 = 0;
+		while(_g2 < len) {
+			var i = _g2++;
+			var v = row.values[i], rep = v == last[i];
+			if(!rep) {
+				last[i] = v;
+				var _g3 = i + 1;
+				while(_g3 < len) {
+					var j = _g3++;
+					last[j] = null;
+				}
+			}
+			tr.append("th").attr("class").string(rep?"row value empty":"row value").text().string(rep?"":this.labelAxisValue(v,d.row_headers[i]));
+		}
+		var _g2 = 0, _g3 = row.cells;
+		while(_g2 < _g3.length) {
+			var cell = _g3[_g2];
+			++_g2;
+			var td = tr.append("td").text().string(this.formatDataPoint(cell)).attr("title").string(this.formatDataPointOver(cell));
+			if(null != this.click) td.onNode("click",(function(f,a1) {
+				$s.push("rg.view.html.widget.PivotTable::data@192");
+				var $spos = $s.length;
+				var $tmp = function(a2,a3) {
+					$s.push("rg.view.html.widget.PivotTable::data@192@192");
+					var $spos = $s.length;
+					var $tmp = f(a1,a2,a3);
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})($closure(this,"onClick"),cell));
+			if(this.displayHeatMap) {
+				var c = color(Reflect.field(cell,this.cellVariable.type) / d.stats.max);
+				td.style("background-color").color(c).style("color").color(thx.color.Rgb.contrastBW(c));
+			}
+		}
+		if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("row total").text().string(this.formatTotal(row.stats.tot)).attr("title").string(this.formatTotalOver(row.stats.tot));
+	}
+	var tfoot = table.append("tfoot");
+	if(this.displayColumnTotal && d.rows.length > 1) {
+		var tr = tfoot.append("tr");
+		this.prependSpacer(leftspan,tr);
+		var _g = 0, _g1 = d.columns;
+		while(_g < _g1.length) {
+			var col = _g1[_g];
+			++_g;
+			tr.append("th").attr("class").string("column total").text().string(this.formatTotal(col.stats.tot)).attr("title").string(this.formatTotalOver(col.stats.tot));
+		}
+		if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("table total").text().string(this.formatTotal(d.stats.tot)).attr("title").string(this.formatTotalOver(d.stats.tot));
+	}
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.onClick = function(dp,_,_1) {
+	$s.push("rg.view.html.widget.PivotTable::onClick");
+	var $spos = $s.length;
+	this.click(dp);
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.formatTotal = function(v,_) {
+	$s.push("rg.view.html.widget.PivotTable::formatTotal");
+	var $spos = $s.length;
+	var $tmp = this.labelTotal(v,this.stats);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.formatTotalOver = function(v,_) {
+	$s.push("rg.view.html.widget.PivotTable::formatTotalOver");
+	var $spos = $s.length;
+	var $tmp = this.labelTotalOver(v,this.stats);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.formatDataPoint = function(dp,_) {
+	$s.push("rg.view.html.widget.PivotTable::formatDataPoint");
+	var $spos = $s.length;
+	var $tmp = this.labelDataPoint(dp,this.stats);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.formatDataPointOver = function(dp,_) {
+	$s.push("rg.view.html.widget.PivotTable::formatDataPointOver");
+	var $spos = $s.length;
+	var $tmp = this.labelDataPointOver(dp,this.stats);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.buildValue = function(value,header,counter,tr) {
+	$s.push("rg.view.html.widget.PivotTable::buildValue");
+	var $spos = $s.length;
+	var th = tr.append("th").attr("class").string("column value").text().string(this.labelAxisValue(value,header));
+	if(counter > 1) th.attr("colspan")["float"](counter);
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.prependSpacer = function(counter,tr) {
+	$s.push("rg.view.html.widget.PivotTable::prependSpacer");
+	var $spos = $s.length;
+	if(counter == 0) {
+		$s.pop();
+		return;
+	}
+	var th = tr.append("th").attr("class").string("spacer");
+	if(counter > 1) th.attr("colspan")["float"](counter);
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.init = function() {
+	$s.push("rg.view.html.widget.PivotTable::init");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.destroy = function() {
+	$s.push("rg.view.html.widget.PivotTable::destroy");
+	var $spos = $s.length;
+	this.container.html().string("");
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
+	$s.push("rg.view.html.widget.PivotTable::transformData");
+	var $spos = $s.length;
+	var column_headers = [], row_headers = [], columns = [], rows = [], tcalc = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0};
+	var variable;
+	var _g1 = 0, _g = Ints.min(1,this.columnVariables.length);
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.columnVariables[i];
+		column_headers.push(variable.type);
+		var _g2 = 0, _g3 = variable.range();
+		while(_g2 < _g3.length) {
+			var value = _g3[_g2];
+			++_g2;
+			columns.push({ values : [value], stats : null});
+		}
+	}
+	var _g1 = 1, _g = this.columnVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.columnVariables[i];
+		column_headers.push(variable.type);
+		var tmp = columns.copy();
+		columns = [];
+		var _g2 = 0;
+		while(_g2 < tmp.length) {
+			var src = tmp[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = variable.range();
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				var column = Objects.clone(src);
+				column.values.push(value);
+				columns.push(column);
+			}
+		}
+	}
+	var name, headers = column_headers;
+	var _g1 = 0, _g = columns.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var column = [columns[i]], ccalc = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0};
+		column[0].stats = ccalc;
+		var _g2 = 0, _g3 = Arrays.filter(dps,(function(column) {
+			$s.push("rg.view.html.widget.PivotTable::transformData@362");
+			var $spos = $s.length;
+			var $tmp = function(dp) {
+				$s.push("rg.view.html.widget.PivotTable::transformData@362@362");
+				var $spos = $s.length;
+				var _g3 = 0, _g21 = headers.length;
+				while(_g3 < _g21) {
+					var j = _g3++;
+					name = headers[j];
+					if(Reflect.field(dp,name) != column[0].values[j]) {
+						$s.pop();
+						return false;
+					}
+				}
+				$s.pop();
+				return true;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(column));
+		while(_g2 < _g3.length) {
+			var dp = _g3[_g2];
+			++_g2;
+			var v = Reflect.field(dp,this.cellVariable.type);
+			if(null == v) continue;
+			if(v < ccalc.min) {
+				ccalc.min = v;
+				if(v < tcalc.min) tcalc.min = v;
+			}
+			if(v > ccalc.max) {
+				ccalc.max = v;
+				if(v > tcalc.max) tcalc.max = v;
+			}
+			ccalc.tot += v;
+		}
+		tcalc.tot += ccalc.tot;
+	}
+	var _g1 = 0, _g = Ints.min(1,this.rowVariables.length);
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.rowVariables[i];
+		row_headers.push(variable.type);
+		var _g2 = 0, _g3 = variable.range();
+		while(_g2 < _g3.length) {
+			var value = _g3[_g2];
+			++_g2;
+			rows.push({ values : [value], stats : null, cells : null});
+		}
+	}
+	var _g1 = 1, _g = this.rowVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		variable = this.rowVariables[i];
+		row_headers.push(variable.type);
+		var tmp = rows.copy();
+		rows = [];
+		var _g2 = 0;
+		while(_g2 < tmp.length) {
+			var src = tmp[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = variable.range();
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				var row = Objects.clone(src);
+				row.values.push(value);
+				rows.push(row);
+			}
+		}
+	}
+	var name1, headers1 = row_headers;
+	var _g = 0;
+	while(_g < rows.length) {
+		var row = [rows[_g]];
+		++_g;
+		row[0].stats = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0};
+		row[0].cells = [];
+		var rdps = Arrays.filter(dps,(function(row) {
+			$s.push("rg.view.html.widget.PivotTable::transformData@431");
+			var $spos = $s.length;
+			var $tmp = function(d) {
+				$s.push("rg.view.html.widget.PivotTable::transformData@431@431");
+				var $spos = $s.length;
+				var _g2 = 0, _g1 = headers1.length;
+				while(_g2 < _g1) {
+					var j = _g2++;
+					name1 = headers1[j];
+					if(Reflect.field(d,name1) != row[0].values[j]) {
+						$s.pop();
+						return false;
+					}
+				}
+				$s.pop();
+				return true;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(row));
+		var _g1 = 0;
+		while(_g1 < columns.length) {
+			var column = [columns[_g1]];
+			++_g1;
+			var dp = Arrays.firstf(rdps,(function(column) {
+				$s.push("rg.view.html.widget.PivotTable::transformData@443");
+				var $spos = $s.length;
+				var $tmp = function(dp) {
+					$s.push("rg.view.html.widget.PivotTable::transformData@443@443");
+					var $spos = $s.length;
+					var _g3 = 0, _g2 = column[0].values.length;
+					while(_g3 < _g2) {
+						var i = _g3++;
+						if(Reflect.field(dp,column_headers[i]) != column[0].values[i]) {
+							$s.pop();
+							return false;
+						}
+					}
+					$s.pop();
+					return true;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(column));
+			var v = Reflect.field(dp,this.cellVariable.type);
+			if(null == v) {
+				row[0].cells.push({ });
+				continue;
+			}
+			row[0].cells.push(dp);
+			if(v < row[0].stats.min) row[0].stats.min = v;
+			if(v > row[0].stats.max) row[0].stats.max = v;
+			row[0].stats.tot += v;
+		}
+	}
+	var $tmp = { column_headers : column_headers, row_headers : row_headers, columns : columns, rows : rows, stats : tcalc};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.html.widget.PivotTable.prototype.__class__ = rg.view.html.widget.PivotTable;
 thx.js.Timer = function() { }
 thx.js.Timer.__name__ = ["thx","js","Timer"];
 thx.js.Timer.timer = function(f,delay) {
@@ -21539,6 +23129,14 @@ rg.util.Periodicity.parsePair = function(start,end) {
 	return $tmp;
 	$s.pop();
 }
+rg.util.Periodicity.isValidGroupBy = function(value) {
+	$s.push("rg.util.Periodicity::isValidGroupBy");
+	var $spos = $s.length;
+	var $tmp = Arrays.exists(rg.util.Periodicity.validGroupValues,value);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.util.Periodicity.prototype.__class__ = rg.util.Periodicity;
 rg.data.TestAxisOrdinal = function(p) {
 	$s.push("rg.data.TestAxisOrdinal::new");
@@ -21668,7 +23266,7 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = 
 		$s.pop();
 		return $tmp;
 	}
-	var $tmp = data.data.map(function(d,_) {
+	var result = data.data.map(function(d,_) {
 		$s.push("rg.data.source.rgquery.transform.TransformCountTimeSeries::transform@34");
 		var $spos = $s.length;
 		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0],d[1],event]);
@@ -21677,7 +23275,7 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = 
 		$s.pop();
 	});
 	$s.pop();
-	return $tmp;
+	return result;
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeSeries;
@@ -23663,8 +25261,9 @@ Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
 rg.controller.App.lastid = 0;
-rg.controller.Visualizations.html = ["pivottable"];
-rg.controller.Visualizations.svg = ["linechart","piechart"];
+thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
+rg.controller.Visualizations.html = ["pivottable","leaderboard"];
+rg.controller.Visualizations.svg = ["linechart","piechart","linechart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","simplereverse"];
 utest.TestHandler.POLLING_TIME = 10;
@@ -23675,6 +25274,8 @@ rg.controller.factory.FactoryLayout.LIMIT_WIDTH = 10;
 rg.controller.factory.FactoryLayout.LIMIT_HEIGHT = 10;
 rg.controller.factory.FactoryLayout.DEFAULT_WIDTH = 400;
 rg.controller.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
+rg.view.html.widget.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
+rg.view.html.widget.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 thx.js.Timer.timeout = 0;
 thx.js.Timer.queue = null;
 thx.js.Timer.interval = 0;
@@ -23682,4 +25283,5 @@ thx.js.Timer._step = thx.js.Timer.step;
 thx.color.Colors._reParse = new EReg("^\\s*(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))\\s*$","i");
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
+rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
 TestAll.main()

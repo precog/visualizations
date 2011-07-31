@@ -4,6 +4,7 @@
  */
 
 package rg.controller.factory;
+import rg.data.AxisGroupByTime;
 import rg.data.AxisOrdinal;
 import rg.data.AxisNumeric;
 import rg.data.AxisTime;
@@ -28,11 +29,15 @@ class FactoryAxis
 		}
 	}
 	
-	public function createDiscrete(type : String, samples : Array<Dynamic>) : IAxisDiscrete<Dynamic>
+	public function createDiscrete(type : String, samples : Array<Dynamic>, groupBy : Null<String>) : IAxisDiscrete<Dynamic>
 	{
-		if(Properties.isTime(type))
-			return new AxisTime(Properties.periodicity(type));
-		else
+		if (Properties.isTime(type))
+		{
+			if (null != groupBy)
+				return new AxisGroupByTime(groupBy);
+			else
+				return new AxisTime(Properties.periodicity(type));
+		} else
 			return new AxisOrdinal(samples);
 	}
 }

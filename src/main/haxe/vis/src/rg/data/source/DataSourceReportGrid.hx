@@ -31,6 +31,7 @@ class DataSourceReportGrid implements IDataSource
 	public var path(default, null) : String;
 	public var start : Float;
 	public var end : Float;
+	public var groupBy : Null<String>;
 	
 	var transform : ITransform<Dynamic>;
 	
@@ -53,17 +54,18 @@ class DataSourceReportGrid implements IDataSource
 					event : event,
 					property : null,
 					limit : null,
-					order : null
+					order : null	
 				};
 			default:
 				throw new Error("normalization failed, only Property values should be allowed");
 		}
 	}
 	
-	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?start : Float, ?end : Float)
+	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?groupby : String, ?start : Float, ?end : Float)
 	{
 		this.query = query;
 		this.executor = executor;
+		this.groupBy = groupby;
 		var e = normalize(query.exp);
 		this.event = event;
 		this.periodicity = switch(e.pop()) { case Time(p): p; default: throw new Error("normalization failed, the last value should always be a Time expression"); };
@@ -96,7 +98,11 @@ class DataSourceReportGrid implements IDataSource
 		if (null != end)
 			Reflect.setField(o, "end", end);
 		if (appendPeriodicity)
+		{
 			Reflect.setField(o, "periodicity", periodicity);
+			if (null != groupBy)
+				Reflect.setField(o, "groupBy", groupBy);
+		}
 			
 		if (where.length > 1)
 		{

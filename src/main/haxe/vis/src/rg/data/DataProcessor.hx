@@ -37,8 +37,7 @@ class DataProcessor
 		var tmin = null, tmax = null;
 		for (variable in independentVariables)
 		{
-			var axis = Types.as(variable.variable.axis, AxisTime);
-			if (null == axis)
+			if(!Std.is(variable.variable.axis, AxisTime) && !Std.is(variable.variable.axis, AxisGroupByTime))
 				continue;
 			tmin = variable.variable.min;
 			tmax = variable.variable.max;
@@ -82,19 +81,9 @@ class DataProcessor
 			onData.dispatch([]);
 			return;
 		}
-
 		fillIndependentVariables(data);
 
 		var dataPoints : Array<DataPoint> = [];
-/*
-		if (0 == independentVariables.length)
-		{
-			var subsets = [];
-			for (d in data)
-				subsets.push(d);
-			dataPoints = pushDataPoints(subsets, dataPoints);
-		} else {
-*/
 		var variablesset = getVariableIndependentValues();
 		for (values in variablesset)
 		{
@@ -108,10 +97,8 @@ class DataProcessor
 			}
 			dataPoints = pushDataPoints(subsets, dataPoints);
 		}
-//		}
 			
-		fillDependentVariables(dataPoints);
-		
+		fillDependentVariables(dataPoints);		
 		onData.dispatch(dataPoints);
 	}
 	

@@ -176,4 +176,11 @@ class Periodicity
 			DateParser.parse(end).getTime()
 		];
 	}
+	
+	
+	static var validGroupValues = ["hour", "day", "week", "month", "year"];
+	public static function isValidGroupBy(value : String)
+	{
+		return validGroupValues.exists(value);
+	}
 }

@@ -26,6 +26,7 @@ class TestAll
 		runner.addCase(new rg.util.TestProperties());
 		runner.addCase(new rg.view.frame.TestStack());
 		runner.addCase(new rg.view.svg.panel.TestSpace());
+		runner.addCase(new rg.data.TestAxisGroupByTime());
 	}
 	
 	public static function main() 

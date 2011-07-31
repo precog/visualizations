@@ -8,6 +8,7 @@ import rg.controller.info.InfoLineChart;
 import rg.controller.info.InfoPieChart;
 import rg.controller.visualization.VisualizationPieChart;
 import rg.controller.visualization.VisualizationSvg;
+import rg.controller.visualization.VisualizationLineChart;
 import rg.view.layout.Layout;
 import thx.error.Error;
 import thx.error.NotImplemented;
@@ -23,23 +24,15 @@ class FactorySvgVisualization
 		switch(type)
 		{
 			case "linechart":
-				return createLineChart(new InfoLineChart().feed(options), layout);
+				var chart = new VisualizationLineChart(layout);
+				chart.info = new InfoLineChart().feed(options);
+				return chart;
 			case "piechart":
-				return createPieChart(new InfoPieChart().feed(options), layout);
+				var chart = new VisualizationPieChart(layout);
+				chart.info = new InfoPieChart().feed(options);
+				return chart;
 			default:
 				throw new Error("unsupported visualization type '{0}'", type);
 		}
-	}
-	
-	public function createLineChart(info : InfoLineChart, layout : Layout)
-	{
-		return throw new NotImplemented();
-	}
-	
-	public function createPieChart(info : InfoPieChart, layout : Layout)
-	{
-		var chart = new VisualizationPieChart(layout);
-		chart.info = info;
-		return chart;
 	}
 }

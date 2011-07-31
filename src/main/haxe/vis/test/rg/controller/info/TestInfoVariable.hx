@@ -43,7 +43,10 @@ class TestInfoVariable
 		
 		// valid values
 		info.feed( { values : [1,2,3] } );
-		Assert.same([1,2,3], info.values);
+		Assert.same([1, 2, 3], info.values);
+		
+		info.feed( { groupby : "week" } );
+		Assert.equals("week", info.groupBy);
 	}
 	
 	public function new() { }

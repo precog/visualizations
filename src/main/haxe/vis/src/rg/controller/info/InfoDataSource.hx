@@ -5,6 +5,7 @@
 
 package rg.controller.info;
 import rg.data.DataPoint;
+import rg.util.Periodicity;
 
 class InfoDataSource
 {
@@ -14,6 +15,7 @@ class InfoDataSource
 	public var namedData : Null<String>;
 	public var data : Null<Array<DataPoint>>;
 	public var name : Null<String>;
+	public var groupBy : Null<String>;
 	
 	public function new() {}
 	
@@ -44,6 +46,13 @@ class InfoDataSource
 					return [{ field : "data", value : v }];
 				else
 					return [{ field : "namedData", value : v }];
+			}
+		}, {
+			field : "groupby",
+			validator : function(v : Dynamic) return Std.is(v, String) && Periodicity.isValid(v),
+			filter : function(v)
+			{
+				return [{ field : "groupBy", value : v }];
 			}
 		}];
 	}

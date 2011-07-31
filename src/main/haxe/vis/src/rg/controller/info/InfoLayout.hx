@@ -11,7 +11,11 @@ class InfoLayout
 	public var width  : Null<Int>;
 	public var height : Null<Int>;
 	public var type : Null<String>;
-	public function new() { }
+	public var main : String;
+	public function new()
+	{
+		main = "main";
+	}
 	
 	public static function filters() 
 	{
@@ -45,6 +49,10 @@ class InfoLayout
 				value : v.toLowerCase(),
 				field : "type"
 			}]
+		}, {
+			field : "main",
+			validator : function(v) return Std.is(v, String),
+			filter : null
 		}];
 	}
 }

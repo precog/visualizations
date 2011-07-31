@@ -24,7 +24,25 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-	ReportGrid.pieChart("#chart", {
+	ReportGrid.pieChart("#chart3", {
+		axes : [{
+			type : ".#time:day",
+			view : ["2 months ago", "now"],
+			groupby : "week",
+		}, {
+			type : "count"
+		}],
+		data : {
+			src : {
+				path : "/rgadnet",
+				event : "impression",
+				query : ".#time:day",
+				groupby : "week"
+			}
+		}
+	});
+/*
+	ReportGrid.pieChart("#chart1", {
 		axes : [{
 			type: ".ageRange"
 		}, {
@@ -60,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 
-	ReportGrid.pieChart("#chart", {
+	ReportGrid.pieChart("#chart1", {
 		axes : [{
 			type: ".platform"
 		}, {
@@ -82,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 
-	ReportGrid.pieChart("#chart", {
+	ReportGrid.pieChart("#chart1", {
 		axes : [{
 			type : "event"
 		}, {
@@ -179,13 +197,14 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		});
 	}
-
+*/
 }, false)
 </script>
 </head>
 <body>
-	<div id="chart"></div>
-	<div id="chart2"></div>
 	<div id="haxe:trace"></div>
+	<div id="chart3"></div>
+	<div id="chart1"></div>
+	<div id="chart2"></div>
 </body>
 </html>

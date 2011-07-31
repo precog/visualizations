@@ -26,15 +26,15 @@ class JSBridge
 			return app.visualization(select(el), chartopt(options, type));
 		
 		// define public visualization constrcutors
-		o.lineChart = function(el, options) return o.viz(el, options, "linechart");
-		o.pieChart = function(el, options) return o.viz(el, options, "piechart");
-		o.pivotTable = function(el, options) return o.viz(el, options, "pivottable");
+		o.lineChart   = function(el, options) return o.viz(el, options, "linechart");
+		o.pieChart    = function(el, options) return o.viz(el, options, "piechart");
+		o.pivotTable  = function(el, options) return o.viz(el, options, "pivottable");
 		o.leaderBoard = function(el, options) return o.viz(el, options, "leaderboard");
 		
 		// utility functions
-		o.format = Dynamics.format;
+		o.format  = Dynamics.format;
 		o.compare = Dynamics.compare;
-		o.dump = Dynamics.string;
+		o.dump    = Dynamics.string;
 	}
 	
 	// make sure a thx.js.Selection is passed

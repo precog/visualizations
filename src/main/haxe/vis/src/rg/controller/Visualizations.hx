@@ -6,18 +6,19 @@
 package rg.controller;
 import thx.error.Error;
 import thx.js.Selection;
+import rg.view.layout.Layout;
 
 class Visualizations 
 {
 	public static var html = ["pivottable", "leaderboard"];
-	public static var svg = ["linechart", "piechart"];
+	public static var svg = ["linechart", "piechart", "linechart"];
 	public static var visualizations = svg.concat(html);
 	public static var layouts = ["simple", "simplereverse"];
 	public static var layoutDefault : Hash<String>;
 	public static var layoutType : Hash<Class<Dynamic>>;
 	public static var layoutArgs : Hash<Array<Dynamic>>;
 	
-	public static function instantiateLayout(name : String, width : Int, height : Int, container : Selection)
+	public static function instantiateLayout(name : String, width : Int, height : Int, container : Selection) : Layout
 	{
 		return Type.createInstance(getType(name), getArgs(name, width, height, container));
 	}

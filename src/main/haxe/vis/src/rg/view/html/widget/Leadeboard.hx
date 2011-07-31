@@ -66,14 +66,13 @@ class Leadeboard
 	
 	public function data(dps : Array<DataPoint>)
 	{
-		var filtered = DataPoints.filterByVariable(dps, [variableIndependent]),
-			name = variableDependent.type;
+		var name = variableDependent.type;
 		if (null != sortDataPoint)
-			filtered.sort(sortDataPoint);
+			dps.sort(sortDataPoint);
 		
-		var stats = this.stats = DataPoints.stats(filtered, variableDependent.type);
+		var stats = this.stats = DataPoints.stats(dps, variableDependent.type);
 			
-		var choice = list.selectAll("li").data(filtered, id);
+		var choice = list.selectAll("li").data(dps, id);
 		
 		// enter
 		var enter = choice.enter()

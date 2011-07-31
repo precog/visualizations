@@ -8,11 +8,38 @@ package rg.util;
 import haxe.Md5;
 import rg.data.DataPoint;
 import rg.data.VariableIndependent;
+import rg.data.VariableDependent;
 using Arrays;
 
 class DataPoints 
 {
-	public static function filterByVariable(dps : Array<DataPoint>, variables : Array<VariableIndependent<Dynamic>>)
+	public static function partition(dps : Array<DataPoint>, property : String, def = "default")
+	{
+		var map = new Hash();
+		function getBucket(n)
+		{
+			var bucket = map.get(n);
+			if (null == bucket)
+			{
+				bucket = [];
+				map.set(n, bucket);
+			}
+			return bucket;
+		}
+		var v, name, bucket;
+		for (dp in dps)
+		{
+			v = value(dp, property);
+			if (null == v)
+				name = def;
+			else
+				name = Dynamics.string(v);
+			getBucket(name).push(dp);
+		}
+		return map;
+	}
+	
+	public static function filterByIndependents(dps : Array<DataPoint>, variables : Array<VariableIndependent<Dynamic>>)
 	{
 		for (variable in variables)
 		{
@@ -22,6 +49,20 @@ class DataPoints
 				if (null == v)
 					return false;
 				return values.exists(v);
+			});
+		}
+		return dps;
+	}
+	
+	public static function filterByDependents(dps : Array<DataPoint>, variables : Array<VariableDependent<Dynamic>>)
+	{
+		for (variable in variables)
+		{
+			dps = dps.filter(function(dp) {
+				if (null == Reflect.field(dp, variable.type))
+					return false;
+				else
+					return true;
 			});
 		}
 		return dps;

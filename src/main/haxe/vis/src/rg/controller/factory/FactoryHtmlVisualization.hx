@@ -24,26 +24,16 @@ class FactoryHtmlVisualization
 		switch(type)
 		{
 			case "pivottable":
-				return createPivotTable(new InfoPivotTable().feed(options), container);
+				var chart = new VisualizationPivotTable(container);
+				chart.info = new InfoPivotTable().feed(options);
+				return chart;
 			case "leaderboard":
-				return createLeaderboard(new InfoLeaderboard().feed(options), container);
+				var chart = new VisualizationLeaderboard(container);
+				chart.info = new InfoLeaderboard().feed(options);
+				return chart;
 			default:
 				throw new Error("unsupported visualization '{0}'", type);
 		}
 		return null;
-	}
-	
-	public function createPivotTable(info : InfoPivotTable, container : Selection)
-	{
-		var chart = new VisualizationPivotTable(container);
-		chart.info = info;
-		return chart;
-	}
-	
-	public function createLeaderboard(info : InfoLeaderboard, container : Selection)
-	{
-		var chart = new VisualizationLeaderboard(container);
-		chart.info = info;
-		return chart;
 	}
 }
