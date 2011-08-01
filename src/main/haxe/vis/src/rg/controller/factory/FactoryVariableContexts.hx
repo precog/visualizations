@@ -33,7 +33,13 @@ class FactoryVariableContexts
 		var result = [], ordinal, v, ctx;
 		for (i in info)
 		{
-			if (!knownProperties.exists(i.type))
+			var moveon = switch(i.variableType)
+			{
+				case Independent: false;
+				case Unknwon: !knownProperties.exists(i.type);
+				default: true;
+			}
+			if (moveon)
 				continue;
 			v = independentFactory.create(i);
 			if (null != (ordinal = Types.as(v, AxisOrdinal)))
@@ -54,8 +60,15 @@ class FactoryVariableContexts
 		var result = [], ordinal;
 		for (i in info)
 		{
-			if (knownProperties.exists(i.type))
+			var moveon = switch(i.variableType)
+			{
+				case Dependent: false;
+				case Unknwon: knownProperties.exists(i.type);
+				default: true;
+			}
+			if (moveon)
 				continue;
+
 			var isnumeric = null != i.min ? Std.is(i.min, Float) : (i.max ? Std.is(i.max, Float) : false),
 				v = dependentFactory.create(i, isnumeric);
 			result.push(new VariableDependentContext(v, 

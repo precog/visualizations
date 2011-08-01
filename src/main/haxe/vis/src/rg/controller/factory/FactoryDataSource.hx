@@ -40,7 +40,7 @@ class FactoryDataSource
 				throw new Error("the data source named '{0}' cannot be found in the current context", info.name);
 			return data;
 		}
-		if (null != info.data && null != info.name)
+		if (null != info.data)
 		{
 			return createFromData(info.data);
 		} 

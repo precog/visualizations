@@ -30,12 +30,15 @@ class InfoDataContext
 		}, {
 			field : "src",
 			validator : function(v) return (Std.is(v, Array) && Arrays.all(v, function(v) return Types.isAnonymous(v))) || Types.isAnonymous(v),
-			filter : function(v) return [{ 
-				field : "sources",
-				value : Std.is(v, Array)
-					? Arrays.map(v, function(v, i) return new InfoDataSource().feed(v))
-					: [new InfoDataSource().feed(v)]
-			}]
+			filter : function(v)
+			{
+				return [{ 
+					field : "sources",
+					value : Std.is(v, Array)
+						? Arrays.map(v, function(v, i) return new InfoDataSource().feed(v))
+						: [new InfoDataSource().feed(v)]
+				}];
+			}
 		}];
 	}
 }

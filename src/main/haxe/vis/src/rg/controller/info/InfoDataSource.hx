@@ -39,7 +39,7 @@ class InfoDataSource
 			filter : null
 		}, {
 			field : "data",
-			validator : function(v) return Std.is(v, String) || (Std.is(v, Array) && Arrays.all(v, function(v) return Types.isAnonymous(v) && Std.is(v.event, String))),
+			validator : function(v) return Std.is(v, String) || (Std.is(v, Array) && Arrays.all(v, function(v) return Types.isAnonymous(v))),
 			filter : function(v)
 			{
 				if(Std.is(v, Array))

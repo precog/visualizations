@@ -6,6 +6,7 @@
 package rg.controller.info;
 
 import rg.util.Periodicity;
+using Arrays;
 
 class InfoVariable extends Info
 {
@@ -14,10 +15,10 @@ class InfoVariable extends Info
 	public var max : Null<Dynamic>;
 	public var values : Null<Array<Dynamic>>;
 	public var groupBy : Null<String>;
-//	public var variableType : VariableType;
+	public var variableType : VariableType;
 	public function new()
 	{
-//		variableType = Unknwon;
+		variableType = Unknwon;
 	}
 
 	public static function filters() : Array<FieldFilter>
@@ -50,6 +51,16 @@ class InfoVariable extends Info
 					value : v
 				}];
 			}
+		}, {
+			field : "variable",
+			validator : function(v : Dynamic) return Std.is(v, String) && ["independent", "dependent"].exists(v.toLowerCase()),
+			filter : function(v : Dynamic)
+			{
+				return [{
+					field : "variableType",
+					value : Type.createEnum(VariableType, Strings.ucfirst(("" + v).toLowerCase()), [])
+				}];
+			}
 		}];
 	}
 	
@@ -58,11 +69,10 @@ class InfoVariable extends Info
 		return v == null || Types.isPrimitive(v) || Std.is(v, Date);
 	}
 }
-/*
+
 enum VariableType
 {
 	Unknwon;
 	Independent;
 	Dependent;
 }
-*/

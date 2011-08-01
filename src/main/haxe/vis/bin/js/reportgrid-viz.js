@@ -4187,7 +4187,7 @@ rg.controller.factory.FactoryDataSource.prototype.create = function(info) {
 		if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.name,{ fileName : "FactoryDataSource.hx", lineNumber : 40, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 		return data;
 	}
-	if(null != info.data && null != info.name) return this.createFromData(info.data);
+	if(null != info.data) return this.createFromData(info.data);
 	if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.groupBy);
 	throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 50, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 }
@@ -5833,6 +5833,8 @@ thx.culture.core.DateTimeInfo.prototype.patternTime = null;
 thx.culture.core.DateTimeInfo.prototype.patternTimeShort = null;
 thx.culture.core.DateTimeInfo.prototype.__class__ = thx.culture.core.DateTimeInfo;
 rg.controller.info.InfoVariable = function(p) {
+	if( p === $_ ) return;
+	this.variableType = rg.controller.info.VariableType.Unknwon;
 }
 rg.controller.info.InfoVariable.__name__ = ["rg","controller","info","InfoVariable"];
 rg.controller.info.InfoVariable.__super__ = rg.controller.info.Info;
@@ -5855,6 +5857,10 @@ rg.controller.info.InfoVariable.filters = function() {
 		return Std["is"](v,String) && rg.util.Periodicity.isValidGroupBy(v);
 	}, filter : function(v) {
 		return [{ field : "groupBy", value : v}];
+	}},{ field : "variable", validator : function(v) {
+		return Std["is"](v,String) && Arrays.exists(["independent","dependent"],v.toLowerCase());
+	}, filter : function(v) {
+		return [{ field : "variableType", value : Type.createEnum(rg.controller.info.VariableType,Strings.ucfirst(("" + v).toLowerCase()),[])}];
 	}}];
 }
 rg.controller.info.InfoVariable.testViewValue = function(v) {
@@ -5865,7 +5871,18 @@ rg.controller.info.InfoVariable.prototype.min = null;
 rg.controller.info.InfoVariable.prototype.max = null;
 rg.controller.info.InfoVariable.prototype.values = null;
 rg.controller.info.InfoVariable.prototype.groupBy = null;
+rg.controller.info.InfoVariable.prototype.variableType = null;
 rg.controller.info.InfoVariable.prototype.__class__ = rg.controller.info.InfoVariable;
+rg.controller.info.VariableType = { __ename__ : ["rg","controller","info","VariableType"], __constructs__ : ["Unknwon","Independent","Dependent"] }
+rg.controller.info.VariableType.Unknwon = ["Unknwon",0];
+rg.controller.info.VariableType.Unknwon.toString = $estr;
+rg.controller.info.VariableType.Unknwon.__enum__ = rg.controller.info.VariableType;
+rg.controller.info.VariableType.Independent = ["Independent",1];
+rg.controller.info.VariableType.Independent.toString = $estr;
+rg.controller.info.VariableType.Independent.__enum__ = rg.controller.info.VariableType;
+rg.controller.info.VariableType.Dependent = ["Dependent",2];
+rg.controller.info.VariableType.Dependent.toString = $estr;
+rg.controller.info.VariableType.Dependent.__enum__ = rg.controller.info.VariableType;
 if(!thx.date) thx.date = {}
 thx.date.DateParser = function() { }
 thx.date.DateParser.__name__ = ["thx","date","DateParser"];
@@ -6974,7 +6991,21 @@ rg.controller.factory.FactoryVariableContexts.prototype.createIndependents = fun
 	while(_g < info.length) {
 		var i = info[_g];
 		++_g;
-		if(!this.knownProperties.exists(i.type)) continue;
+		var moveon = (function($this) {
+			var $r;
+			switch( (i.variableType)[1] ) {
+			case 1:
+				$r = false;
+				break;
+			case 0:
+				$r = !$this.knownProperties.exists(i.type);
+				break;
+			default:
+				$r = true;
+			}
+			return $r;
+		}(this));
+		if(moveon) continue;
 		v = this.independentFactory.create(i);
 		if(null != (ordinal = Std["is"](v,rg.data.AxisOrdinal)?v:null)) ctx = new rg.data.VariableIndependentContext(v,0 == ordinal.getValues().length); else if(Std["is"](v.axis,rg.data.AxisTime)) ctx = new rg.data.VariableIndependentContext(v,false); else ctx = new rg.data.VariableIndependentContext(v,null == v.max || null == v.min);
 		result.push(ctx);
@@ -6987,7 +7018,21 @@ rg.controller.factory.FactoryVariableContexts.prototype.createDependents = funct
 	while(_g < info.length) {
 		var i = info[_g];
 		++_g;
-		if(this.knownProperties.exists(i.type)) continue;
+		var moveon = (function($this) {
+			var $r;
+			switch( (i.variableType)[1] ) {
+			case 2:
+				$r = false;
+				break;
+			case 0:
+				$r = $this.knownProperties.exists(i.type);
+				break;
+			default:
+				$r = true;
+			}
+			return $r;
+		}(this));
+		if(moveon) continue;
 		var isnumeric = null != i.min?Std["is"](i.min,Float):i.max?Std["is"](i.max,Float):false, v = this.dependentFactory.create(i,isnumeric);
 		result.push(new rg.data.VariableDependentContext(v,null == v.max || null == v.min || null == v.axis || null != (ordinal = Std["is"](v,rg.data.AxisOrdinal)?v:null) && 0 == ordinal.getValues().length));
 	}
@@ -9405,7 +9450,7 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "data", validator : function(v) {
 		return Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			return Reflect.isObject(v1) && null == Type.getClass(v1) && Std["is"](v1.event,String);
+			return Reflect.isObject(v1) && null == Type.getClass(v1);
 		});
 	}, filter : function(v) {
 		if(Std["is"](v,Array)) return [{ field : "data", value : v}]; else return [{ field : "namedData", value : v}];

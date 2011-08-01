@@ -26,18 +26,23 @@
 document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.pieChart("#chart3", {
 		axes : [{
-			type : ".#time:day",
-			view : ["2 months ago", "now"],
-			groupby : "week",
+			type : "slice",
+			variable : "independent"
 		}, {
 			type : "count"
 		}],
 		data : {
 			src : {
-				path : "/rgadnet",
-				event : "impression",
-				query : ".#time:day",
-				groupby : "week"
+				data : [{
+					slice : "A",
+					count : 10
+				}, {
+					slice : "B",
+					count : 20
+				}, {
+					slice : "C",
+					count : 30
+				}]
 			}
 		}
 	});
