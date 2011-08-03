@@ -169,6 +169,11 @@
 	stroke-width: 3;
 }
 
+.rg .line-chart g.group .symbol path
+{
+	fill: #fff;
+}
+
 #tooltip
 {
 	text-align: center;
@@ -227,6 +232,7 @@
 .rg .line-chart path.line
 {
 	stroke-width: 3;
+	fill: none;
 }
 
 .rg .line-chart path.line:hover
@@ -465,12 +471,7 @@ font-size: 11px;
 	font-size: 10pt;
 }
 
-.rg .symbol path
-{
-	fill: #fff;
-	stroke: #000;
-	stroke-width: 1px;
-}
+
 
 .rg .funnel-chart .funnel-outside
 {

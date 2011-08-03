@@ -36,7 +36,7 @@ class FactoryVariableContexts
 			var moveon = switch(i.variableType)
 			{
 				case Independent: false;
-				case Unknwon: !knownProperties.exists(i.type);
+				case Unknown: !knownProperties.exists(i.type);
 				default: true;
 			}
 			if (moveon)
@@ -63,7 +63,7 @@ class FactoryVariableContexts
 			var moveon = switch(i.variableType)
 			{
 				case Dependent: false;
-				case Unknwon: knownProperties.exists(i.type);
+				case Unknown: knownProperties.exists(i.type);
 				default: true;
 			}
 			if (moveon)

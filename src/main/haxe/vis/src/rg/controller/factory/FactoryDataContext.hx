@@ -34,9 +34,9 @@ class FactoryDataContext
 		{
 			processor.transform = function(dps : Array<Array<DataPoint>>)
 			{
-				trace(dps);
+//				trace(dps);
 				var res = untyped info.transform.apply(__this__, dps);
-				trace(res);
+//				trace(res);
 				return res;
 			}
 		}

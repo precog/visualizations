@@ -76,6 +76,7 @@ class DataProcessor
 	
 	function process(data : Array<Array<DataPoint>>)
 	{
+//		trace(data);
 		if (null == data || data.length == 0 || data[0].length == 0)
 		{
 			onData.dispatch([]);
@@ -97,8 +98,8 @@ class DataProcessor
 			}
 			dataPoints = pushDataPoints(subsets, dataPoints);
 		}
-			
-		fillDependentVariables(dataPoints);		
+		
+		fillDependentVariables(dataPoints);
 		onData.dispatch(dataPoints);
 	}
 	
@@ -124,14 +125,10 @@ class DataProcessor
 					compare = Dynamics.comparef(value = values[0]);
 				if (null == variable.axis)
 				{
-					variable = ctx.variable = new VariableDependent(
+					variable.setAxis(new FactoryAxis().create(
 						variable.type,
-						new FactoryAxis().create(
-							variable.type,
-							Std.is(value, Float)
-						),
-						variable.min,
-						variable.max);
+						Std.is(value, Float)
+					));
 				}
 				if (null == variable.min)
 				{

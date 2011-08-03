@@ -36,6 +36,6 @@ class AxisTime implements IAxisDiscrete<Float>
 	
 	public function scale(start : Float, end : Float, v : Float)
 	{
-		return Floats.interpolate(v, start, end);
+		return Floats.uninterpolatef(start, end)(v);
 	}
 }

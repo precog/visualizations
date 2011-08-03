@@ -21,8 +21,6 @@ class VisualizationLeaderboard extends VisualizationHtml
 	override function init()
 	{
 		chart = new Leadeboard(container);
-		chart.variableIndependent = independentVariables[0];
-		chart.variableDependent = dependentVariables[0];
 		
 		if (null != info.label.datapoint)
 			chart.labelDataPoint = info.label.datapoint;
@@ -44,6 +42,7 @@ class VisualizationLeaderboard extends VisualizationHtml
 	
 	override function feedData(data : Array<DataPoint>)
 	{
+		chart.setVariables(independentVariables, dependentVariables);
 		chart.data(data);
 	}
 }

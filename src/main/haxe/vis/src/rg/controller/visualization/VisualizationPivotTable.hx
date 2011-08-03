@@ -34,12 +34,6 @@ class VisualizationPivotTable extends VisualizationHtml
 		chart.colorStart = info.heatmapColorStart;
 		chart.colorEnd = info.heatmapColorEnd;
 		
-		var incolumns = Ints.min(info.columnAxes, independentVariables.length);
-		
-		chart.columnVariables = independentVariables.slice(0, incolumns);
-		chart.rowVariables = independentVariables.slice(incolumns);
-		chart.cellVariable = dependentVariables[0];
-		
 		if (null != info.click)
 			chart.click = info.click;
 		
@@ -61,12 +55,13 @@ class VisualizationPivotTable extends VisualizationHtml
 			
 		if (null != info.label.totalover)
 			chart.labelTotalOver = info.label.totalover;
-		
+		chart.incolumns = Ints.min(info.columnAxes, independentVariables.length);
 		chart.init();
 	}
 	
 	override function feedData(data : Array<DataPoint>)
 	{
+		chart.setVariables(independentVariables, dependentVariables);
 		chart.data(data);
 	}
 	

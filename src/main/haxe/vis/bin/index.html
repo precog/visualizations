@@ -24,17 +24,81 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
+/*
 	ReportGrid.lineChart("#chart1", {
 		axes : [{
-			type : ".#time:hour",
-			view : ["2011-07-21 09:00:00", "2011-07-21 23:59:59"]
+			type : "slice",
+			variable : "independent",
+			values : ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'],
+			view : ['A', 'P']
 		}, {
-			type : ".platform"
+			type : "count",
+			view : [0, 10.5]
+		}],
+		data : {
+			src : {
+				data : [{
+					slice : "A",
+					count : 1
+				}, {
+					slice : "B",
+					count : 4
+				}, {
+					slice : "C",
+					count : 3
+				}, {
+					slice : "D",
+					count : 5
+				}, {
+					slice : "E",
+					count : 6
+				}, {
+					slice : "F",
+					count : 9
+				}, {
+					slice : "G",
+					count : 4
+				}, {
+					slice : "H",
+					count : 10
+				}, {
+					slice : "I",
+					count : 5
+				}, {
+					slice : "J",
+					count : 4
+				}, {
+					slice : "K",
+					count : 9
+				}, {
+					slice : "L",
+					count : 5
+				}, {
+					slice : "M",
+					count : 9
+				}, {
+					slice : "N",
+					count : 9
+				}, {
+					slice : "O",
+					count : 4
+				}, {
+					slice : "P",
+					count : 2
+				}]
+			}
+		}
+	});
+
+	ReportGrid.lineChart("#chart2", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
 		}, {
 			type : "count"
 		}],
 		data : {
-			src : { path : "/rgadnet", event : "impression", query : ".platform * .#time:hour" }
+			src : { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" }
 		},
 		options : {
 			segmenton : ".platform", 
@@ -48,10 +112,101 @@ document.addEventListener("DOMContentLoaded", function(){
 				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
 			},
 			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100
 		}
 	});
-	
+*/
+	function transformDataPoint(arr)
+	{
+		for(var i = 0, v; i < arr.length; i++)
+		{
+			v = arr[i];
+			v[v.event] = v.count;
+		}
+		return arr;
+	}
+
+	ReportGrid.lineChart("#chart1", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
+		}, {
+			type : "impression"
+		}, {
+			type : "click"
+		}, {
+			type : "conversion"
+		}],
+/*
+		data : {
+			src: [
+				{ path : "/rgadnet", event : "impression", query : ".#time:minute" },
+				{ path : "/rgadnet", event : "click", query : ".#time:minute" },
+				{ path : "/rgadnet", event : "conversion", query : ".#time:minute" }
+			]
+		},
+*/
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".#time:minute" },
+			transform : transformDataPoint
+		}, {
+			src: { path : "/rgadnet", event : "click", query : ".#time:minute" },
+			transform : transformDataPoint
+		}, {
+			src: { path : "/rgadnet", event : "conversion", query : ".#time:minute" },
+			transform : transformDataPoint
+		}],
+		options : {
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			label : {
+				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+			},
+			click : function(dp) { alert(dp[".platform"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100,
+			symbol : function(ds, stats) {
+				var v = ds.count / stats.max,
+					size = 64;
+				if(v > 0.95)
+					return ReportGrid.symbol.triangleUp(size);
+				else if(v < 0.3)
+					return ReportGrid.symbol.triangleDown(size);
+				else
+					return null;
+			},
+			symbolstyle : function(ds, stats)
+			{
+				var v = ds.count / stats.max;
+				if(v < 0.5)
+				{
+					return "fill:#ff0000;stroke:#000;stroke-width:1px;shape-rendering:crisp-edges";
+				} else {
+					return "fill:#00ff00;stroke:#000;stroke-width:1px;shape-rendering:crisp-edges";
+				}
+			},
+			click : function(ds, stats)
+			{
+				console.log(ds);
+				console.log(stats);
+			},
+			label : {
+				datapoint : function(ds, stats) { 
+					if(ds.count < 7 || ds.count > 97)
+						return ReportGrid.format(ds.count);
+					else
+						return null;
+				},
+				datapointover : function(ds, stats) { return ds.event + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
+			}
+		}
+	});
+
 	ReportGrid.lineChart("#chart2", {
 		axes : [{
 			type : ".#time:hour",
@@ -69,11 +224,9 @@ document.addEventListener("DOMContentLoaded", function(){
 				ease : function(f) { return f; },
 				delay : 500
 			},
-			label : {
-				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
-			},
 			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100
 		}
 	});
 	
@@ -98,12 +251,18 @@ document.addEventListener("DOMContentLoaded", function(){
 				delay : 500
 			},
 			label : {
-				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+				datapoint : function(dp) { return ReportGrid.format(dp["count"]); }
 			},
 			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100,
+			symbol : function(ds, stats) {
+				var v = ds.count / stats.max;
+				return ReportGrid.symbol.square(100 * v);
+			}
 		}
 	});
+
 }, false)
 </script>
 </head>

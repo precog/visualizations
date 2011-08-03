@@ -18,7 +18,7 @@ class InfoVariable extends Info
 	public var variableType : VariableType;
 	public function new()
 	{
-		variableType = Unknwon;
+		variableType = Unknown;
 	}
 
 	public static function filters() : Array<FieldFilter>
@@ -72,7 +72,7 @@ class InfoVariable extends Info
 
 enum VariableType
 {
-	Unknwon;
+	Unknown;
 	Independent;
 	Dependent;
 }

@@ -26,7 +26,6 @@ class VisualizationPieChart extends VisualizationSvg
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName).panel;
 		chart = new PieChart(panelChart);
-		chart.propertyValue = dependentVariables[0].type;
 		
 		// aesthetic
 		chart.innerRadius = info.innerradius;
@@ -73,6 +72,7 @@ class VisualizationPieChart extends VisualizationSvg
 	// TODO move sort to axis
 	override function feedData(data : Array<DataPoint>)
 	{
+		chart.setVariables(independentVariables, dependentVariables);
 		if (null != title)
 		{
 			if (null == info.label.title)

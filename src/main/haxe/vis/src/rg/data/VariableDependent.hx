@@ -13,4 +13,9 @@ class VariableDependent<T> extends Variable<T>
 		super(type, min, max);
 		this.axis = axis;
 	}
+	
+	public function setAxis(axis : IAxis<T>)
+	{
+		this.axis = axis;
+	}
 }

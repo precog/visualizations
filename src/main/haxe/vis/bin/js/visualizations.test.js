@@ -4453,8 +4453,8 @@ rg.controller.visualization.VisualizationLineChart.prototype.init = function() {
 	var $spos = $s.length;
 	var main = this.layout.getPanel(this.layout.mainPanelName).panel;
 	this.chart = new rg.view.svg.widget.LineChart(main);
-	this.chart.variableIndependents = this.independentVariables;
-	this.chart.variableDependent = this.dependentVariables[0];
+	this.chart.variableIndependent = this.independentVariables[0];
+	this.chart.variableDependents = this.dependentVariables;
 	this.chart.animated = this.info.animation.animated;
 	this.chart.animationDuration = this.info.animation.duration;
 	this.chart.animationEase = this.info.animation.ease;
@@ -4679,6 +4679,121 @@ thx.translation.ITranslation.prototype.domain = null;
 thx.translation.ITranslation.prototype._ = null;
 thx.translation.ITranslation.prototype.__ = null;
 thx.translation.ITranslation.prototype.__class__ = thx.translation.ITranslation;
+if(!thx.svg) thx.svg = {}
+thx.svg.Line = function(x,y,interpolator) {
+	if( x === $_ ) return;
+	$s.push("thx.svg.Line::new");
+	var $spos = $s.length;
+	this._x = x;
+	this._y = y;
+	this._interpolator = interpolator;
+	$s.pop();
+}
+thx.svg.Line.__name__ = ["thx","svg","Line"];
+thx.svg.Line.pointArray = function(interpolator) {
+	$s.push("thx.svg.Line::pointArray");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Line(function(d,_) {
+		$s.push("thx.svg.Line::pointArray@53");
+		var $spos = $s.length;
+		var $tmp = d[0];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Line::pointArray@53");
+		var $spos = $s.length;
+		var $tmp = d[1];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Line.pointObject = function(interpolator) {
+	$s.push("thx.svg.Line::pointObject");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Line(function(d,_) {
+		$s.push("thx.svg.Line::pointObject@58");
+		var $spos = $s.length;
+		var $tmp = d.x;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Line::pointObject@58");
+		var $spos = $s.length;
+		var $tmp = d.y;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Line.prototype._x = null;
+thx.svg.Line.prototype._y = null;
+thx.svg.Line.prototype._interpolator = null;
+thx.svg.Line.prototype.shape = function(data,i) {
+	$s.push("thx.svg.Line::shape");
+	var $spos = $s.length;
+	var $tmp = data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y),this._interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Line.prototype.getInterpolator = function() {
+	$s.push("thx.svg.Line::getInterpolator");
+	var $spos = $s.length;
+	var $tmp = this._interpolator;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Line.prototype.interpolator = function(type) {
+	$s.push("thx.svg.Line::interpolator");
+	var $spos = $s.length;
+	this._interpolator = type;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Line.prototype.getX = function() {
+	$s.push("thx.svg.Line::getX");
+	var $spos = $s.length;
+	var $tmp = this._x;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Line.prototype.x = function(v) {
+	$s.push("thx.svg.Line::x");
+	var $spos = $s.length;
+	this._x = v;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Line.prototype.getY = function() {
+	$s.push("thx.svg.Line::getY");
+	var $spos = $s.length;
+	var $tmp = this._y;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Line.prototype.y = function(v) {
+	$s.push("thx.svg.Line::y");
+	var $spos = $s.length;
+	this._y = v;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Line.prototype.__class__ = thx.svg.Line;
 if(!thx.xml) thx.xml = {}
 thx.xml.Namespace = function() { }
 thx.xml.Namespace.__name__ = ["thx","xml","Namespace"];
@@ -7548,7 +7663,7 @@ rg.controller.info.InfoPieChart = function(p) {
 	this.innerradius = 0.0;
 	this.labelradius = 0.45;
 	this.labeldisplay = true;
-	this.labelorientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
+	this.labelorientation = rg.view.svg.widget.LabelOrientation.Aligned;
 	this.outerradius = 0.9;
 	this.overradius = 0.95;
 	this.animation = new rg.controller.info.InfoAnimation();
@@ -8304,9 +8419,9 @@ rg.util.DataPoints.partition = function(dps,property,def) {
 	$s.push("rg.util.DataPoints::partition");
 	var $spos = $s.length;
 	if(def == null) def = "default";
-	var map = new Hash();
+	var map = new thx.collections.HashList();
 	var getBucket = function(n) {
-		$s.push("rg.util.DataPoints::partition@19");
+		$s.push("rg.util.DataPoints::partition@20");
 		var $spos = $s.length;
 		var bucket = map.get(n);
 		if(null == bucket) {
@@ -8339,10 +8454,10 @@ rg.util.DataPoints.filterByIndependents = function(dps,variables) {
 		++_g;
 		var values = [variable[0].range()];
 		dps = Arrays.filter(dps,(function(values,variable) {
-			$s.push("rg.util.DataPoints::filterByIndependents@47");
+			$s.push("rg.util.DataPoints::filterByIndependents@48");
 			var $spos = $s.length;
 			var $tmp = function(dp) {
-				$s.push("rg.util.DataPoints::filterByIndependents@47@47");
+				$s.push("rg.util.DataPoints::filterByIndependents@48@48");
 				var $spos = $s.length;
 				var v = Reflect.field(dp,variable[0].type);
 				if(null == v) {
@@ -8371,10 +8486,10 @@ rg.util.DataPoints.filterByDependents = function(dps,variables) {
 		var variable = [variables[_g]];
 		++_g;
 		dps = Arrays.filter(dps,(function(variable) {
-			$s.push("rg.util.DataPoints::filterByDependents@61");
+			$s.push("rg.util.DataPoints::filterByDependents@62");
 			var $spos = $s.length;
 			var $tmp = function(dp) {
-				$s.push("rg.util.DataPoints::filterByDependents@61@61");
+				$s.push("rg.util.DataPoints::filterByDependents@62@62");
 				var $spos = $s.length;
 				if(null == Reflect.field(dp,variable[0].type)) {
 					$s.pop();
@@ -9340,7 +9455,6 @@ rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) {
 rg.view.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
-if(!thx.svg) thx.svg = {}
 thx.svg.LineInterpolator = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
@@ -15013,7 +15127,7 @@ rg.data.AxisTime.prototype.range = function(start,end) {
 rg.data.AxisTime.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisTime::scale");
 	var $spos = $s.length;
-	var $tmp = Floats.interpolate(v,start,end);
+	var $tmp = (Floats.uninterpolatef(start,end))(v);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -18800,7 +18914,7 @@ rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
 rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisNumeric::scale");
 	var $spos = $s.length;
-	var $tmp = Floats.interpolate(v,start,end);
+	var $tmp = (Floats.uninterpolatef(start,end))(v);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -20210,15 +20324,37 @@ rg.view.svg.widget.LineChart = function(panel) {
 rg.view.svg.widget.LineChart.__name__ = ["rg","view","svg","widget","LineChart"];
 rg.view.svg.widget.LineChart.__super__ = rg.view.svg.panel.Layer;
 for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.LineChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
-rg.view.svg.widget.LineChart.prototype.variableDependent = null;
-rg.view.svg.widget.LineChart.prototype.variableIndependents = null;
+rg.view.svg.widget.LineChart.prototype.variableDependents = null;
+rg.view.svg.widget.LineChart.prototype.variableIndependent = null;
 rg.view.svg.widget.LineChart.prototype.animated = null;
 rg.view.svg.widget.LineChart.prototype.animationDuration = null;
 rg.view.svg.widget.LineChart.prototype.animationEase = null;
 rg.view.svg.widget.LineChart.prototype.segmenton = null;
+rg.view.svg.widget.LineChart.prototype.linePath = null;
 rg.view.svg.widget.LineChart.prototype.init = function() {
 	$s.push("rg.view.svg.widget.LineChart::init");
 	var $spos = $s.length;
+	var xname = this.variableIndependent.type, xaxis = this.variableIndependent.axis, xmin = this.variableIndependent.min, xmax = this.variableIndependent.max, yname = this.variableDependents[0].type, yaxis = this.variableDependents[0].axis, ymin = this.variableDependents[0].min, ymax = this.variableDependents[0].max, w = this.width, h = this.height;
+	haxe.Log.trace(this.variableDependents,{ fileName : "LineChart.hx", lineNumber : 57, className : "rg.view.svg.widget.LineChart", methodName : "init"});
+	haxe.Log.trace(Type["typeof"](this.variableDependents[0].axis),{ fileName : "LineChart.hx", lineNumber : 58, className : "rg.view.svg.widget.LineChart", methodName : "init"});
+	this.linePath = new thx.svg.Line(function(d,i) {
+		$s.push("rg.view.svg.widget.LineChart::init@61");
+		var $spos = $s.length;
+		var value = Reflect.field(d,xname), scaled = xaxis.scale(xmin,xmax,value), scaledw = scaled * w;
+		haxe.Log.trace("W: value " + value + ", scaled " + scaled + ", scaled width " + scaledw + ", width " + w,{ fileName : "LineChart.hx", lineNumber : 65, className : "rg.view.svg.widget.LineChart", methodName : "init"});
+		$s.pop();
+		return scaledw;
+		$s.pop();
+	},function(d,i) {
+		$s.push("rg.view.svg.widget.LineChart::init@68");
+		var $spos = $s.length;
+		var value = Reflect.field(d,yname), scaled = yaxis.scale(ymin,ymax,value), scaledh = scaled * h;
+		haxe.Log.trace("H: value " + value + ", scaled " + scaled + ", scaled height " + scaledh + ", height " + h,{ fileName : "LineChart.hx", lineNumber : 72, className : "rg.view.svg.widget.LineChart", methodName : "init"});
+		var $tmp = h - scaledh;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
 	$s.pop();
 }
 rg.view.svg.widget.LineChart.prototype.data = function(input) {
@@ -20226,33 +20362,46 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 	var $spos = $s.length;
 	var dps = this.transformData(input);
 	var axisgroup = this.g.selectAll("g.axis-group").data(dps);
-	axisgroup.enter().append("g").attr("class").stringf(function(_,i) {
-		$s.push("rg.view.svg.widget.LineChart::data@51");
+	var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
+		$s.push("rg.view.svg.widget.LineChart::data@87");
 		var $spos = $s.length;
 		var $tmp = "axis-group group-" + i;
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	});
-	haxe.Log.trace(dps,{ fileName : "LineChart.hx", lineNumber : 53, className : "rg.view.svg.widget.LineChart", methodName : "data"});
+	axisgroup.exit().remove();
+	var segmentgroup = axisenter.selectAll("g.segment").dataf(function(d,i) {
+		$s.push("rg.view.svg.widget.LineChart::data@96");
+		var $spos = $s.length;
+		var $tmp = [d.getAt(i)];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	segmentgroup.enter().append("svg:path").attr("class").string("line").attr("d").stringf($closure(this,"path"));
+	haxe.Log.trace(dps,{ fileName : "LineChart.hx", lineNumber : 110, className : "rg.view.svg.widget.LineChart", methodName : "data"});
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.path = function(d,i) {
+	$s.push("rg.view.svg.widget.LineChart::path");
+	var $spos = $s.length;
+	var $tmp = this.linePath.shape(d,i);
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
 rg.view.svg.widget.LineChart.prototype.transformData = function(dps) {
 	$s.push("rg.view.svg.widget.LineChart::transformData");
 	var $spos = $s.length;
 	var results = [];
-	if(this.variableIndependents.length == 1) {
-		var map = rg.util.DataPoints.partition(dps,this.segmenton);
+	var _g1 = 0, _g = this.variableDependents.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var variable = this.variableDependents[i];
+		var values = rg.util.DataPoints.filterByDependents(dps,[variable]);
+		var map = rg.util.DataPoints.partition(values,this.segmenton);
 		results.push(map);
-	} else {
-		var _g1 = 1, _g = this.variableIndependents.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var variable = this.variableIndependents[i];
-			var values = rg.util.DataPoints.filterByIndependents(dps,[variable]);
-			var map = rg.util.DataPoints.partition(values,this.segmenton);
-			results.push(map);
-		}
 	}
 	$s.pop();
 	return results;
@@ -25076,7 +25225,7 @@ var posProcess = function( selector, context ) {
 window.Sizzle = Sizzle;
 
 })();;
-	var s = (window.Sizzle || jQuery.find || $.find);
+	var s = (window.Sizzle || (jQuery && jQuery.find) || ($ && $.find));
 	thx.js.Sizzle = s;
 	thx.js.Sizzle.select = s;
 }

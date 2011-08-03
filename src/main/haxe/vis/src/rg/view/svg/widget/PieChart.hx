@@ -5,6 +5,8 @@
 
 package rg.view.svg.widget;
 import haxe.Md5;
+import rg.data.VariableDependent;
+import rg.data.VariableIndependent;
 import thx.culture.FormatNumber;
 import thx.js.Selection;
 import rg.view.svg.panel.Layer;
@@ -36,8 +38,8 @@ class PieChart extends Layer
 	var arcBig : Arc<{ startAngle : Float, endAngle : Float }>;
 	var pie : Pie<Float>;
 	var radius : Float;
-	public var propertyValue : String;
 	var stats : { min : Float, max : Float, tot : Float };
+	var variableDependent : VariableDependent<Dynamic>;
 	public var animated : Bool;
 	public var animationDuration : Int;
 	public var animationEase : Float -> Float;
@@ -75,12 +77,12 @@ class PieChart extends Layer
 
 	public dynamic function labelFormatDataPoint(dp : DataPoint, stats : Stats)
 	{
-		return FormatNumber.percent(100 * Reflect.field(dp, propertyValue) / stats.tot, 1);
+		return FormatNumber.percent(100 * Reflect.field(dp, variableDependent.type) / stats.tot, 1);
 	}
 	
 	public dynamic function labelFormatDataPointOver(dp : DataPoint, stats : Stats)
 	{
-		return Ints.format(Reflect.field(dp, propertyValue));
+		return Ints.format(Reflect.field(dp, variableDependent.type));
 	}
 /*
 	function createSampleLabel(orientation, anchor, angle : Float)
@@ -107,6 +109,12 @@ class PieChart extends Layer
 		sample.place(x2, y2, angle);
 	}
 */
+	
+	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	{
+		variableDependent = variableDependents[0];
+	}
+
 	public function init()
 	{
 		resize();
@@ -138,13 +146,13 @@ class PieChart extends Layer
 	
 	public function data(dp : Array<DataPoint>)
 	{
-		var pv = propertyValue;
+		var pv = variableDependent.type;
 		// filter out dp with zero values
 		dp = dp.filter(function(dp) {
 			return DataPoints.value(dp, pv) > 0;
 		});
 		
-		stats = DataPoints.stats(dp, propertyValue);
+		stats = DataPoints.stats(dp, variableDependent.type);
 		// data
 		var choice = g.selectAll("g.group").data(pief(dp), id);
 		
@@ -322,7 +330,7 @@ class PieChart extends Layer
 	function makeid(dp : DataPoint)
 	{
 		var o = Objects.clone(dp);
-		Reflect.deleteField(o, propertyValue);
+		Reflect.deleteField(o, variableDependent.type);
 		return Md5.encode(Dynamics.string(o));
 	}
 	
@@ -336,7 +344,7 @@ class PieChart extends Layer
 	
 	function pief(dp : Array<DataPoint>) : Array<{ startAngle : Float, endEngle : Float, id : String, dp : DataPoint }>
 	{
-		var name = propertyValue,
+		var name = variableDependent.type,
 			temp = dp.map(function(d, i) return Reflect.field(d, name)),
 			arr : Dynamic = pie.pie(temp);
 		for (i in 0...arr.length)

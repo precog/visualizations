@@ -19,8 +19,8 @@ using Arrays;
 // TODO MOVE SORTING TO AXIS
 class Leadeboard 
 {
-	public var variableIndependent : VariableIndependent<Dynamic>;
-	public var variableDependent : VariableDependent<Dynamic>;
+	var variableIndependent : VariableIndependent<Dynamic>;
+	var variableDependent : VariableDependent<Dynamic>;
 	
 	public var animated : Bool;
 	public var animationDuration : Int;
@@ -62,6 +62,12 @@ class Leadeboard
 	{
 		list = container.append("ul")
 			.attr("class").string("leaderboard");
+	}
+	
+	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	{
+		variableDependent = variableDependents[0];
+		variableIndependent = variableIndependents[0];
 	}
 	
 	public function data(dps : Array<DataPoint>)

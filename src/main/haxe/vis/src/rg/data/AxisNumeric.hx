@@ -11,7 +11,7 @@ class AxisNumeric implements IAxis<Float>
 	public function new() { }
 	public function scale(start : Float, end : Float, v : Float)
 	{
-		return Floats.interpolate(v, start, end);
+		return Floats.uninterpolatef(start, end)(v);
 	}
 	
 	public function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>

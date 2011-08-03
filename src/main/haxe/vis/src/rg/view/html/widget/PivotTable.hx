@@ -32,9 +32,11 @@ class PivotTable
 	public var colorStart : Hsl;
 	public var colorEnd : Hsl;
 	
-	public var columnVariables : Array<VariableIndependent<Dynamic>>;
-	public var rowVariables : Array<VariableIndependent<Dynamic>>;
-	public var cellVariable : VariableDependent<Dynamic>;
+	var columnVariables : Array<VariableIndependent<Dynamic>>;
+	var rowVariables : Array<VariableIndependent<Dynamic>>;
+	var cellVariable : VariableDependent<Dynamic>;
+	
+	public var incolumns : Int;
 	
 	public var click : DataPoint -> Void;
 	
@@ -50,6 +52,7 @@ class PivotTable
 		displayHeatMap = true;
 		colorStart = defaultColorStart;
 		colorEnd = defaultColorEnd;
+		incolumns = 1;
 	}
 	
 	public dynamic function labelDataPoint(dp : DataPoint, stats : Stats)
@@ -295,6 +298,18 @@ class PivotTable
 	public function init()
 	{
 		
+	}
+	
+	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	{
+		cellVariable = variableDependents[0];
+		columnVariables = [];
+		for (i in 0...incolumns)
+			columnVariables.push(variableIndependents[i]);
+
+		rowVariables = [];
+		for (i in incolumns...variableIndependents.length)
+			rowVariables.push(variableIndependents[i]);
 	}
 	
 	public function destroy()

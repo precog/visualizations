@@ -9,13 +9,14 @@ import haxe.Md5;
 import rg.data.DataPoint;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
+import thx.collections.HashList;
 using Arrays;
 
 class DataPoints 
 {
 	public static function partition(dps : Array<DataPoint>, property : String, def = "default")
 	{
-		var map = new Hash();
+		var map = new HashList();
 		function getBucket(n)
 		{
 			var bucket = map.get(n);
@@ -36,7 +37,7 @@ class DataPoints
 				name = Dynamics.string(v);
 			getBucket(name).push(dp);
 		}
-		return map;
+		return map.array();
 	}
 	
 	public static function filterByIndependents(dps : Array<DataPoint>, variables : Array<VariableIndependent<Dynamic>>)

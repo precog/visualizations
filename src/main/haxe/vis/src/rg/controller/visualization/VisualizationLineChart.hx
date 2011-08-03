@@ -18,20 +18,25 @@ class VisualizationLineChart extends VisualizationSvg
 		
 		chart = new LineChart(main);
 		
-		chart.variableIndependents = independentVariables;
-		chart.variableDependent = dependentVariables[0];
-		
 		chart.animated = info.animation.animated;
 		chart.animationDuration = info.animation.duration;
 		chart.animationEase = info.animation.ease;
 		
 		chart.segmenton = info.segmenton;
 		
+		chart.symbol = info.symbol;
+		chart.symbolStyle = info.symbolStyle;
+		
+		chart.click = info.click;
+		chart.labelDataPoint = info.label.datapoint;
+		chart.labelDataPointOver = info.label.datapointover;
+		
 		chart.init();
 	}
 	
 	override function feedData(data : Array<DataPoint>)
 	{
+		chart.setVariables(independentVariables, dependentVariables);
 		chart.data(data);
 	}
 	

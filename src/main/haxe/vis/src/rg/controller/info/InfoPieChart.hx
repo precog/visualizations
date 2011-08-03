@@ -32,7 +32,7 @@ class InfoPieChart
 		innerradius = 0.0;
 		labelradius = 0.45;
 		labeldisplay = true;
-		labelorientation = LabelOrientation.Orthogonal;
+		labelorientation = LabelOrientation.Aligned;
 		outerradius = 0.9;
 		overradius = 0.95;
 		animation = new InfoAnimation();
