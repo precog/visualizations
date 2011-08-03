@@ -344,6 +344,38 @@ Strings.interpolatef = function(a,b,equation) {
 		}).join("");
 	};
 }
+Strings.interpolateChars = function(v,a,b,equation) {
+	return (Strings.interpolateCharsf(a,b,equation))(v);
+}
+Strings.interpolateCharsf = function(a,b,equation) {
+	var aa = a.split(""), ab = b.split("");
+	while(aa.length > ab.length) ab.insert(0," ");
+	while(ab.length > aa.length) aa.insert(0," ");
+	var ai = [];
+	var _g1 = 0, _g = aa.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		ai[i] = Strings.interpolateCharf(aa[i],ab[i]);
+	}
+	return function(v) {
+		var r = [];
+		var _g1 = 0, _g = ai.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r[i] = ai[i](v);
+		}
+		return StringTools.trim(r.join(""));
+	};
+}
+Strings.interpolateChar = function(v,a,b,equation) {
+	return (Strings.interpolateCharf(a,b,equation))(v);
+}
+Strings.interpolateCharf = function(a,b,equation) {
+	var ca = a.charCodeAt(0), cb = b.charCodeAt(0), i = Ints.interpolatef(ca,cb,equation);
+	return function(v) {
+		return String.fromCharCode(i(v));
+	};
+}
 Strings.ellipsis = function(s,maxlen,symbol) {
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
@@ -2762,6 +2794,116 @@ rg.data.AxisGroupByTime.valuesByGroup = function(groupby) {
 }
 rg.data.AxisGroupByTime.prototype.groupBy = null;
 rg.data.AxisGroupByTime.prototype.__class__ = rg.data.AxisGroupByTime;
+thx.js.AccessTween = function(transition,tweens) {
+	if( transition === $_ ) return;
+	this.transition = transition;
+	this.tweens = tweens;
+}
+thx.js.AccessTween.__name__ = ["thx","js","AccessTween"];
+thx.js.AccessTween.prototype.transition = null;
+thx.js.AccessTween.prototype.tweens = null;
+thx.js.AccessTween.prototype.transitionColorTween = function(value) {
+	return function(d,i,a) {
+		return thx.color.Rgb.interpolatef(a,value);
+	};
+}
+thx.js.AccessTween.prototype.transitionColorTweenf = function(f) {
+	return function(d,i,a) {
+		return thx.color.Rgb.interpolatef(a,f(d,i));
+	};
+}
+thx.js.AccessTween.prototype.transitionStringTween = function(value) {
+	return function(d,i,a) {
+		return Strings.interpolatef(a,value);
+	};
+}
+thx.js.AccessTween.prototype.transitionStringTweenf = function(f) {
+	return function(d,i,a) {
+		return Strings.interpolatef(a,f(d,i));
+	};
+}
+thx.js.AccessTween.prototype.transitionCharsTween = function(value) {
+	return function(d,i,a) {
+		return Strings.interpolateCharsf(a,value);
+	};
+}
+thx.js.AccessTween.prototype.transitionCharsTweenf = function(f) {
+	return function(d,i,a) {
+		return Strings.interpolateCharsf(a,f(d,i));
+	};
+}
+thx.js.AccessTween.prototype.transitionFloatTween = function(value) {
+	return function(d,i,a) {
+		return Floats.interpolatef(a,value);
+	};
+}
+thx.js.AccessTween.prototype.transitionFloatTweenf = function(f) {
+	return function(d,i,a) {
+		return Floats.interpolatef(a,f(d,i));
+	};
+}
+thx.js.AccessTween.prototype._that = function() {
+	return this.transition;
+}
+thx.js.AccessTween.prototype.__class__ = thx.js.AccessTween;
+thx.js.AccessTweenText = function(transition,tweens) {
+	if( transition === $_ ) return;
+	thx.js.AccessTween.call(this,transition,tweens);
+}
+thx.js.AccessTweenText.__name__ = ["thx","js","AccessTweenText"];
+thx.js.AccessTweenText.__super__ = thx.js.AccessTween;
+for(var k in thx.js.AccessTween.prototype ) thx.js.AccessTweenText.prototype[k] = thx.js.AccessTween.prototype[k];
+thx.js.AccessTweenText.prototype.stringNodef = function(f) {
+	return this.stringTweenNodef(this.transitionStringTweenf(f));
+}
+thx.js.AccessTweenText.prototype.string = function(value) {
+	return this.stringTweenNodef(this.transitionStringTween(value));
+}
+thx.js.AccessTweenText.prototype.stringTweenNodef = function(tween) {
+	var handler = function(d,i) {
+		var f = tween(d,i,d.textContent);
+		return function(t) {
+			d.textContent = f(t);
+		};
+	};
+	this.tweens.set("text",handler);
+	return this.transition;
+}
+thx.js.AccessTweenText.prototype.charsNodef = function(f) {
+	return this.stringTweenNodef(this.transitionCharsTweenf(f));
+}
+thx.js.AccessTweenText.prototype.chars = function(value) {
+	return this.stringTweenNodef(this.transitionCharsTween(value));
+}
+thx.js.AccessTweenText.prototype.__class__ = thx.js.AccessTweenText;
+thx.js.AccessDataTweenText = function(transition,tweens) {
+	if( transition === $_ ) return;
+	thx.js.AccessTweenText.call(this,transition,tweens);
+}
+thx.js.AccessDataTweenText.__name__ = ["thx","js","AccessDataTweenText"];
+thx.js.AccessDataTweenText.__super__ = thx.js.AccessTweenText;
+for(var k in thx.js.AccessTweenText.prototype ) thx.js.AccessDataTweenText.prototype[k] = thx.js.AccessTweenText.prototype[k];
+thx.js.AccessDataTweenText.prototype.stringf = function(f) {
+	return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+		return f(Reflect.field(n,"__data__"),i);
+	}));
+}
+thx.js.AccessDataTweenText.prototype.charsf = function(f) {
+	return this.stringTweenNodef(this.transitionCharsTweenf(function(n,i) {
+		return f(Reflect.field(n,"__data__"),i);
+	}));
+}
+thx.js.AccessDataTweenText.prototype.stringTweenf = function(tween) {
+	var handler = function(n,i) {
+		var f = tween(Reflect.field(n,"__data__"),i,d.textContent);
+		return function(t) {
+			d.textContent = f(t);
+		};
+	};
+	this.tweens.set("text",handler);
+	return this.transition;
+}
+thx.js.AccessDataTweenText.prototype.__class__ = thx.js.AccessDataTweenText;
 rg.data.VariableDependentContext = function(variable,partial) {
 	if( variable === $_ ) return;
 	this.variable = variable;
@@ -8338,7 +8480,7 @@ thx.js.BaseTransition.prototype.selectAll = function(selector) {
 thx.js.BaseTransition.prototype.createTransition = function(selection) {
 	return (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 242, className : "thx.js.BaseTransition", methodName : "createTransition"});
+		throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 243, className : "thx.js.BaseTransition", methodName : "createTransition"});
 		return $r;
 	}(this));
 }
@@ -8353,6 +8495,9 @@ thx.js.UnboundTransition = function(selection) {
 thx.js.UnboundTransition.__name__ = ["thx","js","UnboundTransition"];
 thx.js.UnboundTransition.__super__ = thx.js.BaseTransition;
 for(var k in thx.js.BaseTransition.prototype ) thx.js.UnboundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
+thx.js.UnboundTransition.prototype.text = function() {
+	return new thx.js.AccessTweenText(this,this._tweens);
+}
 thx.js.UnboundTransition.prototype.style = function(name) {
 	return new thx.js.AccessTweenStyle(name,this,this._tweens);
 }
@@ -8370,6 +8515,9 @@ thx.js.BoundTransition = function(selection) {
 thx.js.BoundTransition.__name__ = ["thx","js","BoundTransition"];
 thx.js.BoundTransition.__super__ = thx.js.BaseTransition;
 for(var k in thx.js.BaseTransition.prototype ) thx.js.BoundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
+thx.js.BoundTransition.prototype.text = function() {
+	return new thx.js.AccessDataTweenText(this,this._tweens);
+}
 thx.js.BoundTransition.prototype.style = function(name) {
 	return new thx.js.AccessDataTweenStyle(name,this,this._tweens);
 }
@@ -8859,48 +9007,6 @@ rg.controller.App.prototype.getLayout = function(id,options,container) {
 	return layout;
 }
 rg.controller.App.prototype.__class__ = rg.controller.App;
-thx.js.AccessTween = function(transition,tweens) {
-	if( transition === $_ ) return;
-	this.transition = transition;
-	this.tweens = tweens;
-}
-thx.js.AccessTween.__name__ = ["thx","js","AccessTween"];
-thx.js.AccessTween.prototype.transition = null;
-thx.js.AccessTween.prototype.tweens = null;
-thx.js.AccessTween.prototype.transitionColorTween = function(value) {
-	return function(d,i,a) {
-		return thx.color.Rgb.interpolatef(a,value);
-	};
-}
-thx.js.AccessTween.prototype.transitionColorTweenf = function(f) {
-	return function(d,i,a) {
-		return thx.color.Rgb.interpolatef(a,f(d,i));
-	};
-}
-thx.js.AccessTween.prototype.transitionStringTween = function(value) {
-	return function(d,i,a) {
-		return Strings.interpolatef(a,value);
-	};
-}
-thx.js.AccessTween.prototype.transitionStringTweenf = function(f) {
-	return function(d,i,a) {
-		return Strings.interpolatef(a,f(d,i));
-	};
-}
-thx.js.AccessTween.prototype.transitionFloatTween = function(value) {
-	return function(d,i,a) {
-		return Floats.interpolatef(a,value);
-	};
-}
-thx.js.AccessTween.prototype.transitionFloatTweenf = function(f) {
-	return function(d,i,a) {
-		return Floats.interpolatef(a,f(d,i));
-	};
-}
-thx.js.AccessTween.prototype._that = function() {
-	return this.transition;
-}
-thx.js.AccessTween.prototype.__class__ = thx.js.AccessTween;
 thx.js.AccessTweenStyle = function(name,transition,tweens) {
 	if( name === $_ ) return;
 	thx.js.AccessTween.call(this,transition,tweens);
@@ -10174,9 +10280,6 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 				return function(n,i1) {
 					var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n));
 					label.setText(f[0](dp,stats[0]));
-					label.setOrientation(rg.view.svg.widget.LabelOrientation.Aligned);
-					label.place(3,3,-30);
-					label.setAnchor(rg.view.svg.widget.GridAnchor.BottomLeft);
 				};
 			})(f,stats));
 		}

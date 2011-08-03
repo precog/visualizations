@@ -21,18 +21,15 @@ import thx.svg.Symbol;
 import thx.js.Access;
 using Arrays;
 
-// TODO point symbol
-// TODO transition animation
-// TODO click event
-// TODO mouseover label
-// TODO datapoint label
 // TODO curve approximation
+// TODO transition animation
 // TODO clip path (?)
 // TODO effect: no-effect
 // TODO effect: shadow
 // TODO effect: gradient
-// TODO values highlighter
 // TODO area chart
+// TODO stack area chart
+// TODO values highlighter
 // TODO expose options: label.orientation
 // TODO expose options: label.place (distance, angle)
 // TODO expose options: label.anchor
@@ -189,9 +186,9 @@ class LineChart extends Layer
 					var dp = Access.getData(n),
 						label = new Label(thx.js.Dom.selectNode(n));
 					label.text = f(dp, stats);
-					label.orientation = LabelOrientation.Aligned;
-					label.place(3, 3, -30);
-					label.anchor = GridAnchor.BottomLeft;
+//					label.orientation = LabelOrientation.Aligned;
+//					label.place(3, 3, -30);
+//					label.anchor = GridAnchor.BottomLeft;
 				});
 			}
 
