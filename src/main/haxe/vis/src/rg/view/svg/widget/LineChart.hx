@@ -22,7 +22,6 @@ import thx.svg.Symbol;
 import thx.js.Access;
 using Arrays;
 
-// TODO curve approximation
 // TODO transition animation
 // TODO clip path (?)
 // TODO effect: no-effect
