@@ -2373,6 +2373,7 @@ rg.controller.visualization.VisualizationLineChart.prototype.init = function() {
 	this.chart.click = this.info.click;
 	this.chart.labelDataPoint = this.info.label.datapoint;
 	this.chart.labelDataPointOver = this.info.label.datapointover;
+	this.chart.lineInterpolator = this.info.lineInterpolator;
 	this.chart.init();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.feedData = function(data) {
@@ -4919,6 +4920,10 @@ rg.controller.info.InfoLineChart.filters = function() {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
 		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelPivotTable(),v)}];
+	}},{ field : "lineinterpolation", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "lineInterpolator", value : thx.svg.LineInterpolators.parse(v)}];
 	}}];
 }
 rg.controller.info.InfoLineChart.prototype.animation = null;
@@ -4927,6 +4932,7 @@ rg.controller.info.InfoLineChart.prototype.symbol = null;
 rg.controller.info.InfoLineChart.prototype.symbolStyle = null;
 rg.controller.info.InfoLineChart.prototype.click = null;
 rg.controller.info.InfoLineChart.prototype.label = null;
+rg.controller.info.InfoLineChart.prototype.lineInterpolator = null;
 rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
 rg.controller.info.InfoLabel = function(p) {
 }
@@ -6411,7 +6417,7 @@ rg.view.svg.widget.Baloon = function(container) {
 	this.setRoundedCorner(6);
 	this.setPadding(5);
 	this._transition_id = 0;
-	this.baloon = container.append("svg:g").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
+	this.baloon = container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
 	this.frame = this.baloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
 	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)").style("opacity")["float"](0.25).style("fill").string("none").style("stroke").string("#000").style("stroke-width")["float"](this._strokeWidth + 2);
 	this._connectorShapeV = thx.svg.Diagonal.forObject();
@@ -6882,6 +6888,52 @@ rg.controller.info.InfoVisualizationType.filters = function() {
 }
 rg.controller.info.InfoVisualizationType.prototype.type = null;
 rg.controller.info.InfoVisualizationType.prototype.__class__ = rg.controller.info.InfoVisualizationType;
+thx.svg.LineInterpolators = function() { }
+thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
+thx.svg.LineInterpolators.parse = function(s,sep) {
+	if(sep == null) sep = "-";
+	var interp = s.split(sep)[0].toLowerCase();
+	return (function($this) {
+		var $r;
+		switch(interp) {
+		case "basis":
+			$r = thx.svg.LineInterpolator.Basis;
+			break;
+		case "basisopen":
+			$r = thx.svg.LineInterpolator.BasisOpen;
+			break;
+		case "basisclosed":
+			$r = thx.svg.LineInterpolator.BasisClosed;
+			break;
+		case "cardinal":
+			$r = thx.svg.LineInterpolator.Cardinal(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "cardinalopen":
+			$r = thx.svg.LineInterpolator.CardinalOpen(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "cardinalclosed":
+			$r = thx.svg.LineInterpolator.CardinalClosed(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "monotone":
+			$r = thx.svg.LineInterpolator.Monotone;
+			break;
+		case "stepafter":
+			$r = thx.svg.LineInterpolator.StepAfter;
+			break;
+		case "stepbefore":
+			$r = thx.svg.LineInterpolator.StepBefore;
+			break;
+		default:
+			$r = thx.svg.LineInterpolator.Linear;
+		}
+		return $r;
+	}(this));
+}
+thx.svg.LineInterpolators.argument = function(s) {
+	var v = s.split("-")[1];
+	if(null == v) return null; else return Std.parseFloat(v);
+}
+thx.svg.LineInterpolators.prototype.__class__ = thx.svg.LineInterpolators;
 if(!rg.data.source.rgquery.transform) rg.data.source.rgquery.transform = {}
 rg.data.source.rgquery.transform.TransformCount = function(properties,event,unit) {
 	if( properties === $_ ) return;
@@ -10181,6 +10233,7 @@ rg.view.svg.widget.LineChart.prototype.segmenton = null;
 rg.view.svg.widget.LineChart.prototype.click = null;
 rg.view.svg.widget.LineChart.prototype.labelDataPoint = null;
 rg.view.svg.widget.LineChart.prototype.labelDataPointOver = null;
+rg.view.svg.widget.LineChart.prototype.lineInterpolator = null;
 rg.view.svg.widget.LineChart.prototype.linePath = null;
 rg.view.svg.widget.LineChart.prototype.chart = null;
 rg.view.svg.widget.LineChart.prototype.setVariables = function(variableIndependents,variableDependents) {
@@ -10195,6 +10248,7 @@ rg.view.svg.widget.LineChart.prototype.setVariables = function(variableIndepende
 				return f(a1,a2,a3);
 			};
 		})($closure(this,"y"),variableDependents[i]));
+		if(null != this.lineInterpolator) this.linePath[i].interpolator(this.lineInterpolator);
 	}
 }
 rg.view.svg.widget.LineChart.prototype.x = function(d,i) {

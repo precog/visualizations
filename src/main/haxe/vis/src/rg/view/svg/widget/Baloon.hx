@@ -51,6 +51,7 @@ class Baloon
 
 		this.baloon = container
 			.append("svg:g")
+			.attr("pointer-events").string("none")
 			.attr("class").string("baloon")
 			.attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
 		frame = baloon.append("svg:g")

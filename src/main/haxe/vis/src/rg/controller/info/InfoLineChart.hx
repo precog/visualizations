@@ -6,6 +6,8 @@
 package rg.controller.info;
 import rg.data.DataPoint;
 import rg.data.Stats;
+import thx.svg.LineInterpolator;
+import thx.svg.LineInterpolators;
 using rg.controller.info.Info;
 
 class InfoLineChart 
@@ -16,6 +18,7 @@ class InfoLineChart
 	public var symbolStyle : DataPoint -> Stats -> String;
 	public var click : DataPoint -> Stats -> Void;
 	public var label : InfoLabel;
+	public var lineInterpolator : LineInterpolator;
 	
 	public function new() 
 	{
@@ -57,6 +60,13 @@ class InfoLineChart
 			filter : function(v) return [{
 				field : "label",
 				value : new InfoLabelPivotTable().feed(v)
+			}]
+		}, {
+			field : "lineinterpolation",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) return [ {
+				field : "lineInterpolator",
+				value : LineInterpolators.parse(v)
 			}]
 		}];
 	}

@@ -203,7 +203,8 @@ document.addEventListener("DOMContentLoaded", function(){
 						return null;
 				},
 				datapointover : function(ds, stats) { return ds.event + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
-			}
+			},
+			lineinterpolation : "cardinal"
 		}
 	});
 
@@ -259,7 +260,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			symbol : function(ds, stats) {
 				var v = ds.count / stats.max;
 				return ReportGrid.symbol.square(100 * v);
-			}
+			},
+			lineinterpolation : "stepbefore"
 		}
 	});
 

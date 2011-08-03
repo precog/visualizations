@@ -17,6 +17,7 @@ import rg.util.DataPoints;
 import thx.collections.HashList;
 import thx.svg.Line;
 import rg.data.Stats;
+import thx.svg.LineInterpolator;
 import thx.svg.Symbol;
 import thx.js.Access;
 using Arrays;
@@ -51,6 +52,8 @@ class LineChart extends Layer
 	public var labelDataPoint : DataPoint -> Stats -> String;
 	public var labelDataPointOver : DataPoint -> Stats -> String;
 	
+	public var lineInterpolator : LineInterpolator;
+	
 	var linePath : Array<Line<DataPoint>>;
 	var chart : Selection;
 	
@@ -76,6 +79,8 @@ class LineChart extends Layer
 		for (i in 0...variableDependents.length)
 		{
 			linePath[i] = new thx.svg.Line(x, callback(y, variableDependents[i]));
+			if (null != lineInterpolator)
+				linePath[i].interpolator(lineInterpolator);
 		}
 	}
 	
