@@ -679,6 +679,68 @@ Strings.interpolatef = function(a,b,equation) {
 	return $tmp;
 	$s.pop();
 }
+Strings.interpolateChars = function(v,a,b,equation) {
+	$s.push("Strings::interpolateChars");
+	var $spos = $s.length;
+	var $tmp = (Strings.interpolateCharsf(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+Strings.interpolateCharsf = function(a,b,equation) {
+	$s.push("Strings::interpolateCharsf");
+	var $spos = $s.length;
+	var aa = a.split(""), ab = b.split("");
+	while(aa.length > ab.length) ab.insert(0," ");
+	while(ab.length > aa.length) aa.insert(0," ");
+	var ai = [];
+	var _g1 = 0, _g = aa.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		ai[i] = Strings.interpolateCharf(aa[i],ab[i]);
+	}
+	var $tmp = function(v) {
+		$s.push("Strings::interpolateCharsf@509");
+		var $spos = $s.length;
+		var r = [];
+		var _g1 = 0, _g = ai.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r[i] = ai[i](v);
+		}
+		var $tmp = StringTools.trim(r.join(""));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+Strings.interpolateChar = function(v,a,b,equation) {
+	$s.push("Strings::interpolateChar");
+	var $spos = $s.length;
+	var $tmp = (Strings.interpolateCharf(a,b,equation))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+Strings.interpolateCharf = function(a,b,equation) {
+	$s.push("Strings::interpolateCharf");
+	var $spos = $s.length;
+	var ca = a.charCodeAt(0), cb = b.charCodeAt(0), i = Ints.interpolatef(ca,cb,equation);
+	var $tmp = function(v) {
+		$s.push("Strings::interpolateCharf@528");
+		var $spos = $s.length;
+		var $tmp = String.fromCharCode(i(v));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 Strings.ellipsis = function(s,maxlen,symbol) {
 	$s.push("Strings::ellipsis");
 	var $spos = $s.length;
@@ -700,7 +762,7 @@ Strings.ellipsisf = function(maxlen,symbol) {
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
 	var $tmp = function(s) {
-		$s.push("Strings::ellipsisf@503");
+		$s.push("Strings::ellipsisf@541");
 		var $spos = $s.length;
 		if(s.length > maxlen) {
 			var $tmp = s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol;
@@ -762,6 +824,50 @@ rg.util.Properties.humanize = function(s) {
 	$s.pop();
 }
 rg.util.Properties.prototype.__class__ = rg.util.Properties;
+if(!rg.view) rg.view = {}
+if(!rg.view.svg) rg.view.svg = {}
+if(!rg.view.svg.widget) rg.view.svg.widget = {}
+rg.view.svg.widget.BaloonShape = function() { }
+rg.view.svg.widget.BaloonShape.__name__ = ["rg","view","svg","widget","BaloonShape"];
+rg.view.svg.widget.BaloonShape.shape = function(width,height,rc,rp,side,offset) {
+	$s.push("rg.view.svg.widget.BaloonShape::shape");
+	var $spos = $s.length;
+	var w = width - rc * 2, h = height - rc * 2;
+	var buf = "M" + rc + ",0";
+	if(0 == side) {
+		buf += "h" + offset;
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + -rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + rc;
+		buf += "h" + (w - (offset + 2 * rc));
+	} else buf += "h" + w;
+	buf += "a" + rc + "," + rc + ",0,0,1," + rc + "," + rc;
+	if(1 == side) {
+		buf += "v" + (offset - rc);
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + rc;
+		buf += "v" + (h - (offset + rc));
+	} else buf += "v" + h;
+	buf += "a" + rc + "," + rc + ",0,0,1," + -rc + "," + rc;
+	if(2 == side) {
+		buf += "h" + -(w - (offset + 2 * rc));
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + -rc;
+		buf += "h" + -offset;
+	} else buf += "h" + -w;
+	buf += "a" + rc + "," + rc + ",0,0,1," + -rc + "," + -rc;
+	if(3 == side) {
+		buf += "v" + -(h - (offset + rc));
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + -rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + -rc;
+		buf += "v" + -(offset - rc);
+	} else buf += "v" + -h;
+	buf += "a" + rc + "," + rc + ",0,0,1," + rc + "," + -rc;
+	var $tmp = buf + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.BaloonShape.prototype.__class__ = rg.view.svg.widget.BaloonShape;
 if(typeof utest=='undefined') utest = {}
 if(!utest.ui) utest.ui = {}
 if(!utest.ui.common) utest.ui.common = {}
@@ -1713,7 +1819,6 @@ Dynamics.number = function(v) {
 	$s.pop();
 }
 Dynamics.prototype.__class__ = Dynamics;
-if(!rg.view) rg.view = {}
 if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.Anchor = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
 rg.view.layout.Anchor.Top = ["Top",0];
@@ -1820,6 +1925,13 @@ rg.view.html.widget.Leadeboard.prototype.init = function() {
 	this.list = this.container.append("ul").attr("class").string("leaderboard");
 	$s.pop();
 }
+rg.view.html.widget.Leadeboard.prototype.setVariables = function(variableIndependents,variableDependents) {
+	$s.push("rg.view.html.widget.Leadeboard::setVariables");
+	var $spos = $s.length;
+	this.variableDependent = variableDependents[0];
+	this.variableIndependent = variableIndependents[0];
+	$s.pop();
+}
 rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
 	$s.push("rg.view.html.widget.Leadeboard::data");
 	var $spos = $s.length;
@@ -1828,7 +1940,7 @@ rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
 	var stats = this.stats = rg.util.DataPoints.stats(dps,this.variableDependent.type);
 	var choice = this.list.selectAll("li").data(dps,$closure(this,"id"));
 	var enter = choice.enter().append("li").style("background-size").stringf(function(d,i) {
-		$s.push("rg.view.html.widget.Leadeboard::data@80");
+		$s.push("rg.view.html.widget.Leadeboard::data@86");
 		var $spos = $s.length;
 		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
 		$s.pop();
@@ -1838,7 +1950,7 @@ rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
 	if(null != this.click) enter.on("click.user",$closure(this,"onClick"));
 	if(this.animated) enter.style("opacity")["float"](0).eachNode($closure(this,"fadeIn")); else enter.style("opacity")["float"](1);
 	choice.update().select("li").style("background-size").stringf(function(d,i) {
-		$s.push("rg.view.html.widget.Leadeboard::data@96");
+		$s.push("rg.view.html.widget.Leadeboard::data@102");
 		var $spos = $s.length;
 		var $tmp = 100 * Reflect.field(d,name) / stats.tot + "%";
 		$s.pop();
@@ -1859,7 +1971,7 @@ rg.view.html.widget.Leadeboard.prototype.fadeIn = function(n,i) {
 	var $spos = $s.length;
 	var me = this;
 	thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
-		$s.push("rg.view.html.widget.Leadeboard::fadeIn@124");
+		$s.push("rg.view.html.widget.Leadeboard::fadeIn@130");
 		var $spos = $s.length;
 		me._created++;
 		$s.pop();
@@ -2162,7 +2274,14 @@ rg.controller.info.Info.feed = function(info,o) {
 	$s.pop();
 }
 rg.controller.info.Info.prototype.__class__ = rg.controller.info.Info;
-if(!rg.view.svg) rg.view.svg = {}
+rg.view.svg.widget.LineEffect = { __ename__ : ["rg","view","svg","widget","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
+rg.view.svg.widget.LineEffect.NoEffect = ["NoEffect",0];
+rg.view.svg.widget.LineEffect.NoEffect.toString = $estr;
+rg.view.svg.widget.LineEffect.NoEffect.__enum__ = rg.view.svg.widget.LineEffect;
+rg.view.svg.widget.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.view.svg.widget.LineEffect; $x.toString = $estr; return $x; }
+rg.view.svg.widget.LineEffect.DropShadow = ["DropShadow",2];
+rg.view.svg.widget.LineEffect.DropShadow.toString = $estr;
+rg.view.svg.widget.LineEffect.DropShadow.__enum__ = rg.view.svg.widget.LineEffect;
 if(!rg.view.svg.panel) rg.view.svg.panel = {}
 rg.view.svg.panel.Layer = function(panel) {
 	if( panel === $_ ) return;
@@ -2233,7 +2352,6 @@ rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
 	$s.pop();
 }
 rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
-if(!rg.view.svg.widget) rg.view.svg.widget = {}
 rg.view.svg.widget.Title = function(panel,text,anchor,padding,className) {
 	if( panel === $_ ) return;
 	$s.push("rg.view.svg.widget.Title::new");
@@ -2557,6 +2675,106 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
+if(!thx.svg) thx.svg = {}
+thx.svg.Diagonal = function(p) {
+	if( p === $_ ) return;
+	$s.push("thx.svg.Diagonal::new");
+	var $spos = $s.length;
+	this._projection = thx.svg.Diagonal.diagonalProjection;
+	$s.pop();
+}
+thx.svg.Diagonal.__name__ = ["thx","svg","Diagonal"];
+thx.svg.Diagonal.diagonalProjection = function(d,_) {
+	$s.push("thx.svg.Diagonal::diagonalProjection");
+	var $spos = $s.length;
+	$s.pop();
+	return d;
+	$s.pop();
+}
+thx.svg.Diagonal.forObject = function() {
+	$s.push("thx.svg.Diagonal::forObject");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Diagonal().sourcef(function(d,_i) {
+		$s.push("thx.svg.Diagonal::forObject@54");
+		var $spos = $s.length;
+		var $tmp = [d.x0,d.y0];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).targetf(function(d,_i) {
+		$s.push("thx.svg.Diagonal::forObject@55");
+		var $spos = $s.length;
+		var $tmp = [d.x1,d.y1];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype._source = null;
+thx.svg.Diagonal.prototype._target = null;
+thx.svg.Diagonal.prototype._projection = null;
+thx.svg.Diagonal.prototype.diagonal = function(d,i) {
+	$s.push("thx.svg.Diagonal::diagonal");
+	var $spos = $s.length;
+	var p0 = this._source(d,i), p3 = this._target(d,i), m = (p0[1] + p3[1]) / 2, p = [p0,[p0[0],m],[p3[0],m],p3];
+	var p2 = p.map(this._projection);
+	var $tmp = "M" + p2[0][0] + "," + p2[0][1] + "C" + p2[1][0] + "," + p2[1][1] + " " + p2[2][0] + "," + p2[2][1] + " " + p2[3][0] + "," + p2[3][1];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype.getSource = function() {
+	$s.push("thx.svg.Diagonal::getSource");
+	var $spos = $s.length;
+	var $tmp = this._source;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype.sourcef = function(x) {
+	$s.push("thx.svg.Diagonal::sourcef");
+	var $spos = $s.length;
+	this._source = x;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype.getTarget = function() {
+	$s.push("thx.svg.Diagonal::getTarget");
+	var $spos = $s.length;
+	var $tmp = this._target;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype.targetf = function(x) {
+	$s.push("thx.svg.Diagonal::targetf");
+	var $spos = $s.length;
+	this._target = x;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype.getProjection = function() {
+	$s.push("thx.svg.Diagonal::getProjection");
+	var $spos = $s.length;
+	var $tmp = this._projection;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype.projection = function(x) {
+	$s.push("thx.svg.Diagonal::projection");
+	var $spos = $s.length;
+	this._projection = x;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Diagonal.prototype.__class__ = thx.svg.Diagonal;
 if(!utest._Dispatcher) utest._Dispatcher = {}
 utest._Dispatcher.EventException = { __ename__ : ["utest","_Dispatcher","EventException"], __constructs__ : ["StopPropagation"] }
 utest._Dispatcher.EventException.StopPropagation = ["StopPropagation",0];
@@ -4453,18 +4671,23 @@ rg.controller.visualization.VisualizationLineChart.prototype.init = function() {
 	var $spos = $s.length;
 	var main = this.layout.getPanel(this.layout.mainPanelName).panel;
 	this.chart = new rg.view.svg.widget.LineChart(main);
-	this.chart.variableIndependent = this.independentVariables[0];
-	this.chart.variableDependents = this.dependentVariables;
 	this.chart.animated = this.info.animation.animated;
 	this.chart.animationDuration = this.info.animation.duration;
 	this.chart.animationEase = this.info.animation.ease;
 	this.chart.segmenton = this.info.segmenton;
+	this.chart.symbol = this.info.symbol;
+	this.chart.symbolStyle = this.info.symbolStyle;
+	this.chart.click = this.info.click;
+	this.chart.labelDataPoint = this.info.label.datapoint;
+	this.chart.labelDataPointOver = this.info.label.datapointover;
+	this.chart.lineInterpolator = this.info.lineInterpolator;
 	this.chart.init();
 	$s.pop();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.VisualizationLineChart::feedData");
 	var $spos = $s.length;
+	this.chart.setVariables(this.independentVariables,this.dependentVariables);
 	this.chart.data(data);
 	$s.pop();
 }
@@ -4679,7 +4902,6 @@ thx.translation.ITranslation.prototype.domain = null;
 thx.translation.ITranslation.prototype._ = null;
 thx.translation.ITranslation.prototype.__ = null;
 thx.translation.ITranslation.prototype.__class__ = thx.translation.ITranslation;
-if(!thx.svg) thx.svg = {}
 thx.svg.Line = function(x,y,interpolator) {
 	if( x === $_ ) return;
 	$s.push("thx.svg.Line::new");
@@ -5552,6 +5774,276 @@ rg.data.AxisGroupByTime.valuesByGroup = function(groupby) {
 }
 rg.data.AxisGroupByTime.prototype.groupBy = null;
 rg.data.AxisGroupByTime.prototype.__class__ = rg.data.AxisGroupByTime;
+thx.js.AccessTween = function(transition,tweens) {
+	if( transition === $_ ) return;
+	$s.push("thx.js.AccessTween::new");
+	var $spos = $s.length;
+	this.transition = transition;
+	this.tweens = tweens;
+	$s.pop();
+}
+thx.js.AccessTween.__name__ = ["thx","js","AccessTween"];
+thx.js.AccessTween.prototype.transition = null;
+thx.js.AccessTween.prototype.tweens = null;
+thx.js.AccessTween.prototype.transitionColorTween = function(value) {
+	$s.push("thx.js.AccessTween::transitionColorTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionColorTween@22");
+		var $spos = $s.length;
+		var $tmp = thx.color.Rgb.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionColorTweenf = function(f) {
+	$s.push("thx.js.AccessTween::transitionColorTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionColorTweenf@27");
+		var $spos = $s.length;
+		var $tmp = thx.color.Rgb.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionStringTween = function(value) {
+	$s.push("thx.js.AccessTween::transitionStringTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionStringTween@32");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionStringTweenf = function(f) {
+	$s.push("thx.js.AccessTween::transitionStringTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionStringTweenf@37");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionCharsTween = function(value) {
+	$s.push("thx.js.AccessTween::transitionCharsTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionCharsTween@42");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolateCharsf(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionCharsTweenf = function(f) {
+	$s.push("thx.js.AccessTween::transitionCharsTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionCharsTweenf@47");
+		var $spos = $s.length;
+		var $tmp = Strings.interpolateCharsf(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionFloatTween = function(value) {
+	$s.push("thx.js.AccessTween::transitionFloatTween");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionFloatTween@52");
+		var $spos = $s.length;
+		var $tmp = Floats.interpolatef(a,value);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.transitionFloatTweenf = function(f) {
+	$s.push("thx.js.AccessTween::transitionFloatTweenf");
+	var $spos = $s.length;
+	var $tmp = function(d,i,a) {
+		$s.push("thx.js.AccessTween::transitionFloatTweenf@57");
+		var $spos = $s.length;
+		var $tmp = Floats.interpolatef(a,f(d,i));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype._that = function() {
+	$s.push("thx.js.AccessTween::_that");
+	var $spos = $s.length;
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTween.prototype.__class__ = thx.js.AccessTween;
+thx.js.AccessTweenText = function(transition,tweens) {
+	if( transition === $_ ) return;
+	$s.push("thx.js.AccessTweenText::new");
+	var $spos = $s.length;
+	thx.js.AccessTween.call(this,transition,tweens);
+	$s.pop();
+}
+thx.js.AccessTweenText.__name__ = ["thx","js","AccessTweenText"];
+thx.js.AccessTweenText.__super__ = thx.js.AccessTween;
+for(var k in thx.js.AccessTween.prototype ) thx.js.AccessTweenText.prototype[k] = thx.js.AccessTween.prototype[k];
+thx.js.AccessTweenText.prototype.stringNodef = function(f) {
+	$s.push("thx.js.AccessTweenText::stringNodef");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(f));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenText.prototype.string = function(value) {
+	$s.push("thx.js.AccessTweenText::string");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTween(value));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenText.prototype.stringTweenNodef = function(tween) {
+	$s.push("thx.js.AccessTweenText::stringTweenNodef");
+	var $spos = $s.length;
+	var handler = function(d,i) {
+		$s.push("thx.js.AccessTweenText::stringTweenNodef@31");
+		var $spos = $s.length;
+		var f = tween(d,i,d.textContent);
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessTweenText::stringTweenNodef@31@34");
+			var $spos = $s.length;
+			d.textContent = f(t);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("text",handler);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenText.prototype.charsNodef = function(f) {
+	$s.push("thx.js.AccessTweenText::charsNodef");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionCharsTweenf(f));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenText.prototype.chars = function(value) {
+	$s.push("thx.js.AccessTweenText::chars");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionCharsTween(value));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessTweenText.prototype.__class__ = thx.js.AccessTweenText;
+thx.js.AccessDataTweenText = function(transition,tweens) {
+	if( transition === $_ ) return;
+	$s.push("thx.js.AccessDataTweenText::new");
+	var $spos = $s.length;
+	thx.js.AccessTweenText.call(this,transition,tweens);
+	$s.pop();
+}
+thx.js.AccessDataTweenText.__name__ = ["thx","js","AccessDataTweenText"];
+thx.js.AccessDataTweenText.__super__ = thx.js.AccessTweenText;
+for(var k in thx.js.AccessTweenText.prototype ) thx.js.AccessDataTweenText.prototype[k] = thx.js.AccessTweenText.prototype[k];
+thx.js.AccessDataTweenText.prototype.stringf = function(f) {
+	$s.push("thx.js.AccessDataTweenText::stringf");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenText::stringf@64");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenText.prototype.charsf = function(f) {
+	$s.push("thx.js.AccessDataTweenText::charsf");
+	var $spos = $s.length;
+	var $tmp = this.stringTweenNodef(this.transitionCharsTweenf(function(n,i) {
+		$s.push("thx.js.AccessDataTweenText::charsf@69");
+		var $spos = $s.length;
+		var $tmp = f(Reflect.field(n,"__data__"),i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenText.prototype.stringTweenf = function(tween) {
+	$s.push("thx.js.AccessDataTweenText::stringTweenf");
+	var $spos = $s.length;
+	var handler = function(n,i) {
+		$s.push("thx.js.AccessDataTweenText::stringTweenf@74");
+		var $spos = $s.length;
+		var f = tween(Reflect.field(n,"__data__"),i,d.textContent);
+		var $tmp = function(t) {
+			$s.push("thx.js.AccessDataTweenText::stringTweenf@74@77");
+			var $spos = $s.length;
+			d.textContent = f(t);
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	this.tweens.set("text",handler);
+	var $tmp = this.transition;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.js.AccessDataTweenText.prototype.__class__ = thx.js.AccessDataTweenText;
 rg.controller.factory.FactoryDataContext = function(factoryDataSource) {
 	if( factoryDataSource === $_ ) return;
 	$s.push("rg.controller.factory.FactoryDataContext::new");
@@ -5576,9 +6068,7 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	if(null != info.transform) processor.transform = function(dps) {
 		$s.push("rg.controller.factory.FactoryDataContext::create@35");
 		var $spos = $s.length;
-		haxe.Log.trace(dps,{ fileName : "FactoryDataContext.hx", lineNumber : 37, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
 		var res = info.transform.apply(this,dps);
-		haxe.Log.trace(res,{ fileName : "FactoryDataContext.hx", lineNumber : 39, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
 		$s.pop();
 		return res;
 		$s.pop();
@@ -5870,8 +6360,6 @@ rg.controller.visualization.VisualizationLeaderboard.prototype.init = function()
 	$s.push("rg.controller.visualization.VisualizationLeaderboard::init");
 	var $spos = $s.length;
 	this.chart = new rg.view.html.widget.Leadeboard(this.container);
-	this.chart.variableIndependent = this.independentVariables[0];
-	this.chart.variableDependent = this.dependentVariables[0];
 	if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
 	if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
 	this.chart.animated = this.info.animation.animated;
@@ -5886,6 +6374,7 @@ rg.controller.visualization.VisualizationLeaderboard.prototype.init = function()
 rg.controller.visualization.VisualizationLeaderboard.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.VisualizationLeaderboard::feedData");
 	var $spos = $s.length;
+	this.chart.setVariables(this.independentVariables,this.dependentVariables);
 	this.chart.data(data);
 	$s.pop();
 }
@@ -8368,7 +8857,6 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	var $spos = $s.length;
 	var panelChart = this.layout.getPanel(this.layout.mainPanelName).panel;
 	this.chart = new rg.view.svg.widget.PieChart(panelChart);
-	this.chart.propertyValue = this.dependentVariables[0].type;
 	this.chart.innerRadius = this.info.innerradius;
 	this.chart.outerRadius = this.info.outerradius;
 	this.chart.overRadius = this.info.overradius;
@@ -8395,6 +8883,7 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 rg.controller.visualization.VisualizationPieChart.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.VisualizationPieChart::feedData");
 	var $spos = $s.length;
+	this.chart.setVariables(this.independentVariables,this.dependentVariables);
 	if(null != this.title) {
 		if(null == this.info.label.title) this.title.setText(rg.controller.visualization.VisualizationPieChart.defaultTitle(this.getVariables(),data)); else this.title.setText(this.info.label.title(this.getVariables(),data));
 		this.layout.suggestSize("title",this.title.idealHeight());
@@ -8441,8 +8930,9 @@ rg.util.DataPoints.partition = function(dps,property,def) {
 		if(null == v) name = def; else name = Dynamics.string(v);
 		getBucket(name).push(dp);
 	}
+	var $tmp = map.array();
 	$s.pop();
-	return map;
+	return $tmp;
 	$s.pop();
 }
 rg.util.DataPoints.filterByIndependents = function(dps,variables) {
@@ -9802,6 +10292,7 @@ rg.controller.info.InfoLineChart = function(p) {
 	$s.push("rg.controller.info.InfoLineChart::new");
 	var $spos = $s.length;
 	this.animation = new rg.controller.info.InfoAnimation();
+	this.label = new rg.controller.info.InfoLabel();
 	$s.pop();
 }
 rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
@@ -9809,33 +10300,94 @@ rg.controller.info.InfoLineChart.filters = function() {
 	$s.push("rg.controller.info.InfoLineChart::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@23");
+		$s.push("rg.controller.info.InfoLineChart::filters@33");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@24");
+		$s.push("rg.controller.info.InfoLineChart::filters@34");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "segmenton", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@30");
+		$s.push("rg.controller.info.InfoLineChart::filters@40");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null}];
+	}, filter : null},{ field : "symbol", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@44");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "symbolstyle", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@48");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@49");
+		var $spos = $s.length;
+		var $tmp = [{ field : "symbolStyle", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@55");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@59");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@60");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelPivotTable(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "lineinterpolation", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@66");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@67");
+		var $spos = $s.length;
+		var $tmp = [{ field : "lineInterpolator", value : thx.svg.LineInterpolators.parse(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
 rg.controller.info.InfoLineChart.prototype.animation = null;
 rg.controller.info.InfoLineChart.prototype.segmenton = null;
+rg.controller.info.InfoLineChart.prototype.symbol = null;
+rg.controller.info.InfoLineChart.prototype.symbolStyle = null;
+rg.controller.info.InfoLineChart.prototype.click = null;
+rg.controller.info.InfoLineChart.prototype.label = null;
+rg.controller.info.InfoLineChart.prototype.lineInterpolator = null;
 rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
 rg.controller.info.InfoLabel = function(p) {
 	$s.push("rg.controller.info.InfoLabel::new");
@@ -12689,7 +13241,7 @@ rg.controller.info.InfoVariable = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoVariable::new");
 	var $spos = $s.length;
-	this.variableType = rg.controller.info.VariableType.Unknwon;
+	this.variableType = rg.controller.info.VariableType.Unknown;
 	$s.pop();
 }
 rg.controller.info.InfoVariable.__name__ = ["rg","controller","info","InfoVariable"];
@@ -12783,10 +13335,10 @@ rg.controller.info.InfoVariable.prototype.values = null;
 rg.controller.info.InfoVariable.prototype.groupBy = null;
 rg.controller.info.InfoVariable.prototype.variableType = null;
 rg.controller.info.InfoVariable.prototype.__class__ = rg.controller.info.InfoVariable;
-rg.controller.info.VariableType = { __ename__ : ["rg","controller","info","VariableType"], __constructs__ : ["Unknwon","Independent","Dependent"] }
-rg.controller.info.VariableType.Unknwon = ["Unknwon",0];
-rg.controller.info.VariableType.Unknwon.toString = $estr;
-rg.controller.info.VariableType.Unknwon.__enum__ = rg.controller.info.VariableType;
+rg.controller.info.VariableType = { __ename__ : ["rg","controller","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
+rg.controller.info.VariableType.Unknown = ["Unknown",0];
+rg.controller.info.VariableType.Unknown.toString = $estr;
+rg.controller.info.VariableType.Unknown.__enum__ = rg.controller.info.VariableType;
 rg.controller.info.VariableType.Independent = ["Independent",1];
 rg.controller.info.VariableType.Independent.toString = $estr;
 rg.controller.info.VariableType.Independent.__enum__ = rg.controller.info.VariableType;
@@ -13071,6 +13623,457 @@ thx.date.DateParser.plusPm = function(s) {
 	$s.pop();
 }
 thx.date.DateParser.prototype.__class__ = thx.date.DateParser;
+rg.view.svg.widget.Baloon = function(container) {
+	if( container === $_ ) return;
+	$s.push("rg.view.svg.widget.Baloon::new");
+	var $spos = $s.length;
+	this.container = container;
+	this.visible = true;
+	this._duration = 500;
+	this.minwidth = 30;
+	this.setPreferredSide(2);
+	this._ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
+	this._strokeWidth = 1;
+	this.setRoundedCorner(6);
+	this.setPadding(5);
+	this._transition_id = 0;
+	this.baloon = container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
+	this.frame = this.baloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
+	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)").style("opacity")["float"](0.25).style("fill").string("none").style("stroke").string("#000").style("stroke-width")["float"](this._strokeWidth + 2);
+	this._connectorShapeV = thx.svg.Diagonal.forObject();
+	this._connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
+		$s.push("rg.view.svg.widget.Baloon::new@70");
+		var $spos = $s.length;
+		var $tmp = [d[1],d[0]];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	this.connector = this.baloon.append("svg:path").attr("class").string("baloon-connector").style("fill").string("none").style("display").string("none").attr("transform").string("translate(0, 0)");
+	this.frame.append("svg:path").attr("class").string("bg").style("fill").string("#ff9").style("stroke").string("#fa0").style("fill-opacity")["float"](0.9).style("stroke-width")["float"](this._strokeWidth);
+	var r = Math.min(10,Math.max(3,this.roundedCorner));
+	this.setTextHeight(11);
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.__name__ = ["rg","view","svg","widget","Baloon"];
+rg.view.svg.widget.Baloon.prototype.text = null;
+rg.view.svg.widget.Baloon.prototype.x = null;
+rg.view.svg.widget.Baloon.prototype.y = null;
+rg.view.svg.widget.Baloon.prototype.boxWidth = null;
+rg.view.svg.widget.Baloon.prototype.boxHeight = null;
+rg.view.svg.widget.Baloon.prototype.visible = null;
+rg.view.svg.widget.Baloon.prototype.textHeight = null;
+rg.view.svg.widget.Baloon.prototype.roundedCorner = null;
+rg.view.svg.widget.Baloon.prototype.padding = null;
+rg.view.svg.widget.Baloon.prototype.preferredSide = null;
+rg.view.svg.widget.Baloon.prototype.minwidth = null;
+rg.view.svg.widget.Baloon.prototype.container = null;
+rg.view.svg.widget.Baloon.prototype.baloon = null;
+rg.view.svg.widget.Baloon.prototype.frame = null;
+rg.view.svg.widget.Baloon.prototype.connector = null;
+rg.view.svg.widget.Baloon.prototype._duration = null;
+rg.view.svg.widget.Baloon.prototype._ease = null;
+rg.view.svg.widget.Baloon.prototype._strokeWidth = null;
+rg.view.svg.widget.Baloon.prototype._connectorShapeV = null;
+rg.view.svg.widget.Baloon.prototype._connectorShapeH = null;
+rg.view.svg.widget.Baloon.prototype.boundingBox = null;
+rg.view.svg.widget.Baloon.prototype.setPreferredSide = function(v) {
+	$s.push("rg.view.svg.widget.Baloon::setPreferredSide");
+	var $spos = $s.length;
+	this.preferredSide = Ints.clamp(v,0,3);
+	this.redraw();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.setText = function(v) {
+	$s.push("rg.view.svg.widget.Baloon::setText");
+	var $spos = $s.length;
+	this.text = v;
+	this.redraw();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.setTextHeight = function(v) {
+	$s.push("rg.view.svg.widget.Baloon::setTextHeight");
+	var $spos = $s.length;
+	this.textHeight = v;
+	this.redraw();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.setPadding = function(v) {
+	$s.push("rg.view.svg.widget.Baloon::setPadding");
+	var $spos = $s.length;
+	this.padding = v;
+	this.redraw();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.setRoundedCorner = function(v) {
+	$s.push("rg.view.svg.widget.Baloon::setRoundedCorner");
+	var $spos = $s.length;
+	this.roundedCorner = v;
+	this.redraw();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.setBoundingBox = function(v) {
+	$s.push("rg.view.svg.widget.Baloon::setBoundingBox");
+	var $spos = $s.length;
+	this.boundingBox = v;
+	this.redraw();
+	$s.pop();
+	return v;
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.getBoundingBox = function() {
+	$s.push("rg.view.svg.widget.Baloon::getBoundingBox");
+	var $spos = $s.length;
+	if(null == this.boundingBox) this.setBoundingBox(this.container.node().getBBox());
+	var $tmp = this.boundingBox;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype._transition_id = null;
+rg.view.svg.widget.Baloon.prototype.moveTo = function(x,y,animate) {
+	$s.push("rg.view.svg.widget.Baloon::moveTo");
+	var $spos = $s.length;
+	if(animate == null) animate = true;
+	if(animate) {
+		var $int = thx.math.Equations.elasticf(), tid = ++this._transition_id, ix = Floats.interpolatef(this.x,x,this._ease), iy = Floats.interpolatef(this.y,y,this._ease), duration = this._duration, mt = $closure(this,"_moveTo"), me = this;
+		thx.js.Timer.timer(function(t) {
+			$s.push("rg.view.svg.widget.Baloon::moveTo@153");
+			var $spos = $s.length;
+			if(tid != me._transition_id) {
+				$s.pop();
+				return true;
+			}
+			if(t > duration) {
+				mt(x,y);
+				$s.pop();
+				return true;
+			}
+			mt(ix(t / duration),iy(t / duration));
+			$s.pop();
+			return false;
+			$s.pop();
+		},0);
+	} else this._moveTo(x,y);
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype._moveTo = function(x,y) {
+	$s.push("rg.view.svg.widget.Baloon::_moveTo");
+	var $spos = $s.length;
+	var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
+	var tx = 0.0, ty = 0.0, side = this.preferredSide, found = 1;
+	while(found > 0 && found < 5) {
+		if(x >= right - limit) {
+			if(y <= top + limit) {
+				if(x - right < top - y) {
+					tx = -this.boxWidth + right - x;
+					ty = top - y + this.roundedCorner;
+					side = 0;
+					offset = this.boxWidth - 4 * this.roundedCorner;
+				} else {
+					tx = -this.boxWidth + right - x - this.roundedCorner;
+					ty = top - y;
+					side = 1;
+					offset = this.roundedCorner;
+				}
+				found = 0;
+				diagonal = 1;
+				break;
+			} else if(y >= bottom - limit) {
+				if(x - right < y - bottom) {
+					tx = -this.boxWidth + right - x;
+					ty = bottom - y - this.boxHeight - this.roundedCorner;
+					side = 2;
+					offset = this.boxWidth - 4 * this.roundedCorner;
+				} else {
+					tx = -this.boxWidth + right - x - this.roundedCorner;
+					ty = bottom - y - this.boxHeight;
+					side = 1;
+					offset = this.boxHeight - 3 * this.roundedCorner;
+				}
+				found = 0;
+				diagonal = 1;
+				break;
+			}
+		} else if(x <= left + limit) {
+			if(y <= top + limit) {
+				if(left - x < top - y) {
+					tx = left - x;
+					ty = top - y + this.roundedCorner;
+					side = 0;
+					offset = 0;
+				} else {
+					tx = left - x + this.roundedCorner;
+					ty = top - y;
+					side = 3;
+					offset = this.roundedCorner;
+				}
+				found = 0;
+				diagonal = 1;
+				break;
+			} else if(y >= bottom - limit) {
+				if(left - x < y - bottom) {
+					tx = left - x;
+					ty = bottom - y - this.boxHeight - this.roundedCorner;
+					side = 2;
+					offset = 0;
+				} else {
+					tx = left - x + this.roundedCorner;
+					ty = bottom - y - this.boxHeight;
+					side = 3;
+					offset = this.boxHeight - 3 * this.roundedCorner;
+				}
+				found = 0;
+				diagonal = 1;
+				break;
+			}
+		}
+		switch(side) {
+		case 0:
+			if(y + this.boxHeight + this.roundedCorner >= bottom) {
+				side = 2;
+				found++;
+				continue;
+			} else if(x <= left + limit) {
+				side = 3;
+				found++;
+				continue;
+			} else if(x >= right - limit) {
+				side = 1;
+				found++;
+				continue;
+			}
+			tx = -this.boxWidth / 2;
+			ty = this.roundedCorner;
+			offset = this.boxWidth / 2 - this.roundedCorner * 2;
+			if(x - this.boxWidth / 2 <= left) {
+				var d = left - x + this.boxWidth / 2;
+				offset = Math.max(0,offset - d);
+				tx += d;
+			} else if(x + this.boxWidth / 2 >= right) {
+				var d = right - x - this.boxWidth / 2;
+				offset = Math.min(this.boxWidth - this.roundedCorner * 3,offset - d);
+				tx += d;
+			}
+			if(y < top) {
+				diagonal = 1;
+				ty = top - y + this.roundedCorner;
+			}
+			break;
+		case 1:
+			if(x - this.boxWidth - this.roundedCorner <= left) {
+				side = 3;
+				found++;
+				continue;
+			} else if(y <= top + limit) {
+				side = 2;
+				found++;
+				continue;
+			} else if(y >= bottom - limit) {
+				side = 0;
+				found++;
+				continue;
+			}
+			tx = -this.boxWidth - this.roundedCorner;
+			ty = -this.boxHeight / 2;
+			offset = (this.boxHeight - this.roundedCorner * 2) / 2;
+			if(y - this.boxHeight / 2 <= top) {
+				var d = top - y + this.boxHeight / 2;
+				offset = Math.max(0,offset - d);
+				ty += d;
+			} else if(y + this.boxHeight / 2 >= bottom) {
+				var d = bottom - y - this.boxHeight / 2;
+				offset = Math.min(this.boxHeight - this.roundedCorner * 3,offset - d);
+				ty += d;
+			}
+			if(x > right) {
+				diagonal = 2;
+				tx = right - x - this.boxWidth - this.roundedCorner;
+			}
+			break;
+		case 2:
+			if(y - this.boxHeight - this.roundedCorner <= top) {
+				side = 0;
+				found++;
+				continue;
+			} else if(x <= left + limit) {
+				side = 3;
+				found++;
+				continue;
+			} else if(x >= right - limit) {
+				side = 1;
+				found++;
+				continue;
+			}
+			tx = -this.boxWidth / 2;
+			ty = -this.boxHeight - this.roundedCorner;
+			offset = this.boxWidth / 2 - this.roundedCorner * 2;
+			if(x - this.boxWidth / 2 <= left) {
+				var d = left - x + this.boxWidth / 2;
+				offset = Math.max(this.roundedCorner,offset - d);
+				tx += d;
+			} else if(x + this.boxWidth / 2 >= right) {
+				var d = right - x - this.boxWidth / 2;
+				offset = Math.min(this.boxWidth - this.roundedCorner * 3,offset - d);
+				tx += d;
+			}
+			if(y > bottom) {
+				diagonal = 1;
+				ty = bottom - y - this.boxHeight - this.roundedCorner;
+			}
+			break;
+		case 3:
+			if(x + this.boxWidth + this.roundedCorner >= right) {
+				side = 1;
+				found++;
+				continue;
+			} else if(y <= top + limit) {
+				side = 2;
+				found++;
+				continue;
+			} else if(y >= bottom - limit) {
+				side = 0;
+				found++;
+				continue;
+			}
+			tx = this.roundedCorner;
+			ty = -this.boxHeight / 2;
+			offset = (this.boxHeight - this.roundedCorner * 2) / 2;
+			if(y - this.boxHeight / 2 <= top) {
+				var d = top - y + this.boxHeight / 2;
+				offset = Math.max(this.roundedCorner,offset - d);
+				ty += d;
+			} else if(y + this.boxHeight / 2 >= bottom) {
+				var d = bottom - y - this.boxHeight / 2;
+				offset = Math.min(this.boxHeight - this.roundedCorner * 3,offset - d);
+				ty += d;
+			}
+			if(x < left) {
+				diagonal = 2;
+				tx = left - x + this.roundedCorner;
+			}
+			break;
+		}
+		found = 0;
+	}
+	var o = null;
+	if(0 == diagonal) this.connector.style("display").string("none"); else {
+		this.connector.style("display").string("block");
+		o = { x0 : 0.0, y0 : 0.0, x1 : 0.0, y1 : 0.0};
+		switch(side) {
+		case 0:
+			o.x1 = tx + 0.5 + offset + 2 * this.roundedCorner;
+			o.y1 = ty + 0.5 - this.roundedCorner;
+			break;
+		case 1:
+			o.y1 = tx + 0.5 + this.boxWidth + this.roundedCorner;
+			o.x1 = ty + 0.5 + offset + this.roundedCorner;
+			break;
+		case 2:
+			o.x1 = tx + 0.5 + offset + 2 * this.roundedCorner;
+			o.y1 = ty + 0.5 + this.boxHeight + this.roundedCorner;
+			break;
+		case 3:
+			o.y1 = tx + 0.5 + -this.roundedCorner;
+			o.x1 = ty + 0.5 + offset + this.roundedCorner;
+			break;
+		}
+	}
+	this.baloon.attr("transform").string("translate(" + (this.x = x) + ", " + (this.y = y) + ")");
+	this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.view.svg.widget.BaloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
+	if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this._connectorShapeV.diagonal(o):this._connectorShapeH.diagonal(o));
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.show = function() {
+	$s.push("rg.view.svg.widget.Baloon::show");
+	var $spos = $s.length;
+	if(!this.visible) {
+		$s.pop();
+		return;
+	}
+	this.visible = true;
+	this.baloon.style("display").string("block");
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.hide = function() {
+	$s.push("rg.view.svg.widget.Baloon::hide");
+	var $spos = $s.length;
+	if(this.visible) {
+		$s.pop();
+		return;
+	}
+	this.visible = false;
+	this.baloon.style("display").string("none");
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.redraw = function() {
+	$s.push("rg.view.svg.widget.Baloon::redraw");
+	var $spos = $s.length;
+	if(null == this.text || this.text.length == 0) {
+		$s.pop();
+		return;
+	}
+	var key = function(d,i) {
+		$s.push("rg.view.svg.widget.Baloon::redraw@465");
+		var $spos = $s.length;
+		var $tmp = d + ":" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	var choice = this.frame.selectAll("text").data(this.text,key), th = this.textHeight, linewidth = this.minwidth, pad = this.padding;
+	var calculateLineWidth = function(n,i) {
+		$s.push("rg.view.svg.widget.Baloon::redraw@477");
+		var $spos = $s.length;
+		var v = n.getBBox().width;
+		if(v > linewidth) linewidth = v;
+		$s.pop();
+	};
+	choice.enter().append("svg:text").style("font-size").string(th + "px").style("font-weight").string("bold").style("fill").string("#000").text().stringf(function(d,i) {
+		$s.push("rg.view.svg.widget.Baloon::redraw@489");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}).eachNode(calculateLineWidth).attr("x")["float"](pad).attr("y").floatf(function(_,i) {
+		$s.push("rg.view.svg.widget.Baloon::redraw@492");
+		var $spos = $s.length;
+		var $tmp = Math.round((0.6 + i) * 1.2 * th + pad);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).attr("opacity")["float"](0).transition().duration(null,this._duration).ease(this._ease).delay(null,this._duration / 3).attr("opacity")["float"](1);
+	choice.update().text().stringf(function(d,i) {
+		$s.push("rg.view.svg.widget.Baloon::redraw@501");
+		var $spos = $s.length;
+		$s.pop();
+		return d;
+		$s.pop();
+	}).eachNode(calculateLineWidth).transition().duration(null,this._duration).ease(this._ease).attr("opacity")["float"](1).attr("x")["float"](pad).attr("y").floatf(function(_,i) {
+		$s.push("rg.view.svg.widget.Baloon::redraw@507");
+		var $spos = $s.length;
+		var $tmp = Math.round((0.6 + i) * 1.2 * th + pad);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).style("font-size").string(th + "px").style("font-weight").string("bold");
+	choice.exit().transition().ease(this._ease).duration(null,this._duration / 3).attr("opacity")["float"](0).remove();
+	this.boxWidth = linewidth + this.padding * 2;
+	this.boxHeight = th * this.text.length + this.padding * 2;
+	this.frame.selectAll(".bg").transition().ease(this._ease).delay(null,this._duration);
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.__class__ = rg.view.svg.widget.Baloon;
 rg.view.layout.PanelContext = function(panel,anchor) {
 	if( panel === $_ ) return;
 	$s.push("rg.view.layout.PanelContext::new");
@@ -13653,6 +14656,67 @@ rg.controller.info.InfoVisualizationType.filters = function() {
 }
 rg.controller.info.InfoVisualizationType.prototype.type = null;
 rg.controller.info.InfoVisualizationType.prototype.__class__ = rg.controller.info.InfoVisualizationType;
+thx.svg.LineInterpolators = function() { }
+thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
+thx.svg.LineInterpolators.parse = function(s,sep) {
+	$s.push("thx.svg.LineInterpolators::parse");
+	var $spos = $s.length;
+	if(sep == null) sep = "-";
+	var interp = s.split(sep)[0].toLowerCase();
+	var $tmp = (function($this) {
+		var $r;
+		switch(interp) {
+		case "basis":
+			$r = thx.svg.LineInterpolator.Basis;
+			break;
+		case "basisopen":
+			$r = thx.svg.LineInterpolator.BasisOpen;
+			break;
+		case "basisclosed":
+			$r = thx.svg.LineInterpolator.BasisClosed;
+			break;
+		case "cardinal":
+			$r = thx.svg.LineInterpolator.Cardinal(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "cardinalopen":
+			$r = thx.svg.LineInterpolator.CardinalOpen(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "cardinalclosed":
+			$r = thx.svg.LineInterpolator.CardinalClosed(thx.svg.LineInterpolators.argument(s));
+			break;
+		case "monotone":
+			$r = thx.svg.LineInterpolator.Monotone;
+			break;
+		case "stepafter":
+			$r = thx.svg.LineInterpolator.StepAfter;
+			break;
+		case "stepbefore":
+			$r = thx.svg.LineInterpolator.StepBefore;
+			break;
+		default:
+			$r = thx.svg.LineInterpolator.Linear;
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.LineInterpolators.argument = function(s) {
+	$s.push("thx.svg.LineInterpolators::argument");
+	var $spos = $s.length;
+	var v = s.split("-")[1];
+	if(null == v) {
+		$s.pop();
+		return null;
+	} else {
+		var $tmp = Std.parseFloat(v);
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+thx.svg.LineInterpolators.prototype.__class__ = thx.svg.LineInterpolators;
 rg.data.source.rgquery.transform.TransformCount = function(properties,event,unit) {
 	if( properties === $_ ) return;
 	$s.push("rg.data.source.rgquery.transform.TransformCount::new");
@@ -15416,10 +16480,10 @@ rg.JSBridge.main = function() {
 	$s.push("rg.JSBridge::main");
 	var $spos = $s.length;
 	var o = window.ReportGrid;
-	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 19, className : "rg.JSBridge", methodName : "main"});
+	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 20, className : "rg.JSBridge", methodName : "main"});
 	var app = new rg.controller.App(o);
 	o.viz = function(el,options,type) {
-		$s.push("rg.JSBridge::main@25");
+		$s.push("rg.JSBridge::main@26");
 		var $spos = $s.length;
 		var $tmp = app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
 		$s.pop();
@@ -15427,7 +16491,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.lineChart = function(el,options) {
-		$s.push("rg.JSBridge::main@29");
+		$s.push("rg.JSBridge::main@30");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"linechart");
 		$s.pop();
@@ -15435,7 +16499,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.pieChart = function(el,options) {
-		$s.push("rg.JSBridge::main@30");
+		$s.push("rg.JSBridge::main@31");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"piechart");
 		$s.pop();
@@ -15443,7 +16507,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.pivotTable = function(el,options) {
-		$s.push("rg.JSBridge::main@31");
+		$s.push("rg.JSBridge::main@32");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"pivottable");
 		$s.pop();
@@ -15451,7 +16515,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.leaderBoard = function(el,options) {
-		$s.push("rg.JSBridge::main@32");
+		$s.push("rg.JSBridge::main@33");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"leaderboard");
 		$s.pop();
@@ -15461,13 +16525,14 @@ rg.JSBridge.main = function() {
 	o.format = Dynamics.format;
 	o.compare = Dynamics.compare;
 	o.dump = Dynamics.string;
+	o.symbol = thx.svg.Symbol;
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 45, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 47, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();
@@ -15911,8 +16976,8 @@ rg.view.svg.widget.PieChart.prototype.arcStart = null;
 rg.view.svg.widget.PieChart.prototype.arcBig = null;
 rg.view.svg.widget.PieChart.prototype.pie = null;
 rg.view.svg.widget.PieChart.prototype.radius = null;
-rg.view.svg.widget.PieChart.prototype.propertyValue = null;
 rg.view.svg.widget.PieChart.prototype.stats = null;
+rg.view.svg.widget.PieChart.prototype.variableDependent = null;
 rg.view.svg.widget.PieChart.prototype.animated = null;
 rg.view.svg.widget.PieChart.prototype.animationDuration = null;
 rg.view.svg.widget.PieChart.prototype.animationEase = null;
@@ -15926,7 +16991,7 @@ rg.view.svg.widget.PieChart.prototype.mouseClick = null;
 rg.view.svg.widget.PieChart.prototype.labelFormatDataPoint = function(dp,stats) {
 	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPoint");
 	var $spos = $s.length;
-	var $tmp = thx.culture.FormatNumber.percent(100 * Reflect.field(dp,this.propertyValue) / stats.tot,1);
+	var $tmp = thx.culture.FormatNumber.percent(100 * Reflect.field(dp,this.variableDependent.type) / stats.tot,1);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -15934,9 +16999,15 @@ rg.view.svg.widget.PieChart.prototype.labelFormatDataPoint = function(dp,stats) 
 rg.view.svg.widget.PieChart.prototype.labelFormatDataPointOver = function(dp,stats) {
 	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPointOver");
 	var $spos = $s.length;
-	var $tmp = Ints.format(Reflect.field(dp,this.propertyValue));
+	var $tmp = Ints.format(Reflect.field(dp,this.variableDependent.type));
 	$s.pop();
 	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.PieChart.prototype.setVariables = function(variableIndependents,variableDependents) {
+	$s.push("rg.view.svg.widget.PieChart::setVariables");
+	var $spos = $s.length;
+	this.variableDependent = variableDependents[0];
 	$s.pop();
 }
 rg.view.svg.widget.PieChart.prototype.init = function() {
@@ -15958,20 +17029,20 @@ rg.view.svg.widget.PieChart.prototype.resize = function() {
 rg.view.svg.widget.PieChart.prototype.data = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::data");
 	var $spos = $s.length;
-	var pv = this.propertyValue;
+	var pv = this.variableDependent.type;
 	dp = Arrays.filter(dp,function(dp1) {
-		$s.push("rg.view.svg.widget.PieChart::data@143");
+		$s.push("rg.view.svg.widget.PieChart::data@151");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(dp1,pv) > 0;
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	});
-	this.stats = rg.util.DataPoints.stats(dp,this.propertyValue);
+	this.stats = rg.util.DataPoints.stats(dp,this.variableDependent.type);
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@154");
+		$s.push("rg.view.svg.widget.PieChart::data@162");
 		var $spos = $s.length;
 		var $tmp = "group item-" + i;
 		$s.pop();
@@ -16088,7 +17159,7 @@ rg.view.svg.widget.PieChart.prototype.makeid = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::makeid");
 	var $spos = $s.length;
 	var o = Objects.clone(dp);
-	Reflect.deleteField(o,this.propertyValue);
+	Reflect.deleteField(o,this.variableDependent.type);
 	var $tmp = haxe.Md5.encode(Dynamics.string(o));
 	$s.pop();
 	return $tmp;
@@ -16098,7 +17169,7 @@ rg.view.svg.widget.PieChart.prototype.arcShape = function(a) {
 	$s.push("rg.view.svg.widget.PieChart::arcShape");
 	var $spos = $s.length;
 	var $tmp = function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::arcShape@331");
+		$s.push("rg.view.svg.widget.PieChart::arcShape@339");
 		var $spos = $s.length;
 		var $tmp = a.shape(d);
 		$s.pop();
@@ -16112,8 +17183,8 @@ rg.view.svg.widget.PieChart.prototype.arcShape = function(a) {
 rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
 	$s.push("rg.view.svg.widget.PieChart::pief");
 	var $spos = $s.length;
-	var name = this.propertyValue, temp = dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@340");
+	var name = this.variableDependent.type, temp = dp.map(function(d,i) {
+		$s.push("rg.view.svg.widget.PieChart::pief@348");
 		var $spos = $s.length;
 		var $tmp = Reflect.field(d,name);
 		$s.pop();
@@ -16185,6 +17256,108 @@ haxe.Log.clear = function() {
 	$s.pop();
 }
 haxe.Log.prototype.__class__ = haxe.Log;
+thx.svg.Symbol = function() { }
+thx.svg.Symbol.__name__ = ["thx","svg","Symbol"];
+thx.svg.Symbol.triangleDown = function(size) {
+	$s.push("thx.svg.Symbol::triangleDown");
+	var $spos = $s.length;
+	var rx = Math.sqrt(size / thx.svg.Symbol.sqrt3), ry = rx * thx.svg.Symbol.sqrt3 / 2;
+	var $tmp = "M0," + ry + "L" + rx + "," + -ry + " " + -rx + "," + -ry + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.triangleUp = function(size) {
+	$s.push("thx.svg.Symbol::triangleUp");
+	var $spos = $s.length;
+	var rx = Math.sqrt(size / thx.svg.Symbol.sqrt3), ry = rx * thx.svg.Symbol.sqrt3 / 2;
+	var $tmp = "M0," + -ry + "L" + rx + "," + ry + " " + -rx + "," + ry + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.square = function(size) {
+	$s.push("thx.svg.Symbol::square");
+	var $spos = $s.length;
+	var r = Math.sqrt(size) / 2;
+	var $tmp = "M" + -r + "," + -r + "L" + r + "," + -r + " " + r + "," + r + " " + -r + "," + r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.diamond = function(size) {
+	$s.push("thx.svg.Symbol::diamond");
+	var $spos = $s.length;
+	var ry = Math.sqrt(size / (2 * thx.svg.Symbol.tan30)), rx = ry * thx.svg.Symbol.tan30;
+	var $tmp = "M0," + -ry + "L" + rx + ",0" + " 0," + ry + " " + -rx + ",0" + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.cross = function(size) {
+	$s.push("thx.svg.Symbol::cross");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / 5) / 2;
+	var $tmp = "M" + -3 * r + "," + -r + "H" + -r + "V" + -3 * r + "H" + r + "V" + -r + "H" + 3 * r + "V" + r + "H" + r + "V" + 3 * r + "H" + -r + "V" + r + "H" + -3 * r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.circle = function(size) {
+	$s.push("thx.svg.Symbol::circle");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / Math.PI);
+	var $tmp = "M0," + r + "A" + r + "," + r + " 0 1,1 0," + -r + "A" + r + "," + r + " 0 1,1 0," + r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.arrowUp = function(size) {
+	$s.push("thx.svg.Symbol::arrowUp");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / 2);
+	var $tmp = "M" + -r + ",0" + "h" + r / 2 + "v" + r + "h" + r + "v" + -r + "h" + r / 2 + "l" + -r + "," + -r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.arrowDown = function(size) {
+	$s.push("thx.svg.Symbol::arrowDown");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / 2);
+	var $tmp = "M" + -r + ",0" + "h" + r / 2 + "v" + -r + "h" + r + "v" + r + "h" + r / 2 + "l" + -r + "," + r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.arrowDownWide = function(size) {
+	$s.push("thx.svg.Symbol::arrowDownWide");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / 2.5);
+	var $tmp = "M" + -r + ",0" + "h" + r / 4 + "v" + -r + "h" + r * 1.5 + "v" + r + "h" + r / 4 + "l" + -r + "," + r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.arrowRight = function(size) {
+	$s.push("thx.svg.Symbol::arrowRight");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / 2);
+	var $tmp = "M" + "0," + -r + "v" + r / 2 + "h" + -r + "v" + r + "h" + r + "v" + r / 2 + "l" + r + "," + -r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.arrowLeft = function(size) {
+	$s.push("thx.svg.Symbol::arrowLeft");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / 2);
+	var $tmp = "M" + "0," + -r + "v" + r / 2 + "h" + r + "v" + r + "h" + -r + "v" + r / 2 + "l" + -r + "," + -r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.prototype.__class__ = thx.svg.Symbol;
 rg.controller.factory.FactorySvgVisualization = function(p) {
 	$s.push("rg.controller.factory.FactorySvgVisualization::new");
 	var $spos = $s.length;
@@ -16245,7 +17418,7 @@ thx.js.BaseTransition = function(selection) {
 	this._ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
 	this._step = $closure(this,"step");
 	selection.eachNode(function(n,_) {
-		$s.push("thx.js.BaseTransition::new@54");
+		$s.push("thx.js.BaseTransition::new@55");
 		var $spos = $s.length;
 		if(Reflect.hasField(n,"__transition__")) Reflect.field(n,"__transition__").owner = tid; else n["__transition__"] = { owner : tid};
 		$s.pop();
@@ -16273,7 +17446,7 @@ thx.js.BaseTransition.prototype.step = function(elapsed) {
 	var $spos = $s.length;
 	var clear = true, k = -1, me = this;
 	this.selection.eachNode(function(n,i) {
-		$s.push("thx.js.BaseTransition::step@67");
+		$s.push("thx.js.BaseTransition::step@68");
 		var $spos = $s.length;
 		if(2 == me._stage[++k]) {
 			$s.pop();
@@ -16358,7 +17531,7 @@ thx.js.BaseTransition.prototype.stop = function() {
 	var $spos = $s.length;
 	var k = -1, me = this;
 	this.selection.eachNode(function(n,i) {
-		$s.push("thx.js.BaseTransition::stop@156");
+		$s.push("thx.js.BaseTransition::stop@157");
 		var $spos = $s.length;
 		me._stage[++k] = 2;
 		Reflect.deleteField(n,"__transition__");
@@ -16375,7 +17548,7 @@ thx.js.BaseTransition.prototype.delay = function(f,v) {
 	if(v == null) v = 0.0;
 	var delayMin = Math.POSITIVE_INFINITY, k = -1, me = this;
 	if(null != f) this.selection.eachNode(function(n,i) {
-		$s.push("thx.js.BaseTransition::delay@170");
+		$s.push("thx.js.BaseTransition::delay@171");
 		var $spos = $s.length;
 		var x = me._delay[++k] = f(n,i);
 		if(x < delayMin) delayMin = x;
@@ -16383,7 +17556,7 @@ thx.js.BaseTransition.prototype.delay = function(f,v) {
 	}); else {
 		delayMin = v;
 		this.selection.eachNode(function(n,i) {
-			$s.push("thx.js.BaseTransition::delay@177");
+			$s.push("thx.js.BaseTransition::delay@178");
 			var $spos = $s.length;
 			me._delay[++k] = delayMin;
 			$s.pop();
@@ -16403,7 +17576,7 @@ thx.js.BaseTransition.prototype.duration = function(f,v) {
 	if(null != f) {
 		this._durationMax = 0;
 		this.selection.eachNode(function(n,i) {
-			$s.push("thx.js.BaseTransition::duration@192");
+			$s.push("thx.js.BaseTransition::duration@193");
 			var $spos = $s.length;
 			var x = me._duration[++k] = f(n,i);
 			if(x > me._durationMax) me._durationMax = x;
@@ -16412,7 +17585,7 @@ thx.js.BaseTransition.prototype.duration = function(f,v) {
 	} else {
 		this._durationMax = v;
 		this.selection.eachNode(function(n,i) {
-			$s.push("thx.js.BaseTransition::duration@199");
+			$s.push("thx.js.BaseTransition::duration@200");
 			var $spos = $s.length;
 			me._duration[++k] = me._durationMax;
 			$s.pop();
@@ -16451,7 +17624,7 @@ thx.js.BaseTransition.prototype.select = function(selector) {
 	var duration = this._duration;
 	k = -1;
 	t.delay(function(d,i) {
-		$s.push("thx.js.BaseTransition::select@224");
+		$s.push("thx.js.BaseTransition::select@225");
 		var $spos = $s.length;
 		var $tmp = delay[++k];
 		$s.pop();
@@ -16460,7 +17633,7 @@ thx.js.BaseTransition.prototype.select = function(selector) {
 	});
 	k = -1;
 	t.delay(function(d,i) {
-		$s.push("thx.js.BaseTransition::select@225");
+		$s.push("thx.js.BaseTransition::select@226");
 		var $spos = $s.length;
 		var $tmp = duration[++k];
 		$s.pop();
@@ -16480,7 +17653,7 @@ thx.js.BaseTransition.prototype.selectAll = function(selector) {
 	var duration = this._duration;
 	k = -1;
 	t.delay(function(d,i) {
-		$s.push("thx.js.BaseTransition::selectAll@235");
+		$s.push("thx.js.BaseTransition::selectAll@236");
 		var $spos = $s.length;
 		var $tmp = delay[i > 0?k:++k];
 		$s.pop();
@@ -16489,7 +17662,7 @@ thx.js.BaseTransition.prototype.selectAll = function(selector) {
 	});
 	k = -1;
 	t.delay(function(d,i) {
-		$s.push("thx.js.BaseTransition::selectAll@236");
+		$s.push("thx.js.BaseTransition::selectAll@237");
 		var $spos = $s.length;
 		var $tmp = duration[i > 0?k:++k];
 		$s.pop();
@@ -16505,7 +17678,7 @@ thx.js.BaseTransition.prototype.createTransition = function(selection) {
 	var $spos = $s.length;
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 242, className : "thx.js.BaseTransition", methodName : "createTransition"});
+		throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 243, className : "thx.js.BaseTransition", methodName : "createTransition"});
 		return $r;
 	}(this));
 	$s.pop();
@@ -16531,6 +17704,14 @@ thx.js.UnboundTransition = function(selection) {
 thx.js.UnboundTransition.__name__ = ["thx","js","UnboundTransition"];
 thx.js.UnboundTransition.__super__ = thx.js.BaseTransition;
 for(var k in thx.js.BaseTransition.prototype ) thx.js.UnboundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
+thx.js.UnboundTransition.prototype.text = function() {
+	$s.push("thx.js.UnboundTransition::text");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessTweenText(this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 thx.js.UnboundTransition.prototype.style = function(name) {
 	$s.push("thx.js.UnboundTransition::style");
 	var $spos = $s.length;
@@ -16566,6 +17747,14 @@ thx.js.BoundTransition = function(selection) {
 thx.js.BoundTransition.__name__ = ["thx","js","BoundTransition"];
 thx.js.BoundTransition.__super__ = thx.js.BaseTransition;
 for(var k in thx.js.BaseTransition.prototype ) thx.js.BoundTransition.prototype[k] = thx.js.BaseTransition.prototype[k];
+thx.js.BoundTransition.prototype.text = function() {
+	$s.push("thx.js.BoundTransition::text");
+	var $spos = $s.length;
+	var $tmp = new thx.js.AccessDataTweenText(this,this._tweens);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 thx.js.BoundTransition.prototype.style = function(name) {
 	$s.push("thx.js.BoundTransition::style");
 	var $spos = $s.length;
@@ -16586,7 +17775,7 @@ thx.js.BoundTransition.prototype.start = function(f) {
 	$s.push("thx.js.BoundTransition::start");
 	var $spos = $s.length;
 	var $tmp = this.startNode(function(n,i) {
-		$s.push("thx.js.BoundTransition::start@271");
+		$s.push("thx.js.BoundTransition::start@274");
 		var $spos = $s.length;
 		f(Reflect.field(n,"__data__"),i);
 		$s.pop();
@@ -16599,7 +17788,7 @@ thx.js.BoundTransition.prototype.end = function(f) {
 	$s.push("thx.js.BoundTransition::end");
 	var $spos = $s.length;
 	var $tmp = this.endNode(function(n,i) {
-		$s.push("thx.js.BoundTransition::end@276");
+		$s.push("thx.js.BoundTransition::end@279");
 		var $spos = $s.length;
 		f(Reflect.field(n,"__data__"),i);
 		$s.pop();
@@ -17413,116 +18602,6 @@ rg.controller.App.prototype.getLayout = function(id,options,container) {
 	$s.pop();
 }
 rg.controller.App.prototype.__class__ = rg.controller.App;
-thx.js.AccessTween = function(transition,tweens) {
-	if( transition === $_ ) return;
-	$s.push("thx.js.AccessTween::new");
-	var $spos = $s.length;
-	this.transition = transition;
-	this.tweens = tweens;
-	$s.pop();
-}
-thx.js.AccessTween.__name__ = ["thx","js","AccessTween"];
-thx.js.AccessTween.prototype.transition = null;
-thx.js.AccessTween.prototype.tweens = null;
-thx.js.AccessTween.prototype.transitionColorTween = function(value) {
-	$s.push("thx.js.AccessTween::transitionColorTween");
-	var $spos = $s.length;
-	var $tmp = function(d,i,a) {
-		$s.push("thx.js.AccessTween::transitionColorTween@22");
-		var $spos = $s.length;
-		var $tmp = thx.color.Rgb.interpolatef(a,value);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.js.AccessTween.prototype.transitionColorTweenf = function(f) {
-	$s.push("thx.js.AccessTween::transitionColorTweenf");
-	var $spos = $s.length;
-	var $tmp = function(d,i,a) {
-		$s.push("thx.js.AccessTween::transitionColorTweenf@27");
-		var $spos = $s.length;
-		var $tmp = thx.color.Rgb.interpolatef(a,f(d,i));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.js.AccessTween.prototype.transitionStringTween = function(value) {
-	$s.push("thx.js.AccessTween::transitionStringTween");
-	var $spos = $s.length;
-	var $tmp = function(d,i,a) {
-		$s.push("thx.js.AccessTween::transitionStringTween@32");
-		var $spos = $s.length;
-		var $tmp = Strings.interpolatef(a,value);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.js.AccessTween.prototype.transitionStringTweenf = function(f) {
-	$s.push("thx.js.AccessTween::transitionStringTweenf");
-	var $spos = $s.length;
-	var $tmp = function(d,i,a) {
-		$s.push("thx.js.AccessTween::transitionStringTweenf@37");
-		var $spos = $s.length;
-		var $tmp = Strings.interpolatef(a,f(d,i));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.js.AccessTween.prototype.transitionFloatTween = function(value) {
-	$s.push("thx.js.AccessTween::transitionFloatTween");
-	var $spos = $s.length;
-	var $tmp = function(d,i,a) {
-		$s.push("thx.js.AccessTween::transitionFloatTween@42");
-		var $spos = $s.length;
-		var $tmp = Floats.interpolatef(a,value);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.js.AccessTween.prototype.transitionFloatTweenf = function(f) {
-	$s.push("thx.js.AccessTween::transitionFloatTweenf");
-	var $spos = $s.length;
-	var $tmp = function(d,i,a) {
-		$s.push("thx.js.AccessTween::transitionFloatTweenf@47");
-		var $spos = $s.length;
-		var $tmp = Floats.interpolatef(a,f(d,i));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.js.AccessTween.prototype._that = function() {
-	$s.push("thx.js.AccessTween::_that");
-	var $spos = $s.length;
-	var $tmp = this.transition;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.js.AccessTween.prototype.__class__ = thx.js.AccessTween;
 thx.js.AccessTweenStyle = function(name,transition,tweens) {
 	if( name === $_ ) return;
 	$s.push("thx.js.AccessTweenStyle::new");
@@ -19760,10 +20839,6 @@ rg.controller.visualization.VisualizationPivotTable.prototype.init = function() 
 	this.chart.displayRowTotal = this.info.displayRowTotal;
 	this.chart.colorStart = this.info.heatmapColorStart;
 	this.chart.colorEnd = this.info.heatmapColorEnd;
-	var incolumns = Ints.min(this.info.columnAxes,this.independentVariables.length);
-	this.chart.columnVariables = this.independentVariables.slice(0,incolumns);
-	this.chart.rowVariables = this.independentVariables.slice(incolumns);
-	this.chart.cellVariable = this.dependentVariables[0];
 	if(null != this.info.click) this.chart.click = this.info.click;
 	if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
 	if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
@@ -19771,12 +20846,14 @@ rg.controller.visualization.VisualizationPivotTable.prototype.init = function() 
 	if(null != this.info.label.axisvalue) this.chart.labelAxisValue = this.info.label.axisvalue;
 	if(null != this.info.label.total) this.chart.labelTotal = this.info.label.total;
 	if(null != this.info.label.totalover) this.chart.labelTotalOver = this.info.label.totalover;
+	this.chart.incolumns = Ints.min(this.info.columnAxes,this.independentVariables.length);
 	this.chart.init();
 	$s.pop();
 }
 rg.controller.visualization.VisualizationPivotTable.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.VisualizationPivotTable::feedData");
 	var $spos = $s.length;
+	this.chart.setVariables(this.independentVariables,this.dependentVariables);
 	this.chart.data(data);
 	$s.pop();
 }
@@ -20316,79 +21393,361 @@ rg.view.svg.widget.LineChart = function(panel) {
 	var $spos = $s.length;
 	rg.view.svg.panel.Layer.call(this,panel);
 	this.addClass("line-chart");
+	this.chart = this.g.append("svg:g");
 	this.animated = true;
 	this.animationDuration = 1500;
 	this.animationEase = thx.math.Equations.linear;
+	this.lineEffect = rg.view.svg.widget.LineEffect.Gradient(1.5,2);
 	$s.pop();
 }
 rg.view.svg.widget.LineChart.__name__ = ["rg","view","svg","widget","LineChart"];
 rg.view.svg.widget.LineChart.__super__ = rg.view.svg.panel.Layer;
 for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.LineChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.widget.LineChart.coordsFromTransform = function(s) {
+	$s.push("rg.view.svg.widget.LineChart::coordsFromTransform");
+	var $spos = $s.length;
+	if(!rg.view.svg.widget.LineChart.retransform.match(s)) {
+		var $tmp = [0.0,0];
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = [Std.parseFloat(rg.view.svg.widget.LineChart.retransform.matched(1)),Std.parseFloat(rg.view.svg.widget.LineChart.retransform.matched(2))];
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
 rg.view.svg.widget.LineChart.prototype.variableDependents = null;
 rg.view.svg.widget.LineChart.prototype.variableIndependent = null;
 rg.view.svg.widget.LineChart.prototype.animated = null;
 rg.view.svg.widget.LineChart.prototype.animationDuration = null;
 rg.view.svg.widget.LineChart.prototype.animationEase = null;
+rg.view.svg.widget.LineChart.prototype.symbol = null;
+rg.view.svg.widget.LineChart.prototype.symbolStyle = null;
 rg.view.svg.widget.LineChart.prototype.segmenton = null;
+rg.view.svg.widget.LineChart.prototype.click = null;
+rg.view.svg.widget.LineChart.prototype.labelDataPoint = null;
+rg.view.svg.widget.LineChart.prototype.labelDataPointOver = null;
+rg.view.svg.widget.LineChart.prototype.lineInterpolator = null;
+rg.view.svg.widget.LineChart.prototype.lineEffect = null;
 rg.view.svg.widget.LineChart.prototype.linePath = null;
+rg.view.svg.widget.LineChart.prototype.chart = null;
+rg.view.svg.widget.LineChart.prototype.setVariables = function(variableIndependents,variableDependents) {
+	$s.push("rg.view.svg.widget.LineChart::setVariables");
+	var $spos = $s.length;
+	this.variableIndependent = variableIndependents[0];
+	this.variableDependents = variableDependents;
+	this.linePath = [];
+	var _g1 = 0, _g = variableDependents.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.linePath[i] = new thx.svg.Line($closure(this,"x"),(function(f,a1) {
+			$s.push("rg.view.svg.widget.LineChart::setVariables@86");
+			var $spos = $s.length;
+			var $tmp = function(a2,a3) {
+				$s.push("rg.view.svg.widget.LineChart::setVariables@86@86");
+				var $spos = $s.length;
+				var $tmp = f(a1,a2,a3);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})($closure(this,"y"),variableDependents[i]));
+		if(null != this.lineInterpolator) this.linePath[i].interpolator(this.lineInterpolator);
+	}
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.x = function(d,i) {
+	$s.push("rg.view.svg.widget.LineChart::x");
+	var $spos = $s.length;
+	var value = Reflect.field(d,this.variableIndependent.type), scaled = this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,value), scaledw = scaled * this.width;
+	$s.pop();
+	return scaledw;
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.y = function(v,d,i) {
+	$s.push("rg.view.svg.widget.LineChart::y");
+	var $spos = $s.length;
+	var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * this.height;
+	var $tmp = this.height - scaledh;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.view.svg.widget.LineChart.prototype.init = function() {
 	$s.push("rg.view.svg.widget.LineChart::init");
 	var $spos = $s.length;
-	var xname = this.variableIndependent.type, xaxis = this.variableIndependent.axis, xmin = this.variableIndependent.min, xmax = this.variableIndependent.max, yname = this.variableDependents[0].type, yaxis = this.variableDependents[0].axis, ymin = this.variableDependents[0].min, ymax = this.variableDependents[0].max, w = this.width, h = this.height;
-	haxe.Log.trace(this.variableDependents,{ fileName : "LineChart.hx", lineNumber : 57, className : "rg.view.svg.widget.LineChart", methodName : "init"});
-	haxe.Log.trace(Type["typeof"](this.variableDependents[0].axis),{ fileName : "LineChart.hx", lineNumber : 58, className : "rg.view.svg.widget.LineChart", methodName : "init"});
-	this.linePath = new thx.svg.Line(function(d,i) {
-		$s.push("rg.view.svg.widget.LineChart::init@61");
-		var $spos = $s.length;
-		var value = Reflect.field(d,xname), scaled = xaxis.scale(xmin,xmax,value), scaledw = scaled * w;
-		haxe.Log.trace("W: value " + value + ", scaled " + scaled + ", scaled width " + scaledw + ", width " + w,{ fileName : "LineChart.hx", lineNumber : 65, className : "rg.view.svg.widget.LineChart", methodName : "init"});
-		$s.pop();
-		return scaledw;
-		$s.pop();
-	},function(d,i) {
-		$s.push("rg.view.svg.widget.LineChart::init@68");
-		var $spos = $s.length;
-		var value = Reflect.field(d,yname), scaled = yaxis.scale(ymin,ymax,value), scaledh = scaled * h;
-		haxe.Log.trace("H: value " + value + ", scaled " + scaled + ", scaled height " + scaledh + ", height " + h,{ fileName : "LineChart.hx", lineNumber : 72, className : "rg.view.svg.widget.LineChart", methodName : "init"});
-		var $tmp = h - scaledh;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
+	if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Baloon(this.g);
 	$s.pop();
 }
+rg.view.svg.widget.LineChart.prototype.tooltip = null;
 rg.view.svg.widget.LineChart.prototype.data = function(input) {
 	$s.push("rg.view.svg.widget.LineChart::data");
 	var $spos = $s.length;
 	var dps = this.transformData(input);
-	var axisgroup = this.g.selectAll("g.axis-group").data(dps);
+	var axisgroup = this.chart.selectAll("g.group").data(dps);
 	var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
-		$s.push("rg.view.svg.widget.LineChart::data@87");
+		$s.push("rg.view.svg.widget.LineChart::data@126");
 		var $spos = $s.length;
-		var $tmp = "axis-group group-" + i;
+		var $tmp = "group group-" + i;
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	});
 	axisgroup.exit().remove();
-	var segmentgroup = axisenter.selectAll("g.segment").dataf(function(d,i) {
-		$s.push("rg.view.svg.widget.LineChart::data@96");
-		var $spos = $s.length;
-		var $tmp = [d.getAt(i)];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	segmentgroup.enter().append("svg:path").attr("class").string("line").attr("d").stringf($closure(this,"path"));
-	haxe.Log.trace(dps,{ fileName : "LineChart.hx", lineNumber : 110, className : "rg.view.svg.widget.LineChart", methodName : "data"});
+	var _g1 = 0, _g = dps.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var d = dps[i], gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(Arrays.flatten(d),this.variableDependents[i].type)];
+		var segmentgroup = gi.selectAll("path.line").data(d);
+		var $e = (this.lineEffect);
+		switch( $e[1] ) {
+		case 1:
+			var levels = $e[3], lightness = $e[2];
+			var temp = segmentgroup.enter().append("svg:path").attr("class").string("line item-" + i), color = temp.style("stroke").get();
+			temp.remove();
+			if(null == color) color = "#000000";
+			var start = thx.color.Hsl.toHsl(thx.color.Colors.parse(color)), end = thx.color.Hsl.darker(start,lightness), f = thx.color.Hsl.interpolatef(end,start);
+			var _g2 = 0;
+			while(_g2 < levels) {
+				var j = _g2++;
+				segmentgroup.enter().append("svg:path").attr("class").string("line item-" + i + " grad-" + (levels - j - 1)).style("stroke").string(f(j / levels).hex("#")).attr("d").stringf($closure(this.linePath[i],"shape"));
+			}
+			break;
+		default:
+		}
+		segmentgroup.enter().append("svg:path").attr("class").string("line item-" + i).attr("d").stringf($closure(this.linePath[i],"shape"));
+		segmentgroup.update().attr("d").stringf($closure(this.linePath[i],"shape"));
+		segmentgroup.exit().remove();
+		var gsymbols = gi.selectAll("g.symbols").data(d), x = $closure(this,"x"), y = $closure(this,"y"), vars = this.variableDependents, onclick = ((function() {
+			$s.push("rg.view.svg.widget.LineChart::data@180");
+			var $spos = $s.length;
+			var $tmp = function(f,a1) {
+				$s.push("rg.view.svg.widget.LineChart::data@180@180");
+				var $spos = $s.length;
+				var $tmp = (function() {
+					$s.push("rg.view.svg.widget.LineChart::data@180@180@180");
+					var $spos = $s.length;
+					var $tmp = function(a2,a3) {
+						$s.push("rg.view.svg.widget.LineChart::data@180@180@180@180");
+						var $spos = $s.length;
+						var $tmp = f(a1,a2,a3);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})();
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})())($closure(this,"onclick"),stats[0]), onmouseover = ((function() {
+			$s.push("rg.view.svg.widget.LineChart::data@181");
+			var $spos = $s.length;
+			var $tmp = function(f,a1) {
+				$s.push("rg.view.svg.widget.LineChart::data@181@181");
+				var $spos = $s.length;
+				var $tmp = (function() {
+					$s.push("rg.view.svg.widget.LineChart::data@181@181@181");
+					var $spos = $s.length;
+					var $tmp = function(a2,a3) {
+						$s.push("rg.view.svg.widget.LineChart::data@181@181@181@181");
+						var $spos = $s.length;
+						var $tmp = f(a1,a2,a3);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})();
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})())($closure(this,"onmouseover"),stats[0]);
+		var enter = gsymbols.enter().append("svg:g").attr("class").string("symbols item-" + i);
+		var gsymbol = enter.selectAll("g.symbol").dataf((function() {
+			$s.push("rg.view.svg.widget.LineChart::data@187");
+			var $spos = $s.length;
+			var $tmp = function(d1,i1) {
+				$s.push("rg.view.svg.widget.LineChart::data@187@187");
+				var $spos = $s.length;
+				$s.pop();
+				return d1;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})()).enter().append("svg:g").attr("class").string("symbol").attr("transform").stringf(((function() {
+			$s.push("rg.view.svg.widget.LineChart::data@190");
+			var $spos = $s.length;
+			var $tmp = function(f,a1) {
+				$s.push("rg.view.svg.widget.LineChart::data@190@190");
+				var $spos = $s.length;
+				var $tmp = (function() {
+					$s.push("rg.view.svg.widget.LineChart::data@190@190@190");
+					var $spos = $s.length;
+					var $tmp = function(a2,a3) {
+						$s.push("rg.view.svg.widget.LineChart::data@190@190@190@190");
+						var $spos = $s.length;
+						var $tmp = f(a1,a2,a3);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})();
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})())($closure(this,"translatePoint"),i));
+		if(null != this.click) gsymbol.on("click",onclick);
+		if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
+		gsymbol.append("svg:circle").attr("r")["float"](4).style("fill").string("#000000").style("fill-opacity")["float"](0.0).style("stroke").string("none");
+		if(null != this.symbol) {
+			var sp = [this.symbol];
+			var spath = gsymbol.append("svg:path").attr("class").string("item-" + i).attr("d").stringf((function(sp,stats) {
+				$s.push("rg.view.svg.widget.LineChart::data@210");
+				var $spos = $s.length;
+				var $tmp = function(dp,_) {
+					$s.push("rg.view.svg.widget.LineChart::data@210@210");
+					var $spos = $s.length;
+					var $tmp = sp[0](dp,stats[0]);
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(sp,stats));
+			if(null != this.symbolStyle) {
+				var ss = [this.symbolStyle];
+				spath.attr("style").stringf((function(ss,stats) {
+					$s.push("rg.view.svg.widget.LineChart::data@214");
+					var $spos = $s.length;
+					var $tmp = function(dp,_) {
+						$s.push("rg.view.svg.widget.LineChart::data@214@214");
+						var $spos = $s.length;
+						var $tmp = ss[0](dp,stats[0]);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})(ss,stats));
+			}
+		}
+		if(null != this.labelDataPoint) {
+			var f = [this.labelDataPoint];
+			gsymbol.eachNode((function(f,stats) {
+				$s.push("rg.view.svg.widget.LineChart::data@221");
+				var $spos = $s.length;
+				var $tmp = function(n,i1) {
+					$s.push("rg.view.svg.widget.LineChart::data@221@221");
+					var $spos = $s.length;
+					var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n));
+					label.setText(f[0](dp,stats[0]));
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(f,stats));
+		}
+		gsymbols.update().selectAll("g.symbol").dataf((function() {
+			$s.push("rg.view.svg.widget.LineChart::data@233");
+			var $spos = $s.length;
+			var $tmp = function(d1,i1) {
+				$s.push("rg.view.svg.widget.LineChart::data@233@233");
+				var $spos = $s.length;
+				$s.pop();
+				return d1;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})()).update().attr("transform").stringf(((function() {
+			$s.push("rg.view.svg.widget.LineChart::data@235");
+			var $spos = $s.length;
+			var $tmp = function(f,a1) {
+				$s.push("rg.view.svg.widget.LineChart::data@235@235");
+				var $spos = $s.length;
+				var $tmp = (function() {
+					$s.push("rg.view.svg.widget.LineChart::data@235@235@235");
+					var $spos = $s.length;
+					var $tmp = function(a2,a3) {
+						$s.push("rg.view.svg.widget.LineChart::data@235@235@235@235");
+						var $spos = $s.length;
+						var $tmp = f(a1,a2,a3);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})();
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})())($closure(this,"translatePoint"),i));
+		gsymbols.exit().remove();
+	}
 	$s.pop();
 }
-rg.view.svg.widget.LineChart.prototype.path = function(d,i) {
-	$s.push("rg.view.svg.widget.LineChart::path");
+rg.view.svg.widget.LineChart.prototype.translatePoint = function(pos,dp,_) {
+	$s.push("rg.view.svg.widget.LineChart::translatePoint");
 	var $spos = $s.length;
-	var $tmp = this.linePath.shape(d,i);
+	var $tmp = "translate(" + this.x(dp) + "," + this.y(this.variableDependents[pos],dp) + ")";
 	$s.pop();
 	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.onmouseover = function(stats,n,i) {
+	$s.push("rg.view.svg.widget.LineChart::onmouseover");
+	var $spos = $s.length;
+	var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
+	if(null == text) this.tooltip.hide(); else {
+		var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.widget.LineChart.coordsFromTransform(sel.attr("transform").get());
+		this.tooltip.show();
+		this.tooltip.setText(text.split("\n"));
+		this.tooltip.moveTo(coords[0],coords[1]);
+	}
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.onclick = function(stats,dp,i) {
+	$s.push("rg.view.svg.widget.LineChart::onclick");
+	var $spos = $s.length;
+	this.click(dp,stats);
 	$s.pop();
 }
 rg.view.svg.widget.LineChart.prototype.transformData = function(dps) {
@@ -20511,6 +21870,12 @@ rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
 rg.data.VariableDependent.__super__ = rg.data.Variable;
 for(var k in rg.data.Variable.prototype ) rg.data.VariableDependent.prototype[k] = rg.data.Variable.prototype[k];
 rg.data.VariableDependent.prototype.axis = null;
+rg.data.VariableDependent.prototype.setAxis = function(axis) {
+	$s.push("rg.data.VariableDependent::setAxis");
+	var $spos = $s.length;
+	this.axis = axis;
+	$s.pop();
+}
 rg.data.VariableDependent.prototype.__class__ = rg.data.VariableDependent;
 thx.math.Ease = function() { }
 thx.math.Ease.__name__ = ["thx","math","Ease"];
@@ -20999,10 +22364,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 		++_g;
 		if(ctx.partial) {
 			var variable = [ctx.variable], values = Arrays.filter(data.map((function(variable) {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@120");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@121");
 				var $spos = $s.length;
 				var $tmp = function(dp,_) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@120@120");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@121@121");
 					var $spos = $s.length;
 					var $tmp = Reflect.field(dp,variable[0].type);
 					$s.pop();
@@ -21013,10 +22378,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 				return $tmp;
 				$s.pop();
 			})(variable)),(function() {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@120");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@121");
 				var $spos = $s.length;
 				var $tmp = function(v) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@120@120");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@121@121");
 					var $spos = $s.length;
 					var $tmp = null != v;
 					$s.pop();
@@ -21029,7 +22394,7 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 			})());
 			if(values.length == 0) continue;
 			var value, compare = Dynamics.comparef(value = values[0]);
-			if(null == variable[0].axis) variable[0] = ctx.variable = new rg.data.VariableDependent(variable[0].type,new rg.controller.factory.FactoryAxis().create(variable[0].type,Std["is"](value,Float)),variable[0].min,variable[0].max);
+			if(null == variable[0].axis) variable[0].setAxis(new rg.controller.factory.FactoryAxis().create(variable[0].type,Std["is"](value,Float)));
 			if(null == variable[0].min) {
 				variable[0].min = value;
 				var _g3 = 1, _g2 = values.length;
@@ -21099,7 +22464,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@205");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@202");
 		var $spos = $s.length;
 		var $tmp = d.variable.range();
 		$s.pop();
@@ -21911,6 +23276,7 @@ rg.view.html.widget.PivotTable = function(container) {
 	this.displayHeatMap = true;
 	this.colorStart = rg.view.html.widget.PivotTable.defaultColorStart;
 	this.colorEnd = rg.view.html.widget.PivotTable.defaultColorEnd;
+	this.incolumns = 1;
 	$s.pop();
 }
 rg.view.html.widget.PivotTable.__name__ = ["rg","view","html","widget","PivotTable"];
@@ -21922,6 +23288,7 @@ rg.view.html.widget.PivotTable.prototype.colorEnd = null;
 rg.view.html.widget.PivotTable.prototype.columnVariables = null;
 rg.view.html.widget.PivotTable.prototype.rowVariables = null;
 rg.view.html.widget.PivotTable.prototype.cellVariable = null;
+rg.view.html.widget.PivotTable.prototype.incolumns = null;
 rg.view.html.widget.PivotTable.prototype.click = null;
 rg.view.html.widget.PivotTable.prototype.container = null;
 rg.view.html.widget.PivotTable.prototype.stats = null;
@@ -22053,10 +23420,10 @@ rg.view.html.widget.PivotTable.prototype.data = function(dps) {
 			++_g2;
 			var td = tr.append("td").text().string(this.formatDataPoint(cell)).attr("title").string(this.formatDataPointOver(cell));
 			if(null != this.click) td.onNode("click",(function(f,a1) {
-				$s.push("rg.view.html.widget.PivotTable::data@192");
+				$s.push("rg.view.html.widget.PivotTable::data@195");
 				var $spos = $s.length;
 				var $tmp = function(a2,a3) {
-					$s.push("rg.view.html.widget.PivotTable::data@192@192");
+					$s.push("rg.view.html.widget.PivotTable::data@195@195");
 					var $spos = $s.length;
 					var $tmp = f(a1,a2,a3);
 					$s.pop();
@@ -22149,6 +23516,24 @@ rg.view.html.widget.PivotTable.prototype.init = function() {
 	var $spos = $s.length;
 	$s.pop();
 }
+rg.view.html.widget.PivotTable.prototype.setVariables = function(variableIndependents,variableDependents) {
+	$s.push("rg.view.html.widget.PivotTable::setVariables");
+	var $spos = $s.length;
+	this.cellVariable = variableDependents[0];
+	this.columnVariables = [];
+	var _g1 = 0, _g = this.incolumns;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.columnVariables.push(variableIndependents[i]);
+	}
+	this.rowVariables = [];
+	var _g1 = this.incolumns, _g = variableIndependents.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.rowVariables.push(variableIndependents[i]);
+	}
+	$s.pop();
+}
 rg.view.html.widget.PivotTable.prototype.destroy = function() {
 	$s.push("rg.view.html.widget.PivotTable::destroy");
 	var $spos = $s.length;
@@ -22200,10 +23585,10 @@ rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
 		var column = [columns[i]], ccalc = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0};
 		column[0].stats = ccalc;
 		var _g2 = 0, _g3 = Arrays.filter(dps,(function(column) {
-			$s.push("rg.view.html.widget.PivotTable::transformData@362");
+			$s.push("rg.view.html.widget.PivotTable::transformData@377");
 			var $spos = $s.length;
 			var $tmp = function(dp) {
-				$s.push("rg.view.html.widget.PivotTable::transformData@362@362");
+				$s.push("rg.view.html.widget.PivotTable::transformData@377@377");
 				var $spos = $s.length;
 				var _g3 = 0, _g21 = headers.length;
 				while(_g3 < _g21) {
@@ -22280,10 +23665,10 @@ rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
 		row[0].stats = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0};
 		row[0].cells = [];
 		var rdps = Arrays.filter(dps,(function(row) {
-			$s.push("rg.view.html.widget.PivotTable::transformData@431");
+			$s.push("rg.view.html.widget.PivotTable::transformData@446");
 			var $spos = $s.length;
 			var $tmp = function(d) {
-				$s.push("rg.view.html.widget.PivotTable::transformData@431@431");
+				$s.push("rg.view.html.widget.PivotTable::transformData@446@446");
 				var $spos = $s.length;
 				var _g2 = 0, _g1 = headers1.length;
 				while(_g2 < _g1) {
@@ -22307,10 +23692,10 @@ rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
 			var column = [columns[_g1]];
 			++_g1;
 			var dp = Arrays.firstf(rdps,(function(column) {
-				$s.push("rg.view.html.widget.PivotTable::transformData@443");
+				$s.push("rg.view.html.widget.PivotTable::transformData@458");
 				var $spos = $s.length;
 				var $tmp = function(dp) {
-					$s.push("rg.view.html.widget.PivotTable::transformData@443@443");
+					$s.push("rg.view.html.widget.PivotTable::transformData@458@458");
 					var $spos = $s.length;
 					var _g3 = 0, _g2 = column[0].values.length;
 					while(_g3 < _g2) {
@@ -25462,6 +26847,8 @@ thx.svg.LineInternals._lineBasisBezier1 = [0,2 / 3,1 / 3,0];
 thx.svg.LineInternals._lineBasisBezier2 = [0,1 / 3,2 / 3,0];
 thx.svg.LineInternals._lineBasisBezier3 = [0,1 / 6,2 / 3,1 / 6];
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
+thx.svg.Symbol.sqrt3 = Math.sqrt(3);
+thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
 rg.controller.App.lastid = 0;
@@ -25474,6 +26861,7 @@ utest.TestHandler.POLLING_TIME = 10;
 haxe.Timer.arr = new Array();
 rg.data.source.rgquery.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
+rg.view.svg.widget.LineChart.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
 rg.controller.factory.FactoryLayout.LIMIT_WIDTH = 10;
 rg.controller.factory.FactoryLayout.LIMIT_HEIGHT = 10;
 rg.controller.factory.FactoryLayout.DEFAULT_WIDTH = 400;

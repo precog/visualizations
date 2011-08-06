@@ -6,6 +6,7 @@
 package rg.controller.info;
 
 import rg.util.Periodicity;
+import rg.data.DataPoint;
 using Arrays;
 
 class InfoVariable extends Info
@@ -16,6 +17,9 @@ class InfoVariable extends Info
 	public var values : Null<Array<Dynamic>>;
 	public var groupBy : Null<String>;
 	public var variableType : VariableType;
+	public var scaleDataSet : Array<DataPoint> -> Array<DataPoint>;
+	
+	
 	public function new()
 	{
 		variableType = Unknown;
@@ -61,6 +65,13 @@ class InfoVariable extends Info
 					value : Type.createEnum(VariableType, Strings.ucfirst(("" + v).toLowerCase()), [])
 				}];
 			}
+		}, {
+			field : "transform",
+			validator : function(v : Dynamic) return Reflect.isFunction(v),
+			filter : function(v : Dynamic) return [{
+				field : "scaleDataSet",
+				value : v
+			}]
 		}];
 	}
 	

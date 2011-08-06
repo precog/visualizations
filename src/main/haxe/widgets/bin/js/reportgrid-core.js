@@ -63,7 +63,7 @@ var ReportGrid = window.ReportGrid || {};
           var script = scripts[i];
           var src = script.getAttribute('src');
 
-          if (src && src.indexOf('reportgrid-core.js') != -1) {
+          if (src && src.indexOf('reportgrid') != -1) {
             return script;
           }
         }
@@ -365,6 +365,10 @@ var ReportGrid = window.ReportGrid || {};
       script.setAttribute('src',  fullUrl);
       script.setAttribute('id',   funcName);
 
+      // Workaround for document.head being undefined.
+      if (! document.head)
+        document.head = document.getElementsByTagName('head')[0];
+
       document.head.appendChild(script);
     },
 
@@ -629,22 +633,33 @@ var ReportGrid = window.ReportGrid || {};
    * Retrieves time series counts of how often the specified property appeared
    * in events of the specified type.
    *
+   * Options:
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * start - the start of the time period to query
+   *  * end   - the end of the time period to query
+   *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
+   *
    * ReportGrid.propertySeries("/atm-events/", {property: "transaction", periodicity: "hour"});
-   * > {"hour":[[4512239238,2323]]}
+   * > {"type":"timeseries", "periodicity":"hour", "data":{"4512239238":2323}}
+   *
+   * Or, if using groupBy:
+   * > {"type":"deltas", "zero":0, "data":{"0":293, "1": 386, ..., "59": 222}}
    */
   ReportGrid.propertySeries = function(path_, options, success, failure) {
     var path     = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property);
     var peri     = options.periodicity || "eternity";
-
-    var headers = Util.rangeHeaderFromStartEnd(options);
+    var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
+	var headers  = Util.rangeHeaderFromStartEnd(options);
 
     var description = 'Get series for property ' + path + property + ' (periodicity = ' + peri + ')';
 
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/series/' + peri,
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId },
+      query,
       headers
     );
   }
@@ -695,15 +710,26 @@ var ReportGrid = window.ReportGrid || {};
    * Retrieves the time series count of when the property was equal to the
    * specified value.
    *
+   * Options:
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * start - the start of the time period to query
+   *  * end   - the end of the time period to query
+   *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
+   *
    * ReportGrid.propertyValueSeries("/transactions/", {property: "click.gender", value: "male" periodicity: "hour"});
-   * > {"hour":{"1239232323":293}}
+   * > {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":293}}
+   *
+   * Or, if using groupBy:
+   * > {"type":"deltas", "zero":0, "data":{"0":293, "1": 386, ..., "59": 222}}
    */
   ReportGrid.propertyValueSeries = function(path_, options, success, failure) {
     var path     = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property);
     var value    = options.value;
     var peri     = options.periodicity || "eternity";
-
+    var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
     var headers = Util.rangeHeaderFromStartEnd(options);
 
     var valueJson = JSON.stringify(value);
@@ -713,7 +739,7 @@ var ReportGrid = window.ReportGrid || {};
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + encodeURIComponent(valueJson) + '/series/' + peri,
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId },
+      query,
       headers
     );
   }
@@ -748,13 +774,19 @@ var ReportGrid = window.ReportGrid || {};
    *
    * Options:
    *
-   *  * periodicity
-   *  * start
-   *  * end
-   *
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * start - the start of the time period
+   *  * end - the end of the time period
+   *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
+   *                                                        For example, if you batch minute data by hour, then the result will contain a dataset
+   *                                                        with 60 entries; the first entry will contain the sum of counts for the first minute
+   *                                                        of each hour in the specified time range, etc.
    *
    * ReportGrid.searchSeries("/advertisers/Nike", {periodicity: "hour", where: {".impression.carrier": "AT&T"}});
-   * > {"hour":{"1239232323":293}}
+   * > {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":293, "234345468":222, ...}}
+   *
+   * Or, if using groupBy:
+   * > {"type":"deltas", "zero":0, "data":{"0":293, "1": 386, ..., "59": 222}}
    */
   ReportGrid.searchSeries = function(path_, options, success, failure) {
     var path  = Util.sanitizePath(path_);
@@ -767,7 +799,10 @@ var ReportGrid = window.ReportGrid || {};
       from:   path,
       where:  options.where
 	};
-	
+	var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
+
     var start = Util.normalizeTime(options, 'start');
     var end = Util.normalizeTime(options, 'end');
 	
@@ -778,7 +813,7 @@ var ReportGrid = window.ReportGrid || {};
       $.Config.analyticsServer + '/search',
       ob,
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
+      query
     );
   }
   
@@ -788,14 +823,29 @@ var ReportGrid = window.ReportGrid || {};
    *
    * Options:
    *
-   *  * properties
-   *  * periodicity
-   *  * start
-   *  * end
+   *  * properties - The property/value pairs that each selected event must have. You may specify properties up to the order defined by your token.
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * start - the start of the time period
+   *  * end - the end of the time period
+   *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
+   *                                                        For example, if you batch minute data by hour, then the result will contain a dataset
+   *                                                        with 60 entries; the first entry will contain the sum of counts for the first minute
+   *                                                        of each hour in the specified time range, etc.
    *
    *
    * ReportGrid.intersect("/advertisers/Nike", {periodicity: "hour", properties: [{"property" : ".impression.platform", "limit" : 3, "order" : "descending"}]});
-   * > {"iphone":{"hour":{"1239232323":293}},"android":{"hour":{"1239232323":155}},"blackberry":{"hour":{"1239232323":65}}}
+   * > {
+   *     "iphone":    {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":293, "234345468":222, ...}},
+   *     "android":   {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":155, "234345468":222, ...}}, 
+   *     "blackberry":{"type":"timeseries", "periodicity":"hour", "data":{"1239232323":65, ...}}
+   *   }
+   *
+   * Or, if using groupBy:
+   * > {
+   *     "iphone":    {"type":"deltas", "zero":0, "data":{"0":293, "1": 386, ..., "59": 222}},
+   *     "android":   {"type":"deltas", "zero":0, "data":{"0":155, "1": 482, ..., "59": 333}}, 
+   *     "blackberry":{"type":"deltas", "zero":0, "data":{"0":470, "1": 284, ..., "59": 333}}
+   *   }
    */
   ReportGrid.intersect = function(path_, options, success, failure) {
 	var path = Util.sanitizePath(path_);
@@ -808,7 +858,9 @@ var ReportGrid = window.ReportGrid || {};
 	  from:       path,
 	  properties: options.properties
 	};
-
+    var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
     var start = Util.normalizeTime(options, 'start');
     var end = Util.normalizeTime(options, 'end');
 
@@ -819,7 +871,7 @@ var ReportGrid = window.ReportGrid || {};
 	  $.Config.analyticsServer + '/intersect',
 	  ob,
 	  Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
+      query
 	);
   }
 
@@ -834,7 +886,7 @@ var ReportGrid = window.ReportGrid || {};
       {tokenId: $.Config.tokenId }
     );
   }
-  
+
   ReportGrid.token = function(token, success, failure) {
     var http = $.Http();
 	if(typeof(token) != "string")

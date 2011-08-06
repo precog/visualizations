@@ -99,7 +99,11 @@ class DataProcessor
 			dataPoints = pushDataPoints(subsets, dataPoints);
 		}
 		
+		for (dv in dependentVariables)
+			dataPoints = dv.variable.scaleDataSet(dataPoints);
+		
 		fillDependentVariables(dataPoints);
+		
 		onData.dispatch(dataPoints);
 	}
 	
@@ -108,6 +112,8 @@ class DataProcessor
 		if (subsets.length == 0 || subsets[0].length == 0)
 			return dataPoints;
 		var transformed = transform(subsets);
+		for (idv in independentVariables)
+			transformed = idv.variable.scaleDataSet(transformed);
 		return dataPoints.concat(transformed);
 	}
 

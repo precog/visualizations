@@ -7,7 +7,6 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
 <!--
 	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
 -->
@@ -24,110 +23,152 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-/*
-	ReportGrid.lineChart("#chart1", {
+	function transformDataPoint(arr)
+	{
+		var y0 = 0.0;
+		for(var i = 0, v; i < arr.length; i++)
+		{
+			v = arr[i];
+			v[v.event] = v.count;
+			v["y0"] = y0;
+			y0 += v.count;
+		}
+		return arr;
+	}
+	
+	function transformDataSet(arr)
+	{
+		var sum = 0.0;
+		for(var i = 0, v; i < arr.length; i++)
+		{
+			v = arr[i];
+			v.sum = (sum += v.count);
+		}
+		return arr;
+	}
+
+	// stack area incremental
+	ReportGrid.lineChart("#chart7", {
 		axes : [{
-			type : "slice",
-			variable : "independent",
-			values : ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'],
-			view : ['A', 'P']
+			type : ".#time:minute",
+			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
 		}, {
-			type : "count",
-			view : [0, 10.5]
+			type : "sum",
+			view : [0, 12000],
+			transform : transformDataSet
 		}],
-		data : {
-			src : {
-				data : [{
-					slice : "A",
-					count : 1
-				}, {
-					slice : "B",
-					count : 4
-				}, {
-					slice : "C",
-					count : 3
-				}, {
-					slice : "D",
-					count : 5
-				}, {
-					slice : "E",
-					count : 6
-				}, {
-					slice : "F",
-					count : 9
-				}, {
-					slice : "G",
-					count : 4
-				}, {
-					slice : "H",
-					count : 10
-				}, {
-					slice : "I",
-					count : 5
-				}, {
-					slice : "J",
-					count : 4
-				}, {
-					slice : "K",
-					count : 9
-				}, {
-					slice : "L",
-					count : 5
-				}, {
-					slice : "M",
-					count : 9
-				}, {
-					slice : "N",
-					count : 9
-				}, {
-					slice : "O",
-					count : 4
-				}, {
-					slice : "P",
-					count : 2
-				}]
-			}
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : transformDataPoint
+		}],
+		options : {
+			height: 100,
+			symbol : function(dp, stats) {
+				return ReportGrid.symbol.circle(16);
+			},
+			line : {
+				interpolation : "cardinal",
+				effect : "gradient", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			label : {
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
+			},
+			displayarea : true,
+			segmenton : ".platform",
+			y0property : "y0"
 		}
 	});
 
-	ReportGrid.lineChart("#chart2", {
+	// incremental
+	ReportGrid.lineChart("#chart6", {
+		axes : [{
+			type : ".#time:hour",
+			view : ["2011-07-21 06:00:00", "2011-07-21 23:59:59"]
+		}, {
+			type : "sum",
+			transform : transformDataSet
+		}],
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".#time:hour" },
+			transform : transformDataPoint
+		}],
+		options : {
+			height: 100,
+			symbol : function(dp, stats) {
+				return ReportGrid.symbol.circle(16);
+			},
+			line : {
+				interpolation : "cardinal",
+				effect : "dropshadow", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			label : {
+				datapointover : function(ds, stats) { return ds["event"] + ": " + ReportGrid.format(ds.sum) + " (incr. " + ReportGrid.format(ds.count) + ") at " + ReportGrid.format(new Date(ds[".#time:hour"]), "TS") }
+			},
+			displayarea : true,
+			segmenton : ".platform"
+		}
+	});
+	
+	// stack area
+	ReportGrid.lineChart("#chart5", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
+		}, {
+			type : "count",
+			view : [0, 110]
+		}],
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : transformDataPoint
+		}],
+		options : {
+			height: 100,
+			symbol : function(dp, stats) {
+				return ReportGrid.symbol.circle(16);
+			},
+			line : {
+				interpolation : "cardinal",
+				effect : "noeffect", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			label : {
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
+			},
+			displayarea : true,
+			segmenton : ".platform",
+			y0property : "y0"
+		}
+	});
+	
+	ReportGrid.lineChart("#chart4", {
 		axes : [{
 			type : ".#time:minute",
 			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
 		}, {
 			type : "count"
 		}],
-		data : {
-			src : { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" }
-		},
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : transformDataPoint
+		}],
 		options : {
-			segmenton : ".platform", 
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
+			height: 100,
+			symbol : function(dp, stats) {
+				return ReportGrid.symbol.circle(16);
+			},
+			line : {
+				interpolation : "cardinal",
+				effect : "noeffect", //"gradient-0.75,1" //"dropshadow-1,1,1"
 			},
 			label : {
-				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
 			},
-			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
-			height: 100
+			displayarea : true,
+			segmenton : ".platform"
 		}
 	});
-*/
-	function transformDataPoint(arr)
-	{
-		for(var i = 0, v; i < arr.length; i++)
-		{
-			v = arr[i];
-			v[v.event] = v.count;
-		}
-		return arr;
-	}
 
-	ReportGrid.lineChart("#chart1", {
+	ReportGrid.lineChart("#chart3", {
 		axes : [{
 			type : ".#time:minute",
 			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
@@ -138,15 +179,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		}, {
 			type : "conversion"
 		}],
-/*
-		data : {
-			src: [
-				{ path : "/rgadnet", event : "impression", query : ".#time:minute" },
-				{ path : "/rgadnet", event : "click", query : ".#time:minute" },
-				{ path : "/rgadnet", event : "conversion", query : ".#time:minute" }
-			]
-		},
-*/
 		data : [{
 			src: { path : "/rgadnet", event : "impression", query : ".#time:minute" },
 			transform : transformDataPoint
@@ -158,42 +190,29 @@ document.addEventListener("DOMContentLoaded", function(){
 			transform : transformDataPoint
 		}],
 		options : {
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
-			},
-			label : {
-				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
-			},
 			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
 			height: 100,
-			symbol : function(ds, stats) {
-				var v = ds.count / stats.max,
+			symbol : function(dp, stats) {
+				var v = dp.count / stats.max,
 					size = 64;
 				if(v > 0.95)
 					return ReportGrid.symbol.triangleUp(size);
 				else if(v < 0.3)
 					return ReportGrid.symbol.triangleDown(size);
 				else
-					return null;
+					return ReportGrid.symbol.circle(16);
 			},
-			symbolstyle : function(ds, stats)
+			symbolstyle : function(dp, stats)
 			{
-				var v = ds.count / stats.max;
-				if(v < 0.5)
+				var v = dp.count / stats.max;
+				if(v < 0.3)
 				{
 					return "fill:#ff0000;stroke:#000;stroke-width:1px;shape-rendering:crisp-edges";
-				} else {
+				} else if(v > 0.95) {
 					return "fill:#00ff00;stroke:#000;stroke-width:1px;shape-rendering:crisp-edges";
+				} else {
+					return null;
 				}
-			},
-			click : function(ds, stats)
-			{
-				console.log(ds);
-				console.log(stats);
 			},
 			label : {
 				datapoint : function(ds, stats) { 
@@ -204,7 +223,11 @@ document.addEventListener("DOMContentLoaded", function(){
 				},
 				datapointover : function(ds, stats) { return ds.event + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
 			},
-			lineinterpolation : "cardinal"
+			line : {
+				interpolation : "cardinal",
+				effect : "noeffect", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			displayarea : true
 		}
 	});
 
@@ -231,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 	
-	ReportGrid.lineChart("#chart3", {
+	ReportGrid.lineChart("#chart1", {
 		axes : [{
 			type : ".#time:hour",
 			view : ["2011-07-21 09:00:00", "2011-07-21 23:59:59"]
@@ -242,6 +265,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			src : { path : "/rgadnet", event : "impression", query : ".#time:hour" }
 		}, {
 			src : { path : "/rgadnet", event : "click", query : ".#time:hour" }
+		}, {
+			src : { path : "/rgadnet", event : "conversion", query : ".#time:hour" }
 		}],
 		options : {
 			segmenton : "event",
@@ -261,17 +286,23 @@ document.addEventListener("DOMContentLoaded", function(){
 				var v = ds.count / stats.max;
 				return ReportGrid.symbol.square(100 * v);
 			},
-			lineinterpolation : "stepbefore"
+			line : {
+				interpolation : "stepbefore",
+				effect : "noeffect"
+			}
 		}
 	});
-
 }, false)
 </script>
 </head>
 <body>
-	<div id="chart1"></div>
-	<div id="chart2"></div>
+	<div id="chart7"></div>
+	<div id="chart6"></div>
+	<div id="chart5"></div>
+	<div id="chart4"></div>
 	<div id="chart3"></div>
+	<div id="chart2"></div>
+	<div id="chart1"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

@@ -71,6 +71,12 @@ class DataPoints
 	
 	public inline static function value(dp : DataPoint, property : String) : Dynamic return Reflect.field(dp, property)
 	
+	public inline static function valueAlt<T>(dp : DataPoint, property : String, alt : T) : T
+	{
+		var v;
+		return (null == (v = Reflect.field(dp, property))) ? alt : v;
+	}
+	
 	public static function stats(dps : Array<DataPoint>, property : String) 
 	{
 		var min = Math.POSITIVE_INFINITY,

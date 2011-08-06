@@ -4,7 +4,6 @@
 -lib thx
 -lib hxevents
 -js bin/js/reportgrid-viz.js
--D noEmbedJS
 -D release
 --no-traces
 rg.Viz

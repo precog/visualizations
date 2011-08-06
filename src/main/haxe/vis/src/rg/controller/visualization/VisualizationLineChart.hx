@@ -31,7 +31,13 @@ class VisualizationLineChart extends VisualizationSvg
 		chart.labelDataPoint = info.label.datapoint;
 		chart.labelDataPointOver = info.label.datapointover;
 		
-		chart.lineInterpolator = info.lineInterpolator;
+		chart.lineInterpolator = info.line.interpolation;
+		chart.lineEffect = info.line.effect;
+		
+		if (null != info.y0property)
+			chart.y0property = info.y0property;
+		else if (info.displayarea)
+			chart.y0property = "";
 		
 		chart.init();
 	}

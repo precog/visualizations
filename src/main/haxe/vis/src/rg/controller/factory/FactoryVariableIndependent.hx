@@ -35,7 +35,10 @@ class FactoryVariableIndependent
 			min = defaultMin(normalizeTime(info.min), periodicity);
 			max = defaultMax(normalizeTime(info.max), periodicity);
 		}
-		return new VariableIndependent(info.type, axis, min, max);
+		var variable = new VariableIndependent(info.type, axis, min, max);
+		if (null != info.scaleDataSet)
+			variable.scaleDataSet = info.scaleDataSet;
+		return variable;
 	}
 	
 	function normalizeTime(v : Dynamic) : Null<Float>

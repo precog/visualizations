@@ -18,12 +18,15 @@ class InfoLineChart
 	public var symbolStyle : DataPoint -> Stats -> String;
 	public var click : DataPoint -> Stats -> Void;
 	public var label : InfoLabel;
-	public var lineInterpolator : LineInterpolator;
+	public var line : InfoLine;
+	public var displayarea : Bool;
+	public var y0property : String;
 	
 	public function new() 
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabel();
+		line = new InfoLine();
 	}
 	
 	public static function filters()
@@ -37,6 +40,10 @@ class InfoLineChart
 			}]
 		}, {
 			field : "segmenton",
+			validator : function(v) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "y0property",
 			validator : function(v) return Std.is(v, String),
 			filter : null
 		}, {
@@ -62,12 +69,16 @@ class InfoLineChart
 				value : new InfoLabelPivotTable().feed(v)
 			}]
 		}, {
-			field : "lineinterpolation",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [ {
-				field : "lineInterpolator",
-				value : LineInterpolators.parse(v)
+			field : "line",
+			validator : function(v) return Types.isAnonymous(v),
+			filter : function(v) return [{
+				field : "line",
+				value : new InfoLine().feed(v)
 			}]
+		} , {
+			field : "displayarea",
+			validator : function(v) return Std.is(v, Bool),
+			filter : null
 		}];
 	}
 }

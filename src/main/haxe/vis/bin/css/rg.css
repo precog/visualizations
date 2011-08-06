@@ -81,6 +81,7 @@
 .rg line, .rg path
 {
 	stroke-width: 1;
+	stroke: #999;
 }
 
 .rg text, .rg tspan
@@ -145,11 +146,6 @@
 	stroke-miterlimit: 1;
 }
 
-.rg line, .rg path
-{
-	stroke: #999;
-}
-
 .rg .pie-chart g.group, .rg .stream-chart g.group
 {
 	stroke-width: 3;
@@ -163,15 +159,62 @@
 	stroke-opacity: 0.4;
 }
 
-.rg .line-chart g.group path
+.rg .line-chart g.group path.gradient
+{
+	fill:none;
+	stroke-width: 1;
+}
+
+.rg .line-chart g.group path.area
+{
+	stroke: none;
+	fill-opacity: 0.2;
+/*	fill: url(rg.svg#areagradient) */
+}
+
+.rg .line-chart g.group path.noeffect
+{
+	fill:none;
+	stroke-width: 2;
+}
+
+.rg .line-chart g.group path.dropshadow
+{
+	fill:none;
+	stroke-width: 2;
+}
+
+.rg .line-chart g.group path.shadow
+{
+	fill:none;
+	stroke-width: 2;
+	stroke-opacity: 0.4;
+	stroke: #666666;
+}
+
+.rg .line-chart g.group path.grad-0
 {
 	fill:none;
 	stroke-width: 3;
+	stroke-opacity: 1.0;
 }
 
-.rg .line-chart g.group .symbol path
+.rg .line-chart g.group path.grad-1
+{
+	fill:none;
+	stroke-width: 5;
+	stroke-opacity: 1.0;
+}
+
+.rg .line-chart g.group .symbols path
 {
 	fill: #fff;
+	stroke: inherit;
+}
+
+.rg .line-chart path.line:hover
+{
+	stroke-width: 4.5;
 }
 
 #tooltip
@@ -227,17 +270,6 @@
 {
 	fill: #fff;
 	fill-opacity: 0;
-}
-
-.rg .line-chart path.line
-{
-	stroke-width: 3;
-	fill: none;
-}
-
-.rg .line-chart path.line:hover
-{
-	stroke-width: 4.5;
 }
 
 .rg .dimension-0 text
