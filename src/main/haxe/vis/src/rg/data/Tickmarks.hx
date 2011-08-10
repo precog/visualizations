@@ -44,8 +44,8 @@ class Tickmarks
 		return Dynamics.string(tick.value) + " (" + (tick.major ? "Major" : "minor") + ", " + Floats.format(tick.delta) + ")";
 	}
 	
-	inline public static function forFloat(start : Float, end : Float, value : Float)
+	inline public static function forFloat(start : Float, end : Float, value : Float, major : Bool)
 	{
-		return new Tickmark(value, true, (value - start) / (end - start));
+		return new Tickmark(value, major, (value - start) / (end - start));
 	}
 }

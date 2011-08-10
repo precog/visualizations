@@ -23,7 +23,7 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-	function transformDataPoint(arr)
+	function transform(arr)
 	{
 		var y0 = 0.0;
 		for(var i = 0, v; i < arr.length; i++)
@@ -36,7 +36,26 @@ document.addEventListener("DOMContentLoaded", function(){
 		return arr;
 	}
 	
-	function transformDataSet(arr)
+	function appendSum(arr)
+	{
+		for(var i = 0; i < arr.length; i++)
+			arr[i]["sum"] = 0.0;
+		return arr;
+	}
+	
+	function transformSum(arr)
+	{
+		var y0 = 0.0;
+		for(var i = 0, v; i < arr.length; i++)
+		{
+			v = arr[i];
+			v["y0"] = y0;
+			y0 += v.sum;
+		}
+		return arr;
+	}
+	
+	function scale(arr)
 	{
 		var sum = 0.0;
 		for(var i = 0, v; i < arr.length; i++)
@@ -44,28 +63,26 @@ document.addEventListener("DOMContentLoaded", function(){
 			v = arr[i];
 			v.sum = (sum += v.count);
 		}
+//		console.log(arr);
 		return arr;
 	}
 
 	// stack area incremental
-	ReportGrid.lineChart("#chart7", {
+	ReportGrid.lineChart("#chart8", {
 		axes : [{
 			type : ".#time:minute",
 			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
 		}, {
 			type : "sum",
-			view : [0, 12000],
-			transform : transformDataSet
+			view : [0, 12000]
 		}],
 		data : [{
 			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
-			transform : transformDataPoint
+			transform : appendSum
 		}],
 		options : {
 			height: 100,
-			symbol : function(dp, stats) {
-				return ReportGrid.symbol.circle(16);
-			},
+			symbol : function(dp, stats) { return ReportGrid.symbol.get("circle", 16); },
 			line : {
 				interpolation : "cardinal",
 				effect : "gradient", //"gradient-0.75,1" //"dropshadow-1,1,1"
@@ -74,43 +91,49 @@ document.addEventListener("DOMContentLoaded", function(){
 				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
 			},
 			displayarea : true,
-			segmenton : ".platform",
+			segment : {
+				on : ".platform",
+				transform : transformSum,
+				scale : scale
+			},
 			y0property : "y0"
 		}
 	});
 
 	// incremental
-	ReportGrid.lineChart("#chart6", {
+	ReportGrid.lineChart("#chart7", {
 		axes : [{
-			type : ".#time:hour",
-			view : ["2011-07-21 06:00:00", "2011-07-21 23:59:59"]
+			type : ".#time:minute",
+			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
 		}, {
 			type : "sum",
-			transform : transformDataSet
+			view : [0, 9000]
 		}],
 		data : [{
-			src: { path : "/rgadnet", event : "impression", query : ".#time:hour" },
-			transform : transformDataPoint
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : appendSum
 		}],
 		options : {
 			height: 100,
-			symbol : function(dp, stats) {
-				return ReportGrid.symbol.circle(16);
-			},
+			symbol : function(dp, stats) { return ReportGrid.symbol.get("circle", 16); },
 			line : {
 				interpolation : "cardinal",
-				effect : "dropshadow", //"gradient-0.75,1" //"dropshadow-1,1,1"
+				effect : "gradient", //"gradient-0.75,1" //"dropshadow-1,1,1"
 			},
 			label : {
-				datapointover : function(ds, stats) { return ds["event"] + ": " + ReportGrid.format(ds.sum) + " (incr. " + ReportGrid.format(ds.count) + ") at " + ReportGrid.format(new Date(ds[".#time:hour"]), "TS") }
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + " at " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
 			},
 			displayarea : true,
-			segmenton : ".platform"
+			segment : {
+				on : ".platform",
+				scale : scale
+			},
+			y0property : "y0"
 		}
 	});
-	
+
 	// stack area
-	ReportGrid.lineChart("#chart5", {
+	ReportGrid.lineChart("#chart6", {
 		axes : [{
 			type : ".#time:minute",
 			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
@@ -120,12 +143,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		}],
 		data : [{
 			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
-			transform : transformDataPoint
+			transform : transform
 		}],
 		options : {
 			height: 100,
 			symbol : function(dp, stats) {
-				return ReportGrid.symbol.circle(16);
+				return ReportGrid.symbol.get("circle", 16);
 			},
 			line : {
 				interpolation : "cardinal",
@@ -140,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 	
-	ReportGrid.lineChart("#chart4", {
+	ReportGrid.lineChart("#chart5", {
 		axes : [{
 			type : ".#time:minute",
 			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
@@ -149,12 +172,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		}],
 		data : [{
 			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
-			transform : transformDataPoint
+			transform : transform
 		}],
 		options : {
 			height: 100,
 			symbol : function(dp, stats) {
-				return ReportGrid.symbol.circle(16);
+				return ReportGrid.symbol.get("star", 36);
 			},
 			line : {
 				interpolation : "cardinal",
@@ -168,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 
-	ReportGrid.lineChart("#chart3", {
+	ReportGrid.lineChart("#chart4", {
 		axes : [{
 			type : ".#time:minute",
 			view : ["2011-07-21 10:00:00", "2011-07-21 12:00:0"]
@@ -181,13 +204,13 @@ document.addEventListener("DOMContentLoaded", function(){
 		}],
 		data : [{
 			src: { path : "/rgadnet", event : "impression", query : ".#time:minute" },
-			transform : transformDataPoint
+			transform : transform
 		}, {
 			src: { path : "/rgadnet", event : "click", query : ".#time:minute" },
-			transform : transformDataPoint
+			transform : transform
 		}, {
 			src: { path : "/rgadnet", event : "conversion", query : ".#time:minute" },
-			transform : transformDataPoint
+			transform : transform
 		}],
 		options : {
 			click : function(dp) { alert(dp[".platform"]); },
@@ -196,11 +219,11 @@ document.addEventListener("DOMContentLoaded", function(){
 				var v = dp.count / stats.max,
 					size = 64;
 				if(v > 0.95)
-					return ReportGrid.symbol.triangleUp(size);
+					return ReportGrid.symbol.get("triangleUp", size);
 				else if(v < 0.3)
-					return ReportGrid.symbol.triangleDown(size);
+					return ReportGrid.symbol.get("triangleDown", size);
 				else
-					return ReportGrid.symbol.circle(16);
+					return ReportGrid.symbol.get("cross", 36);
 			},
 			symbolstyle : function(dp, stats)
 			{
@@ -231,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 
-	ReportGrid.lineChart("#chart2", {
+	ReportGrid.lineChart("#chart3", {
 		axes : [{
 			type : ".#time:hour",
 			view : ["2011-07-21 09:00:00", "2011-07-21 23:59:59"]
@@ -254,6 +277,53 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 	
+	ReportGrid.lineChart("#chart2", {
+		axes : [{
+			type : ".#time:hour",
+			view : ["2011-07-21 09:00:00", "2011-07-21 23:59:59"]
+		}, {
+			type : "sum",
+			view : [0, 70000]
+		}],
+		data : [{
+			src : { path : "/rgadnet", event : "impression", query : ".#time:hour" },
+			transform : appendSum
+		}, {
+			src : { path : "/rgadnet", event : "click", query : ".#time:hour" },
+			transform : appendSum
+		}, {
+			src : { path : "/rgadnet", event : "conversion", query : ".#time:hour" },
+			transform : appendSum
+		}],
+		options : {
+			segment : {
+				on : "event",
+				scale : scale,
+				transform : transformSum
+			},
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			label : {
+				datapoint : function(dp) { return ReportGrid.format(dp["count"]); }
+			},
+			click : function(dp) { alert(dp["event"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100,
+			symbol : function(ds, stats) {
+				var v = ds.count / stats.max;
+				return ReportGrid.symbol.get("square", Math.round(100 * v));
+			},
+			line : {
+				effect : "dropshadow"
+			},
+			y0property : "y0"
+		}
+	});
+/*
 	ReportGrid.lineChart("#chart1", {
 		axes : [{
 			type : ".#time:hour",
@@ -284,7 +354,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			height: 100,
 			symbol : function(ds, stats) {
 				var v = ds.count / stats.max;
-				return ReportGrid.symbol.square(100 * v);
+				return ReportGrid.symbol.get("square", Math.round(100 * v));
 			},
 			line : {
 				interpolation : "stepbefore",
@@ -292,10 +362,12 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		}
 	});
+*/
 }, false)
 </script>
 </head>
 <body>
+	<div id="chart8"></div>
 	<div id="chart7"></div>
 	<div id="chart6"></div>
 	<div id="chart5"></div>

@@ -36,8 +36,6 @@ class FactoryVariableIndependent
 			max = defaultMax(normalizeTime(info.max), periodicity);
 		}
 		var variable = new VariableIndependent(info.type, axis, min, max);
-		if (null != info.scaleDataSet)
-			variable.scaleDataSet = info.scaleDataSet;
 		return variable;
 	}
 	

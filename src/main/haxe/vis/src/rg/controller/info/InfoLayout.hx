@@ -4,6 +4,7 @@
  */
 
 package rg.controller.info;
+import rg.view.layout.LayoutScaleY;
 
 class InfoLayout
 {
@@ -12,9 +13,14 @@ class InfoLayout
 	public var height : Null<Int>;
 	public var type : Null<String>;
 	public var main : String;
+	public var titleOnTop : Bool;
+	public var layoutScaleY : LayoutScaleY;
+	
 	public function new()
 	{
 		main = "main";
+		titleOnTop = true;
+		layoutScaleY = ScalesAlternating;
 	}
 	
 	public static function filters() 
@@ -53,6 +59,24 @@ class InfoLayout
 			field : "main",
 			validator : function(v) return Std.is(v, String),
 			filter : null
+		}, {
+			field : "titleontop",
+			validator : function(v) return Std.is(v, Bool),
+			filter : function(v) return [ {
+				value : v,
+				field : "titleOnTop"
+			}]
+		}, {
+			field : "yscaleposition",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) return [ {
+				value : v,
+				field : switch(v) {
+					case "alt", "alternate", "alternating": LayoutScaleY.ScalesAlternating;
+					case "right": LayoutScaleY.ScalesOnRight;
+					default: LayoutScaleY.ScalesOnLeft;
+				}
+			}]
 		}];
 	}
 }

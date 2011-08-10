@@ -17,9 +17,4 @@ class Variable<T>
 		this.min = min;
 		this.max = max;
 	}
-	
-	public dynamic function scaleDataSet(arr : Array<DataPoint>)
-	{
-		return arr;
-	}
 }

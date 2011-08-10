@@ -33,7 +33,7 @@ class FactoryLayout
 		if (null == layoutName)
 			throw new Error("unable to find a suitable layout for '{0}'", info.type);
 		var layout = Visualizations.instantiateLayout(layoutName, width, height, container);
-		layout.mainPanelName = info.main;
+		layout.feedOptions(info);
 		return layout;
 	}
 }

@@ -16,7 +16,7 @@ class AxisNumeric implements IAxis<Float>
 	
 	public function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>
 	{
-		return Tickmarks.forFloat(start, end, value);
+		return Tickmarks.forFloat(start, end, value, true);
 	}
 
 	public function ticks(start : Float, end : Float, ?maxTicks : Int) : Array<ITickmark<Float>>

@@ -76,7 +76,6 @@ class DataProcessor
 	
 	function process(data : Array<Array<DataPoint>>)
 	{
-//		trace(data);
 		if (null == data || data.length == 0 || data[0].length == 0)
 		{
 			onData.dispatch([]);
@@ -96,25 +95,13 @@ class DataProcessor
 				if(subset.length > 0)
 					subsets.push(subset);
 			}
-			dataPoints = pushDataPoints(subsets, dataPoints);
+			if (subsets.length == 0 || subsets[0].length == 0)
+				continue;
+			var transformed = transform(subsets);
+			dataPoints = dataPoints.concat(transformed);
 		}
-		
-		for (dv in dependentVariables)
-			dataPoints = dv.variable.scaleDataSet(dataPoints);
-		
 		fillDependentVariables(dataPoints);
-		
 		onData.dispatch(dataPoints);
-	}
-	
-	function pushDataPoints(subsets : Array<Array<DataPoint>>, dataPoints : Array<DataPoint>)
-	{
-		if (subsets.length == 0 || subsets[0].length == 0)
-			return dataPoints;
-		var transformed = transform(subsets);
-		for (idv in independentVariables)
-			transformed = idv.variable.scaleDataSet(transformed);
-		return dataPoints.concat(transformed);
 	}
 
 	function fillDependentVariables(data : Array<DataPoint>)

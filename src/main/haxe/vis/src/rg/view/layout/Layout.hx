@@ -4,6 +4,7 @@
  */
 
 package rg.view.layout;
+import rg.controller.info.InfoLayout;
 import rg.view.svg.panel.Panel;
 import rg.view.svg.panel.Space;
 import thx.js.Selection;
@@ -42,5 +43,10 @@ class Layout
 			default:
 				// do nothing
 		}
+	}
+	
+	public function feedOptions(info : InfoLayout)
+	{
+		this.mainPanelName = info.main;
 	}
 }

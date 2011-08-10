@@ -8,7 +8,8 @@ import rg.controller.App;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import thx.js.Dom;
 import thx.error.Error;
-import thx.svg.Symbol;
+//import thx.svg.Symbol;
+import rg.view.svg.util.SymbolCache;
  
 class JSBridge 
 {
@@ -36,7 +37,7 @@ class JSBridge
 		o.format  = Dynamics.format;
 		o.compare = Dynamics.compare;
 		o.dump    = Dynamics.string;
-		o.symbol  = Symbol;
+		o.symbol  = SymbolCache.cache;
 	}
 	
 	// make sure a thx.js.Selection is passed

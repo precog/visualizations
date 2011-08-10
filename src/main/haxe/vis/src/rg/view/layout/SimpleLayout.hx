@@ -7,6 +7,7 @@ package rg.view.layout;
 import thx.js.Selection;
 import rg.view.frame.FrameLayout;
 import rg.view.layout.Anchor;
+import rg.controller.info.InfoLayout;
 
 class SimpleLayout extends Layout
 {
@@ -14,11 +15,11 @@ class SimpleLayout extends Layout
 	var titleUsed : Bool;
 	var titleOnTop : Bool;
 
-	public function new(width : Int, height : Int, container : Selection, titleontop : Bool ) 
+	public function new(width : Int, height : Int, container : Selection) 
 	{
 		super(width, height, container);
 		titleUsed = false;
-		this.titleOnTop = titleontop;
+		titleOnTop = true;
 	}
 	
 	override public function getPanel(name : String) : PanelContext
@@ -37,5 +38,11 @@ class SimpleLayout extends Layout
 			default:
 				return null;
 		}
+	}
+	
+	override function feedOptions(info : InfoLayout)
+	{
+		super.feedOptions(info);
+		titleOnTop = info.titleOnTop;
 	}
 }

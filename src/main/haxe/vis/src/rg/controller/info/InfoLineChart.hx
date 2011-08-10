@@ -13,7 +13,7 @@ using rg.controller.info.Info;
 class InfoLineChart 
 {
 	public var animation : InfoAnimation;
-	public var segmenton : String;
+	public var segment : InfoSegment;
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
 	public var click : DataPoint -> Stats -> Void;
@@ -27,6 +27,7 @@ class InfoLineChart
 		animation = new InfoAnimation();
 		label = new InfoLabel();
 		line = new InfoLine();
+		segment = new InfoSegment();
 	}
 	
 	public static function filters()
@@ -41,7 +42,17 @@ class InfoLineChart
 		}, {
 			field : "segmenton",
 			validator : function(v) return Std.is(v, String),
-			filter : null
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed( { on : v } )
+			}]
+		}, {
+			field : "segment",
+			validator : function(v) return Types.isAnonymous(v),
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed(v)
+			}]
 		}, {
 			field : "y0property",
 			validator : function(v) return Std.is(v, String),

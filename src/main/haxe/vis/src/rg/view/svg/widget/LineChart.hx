@@ -106,21 +106,6 @@ class LineChart extends Layer
 		return scaledw;
 	}
 
-/*
-	function getY(pos : Int, f : DataPoint -> Float)
-	{
-		var h = height,
-			v = variableDependents[pos];
-		return function(d : DataPoint, i : Int)
-		{
-			var value   = f(d),
-				scaled  = v.axis.scale(v.min, v.max, value),
-				scaledh = scaled * h;
-			return h - scaledh;
-		}
-	}
-*/
-
 	function getY1(pos : Int)
 	{
 		var h = height,
@@ -177,10 +162,8 @@ class LineChart extends Layer
 		}
 	}
 	
-	public function data(input : Array<DataPoint>)
+	public function data(dps : Array<Array<Array<DataPoint>>>)
 	{
-		dps = transformData(input);
-		
 		var axisgroup = chart.selectAll("g.group").data(dps);
 		// axis enter
 		var axisenter = axisgroup.enter()
@@ -385,7 +368,7 @@ class LineChart extends Layer
 	{
 		click(dp, stats);
 	}
-	
+/*
 	function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
 	{
 		var results = [];
@@ -398,4 +381,5 @@ class LineChart extends Layer
 		}
 		return results;
 	}
+*/
 }

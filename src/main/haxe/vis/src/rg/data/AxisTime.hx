@@ -17,14 +17,15 @@ class AxisTime implements IAxisDiscrete<Float>
 	
 	public function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>
 	{
-		return Tickmarks.forFloat(start, end, value);
+		return Tickmarks.forFloat(start, end, value, true);
 	}
 	
 	public function ticks(start: Float, end: Float, ?upperBound: Int) : Array<ITickmark<Float>>
 	{
-		var span = end - start,
+		var p = periodicity,
+			span = end - start,
 			range = range(start, end).map(function(value, i) : ITickmark<Float> {
-			return new Tickmark(value, true, (value - start) / span);
+			return new TickmarkTime(value, true, (value - start) / span, p);
 		});
 		return Tickmarks.bound(range, upperBound);
 	}

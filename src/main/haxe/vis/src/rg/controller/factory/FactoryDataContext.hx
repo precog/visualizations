@@ -40,6 +40,12 @@ class FactoryDataContext
 				return res;
 			}
 		}
+		/*
+		if (null != info.scale)
+		{
+			processor.scale = info.scale;
+		}
+		*/
 		return new DataContext(info.name, processor);
 	}
 }

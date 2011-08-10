@@ -259,11 +259,18 @@
 	stroke: #999;
 }
 
-.rg line.tick
+.rg g.tickmark line
 {
 	stroke-width: 1;
 	shape-rendering: crispEdges;
 	stroke: #666;
+}
+
+.rg g.tickmark line.major
+{
+	stroke-width: 2;
+	shape-rendering: crispEdges;
+	stroke: #333;
 }
 
 .rg rect.panel-frame
@@ -551,7 +558,7 @@ font-size: 11px;
 	fill: #9f9;
 	fill-opacity: 0.4;
 	stroke: #393;
-	stroke-width: 0;
+	stroke-width: 1;
 	stroke-opacity: 0.4;
 }
 */

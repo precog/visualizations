@@ -20,8 +20,6 @@ class FactoryVariableDependent
 		var axiscreator = new FactoryAxis(),
 			axis = axiscreator.create(info.type, isnumeric, info.values);
 		var variable = new VariableDependent(info.type, axis, info.min, info.max);
-		if (null != info.scaleDataSet)
-			variable.scaleDataSet = info.scaleDataSet;
 		return variable;
 	}
 }

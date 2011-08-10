@@ -31,14 +31,14 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	public function toTickmark(start: T, end : T, value: T): ITickmark<T>
 	{
 		var r = range(start, end);
-		return new OrdinalTickmark(r.indexOf(value), r);
+		return new TickmarkOrdinal(r.indexOf(value), r);
 	}
 
 	public function ticks(start: T, end: T, ?upperBound: Int) : Array<ITickmark<T>>
 	{
 		if (0 == upperBound)
 			return [];	
-		var ticks : Array<ITickmark<T>> = cast OrdinalTickmark.fromArray(range(start, end));
+		var ticks : Array<ITickmark<T>> = cast TickmarkOrdinal.fromArray(range(start, end));
 		return Tickmarks.bound(ticks, upperBound);
 	}
 	
@@ -77,36 +77,4 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 			l = last;
 		return range(f, l).map(function(d, i) return t(f, l, d));
 	}
-}
-
-class OrdinalTickmark<T> implements ITickmark<T>
-{
-	public static function fromArray<T>(values : Array<T>)
-	{
-		return values.map(function(_, i) return new OrdinalTickmark<T>(i, values));
-	}
-	
-	var pos : Int;
-	var values : Array<T>;
-	public function new(pos : Int, values : Array<T>)
-	{
-		this.pos = pos;
-		this.values = values;
-	}
-	public var delta(getDelta, null) : Float;
-	function getDelta()
-	{
-		return pos / values.length;
-	}
-	
-	public var major(getMajor, null) : Bool;
-	function getMajor() return true
-	
-	public var value(getValue, null) : T;
-	function getValue()
-	{
-		return values[pos];
-	}
-	
-	function toString() return Tickmarks.string(this)
 }
