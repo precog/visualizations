@@ -11,6 +11,7 @@ import rg.data.IAxis;
 import rg.data.VariableIndependent;
 import thx.date.DateParser;
 import thx.error.Error;
+import rg.util.Periodicity;
 
 class FactoryVariableIndependent
 {
@@ -27,8 +28,8 @@ class FactoryVariableIndependent
 		if (Std.is(axis, AxisTime))
 		{
 			var periodicity = cast(axis, AxisTime).periodicity;
-			min = defaultMin(normalizeTime(info.min), periodicity);
-			max = defaultMax(normalizeTime(info.max), periodicity);
+			min = Dates.snap(defaultMin(normalizeTime(info.min), periodicity), periodicity);
+			max = Dates.snap(defaultMax(normalizeTime(info.max), periodicity), periodicity);
 		} else if (Std.is(axis, AxisGroupByTime))
 		{
 			var periodicity = cast(axis, AxisGroupByTime).groupBy;

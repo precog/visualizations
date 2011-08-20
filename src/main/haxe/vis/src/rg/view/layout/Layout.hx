@@ -23,17 +23,27 @@ class Layout
 		space = new Space(width, height, container);
 	}
 	
-	public function getPanel(name : String) : PanelContext
+	public function getContext(name : String) : PanelContext
+	{
+		return null;
+	}
+	
+	public function getPanel(name : String) : Panel
 	{
 		return null;
 	}
 	
 	public function suggestSize(name : String, size : Int)
 	{
-		var context = getPanel(name);
-		if (null == context)
+		var panel = getPanel(name);
+		if (null == panel)
 			return;
-		var stackitem = Types.as(context.panel.frame, StackItem);
+		suggestPanelSize(panel, size);
+	}
+	
+	function suggestPanelSize(panel : Panel, size : Int)
+	{
+		var stackitem = Types.as(panel.frame, StackItem);
 		if (null == stackitem)
 			return;
 		switch(stackitem.disposition)

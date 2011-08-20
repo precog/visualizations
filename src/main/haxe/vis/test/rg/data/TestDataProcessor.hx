@@ -141,9 +141,9 @@ class TestDataProcessor
 		
 		processor.onData.add(function(data) {
 			var expected = [
-				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310450400000, "1-12", "male", 2]),
-				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310454000000, "13-20", "female", 2]),
-				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310457600000, "21+", "male", 2])
+				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310425200000, "1-12", "male", 2]),
+				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310428800000, "13-20", "female", 2]),
+				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310432400000, "21+", "male", 2])
 			];
 			Assert.same(expected, data);
 		});

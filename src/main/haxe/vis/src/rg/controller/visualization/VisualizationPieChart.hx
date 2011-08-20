@@ -18,13 +18,12 @@ import rg.util.Properties;
 class VisualizationPieChart extends VisualizationSvg
 {
 	var chart : PieChart;
-	var panelContextTitle : Null<PanelContext>;
 	var title : Null<Title>;
 	public var info : InfoPieChart;
 	override function init()
 	{
 		// CHART
-		var panelChart = layout.getPanel(layout.mainPanelName).panel;
+		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new PieChart(panelChart);
 		
 		// aesthetic
@@ -55,30 +54,19 @@ class VisualizationPieChart extends VisualizationSvg
 			chart.mouseClick = info.click;
 		
 		// TITLE
-		panelContextTitle = layout.getPanel("title");
+		var panelContextTitle = layout.getContext("title");
 		if (null == panelContextTitle)
 			return;
 		title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
-	}
-	
-	static function defaultTitle(axes : Array<Variable<Dynamic>>, dps : Array<DataPoint>)
-	{
-		for (axis in axes)
-			if (Std.is(axis, VariableIndependent))
-				return Strings.ucwords(Properties.humanize(axis.type));
-		return null;
 	}
 	
 	// TODO move sort to axis
 	override function feedData(data : Array<DataPoint>)
 	{
 		chart.setVariables(independentVariables, dependentVariables);
-		if (null != title)
+		if (null != title && null != info.label.title)
 		{
-			if (null == info.label.title)
-				title.text = defaultTitle(variables, data);
-			else
-				title.text = info.label.title(variables, data);
+			title.text = info.label.title(variables, data);
 			layout.suggestSize("title", title.idealHeight());
 		}
 		if (null != info.sortDataPoint)

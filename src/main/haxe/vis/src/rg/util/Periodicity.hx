@@ -35,6 +35,34 @@ class Periodicity
 			return "minute";
 	}
 	
+	public static function unitsBetween(start : Float, end : Float, periodicity : String) : Int
+	{
+		return switch(periodicity)
+		{
+			case "eternity": 1;
+			case "minute":   Math.floor((end - start) / 60000);
+			case "hour":     Math.floor((end - start) / (60 * 60000));
+			case "day":      Math.floor((end - start) / (24 * 60 * 60000));
+			case "week":     Math.floor((end - start) / (7 * 24 * 60 * 60000));
+			case "month":
+				var s = Date.fromTime(start),
+					e = Date.fromTime(end),
+					sy = s.getFullYear(),
+					ey = e.getFullYear(),
+					sm = s.getMonth(),
+					em = e.getMonth();
+				ey - sy * 12 + em - sm;
+			case "year": Math.floor(unitsBetween(start, end, "month") / 12);
+		}
+	}
+	
+	public static function units(value : Float, periodicity : String) {
+		return unitsBetween(0, value, periodicity) + switch(periodicity) {
+			case "hour" : 1;
+			default: 0;
+		};
+	}
+	
 	public static function range(start : Float, end : Float, periodicity : String) : Array<Float>
 	{
 		var step = 1000;
@@ -140,11 +168,79 @@ class Periodicity
 		switch(periodicity)
 		{
 			case "eternity": return "all time";
-			case "minute", "hour": return FormatDate.timeShort(Date.fromTime(v));
+			case "minute": return FormatDate.timeShort(Date.fromTime(v));
+			case "hour": return FormatDate.hourShort(Date.fromTime(v));
 			case "day", "week": return FormatDate.dateShort(Date.fromTime(v));
 			case "month": return FormatDate.yearMonth(Date.fromTime(v));
 			case "year": return FormatDate.year(Date.fromTime(v));
 			default: return periodicity + ": " + v;
+		}
+	}
+	
+	public static function smartFormat(periodicity : String, v : Float) : String
+	{
+		var d = Date.fromTime(v);
+		switch(periodicity)
+		{
+			case "eternity": return "all time";
+			case "minute":
+				if (firstInSeries("hour", v))
+					return FormatDate.timeShort(d);
+				else
+					return FormatDate.format("%i", d);
+			case "hour":
+				if (firstInSeries("day", v))
+					return FormatDate.format("%b %e", d);
+				else
+					return FormatDate.hourShort(d);
+			case "day", "week":
+				if (firstInSeries("month", v))
+					return FormatDate.monthNameShort(d);
+				else
+					return FormatDate.dateShort(d);
+			case "month":
+				if (firstInSeries("year", v))
+					return FormatDate.year(Date.fromTime(v));
+				else
+					return FormatDate.yearMonth(d);
+			case "year":
+				return FormatDate.year(d);
+			default: return periodicity + ": " + d;
+		}
+	}
+	
+	public static function firstInSeries(periodicity : String, v : Float) : Bool
+	{
+		return switch(periodicity)
+		{
+			case "eternity": 0 == v;
+			case "minute":   0 == v % 60000;
+			case "hour":     0 == v % (60000 * 60);
+			case "day":
+				var d = Date.fromTime(v);
+				0 == d.getHours() && 0 == d.getMinutes() && 0 == d.getSeconds();
+			case "week":
+				var d = Date.fromTime(v);
+				0 == d.getDay();
+			case "month":
+				var d = Date.fromTime(v);
+				1 == d.getDay();
+			case "year":
+				var d = Date.fromTime(v);
+				1 == d.getDay() && 0 == d.getMonth();
+			default: false;
+		}
+	}
+	
+	public static function nextPeriodicity(periodicity : String) : String
+	{
+		return switch(periodicity)
+		{
+			case "minute":      "hour";
+			case "hour":        "day";
+			case "day", "week": "month";
+			case "month":       "year";
+			default: null;
 		}
 	}
 	

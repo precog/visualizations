@@ -17,7 +17,7 @@ class InfoLineChart
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
 	public var click : DataPoint -> Stats -> Void;
-	public var label : InfoLabel;
+	public var label : InfoLabelAxis;
 	public var line : InfoLine;
 	public var displayarea : Bool;
 	public var y0property : String;
@@ -25,7 +25,7 @@ class InfoLineChart
 	public function new() 
 	{
 		animation = new InfoAnimation();
-		label = new InfoLabel();
+		label = new InfoLabelAxis();
 		line = new InfoLine();
 		segment = new InfoSegment();
 	}
@@ -77,7 +77,7 @@ class InfoLineChart
 			validator : function(v) return Types.isAnonymous(v),
 			filter : function(v) return [{
 				field : "label",
-				value : new InfoLabelPivotTable().feed(v)
+				value : new InfoLabelAxis().feed(v)
 			}]
 		}, {
 			field : "line",

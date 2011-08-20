@@ -4,7 +4,7 @@
  */
 
 package rg.view.svg.widget;
-import rg.data.VariableIndependent;
+import rg.data.IAxis;
 import rg.view.layout.Anchor;
 import rg.view.svg.panel.Layer;
 import rg.view.svg.panel.Panel;
@@ -13,7 +13,6 @@ import thx.js.Dom;
 
 class ChartTickmarks extends Layer
 {
-	var variable : VariableIndependent<Dynamic>;
 	var anchor : Anchor;
 	
 	public var tickDisplay : Bool;
@@ -27,6 +26,7 @@ class ChartTickmarks extends Layer
 	public var labelOrientation : LabelOrientation;
 	public var labelAnchor : GridAnchor;
 	public var labelAngle : Float;
+	public var desiredSize(default, null) : Float;
 	
 	
 	var translate : ITickmark<Dynamic> -> Int -> String;
@@ -37,34 +37,65 @@ class ChartTickmarks extends Layer
 	var x : ITickmark<Dynamic> -> Int -> Float;
 	var y : ITickmark<Dynamic> -> Int -> Float;
 	
-	public function new(panel : Panel, variable : VariableIndependent<Dynamic>, anchor : Anchor) 
+	public function new(panel : Panel, anchor : Anchor) 
 	{
 		super(panel);
-		this.variable = variable;
 		this.anchor = anchor;
 		
 		tickDisplay = true;
-		tickMinorLength = 4;
-		tickMajorLength = 6;
-		tickMinorPadding = 6;
-		tickMajorPadding = 4;
+		tickMinorLength = 2;
+		tickMajorLength = 5;
+		tickMinorPadding = 1;
+		tickMajorPadding = 1;
 		labelDisplay = true;
-		labelMinorPadding = 12;
-		labelMajorPadding = 14;
+		labelMinorPadding = 6;
+		labelMajorPadding = 10;
 		
 		g.classed().add("tickmarks");
 		initf();
 	}
 	
-	public function update()
+	var axis : IAxis<Dynamic>;
+	var min : Dynamic;
+	var max : Dynamic;
+	
+	override function resize()
 	{
-		var data = variable.axis.ticks(variable.min, variable.max);
+		if (null == axis)
+			return;
+		redraw();
+	}
+	
+	public function update(axis : IAxis<Dynamic>, min : Dynamic, max : Dynamic)
+	{
+		this.axis = axis;
+		this.min = min;
+		this.max = max;
+		redraw();
+	}
+	
+	function maxTicks()
+	{
+		var size = switch(anchor)
+		{
+			case Left, Right: height;
+			case Top, Bottom: width;
+		}
+		return Math.round(size / 3);
+	}
+	
+	function redraw()
+	{
+		desiredSize = Math.max(tickMinorPadding + tickMinorLength, tickMajorPadding + tickMajorLength);
+		var ticks = maxTicks();
+		var data = axis.ticks(min, max, ticks);
 	
 		// ticks
-		var tick = g.selectAll("g.tickmark").data(data);
-		tick.enter()
-			.append("svg:g").attr("class").string("tickmark")
-			.attr("transform").stringf(translate)
+		var tick = g.selectAll("g.tick").data(data, function(d,i) return "" + d.value);
+		var enter = tick.enter()
+			.append("svg:g").attr("class").string("tick")
+			.attr("transform").stringf(translate);
+		enter
 			.append("svg:line")
 				.attr("x1").floatf(x1)
 				.attr("y1").floatf(y1)
@@ -73,22 +104,25 @@ class ChartTickmarks extends Layer
 				.attr("class").stringf(tickClass)
 		;
 		
-		// labels
-		var label = g.selectAll("g.label").data(data);
-		label.enter()
-			.append("svg:g").attr("class").string("label")
-			.attr("transform").stringf(translate)
-			.eachNode(createLabel);
+		enter.eachNode(createLabel);
+		
+		tick.update()
+			.attr("transform").stringf(translate);
+			
+		tick.exit()
+			.remove();
 	}
 	
 	function createLabel(n, i)
 	{
-		var node = Dom.selectNode(n),
-			d : ITickmark<Dynamic> = thx.js.Access.getData(n);
-		var label = new Label(node, true);
+		var d : ITickmark<Dynamic> = thx.js.Access.getData(n);
+		if (!d.major)
+			return;
+		var label = new Label(Dom.selectNode(n), false, true, false);
 		label.anchor = labelAnchor;
 		label.orientation = labelOrientation;
 		var padding = d.major ? labelMajorPadding : labelMinorPadding;
+		label.text = d.label;
 		switch(anchor)
 		{
 			case Top:
@@ -100,7 +134,16 @@ class ChartTickmarks extends Layer
 			case Right:
 				label.place(-padding, 0, labelAngle);
 		}
-		label.text = d.label;
+		
+		var s = switch(anchor)
+		{
+			case Top, Bottom:
+				label.getSize().height + padding;
+			case Left, Right:
+				label.getSize().width + padding;
+		};
+		if (s > desiredSize)
+			desiredSize = s;
 	}
 	
 	function initf()
@@ -163,39 +206,40 @@ class ChartTickmarks extends Layer
 				case Top:
 					labelAngle = 90;
 				case Bottom:
-					labelAngle = -90;
+					labelAngle = 90;
 				case Left:
 					labelAngle = 0;
 				case Right:
-					labelAngle = 180;
+					labelAngle = 0;
 			}
 		}
 	}
 	
 	inline function t(x : Float, y : Float) return "translate(" + x + "," + y + ")"
 	
-	function translateTop(d : ITickmark<Dynamic>, i : Int)return t(d.delta * panel.frame.width, 0)
-	function translateBottom(d : ITickmark<Dynamic>, i : Int) : String return t(d.delta * panel.frame.width, panel.frame.height)
-	function translateLeft(d : ITickmark<Dynamic>, i : Int) : String return t(0, panel.frame.height - d.delta * panel.frame.height)
-	function translateRight(d : ITickmark<Dynamic>, i : Int) : String return t(panel.frame.width, panel.frame.height - d.delta * panel.frame.height)
+	function translateTop(d : ITickmark<Dynamic>, i : Int)		return t(d.delta * panel.frame.width, 0)
+	function translateBottom(d : ITickmark<Dynamic>, i : Int)	return t(d.delta * panel.frame.width, panel.frame.height)
+	function translateLeft(d : ITickmark<Dynamic>, i : Int)		return t(0, panel.frame.height - d.delta * panel.frame.height)
+	function translateRight(d : ITickmark<Dynamic>, i : Int)	return t(panel.frame.width, panel.frame.height - d.delta * panel.frame.height)
 
-	function x1Top(d : ITickmark<Dynamic>, i : Int) : Float return 0
-	function x1Bottom(d : ITickmark<Dynamic>, i : Int) : Float return 0
-	function x1Left(d : ITickmark<Dynamic>, i : Int) : Float return d.major ? tickMajorPadding : tickMinorPadding
-	function x1Right(d : ITickmark<Dynamic>, i : Int) : Float return -(d.major ? tickMajorPadding : tickMinorPadding)
-	function y1Top(d : ITickmark<Dynamic>, i : Int) : Float return d.major ? tickMajorPadding : tickMinorPadding
-	function y1Bottom(d : ITickmark<Dynamic>, i : Int) : Float return -(d.major ? tickMajorPadding : tickMinorPadding)
-	function y1Left(d : ITickmark<Dynamic>, i : Int) : Float return 0
-	function y1Right(d : ITickmark<Dynamic>, i : Int) : Float return 0
+	function x1Top(d : ITickmark<Dynamic>, i : Int)		return 0
+	function x1Bottom(d : ITickmark<Dynamic>, i : Int)	return 0
+	function x1Left(d : ITickmark<Dynamic>, i : Int)	return d.major ? tickMajorPadding : tickMinorPadding
+	function x1Right(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? tickMajorPadding : tickMinorPadding)
+	function y1Top(d : ITickmark<Dynamic>, i : Int)		return d.major ? tickMajorPadding : tickMinorPadding
+	function y1Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? tickMajorPadding : tickMinorPadding)
+	function y1Left(d : ITickmark<Dynamic>, i : Int)	return 0
+	function y1Right(d : ITickmark<Dynamic>, i : Int)	return 0
 	
-	function x2Top(d : ITickmark<Dynamic>, i : Int) : Float return 0
-	function x2Bottom(d : ITickmark<Dynamic>, i : Int) : Float return 0
-	function x2Left(d : ITickmark<Dynamic>, i : Int) : Float return d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding
-	function x2Right(d : ITickmark<Dynamic>, i : Int) : Float return -(d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding)
-	function y2Top(d : ITickmark<Dynamic>, i : Int) : Float return (d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding)
-	function y2Bottom(d : ITickmark<Dynamic>, i : Int) : Float return -(d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding)
-	function y2Left(d : ITickmark<Dynamic>, i : Int) : Float return 0
-	function y2Right(d : ITickmark<Dynamic>, i : Int) : Float return 0
+	function x2Top(d : ITickmark<Dynamic>, i : Int)		return 0
+	function x2Bottom(d : ITickmark<Dynamic>, i : Int)	return 0
+	function x2Left(d : ITickmark<Dynamic>, i : Int)	return d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding
+	function x2Right(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding)
 	
-	function tickClass(d : ITickmark<Dynamic>, i : Int) return d.major ? "major" : null
+	function y2Top(d : ITickmark<Dynamic>, i : Int)		return d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding
+	function y2Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? tickMajorLength + tickMajorPadding : tickMinorLength + tickMinorPadding)
+	function y2Left(d : ITickmark<Dynamic>, i : Int)	return 0
+	function y2Right(d : ITickmark<Dynamic>, i : Int)	return 0
+	
+	function tickClass(d : ITickmark<Dynamic>, i : Int)	return d.major ? "major" : null
 }

@@ -6,6 +6,10 @@
 package rg;
 import rg.controller.App;
 import rg.data.source.rgquery.IExecutorReportGrid;
+import rg.util.Periodicity;
+import rg.util.Properties;
+import rg.util.RGStrings;
+import thx.date.DateParser;
 import thx.js.Dom;
 import thx.error.Error;
 //import thx.svg.Symbol;
@@ -38,6 +42,31 @@ class JSBridge
 		o.compare = Dynamics.compare;
 		o.dump    = Dynamics.string;
 		o.symbol  = SymbolCache.cache;
+		o.date = { 
+			range : function(a : Dynamic, b : Dynamic, p : String) {
+				if (Std.is(a, String))
+					a = DateParser.parse(a);
+				if (null == a)
+					a = Periodicity.defaultRange(p)[0];
+				if (Std.is(a, Date))
+					a = a.getTime();
+				
+				if (Std.is(b, String))
+					b = DateParser.parse(b);
+				if (null == b)
+					b = Periodicity.defaultRange(p)[1];
+				if (Std.is(b, Date))
+					b = b.getTime();
+				return Periodicity.range(a, b, p);
+			},
+			parse : DateParser.parse
+		};
+		o.humanize = function(v : Dynamic)
+		{
+			if (Std.is(v, String) && Properties.isTime(v))
+				return Properties.periodicity(v);
+			return RGStrings.humanize(v);
+		}
 	}
 	
 	// make sure a thx.js.Selection is passed

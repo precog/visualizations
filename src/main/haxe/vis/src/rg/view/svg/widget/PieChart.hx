@@ -228,7 +228,7 @@ class PieChart extends Layer
 	function appendLabel(dom, i : Int)
 	{
 		var n = Dom.selectNode(dom),
-			label = new Label(n, labelDontFlip),
+			label = new Label(n, labelDontFlip, true, true),
 			d : { startAngle : Float, endAngle : Float, id : String, dp : DataPoint } = Access.getData(dom),
 			r = radius * labelRadius,
 			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;

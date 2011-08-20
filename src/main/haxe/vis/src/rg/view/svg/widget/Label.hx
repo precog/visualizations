@@ -7,6 +7,7 @@ package rg.view.svg.widget;
 import thx.js.Selection;
 import rg.view.svg.widget.LabelOrientation;
 import rg.view.svg.widget.GridAnchor;
+using Arrays;
 
 class Label 
 {	
@@ -17,38 +18,59 @@ class Label
 	public var y(default, null) : Float;
 	public var angle(default, null) : Float;
 	public var dontFlip(default, null) : Bool;
-	public var shadowOffset(default, setShadowOffset) : Float;
+	public var shadowOffsetX(default, null) : Float;
+	public var shadowOffsetY(default, null) : Float;
+	public var shadow(default, null) : Bool;
+	public var outline(default, null) : Bool;
 	
 	var g : Selection;
-	var gs : Selection;
-	var r : Selection;
-	var gr : Selection;
-	var t : Selection;
-	var tbg : Selection;
-	var s : Selection;
+	var gshadow : Selection;
+	var gtext : Selection;
+	var gshadowrot : Selection;
+	var ttext : Selection;
+	var toutline : Selection;
+	var tshadow : Selection;
 //	var b : Selection;
 	
-	public function new(container : Selection, dontflip = true) 
+	public function new(container : Selection, dontflip = true, shadow : Bool, outline : Bool) 
 	{
-		g = container.append("svg:g")
-			.attr("class").string("label");
-		gs = g.append("svg:g").attr("transform").string("translate(0,0)");
-		gr = gs.append("svg:g");
-		r = g.append("svg:g");
-//		b = r.append("svg:rect").style("fill").string("none");
+		this.shadow = shadow;
+		this.outline = outline;
+		
+		g = container.append("svg:g").attr("class").string("label");
+		if (shadow)
+		{
+			gshadow = g.append("svg:g").attr("transform").string("translate(0,0)");
+			gshadowrot = gshadow.append("svg:g");
+			tshadow = gshadowrot.append("svg:text").attr("class").string("shadow" + (outline ? "" : " nooutline"));
+		}
+		
+//		b = gtext.append("svg:rect").style("fill").string("none");
 //		b.style("stroke").string("#333");
 		
-		s = gr.append("svg:text").attr("class").string("shadow");
-		tbg = r.append("svg:text").attr("class").string("bg");
-		t = r.append("svg:text");
+		gtext = g.append("svg:g");
+		if(outline)
+			toutline = gtext.append("svg:text").attr("class").string("outline" + (shadow ? "" : " noshadow"));
+		var cls = [].addIf(!outline, "nooutline").addIf(!shadow, "noshadow");
+		ttext = gtext.append("svg:text").attr("class").string(cls.join(" "));
 		
 		this.dontFlip = dontflip;
-		shadowOffset = 1.25;
+		if (outline)
+		{
+			setShadowOffset(1, 1.25);
+		} else {
+			setShadowOffset(0.5, 0.5);
+		}
 		x = 0;
 		y = 0;
 		angle = 0;
 		Reflect.setField(this, "orientation", FixedAngle(0));
 		Reflect.setField(this, "anchor", Center);
+	}
+	
+	public function getSize() : { width : Float, height : Float }
+	{
+		return untyped g.node().getBBox();
 	}
 	
 	public function place(x : Float, y : Float, angle : Float)
@@ -62,33 +84,37 @@ class Label
 		switch(orientation)
 		{
 			case FixedAngle(a):
-				r.attr("transform").string("rotate(" + a + ")");
+				gtext.attr("transform").string("rotate(" + a + ")");
 			case Aligned:
 				if (dontFlip && this.angle > 90 && this.angle < 270)
 					angle += 180;
-				r.attr("transform").string("rotate(" + angle + ")");
+				gtext.attr("transform").string("rotate(" + angle + ")");
 			case Orthogonal:
 				if (dontFlip && this.angle > 180)
 					angle -= 180;
-				r.attr("transform").string("rotate(" + (-90 + angle) + ")");
+				gtext.attr("transform").string("rotate(" + (-90 + angle) + ")");
 		}
-		gr.attr("transform").string(r.attr("transform").get());
+		if (shadow)
+			gshadowrot.attr("transform").string(gtext.attr("transform").get());
 		reanchor();
 	}
 	
-	function setShadowOffset(v : Float)
+	function setShadowOffset(x : Float, y : Float)
 	{
-		shadowOffset = v;
-		gs.attr("transform").string("translate("+v+","+v+")");
-		return v;
+		shadowOffsetX = x;
+		shadowOffsetY = y;
+		if (shadow)
+			gshadow.attr("transform").string("translate("+shadowOffsetX+","+shadowOffsetY+")");
 	}
 	
 	function setText(v : String)
 	{
 		this.text = v;
-		tbg.text().string(v);
-		t.text().string(v);
-		s.text().string(v);
+		if (outline)
+			toutline.text().string(v);
+		ttext.text().string(v);
+		if (shadow)
+			tshadow.text().string(v);
 		reanchor();
 		return v;
 	}
@@ -109,11 +135,11 @@ class Label
 	
 	function getBB() : { width : Float, height : Float }
 	{
-		var h = t.style("font-size").getFloat();
+		var h = ttext.style("font-size").getFloat();
 		if (null == h || 0 >= h)
-			h = untyped t.node().getExtentOfChar("A").height;
+			h = untyped ttext.node().getExtentOfChar("A").height;
 		return {
-			width : untyped t.node().getComputedTextLength(),
+			width : untyped ttext.node().getComputedTextLength(),
 			height : h
 		}
 	}
@@ -195,9 +221,11 @@ class Label
 				x = -bb.width;
 				y = 0;
 		}
-		tbg.attr("x").float(x+0.5).attr("y").float(y-1.5);
-		t.attr("x").float(x+0.5).attr("y").float(y-1.5);
-		s.attr("x").float(x+0.5).attr("y").float(y-1.5);
+		if (outline)
+			toutline.attr("x").float(x+0.5).attr("y").float(y-1.5);
+		ttext.attr("x").float(x + 0.5).attr("y").float(y - 1.5);
+		if (shadow)
+			tshadow.attr("x").float(x+0.5).attr("y").float(y-1.5);
 //		b.attr("x").float(x).attr("y").float(y-bb.height);
 	}
 	

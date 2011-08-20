@@ -309,7 +309,7 @@ class LineChart extends Layer
 				var f = this.labelDataPoint;
 				gsymbol.eachNode(function(n, i) {
 					var dp = Access.getData(n),
-						label = new Label(thx.js.Dom.selectNode(n));
+						label = new Label(thx.js.Dom.selectNode(n), true, true, true);
 					label.text = f(dp, stats);
 //					label.orientation = LabelOrientation.Aligned;
 //					label.place(3, 3, -30);

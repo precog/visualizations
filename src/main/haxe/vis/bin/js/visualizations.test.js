@@ -1872,6 +1872,401 @@ rg.controller.info.DomKind.Html.__enum__ = rg.controller.info.DomKind;
 rg.controller.info.DomKind.Svg = ["Svg",1];
 rg.controller.info.DomKind.Svg.toString = $estr;
 rg.controller.info.DomKind.Svg.__enum__ = rg.controller.info.DomKind;
+if(!rg.view.svg.panel) rg.view.svg.panel = {}
+rg.view.svg.panel.Layer = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.panel.Layer::new");
+	var $spos = $s.length;
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.g = panel.g.append("svg:g");
+	this.g.attr("class").string("layer");
+	this._resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
+rg.view.svg.panel.Layer.prototype.panel = null;
+rg.view.svg.panel.Layer.prototype.frame = null;
+rg.view.svg.panel.Layer.prototype.g = null;
+rg.view.svg.panel.Layer.prototype.width = null;
+rg.view.svg.panel.Layer.prototype.height = null;
+rg.view.svg.panel.Layer.prototype.customClass = null;
+rg.view.svg.panel.Layer.prototype.addClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::addClass");
+	var $spos = $s.length;
+	this.g.classed().add(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.removeClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::removeClass");
+	var $spos = $s.length;
+	this.g.classed().remove(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.toggleClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::toggleClass");
+	var $spos = $s.length;
+	this.g.classed().toggle(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype._resize = function() {
+	$s.push("rg.view.svg.panel.Layer::_resize");
+	var $spos = $s.length;
+	this.width = this.frame.width;
+	this.height = this.frame.height;
+	this.resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.resize = function() {
+	$s.push("rg.view.svg.panel.Layer::resize");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.destroy = function() {
+	$s.push("rg.view.svg.panel.Layer::destroy");
+	var $spos = $s.length;
+	var p = this.panel;
+	p.removeLayer(this);
+	this.g.remove();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
+	$s.push("rg.view.svg.panel.Layer::setCustomClass");
+	var $spos = $s.length;
+	if(null != this.customClass) this.g.classed().remove(this.customClass);
+	this.g.classed().add(v);
+	var $tmp = this.customClass = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
+rg.view.svg.widget.ChartTickmarks = function(panel,variable,anchor) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.widget.ChartTickmarks::new");
+	var $spos = $s.length;
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.variable = variable;
+	this.anchor = anchor;
+	this.tickDisplay = true;
+	this.tickMinorLength = 4;
+	this.tickMajorLength = 6;
+	this.tickMinorPadding = 6;
+	this.tickMajorPadding = 4;
+	this.labelDisplay = true;
+	this.labelMinorPadding = 12;
+	this.labelMajorPadding = 14;
+	this.g.classed().add("tickmarks");
+	this.initf();
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.__name__ = ["rg","view","svg","widget","ChartTickmarks"];
+rg.view.svg.widget.ChartTickmarks.__super__ = rg.view.svg.panel.Layer;
+for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.ChartTickmarks.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.widget.ChartTickmarks.prototype.variable = null;
+rg.view.svg.widget.ChartTickmarks.prototype.anchor = null;
+rg.view.svg.widget.ChartTickmarks.prototype.tickDisplay = null;
+rg.view.svg.widget.ChartTickmarks.prototype.tickMinorLength = null;
+rg.view.svg.widget.ChartTickmarks.prototype.tickMajorLength = null;
+rg.view.svg.widget.ChartTickmarks.prototype.tickMinorPadding = null;
+rg.view.svg.widget.ChartTickmarks.prototype.tickMajorPadding = null;
+rg.view.svg.widget.ChartTickmarks.prototype.labelDisplay = null;
+rg.view.svg.widget.ChartTickmarks.prototype.labelMinorPadding = null;
+rg.view.svg.widget.ChartTickmarks.prototype.labelMajorPadding = null;
+rg.view.svg.widget.ChartTickmarks.prototype.labelOrientation = null;
+rg.view.svg.widget.ChartTickmarks.prototype.labelAnchor = null;
+rg.view.svg.widget.ChartTickmarks.prototype.labelAngle = null;
+rg.view.svg.widget.ChartTickmarks.prototype.translate = null;
+rg.view.svg.widget.ChartTickmarks.prototype.x1 = null;
+rg.view.svg.widget.ChartTickmarks.prototype.y1 = null;
+rg.view.svg.widget.ChartTickmarks.prototype.x2 = null;
+rg.view.svg.widget.ChartTickmarks.prototype.y2 = null;
+rg.view.svg.widget.ChartTickmarks.prototype.x = null;
+rg.view.svg.widget.ChartTickmarks.prototype.y = null;
+rg.view.svg.widget.ChartTickmarks.prototype.update = function() {
+	$s.push("rg.view.svg.widget.ChartTickmarks::update");
+	var $spos = $s.length;
+	var data = this.variable.axis.ticks(this.variable.min,this.variable.max);
+	var tick = this.g.selectAll("g.tickmark").data(data);
+	tick.enter().append("svg:g").attr("class").string("tickmark").attr("transform").stringf(this.translate).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($closure(this,"tickClass"));
+	var label = this.g.selectAll("g.label").data(data);
+	label.enter().append("svg:g").attr("class").string("label").attr("transform").stringf(this.translate).eachNode($closure(this,"createLabel"));
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.createLabel = function(n,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::createLabel");
+	var $spos = $s.length;
+	var node = thx.js.Dom.selectNode(n), d = Reflect.field(n,"__data__");
+	var label = new rg.view.svg.widget.Label(node,true);
+	label.setAnchor(this.labelAnchor);
+	label.setOrientation(this.labelOrientation);
+	var padding = d.getMajor()?this.labelMajorPadding:this.labelMinorPadding;
+	switch( (this.anchor)[1] ) {
+	case 0:
+		label.place(0,padding,this.labelAngle);
+		break;
+	case 1:
+		label.place(0,-padding,this.labelAngle);
+		break;
+	case 2:
+		label.place(padding,0,this.labelAngle);
+		break;
+	case 3:
+		label.place(-padding,0,this.labelAngle);
+		break;
+	}
+	label.setText(d.getLabel());
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.initf = function() {
+	$s.push("rg.view.svg.widget.ChartTickmarks::initf");
+	var $spos = $s.length;
+	switch( (this.anchor)[1] ) {
+	case 0:
+		this.translate = $closure(this,"translateTop");
+		this.x1 = $closure(this,"x1Top");
+		this.y1 = $closure(this,"y1Top");
+		this.x2 = $closure(this,"x2Top");
+		this.y2 = $closure(this,"y2Top");
+		break;
+	case 1:
+		this.translate = $closure(this,"translateBottom");
+		this.x1 = $closure(this,"x1Bottom");
+		this.y1 = $closure(this,"y1Bottom");
+		this.x2 = $closure(this,"x2Bottom");
+		this.y2 = $closure(this,"y2Bottom");
+		break;
+	case 2:
+		this.translate = $closure(this,"translateLeft");
+		this.x1 = $closure(this,"x1Left");
+		this.y1 = $closure(this,"y1Left");
+		this.x2 = $closure(this,"x2Left");
+		this.y2 = $closure(this,"y2Left");
+		break;
+	case 3:
+		this.translate = $closure(this,"translateRight");
+		this.x1 = $closure(this,"x1Right");
+		this.y1 = $closure(this,"y1Right");
+		this.x2 = $closure(this,"x2Right");
+		this.y2 = $closure(this,"y2Right");
+		break;
+	}
+	if(null == this.labelOrientation) {
+		switch( (this.anchor)[1] ) {
+		case 0:
+		case 1:
+			this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
+			break;
+		case 2:
+		case 3:
+			this.labelOrientation = rg.view.svg.widget.LabelOrientation.Aligned;
+			break;
+		}
+	}
+	if(null == this.labelAnchor) {
+		switch( (this.anchor)[1] ) {
+		case 0:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Top;
+			break;
+		case 1:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Bottom;
+			break;
+		case 2:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
+			break;
+		case 3:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Right;
+			break;
+		}
+	}
+	if(null == this.labelAngle) {
+		switch( (this.anchor)[1] ) {
+		case 0:
+			this.labelAngle = 90;
+			break;
+		case 1:
+			this.labelAngle = -90;
+			break;
+		case 2:
+			this.labelAngle = 0;
+			break;
+		case 3:
+			this.labelAngle = 180;
+			break;
+		}
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.t = function(x,y) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::t");
+	var $spos = $s.length;
+	var $tmp = "translate(" + x + "," + y + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.translateTop = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::translateTop");
+	var $spos = $s.length;
+	var $tmp = "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.translateBottom = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::translateBottom");
+	var $spos = $s.length;
+	var $tmp = "translate(" + d.getDelta() * this.panel.frame.width + "," + this.panel.frame.height + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.translateLeft = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::translateLeft");
+	var $spos = $s.length;
+	var $tmp = "translate(" + 0 + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.translateRight = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::translateRight");
+	var $spos = $s.length;
+	var $tmp = "translate(" + this.panel.frame.width + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x1Top = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x1Top");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x1Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x1Bottom");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x1Left = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x1Left");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.tickMajorPadding:this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x1Right = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x1Right");
+	var $spos = $s.length;
+	var $tmp = -d.getMajor()?this.tickMajorPadding:this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y1Top = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y1Top");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.tickMajorPadding:this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y1Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y1Bottom");
+	var $spos = $s.length;
+	var $tmp = -d.getMajor()?this.tickMajorPadding:this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y1Left = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y1Left");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y1Right = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y1Right");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x2Top = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x2Top");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x2Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x2Bottom");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x2Left = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x2Left");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.x2Right = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::x2Right");
+	var $spos = $s.length;
+	var $tmp = -d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y2Top = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y2Top");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y2Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y2Bottom");
+	var $spos = $s.length;
+	var $tmp = -d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y2Left = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y2Left");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.y2Right = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::y2Right");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.tickClass = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartTickmarks::tickClass");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?"major":null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartTickmarks.prototype.__class__ = rg.view.svg.widget.ChartTickmarks;
 if(!rg.view.html) rg.view.html = {}
 if(!rg.view.html.widget) rg.view.html.widget = {}
 rg.view.html.widget.Leadeboard = function(container) {
@@ -2038,7 +2433,7 @@ rg.data.AxisOrdinal.prototype.toTickmark = function(start,end,value) {
 	$s.push("rg.data.AxisOrdinal::toTickmark");
 	var $spos = $s.length;
 	var r = this.range(start,end);
-	var $tmp = new rg.data.OrdinalTickmark(r.indexOf(value),r);
+	var $tmp = new rg.data.TickmarkOrdinal(r.indexOf(value),r);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -2051,7 +2446,7 @@ rg.data.AxisOrdinal.prototype.ticks = function(start,end,upperBound) {
 		$s.pop();
 		return $tmp;
 	}
-	var ticks = rg.data.OrdinalTickmark.fromArray(this.range(start,end));
+	var ticks = rg.data.TickmarkOrdinal.fromArray(this.range(start,end));
 	var $tmp = rg.data.Tickmarks.bound(ticks,upperBound);
 	$s.pop();
 	return $tmp;
@@ -2122,74 +2517,6 @@ rg.data.AxisOrdinal.prototype.getAllTicks = function() {
 }
 rg.data.AxisOrdinal.prototype.__class__ = rg.data.AxisOrdinal;
 rg.data.AxisOrdinal.__interfaces__ = [rg.data.IAxisOrdinal];
-rg.data.ITickmark = function() { }
-rg.data.ITickmark.__name__ = ["rg","data","ITickmark"];
-rg.data.ITickmark.prototype.delta = null;
-rg.data.ITickmark.prototype.major = null;
-rg.data.ITickmark.prototype.value = null;
-rg.data.ITickmark.prototype.__class__ = rg.data.ITickmark;
-rg.data.OrdinalTickmark = function(pos,values) {
-	if( pos === $_ ) return;
-	$s.push("rg.data.OrdinalTickmark::new");
-	var $spos = $s.length;
-	this.pos = pos;
-	this.values = values;
-	$s.pop();
-}
-rg.data.OrdinalTickmark.__name__ = ["rg","data","OrdinalTickmark"];
-rg.data.OrdinalTickmark.fromArray = function(values) {
-	$s.push("rg.data.OrdinalTickmark::fromArray");
-	var $spos = $s.length;
-	var $tmp = values.map(function(_,i) {
-		$s.push("rg.data.OrdinalTickmark::fromArray@86");
-		var $spos = $s.length;
-		var $tmp = new rg.data.OrdinalTickmark(i,values);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.OrdinalTickmark.prototype.pos = null;
-rg.data.OrdinalTickmark.prototype.values = null;
-rg.data.OrdinalTickmark.prototype.delta = null;
-rg.data.OrdinalTickmark.prototype.getDelta = function() {
-	$s.push("rg.data.OrdinalTickmark::getDelta");
-	var $spos = $s.length;
-	var $tmp = this.pos / this.values.length;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.OrdinalTickmark.prototype.major = null;
-rg.data.OrdinalTickmark.prototype.getMajor = function() {
-	$s.push("rg.data.OrdinalTickmark::getMajor");
-	var $spos = $s.length;
-	$s.pop();
-	return true;
-	$s.pop();
-}
-rg.data.OrdinalTickmark.prototype.value = null;
-rg.data.OrdinalTickmark.prototype.getValue = function() {
-	$s.push("rg.data.OrdinalTickmark::getValue");
-	var $spos = $s.length;
-	var $tmp = this.values[this.pos];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.OrdinalTickmark.prototype.toString = function() {
-	$s.push("rg.data.OrdinalTickmark::toString");
-	var $spos = $s.length;
-	var $tmp = rg.data.Tickmarks.string(this);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.OrdinalTickmark.prototype.__class__ = rg.data.OrdinalTickmark;
-rg.data.OrdinalTickmark.__interfaces__ = [rg.data.ITickmark];
 if(!rg.view.frame) rg.view.frame = {}
 rg.view.frame.Orientation = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
 rg.view.frame.Orientation.Vertical = ["Vertical",0];
@@ -2274,84 +2601,6 @@ rg.controller.info.Info.feed = function(info,o) {
 	$s.pop();
 }
 rg.controller.info.Info.prototype.__class__ = rg.controller.info.Info;
-rg.view.svg.widget.LineEffect = { __ename__ : ["rg","view","svg","widget","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
-rg.view.svg.widget.LineEffect.NoEffect = ["NoEffect",0];
-rg.view.svg.widget.LineEffect.NoEffect.toString = $estr;
-rg.view.svg.widget.LineEffect.NoEffect.__enum__ = rg.view.svg.widget.LineEffect;
-rg.view.svg.widget.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.view.svg.widget.LineEffect; $x.toString = $estr; return $x; }
-rg.view.svg.widget.LineEffect.DropShadow = ["DropShadow",2];
-rg.view.svg.widget.LineEffect.DropShadow.toString = $estr;
-rg.view.svg.widget.LineEffect.DropShadow.__enum__ = rg.view.svg.widget.LineEffect;
-if(!rg.view.svg.panel) rg.view.svg.panel = {}
-rg.view.svg.panel.Layer = function(panel) {
-	if( panel === $_ ) return;
-	$s.push("rg.view.svg.panel.Layer::new");
-	var $spos = $s.length;
-	this.frame = (this.panel = panel).frame;
-	var p = panel;
-	p.addLayer(this);
-	this.g = panel.g.append("svg:g");
-	this.g.attr("class").string("layer");
-	this._resize();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
-rg.view.svg.panel.Layer.prototype.panel = null;
-rg.view.svg.panel.Layer.prototype.frame = null;
-rg.view.svg.panel.Layer.prototype.g = null;
-rg.view.svg.panel.Layer.prototype.width = null;
-rg.view.svg.panel.Layer.prototype.height = null;
-rg.view.svg.panel.Layer.prototype.customClass = null;
-rg.view.svg.panel.Layer.prototype.addClass = function(name) {
-	$s.push("rg.view.svg.panel.Layer::addClass");
-	var $spos = $s.length;
-	this.g.classed().add(name);
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.removeClass = function(name) {
-	$s.push("rg.view.svg.panel.Layer::removeClass");
-	var $spos = $s.length;
-	this.g.classed().remove(name);
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.toggleClass = function(name) {
-	$s.push("rg.view.svg.panel.Layer::toggleClass");
-	var $spos = $s.length;
-	this.g.classed().toggle(name);
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype._resize = function() {
-	$s.push("rg.view.svg.panel.Layer::_resize");
-	var $spos = $s.length;
-	this.width = this.frame.width;
-	this.height = this.frame.height;
-	this.resize();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.resize = function() {
-	$s.push("rg.view.svg.panel.Layer::resize");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.destroy = function() {
-	$s.push("rg.view.svg.panel.Layer::destroy");
-	var $spos = $s.length;
-	var p = this.panel;
-	p.removeLayer(this);
-	this.g.remove();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
-	$s.push("rg.view.svg.panel.Layer::setCustomClass");
-	var $spos = $s.length;
-	if(null != this.customClass) this.g.classed().remove(this.customClass);
-	this.g.classed().add(v);
-	var $tmp = this.customClass = v;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
 rg.view.svg.widget.Title = function(panel,text,anchor,padding,className) {
 	if( panel === $_ ) return;
 	$s.push("rg.view.svg.widget.Title::new");
@@ -2444,6 +2693,12 @@ rg.view.svg.widget.Title.prototype.setPadding = function(v) {
 	$s.pop();
 }
 rg.view.svg.widget.Title.prototype.__class__ = rg.view.svg.widget.Title;
+rg.view.svg.widget.LineEffect = { __ename__ : ["rg","view","svg","widget","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
+rg.view.svg.widget.LineEffect.NoEffect = ["NoEffect",0];
+rg.view.svg.widget.LineEffect.NoEffect.toString = $estr;
+rg.view.svg.widget.LineEffect.NoEffect.__enum__ = rg.view.svg.widget.LineEffect;
+rg.view.svg.widget.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.view.svg.widget.LineEffect; $x.toString = $estr; return $x; }
+rg.view.svg.widget.LineEffect.DropShadow = function(ox,oy,evels) { var $x = ["DropShadow",2,ox,oy,evels]; $x.__enum__ = rg.view.svg.widget.LineEffect; $x.toString = $estr; return $x; }
 rg.controller.info.TestInfoVariable = function(p) {
 	$s.push("rg.controller.info.TestInfoVariable::new");
 	var $spos = $s.length;
@@ -4666,29 +4921,66 @@ rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.vis
 for(var k in rg.controller.visualization.VisualizationSvg.prototype ) rg.controller.visualization.VisualizationLineChart.prototype[k] = rg.controller.visualization.VisualizationSvg.prototype[k];
 rg.controller.visualization.VisualizationLineChart.prototype.info = null;
 rg.controller.visualization.VisualizationLineChart.prototype.chart = null;
+rg.controller.visualization.VisualizationLineChart.prototype.xlabel = null;
 rg.controller.visualization.VisualizationLineChart.prototype.init = function() {
 	$s.push("rg.controller.visualization.VisualizationLineChart::init");
+	var $spos = $s.length;
+	this.initXAxis();
+	this.initChart();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLineChart.prototype.initXAxis = function() {
+	$s.push("rg.controller.visualization.VisualizationLineChart::initXAxis");
+	var $spos = $s.length;
+	var context = this.layout.getPanel("x");
+	if(null == context) {
+		$s.pop();
+		return;
+	}
+	var panel = context.panel, anchor = context.anchor;
+	this.xlabel = new rg.view.svg.widget.ChartTickmarks(panel,this.independentVariables[0],anchor);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLineChart.prototype.initChart = function() {
+	$s.push("rg.controller.visualization.VisualizationLineChart::initChart");
 	var $spos = $s.length;
 	var main = this.layout.getPanel(this.layout.mainPanelName).panel;
 	this.chart = new rg.view.svg.widget.LineChart(main);
 	this.chart.animated = this.info.animation.animated;
 	this.chart.animationDuration = this.info.animation.duration;
 	this.chart.animationEase = this.info.animation.ease;
-	this.chart.segmenton = this.info.segmenton;
 	this.chart.symbol = this.info.symbol;
 	this.chart.symbolStyle = this.info.symbolStyle;
 	this.chart.click = this.info.click;
 	this.chart.labelDataPoint = this.info.label.datapoint;
 	this.chart.labelDataPointOver = this.info.label.datapointover;
-	this.chart.lineInterpolator = this.info.lineInterpolator;
+	this.chart.lineInterpolator = this.info.line.interpolation;
+	this.chart.lineEffect = this.info.line.effect;
+	if(null != this.info.y0property) this.chart.y0property = this.info.y0property; else if(this.info.displayarea) this.chart.y0property = "";
 	this.chart.init();
 	$s.pop();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.feedData = function(data) {
 	$s.push("rg.controller.visualization.VisualizationLineChart::feedData");
 	var $spos = $s.length;
+	if(null != this.xlabel) this.xlabel.update();
 	this.chart.setVariables(this.independentVariables,this.dependentVariables);
-	this.chart.data(data);
+	this.chart.data(this.transformData(data));
+	$s.pop();
+}
+rg.controller.visualization.VisualizationLineChart.prototype.transformData = function(dps) {
+	$s.push("rg.controller.visualization.VisualizationLineChart::transformData");
+	var $spos = $s.length;
+	var results = [], segmenter = new rg.data.Segmenter(this.info.segment.on,this.info.segment.transform,this.info.segment.scale);
+	var _g1 = 0, _g = this.dependentVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var variable = this.dependentVariables[i];
+		var values = rg.util.DataPoints.filterByDependents(dps,[variable]);
+		results.push(segmenter.segment(values));
+	}
+	$s.pop();
+	return results;
 	$s.pop();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.destroy = function() {
@@ -4707,6 +4999,8 @@ rg.controller.info.InfoLayout = function(p) {
 	$s.push("rg.controller.info.InfoLayout::new");
 	var $spos = $s.length;
 	this.main = "main";
+	this.titleOnTop = true;
+	this.layoutScaleY = rg.view.layout.LayoutScaleY.ScalesAlternating;
 	$s.pop();
 }
 rg.controller.info.InfoLayout.__name__ = ["rg","controller","info","InfoLayout"];
@@ -4714,69 +5008,110 @@ rg.controller.info.InfoLayout.filters = function() {
 	$s.push("rg.controller.info.InfoLayout::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "layout", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@24");
+		$s.push("rg.controller.info.InfoLayout::filters@30");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && Arrays.exists(rg.controller.Visualizations.layouts,v.toLowerCase());
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@25");
+		$s.push("rg.controller.info.InfoLayout::filters@31");
 		var $spos = $s.length;
 		var $tmp = [{ field : "layout", value : v.toLowerCase()}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "width", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@33");
+		$s.push("rg.controller.info.InfoLayout::filters@39");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@34");
+		$s.push("rg.controller.info.InfoLayout::filters@40");
 		var $spos = $s.length;
 		var $tmp = [{ value : Math.round(v), field : "width"}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "height", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@40");
+		$s.push("rg.controller.info.InfoLayout::filters@46");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@41");
+		$s.push("rg.controller.info.InfoLayout::filters@47");
 		var $spos = $s.length;
 		var $tmp = [{ value : Math.round(v), field : "height"}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "visualization", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@47");
+		$s.push("rg.controller.info.InfoLayout::filters@53");
 		var $spos = $s.length;
 		var $tmp = Arrays.exists(rg.controller.Visualizations.svg,v.toLowerCase());
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@48");
+		$s.push("rg.controller.info.InfoLayout::filters@54");
 		var $spos = $s.length;
 		var $tmp = [{ value : v.toLowerCase(), field : "type"}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "main", validator : function(v) {
-		$s.push("rg.controller.info.InfoLayout::filters@54");
+		$s.push("rg.controller.info.InfoLayout::filters@60");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null}];
+	}, filter : null},{ field : "titleontop", validator : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@64");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@65");
+		var $spos = $s.length;
+		var $tmp = [{ value : v, field : "titleOnTop"}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "yscaleposition", validator : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@71");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLayout::filters@72");
+		var $spos = $s.length;
+		var $tmp = [{ value : v, field : (function($this) {
+			var $r;
+			switch(v) {
+			case "alt":case "alternate":case "alternating":
+				$r = rg.view.layout.LayoutScaleY.ScalesAlternating;
+				break;
+			case "right":
+				$r = rg.view.layout.LayoutScaleY.ScalesOnRight;
+				break;
+			default:
+				$r = rg.view.layout.LayoutScaleY.ScalesOnLeft;
+			}
+			return $r;
+		}(this))}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4786,6 +5121,8 @@ rg.controller.info.InfoLayout.prototype.width = null;
 rg.controller.info.InfoLayout.prototype.height = null;
 rg.controller.info.InfoLayout.prototype.type = null;
 rg.controller.info.InfoLayout.prototype.main = null;
+rg.controller.info.InfoLayout.prototype.titleOnTop = null;
+rg.controller.info.InfoLayout.prototype.layoutScaleY = null;
 rg.controller.info.InfoLayout.prototype.__class__ = rg.controller.info.InfoLayout;
 IntHash = function(p) {
 	if( p === $_ ) return;
@@ -5016,6 +5353,90 @@ thx.svg.Line.prototype.y = function(v) {
 	$s.pop();
 }
 thx.svg.Line.prototype.__class__ = thx.svg.Line;
+rg.controller.info.InfoLine = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoLine::new");
+	var $spos = $s.length;
+	this.effect = rg.view.svg.widget.LineEffect.Gradient(0.75,2);
+	this.interpolation = thx.svg.LineInterpolator.Cardinal(0.7);
+	$s.pop();
+}
+rg.controller.info.InfoLine.__name__ = ["rg","controller","info","InfoLine"];
+rg.controller.info.InfoLine.filters = function() {
+	$s.push("rg.controller.info.InfoLine::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "effect", validator : function(v) {
+		$s.push("rg.controller.info.InfoLine::filters@26");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLine::filters@27");
+		var $spos = $s.length;
+		var $tmp = [{ field : "effect", value : rg.view.svg.widget.LineEffects.parse(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "interpolation", validator : function(v) {
+		$s.push("rg.controller.info.InfoLine::filters@33");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLine::filters@34");
+		var $spos = $s.length;
+		var $tmp = [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoLine.prototype.effect = null;
+rg.controller.info.InfoLine.prototype.interpolation = null;
+rg.controller.info.InfoLine.prototype.__class__ = rg.controller.info.InfoLine;
+if(!rg.view.svg.util) rg.view.svg.util = {}
+rg.view.svg.util.SymbolCache = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.view.svg.util.SymbolCache::new");
+	var $spos = $s.length;
+	this.c = new Hash();
+	this.r = 0;
+	$s.pop();
+}
+rg.view.svg.util.SymbolCache.__name__ = ["rg","view","svg","util","SymbolCache"];
+rg.view.svg.util.SymbolCache.cache = null;
+rg.view.svg.util.SymbolCache.prototype.c = null;
+rg.view.svg.util.SymbolCache.prototype.r = null;
+rg.view.svg.util.SymbolCache.prototype.get = function(type,size) {
+	$s.push("rg.view.svg.util.SymbolCache::get");
+	var $spos = $s.length;
+	if(size == null) size = 100;
+	this.r++;
+	var k = type + ":" + size, s = this.c.get(k);
+	if(null == s) {
+		s = (Reflect.field(thx.svg.Symbol,type))(size);
+		this.c.set(k,s);
+	}
+	$s.pop();
+	return s;
+	$s.pop();
+}
+rg.view.svg.util.SymbolCache.prototype.stats = function() {
+	$s.push("rg.view.svg.util.SymbolCache::stats");
+	var $spos = $s.length;
+	var $tmp = { cachedSymbols : Iterators.array(this.c.iterator()).length, requests : this.r};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.util.SymbolCache.prototype.__class__ = rg.view.svg.util.SymbolCache;
 if(!thx.xml) thx.xml = {}
 thx.xml.Namespace = function() { }
 thx.xml.Namespace.__name__ = ["thx","xml","Namespace"];
@@ -6044,6 +6465,42 @@ thx.js.AccessDataTweenText.prototype.stringTweenf = function(tween) {
 	$s.pop();
 }
 thx.js.AccessDataTweenText.prototype.__class__ = thx.js.AccessDataTweenText;
+rg.view.svg.widget.LineEffects = function() { }
+rg.view.svg.widget.LineEffects.__name__ = ["rg","view","svg","widget","LineEffects"];
+rg.view.svg.widget.LineEffects.parse = function(s) {
+	$s.push("rg.view.svg.widget.LineEffects::parse");
+	var $spos = $s.length;
+	var parts = s.toLowerCase().split("-");
+	switch(parts.shift()) {
+	case "dropshadow":
+		var offsetx = 0.5, offsety = 0.5, levels = 2, parameters = parts.pop();
+		if(null != parameters) {
+			var parameters1 = parameters.split(",");
+			offsetx = Std.parseFloat(parameters1[0]);
+			if(parameters1.length > 1) offsety = Std.parseFloat(parameters1[1]); else offsety = offsetx;
+			if(parameters1.length > 2) levels = Std.parseInt(parameters1[2]);
+		}
+		var $tmp = rg.view.svg.widget.LineEffect.DropShadow(offsetx,offsety,levels);
+		$s.pop();
+		return $tmp;
+	case "gradient":
+		var lightness = 0.75, levels = 2, parameters = parts.pop();
+		if(null != parameters) {
+			lightness = Std.parseFloat(parameters.split(",").shift());
+			var nlevels = parameters.split(",").pop();
+			if(null != nlevels) levels = Std.parseInt(nlevels);
+		}
+		var $tmp = rg.view.svg.widget.LineEffect.Gradient(lightness,levels);
+		$s.pop();
+		return $tmp;
+	default:
+		var $tmp = rg.view.svg.widget.LineEffect.NoEffect;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.view.svg.widget.LineEffects.prototype.__class__ = rg.view.svg.widget.LineEffects;
 rg.controller.factory.FactoryDataContext = function(factoryDataSource) {
 	if( factoryDataSource === $_ ) return;
 	$s.push("rg.controller.factory.FactoryDataContext::new");
@@ -8144,6 +8601,33 @@ Arrays.product = function(a) {
 	return result;
 	$s.pop();
 }
+Arrays.rotate = function(a) {
+	$s.push("Arrays::rotate");
+	var $spos = $s.length;
+	if(a.length == 0) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
+	var result = [];
+	var _g1 = 0, _g = a[0].length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		result[i] = [];
+	}
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		var _g3 = 0, _g2 = a[0].length;
+		while(_g3 < _g2) {
+			var i = _g3++;
+			result[i][j] = a[j][i];
+		}
+	}
+	$s.pop();
+	return result;
+	$s.pop();
+}
 Arrays.prototype.__class__ = Arrays;
 rg.controller.info.InfoPieChart = function(p) {
 	if( p === $_ ) return;
@@ -9007,6 +9491,15 @@ rg.util.DataPoints.value = function(dp,property) {
 	return $tmp;
 	$s.pop();
 }
+rg.util.DataPoints.valueAlt = function(dp,property,alt) {
+	$s.push("rg.util.DataPoints::valueAlt");
+	var $spos = $s.length;
+	var v;
+	var $tmp = null == (v = Reflect.field(dp,property))?alt:v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
 rg.util.DataPoints.stats = function(dps,property) {
 	$s.push("rg.util.DataPoints::stats");
 	var $spos = $s.length;
@@ -9042,6 +9535,13 @@ rg.util.DataPoints.id = function(dp,dependentProperties) {
 	$s.pop();
 }
 rg.util.DataPoints.prototype.__class__ = rg.util.DataPoints;
+rg.data.ITickmark = function() { }
+rg.data.ITickmark.__name__ = ["rg","data","ITickmark"];
+rg.data.ITickmark.prototype.delta = null;
+rg.data.ITickmark.prototype.major = null;
+rg.data.ITickmark.prototype.value = null;
+rg.data.ITickmark.prototype.label = null;
+rg.data.ITickmark.prototype.__class__ = rg.data.ITickmark;
 Ints = function() { }
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
@@ -10293,6 +10793,8 @@ rg.controller.info.InfoLineChart = function(p) {
 	var $spos = $s.length;
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabel();
+	this.line = new rg.controller.info.InfoLine();
+	this.segment = new rg.controller.info.InfoSegment();
 	$s.pop();
 }
 rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
@@ -10300,94 +10802,131 @@ rg.controller.info.InfoLineChart.filters = function() {
 	$s.push("rg.controller.info.InfoLineChart::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@33");
+		$s.push("rg.controller.info.InfoLineChart::filters@37");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@34");
+		$s.push("rg.controller.info.InfoLineChart::filters@38");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "segmenton", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@40");
+		$s.push("rg.controller.info.InfoLineChart::filters@44");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null},{ field : "symbol", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@44");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "symbolstyle", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@48");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@49");
+		$s.push("rg.controller.info.InfoLineChart::filters@45");
 		var $spos = $s.length;
-		var $tmp = [{ field : "symbolStyle", value : v}];
+		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),{ on : v})}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "click", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@55");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "label", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@59");
+	}},{ field : "segment", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@51");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@60");
+		$s.push("rg.controller.info.InfoLineChart::filters@52");
 		var $spos = $s.length;
-		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelPivotTable(),v)}];
+		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "lineinterpolation", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@66");
+	}},{ field : "y0property", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@58");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "symbol", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@62");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "symbolstyle", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@66");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
 		$s.push("rg.controller.info.InfoLineChart::filters@67");
 		var $spos = $s.length;
-		var $tmp = [{ field : "lineInterpolator", value : thx.svg.LineInterpolators.parse(v)}];
+		var $tmp = [{ field : "symbolStyle", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}}];
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@73");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@77");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@78");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelPivotTable(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "line", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@84");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@85");
+		var $spos = $s.length;
+		var $tmp = [{ field : "line", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLine(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displayarea", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@91");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
 rg.controller.info.InfoLineChart.prototype.animation = null;
-rg.controller.info.InfoLineChart.prototype.segmenton = null;
+rg.controller.info.InfoLineChart.prototype.segment = null;
 rg.controller.info.InfoLineChart.prototype.symbol = null;
 rg.controller.info.InfoLineChart.prototype.symbolStyle = null;
 rg.controller.info.InfoLineChart.prototype.click = null;
 rg.controller.info.InfoLineChart.prototype.label = null;
-rg.controller.info.InfoLineChart.prototype.lineInterpolator = null;
+rg.controller.info.InfoLineChart.prototype.line = null;
+rg.controller.info.InfoLineChart.prototype.displayarea = null;
+rg.controller.info.InfoLineChart.prototype.y0property = null;
 rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
 rg.controller.info.InfoLabel = function(p) {
 	$s.push("rg.controller.info.InfoLabel::new");
@@ -13251,21 +13790,21 @@ rg.controller.info.InfoVariable.filters = function() {
 	$s.push("rg.controller.info.InfoVariable::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "type", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@28");
+		$s.push("rg.controller.info.InfoVariable::filters@30");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "view", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@32");
+		$s.push("rg.controller.info.InfoVariable::filters@34");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && rg.controller.info.InfoVariable.testViewValue(v[0]) && rg.controller.info.InfoVariable.testViewValue(v[1]);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@33");
+		$s.push("rg.controller.info.InfoVariable::filters@35");
 		var $spos = $s.length;
 		var result = [];
 		if(null != v[0]) result.push({ field : "min", value : v[0]});
@@ -13274,10 +13813,10 @@ rg.controller.info.InfoVariable.filters = function() {
 		return result;
 		$s.pop();
 	}},{ field : "values", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@43");
+		$s.push("rg.controller.info.InfoVariable::filters@45");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoVariable::filters@43@43");
+			$s.push("rg.controller.info.InfoVariable::filters@45@45");
 			var $spos = $s.length;
 			var $tmp = Types.isPrimitive(v1);
 			$s.pop();
@@ -13288,28 +13827,28 @@ rg.controller.info.InfoVariable.filters = function() {
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "groupby", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@47");
+		$s.push("rg.controller.info.InfoVariable::filters@49");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && rg.util.Periodicity.isValidGroupBy(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@48");
+		$s.push("rg.controller.info.InfoVariable::filters@50");
 		var $spos = $s.length;
 		var $tmp = [{ field : "groupBy", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "variable", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@56");
+		$s.push("rg.controller.info.InfoVariable::filters@58");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && Arrays.exists(["independent","dependent"],v.toLowerCase());
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@57");
+		$s.push("rg.controller.info.InfoVariable::filters@59");
 		var $spos = $s.length;
 		var $tmp = [{ field : "variableType", value : Type.createEnum(rg.controller.info.VariableType,Strings.ucfirst(("" + v).toLowerCase()),[])}];
 		$s.pop();
@@ -14656,6 +15195,77 @@ rg.controller.info.InfoVisualizationType.filters = function() {
 }
 rg.controller.info.InfoVisualizationType.prototype.type = null;
 rg.controller.info.InfoVisualizationType.prototype.__class__ = rg.controller.info.InfoVisualizationType;
+rg.data.TickmarkOrdinal = function(pos,values) {
+	if( pos === $_ ) return;
+	$s.push("rg.data.TickmarkOrdinal::new");
+	var $spos = $s.length;
+	this.pos = pos;
+	this.values = values;
+	$s.pop();
+}
+rg.data.TickmarkOrdinal.__name__ = ["rg","data","TickmarkOrdinal"];
+rg.data.TickmarkOrdinal.fromArray = function(values) {
+	$s.push("rg.data.TickmarkOrdinal::fromArray");
+	var $spos = $s.length;
+	var $tmp = values.map(function(_,i) {
+		$s.push("rg.data.TickmarkOrdinal::fromArray@15");
+		var $spos = $s.length;
+		var $tmp = new rg.data.TickmarkOrdinal(i,values);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkOrdinal.prototype.pos = null;
+rg.data.TickmarkOrdinal.prototype.values = null;
+rg.data.TickmarkOrdinal.prototype.delta = null;
+rg.data.TickmarkOrdinal.prototype.getDelta = function() {
+	$s.push("rg.data.TickmarkOrdinal::getDelta");
+	var $spos = $s.length;
+	var $tmp = this.pos / this.values.length;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkOrdinal.prototype.major = null;
+rg.data.TickmarkOrdinal.prototype.getMajor = function() {
+	$s.push("rg.data.TickmarkOrdinal::getMajor");
+	var $spos = $s.length;
+	$s.pop();
+	return true;
+	$s.pop();
+}
+rg.data.TickmarkOrdinal.prototype.value = null;
+rg.data.TickmarkOrdinal.prototype.getValue = function() {
+	$s.push("rg.data.TickmarkOrdinal::getValue");
+	var $spos = $s.length;
+	var $tmp = this.values[this.pos];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkOrdinal.prototype.label = null;
+rg.data.TickmarkOrdinal.prototype.getLabel = function() {
+	$s.push("rg.data.TickmarkOrdinal::getLabel");
+	var $spos = $s.length;
+	var $tmp = rg.util.RGStrings.humanize(this.values[this.pos]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkOrdinal.prototype.toString = function() {
+	$s.push("rg.data.TickmarkOrdinal::toString");
+	var $spos = $s.length;
+	var $tmp = rg.data.Tickmarks.string(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkOrdinal.prototype.__class__ = rg.data.TickmarkOrdinal;
+rg.data.TickmarkOrdinal.__interfaces__ = [rg.data.ITickmark];
 thx.svg.LineInterpolators = function() { }
 thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
 thx.svg.LineInterpolators.parse = function(s,sep) {
@@ -14931,7 +15541,7 @@ rg.data.TestDataProcessor.prototype.testTransform = function() {
 	processor.onData.add(function(data) {
 		$s.push("rg.data.TestDataProcessor::testTransform@142");
 		var $spos = $s.length;
-		var expected = [Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310450400000,"1-12","male",2]),Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310454000000,"13-20","female",2]),Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310457600000,"21+","male",2])];
+		var expected = [Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310425200000,"1-12","male",2]),Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310428800000,"13-20","female",2]),Objects.addFields({ event : "impression"},[".#time:hour",".ageRange",".gender","count"],[1310432400000,"21+","male",2])];
 		utest.Assert.same(expected,data,null,null,{ fileName : "TestDataProcessor.hx", lineNumber : 148, className : "rg.data.TestDataProcessor", methodName : "testTransform"});
 		$s.pop();
 	});
@@ -16167,10 +16777,10 @@ rg.data.AxisTime.prototype.toTickmark = function(start,end,value) {
 rg.data.AxisTime.prototype.ticks = function(start,end,upperBound) {
 	$s.push("rg.data.AxisTime::ticks");
 	var $spos = $s.length;
-	var span = end - start, range = this.range(start,end).map(function(value,i) {
-		$s.push("rg.data.AxisTime::ticks@26");
+	var p = this.periodicity, span = end - start, range = this.range(start,end).map(function(value,i) {
+		$s.push("rg.data.AxisTime::ticks@27");
 		var $spos = $s.length;
-		var $tmp = new rg.data.Tickmark(value,true,(value - start) / span);
+		var $tmp = new rg.data.TickmarkTime(value,true,(value - start) / span,p);
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -16480,10 +17090,10 @@ rg.JSBridge.main = function() {
 	$s.push("rg.JSBridge::main");
 	var $spos = $s.length;
 	var o = window.ReportGrid;
-	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 20, className : "rg.JSBridge", methodName : "main"});
+	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 21, className : "rg.JSBridge", methodName : "main"});
 	var app = new rg.controller.App(o);
 	o.viz = function(el,options,type) {
-		$s.push("rg.JSBridge::main@26");
+		$s.push("rg.JSBridge::main@27");
 		var $spos = $s.length;
 		var $tmp = app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
 		$s.pop();
@@ -16491,7 +17101,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.lineChart = function(el,options) {
-		$s.push("rg.JSBridge::main@30");
+		$s.push("rg.JSBridge::main@31");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"linechart");
 		$s.pop();
@@ -16499,7 +17109,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.pieChart = function(el,options) {
-		$s.push("rg.JSBridge::main@31");
+		$s.push("rg.JSBridge::main@32");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"piechart");
 		$s.pop();
@@ -16507,7 +17117,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.pivotTable = function(el,options) {
-		$s.push("rg.JSBridge::main@32");
+		$s.push("rg.JSBridge::main@33");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"pivottable");
 		$s.pop();
@@ -16515,7 +17125,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.leaderBoard = function(el,options) {
-		$s.push("rg.JSBridge::main@33");
+		$s.push("rg.JSBridge::main@34");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"leaderboard");
 		$s.pop();
@@ -16525,14 +17135,14 @@ rg.JSBridge.main = function() {
 	o.format = Dynamics.format;
 	o.compare = Dynamics.compare;
 	o.dump = Dynamics.string;
-	o.symbol = thx.svg.Symbol;
+	o.symbol = rg.view.svg.util.SymbolCache.cache;
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 47, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 48, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();
@@ -16796,24 +17406,24 @@ rg.controller.info.InfoDataContext.filters = function() {
 	$s.push("rg.controller.info.InfoDataContext::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "name", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataContext::filters@24");
+		$s.push("rg.controller.info.InfoDataContext::filters@25");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "transform", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataContext::filters@28");
+		$s.push("rg.controller.info.InfoDataContext::filters@29");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "src", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataContext::filters@32");
+		$s.push("rg.controller.info.InfoDataContext::filters@37");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoDataContext::filters@32@32");
+			$s.push("rg.controller.info.InfoDataContext::filters@37@37");
 			var $spos = $s.length;
 			var $tmp = Reflect.isObject(v1) && null == Type.getClass(v1);
 			$s.pop();
@@ -16824,10 +17434,10 @@ rg.controller.info.InfoDataContext.filters = function() {
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataContext::filters@33");
+		$s.push("rg.controller.info.InfoDataContext::filters@38");
 		var $spos = $s.length;
 		var $tmp = [{ field : "sources", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			$s.push("rg.controller.info.InfoDataContext::filters@33@38");
+			$s.push("rg.controller.info.InfoDataContext::filters@38@43");
 			var $spos = $s.length;
 			var $tmp = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),v1);
 			$s.pop();
@@ -16878,6 +17488,44 @@ Enums.compare = function(a,b) {
 	$s.pop();
 }
 Enums.prototype.__class__ = Enums;
+rg.data.Segmenter = function(on,transform,scale) {
+	if( on === $_ ) return;
+	$s.push("rg.data.Segmenter::new");
+	var $spos = $s.length;
+	this.on = on;
+	this.transform = transform;
+	this.scale = scale;
+	$s.pop();
+}
+rg.data.Segmenter.__name__ = ["rg","data","Segmenter"];
+rg.data.Segmenter.prototype.on = null;
+rg.data.Segmenter.prototype.transform = null;
+rg.data.Segmenter.prototype.scale = null;
+rg.data.Segmenter.prototype.segment = function(data) {
+	$s.push("rg.data.Segmenter::segment");
+	var $spos = $s.length;
+	var segmented = null == this.on?[data]:rg.util.DataPoints.partition(data,this.on);
+	if(null != this.scale) {
+		var _g1 = 0, _g = segmented.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			segmented[i] = this.scale(segmented[i]);
+		}
+	}
+	if(null != this.transform) {
+		var rotated = Arrays.rotate(segmented);
+		var _g1 = 0, _g = rotated.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			rotated[i] = this.transform(rotated[i]);
+		}
+		segmented = Arrays.rotate(rotated);
+	}
+	$s.pop();
+	return segmented;
+	$s.pop();
+}
+rg.data.Segmenter.prototype.__class__ = rg.data.Segmenter;
 rg.view.svg.widget.GridAnchor = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;
@@ -17353,6 +18001,15 @@ thx.svg.Symbol.arrowLeft = function(size) {
 	var $spos = $s.length;
 	var r = Math.sqrt(size / 2);
 	var $tmp = "M" + "0," + -r + "v" + r / 2 + "h" + r + "v" + r + "h" + -r + "v" + r / 2 + "l" + -r + "," + -r + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Symbol.star = function(size) {
+	$s.push("thx.svg.Symbol::star");
+	var $spos = $s.length;
+	var r = Math.sqrt(size / 0.31027) / 2;
+	var $tmp = "M0," + -r + "L" + r * 0.236 + "," + r * -0.325 + " " + r * 0.951 + "," + r * -0.309 + " " + r * 0.382 + "," + r * 0.124 + " " + r * 0.588 + "," + r * 0.809 + " " + r * 0 + "," + r * 0.401 + " " + r * -0.588 + "," + r * 0.809 + " " + r * -0.382 + "," + r * 0.124 + " " + r * -0.951 + "," + r * -0.309 + " " + r * -0.236 + "," + r * -0.325 + " " + "Z";
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -18127,6 +18784,45 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 	$s.pop();
 }
 thx.culture.FormatDate.prototype.__class__ = thx.culture.FormatDate;
+rg.controller.info.InfoSegment = function(p) {
+	$s.push("rg.controller.info.InfoSegment::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoSegment.__name__ = ["rg","controller","info","InfoSegment"];
+rg.controller.info.InfoSegment.filters = function() {
+	$s.push("rg.controller.info.InfoSegment::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "on", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@20");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "transform", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@24");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "scale", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@28");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoSegment.prototype.on = null;
+rg.controller.info.InfoSegment.prototype.transform = null;
+rg.controller.info.InfoSegment.prototype.scale = null;
+rg.controller.info.InfoSegment.prototype.__class__ = rg.controller.info.InfoSegment;
 thx.culture.FormatNumber = function() { }
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
@@ -18318,9 +19014,9 @@ rg.controller.factory.FactoryVariableDependent.prototype.create = function(info,
 	var $spos = $s.length;
 	if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 19, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
 	var axiscreator = new rg.controller.factory.FactoryAxis(), axis = axiscreator.create(info.type,isnumeric,info.values);
-	var $tmp = new rg.data.VariableDependent(info.type,axis,info.min,info.max);
+	var variable = new rg.data.VariableDependent(info.type,axis,info.min,info.max);
 	$s.pop();
-	return $tmp;
+	return variable;
 	$s.pop();
 }
 rg.controller.factory.FactoryVariableDependent.prototype.__class__ = rg.controller.factory.FactoryVariableDependent;
@@ -19651,14 +20347,20 @@ rg.view.layout.Layout.prototype.suggestSize = function(name,size) {
 	}
 	$s.pop();
 }
+rg.view.layout.Layout.prototype.feedOptions = function(info) {
+	$s.push("rg.view.layout.Layout::feedOptions");
+	var $spos = $s.length;
+	this.mainPanelName = info.main;
+	$s.pop();
+}
 rg.view.layout.Layout.prototype.__class__ = rg.view.layout.Layout;
-rg.view.layout.SimpleLayout = function(width,height,container,titleontop) {
+rg.view.layout.SimpleLayout = function(width,height,container) {
 	if( width === $_ ) return;
 	$s.push("rg.view.layout.SimpleLayout::new");
 	var $spos = $s.length;
 	rg.view.layout.Layout.call(this,width,height,container);
 	this.titleUsed = false;
-	this.titleOnTop = titleontop;
+	this.titleOnTop = true;
 	$s.pop();
 }
 rg.view.layout.SimpleLayout.__name__ = ["rg","view","layout","SimpleLayout"];
@@ -19691,7 +20393,163 @@ rg.view.layout.SimpleLayout.prototype.getPanel = function(name) {
 	}
 	$s.pop();
 }
+rg.view.layout.SimpleLayout.prototype.feedOptions = function(info) {
+	$s.push("rg.view.layout.SimpleLayout::feedOptions");
+	var $spos = $s.length;
+	rg.view.layout.Layout.prototype.feedOptions.call(this,info);
+	this.titleOnTop = info.titleOnTop;
+	$s.pop();
+}
 rg.view.layout.SimpleLayout.prototype.__class__ = rg.view.layout.SimpleLayout;
+rg.view.layout.CartesianLayout = function(width,height,container) {
+	if( width === $_ ) return;
+	$s.push("rg.view.layout.CartesianLayout::new");
+	var $spos = $s.length;
+	rg.view.layout.Layout.call(this,width,height,container);
+	this.titleUsed = false;
+	this.titleOnTop = true;
+	this.left = true;
+	this.alternating = true;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.__name__ = ["rg","view","layout","CartesianLayout"];
+rg.view.layout.CartesianLayout.__super__ = rg.view.layout.Layout;
+for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.CartesianLayout.prototype[k] = rg.view.layout.Layout.prototype[k];
+rg.view.layout.CartesianLayout.prototype.main = null;
+rg.view.layout.CartesianLayout.prototype.titleUsed = null;
+rg.view.layout.CartesianLayout.prototype.titleOnTop = null;
+rg.view.layout.CartesianLayout.prototype.leftcontainer = null;
+rg.view.layout.CartesianLayout.prototype.rightcontainer = null;
+rg.view.layout.CartesianLayout.prototype.bottomcontainer = null;
+rg.view.layout.CartesianLayout.prototype.maincontainer = null;
+rg.view.layout.CartesianLayout.prototype.middlecontainer = null;
+rg.view.layout.CartesianLayout.prototype.bottomleft = null;
+rg.view.layout.CartesianLayout.prototype.bottomright = null;
+rg.view.layout.CartesianLayout.prototype.bottom = null;
+rg.view.layout.CartesianLayout.prototype.left = null;
+rg.view.layout.CartesianLayout.prototype.alternating = null;
+rg.view.layout.CartesianLayout.prototype.getPanel = function(name) {
+	$s.push("rg.view.layout.CartesianLayout::getPanel");
+	var $spos = $s.length;
+	switch(name) {
+	case "main":
+		var $tmp = this.getMain();
+		$s.pop();
+		return $tmp;
+	case "title":
+		if(this.titleUsed) {
+			$s.pop();
+			return null;
+		}
+		this.titleUsed = true;
+		var $tmp = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,20)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
+		$s.pop();
+		return $tmp;
+	case "x":
+		var $tmp = this.getBottom();
+		$s.pop();
+		return $tmp;
+	case "y":
+		var context = this.left?new rg.view.layout.PanelContext(this.getLeftContainer().createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,20)),rg.view.layout.Anchor.Right):new rg.view.layout.PanelContext(this.getRightContainer().createPanel(rg.view.frame.FrameLayout.Fixed(0,0,20)),rg.view.layout.Anchor.Left);
+		if(this.alternating) this.left = !this.left;
+		$s.pop();
+		return context;
+	default:
+		$s.pop();
+		return null;
+	}
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.getMainContainer = function() {
+	$s.push("rg.view.layout.CartesianLayout::getMainContainer");
+	var $spos = $s.length;
+	if(null == this.maincontainer) this.maincontainer = this.space.createContainerAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
+	var $tmp = this.maincontainer;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.getMiddleContainer = function() {
+	$s.push("rg.view.layout.CartesianLayout::getMiddleContainer");
+	var $spos = $s.length;
+	if(null == this.middlecontainer) this.middlecontainer = this.getMainContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Horizontal);
+	var $tmp = this.middlecontainer;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.getLeftContainer = function() {
+	$s.push("rg.view.layout.CartesianLayout::getLeftContainer");
+	var $spos = $s.length;
+	if(null == this.leftcontainer) this.leftcontainer = this.getMiddleContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fixed(0,0,20),rg.view.frame.Orientation.Horizontal);
+	var $tmp = this.leftcontainer;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.getRightContainer = function() {
+	$s.push("rg.view.layout.CartesianLayout::getRightContainer");
+	var $spos = $s.length;
+	if(null == this.rightcontainer) this.rightcontainer = this.getMiddleContainer().createContainerAt(2,rg.view.frame.FrameLayout.Fixed(0,0,20),rg.view.frame.Orientation.Horizontal);
+	var $tmp = this.rightcontainer;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.getBottomContainer = function() {
+	$s.push("rg.view.layout.CartesianLayout::getBottomContainer");
+	var $spos = $s.length;
+	if(null == this.bottomcontainer) this.bottomcontainer = this.getMainContainer().createContainerAt(1,rg.view.frame.FrameLayout.Fixed(0,0,20),rg.view.frame.Orientation.Horizontal);
+	var $tmp = this.bottomcontainer;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.getBottom = function() {
+	$s.push("rg.view.layout.CartesianLayout::getBottom");
+	var $spos = $s.length;
+	if(null == this.bottom) {
+		var container = this.getBottomContainer();
+		this.bottomleft = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,20));
+		this.bottom = new rg.view.layout.PanelContext(container.createPanel(rg.view.frame.FrameLayout.Fill(0,0)),rg.view.layout.Anchor.Top);
+		this.bottomright = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,20));
+	}
+	var $tmp = this.bottom;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.getMain = function() {
+	$s.push("rg.view.layout.CartesianLayout::getMain");
+	var $spos = $s.length;
+	if(null == this.main) this.main = new rg.view.layout.PanelContext(this.getMiddleContainer().createPanelAt(1,rg.view.frame.FrameLayout.Fill(0,0)),rg.view.layout.Anchor.Bottom);
+	var $tmp = this.main;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.feedOptions = function(info) {
+	$s.push("rg.view.layout.CartesianLayout::feedOptions");
+	var $spos = $s.length;
+	rg.view.layout.Layout.prototype.feedOptions.call(this,info);
+	this.titleOnTop = info.titleOnTop;
+	switch( (info.layoutScaleY)[1] ) {
+	case 0:
+		this.left = true;
+		this.alternating = false;
+		break;
+	case 1:
+		this.left = false;
+		this.alternating = false;
+		break;
+	case 2:
+		this.left = true;
+		this.alternating = true;
+		break;
+	}
+	$s.pop();
+}
+rg.view.layout.CartesianLayout.prototype.__class__ = rg.view.layout.CartesianLayout;
 rg.controller.Visualizations = function() { }
 rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
 rg.controller.Visualizations.layoutDefault = null;
@@ -19700,26 +20558,7 @@ rg.controller.Visualizations.layoutArgs = null;
 rg.controller.Visualizations.instantiateLayout = function(name,width,height,container) {
 	$s.push("rg.controller.Visualizations::instantiateLayout");
 	var $spos = $s.length;
-	var $tmp = Type.createInstance(rg.controller.Visualizations.getType(name),rg.controller.Visualizations.getArgs(name,width,height,container));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.Visualizations.getType = function(name) {
-	$s.push("rg.controller.Visualizations::getType");
-	var $spos = $s.length;
-	var $tmp = rg.controller.Visualizations.layoutType.get(name);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.Visualizations.getArgs = function(name,width,height,container) {
-	$s.push("rg.controller.Visualizations::getArgs");
-	var $spos = $s.length;
-	var extra = rg.controller.Visualizations.layoutArgs.get(name);
-	if(null == extra) extra = [];
-	var args = [];
-	var $tmp = args.concat([width,height,container]).concat(extra);
+	var $tmp = Type.createInstance(rg.controller.Visualizations.layoutType.get(name),[width,height,container]);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -19950,6 +20789,7 @@ rg.data.Tickmark.__name__ = ["rg","data","Tickmark"];
 rg.data.Tickmark.prototype.delta = null;
 rg.data.Tickmark.prototype.major = null;
 rg.data.Tickmark.prototype.value = null;
+rg.data.Tickmark.prototype.label = null;
 rg.data.Tickmark.prototype.getDelta = function() {
 	$s.push("rg.data.Tickmark::getDelta");
 	var $spos = $s.length;
@@ -19970,6 +20810,14 @@ rg.data.Tickmark.prototype.getValue = function() {
 	$s.push("rg.data.Tickmark::getValue");
 	var $spos = $s.length;
 	var $tmp = this.value;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.Tickmark.prototype.getLabel = function() {
+	$s.push("rg.data.Tickmark::getLabel");
+	var $spos = $s.length;
+	var $tmp = rg.util.RGStrings.humanize(this.getValue());
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -20175,9 +21023,9 @@ rg.controller.factory.FactoryVariableIndependent.prototype.create = function(inf
 		min = this.defaultMin(this.normalizeTime(info.min),periodicity);
 		max = this.defaultMax(this.normalizeTime(info.max),periodicity);
 	}
-	var $tmp = new rg.data.VariableIndependent(info.type,axis,min,max);
+	var variable = new rg.data.VariableIndependent(info.type,axis,min,max);
 	$s.pop();
-	return $tmp;
+	return variable;
 	$s.pop();
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = function(v) {
@@ -20203,7 +21051,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = funct
 		$s.pop();
 		return $tmp;
 	}
-	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 49, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
+	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 50, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
 	$s.pop();
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
@@ -20242,7 +21090,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function
 		$s.pop();
 		return $tmp;
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 73, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 74, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
 	}
 	$s.pop();
 }
@@ -20266,7 +21114,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function
 		$s.pop();
 		return $tmp;
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 90, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 91, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
 	}
 	$s.pop();
 }
@@ -20399,13 +21247,24 @@ rg.controller.info.TestInfoDataSource.prototype.testDataSourceInfo = function() 
 	$s.pop();
 }
 rg.controller.info.TestInfoDataSource.prototype.__class__ = rg.controller.info.TestInfoDataSource;
+rg.view.layout.LayoutScaleY = { __ename__ : ["rg","view","layout","LayoutScaleY"], __constructs__ : ["ScalesOnLeft","ScalesOnRight","ScalesAlternating"] }
+rg.view.layout.LayoutScaleY.ScalesOnLeft = ["ScalesOnLeft",0];
+rg.view.layout.LayoutScaleY.ScalesOnLeft.toString = $estr;
+rg.view.layout.LayoutScaleY.ScalesOnLeft.__enum__ = rg.view.layout.LayoutScaleY;
+rg.view.layout.LayoutScaleY.ScalesOnRight = ["ScalesOnRight",1];
+rg.view.layout.LayoutScaleY.ScalesOnRight.toString = $estr;
+rg.view.layout.LayoutScaleY.ScalesOnRight.__enum__ = rg.view.layout.LayoutScaleY;
+rg.view.layout.LayoutScaleY.ScalesAlternating = ["ScalesAlternating",2];
+rg.view.layout.LayoutScaleY.ScalesAlternating.toString = $estr;
+rg.view.layout.LayoutScaleY.ScalesAlternating.__enum__ = rg.view.layout.LayoutScaleY;
 haxe.Timer = function(time_ms) {
 	if( time_ms === $_ ) return;
 	$s.push("haxe.Timer::new");
 	var $spos = $s.length;
-	this.id = haxe.Timer.arr.length;
-	haxe.Timer.arr[this.id] = this;
-	this.timerId = window.setInterval("haxe.Timer.arr[" + this.id + "].run();",time_ms);
+	var arr = haxe_timers;
+	this.id = arr.length;
+	arr[this.id] = this;
+	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
 	$s.pop();
 }
 haxe.Timer.__name__ = ["haxe","Timer"];
@@ -20414,7 +21273,7 @@ haxe.Timer.delay = function(f,time_ms) {
 	var $spos = $s.length;
 	var t = new haxe.Timer(time_ms);
 	t.run = function() {
-		$s.push("haxe.Timer::delay@78");
+		$s.push("haxe.Timer::delay@79");
 		var $spos = $s.length;
 		t.stop();
 		f();
@@ -20452,11 +21311,12 @@ haxe.Timer.prototype.stop = function() {
 		return;
 	}
 	window.clearInterval(this.timerId);
-	haxe.Timer.arr[this.id] = null;
-	if(this.id > 100 && this.id == haxe.Timer.arr.length - 1) {
+	var arr = haxe_timers;
+	arr[this.id] = null;
+	if(this.id > 100 && this.id == arr.length - 1) {
 		var p = this.id - 1;
-		while(p >= 0 && haxe.Timer.arr[p] == null) p--;
-		haxe.Timer.arr = haxe.Timer.arr.slice(0,p + 1);
+		while(p >= 0 && arr[p] == null) p--;
+		arr = arr.slice(0,p + 1);
 	}
 	this.id = null;
 	$s.pop();
@@ -21397,7 +22257,6 @@ rg.view.svg.widget.LineChart = function(panel) {
 	this.animated = true;
 	this.animationDuration = 1500;
 	this.animationEase = thx.math.Equations.linear;
-	this.lineEffect = rg.view.svg.widget.LineEffect.Gradient(1.5,2);
 	$s.pop();
 }
 rg.view.svg.widget.LineChart.__name__ = ["rg","view","svg","widget","LineChart"];
@@ -21430,24 +22289,31 @@ rg.view.svg.widget.LineChart.prototype.labelDataPoint = null;
 rg.view.svg.widget.LineChart.prototype.labelDataPointOver = null;
 rg.view.svg.widget.LineChart.prototype.lineInterpolator = null;
 rg.view.svg.widget.LineChart.prototype.lineEffect = null;
-rg.view.svg.widget.LineChart.prototype.linePath = null;
+rg.view.svg.widget.LineChart.prototype.y0property = null;
+rg.view.svg.widget.LineChart.prototype.linePathShape = null;
 rg.view.svg.widget.LineChart.prototype.chart = null;
+rg.view.svg.widget.LineChart.prototype.dps = null;
+rg.view.svg.widget.LineChart.prototype.segment = null;
 rg.view.svg.widget.LineChart.prototype.setVariables = function(variableIndependents,variableDependents) {
 	$s.push("rg.view.svg.widget.LineChart::setVariables");
 	var $spos = $s.length;
+	var me = this;
 	this.variableIndependent = variableIndependents[0];
 	this.variableDependents = variableDependents;
-	this.linePath = [];
+	this.linePathShape = [];
 	var _g1 = 0, _g = variableDependents.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		this.linePath[i] = new thx.svg.Line($closure(this,"x"),(function(f,a1) {
-			$s.push("rg.view.svg.widget.LineChart::setVariables@86");
+		var line = [new thx.svg.Line($closure(this,"x"),this.getY1(i))];
+		if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
+		this.linePathShape[i] = (function(line) {
+			$s.push("rg.view.svg.widget.LineChart::setVariables@93");
 			var $spos = $s.length;
-			var $tmp = function(a2,a3) {
-				$s.push("rg.view.svg.widget.LineChart::setVariables@86@86");
+			var $tmp = function(dp,i1) {
+				$s.push("rg.view.svg.widget.LineChart::setVariables@93@93");
 				var $spos = $s.length;
-				var $tmp = f(a1,a2,a3);
+				me.segment = i1;
+				var $tmp = line[0].shape(dp,i1);
 				$s.pop();
 				return $tmp;
 				$s.pop();
@@ -21455,8 +22321,7 @@ rg.view.svg.widget.LineChart.prototype.setVariables = function(variableIndepende
 			$s.pop();
 			return $tmp;
 			$s.pop();
-		})($closure(this,"y"),variableDependents[i]));
-		if(null != this.lineInterpolator) this.linePath[i].interpolator(this.lineInterpolator);
+		})(line);
 	}
 	$s.pop();
 }
@@ -21468,11 +22333,50 @@ rg.view.svg.widget.LineChart.prototype.x = function(d,i) {
 	return scaledw;
 	$s.pop();
 }
-rg.view.svg.widget.LineChart.prototype.y = function(v,d,i) {
-	$s.push("rg.view.svg.widget.LineChart::y");
+rg.view.svg.widget.LineChart.prototype.getY1 = function(pos) {
+	$s.push("rg.view.svg.widget.LineChart::getY1");
 	var $spos = $s.length;
-	var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * this.height;
-	var $tmp = this.height - scaledh;
+	var h = this.height, v = this.variableDependents[pos], y0 = this.y0property;
+	if(null != y0) {
+		var $tmp = function(d,i) {
+			$s.push("rg.view.svg.widget.LineChart::getY1@116");
+			var $spos = $s.length;
+			var value = Reflect.field(d,v.type) + rg.util.DataPoints.valueAlt(d,y0,0.0), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
+			var $tmp = h - scaledh;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = function(d,i) {
+			$s.push("rg.view.svg.widget.LineChart::getY1@124");
+			var $spos = $s.length;
+			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
+			var $tmp = h - scaledh;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.getY0 = function(pos) {
+	$s.push("rg.view.svg.widget.LineChart::getY0");
+	var $spos = $s.length;
+	var h = this.height, y0 = this.y0property, v = this.variableDependents[pos];
+	var $tmp = function(d,i) {
+		$s.push("rg.view.svg.widget.LineChart::getY0@139");
+		var $spos = $s.length;
+		var value = rg.util.DataPoints.valueAlt(d,y0,0.0), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
+		var $tmp = h - scaledh;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -21484,13 +22388,28 @@ rg.view.svg.widget.LineChart.prototype.init = function() {
 	$s.pop();
 }
 rg.view.svg.widget.LineChart.prototype.tooltip = null;
-rg.view.svg.widget.LineChart.prototype.data = function(input) {
+rg.view.svg.widget.LineChart.prototype.segments = null;
+rg.view.svg.widget.LineChart.prototype.classf = function(pos,cls) {
+	$s.push("rg.view.svg.widget.LineChart::classf");
+	var $spos = $s.length;
+	var $tmp = function(_,i) {
+		$s.push("rg.view.svg.widget.LineChart::classf@159");
+		var $spos = $s.length;
+		var $tmp = cls + " item-" + (pos + i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.LineChart.prototype.data = function(dps) {
 	$s.push("rg.view.svg.widget.LineChart::data");
 	var $spos = $s.length;
-	var dps = this.transformData(input);
 	var axisgroup = this.chart.selectAll("g.group").data(dps);
 	var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
-		$s.push("rg.view.svg.widget.LineChart::data@126");
+		$s.push("rg.view.svg.widget.LineChart::data@171");
 		var $spos = $s.length;
 		var $tmp = "group group-" + i;
 		$s.pop();
@@ -21501,38 +22420,92 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 	var _g1 = 0, _g = dps.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var d = dps[i], gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(Arrays.flatten(d),this.variableDependents[i].type)];
-		var segmentgroup = gi.selectAll("path.line").data(d);
+		this.segments = dps[i];
+		var gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(Arrays.flatten(this.segments),this.variableDependents[i].type)];
+		var segmentgroup = gi.selectAll("path.line").data(this.segments);
+		if(null != this.y0property) {
+			var area = new thx.svg.Area($closure(this,"x"),this.getY0(i),this.getY1(i));
+			if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
+			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line area")).attr("d").stringf($closure(area,"shape"));
+		}
 		var $e = (this.lineEffect);
 		switch( $e[1] ) {
 		case 1:
 			var levels = $e[3], lightness = $e[2];
-			var temp = segmentgroup.enter().append("svg:path").attr("class").string("line item-" + i), color = temp.style("stroke").get();
-			temp.remove();
-			if(null == color) color = "#000000";
-			var start = thx.color.Hsl.toHsl(thx.color.Colors.parse(color)), end = thx.color.Hsl.darker(start,lightness), f = thx.color.Hsl.interpolatef(end,start);
+			var levels1 = [levels];
+			var lightness1 = [lightness];
+			var fs = [[]];
+			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).eachNode((function(fs,lightness1) {
+				$s.push("rg.view.svg.widget.LineChart::data@217");
+				var $spos = $s.length;
+				var $tmp = function(n,i1) {
+					$s.push("rg.view.svg.widget.LineChart::data@217@217");
+					var $spos = $s.length;
+					var color = thx.js.Dom.selectNode(n).style("stroke").get();
+					if(null == color) color = "#000000";
+					var start = thx.color.Hsl.toHsl(thx.color.Colors.parse(color)), end = thx.color.Hsl.darker(start,lightness1[0]);
+					fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(fs,lightness1)).remove();
+			var _g2 = 0;
+			while(_g2 < levels1[0]) {
+				var j = [_g2++];
+				segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
+					$s.push("rg.view.svg.widget.LineChart::data@231");
+					var $spos = $s.length;
+					var $tmp = function(_,i1) {
+						$s.push("rg.view.svg.widget.LineChart::data@231@231");
+						var $spos = $s.length;
+						var $tmp = fs[0][i1](j[0] / levels1[0]).hex("#");
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i]);
+			}
+			break;
+		case 2:
+			var levels = $e[4], oy = $e[3], ox = $e[2];
 			var _g2 = 0;
 			while(_g2 < levels) {
 				var j = _g2++;
-				segmentgroup.enter().append("svg:path").attr("class").string("line item-" + i + " grad-" + (levels - j - 1)).style("stroke").string(f(j / levels).hex("#")).attr("d").stringf($closure(this.linePath[i],"shape"));
+				segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
 			}
 			break;
 		default:
 		}
-		segmentgroup.enter().append("svg:path").attr("class").string("line item-" + i).attr("d").stringf($closure(this.linePath[i],"shape"));
-		segmentgroup.update().attr("d").stringf($closure(this.linePath[i],"shape"));
+		var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).attr("d").stringf(this.linePathShape[i]);
+		switch( (this.lineEffect)[1] ) {
+		case 1:
+			path.classed().add("gradient");
+			break;
+		case 2:
+			path.classed().add("dropshadow");
+			break;
+		case 0:
+			path.classed().add("noeffect");
+			break;
+		}
+		segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
 		segmentgroup.exit().remove();
-		var gsymbols = gi.selectAll("g.symbols").data(d), x = $closure(this,"x"), y = $closure(this,"y"), vars = this.variableDependents, onclick = ((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@180");
+		var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.variableDependents, onclick = ((function() {
+			$s.push("rg.view.svg.widget.LineChart::data@268");
 			var $spos = $s.length;
 			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.widget.LineChart::data@180@180");
+				$s.push("rg.view.svg.widget.LineChart::data@268@268");
 				var $spos = $s.length;
 				var $tmp = (function() {
-					$s.push("rg.view.svg.widget.LineChart::data@180@180@180");
+					$s.push("rg.view.svg.widget.LineChart::data@268@268@268");
 					var $spos = $s.length;
 					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.widget.LineChart::data@180@180@180@180");
+						$s.push("rg.view.svg.widget.LineChart::data@268@268@268@268");
 						var $spos = $s.length;
 						var $tmp = f(a1,a2,a3);
 						$s.pop();
@@ -21551,16 +22524,16 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 			return $tmp;
 			$s.pop();
 		})())($closure(this,"onclick"),stats[0]), onmouseover = ((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@181");
+			$s.push("rg.view.svg.widget.LineChart::data@269");
 			var $spos = $s.length;
 			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.widget.LineChart::data@181@181");
+				$s.push("rg.view.svg.widget.LineChart::data@269@269");
 				var $spos = $s.length;
 				var $tmp = (function() {
-					$s.push("rg.view.svg.widget.LineChart::data@181@181@181");
+					$s.push("rg.view.svg.widget.LineChart::data@269@269@269");
 					var $spos = $s.length;
 					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.widget.LineChart::data@181@181@181@181");
+						$s.push("rg.view.svg.widget.LineChart::data@269@269@269@269");
 						var $spos = $s.length;
 						var $tmp = f(a1,a2,a3);
 						$s.pop();
@@ -21579,59 +22552,31 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 			return $tmp;
 			$s.pop();
 		})())($closure(this,"onmouseover"),stats[0]);
-		var enter = gsymbols.enter().append("svg:g").attr("class").string("symbols item-" + i);
+		var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbols"));
 		var gsymbol = enter.selectAll("g.symbol").dataf((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@187");
+			$s.push("rg.view.svg.widget.LineChart::data@275");
 			var $spos = $s.length;
-			var $tmp = function(d1,i1) {
-				$s.push("rg.view.svg.widget.LineChart::data@187@187");
+			var $tmp = function(d,i1) {
+				$s.push("rg.view.svg.widget.LineChart::data@275@275");
 				var $spos = $s.length;
 				$s.pop();
-				return d1;
+				return d;
 				$s.pop();
 			};
 			$s.pop();
 			return $tmp;
 			$s.pop();
-		})()).enter().append("svg:g").attr("class").string("symbol").attr("transform").stringf(((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@190");
-			var $spos = $s.length;
-			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.widget.LineChart::data@190@190");
-				var $spos = $s.length;
-				var $tmp = (function() {
-					$s.push("rg.view.svg.widget.LineChart::data@190@190@190");
-					var $spos = $s.length;
-					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.widget.LineChart::data@190@190@190@190");
-						var $spos = $s.length;
-						var $tmp = f(a1,a2,a3);
-						$s.pop();
-						return $tmp;
-						$s.pop();
-					};
-					$s.pop();
-					return $tmp;
-					$s.pop();
-				})();
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})())($closure(this,"translatePoint"),i));
+		})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
 		if(null != this.click) gsymbol.on("click",onclick);
 		if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
 		gsymbol.append("svg:circle").attr("r")["float"](4).style("fill").string("#000000").style("fill-opacity")["float"](0.0).style("stroke").string("none");
 		if(null != this.symbol) {
 			var sp = [this.symbol];
-			var spath = gsymbol.append("svg:path").attr("class").string("item-" + i).attr("d").stringf((function(sp,stats) {
-				$s.push("rg.view.svg.widget.LineChart::data@210");
+			var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
+				$s.push("rg.view.svg.widget.LineChart::data@299");
 				var $spos = $s.length;
 				var $tmp = function(dp,_) {
-					$s.push("rg.view.svg.widget.LineChart::data@210@210");
+					$s.push("rg.view.svg.widget.LineChart::data@299@299");
 					var $spos = $s.length;
 					var $tmp = sp[0](dp,stats[0]);
 					$s.pop();
@@ -21645,10 +22590,10 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 			if(null != this.symbolStyle) {
 				var ss = [this.symbolStyle];
 				spath.attr("style").stringf((function(ss,stats) {
-					$s.push("rg.view.svg.widget.LineChart::data@214");
+					$s.push("rg.view.svg.widget.LineChart::data@303");
 					var $spos = $s.length;
 					var $tmp = function(dp,_) {
-						$s.push("rg.view.svg.widget.LineChart::data@214@214");
+						$s.push("rg.view.svg.widget.LineChart::data@303@303");
 						var $spos = $s.length;
 						var $tmp = ss[0](dp,stats[0]);
 						$s.pop();
@@ -21664,10 +22609,10 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 		if(null != this.labelDataPoint) {
 			var f = [this.labelDataPoint];
 			gsymbol.eachNode((function(f,stats) {
-				$s.push("rg.view.svg.widget.LineChart::data@221");
+				$s.push("rg.view.svg.widget.LineChart::data@310");
 				var $spos = $s.length;
 				var $tmp = function(n,i1) {
-					$s.push("rg.view.svg.widget.LineChart::data@221@221");
+					$s.push("rg.view.svg.widget.LineChart::data@310@310");
 					var $spos = $s.length;
 					var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n));
 					label.setText(f[0](dp,stats[0]));
@@ -21679,55 +22624,35 @@ rg.view.svg.widget.LineChart.prototype.data = function(input) {
 			})(f,stats));
 		}
 		gsymbols.update().selectAll("g.symbol").dataf((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@233");
+			$s.push("rg.view.svg.widget.LineChart::data@322");
 			var $spos = $s.length;
-			var $tmp = function(d1,i1) {
-				$s.push("rg.view.svg.widget.LineChart::data@233@233");
+			var $tmp = function(d,i1) {
+				$s.push("rg.view.svg.widget.LineChart::data@322@322");
 				var $spos = $s.length;
 				$s.pop();
-				return d1;
+				return d;
 				$s.pop();
 			};
 			$s.pop();
 			return $tmp;
 			$s.pop();
-		})()).update().attr("transform").stringf(((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@235");
-			var $spos = $s.length;
-			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.widget.LineChart::data@235@235");
-				var $spos = $s.length;
-				var $tmp = (function() {
-					$s.push("rg.view.svg.widget.LineChart::data@235@235@235");
-					var $spos = $s.length;
-					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.widget.LineChart::data@235@235@235@235");
-						var $spos = $s.length;
-						var $tmp = f(a1,a2,a3);
-						$s.pop();
-						return $tmp;
-						$s.pop();
-					};
-					$s.pop();
-					return $tmp;
-					$s.pop();
-				})();
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})())($closure(this,"translatePoint"),i));
+		})()).update().attr("transform").stringf(this.getTranslatePointf(i));
 		gsymbols.exit().remove();
 	}
 	$s.pop();
 }
-rg.view.svg.widget.LineChart.prototype.translatePoint = function(pos,dp,_) {
-	$s.push("rg.view.svg.widget.LineChart::translatePoint");
+rg.view.svg.widget.LineChart.prototype.getTranslatePointf = function(pos) {
+	$s.push("rg.view.svg.widget.LineChart::getTranslatePointf");
 	var $spos = $s.length;
-	var $tmp = "translate(" + this.x(dp) + "," + this.y(this.variableDependents[pos],dp) + ")";
+	var x = $closure(this,"x"), y = this.getY1(pos);
+	var $tmp = function(dp,i) {
+		$s.push("rg.view.svg.widget.LineChart::getTranslatePointf@335");
+		var $spos = $s.length;
+		var $tmp = "translate(" + x(dp) + "," + y(dp,i) + ")";
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -21748,22 +22673,6 @@ rg.view.svg.widget.LineChart.prototype.onclick = function(stats,dp,i) {
 	$s.push("rg.view.svg.widget.LineChart::onclick");
 	var $spos = $s.length;
 	this.click(dp,stats);
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.transformData = function(dps) {
-	$s.push("rg.view.svg.widget.LineChart::transformData");
-	var $spos = $s.length;
-	var results = [];
-	var _g1 = 0, _g = this.variableDependents.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var variable = this.variableDependents[i];
-		var values = rg.util.DataPoints.filterByDependents(dps,[variable]);
-		var map = rg.util.DataPoints.partition(values,this.segmenton);
-		results.push(map);
-	}
-	$s.pop();
-	return results;
 	$s.pop();
 }
 rg.view.svg.widget.LineChart.prototype.__class__ = rg.view.svg.widget.LineChart;
@@ -22138,7 +23047,7 @@ rg.controller.factory.FactoryLayout.prototype.create = function(info,container) 
 	if(null == layoutName) layoutName = rg.controller.Visualizations.layoutDefault.get(info.type);
 	if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
 	var layout = rg.controller.Visualizations.instantiateLayout(layoutName,width,height,container);
-	layout.mainPanelName = info.main;
+	layout.feedOptions(info);
 	$s.pop();
 	return layout;
 	$s.pop();
@@ -22217,10 +23126,10 @@ rg.data.Tickmarks.string = function(tick) {
 	return $tmp;
 	$s.pop();
 }
-rg.data.Tickmarks.forFloat = function(start,end,value) {
+rg.data.Tickmarks.forFloat = function(start,end,value,major) {
 	$s.push("rg.data.Tickmarks::forFloat");
 	var $spos = $s.length;
-	var $tmp = new rg.data.Tickmark(value,true,(value - start) / (end - start));
+	var $tmp = new rg.data.Tickmark(value,major,(value - start) / (end - start));
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -22336,23 +23245,12 @@ rg.data.DataProcessor.prototype.process = function(data) {
 			var subset = this.filterSubset(d,values);
 			if(subset.length > 0) subsets.push(subset);
 		}
-		dataPoints = this.pushDataPoints(subsets,dataPoints);
+		if(subsets.length == 0 || subsets[0].length == 0) continue;
+		var transformed = this.transform(subsets);
+		dataPoints = dataPoints.concat(transformed);
 	}
 	this.fillDependentVariables(dataPoints);
 	this.onData.dispatch(dataPoints);
-	$s.pop();
-}
-rg.data.DataProcessor.prototype.pushDataPoints = function(subsets,dataPoints) {
-	$s.push("rg.data.DataProcessor::pushDataPoints");
-	var $spos = $s.length;
-	if(subsets.length == 0 || subsets[0].length == 0) {
-		$s.pop();
-		return dataPoints;
-	}
-	var transformed = this.transform(subsets);
-	var $tmp = dataPoints.concat(transformed);
-	$s.pop();
-	return $tmp;
 	$s.pop();
 }
 rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
@@ -22364,10 +23262,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 		++_g;
 		if(ctx.partial) {
 			var variable = [ctx.variable], values = Arrays.filter(data.map((function(variable) {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@121");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@114");
 				var $spos = $s.length;
 				var $tmp = function(dp,_) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@121@121");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@114@114");
 					var $spos = $s.length;
 					var $tmp = Reflect.field(dp,variable[0].type);
 					$s.pop();
@@ -22378,10 +23276,10 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 				return $tmp;
 				$s.pop();
 			})(variable)),(function() {
-				$s.push("rg.data.DataProcessor::fillDependentVariables@121");
+				$s.push("rg.data.DataProcessor::fillDependentVariables@114");
 				var $spos = $s.length;
 				var $tmp = function(v) {
-					$s.push("rg.data.DataProcessor::fillDependentVariables@121@121");
+					$s.push("rg.data.DataProcessor::fillDependentVariables@114@114");
 					var $spos = $s.length;
 					var $tmp = null != v;
 					$s.pop();
@@ -22464,7 +23362,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@202");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@195");
 		var $spos = $s.length;
 		var $tmp = d.variable.range();
 		$s.pop();
@@ -24066,6 +24964,27 @@ thx.culture.core.NumberInfo.prototype.groupsSeparator = null;
 thx.culture.core.NumberInfo.prototype.patternNegative = null;
 thx.culture.core.NumberInfo.prototype.patternPositive = null;
 thx.culture.core.NumberInfo.prototype.__class__ = thx.culture.core.NumberInfo;
+rg.data.TickmarkTime = function(value,major,delta,periodicity) {
+	if( value === $_ ) return;
+	$s.push("rg.data.TickmarkTime::new");
+	var $spos = $s.length;
+	rg.data.Tickmark.call(this,value,major,delta);
+	this.periodicity = periodicity;
+	$s.pop();
+}
+rg.data.TickmarkTime.__name__ = ["rg","data","TickmarkTime"];
+rg.data.TickmarkTime.__super__ = rg.data.Tickmark;
+for(var k in rg.data.Tickmark.prototype ) rg.data.TickmarkTime.prototype[k] = rg.data.Tickmark.prototype[k];
+rg.data.TickmarkTime.prototype.periodicity = null;
+rg.data.TickmarkTime.prototype.getLabel = function() {
+	$s.push("rg.data.TickmarkTime::getLabel");
+	var $spos = $s.length;
+	var $tmp = rg.util.Periodicity.format(this.periodicity,this.getValue());
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkTime.prototype.__class__ = rg.data.TickmarkTime;
 thx.error.AbstractMethod = function(posInfo) {
 	if( posInfo === $_ ) return;
 	$s.push("thx.error.AbstractMethod::new");
@@ -24763,6 +25682,210 @@ rg.data.TestAxisOrdinal.prototype.assertValues = function(expected,test,pos) {
 	$s.pop();
 }
 rg.data.TestAxisOrdinal.prototype.__class__ = rg.data.TestAxisOrdinal;
+thx.svg.Area = function(x,y0,y1,interpolator) {
+	if( x === $_ ) return;
+	$s.push("thx.svg.Area::new");
+	var $spos = $s.length;
+	this._x = x;
+	this._y0 = y0;
+	this._y1 = y1;
+	this._interpolator = interpolator;
+	$s.pop();
+}
+thx.svg.Area.__name__ = ["thx","svg","Area"];
+thx.svg.Area.pointArray = function(interpolator) {
+	$s.push("thx.svg.Area::pointArray");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointArray@62");
+		var $spos = $s.length;
+		var $tmp = d[0];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Area::pointArray@62");
+		var $spos = $s.length;
+		var $tmp = d[1];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Area::pointArray@62");
+		var $spos = $s.length;
+		var $tmp = d[2];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.pointObject = function(interpolator) {
+	$s.push("thx.svg.Area::pointObject");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointObject@67");
+		var $spos = $s.length;
+		var $tmp = d.x;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Area::pointObject@67");
+		var $spos = $s.length;
+		var $tmp = d.y0;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Area::pointObject@67");
+		var $spos = $s.length;
+		var $tmp = d.y1;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.pointArray2 = function(interpolator) {
+	$s.push("thx.svg.Area::pointArray2");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointArray2@72");
+		var $spos = $s.length;
+		var $tmp = d[0];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(_,_1) {
+		$s.push("thx.svg.Area::pointArray2@72");
+		var $spos = $s.length;
+		$s.pop();
+		return 0.0;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Area::pointArray2@72");
+		var $spos = $s.length;
+		var $tmp = d[1];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.pointObjectXY = function(interpolator) {
+	$s.push("thx.svg.Area::pointObjectXY");
+	var $spos = $s.length;
+	var $tmp = new thx.svg.Area(function(d,_) {
+		$s.push("thx.svg.Area::pointObjectXY@77");
+		var $spos = $s.length;
+		var $tmp = d.x;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},function(_,_1) {
+		$s.push("thx.svg.Area::pointObjectXY@77");
+		var $spos = $s.length;
+		$s.pop();
+		return 0.0;
+		$s.pop();
+	},function(d,_) {
+		$s.push("thx.svg.Area::pointObjectXY@77");
+		var $spos = $s.length;
+		var $tmp = d.y;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	},interpolator);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.prototype._x = null;
+thx.svg.Area.prototype._y0 = null;
+thx.svg.Area.prototype._y1 = null;
+thx.svg.Area.prototype._interpolator = null;
+thx.svg.Area.prototype.shape = function(data,i) {
+	$s.push("thx.svg.Area::shape");
+	var $spos = $s.length;
+	var second = thx.svg.LineInternals.linePoints(data,this._x,this._y0);
+	second.reverse();
+	var $tmp = data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y1),this._interpolator) + "L" + thx.svg.LineInternals.interpolatePoints(second,this._interpolator) + "Z";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.prototype.getInterpolator = function() {
+	$s.push("thx.svg.Area::getInterpolator");
+	var $spos = $s.length;
+	var $tmp = this._interpolator;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.prototype.interpolator = function(type) {
+	$s.push("thx.svg.Area::interpolator");
+	var $spos = $s.length;
+	this._interpolator = type;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Area.prototype.getX = function() {
+	$s.push("thx.svg.Area::getX");
+	var $spos = $s.length;
+	var $tmp = this._x;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.prototype.x = function(v) {
+	$s.push("thx.svg.Area::x");
+	var $spos = $s.length;
+	this._x = v;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Area.prototype.getY0 = function() {
+	$s.push("thx.svg.Area::getY0");
+	var $spos = $s.length;
+	var $tmp = this._y0;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.prototype.y0 = function(v) {
+	$s.push("thx.svg.Area::y0");
+	var $spos = $s.length;
+	this._y0 = v;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Area.prototype.getY1 = function() {
+	$s.push("thx.svg.Area::getY1");
+	var $spos = $s.length;
+	var $tmp = this._y1;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+thx.svg.Area.prototype.y1 = function(v) {
+	$s.push("thx.svg.Area::y1");
+	var $spos = $s.length;
+	this._y1 = v;
+	$s.pop();
+	return this;
+	$s.pop();
+}
+thx.svg.Area.prototype.__class__ = thx.svg.Area;
 rg.data.source.rgquery.transform.TransformCountTimeIntersect = function(properties,fields,event,periodicity,unit) {
 	if( properties === $_ ) return;
 	$s.push("rg.data.source.rgquery.transform.TransformCountTimeIntersect::new");
@@ -24960,6 +26083,7 @@ js.Boot.__init();
 		return f(msg,stack);
 	}
 }
+rg.view.svg.util.SymbolCache.cache = new rg.view.svg.util.SymbolCache();
 thx.cultures.EnUS.getCulture();
 {
 	thx.color.NamedColors.byName = new Hash();
@@ -26707,12 +27831,10 @@ thx.languages.En.getLanguage();
 	rg.controller.Visualizations.layoutDefault = new Hash();
 	rg.controller.Visualizations.layoutType = new Hash();
 	rg.controller.Visualizations.layoutArgs = new Hash();
-	rg.controller.Visualizations.layoutDefault.set("linechart","simple");
+	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
 	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.SimpleLayout);
-	rg.controller.Visualizations.layoutArgs.set("simple",[true]);
-	rg.controller.Visualizations.layoutType.set("simplereverse",rg.view.layout.SimpleLayout);
-	rg.controller.Visualizations.layoutArgs.set("simplereverse",[false]);
+	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.CartesianLayout);
 }
 {
 	String.prototype.__class__ = String;
@@ -26728,6 +27850,7 @@ thx.languages.En.getLanguage();
 	Enum = { };
 	Void = { __ename__ : ["Void"]};
 }
+if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 {
 	var _PNAME = "((?:\\.?#?\\w+)+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+))";
 	rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "?" + "$","i");
@@ -26772,6 +27895,7 @@ thx.math.Const.HALF_PI = 1.570796326794896619;
 thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
+rg.view.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
 thx.xml.Namespace.prefix = (function() {
 	$s.push("utest.ui.common.FixtureResult::add");
 	var $spos = $s.length;
@@ -26856,9 +27980,8 @@ thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAg
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
 rg.controller.Visualizations.svg = ["linechart","piechart","linechart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
-rg.controller.Visualizations.layouts = ["simple","simplereverse"];
+rg.controller.Visualizations.layouts = ["simple","simplereverse","cartesian","cartesianreverse"];
 utest.TestHandler.POLLING_TIME = 10;
-haxe.Timer.arr = new Array();
 rg.data.source.rgquery.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
 rg.view.svg.widget.LineChart.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");

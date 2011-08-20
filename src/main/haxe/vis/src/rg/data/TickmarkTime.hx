@@ -16,5 +16,5 @@ class TickmarkTime extends Tickmark<Float>
 		this.periodicity = periodicity;
 	}
 	
-	override function getLabel() return Periodicity.format(periodicity, value)
+	override function getLabel() return Periodicity.smartFormat(periodicity, value)
 }
