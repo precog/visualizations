@@ -5,6 +5,7 @@
 
 package rg.view.layout;
 import rg.controller.info.InfoLayout;
+import rg.controller.info.InfoPadding;
 import rg.view.svg.panel.Panel;
 import rg.view.svg.panel.Space;
 import thx.js.Selection;
@@ -54,9 +55,39 @@ class Layout
 				// do nothing
 		}
 	}
+
+	function suggestPanelPadding(panel : Panel, before : Null<Int>, after : Null<Int>)
+	{
+		if (null == panel)
+			return;
+		var stackitem = Types.as(panel.frame, StackItem);
+		if (null == stackitem)
+			return;
+		switch(stackitem.disposition)
+		{
+			case Fill(b, a, min, max):
+				stackitem.disposition = Fill(null == before ? b : before, null == after ? a : after, min, max);
+			case FillPercent(b, a, percent, min, max):
+				stackitem.disposition = FillPercent(null == before ? b : before, null == after ? a : after, percent, min, max);
+			case FillRatio(b, a, ratio):
+				stackitem.disposition = FillRatio(null == before ? b : before, null == after ? a : after, ratio);
+			case Fixed(b, a, size):
+				stackitem.disposition = Fixed(null == before ? b : before, null == after ? a : after, size);
+			default:
+				// do nothing
+		}
+	}
+	
+	var paddings : InfoPadding;
 	
 	public function feedOptions(info : InfoLayout)
 	{
 		this.mainPanelName = info.main;
+		this.paddings = info.padding;
+	}
+	
+	public function adjustPadding()
+	{
+		
 	}
 }

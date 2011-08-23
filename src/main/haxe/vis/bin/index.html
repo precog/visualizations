@@ -125,6 +125,78 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		}
 	});
+
+	var ageRanges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"];
+//	var ages = ["0-13", "14-15", "16-20", "21-35", "36+"];
+	ReportGrid.lineChart("#chart2", {
+		axes : [{
+			type : "age",
+			values : ageRanges,
+			view : ["0-13", "100+"],
+			variable : "independent"
+		}, {
+			type : "count",
+			view : [0, 40],
+			variable : "dependent"
+		}],
+		data : [{
+			src : {
+				data : ageRanges.map(function(d,i) {
+					return {
+						count : ReportGrid.math.random() * 35 + 5,
+						age : d
+					};
+				})
+			}
+		}],
+		options : {
+			height : 120,
+			line : {
+				interpolation : "linear"
+			},
+			label : {
+				datapointover : function(dp) { 
+					return ReportGrid.format(dp["count"]); 
+				},
+				axis : function(name) { return ReportGrid.humanize(name); }
+			}
+		}
+	});
+	
+	var interests = ["sport", "tv", "internet", "art", "history", "diy"];
+	ReportGrid.lineChart("#chart3", {
+		axes : [{
+			type : "age",
+			values : ageRanges,
+			view : ["0-13", "100+"],
+			variable : "independent"
+		}, {
+			type : "interest",
+			view : ["sport", "diy"],
+			values : interests,
+			variable : "dependent"
+		}],
+		data : [{
+			src : {
+				data : ageRanges.map(function(d,i) {
+					return {
+						interest : interests[Math.floor(ReportGrid.math.random()*interests.length)],
+						age : d
+					};
+				})
+			}
+		}],
+		options : {
+			height : 120,
+			label : {
+				title : "Interests by Age Groups",
+				datapointover : function(dp) { 
+					return dp["age"] + ": " + dp["interest"]; 
+				},
+				axis : function(name) { return ReportGrid.humanize(name); }
+			}
+		}
+	});
 }, false)
 </script>
 </head>

@@ -12,6 +12,7 @@ import rg.util.RGStrings;
 import thx.date.DateParser;
 import thx.js.Dom;
 import thx.error.Error;
+import thx.math.Random;
 //import thx.svg.Symbol;
 import rg.view.svg.util.SymbolCache;
  
@@ -66,6 +67,9 @@ class JSBridge
 			if (Std.is(v, String) && Properties.isTime(v))
 				return Properties.periodicity(v);
 			return RGStrings.humanize(v);
+		}
+		o.math = {
+			random : new Random(9).float
 		}
 	}
 	

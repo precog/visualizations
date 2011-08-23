@@ -36,8 +36,14 @@ class VisualizationLineChart extends VisualizationSvg
 	{
 		initYAxes();
 		initXAxis();
-		initChart();
 		initTitle();
+		initPadding();
+		initChart();
+	}
+	
+	function initPadding()
+	{
+		layout.adjustPadding();
 	}
 	
 	function initYAxes()
@@ -122,6 +128,8 @@ class VisualizationLineChart extends VisualizationSvg
 	
 	function initTitle()
 	{
+		if (null == info.label.title)
+			return;
 		var panelContextTitle = layout.getContext("title");
 		if (null == panelContextTitle)
 			return;

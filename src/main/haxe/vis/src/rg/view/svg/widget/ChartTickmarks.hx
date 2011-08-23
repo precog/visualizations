@@ -21,8 +21,7 @@ class ChartTickmarks extends Layer
 	public var tickMinorPadding : Float;
 	public var tickMajorPadding : Float;
 	public var labelDisplay : Bool;
-	public var labelMinorPadding : Float;
-	public var labelMajorPadding : Float;
+	public var labelPadding : Float;
 	public var labelOrientation : LabelOrientation;
 	public var labelAnchor : GridAnchor;
 	public var labelAngle : Float;
@@ -48,8 +47,7 @@ class ChartTickmarks extends Layer
 		tickMinorPadding = 1;
 		tickMajorPadding = 1;
 		labelDisplay = true;
-		labelMinorPadding = 6;
-		labelMajorPadding = 10;
+		labelPadding = 10;
 		
 		g.classed().add("tickmarks");
 		initf();
@@ -81,7 +79,7 @@ class ChartTickmarks extends Layer
 			case Left, Right: height;
 			case Top, Bottom: width;
 		}
-		return Math.round(size / 3);
+		return Math.round(size / 2.5);
 	}
 	
 	function redraw()
@@ -89,7 +87,7 @@ class ChartTickmarks extends Layer
 		desiredSize = Math.max(tickMinorPadding + tickMinorLength, tickMajorPadding + tickMajorLength);
 		var ticks = maxTicks();
 		var data = axis.ticks(min, max, ticks);
-	
+
 		// ticks
 		var tick = g.selectAll("g.tick").data(data, function(d,i) return "" + d.value);
 		var enter = tick.enter()
@@ -121,7 +119,7 @@ class ChartTickmarks extends Layer
 		var label = new Label(Dom.selectNode(n), false, true, false);
 		label.anchor = labelAnchor;
 		label.orientation = labelOrientation;
-		var padding = d.major ? labelMajorPadding : labelMinorPadding;
+		var padding = labelPadding;
 		label.text = d.label;
 		switch(anchor)
 		{

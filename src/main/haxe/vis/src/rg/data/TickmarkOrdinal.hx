@@ -25,7 +25,7 @@ class TickmarkOrdinal<T> implements ITickmark<T>
 	public var delta(getDelta, null) : Float;
 	function getDelta()
 	{
-		return pos / values.length;
+		return pos / (values.length - 1);
 	}
 	
 	public var major(getMajor, null) : Bool;

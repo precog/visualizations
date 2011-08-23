@@ -68,6 +68,16 @@ class Label
 		Reflect.setField(this, "anchor", Center);
 	}
 	
+	public function addClass(name : String)
+	{
+		g.classed().add(name);
+	}
+	
+	public function removeClass(name : String)
+	{
+		g.classed().remove(name);
+	}
+	
 	public function getSize() : { width : Float, height : Float }
 	{
 		return untyped g.node().getBBox();

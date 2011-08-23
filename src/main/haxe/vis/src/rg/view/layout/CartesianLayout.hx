@@ -6,6 +6,7 @@
 package rg.view.layout;
 
 import rg.controller.info.InfoLayout;
+import rg.controller.info.InfoPadding;
 import rg.view.svg.panel.Panel;
 import rg.view.svg.panel.Container;
 import thx.js.Selection;
@@ -16,7 +17,6 @@ import rg.view.frame.Orientation;
 class CartesianLayout extends Layout
 {
 	var main : Panel;
-	var titleUsed : Bool;
 	var titleOnTop : Bool;
 	
 	var leftcontainer : Container;
@@ -44,7 +44,6 @@ class CartesianLayout extends Layout
 	public function new(width : Int, height : Int, container : Selection) 
 	{
 		super(width, height, container);
-		titleUsed = false;
 		titleOnTop = true;
 		left = true;
 		alternating = true;
@@ -260,7 +259,7 @@ class CartesianLayout extends Layout
 			default: //
 		}
 	}
-	
+
 	function getXTitle()
 	{
 		if (null == xtitle)
@@ -337,7 +336,6 @@ class CartesianLayout extends Layout
 	{
 		super.feedOptions(info);
 		titleOnTop = info.titleOnTop;
-		
 		switch(info.layoutScaleY)
 		{
 			case LayoutScaleY.ScalesOnLeft:
@@ -349,6 +347,30 @@ class CartesianLayout extends Layout
 			case LayoutScaleY.ScalesAlternating:
 				left = true;
 				alternating = true;
+		}
+	}
+	
+	static inline var ALT_RIGHT  = 15;
+	static inline var ALT_LEFT   = 15;
+	static inline var ALT_TOP    = 5;
+	static inline var ALT_BOTTOM = 5;
+	
+	override function adjustPadding()
+	{
+		var top    = (null == title && null == paddings.top) ? ALT_TOP : paddings.top,
+			bottom = ((null == xtickmarks || !titleOnTop && null == title) && null == paddings.bottom) ? ALT_BOTTOM : paddings.bottom,
+			left   = (null == leftcontainer && null == paddings.left) ? ALT_LEFT : paddings.left,
+			right  = (null == rightcontainer && null == paddings.right) ? ALT_RIGHT : paddings.right;
+
+		if (null != left || null != right)
+		{
+			suggestPanelPadding(getMain(), left, right);
+			suggestPanelPadding(bottommiddlecontainer, left, right);
+		}
+		
+		if (null != top || null != bottom)
+		{
+			suggestPanelPadding(middlecontainer, top, bottom);
 		}
 	}
 }

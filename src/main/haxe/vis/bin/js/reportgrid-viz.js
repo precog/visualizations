@@ -1007,8 +1007,7 @@ rg.view.svg.widget.ChartTickmarks = function(panel,anchor) {
 	this.tickMinorPadding = 1;
 	this.tickMajorPadding = 1;
 	this.labelDisplay = true;
-	this.labelMinorPadding = 6;
-	this.labelMajorPadding = 10;
+	this.labelPadding = 10;
 	this.g.classed().add("tickmarks");
 	this.initf();
 }
@@ -1022,8 +1021,7 @@ rg.view.svg.widget.ChartTickmarks.prototype.tickMajorLength = null;
 rg.view.svg.widget.ChartTickmarks.prototype.tickMinorPadding = null;
 rg.view.svg.widget.ChartTickmarks.prototype.tickMajorPadding = null;
 rg.view.svg.widget.ChartTickmarks.prototype.labelDisplay = null;
-rg.view.svg.widget.ChartTickmarks.prototype.labelMinorPadding = null;
-rg.view.svg.widget.ChartTickmarks.prototype.labelMajorPadding = null;
+rg.view.svg.widget.ChartTickmarks.prototype.labelPadding = null;
 rg.view.svg.widget.ChartTickmarks.prototype.labelOrientation = null;
 rg.view.svg.widget.ChartTickmarks.prototype.labelAnchor = null;
 rg.view.svg.widget.ChartTickmarks.prototype.labelAngle = null;
@@ -1063,7 +1061,7 @@ rg.view.svg.widget.ChartTickmarks.prototype.maxTicks = function() {
 		}
 		return $r;
 	}(this));
-	return Math.round(size / 3);
+	return Math.round(size / 2.5);
 }
 rg.view.svg.widget.ChartTickmarks.prototype.redraw = function() {
 	this.desiredSize = Math.max(this.tickMinorPadding + this.tickMinorLength,this.tickMajorPadding + this.tickMajorLength);
@@ -1084,7 +1082,7 @@ rg.view.svg.widget.ChartTickmarks.prototype.createLabel = function(n,i) {
 	var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
 	label.setAnchor(this.labelAnchor);
 	label.setOrientation(this.labelOrientation);
-	var padding = d.getMajor()?this.labelMajorPadding:this.labelMinorPadding;
+	var padding = this.labelPadding;
 	label.setText(d.getLabel());
 	switch( (this.anchor)[1] ) {
 	case 0:
@@ -2637,8 +2635,12 @@ rg.controller.visualization.VisualizationLineChart.prototype.title = null;
 rg.controller.visualization.VisualizationLineChart.prototype.init = function() {
 	this.initYAxes();
 	this.initXAxis();
-	this.initChart();
 	this.initTitle();
+	this.initPadding();
+	this.initChart();
+}
+rg.controller.visualization.VisualizationLineChart.prototype.initPadding = function() {
+	this.layout.adjustPadding();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.initYAxes = function() {
 	this.ypanels = [];
@@ -2698,6 +2700,7 @@ rg.controller.visualization.VisualizationLineChart.prototype.initChart = functio
 	this.chart.init();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.initTitle = function() {
+	if(null == this.info.label.title) return;
 	var panelContextTitle = this.layout.getContext("title");
 	if(null == panelContextTitle) return;
 	this.title = new rg.view.svg.widget.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
@@ -2748,6 +2751,7 @@ rg.controller.info.InfoLayout = function(p) {
 	this.main = "main";
 	this.titleOnTop = true;
 	this.layoutScaleY = rg.view.layout.LayoutScaleY.ScalesAlternating;
+	this.padding = new rg.controller.info.InfoPadding();
 }
 rg.controller.info.InfoLayout.__name__ = ["rg","controller","info","InfoLayout"];
 rg.controller.info.InfoLayout.filters = function() {
@@ -2790,6 +2794,10 @@ rg.controller.info.InfoLayout.filters = function() {
 			}
 			return $r;
 		}(this))}];
+	}},{ field : "padding", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "padding", value : rg.controller.info.Info.feed(new rg.controller.info.InfoPadding(),v)}];
 	}}];
 }
 rg.controller.info.InfoLayout.prototype.layout = null;
@@ -2799,6 +2807,7 @@ rg.controller.info.InfoLayout.prototype.type = null;
 rg.controller.info.InfoLayout.prototype.main = null;
 rg.controller.info.InfoLayout.prototype.titleOnTop = null;
 rg.controller.info.InfoLayout.prototype.layoutScaleY = null;
+rg.controller.info.InfoLayout.prototype.padding = null;
 rg.controller.info.InfoLayout.prototype.__class__ = rg.controller.info.InfoLayout;
 IntHash = function(p) {
 	if( p === $_ ) return;
@@ -2919,7 +2928,7 @@ thx.svg.Line.prototype.__class__ = thx.svg.Line;
 rg.controller.info.InfoLine = function(p) {
 	if( p === $_ ) return;
 	this.effect = rg.view.svg.widget.LineEffect.Gradient(0.75,2);
-	this.interpolation = thx.svg.LineInterpolator.Cardinal(0.7);
+	this.interpolation = thx.svg.LineInterpolator.Linear;
 }
 rg.controller.info.InfoLine.__name__ = ["rg","controller","info","InfoLine"];
 rg.controller.info.InfoLine.filters = function() {
@@ -5764,6 +5773,12 @@ rg.view.svg.widget.Label.prototype.gshadowrot = null;
 rg.view.svg.widget.Label.prototype.ttext = null;
 rg.view.svg.widget.Label.prototype.toutline = null;
 rg.view.svg.widget.Label.prototype.tshadow = null;
+rg.view.svg.widget.Label.prototype.addClass = function(name) {
+	this.g.classed().add(name);
+}
+rg.view.svg.widget.Label.prototype.removeClass = function(name) {
+	this.g.classed().remove(name);
+}
 rg.view.svg.widget.Label.prototype.getSize = function() {
 	return this.g.node().getBBox();
 }
@@ -5943,6 +5958,30 @@ rg.view.svg.widget.Label.prototype.destroy = function() {
 	this.g.remove();
 }
 rg.view.svg.widget.Label.prototype.__class__ = rg.view.svg.widget.Label;
+rg.controller.info.InfoAnimation = function(p) {
+	if( p === $_ ) return;
+	this.animated = true;
+	this.duration = 1500;
+	this.delay = 150;
+	this.ease = thx.math.Equations.elasticf();
+}
+rg.controller.info.InfoAnimation.__name__ = ["rg","controller","info","InfoAnimation"];
+rg.controller.info.InfoAnimation.filters = function() {
+	return [{ field : "animated", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "duration", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "delay", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "ease", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}];
+}
+rg.controller.info.InfoAnimation.prototype.animated = null;
+rg.controller.info.InfoAnimation.prototype.duration = null;
+rg.controller.info.InfoAnimation.prototype.ease = null;
+rg.controller.info.InfoAnimation.prototype.delay = null;
+rg.controller.info.InfoAnimation.prototype.__class__ = rg.controller.info.InfoAnimation;
 Floats = function() { }
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
@@ -6083,30 +6122,6 @@ Floats.round = function(x,n) {
 	return n != 0?Math.round(x * Math.pow(10,n)) * Math.pow(10,-n):Math.round(x);
 }
 Floats.prototype.__class__ = Floats;
-rg.controller.info.InfoAnimation = function(p) {
-	if( p === $_ ) return;
-	this.animated = true;
-	this.duration = 1500;
-	this.delay = 150;
-	this.ease = thx.math.Equations.elasticf();
-}
-rg.controller.info.InfoAnimation.__name__ = ["rg","controller","info","InfoAnimation"];
-rg.controller.info.InfoAnimation.filters = function() {
-	return [{ field : "animated", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "duration", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "delay", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "ease", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
-}
-rg.controller.info.InfoAnimation.prototype.animated = null;
-rg.controller.info.InfoAnimation.prototype.duration = null;
-rg.controller.info.InfoAnimation.prototype.ease = null;
-rg.controller.info.InfoAnimation.prototype.delay = null;
-rg.controller.info.InfoAnimation.prototype.__class__ = rg.controller.info.InfoAnimation;
 thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
 thx.math.EaseMode.EaseIn.toString = $estr;
@@ -6904,25 +6919,29 @@ rg.view.svg.widget.Baloon = function(container) {
 	if( container === $_ ) return;
 	this.container = container;
 	this.visible = true;
-	this._duration = 500;
+	this.duration = 500;
 	this.minwidth = 30;
 	this.setPreferredSide(2);
-	this._ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
-	this._strokeWidth = 1;
-	this.setRoundedCorner(6);
-	this.setPadding(5);
-	this._transition_id = 0;
+	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
+	this.setRoundedCorner(4);
+	this.paddingHorizontal = 3.5;
+	this.paddingVertical = 1.5;
+	this.transition_id = 0;
 	this.baloon = container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
 	this.frame = this.baloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
-	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)").style("opacity")["float"](0.25).style("fill").string("none").style("stroke").string("#000").style("stroke-width")["float"](this._strokeWidth + 2);
-	this._connectorShapeV = thx.svg.Diagonal.forObject();
-	this._connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
+	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)");
+	this.connectorShapeV = thx.svg.Diagonal.forObject();
+	this.connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
 		return [d[1],d[0]];
 	});
 	this.connector = this.baloon.append("svg:path").attr("class").string("baloon-connector").style("fill").string("none").style("display").string("none").attr("transform").string("translate(0, 0)");
-	this.frame.append("svg:path").attr("class").string("bg").style("fill").string("#ff9").style("stroke").string("#fa0").style("fill-opacity")["float"](0.9).style("stroke-width")["float"](this._strokeWidth);
-	var r = Math.min(10,Math.max(3,this.roundedCorner));
-	this.setTextHeight(11);
+	this.frame.append("svg:path").attr("class").string("bg");
+	this.labelsContainer = this.frame.append("svg:g").attr("class").string("labels");
+	this.labels = [];
+	var temp = this.createLabel(0);
+	temp.setText("HELLO");
+	this.setLineHeight(temp.getSize().height);
+	temp.destroy();
 }
 rg.view.svg.widget.Baloon.__name__ = ["rg","view","svg","widget","Baloon"];
 rg.view.svg.widget.Baloon.prototype.text = null;
@@ -6931,40 +6950,64 @@ rg.view.svg.widget.Baloon.prototype.y = null;
 rg.view.svg.widget.Baloon.prototype.boxWidth = null;
 rg.view.svg.widget.Baloon.prototype.boxHeight = null;
 rg.view.svg.widget.Baloon.prototype.visible = null;
-rg.view.svg.widget.Baloon.prototype.textHeight = null;
+rg.view.svg.widget.Baloon.prototype.lineHeight = null;
 rg.view.svg.widget.Baloon.prototype.roundedCorner = null;
-rg.view.svg.widget.Baloon.prototype.padding = null;
+rg.view.svg.widget.Baloon.prototype.paddingHorizontal = null;
+rg.view.svg.widget.Baloon.prototype.paddingVertical = null;
 rg.view.svg.widget.Baloon.prototype.preferredSide = null;
 rg.view.svg.widget.Baloon.prototype.minwidth = null;
+rg.view.svg.widget.Baloon.prototype.labels = null;
 rg.view.svg.widget.Baloon.prototype.container = null;
 rg.view.svg.widget.Baloon.prototype.baloon = null;
 rg.view.svg.widget.Baloon.prototype.frame = null;
+rg.view.svg.widget.Baloon.prototype.labelsContainer = null;
 rg.view.svg.widget.Baloon.prototype.connector = null;
-rg.view.svg.widget.Baloon.prototype._duration = null;
-rg.view.svg.widget.Baloon.prototype._ease = null;
-rg.view.svg.widget.Baloon.prototype._strokeWidth = null;
-rg.view.svg.widget.Baloon.prototype._connectorShapeV = null;
-rg.view.svg.widget.Baloon.prototype._connectorShapeH = null;
+rg.view.svg.widget.Baloon.prototype.duration = null;
+rg.view.svg.widget.Baloon.prototype.ease = null;
+rg.view.svg.widget.Baloon.prototype.connectorShapeV = null;
+rg.view.svg.widget.Baloon.prototype.connectorShapeH = null;
 rg.view.svg.widget.Baloon.prototype.boundingBox = null;
+rg.view.svg.widget.Baloon.prototype.createLabel = function(i) {
+	var label = new rg.view.svg.widget.Label(this.labelsContainer,true,true,false);
+	label.addClass("line-" + i);
+	label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
+	label.setOrientation(rg.view.svg.widget.LabelOrientation.Orthogonal);
+	label.place(0,i * this.lineHeight,90);
+	return label;
+}
 rg.view.svg.widget.Baloon.prototype.setPreferredSide = function(v) {
 	this.preferredSide = Ints.clamp(v,0,3);
 	this.redraw();
 	return v;
 }
 rg.view.svg.widget.Baloon.prototype.setText = function(v) {
+	while(this.labels.length > v.length) {
+		var label = this.labels.pop();
+		label.destroy();
+	}
+	var _g1 = this.labels.length, _g = v.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.labels[i] = this.createLabel(i);
+	}
+	var _g1 = 0, _g = v.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.labels[i].setText(v[i]);
+	}
 	this.text = v;
 	this.redraw();
 	return v;
 }
-rg.view.svg.widget.Baloon.prototype.setTextHeight = function(v) {
-	this.textHeight = v;
+rg.view.svg.widget.Baloon.prototype.setLineHeight = function(v) {
+	this.lineHeight = v;
 	this.redraw();
 	return v;
 }
-rg.view.svg.widget.Baloon.prototype.setPadding = function(v) {
-	this.padding = v;
+rg.view.svg.widget.Baloon.prototype.setPadding = function(h,v) {
+	this.paddingHorizontal = h;
+	this.paddingVertical = v;
 	this.redraw();
-	return v;
 }
 rg.view.svg.widget.Baloon.prototype.setRoundedCorner = function(v) {
 	this.roundedCorner = v;
@@ -6980,13 +7023,13 @@ rg.view.svg.widget.Baloon.prototype.getBoundingBox = function() {
 	if(null == this.boundingBox) this.setBoundingBox(this.container.node().getBBox());
 	return this.boundingBox;
 }
-rg.view.svg.widget.Baloon.prototype._transition_id = null;
+rg.view.svg.widget.Baloon.prototype.transition_id = null;
 rg.view.svg.widget.Baloon.prototype.moveTo = function(x,y,animate) {
 	if(animate == null) animate = true;
 	if(animate) {
-		var $int = thx.math.Equations.elasticf(), tid = ++this._transition_id, ix = Floats.interpolatef(this.x,x,this._ease), iy = Floats.interpolatef(this.y,y,this._ease), duration = this._duration, mt = $closure(this,"_moveTo"), me = this;
+		var $int = thx.math.Equations.elasticf(), tid = ++this.transition_id, ix = Floats.interpolatef(this.x,x,this.ease), iy = Floats.interpolatef(this.y,y,this.ease), duration = this.duration, mt = $closure(this,"_moveTo"), me = this;
 		thx.js.Timer.timer(function(t) {
-			if(tid != me._transition_id) return true;
+			if(tid != me.transition_id) return true;
 			if(t > duration) {
 				mt(x,y);
 				return true;
@@ -7218,7 +7261,7 @@ rg.view.svg.widget.Baloon.prototype._moveTo = function(x,y) {
 	}
 	this.baloon.attr("transform").string("translate(" + (this.x = x) + ", " + (this.y = y) + ")");
 	this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.view.svg.widget.BaloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
-	if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this._connectorShapeV.diagonal(o):this._connectorShapeH.diagonal(o));
+	if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(o):this.connectorShapeH.diagonal(o));
 }
 rg.view.svg.widget.Baloon.prototype.show = function() {
 	if(!this.visible) return;
@@ -7232,28 +7275,20 @@ rg.view.svg.widget.Baloon.prototype.hide = function() {
 }
 rg.view.svg.widget.Baloon.prototype.redraw = function() {
 	if(null == this.text || this.text.length == 0) return;
-	var key = function(d,i) {
-		return d + ":" + i;
-	};
-	var choice = this.frame.selectAll("text").data(this.text,key), th = this.textHeight, linewidth = this.minwidth, pad = this.padding;
-	var calculateLineWidth = function(n,i) {
-		var v = n.getBBox().width;
-		if(v > linewidth) linewidth = v;
-	};
-	choice.enter().append("svg:text").style("font-size").string(th + "px").style("font-weight").string("bold").style("fill").string("#000").text().stringf(function(d,i) {
-		return d;
-	}).eachNode(calculateLineWidth).attr("x")["float"](pad).attr("y").floatf(function(_,i) {
-		return Math.round((0.6 + i) * 1.2 * th + pad);
-	}).attr("opacity")["float"](0).transition().duration(null,this._duration).ease(this._ease).delay(null,this._duration / 3).attr("opacity")["float"](1);
-	choice.update().text().stringf(function(d,i) {
-		return d;
-	}).eachNode(calculateLineWidth).transition().duration(null,this._duration).ease(this._ease).attr("opacity")["float"](1).attr("x")["float"](pad).attr("y").floatf(function(_,i) {
-		return Math.round((0.6 + i) * 1.2 * th + pad);
-	}).style("font-size").string(th + "px").style("font-weight").string("bold");
-	choice.exit().transition().ease(this._ease).duration(null,this._duration / 3).attr("opacity")["float"](0).remove();
-	this.boxWidth = linewidth + this.padding * 2;
-	this.boxHeight = th * this.text.length + this.padding * 2;
-	this.frame.selectAll(".bg").transition().ease(this._ease).delay(null,this._duration);
+	this.boxWidth = 0.0;
+	var w;
+	var _g = 0, _g1 = this.labels;
+	while(_g < _g1.length) {
+		var label = _g1[_g];
+		++_g;
+		if((w = label.getSize().width) > this.boxWidth) this.boxWidth = w;
+	}
+	this.boxWidth += this.paddingHorizontal * 2;
+	this.boxHeight = this.lineHeight * this.labels.length + this.paddingVertical * 2;
+	var bg = this.frame.selectAll(".bg"), sw = bg.style("stroke-width").getFloat();
+	if(Math.isNaN(sw)) sw = 0;
+	this.labelsContainer.attr("transform").string("translate(" + (-sw + this.boxWidth) / 2 + "," + (sw + this.paddingVertical) + ")");
+	bg.transition().ease(this.ease).delay(null,this.duration);
 }
 rg.view.svg.widget.Baloon.prototype.__class__ = rg.view.svg.widget.Baloon;
 rg.view.layout.PanelContext = function(panel,anchor) {
@@ -7398,7 +7433,7 @@ rg.data.TickmarkOrdinal.prototype.pos = null;
 rg.data.TickmarkOrdinal.prototype.values = null;
 rg.data.TickmarkOrdinal.prototype.delta = null;
 rg.data.TickmarkOrdinal.prototype.getDelta = function() {
-	return this.pos / this.values.length;
+	return this.pos / (this.values.length - 1);
 }
 rg.data.TickmarkOrdinal.prototype.major = null;
 rg.data.TickmarkOrdinal.prototype.getMajor = function() {
@@ -7417,6 +7452,20 @@ rg.data.TickmarkOrdinal.prototype.toString = function() {
 }
 rg.data.TickmarkOrdinal.prototype.__class__ = rg.data.TickmarkOrdinal;
 rg.data.TickmarkOrdinal.__interfaces__ = [rg.data.ITickmark];
+thx.math.Random = function(seed) {
+	if( seed === $_ ) return;
+	if(seed == null) seed = 1;
+	this.seed = seed;
+}
+thx.math.Random.__name__ = ["thx","math","Random"];
+thx.math.Random.prototype.seed = null;
+thx.math.Random.prototype["int"] = function() {
+	return (this.seed = this.seed * 16807 % 2147483647) & 1073741823;
+}
+thx.math.Random.prototype["float"] = function() {
+	return ((this.seed = this.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
+}
+thx.math.Random.prototype.__class__ = thx.math.Random;
 thx.svg.LineInterpolators = function() { }
 thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
 thx.svg.LineInterpolators.parse = function(s,sep) {
@@ -8420,7 +8469,7 @@ rg.JSBridge = function() { }
 rg.JSBridge.__name__ = ["rg","JSBridge"];
 rg.JSBridge.main = function() {
 	var o = window.ReportGrid;
-	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 25, className : "rg.JSBridge", methodName : "main"});
+	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 26, className : "rg.JSBridge", methodName : "main"});
 	var app = new rg.controller.App(o);
 	o.viz = function(el,options,type) {
 		return app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
@@ -8454,10 +8503,11 @@ rg.JSBridge.main = function() {
 		if(Std["is"](v,String) && rg.util.Properties.isTime(v)) return rg.util.Properties.periodicity(v);
 		return rg.util.RGStrings.humanize(v);
 	};
+	o.math = { random : $closure(new thx.math.Random(9),"float")};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 77, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 81, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(o) {
@@ -10114,8 +10164,37 @@ rg.view.layout.Layout.prototype.suggestPanelSize = function(panel,size) {
 	default:
 	}
 }
+rg.view.layout.Layout.prototype.suggestPanelPadding = function(panel,before,after) {
+	if(null == panel) return;
+	var stackitem = Types["as"](panel.frame,rg.view.frame.StackItem);
+	if(null == stackitem) return;
+	var $e = (stackitem.disposition);
+	switch( $e[1] ) {
+	case 0:
+		var max = $e[5], min = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
+		break;
+	case 1:
+		var max = $e[6], min = $e[5], percent = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
+		break;
+	case 2:
+		var ratio = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
+		break;
+	case 3:
+		var size = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
+		break;
+	default:
+	}
+}
+rg.view.layout.Layout.prototype.paddings = null;
 rg.view.layout.Layout.prototype.feedOptions = function(info) {
 	this.mainPanelName = info.main;
+	this.paddings = info.padding;
+}
+rg.view.layout.Layout.prototype.adjustPadding = function() {
 }
 rg.view.layout.Layout.prototype.__class__ = rg.view.layout.Layout;
 rg.view.layout.SimpleLayout = function(width,height,container) {
@@ -10161,7 +10240,6 @@ rg.view.layout.SimpleLayout.prototype.__class__ = rg.view.layout.SimpleLayout;
 rg.view.layout.CartesianLayout = function(width,height,container) {
 	if( width === $_ ) return;
 	rg.view.layout.Layout.call(this,width,height,container);
-	this.titleUsed = false;
 	this.titleOnTop = true;
 	this.left = true;
 	this.alternating = true;
@@ -10171,7 +10249,6 @@ rg.view.layout.CartesianLayout.__name__ = ["rg","view","layout","CartesianLayout
 rg.view.layout.CartesianLayout.__super__ = rg.view.layout.Layout;
 for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.CartesianLayout.prototype[k] = rg.view.layout.Layout.prototype[k];
 rg.view.layout.CartesianLayout.prototype.main = null;
-rg.view.layout.CartesianLayout.prototype.titleUsed = null;
 rg.view.layout.CartesianLayout.prototype.titleOnTop = null;
 rg.view.layout.CartesianLayout.prototype.leftcontainer = null;
 rg.view.layout.CartesianLayout.prototype.rightcontainer = null;
@@ -10398,6 +10475,14 @@ rg.view.layout.CartesianLayout.prototype.feedOptions = function(info) {
 		break;
 	}
 }
+rg.view.layout.CartesianLayout.prototype.adjustPadding = function() {
+	var top = null == this.title && null == this.paddings.top?5:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?5:this.paddings.bottom, left = null == this.leftcontainer && null == this.paddings.left?15:this.paddings.left, right = null == this.rightcontainer && null == this.paddings.right?15:this.paddings.right;
+	if(null != left || null != right) {
+		this.suggestPanelPadding(this.getMain(),left,right);
+		this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
+	}
+	if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
+}
 rg.view.layout.CartesianLayout.prototype.__class__ = rg.view.layout.CartesianLayout;
 rg.controller.Visualizations = function() { }
 rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
@@ -10439,6 +10524,10 @@ rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
 rg.data.AxisNumeric = function(p) {
 }
 rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
+rg.data.AxisNumeric._ticks = function(start,end,m) {
+	var span = end - start, step = Math.pow(m,Math.floor(Math.log(span / m) / Math.log(m))), err = m / (span / step);
+	return Floats.range(start,end,step);
+}
 rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
 	return (Floats.uninterpolatef(start,end))(v);
 }
@@ -10446,12 +10535,10 @@ rg.data.AxisNumeric.prototype.toTickmark = function(start,end,value) {
 	return new rg.data.Tickmark(value,true,(value - start) / (end - start));
 }
 rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
-	var m = 10, span = end - start, step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / (span / step);
-	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
-	if(null != maxTicks) while(span / step > maxTicks) step *= 2;
-	return Floats.range(start,end,step).map(function(d,i) {
-		return new rg.data.Tickmark(d,true,(d - start) / (end - start));
-	});
+	var minors = rg.data.AxisNumeric._ticks(start,end,10), majors = rg.data.AxisNumeric._ticks(start,end,5);
+	return rg.data.Tickmarks.bound(minors.map(function(d,i) {
+		return new rg.data.Tickmark(d,majors.remove(d),(d - start) / (end - start));
+	}),maxTicks);
 }
 rg.data.AxisNumeric.prototype.__class__ = rg.data.AxisNumeric;
 rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
@@ -12454,6 +12541,25 @@ DateTools.make = function(o) {
 	return o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
 }
 DateTools.prototype.__class__ = DateTools;
+rg.controller.info.InfoPadding = function(p) {
+}
+rg.controller.info.InfoPadding.__name__ = ["rg","controller","info","InfoPadding"];
+rg.controller.info.InfoPadding.filters = function() {
+	return [{ field : "top", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "bottom", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "left", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "right", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null}];
+}
+rg.controller.info.InfoPadding.prototype.top = null;
+rg.controller.info.InfoPadding.prototype.bottom = null;
+rg.controller.info.InfoPadding.prototype.left = null;
+rg.controller.info.InfoPadding.prototype.right = null;
+rg.controller.info.InfoPadding.prototype.__class__ = rg.controller.info.InfoPadding;
 rg.util.Periodicity = function() { }
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.isValid = function(v) {
@@ -14791,6 +14897,10 @@ thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAg
 rg.view.layout.CartesianLayout.REYAXIS = new EReg("^y(\\d+)$","");
 rg.view.layout.CartesianLayout.REYINDEX = new EReg("^y(\\d+)","");
 rg.view.layout.CartesianLayout.REYTITLE = new EReg("^y(\\d+)title$","");
+rg.view.layout.CartesianLayout.ALT_RIGHT = 15;
+rg.view.layout.CartesianLayout.ALT_LEFT = 15;
+rg.view.layout.CartesianLayout.ALT_TOP = 5;
+rg.view.layout.CartesianLayout.ALT_BOTTOM = 5;
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
 rg.controller.Visualizations.svg = ["linechart","piechart","linechart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);

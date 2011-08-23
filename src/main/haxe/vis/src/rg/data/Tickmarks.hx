@@ -42,7 +42,7 @@ class Tickmarks
 		return Dynamics.string(tick.value) + " (" + (tick.major ? "Major" : "minor") + ", " + Floats.format(tick.delta) + ")";
 	}
 	
-	inline public static function forFloat(start : Float, end : Float, value : Float, major : Bool)
+	inline public static function forFloat(start : Float, end : Float, value : Float, major : Bool) : ITickmark<Float>
 	{
 		return new Tickmark(value, major, (value - start) / (end - start));
 	}

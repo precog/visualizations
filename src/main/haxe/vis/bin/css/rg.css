@@ -568,6 +568,28 @@ font-size: 11px;
 /*	shape-rendering: crispEdges; */
 }
 
+.rg .baloon .label text.nooutline, .rg .baloon .label text.shadow.nooutline
+{
+	font-size: 10px;
+	font-weight: bold;
+}
+
+.rg .baloon path.bg
+{
+	fill : #fafafa;
+	stroke : #ddd;
+	fill-opacity : 1;
+	stroke-width : 1;
+}
+
+.rg .baloon path.shadow
+{
+	opacity : 0.4;
+	fill : #000;
+	stroke : #000;
+	stroke-width : 1.5;
+}
+
 
 .rg .heat-grid rect
 {

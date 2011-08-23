@@ -21,33 +21,35 @@ class Baloon
 	public var boxWidth(default, null) : Float;
 	public var boxHeight(default, null) : Float;
 	public var visible(default, null) : Bool;
-	public var textHeight(default, setTextHeight) : Float;
+	public var lineHeight(default, setLineHeight) : Float;
 	public var roundedCorner(default, setRoundedCorner) : Float;
-	public var padding(default, setPadding) : Float;
+	public var paddingHorizontal(default, null) : Float;
+	public var paddingVertical(default, null) : Float;
 	public var preferredSide(default, setPreferredSide) : Int;
 	public var minwidth : Float;
+	var labels : Array<Label>;
 	var container : Selection;
 	var baloon : Selection;
 	var frame : Selection;
+	var labelsContainer : Selection;
 	var connector : Selection;
-	var _duration : Int;
-	var _ease : Float -> Float;
-	var _strokeWidth : Float;
-	var _connectorShapeV : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
-	var _connectorShapeH : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
+	var duration : Int;
+	var ease : Float -> Float;
+	var connectorShapeV : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
+	var connectorShapeH : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
 	public var boundingBox(getBoundingBox, setBoundingBox) : { x : Float, y : Float, width : Float, height : Float }; 
 	public function new(container : Selection) 
 	{
 		this.container = container;
 		visible = true;
-		_duration = 500;
+		duration = 500;
 		minwidth = 30;
 		preferredSide = 2;
-		_ease = Ease.mode(EaseMode.EaseInEaseOut, Equations.cubic);
-		_strokeWidth = 1;
-		roundedCorner = 6;
-		padding = 5;
-		_transition_id = 0;
+		ease = Ease.mode(EaseMode.EaseInEaseOut, Equations.cubic);
+		roundedCorner = 4;
+		paddingHorizontal = 3.5;
+		paddingVertical = 1.5;
+		transition_id = 0;
 
 		this.baloon = container
 			.append("svg:g")
@@ -60,14 +62,10 @@ class Baloon
 		frame.append("svg:path")
 			.attr("class").string("shadow")
 			.attr("transform").string("translate(1, 1)")
-			.style("opacity").float(0.25)
-			.style("fill").string("none")
-			.style("stroke").string("#000")
-			.style("stroke-width").float(_strokeWidth+2)
 		;
 		
-		_connectorShapeV = Diagonal.forObject();
-		_connectorShapeH = Diagonal.forObject().projection(function(d,i) return [d[1], d[0]]);
+		connectorShapeV = Diagonal.forObject();
+		connectorShapeH = Diagonal.forObject().projection(function(d,i) return [d[1], d[0]]);
 		connector = baloon.append("svg:path")
 			.attr("class").string("baloon-connector")
 			.style("fill").string("none")
@@ -76,14 +74,25 @@ class Baloon
 		;
 		frame.append("svg:path")
 			.attr("class").string("bg")
-			.style("fill").string("#ff9")
-			.style("stroke").string("#fa0")
-			.style("fill-opacity").float(0.9)
-			.style("stroke-width").float(_strokeWidth)
 		;
 		
-		var r = Math.min(10, Math.max(3, roundedCorner));		
-		textHeight = 11;
+		labelsContainer = frame.append("svg:g").attr("class").string("labels");
+		labels = [];
+		
+		var temp = createLabel(0);
+		temp.text = "HELLO";
+		lineHeight = temp.getSize().height;
+		temp.destroy();
+	}
+	
+	function createLabel(i : Int)
+	{
+		var label = new Label(labelsContainer, true, true, false);
+		label.addClass("line-" + i);
+		label.anchor = GridAnchor.Top;
+		label.orientation = LabelOrientation.Orthogonal;
+		label.place(0, i * lineHeight, 90);
+		return label;
 	}
 	
 	function setPreferredSide(v : Int)
@@ -95,23 +104,38 @@ class Baloon
 	
 	function setText(v : Array<String>)
 	{
+		while (labels.length > v.length)
+		{
+			var label = labels.pop();
+			label.destroy();
+		}
+		
+		for (i in labels.length ... v.length)
+		{
+			labels[i] = createLabel(i);
+		}
+		
+		for (i in 0...v.length)
+		{
+			labels[i].text = v[i];
+		}
 		text = v;
 		redraw();
 		return v;
 	}
 	
-	function setTextHeight(v : Float)
+	function setLineHeight(v : Float)
 	{
-		textHeight = v;
+		lineHeight = v;
 		redraw();
 		return v;
 	}
 	
-	function setPadding(v : Float)
+	public function setPadding(h : Float, v : Float)
 	{
-		padding = v;
+		paddingHorizontal = h;
+		paddingVertical = v;
 		redraw();
-		return v;
 	}
 	
 	function setRoundedCorner(v : Float)
@@ -137,21 +161,21 @@ class Baloon
 		return boundingBox;
 	}
 	
-	var _transition_id : Int;
+	var transition_id : Int;
 	public function moveTo(x : Float, y : Float, animate = true)
 	{
 		if (animate)
 		{
 			var int = Equations.elasticf(),
-				tid = ++_transition_id,
-				ix = Floats.interpolatef(this.x, x, _ease),
-				iy = Floats.interpolatef(this.y, y, _ease),
-				duration = _duration,
+				tid = ++transition_id,
+				ix = Floats.interpolatef(this.x, x, ease),
+				iy = Floats.interpolatef(this.y, y, ease),
+				duration = duration,
 				mt = _moveTo,
 				me = this;
 
 			Timer.timer(function(t) {
-				if (tid != me._transition_id)
+				if (tid != me.transition_id)
 					return true;
 				if (t > duration)
 				{
@@ -438,7 +462,7 @@ class Baloon
 			.selectAll("path").attr("d").string(BaloonShape.shape(boxWidth, boxHeight, roundedCorner, roundedCorner, side, offset));
 		
 		if (0 != diagonal)
-			connector.attr("d").string(side % 2 == 0 ? _connectorShapeV.diagonal(o) : _connectorShapeH.diagonal(o));
+			connector.attr("d").string(side % 2 == 0 ? connectorShapeV.diagonal(o) : connectorShapeH.diagonal(o));
 	}
 	
 	public function show()
@@ -461,19 +485,20 @@ class Baloon
 	{
 		if (null == text || text.length == 0)
 			return;
-
+/*
 		function key(d : String, i : Int)
 		{
 			return d + ":" + i;
 		}
 		
-		var choice = frame
-			.selectAll("text")
-			.data(text, key),
+		var //choice = frame
+			//.selectAll("text")
+			//.data(text, key),
 			th = textHeight,
 			linewidth = minwidth,
 			pad = padding;
-		
+*/
+/*
 		function calculateLineWidth(n : HtmlDom, i : Int)
 		{
 			var v : Float = untyped n.getBBox().width;
@@ -492,8 +517,8 @@ class Baloon
 			.attr("y").floatf(function(_, i) return Math.round((0.6+i) * 1.2 * th + pad))
 			.attr("opacity").float(0)
 			.transition()
-				.duration(_duration).ease(_ease)
-				.delay(_duration / 3)
+				.duration(duration).ease(ease)
+				.delay(duration / 3)
 				.attr("opacity").float(1)
 		;
 
@@ -501,7 +526,7 @@ class Baloon
 			.text().stringf(function(d, i) return d)
 			.eachNode(calculateLineWidth)
 			.transition()
-				.duration(_duration).ease(_ease)
+				.duration(duration).ease(ease)
 				.attr("opacity").float(1)
 				.attr("x").float(pad)
 				.attr("y").floatf(function(_, i) return Math.round((0.6+i) * 1.2 * th + pad))
@@ -510,18 +535,33 @@ class Baloon
 		;
 
 		choice.exit()
-			.transition().ease(_ease)
-			.duration(_duration / 3)
+			.transition().ease(ease)
+			.duration(duration / 3)
 			.attr("opacity").float(0)
 			.remove()
 		;
+*/
 		
-		boxWidth = linewidth + padding * 2;
-		boxHeight = th * text.length + padding * 2;
+		boxWidth = 0.0;
+		//linewidth + padding * 2;
+		var w;
+		for (label in labels)
+		{
+			if ((w = label.getSize().width) > boxWidth)
+				boxWidth = w;
+		}
+		boxWidth += paddingHorizontal * 2;
+		boxHeight = lineHeight * labels.length + paddingVertical * 2;
+		
+		var bg = frame.selectAll(".bg"),
+			sw = bg.style("stroke-width").getFloat();
+		if (Math.isNaN(sw))
+			sw = 0;
+		
+		labelsContainer.attr("transform").string("translate(" + ((-sw + boxWidth) / 2) + "," + (sw + paddingVertical) + ")");
 
-		frame.selectAll(".bg")
-			.transition().ease(_ease)
-			.delay(_duration)
+		bg.transition().ease(ease)
+			.delay(duration)
 		;
 	}
 }

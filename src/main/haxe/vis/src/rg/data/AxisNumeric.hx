@@ -23,22 +23,23 @@ class AxisNumeric implements IAxis<Float>
 
 	public function ticks(start : Float, end : Float, ?maxTicks : Int) : Array<ITickmark<Float>>
 	{
-		var m = 10,
-			span = end - start,
-			step = Math.pow(10, Math.floor(Math.log(span / m) / Const.LN10)),
+		var minors = _ticks(start, end, 10),
+			majors = _ticks(start, end, 5);
+		return Tickmarks.bound(minors.map(function(d : Float, i : Int) return Tickmarks.forFloat(start, end, d, majors.remove(d))), maxTicks);
+	}
+	
+	static function _ticks(start : Float, end : Float, m : Int)
+	{
+		var span = end - start,
+			step = Math.pow(m, Math.floor(Math.log(span / m) / Math.log(m))),
 			err = m / (span / step);
-		if (err <= .15)
-			step *= 10;
-		else if (err <= .35)
-			step *= 5;
-		else if (err <= .75)
-			step *= 2;
-		
-		if (null != maxTicks)
-		{
-			while (span / step > maxTicks)
-				step *= 2;
-		}
-		return cast Floats.range(start, end, step).map(function(d, i) return Tickmarks.forFloat(start, end, d, true));
+/*			trace(err);
+			if (err <= .15)
+				step *= 10;
+			else if (err <= .35)
+				step *= 5;
+			else if (err <= .75)
+				step *= 2; */
+		return Floats.range(start, end, step);
 	}
 }

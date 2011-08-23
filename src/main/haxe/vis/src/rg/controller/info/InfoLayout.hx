@@ -5,6 +5,7 @@
 
 package rg.controller.info;
 import rg.view.layout.LayoutScaleY;
+using rg.controller.info.Info;
 
 class InfoLayout
 {
@@ -15,12 +16,14 @@ class InfoLayout
 	public var main : String;
 	public var titleOnTop : Bool;
 	public var layoutScaleY : LayoutScaleY;
+	public var padding : InfoPadding;
 	
 	public function new()
 	{
 		main = "main";
 		titleOnTop = true;
 		layoutScaleY = ScalesAlternating;
+		padding = new InfoPadding();
 	}
 	
 	public static function filters() 
@@ -76,6 +79,13 @@ class InfoLayout
 					case "right": LayoutScaleY.ScalesOnRight;
 					default: LayoutScaleY.ScalesOnLeft;
 				}
+			}]
+		}, {
+			field : "padding",
+			validator : function(v) return Types.isAnonymous(v),
+			filter : function(v) return[ {
+				field : "padding",
+				value : new InfoPadding().feed(v)
 			}]
 		}];
 	}

@@ -16,7 +16,7 @@ class InfoLine
 	public function new() 
 	{
 		effect = LineEffect.Gradient(0.75, 2);
-		interpolation = LineInterpolator.Cardinal(0.7);
+		interpolation = LineInterpolator.Linear;
 	}
 	
 	public static function filters() 
