@@ -449,7 +449,7 @@ font-size: 11px;
 {
 	font-family: sans-serif;
 	font-weight: bold;
-	font-size: 12px;
+	font-size: 11px;
 	fill: #fff;
 	stroke: none;
 }
@@ -457,9 +457,9 @@ font-size: 11px;
 .rg .label text.outline
 {
 	fill: none;
-	stroke: #777;
+	stroke: #555;
 	stroke-width: 2px;
-	stroke-opacity: 1;;
+	stroke-opacity: 1;
 }
 
 .rg .label text.shadow
@@ -564,8 +564,7 @@ font-size: 11px;
 {
 	stroke: #666;
 	stroke-width: 1;
-	stroke-dasharray: 1, 1; 
-/*	shape-rendering: crispEdges; */
+	stroke-dasharray: 1, 1;
 }
 
 .rg .baloon .label text.nooutline, .rg .baloon .label text.shadow.nooutline

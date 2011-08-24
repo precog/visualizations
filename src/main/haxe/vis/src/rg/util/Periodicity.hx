@@ -51,8 +51,9 @@ class Periodicity
 					ey = e.getFullYear(),
 					sm = s.getMonth(),
 					em = e.getMonth();
-				ey - sy * 12 + em - sm;
-			case "year": Math.floor(unitsBetween(start, end, "month") / 12);
+				(ey - sy) * 12 + (em - sm);
+			case "year":
+				Math.floor(unitsBetween(start, end, "month") / 12);
 		}
 	}
 	
@@ -85,22 +86,18 @@ class Periodicity
 					e = Date.fromTime(end),
 					sy = s.getFullYear(),
 					ey = e.getFullYear(),
-					sm = s.getMonth();
+					sm = s.getMonth(),
+					em = e.getMonth();
 				var result = [];
-				for (y in sy...ey)
+				while (sy < ey || sm <= em)
 				{
-					var sr = 0,
-						er = 12;
-					if (y == sy && y == ey)
+					result.push(new Date(sy, sm, 1, 0, 0, 0).getTime());
+					sm++;
+					if (sm > 11)
 					{
-						sr = sy;
-						er = ey;
-					} else if (y == sy)
-						sr = sy;
-					else if (y == ey)
-						er = ey;
-					for (m in sr...er)
-						result.push(new Date(y, m, 1, 0, 0, 0).getTime());
+						sm = 0;
+						sy++;
+					}
 				}
 				return result;
 			case "year":
@@ -193,16 +190,21 @@ class Periodicity
 					return FormatDate.format("%b %e", d);
 				else
 					return FormatDate.hourShort(d);
-			case "day", "week":
+			case "day":
 				if (firstInSeries("month", v))
-					return FormatDate.monthNameShort(d);
+					return FormatDate.format("%b %e", d);
 				else
-					return FormatDate.dateShort(d);
+					return FormatDate.format("%e", d);			
+			case "week":
+				if (d.getDate() <= 7)
+					return FormatDate.format("%b %e", d);
+				else
+					return FormatDate.format("%e", d);
 			case "month":
 				if (firstInSeries("year", v))
 					return FormatDate.year(Date.fromTime(v));
 				else
-					return FormatDate.yearMonth(d);
+					return FormatDate.format("%b", d);
 			case "year":
 				return FormatDate.year(d);
 			default: return periodicity + ": " + d;
@@ -224,10 +226,10 @@ class Periodicity
 				0 == d.getDay();
 			case "month":
 				var d = Date.fromTime(v);
-				1 == d.getDay();
+				1 == d.getDate();
 			case "year":
 				var d = Date.fromTime(v);
-				1 == d.getDay() && 0 == d.getMonth();
+				1 == d.getDate() && 0 == d.getMonth();
 			default: false;
 		}
 	}
@@ -240,7 +242,19 @@ class Periodicity
 			case "hour":        "day";
 			case "day", "week": "month";
 			case "month":       "year";
-			default: null;
+			default: "year";
+		}
+	}
+	
+	public static function prevPeriodicity(periodicity : String) : String
+	{
+		return switch(periodicity)
+		{
+			case "minute":			"hour";
+			case "hour":			"minute";
+			case "day":				"hour";
+			case "week", "month":	"day"; 
+			default: "minute";
 		}
 	}
 	

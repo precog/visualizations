@@ -16,6 +16,12 @@ import rg.view.frame.Orientation;
 
 class CartesianLayout extends Layout
 {
+	
+	static inline var ALT_RIGHT  = 20;
+	static inline var ALT_LEFT   = 20;
+	static inline var ALT_TOP    = 8;
+	static inline var ALT_BOTTOM = 8;
+
 	var main : Panel;
 	var titleOnTop : Bool;
 	
@@ -349,11 +355,6 @@ class CartesianLayout extends Layout
 				alternating = true;
 		}
 	}
-	
-	static inline var ALT_RIGHT  = 15;
-	static inline var ALT_LEFT   = 15;
-	static inline var ALT_TOP    = 5;
-	static inline var ALT_BOTTOM = 5;
 	
 	override function adjustPadding()
 	{

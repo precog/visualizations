@@ -33,13 +33,14 @@ class AxisNumeric implements IAxis<Float>
 		var span = end - start,
 			step = Math.pow(m, Math.floor(Math.log(span / m) / Math.log(m))),
 			err = m / (span / step);
-/*			trace(err);
-			if (err <= .15)
+			if (err <= .05)
 				step *= 10;
-			else if (err <= .35)
+			else if (err <= .2)
 				step *= 5;
-			else if (err <= .75)
-				step *= 2; */
+			else if (err <= .4)
+				step *= 4;
+			else if (err <= .6)
+				step *= 2; 
 		return Floats.range(start, end, step);
 	}
 }

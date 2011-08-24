@@ -46,7 +46,7 @@ class Baloon
 		minwidth = 30;
 		preferredSide = 2;
 		ease = Ease.mode(EaseMode.EaseInEaseOut, Equations.cubic);
-		roundedCorner = 4;
+		roundedCorner = 5;
 		paddingHorizontal = 3.5;
 		paddingVertical = 1.5;
 		transition_id = 0;
@@ -83,6 +83,16 @@ class Baloon
 		temp.text = "HELLO";
 		lineHeight = temp.getSize().height;
 		temp.destroy();
+	}
+	
+	public function addClass(name : String)
+	{
+		frame.select("path.bg").classed().add(name);
+	}
+	
+	public function removeClass(name : String)
+	{
+		frame.select("path.bg").classed().remove(name);
 	}
 	
 	function createLabel(i : Int)
@@ -558,7 +568,7 @@ class Baloon
 		if (Math.isNaN(sw))
 			sw = 0;
 		
-		labelsContainer.attr("transform").string("translate(" + ((-sw + boxWidth) / 2) + "," + (sw + paddingVertical) + ")");
+		labelsContainer.attr("transform").string("translate(" + (boxWidth / 2) + "," + (sw + paddingVertical) + ")");
 
 		bg.transition().ease(ease)
 			.delay(duration)

@@ -18,25 +18,38 @@ import rg.view.svg.util.SymbolCache;
  
 class JSBridge 
 {
+	static function log(msg : String)
+	{
+		var console : String -> Void = untyped __js__("(window.console && window.console.warn) || alert");
+		console(msg);
+	}
 	static function main() 
 	{
 		// retrieve ReportGrid core
 		var o : Dynamic = untyped __js__("window.ReportGrid");
 		if (null == o)
-			throw new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script");
+			log(new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script").toString());
 		
 		// init app
 		var app = new App(o);	
 		
 		// define bridge function
 		o.viz = function(el : Dynamic, options : Dynamic, ?type : String)
-			return app.visualization(select(el), chartopt(options, type));
+		{
+			try {
+				return app.visualization(select(el), chartopt(options, type));
+			} catch (e : Dynamic) {
+				log(Std.string(e));
+				return null;
+			}
+		}
 		
 		// define public visualization constrcutors
 		o.lineChart   = function(el, options) return o.viz(el, options, "linechart");
 		o.pieChart    = function(el, options) return o.viz(el, options, "piechart");
 		o.pivotTable  = function(el, options) return o.viz(el, options, "pivottable");
 		o.leaderBoard = function(el, options) return o.viz(el, options, "leaderboard");
+		o.barChart    = function(el, options) return o.viz(el, options, "barchart");
 		
 		// utility functions
 		o.format  = Dynamics.format;

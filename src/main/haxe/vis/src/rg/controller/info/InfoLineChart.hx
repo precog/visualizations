@@ -10,57 +10,28 @@ import thx.svg.LineInterpolator;
 import thx.svg.LineInterpolators;
 using rg.controller.info.Info;
 
-class InfoLineChart 
+class InfoLineChart extends InfoCartesianChart
 {
-	public var animation : InfoAnimation;
-	public var segment : InfoSegment;
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
-	public var click : DataPoint -> Stats -> Void;
-	public var label : InfoLabelAxis;
 	public var line : InfoLine;
 	public var displayarea : Bool;
-	public var y0property : String;
-	
-	public function new() 
+
+	public function new()
 	{
-		animation = new InfoAnimation();
-		label = new InfoLabelAxis();
+		super();
 		line = new InfoLine();
-		segment = new InfoSegment();
 	}
 	
 	public static function filters()
 	{
 		return [{
-			field : "animation",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "animation",
-				value : new InfoAnimation().feed(v)
-			}]
-		}, {
-			field : "segmenton",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "segment",
-				value : new InfoSegment().feed( { on : v } )
-			}]
-		}, {
-			field : "segment",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "segment",
-				value : new InfoSegment().feed(v)
-			}]
-		}, {
-			field : "y0property",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
 			field : "symbol",
-			validator : function(v) return Reflect.isFunction(v),
-			filter: null
+			validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+			filter: function(v : Dynamic) return [ {
+				field : "symbol",
+				value : Std.is(v, String) ? function(_,_) return v : v
+			}]
 		}, {
 			field : "symbolstyle",
 			validator : function(v) return Reflect.isFunction(v),
@@ -69,27 +40,16 @@ class InfoLineChart
 				value : v
 			}]
 		}, {
-			field : "click",
-			validator : function(v) return Reflect.isFunction(v),
-			filter: null
-		}, {
-			field : "label",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "label",
-				value : new InfoLabelAxis().feed(v)
-			}]
-		}, {
 			field : "line",
 			validator : function(v) return Types.isAnonymous(v),
 			filter : function(v) return [{
 				field : "line",
 				value : new InfoLine().feed(v)
 			}]
-		} , {
+		}, {
 			field : "displayarea",
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
-		}];
+		}].concat(cast InfoCartesianChart.filters());
 	}
 }

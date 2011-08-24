@@ -7,55 +7,31 @@ package rg.view.svg.widget;
 import thx.js.Dom;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
-import rg.view.svg.panel.Layer;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
 import thx.color.Colors;
 import thx.color.Hsl;
 import thx.js.Selection;
 import thx.math.Equations;
-import rg.util.Properties;
 import rg.util.DataPoints;
-import thx.collections.HashList;
 import thx.svg.Line;
 import rg.data.Stats;
 import thx.svg.LineInterpolator;
-import thx.svg.Symbol;
 import thx.js.Access;
 import thx.svg.Area;
 using Arrays;
 
-// TODO area chart
-// TODO incremental chart
 // TODO transition animation
-// TODO stack area chart
-// TODO clip path (?)
-// TODO values highlighter
 // TODO expose options: label.orientation
 // TODO expose options: label.place (distance, angle)
 // TODO expose options: label.anchor
 
-// area : display : bool
-
-class LineChart extends Layer
+class LineChart extends CartesianChart
 {
-	public var variableDependents : Array<VariableDependent<Dynamic>>;
-	public var variableIndependent : VariableIndependent<Dynamic>;
-	
-	public var animated : Bool;
-	public var animationDuration : Int;
-	public var animationEase : Float -> Float;
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
-	
 	public var segmenton : Null<String>;
-	
-	public var click : DataPoint -> Stats -> Void;
-	public var labelDataPoint : DataPoint -> Stats -> String;
-	public var labelDataPointOver : DataPoint -> Stats -> String;
-	
 	public var lineInterpolator : LineInterpolator;
-	
 	public var lineEffect : LineEffect;
 	public var y0property : String;
 	
@@ -79,11 +55,9 @@ class LineChart extends Layer
 		animationEase = Equations.linear;
 	}
 	
-	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
-		var me = this;
-		this.variableIndependent = variableIndependents[0];
-		this.variableDependents = variableDependents;
+		super.setVariables(variableIndependents, variableDependents);
 		linePathShape = [];
 		for (i in 0...variableDependents.length)
 		{
@@ -92,7 +66,7 @@ class LineChart extends Layer
 				line.interpolator(lineInterpolator);
 			linePathShape[i] = function(dp, i)
 			{
-				me.segment = i;
+				segment = i;
 				return line.shape(dp, i);
 			};
 		}
@@ -115,7 +89,8 @@ class LineChart extends Layer
 		{
 			return function(d : DataPoint, i : Int)
 			{
-				var value   = DataPoints.value(d, v.type) + DataPoints.valueAlt(d, y0, 0.0),
+				var v1 = DataPoints.value(d, v.type),
+					value   = Std.is(v1, Float) ? (v1 + DataPoints.valueAlt(d, y0, v.min)) : v1,
 					scaled  = v.axis.scale(v.min, v.max, value),
 					scaledh = scaled * h;
 				return h - scaledh;
@@ -138,20 +113,13 @@ class LineChart extends Layer
 			v = variableDependents[pos];
 		return function(d : DataPoint, i : Int)
 		{
-			var value   = DataPoints.valueAlt(d, y0, 0.0),
+			var value   = DataPoints.valueAlt(d, y0, v.min),
 				scaled  = v.axis.scale(v.min, v.max, value),
 				scaledh = scaled * h;
 			return h - scaledh;
 		}
 	}
-
-	public function init()
-	{
-		if (null != labelDataPointOver)
-			tooltip = new Baloon(g);
-	}
 	
-	var tooltip : Baloon;
 	var segments : Array<Array<DataPoint>>;
 	
 	public function classf(pos : Int, cls : String)
@@ -162,7 +130,7 @@ class LineChart extends Layer
 		}
 	}
 	
-	public function data(dps : Array<Array<Array<DataPoint>>>)
+	override function data(dps : Array<Array<Array<DataPoint>>>)
 	{
 		var axisgroup = chart.selectAll("g.group").data(dps);
 		// axis enter
@@ -196,20 +164,6 @@ class LineChart extends Layer
 			switch(lineEffect)
 			{
 				case LineEffect.Gradient(lightness, levels):
-					// add temp line to grab color and width
-					/*
-					var temp = segmentgroup.enter()
-							.append("svg:path")
-							.attr("class").stringf(classf(i, "line")),
-						color : String = temp.style("stroke").get();
-					trace(color);
-					temp.remove();
-					if (null == color)
-						color = "#000000";
-					var start = Hsl.toHsl(Colors.parse(color)),
-						end = Hsl.darker(start, lightness),
-						f = Hsl.interpolatef(end, start);
-						*/
 					var fs = [];
 					segmentgroup.enter()
 						.append("svg:path")
@@ -262,7 +216,7 @@ class LineChart extends Layer
 				.attr("d").stringf(linePathShape[i]);
 			
 			segmentgroup.exit().remove();
-			
+		
 			var gsymbols = gi.selectAll("g.symbols").data(segments),
 				vars = this.variableDependents,
 				onclick = callback(onclick, stats),
@@ -348,7 +302,10 @@ class LineChart extends Layer
 		{
 			var sel = thx.js.Dom.selectNode(n),
 				coords = coordsFromTransform(sel.attr("transform").get());
-			
+
+//			for (j in 0...segments.length)
+//				tooltip.removeClass("item-" + j);
+//			tooltip.addClass("item-" + seg);
 			tooltip.show();
 			tooltip.text = text.split("\n");
 			tooltip.moveTo(coords[0], coords[1]);
@@ -368,18 +325,4 @@ class LineChart extends Layer
 	{
 		click(dp, stats);
 	}
-/*
-	function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
-	{
-		var results = [];
-		for (i in 0...variableDependents.length)
-		{
-			var variable = variableDependents[i];
-			var values = DataPoints.filterByDependents(dps, [variable]);
-			var map = DataPoints.partition(values, segmenton);
-			results.push(map);
-		}
-		return results;
-	}
-*/
 }

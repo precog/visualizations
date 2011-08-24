@@ -4,11 +4,13 @@
  */
 
 package rg.controller.factory;
+import rg.controller.info.InfoBarChart;
 import rg.controller.info.InfoLineChart;
 import rg.controller.info.InfoPieChart;
 import rg.controller.visualization.VisualizationPieChart;
 import rg.controller.visualization.VisualizationSvg;
 import rg.controller.visualization.VisualizationLineChart;
+import rg.controller.visualization.VisualizationBarChart;
 import rg.view.layout.Layout;
 import thx.error.Error;
 import thx.error.NotImplemented;
@@ -25,11 +27,15 @@ class FactorySvgVisualization
 		{
 			case "linechart":
 				var chart = new VisualizationLineChart(layout);
-				chart.info = new InfoLineChart().feed(options);
+				chart.info = chart.infoLine = new InfoLineChart().feed(options);
 				return chart;
 			case "piechart":
 				var chart = new VisualizationPieChart(layout);
 				chart.info = new InfoPieChart().feed(options);
+				return chart;
+			case "barchart":
+				var chart = new VisualizationBarChart(layout);
+				chart.info = chart.infoBar = new InfoBarChart().feed(options);
 				return chart;
 			default:
 				throw new Error("unsupported visualization type '{0}'", type);
