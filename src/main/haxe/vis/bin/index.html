@@ -73,13 +73,21 @@ document.addEventListener("DOMContentLoaded", function(){
 		})
 	;
 //	console.log(ReportGrid.dump(data));
-	var alt = 0;
+	var alt = 0,
+		mathData = [
+			{ src : { data : data1 } }, 
+			{ src : { data : data2 } },
+			{ src : { data : data3 } }, 
+			{ src : { data : data4 } },
+			{ src : { data : data5 } }
+		];
 	
 	ReportGrid.barChart("#chart1", {
 		axes : [{
 			type : ".#time:day",
 			view : [start, end],
-			variable : "independent"
+			variable : "independent",
+			scalemode : "fit"
 		}, {
 			type : "impression"
 		}, {
@@ -87,15 +95,10 @@ document.addEventListener("DOMContentLoaded", function(){
 		}, {
 			type : "conversion"
 		}, {
-			type : "other"
+			type : "other",
+			view : [0, 250]
 		}],
-		data : [
-			{ src : { data : data1 } }, 
-			{ src : { data : data2 } },
-			{ src : { data : data3 } }, 
-			{ src : { data : data4 } },
-			{ src : { data : data5 } }
-		],
+		data : mathData,
 		options : {
 			segmenton : "event",
 			animation : {
@@ -121,10 +124,67 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		}
 	});
+	
+	ReportGrid.barChart("#chart2", {
+		axes : [{
+			type : ".#time:day",
+			view : [start, end],
+			variable : "independent",
+			scalemode : "fit"
+		}, {
+			type : "impression"
+		}, {
+			type : "click"
+		}, {
+			type : "conversion"
+		}, {
+			type : "other"
+		}],
+		data : mathData,
+		options : {
+			segmenton : "event",
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			label : {
+				datapointover : function(dp) { 
+					return dp.event + ": " + ReportGrid.format(dp["count"]); 
+				},
+//				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			click : function(dp) { alert(dp[".platform"]); },
+			height: 200,
+			symbol : function(ds, stats) {
+				return ReportGrid.symbol.get("circle", 20);
+			},
+			line : {
+//				interpolation : "cardinal",
+				effect : "gradient"
+			},
+			stacked : false
+		}
+	});
 
 	var ageRanges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"];
-//	var ages = ["0-13", "14-15", "16-20", "21-35", "36+"];
-	ReportGrid.barChart("#chart2", {
+	var genders = ["male", "female", "undisclosed", "unknown"];
+	function ageGender(d,i) {
+		return {
+			count : ReportGrid.math.random() * 35 + 5,
+			age : d,
+			gender : genders[Math.floor(ReportGrid.math.random()*genders.length)]
+		};
+	}
+	var ageGenderData = [
+		{ src : { data : ageRanges.map(ageGender) }, },
+		{ src : { data : ageRanges.map(ageGender) }, },
+		{ src : { data : ageRanges.map(ageGender) }, },
+		{ src : { data : ageRanges.map(ageGender) }, },
+		{ src : { data : ageRanges.map(ageGender) }, },
+	];
+	ReportGrid.barChart("#chart3", {
 		axes : [{
 			type : "age",
 			values : ageRanges,
@@ -132,19 +192,10 @@ document.addEventListener("DOMContentLoaded", function(){
 			variable : "independent"
 		}, {
 			type : "count",
-			view : [0, 40],
+			view : [0, 120],
 			variable : "dependent"
 		}],
-		data : [{
-			src : {
-				data : ageRanges.map(function(d,i) {
-					return {
-						count : ReportGrid.math.random() * 35 + 5,
-						age : d
-					};
-				})
-			}
-		}],
+		data : ageGenderData,
 		options : {
 			height : 120,
 			line : {
@@ -160,8 +211,36 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 	
+	ReportGrid.barChart("#chart4", {
+		axes : [{
+			type : "age",
+			values : ageRanges,
+			view : ["0-13", "100+"],
+			variable : "independent"
+		}, {
+			type : "count",
+			view : [0, 40],
+			variable : "dependent"
+		}],
+		data : ageGenderData,
+		options : {
+			height : 120,
+			line : {
+				interpolation : "linear"
+			},
+			label : {
+				datapointover : function(dp) { 
+					return ReportGrid.format(dp["count"]); 
+				},
+				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			displayarea : true,
+			stacked : false
+		}
+	});
+
 	var interests = ["sport", "tv", "internet", "art", "history", "diy"];
-	ReportGrid.barChart("#chart3", {
+	ReportGrid.barChart("#chart5", {
 		axes : [{
 			type : "age",
 			values : ageRanges,
@@ -195,7 +274,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			displayarea : true,
 			line : { effect : "none" },
 			symbol : ReportGrid.symbol.get("circle", 36),
-			titleontop : false
+			titleontop : true
 		}
 	});
 }, false)

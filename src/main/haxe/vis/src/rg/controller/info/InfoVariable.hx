@@ -7,6 +7,7 @@ package rg.controller.info;
 
 import rg.util.Periodicity;
 import rg.data.DataPoint;
+import rg.data.ScaleDistribution;
 using Arrays;
 
 class InfoVariable extends Info
@@ -17,6 +18,7 @@ class InfoVariable extends Info
 	public var values : Null<Array<Dynamic>>;
 	public var groupBy : Null<String>;
 	public var variableType : VariableType;
+	public var scaleDistribution : Null<ScaleDistribution>;
 
 	public function new()
 	{
@@ -61,6 +63,16 @@ class InfoVariable extends Info
 				return [{
 					field : "variableType",
 					value : Type.createEnum(VariableType, Strings.ucfirst(("" + v).toLowerCase()), [])
+				}];
+			}
+		}, {
+			field : "scalemode",
+			validator : function(v : Dynamic) return Std.is(v, String),
+			filter : function(v : Dynamic)
+			{
+				return [{
+					field : "scaleDistribution",
+					value : cast Type.createEnum(ScaleDistribution, "Scale" + Strings.ucfirst(("" + v).toLowerCase()), [])
 				}];
 			}
 		}];

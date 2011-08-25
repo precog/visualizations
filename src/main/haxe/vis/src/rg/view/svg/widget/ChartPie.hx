@@ -26,7 +26,7 @@ using Arrays;
 
 // TODO add overDataPoint
 // TODO improve automatic title when the axis is time
-class PieChart extends Layer
+class ChartPie extends Layer
 {
 	public var innerRadius : Float;
 	public var outerRadius : Float;

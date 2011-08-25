@@ -5,24 +5,27 @@
 
 package rg.data;
 import rg.util.Periodicity;
+import rg.data.ScaleDistribution;
 using Arrays;
 
 class AxisTime implements IAxisDiscrete<Float>
 {
 	public var periodicity(default, null) : String;
+	public var scaleDistribution(default, setScaleDistribution) : ScaleDistribution;
 	public function new(periodicity)
 	{
 		this.periodicity = periodicity;
+		this.scaleDistribution = ScaleFill;
 	}
-	
-	public function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>
+/*
+	function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>
 	{
 		var span = end - start,
 			major = isMajor(start, end, value);
 		return new TickmarkTime(value, major, (value - start) / span, periodicity);
 //		return Tickmarks.forFloat(start, end, value, true);
 	}
-	
+*/
 	static var snapping = {
 		minute : [ { to : 10, s : 1 }, { to : 20, s : 2 }, { to : 30, s : 5 }, { to : 60, s : 10 }, { to : 120, s : 30 }, { to : 240, s : 60 }, { to : 960, s : 240 } ],
 		minutetop : 480,
@@ -33,10 +36,9 @@ class AxisTime implements IAxisDiscrete<Float>
 		year : [ { to : 10, s : 1 }, { to : 20, s : 2 }, { to : 50, s : 5 } ],
 		yeartop : 10
 	};
-	function isMajor(start : Float, end : Float, value : Float)
+	
+	function isMajor(units : Int, value : Float)
 	{
-		var units = Periodicity.unitsBetween(start, end, periodicity);
-		
 		switch(periodicity)
 		{
 			case "day":
@@ -74,8 +76,13 @@ class AxisTime implements IAxisDiscrete<Float>
 	
 	public function ticks(start: Float, end: Float, ?upperBound: Int) : Array<ITickmark<Float>>
 	{
-		var range = range(start, end).map(function(value, i) : ITickmark<Float> {
-			return toTickmark(start, end, value);
+		var span = end - start,
+			units = Periodicity.unitsBetween(start, end, periodicity),
+			values = range(start, end),
+			range = values.map(function(value, i) : ITickmark<Float> {
+			var major = isMajor(units, value),
+				unit = Periodicity.unitsBetween(start, value, periodicity);
+			return new TickmarkTime(value, values, major, periodicity, scaleDistribution);
 		});
 		
 		return Tickmarks.bound(range, upperBound);
@@ -88,6 +95,12 @@ class AxisTime implements IAxisDiscrete<Float>
 	
 	public function scale(start : Float, end : Float, v : Float)
 	{
-		return Floats.uninterpolatef(start, end)(v);
+		var values = range(start, end);
+		return ScaleDistributions.distribute(scaleDistribution, Arrays.indexOf(values, v), values.length);
+	}
+	
+	function setScaleDistribution(v : ScaleDistribution)
+	{
+		return this.scaleDistribution = v;
 	}
 }

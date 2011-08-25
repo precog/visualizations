@@ -142,8 +142,6 @@
 .rg g.group
 {
 	stroke-width: 5;
-	stroke-miterjoin: miter;
-	stroke-miterlimit: 1;
 }
 
 .rg .pie-chart g.group, .rg .stream-chart g.group
@@ -427,16 +425,10 @@ font-size: 11px;
 	border: 0;
 }
 
-.rg .bar-chart rect
+.rg .bar-chart rect.bar
 {
 	shape-rendering: crispEdges;
 	stroke-width: 1;
-}
-
-.rg .stack-chart rect
-{
-	shape-rendering: crispEdges;
-	stroke-width: 0;
 }
 
 .rg .border

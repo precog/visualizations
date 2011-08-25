@@ -144,6 +144,12 @@ class DataProcessor
 					}
 				}
 			}
+			var discrete;
+			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
+			{
+				discrete.scaleDistribution = ctx.variable.scaleDistribution;
+				ctx.variable.scaleDistribution = null; // reset to avoid multiple assign
+			}
 		}
 	}
 	
@@ -151,11 +157,18 @@ class DataProcessor
 	{
 		var toprocess = false;
 		for (ctx in independentVariables)
+		{
 			if (ctx.partial)
 			{
 				toprocess = true;
-				break;
 			}
+			var discrete;
+			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
+			{
+				discrete.scaleDistribution = ctx.variable.scaleDistribution;
+				ctx.variable.scaleDistribution = null; // reset to avoid multiple assign
+			}
+		}
 		if (toprocess)
 		{
 			var flatten = data.flatten();

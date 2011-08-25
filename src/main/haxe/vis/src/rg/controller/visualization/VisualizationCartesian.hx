@@ -6,19 +6,18 @@
 package rg.controller.visualization;
 import rg.controller.info.InfoCartesianChart;
 import rg.data.DataPoint;
-import rg.data.Segmenter;
 import rg.util.DataPoints;
-import rg.view.svg.widget.ChartTickmarks;
-import rg.view.svg.widget.CartesianChart;
+import rg.view.svg.widget.TickmarksOrtho;
+import rg.view.svg.widget.ChartCartesian;
 import rg.view.svg.widget.Title;
 import thx.error.AbstractMethod;
 
-class VisualizationCartesian extends VisualizationSvg
+class VisualizationCartesian<T> extends VisualizationSvg
 {
 	public var info : InfoCartesianChart;
-	var chart : CartesianChart;
-	var xlabel : ChartTickmarks;
-	var ylabels : Array<{ id : Int, tickmarks : ChartTickmarks }>;
+	var chart : ChartCartesian<T>;
+	var xlabel : TickmarksOrtho;
+	var ylabels : Array<{ id : Int, tickmarks : TickmarksOrtho }>;
 	var title : Null<Title>;
 	
 	override function init() 
@@ -115,17 +114,9 @@ class VisualizationCartesian extends VisualizationSvg
 		chart.data(transformData(data));
 	}
 	
-	function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
+	function transformData(dps : Array<DataPoint>) : T
 	{
-		var results = [],
-			segmenter = new Segmenter(info.segment.on, info.segment.transform, info.segment.scale);
-		for (i in 0...dependentVariables.length)
-		{
-			var variable = dependentVariables[i];
-			var values = DataPoints.filterByDependents(dps, [variable]);
-			results.push(segmenter.segment(values));
-		}
-		return results;
+		return throw new AbstractMethod();
 	}
 	
 	override function destroy()
@@ -148,7 +139,7 @@ class VisualizationCartesian extends VisualizationSvg
 			if (null == context)
 				return null;
 				
-			tickmarks = new ChartTickmarks(context.panel, context.anchor);
+			tickmarks = new TickmarksOrtho(context.panel, context.anchor);
 			if (!displayLabel)
 				tickmarks.displayLabel = false;
 			else if (null != info.label.tickmark)

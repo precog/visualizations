@@ -34,7 +34,7 @@ class JSBridge
 		var app = new App(o);	
 		
 		// define bridge function
-		o.viz = function(el : Dynamic, options : Dynamic, ?type : String)
+		o.viz = function(el : Dynamic, options : Dynamic, type : String)
 		{
 			try {
 				return app.visualization(select(el), chartopt(options, type));
@@ -82,7 +82,7 @@ class JSBridge
 			return RGStrings.humanize(v);
 		}
 		o.math = {
-			random : new Random(9).float
+			random : new Random(666).float
 		}
 	}
 	
@@ -96,12 +96,11 @@ class JSBridge
 	}
 	
 	static inline function opt(o : Dynamic) return null == o ? { } : o
-	static function chartopt(o : Dynamic, ?viz : String)
+	static function chartopt(o : Dynamic, viz : String)
 	{
 		o = opt(o);
 		o.options = opt(o.options);
-		if(null != viz)
-			o.options.visualization =  viz;
+		o.options.visualization =  viz;
 		return o;
 	}
 }

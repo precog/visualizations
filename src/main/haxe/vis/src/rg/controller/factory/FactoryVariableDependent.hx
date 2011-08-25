@@ -19,7 +19,7 @@ class FactoryVariableDependent
 			throw new Error("cannot create an axis if type is not specified");
 		var axiscreator = new FactoryAxis(),
 			axis = axiscreator.create(info.type, isnumeric, info.values);
-		var variable = new VariableDependent(info.type, axis, info.min, info.max);
+		var variable = new VariableDependent(info.type, axis, info.scaleDistribution, info.min, info.max);
 		return variable;
 	}
 }

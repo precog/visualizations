@@ -15,11 +15,6 @@ class AxisNumeric implements IAxis<Float>
 	{
 		return Floats.uninterpolatef(start, end)(v);
 	}
-	
-	public function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>
-	{
-		return Tickmarks.forFloat(start, end, value, true);
-	}
 
 	public function ticks(start : Float, end : Float, ?maxTicks : Int) : Array<ITickmark<Float>>
 	{

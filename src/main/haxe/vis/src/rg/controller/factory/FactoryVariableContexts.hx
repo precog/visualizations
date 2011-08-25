@@ -12,6 +12,7 @@ import rg.util.Properties;
 import thx.collections.Set;
 import rg.data.VariableDependentContext;
 import rg.data.VariableIndependentContext;
+import rg.data.IAxisDiscrete;
 import rg.data.AxisOrdinal;
 import rg.data.AxisTime;
 import rg.data.DataContext;
@@ -30,7 +31,7 @@ class FactoryVariableContexts
 	
 	public function createIndependents(info : Array<InfoVariable>) : Array<VariableIndependentContext<Dynamic>>
 	{
-		var result = [], ordinal, v, ctx;
+		var result = [], ordinal, discrete, v, ctx;
 		for (i in info)
 		{
 			var moveon = switch(i.variableType)

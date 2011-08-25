@@ -18,7 +18,7 @@ class TestInfoLayout
 	
 	public function testType()
 	{
-		var info = new InfoLayout().feed( { visualization : "LineChart" } );
+		var info = new InfoLayout().feed( { visualization : "ChartLine" } );
 		Assert.equals("linechart", info.type);
 	}
 	

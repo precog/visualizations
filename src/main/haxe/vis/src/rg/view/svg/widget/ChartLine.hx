@@ -12,7 +12,6 @@ import rg.data.DataPoint;
 import thx.color.Colors;
 import thx.color.Hsl;
 import thx.js.Selection;
-import thx.math.Equations;
 import rg.util.DataPoints;
 import thx.svg.Line;
 import rg.data.Stats;
@@ -26,7 +25,7 @@ using Arrays;
 // TODO expose options: label.place (distance, angle)
 // TODO expose options: label.anchor
 
-class LineChart extends CartesianChart
+class ChartLine extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 {
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
@@ -44,15 +43,9 @@ class LineChart extends CartesianChart
 	public function new(panel : Panel) 
 	{
 		super(panel);
-		addClass("line-chart");
-		
-		chart = g.append("svg:g");
-//		overlay = g.append("svg:g");
-//		g.append("svg:defs");
 
-		animated = true;
-		animationDuration = 1500;
-		animationEase = Equations.linear;
+		addClass("line-chart");
+		chart = g.append("svg:g");
 	}
 	
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)

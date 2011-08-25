@@ -7,12 +7,14 @@ package rg.view.svg.widget;
 import rg.view.svg.panel.Layer;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
+import rg.view.svg.panel.Panel;
 import thx.error.AbstractMethod;
 import rg.data.DataPoint;
 import rg.data.Stats;
 import rg.view.svg.widget.Baloon;
+import thx.math.Equations;
 
-class CartesianChart extends Layer
+class ChartCartesian<T> extends Layer
 {
 	public var variableDependents : Array<VariableDependent<Dynamic>>;
 	public var variableIndependent : VariableIndependent<Dynamic>;
@@ -23,14 +25,22 @@ class CartesianChart extends Layer
 	public var labelDataPoint : DataPoint -> Stats -> String;
 	public var labelDataPointOver : DataPoint -> Stats -> String;
 	var tooltip : Baloon;
-		
+	
+	public function new(panel : Panel)
+	{
+		super(panel);
+		animated = true;
+		animationDuration = 1500;
+		animationEase = Equations.linear;
+	}
+	
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
 		this.variableIndependent = variableIndependents[0];
 		this.variableDependents = variableDependents;
 	}
 	
-	public function data(dps : Array<Array<Array<DataPoint>>>)
+	public function data(dps : T)
 	{
 		throw new AbstractMethod();
 	}

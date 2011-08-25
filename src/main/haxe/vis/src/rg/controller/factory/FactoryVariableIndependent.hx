@@ -36,7 +36,7 @@ class FactoryVariableIndependent
 			min = defaultMin(normalizeTime(info.min), periodicity);
 			max = defaultMax(normalizeTime(info.max), periodicity);
 		}
-		var variable = new VariableIndependent(info.type, axis, min, max);
+		var variable = new VariableIndependent(info.type, axis, info.scaleDistribution, min, max);
 		return variable;
 	}
 	

@@ -12,7 +12,7 @@ import rg.data.ITickmark;
 import thx.js.Dom;
 using Arrays;
 
-class ChartTickmarks extends Layer
+class TickmarksOrtho extends Layer
 {
 	public var anchor(default, null) : Anchor;
 	

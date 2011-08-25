@@ -6,15 +6,14 @@
 package rg.data;
 import rg.util.Periodicity;
 
-class TickmarkTime extends Tickmark<Float>
+class TickmarkTime extends TickmarkOrdinal<Float>
 {
 	public var periodicity(default, null) : String;
 	
-	public function new(value : Float, major : Bool, delta : Float, periodicity : String) 
+	public function new(value : Float, values : Array<Float>, major : Bool, periodicity : String, scaleDistribution : ScaleDistribution) 
 	{
-		super(value, major, delta);
+		super(Arrays.indexOf(values, value), values, major, scaleDistribution);
 		this.periodicity = periodicity;
 	}
-	
-	override function getLabel() return Periodicity.smartFormat(periodicity, value)
+	override function getLabel() return Periodicity.smartFormat(periodicity, values[pos])
 }

@@ -10,26 +10,29 @@ using Arrays;
 
 class TickmarkOrdinal<T> implements ITickmark<T>
 {
-	public static function fromArray<T>(values : Array<T>)
+	public static function fromArray<T>(values : Array<T>, scaleDistribution : ScaleDistribution)
 	{
-		return values.map(function(_, i) return new TickmarkOrdinal<T>(i, values));
+		return values.map(function(_, i) return new TickmarkOrdinal<T>(i, values, scaleDistribution));
 	}
 	
 	var pos : Int;
 	var values : Array<T>;
-	public function new(pos : Int, values : Array<T>)
+	var scaleDistribution : ScaleDistribution;
+	public function new(pos : Int, values : Array<T>, major = true, scaleDistribution : ScaleDistribution)
 	{
 		this.pos = pos;
 		this.values = values;
+		this.scaleDistribution = scaleDistribution;
+		this.major = major;
 	}
 	public var delta(getDelta, null) : Float;
 	function getDelta()
 	{
-		return pos / (values.length - 1);
+		return ScaleDistributions.distribute(scaleDistribution, pos, values.length);
 	}
 	
 	public var major(getMajor, null) : Bool;
-	function getMajor() return true
+	function getMajor() return major
 	
 	public var value(getValue, null) : T;
 	function getValue()
