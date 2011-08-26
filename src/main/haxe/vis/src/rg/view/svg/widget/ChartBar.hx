@@ -28,6 +28,9 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 	var dps : Array<Array<Array<DataPoint>>>;
 	public var gradientLightness : Float;
 	public var displayGradient : Bool;
+	public var padding : Float;
+	public var paddingAxis : Float;
+	public var paddingDataPoint : Float;
 	
 	public function new(panel : Panel) 
 	{
@@ -38,14 +41,14 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 		chart = g.append("svg:g");
 		gradientLightness = 1.4;
 		displayGradient = true;
+		padding = 10;
+		paddingAxis = 4;
+		paddingDataPoint = 2;
 	}
 	
 	override function data(dps : Array<Array<Array<DataPoint>>>)
 	{
-		var padding = 10,
-			ypadding = 4,
-			segpadding = 2,
-			values = dps.length,
+		var values = dps.length,
 			axisgs = new Hash(),
 			discrete, scaledist = ScaleDistribution.ScaleFill,
 			span
@@ -72,7 +75,7 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 		for (i in 0...dps.length)
 		{
 			var valuedps = dps[i],
-				waxis = (span - (ypadding * (valuedps.length - 1))) / valuedps.length
+				waxis = (span - (paddingAxis * (valuedps.length - 1))) / valuedps.length
 			;
 			
 			// axis values
@@ -84,8 +87,8 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 					yaxis = variableDependents[j].axis,
 					ymin = variableDependents[j].min,
 					ymax = variableDependents[j].max,
-					w = Math.max(1, (waxis - (segpadding * (axisdps.length - 1))) / axisdps.length),
-					offset = - span / 2 + j * (waxis + ypadding),
+					w = Math.max(1, (waxis - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
+					offset = - span / 2 + j * (waxis + paddingAxis),
 					ystats = DataPoints.stats(flatdata, variableDependents[j].type),
 					over = callback(onmouseover, ystats),
 					click = callback(onclick, ystats)
@@ -102,7 +105,7 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height;
 					var bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
-						.attr("x").float(stacked ? x + offset : x + offset + k * (w + segpadding))
+						.attr("x").float(stacked ? x + offset : x + offset + k * (w + paddingDataPoint))
 						.attr("width").float(stacked ? waxis : w)
 						.attr("y").float(height - h - y)
 						.attr("height").float(h)

@@ -4,7 +4,7 @@
  */
 
 package rg.controller.info;
-import rg.view.layout.LayoutScaleY;
+import rg.view.layout.ScalePattern;
 using rg.controller.info.Info;
 
 class InfoLayout
@@ -15,14 +15,14 @@ class InfoLayout
 	public var type : Null<String>;
 	public var main : String;
 	public var titleOnTop : Bool;
-	public var layoutScaleY : LayoutScaleY;
+	public var scalePattern : ScalePattern;
 	public var padding : InfoPadding;
 	
 	public function new()
 	{
 		main = "main";
 		titleOnTop = true;
-		layoutScaleY = ScalesAlternating;
+		scalePattern = ScalesAlternating;
 		padding = new InfoPadding();
 	}
 	
@@ -75,9 +75,9 @@ class InfoLayout
 			filter : function(v) return [ {
 				value : v,
 				field : switch(v) {
-					case "alt", "alternate", "alternating": LayoutScaleY.ScalesAlternating;
-					case "right": LayoutScaleY.ScalesOnRight;
-					default: LayoutScaleY.ScalesOnLeft;
+					case "alt", "alternate", "alternating": ScalePattern.ScalesAlternating;
+					case "right": ScalePattern.ScalesAfter;
+					default: ScalePattern.ScalesBefore;
 				}
 			}]
 		}, {

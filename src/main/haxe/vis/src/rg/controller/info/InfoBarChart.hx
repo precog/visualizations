@@ -11,11 +11,17 @@ class InfoBarChart extends InfoCartesianChart
 {
 	public var stacked : Bool;
 	public var effect : BarEffect;
+	public var barPaddingDataPoint : Float;
+	public var barPaddingAxis: Float;
+	public var barPadding : Float;
 	public function new()
 	{
 		super();
 		stacked = true;
 		effect = BarEffect.Gradient(0.75);
+		barPadding = 16;
+		barPaddingAxis = 4;
+		barPaddingDataPoint = 2;
 	}
 	
 	public static function filters()
@@ -30,6 +36,27 @@ class InfoBarChart extends InfoCartesianChart
 			filter : function(v) return [{
 				field : "effect",
 				value : BarEffects.parse(v)
+			}]
+		}, {
+			field : "barpadding",
+			validator : function(v) return Std.is(v, Float),
+			filter : function(v) return [{
+				field : "barPadding",
+				value : v
+			}]
+		}, {
+			field : "barpaddingaxis",
+			validator : function(v) return Std.is(v, Float),
+			filter : function(v) return [{
+				field : "barPaddingAxis",
+				value : v
+			}]
+		}, {
+			field : "barpaddingdatapoint",
+			validator : function(v) return Std.is(v, Float),
+			filter : function(v) return [{
+				field : "barPaddingDataPoint",
+				value : v
 			}]
 		}].concat(cast InfoCartesianChart.filters());
 	}

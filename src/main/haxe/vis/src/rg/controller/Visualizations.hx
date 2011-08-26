@@ -33,7 +33,7 @@ class Visualizations
 		layoutDefault.set("linechart", "cartesian");
 		layoutDefault.set("piechart", "simple");
 		
-		layoutType.set("simple",    rg.view.layout.SimpleLayout);
-		layoutType.set("cartesian", rg.view.layout.CartesianLayout);
+		layoutType.set("simple",    rg.view.layout.LayoutSimple);
+		layoutType.set("cartesian", rg.view.layout.LayoutCartesian);
 	}
 }

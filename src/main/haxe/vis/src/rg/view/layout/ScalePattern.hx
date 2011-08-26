@@ -5,9 +5,9 @@
 
 package rg.view.layout;
 
-enum LayoutScaleY 
+enum ScalePattern 
 {
-	ScalesOnLeft;
-	ScalesOnRight;
+	ScalesBefore;
+	ScalesAfter;
 	ScalesAlternating;
 }

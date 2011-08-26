@@ -52,7 +52,7 @@ class Baloon
 		duration = 500;
 		minwidth = 30;
 		preferredSide = 2;
-		ease = Ease.mode(EaseMode.EaseInEaseOut, Equations.cubic);
+		ease = Ease.mode(EaseMode.EaseOut, Equations.cubic);
 		roundedCorner = 5;
 		paddingHorizontal = 3.5;
 		paddingVertical = 1.5;

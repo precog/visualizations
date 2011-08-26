@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>ReportGrid.Visualizations</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+<!--
+	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
+-->
+	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
+<!--
+	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
+-->
+	<script src="js/reportgrid-core.js?tokenId=C7A18C95-3619-415B-A89B-4CE47693E4CC"></script>
+	<script src="js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+	function transform(arr)
+	{
+		var y0 = 0.0;
+		for(var i = 0, v; i < arr.length; i++)
+		{
+			v = arr[i];
+			v[v.event] = v.count;
+			v["y0"] = y0;
+			y0 += v.count;
+		}
+		return arr;
+	}
+	
+	function appendSum(arr)
+	{
+		for(var i = 0; i < arr.length; i++)
+			arr[i]["sum"] = 0.0;
+		return arr;
+	}
+	
+	function transformSum(arr)
+	{
+		var y0 = 0.0;
+		for(var i = 0, v; i < arr.length; i++)
+		{
+			v = arr[i];
+			v["y0"] = y0;
+			y0 += v.sum;
+		}
+		return arr;
+	}
+	
+	function scale(arr)
+	{
+		var sum = 0.0;
+		for(var i = 0, v; i < arr.length; i++)
+		{
+			v = arr[i];
+			v.sum = (sum += v.count);
+		}
+//		console.log(arr);
+		return arr;
+	}
+
+	// stack area incremental
+	ReportGrid.barChart("#chart8", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-28 20:00:00", "2011-07-28 21:00:0"]
+		}, {
+			type : "sum",
+			view : [0, 6000]
+		}],
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : appendSum
+		}],
+		options : {
+			height: 100,
+			symbol : function(dp, stats) { return ReportGrid.symbol.get("circle", 16); },
+			line : {
+				interpolation : "cardinal",
+				effect : "gradient", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			label : {
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + "\nat " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
+			},
+			displayarea : true,
+			segment : {
+				on : ".platform",
+				transform : transformSum,
+				scale : scale
+			},
+			y0property : "y0"
+		}
+	});
+
+	// incremental
+	ReportGrid.barChart("#chart7", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-28 20:00:00", "2011-07-28 21:00:0"]
+		}, {
+			type : "sum",
+			view : [0, 5000]
+		}],
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : appendSum
+		}],
+		options : {
+			height: 100,
+			symbol : function(dp, stats) { return ReportGrid.symbol.get("circle", 16); },
+			line : {
+				interpolation : "cardinal",
+				effect : "gradient", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			label : {
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + "\nat " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
+			},
+			displayarea : true,
+			segment : {
+				on : ".platform",
+				scale : scale
+			},
+			y0property : "y0"
+		}
+	});
+
+	// stack area
+	ReportGrid.barChart("#chart6", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-28 20:00:00", "2011-07-28 21:00:0"]
+		}, {
+			type : "count",
+			view : [0, 110]
+		}],
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : transform
+		}],
+		options : {
+			height: 100,
+			symbol : function(dp, stats) {
+				return ReportGrid.symbol.get("circle", 16);
+			},
+			line : {
+				interpolation : "cardinal",
+				effect : "noeffect", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			label : {
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + "\nat " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") },
+				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			displayarea : true,
+			segmenton : ".platform",
+			y0property : "y0"
+		}
+	});
+
+	ReportGrid.barChart("#chart5", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-28 20:00:00", "2011-07-28 21:00:0"]
+		}, {
+			type : "count",
+			view : [0, 100]
+		}],
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".platform * .#time:minute" },
+			transform : transform
+		}],
+		options : {
+			height: 100,
+			symbol : function(dp, stats) {
+				return ReportGrid.symbol.get("star", 36);
+			},
+			line : {
+				interpolation : "cardinal",
+				effect : "noeffect", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			label : {
+				datapointover : function(ds, stats) { return ds[".platform"] + ": " + ReportGrid.format(ds.count) + "\nat " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
+			},
+			displayarea : true,
+			segmenton : ".platform"
+		}
+	});
+
+	ReportGrid.barChart("#chart4", {
+		axes : [{
+			type : ".#time:minute",
+			view : ["2011-07-28 20:00:00", "2011-07-28 21:00:0"]
+		}, {
+			type : "impression"
+		}, {
+			type : "click"
+		}, {
+			type : "conversion"
+		}],
+		data : [{
+			src: { path : "/rgadnet", event : "impression", query : ".#time:minute" },
+			transform : transform
+		}, {
+			src: { path : "/rgadnet", event : "click", query : ".#time:minute" },
+			transform : transform
+		}, {
+			src: { path : "/rgadnet", event : "conversion", query : ".#time:minute" },
+			transform : transform
+		}],
+		options : {
+			click : function(dp) { alert(dp[".platform"]); },
+			height: 100,
+			symbol : function(dp, stats) {
+				var v = dp.count / stats.max,
+					size = 64;
+				if(v > 0.95)
+					return ReportGrid.symbol.get("triangleUp", size);
+				else if(v < 0.3)
+					return ReportGrid.symbol.get("triangleDown", size);
+				else
+					return ReportGrid.symbol.get("cross", 36);
+			},
+			symbolstyle : function(dp, stats)
+			{
+				var v = dp.count / stats.max;
+				if(v < 0.3)
+				{
+					return "fill:#ff0000;stroke:#000;stroke-width:1px;shape-rendering:crisp-edges";
+				} else if(v > 0.95) {
+					return "fill:#00ff00;stroke:#000;stroke-width:1px;shape-rendering:crisp-edges";
+				} else {
+					return null;
+				}
+			},
+			label : {
+				datapoint : function(ds, stats) { 
+					if(ds.count < 7 || ds.count > 97)
+						return ReportGrid.format(ds.count);
+					else
+						return null;
+				},
+				datapointover : function(ds, stats) { return ds.event + ": " + ReportGrid.format(ds.count) + "\nat " + ReportGrid.format(new Date(ds[".#time:minute"]), "TS") }
+			},
+			line : {
+				interpolation : "cardinal",
+				effect : "noeffect", //"gradient-0.75,1" //"dropshadow-1,1,1"
+			},
+			displayarea : true
+		}
+	});
+
+	ReportGrid.barChart("#chart3", {
+		axes : [{
+			type : ".#time:hour",
+			view : ["2011-07-21 14:00:00", "2011-07-21 23:59:59"]
+		}, {
+			type : "count"
+		}],
+		data : {
+			src : { path : "/rgadnet", event : "impression", query : ".#time:hour" }
+		},
+		options : {
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			click : function(dp) { alert(dp[".platform"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100
+		}
+	});
+
+	ReportGrid.barChart("#chart2", {
+		axes : [{
+			type : ".#time:hour",
+			view : ["2011-07-21 14:00:00", "2011-07-21 23:59:59"]
+		}, {
+			type : "sum",
+			view : [0, 70000]
+		}],
+		data : [{
+			src : { path : "/rgadnet", event : "impression", query : ".#time:hour" },
+			transform : appendSum
+		}, {
+			src : { path : "/rgadnet", event : "click", query : ".#time:hour" },
+			transform : appendSum
+		}, {
+			src : { path : "/rgadnet", event : "conversion", query : ".#time:hour" },
+			transform : appendSum
+		}],
+		options : {
+			segment : {
+				on : "event",
+				scale : scale,
+				transform : transformSum
+			},
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			label : {
+				datapoint : function(dp) { return ReportGrid.format(dp["count"]); }
+			},
+			click : function(dp) { alert(dp["event"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100,
+			symbol : function(ds, stats) {
+				var v = ds.count / stats.max;
+				return ReportGrid.symbol.get("square", Math.round(100 * v));
+			},
+			line : {
+				effect : "dropshadow"
+			},
+			y0property : "y0"
+		}
+	});
+
+	ReportGrid.barChart("#chart1", {
+		axes : [{
+			type : ".#time:hour",
+			view : ["2011-07-21 14:00:00", "2011-07-21 23:59:59"]
+		}, {
+			type : "count"
+		}],
+		data : [{
+			src : { path : "/rgadnet", event : "impression", query : ".#time:hour" }
+		}, {
+			src : { path : "/rgadnet", event : "click", query : ".#time:hour" }
+		}, {
+			src : { path : "/rgadnet", event : "conversion", query : ".#time:hour" }
+		}],
+		options : {
+			segmenton : "event",
+			animation : {
+				animated : true,
+				duration : 500,
+				ease : function(f) { return f; },
+				delay : 500
+			},
+			label : {
+				datapoint : function(dp) { return ReportGrid.format(dp["count"]); },
+				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			click : function(dp) { alert(dp[".platform"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			height: 100,
+			symbol : function(ds, stats) {
+				var v = ds.count / stats.max;
+				return ReportGrid.symbol.get("square", Math.round(100 * v));
+			},
+			line : {
+				interpolation : "stepbefore",
+				effect : "noeffect"
+			}
+		}
+	});
+
+}, false)
+</script>
+</head>
+<body>
+	<div id="chart8"></div>
+	<div id="chart7"></div>
+	<div id="chart6"></div>
+	<div id="chart5"></div>
+	<div id="chart4"></div>
+	<div id="chart3"></div>
+	<div id="chart2"></div>
+	<div id="chart1"></div>
+	<div id="haxe:trace"></div>
+</body>
+</html>

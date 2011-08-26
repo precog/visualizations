@@ -14,7 +14,7 @@ import rg.view.frame.FrameLayout;
 import rg.view.layout.Anchor;
 import rg.view.frame.Orientation;
 
-class CartesianLayout extends Layout
+class LayoutCartesian extends Layout
 {
 	
 	static inline var ALT_RIGHT  = 20;
@@ -342,15 +342,15 @@ class CartesianLayout extends Layout
 	{
 		super.feedOptions(info);
 		titleOnTop = info.titleOnTop;
-		switch(info.layoutScaleY)
+		switch(info.scalePattern)
 		{
-			case LayoutScaleY.ScalesOnLeft:
+			case ScalePattern.ScalesBefore:
 				left = true;
 				alternating = false;
-			case LayoutScaleY.ScalesOnRight:
+			case ScalePattern.ScalesAfter:
 				left = false;
 				alternating = false;
-			case LayoutScaleY.ScalesAlternating:
+			case ScalePattern.ScalesAlternating:
 				left = true;
 				alternating = true;
 		}

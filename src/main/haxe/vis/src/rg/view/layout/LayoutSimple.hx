@@ -10,7 +10,7 @@ import rg.view.layout.Anchor;
 import rg.controller.info.InfoLayout;
 import rg.view.svg.panel.Panel;
 
-class SimpleLayout extends Layout
+class LayoutSimple extends Layout
 {
 	var main : Panel;
 	var titleOnTop : Bool;

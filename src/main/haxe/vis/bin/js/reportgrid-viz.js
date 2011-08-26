@@ -737,6 +737,9 @@ rg.controller.visualization.VisualizationBarChart.prototype.initChart = function
 		chart.gradientLightness = lightness;
 		break;
 	}
+	chart.padding = this.infoBar.barPadding;
+	chart.paddingAxis = this.infoBar.barPaddingAxis;
+	chart.paddingDataPoint = this.infoBar.barPaddingDataPoint;
 	this.chart = chart;
 }
 rg.controller.visualization.VisualizationBarChart.prototype.transformData = function(dps) {
@@ -1233,6 +1236,9 @@ rg.controller.info.InfoBarChart = function(p) {
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.stacked = true;
 	this.effect = rg.view.svg.widget.BarEffect.Gradient(0.75);
+	this.barPadding = 16;
+	this.barPaddingAxis = 4;
+	this.barPaddingDataPoint = 2;
 }
 rg.controller.info.InfoBarChart.__name__ = ["rg","controller","info","InfoBarChart"];
 rg.controller.info.InfoBarChart.__super__ = rg.controller.info.InfoCartesianChart;
@@ -1244,10 +1250,25 @@ rg.controller.info.InfoBarChart.filters = function() {
 		return Std["is"](v,String);
 	}, filter : function(v) {
 		return [{ field : "effect", value : rg.view.svg.widget.BarEffects.parse(v)}];
+	}},{ field : "barpadding", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "barPadding", value : v}];
+	}},{ field : "barpaddingaxis", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "barPaddingAxis", value : v}];
+	}},{ field : "barpaddingdatapoint", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "barPaddingDataPoint", value : v}];
 	}}].concat(rg.controller.info.InfoCartesianChart.filters());
 }
 rg.controller.info.InfoBarChart.prototype.stacked = null;
 rg.controller.info.InfoBarChart.prototype.effect = null;
+rg.controller.info.InfoBarChart.prototype.barPaddingDataPoint = null;
+rg.controller.info.InfoBarChart.prototype.barPaddingAxis = null;
+rg.controller.info.InfoBarChart.prototype.barPadding = null;
 rg.controller.info.InfoBarChart.prototype.__class__ = rg.controller.info.InfoBarChart;
 if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.Anchor = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
@@ -1355,6 +1376,9 @@ rg.view.svg.widget.ChartBar = function(panel) {
 	this.chart = this.g.append("svg:g");
 	this.gradientLightness = 1.4;
 	this.displayGradient = true;
+	this.padding = 10;
+	this.paddingAxis = 4;
+	this.paddingDataPoint = 2;
 }
 rg.view.svg.widget.ChartBar.__name__ = ["rg","view","svg","widget","ChartBar"];
 rg.view.svg.widget.ChartBar.__super__ = rg.view.svg.widget.ChartCartesian;
@@ -1365,9 +1389,12 @@ rg.view.svg.widget.ChartBar.prototype.defs = null;
 rg.view.svg.widget.ChartBar.prototype.dps = null;
 rg.view.svg.widget.ChartBar.prototype.gradientLightness = null;
 rg.view.svg.widget.ChartBar.prototype.displayGradient = null;
+rg.view.svg.widget.ChartBar.prototype.padding = null;
+rg.view.svg.widget.ChartBar.prototype.paddingAxis = null;
+rg.view.svg.widget.ChartBar.prototype.paddingDataPoint = null;
 rg.view.svg.widget.ChartBar.prototype.data = function(dps) {
-	var padding = 10, ypadding = 4, segpadding = 2, values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
-	if(null != (discrete = Types["as"](this.variableIndependent.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - padding * (values - 1)) / values; else span = (this.width - padding * (values - 1)) / values;
+	var values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
+	if(null != (discrete = Types["as"](this.variableIndependent.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - this.padding * (values - 1)) / values; else span = (this.width - this.padding * (values - 1)) / values;
 	var getGroup = function(name,container) {
 		var gr = axisgs.get(name);
 		if(null == gr) {
@@ -1380,11 +1407,11 @@ rg.view.svg.widget.ChartBar.prototype.data = function(dps) {
 	var _g1 = 0, _g = dps.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var valuedps = dps[i], waxis = (span - ypadding * (valuedps.length - 1)) / valuedps.length;
+		var valuedps = dps[i], waxis = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
 		var _g3 = 0, _g2 = valuedps.length;
 		while(_g3 < _g2) {
 			var j = _g3++;
-			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.variableDependents[j].type, yaxis = this.variableDependents[j].axis, ymin = this.variableDependents[j].min, ymax = this.variableDependents[j].max, w = Math.max(1,(waxis - segpadding * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + ypadding), ystats = rg.util.DataPoints.stats(flatdata,this.variableDependents[j].type), over = (function(f,a1) {
+			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.variableDependents[j].type, yaxis = this.variableDependents[j].axis, ymin = this.variableDependents[j].min, ymax = this.variableDependents[j].max, w = Math.max(1,(waxis - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + this.paddingAxis), ystats = rg.util.DataPoints.stats(flatdata,this.variableDependents[j].type), over = (function(f,a1) {
 				return function(a2,a3) {
 					return f(a1,a2,a3);
 				};
@@ -1398,7 +1425,7 @@ rg.view.svg.widget.ChartBar.prototype.data = function(dps) {
 			while(_g5 < _g4) {
 				var k = _g5++;
 				var dp = axisdps[k], seggroup = getGroup("item-" + k,axisg), x = this.width * this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,Reflect.field(dp,this.variableIndependent.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
-				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + segpadding)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over);
+				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + this.paddingDataPoint)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over);
 				bar.node()["__data__"] = dp;
 				if(this.displayGradient) bar.eachNode($closure(this,"applyGradient"));
 				if(this.stacked) prev = y + h;
@@ -2818,7 +2845,7 @@ rg.controller.info.InfoLayout = function(p) {
 	if( p === $_ ) return;
 	this.main = "main";
 	this.titleOnTop = true;
-	this.layoutScaleY = rg.view.layout.LayoutScaleY.ScalesAlternating;
+	this.scalePattern = rg.view.layout.ScalePattern.ScalesAlternating;
 	this.padding = new rg.controller.info.InfoPadding();
 }
 rg.controller.info.InfoLayout.__name__ = ["rg","controller","info","InfoLayout"];
@@ -2852,13 +2879,13 @@ rg.controller.info.InfoLayout.filters = function() {
 			var $r;
 			switch(v) {
 			case "alt":case "alternate":case "alternating":
-				$r = rg.view.layout.LayoutScaleY.ScalesAlternating;
+				$r = rg.view.layout.ScalePattern.ScalesAlternating;
 				break;
 			case "right":
-				$r = rg.view.layout.LayoutScaleY.ScalesOnRight;
+				$r = rg.view.layout.ScalePattern.ScalesAfter;
 				break;
 			default:
-				$r = rg.view.layout.LayoutScaleY.ScalesOnLeft;
+				$r = rg.view.layout.ScalePattern.ScalesBefore;
 			}
 			return $r;
 		}(this))}];
@@ -2874,7 +2901,7 @@ rg.controller.info.InfoLayout.prototype.height = null;
 rg.controller.info.InfoLayout.prototype.type = null;
 rg.controller.info.InfoLayout.prototype.main = null;
 rg.controller.info.InfoLayout.prototype.titleOnTop = null;
-rg.controller.info.InfoLayout.prototype.layoutScaleY = null;
+rg.controller.info.InfoLayout.prototype.scalePattern = null;
 rg.controller.info.InfoLayout.prototype.padding = null;
 rg.controller.info.InfoLayout.prototype.__class__ = rg.controller.info.InfoLayout;
 IntHash = function(p) {
@@ -5397,6 +5424,319 @@ rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) {
 rg.view.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.view.layout.Layout = function(width,height,container) {
+	if( width === $_ ) return;
+	this.container = container;
+	container.classed().add("rg");
+	this.space = new rg.view.svg.panel.Space(width,height,container);
+}
+rg.view.layout.Layout.__name__ = ["rg","view","layout","Layout"];
+rg.view.layout.Layout.prototype.mainPanelName = null;
+rg.view.layout.Layout.prototype.space = null;
+rg.view.layout.Layout.prototype.container = null;
+rg.view.layout.Layout.prototype.getContext = function(name) {
+	return null;
+}
+rg.view.layout.Layout.prototype.getPanel = function(name) {
+	return null;
+}
+rg.view.layout.Layout.prototype.suggestSize = function(name,size) {
+	var panel = this.getPanel(name);
+	if(null == panel) return;
+	this.suggestPanelSize(panel,size);
+}
+rg.view.layout.Layout.prototype.suggestPanelSize = function(panel,size) {
+	var stackitem = Types["as"](panel.frame,rg.view.frame.StackItem);
+	if(null == stackitem) return;
+	var $e = (stackitem.disposition);
+	switch( $e[1] ) {
+	case 3:
+		var a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(b,a,size));
+		break;
+	default:
+	}
+}
+rg.view.layout.Layout.prototype.suggestPanelPadding = function(panel,before,after) {
+	if(null == panel) return;
+	var stackitem = Types["as"](panel.frame,rg.view.frame.StackItem);
+	if(null == stackitem) return;
+	var $e = (stackitem.disposition);
+	switch( $e[1] ) {
+	case 0:
+		var max = $e[5], min = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
+		break;
+	case 1:
+		var max = $e[6], min = $e[5], percent = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
+		break;
+	case 2:
+		var ratio = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
+		break;
+	case 3:
+		var size = $e[4], a = $e[3], b = $e[2];
+		stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
+		break;
+	default:
+	}
+}
+rg.view.layout.Layout.prototype.paddings = null;
+rg.view.layout.Layout.prototype.feedOptions = function(info) {
+	this.mainPanelName = info.main;
+	this.paddings = info.padding;
+}
+rg.view.layout.Layout.prototype.adjustPadding = function() {
+}
+rg.view.layout.Layout.prototype.__class__ = rg.view.layout.Layout;
+rg.view.layout.LayoutCartesian = function(width,height,container) {
+	if( width === $_ ) return;
+	rg.view.layout.Layout.call(this,width,height,container);
+	this.titleOnTop = true;
+	this.left = true;
+	this.alternating = true;
+	this.yitems = [];
+}
+rg.view.layout.LayoutCartesian.__name__ = ["rg","view","layout","LayoutCartesian"];
+rg.view.layout.LayoutCartesian.__super__ = rg.view.layout.Layout;
+for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.LayoutCartesian.prototype[k] = rg.view.layout.Layout.prototype[k];
+rg.view.layout.LayoutCartesian.prototype.main = null;
+rg.view.layout.LayoutCartesian.prototype.titleOnTop = null;
+rg.view.layout.LayoutCartesian.prototype.leftcontainer = null;
+rg.view.layout.LayoutCartesian.prototype.rightcontainer = null;
+rg.view.layout.LayoutCartesian.prototype.bottomcontainer = null;
+rg.view.layout.LayoutCartesian.prototype.bottommiddlecontainer = null;
+rg.view.layout.LayoutCartesian.prototype.maincontainer = null;
+rg.view.layout.LayoutCartesian.prototype.middlecontainer = null;
+rg.view.layout.LayoutCartesian.prototype.bottomleft = null;
+rg.view.layout.LayoutCartesian.prototype.bottomright = null;
+rg.view.layout.LayoutCartesian.prototype.xtickmarks = null;
+rg.view.layout.LayoutCartesian.prototype.title = null;
+rg.view.layout.LayoutCartesian.prototype.left = null;
+rg.view.layout.LayoutCartesian.prototype.alternating = null;
+rg.view.layout.LayoutCartesian.prototype.yitems = null;
+rg.view.layout.LayoutCartesian.prototype.xtitle = null;
+rg.view.layout.LayoutCartesian.prototype.getContext = function(name) {
+	if(this.isY(name)) return this.getYContext(this.getYIndex(name)); else if(this.isYTitle(name)) return this.getYTitle(this.getYIndex(name));
+	switch(name) {
+	case "title":
+		if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,0)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
+		return this.title;
+	case "x":
+		return this.getXTickmarks();
+	case "xtitle":
+		return this.getXTitle();
+	default:
+		return null;
+	}
+}
+rg.view.layout.LayoutCartesian.prototype.getPanel = function(name) {
+	switch(name) {
+	case "main":
+		return this.getMain();
+	case "xtickmarks":
+		return this.getBottomContainer();
+	case "left":
+		return this.getLeftContainer();
+	case "right":
+		return this.getRightContainer();
+	case "bottomleft":
+		return this.bottomleft;
+	case "bottomright":
+		return this.bottomright;
+	default:
+		var ctx = this.getContext(name);
+		if(null == ctx) return null;
+		return ctx.panel;
+	}
+}
+rg.view.layout.LayoutCartesian.prototype.getYItem = function(index) {
+	if(null == this.yitems[index]) this.yitems[index] = { container : null, context : null, title : null, anchor : this.alternating && index % 2 == 0?rg.view.layout.Anchor.Right:rg.view.layout.Anchor.Left};
+	return this.yitems[index];
+}
+rg.view.layout.LayoutCartesian.prototype.getYContainer = function(index) {
+	var item = this.getYItem(index);
+	if(null == item.container) {
+		if(this.alternating && index % 2 == 0) item.container = this.getLeftContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal); else item.container = this.getRightContainer().createContainer(rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
+		item.container.g.classed().add("group-" + index);
+	}
+	return item.container;
+}
+rg.view.layout.LayoutCartesian.prototype.getYContext = function(index) {
+	var item = this.getYItem(index);
+	if(null == item.context) {
+		var panel = (function($this) {
+			var $r;
+			switch( (item.anchor)[1] ) {
+			case 2:
+				$r = $this.getYContainer(index).createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0));
+				break;
+			case 3:
+				$r = $this.getYContainer(index).createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
+				break;
+			default:
+				$r = null;
+			}
+			return $r;
+		}(this));
+		item.context = new rg.view.layout.PanelContext(panel,item.anchor);
+	}
+	return item.context;
+}
+rg.view.layout.LayoutCartesian.prototype.getYTitle = function(index) {
+	var item = this.getYItem(index);
+	if(null == item.title) {
+		var panel = (function($this) {
+			var $r;
+			switch( (item.anchor)[1] ) {
+			case 2:
+				$r = $this.getYContainer(index).createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
+				break;
+			case 3:
+				$r = $this.getYContainer(index).createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0));
+				break;
+			default:
+				$r = null;
+			}
+			return $r;
+		}(this));
+		item.title = new rg.view.layout.PanelContext(panel,item.anchor);
+	}
+	return item.title;
+}
+rg.view.layout.LayoutCartesian.prototype.getYIndex = function(s) {
+	if(!rg.view.layout.LayoutCartesian.REYINDEX.match(s)) return -1; else return Std.parseInt(rg.view.layout.LayoutCartesian.REYINDEX.matched(1));
+}
+rg.view.layout.LayoutCartesian.prototype.isY = function(s) {
+	return rg.view.layout.LayoutCartesian.REYAXIS.match(s);
+}
+rg.view.layout.LayoutCartesian.prototype.isYTitle = function(s) {
+	return rg.view.layout.LayoutCartesian.REYTITLE.match(s);
+}
+rg.view.layout.LayoutCartesian.prototype.suggestSize = function(name,size) {
+	if(this.isY(name) || this.isYTitle(name)) {
+		var index = this.getYIndex(name), item = this.getYItem(index);
+		if(null == item.container) return;
+		var ysize = 0.0;
+		if(null != item.context) {
+			if(this.isY(name)) this.suggestPanelSize(item.context.panel,size);
+			ysize += item.context.panel.frame.width;
+		}
+		if(null != item.title) {
+			if(this.isYTitle(name)) this.suggestPanelSize(item.title.panel,size);
+			ysize += item.title.panel.frame.width;
+		}
+		this.suggestPanelSize(item.container,Math.round(ysize));
+		this.suggestLateralSize(item.anchor);
+		return;
+	}
+	rg.view.layout.Layout.prototype.suggestSize.call(this,name,size);
+	switch(name) {
+	case "x":case "xtitle":
+		var size1 = 0, c = this.getPanel("x");
+		if(null != c) size1 += c.frame.height;
+		c = this.getPanel("xtitle");
+		if(null != c) size1 += c.frame.height;
+		rg.view.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
+		break;
+	}
+}
+rg.view.layout.LayoutCartesian.prototype.suggestLateralSize = function(anchor) {
+	var size = 0;
+	var i = 0;
+	var _g = 0, _g1 = this.yitems;
+	while(_g < _g1.length) {
+		var item = _g1[_g];
+		++_g;
+		i++;
+		if(null == item.container || !Type.enumEq(item.anchor,anchor)) continue;
+		size += item.container.frame.width;
+	}
+	switch( (anchor)[1] ) {
+	case 3:
+		this.suggestSize("left",size);
+		this.suggestSize("bottomleft",size);
+		break;
+	case 2:
+		this.suggestSize("right",size);
+		this.suggestSize("bottomright",size);
+		break;
+	default:
+	}
+}
+rg.view.layout.LayoutCartesian.prototype.getXTitle = function() {
+	if(null == this.xtitle) this.xtitle = new rg.view.layout.PanelContext(this.getBottomMiddleContainer().createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
+	return this.xtitle;
+}
+rg.view.layout.LayoutCartesian.prototype.getMainContainer = function() {
+	if(null == this.maincontainer) this.maincontainer = this.space.createContainerAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
+	return this.maincontainer;
+}
+rg.view.layout.LayoutCartesian.prototype.getMiddleContainer = function() {
+	if(null == this.middlecontainer) this.middlecontainer = this.getMainContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Horizontal);
+	return this.middlecontainer;
+}
+rg.view.layout.LayoutCartesian.prototype.getLeftContainer = function() {
+	if(null == this.leftcontainer) this.leftcontainer = this.getMiddleContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
+	return this.leftcontainer;
+}
+rg.view.layout.LayoutCartesian.prototype.getRightContainer = function() {
+	if(null == this.rightcontainer) this.rightcontainer = this.getMiddleContainer().createContainerAt(2,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
+	return this.rightcontainer;
+}
+rg.view.layout.LayoutCartesian.prototype.getBottomContainer = function() {
+	if(null == this.bottomcontainer) this.bottomcontainer = this.getMainContainer().createContainerAt(1,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
+	return this.bottomcontainer;
+}
+rg.view.layout.LayoutCartesian.prototype.getBottomMiddleContainer = function() {
+	if(null == this.bottommiddlecontainer) {
+		var container = this.getBottomContainer();
+		this.bottomleft = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
+		this.bottommiddlecontainer = container.createContainer(rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
+		this.bottommiddlecontainer.g.classed().add("axis-x");
+		this.bottomright = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
+	}
+	return this.bottommiddlecontainer;
+}
+rg.view.layout.LayoutCartesian.prototype.getXTickmarks = function() {
+	if(null == this.xtickmarks) {
+		var container = this.getBottomMiddleContainer();
+		this.xtickmarks = new rg.view.layout.PanelContext(container.createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
+	}
+	return this.xtickmarks;
+}
+rg.view.layout.LayoutCartesian.prototype.getMain = function() {
+	if(null == this.main) this.main = this.getMiddleContainer().createPanelAt(1,rg.view.frame.FrameLayout.Fill(0,0));
+	return this.main;
+}
+rg.view.layout.LayoutCartesian.prototype.feedOptions = function(info) {
+	rg.view.layout.Layout.prototype.feedOptions.call(this,info);
+	this.titleOnTop = info.titleOnTop;
+	switch( (info.scalePattern)[1] ) {
+	case 0:
+		this.left = true;
+		this.alternating = false;
+		break;
+	case 1:
+		this.left = false;
+		this.alternating = false;
+		break;
+	case 2:
+		this.left = true;
+		this.alternating = true;
+		break;
+	}
+}
+rg.view.layout.LayoutCartesian.prototype.adjustPadding = function() {
+	var top = null == this.title && null == this.paddings.top?8:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?8:this.paddings.bottom, left = null == this.leftcontainer && null == this.paddings.left?20:this.paddings.left, right = null == this.rightcontainer && null == this.paddings.right?20:this.paddings.right;
+	if(null != left || null != right) {
+		this.suggestPanelPadding(this.getMain(),left,right);
+		this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
+	}
+	if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
+}
+rg.view.layout.LayoutCartesian.prototype.__class__ = rg.view.layout.LayoutCartesian;
 thx.svg.LineInterpolator = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
@@ -7463,7 +7803,7 @@ rg.view.svg.widget.Baloon = function(container,bindOnTop) {
 	this.duration = 500;
 	this.minwidth = 30;
 	this.setPreferredSide(2);
-	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
+	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseOut,thx.math.Equations.cubic);
 	this.setRoundedCorner(5);
 	this.paddingHorizontal = 3.5;
 	this.paddingVertical = 1.5;
@@ -7847,6 +8187,46 @@ rg.view.layout.PanelContext.__name__ = ["rg","view","layout","PanelContext"];
 rg.view.layout.PanelContext.prototype.panel = null;
 rg.view.layout.PanelContext.prototype.anchor = null;
 rg.view.layout.PanelContext.prototype.__class__ = rg.view.layout.PanelContext;
+rg.view.layout.LayoutSimple = function(width,height,container) {
+	if( width === $_ ) return;
+	rg.view.layout.Layout.call(this,width,height,container);
+	this.titleOnTop = true;
+}
+rg.view.layout.LayoutSimple.__name__ = ["rg","view","layout","LayoutSimple"];
+rg.view.layout.LayoutSimple.__super__ = rg.view.layout.Layout;
+for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.LayoutSimple.prototype[k] = rg.view.layout.Layout.prototype[k];
+rg.view.layout.LayoutSimple.prototype.main = null;
+rg.view.layout.LayoutSimple.prototype.titleOnTop = null;
+rg.view.layout.LayoutSimple.prototype.getContext = function(name) {
+	switch(name) {
+	case "title":
+		if(null != this.title) return null;
+		return this.getTitle();
+	default:
+		return null;
+	}
+}
+rg.view.layout.LayoutSimple.prototype.getPanel = function(name) {
+	switch(name) {
+	case "main":
+		if(null == this.main) this.main = this.space.createPanelAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0));
+		return this.main;
+	case "title":
+		return this.getTitle().panel;
+	default:
+		return null;
+	}
+}
+rg.view.layout.LayoutSimple.prototype.title = null;
+rg.view.layout.LayoutSimple.prototype.getTitle = function() {
+	if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,20)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
+	return this.title;
+}
+rg.view.layout.LayoutSimple.prototype.feedOptions = function(info) {
+	rg.view.layout.Layout.prototype.feedOptions.call(this,info);
+	this.titleOnTop = info.titleOnTop;
+}
+rg.view.layout.LayoutSimple.prototype.__class__ = rg.view.layout.LayoutSimple;
 rg.controller.info.InfoPivotTable = function(p) {
 	if( p === $_ ) return;
 	this.label = new rg.controller.info.InfoLabelPivotTable();
@@ -10764,359 +11144,6 @@ thx.js.Svg.mouse = function(dom) {
 	return [point.x,point.y];
 }
 thx.js.Svg.prototype.__class__ = thx.js.Svg;
-rg.view.layout.Layout = function(width,height,container) {
-	if( width === $_ ) return;
-	this.container = container;
-	container.classed().add("rg");
-	this.space = new rg.view.svg.panel.Space(width,height,container);
-}
-rg.view.layout.Layout.__name__ = ["rg","view","layout","Layout"];
-rg.view.layout.Layout.prototype.mainPanelName = null;
-rg.view.layout.Layout.prototype.space = null;
-rg.view.layout.Layout.prototype.container = null;
-rg.view.layout.Layout.prototype.getContext = function(name) {
-	return null;
-}
-rg.view.layout.Layout.prototype.getPanel = function(name) {
-	return null;
-}
-rg.view.layout.Layout.prototype.suggestSize = function(name,size) {
-	var panel = this.getPanel(name);
-	if(null == panel) return;
-	this.suggestPanelSize(panel,size);
-}
-rg.view.layout.Layout.prototype.suggestPanelSize = function(panel,size) {
-	var stackitem = Types["as"](panel.frame,rg.view.frame.StackItem);
-	if(null == stackitem) return;
-	var $e = (stackitem.disposition);
-	switch( $e[1] ) {
-	case 3:
-		var a = $e[3], b = $e[2];
-		stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(b,a,size));
-		break;
-	default:
-	}
-}
-rg.view.layout.Layout.prototype.suggestPanelPadding = function(panel,before,after) {
-	if(null == panel) return;
-	var stackitem = Types["as"](panel.frame,rg.view.frame.StackItem);
-	if(null == stackitem) return;
-	var $e = (stackitem.disposition);
-	switch( $e[1] ) {
-	case 0:
-		var max = $e[5], min = $e[4], a = $e[3], b = $e[2];
-		stackitem.setDisposition(rg.view.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
-		break;
-	case 1:
-		var max = $e[6], min = $e[5], percent = $e[4], a = $e[3], b = $e[2];
-		stackitem.setDisposition(rg.view.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
-		break;
-	case 2:
-		var ratio = $e[4], a = $e[3], b = $e[2];
-		stackitem.setDisposition(rg.view.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
-		break;
-	case 3:
-		var size = $e[4], a = $e[3], b = $e[2];
-		stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
-		break;
-	default:
-	}
-}
-rg.view.layout.Layout.prototype.paddings = null;
-rg.view.layout.Layout.prototype.feedOptions = function(info) {
-	this.mainPanelName = info.main;
-	this.paddings = info.padding;
-}
-rg.view.layout.Layout.prototype.adjustPadding = function() {
-}
-rg.view.layout.Layout.prototype.__class__ = rg.view.layout.Layout;
-rg.view.layout.SimpleLayout = function(width,height,container) {
-	if( width === $_ ) return;
-	rg.view.layout.Layout.call(this,width,height,container);
-	this.titleOnTop = true;
-}
-rg.view.layout.SimpleLayout.__name__ = ["rg","view","layout","SimpleLayout"];
-rg.view.layout.SimpleLayout.__super__ = rg.view.layout.Layout;
-for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.SimpleLayout.prototype[k] = rg.view.layout.Layout.prototype[k];
-rg.view.layout.SimpleLayout.prototype.main = null;
-rg.view.layout.SimpleLayout.prototype.titleOnTop = null;
-rg.view.layout.SimpleLayout.prototype.getContext = function(name) {
-	switch(name) {
-	case "title":
-		if(null != this.title) return null;
-		return this.getTitle();
-	default:
-		return null;
-	}
-}
-rg.view.layout.SimpleLayout.prototype.getPanel = function(name) {
-	switch(name) {
-	case "main":
-		if(null == this.main) this.main = this.space.createPanelAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0));
-		return this.main;
-	case "title":
-		return this.getTitle().panel;
-	default:
-		return null;
-	}
-}
-rg.view.layout.SimpleLayout.prototype.title = null;
-rg.view.layout.SimpleLayout.prototype.getTitle = function() {
-	if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,20)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
-	return this.title;
-}
-rg.view.layout.SimpleLayout.prototype.feedOptions = function(info) {
-	rg.view.layout.Layout.prototype.feedOptions.call(this,info);
-	this.titleOnTop = info.titleOnTop;
-}
-rg.view.layout.SimpleLayout.prototype.__class__ = rg.view.layout.SimpleLayout;
-rg.view.layout.CartesianLayout = function(width,height,container) {
-	if( width === $_ ) return;
-	rg.view.layout.Layout.call(this,width,height,container);
-	this.titleOnTop = true;
-	this.left = true;
-	this.alternating = true;
-	this.yitems = [];
-}
-rg.view.layout.CartesianLayout.__name__ = ["rg","view","layout","CartesianLayout"];
-rg.view.layout.CartesianLayout.__super__ = rg.view.layout.Layout;
-for(var k in rg.view.layout.Layout.prototype ) rg.view.layout.CartesianLayout.prototype[k] = rg.view.layout.Layout.prototype[k];
-rg.view.layout.CartesianLayout.prototype.main = null;
-rg.view.layout.CartesianLayout.prototype.titleOnTop = null;
-rg.view.layout.CartesianLayout.prototype.leftcontainer = null;
-rg.view.layout.CartesianLayout.prototype.rightcontainer = null;
-rg.view.layout.CartesianLayout.prototype.bottomcontainer = null;
-rg.view.layout.CartesianLayout.prototype.bottommiddlecontainer = null;
-rg.view.layout.CartesianLayout.prototype.maincontainer = null;
-rg.view.layout.CartesianLayout.prototype.middlecontainer = null;
-rg.view.layout.CartesianLayout.prototype.bottomleft = null;
-rg.view.layout.CartesianLayout.prototype.bottomright = null;
-rg.view.layout.CartesianLayout.prototype.xtickmarks = null;
-rg.view.layout.CartesianLayout.prototype.title = null;
-rg.view.layout.CartesianLayout.prototype.left = null;
-rg.view.layout.CartesianLayout.prototype.alternating = null;
-rg.view.layout.CartesianLayout.prototype.yitems = null;
-rg.view.layout.CartesianLayout.prototype.xtitle = null;
-rg.view.layout.CartesianLayout.prototype.getContext = function(name) {
-	if(this.isY(name)) return this.getYContext(this.getYIndex(name)); else if(this.isYTitle(name)) return this.getYTitle(this.getYIndex(name));
-	switch(name) {
-	case "title":
-		if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,0)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
-		return this.title;
-	case "x":
-		return this.getXTickmarks();
-	case "xtitle":
-		return this.getXTitle();
-	default:
-		return null;
-	}
-}
-rg.view.layout.CartesianLayout.prototype.getPanel = function(name) {
-	switch(name) {
-	case "main":
-		return this.getMain();
-	case "xtickmarks":
-		return this.getBottomContainer();
-	case "left":
-		return this.getLeftContainer();
-	case "right":
-		return this.getRightContainer();
-	case "bottomleft":
-		return this.bottomleft;
-	case "bottomright":
-		return this.bottomright;
-	default:
-		var ctx = this.getContext(name);
-		if(null == ctx) return null;
-		return ctx.panel;
-	}
-}
-rg.view.layout.CartesianLayout.prototype.getYItem = function(index) {
-	if(null == this.yitems[index]) this.yitems[index] = { container : null, context : null, title : null, anchor : this.alternating && index % 2 == 0?rg.view.layout.Anchor.Right:rg.view.layout.Anchor.Left};
-	return this.yitems[index];
-}
-rg.view.layout.CartesianLayout.prototype.getYContainer = function(index) {
-	var item = this.getYItem(index);
-	if(null == item.container) {
-		if(this.alternating && index % 2 == 0) item.container = this.getLeftContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal); else item.container = this.getRightContainer().createContainer(rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-		item.container.g.classed().add("group-" + index);
-	}
-	return item.container;
-}
-rg.view.layout.CartesianLayout.prototype.getYContext = function(index) {
-	var item = this.getYItem(index);
-	if(null == item.context) {
-		var panel = (function($this) {
-			var $r;
-			switch( (item.anchor)[1] ) {
-			case 2:
-				$r = $this.getYContainer(index).createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0));
-				break;
-			case 3:
-				$r = $this.getYContainer(index).createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-				break;
-			default:
-				$r = null;
-			}
-			return $r;
-		}(this));
-		item.context = new rg.view.layout.PanelContext(panel,item.anchor);
-	}
-	return item.context;
-}
-rg.view.layout.CartesianLayout.prototype.getYTitle = function(index) {
-	var item = this.getYItem(index);
-	if(null == item.title) {
-		var panel = (function($this) {
-			var $r;
-			switch( (item.anchor)[1] ) {
-			case 2:
-				$r = $this.getYContainer(index).createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-				break;
-			case 3:
-				$r = $this.getYContainer(index).createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0));
-				break;
-			default:
-				$r = null;
-			}
-			return $r;
-		}(this));
-		item.title = new rg.view.layout.PanelContext(panel,item.anchor);
-	}
-	return item.title;
-}
-rg.view.layout.CartesianLayout.prototype.getYIndex = function(s) {
-	if(!rg.view.layout.CartesianLayout.REYINDEX.match(s)) return -1; else return Std.parseInt(rg.view.layout.CartesianLayout.REYINDEX.matched(1));
-}
-rg.view.layout.CartesianLayout.prototype.isY = function(s) {
-	return rg.view.layout.CartesianLayout.REYAXIS.match(s);
-}
-rg.view.layout.CartesianLayout.prototype.isYTitle = function(s) {
-	return rg.view.layout.CartesianLayout.REYTITLE.match(s);
-}
-rg.view.layout.CartesianLayout.prototype.suggestSize = function(name,size) {
-	if(this.isY(name) || this.isYTitle(name)) {
-		var index = this.getYIndex(name), item = this.getYItem(index);
-		if(null == item.container) return;
-		var ysize = 0.0;
-		if(null != item.context) {
-			if(this.isY(name)) this.suggestPanelSize(item.context.panel,size);
-			ysize += item.context.panel.frame.width;
-		}
-		if(null != item.title) {
-			if(this.isYTitle(name)) this.suggestPanelSize(item.title.panel,size);
-			ysize += item.title.panel.frame.width;
-		}
-		this.suggestPanelSize(item.container,Math.round(ysize));
-		this.suggestLateralSize(item.anchor);
-		return;
-	}
-	rg.view.layout.Layout.prototype.suggestSize.call(this,name,size);
-	switch(name) {
-	case "x":case "xtitle":
-		var size1 = 0, c = this.getPanel("x");
-		if(null != c) size1 += c.frame.height;
-		c = this.getPanel("xtitle");
-		if(null != c) size1 += c.frame.height;
-		rg.view.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
-		break;
-	}
-}
-rg.view.layout.CartesianLayout.prototype.suggestLateralSize = function(anchor) {
-	var size = 0;
-	var i = 0;
-	var _g = 0, _g1 = this.yitems;
-	while(_g < _g1.length) {
-		var item = _g1[_g];
-		++_g;
-		i++;
-		if(null == item.container || !Type.enumEq(item.anchor,anchor)) continue;
-		size += item.container.frame.width;
-	}
-	switch( (anchor)[1] ) {
-	case 3:
-		this.suggestSize("left",size);
-		this.suggestSize("bottomleft",size);
-		break;
-	case 2:
-		this.suggestSize("right",size);
-		this.suggestSize("bottomright",size);
-		break;
-	default:
-	}
-}
-rg.view.layout.CartesianLayout.prototype.getXTitle = function() {
-	if(null == this.xtitle) this.xtitle = new rg.view.layout.PanelContext(this.getBottomMiddleContainer().createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
-	return this.xtitle;
-}
-rg.view.layout.CartesianLayout.prototype.getMainContainer = function() {
-	if(null == this.maincontainer) this.maincontainer = this.space.createContainerAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
-	return this.maincontainer;
-}
-rg.view.layout.CartesianLayout.prototype.getMiddleContainer = function() {
-	if(null == this.middlecontainer) this.middlecontainer = this.getMainContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Horizontal);
-	return this.middlecontainer;
-}
-rg.view.layout.CartesianLayout.prototype.getLeftContainer = function() {
-	if(null == this.leftcontainer) this.leftcontainer = this.getMiddleContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-	return this.leftcontainer;
-}
-rg.view.layout.CartesianLayout.prototype.getRightContainer = function() {
-	if(null == this.rightcontainer) this.rightcontainer = this.getMiddleContainer().createContainerAt(2,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-	return this.rightcontainer;
-}
-rg.view.layout.CartesianLayout.prototype.getBottomContainer = function() {
-	if(null == this.bottomcontainer) this.bottomcontainer = this.getMainContainer().createContainerAt(1,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-	return this.bottomcontainer;
-}
-rg.view.layout.CartesianLayout.prototype.getBottomMiddleContainer = function() {
-	if(null == this.bottommiddlecontainer) {
-		var container = this.getBottomContainer();
-		this.bottomleft = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-		this.bottommiddlecontainer = container.createContainer(rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
-		this.bottommiddlecontainer.g.classed().add("axis-x");
-		this.bottomright = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-	}
-	return this.bottommiddlecontainer;
-}
-rg.view.layout.CartesianLayout.prototype.getXTickmarks = function() {
-	if(null == this.xtickmarks) {
-		var container = this.getBottomMiddleContainer();
-		this.xtickmarks = new rg.view.layout.PanelContext(container.createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
-	}
-	return this.xtickmarks;
-}
-rg.view.layout.CartesianLayout.prototype.getMain = function() {
-	if(null == this.main) this.main = this.getMiddleContainer().createPanelAt(1,rg.view.frame.FrameLayout.Fill(0,0));
-	return this.main;
-}
-rg.view.layout.CartesianLayout.prototype.feedOptions = function(info) {
-	rg.view.layout.Layout.prototype.feedOptions.call(this,info);
-	this.titleOnTop = info.titleOnTop;
-	switch( (info.layoutScaleY)[1] ) {
-	case 0:
-		this.left = true;
-		this.alternating = false;
-		break;
-	case 1:
-		this.left = false;
-		this.alternating = false;
-		break;
-	case 2:
-		this.left = true;
-		this.alternating = true;
-		break;
-	}
-}
-rg.view.layout.CartesianLayout.prototype.adjustPadding = function() {
-	var top = null == this.title && null == this.paddings.top?8:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?8:this.paddings.bottom, left = null == this.leftcontainer && null == this.paddings.left?20:this.paddings.left, right = null == this.rightcontainer && null == this.paddings.right?20:this.paddings.right;
-	if(null != left || null != right) {
-		this.suggestPanelPadding(this.getMain(),left,right);
-		this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
-	}
-	if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
-}
-rg.view.layout.CartesianLayout.prototype.__class__ = rg.view.layout.CartesianLayout;
 rg.controller.Visualizations = function() { }
 rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
 rg.controller.Visualizations.layoutDefault = null;
@@ -11299,16 +11326,6 @@ rg.data.VariableIndependentContext.__name__ = ["rg","data","VariableIndependentC
 rg.data.VariableIndependentContext.prototype.partial = null;
 rg.data.VariableIndependentContext.prototype.variable = null;
 rg.data.VariableIndependentContext.prototype.__class__ = rg.data.VariableIndependentContext;
-rg.view.layout.LayoutScaleY = { __ename__ : ["rg","view","layout","LayoutScaleY"], __constructs__ : ["ScalesOnLeft","ScalesOnRight","ScalesAlternating"] }
-rg.view.layout.LayoutScaleY.ScalesOnLeft = ["ScalesOnLeft",0];
-rg.view.layout.LayoutScaleY.ScalesOnLeft.toString = $estr;
-rg.view.layout.LayoutScaleY.ScalesOnLeft.__enum__ = rg.view.layout.LayoutScaleY;
-rg.view.layout.LayoutScaleY.ScalesOnRight = ["ScalesOnRight",1];
-rg.view.layout.LayoutScaleY.ScalesOnRight.toString = $estr;
-rg.view.layout.LayoutScaleY.ScalesOnRight.__enum__ = rg.view.layout.LayoutScaleY;
-rg.view.layout.LayoutScaleY.ScalesAlternating = ["ScalesAlternating",2];
-rg.view.layout.LayoutScaleY.ScalesAlternating.toString = $estr;
-rg.view.layout.LayoutScaleY.ScalesAlternating.__enum__ = rg.view.layout.LayoutScaleY;
 rg.controller.factory.FactoryAxis = function(p) {
 }
 rg.controller.factory.FactoryAxis.__name__ = ["rg","controller","factory","FactoryAxis"];
@@ -11411,6 +11428,16 @@ rg.data.source.rgquery.QueryParser.prototype.addWhereCondition = function(name,o
 	}
 }
 rg.data.source.rgquery.QueryParser.prototype.__class__ = rg.data.source.rgquery.QueryParser;
+rg.view.layout.ScalePattern = { __ename__ : ["rg","view","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
+rg.view.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
+rg.view.layout.ScalePattern.ScalesBefore.toString = $estr;
+rg.view.layout.ScalePattern.ScalesBefore.__enum__ = rg.view.layout.ScalePattern;
+rg.view.layout.ScalePattern.ScalesAfter = ["ScalesAfter",1];
+rg.view.layout.ScalePattern.ScalesAfter.toString = $estr;
+rg.view.layout.ScalePattern.ScalesAfter.__enum__ = rg.view.layout.ScalePattern;
+rg.view.layout.ScalePattern.ScalesAlternating = ["ScalesAlternating",2];
+rg.view.layout.ScalePattern.ScalesAlternating.toString = $estr;
+rg.view.layout.ScalePattern.ScalesAlternating.__enum__ = rg.view.layout.ScalePattern;
 thx.js.AccessText = function(selection) {
 	if( selection === $_ ) return;
 	thx.js.Access.call(this,selection);
@@ -15243,8 +15270,8 @@ thx.languages.En.getLanguage();
 	rg.controller.Visualizations.layoutDefault.set("barchart","cartesian");
 	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
 	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
-	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.SimpleLayout);
-	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.CartesianLayout);
+	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
+	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
 }
 {
 	String.prototype.__class__ = String;
@@ -15312,6 +15339,13 @@ thx.xml.Namespace.prefix = (function() {
 })();
 rg.view.svg.widget.ChartLine.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
 Ints._reparse = new EReg("^([+-])?\\d+$","");
+rg.view.layout.LayoutCartesian.ALT_RIGHT = 20;
+rg.view.layout.LayoutCartesian.ALT_LEFT = 20;
+rg.view.layout.LayoutCartesian.ALT_TOP = 8;
+rg.view.layout.LayoutCartesian.ALT_BOTTOM = 8;
+rg.view.layout.LayoutCartesian.REYAXIS = new EReg("^y(\\d+)$","");
+rg.view.layout.LayoutCartesian.REYINDEX = new EReg("^y(\\d+)","");
+rg.view.layout.LayoutCartesian.REYTITLE = new EReg("^y(\\d+)title$","");
 thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
@@ -15359,13 +15393,6 @@ thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
 rg.controller.App.lastid = 0;
 thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
-rg.view.layout.CartesianLayout.ALT_RIGHT = 20;
-rg.view.layout.CartesianLayout.ALT_LEFT = 20;
-rg.view.layout.CartesianLayout.ALT_TOP = 8;
-rg.view.layout.CartesianLayout.ALT_BOTTOM = 8;
-rg.view.layout.CartesianLayout.REYAXIS = new EReg("^y(\\d+)$","");
-rg.view.layout.CartesianLayout.REYINDEX = new EReg("^y(\\d+)","");
-rg.view.layout.CartesianLayout.REYTITLE = new EReg("^y(\\d+)title$","");
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
 rg.controller.Visualizations.svg = ["linechart","piechart","barchart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
