@@ -38,9 +38,16 @@ class Baloon
 	var connectorShapeV : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
 	var connectorShapeH : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
 	public var boundingBox(getBoundingBox, setBoundingBox) : { x : Float, y : Float, width : Float, height : Float }; 
-	public function new(container : Selection) 
+	public function new(container : Selection, bindOnTop = true) 
 	{
-		this.container = container;
+		if (bindOnTop)
+		{
+			var parent = container.node();
+			while (null != parent && parent.nodeName != "svg")
+				parent = parent.parentNode;
+			this.container = null == parent ? container : thx.js.Dom.selectNode(parent);
+		} else
+			this.container = container;
 		visible = true;
 		duration = 500;
 		minwidth = 30;
@@ -51,7 +58,7 @@ class Baloon
 		paddingVertical = 1.5;
 		transition_id = 0;
 
-		this.baloon = container
+		this.baloon = this.container
 			.append("svg:g")
 			.attr("pointer-events").string("none")
 			.attr("class").string("baloon")

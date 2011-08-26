@@ -23,8 +23,8 @@ class TestDataProcessor
 		var datacontexts = [new DataContext("count", processor)];
 		var request = new DataRequest(cache, datacontexts);
 
-		processor.independentVariables = [new VariableIndependentContext(new VariableIndependent("event", new AxisOrdinal()), true)];
-		processor.dependentVariables = [new VariableDependentContext(new VariableDependent("count"), true)];
+		processor.independentVariables = [new VariableIndependentContext(new VariableIndependent("event", new AxisOrdinal(), null), true)];
+		processor.dependentVariables = [new VariableDependentContext(new VariableDependent("count", null, null), true)];
 
 		processor.onData.add(function(d) {
 			Assert.same([{
@@ -45,10 +45,10 @@ class TestDataProcessor
 			processor = new DataProcessor(sources),
 			vi : VariableIndependent<Dynamic>, vd : VariableDependent<Dynamic>;
 		processor.independentVariables = [
-			new VariableIndependentContext(vi = new VariableIndependent("gender", new AxisOrdinal()), true)
+			new VariableIndependentContext(vi = new VariableIndependent("gender", new AxisOrdinal(), null), true)
 		];
 		processor.dependentVariables = [
-			new VariableDependentContext(vd = new VariableDependent("count", new AxisNumeric()), true)
+			new VariableDependentContext(vd = new VariableDependent("count", new AxisNumeric(), null), true)
 		];
 		processor.onData.add(function(d) {
 			Assert.equals("male", vi.min);
@@ -70,8 +70,8 @@ class TestDataProcessor
 		var datacontexts = [new DataContext("count", processor)];
 		var request = new DataRequest(cache, datacontexts);
 
-		processor.independentVariables = [new VariableIndependentContext(new VariableIndependent("event", new AxisOrdinal()), true)];
-		processor.dependentVariables = [new VariableDependentContext(new VariableDependent("count"), true)];
+		processor.independentVariables = [new VariableIndependentContext(new VariableIndependent("event", new AxisOrdinal(), null), true)];
+		processor.dependentVariables = [new VariableDependentContext(new VariableDependent("count", null, null), true)];
 
 		processor.onData.add(function(d) {
 			Assert.same([{
@@ -118,11 +118,11 @@ class TestDataProcessor
 			dv : Array<VariableDependentContext<Dynamic>> = [],
 			periodicity = "hour";
 			
-		iv.push(new VariableIndependentContext(VariableIndependent.forTime(".#time:hour", periodicity, start, end), false));
-		iv.push(new VariableIndependentContext(VariableIndependent.forOrdinal(".ageRange"), true));
-		iv.push(new VariableIndependentContext(VariableIndependent.forOrdinal(".gender", ["male", "female"]), false));
+		iv.push(new VariableIndependentContext(VariableIndependent.forTime(".#time:hour", periodicity, null, start, end), false));
+		iv.push(new VariableIndependentContext(VariableIndependent.forOrdinal(".ageRange", null), true));
+		iv.push(new VariableIndependentContext(VariableIndependent.forOrdinal(".gender", null, ["male", "female"]), false));
 		
-		dv.push(new VariableDependentContext(new VariableDependent("count", new AxisNumeric(), 0, 10), false));
+		dv.push(new VariableDependentContext(new VariableDependent("count", new AxisNumeric(), null, 0, 10), false));
 
 		var sources = new Sources(src),
 			processor = new DataProcessor(sources);

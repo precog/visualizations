@@ -21,8 +21,8 @@ class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Da
 		chart.symbol = infoLine.symbol;
 		chart.symbolStyle = infoLine.symbolStyle;
 		
-		chart.lineInterpolator = infoLine.line.interpolation;
-		chart.lineEffect = infoLine.line.effect;
+		chart.lineInterpolator = infoLine.interpolation;
+		chart.lineEffect = infoLine.effect;
 		
 		
 		if(null == independentVariables[0].scaleDistribution)

@@ -17,9 +17,9 @@ class Container extends Panel
 	var panels : Array<Panel>;
 	public function new(frame : StackItem, orientation : Orientation)
 	{
+		super(frame);
 		stack = new Stack(frame.width, frame.height, orientation);
 		panels = [];
-		super(frame);
 	}
 	
 	public function insertPanel(pos : Int, panel : Panel)

@@ -18,7 +18,7 @@ class TestInfoLayout
 	
 	public function testType()
 	{
-		var info = new InfoLayout().feed( { visualization : "ChartLine" } );
+		var info = new InfoLayout().feed( { visualization : "lineChart" } );
 		Assert.equals("linechart", info.type);
 	}
 	
@@ -26,9 +26,6 @@ class TestInfoLayout
 	{
 		var info = new InfoLayout().feed( { layout : "simple" } );
 		Assert.equals("simple", info.layout);
-		
-		info = new InfoLayout().feed( { layout : "simpleReverse" } );
-		Assert.equals("simplereverse", info.layout);
 	}
 	
 	public function new() { }

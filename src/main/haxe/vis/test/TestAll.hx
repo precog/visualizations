@@ -25,6 +25,7 @@ class TestAll
 		runner.addCase(new rg.data.source.rgquery.transform.TestCountTransform());
 		runner.addCase(new rg.util.TestProperties());
 		runner.addCase(new rg.view.frame.TestStack());
+		runner.addCase(new rg.view.svg.panel.TestPanel());
 		runner.addCase(new rg.view.svg.panel.TestSpace());
 		runner.addCase(new rg.data.TestAxisGroupByTime());
 	}

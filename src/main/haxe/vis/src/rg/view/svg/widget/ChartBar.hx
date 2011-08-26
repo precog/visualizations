@@ -16,6 +16,7 @@ import rg.data.IAxisDiscrete;
 import thx.js.Dom;
 import thx.color.Hsl;
 import thx.color.Colors;
+import rg.data.Stats;
 using Arrays;
 
 class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
@@ -66,6 +67,7 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 			return gr;
 		}
 		
+		var flatdata = dps.flatten().flatten();
 		// dependent values
 		for (i in 0...dps.length)
 		{
@@ -83,7 +85,10 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 					ymin = variableDependents[j].min,
 					ymax = variableDependents[j].max,
 					w = Math.max(1, (waxis - (segpadding * (axisdps.length - 1))) / axisdps.length),
-					offset = - span / 2 + j * (waxis + ypadding)
+					offset = - span / 2 + j * (waxis + ypadding),
+					ystats = DataPoints.stats(flatdata, variableDependents[j].type),
+					over = callback(onmouseover, ystats),
+					click = callback(onclick, ystats)
 				;
 				
 				var prev = 0.0;
@@ -101,13 +106,42 @@ class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 						.attr("width").float(stacked ? waxis : w)
 						.attr("y").float(height - h - y)
 						.attr("height").float(h)
+						.onNode("mouseover", over)
 					;
+					Access.setData(bar.node(), dp);
 					if(displayGradient)
 						bar.eachNode(applyGradient);
 					if(stacked)
 						prev = y + h;
 				}
 			}
+		}
+	}
+	
+	function onclick(ystats : Stats, dp : DataPoint, i : Int)
+	{
+		click(dp, ystats);
+	}
+	
+	function onmouseover(ystats : Stats, n : js.Dom.HtmlDom, i : Int)
+	{
+		var dp = Access.getData(n),
+			text = labelDataPointOver(dp, ystats);
+		if (null == text)
+			tooltip.hide();
+		else
+		{
+			var sel = thx.js.Dom.selectNode(n),
+				x = sel.attr("x").getFloat(),
+				y = sel.attr("y").getFloat(),
+				w = sel.attr("width").getFloat();
+
+//			for (j in 0...segments.length)
+//				tooltip.removeClass("item-" + j);
+//			tooltip.addClass("item-" + seg);
+			tooltip.show();
+			tooltip.text = text.split("\n");
+			tooltip.moveTo(panelx + x + w / 2, panely + y);
 		}
 	}
 	

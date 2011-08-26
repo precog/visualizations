@@ -274,11 +274,11 @@ thx.collections.HashList.prototype.__class__ = thx.collections.HashList;
 rg.data.IAxis = function() { }
 rg.data.IAxis.__name__ = ["rg","data","IAxis"];
 rg.data.IAxis.prototype.scale = null;
-rg.data.IAxis.prototype.toTickmark = null;
 rg.data.IAxis.prototype.ticks = null;
 rg.data.IAxis.prototype.__class__ = rg.data.IAxis;
 rg.data.IAxisDiscrete = function() { }
 rg.data.IAxisDiscrete.__name__ = ["rg","data","IAxisDiscrete"];
+rg.data.IAxisDiscrete.prototype.scaleDistribution = null;
 rg.data.IAxisDiscrete.prototype.range = null;
 rg.data.IAxisDiscrete.prototype.__class__ = rg.data.IAxisDiscrete;
 rg.data.IAxisDiscrete.__interfaces__ = [rg.data.IAxis];
@@ -1065,95 +1065,6 @@ thx.color.NamedColors.yellow = null;
 thx.color.NamedColors.yellowgreen = null;
 thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype.__class__ = thx.color.NamedColors;
-rg.data.AxisNumeric = function(p) {
-	$s.push("rg.data.AxisNumeric::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
-rg.data.AxisNumeric._ticks = function(start,end,m) {
-	$s.push("rg.data.AxisNumeric::_ticks");
-	var $spos = $s.length;
-	var span = end - start, step = Math.pow(m,Math.floor(Math.log(span / m) / Math.log(m))), err = m / (span / step);
-	var $tmp = Floats.range(start,end,step);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
-	$s.push("rg.data.AxisNumeric::scale");
-	var $spos = $s.length;
-	var $tmp = (Floats.uninterpolatef(start,end))(v);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.toTickmark = function(start,end,value) {
-	$s.push("rg.data.AxisNumeric::toTickmark");
-	var $spos = $s.length;
-	var $tmp = new rg.data.Tickmark(value,true,(value - start) / (end - start));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
-	$s.push("rg.data.AxisNumeric::ticks");
-	var $spos = $s.length;
-	var minors = rg.data.AxisNumeric._ticks(start,end,10), majors = rg.data.AxisNumeric._ticks(start,end,5);
-	var $tmp = rg.data.Tickmarks.bound(minors.map(function(d,i) {
-		$s.push("rg.data.AxisNumeric::ticks@28");
-		var $spos = $s.length;
-		var $tmp = new rg.data.Tickmark(d,majors.remove(d),(d - start) / (end - start));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}),maxTicks);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.__class__ = rg.data.AxisNumeric;
-rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
-if(!rg.controller.info) rg.controller.info = {}
-rg.controller.info.InfoSegment = function(p) {
-	$s.push("rg.controller.info.InfoSegment::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.info.InfoSegment.__name__ = ["rg","controller","info","InfoSegment"];
-rg.controller.info.InfoSegment.filters = function() {
-	$s.push("rg.controller.info.InfoSegment::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "on", validator : function(v) {
-		$s.push("rg.controller.info.InfoSegment::filters@20");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "transform", validator : function(v) {
-		$s.push("rg.controller.info.InfoSegment::filters@24");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "scale", validator : function(v) {
-		$s.push("rg.controller.info.InfoSegment::filters@28");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoSegment.prototype.on = null;
-rg.controller.info.InfoSegment.prototype.transform = null;
-rg.controller.info.InfoSegment.prototype.scale = null;
-rg.controller.info.InfoSegment.prototype.__class__ = rg.controller.info.InfoSegment;
 IntHash = function(p) {
 	if( p === $_ ) return;
 	$s.push("IntHash::new");
@@ -1254,6 +1165,323 @@ IntHash.prototype.toString = function() {
 	$s.pop();
 }
 IntHash.prototype.__class__ = IntHash;
+rg.data.AxisNumeric = function(p) {
+	$s.push("rg.data.AxisNumeric::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
+rg.data.AxisNumeric._ticks = function(start,end,m) {
+	$s.push("rg.data.AxisNumeric::_ticks");
+	var $spos = $s.length;
+	var span = end - start, step = Math.pow(m,Math.floor(Math.log(span / m) / Math.log(m))), err = m / (span / step);
+	if(err <= .05) step *= 10; else if(err <= .2) step *= 5; else if(err <= .4) step *= 4; else if(err <= .6) step *= 2;
+	var $tmp = Floats.range(start,end,step);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
+	$s.push("rg.data.AxisNumeric::scale");
+	var $spos = $s.length;
+	var $tmp = (Floats.uninterpolatef(start,end))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
+	$s.push("rg.data.AxisNumeric::ticks");
+	var $spos = $s.length;
+	var minors = rg.data.AxisNumeric._ticks(start,end,10), majors = rg.data.AxisNumeric._ticks(start,end,5);
+	var $tmp = rg.data.Tickmarks.bound(minors.map(function(d,i) {
+		$s.push("rg.data.AxisNumeric::ticks@23");
+		var $spos = $s.length;
+		var $tmp = new rg.data.Tickmark(d,majors.remove(d),(d - start) / (end - start));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}),maxTicks);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.__class__ = rg.data.AxisNumeric;
+rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
+if(!rg.controller.info) rg.controller.info = {}
+rg.controller.info.InfoSegment = function(p) {
+	$s.push("rg.controller.info.InfoSegment::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoSegment.__name__ = ["rg","controller","info","InfoSegment"];
+rg.controller.info.InfoSegment.filters = function() {
+	$s.push("rg.controller.info.InfoSegment::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "on", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@20");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "transform", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@24");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "scale", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@28");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoSegment.prototype.on = null;
+rg.controller.info.InfoSegment.prototype.transform = null;
+rg.controller.info.InfoSegment.prototype.scale = null;
+rg.controller.info.InfoSegment.prototype.__class__ = rg.controller.info.InfoSegment;
+rg.controller.visualization.VisualizationCartesian = function(layout) {
+	if( layout === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationCartesian::new");
+	var $spos = $s.length;
+	rg.controller.visualization.VisualizationSvg.call(this,layout);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.__name__ = ["rg","controller","visualization","VisualizationCartesian"];
+rg.controller.visualization.VisualizationCartesian.__super__ = rg.controller.visualization.VisualizationSvg;
+for(var k in rg.controller.visualization.VisualizationSvg.prototype ) rg.controller.visualization.VisualizationCartesian.prototype[k] = rg.controller.visualization.VisualizationSvg.prototype[k];
+rg.controller.visualization.VisualizationCartesian.prototype.info = null;
+rg.controller.visualization.VisualizationCartesian.prototype.chart = null;
+rg.controller.visualization.VisualizationCartesian.prototype.xlabel = null;
+rg.controller.visualization.VisualizationCartesian.prototype.ylabels = null;
+rg.controller.visualization.VisualizationCartesian.prototype.title = null;
+rg.controller.visualization.VisualizationCartesian.prototype.init = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::init");
+	var $spos = $s.length;
+	this.initYAxes();
+	this.initXAxis();
+	this.initTitle();
+	this.initPadding();
+	this.initChart();
+	this.initCartesianChart();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.initPadding = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::initPadding");
+	var $spos = $s.length;
+	this.layout.adjustPadding();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.initYAxes = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::initYAxes");
+	var $spos = $s.length;
+	this.ylabels = [];
+	var _g1 = 0, _g = this.dependentVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var tickmarks = this.createTickmarks(this.dependentVariables[i].type,"y" + i);
+		if(null == tickmarks) continue;
+		this.ylabels.push({ id : i, tickmarks : tickmarks});
+	}
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.initXAxis = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::initXAxis");
+	var $spos = $s.length;
+	this.xlabel = this.createTickmarks(this.independentVariables[0].type,"x");
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.initChart = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::initChart");
+	var $spos = $s.length;
+	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 60, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.initCartesianChart = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::initCartesianChart");
+	var $spos = $s.length;
+	this.chart.animated = this.info.animation.animated;
+	this.chart.animationDuration = this.info.animation.duration;
+	this.chart.animationEase = this.info.animation.ease;
+	this.chart.click = this.info.click;
+	this.chart.labelDataPoint = this.info.label.datapoint;
+	this.chart.labelDataPointOver = this.info.label.datapointover;
+	this.chart.init();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.initTitle = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::initTitle");
+	var $spos = $s.length;
+	if(null == this.info.label.title) {
+		$s.pop();
+		return;
+	}
+	var panelContextTitle = this.layout.getContext("title");
+	if(null == panelContextTitle) {
+		$s.pop();
+		return;
+	}
+	this.title = new rg.view.svg.widget.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.feedData = function(data) {
+	$s.push("rg.controller.visualization.VisualizationCartesian::feedData");
+	var $spos = $s.length;
+	if(0 == data.length) {
+		$s.pop();
+		return;
+	}
+	if(null != this.title && null != this.info.label.title) {
+		this.title.setText(this.info.label.title(this.getVariables(),data));
+		this.layout.suggestSize("title",this.title.idealHeight());
+	}
+	var _g1 = 0, _g = this.ylabels.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var item = this.ylabels[i], variable = this.dependentVariables[item.id];
+		item.tickmarks.update(variable.axis,variable.min,variable.max);
+		var size = Math.round(item.tickmarks.desiredSize);
+		this.layout.suggestSize("y" + item.id,size);
+	}
+	if(null != this.xlabel) {
+		var variable = this.independentVariables[0];
+		this.xlabel.update(variable.axis,variable.min,variable.max);
+		var size = Math.round(this.xlabel.desiredSize);
+		this.layout.suggestSize("x",size);
+	}
+	this.chart.setVariables(this.independentVariables,this.dependentVariables);
+	this.chart.data(this.transformData(data));
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.transformData = function(dps) {
+	$s.push("rg.controller.visualization.VisualizationCartesian::transformData");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 119, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.destroy = function() {
+	$s.push("rg.controller.visualization.VisualizationCartesian::destroy");
+	var $spos = $s.length;
+	this.chart.destroy();
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = function(type,pname) {
+	$s.push("rg.controller.visualization.VisualizationCartesian::createTickmarks");
+	var $spos = $s.length;
+	var me = this;
+	var displayMinor = this.info.displayMinor(type), displayMajor = this.info.displayMajor(type), displayLabel = this.info.displayLabel(type), title = null != this.info.label.axis?this.info.label.axis(type):null, tickmarks = null, context;
+	if(displayMinor || displayMajor || displayLabel) {
+		context = this.layout.getContext(pname);
+		if(null == context) {
+			$s.pop();
+			return null;
+		}
+		tickmarks = new rg.view.svg.widget.TickmarksOrtho(context.panel,context.anchor);
+		if(!displayLabel) tickmarks.displayLabel = false; else if(null != this.info.label.tickmark) tickmarks.tickLabel = function(d) {
+			$s.push("rg.controller.visualization.VisualizationCartesian::createTickmarks@146");
+			var $spos = $s.length;
+			var $tmp = me.info.label.tickmark(d,type);
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		tickmarks.displayMinor = displayMinor;
+		tickmarks.displayMajor = displayMajor;
+		tickmarks.lengthMinor = this.info.lengthTickMinor;
+		tickmarks.lengthMajor = this.info.lengthTickMajor;
+		tickmarks.paddingMinor = this.info.paddingTickMinor;
+		tickmarks.paddingMajor = this.info.paddingTickMajor;
+		tickmarks.paddingLabel = this.info.paddingLabel;
+	}
+	if(null != title && null != (context = this.layout.getContext(pname + "title"))) {
+		var t = new rg.view.svg.widget.Title(context.panel,title,context.anchor,null,"axis-title");
+		var h = t.idealHeight();
+		this.layout.suggestSize(pname + "title",h);
+	}
+	$s.pop();
+	return tickmarks;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationCartesian.prototype.__class__ = rg.controller.visualization.VisualizationCartesian;
+rg.controller.visualization.VisualizationBarChart = function(layout) {
+	if( layout === $_ ) return;
+	$s.push("rg.controller.visualization.VisualizationBarChart::new");
+	var $spos = $s.length;
+	rg.controller.visualization.VisualizationCartesian.call(this,layout);
+	$s.pop();
+}
+rg.controller.visualization.VisualizationBarChart.__name__ = ["rg","controller","visualization","VisualizationBarChart"];
+rg.controller.visualization.VisualizationBarChart.__super__ = rg.controller.visualization.VisualizationCartesian;
+for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationBarChart.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
+rg.controller.visualization.VisualizationBarChart.prototype.infoBar = null;
+rg.controller.visualization.VisualizationBarChart.prototype.initChart = function() {
+	$s.push("rg.controller.visualization.VisualizationBarChart::initChart");
+	var $spos = $s.length;
+	var chart = new rg.view.svg.widget.ChartBar(this.layout.getPanel(this.layout.mainPanelName));
+	chart.stacked = this.infoBar.stacked;
+	var $e = (this.infoBar.effect);
+	switch( $e[1] ) {
+	case 0:
+		chart.displayGradient = false;
+		break;
+	case 1:
+		var lightness = $e[2];
+		chart.displayGradient = true;
+		chart.gradientLightness = lightness;
+		break;
+	}
+	this.chart = chart;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationBarChart.prototype.transformData = function(dps) {
+	$s.push("rg.controller.visualization.VisualizationBarChart::transformData");
+	var $spos = $s.length;
+	var results = [], values = this.independentVariables[0].range(), itype = this.independentVariables[0].type;
+	var _g = 0;
+	while(_g < values.length) {
+		var value = [values[_g]];
+		++_g;
+		var axisresults = [];
+		var _g2 = 0, _g1 = this.dependentVariables.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var dps1 = rg.util.DataPoints.filterByDependents(dps,[this.dependentVariables[i]]);
+			axisresults.push(Arrays.filter(dps1,(function(value) {
+				$s.push("rg.controller.visualization.VisualizationBarChart::transformData@46");
+				var $spos = $s.length;
+				var $tmp = function(d) {
+					$s.push("rg.controller.visualization.VisualizationBarChart::transformData@46@46");
+					var $spos = $s.length;
+					var $tmp = Reflect.field(d,itype) == value[0];
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(value)));
+		}
+		results.push(axisresults);
+	}
+	$s.pop();
+	return results;
+	$s.pop();
+}
+rg.controller.visualization.VisualizationBarChart.prototype.__class__ = rg.controller.visualization.VisualizationBarChart;
 if(!rg.util) rg.util = {}
 rg.util.TestProperties = function(p) {
 	$s.push("rg.util.TestProperties::new");
@@ -1322,6 +1550,28 @@ rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.testT
 	$s.pop();
 }
 rg.data.source.rgquery.transform.TestCountTimeIntersectTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeIntersectTransform;
+rg.data.source.rgquery.transform.TestCountTransform = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TestCountTransform::new");
+	var $spos = $s.length;
+	rg.data.source.rgquery.transform.TestBase.call(this);
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTransform.__name__ = ["rg","data","source","rgquery","transform","TestCountTransform"];
+rg.data.source.rgquery.transform.TestCountTransform.__super__ = rg.data.source.rgquery.transform.TestBase;
+for(var k in rg.data.source.rgquery.transform.TestBase.prototype ) rg.data.source.rgquery.transform.TestCountTransform.prototype[k] = rg.data.source.rgquery.transform.TestBase.prototype[k];
+rg.data.source.rgquery.transform.TestCountTransform.prototype.testTransform = function() {
+	$s.push("rg.data.source.rgquery.transform.TestCountTransform::testTransform");
+	var $spos = $s.length;
+	var transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","count");
+	var data = 39;
+	this.assertDataPoints([{ event : "impression", count : 39.0}],transform.transform(data),{ fileName : "TestCountTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","otherunit");
+	data = 7;
+	this.assertDataPoints([{ event : "impression", otherunit : 7.0}],transform.transform(7),{ fileName : "TestCountTransform.hx", lineNumber : 27, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTransform;
 rg.controller.info.TestInfoVisualizationOption = function(p) {
 	$s.push("rg.controller.info.TestInfoVisualizationOption::new");
 	var $spos = $s.length;
@@ -1346,28 +1596,6 @@ rg.controller.info.TestInfoVisualizationOption.prototype.testFeedOptions = funct
 	$s.pop();
 }
 rg.controller.info.TestInfoVisualizationOption.prototype.__class__ = rg.controller.info.TestInfoVisualizationOption;
-rg.data.source.rgquery.transform.TestCountTransform = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.data.source.rgquery.transform.TestCountTransform::new");
-	var $spos = $s.length;
-	rg.data.source.rgquery.transform.TestBase.call(this);
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TestCountTransform.__name__ = ["rg","data","source","rgquery","transform","TestCountTransform"];
-rg.data.source.rgquery.transform.TestCountTransform.__super__ = rg.data.source.rgquery.transform.TestBase;
-for(var k in rg.data.source.rgquery.transform.TestBase.prototype ) rg.data.source.rgquery.transform.TestCountTransform.prototype[k] = rg.data.source.rgquery.transform.TestBase.prototype[k];
-rg.data.source.rgquery.transform.TestCountTransform.prototype.testTransform = function() {
-	$s.push("rg.data.source.rgquery.transform.TestCountTransform::testTransform");
-	var $spos = $s.length;
-	var transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","count");
-	var data = 39;
-	this.assertDataPoints([{ event : "impression", count : 39.0}],transform.transform(data),{ fileName : "TestCountTransform.hx", lineNumber : 17, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
-	transform = new rg.data.source.rgquery.transform.TransformCount({ },"impression","otherunit");
-	data = 7;
-	this.assertDataPoints([{ event : "impression", otherunit : 7.0}],transform.transform(7),{ fileName : "TestCountTransform.hx", lineNumber : 27, className : "rg.data.source.rgquery.transform.TestCountTransform", methodName : "testTransform"});
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TestCountTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTransform;
 if(!thx.culture) thx.culture = {}
 thx.culture.Info = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
@@ -1508,6 +1736,7 @@ rg.view.svg.panel.Panel.prototype.setParent = function(container) {
 	$s.push("rg.view.svg.panel.Panel::setParent");
 	var $spos = $s.length;
 	if(null != this.g) this.g.remove();
+	this.parent = container;
 	if(null == container) {
 		$s.pop();
 		return;
@@ -1540,9 +1769,9 @@ rg.view.svg.panel.Container = function(frame,orientation) {
 	if( frame === $_ ) return;
 	$s.push("rg.view.svg.panel.Container::new");
 	var $spos = $s.length;
+	rg.view.svg.panel.Panel.call(this,frame);
 	this.stack = new rg.view.frame.Stack(frame.width,frame.height,orientation);
 	this.panels = [];
-	rg.view.svg.panel.Panel.call(this,frame);
 	$s.pop();
 }
 rg.view.svg.panel.Container.__name__ = ["rg","view","svg","panel","Container"];
@@ -1749,21 +1978,21 @@ rg.controller.info.InfoVariable.filters = function() {
 	$s.push("rg.controller.info.InfoVariable::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "type", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@30");
+		$s.push("rg.controller.info.InfoVariable::filters@32");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "view", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@34");
+		$s.push("rg.controller.info.InfoVariable::filters@36");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && rg.controller.info.InfoVariable.testViewValue(v[0]) && rg.controller.info.InfoVariable.testViewValue(v[1]);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@35");
+		$s.push("rg.controller.info.InfoVariable::filters@37");
 		var $spos = $s.length;
 		var result = [];
 		if(null != v[0]) result.push({ field : "min", value : v[0]});
@@ -1772,10 +2001,10 @@ rg.controller.info.InfoVariable.filters = function() {
 		return result;
 		$s.pop();
 	}},{ field : "values", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@45");
+		$s.push("rg.controller.info.InfoVariable::filters@47");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoVariable::filters@45@45");
+			$s.push("rg.controller.info.InfoVariable::filters@47@47");
 			var $spos = $s.length;
 			var $tmp = Types.isPrimitive(v1);
 			$s.pop();
@@ -1786,30 +2015,44 @@ rg.controller.info.InfoVariable.filters = function() {
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "groupby", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@49");
+		$s.push("rg.controller.info.InfoVariable::filters@51");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && rg.util.Periodicity.isValidGroupBy(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@50");
+		$s.push("rg.controller.info.InfoVariable::filters@52");
 		var $spos = $s.length;
 		var $tmp = [{ field : "groupBy", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "variable", validator : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@58");
+		$s.push("rg.controller.info.InfoVariable::filters@60");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && Arrays.exists(["independent","dependent"],v.toLowerCase());
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoVariable::filters@59");
+		$s.push("rg.controller.info.InfoVariable::filters@61");
 		var $spos = $s.length;
 		var $tmp = [{ field : "variableType", value : Type.createEnum(rg.controller.info.VariableType,Strings.ucfirst(("" + v).toLowerCase()),[])}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "scalemode", validator : function(v) {
+		$s.push("rg.controller.info.InfoVariable::filters@70");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoVariable::filters@71");
+		var $spos = $s.length;
+		var $tmp = [{ field : "scaleDistribution", value : Type.createEnum(rg.data.ScaleDistribution,"Scale" + Strings.ucfirst(("" + v).toLowerCase()),[])}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -1832,6 +2075,7 @@ rg.controller.info.InfoVariable.prototype.max = null;
 rg.controller.info.InfoVariable.prototype.values = null;
 rg.controller.info.InfoVariable.prototype.groupBy = null;
 rg.controller.info.InfoVariable.prototype.variableType = null;
+rg.controller.info.InfoVariable.prototype.scaleDistribution = null;
 rg.controller.info.InfoVariable.prototype.__class__ = rg.controller.info.InfoVariable;
 rg.controller.info.VariableType = { __ename__ : ["rg","controller","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
 rg.controller.info.VariableType.Unknown = ["Unknown",0];
@@ -3025,6 +3269,25 @@ rg.controller.factory.TestFactoryDataSource.prototype.setup = function() {
 	$s.pop();
 }
 rg.controller.factory.TestFactoryDataSource.prototype.__class__ = rg.controller.factory.TestFactoryDataSource;
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TestCountTimeSeriesTransform::new");
+	var $spos = $s.length;
+	rg.data.source.rgquery.transform.TestBase.call(this);
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.__name__ = ["rg","data","source","rgquery","transform","TestCountTimeSeriesTransform"];
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.__super__ = rg.data.source.rgquery.transform.TestBase;
+for(var k in rg.data.source.rgquery.transform.TestBase.prototype ) rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype[k] = rg.data.source.rgquery.transform.TestBase.prototype[k];
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.testTransform = function() {
+	$s.push("rg.data.source.rgquery.transform.TestCountTimeSeriesTransform::testTransform");
+	var $spos = $s.length;
+	var transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ },"impression","day","count");
+	var data = { type : "timeseries", periodicity : "day", data : [[1310342400000,0],[1310428800000,1],[1310515200000,2]]};
+	this.assertDataPoints([Objects.addFields({ event : "impression", count : 0},[".#time:day"],[1310342400000]),Objects.addFields({ event : "impression", count : 1},[".#time:day"],[1310428800000]),Objects.addFields({ event : "impression", count : 2},[".#time:day"],[1310515200000])],transform.transform(data),{ fileName : "TestCountTimeSeriesTransform.hx", lineNumber : 18, className : "rg.data.source.rgquery.transform.TestCountTimeSeriesTransform", methodName : "testTransform"});
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeSeriesTransform;
 if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.LayoutScaleY = { __ename__ : ["rg","view","layout","LayoutScaleY"], __constructs__ : ["ScalesOnLeft","ScalesOnRight","ScalesAlternating"] }
 rg.view.layout.LayoutScaleY.ScalesOnLeft = ["ScalesOnLeft",0];
@@ -3177,25 +3440,6 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 	$s.pop();
 }
 thx.culture.FormatNumber.prototype.__class__ = thx.culture.FormatNumber;
-rg.data.source.rgquery.transform.TestCountTimeSeriesTransform = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.data.source.rgquery.transform.TestCountTimeSeriesTransform::new");
-	var $spos = $s.length;
-	rg.data.source.rgquery.transform.TestBase.call(this);
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.__name__ = ["rg","data","source","rgquery","transform","TestCountTimeSeriesTransform"];
-rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.__super__ = rg.data.source.rgquery.transform.TestBase;
-for(var k in rg.data.source.rgquery.transform.TestBase.prototype ) rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype[k] = rg.data.source.rgquery.transform.TestBase.prototype[k];
-rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.testTransform = function() {
-	$s.push("rg.data.source.rgquery.transform.TestCountTimeSeriesTransform::testTransform");
-	var $spos = $s.length;
-	var transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ },"impression","day","count");
-	var data = { type : "timeseries", periodicity : "day", data : [[1310342400000,0],[1310428800000,1],[1310515200000,2]]};
-	this.assertDataPoints([Objects.addFields({ event : "impression", count : 0},[".#time:day"],[1310342400000]),Objects.addFields({ event : "impression", count : 1},[".#time:day"],[1310428800000]),Objects.addFields({ event : "impression", count : 2},[".#time:day"],[1310515200000])],transform.transform(data),{ fileName : "TestCountTimeSeriesTransform.hx", lineNumber : 18, className : "rg.data.source.rgquery.transform.TestCountTimeSeriesTransform", methodName : "testTransform"});
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TestCountTimeSeriesTransform.prototype.__class__ = rg.data.source.rgquery.transform.TestCountTimeSeriesTransform;
 utest.ui.common.ReportTools = function() { }
 utest.ui.common.ReportTools.__name__ = ["utest","ui","common","ReportTools"];
 utest.ui.common.ReportTools.hasHeader = function(report,stats) {
@@ -3278,6 +3522,7 @@ rg.data.AxisOrdinal = function(arr,set) {
 	$s.push("rg.data.AxisOrdinal::new");
 	var $spos = $s.length;
 	if(null != arr) this.values = thx.collections.Set.ofArray(arr); else if(null != set) this.values = set; else this.values = new thx.collections.Set();
+	this.setScaleDistribution(rg.data.ScaleDistribution.ScaleFit);
 	$s.pop();
 }
 rg.data.AxisOrdinal.__name__ = ["rg","data","AxisOrdinal"];
@@ -3285,11 +3530,12 @@ rg.data.AxisOrdinal.prototype.first = null;
 rg.data.AxisOrdinal.prototype.last = null;
 rg.data.AxisOrdinal.prototype.values = null;
 rg.data.AxisOrdinal.prototype.allTicks = null;
+rg.data.AxisOrdinal.prototype.scaleDistribution = null;
 rg.data.AxisOrdinal.prototype.toTickmark = function(start,end,value) {
 	$s.push("rg.data.AxisOrdinal::toTickmark");
 	var $spos = $s.length;
 	var r = this.range(start,end);
-	var $tmp = new rg.data.TickmarkOrdinal(r.indexOf(value),r);
+	var $tmp = new rg.data.TickmarkOrdinal(r.indexOf(value),r,null,this.scaleDistribution);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -3302,7 +3548,7 @@ rg.data.AxisOrdinal.prototype.ticks = function(start,end,upperBound) {
 		$s.pop();
 		return $tmp;
 	}
-	var ticks = rg.data.TickmarkOrdinal.fromArray(this.range(start,end));
+	var ticks = rg.data.TickmarkOrdinal.fromArray(this.range(start,end),this.scaleDistribution);
 	var $tmp = rg.data.Tickmarks.bound(ticks,upperBound);
 	$s.pop();
 	return $tmp;
@@ -3312,8 +3558,8 @@ rg.data.AxisOrdinal.prototype.range = function(start,end) {
 	$s.push("rg.data.AxisOrdinal::range");
 	var $spos = $s.length;
 	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 50, className : "rg.data.AxisOrdinal", methodName : "range"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 52, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 53, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 55, className : "rg.data.AxisOrdinal", methodName : "range"});
 	var $tmp = this.getValues().array().slice(s,e + 1);
 	$s.pop();
 	return $tmp;
@@ -3323,10 +3569,10 @@ rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisOrdinal::scale");
 	var $spos = $s.length;
 	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end), p = this.getValues()._v.indexOf(v);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 62, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 66, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	var $tmp = (p - s) / (e - s);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 65, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 67, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 69, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	var $tmp = rg.data.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -3360,13 +3606,21 @@ rg.data.AxisOrdinal.prototype.getAllTicks = function() {
 	var $spos = $s.length;
 	var t = $closure(this,"toTickmark"), f = this.getFirst(), l = this.getLast();
 	var $tmp = this.range(f,l).map(function(d,i) {
-		$s.push("rg.data.AxisOrdinal::getAllTicks@78");
+		$s.push("rg.data.AxisOrdinal::getAllTicks@81");
 		var $spos = $s.length;
 		var $tmp = t(f,l,d);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	});
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinal.prototype.setScaleDistribution = function(v) {
+	$s.push("rg.data.AxisOrdinal::setScaleDistribution");
+	var $spos = $s.length;
+	var $tmp = this.scaleDistribution = v;
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4293,472 +4547,6 @@ thx.culture.Language.add = function(language) {
 	$s.pop();
 }
 thx.culture.Language.prototype.__class__ = thx.culture.Language;
-rg.view.svg.panel.Layer = function(panel) {
-	if( panel === $_ ) return;
-	$s.push("rg.view.svg.panel.Layer::new");
-	var $spos = $s.length;
-	this.frame = (this.panel = panel).frame;
-	var p = panel;
-	p.addLayer(this);
-	this.g = panel.g.append("svg:g");
-	this.g.attr("class").string("layer");
-	this._resize();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
-rg.view.svg.panel.Layer.prototype.panel = null;
-rg.view.svg.panel.Layer.prototype.frame = null;
-rg.view.svg.panel.Layer.prototype.g = null;
-rg.view.svg.panel.Layer.prototype.width = null;
-rg.view.svg.panel.Layer.prototype.height = null;
-rg.view.svg.panel.Layer.prototype.customClass = null;
-rg.view.svg.panel.Layer.prototype.addClass = function(name) {
-	$s.push("rg.view.svg.panel.Layer::addClass");
-	var $spos = $s.length;
-	this.g.classed().add(name);
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.removeClass = function(name) {
-	$s.push("rg.view.svg.panel.Layer::removeClass");
-	var $spos = $s.length;
-	this.g.classed().remove(name);
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.toggleClass = function(name) {
-	$s.push("rg.view.svg.panel.Layer::toggleClass");
-	var $spos = $s.length;
-	this.g.classed().toggle(name);
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype._resize = function() {
-	$s.push("rg.view.svg.panel.Layer::_resize");
-	var $spos = $s.length;
-	this.width = this.frame.width;
-	this.height = this.frame.height;
-	this.resize();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.resize = function() {
-	$s.push("rg.view.svg.panel.Layer::resize");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.destroy = function() {
-	$s.push("rg.view.svg.panel.Layer::destroy");
-	var $spos = $s.length;
-	var p = this.panel;
-	p.removeLayer(this);
-	this.g.remove();
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
-	$s.push("rg.view.svg.panel.Layer::setCustomClass");
-	var $spos = $s.length;
-	if(null != this.customClass) this.g.classed().remove(this.customClass);
-	this.g.classed().add(v);
-	var $tmp = this.customClass = v;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
-if(!rg.view.svg.widget) rg.view.svg.widget = {}
-rg.view.svg.widget.ChartTickmarks = function(panel,anchor) {
-	if( panel === $_ ) return;
-	$s.push("rg.view.svg.widget.ChartTickmarks::new");
-	var $spos = $s.length;
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.anchor = anchor;
-	this.tickDisplay = true;
-	this.tickMinorLength = 2;
-	this.tickMajorLength = 5;
-	this.tickMinorPadding = 1;
-	this.tickMajorPadding = 1;
-	this.labelDisplay = true;
-	this.labelPadding = 10;
-	this.g.classed().add("tickmarks");
-	this.initf();
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.__name__ = ["rg","view","svg","widget","ChartTickmarks"];
-rg.view.svg.widget.ChartTickmarks.__super__ = rg.view.svg.panel.Layer;
-for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.ChartTickmarks.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
-rg.view.svg.widget.ChartTickmarks.prototype.anchor = null;
-rg.view.svg.widget.ChartTickmarks.prototype.tickDisplay = null;
-rg.view.svg.widget.ChartTickmarks.prototype.tickMinorLength = null;
-rg.view.svg.widget.ChartTickmarks.prototype.tickMajorLength = null;
-rg.view.svg.widget.ChartTickmarks.prototype.tickMinorPadding = null;
-rg.view.svg.widget.ChartTickmarks.prototype.tickMajorPadding = null;
-rg.view.svg.widget.ChartTickmarks.prototype.labelDisplay = null;
-rg.view.svg.widget.ChartTickmarks.prototype.labelPadding = null;
-rg.view.svg.widget.ChartTickmarks.prototype.labelOrientation = null;
-rg.view.svg.widget.ChartTickmarks.prototype.labelAnchor = null;
-rg.view.svg.widget.ChartTickmarks.prototype.labelAngle = null;
-rg.view.svg.widget.ChartTickmarks.prototype.desiredSize = null;
-rg.view.svg.widget.ChartTickmarks.prototype.translate = null;
-rg.view.svg.widget.ChartTickmarks.prototype.x1 = null;
-rg.view.svg.widget.ChartTickmarks.prototype.y1 = null;
-rg.view.svg.widget.ChartTickmarks.prototype.x2 = null;
-rg.view.svg.widget.ChartTickmarks.prototype.y2 = null;
-rg.view.svg.widget.ChartTickmarks.prototype.x = null;
-rg.view.svg.widget.ChartTickmarks.prototype.y = null;
-rg.view.svg.widget.ChartTickmarks.prototype.axis = null;
-rg.view.svg.widget.ChartTickmarks.prototype.min = null;
-rg.view.svg.widget.ChartTickmarks.prototype.max = null;
-rg.view.svg.widget.ChartTickmarks.prototype.resize = function() {
-	$s.push("rg.view.svg.widget.ChartTickmarks::resize");
-	var $spos = $s.length;
-	if(null == this.axis) {
-		$s.pop();
-		return;
-	}
-	this.redraw();
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.update = function(axis,min,max) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::update");
-	var $spos = $s.length;
-	this.axis = axis;
-	this.min = min;
-	this.max = max;
-	this.redraw();
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.maxTicks = function() {
-	$s.push("rg.view.svg.widget.ChartTickmarks::maxTicks");
-	var $spos = $s.length;
-	var size = (function($this) {
-		var $r;
-		switch( ($this.anchor)[1] ) {
-		case 2:
-		case 3:
-			$r = $this.height;
-			break;
-		case 0:
-		case 1:
-			$r = $this.width;
-			break;
-		}
-		return $r;
-	}(this));
-	var $tmp = Math.round(size / 2.5);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.redraw = function() {
-	$s.push("rg.view.svg.widget.ChartTickmarks::redraw");
-	var $spos = $s.length;
-	this.desiredSize = Math.max(this.tickMinorPadding + this.tickMinorLength,this.tickMajorPadding + this.tickMajorLength);
-	var ticks = this.maxTicks();
-	var data = this.axis.ticks(this.min,this.max,ticks);
-	var tick = this.g.selectAll("g.tick").data(data,function(d,i) {
-		$s.push("rg.view.svg.widget.ChartTickmarks::redraw@92");
-		var $spos = $s.length;
-		var $tmp = "" + d.getValue();
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
-	enter.append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($closure(this,"tickClass"));
-	enter.eachNode($closure(this,"createLabel"));
-	tick.update().attr("transform").stringf(this.translate);
-	tick.exit().remove();
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.createLabel = function(n,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::createLabel");
-	var $spos = $s.length;
-	var d = Reflect.field(n,"__data__");
-	if(!d.getMajor()) {
-		$s.pop();
-		return;
-	}
-	var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
-	label.setAnchor(this.labelAnchor);
-	label.setOrientation(this.labelOrientation);
-	var padding = this.labelPadding;
-	label.setText(d.getLabel());
-	switch( (this.anchor)[1] ) {
-	case 0:
-		label.place(0,padding,this.labelAngle);
-		break;
-	case 1:
-		label.place(0,-padding,this.labelAngle);
-		break;
-	case 2:
-		label.place(padding,0,this.labelAngle);
-		break;
-	case 3:
-		label.place(-padding,0,this.labelAngle);
-		break;
-	}
-	var s = (function($this) {
-		var $r;
-		switch( ($this.anchor)[1] ) {
-		case 0:
-		case 1:
-			$r = label.getSize().height + padding;
-			break;
-		case 2:
-		case 3:
-			$r = label.getSize().width + padding;
-			break;
-		}
-		return $r;
-	}(this));
-	if(s > this.desiredSize) this.desiredSize = s;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.initf = function() {
-	$s.push("rg.view.svg.widget.ChartTickmarks::initf");
-	var $spos = $s.length;
-	switch( (this.anchor)[1] ) {
-	case 0:
-		this.translate = $closure(this,"translateTop");
-		this.x1 = $closure(this,"x1Top");
-		this.y1 = $closure(this,"y1Top");
-		this.x2 = $closure(this,"x2Top");
-		this.y2 = $closure(this,"y2Top");
-		break;
-	case 1:
-		this.translate = $closure(this,"translateBottom");
-		this.x1 = $closure(this,"x1Bottom");
-		this.y1 = $closure(this,"y1Bottom");
-		this.x2 = $closure(this,"x2Bottom");
-		this.y2 = $closure(this,"y2Bottom");
-		break;
-	case 2:
-		this.translate = $closure(this,"translateLeft");
-		this.x1 = $closure(this,"x1Left");
-		this.y1 = $closure(this,"y1Left");
-		this.x2 = $closure(this,"x2Left");
-		this.y2 = $closure(this,"y2Left");
-		break;
-	case 3:
-		this.translate = $closure(this,"translateRight");
-		this.x1 = $closure(this,"x1Right");
-		this.y1 = $closure(this,"y1Right");
-		this.x2 = $closure(this,"x2Right");
-		this.y2 = $closure(this,"y2Right");
-		break;
-	}
-	if(null == this.labelOrientation) {
-		switch( (this.anchor)[1] ) {
-		case 0:
-		case 1:
-			this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
-			break;
-		case 2:
-		case 3:
-			this.labelOrientation = rg.view.svg.widget.LabelOrientation.Aligned;
-			break;
-		}
-	}
-	if(null == this.labelAnchor) {
-		switch( (this.anchor)[1] ) {
-		case 0:
-			this.labelAnchor = rg.view.svg.widget.GridAnchor.Top;
-			break;
-		case 1:
-			this.labelAnchor = rg.view.svg.widget.GridAnchor.Bottom;
-			break;
-		case 2:
-			this.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
-			break;
-		case 3:
-			this.labelAnchor = rg.view.svg.widget.GridAnchor.Right;
-			break;
-		}
-	}
-	if(null == this.labelAngle) {
-		switch( (this.anchor)[1] ) {
-		case 0:
-			this.labelAngle = 90;
-			break;
-		case 1:
-			this.labelAngle = 90;
-			break;
-		case 2:
-			this.labelAngle = 0;
-			break;
-		case 3:
-			this.labelAngle = 0;
-			break;
-		}
-	}
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.t = function(x,y) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::t");
-	var $spos = $s.length;
-	var $tmp = "translate(" + x + "," + y + ")";
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.translateTop = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::translateTop");
-	var $spos = $s.length;
-	var $tmp = "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.translateBottom = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::translateBottom");
-	var $spos = $s.length;
-	var $tmp = "translate(" + d.getDelta() * this.panel.frame.width + "," + this.panel.frame.height + ")";
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.translateLeft = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::translateLeft");
-	var $spos = $s.length;
-	var $tmp = "translate(" + 0 + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.translateRight = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::translateRight");
-	var $spos = $s.length;
-	var $tmp = "translate(" + this.panel.frame.width + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x1Top = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x1Top");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x1Bottom = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x1Bottom");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x1Left = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x1Left");
-	var $spos = $s.length;
-	var $tmp = d.getMajor()?this.tickMajorPadding:this.tickMinorPadding;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x1Right = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x1Right");
-	var $spos = $s.length;
-	var $tmp = -(d.getMajor()?this.tickMajorPadding:this.tickMinorPadding);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y1Top = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y1Top");
-	var $spos = $s.length;
-	var $tmp = d.getMajor()?this.tickMajorPadding:this.tickMinorPadding;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y1Bottom = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y1Bottom");
-	var $spos = $s.length;
-	var $tmp = -(d.getMajor()?this.tickMajorPadding:this.tickMinorPadding);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y1Left = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y1Left");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y1Right = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y1Right");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x2Top = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x2Top");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x2Bottom = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x2Bottom");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x2Left = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x2Left");
-	var $spos = $s.length;
-	var $tmp = d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.x2Right = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::x2Right");
-	var $spos = $s.length;
-	var $tmp = -(d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y2Top = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y2Top");
-	var $spos = $s.length;
-	var $tmp = d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y2Bottom = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y2Bottom");
-	var $spos = $s.length;
-	var $tmp = -(d.getMajor()?this.tickMajorLength + this.tickMajorPadding:this.tickMinorLength + this.tickMinorPadding);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y2Left = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y2Left");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.y2Right = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::y2Right");
-	var $spos = $s.length;
-	$s.pop();
-	return 0;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.tickClass = function(d,i) {
-	$s.push("rg.view.svg.widget.ChartTickmarks::tickClass");
-	var $spos = $s.length;
-	var $tmp = d.getMajor()?"major":null;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.ChartTickmarks.prototype.__class__ = rg.view.svg.widget.ChartTickmarks;
 rg.data.Tickmarks = function() { }
 rg.data.Tickmarks.__name__ = ["rg","data","Tickmarks"];
 rg.data.Tickmarks.bound = function(tickmarks,max) {
@@ -4852,8 +4640,8 @@ rg.data.TestDataProcessor.prototype.testOnData = function() {
 	var processor = new rg.data.DataProcessor(sources);
 	var datacontexts = [new rg.data.DataContext("count",processor)];
 	var request = new rg.data.DataRequest(cache,datacontexts);
-	processor.independentVariables = [new rg.data.VariableIndependentContext(new rg.data.VariableIndependent("event",new rg.data.AxisOrdinal()),true)];
-	processor.dependentVariables = [new rg.data.VariableDependentContext(new rg.data.VariableDependent("count"),true)];
+	processor.independentVariables = [new rg.data.VariableIndependentContext(new rg.data.VariableIndependent("event",new rg.data.AxisOrdinal(),null),true)];
+	processor.dependentVariables = [new rg.data.VariableDependentContext(new rg.data.VariableDependent("count",null,null),true)];
 	processor.onData.add(function(d) {
 		$s.push("rg.data.TestDataProcessor::testOnData@29");
 		var $spos = $s.length;
@@ -4867,8 +4655,8 @@ rg.data.TestDataProcessor.prototype.testFillVariable = function() {
 	$s.push("rg.data.TestDataProcessor::testFillVariable");
 	var $spos = $s.length;
 	var ds = new rg.data.source.DataSourceArray([{ gender : "male", count : 2, event : "click"},{ gender : "female", count : 3, event : "click"}]), sources = new rg.data.Sources([ds]), processor = new rg.data.DataProcessor(sources), vi, vd;
-	processor.independentVariables = [new rg.data.VariableIndependentContext(vi = new rg.data.VariableIndependent("gender",new rg.data.AxisOrdinal()),true)];
-	processor.dependentVariables = [new rg.data.VariableDependentContext(vd = new rg.data.VariableDependent("count",new rg.data.AxisNumeric()),true)];
+	processor.independentVariables = [new rg.data.VariableIndependentContext(vi = new rg.data.VariableIndependent("gender",new rg.data.AxisOrdinal(),null),true)];
+	processor.dependentVariables = [new rg.data.VariableDependentContext(vd = new rg.data.VariableDependent("count",new rg.data.AxisNumeric(),null),true)];
 	processor.onData.add(function(d) {
 		$s.push("rg.data.TestDataProcessor::testFillVariable@53");
 		var $spos = $s.length;
@@ -4891,8 +4679,8 @@ rg.data.TestDataProcessor.prototype.testEvents = function() {
 	var processor = new rg.data.DataProcessor(sources);
 	var datacontexts = [new rg.data.DataContext("count",processor)];
 	var request = new rg.data.DataRequest(cache,datacontexts);
-	processor.independentVariables = [new rg.data.VariableIndependentContext(new rg.data.VariableIndependent("event",new rg.data.AxisOrdinal()),true)];
-	processor.dependentVariables = [new rg.data.VariableDependentContext(new rg.data.VariableDependent("count"),true)];
+	processor.independentVariables = [new rg.data.VariableIndependentContext(new rg.data.VariableIndependent("event",new rg.data.AxisOrdinal(),null),true)];
+	processor.dependentVariables = [new rg.data.VariableDependentContext(new rg.data.VariableDependent("count",null,null),true)];
 	processor.onData.add(function(d) {
 		$s.push("rg.data.TestDataProcessor::testEvents@76");
 		var $spos = $s.length;
@@ -4925,10 +4713,10 @@ rg.data.TestDataProcessor.prototype.testTransform = function() {
 		$s.pop();
 	})));
 	var iv = [], dv = [], periodicity = "hour";
-	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forTime(".#time:hour",periodicity,start,end),false));
-	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forOrdinal(".ageRange"),true));
-	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forOrdinal(".gender",["male","female"]),false));
-	dv.push(new rg.data.VariableDependentContext(new rg.data.VariableDependent("count",new rg.data.AxisNumeric(),0,10),false));
+	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forTime(".#time:hour",periodicity,null,start,end),false));
+	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forOrdinal(".ageRange",null),true));
+	iv.push(new rg.data.VariableIndependentContext(rg.data.VariableIndependent.forOrdinal(".gender",null,["male","female"]),false));
+	dv.push(new rg.data.VariableDependentContext(new rg.data.VariableDependent("count",new rg.data.AxisNumeric(),null,0,10),false));
 	var sources = new rg.data.Sources(src), processor = new rg.data.DataProcessor(sources);
 	processor.independentVariables = iv;
 	processor.dependentVariables = dv;
@@ -6030,22 +5818,38 @@ rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
 rg.view.html.widget.PivotTable.prototype.__class__ = rg.view.html.widget.PivotTable;
 rg.JSBridge = function() { }
 rg.JSBridge.__name__ = ["rg","JSBridge"];
+rg.JSBridge.log = function(msg) {
+	$s.push("rg.JSBridge::log");
+	var $spos = $s.length;
+	var console = (window.console && window.console.warn) || alert;
+	console(msg);
+	$s.pop();
+}
 rg.JSBridge.main = function() {
 	$s.push("rg.JSBridge::main");
 	var $spos = $s.length;
 	var o = window.ReportGrid;
-	if(null == o) throw new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 26, className : "rg.JSBridge", methodName : "main"});
+	if(null == o) rg.JSBridge.log(new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 31, className : "rg.JSBridge", methodName : "main"}).toString());
 	var app = new rg.controller.App(o);
 	o.viz = function(el,options,type) {
-		$s.push("rg.JSBridge::main@32");
+		$s.push("rg.JSBridge::main@37");
 		var $spos = $s.length;
-		var $tmp = app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
-		$s.pop();
-		return $tmp;
+		try {
+			var $tmp = app.visualization(rg.JSBridge.select(el),rg.JSBridge.chartopt(options,type));
+			$s.pop();
+			return $tmp;
+		} catch( e ) {
+			$e = [];
+			while($s.length >= $spos) $e.unshift($s.pop());
+			$s.push($e[0]);
+			rg.JSBridge.log(Std.string(e));
+			$s.pop();
+			return null;
+		}
 		$s.pop();
 	};
 	o.lineChart = function(el,options) {
-		$s.push("rg.JSBridge::main@36");
+		$s.push("rg.JSBridge::main@48");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"linechart");
 		$s.pop();
@@ -6053,7 +5857,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.pieChart = function(el,options) {
-		$s.push("rg.JSBridge::main@37");
+		$s.push("rg.JSBridge::main@49");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"piechart");
 		$s.pop();
@@ -6061,7 +5865,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.pivotTable = function(el,options) {
-		$s.push("rg.JSBridge::main@38");
+		$s.push("rg.JSBridge::main@50");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"pivottable");
 		$s.pop();
@@ -6069,9 +5873,17 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	o.leaderBoard = function(el,options) {
-		$s.push("rg.JSBridge::main@39");
+		$s.push("rg.JSBridge::main@51");
 		var $spos = $s.length;
 		var $tmp = o.viz(el,options,"leaderboard");
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	o.barChart = function(el,options) {
+		$s.push("rg.JSBridge::main@52");
+		var $spos = $s.length;
+		var $tmp = o.viz(el,options,"barchart");
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -6081,7 +5893,7 @@ rg.JSBridge.main = function() {
 	o.dump = Dynamics.string;
 	o.symbol = rg.view.svg.util.SymbolCache.cache;
 	o.date = { range : function(a,b,p) {
-		$s.push("rg.JSBridge::main@47");
+		$s.push("rg.JSBridge::main@60");
 		var $spos = $s.length;
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
 		if(null == a) a = rg.util.Periodicity.defaultRange(p)[0];
@@ -6095,7 +5907,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	}, parse : thx.date.DateParser.parse};
 	o.humanize = function(v) {
-		$s.push("rg.JSBridge::main@65");
+		$s.push("rg.JSBridge::main@78");
 		var $spos = $s.length;
 		if(Std["is"](v,String) && rg.util.Properties.isTime(v)) {
 			var $tmp = rg.util.Properties.periodicity(v);
@@ -6107,14 +5919,14 @@ rg.JSBridge.main = function() {
 		return $tmp;
 		$s.pop();
 	};
-	o.math = { random : $closure(new thx.math.Random(9),"float")};
+	o.math = { random : $closure(new thx.math.Random(666),"float")};
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 81, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 94, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();
@@ -6132,12 +5944,25 @@ rg.JSBridge.chartopt = function(o,viz) {
 	var $spos = $s.length;
 	o = null == o?{ }:o;
 	o.options = rg.JSBridge.opt(o.options);
-	if(null != viz) o.options.visualization = viz;
+	o.options.visualization = viz;
 	$s.pop();
 	return o;
 	$s.pop();
 }
 rg.JSBridge.prototype.__class__ = rg.JSBridge;
+rg.data.ScaleDistribution = { __ename__ : ["rg","data","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
+rg.data.ScaleDistribution.ScaleFit = ["ScaleFit",0];
+rg.data.ScaleDistribution.ScaleFit.toString = $estr;
+rg.data.ScaleDistribution.ScaleFit.__enum__ = rg.data.ScaleDistribution;
+rg.data.ScaleDistribution.ScaleFill = ["ScaleFill",1];
+rg.data.ScaleDistribution.ScaleFill.toString = $estr;
+rg.data.ScaleDistribution.ScaleFill.__enum__ = rg.data.ScaleDistribution;
+rg.data.ScaleDistribution.ScaleBefore = ["ScaleBefore",2];
+rg.data.ScaleDistribution.ScaleBefore.toString = $estr;
+rg.data.ScaleDistribution.ScaleBefore.__enum__ = rg.data.ScaleDistribution;
+rg.data.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
+rg.data.ScaleDistribution.ScaleAfter.toString = $estr;
+rg.data.ScaleDistribution.ScaleAfter.__enum__ = rg.data.ScaleDistribution;
 rg.view.html.widget.Leadeboard = function(container) {
 	if( container === $_ ) return;
 	$s.push("rg.view.html.widget.Leadeboard::new");
@@ -6329,7 +6154,7 @@ rg.controller.factory.FactoryVariableContexts.prototype.dependentFactory = null;
 rg.controller.factory.FactoryVariableContexts.prototype.createIndependents = function(info) {
 	$s.push("rg.controller.factory.FactoryVariableContexts::createIndependents");
 	var $spos = $s.length;
-	var result = [], ordinal, v, ctx;
+	var result = [], ordinal, discrete, v, ctx;
 	var _g = 0;
 	while(_g < info.length) {
 		var i = info[_g];
@@ -6442,51 +6267,72 @@ rg.data.AxisTime = function(periodicity) {
 	$s.push("rg.data.AxisTime::new");
 	var $spos = $s.length;
 	this.periodicity = periodicity;
+	this.setScaleDistribution(rg.data.ScaleDistribution.ScaleFill);
 	$s.pop();
 }
 rg.data.AxisTime.__name__ = ["rg","data","AxisTime"];
 rg.data.AxisTime.prototype.periodicity = null;
-rg.data.AxisTime.prototype.toTickmark = function(start,end,value) {
-	$s.push("rg.data.AxisTime::toTickmark");
-	var $spos = $s.length;
-	var span = end - start, major = this.isMajor(start,end,value);
-	var $tmp = new rg.data.TickmarkTime(value,major,(value - start) / span,this.periodicity);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisTime.prototype.isMajor = function(start,end,value) {
+rg.data.AxisTime.prototype.scaleDistribution = null;
+rg.data.AxisTime.prototype.isMajor = function(units,value) {
 	$s.push("rg.data.AxisTime::isMajor");
 	var $spos = $s.length;
-	var units = rg.util.Periodicity.unitsBetween(start,end,this.periodicity), series = Reflect.field(rg.data.AxisTime.snapping,this.periodicity), unit = rg.util.Periodicity.units(value,this.periodicity);
-	if(null == series) {
+	switch(this.periodicity) {
+	case "day":
+		if(units < 28) {
+			$s.pop();
+			return true;
+		}
+		if(units < 121) {
+			var d = Date.fromTime(value).getDate(), delta = 4;
+			var $tmp = rg.util.Periodicity.firstInSeries("month",value) || d > delta && d < 31 - delta && rg.util.Periodicity.firstInSeries("week",value);
+			$s.pop();
+			return $tmp;
+		}
+		var $tmp = rg.util.Periodicity.firstInSeries("month",value);
 		$s.pop();
-		return true;
-	}
-	var _g = 0;
-	while(_g < series.length) {
-		var item = series[_g];
-		++_g;
-		if(units > item.to) continue;
-		var $tmp = 0 == unit % item.s;
+		return $tmp;
+	case "week":
+		if(units < 28) {
+			$s.pop();
+			return true;
+		} else {
+			var $tmp = Date.fromTime(value).getDate() <= 7;
+			$s.pop();
+			return $tmp;
+		}
+		break;
+	default:
+		var series = Reflect.field(rg.data.AxisTime.snapping,this.periodicity), unit = rg.util.Periodicity.units(value,this.periodicity);
+		if(null == series) {
+			$s.pop();
+			return true;
+		}
+		var _g = 0;
+		while(_g < series.length) {
+			var item = series[_g];
+			++_g;
+			if(units > item.to) continue;
+			var $tmp = 0 == unit % item.s;
+			$s.pop();
+			return $tmp;
+		}
+		var top = Reflect.field(rg.data.AxisTime.snapping,this.periodicity + "top");
+		if(null == top) top = 1;
+		var $tmp = 0 == unit % top;
 		$s.pop();
 		return $tmp;
 	}
-	var top = Reflect.field(rg.data.AxisTime.snapping,this.periodicity + "top");
-	if(null == top) top = 1;
-	var $tmp = 0 == unit % top;
-	$s.pop();
-	return $tmp;
 	$s.pop();
 }
 rg.data.AxisTime.prototype.ticks = function(start,end,upperBound) {
 	$s.push("rg.data.AxisTime::ticks");
 	var $spos = $s.length;
 	var me = this;
-	var range = this.range(start,end).map(function(value,i) {
-		$s.push("rg.data.AxisTime::ticks@53");
+	var span = end - start, units = rg.util.Periodicity.unitsBetween(start,end,this.periodicity), values = this.range(start,end), range = values.map(function(value,i) {
+		$s.push("rg.data.AxisTime::ticks@82");
 		var $spos = $s.length;
-		var $tmp = me.toTickmark(start,end,value);
+		var major = me.isMajor(units,value), unit = rg.util.Periodicity.unitsBetween(start,value,me.periodicity);
+		var $tmp = new rg.data.TickmarkTime(value,values,major,me.periodicity,me.scaleDistribution);
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -6507,7 +6353,16 @@ rg.data.AxisTime.prototype.range = function(start,end) {
 rg.data.AxisTime.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisTime::scale");
 	var $spos = $s.length;
-	var $tmp = (Floats.uninterpolatef(start,end))(v);
+	var values = this.range(start,end);
+	var $tmp = rg.data.ScaleDistributions.distribute(this.scaleDistribution,values.indexOf(v),values.length);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisTime.prototype.setScaleDistribution = function(v) {
+	$s.push("rg.data.AxisTime::setScaleDistribution");
+	var $spos = $s.length;
+	var $tmp = this.scaleDistribution = v;
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -6719,6 +6574,53 @@ thx.text.ERegs.escapeERegChars = function(s) {
 	$s.pop();
 }
 thx.text.ERegs.prototype.__class__ = thx.text.ERegs;
+rg.view.svg.panel.Panels = function() { }
+rg.view.svg.panel.Panels.__name__ = ["rg","view","svg","panel","Panels"];
+rg.view.svg.panel.Panels.rootSize = function(panel) {
+	$s.push("rg.view.svg.panel.Panels::rootSize");
+	var $spos = $s.length;
+	var p = panel.parent;
+	while(p != null) {
+		var t = p;
+		p = panel.parent;
+		panel = t;
+	}
+	var $tmp = { width : panel.frame.width, height : panel.frame.height};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Panels.boundingBox = function(panel,ancestor) {
+	$s.push("rg.view.svg.panel.Panels::boundingBox");
+	var $spos = $s.length;
+	var p = panel, x = 0, y = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		p = p.parent;
+	}
+	var $tmp = { x : x, y : y, width : panel.frame.width, height : panel.frame.height};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Panels.ancestorBoundingBox = function(panel,ancestor) {
+	$s.push("rg.view.svg.panel.Panels::ancestorBoundingBox");
+	var $spos = $s.length;
+	var p = panel, x = 0, y = 0, w = 0, h = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		w = p.frame.width;
+		h = p.frame.height;
+		p = p.parent;
+	}
+	var $tmp = { x : -x, y : -y, width : w, height : h};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Panels.prototype.__class__ = rg.view.svg.panel.Panels;
 rg.util.Periodicity = function() { }
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.isValid = function(v) {
@@ -6784,7 +6686,7 @@ rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 			$r = (function($this) {
 				var $r;
 				var s = Date.fromTime(start), e = Date.fromTime(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
-				$r = ey - sy * 12 + em - sm;
+				$r = (ey - sy) * 12 + (em - sm);
 				return $r;
 			}($this));
 			break;
@@ -6840,27 +6742,21 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		step = 604800000;
 		break;
 	case "month":
-		var s = Date.fromTime(start), e = Date.fromTime(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth();
+		var s = Date.fromTime(start), e = Date.fromTime(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
 		var result = [];
-		var _g = sy;
-		while(_g < ey) {
-			var y = _g++;
-			var sr = 0, er = 12;
-			if(y == sy && y == ey) {
-				sr = sy;
-				er = ey;
-			} else if(y == sy) sr = sy; else if(y == ey) er = ey;
-			var _g1 = sr;
-			while(_g1 < er) {
-				var m = _g1++;
-				result.push(new Date(y,m,1,0,0,0).getTime());
+		while(sy < ey || sm <= em) {
+			result.push(new Date(sy,sm,1,0,0,0).getTime());
+			sm++;
+			if(sm > 11) {
+				sm = 0;
+				sy++;
 			}
 		}
 		$s.pop();
 		return result;
 	case "year":
 		var $tmp = Ints.range(Date.fromTime(start).getFullYear(),Date.fromTime(end).getFullYear(),1).map(function(d,i) {
-			$s.push("rg.util.Periodicity::range@107");
+			$s.push("rg.util.Periodicity::range@104");
 			var $spos = $s.length;
 			var $tmp = new Date(d,0,1,0,0,0).getTime();
 			$s.pop();
@@ -6929,11 +6825,11 @@ rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
 	$s.push("rg.util.Periodicity::minForPeriodicityInSeries");
 	var $spos = $s.length;
 	var $tmp = Arrays.floatMin(arr,function(d) {
-		$s.push("rg.util.Periodicity::minForPeriodicityInSeries@140");
+		$s.push("rg.util.Periodicity::minForPeriodicityInSeries@137");
 		var $spos = $s.length;
 		var o = Reflect.field(d,periodicity);
 		var $tmp = Arrays.floatMin(Reflect.fields(o),function(d1) {
-			$s.push("rg.util.Periodicity::minForPeriodicityInSeries@140@142");
+			$s.push("rg.util.Periodicity::minForPeriodicityInSeries@137@139");
 			var $spos = $s.length;
 			var $tmp = Std.parseFloat(d1);
 			$s.pop();
@@ -6952,11 +6848,11 @@ rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
 	$s.push("rg.util.Periodicity::maxForPeriodicityInSeries");
 	var $spos = $s.length;
 	var $tmp = Arrays.floatMax(arr,function(d) {
-		$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@148");
+		$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@145");
 		var $spos = $s.length;
 		var o = Reflect.field(d,periodicity);
 		var $tmp = Arrays.floatMax(Reflect.fields(o),function(d1) {
-			$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@148@150");
+			$s.push("rg.util.Periodicity::maxForPeriodicityInSeries@145@147");
 			var $spos = $s.length;
 			var $tmp = Std.parseFloat(d1);
 			$s.pop();
@@ -6979,7 +6875,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 		switch(periodicity) {
 		case "eternity":
 			$r = function(_) {
-				$s.push("rg.util.Periodicity::formatf@158");
+				$s.push("rg.util.Periodicity::formatf@155");
 				var $spos = $s.length;
 				$s.pop();
 				return "all time";
@@ -6988,7 +6884,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "minute":case "hour":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@159");
+				$s.push("rg.util.Periodicity::formatf@156");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.timeShort(Date.fromTime(v));
 				$s.pop();
@@ -6998,7 +6894,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "day":case "week":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@160");
+				$s.push("rg.util.Periodicity::formatf@157");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.dateShort(Date.fromTime(v));
 				$s.pop();
@@ -7008,7 +6904,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "month":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@161");
+				$s.push("rg.util.Periodicity::formatf@158");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.yearMonth(Date.fromTime(v));
 				$s.pop();
@@ -7018,7 +6914,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 			break;
 		case "year":
 			$r = function(v) {
-				$s.push("rg.util.Periodicity::formatf@162");
+				$s.push("rg.util.Periodicity::formatf@159");
 				var $spos = $s.length;
 				var $tmp = thx.culture.FormatDate.year(Date.fromTime(v));
 				$s.pop();
@@ -7097,13 +6993,24 @@ rg.util.Periodicity.smartFormat = function(periodicity,v) {
 			return $tmp;
 		}
 		break;
-	case "day":case "week":
+	case "day":
 		if(rg.util.Periodicity.firstInSeries("month",v)) {
-			var $tmp = thx.culture.FormatDate.monthNameShort(d);
+			var $tmp = thx.culture.FormatDate.format("%b %e",d);
 			$s.pop();
 			return $tmp;
 		} else {
-			var $tmp = thx.culture.FormatDate.dateShort(d);
+			var $tmp = thx.culture.FormatDate.format("%e",d);
+			$s.pop();
+			return $tmp;
+		}
+		break;
+	case "week":
+		if(d.getDate() <= 7) {
+			var $tmp = thx.culture.FormatDate.format("%b %e",d);
+			$s.pop();
+			return $tmp;
+		} else {
+			var $tmp = thx.culture.FormatDate.format("%e",d);
 			$s.pop();
 			return $tmp;
 		}
@@ -7114,7 +7021,7 @@ rg.util.Periodicity.smartFormat = function(periodicity,v) {
 			$s.pop();
 			return $tmp;
 		} else {
-			var $tmp = thx.culture.FormatDate.yearMonth(d);
+			var $tmp = thx.culture.FormatDate.format("%b",d);
 			$s.pop();
 			return $tmp;
 		}
@@ -7165,7 +7072,7 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 			$r = (function($this) {
 				var $r;
 				var d = Date.fromTime(v);
-				$r = 1 == d.getDay();
+				$r = 1 == d.getDate();
 				return $r;
 			}($this));
 			break;
@@ -7173,7 +7080,7 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 			$r = (function($this) {
 				var $r;
 				var d = Date.fromTime(v);
-				$r = 1 == d.getDay() && 0 == d.getMonth();
+				$r = 1 == d.getDate() && 0 == d.getMonth();
 				return $r;
 			}($this));
 			break;
@@ -7205,7 +7112,34 @@ rg.util.Periodicity.nextPeriodicity = function(periodicity) {
 			$r = "year";
 			break;
 		default:
-			$r = null;
+			$r = "year";
+		}
+		return $r;
+	}(this));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.util.Periodicity.prevPeriodicity = function(periodicity) {
+	$s.push("rg.util.Periodicity::prevPeriodicity");
+	var $spos = $s.length;
+	var $tmp = (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "minute";
+			break;
+		case "day":
+			$r = "hour";
+			break;
+		case "week":case "month":
+			$r = "day";
+			break;
+		default:
+			$r = "minute";
 		}
 		return $r;
 	}(this));
@@ -7264,54 +7198,6 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 	$s.pop();
 }
 rg.util.Periodicity.prototype.__class__ = rg.util.Periodicity;
-rg.controller.info.InfoLine = function(p) {
-	if( p === $_ ) return;
-	$s.push("rg.controller.info.InfoLine::new");
-	var $spos = $s.length;
-	this.effect = rg.view.svg.widget.LineEffect.Gradient(0.75,2);
-	this.interpolation = thx.svg.LineInterpolator.Linear;
-	$s.pop();
-}
-rg.controller.info.InfoLine.__name__ = ["rg","controller","info","InfoLine"];
-rg.controller.info.InfoLine.filters = function() {
-	$s.push("rg.controller.info.InfoLine::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "effect", validator : function(v) {
-		$s.push("rg.controller.info.InfoLine::filters@26");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLine::filters@27");
-		var $spos = $s.length;
-		var $tmp = [{ field : "effect", value : rg.view.svg.widget.LineEffects.parse(v)}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "interpolation", validator : function(v) {
-		$s.push("rg.controller.info.InfoLine::filters@33");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLine::filters@34");
-		var $spos = $s.length;
-		var $tmp = [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoLine.prototype.effect = null;
-rg.controller.info.InfoLine.prototype.interpolation = null;
-rg.controller.info.InfoLine.prototype.__class__ = rg.controller.info.InfoLine;
 if(!thx.cultures) thx.cultures = {}
 thx.cultures.EnUS = function(p) {
 	if( p === $_ ) return;
@@ -7637,6 +7523,490 @@ thx.date.DateParser.plusPm = function(s) {
 	$s.pop();
 }
 thx.date.DateParser.prototype.__class__ = thx.date.DateParser;
+rg.view.svg.panel.Layer = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.panel.Layer::new");
+	var $spos = $s.length;
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.g = panel.g.append("svg:g");
+	this.g.attr("class").string("layer");
+	this._resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
+rg.view.svg.panel.Layer.prototype.panel = null;
+rg.view.svg.panel.Layer.prototype.frame = null;
+rg.view.svg.panel.Layer.prototype.g = null;
+rg.view.svg.panel.Layer.prototype.width = null;
+rg.view.svg.panel.Layer.prototype.height = null;
+rg.view.svg.panel.Layer.prototype.customClass = null;
+rg.view.svg.panel.Layer.prototype.addClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::addClass");
+	var $spos = $s.length;
+	this.g.classed().add(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.removeClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::removeClass");
+	var $spos = $s.length;
+	this.g.classed().remove(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.toggleClass = function(name) {
+	$s.push("rg.view.svg.panel.Layer::toggleClass");
+	var $spos = $s.length;
+	this.g.classed().toggle(name);
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype._resize = function() {
+	$s.push("rg.view.svg.panel.Layer::_resize");
+	var $spos = $s.length;
+	this.width = this.frame.width;
+	this.height = this.frame.height;
+	this.resize();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.resize = function() {
+	$s.push("rg.view.svg.panel.Layer::resize");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.destroy = function() {
+	$s.push("rg.view.svg.panel.Layer::destroy");
+	var $spos = $s.length;
+	var p = this.panel;
+	p.removeLayer(this);
+	this.g.remove();
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.setCustomClass = function(v) {
+	$s.push("rg.view.svg.panel.Layer::setCustomClass");
+	var $spos = $s.length;
+	if(null != this.customClass) this.g.classed().remove(this.customClass);
+	this.g.classed().add(v);
+	var $tmp = this.customClass = v;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.panel.Layer.prototype.__class__ = rg.view.svg.panel.Layer;
+if(!rg.view.svg.widget) rg.view.svg.widget = {}
+rg.view.svg.widget.TickmarksOrtho = function(panel,anchor) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.widget.TickmarksOrtho::new");
+	var $spos = $s.length;
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.anchor = anchor;
+	this.displayMinor = true;
+	this.displayMajor = true;
+	this.displayLabel = true;
+	this.lengthMinor = 2;
+	this.lengthMajor = 5;
+	this.paddingMinor = 1;
+	this.paddingMajor = 1;
+	this.paddingLabel = 10;
+	this.g.classed().add("tickmarks");
+	this.initf();
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.__name__ = ["rg","view","svg","widget","TickmarksOrtho"];
+rg.view.svg.widget.TickmarksOrtho.__super__ = rg.view.svg.panel.Layer;
+for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.TickmarksOrtho.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.widget.TickmarksOrtho.prototype.anchor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.displayMinor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.displayMajor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.displayLabel = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.lengthMinor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.lengthMajor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.paddingMinor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.paddingMajor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.paddingLabel = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.labelOrientation = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.labelAnchor = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.labelAngle = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.desiredSize = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.tickLabel = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.translate = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.x1 = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.y1 = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.x2 = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.y2 = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.x = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.y = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.axis = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.min = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.max = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.resize = function() {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::resize");
+	var $spos = $s.length;
+	if(null == this.axis) {
+		$s.pop();
+		return;
+	}
+	this.redraw();
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.update = function(axis,min,max) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::update");
+	var $spos = $s.length;
+	this.axis = axis;
+	this.min = min;
+	this.max = max;
+	this.redraw();
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.maxTicks = function() {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::maxTicks");
+	var $spos = $s.length;
+	var size = (function($this) {
+		var $r;
+		switch( ($this.anchor)[1] ) {
+		case 2:
+		case 3:
+			$r = $this.height;
+			break;
+		case 0:
+		case 1:
+			$r = $this.width;
+			break;
+		}
+		return $r;
+	}(this));
+	var $tmp = Math.round(size / 2.5);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.id = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::id");
+	var $spos = $s.length;
+	var $tmp = "" + d.getValue();
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.redraw = function() {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::redraw");
+	var $spos = $s.length;
+	this.desiredSize = Math.max(this.paddingMinor + this.lengthMinor,this.paddingMajor + this.lengthMajor);
+	var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
+	var tick = this.g.selectAll("g.tick").data(data,$closure(this,"id"));
+	var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
+	if(this.displayMinor) enter.filter(function(d,i) {
+		$s.push("rg.view.svg.widget.TickmarksOrtho::redraw@104");
+		var $spos = $s.length;
+		var $tmp = !d.major;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($closure(this,"tickClass"));
+	if(this.displayMajor) enter.filter(function(d,i) {
+		$s.push("rg.view.svg.widget.TickmarksOrtho::redraw@115");
+		var $spos = $s.length;
+		var $tmp = d.major;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($closure(this,"tickClass"));
+	if(this.displayLabel) enter.eachNode($closure(this,"createLabel"));
+	tick.update().attr("transform").stringf(this.translate);
+	tick.exit().remove();
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.createLabel = function(n,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::createLabel");
+	var $spos = $s.length;
+	var d = Reflect.field(n,"__data__");
+	if(!d.getMajor()) {
+		$s.pop();
+		return;
+	}
+	var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
+	label.setAnchor(this.labelAnchor);
+	label.setOrientation(this.labelOrientation);
+	var padding = this.paddingLabel;
+	label.setText(null == this.tickLabel?d.getLabel():this.tickLabel(d.getValue()));
+	switch( (this.anchor)[1] ) {
+	case 0:
+		label.place(0,padding,this.labelAngle);
+		break;
+	case 1:
+		label.place(0,-padding,this.labelAngle);
+		break;
+	case 2:
+		label.place(padding,0,this.labelAngle);
+		break;
+	case 3:
+		label.place(-padding,0,this.labelAngle);
+		break;
+	}
+	var s = (function($this) {
+		var $r;
+		switch( ($this.anchor)[1] ) {
+		case 0:
+		case 1:
+			$r = label.getSize().height + padding;
+			break;
+		case 2:
+		case 3:
+			$r = label.getSize().width + padding;
+			break;
+		}
+		return $r;
+	}(this));
+	if(s > this.desiredSize) this.desiredSize = s;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.initf = function() {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::initf");
+	var $spos = $s.length;
+	switch( (this.anchor)[1] ) {
+	case 0:
+		this.translate = $closure(this,"translateTop");
+		this.x1 = $closure(this,"x1Top");
+		this.y1 = $closure(this,"y1Top");
+		this.x2 = $closure(this,"x2Top");
+		this.y2 = $closure(this,"y2Top");
+		break;
+	case 1:
+		this.translate = $closure(this,"translateBottom");
+		this.x1 = $closure(this,"x1Bottom");
+		this.y1 = $closure(this,"y1Bottom");
+		this.x2 = $closure(this,"x2Bottom");
+		this.y2 = $closure(this,"y2Bottom");
+		break;
+	case 2:
+		this.translate = $closure(this,"translateLeft");
+		this.x1 = $closure(this,"x1Left");
+		this.y1 = $closure(this,"y1Left");
+		this.x2 = $closure(this,"x2Left");
+		this.y2 = $closure(this,"y2Left");
+		break;
+	case 3:
+		this.translate = $closure(this,"translateRight");
+		this.x1 = $closure(this,"x1Right");
+		this.y1 = $closure(this,"y1Right");
+		this.x2 = $closure(this,"x2Right");
+		this.y2 = $closure(this,"y2Right");
+		break;
+	}
+	if(null == this.labelOrientation) {
+		switch( (this.anchor)[1] ) {
+		case 0:
+		case 1:
+			this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
+			break;
+		case 2:
+		case 3:
+			this.labelOrientation = rg.view.svg.widget.LabelOrientation.Aligned;
+			break;
+		}
+	}
+	if(null == this.labelAnchor) {
+		switch( (this.anchor)[1] ) {
+		case 0:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Top;
+			break;
+		case 1:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Bottom;
+			break;
+		case 2:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
+			break;
+		case 3:
+			this.labelAnchor = rg.view.svg.widget.GridAnchor.Right;
+			break;
+		}
+	}
+	if(null == this.labelAngle) {
+		switch( (this.anchor)[1] ) {
+		case 0:
+			this.labelAngle = 90;
+			break;
+		case 1:
+			this.labelAngle = 90;
+			break;
+		case 2:
+			this.labelAngle = 0;
+			break;
+		case 3:
+			this.labelAngle = 0;
+			break;
+		}
+	}
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.t = function(x,y) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::t");
+	var $spos = $s.length;
+	var $tmp = "translate(" + x + "," + y + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.translateTop = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::translateTop");
+	var $spos = $s.length;
+	var $tmp = "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.translateBottom = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::translateBottom");
+	var $spos = $s.length;
+	var $tmp = "translate(" + d.getDelta() * this.panel.frame.width + "," + this.panel.frame.height + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.translateLeft = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::translateLeft");
+	var $spos = $s.length;
+	var $tmp = "translate(" + 0 + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.translateRight = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::translateRight");
+	var $spos = $s.length;
+	var $tmp = "translate(" + this.panel.frame.width + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x1Top = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x1Top");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x1Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x1Bottom");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x1Left = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x1Left");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.paddingMajor:this.paddingMinor;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x1Right = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x1Right");
+	var $spos = $s.length;
+	var $tmp = -(d.getMajor()?this.paddingMajor:this.paddingMinor);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y1Top = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y1Top");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.paddingMajor:this.paddingMinor;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y1Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y1Bottom");
+	var $spos = $s.length;
+	var $tmp = -(d.getMajor()?this.paddingMajor:this.paddingMinor);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y1Left = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y1Left");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y1Right = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y1Right");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x2Top = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x2Top");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x2Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x2Bottom");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x2Left = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x2Left");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.x2Right = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::x2Right");
+	var $spos = $s.length;
+	var $tmp = -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y2Top = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y2Top");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y2Bottom = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y2Bottom");
+	var $spos = $s.length;
+	var $tmp = -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y2Left = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y2Left");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.y2Right = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::y2Right");
+	var $spos = $s.length;
+	$s.pop();
+	return 0;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.tickClass = function(d,i) {
+	$s.push("rg.view.svg.widget.TickmarksOrtho::tickClass");
+	var $spos = $s.length;
+	var $tmp = d.getMajor()?"major":null;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.__class__ = rg.view.svg.widget.TickmarksOrtho;
 if(!thx.languages) thx.languages = {}
 thx.languages.En = function(p) {
 	if( p === $_ ) return;
@@ -7739,435 +8109,6 @@ rg.view.svg.util.SymbolCache.prototype.stats = function() {
 	$s.pop();
 }
 rg.view.svg.util.SymbolCache.prototype.__class__ = rg.view.svg.util.SymbolCache;
-rg.view.svg.widget.LineChart = function(panel) {
-	if( panel === $_ ) return;
-	$s.push("rg.view.svg.widget.LineChart::new");
-	var $spos = $s.length;
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.addClass("line-chart");
-	this.chart = this.g.append("svg:g");
-	this.animated = true;
-	this.animationDuration = 1500;
-	this.animationEase = thx.math.Equations.linear;
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.__name__ = ["rg","view","svg","widget","LineChart"];
-rg.view.svg.widget.LineChart.__super__ = rg.view.svg.panel.Layer;
-for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.LineChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
-rg.view.svg.widget.LineChart.coordsFromTransform = function(s) {
-	$s.push("rg.view.svg.widget.LineChart::coordsFromTransform");
-	var $spos = $s.length;
-	if(!rg.view.svg.widget.LineChart.retransform.match(s)) {
-		var $tmp = [0.0,0];
-		$s.pop();
-		return $tmp;
-	} else {
-		var $tmp = [Std.parseFloat(rg.view.svg.widget.LineChart.retransform.matched(1)),Std.parseFloat(rg.view.svg.widget.LineChart.retransform.matched(2))];
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.variableDependents = null;
-rg.view.svg.widget.LineChart.prototype.variableIndependent = null;
-rg.view.svg.widget.LineChart.prototype.animated = null;
-rg.view.svg.widget.LineChart.prototype.animationDuration = null;
-rg.view.svg.widget.LineChart.prototype.animationEase = null;
-rg.view.svg.widget.LineChart.prototype.symbol = null;
-rg.view.svg.widget.LineChart.prototype.symbolStyle = null;
-rg.view.svg.widget.LineChart.prototype.segmenton = null;
-rg.view.svg.widget.LineChart.prototype.click = null;
-rg.view.svg.widget.LineChart.prototype.labelDataPoint = null;
-rg.view.svg.widget.LineChart.prototype.labelDataPointOver = null;
-rg.view.svg.widget.LineChart.prototype.lineInterpolator = null;
-rg.view.svg.widget.LineChart.prototype.lineEffect = null;
-rg.view.svg.widget.LineChart.prototype.y0property = null;
-rg.view.svg.widget.LineChart.prototype.linePathShape = null;
-rg.view.svg.widget.LineChart.prototype.chart = null;
-rg.view.svg.widget.LineChart.prototype.dps = null;
-rg.view.svg.widget.LineChart.prototype.segment = null;
-rg.view.svg.widget.LineChart.prototype.setVariables = function(variableIndependents,variableDependents) {
-	$s.push("rg.view.svg.widget.LineChart::setVariables");
-	var $spos = $s.length;
-	var me = this;
-	this.variableIndependent = variableIndependents[0];
-	this.variableDependents = variableDependents;
-	this.linePathShape = [];
-	var _g1 = 0, _g = variableDependents.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var line = [new thx.svg.Line($closure(this,"x"),this.getY1(i))];
-		if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
-		this.linePathShape[i] = (function(line) {
-			$s.push("rg.view.svg.widget.LineChart::setVariables@93");
-			var $spos = $s.length;
-			var $tmp = function(dp,i1) {
-				$s.push("rg.view.svg.widget.LineChart::setVariables@93@93");
-				var $spos = $s.length;
-				me.segment = i1;
-				var $tmp = line[0].shape(dp,i1);
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})(line);
-	}
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.x = function(d,i) {
-	$s.push("rg.view.svg.widget.LineChart::x");
-	var $spos = $s.length;
-	var value = Reflect.field(d,this.variableIndependent.type), scaled = this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,value), scaledw = scaled * this.width;
-	$s.pop();
-	return scaledw;
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.getY1 = function(pos) {
-	$s.push("rg.view.svg.widget.LineChart::getY1");
-	var $spos = $s.length;
-	var h = this.height, v = this.variableDependents[pos], y0 = this.y0property;
-	if(null != y0) {
-		var $tmp = function(d,i) {
-			$s.push("rg.view.svg.widget.LineChart::getY1@116");
-			var $spos = $s.length;
-			var value = Reflect.field(d,v.type) + rg.util.DataPoints.valueAlt(d,y0,0.0), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
-			var $tmp = h - scaledh;
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		};
-		$s.pop();
-		return $tmp;
-	} else {
-		var $tmp = function(d,i) {
-			$s.push("rg.view.svg.widget.LineChart::getY1@124");
-			var $spos = $s.length;
-			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
-			var $tmp = h - scaledh;
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		};
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.getY0 = function(pos) {
-	$s.push("rg.view.svg.widget.LineChart::getY0");
-	var $spos = $s.length;
-	var h = this.height, y0 = this.y0property, v = this.variableDependents[pos];
-	var $tmp = function(d,i) {
-		$s.push("rg.view.svg.widget.LineChart::getY0@139");
-		var $spos = $s.length;
-		var value = rg.util.DataPoints.valueAlt(d,y0,0.0), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
-		var $tmp = h - scaledh;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.init = function() {
-	$s.push("rg.view.svg.widget.LineChart::init");
-	var $spos = $s.length;
-	if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Baloon(this.g);
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.tooltip = null;
-rg.view.svg.widget.LineChart.prototype.segments = null;
-rg.view.svg.widget.LineChart.prototype.classf = function(pos,cls) {
-	$s.push("rg.view.svg.widget.LineChart::classf");
-	var $spos = $s.length;
-	var $tmp = function(_,i) {
-		$s.push("rg.view.svg.widget.LineChart::classf@159");
-		var $spos = $s.length;
-		var $tmp = cls + " item-" + (pos + i);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.data = function(dps) {
-	$s.push("rg.view.svg.widget.LineChart::data");
-	var $spos = $s.length;
-	var axisgroup = this.chart.selectAll("g.group").data(dps);
-	var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
-		$s.push("rg.view.svg.widget.LineChart::data@171");
-		var $spos = $s.length;
-		var $tmp = "group group-" + i;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	axisgroup.exit().remove();
-	var _g1 = 0, _g = dps.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		this.segments = dps[i];
-		var gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(Arrays.flatten(this.segments),this.variableDependents[i].type)];
-		var segmentgroup = gi.selectAll("path.line").data(this.segments);
-		if(null != this.y0property) {
-			var area = new thx.svg.Area($closure(this,"x"),this.getY0(i),this.getY1(i));
-			if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line area")).attr("d").stringf($closure(area,"shape"));
-		}
-		var $e = (this.lineEffect);
-		switch( $e[1] ) {
-		case 1:
-			var levels = $e[3], lightness = $e[2];
-			var levels1 = [levels];
-			var lightness1 = [lightness];
-			var fs = [[]];
-			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).eachNode((function(fs,lightness1) {
-				$s.push("rg.view.svg.widget.LineChart::data@217");
-				var $spos = $s.length;
-				var $tmp = function(n,i1) {
-					$s.push("rg.view.svg.widget.LineChart::data@217@217");
-					var $spos = $s.length;
-					var color = thx.js.Dom.selectNode(n).style("stroke").get();
-					if(null == color) color = "#000000";
-					var start = thx.color.Hsl.toHsl(thx.color.Colors.parse(color)), end = thx.color.Hsl.darker(start,lightness1[0]);
-					fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
-					$s.pop();
-				};
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			})(fs,lightness1)).remove();
-			var _g2 = 0;
-			while(_g2 < levels1[0]) {
-				var j = [_g2++];
-				segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
-					$s.push("rg.view.svg.widget.LineChart::data@231");
-					var $spos = $s.length;
-					var $tmp = function(_,i1) {
-						$s.push("rg.view.svg.widget.LineChart::data@231@231");
-						var $spos = $s.length;
-						var $tmp = fs[0][i1](j[0] / levels1[0]).hex("#");
-						$s.pop();
-						return $tmp;
-						$s.pop();
-					};
-					$s.pop();
-					return $tmp;
-					$s.pop();
-				})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i]);
-			}
-			break;
-		case 2:
-			var levels = $e[4], oy = $e[3], ox = $e[2];
-			var _g2 = 0;
-			while(_g2 < levels) {
-				var j = _g2++;
-				segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
-			}
-			break;
-		default:
-		}
-		var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).attr("d").stringf(this.linePathShape[i]);
-		switch( (this.lineEffect)[1] ) {
-		case 1:
-			path.classed().add("gradient");
-			break;
-		case 2:
-			path.classed().add("dropshadow");
-			break;
-		case 0:
-			path.classed().add("noeffect");
-			break;
-		}
-		segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
-		segmentgroup.exit().remove();
-		var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.variableDependents, onclick = ((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@268");
-			var $spos = $s.length;
-			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.widget.LineChart::data@268@268");
-				var $spos = $s.length;
-				var $tmp = (function() {
-					$s.push("rg.view.svg.widget.LineChart::data@268@268@268");
-					var $spos = $s.length;
-					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.widget.LineChart::data@268@268@268@268");
-						var $spos = $s.length;
-						var $tmp = f(a1,a2,a3);
-						$s.pop();
-						return $tmp;
-						$s.pop();
-					};
-					$s.pop();
-					return $tmp;
-					$s.pop();
-				})();
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})())($closure(this,"onclick"),stats[0]), onmouseover = ((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@269");
-			var $spos = $s.length;
-			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.widget.LineChart::data@269@269");
-				var $spos = $s.length;
-				var $tmp = (function() {
-					$s.push("rg.view.svg.widget.LineChart::data@269@269@269");
-					var $spos = $s.length;
-					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.widget.LineChart::data@269@269@269@269");
-						var $spos = $s.length;
-						var $tmp = f(a1,a2,a3);
-						$s.pop();
-						return $tmp;
-						$s.pop();
-					};
-					$s.pop();
-					return $tmp;
-					$s.pop();
-				})();
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})())($closure(this,"onmouseover"),stats[0]);
-		var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbols"));
-		var gsymbol = enter.selectAll("g.symbol").dataf((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@275");
-			var $spos = $s.length;
-			var $tmp = function(d,i1) {
-				$s.push("rg.view.svg.widget.LineChart::data@275@275");
-				var $spos = $s.length;
-				$s.pop();
-				return d;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
-		if(null != this.click) gsymbol.on("click",onclick);
-		if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
-		gsymbol.append("svg:circle").attr("r")["float"](4).style("fill").string("#000000").style("fill-opacity")["float"](0.0).style("stroke").string("none");
-		if(null != this.symbol) {
-			var sp = [this.symbol];
-			var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
-				$s.push("rg.view.svg.widget.LineChart::data@299");
-				var $spos = $s.length;
-				var $tmp = function(dp,_) {
-					$s.push("rg.view.svg.widget.LineChart::data@299@299");
-					var $spos = $s.length;
-					var $tmp = sp[0](dp,stats[0]);
-					$s.pop();
-					return $tmp;
-					$s.pop();
-				};
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			})(sp,stats));
-			if(null != this.symbolStyle) {
-				var ss = [this.symbolStyle];
-				spath.attr("style").stringf((function(ss,stats) {
-					$s.push("rg.view.svg.widget.LineChart::data@303");
-					var $spos = $s.length;
-					var $tmp = function(dp,_) {
-						$s.push("rg.view.svg.widget.LineChart::data@303@303");
-						var $spos = $s.length;
-						var $tmp = ss[0](dp,stats[0]);
-						$s.pop();
-						return $tmp;
-						$s.pop();
-					};
-					$s.pop();
-					return $tmp;
-					$s.pop();
-				})(ss,stats));
-			}
-		}
-		if(null != this.labelDataPoint) {
-			var f = [this.labelDataPoint];
-			gsymbol.eachNode((function(f,stats) {
-				$s.push("rg.view.svg.widget.LineChart::data@310");
-				var $spos = $s.length;
-				var $tmp = function(n,i1) {
-					$s.push("rg.view.svg.widget.LineChart::data@310@310");
-					var $spos = $s.length;
-					var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
-					label.setText(f[0](dp,stats[0]));
-					$s.pop();
-				};
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			})(f,stats));
-		}
-		gsymbols.update().selectAll("g.symbol").dataf((function() {
-			$s.push("rg.view.svg.widget.LineChart::data@322");
-			var $spos = $s.length;
-			var $tmp = function(d,i1) {
-				$s.push("rg.view.svg.widget.LineChart::data@322@322");
-				var $spos = $s.length;
-				$s.pop();
-				return d;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})()).update().attr("transform").stringf(this.getTranslatePointf(i));
-		gsymbols.exit().remove();
-	}
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.getTranslatePointf = function(pos) {
-	$s.push("rg.view.svg.widget.LineChart::getTranslatePointf");
-	var $spos = $s.length;
-	var x = $closure(this,"x"), y = this.getY1(pos);
-	var $tmp = function(dp,i) {
-		$s.push("rg.view.svg.widget.LineChart::getTranslatePointf@335");
-		var $spos = $s.length;
-		var $tmp = "translate(" + x(dp) + "," + y(dp,i) + ")";
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.onmouseover = function(stats,n,i) {
-	$s.push("rg.view.svg.widget.LineChart::onmouseover");
-	var $spos = $s.length;
-	var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
-	if(null == text) this.tooltip.hide(); else {
-		var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.widget.LineChart.coordsFromTransform(sel.attr("transform").get());
-		this.tooltip.show();
-		this.tooltip.setText(text.split("\n"));
-		this.tooltip.moveTo(coords[0],coords[1]);
-	}
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.onclick = function(stats,dp,i) {
-	$s.push("rg.view.svg.widget.LineChart::onclick");
-	var $spos = $s.length;
-	this.click(dp,stats);
-	$s.pop();
-}
-rg.view.svg.widget.LineChart.prototype.__class__ = rg.view.svg.widget.LineChart;
 if(!thx.translation) thx.translation = {}
 thx.translation.ITranslation = function() { }
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
@@ -8503,6 +8444,27 @@ haxe.io.Bytes.prototype.__class__ = haxe.io.Bytes;
 thx.math.Const = function() { }
 thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype.__class__ = thx.math.Const;
+rg.view.svg.widget.BarEffects = function() { }
+rg.view.svg.widget.BarEffects.__name__ = ["rg","view","svg","widget","BarEffects"];
+rg.view.svg.widget.BarEffects.parse = function(s) {
+	$s.push("rg.view.svg.widget.BarEffects::parse");
+	var $spos = $s.length;
+	var parts = s.toLowerCase().split("-");
+	switch(parts.shift()) {
+	case "gradient":
+		var lightness = 0.75, parameters = parts.pop();
+		if(null != parameters) lightness = Std.parseFloat(parameters.split(",").shift());
+		var $tmp = rg.view.svg.widget.BarEffect.Gradient(lightness);
+		$s.pop();
+		return $tmp;
+	default:
+		var $tmp = rg.view.svg.widget.BarEffect.NoEffect;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.view.svg.widget.BarEffects.prototype.__class__ = rg.view.svg.widget.BarEffects;
 rg.controller.factory.FactoryDataContext = function(factoryDataSource) {
 	if( factoryDataSource === $_ ) return;
 	$s.push("rg.controller.factory.FactoryDataContext::new");
@@ -9341,6 +9303,278 @@ utest.TestResult.prototype.allOk = function() {
 	$s.pop();
 }
 utest.TestResult.prototype.__class__ = utest.TestResult;
+rg.view.svg.widget.ChartPie = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.widget.ChartPie::new");
+	var $spos = $s.length;
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.addClass("pie-chart");
+	this.g.append("svg:defs");
+	this.pie = new thx.geom.layout.Pie();
+	this.animated = false;
+	this.animationDuration = 0;
+	this.gradientLightness = 1.5;
+	this.animationDelay = 0;
+	this.innerRadius = 0.0;
+	this.outerRadius = 0.9;
+	this.overRadius = 0.95;
+	this.labelRadius = 0.45;
+	this.labels = new Hash();
+	this.labelDisplay = true;
+	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
+	this.labelDontFlip = true;
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.__name__ = ["rg","view","svg","widget","ChartPie"];
+rg.view.svg.widget.ChartPie.__super__ = rg.view.svg.panel.Layer;
+for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.ChartPie.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.widget.ChartPie.prototype.innerRadius = null;
+rg.view.svg.widget.ChartPie.prototype.outerRadius = null;
+rg.view.svg.widget.ChartPie.prototype.overRadius = null;
+rg.view.svg.widget.ChartPie.prototype.labelRadius = null;
+rg.view.svg.widget.ChartPie.prototype.arcNormal = null;
+rg.view.svg.widget.ChartPie.prototype.arcStart = null;
+rg.view.svg.widget.ChartPie.prototype.arcBig = null;
+rg.view.svg.widget.ChartPie.prototype.pie = null;
+rg.view.svg.widget.ChartPie.prototype.radius = null;
+rg.view.svg.widget.ChartPie.prototype.stats = null;
+rg.view.svg.widget.ChartPie.prototype.variableDependent = null;
+rg.view.svg.widget.ChartPie.prototype.animated = null;
+rg.view.svg.widget.ChartPie.prototype.animationDuration = null;
+rg.view.svg.widget.ChartPie.prototype.animationEase = null;
+rg.view.svg.widget.ChartPie.prototype.gradientLightness = null;
+rg.view.svg.widget.ChartPie.prototype.animationDelay = null;
+rg.view.svg.widget.ChartPie.prototype.labelDisplay = null;
+rg.view.svg.widget.ChartPie.prototype.labelOrientation = null;
+rg.view.svg.widget.ChartPie.prototype.labelDontFlip = null;
+rg.view.svg.widget.ChartPie.prototype.labels = null;
+rg.view.svg.widget.ChartPie.prototype.mouseClick = null;
+rg.view.svg.widget.ChartPie.prototype.labelFormatDataPoint = function(dp,stats) {
+	$s.push("rg.view.svg.widget.ChartPie::labelFormatDataPoint");
+	var $spos = $s.length;
+	var $tmp = thx.culture.FormatNumber.percent(100 * Reflect.field(dp,this.variableDependent.type) / stats.tot,1);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.labelFormatDataPointOver = function(dp,stats) {
+	$s.push("rg.view.svg.widget.ChartPie::labelFormatDataPointOver");
+	var $spos = $s.length;
+	var $tmp = Ints.format(Reflect.field(dp,this.variableDependent.type));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.setVariables = function(variableIndependents,variableDependents) {
+	$s.push("rg.view.svg.widget.ChartPie::setVariables");
+	var $spos = $s.length;
+	this.variableDependent = variableDependents[0];
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.init = function() {
+	$s.push("rg.view.svg.widget.ChartPie::init");
+	var $spos = $s.length;
+	this.resize();
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.resize = function() {
+	$s.push("rg.view.svg.widget.ChartPie::resize");
+	var $spos = $s.length;
+	this.radius = Math.min(this.width,this.height) / 2;
+	this.arcStart = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.innerRadius);
+	this.arcNormal = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.outerRadius);
+	this.arcBig = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.overRadius);
+	if(this.width > this.height) this.g.attr("transform").string("translate(" + (this.width / 2 - this.height / 2) + ",0)"); else this.g.attr("transform").string("translate(0," + (this.height / 2 - this.width / 2) + ")");
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.data = function(dp) {
+	$s.push("rg.view.svg.widget.ChartPie::data");
+	var $spos = $s.length;
+	var pv = this.variableDependent.type;
+	dp = Arrays.filter(dp,function(dp1) {
+		$s.push("rg.view.svg.widget.ChartPie::data@151");
+		var $spos = $s.length;
+		var $tmp = Reflect.field(dp1,pv) > 0;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	this.stats = rg.util.DataPoints.stats(dp,this.variableDependent.type);
+	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
+	var enter = choice.enter();
+	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
+		$s.push("rg.view.svg.widget.ChartPie::data@162");
+		var $spos = $s.length;
+		var $tmp = "group item-" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
+	var path = arc.append("svg:path").attr("class").string("slice");
+	arc.eachNode($closure(this,"applyGradient"));
+	if(this.animated) {
+		path.attr("d").stringf(this.arcShape(this.arcStart));
+		arc.eachNode($closure(this,"fadein")).onNode("mouseover.animation",$closure(this,"highlight")).onNode("mouseout.animation",$closure(this,"backtonormal"));
+	} else path.attr("d").stringf(this.arcShape(this.arcNormal));
+	if(this.labelDisplay) arc.eachNode($closure(this,"appendLabel"));
+	if(null != this.mouseClick) arc.onNode("click.user",$closure(this,"onMouseClick"));
+	choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
+	if(this.labelDisplay) choice.update().eachNode($closure(this,"updateLabel"));
+	choice.exit().eachNode($closure(this,"removeLabel")).remove();
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.onMouseClick = function(dom,i) {
+	$s.push("rg.view.svg.widget.ChartPie::onMouseClick");
+	var $spos = $s.length;
+	var d = Reflect.field(dom,"__data__");
+	this.mouseClick(d.dp);
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.removeLabel = function(dom,i) {
+	$s.push("rg.view.svg.widget.ChartPie::removeLabel");
+	var $spos = $s.length;
+	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
+	var label = this.labels.get(d.id);
+	label.destroy();
+	this.labels.remove(d.id);
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.updateLabel = function(dom,i) {
+	$s.push("rg.view.svg.widget.ChartPie::updateLabel");
+	var $spos = $s.length;
+	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
+	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.appendLabel = function(dom,i) {
+	$s.push("rg.view.svg.widget.ChartPie::appendLabel");
+	var $spos = $s.length;
+	var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+	label.setOrientation(this.labelOrientation);
+	switch( (this.labelOrientation)[1] ) {
+	case 0:
+		label.setAnchor(rg.view.svg.widget.GridAnchor.Center);
+		break;
+	case 1:
+		label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
+		break;
+	case 2:
+		label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
+		break;
+	}
+	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
+	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
+	this.labels.set(d.id,label);
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.applyGradient = function(n,i) {
+	$s.push("rg.view.svg.widget.ChartPie::applyGradient");
+	var $spos = $s.length;
+	var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
+	if(this.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
+		var slice = gn.select("path.slice"), shape = this.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = t.node().getBBox();
+		t.remove();
+		var color = slice.style("fill").get();
+		if(null == color) color = "#cccccc";
+		var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(thx.color.Colors.parse(color)),this.gradientLightness).toRgbString();
+		var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
+		var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
+		var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
+		stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
+		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color).attr("stop-opacity")["float"](1);
+	}
+	gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.fadein = function(n,i) {
+	$s.push("rg.view.svg.widget.ChartPie::fadein");
+	var $spos = $s.length;
+	var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
+	gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay).attr("d").string(shape);
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.highlight = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartPie::highlight");
+	var $spos = $s.length;
+	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcBig));
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.backtonormal = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartPie::backtonormal");
+	var $spos = $s.length;
+	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.id = function(o,i) {
+	$s.push("rg.view.svg.widget.ChartPie::id");
+	var $spos = $s.length;
+	var $tmp = o.id;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.makeid = function(dp) {
+	$s.push("rg.view.svg.widget.ChartPie::makeid");
+	var $spos = $s.length;
+	var o = Objects.clone(dp);
+	Reflect.deleteField(o,this.variableDependent.type);
+	var $tmp = haxe.Md5.encode(Dynamics.string(o));
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.arcShape = function(a) {
+	$s.push("rg.view.svg.widget.ChartPie::arcShape");
+	var $spos = $s.length;
+	var $tmp = function(d,i) {
+		$s.push("rg.view.svg.widget.ChartPie::arcShape@339");
+		var $spos = $s.length;
+		var $tmp = a.shape(d);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.pief = function(dp) {
+	$s.push("rg.view.svg.widget.ChartPie::pief");
+	var $spos = $s.length;
+	var name = this.variableDependent.type, temp = dp.map(function(d,i) {
+		$s.push("rg.view.svg.widget.ChartPie::pief@348");
+		var $spos = $s.length;
+		var $tmp = Reflect.field(d,name);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}), arr = this.pie.pie(temp);
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var id = this.makeid(dp[i]);
+		arr[i]["id"] = id;
+		arr[i]["dp"] = dp[i];
+	}
+	$s.pop();
+	return arr;
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.destroy = function() {
+	$s.push("rg.view.svg.widget.ChartPie::destroy");
+	var $spos = $s.length;
+	var $it0 = this.labels.iterator();
+	while( $it0.hasNext() ) {
+		var label = $it0.next();
+		label.destroy();
+	}
+	rg.view.svg.panel.Layer.prototype.destroy.call(this);
+	$s.pop();
+}
+rg.view.svg.widget.ChartPie.prototype.__class__ = rg.view.svg.widget.ChartPie;
 Iterables = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.indexOf = function(it,v,f) {
@@ -10850,7 +11084,7 @@ rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,l
 	switch(type) {
 	case "linechart":
 		var chart = new rg.controller.visualization.VisualizationLineChart(layout);
-		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoLineChart(),options);
+		chart.info = chart.infoLine = rg.controller.info.Info.feed(new rg.controller.info.InfoLineChart(),options);
 		$s.pop();
 		return chart;
 	case "piechart":
@@ -10858,8 +11092,13 @@ rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,l
 		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoPieChart(),options);
 		$s.pop();
 		return chart;
+	case "barchart":
+		var chart = new rg.controller.visualization.VisualizationBarChart(layout);
+		chart.info = chart.infoBar = rg.controller.info.Info.feed(new rg.controller.info.InfoBarChart(),options);
+		$s.pop();
+		return chart;
 	default:
-		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 35, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 41, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 	}
 	$s.pop();
 }
@@ -11177,22 +11416,25 @@ rg.data.ITickmark.prototype.major = null;
 rg.data.ITickmark.prototype.value = null;
 rg.data.ITickmark.prototype.label = null;
 rg.data.ITickmark.prototype.__class__ = rg.data.ITickmark;
-rg.data.TickmarkOrdinal = function(pos,values) {
+rg.data.TickmarkOrdinal = function(pos,values,major,scaleDistribution) {
 	if( pos === $_ ) return;
 	$s.push("rg.data.TickmarkOrdinal::new");
 	var $spos = $s.length;
+	if(major == null) major = true;
 	this.pos = pos;
 	this.values = values;
+	this.scaleDistribution = scaleDistribution;
+	this.major = major;
 	$s.pop();
 }
 rg.data.TickmarkOrdinal.__name__ = ["rg","data","TickmarkOrdinal"];
-rg.data.TickmarkOrdinal.fromArray = function(values) {
+rg.data.TickmarkOrdinal.fromArray = function(values,scaleDistribution) {
 	$s.push("rg.data.TickmarkOrdinal::fromArray");
 	var $spos = $s.length;
 	var $tmp = values.map(function(_,i) {
 		$s.push("rg.data.TickmarkOrdinal::fromArray@15");
 		var $spos = $s.length;
-		var $tmp = new rg.data.TickmarkOrdinal(i,values);
+		var $tmp = new rg.data.TickmarkOrdinal(i,values,null,scaleDistribution);
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -11203,11 +11445,12 @@ rg.data.TickmarkOrdinal.fromArray = function(values) {
 }
 rg.data.TickmarkOrdinal.prototype.pos = null;
 rg.data.TickmarkOrdinal.prototype.values = null;
+rg.data.TickmarkOrdinal.prototype.scaleDistribution = null;
 rg.data.TickmarkOrdinal.prototype.delta = null;
 rg.data.TickmarkOrdinal.prototype.getDelta = function() {
 	$s.push("rg.data.TickmarkOrdinal::getDelta");
 	var $spos = $s.length;
-	var $tmp = this.pos / (this.values.length - 1);
+	var $tmp = rg.data.ScaleDistributions.distribute(this.scaleDistribution,this.pos,this.values.length);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -11216,8 +11459,9 @@ rg.data.TickmarkOrdinal.prototype.major = null;
 rg.data.TickmarkOrdinal.prototype.getMajor = function() {
 	$s.push("rg.data.TickmarkOrdinal::getMajor");
 	var $spos = $s.length;
+	var $tmp = this.major;
 	$s.pop();
-	return true;
+	return $tmp;
 	$s.pop();
 }
 rg.data.TickmarkOrdinal.prototype.value = null;
@@ -11256,147 +11500,24 @@ rg.controller.visualization.VisualizationLineChart = function(layout) {
 	if( layout === $_ ) return;
 	$s.push("rg.controller.visualization.VisualizationLineChart::new");
 	var $spos = $s.length;
-	rg.controller.visualization.VisualizationSvg.call(this,layout);
+	rg.controller.visualization.VisualizationCartesian.call(this,layout);
 	$s.pop();
 }
 rg.controller.visualization.VisualizationLineChart.__name__ = ["rg","controller","visualization","VisualizationLineChart"];
-rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.visualization.VisualizationSvg;
-for(var k in rg.controller.visualization.VisualizationSvg.prototype ) rg.controller.visualization.VisualizationLineChart.prototype[k] = rg.controller.visualization.VisualizationSvg.prototype[k];
-rg.controller.visualization.VisualizationLineChart.prototype.info = null;
-rg.controller.visualization.VisualizationLineChart.prototype.chart = null;
-rg.controller.visualization.VisualizationLineChart.prototype.xlabel = null;
-rg.controller.visualization.VisualizationLineChart.prototype.xpanel = null;
-rg.controller.visualization.VisualizationLineChart.prototype.ypanels = null;
-rg.controller.visualization.VisualizationLineChart.prototype.title = null;
-rg.controller.visualization.VisualizationLineChart.prototype.init = function() {
-	$s.push("rg.controller.visualization.VisualizationLineChart::init");
-	var $spos = $s.length;
-	this.initYAxes();
-	this.initXAxis();
-	this.initTitle();
-	this.initPadding();
-	this.initChart();
-	$s.pop();
-}
-rg.controller.visualization.VisualizationLineChart.prototype.initPadding = function() {
-	$s.push("rg.controller.visualization.VisualizationLineChart::initPadding");
-	var $spos = $s.length;
-	this.layout.adjustPadding();
-	$s.pop();
-}
-rg.controller.visualization.VisualizationLineChart.prototype.initYAxes = function() {
-	$s.push("rg.controller.visualization.VisualizationLineChart::initYAxes");
-	var $spos = $s.length;
-	this.ypanels = [];
-	var _g1 = 0, _g = this.dependentVariables.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var context = this.layout.getContext("y" + i);
-		if(null == context) continue;
-		var panel = context.panel;
-		this.ypanels.push({ id : i, panel : panel, tickmarks : new rg.view.svg.widget.ChartTickmarks(panel,context.anchor), isleft : (function($this) {
-			var $r;
-			switch( (context.anchor)[1] ) {
-			case 3:
-				$r = true;
-				break;
-			default:
-				$r = false;
-			}
-			return $r;
-		}(this))});
-		var title, pname = "y" + i + "title";
-		if(null == this.info.label.axis || null == (title = this.info.label.axis(this.dependentVariables[i].type))) continue;
-		var context1 = this.layout.getContext(pname);
-		if(null == context1) continue;
-		var t = new rg.view.svg.widget.Title(context1.panel,title,context1.anchor,null,"axis-title");
-		var h = t.idealHeight();
-		this.layout.suggestSize(pname,h);
-	}
-	$s.pop();
-}
-rg.controller.visualization.VisualizationLineChart.prototype.initXAxis = function() {
-	$s.push("rg.controller.visualization.VisualizationLineChart::initXAxis");
-	var $spos = $s.length;
-	var context = this.layout.getContext("x");
-	if(null == context) {
-		$s.pop();
-		return;
-	}
-	this.xpanel = context.panel;
-	this.xlabel = new rg.view.svg.widget.ChartTickmarks(this.xpanel,context.anchor);
-	var title;
-	if(null == this.info.label.axis || null == (title = this.info.label.axis(this.independentVariables[0].type))) {
-		$s.pop();
-		return;
-	}
-	var context1 = this.layout.getContext("xtitle");
-	if(null == context1) {
-		$s.pop();
-		return;
-	}
-	var t = new rg.view.svg.widget.Title(context1.panel,title,context1.anchor,null,"axis-title");
-	var h = t.idealHeight();
-	this.layout.suggestSize("xtitle",h);
-	$s.pop();
-}
+rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.visualization.VisualizationCartesian;
+for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationLineChart.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
+rg.controller.visualization.VisualizationLineChart.prototype.infoLine = null;
 rg.controller.visualization.VisualizationLineChart.prototype.initChart = function() {
 	$s.push("rg.controller.visualization.VisualizationLineChart::initChart");
 	var $spos = $s.length;
-	var main = this.layout.getPanel(this.layout.mainPanelName);
-	this.chart = new rg.view.svg.widget.LineChart(main);
-	this.chart.animated = this.info.animation.animated;
-	this.chart.animationDuration = this.info.animation.duration;
-	this.chart.animationEase = this.info.animation.ease;
-	this.chart.symbol = this.info.symbol;
-	this.chart.symbolStyle = this.info.symbolStyle;
-	this.chart.click = this.info.click;
-	this.chart.labelDataPoint = this.info.label.datapoint;
-	this.chart.labelDataPointOver = this.info.label.datapointover;
-	this.chart.lineInterpolator = this.info.line.interpolation;
-	this.chart.lineEffect = this.info.line.effect;
-	if(null != this.info.y0property) this.chart.y0property = this.info.y0property; else if(this.info.displayarea) this.chart.y0property = "";
-	this.chart.init();
-	$s.pop();
-}
-rg.controller.visualization.VisualizationLineChart.prototype.initTitle = function() {
-	$s.push("rg.controller.visualization.VisualizationLineChart::initTitle");
-	var $spos = $s.length;
-	if(null == this.info.label.title) {
-		$s.pop();
-		return;
-	}
-	var panelContextTitle = this.layout.getContext("title");
-	if(null == panelContextTitle) {
-		$s.pop();
-		return;
-	}
-	this.title = new rg.view.svg.widget.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
-	$s.pop();
-}
-rg.controller.visualization.VisualizationLineChart.prototype.feedData = function(data) {
-	$s.push("rg.controller.visualization.VisualizationLineChart::feedData");
-	var $spos = $s.length;
-	if(null != this.title && null != this.info.label.title) {
-		this.title.setText(this.info.label.title(this.getVariables(),data));
-		this.layout.suggestSize("title",this.title.idealHeight());
-	}
-	var _g1 = 0, _g = this.ypanels.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var item = this.ypanels[i], variable = this.dependentVariables[item.id];
-		item.tickmarks.update(variable.axis,variable.min,variable.max);
-		var size = Math.round(item.tickmarks.desiredSize);
-		this.layout.suggestSize("y" + item.id,size);
-	}
-	if(null != this.xlabel) {
-		var variable = this.independentVariables[0];
-		this.xlabel.update(variable.axis,variable.min,variable.max);
-		var size = this.xlabel.desiredSize;
-		this.layout.suggestSize("x",Math.round(size));
-	}
-	this.chart.setVariables(this.independentVariables,this.dependentVariables);
-	this.chart.data(this.transformData(data));
+	var chart = new rg.view.svg.widget.ChartLine(this.layout.getPanel(this.layout.mainPanelName));
+	chart.symbol = this.infoLine.symbol;
+	chart.symbolStyle = this.infoLine.symbolStyle;
+	chart.lineInterpolator = this.infoLine.interpolation;
+	chart.lineEffect = this.infoLine.effect;
+	if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.data.ScaleDistribution.ScaleFill;
+	if(null != this.infoLine.y0property) chart.y0property = this.infoLine.y0property; else if(this.infoLine.displayarea) chart.y0property = "";
+	this.chart = chart;
 	$s.pop();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.transformData = function(dps) {
@@ -11412,12 +11533,6 @@ rg.controller.visualization.VisualizationLineChart.prototype.transformData = fun
 	}
 	$s.pop();
 	return results;
-	$s.pop();
-}
-rg.controller.visualization.VisualizationLineChart.prototype.destroy = function() {
-	$s.push("rg.controller.visualization.VisualizationLineChart::destroy");
-	var $spos = $s.length;
-	this.chart.destroy();
 	$s.pop();
 }
 rg.controller.visualization.VisualizationLineChart.prototype.__class__ = rg.controller.visualization.VisualizationLineChart;
@@ -13784,278 +13899,64 @@ rg.view.frame.Stack.prototype.toString = function() {
 	$s.pop();
 }
 rg.view.frame.Stack.prototype.__class__ = rg.view.frame.Stack;
-rg.view.svg.widget.PieChart = function(panel) {
+rg.view.svg.widget.ChartCartesian = function(panel) {
 	if( panel === $_ ) return;
-	$s.push("rg.view.svg.widget.PieChart::new");
+	$s.push("rg.view.svg.widget.ChartCartesian::new");
 	var $spos = $s.length;
 	rg.view.svg.panel.Layer.call(this,panel);
-	this.addClass("pie-chart");
-	this.g.append("svg:defs");
-	this.pie = new thx.geom.layout.Pie();
-	this.animated = false;
-	this.animationDuration = 0;
-	this.gradientLightness = 1.5;
-	this.animationDelay = 0;
-	this.innerRadius = 0.0;
-	this.outerRadius = 0.9;
-	this.overRadius = 0.95;
-	this.labelRadius = 0.45;
-	this.labels = new Hash();
-	this.labelDisplay = true;
-	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
-	this.labelDontFlip = true;
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.linear;
 	$s.pop();
 }
-rg.view.svg.widget.PieChart.__name__ = ["rg","view","svg","widget","PieChart"];
-rg.view.svg.widget.PieChart.__super__ = rg.view.svg.panel.Layer;
-for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.PieChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
-rg.view.svg.widget.PieChart.prototype.innerRadius = null;
-rg.view.svg.widget.PieChart.prototype.outerRadius = null;
-rg.view.svg.widget.PieChart.prototype.overRadius = null;
-rg.view.svg.widget.PieChart.prototype.labelRadius = null;
-rg.view.svg.widget.PieChart.prototype.arcNormal = null;
-rg.view.svg.widget.PieChart.prototype.arcStart = null;
-rg.view.svg.widget.PieChart.prototype.arcBig = null;
-rg.view.svg.widget.PieChart.prototype.pie = null;
-rg.view.svg.widget.PieChart.prototype.radius = null;
-rg.view.svg.widget.PieChart.prototype.stats = null;
-rg.view.svg.widget.PieChart.prototype.variableDependent = null;
-rg.view.svg.widget.PieChart.prototype.animated = null;
-rg.view.svg.widget.PieChart.prototype.animationDuration = null;
-rg.view.svg.widget.PieChart.prototype.animationEase = null;
-rg.view.svg.widget.PieChart.prototype.gradientLightness = null;
-rg.view.svg.widget.PieChart.prototype.animationDelay = null;
-rg.view.svg.widget.PieChart.prototype.labelDisplay = null;
-rg.view.svg.widget.PieChart.prototype.labelOrientation = null;
-rg.view.svg.widget.PieChart.prototype.labelDontFlip = null;
-rg.view.svg.widget.PieChart.prototype.labels = null;
-rg.view.svg.widget.PieChart.prototype.mouseClick = null;
-rg.view.svg.widget.PieChart.prototype.labelFormatDataPoint = function(dp,stats) {
-	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPoint");
+rg.view.svg.widget.ChartCartesian.__name__ = ["rg","view","svg","widget","ChartCartesian"];
+rg.view.svg.widget.ChartCartesian.__super__ = rg.view.svg.panel.Layer;
+for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.widget.ChartCartesian.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.widget.ChartCartesian.prototype.variableDependents = null;
+rg.view.svg.widget.ChartCartesian.prototype.variableIndependent = null;
+rg.view.svg.widget.ChartCartesian.prototype.animated = null;
+rg.view.svg.widget.ChartCartesian.prototype.animationDuration = null;
+rg.view.svg.widget.ChartCartesian.prototype.animationEase = null;
+rg.view.svg.widget.ChartCartesian.prototype.click = null;
+rg.view.svg.widget.ChartCartesian.prototype.labelDataPoint = null;
+rg.view.svg.widget.ChartCartesian.prototype.labelDataPointOver = null;
+rg.view.svg.widget.ChartCartesian.prototype.tooltip = null;
+rg.view.svg.widget.ChartCartesian.prototype.setVariables = function(variableIndependents,variableDependents) {
+	$s.push("rg.view.svg.widget.ChartCartesian::setVariables");
 	var $spos = $s.length;
-	var $tmp = thx.culture.FormatNumber.percent(100 * Reflect.field(dp,this.variableDependent.type) / stats.tot,1);
-	$s.pop();
-	return $tmp;
+	this.variableIndependent = variableIndependents[0];
+	this.variableDependents = variableDependents;
 	$s.pop();
 }
-rg.view.svg.widget.PieChart.prototype.labelFormatDataPointOver = function(dp,stats) {
-	$s.push("rg.view.svg.widget.PieChart::labelFormatDataPointOver");
+rg.view.svg.widget.ChartCartesian.prototype.data = function(dps) {
+	$s.push("rg.view.svg.widget.ChartCartesian::data");
 	var $spos = $s.length;
-	var $tmp = Ints.format(Reflect.field(dp,this.variableDependent.type));
-	$s.pop();
-	return $tmp;
+	throw new thx.error.AbstractMethod({ fileName : "ChartCartesian.hx", lineNumber : 45, className : "rg.view.svg.widget.ChartCartesian", methodName : "data"});
 	$s.pop();
 }
-rg.view.svg.widget.PieChart.prototype.setVariables = function(variableIndependents,variableDependents) {
-	$s.push("rg.view.svg.widget.PieChart::setVariables");
+rg.view.svg.widget.ChartCartesian.prototype.init = function() {
+	$s.push("rg.view.svg.widget.ChartCartesian::init");
 	var $spos = $s.length;
-	this.variableDependent = variableDependents[0];
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.init = function() {
-	$s.push("rg.view.svg.widget.PieChart::init");
-	var $spos = $s.length;
-	this.resize();
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.resize = function() {
-	$s.push("rg.view.svg.widget.PieChart::resize");
-	var $spos = $s.length;
-	this.radius = Math.min(this.width,this.height) / 2;
-	this.arcStart = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.innerRadius);
-	this.arcNormal = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.outerRadius);
-	this.arcBig = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.overRadius);
-	if(this.width > this.height) this.g.attr("transform").string("translate(" + (this.width / 2 - this.height / 2) + ",0)"); else this.g.attr("transform").string("translate(0," + (this.height / 2 - this.width / 2) + ")");
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.data = function(dp) {
-	$s.push("rg.view.svg.widget.PieChart::data");
-	var $spos = $s.length;
-	var pv = this.variableDependent.type;
-	dp = Arrays.filter(dp,function(dp1) {
-		$s.push("rg.view.svg.widget.PieChart::data@151");
-		var $spos = $s.length;
-		var $tmp = Reflect.field(dp1,pv) > 0;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	});
-	this.stats = rg.util.DataPoints.stats(dp,this.variableDependent.type);
-	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
-	var enter = choice.enter();
-	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::data@162");
-		var $spos = $s.length;
-		var $tmp = "group item-" + i;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
-	var path = arc.append("svg:path").attr("class").string("slice");
-	arc.eachNode($closure(this,"applyGradient"));
-	if(this.animated) {
-		path.attr("d").stringf(this.arcShape(this.arcStart));
-		arc.eachNode($closure(this,"fadein")).onNode("mouseover.animation",$closure(this,"highlight")).onNode("mouseout.animation",$closure(this,"backtonormal"));
-	} else path.attr("d").stringf(this.arcShape(this.arcNormal));
-	if(this.labelDisplay) arc.eachNode($closure(this,"appendLabel"));
-	if(null != this.mouseClick) arc.onNode("click.user",$closure(this,"onMouseClick"));
-	choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
-	if(this.labelDisplay) choice.update().eachNode($closure(this,"updateLabel"));
-	choice.exit().eachNode($closure(this,"removeLabel")).remove();
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.onMouseClick = function(dom,i) {
-	$s.push("rg.view.svg.widget.PieChart::onMouseClick");
-	var $spos = $s.length;
-	var d = Reflect.field(dom,"__data__");
-	this.mouseClick(d.dp);
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.removeLabel = function(dom,i) {
-	$s.push("rg.view.svg.widget.PieChart::removeLabel");
-	var $spos = $s.length;
-	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
-	var label = this.labels.get(d.id);
-	label.destroy();
-	this.labels.remove(d.id);
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.updateLabel = function(dom,i) {
-	$s.push("rg.view.svg.widget.PieChart::updateLabel");
-	var $spos = $s.length;
-	var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
-	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.appendLabel = function(dom,i) {
-	$s.push("rg.view.svg.widget.PieChart::appendLabel");
-	var $spos = $s.length;
-	var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-	label.setOrientation(this.labelOrientation);
-	switch( (this.labelOrientation)[1] ) {
-	case 0:
-		label.setAnchor(rg.view.svg.widget.GridAnchor.Center);
-		break;
-	case 1:
-		label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
-		break;
-	case 2:
-		label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
-		break;
-	}
-	label.setText(this.labelFormatDataPoint(d.dp,this.stats));
-	label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
-	this.labels.set(d.id,label);
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.applyGradient = function(n,i) {
-	$s.push("rg.view.svg.widget.PieChart::applyGradient");
-	var $spos = $s.length;
-	var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
-	if(this.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
-		var slice = gn.select("path.slice"), shape = this.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = t.node().getBBox();
-		t.remove();
-		var color = slice.style("fill").get();
-		if(null == color) color = "#cccccc";
-		var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(thx.color.Colors.parse(color)),this.gradientLightness).toRgbString();
-		var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
-		var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
-		var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
-		stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
-		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color).attr("stop-opacity")["float"](1);
-	}
-	gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.fadein = function(n,i) {
-	$s.push("rg.view.svg.widget.PieChart::fadein");
-	var $spos = $s.length;
-	var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
-	gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay).attr("d").string(shape);
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.highlight = function(d,i) {
-	$s.push("rg.view.svg.widget.PieChart::highlight");
-	var $spos = $s.length;
-	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
-	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcBig));
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.backtonormal = function(d,i) {
-	$s.push("rg.view.svg.widget.PieChart::backtonormal");
-	var $spos = $s.length;
-	var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
-	slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.id = function(o,i) {
-	$s.push("rg.view.svg.widget.PieChart::id");
-	var $spos = $s.length;
-	var $tmp = o.id;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.makeid = function(dp) {
-	$s.push("rg.view.svg.widget.PieChart::makeid");
-	var $spos = $s.length;
-	var o = Objects.clone(dp);
-	Reflect.deleteField(o,this.variableDependent.type);
-	var $tmp = haxe.Md5.encode(Dynamics.string(o));
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.arcShape = function(a) {
-	$s.push("rg.view.svg.widget.PieChart::arcShape");
-	var $spos = $s.length;
-	var $tmp = function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::arcShape@339");
-		var $spos = $s.length;
-		var $tmp = a.shape(d);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	};
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.pief = function(dp) {
-	$s.push("rg.view.svg.widget.PieChart::pief");
-	var $spos = $s.length;
-	var name = this.variableDependent.type, temp = dp.map(function(d,i) {
-		$s.push("rg.view.svg.widget.PieChart::pief@348");
-		var $spos = $s.length;
-		var $tmp = Reflect.field(d,name);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}), arr = this.pie.pie(temp);
-	var _g1 = 0, _g = arr.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var id = this.makeid(dp[i]);
-		arr[i]["id"] = id;
-		arr[i]["dp"] = dp[i];
+	if(null != this.labelDataPointOver) {
+		this.tooltip = new rg.view.svg.widget.Baloon(this.g);
+		var x = 0.0, y = 0.0, w = 0.0, h = 0.0;
+		var p = this.panel, frame;
+		while(null != p) {
+			frame = p.frame;
+			haxe.Log.trace(frame,{ fileName : "ChartCartesian.hx", lineNumber : 59, className : "rg.view.svg.widget.ChartCartesian", methodName : "init"});
+			x += frame.x;
+			y += frame.y;
+			w = frame.width;
+			h = frame.height;
+			p = p.parent;
+		}
+		haxe.Log.trace("DONE",{ fileName : "ChartCartesian.hx", lineNumber : 66, className : "rg.view.svg.widget.ChartCartesian", methodName : "init"});
+		var box = { x : -x, y : -y, width : w, height : h};
+		this.tooltip.setBoundingBox(box);
 	}
 	$s.pop();
-	return arr;
-	$s.pop();
 }
-rg.view.svg.widget.PieChart.prototype.destroy = function() {
-	$s.push("rg.view.svg.widget.PieChart::destroy");
-	var $spos = $s.length;
-	var $it0 = this.labels.iterator();
-	while( $it0.hasNext() ) {
-		var label = $it0.next();
-		label.destroy();
-	}
-	rg.view.svg.panel.Layer.prototype.destroy.call(this);
-	$s.pop();
-}
-rg.view.svg.widget.PieChart.prototype.__class__ = rg.view.svg.widget.PieChart;
+rg.view.svg.widget.ChartCartesian.prototype.__class__ = rg.view.svg.widget.ChartCartesian;
 rg.util.DataPoints = function() { }
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
 rg.util.DataPoints.partition = function(dps,property,def) {
@@ -14470,78 +14371,22 @@ rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,
 	$s.pop();
 }
 rg.controller.factory.FactoryHtmlVisualization.prototype.__class__ = rg.controller.factory.FactoryHtmlVisualization;
-rg.data.Tickmark = function(value,major,delta) {
-	if( value === $_ ) return;
-	$s.push("rg.data.Tickmark::new");
-	var $spos = $s.length;
-	this.value = value;
-	this.major = major;
-	this.delta = delta;
-	$s.pop();
-}
-rg.data.Tickmark.__name__ = ["rg","data","Tickmark"];
-rg.data.Tickmark.prototype.delta = null;
-rg.data.Tickmark.prototype.major = null;
-rg.data.Tickmark.prototype.value = null;
-rg.data.Tickmark.prototype.label = null;
-rg.data.Tickmark.prototype.getDelta = function() {
-	$s.push("rg.data.Tickmark::getDelta");
-	var $spos = $s.length;
-	var $tmp = this.delta;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.Tickmark.prototype.getMajor = function() {
-	$s.push("rg.data.Tickmark::getMajor");
-	var $spos = $s.length;
-	var $tmp = this.major;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.Tickmark.prototype.getValue = function() {
-	$s.push("rg.data.Tickmark::getValue");
-	var $spos = $s.length;
-	var $tmp = this.value;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.Tickmark.prototype.getLabel = function() {
-	$s.push("rg.data.Tickmark::getLabel");
-	var $spos = $s.length;
-	var $tmp = rg.util.RGStrings.humanize(this.getValue());
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.Tickmark.prototype.toString = function() {
-	$s.push("rg.data.Tickmark::toString");
-	var $spos = $s.length;
-	var $tmp = rg.data.Tickmarks.string(this);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.Tickmark.prototype.__class__ = rg.data.Tickmark;
-rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
-rg.data.TickmarkTime = function(value,major,delta,periodicity) {
+rg.data.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
 	if( value === $_ ) return;
 	$s.push("rg.data.TickmarkTime::new");
 	var $spos = $s.length;
-	rg.data.Tickmark.call(this,value,major,delta);
+	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
 	this.periodicity = periodicity;
 	$s.pop();
 }
 rg.data.TickmarkTime.__name__ = ["rg","data","TickmarkTime"];
-rg.data.TickmarkTime.__super__ = rg.data.Tickmark;
-for(var k in rg.data.Tickmark.prototype ) rg.data.TickmarkTime.prototype[k] = rg.data.Tickmark.prototype[k];
+rg.data.TickmarkTime.__super__ = rg.data.TickmarkOrdinal;
+for(var k in rg.data.TickmarkOrdinal.prototype ) rg.data.TickmarkTime.prototype[k] = rg.data.TickmarkOrdinal.prototype[k];
 rg.data.TickmarkTime.prototype.periodicity = null;
 rg.data.TickmarkTime.prototype.getLabel = function() {
 	$s.push("rg.data.TickmarkTime::getLabel");
 	var $spos = $s.length;
-	var $tmp = rg.util.Periodicity.smartFormat(this.periodicity,this.getValue());
+	var $tmp = rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -14903,7 +14748,7 @@ rg.controller.info.TestInfoLayout.prototype.testSize = function() {
 rg.controller.info.TestInfoLayout.prototype.testType = function() {
 	$s.push("rg.controller.info.TestInfoLayout::testType");
 	var $spos = $s.length;
-	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),{ visualization : "LineChart"});
+	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),{ visualization : "lineChart"});
 	utest.Assert.equals("linechart",info.type,null,{ fileName : "TestInfoLayout.hx", lineNumber : 22, className : "rg.controller.info.TestInfoLayout", methodName : "testType"});
 	$s.pop();
 }
@@ -14912,8 +14757,6 @@ rg.controller.info.TestInfoLayout.prototype.testLayout = function() {
 	var $spos = $s.length;
 	var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),{ layout : "simple"});
 	utest.Assert.equals("simple",info.layout,null,{ fileName : "TestInfoLayout.hx", lineNumber : 28, className : "rg.controller.info.TestInfoLayout", methodName : "testLayout"});
-	info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),{ layout : "simpleReverse"});
-	utest.Assert.equals("simplereverse",info.layout,null,{ fileName : "TestInfoLayout.hx", lineNumber : 31, className : "rg.controller.info.TestInfoLayout", methodName : "testLayout"});
 	$s.pop();
 }
 rg.controller.info.TestInfoLayout.prototype.__class__ = rg.controller.info.TestInfoLayout;
@@ -15241,11 +15084,12 @@ Enums.compare = function(a,b) {
 	$s.pop();
 }
 Enums.prototype.__class__ = Enums;
-rg.data.Variable = function(type,min,max) {
+rg.data.Variable = function(type,scaleDistribution,min,max) {
 	if( type === $_ ) return;
 	$s.push("rg.data.Variable::new");
 	var $spos = $s.length;
 	this.type = type;
+	this.scaleDistribution = scaleDistribution;
 	this.min = min;
 	this.max = max;
 	$s.pop();
@@ -15254,32 +15098,33 @@ rg.data.Variable.__name__ = ["rg","data","Variable"];
 rg.data.Variable.prototype.type = null;
 rg.data.Variable.prototype.min = null;
 rg.data.Variable.prototype.max = null;
+rg.data.Variable.prototype.scaleDistribution = null;
 rg.data.Variable.prototype.__class__ = rg.data.Variable;
-rg.data.VariableIndependent = function(type,axis,min,max) {
+rg.data.VariableIndependent = function(type,axis,scaleDistribution,min,max) {
 	if( type === $_ ) return;
 	$s.push("rg.data.VariableIndependent::new");
 	var $spos = $s.length;
-	rg.data.Variable.call(this,type,min,max);
+	rg.data.Variable.call(this,type,scaleDistribution,min,max);
 	this.axis = axis;
 	$s.pop();
 }
 rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
 rg.data.VariableIndependent.__super__ = rg.data.Variable;
 for(var k in rg.data.Variable.prototype ) rg.data.VariableIndependent.prototype[k] = rg.data.Variable.prototype[k];
-rg.data.VariableIndependent.forTime = function(type,periodicity,min,max) {
+rg.data.VariableIndependent.forTime = function(type,periodicity,scaleDistribution,min,max) {
 	$s.push("rg.data.VariableIndependent::forTime");
 	var $spos = $s.length;
 	var axis = new rg.data.AxisTime(periodicity);
-	var $tmp = new rg.data.VariableIndependent(type,axis,min,max);
+	var $tmp = new rg.data.VariableIndependent(type,axis,scaleDistribution,min,max);
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.data.VariableIndependent.forOrdinal = function(type,values) {
+rg.data.VariableIndependent.forOrdinal = function(type,scaleDistribution,values) {
 	$s.push("rg.data.VariableIndependent::forOrdinal");
 	var $spos = $s.length;
 	var axis = new rg.data.AxisOrdinal(values);
-	var $tmp = new rg.data.VariableIndependent(type,axis,axis.getFirst(),axis.getLast());
+	var $tmp = new rg.data.VariableIndependent(type,axis,scaleDistribution,axis.getFirst(),axis.getLast());
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -16245,6 +16090,142 @@ rg.controller.factory.TestFactoryVariableContexts.prototype.testCreateDependentC
 	$s.pop();
 }
 rg.controller.factory.TestFactoryVariableContexts.prototype.__class__ = rg.controller.factory.TestFactoryVariableContexts;
+rg.view.frame.TestStack = function(p) {
+	$s.push("rg.view.frame.TestStack::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.frame.TestStack.__name__ = ["rg","view","frame","TestStack"];
+rg.view.frame.TestStack.prototype.count = null;
+rg.view.frame.TestStack.prototype.setup = function() {
+	$s.push("rg.view.frame.TestStack::setup");
+	var $spos = $s.length;
+	this.count = 0;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.increment = function() {
+	$s.push("rg.view.frame.TestStack::increment");
+	var $spos = $s.length;
+	this.count++;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.item = function(layout) {
+	$s.push("rg.view.frame.TestStack::item");
+	var $spos = $s.length;
+	var i = new rg.view.frame.StackItem(layout);
+	i.change = $closure(this,"increment");
+	$s.pop();
+	return i;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.assertReflows = function(expected,pos) {
+	$s.push("rg.view.frame.TestStack::assertReflows");
+	var $spos = $s.length;
+	utest.Assert.equals(expected,this.count,null,pos);
+	this.count = 0;
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testAddMany = function() {
+	$s.push("rg.view.frame.TestStack::testAddMany");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), items = [this.item(rg.view.frame.FrameLayout.Fill(0,0)),this.item(rg.view.frame.FrameLayout.Fixed(0,0,40)),this.item(rg.view.frame.FrameLayout.Fill(0,0))];
+	stack.addItems(items);
+	utest.Assert.equals(0,items[0].y,null,{ fileName : "TestStack.hx", lineNumber : 47, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(30,items[0].height,null,{ fileName : "TestStack.hx", lineNumber : 48, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(30,items[1].y,null,{ fileName : "TestStack.hx", lineNumber : 50, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(40,items[1].height,null,{ fileName : "TestStack.hx", lineNumber : 51, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(70,items[2].y,null,{ fileName : "TestStack.hx", lineNumber : 53, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	utest.Assert.equals(30,items[2].height,null,{ fileName : "TestStack.hx", lineNumber : 54, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testAdd = function() {
+	$s.push("rg.view.frame.TestStack::testAdd");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10));
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 61, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.y,null,{ fileName : "TestStack.hx", lineNumber : 62, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.width,null,{ fileName : "TestStack.hx", lineNumber : 63, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.height,null,{ fileName : "TestStack.hx", lineNumber : 64, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	stack.addItem(first);
+	this.assertReflows(1,{ fileName : "TestStack.hx", lineNumber : 68, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 70, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 71, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 72, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(85,first.height,null,{ fileName : "TestStack.hx", lineNumber : 73, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	var second = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20));
+	stack.addItem(second);
+	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 79, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 81, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 82, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 83, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.height,null,{ fileName : "TestStack.hx", lineNumber : 84, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,second.x,null,{ fileName : "TestStack.hx", lineNumber : 86, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(70,second.y,null,{ fileName : "TestStack.hx", lineNumber : 87, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,second.width,null,{ fileName : "TestStack.hx", lineNumber : 88, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 89, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	var third = this.item(rg.view.frame.FrameLayout.FillPercent(5,10,0.1));
+	stack.addItem(third);
+	this.assertReflows(3,{ fileName : "TestStack.hx", lineNumber : 94, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 96, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,second.x,null,{ fileName : "TestStack.hx", lineNumber : 97, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(0,third.x,null,{ fileName : "TestStack.hx", lineNumber : 98, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 99, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,second.width,null,{ fileName : "TestStack.hx", lineNumber : 100, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(50,third.width,null,{ fileName : "TestStack.hx", lineNumber : 101, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 103, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(25,first.height,null,{ fileName : "TestStack.hx", lineNumber : 104, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(45,second.y,null,{ fileName : "TestStack.hx", lineNumber : 105, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 106, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(80,third.y,null,{ fileName : "TestStack.hx", lineNumber : 107, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	utest.Assert.equals(10,third.height,null,{ fileName : "TestStack.hx", lineNumber : 108, className : "rg.view.frame.TestStack", methodName : "testAdd"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testInsert = function() {
+	$s.push("rg.view.frame.TestStack::testInsert");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10)), second = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20)), third = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20)), size;
+	stack.addItem(first);
+	stack.insertItem(0,second);
+	this.assertReflows(3,{ fileName : "TestStack.hx", lineNumber : 121, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(40,first.y,null,{ fileName : "TestStack.hx", lineNumber : 123, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(50,first.height,null,{ fileName : "TestStack.hx", lineNumber : 124, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(5,second.y,null,{ fileName : "TestStack.hx", lineNumber : 126, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 127, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	stack.insertItem(1,third);
+	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 130, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(75,first.y,null,{ fileName : "TestStack.hx", lineNumber : 132, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(15,first.height,null,{ fileName : "TestStack.hx", lineNumber : 133, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(5,second.y,null,{ fileName : "TestStack.hx", lineNumber : 135, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 136, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(40,third.y,null,{ fileName : "TestStack.hx", lineNumber : 138, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	utest.Assert.equals(20,third.height,null,{ fileName : "TestStack.hx", lineNumber : 139, className : "rg.view.frame.TestStack", methodName : "testInsert"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testHorizontal = function() {
+	$s.push("rg.view.frame.TestStack::testHorizontal");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Horizontal), first = this.item(rg.view.frame.FrameLayout.Fill(5,10));
+	stack.addItem(first);
+	utest.Assert.equals(5,first.x,null,{ fileName : "TestStack.hx", lineNumber : 149, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	utest.Assert.equals(0,first.y,null,{ fileName : "TestStack.hx", lineNumber : 150, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	utest.Assert.equals(35,first.width,null,{ fileName : "TestStack.hx", lineNumber : 151, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	utest.Assert.equals(100,first.height,null,{ fileName : "TestStack.hx", lineNumber : 152, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.testFloating = function() {
+	$s.push("rg.view.frame.TestStack::testFloating");
+	var $spos = $s.length;
+	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10)), second = this.item(rg.view.frame.FrameLayout.Floating(20,25,30,35));
+	stack.addItem(first);
+	stack.addItem(second);
+	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 163, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 165, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(85,first.height,null,{ fileName : "TestStack.hx", lineNumber : 166, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(25,second.y,null,{ fileName : "TestStack.hx", lineNumber : 168, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	utest.Assert.equals(35,second.height,null,{ fileName : "TestStack.hx", lineNumber : 169, className : "rg.view.frame.TestStack", methodName : "testFloating"});
+	$s.pop();
+}
+rg.view.frame.TestStack.prototype.__class__ = rg.view.frame.TestStack;
 haxe.Md5 = function(p) {
 	$s.push("haxe.Md5::new");
 	var $spos = $s.length;
@@ -16479,142 +16460,6 @@ haxe.Md5.prototype.doEncode = function(str) {
 	$s.pop();
 }
 haxe.Md5.prototype.__class__ = haxe.Md5;
-rg.view.frame.TestStack = function(p) {
-	$s.push("rg.view.frame.TestStack::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.view.frame.TestStack.__name__ = ["rg","view","frame","TestStack"];
-rg.view.frame.TestStack.prototype.count = null;
-rg.view.frame.TestStack.prototype.setup = function() {
-	$s.push("rg.view.frame.TestStack::setup");
-	var $spos = $s.length;
-	this.count = 0;
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.increment = function() {
-	$s.push("rg.view.frame.TestStack::increment");
-	var $spos = $s.length;
-	this.count++;
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.item = function(layout) {
-	$s.push("rg.view.frame.TestStack::item");
-	var $spos = $s.length;
-	var i = new rg.view.frame.StackItem(layout);
-	i.change = $closure(this,"increment");
-	$s.pop();
-	return i;
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.assertReflows = function(expected,pos) {
-	$s.push("rg.view.frame.TestStack::assertReflows");
-	var $spos = $s.length;
-	utest.Assert.equals(expected,this.count,null,pos);
-	this.count = 0;
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.testAddMany = function() {
-	$s.push("rg.view.frame.TestStack::testAddMany");
-	var $spos = $s.length;
-	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), items = [this.item(rg.view.frame.FrameLayout.Fill(0,0)),this.item(rg.view.frame.FrameLayout.Fixed(0,0,40)),this.item(rg.view.frame.FrameLayout.Fill(0,0))];
-	stack.addItems(items);
-	utest.Assert.equals(0,items[0].y,null,{ fileName : "TestStack.hx", lineNumber : 47, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
-	utest.Assert.equals(30,items[0].height,null,{ fileName : "TestStack.hx", lineNumber : 48, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
-	utest.Assert.equals(30,items[1].y,null,{ fileName : "TestStack.hx", lineNumber : 50, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
-	utest.Assert.equals(40,items[1].height,null,{ fileName : "TestStack.hx", lineNumber : 51, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
-	utest.Assert.equals(70,items[2].y,null,{ fileName : "TestStack.hx", lineNumber : 53, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
-	utest.Assert.equals(30,items[2].height,null,{ fileName : "TestStack.hx", lineNumber : 54, className : "rg.view.frame.TestStack", methodName : "testAddMany"});
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.testAdd = function() {
-	$s.push("rg.view.frame.TestStack::testAdd");
-	var $spos = $s.length;
-	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10));
-	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 61, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,first.y,null,{ fileName : "TestStack.hx", lineNumber : 62, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,first.width,null,{ fileName : "TestStack.hx", lineNumber : 63, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,first.height,null,{ fileName : "TestStack.hx", lineNumber : 64, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	stack.addItem(first);
-	this.assertReflows(1,{ fileName : "TestStack.hx", lineNumber : 68, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 70, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 71, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 72, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(85,first.height,null,{ fileName : "TestStack.hx", lineNumber : 73, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	var second = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20));
-	stack.addItem(second);
-	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 79, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 81, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 82, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 83, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(50,first.height,null,{ fileName : "TestStack.hx", lineNumber : 84, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,second.x,null,{ fileName : "TestStack.hx", lineNumber : 86, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(70,second.y,null,{ fileName : "TestStack.hx", lineNumber : 87, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(50,second.width,null,{ fileName : "TestStack.hx", lineNumber : 88, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 89, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	var third = this.item(rg.view.frame.FrameLayout.FillPercent(5,10,0.1));
-	stack.addItem(third);
-	this.assertReflows(3,{ fileName : "TestStack.hx", lineNumber : 94, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,first.x,null,{ fileName : "TestStack.hx", lineNumber : 96, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,second.x,null,{ fileName : "TestStack.hx", lineNumber : 97, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(0,third.x,null,{ fileName : "TestStack.hx", lineNumber : 98, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(50,first.width,null,{ fileName : "TestStack.hx", lineNumber : 99, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(50,second.width,null,{ fileName : "TestStack.hx", lineNumber : 100, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(50,third.width,null,{ fileName : "TestStack.hx", lineNumber : 101, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 103, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(25,first.height,null,{ fileName : "TestStack.hx", lineNumber : 104, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(45,second.y,null,{ fileName : "TestStack.hx", lineNumber : 105, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 106, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(80,third.y,null,{ fileName : "TestStack.hx", lineNumber : 107, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	utest.Assert.equals(10,third.height,null,{ fileName : "TestStack.hx", lineNumber : 108, className : "rg.view.frame.TestStack", methodName : "testAdd"});
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.testInsert = function() {
-	$s.push("rg.view.frame.TestStack::testInsert");
-	var $spos = $s.length;
-	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10)), second = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20)), third = this.item(rg.view.frame.FrameLayout.Fixed(5,10,20)), size;
-	stack.addItem(first);
-	stack.insertItem(0,second);
-	this.assertReflows(3,{ fileName : "TestStack.hx", lineNumber : 121, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(40,first.y,null,{ fileName : "TestStack.hx", lineNumber : 123, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(50,first.height,null,{ fileName : "TestStack.hx", lineNumber : 124, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(5,second.y,null,{ fileName : "TestStack.hx", lineNumber : 126, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 127, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	stack.insertItem(1,third);
-	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 130, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(75,first.y,null,{ fileName : "TestStack.hx", lineNumber : 132, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(15,first.height,null,{ fileName : "TestStack.hx", lineNumber : 133, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(5,second.y,null,{ fileName : "TestStack.hx", lineNumber : 135, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(20,second.height,null,{ fileName : "TestStack.hx", lineNumber : 136, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(40,third.y,null,{ fileName : "TestStack.hx", lineNumber : 138, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	utest.Assert.equals(20,third.height,null,{ fileName : "TestStack.hx", lineNumber : 139, className : "rg.view.frame.TestStack", methodName : "testInsert"});
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.testHorizontal = function() {
-	$s.push("rg.view.frame.TestStack::testHorizontal");
-	var $spos = $s.length;
-	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Horizontal), first = this.item(rg.view.frame.FrameLayout.Fill(5,10));
-	stack.addItem(first);
-	utest.Assert.equals(5,first.x,null,{ fileName : "TestStack.hx", lineNumber : 149, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
-	utest.Assert.equals(0,first.y,null,{ fileName : "TestStack.hx", lineNumber : 150, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
-	utest.Assert.equals(35,first.width,null,{ fileName : "TestStack.hx", lineNumber : 151, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
-	utest.Assert.equals(100,first.height,null,{ fileName : "TestStack.hx", lineNumber : 152, className : "rg.view.frame.TestStack", methodName : "testHorizontal"});
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.testFloating = function() {
-	$s.push("rg.view.frame.TestStack::testFloating");
-	var $spos = $s.length;
-	var stack = new rg.view.frame.Stack(50,100,rg.view.frame.Orientation.Vertical), first = this.item(rg.view.frame.FrameLayout.Fill(5,10)), second = this.item(rg.view.frame.FrameLayout.Floating(20,25,30,35));
-	stack.addItem(first);
-	stack.addItem(second);
-	this.assertReflows(2,{ fileName : "TestStack.hx", lineNumber : 163, className : "rg.view.frame.TestStack", methodName : "testFloating"});
-	utest.Assert.equals(5,first.y,null,{ fileName : "TestStack.hx", lineNumber : 165, className : "rg.view.frame.TestStack", methodName : "testFloating"});
-	utest.Assert.equals(85,first.height,null,{ fileName : "TestStack.hx", lineNumber : 166, className : "rg.view.frame.TestStack", methodName : "testFloating"});
-	utest.Assert.equals(25,second.y,null,{ fileName : "TestStack.hx", lineNumber : 168, className : "rg.view.frame.TestStack", methodName : "testFloating"});
-	utest.Assert.equals(35,second.height,null,{ fileName : "TestStack.hx", lineNumber : 169, className : "rg.view.frame.TestStack", methodName : "testFloating"});
-	$s.pop();
-}
-rg.view.frame.TestStack.prototype.__class__ = rg.view.frame.TestStack;
 Bools = function() { }
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
@@ -16927,6 +16772,32 @@ rg.controller.factory.TestFactoryAxis.prototype.testAxisOrdinal = function() {
 	$s.pop();
 }
 rg.controller.factory.TestFactoryAxis.prototype.__class__ = rg.controller.factory.TestFactoryAxis;
+rg.data.ScaleDistributions = function() { }
+rg.data.ScaleDistributions.__name__ = ["rg","data","ScaleDistributions"];
+rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
+	$s.push("rg.data.ScaleDistributions::distribute");
+	var $spos = $s.length;
+	switch( (scale)[1] ) {
+	case 0:
+		var $tmp = (pos + 0.5) / values;
+		$s.pop();
+		return $tmp;
+	case 1:
+		var $tmp = pos / (values - 1);
+		$s.pop();
+		return $tmp;
+	case 2:
+		var $tmp = pos / values;
+		$s.pop();
+		return $tmp;
+	case 3:
+		var $tmp = (pos + 1) / values;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.data.ScaleDistributions.prototype.__class__ = rg.data.ScaleDistributions;
 rg.view.svg.widget.Label = function(container,dontflip,shadow,outline) {
 	if( container === $_ ) return;
 	$s.push("rg.view.svg.widget.Label::new");
@@ -17469,26 +17340,31 @@ rg.data.source.rgquery.QueryParser.prototype.addWhereCondition = function(name,o
 	$s.pop();
 }
 rg.data.source.rgquery.QueryParser.prototype.__class__ = rg.data.source.rgquery.QueryParser;
-rg.view.svg.widget.Baloon = function(container) {
+rg.view.svg.widget.Baloon = function(container,bindOnTop) {
 	if( container === $_ ) return;
 	$s.push("rg.view.svg.widget.Baloon::new");
 	var $spos = $s.length;
-	this.container = container;
+	if(bindOnTop == null) bindOnTop = false;
+	if(bindOnTop) {
+		var parent = container.node();
+		while(null != parent && parent.nodeName != "svg") parent = parent.parentNode;
+		this.container = null == parent?container:thx.js.Dom.selectNode(parent);
+	} else this.container = container;
 	this.visible = true;
 	this.duration = 500;
 	this.minwidth = 30;
 	this.setPreferredSide(2);
 	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Equations.cubic);
-	this.setRoundedCorner(4);
+	this.setRoundedCorner(5);
 	this.paddingHorizontal = 3.5;
 	this.paddingVertical = 1.5;
 	this.transition_id = 0;
-	this.baloon = container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
+	this.baloon = this.container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
 	this.frame = this.baloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
 	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)");
 	this.connectorShapeV = thx.svg.Diagonal.forObject();
 	this.connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
-		$s.push("rg.view.svg.widget.Baloon::new@68");
+		$s.push("rg.view.svg.widget.Baloon::new@75");
 		var $spos = $s.length;
 		var $tmp = [d[1],d[0]];
 		$s.pop();
@@ -17529,6 +17405,18 @@ rg.view.svg.widget.Baloon.prototype.ease = null;
 rg.view.svg.widget.Baloon.prototype.connectorShapeV = null;
 rg.view.svg.widget.Baloon.prototype.connectorShapeH = null;
 rg.view.svg.widget.Baloon.prototype.boundingBox = null;
+rg.view.svg.widget.Baloon.prototype.addClass = function(name) {
+	$s.push("rg.view.svg.widget.Baloon::addClass");
+	var $spos = $s.length;
+	this.frame.select("path.bg").classed().add(name);
+	$s.pop();
+}
+rg.view.svg.widget.Baloon.prototype.removeClass = function(name) {
+	$s.push("rg.view.svg.widget.Baloon::removeClass");
+	var $spos = $s.length;
+	this.frame.select("path.bg").classed().remove(name);
+	$s.pop();
+}
 rg.view.svg.widget.Baloon.prototype.createLabel = function(i) {
 	$s.push("rg.view.svg.widget.Baloon::createLabel");
 	var $spos = $s.length;
@@ -17625,7 +17513,7 @@ rg.view.svg.widget.Baloon.prototype.moveTo = function(x,y,animate) {
 	if(animate) {
 		var $int = thx.math.Equations.elasticf(), tid = ++this.transition_id, ix = Floats.interpolatef(this.x,x,this.ease), iy = Floats.interpolatef(this.y,y,this.ease), duration = this.duration, mt = $closure(this,"_moveTo"), me = this;
 		thx.js.Timer.timer(function(t) {
-			$s.push("rg.view.svg.widget.Baloon::moveTo@177");
+			$s.push("rg.view.svg.widget.Baloon::moveTo@194");
 			var $spos = $s.length;
 			if(tid != me.transition_id) {
 				$s.pop();
@@ -17912,7 +17800,7 @@ rg.view.svg.widget.Baloon.prototype.redraw = function() {
 	this.boxHeight = this.lineHeight * this.labels.length + this.paddingVertical * 2;
 	var bg = this.frame.selectAll(".bg"), sw = bg.style("stroke-width").getFloat();
 	if(Math.isNaN(sw)) sw = 0;
-	this.labelsContainer.attr("transform").string("translate(" + (-sw + this.boxWidth) / 2 + "," + (sw + this.paddingVertical) + ")");
+	this.labelsContainer.attr("transform").string("translate(" + this.boxWidth / 2 + "," + (sw + this.paddingVertical) + ")");
 	bg.transition().ease(this.ease).delay(null,this.duration);
 	$s.pop();
 }
@@ -18153,7 +18041,7 @@ rg.controller.factory.FactoryVariableDependent.prototype.create = function(info,
 	var $spos = $s.length;
 	if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 19, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
 	var axiscreator = new rg.controller.factory.FactoryAxis(), axis = axiscreator.create(info.type,isnumeric,info.values);
-	var variable = new rg.data.VariableDependent(info.type,axis,info.min,info.max);
+	var variable = new rg.data.VariableDependent(info.type,axis,info.scaleDistribution,info.min,info.max);
 	$s.pop();
 	return variable;
 	$s.pop();
@@ -19240,7 +19128,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.create = function(inf
 		min = this.defaultMin(this.normalizeTime(info.min),periodicity);
 		max = this.defaultMax(this.normalizeTime(info.max),periodicity);
 	}
-	var variable = new rg.data.VariableIndependent(info.type,axis,min,max);
+	var variable = new rg.data.VariableIndependent(info.type,axis,info.scaleDistribution,min,max);
 	$s.pop();
 	return variable;
 	$s.pop();
@@ -19766,7 +19654,7 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	$s.push("rg.controller.visualization.VisualizationPieChart::init");
 	var $spos = $s.length;
 	var panelChart = this.layout.getPanel(this.layout.mainPanelName);
-	this.chart = new rg.view.svg.widget.PieChart(panelChart);
+	this.chart = new rg.view.svg.widget.ChartPie(panelChart);
 	this.chart.innerRadius = this.info.innerradius;
 	this.chart.outerRadius = this.info.outerradius;
 	this.chart.overRadius = this.info.overradius;
@@ -20396,11 +20284,11 @@ thx.js.UpdateSelection.prototype.exit = function() {
 	$s.pop();
 }
 thx.js.UpdateSelection.prototype.__class__ = thx.js.UpdateSelection;
-rg.data.VariableDependent = function(type,axis,min,max) {
+rg.data.VariableDependent = function(type,axis,scaleDistribution,min,max) {
 	if( type === $_ ) return;
 	$s.push("rg.data.VariableDependent::new");
 	var $spos = $s.length;
-	rg.data.Variable.call(this,type,min,max);
+	rg.data.Variable.call(this,type,scaleDistribution,min,max);
 	this.axis = axis;
 	$s.pop();
 }
@@ -20415,6 +20303,368 @@ rg.data.VariableDependent.prototype.setAxis = function(axis) {
 	$s.pop();
 }
 rg.data.VariableDependent.prototype.__class__ = rg.data.VariableDependent;
+rg.controller.info.InfoCartesianChart = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoCartesianChart::new");
+	var $spos = $s.length;
+	this.animation = new rg.controller.info.InfoAnimation();
+	this.label = new rg.controller.info.InfoLabelAxis();
+	this.segment = new rg.controller.info.InfoSegment();
+	this.displayMinor = function(_) {
+		$s.push("rg.controller.info.InfoCartesianChart::new@34");
+		var $spos = $s.length;
+		$s.pop();
+		return true;
+		$s.pop();
+	};
+	this.displayMajor = function(_) {
+		$s.push("rg.controller.info.InfoCartesianChart::new@35");
+		var $spos = $s.length;
+		$s.pop();
+		return true;
+		$s.pop();
+	};
+	this.displayLabel = function(_) {
+		$s.push("rg.controller.info.InfoCartesianChart::new@36");
+		var $spos = $s.length;
+		$s.pop();
+		return true;
+		$s.pop();
+	};
+	this.lengthTickMinor = 2;
+	this.lengthTickMajor = 5;
+	this.paddingTickMinor = 1;
+	this.paddingTickMajor = 1;
+	this.paddingLabel = 10;
+	$s.pop();
+}
+rg.controller.info.InfoCartesianChart.__name__ = ["rg","controller","info","InfoCartesianChart"];
+rg.controller.info.InfoCartesianChart.filters = function() {
+	$s.push("rg.controller.info.InfoCartesianChart::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "animation", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@49");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@50");
+		var $spos = $s.length;
+		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "segmenton", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@56");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@57");
+		var $spos = $s.length;
+		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),{ on : v})}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "segment", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@63");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@64");
+		var $spos = $s.length;
+		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "y0property", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@70");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@74");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "label", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@78");
+		var $spos = $s.length;
+		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@79");
+		var $spos = $s.length;
+		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelAxis(),v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displaytickmarks", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@85");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@86");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayMinor", value : Std["is"](v,Bool)?function(_) {
+			$s.push("rg.controller.info.InfoCartesianChart::filters@86@88");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v},{ field : "displayMajor", value : Std["is"](v,Bool)?function(_) {
+			$s.push("rg.controller.info.InfoCartesianChart::filters@86@91");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v},{ field : "displayLabel", value : Std["is"](v,Bool)?function(_) {
+			$s.push("rg.controller.info.InfoCartesianChart::filters@86@94");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displaytickminor", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@98");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@99");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayMinor", value : Std["is"](v,Bool)?function(_) {
+			$s.push("rg.controller.info.InfoCartesianChart::filters@99@101");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displaytickmajor", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@105");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@106");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayMajor", value : Std["is"](v,Bool)?function(_) {
+			$s.push("rg.controller.info.InfoCartesianChart::filters@106@108");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "displayticklabel", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@112");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@113");
+		var $spos = $s.length;
+		var $tmp = [{ field : "displayLabel", value : Std["is"](v,Bool)?function(_) {
+			$s.push("rg.controller.info.InfoCartesianChart::filters@113@115");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "lengthtick", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@119");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@120");
+		var $spos = $s.length;
+		var $tmp = [{ field : "lengthTickMajor", value : v},{ field : "lengthTickMinor", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "lengthtickminor", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@129");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@130");
+		var $spos = $s.length;
+		var $tmp = [{ field : "lengthTickMinor", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "lengthtickmajor", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@136");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@137");
+		var $spos = $s.length;
+		var $tmp = [{ field : "lengthTickMajor", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "paddingtick", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@143");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@144");
+		var $spos = $s.length;
+		var $tmp = [{ field : "paddingTickMajor", value : v},{ field : "paddingTickMinor", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "paddingtickminor", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@153");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@154");
+		var $spos = $s.length;
+		var $tmp = [{ field : "paddingTickMinor", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "paddingtickmajor", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@160");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@161");
+		var $spos = $s.length;
+		var $tmp = [{ field : "paddingTickMajor", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "paddingticklabel", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@167");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Float);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@168");
+		var $spos = $s.length;
+		var $tmp = [{ field : "paddingLabel", value : v}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoCartesianChart.prototype.animation = null;
+rg.controller.info.InfoCartesianChart.prototype.segment = null;
+rg.controller.info.InfoCartesianChart.prototype.click = null;
+rg.controller.info.InfoCartesianChart.prototype.label = null;
+rg.controller.info.InfoCartesianChart.prototype.y0property = null;
+rg.controller.info.InfoCartesianChart.prototype.displayMinor = null;
+rg.controller.info.InfoCartesianChart.prototype.displayMajor = null;
+rg.controller.info.InfoCartesianChart.prototype.displayLabel = null;
+rg.controller.info.InfoCartesianChart.prototype.lengthTickMinor = null;
+rg.controller.info.InfoCartesianChart.prototype.lengthTickMajor = null;
+rg.controller.info.InfoCartesianChart.prototype.paddingTickMinor = null;
+rg.controller.info.InfoCartesianChart.prototype.paddingTickMajor = null;
+rg.controller.info.InfoCartesianChart.prototype.paddingLabel = null;
+rg.controller.info.InfoCartesianChart.prototype.__class__ = rg.controller.info.InfoCartesianChart;
+rg.controller.info.InfoBarChart = function(p) {
+	if( p === $_ ) return;
+	$s.push("rg.controller.info.InfoBarChart::new");
+	var $spos = $s.length;
+	rg.controller.info.InfoCartesianChart.call(this);
+	this.stacked = true;
+	this.effect = rg.view.svg.widget.BarEffect.Gradient(0.75);
+	$s.pop();
+}
+rg.controller.info.InfoBarChart.__name__ = ["rg","controller","info","InfoBarChart"];
+rg.controller.info.InfoBarChart.__super__ = rg.controller.info.InfoCartesianChart;
+for(var k in rg.controller.info.InfoCartesianChart.prototype ) rg.controller.info.InfoBarChart.prototype[k] = rg.controller.info.InfoCartesianChart.prototype[k];
+rg.controller.info.InfoBarChart.filters = function() {
+	$s.push("rg.controller.info.InfoBarChart::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "stacked", validator : function(v) {
+		$s.push("rg.controller.info.InfoBarChart::filters@25");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,Bool);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "effect", validator : function(v) {
+		$s.push("rg.controller.info.InfoBarChart::filters@29");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoBarChart::filters@30");
+		var $spos = $s.length;
+		var $tmp = [{ field : "effect", value : rg.view.svg.widget.BarEffects.parse(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}].concat(rg.controller.info.InfoCartesianChart.filters());
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoBarChart.prototype.stacked = null;
+rg.controller.info.InfoBarChart.prototype.effect = null;
+rg.controller.info.InfoBarChart.prototype.__class__ = rg.controller.info.InfoBarChart;
 rg.view.frame.Frame = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.view.frame.Frame::new");
@@ -21263,21 +21513,6 @@ rg.data.Sources.prototype.complete = function() {
 	$s.pop();
 }
 rg.data.Sources.prototype.__class__ = rg.data.Sources;
-haxe.Log = function() { }
-haxe.Log.__name__ = ["haxe","Log"];
-haxe.Log.trace = function(v,infos) {
-	$s.push("haxe.Log::trace");
-	var $spos = $s.length;
-	js.Boot.__trace(v,infos);
-	$s.pop();
-}
-haxe.Log.clear = function() {
-	$s.push("haxe.Log::clear");
-	var $spos = $s.length;
-	js.Boot.__clear_trace();
-	$s.pop();
-}
-haxe.Log.prototype.__class__ = haxe.Log;
 rg.data.TestAxisGroupByTime = function(p) {
 	$s.push("rg.data.TestAxisGroupByTime::new");
 	var $spos = $s.length;
@@ -21327,6 +21562,21 @@ rg.data.TestAxisGroupByTime.prototype.testMinute = function() {
 	$s.pop();
 }
 rg.data.TestAxisGroupByTime.prototype.__class__ = rg.data.TestAxisGroupByTime;
+haxe.Log = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	$s.push("haxe.Log::trace");
+	var $spos = $s.length;
+	js.Boot.__trace(v,infos);
+	$s.pop();
+}
+haxe.Log.clear = function() {
+	$s.push("haxe.Log::clear");
+	var $spos = $s.length;
+	js.Boot.__clear_trace();
+	$s.pop();
+}
+haxe.Log.prototype.__class__ = haxe.Log;
 rg.view.svg.widget.LabelOrientation = { __ename__ : ["rg","view","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
 rg.view.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.view.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
 rg.view.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
@@ -21361,6 +21611,58 @@ rg.data.source.rgquery.transform.TransformCount.prototype.transform = function(d
 }
 rg.data.source.rgquery.transform.TransformCount.prototype.__class__ = rg.data.source.rgquery.transform.TransformCount;
 rg.data.source.rgquery.transform.TransformCount.__interfaces__ = [rg.data.source.ITransform];
+rg.view.svg.panel.TestPanel = function(p) {
+	$s.push("rg.view.svg.panel.TestPanel::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.view.svg.panel.TestPanel.__name__ = ["rg","view","svg","panel","TestPanel"];
+rg.view.svg.panel.TestPanel.prototype.container = null;
+rg.view.svg.panel.TestPanel.prototype.space = null;
+rg.view.svg.panel.TestPanel.prototype.cont1 = null;
+rg.view.svg.panel.TestPanel.prototype.cont2 = null;
+rg.view.svg.panel.TestPanel.prototype.panel1 = null;
+rg.view.svg.panel.TestPanel.prototype.panel2 = null;
+rg.view.svg.panel.TestPanel.prototype.setup = function() {
+	$s.push("rg.view.svg.panel.TestPanel::setup");
+	var $spos = $s.length;
+	this.container = thx.js.Dom.select("body").append("div");
+	this.space = new rg.view.svg.panel.Space(200,150,this.container);
+	this.cont1 = this.space.createContainer(rg.view.frame.FrameLayout.Fill(10,0),rg.view.frame.Orientation.Horizontal);
+	this.cont2 = this.cont1.createContainer(rg.view.frame.FrameLayout.Fill(10,0),rg.view.frame.Orientation.Vertical);
+	this.panel1 = this.cont2.createPanel(rg.view.frame.FrameLayout.Fixed(10,0,20));
+	this.panel2 = this.cont2.createPanel(rg.view.frame.FrameLayout.Fill(10,0));
+	$s.pop();
+}
+rg.view.svg.panel.TestPanel.prototype.teardown = function() {
+	$s.push("rg.view.svg.panel.TestPanel::teardown");
+	var $spos = $s.length;
+	this.container.remove();
+	$s.pop();
+}
+rg.view.svg.panel.TestPanel.prototype.testBoundingBox = function() {
+	$s.push("rg.view.svg.panel.TestPanel::testBoundingBox");
+	var $spos = $s.length;
+	utest.Assert.same({ x : 10, y : 50, width : 190, height : 100},rg.view.svg.panel.Panels.boundingBox(this.panel2),null,null,{ fileName : "TestPanel.hx", lineNumber : 42, className : "rg.view.svg.panel.TestPanel", methodName : "testBoundingBox"});
+	utest.Assert.same({ x : 10, y : 40, width : 190, height : 100},rg.view.svg.panel.Panels.boundingBox(this.panel2,this.cont1),null,null,{ fileName : "TestPanel.hx", lineNumber : 49, className : "rg.view.svg.panel.TestPanel", methodName : "testBoundingBox"});
+	utest.Assert.same({ x : 0, y : 40, width : 190, height : 100},rg.view.svg.panel.Panels.boundingBox(this.panel2,this.cont2),null,null,{ fileName : "TestPanel.hx", lineNumber : 56, className : "rg.view.svg.panel.TestPanel", methodName : "testBoundingBox"});
+	$s.pop();
+}
+rg.view.svg.panel.TestPanel.prototype.ancestorBoundingBox = function() {
+	$s.push("rg.view.svg.panel.TestPanel::ancestorBoundingBox");
+	var $spos = $s.length;
+	utest.Assert.same({ x : -10, y : -50, width : 200, height : 150},rg.view.svg.panel.Panels.ancestorBoundingBox(this.panel2),null,null,{ fileName : "TestPanel.hx", lineNumber : 66, className : "rg.view.svg.panel.TestPanel", methodName : "ancestorBoundingBox"});
+	utest.Assert.same({ x : -10, y : -40, width : 200, height : 140},rg.view.svg.panel.Panels.ancestorBoundingBox(this.panel2,this.cont1),null,null,{ fileName : "TestPanel.hx", lineNumber : 73, className : "rg.view.svg.panel.TestPanel", methodName : "ancestorBoundingBox"});
+	utest.Assert.same({ x : 0, y : -40, width : 190, height : 140},rg.view.svg.panel.Panels.ancestorBoundingBox(this.panel2,this.cont2),null,null,{ fileName : "TestPanel.hx", lineNumber : 80, className : "rg.view.svg.panel.TestPanel", methodName : "ancestorBoundingBox"});
+	$s.pop();
+}
+rg.view.svg.panel.TestPanel.prototype.testRootSize = function() {
+	$s.push("rg.view.svg.panel.TestPanel::testRootSize");
+	var $spos = $s.length;
+	utest.Assert.same({ width : 200, height : 150},rg.view.svg.panel.Panels.rootSize(this.panel2),null,null,{ fileName : "TestPanel.hx", lineNumber : 90, className : "rg.view.svg.panel.TestPanel", methodName : "testRootSize"});
+	$s.pop();
+}
+rg.view.svg.panel.TestPanel.prototype.__class__ = rg.view.svg.panel.TestPanel;
 thx.js.AccessStyle = function(name,selection) {
 	if( name === $_ ) return;
 	$s.push("thx.js.AccessStyle::new");
@@ -22160,6 +22462,416 @@ thx.js.BoundTransition.prototype.createTransition = function(selection) {
 	$s.pop();
 }
 thx.js.BoundTransition.prototype.__class__ = thx.js.BoundTransition;
+rg.view.svg.widget.ChartLine = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.widget.ChartLine::new");
+	var $spos = $s.length;
+	rg.view.svg.widget.ChartCartesian.call(this,panel);
+	this.addClass("line-chart");
+	this.chart = this.g.append("svg:g");
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.__name__ = ["rg","view","svg","widget","ChartLine"];
+rg.view.svg.widget.ChartLine.__super__ = rg.view.svg.widget.ChartCartesian;
+for(var k in rg.view.svg.widget.ChartCartesian.prototype ) rg.view.svg.widget.ChartLine.prototype[k] = rg.view.svg.widget.ChartCartesian.prototype[k];
+rg.view.svg.widget.ChartLine.coordsFromTransform = function(s) {
+	$s.push("rg.view.svg.widget.ChartLine::coordsFromTransform");
+	var $spos = $s.length;
+	if(!rg.view.svg.widget.ChartLine.retransform.match(s)) {
+		var $tmp = [0.0,0];
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = [Std.parseFloat(rg.view.svg.widget.ChartLine.retransform.matched(1)),Std.parseFloat(rg.view.svg.widget.ChartLine.retransform.matched(2))];
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.symbol = null;
+rg.view.svg.widget.ChartLine.prototype.symbolStyle = null;
+rg.view.svg.widget.ChartLine.prototype.segmenton = null;
+rg.view.svg.widget.ChartLine.prototype.lineInterpolator = null;
+rg.view.svg.widget.ChartLine.prototype.lineEffect = null;
+rg.view.svg.widget.ChartLine.prototype.y0property = null;
+rg.view.svg.widget.ChartLine.prototype.linePathShape = null;
+rg.view.svg.widget.ChartLine.prototype.chart = null;
+rg.view.svg.widget.ChartLine.prototype.dps = null;
+rg.view.svg.widget.ChartLine.prototype.segment = null;
+rg.view.svg.widget.ChartLine.prototype.setVariables = function(variableIndependents,variableDependents) {
+	$s.push("rg.view.svg.widget.ChartLine::setVariables");
+	var $spos = $s.length;
+	var me = this;
+	rg.view.svg.widget.ChartCartesian.prototype.setVariables.call(this,variableIndependents,variableDependents);
+	this.linePathShape = [];
+	var _g1 = 0, _g = variableDependents.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var line = [new thx.svg.Line($closure(this,"x"),this.getY1(i))];
+		if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
+		this.linePathShape[i] = (function(line) {
+			$s.push("rg.view.svg.widget.ChartLine::setVariables@60");
+			var $spos = $s.length;
+			var $tmp = function(dp,i1) {
+				$s.push("rg.view.svg.widget.ChartLine::setVariables@60@60");
+				var $spos = $s.length;
+				me.segment = i1;
+				var $tmp = line[0].shape(dp,i1);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(line);
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.x = function(d,i) {
+	$s.push("rg.view.svg.widget.ChartLine::x");
+	var $spos = $s.length;
+	var value = Reflect.field(d,this.variableIndependent.type), scaled = this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,value), scaledw = scaled * this.width;
+	$s.pop();
+	return scaledw;
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.getY1 = function(pos) {
+	$s.push("rg.view.svg.widget.ChartLine::getY1");
+	var $spos = $s.length;
+	var h = this.height, v = this.variableDependents[pos], y0 = this.y0property;
+	if(null != y0) {
+		var $tmp = function(d,i) {
+			$s.push("rg.view.svg.widget.ChartLine::getY1@83");
+			var $spos = $s.length;
+			var v1 = Reflect.field(d,v.type), value = Std["is"](v1,Float)?v1 + rg.util.DataPoints.valueAlt(d,y0,v.min):v1, scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
+			var $tmp = h - scaledh;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	} else {
+		var $tmp = function(d,i) {
+			$s.push("rg.view.svg.widget.ChartLine::getY1@92");
+			var $spos = $s.length;
+			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
+			var $tmp = h - scaledh;
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		};
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.getY0 = function(pos) {
+	$s.push("rg.view.svg.widget.ChartLine::getY0");
+	var $spos = $s.length;
+	var h = this.height, y0 = this.y0property, v = this.variableDependents[pos];
+	var $tmp = function(d,i) {
+		$s.push("rg.view.svg.widget.ChartLine::getY0@107");
+		var $spos = $s.length;
+		var value = rg.util.DataPoints.valueAlt(d,y0,v.min), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
+		var $tmp = h - scaledh;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.segments = null;
+rg.view.svg.widget.ChartLine.prototype.classf = function(pos,cls) {
+	$s.push("rg.view.svg.widget.ChartLine::classf");
+	var $spos = $s.length;
+	var $tmp = function(_,i) {
+		$s.push("rg.view.svg.widget.ChartLine::classf@120");
+		var $spos = $s.length;
+		var $tmp = cls + " item-" + (pos + i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.data = function(dps) {
+	$s.push("rg.view.svg.widget.ChartLine::data");
+	var $spos = $s.length;
+	var axisgroup = this.chart.selectAll("g.group").data(dps);
+	var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
+		$s.push("rg.view.svg.widget.ChartLine::data@132");
+		var $spos = $s.length;
+		var $tmp = "group group-" + i;
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	});
+	axisgroup.exit().remove();
+	var _g1 = 0, _g = dps.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.segments = dps[i];
+		var gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(Arrays.flatten(this.segments),this.variableDependents[i].type)];
+		var segmentgroup = gi.selectAll("path.line").data(this.segments);
+		if(null != this.y0property) {
+			var area = new thx.svg.Area($closure(this,"x"),this.getY0(i),this.getY1(i));
+			if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
+			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line area")).attr("d").stringf($closure(area,"shape"));
+		}
+		var $e = (this.lineEffect);
+		switch( $e[1] ) {
+		case 1:
+			var levels = $e[3], lightness = $e[2];
+			var levels1 = [levels];
+			var lightness1 = [lightness];
+			var fs = [[]];
+			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).eachNode((function(fs,lightness1) {
+				$s.push("rg.view.svg.widget.ChartLine::data@164");
+				var $spos = $s.length;
+				var $tmp = function(n,i1) {
+					$s.push("rg.view.svg.widget.ChartLine::data@164@164");
+					var $spos = $s.length;
+					var color = thx.js.Dom.selectNode(n).style("stroke").get();
+					if(null == color) color = "#000000";
+					var start = thx.color.Hsl.toHsl(thx.color.Colors.parse(color)), end = thx.color.Hsl.darker(start,lightness1[0]);
+					fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(fs,lightness1)).remove();
+			var _g2 = 0;
+			while(_g2 < levels1[0]) {
+				var j = [_g2++];
+				segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
+					$s.push("rg.view.svg.widget.ChartLine::data@178");
+					var $spos = $s.length;
+					var $tmp = function(_,i1) {
+						$s.push("rg.view.svg.widget.ChartLine::data@178@178");
+						var $spos = $s.length;
+						var $tmp = fs[0][i1](j[0] / levels1[0]).hex("#");
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i]);
+			}
+			break;
+		case 2:
+			var levels = $e[4], oy = $e[3], ox = $e[2];
+			var _g2 = 0;
+			while(_g2 < levels) {
+				var j = _g2++;
+				segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
+			}
+			break;
+		default:
+		}
+		var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).attr("d").stringf(this.linePathShape[i]);
+		switch( (this.lineEffect)[1] ) {
+		case 1:
+			path.classed().add("gradient");
+			break;
+		case 2:
+			path.classed().add("dropshadow");
+			break;
+		case 0:
+			path.classed().add("noeffect");
+			break;
+		}
+		segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
+		segmentgroup.exit().remove();
+		var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.variableDependents, onclick = ((function() {
+			$s.push("rg.view.svg.widget.ChartLine::data@215");
+			var $spos = $s.length;
+			var $tmp = function(f,a1) {
+				$s.push("rg.view.svg.widget.ChartLine::data@215@215");
+				var $spos = $s.length;
+				var $tmp = (function() {
+					$s.push("rg.view.svg.widget.ChartLine::data@215@215@215");
+					var $spos = $s.length;
+					var $tmp = function(a2,a3) {
+						$s.push("rg.view.svg.widget.ChartLine::data@215@215@215@215");
+						var $spos = $s.length;
+						var $tmp = f(a1,a2,a3);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})();
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})())($closure(this,"onclick"),stats[0]), onmouseover = ((function() {
+			$s.push("rg.view.svg.widget.ChartLine::data@216");
+			var $spos = $s.length;
+			var $tmp = function(f,a1) {
+				$s.push("rg.view.svg.widget.ChartLine::data@216@216");
+				var $spos = $s.length;
+				var $tmp = (function() {
+					$s.push("rg.view.svg.widget.ChartLine::data@216@216@216");
+					var $spos = $s.length;
+					var $tmp = function(a2,a3) {
+						$s.push("rg.view.svg.widget.ChartLine::data@216@216@216@216");
+						var $spos = $s.length;
+						var $tmp = f(a1,a2,a3);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})();
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})())($closure(this,"onmouseover"),stats[0]);
+		var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbols"));
+		var gsymbol = enter.selectAll("g.symbol").dataf((function() {
+			$s.push("rg.view.svg.widget.ChartLine::data@222");
+			var $spos = $s.length;
+			var $tmp = function(d,i1) {
+				$s.push("rg.view.svg.widget.ChartLine::data@222@222");
+				var $spos = $s.length;
+				$s.pop();
+				return d;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
+		if(null != this.click) gsymbol.on("click",onclick);
+		if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
+		gsymbol.append("svg:circle").attr("r")["float"](4).style("fill").string("#000000").style("fill-opacity")["float"](0.0).style("stroke").string("none");
+		if(null != this.symbol) {
+			var sp = [this.symbol];
+			var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
+				$s.push("rg.view.svg.widget.ChartLine::data@246");
+				var $spos = $s.length;
+				var $tmp = function(dp,_) {
+					$s.push("rg.view.svg.widget.ChartLine::data@246@246");
+					var $spos = $s.length;
+					var $tmp = sp[0](dp,stats[0]);
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(sp,stats));
+			if(null != this.symbolStyle) {
+				var ss = [this.symbolStyle];
+				spath.attr("style").stringf((function(ss,stats) {
+					$s.push("rg.view.svg.widget.ChartLine::data@250");
+					var $spos = $s.length;
+					var $tmp = function(dp,_) {
+						$s.push("rg.view.svg.widget.ChartLine::data@250@250");
+						var $spos = $s.length;
+						var $tmp = ss[0](dp,stats[0]);
+						$s.pop();
+						return $tmp;
+						$s.pop();
+					};
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				})(ss,stats));
+			}
+		}
+		if(null != this.labelDataPoint) {
+			var f = [this.labelDataPoint];
+			gsymbol.eachNode((function(f,stats) {
+				$s.push("rg.view.svg.widget.ChartLine::data@257");
+				var $spos = $s.length;
+				var $tmp = function(n,i1) {
+					$s.push("rg.view.svg.widget.ChartLine::data@257@257");
+					var $spos = $s.length;
+					var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
+					label.setText(f[0](dp,stats[0]));
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})(f,stats));
+		}
+		gsymbols.update().selectAll("g.symbol").dataf((function() {
+			$s.push("rg.view.svg.widget.ChartLine::data@269");
+			var $spos = $s.length;
+			var $tmp = function(d,i1) {
+				$s.push("rg.view.svg.widget.ChartLine::data@269@269");
+				var $spos = $s.length;
+				$s.pop();
+				return d;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})()).update().attr("transform").stringf(this.getTranslatePointf(i));
+		gsymbols.exit().remove();
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.getTranslatePointf = function(pos) {
+	$s.push("rg.view.svg.widget.ChartLine::getTranslatePointf");
+	var $spos = $s.length;
+	var x = $closure(this,"x"), y = this.getY1(pos);
+	var $tmp = function(dp,i) {
+		$s.push("rg.view.svg.widget.ChartLine::getTranslatePointf@282");
+		var $spos = $s.length;
+		var $tmp = "translate(" + x(dp) + "," + y(dp,i) + ")";
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.onmouseover = function(stats,n,i) {
+	$s.push("rg.view.svg.widget.ChartLine::onmouseover");
+	var $spos = $s.length;
+	var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
+	if(null == text) this.tooltip.hide(); else {
+		var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.widget.ChartLine.coordsFromTransform(sel.attr("transform").get());
+		this.tooltip.show();
+		this.tooltip.setText(text.split("\n"));
+		this.tooltip.moveTo(coords[0],coords[1]);
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.onclick = function(stats,dp,i) {
+	$s.push("rg.view.svg.widget.ChartLine::onclick");
+	var $spos = $s.length;
+	this.click(dp,stats);
+	$s.pop();
+}
+rg.view.svg.widget.ChartLine.prototype.__class__ = rg.view.svg.widget.ChartLine;
 rg.controller.info.TestInfoDataSource = function(p) {
 	$s.push("rg.controller.info.TestInfoDataSource::new");
 	var $spos = $s.length;
@@ -22502,14 +23214,21 @@ rg.controller.info.InfoLabelAxis.filters = function() {
 	$s.push("rg.controller.info.InfoLabelAxis::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "axis", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabelAxis::filters@20");
+		$s.push("rg.controller.info.InfoLabelAxis::filters@21");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "axisvalue", validator : function(v) {
-		$s.push("rg.controller.info.InfoLabelAxis::filters@24");
+		$s.push("rg.controller.info.InfoLabelAxis::filters@25");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "tickmark", validator : function(v) {
+		$s.push("rg.controller.info.InfoLabelAxis::filters@29");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
@@ -22522,6 +23241,7 @@ rg.controller.info.InfoLabelAxis.filters = function() {
 }
 rg.controller.info.InfoLabelAxis.prototype.axis = null;
 rg.controller.info.InfoLabelAxis.prototype.axisvalue = null;
+rg.controller.info.InfoLabelAxis.prototype.tickmark = null;
 rg.controller.info.InfoLabelAxis.prototype.__class__ = rg.controller.info.InfoLabelAxis;
 rg.view.svg.widget.Title = function(panel,text,anchor,padding,className,shadow,outline) {
 	if( panel === $_ ) return;
@@ -22659,142 +23379,96 @@ rg.controller.info.InfoLineChart = function(p) {
 	if( p === $_ ) return;
 	$s.push("rg.controller.info.InfoLineChart::new");
 	var $spos = $s.length;
-	this.animation = new rg.controller.info.InfoAnimation();
-	this.label = new rg.controller.info.InfoLabelAxis();
-	this.line = new rg.controller.info.InfoLine();
-	this.segment = new rg.controller.info.InfoSegment();
+	rg.controller.info.InfoCartesianChart.call(this);
+	this.effect = rg.view.svg.widget.LineEffect.Gradient(0.75,2);
+	this.interpolation = thx.svg.LineInterpolator.Linear;
 	$s.pop();
 }
 rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
+rg.controller.info.InfoLineChart.__super__ = rg.controller.info.InfoCartesianChart;
+for(var k in rg.controller.info.InfoCartesianChart.prototype ) rg.controller.info.InfoLineChart.prototype[k] = rg.controller.info.InfoCartesianChart.prototype[k];
 rg.controller.info.InfoLineChart.filters = function() {
 	$s.push("rg.controller.info.InfoLineChart::filters");
 	var $spos = $s.length;
-	var $tmp = [{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@37");
+	var $tmp = [{ field : "symbol", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@34");
 		var $spos = $s.length;
-		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
+		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@38");
+		$s.push("rg.controller.info.InfoLineChart::filters@35");
 		var $spos = $s.length;
-		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
+		var $tmp = [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
+			$s.push("rg.controller.info.InfoLineChart::filters@35@37");
+			var $spos = $s.length;
+			$s.pop();
+			return v;
+			$s.pop();
+		}:v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "segmenton", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@44");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@45");
-		var $spos = $s.length;
-		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),{ on : v})}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "segment", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@51");
-		var $spos = $s.length;
-		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@52");
-		var $spos = $s.length;
-		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),v)}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "y0property", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@58");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "symbol", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@62");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "symbolstyle", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@66");
+	}},{ field : "symbolstyle", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@41");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@67");
+		$s.push("rg.controller.info.InfoLineChart::filters@42");
 		var $spos = $s.length;
 		var $tmp = [{ field : "symbolStyle", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "click", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@73");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "label", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@77");
-		var $spos = $s.length;
-		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@78");
-		var $spos = $s.length;
-		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelAxis(),v)}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}},{ field : "line", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@84");
-		var $spos = $s.length;
-		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@85");
-		var $spos = $s.length;
-		var $tmp = [{ field : "line", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLine(),v)}];
-		$s.pop();
-		return $tmp;
-		$s.pop();
 	}},{ field : "displayarea", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@91");
+		$s.push("rg.controller.info.InfoLineChart::filters@48");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}, filter : null}];
+	}, filter : null},{ field : "effect", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@52");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@53");
+		var $spos = $s.length;
+		var $tmp = [{ field : "effect", value : rg.view.svg.widget.LineEffects.parse(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}},{ field : "interpolation", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@59");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@60");
+		var $spos = $s.length;
+		var $tmp = [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}}].concat(rg.controller.info.InfoCartesianChart.filters());
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.controller.info.InfoLineChart.prototype.animation = null;
-rg.controller.info.InfoLineChart.prototype.segment = null;
+rg.controller.info.InfoLineChart.prototype.effect = null;
+rg.controller.info.InfoLineChart.prototype.interpolation = null;
 rg.controller.info.InfoLineChart.prototype.symbol = null;
 rg.controller.info.InfoLineChart.prototype.symbolStyle = null;
-rg.controller.info.InfoLineChart.prototype.click = null;
-rg.controller.info.InfoLineChart.prototype.label = null;
-rg.controller.info.InfoLineChart.prototype.line = null;
 rg.controller.info.InfoLineChart.prototype.displayarea = null;
-rg.controller.info.InfoLineChart.prototype.y0property = null;
 rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
 if(!thx.xml) thx.xml = {}
 thx.xml.Namespace = function() { }
@@ -23736,6 +24410,7 @@ TestAll.addTest = function(runner) {
 	runner.addCase(new rg.data.source.rgquery.transform.TestCountTransform());
 	runner.addCase(new rg.util.TestProperties());
 	runner.addCase(new rg.view.frame.TestStack());
+	runner.addCase(new rg.view.svg.panel.TestPanel());
 	runner.addCase(new rg.view.svg.panel.TestSpace());
 	runner.addCase(new rg.data.TestAxisGroupByTime());
 	$s.pop();
@@ -23927,6 +24602,11 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 				}
 			}
 		}
+		var discrete;
+		if(null != ctx.variable.scaleDistribution && null != (discrete = Types["as"](ctx.variable.axis,rg.data.IAxisDiscrete))) {
+			discrete.setScaleDistribution(ctx.variable.scaleDistribution);
+			ctx.variable.scaleDistribution = null;
+		}
 	}
 	$s.pop();
 }
@@ -23938,9 +24618,11 @@ rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
 	while(_g < _g1.length) {
 		var ctx = _g1[_g];
 		++_g;
-		if(ctx.partial) {
-			toprocess = true;
-			break;
+		if(ctx.partial) toprocess = true;
+		var discrete;
+		if(null != ctx.variable.scaleDistribution && null != (discrete = Types["as"](ctx.variable.axis,rg.data.IAxisDiscrete))) {
+			discrete.setScaleDistribution(ctx.variable.scaleDistribution);
+			ctx.variable.scaleDistribution = null;
 		}
 	}
 	if(toprocess) {
@@ -23977,7 +24659,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@195");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@208");
 		var $spos = $s.length;
 		var $tmp = d.variable.range();
 		$s.pop();
@@ -24369,7 +25051,7 @@ rg.view.layout.CartesianLayout.prototype.feedOptions = function(info) {
 rg.view.layout.CartesianLayout.prototype.adjustPadding = function() {
 	$s.push("rg.view.layout.CartesianLayout::adjustPadding");
 	var $spos = $s.length;
-	var top = null == this.title && null == this.paddings.top?5:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?5:this.paddings.bottom, left = null == this.leftcontainer && null == this.paddings.left?15:this.paddings.left, right = null == this.rightcontainer && null == this.paddings.right?15:this.paddings.right;
+	var top = null == this.title && null == this.paddings.top?8:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?8:this.paddings.bottom, left = null == this.leftcontainer && null == this.paddings.left?20:this.paddings.left, right = null == this.rightcontainer && null == this.paddings.right?20:this.paddings.right;
 	if(null != left || null != right) {
 		this.suggestPanelPadding(this.getMain(),left,right);
 		this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
@@ -24668,6 +25350,106 @@ rg.controller.info.InfoPivotTable.prototype.displayRowTotal = null;
 rg.controller.info.InfoPivotTable.prototype.columnAxes = null;
 rg.controller.info.InfoPivotTable.prototype.click = null;
 rg.controller.info.InfoPivotTable.prototype.__class__ = rg.controller.info.InfoPivotTable;
+rg.view.svg.widget.ChartBar = function(panel) {
+	if( panel === $_ ) return;
+	$s.push("rg.view.svg.widget.ChartBar::new");
+	var $spos = $s.length;
+	rg.view.svg.widget.ChartCartesian.call(this,panel);
+	this.addClass("bar-chart");
+	this.defs = this.g.append("svg:defs");
+	this.chart = this.g.append("svg:g");
+	this.gradientLightness = 1.4;
+	this.displayGradient = true;
+	$s.pop();
+}
+rg.view.svg.widget.ChartBar.__name__ = ["rg","view","svg","widget","ChartBar"];
+rg.view.svg.widget.ChartBar.__super__ = rg.view.svg.widget.ChartCartesian;
+for(var k in rg.view.svg.widget.ChartCartesian.prototype ) rg.view.svg.widget.ChartBar.prototype[k] = rg.view.svg.widget.ChartCartesian.prototype[k];
+rg.view.svg.widget.ChartBar.prototype.stacked = null;
+rg.view.svg.widget.ChartBar.prototype.chart = null;
+rg.view.svg.widget.ChartBar.prototype.defs = null;
+rg.view.svg.widget.ChartBar.prototype.dps = null;
+rg.view.svg.widget.ChartBar.prototype.gradientLightness = null;
+rg.view.svg.widget.ChartBar.prototype.displayGradient = null;
+rg.view.svg.widget.ChartBar.prototype.data = function(dps) {
+	$s.push("rg.view.svg.widget.ChartBar::data");
+	var $spos = $s.length;
+	var padding = 10, ypadding = 4, segpadding = 2, values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
+	if(null != (discrete = Types["as"](this.variableIndependent.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - padding * (values - 1)) / values; else span = (this.width - padding * (values - 1)) / values;
+	var getGroup = function(name,container) {
+		$s.push("rg.view.svg.widget.ChartBar::data@59");
+		var $spos = $s.length;
+		var gr = axisgs.get(name);
+		if(null == gr) {
+			gr = container.append("svg:g").attr("class").string(name);
+			axisgs.set(name,gr);
+		}
+		$s.pop();
+		return gr;
+		$s.pop();
+	};
+	var _g1 = 0, _g = dps.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var valuedps = dps[i], waxis = (span - ypadding * (valuedps.length - 1)) / valuedps.length;
+		var _g3 = 0, _g2 = valuedps.length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.variableDependents[j].type, yaxis = this.variableDependents[j].axis, ymin = this.variableDependents[j].min, ymax = this.variableDependents[j].max, w = Math.max(1,(waxis - segpadding * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + ypadding), stats = null, over = (function(f,a1) {
+				$s.push("rg.view.svg.widget.ChartBar::data@89");
+				var $spos = $s.length;
+				var $tmp = function(a2,a3) {
+					$s.push("rg.view.svg.widget.ChartBar::data@89@89");
+					var $spos = $s.length;
+					var $tmp = f(a1,a2,a3);
+					$s.pop();
+					return $tmp;
+					$s.pop();
+				};
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			})($closure(this,"onmouseover"),stats);
+			var prev = 0.0;
+			var _g5 = 0, _g4 = axisdps.length;
+			while(_g5 < _g4) {
+				var k = _g5++;
+				var dp = axisdps[k], seggroup = getGroup("item-" + k,axisg), x = this.width * this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,Reflect.field(dp,this.variableIndependent.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
+				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + segpadding)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over);
+				bar.node()["__data__"] = dp;
+				if(this.displayGradient) bar.eachNode($closure(this,"applyGradient"));
+				if(this.stacked) prev = y + h;
+			}
+		}
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartBar.prototype.onmouseover = function(stats,n,i) {
+	$s.push("rg.view.svg.widget.ChartBar::onmouseover");
+	var $spos = $s.length;
+	var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
+	if(null == text) this.tooltip.hide(); else {
+		var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
+		this.tooltip.show();
+		this.tooltip.setText(text.split("\n"));
+		this.tooltip.moveTo(x + w / 2,y);
+	}
+	$s.pop();
+}
+rg.view.svg.widget.ChartBar.prototype.applyGradient = function(n,i) {
+	$s.push("rg.view.svg.widget.ChartBar::applyGradient");
+	var $spos = $s.length;
+	var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), rgb = gn.style("fill").get(), color = thx.color.Colors.parse(null == rgb?"#cccccc":rgb), id = "rg_bar_gradient_" + color.hex("");
+	if(this.defs.select("#" + id).empty()) {
+		var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
+		var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
+		gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
+		gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+	}
+	gn.attr("style").string("fill:url(#" + id + ")");
+	$s.pop();
+}
+rg.view.svg.widget.ChartBar.prototype.__class__ = rg.view.svg.widget.ChartBar;
 thx.math.Random = function(seed) {
 	if( seed === $_ ) return;
 	$s.push("thx.math.Random::new");
@@ -26414,6 +27196,11 @@ Lambda.concat = function(a,b) {
 	$s.pop();
 }
 Lambda.prototype.__class__ = Lambda;
+rg.view.svg.widget.BarEffect = { __ename__ : ["rg","view","svg","widget","BarEffect"], __constructs__ : ["NoEffect","Gradient"] }
+rg.view.svg.widget.BarEffect.NoEffect = ["NoEffect",0];
+rg.view.svg.widget.BarEffect.NoEffect.toString = $estr;
+rg.view.svg.widget.BarEffect.NoEffect.__enum__ = rg.view.svg.widget.BarEffect;
+rg.view.svg.widget.BarEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.view.svg.widget.BarEffect; $x.toString = $estr; return $x; }
 thx.color.Colors = function() { }
 thx.color.Colors.__name__ = ["thx","color","Colors"];
 thx.color.Colors.interpolatef = function(a,b,equation) {
@@ -26530,6 +27317,62 @@ thx.color.Colors._p = function(s) {
 	$s.pop();
 }
 thx.color.Colors.prototype.__class__ = thx.color.Colors;
+rg.data.Tickmark = function(value,major,delta) {
+	if( value === $_ ) return;
+	$s.push("rg.data.Tickmark::new");
+	var $spos = $s.length;
+	this.value = value;
+	this.major = major;
+	this.delta = delta;
+	$s.pop();
+}
+rg.data.Tickmark.__name__ = ["rg","data","Tickmark"];
+rg.data.Tickmark.prototype.delta = null;
+rg.data.Tickmark.prototype.major = null;
+rg.data.Tickmark.prototype.value = null;
+rg.data.Tickmark.prototype.label = null;
+rg.data.Tickmark.prototype.getDelta = function() {
+	$s.push("rg.data.Tickmark::getDelta");
+	var $spos = $s.length;
+	var $tmp = this.delta;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.Tickmark.prototype.getMajor = function() {
+	$s.push("rg.data.Tickmark::getMajor");
+	var $spos = $s.length;
+	var $tmp = this.major;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.Tickmark.prototype.getValue = function() {
+	$s.push("rg.data.Tickmark::getValue");
+	var $spos = $s.length;
+	var $tmp = this.value;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.Tickmark.prototype.getLabel = function() {
+	$s.push("rg.data.Tickmark::getLabel");
+	var $spos = $s.length;
+	var $tmp = rg.util.RGStrings.humanize(this.getValue());
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.Tickmark.prototype.toString = function() {
+	$s.push("rg.data.Tickmark::toString");
+	var $spos = $s.length;
+	var $tmp = rg.data.Tickmarks.string(this);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.Tickmark.prototype.__class__ = rg.data.Tickmark;
+rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
 haxe.Timer = function(time_ms) {
 	if( time_ms === $_ ) return;
 	$s.push("haxe.Timer::new");
@@ -28771,6 +29614,7 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutDefault = new Hash();
 	rg.controller.Visualizations.layoutType = new Hash();
 	rg.controller.Visualizations.layoutArgs = new Hash();
+	rg.controller.Visualizations.layoutDefault.set("barchart","cartesian");
 	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
 	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.SimpleLayout);
@@ -28792,7 +29636,7 @@ thx.js.Dom.selectionEngine = new thx.js.SizzleEngine();
 utest.ui.text.HtmlReport.platform = "javascript";
 rg.view.html.widget.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.view.html.widget.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
-rg.data.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240};
+rg.data.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
 thx.js.Timer.timeout = 0;
 thx.js.Timer.queue = null;
 thx.js.Timer.interval = 0;
@@ -28852,7 +29696,6 @@ thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+seco
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
 rg.view.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
-rg.view.svg.widget.LineChart.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
 thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 thx.math.Const.TWO_PI = 6.283185307179586477;
 thx.math.Const.PI = 3.141592653589793238;
@@ -28874,7 +29717,7 @@ Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 rg.controller.App.lastid = 0;
 rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
-thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+))","");
+thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
 rg.util.Properties.TIME_TOKEN = "#time:";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
@@ -28883,6 +29726,7 @@ thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 utest.TestHandler.POLLING_TIME = 10;
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
+rg.view.svg.widget.ChartLine.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
 Ints._reparse = new EReg("^([+-])?\\d+$","");
 thx.xml.Namespace.prefix = (function() {
 	$s.push("rg.controller.info.InfoLabelPivotTable::filters");
@@ -28897,17 +29741,17 @@ thx.xml.Namespace.prefix = (function() {
 	return h;
 	$s.pop();
 })();
+rg.view.layout.CartesianLayout.ALT_RIGHT = 20;
+rg.view.layout.CartesianLayout.ALT_LEFT = 20;
+rg.view.layout.CartesianLayout.ALT_TOP = 8;
+rg.view.layout.CartesianLayout.ALT_BOTTOM = 8;
 rg.view.layout.CartesianLayout.REYAXIS = new EReg("^y(\\d+)$","");
 rg.view.layout.CartesianLayout.REYINDEX = new EReg("^y(\\d+)","");
 rg.view.layout.CartesianLayout.REYTITLE = new EReg("^y(\\d+)title$","");
-rg.view.layout.CartesianLayout.ALT_RIGHT = 15;
-rg.view.layout.CartesianLayout.ALT_LEFT = 15;
-rg.view.layout.CartesianLayout.ALT_TOP = 5;
-rg.view.layout.CartesianLayout.ALT_BOTTOM = 5;
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
-rg.controller.Visualizations.svg = ["linechart","piechart","linechart"];
+rg.controller.Visualizations.svg = ["linechart","piechart","barchart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
-rg.controller.Visualizations.layouts = ["simple","simplereverse","cartesian","cartesianreverse"];
+rg.controller.Visualizations.layouts = ["simple","cartesian"];
 thx.svg.LineInternals.arcOffset = -Math.PI / 2;
 thx.svg.LineInternals.arcMax = 2 * Math.PI - 1e-6;
 thx.svg.LineInternals._lineBasisBezier1 = [0,2 / 3,1 / 3,0];

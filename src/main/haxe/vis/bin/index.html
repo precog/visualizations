@@ -7,7 +7,7 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" type="text/css" href="css/rg-debug2.css"/>
+	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
 
 	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
 <!--
@@ -164,7 +164,8 @@ document.addEventListener("DOMContentLoaded", function(){
 //				interpolation : "cardinal",
 				effect : "gradient"
 			},
-			stacked : false
+			stacked : false,
+			effect : "none"
 		}
 	});
 
@@ -229,8 +230,8 @@ document.addEventListener("DOMContentLoaded", function(){
 				interpolation : "linear"
 			},
 			label : {
-				datapointover : function(dp) { 
-					return ReportGrid.format(dp["count"]); 
+				datapointover : function(dp, s) { 
+					return ReportGrid.format(100 * dp["count"] / s.tot, "P"); 
 				},
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
@@ -266,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			height : 120,
 			label : {
 				title : "Interests by Age Groups",
-				datapointover : function(dp) { 
+				datapointover : function(dp, s) { 
 					return dp["age"] + ": " + dp["interest"]; 
 				},
 				axis : function(name) { return ReportGrid.humanize(name); }

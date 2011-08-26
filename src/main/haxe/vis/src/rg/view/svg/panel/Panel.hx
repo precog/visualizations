@@ -39,6 +39,7 @@ class Panel
 		if (null != g)
 			g.remove();
 
+		parent = container;
 		if (null == container)
 			return;
 			
@@ -50,19 +51,24 @@ class Panel
 		g = container.append("svg:g")
 			.attr("class").string("panel")
 			.attr("transform").string("translate(" + frame.x + "," + frame.y + ")");
+#if debug
 		g.append("svg:rect")
 			.attr("class").string("panel-frame")
 			.attr("width").float(frame.width)
 			.attr("height").float(frame.height);
+#end
 	}
 	
 	function reframe()
 	{
 		g
 			.attr("transform").string("translate(" + frame.x + "," + frame.y + ")")
+#if debug
 			.select("rect.panel-frame")
 				.attr("width").float(frame.width)
-				.attr("height").float(frame.height);
+				.attr("height").float(frame.height)
+#end
+		;
 
 		var layer : { private function _resize() : Void; };
 		for (i in 0..._layers.length)

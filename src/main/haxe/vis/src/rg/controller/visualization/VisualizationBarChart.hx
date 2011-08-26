@@ -20,6 +20,14 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 		var chart = new ChartBar(layout.getPanel(layout.mainPanelName));
 		
 		chart.stacked = infoBar.stacked;
+		switch(infoBar.effect)
+		{
+			case NoEffect:
+				chart.displayGradient = false;
+			case Gradient(lightness):
+				chart.displayGradient = true;
+				chart.gradientLightness = lightness;
+		}
 
 		this.chart = chart;
 	}

@@ -301,7 +301,7 @@ class ChartLine extends ChartCartesian<Array<Array<Array<DataPoint>>>>
 //			tooltip.addClass("item-" + seg);
 			tooltip.show();
 			tooltip.text = text.split("\n");
-			tooltip.moveTo(coords[0], coords[1]);
+			tooltip.moveTo(panelx + coords[0], panely + coords[1]);
 		}
 	}
 	

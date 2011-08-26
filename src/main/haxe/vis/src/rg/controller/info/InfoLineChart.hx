@@ -8,19 +8,23 @@ import rg.data.DataPoint;
 import rg.data.Stats;
 import thx.svg.LineInterpolator;
 import thx.svg.LineInterpolators;
+import rg.view.svg.widget.LineEffect;
+import rg.view.svg.widget.LineEffects;
 using rg.controller.info.Info;
 
 class InfoLineChart extends InfoCartesianChart
 {
+	public var effect : LineEffect;
+	public var interpolation : LineInterpolator;
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
-	public var line : InfoLine;
 	public var displayarea : Bool;
 
 	public function new()
 	{
 		super();
-		line = new InfoLine();
+		effect = LineEffect.Gradient(0.75, 2);
+		interpolation = LineInterpolator.Linear;
 	}
 	
 	public static function filters()
@@ -40,16 +44,23 @@ class InfoLineChart extends InfoCartesianChart
 				value : v
 			}]
 		}, {
-			field : "line",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "line",
-				value : new InfoLine().feed(v)
-			}]
-		}, {
 			field : "displayarea",
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
+		}, {
+			field : "effect",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) return [{
+				field : "effect",
+				value : LineEffects.parse(v)
+			}]
+		}, {
+			field : "interpolation",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) return [{
+				field : "interpolation",
+				value : LineInterpolators.parse(v)
+			}]
 		}].concat(cast InfoCartesianChart.filters());
 	}
 }

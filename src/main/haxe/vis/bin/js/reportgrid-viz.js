@@ -726,6 +726,17 @@ rg.controller.visualization.VisualizationBarChart.prototype.infoBar = null;
 rg.controller.visualization.VisualizationBarChart.prototype.initChart = function() {
 	var chart = new rg.view.svg.widget.ChartBar(this.layout.getPanel(this.layout.mainPanelName));
 	chart.stacked = this.infoBar.stacked;
+	var $e = (this.infoBar.effect);
+	switch( $e[1] ) {
+	case 0:
+		chart.displayGradient = false;
+		break;
+	case 1:
+		var lightness = $e[2];
+		chart.displayGradient = true;
+		chart.gradientLightness = lightness;
+		break;
+	}
 	this.chart = chart;
 }
 rg.controller.visualization.VisualizationBarChart.prototype.transformData = function(dps) {
@@ -1221,6 +1232,7 @@ rg.controller.info.InfoBarChart = function(p) {
 	if( p === $_ ) return;
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.stacked = true;
+	this.effect = rg.view.svg.widget.BarEffect.Gradient(0.75);
 }
 rg.controller.info.InfoBarChart.__name__ = ["rg","controller","info","InfoBarChart"];
 rg.controller.info.InfoBarChart.__super__ = rg.controller.info.InfoCartesianChart;
@@ -1228,9 +1240,14 @@ for(var k in rg.controller.info.InfoCartesianChart.prototype ) rg.controller.inf
 rg.controller.info.InfoBarChart.filters = function() {
 	return [{ field : "stacked", validator : function(v) {
 		return Std["is"](v,Bool);
-	}, filter : null}].concat(rg.controller.info.InfoCartesianChart.filters());
+	}, filter : null},{ field : "effect", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "effect", value : rg.view.svg.widget.BarEffects.parse(v)}];
+	}}].concat(rg.controller.info.InfoCartesianChart.filters());
 }
 rg.controller.info.InfoBarChart.prototype.stacked = null;
+rg.controller.info.InfoBarChart.prototype.effect = null;
 rg.controller.info.InfoBarChart.prototype.__class__ = rg.controller.info.InfoBarChart;
 if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.Anchor = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
@@ -1308,16 +1325,26 @@ rg.view.svg.widget.ChartCartesian.prototype.animationEase = null;
 rg.view.svg.widget.ChartCartesian.prototype.click = null;
 rg.view.svg.widget.ChartCartesian.prototype.labelDataPoint = null;
 rg.view.svg.widget.ChartCartesian.prototype.labelDataPointOver = null;
+rg.view.svg.widget.ChartCartesian.prototype.panelx = null;
+rg.view.svg.widget.ChartCartesian.prototype.panely = null;
 rg.view.svg.widget.ChartCartesian.prototype.tooltip = null;
 rg.view.svg.widget.ChartCartesian.prototype.setVariables = function(variableIndependents,variableDependents) {
 	this.variableIndependent = variableIndependents[0];
 	this.variableDependents = variableDependents;
 }
 rg.view.svg.widget.ChartCartesian.prototype.data = function(dps) {
-	throw new thx.error.AbstractMethod({ fileName : "ChartCartesian.hx", lineNumber : 45, className : "rg.view.svg.widget.ChartCartesian", methodName : "data"});
+	throw new thx.error.AbstractMethod({ fileName : "ChartCartesian.hx", lineNumber : 49, className : "rg.view.svg.widget.ChartCartesian", methodName : "data"});
+}
+rg.view.svg.widget.ChartCartesian.prototype.resize = function() {
+	var coords = rg.view.svg.panel.Panels.boundingBox(this.panel);
+	this.panelx = coords.x;
+	this.panely = coords.y;
 }
 rg.view.svg.widget.ChartCartesian.prototype.init = function() {
-	if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Baloon(this.g);
+	if(null != this.labelDataPointOver) {
+		this.tooltip = new rg.view.svg.widget.Baloon(this.g);
+		this.resize();
+	}
 }
 rg.view.svg.widget.ChartCartesian.prototype.__class__ = rg.view.svg.widget.ChartCartesian;
 rg.view.svg.widget.ChartBar = function(panel) {
@@ -1349,6 +1376,7 @@ rg.view.svg.widget.ChartBar.prototype.data = function(dps) {
 		}
 		return gr;
 	};
+	var flatdata = Arrays.flatten(Arrays.flatten(dps));
 	var _g1 = 0, _g = dps.length;
 	while(_g1 < _g) {
 		var i = _g1++;
@@ -1356,17 +1384,38 @@ rg.view.svg.widget.ChartBar.prototype.data = function(dps) {
 		var _g3 = 0, _g2 = valuedps.length;
 		while(_g3 < _g2) {
 			var j = _g3++;
-			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.variableDependents[j].type, yaxis = this.variableDependents[j].axis, ymin = this.variableDependents[j].min, ymax = this.variableDependents[j].max, w = Math.max(1,(waxis - segpadding * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + ypadding);
+			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.variableDependents[j].type, yaxis = this.variableDependents[j].axis, ymin = this.variableDependents[j].min, ymax = this.variableDependents[j].max, w = Math.max(1,(waxis - segpadding * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + ypadding), ystats = rg.util.DataPoints.stats(flatdata,this.variableDependents[j].type), over = (function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})($closure(this,"onmouseover"),ystats), click = (function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})($closure(this,"onclick"),ystats);
 			var prev = 0.0;
 			var _g5 = 0, _g4 = axisdps.length;
 			while(_g5 < _g4) {
 				var k = _g5++;
 				var dp = axisdps[k], seggroup = getGroup("item-" + k,axisg), x = this.width * this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,Reflect.field(dp,this.variableIndependent.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
-				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + segpadding)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h);
+				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + segpadding)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over);
+				bar.node()["__data__"] = dp;
 				if(this.displayGradient) bar.eachNode($closure(this,"applyGradient"));
 				if(this.stacked) prev = y + h;
 			}
 		}
+	}
+}
+rg.view.svg.widget.ChartBar.prototype.onclick = function(ystats,dp,i) {
+	this.click(dp,ystats);
+}
+rg.view.svg.widget.ChartBar.prototype.onmouseover = function(ystats,n,i) {
+	var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,ystats);
+	if(null == text) this.tooltip.hide(); else {
+		var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
+		this.tooltip.show();
+		this.tooltip.setText(text.split("\n"));
+		this.tooltip.moveTo(this.panelx + x + w / 2,this.panely + y);
 	}
 }
 rg.view.svg.widget.ChartBar.prototype.applyGradient = function(n,i) {
@@ -2743,8 +2792,8 @@ rg.controller.visualization.VisualizationLineChart.prototype.initChart = functio
 	var chart = new rg.view.svg.widget.ChartLine(this.layout.getPanel(this.layout.mainPanelName));
 	chart.symbol = this.infoLine.symbol;
 	chart.symbolStyle = this.infoLine.symbolStyle;
-	chart.lineInterpolator = this.infoLine.line.interpolation;
-	chart.lineEffect = this.infoLine.line.effect;
+	chart.lineInterpolator = this.infoLine.interpolation;
+	chart.lineEffect = this.infoLine.effect;
 	if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.data.ScaleDistribution.ScaleFill;
 	if(null != this.infoLine.y0property) chart.y0property = this.infoLine.y0property; else if(this.infoLine.displayarea) chart.y0property = "";
 	this.chart = chart;
@@ -2944,26 +2993,6 @@ thx.svg.Line.prototype.y = function(v) {
 	return this;
 }
 thx.svg.Line.prototype.__class__ = thx.svg.Line;
-rg.controller.info.InfoLine = function(p) {
-	if( p === $_ ) return;
-	this.effect = rg.view.svg.widget.LineEffect.Gradient(0.75,2);
-	this.interpolation = thx.svg.LineInterpolator.Linear;
-}
-rg.controller.info.InfoLine.__name__ = ["rg","controller","info","InfoLine"];
-rg.controller.info.InfoLine.filters = function() {
-	return [{ field : "effect", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "effect", value : rg.view.svg.widget.LineEffects.parse(v)}];
-	}},{ field : "interpolation", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
-	}}];
-}
-rg.controller.info.InfoLine.prototype.effect = null;
-rg.controller.info.InfoLine.prototype.interpolation = null;
-rg.controller.info.InfoLine.prototype.__class__ = rg.controller.info.InfoLine;
 if(!rg.view.svg.util) rg.view.svg.util = {}
 rg.view.svg.util.SymbolCache = function(p) {
 	if( p === $_ ) return;
@@ -3772,7 +3801,7 @@ rg.view.svg.widget.ChartLine.prototype.onmouseover = function(stats,n,i) {
 		var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.widget.ChartLine.coordsFromTransform(sel.attr("transform").get());
 		this.tooltip.show();
 		this.tooltip.setText(text.split("\n"));
-		this.tooltip.moveTo(coords[0],coords[1]);
+		this.tooltip.moveTo(this.panelx + coords[0],this.panely + coords[1]);
 	}
 }
 rg.view.svg.widget.ChartLine.prototype.onclick = function(stats,dp,i) {
@@ -5348,6 +5377,20 @@ thx.color.NamedColors.yellow = null;
 thx.color.NamedColors.yellowgreen = null;
 thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype.__class__ = thx.color.NamedColors;
+rg.view.svg.widget.BarEffects = function() { }
+rg.view.svg.widget.BarEffects.__name__ = ["rg","view","svg","widget","BarEffects"];
+rg.view.svg.widget.BarEffects.parse = function(s) {
+	var parts = s.toLowerCase().split("-");
+	switch(parts.shift()) {
+	case "gradient":
+		var lightness = 0.75, parameters = parts.pop();
+		if(null != parameters) lightness = Std.parseFloat(parameters.split(",").shift());
+		return rg.view.svg.widget.BarEffect.Gradient(lightness);
+	default:
+		return rg.view.svg.widget.BarEffect.NoEffect;
+	}
+}
+rg.view.svg.widget.BarEffects.prototype.__class__ = rg.view.svg.widget.BarEffects;
 rg.view.frame.FrameLayout = { __ename__ : ["rg","view","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
 rg.view.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
@@ -5608,7 +5651,8 @@ rg.controller.factory.FactoryHtmlVisualization.prototype.__class__ = rg.controll
 rg.controller.info.InfoLineChart = function(p) {
 	if( p === $_ ) return;
 	rg.controller.info.InfoCartesianChart.call(this);
-	this.line = new rg.controller.info.InfoLine();
+	this.effect = rg.view.svg.widget.LineEffect.Gradient(0.75,2);
+	this.interpolation = thx.svg.LineInterpolator.Linear;
 }
 rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
 rg.controller.info.InfoLineChart.__super__ = rg.controller.info.InfoCartesianChart;
@@ -5624,17 +5668,22 @@ rg.controller.info.InfoLineChart.filters = function() {
 		return Reflect.isFunction(v);
 	}, filter : function(v) {
 		return [{ field : "symbolStyle", value : v}];
-	}},{ field : "line", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "line", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLine(),v)}];
 	}},{ field : "displayarea", validator : function(v) {
 		return Std["is"](v,Bool);
-	}, filter : null}].concat(rg.controller.info.InfoCartesianChart.filters());
+	}, filter : null},{ field : "effect", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "effect", value : rg.view.svg.widget.LineEffects.parse(v)}];
+	}},{ field : "interpolation", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
+	}}].concat(rg.controller.info.InfoCartesianChart.filters());
 }
+rg.controller.info.InfoLineChart.prototype.effect = null;
+rg.controller.info.InfoLineChart.prototype.interpolation = null;
 rg.controller.info.InfoLineChart.prototype.symbol = null;
 rg.controller.info.InfoLineChart.prototype.symbolStyle = null;
-rg.controller.info.InfoLineChart.prototype.line = null;
 rg.controller.info.InfoLineChart.prototype.displayarea = null;
 rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
 rg.controller.info.InfoLabel = function(p) {
@@ -6598,9 +6647,10 @@ Floats.uninterpolateClampf = function(a,b) {
 		return Floats.clamp((x - a) * b,0.0,1.0);
 	};
 }
-Floats.round = function(x,n) {
-	if(n == null) n = 2;
-	return n != 0?Math.round(x * Math.pow(10,n)) * Math.pow(10,-n):Math.round(x);
+Floats.round = function(number,precision) {
+	if(precision == null) precision = 2;
+	number *= Math.pow(10,precision);
+	return Math.round(number) / Math.pow(10,precision);
 }
 Floats.prototype.__class__ = Floats;
 thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
@@ -7401,9 +7451,14 @@ thx.date.DateParser.plusPm = function(s) {
 	}(this));
 }
 thx.date.DateParser.prototype.__class__ = thx.date.DateParser;
-rg.view.svg.widget.Baloon = function(container) {
+rg.view.svg.widget.Baloon = function(container,bindOnTop) {
 	if( container === $_ ) return;
-	this.container = container;
+	if(bindOnTop == null) bindOnTop = true;
+	if(bindOnTop) {
+		var parent = container.node();
+		while(null != parent && parent.nodeName != "svg") parent = parent.parentNode;
+		this.container = null == parent?container:thx.js.Dom.selectNode(parent);
+	} else this.container = container;
 	this.visible = true;
 	this.duration = 500;
 	this.minwidth = 30;
@@ -7413,7 +7468,7 @@ rg.view.svg.widget.Baloon = function(container) {
 	this.paddingHorizontal = 3.5;
 	this.paddingVertical = 1.5;
 	this.transition_id = 0;
-	this.baloon = container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
+	this.baloon = this.container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
 	this.frame = this.baloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
 	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)");
 	this.connectorShapeV = thx.svg.Diagonal.forObject();
@@ -7898,6 +7953,11 @@ thx.languages.En.getLanguage = function() {
 	return thx.languages.En.language;
 }
 thx.languages.En.prototype.__class__ = thx.languages.En;
+rg.view.svg.widget.BarEffect = { __ename__ : ["rg","view","svg","widget","BarEffect"], __constructs__ : ["NoEffect","Gradient"] }
+rg.view.svg.widget.BarEffect.NoEffect = ["NoEffect",0];
+rg.view.svg.widget.BarEffect.NoEffect.toString = $estr;
+rg.view.svg.widget.BarEffect.NoEffect.__enum__ = rg.view.svg.widget.BarEffect;
+rg.view.svg.widget.BarEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.view.svg.widget.BarEffect; $x.toString = $estr; return $x; }
 rg.controller.info.InfoVisualizationType = function(p) {
 }
 rg.controller.info.InfoVisualizationType.__name__ = ["rg","controller","info","InfoVisualizationType"];
@@ -8409,15 +8469,15 @@ rg.view.svg.panel.Panel.prototype.removeLayer = function(layer) {
 }
 rg.view.svg.panel.Panel.prototype.setParent = function(container) {
 	if(null != this.g) this.g.remove();
+	this.parent = container;
 	if(null == container) return;
 	this.init(container.g);
 }
 rg.view.svg.panel.Panel.prototype.init = function(container) {
 	this.g = container.append("svg:g").attr("class").string("panel").attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
-	this.g.append("svg:rect").attr("class").string("panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
 }
 rg.view.svg.panel.Panel.prototype.reframe = function() {
-	this.g.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")").select("rect.panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
+	this.g.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
 	var layer;
 	var _g1 = 0, _g = this._layers.length;
 	while(_g1 < _g) {
@@ -8429,9 +8489,9 @@ rg.view.svg.panel.Panel.prototype.reframe = function() {
 rg.view.svg.panel.Panel.prototype.__class__ = rg.view.svg.panel.Panel;
 rg.view.svg.panel.Container = function(frame,orientation) {
 	if( frame === $_ ) return;
+	rg.view.svg.panel.Panel.call(this,frame);
 	this.stack = new rg.view.frame.Stack(frame.width,frame.height,orientation);
 	this.panels = [];
-	rg.view.svg.panel.Panel.call(this,frame);
 }
 rg.view.svg.panel.Container.__name__ = ["rg","view","svg","panel","Container"];
 rg.view.svg.panel.Container.__super__ = rg.view.svg.panel.Panel;
@@ -10387,6 +10447,38 @@ thx.js.AccessDataTweenStyle.prototype.colorTweenf = function(tween,priority) {
 	return this.transition;
 }
 thx.js.AccessDataTweenStyle.prototype.__class__ = thx.js.AccessDataTweenStyle;
+rg.view.svg.panel.Panels = function() { }
+rg.view.svg.panel.Panels.__name__ = ["rg","view","svg","panel","Panels"];
+rg.view.svg.panel.Panels.rootSize = function(panel) {
+	var p = panel.parent;
+	while(p != null) {
+		var t = p;
+		p = panel.parent;
+		panel = t;
+	}
+	return { width : panel.frame.width, height : panel.frame.height};
+}
+rg.view.svg.panel.Panels.boundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		p = p.parent;
+	}
+	return { x : x, y : y, width : panel.frame.width, height : panel.frame.height};
+}
+rg.view.svg.panel.Panels.ancestorBoundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0, w = 0, h = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		w = p.frame.width;
+		h = p.frame.height;
+		p = p.parent;
+	}
+	return { x : -x, y : -y, width : w, height : h};
+}
+rg.view.svg.panel.Panels.prototype.__class__ = rg.view.svg.panel.Panels;
 hxevents.Dispatcher = function(p) {
 	if( p === $_ ) return;
 	this.handlers = new Array();
@@ -11563,6 +11655,23 @@ Objects.clone = function(src) {
 	Objects.copyTo(src,dst);
 	return dst;
 }
+Objects.mergef = function(ob,new_ob,f) {
+	var _g = 0, _g1 = Reflect.fields(new_ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var new_val = Reflect.field(new_ob,field);
+		if(Reflect.hasField(ob,field)) {
+			var old_val = Reflect.field(ob,field);
+			ob[field] = f(field,old_val,new_val);
+		} else ob[field] = new_val;
+	}
+}
+Objects.merge = function(ob,new_ob) {
+	Objects.mergef(ob,new_ob,function(key,old_v,new_v) {
+		return new_v;
+	});
+}
 Objects._flatten = function(src,cum,arr,levels,level) {
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
@@ -11640,7 +11749,7 @@ Objects.formatf = function(param,params,culture) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 225, className : "Objects", methodName : "formatf"});
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 246, className : "Objects", methodName : "formatf"});
 			return $r;
 		}(this));
 	}
@@ -15176,7 +15285,7 @@ Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
 rg.util.Properties.TIME_TOKEN = "#time:";
-thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+))","");
+thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 js.Lib.onerror = null;
 thx.js.Dom.doc = (function() {
 	var g = new thx.js.Group([js.Lib.document]), gs = thx.js.Selection.create([g]);
