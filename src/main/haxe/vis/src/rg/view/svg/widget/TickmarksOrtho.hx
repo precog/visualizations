@@ -19,6 +19,7 @@ class TickmarksOrtho extends Layer
 	public var displayMinor : Bool;
 	public var displayMajor : Bool;
 	public var displayLabel : Bool;
+	public var displayAnchorLine : Bool;
 	public var lengthMinor : Float;
 	public var lengthMajor : Float;
 	public var paddingMinor : Float;
@@ -46,6 +47,7 @@ class TickmarksOrtho extends Layer
 		displayMinor = true;
 		displayMajor = true;
 		displayLabel = true;
+		displayAnchorLine = false;
 		lengthMinor = 2;
 		lengthMajor = 5;
 		paddingMinor = 1;
@@ -64,6 +66,8 @@ class TickmarksOrtho extends Layer
 	{
 		if (null == axis)
 			return;
+		if (displayAnchorLine)
+			updateAnchorLine();
 		redraw();
 	}
 	
@@ -73,6 +77,34 @@ class TickmarksOrtho extends Layer
 		this.min = min;
 		this.max = max;
 		redraw();
+	}
+	
+	function updateAnchorLine()
+	{
+		var line = g.select("line.anchor-line");
+		switch(anchor)
+		{
+			case Top:
+				line.attr("x1").float(0)
+					.attr("y1").float(0)
+					.attr("x2").float(panel.frame.width)
+					.attr("y2").float(0);
+			case Bottom:
+				line.attr("x1").float(0)
+					.attr("y1").float(panel.frame.height)
+					.attr("x2").float(panel.frame.width)
+					.attr("y2").float(panel.frame.height);
+			case Left:
+				line.attr("x1").float(0)
+					.attr("y1").float(0)
+					.attr("x2").float(0)
+					.attr("y2").float(panel.frame.height);
+			case Right:
+				line.attr("x1").float(panel.frame.width)
+					.attr("y1").float(0)
+					.attr("x2").float(panel.frame.width)
+					.attr("y2").float(panel.frame.height);
+		}
 	}
 	
 	function maxTicks()
@@ -242,6 +274,15 @@ class TickmarksOrtho extends Layer
 				case Right:
 					labelAngle = 0;
 			}
+		}
+	}
+	
+	public function init()
+	{
+		if (displayAnchorLine)
+		{
+			g.append("svg:line").attr("class").string("anchor-line");
+			updateAnchorLine();
 		}
 	}
 	

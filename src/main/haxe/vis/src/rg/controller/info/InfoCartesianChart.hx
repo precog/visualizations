@@ -19,6 +19,7 @@ class InfoCartesianChart
 	public var displayMinor : String -> Bool;
 	public var displayMajor : String -> Bool;
 	public var displayLabel : String -> Bool;
+	public var displayAnchorLine : String -> Bool;
 	
 	public var lengthTickMinor : Float;
 	public var lengthTickMajor : Float;
@@ -34,6 +35,7 @@ class InfoCartesianChart
 		displayMinor = function(_) return true;
 		displayMajor = function(_) return true;
 		displayLabel = function(_) return true;
+		displayAnchorLine = function(_) return false;
 		
 		lengthTickMinor = 2;
 		lengthTickMajor = 5;
@@ -112,6 +114,13 @@ class InfoCartesianChart
 			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
 			filter : function(v : Dynamic) return [{
 				field : "displayLabel",
+				value : Std.is(v, Bool) ? function(_) return v : v
+			}]
+		}, {
+			field : "displayanchorline",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
+			filter : function(v : Dynamic) return [{
+				field : "displayAnchorLine",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}]
 		}, {

@@ -425,6 +425,13 @@ font-size: 11px;
 	border: 0;
 }
 
+.rg .anchor-line
+{
+	shape-rendering: crispEdges;
+	stroke: #999;
+	stroke-width: 1;
+}
+
 .rg .bar-chart rect.bar
 {
 	shape-rendering: crispEdges;

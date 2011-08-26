@@ -208,7 +208,8 @@ document.addEventListener("DOMContentLoaded", function(){
 				},
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			displayarea : true
+			displayarea : true,
+			displayanchorline : function(v) { return v == 'age' }
 		}
 	});
 	
@@ -236,7 +237,8 @@ document.addEventListener("DOMContentLoaded", function(){
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
 			displayarea : true,
-			stacked : false
+			stacked : false,
+			displayanchorline : function(v) { return v == 'age' }
 		}
 	});
 
@@ -275,7 +277,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			displayarea : true,
 			line : { effect : "none" },
 			symbol : ReportGrid.symbol.get("circle", 36),
-			titleontop : true
+			titleontop : true,
+			displayanchorline : function(v) { return v == 'age' }
 		}
 	});
 }, false)

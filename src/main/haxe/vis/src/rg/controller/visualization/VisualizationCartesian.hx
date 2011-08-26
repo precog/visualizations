@@ -153,14 +153,16 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			tickmarks.paddingMajor = info.paddingTickMajor;
 			tickmarks.paddingLabel = info.paddingLabel;
 		}
-
+		
+		tickmarks.displayAnchorLine = info.displayAnchorLine(type);
+		
 		if (null != title && null != (context = layout.getContext(pname + "title")))
 		{
 			var t = new Title(context.panel, title, context.anchor, "axis-title");
 			var h = t.idealHeight();
 			layout.suggestSize(pname + "title", h);
 		}
-		
+		tickmarks.init();
 		return tickmarks;
 	}
 }

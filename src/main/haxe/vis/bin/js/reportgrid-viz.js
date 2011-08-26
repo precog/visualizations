@@ -707,11 +707,13 @@ rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = f
 		tickmarks.paddingMajor = this.info.paddingTickMajor;
 		tickmarks.paddingLabel = this.info.paddingLabel;
 	}
+	tickmarks.displayAnchorLine = this.info.displayAnchorLine(type);
 	if(null != title && null != (context = this.layout.getContext(pname + "title"))) {
 		var t = new rg.view.svg.widget.Title(context.panel,title,context.anchor,null,"axis-title");
 		var h = t.idealHeight();
 		this.layout.suggestSize(pname + "title",h);
 	}
+	tickmarks.init();
 	return tickmarks;
 }
 rg.controller.visualization.VisualizationCartesian.prototype.__class__ = rg.controller.visualization.VisualizationCartesian;
@@ -1131,6 +1133,9 @@ rg.controller.info.InfoCartesianChart = function(p) {
 	this.displayLabel = function(_) {
 		return true;
 	};
+	this.displayAnchorLine = function(_) {
+		return false;
+	};
 	this.lengthTickMinor = 2;
 	this.lengthTickMajor = 5;
 	this.paddingTickMinor = 1;
@@ -1187,6 +1192,12 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return [{ field : "displayLabel", value : Std["is"](v,Bool)?function(_) {
 			return v;
 		}:v}];
+	}},{ field : "displayanchorline", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayAnchorLine", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
 	}},{ field : "lengthtick", validator : function(v) {
 		return Std["is"](v,Float);
 	}, filter : function(v) {
@@ -1225,6 +1236,7 @@ rg.controller.info.InfoCartesianChart.prototype.y0property = null;
 rg.controller.info.InfoCartesianChart.prototype.displayMinor = null;
 rg.controller.info.InfoCartesianChart.prototype.displayMajor = null;
 rg.controller.info.InfoCartesianChart.prototype.displayLabel = null;
+rg.controller.info.InfoCartesianChart.prototype.displayAnchorLine = null;
 rg.controller.info.InfoCartesianChart.prototype.lengthTickMinor = null;
 rg.controller.info.InfoCartesianChart.prototype.lengthTickMajor = null;
 rg.controller.info.InfoCartesianChart.prototype.paddingTickMinor = null;
@@ -6567,6 +6579,7 @@ rg.view.svg.widget.TickmarksOrtho = function(panel,anchor) {
 	this.displayMinor = true;
 	this.displayMajor = true;
 	this.displayLabel = true;
+	this.displayAnchorLine = false;
 	this.lengthMinor = 2;
 	this.lengthMajor = 5;
 	this.paddingMinor = 1;
@@ -6582,6 +6595,7 @@ rg.view.svg.widget.TickmarksOrtho.prototype.anchor = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.displayMinor = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.displayMajor = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.displayLabel = null;
+rg.view.svg.widget.TickmarksOrtho.prototype.displayAnchorLine = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.lengthMinor = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.lengthMajor = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.paddingMinor = null;
@@ -6604,6 +6618,7 @@ rg.view.svg.widget.TickmarksOrtho.prototype.min = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.max = null;
 rg.view.svg.widget.TickmarksOrtho.prototype.resize = function() {
 	if(null == this.axis) return;
+	if(this.displayAnchorLine) this.updateAnchorLine();
 	this.redraw();
 }
 rg.view.svg.widget.TickmarksOrtho.prototype.update = function(axis,min,max) {
@@ -6611,6 +6626,23 @@ rg.view.svg.widget.TickmarksOrtho.prototype.update = function(axis,min,max) {
 	this.min = min;
 	this.max = max;
 	this.redraw();
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.updateAnchorLine = function() {
+	var line = this.g.select("line.anchor-line");
+	switch( (this.anchor)[1] ) {
+	case 0:
+		line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](0);
+		break;
+	case 1:
+		line.attr("x1")["float"](0).attr("y1")["float"](this.panel.frame.height).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](this.panel.frame.height);
+		break;
+	case 2:
+		line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](0).attr("y2")["float"](this.panel.frame.height);
+		break;
+	case 3:
+		line.attr("x1")["float"](this.panel.frame.width).attr("y1")["float"](0).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](this.panel.frame.height);
+		break;
+	}
 }
 rg.view.svg.widget.TickmarksOrtho.prototype.maxTicks = function() {
 	var size = (function($this) {
@@ -6759,6 +6791,12 @@ rg.view.svg.widget.TickmarksOrtho.prototype.initf = function() {
 			this.labelAngle = 0;
 			break;
 		}
+	}
+}
+rg.view.svg.widget.TickmarksOrtho.prototype.init = function() {
+	if(this.displayAnchorLine) {
+		this.g.append("svg:line").attr("class").string("anchor-line");
+		this.updateAnchorLine();
 	}
 }
 rg.view.svg.widget.TickmarksOrtho.prototype.t = function(x,y) {
