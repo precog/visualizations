@@ -1875,6 +1875,13 @@ rg.view.svg.chart.LineEffects.parse = function(s) {
 	}
 }
 rg.view.svg.chart.LineEffects.prototype.__class__ = rg.view.svg.chart.LineEffects;
+rg.controller.info.InfoFunnelChart = function(p) {
+}
+rg.controller.info.InfoFunnelChart.__name__ = ["rg","controller","info","InfoFunnelChart"];
+rg.controller.info.InfoFunnelChart.filters = function() {
+	return [];
+}
+rg.controller.info.InfoFunnelChart.prototype.__class__ = rg.controller.info.InfoFunnelChart;
 if(!thx.js) thx.js = {}
 thx.js.Access = function(selection) {
 	if( selection === $_ ) return;
@@ -7999,6 +8006,15 @@ thx.math.Random.prototype["float"] = function() {
 	return ((this.seed = this.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 }
 thx.math.Random.prototype.__class__ = thx.math.Random;
+rg.controller.visualization.VisualizationFunnelChart = function(layout) {
+	if( layout === $_ ) return;
+	rg.controller.visualization.VisualizationSvg.call(this,layout);
+}
+rg.controller.visualization.VisualizationFunnelChart.__name__ = ["rg","controller","visualization","VisualizationFunnelChart"];
+rg.controller.visualization.VisualizationFunnelChart.__super__ = rg.controller.visualization.VisualizationSvg;
+for(var k in rg.controller.visualization.VisualizationSvg.prototype ) rg.controller.visualization.VisualizationFunnelChart.prototype[k] = rg.controller.visualization.VisualizationSvg.prototype[k];
+rg.controller.visualization.VisualizationFunnelChart.prototype.info = null;
+rg.controller.visualization.VisualizationFunnelChart.prototype.__class__ = rg.controller.visualization.VisualizationFunnelChart;
 if(!rg.view.svg.layer) rg.view.svg.layer = {}
 rg.view.svg.layer.TickmarksOrtho = function(panel,anchor) {
 	if( panel === $_ ) return;
@@ -9702,8 +9718,12 @@ rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,l
 		var chart = new rg.controller.visualization.VisualizationBarChart(layout);
 		chart.info = chart.infoBar = rg.controller.info.Info.feed(new rg.controller.info.InfoBarChart(),options);
 		return chart;
+	case "funnelchart":
+		var chart = new rg.controller.visualization.VisualizationFunnelChart(layout);
+		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoFunnelChart(),options);
+		return chart;
 	default:
-		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 41, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 47, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 	}
 }
 rg.controller.factory.FactorySvgVisualization.prototype.__class__ = rg.controller.factory.FactorySvgVisualization;
@@ -15310,6 +15330,7 @@ thx.languages.En.getLanguage();
 	rg.controller.Visualizations.layoutDefault.set("barchart","cartesian");
 	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
 	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
+	rg.controller.Visualizations.layoutDefault.set("funnelchart","simple");
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
 	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
 }
@@ -15433,7 +15454,7 @@ thx.js.BaseTransition._inheritid = 0;
 rg.controller.App.lastid = 0;
 thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
-rg.controller.Visualizations.svg = ["linechart","piechart","barchart"];
+rg.controller.Visualizations.svg = ["linechart","piechart","barchart","funnelchart"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","cartesian"];
 rg.view.svg.chart.LineChart.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
