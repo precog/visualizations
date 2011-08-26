@@ -5,7 +5,7 @@
 
 package rg.controller.visualization;
 import rg.controller.info.InfoBarChart;
-import rg.view.svg.widget.ChartBar;
+import rg.view.svg.chart.ChartBar;
 import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;

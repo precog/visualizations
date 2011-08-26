@@ -8,8 +8,8 @@ import rg.data.DataPoint;
 import rg.data.Stats;
 import thx.svg.LineInterpolator;
 import thx.svg.LineInterpolators;
-import rg.view.svg.widget.LineEffect;
-import rg.view.svg.widget.LineEffects;
+import rg.view.svg.chart.LineEffect;
+import rg.view.svg.chart.LineEffects;
 using rg.controller.info.Info;
 
 class InfoLineChart extends InfoCartesianChart

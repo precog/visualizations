@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.svg.widget;
+package rg.view.svg.chart;
 import rg.view.svg.panel.Layer;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;

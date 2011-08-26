@@ -3,11 +3,14 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.svg.widget;
+package rg.view.svg.layer;
 import rg.view.svg.panel.Layer;
 import thx.js.Selection;
 import rg.view.layout.Anchor;
 import rg.view.svg.panel.Panel;
+import rg.view.svg.widget.Label;
+import rg.view.svg.widget.LabelOrientation;
+import rg.view.svg.widget.GridAnchor;
 
 class Title extends Layer
 {

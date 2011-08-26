@@ -3,13 +3,16 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.svg.widget;
+package rg.view.svg.layer;
 import rg.data.IAxis;
 import rg.view.layout.Anchor;
 import rg.view.svg.panel.Layer;
 import rg.view.svg.panel.Panel;
 import rg.data.ITickmark;
 import thx.js.Dom;
+import rg.view.svg.widget.Label;
+import rg.view.svg.widget.LabelOrientation;
+import rg.view.svg.widget.GridAnchor;
 using Arrays;
 
 class TickmarksOrtho extends Layer

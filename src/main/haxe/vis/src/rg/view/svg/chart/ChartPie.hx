@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.svg.widget;
+package rg.view.svg.chart;
 import haxe.Md5;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
@@ -22,6 +22,9 @@ import thx.color.Hsl;
 import thx.color.Colors;
 import rg.util.DataPoints;
 import rg.data.Stats;
+import rg.view.svg.widget.LabelOrientation;
+import rg.view.svg.widget.Label;
+import rg.view.svg.widget.GridAnchor;
 using Arrays;
 
 // TODO add overDataPoint

@@ -7,9 +7,9 @@ package rg.controller.visualization;
 import rg.controller.info.InfoCartesianChart;
 import rg.data.DataPoint;
 import rg.util.DataPoints;
-import rg.view.svg.widget.TickmarksOrtho;
-import rg.view.svg.widget.ChartCartesian;
-import rg.view.svg.widget.Title;
+import rg.view.svg.layer.TickmarksOrtho;
+import rg.view.svg.chart.ChartCartesian;
+import rg.view.svg.layer.Title;
 import thx.error.AbstractMethod;
 
 class VisualizationCartesian<T> extends VisualizationSvg

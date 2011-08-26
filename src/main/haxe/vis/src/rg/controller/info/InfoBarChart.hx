@@ -4,8 +4,8 @@
  */
 
 package rg.controller.info;
-import rg.view.svg.widget.BarEffect;
-import rg.view.svg.widget.BarEffects;
+import rg.view.svg.chart.BarEffect;
+import rg.view.svg.chart.BarEffects;
 
 class InfoBarChart extends InfoCartesianChart
 {

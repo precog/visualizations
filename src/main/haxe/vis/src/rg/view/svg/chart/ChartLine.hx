@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.svg.widget;
+package rg.view.svg.chart;
 import thx.js.Dom;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
@@ -18,6 +18,7 @@ import rg.data.Stats;
 import thx.svg.LineInterpolator;
 import thx.js.Access;
 import thx.svg.Area;
+import rg.view.svg.widget.Label;
 using Arrays;
 
 // TODO transition animation
