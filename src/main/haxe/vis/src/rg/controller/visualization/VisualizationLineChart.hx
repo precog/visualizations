@@ -5,7 +5,7 @@
 
 package rg.controller.visualization;
 import rg.controller.info.InfoLineChart;
-import rg.view.svg.chart.ChartLine;
+import rg.view.svg.chart.LineChart;
 import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
@@ -16,7 +16,7 @@ class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Da
 	
 	override function initChart()
 	{
-		var chart = new ChartLine(layout.getPanel(layout.mainPanelName));
+		var chart = new LineChart(layout.getPanel(layout.mainPanelName));
 		
 		chart.symbol = infoLine.symbol;
 		chart.symbolStyle = infoLine.symbolStyle;

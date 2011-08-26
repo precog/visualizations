@@ -8,7 +8,7 @@ import rg.controller.info.InfoAnimation;
 import rg.controller.info.InfoPieChart;
 import rg.data.DataPoint;
 import rg.view.svg.panel.Panel;
-import rg.view.svg.chart.ChartPie;
+import rg.view.svg.chart.PieChart;
 import rg.view.layout.PanelContext;
 import rg.view.svg.layer.Title;
 import rg.data.Variable;
@@ -17,14 +17,14 @@ import rg.util.Properties;
 
 class VisualizationPieChart extends VisualizationSvg
 {
-	var chart : ChartPie;
+	var chart : PieChart;
 	var title : Null<Title>;
 	public var info : InfoPieChart;
 	override function init()
 	{
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
-		chart = new ChartPie(panelChart);
+		chart = new PieChart(panelChart);
 		
 		// aesthetic
 		chart.innerRadius = info.innerradius;

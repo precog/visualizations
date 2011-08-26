@@ -15,7 +15,7 @@ import rg.view.svg.widget.Baloon;
 import thx.math.Equations;
 import rg.view.svg.panel.Panels;
 
-class ChartCartesian<T> extends Layer
+class CartesianChart<T> extends Layer
 {
 	public var variableDependents : Array<VariableDependent<Dynamic>>;
 	public var variableIndependent : VariableIndependent<Dynamic>;

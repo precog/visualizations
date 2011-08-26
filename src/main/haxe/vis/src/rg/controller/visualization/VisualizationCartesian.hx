@@ -8,14 +8,14 @@ import rg.controller.info.InfoCartesianChart;
 import rg.data.DataPoint;
 import rg.util.DataPoints;
 import rg.view.svg.layer.TickmarksOrtho;
-import rg.view.svg.chart.ChartCartesian;
+import rg.view.svg.chart.CartesianChart;
 import rg.view.svg.layer.Title;
 import thx.error.AbstractMethod;
 
 class VisualizationCartesian<T> extends VisualizationSvg
 {
 	public var info : InfoCartesianChart;
-	var chart : ChartCartesian<T>;
+	var chart : CartesianChart<T>;
 	var xlabel : TickmarksOrtho;
 	var ylabels : Array<{ id : Int, tickmarks : TickmarksOrtho }>;
 	var title : Null<Title>;

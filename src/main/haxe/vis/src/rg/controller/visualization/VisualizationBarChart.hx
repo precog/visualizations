@@ -5,7 +5,7 @@
 
 package rg.controller.visualization;
 import rg.controller.info.InfoBarChart;
-import rg.view.svg.chart.ChartBar;
+import rg.view.svg.chart.BarChart;
 import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
@@ -17,7 +17,7 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 	
 	override function initChart()
 	{
-		var chart = new ChartBar(layout.getPanel(layout.mainPanelName));
+		var chart = new BarChart(layout.getPanel(layout.mainPanelName));
 		
 		chart.stacked = infoBar.stacked;
 		switch(infoBar.effect)

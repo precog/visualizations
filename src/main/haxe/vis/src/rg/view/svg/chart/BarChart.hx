@@ -19,7 +19,7 @@ import thx.color.Colors;
 import rg.data.Stats;
 using Arrays;
 
-class ChartBar extends ChartCartesian<Array<Array<Array<DataPoint>>>>
+class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 {
 	public var stacked : Bool;
 	

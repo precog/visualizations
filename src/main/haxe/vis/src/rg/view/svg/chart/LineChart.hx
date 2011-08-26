@@ -26,7 +26,7 @@ using Arrays;
 // TODO expose options: label.place (distance, angle)
 // TODO expose options: label.anchor
 
-class ChartLine extends ChartCartesian<Array<Array<Array<DataPoint>>>>
+class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 {
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
