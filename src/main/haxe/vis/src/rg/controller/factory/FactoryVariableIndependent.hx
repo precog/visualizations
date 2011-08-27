@@ -25,6 +25,10 @@ class FactoryVariableIndependent
 			axis = axiscreateer.createDiscrete(info.type, info.values, info.groupBy),
 			min = info.min,
 			max = info.max;
+		if (null == min && null != info.values)
+			min = Arrays.first(info.values);
+		if (null == max && null != info.values)
+			max = Arrays.last(info.values);
 		if (Std.is(axis, AxisTime))
 		{
 			var periodicity = cast(axis, AxisTime).periodicity;
