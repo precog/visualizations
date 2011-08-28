@@ -447,29 +447,29 @@ class Baloon
 			found = 0;
 		}
 
-		var o = null;
+		var o = null, off = 1.0;
 		if (0 == diagonal)
 		{
 			connector.style("display").string("none");
 		} else {
 			connector.style("display").string("block");
 			o = {
-				x0 : 0.0, y0 : 0.0, x1 : 0.0, y1 : 0.0
+				x0 : off, y0 : off, x1 : off, y1 : off
 			};
 			switch(side)
 			{
 				case 0:
-					o.x1 = tx + 0.5 + offset + 2 * roundedCorner;
-					o.y1 = ty + 0.5 - roundedCorner;
+					o.x1 = tx + off + offset + 2 * roundedCorner;
+					o.y1 = ty + off - roundedCorner;
 				case 1:
-					o.y1 = tx + 0.5 + boxWidth + roundedCorner;
-					o.x1 = ty + 0.5 + offset + roundedCorner;
+					o.y1 = tx + off + boxWidth + roundedCorner;
+					o.x1 = ty + off + offset + roundedCorner;
 				case 2:
-					o.x1 = tx + 0.5 + offset + 2 * roundedCorner;
-					o.y1 = ty + 0.5 + boxHeight + roundedCorner;
+					o.x1 = tx + off + offset + 2 * roundedCorner;
+					o.y1 = ty + off + boxHeight + roundedCorner;
 				case 3:
-					o.y1 = tx + 0.5 + - roundedCorner;
-					o.x1 = ty + 0.5 + offset + roundedCorner;
+					o.y1 = tx + off + - roundedCorner;
+					o.x1 = ty + off + offset + roundedCorner;
 			}
 		}
 		

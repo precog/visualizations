@@ -1876,11 +1876,54 @@ rg.view.svg.chart.LineEffects.parse = function(s) {
 }
 rg.view.svg.chart.LineEffects.prototype.__class__ = rg.view.svg.chart.LineEffects;
 rg.controller.info.InfoFunnelChart = function(p) {
+	if( p === $_ ) return;
+	this.animation = new rg.controller.info.InfoAnimation();
+	this.label = new rg.controller.info.InfoLabel();
+	this.padding = 2.5;
+	this.flatness = 1.0;
+	this.applyGradient = true;
+	this.arrowSize = 30;
 }
 rg.controller.info.InfoFunnelChart.__name__ = ["rg","controller","info","InfoFunnelChart"];
 rg.controller.info.InfoFunnelChart.filters = function() {
-	return [];
+	return [{ field : "animation", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
+	}},{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+	}},{ field : "sort", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "sortDataPoint", value : v}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "segmentpadding", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "padding", value : v}];
+	}},{ field : "flatness", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "style", validator : function(v) {
+		return v == "gradient" || v == "none";
+	}, filter : function(v) {
+		return [{ field : "applyGradient", value : v == "gradient"}];
+	}},{ field : "arrowsize", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "arrowSize", value : v}];
+	}}];
 }
+rg.controller.info.InfoFunnelChart.prototype.animation = null;
+rg.controller.info.InfoFunnelChart.prototype.label = null;
+rg.controller.info.InfoFunnelChart.prototype.sortDataPoint = null;
+rg.controller.info.InfoFunnelChart.prototype.click = null;
+rg.controller.info.InfoFunnelChart.prototype.padding = null;
+rg.controller.info.InfoFunnelChart.prototype.flatness = null;
+rg.controller.info.InfoFunnelChart.prototype.applyGradient = null;
+rg.controller.info.InfoFunnelChart.prototype.arrowSize = null;
 rg.controller.info.InfoFunnelChart.prototype.__class__ = rg.controller.info.InfoFunnelChart;
 if(!thx.js) thx.js = {}
 thx.js.Access = function(selection) {
@@ -2229,13 +2272,14 @@ thx.js.Group = function(nodes) {
 	this.nodes = nodes;
 }
 thx.js.Group.__name__ = ["thx","js","Group"];
+thx.js.Group.current = null;
 thx.js.Group.prototype.parentNode = null;
 thx.js.Group.prototype.nodes = null;
 thx.js.Group.prototype.each = function(f) {
 	var _g1 = 0, _g = this.nodes.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		if(null != this.nodes[i]) f(this.nodes[i],i);
+		if(null != this.nodes[i]) f(thx.js.Group.current = this.nodes[i],i);
 	}
 }
 thx.js.Group.prototype.iterator = function() {
@@ -2485,7 +2529,7 @@ thx.js.BaseSelection.prototype.onNode = function(type,listener,capture) {
 thx.js.BaseSelection.prototype.createSelection = function(groups) {
 	return (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 526, className : "thx.js.BaseSelection", methodName : "createSelection"});
+		throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 529, className : "thx.js.BaseSelection", methodName : "createSelection"});
 		return $r;
 	}(this));
 }
@@ -2586,8 +2630,12 @@ thx.js.Selection = function(groups) {
 thx.js.Selection.__name__ = ["thx","js","Selection"];
 thx.js.Selection.__super__ = thx.js.UnboundSelection;
 for(var k in thx.js.UnboundSelection.prototype ) thx.js.Selection.prototype[k] = thx.js.UnboundSelection.prototype[k];
+thx.js.Selection.current = null;
 thx.js.Selection.create = function(groups) {
 	return new thx.js.Selection(groups);
+}
+thx.js.Selection.getCurrent = function() {
+	return thx.js.Dom.selectNode(thx.js.Group.current);
 }
 thx.js.Selection.prototype.createSelection = function(groups) {
 	return new thx.js.Selection(groups);
@@ -3926,6 +3974,120 @@ thx.error.Error.prototype.toString = function() {
 	}
 }
 thx.error.Error.prototype.__class__ = thx.error.Error;
+if(!thx.math.scale) thx.math.scale = {}
+thx.math.scale.IScale = function() { }
+thx.math.scale.IScale.__name__ = ["thx","math","scale","IScale"];
+thx.math.scale.IScale.prototype.scale = null;
+thx.math.scale.IScale.prototype.getDomain = null;
+thx.math.scale.IScale.prototype.getRange = null;
+thx.math.scale.IScale.prototype.__class__ = thx.math.scale.IScale;
+thx.math.scale.NumericScale = function(p) {
+	if( p === $_ ) return;
+	this._domain = [0.0,1.0];
+	this._range = [0.0,1.0];
+	this.f = Floats.interpolatef;
+	this._clamp = false;
+	this.rescale();
+}
+thx.math.scale.NumericScale.__name__ = ["thx","math","scale","NumericScale"];
+thx.math.scale.NumericScale.scaleBilinear = function(domain,range,uninterpolate,interpolate) {
+	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
+	return function(x) {
+		return i(u(x));
+	};
+}
+thx.math.scale.NumericScale.scalePolylinear = function(domain,range,uninterpolate,interpolate) {
+	var u = [], i = [];
+	var _g1 = 1, _g = domain.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		u.push(uninterpolate(domain[j - 1],domain[j]));
+		i.push(interpolate(range[j - 1],range[j],null));
+	}
+	return function(x) {
+		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
+		return i[j](u[j](x));
+	};
+}
+thx.math.scale.NumericScale.prototype._domain = null;
+thx.math.scale.NumericScale.prototype._range = null;
+thx.math.scale.NumericScale.prototype.f = null;
+thx.math.scale.NumericScale.prototype._clamp = null;
+thx.math.scale.NumericScale.prototype._output = null;
+thx.math.scale.NumericScale.prototype._input = null;
+thx.math.scale.NumericScale.prototype.rescale = function() {
+	var linear = this._domain.length == 2?thx.math.scale.NumericScale.scaleBilinear:thx.math.scale.NumericScale.scalePolylinear, uninterpolate = this._clamp?Floats.uninterpolateClampf:Floats.uninterpolatef;
+	this._output = linear(this._domain,this._range,uninterpolate,this.f);
+	this._input = linear(this._range,this._domain,uninterpolate,Floats.interpolatef);
+	return this;
+}
+thx.math.scale.NumericScale.prototype.scale = function(x,_) {
+	return this._output(x);
+}
+thx.math.scale.NumericScale.prototype.invert = function(y,_) {
+	return this._input(y);
+}
+thx.math.scale.NumericScale.prototype.getDomain = function() {
+	return this._domain;
+}
+thx.math.scale.NumericScale.prototype.domain = function(d) {
+	this._domain = d;
+	return this.rescale();
+}
+thx.math.scale.NumericScale.prototype.getRange = function() {
+	return this._range;
+}
+thx.math.scale.NumericScale.prototype.range = function(r) {
+	this._range = r;
+	return this.rescale();
+}
+thx.math.scale.NumericScale.prototype.rangeRound = function(r) {
+	this.range(r);
+	this.interpolatef(Ints.interpolatef);
+	return this;
+}
+thx.math.scale.NumericScale.prototype.getInterpolate = function() {
+	return this.f;
+}
+thx.math.scale.NumericScale.prototype.interpolatef = function(x) {
+	this.f = x;
+	return this.rescale();
+}
+thx.math.scale.NumericScale.prototype.getClamp = function() {
+	return this._clamp;
+}
+thx.math.scale.NumericScale.prototype.clamp = function(v) {
+	this._clamp = v;
+	return this.rescale();
+}
+thx.math.scale.NumericScale.prototype.ticks = function() {
+	return (function($this) {
+		var $r;
+		throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 86, className : "thx.math.scale.NumericScale", methodName : "ticks"});
+		return $r;
+	}(this));
+}
+thx.math.scale.NumericScale.prototype.tickFormat = function(v,i) {
+	return (function($this) {
+		var $r;
+		throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 91, className : "thx.math.scale.NumericScale", methodName : "tickFormat"});
+		return $r;
+	}(this));
+}
+thx.math.scale.NumericScale.prototype.transform = function(scale,t,a,b) {
+	var range = this.getRange().map(function(v,_) {
+		return (v - t) / scale;
+	});
+	this.domain([a,b]);
+	var r = range.map($closure(this,"invert"));
+	this.domain(r);
+	return this;
+}
+thx.math.scale.NumericScale.prototype._this = function() {
+	return this;
+}
+thx.math.scale.NumericScale.prototype.__class__ = thx.math.scale.NumericScale;
+thx.math.scale.NumericScale.__interfaces__ = [thx.math.scale.IScale];
 Arrays = function() { }
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
@@ -7732,26 +7894,26 @@ rg.view.svg.widget.Baloon.prototype._moveTo = function(x,y) {
 		}
 		found = 0;
 	}
-	var o = null;
+	var o = null, off = 1.0;
 	if(0 == diagonal) this.connector.style("display").string("none"); else {
 		this.connector.style("display").string("block");
-		o = { x0 : 0.0, y0 : 0.0, x1 : 0.0, y1 : 0.0};
+		o = { x0 : off, y0 : off, x1 : off, y1 : off};
 		switch(side) {
 		case 0:
-			o.x1 = tx + 0.5 + offset + 2 * this.roundedCorner;
-			o.y1 = ty + 0.5 - this.roundedCorner;
+			o.x1 = tx + off + offset + 2 * this.roundedCorner;
+			o.y1 = ty + off - this.roundedCorner;
 			break;
 		case 1:
-			o.y1 = tx + 0.5 + this.boxWidth + this.roundedCorner;
-			o.x1 = ty + 0.5 + offset + this.roundedCorner;
+			o.y1 = tx + off + this.boxWidth + this.roundedCorner;
+			o.x1 = ty + off + offset + this.roundedCorner;
 			break;
 		case 2:
-			o.x1 = tx + 0.5 + offset + 2 * this.roundedCorner;
-			o.y1 = ty + 0.5 + this.boxHeight + this.roundedCorner;
+			o.x1 = tx + off + offset + 2 * this.roundedCorner;
+			o.y1 = ty + off + this.boxHeight + this.roundedCorner;
 			break;
 		case 3:
-			o.y1 = tx + 0.5 + -this.roundedCorner;
-			o.x1 = ty + 0.5 + offset + this.roundedCorner;
+			o.y1 = tx + off + -this.roundedCorner;
+			o.x1 = ty + off + offset + this.roundedCorner;
 			break;
 		}
 	}
@@ -8006,6 +8168,160 @@ thx.math.Random.prototype["float"] = function() {
 	return ((this.seed = this.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 }
 thx.math.Random.prototype.__class__ = thx.math.Random;
+rg.view.svg.chart.FunnelChart = function(panel) {
+	if( panel === $_ ) return;
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.padding = 2.5;
+	this.flatness = 1.0;
+	this.arrowSize = 30;
+	this.applyGradient = true;
+}
+rg.view.svg.chart.FunnelChart.__name__ = ["rg","view","svg","chart","FunnelChart"];
+rg.view.svg.chart.FunnelChart.__super__ = rg.view.svg.panel.Layer;
+for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.chart.FunnelChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
+rg.view.svg.chart.FunnelChart.prototype.mouseClick = null;
+rg.view.svg.chart.FunnelChart.prototype.padding = null;
+rg.view.svg.chart.FunnelChart.prototype.flatness = null;
+rg.view.svg.chart.FunnelChart.prototype.applyGradient = null;
+rg.view.svg.chart.FunnelChart.prototype.arrowSize = null;
+rg.view.svg.chart.FunnelChart.prototype.variableIndependent = null;
+rg.view.svg.chart.FunnelChart.prototype.variableDependent = null;
+rg.view.svg.chart.FunnelChart.prototype.defs = null;
+rg.view.svg.chart.FunnelChart.prototype.dps = null;
+rg.view.svg.chart.FunnelChart.prototype.labelFormatDataPoint = function(dp,stats) {
+	var value = Reflect.field(dp,this.variableDependent.type) / stats.max;
+	return thx.culture.FormatNumber.percent(100 * value,0);
+}
+rg.view.svg.chart.FunnelChart.prototype.labelFormatAxis = function(dp,stats) {
+	return rg.util.RGStrings.humanize(Reflect.field(dp,this.variableIndependent.type)).split(" ").join("\n") + "\n" + Dynamics.format(this.dpvalue(dp));
+}
+rg.view.svg.chart.FunnelChart.prototype.labelFormatDataPointOver = function(dp,stats) {
+	return Ints.format(Reflect.field(dp,this.variableDependent.type));
+}
+rg.view.svg.chart.FunnelChart.prototype.setVariables = function(variableIndependents,variableDependents) {
+	this.variableIndependent = variableIndependents[0];
+	this.variableDependent = variableDependents[0];
+}
+rg.view.svg.chart.FunnelChart.prototype.data = function(dps) {
+	this.dps = dps;
+	this.redraw();
+}
+rg.view.svg.chart.FunnelChart.prototype.resize = function() {
+	this.redraw();
+}
+rg.view.svg.chart.FunnelChart.prototype.dpvalue = function(dp) {
+	return Reflect.field(dp,this.variableDependent.type);
+}
+rg.view.svg.chart.FunnelChart.prototype.stats = null;
+rg.view.svg.chart.FunnelChart.prototype.scale = function(value) {
+	return this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,value);
+}
+rg.view.svg.chart.FunnelChart.prototype.next = function(i) {
+	return this.dpvalue(this.dps[i + 1 < this.dps.length?i + 1:i]);
+}
+rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
+	var me = this;
+	if(null == this.dps || 0 == this.dps.length) return;
+	this.g.selectAll("g").remove();
+	this.g.selectAll("radialGradient").remove();
+	this.stats = rg.util.DataPoints.stats(this.dps,this.variableDependent.type);
+	var max = this.scale(this.stats.max), wscale = function(v) {
+		return me.scale(v) / max * (me.width - 2) / 2;
+	}, h, fx1 = function(v) {
+		return me.width / 2 - wscale(v);
+	}, fx2 = function(v) {
+		return me.width - fx1(v);
+	}, diagonal1 = new thx.svg.Diagonal().sourcef(function(o,i) {
+		return [fx1(me.dpvalue(o)),0.0];
+	}).targetf(function(o,i) {
+		return [fx1(me.next(i)),h];
+	}), diagonal2 = new thx.svg.Diagonal().sourcef(function(o,i) {
+		return [fx2(me.next(i)),h];
+	}).targetf(function(o,i) {
+		return [fx2(me.dpvalue(o)),0.0];
+	}), conj = function(v,r,dir) {
+		var x2 = r?fx1(v) - fx2(v):fx2(v) - fx1(v), a = 5, d = r?dir == 0?1:0:dir;
+		return " a " + a + " " + me.flatness + " 0 0 " + d + " " + x2 + " 0";
+	}, conj1 = function(d,i) {
+		return conj(me.dpvalue(d),true,0);
+	}, conj2 = function(d,i) {
+		return conj(me.next(i),false,0);
+	}, conjr = function(d,i) {
+		var v = me.dpvalue(d);
+		return " M " + fx1(v) + " 0 " + conj(v,false,0) + conj(v,true,1);
+	};
+	var top = this.g.append("svg:g");
+	var path = top.append("svg:path").attr("class").string("funnel-inside item-0").attr("d").string(conjr(this.dps[0]));
+	if(null != this.mouseClick) top.onNode("click",function(_,_1) {
+		me.mouseClick(me.dps[0],me.stats);
+	});
+	if(this.applyGradient) this.internalSection(path);
+	var topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
+	var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside item-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
+	bottom.remove();
+	h = (this.height - topheight - bottomheight - (this.dps.length - 1) * this.padding) / this.dps.length;
+	top.attr("transform").string("translate(0," + topheight + ")");
+	var section = this.g.selectAll("g.section").data(this.dps);
+	var enter = section.enter().append("svg:g").attr("class").string("section").attr("transform").stringf(function(d,i) {
+		return "translate(0," + (topheight + i * (me.padding + h)) + ")";
+	});
+	if(null != this.mouseClick) enter.on("click",function(d,i) {
+		me.mouseClick(d,me.stats);
+	});
+	var funnel = enter.append("svg:path").attr("class").stringf(function(d,i) {
+		return "funnel-outside item-" + i;
+	}).attr("d").stringf(function(d,i) {
+		var t = diagonal2.diagonal(d,i).split("C");
+		t.shift();
+		var d2 = "C" + t.join("C");
+		return diagonal1.diagonal(d,i) + conj2(d,i) + d2 + conj1(d,i);
+	});
+	if(this.applyGradient) enter.eachNode($closure(this,"externalSection"));
+	var ga = this.g.selectAll("g.arrow").data(this.dps).enter().append("svg:g").attr("class").string("arrow").attr("transform").stringf(function(d,i) {
+		return "translate(" + me.width / 2 + "," + (topheight + h * i + me.arrowSize / 2) + ")";
+	});
+	ga.each(function(d,i) {
+		var text = me.labelFormatDataPoint(d,me.stats);
+		if(null == text) return;
+		var node = thx.js.Selection.getCurrent();
+		node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
+		node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
+		var label = new rg.view.svg.widget.Label(node,true,true,true);
+		label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+		label.setText(text);
+	});
+	ga.each(function(d,i) {
+		var text = me.labelFormatAxis(d,me.stats);
+		if(null == text) return;
+		var baloon = new rg.view.svg.widget.Baloon(me.g);
+		baloon.setBoundingBox({ x : me.width / 2 + me.arrowSize / 3 * 2, y : 0, width : me.width, height : me.height});
+		baloon.setPreferredSide(3);
+		baloon.setText(text.split("\n"));
+		baloon.moveTo(me.width / 2,topheight + h * .6 + (h + me.padding) * i,false);
+	});
+}
+rg.view.svg.chart.FunnelChart.prototype.init = function() {
+	this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
+}
+rg.view.svg.chart.FunnelChart.prototype.internalSection = function(d) {
+	var c = d.style("fill").get(), color = thx.color.Colors.parse(null == c?"#ccc":c);
+	d.style("fill").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),0.6).toRgbString());
+	var stops = this.defs.append("svg:radialGradient").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
+	stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),1.25).toRgbString());
+	stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),0.4).toRgbString());
+	d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
+}
+rg.view.svg.chart.FunnelChart.prototype.externalSection = function(n,i) {
+	var g = thx.js.Dom.selectNode(n), d = g.select("path"), c = d.style("fill").get(), color = thx.color.Hsl.toHsl(thx.color.Colors.parse(null == c?"#ccc":c)), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
+	var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
+	var top = color.hex("#");
+	stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
+	var middlecolor = thx.color.Hsl.darker(color,1 + Math.log(ratio) / 2.5).hex("#");
+	stops.append("svg:stop").attr("offset").string("50%").attr("stop-color").string(middlecolor);
+	stops.append("svg:stop").attr("offset").string("90%").attr("stop-color").string(top);
+	d.attr("style").string("fill:url(#" + id + ")");
+}
+rg.view.svg.chart.FunnelChart.prototype.__class__ = rg.view.svg.chart.FunnelChart;
 rg.controller.visualization.VisualizationFunnelChart = function(layout) {
 	if( layout === $_ ) return;
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
@@ -8014,6 +8330,43 @@ rg.controller.visualization.VisualizationFunnelChart.__name__ = ["rg","controlle
 rg.controller.visualization.VisualizationFunnelChart.__super__ = rg.controller.visualization.VisualizationSvg;
 for(var k in rg.controller.visualization.VisualizationSvg.prototype ) rg.controller.visualization.VisualizationFunnelChart.prototype[k] = rg.controller.visualization.VisualizationSvg.prototype[k];
 rg.controller.visualization.VisualizationFunnelChart.prototype.info = null;
+rg.controller.visualization.VisualizationFunnelChart.prototype.title = null;
+rg.controller.visualization.VisualizationFunnelChart.prototype.chart = null;
+rg.controller.visualization.VisualizationFunnelChart.prototype.init = function() {
+	var panelChart = this.layout.getPanel(this.layout.mainPanelName);
+	this.chart = new rg.view.svg.chart.FunnelChart(panelChart);
+	if(null != this.info.label.datapoint) this.chart.labelFormatDataPoint = this.info.label.datapoint;
+	if(null != this.info.label.datapoint) this.chart.labelFormatDataPointOver = this.info.label.datapointover;
+	if(null != this.info.click) this.chart.mouseClick = this.info.click;
+	this.chart.padding = this.info.padding;
+	this.chart.flatness = this.info.flatness;
+	this.chart.applyGradient = this.info.applyGradient;
+	this.chart.arrowSize = this.info.arrowSize;
+	if(null != this.info.label.title) {
+		var panelContextTitle = this.layout.getContext("title");
+		if(null == panelContextTitle) return;
+		this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+	}
+}
+rg.controller.visualization.VisualizationFunnelChart.prototype.feedData = function(data) {
+	this.chart.setVariables(this.independentVariables,this.dependentVariables);
+	var data1 = rg.util.DataPoints.filterByIndependents(rg.util.DataPoints.filterByDependents(data,this.dependentVariables),this.independentVariables);
+	if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
+	if(null != this.title) {
+		if(null != this.info.label.title) {
+			this.title.setText(this.info.label.title(this.getVariables(),data1));
+			this.layout.suggestSize("title",this.title.idealHeight());
+		} else this.layout.suggestSize("title",0);
+	}
+	if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
+	this.chart.init();
+	this.chart.data(data1);
+}
+rg.controller.visualization.VisualizationFunnelChart.prototype.destroy = function() {
+	this.chart.destroy();
+	if(null != this.title) this.title.destroy();
+	rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
+}
 rg.controller.visualization.VisualizationFunnelChart.prototype.__class__ = rg.controller.visualization.VisualizationFunnelChart;
 if(!rg.view.svg.layer) rg.view.svg.layer = {}
 rg.view.svg.layer.TickmarksOrtho = function(panel,anchor) {
@@ -8737,6 +9090,36 @@ thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
 	return tangents;
 }
 thx.svg.LineInternals.prototype.__class__ = thx.svg.LineInternals;
+thx.math.scale.Linear = function(p) {
+	if( p === $_ ) return;
+	thx.math.scale.NumericScale.call(this);
+	this.m = 10;
+}
+thx.math.scale.Linear.__name__ = ["thx","math","scale","Linear"];
+thx.math.scale.Linear.__super__ = thx.math.scale.NumericScale;
+for(var k in thx.math.scale.NumericScale.prototype ) thx.math.scale.Linear.prototype[k] = thx.math.scale.NumericScale.prototype[k];
+thx.math.scale.Linear.prototype.m = null;
+thx.math.scale.Linear.prototype.getModulo = function() {
+	return this.m;
+}
+thx.math.scale.Linear.prototype.modulo = function(m) {
+	this.m = m;
+	return this;
+}
+thx.math.scale.Linear.prototype.tickRange = function() {
+	var start = Arrays.min(this._domain), stop = Arrays.max(this._domain), span = stop - start, step = Math.pow(this.m,Math.floor(Math.log(span / this.m) / 2.302585092994046)), err = this.m / (span / step);
+	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
+	return { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
+}
+thx.math.scale.Linear.prototype.ticks = function() {
+	var range = this.tickRange();
+	return Floats.range(range.start,range.stop,range.step);
+}
+thx.math.scale.Linear.prototype.tickFormat = function(v,i) {
+	var n = Math.max(this.m,-Math.floor(Math.log(this.tickRange().step) / 2.302585092994046 + .01));
+	return Floats.format(v,"D:" + n);
+}
+thx.math.scale.Linear.prototype.__class__ = thx.math.scale.Linear;
 rg.view.svg.panel.Panel = function(frame) {
 	if( frame === $_ ) return;
 	this.frame = frame;
@@ -9372,6 +9755,9 @@ rg.JSBridge.main = function() {
 	o.barChart = function(el,options) {
 		return o.viz(el,options,"barchart");
 	};
+	o.funnelChart = function(el,options) {
+		return o.viz(el,options,"funnelchart");
+	};
 	o.format = Dynamics.format;
 	o.compare = Dynamics.compare;
 	o.dump = Dynamics.string;
@@ -9393,7 +9779,7 @@ rg.JSBridge.main = function() {
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 94, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 95, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(o) {
@@ -11091,6 +11477,8 @@ rg.controller.factory.FactoryVariableIndependent.__name__ = ["rg","controller","
 rg.controller.factory.FactoryVariableIndependent.prototype.create = function(info) {
 	if(null == info.type) return null;
 	var axiscreateer = new rg.controller.factory.FactoryAxis(), axis = axiscreateer.createDiscrete(info.type,info.values,info.groupBy), min = info.min, max = info.max;
+	if(null == min && null != info.values) min = info.values[0];
+	if(null == max && null != info.values) max = Arrays.last(info.values);
 	if(Std["is"](axis,rg.data.AxisTime)) {
 		var periodicity = ((function($this) {
 			var $r;
@@ -11125,7 +11513,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = funct
 		return $r;
 	}(this))).getTime();
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
-	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 51, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
+	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 55, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
 	if(null != min) return min;
@@ -11145,7 +11533,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function
 	case "year":
 		return thx.date.DateParser.parse("6 years ago").getTime();
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 75, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 79, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
 	}
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function(max,periodicity) {
@@ -11158,7 +11546,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function
 	case "day":case "week":case "month":case "year":
 		return thx.date.DateParser.parse("today").getTime();
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 92, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
+		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 96, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
 	}
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;

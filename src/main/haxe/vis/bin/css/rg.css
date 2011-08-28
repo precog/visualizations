@@ -555,15 +555,16 @@ font-size: 11px;
 
 .rg .funnel-chart .arrow text
 {
-	fill: #000;
+	font-size: 10px;
 	font-weight: bold;
 }
 
 .rg path.baloon-connector
 {
-	stroke: #666;
+	stroke: #999;
 	stroke-width: 1;
-	stroke-dasharray: 1, 1;
+	stroke-dasharray: 2, 1;
+/*	shape-rendering: crispEdges; */
 }
 
 .rg .baloon .label text.nooutline, .rg .baloon .label text.shadow.nooutline
