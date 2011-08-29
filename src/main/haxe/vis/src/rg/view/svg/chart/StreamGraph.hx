@@ -8,11 +8,18 @@ import rg.data.DataPoint;
 import rg.data.Stats;
 import rg.util.DataPoints;
 import rg.view.svg.panel.Panel;
+import rg.view.svg.widget.Baloon;
 import thx.svg.LineInterpolator;
 import thx.geom.layout.Stack;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
 import thx.svg.Area;
+import thx.js.Dom;
+import thx.js.Selection;
+import thx.color.Colors;
+import thx.color.Hsl;
+import thx.js.Svg;
+import thx.js.Access;
 using Arrays;
 
 
@@ -21,19 +28,25 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	public function new(panel : Panel) 
 	{
 		super(panel);
-		interpolator = LineInterpolator.Basis;
+		interpolator = LineInterpolator.Cardinal(0.6);
+		gradientLightness = 0.75;
 	}
 	
 	public var interpolator : LineInterpolator;
-//	var _area : thx.svg.Area<XYY0>;
+	public var gradientLightness : Float;
+	
 	var dps : Array<Array<DataPoint>>;
 	var area : Area<TransformedData>;
 	var transformedData : Array<Array<TransformedData>>;
 	var stats : Stats;
+	var defs : Selection;
+	var maxy : Float;
 	
 	override function init()
 	{
+		defs = g.append("svg:defs");
 		g.classed().add("stream-chart");
+		tooltip = new Baloon(g);
 	}
 	
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
@@ -63,22 +76,53 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			.select("path.line").attr("d").stringf(area.shape);
 
 		// enter
-		layer.enter()
+		var node = layer.enter()
 			.append("svg:g")
 			.attr("class").string("group")
 //			.attr("transform").string("translate(0,0)")
-//			.onNode("mousemove", over)
+			.onNode("mousemove", onover)
+			.onNode("click", onclick)
 //			.onNode("mouseout", out)
 			.append("svg:path")
 				.attr("class").stringf(function(d, i) return "line item-" + i)
 				.attr("d").stringf(area.shape)
 				;
+		node.each(applyGradientH);
 		// exit
 		layer.exit().remove();
 	}
 	
+	function getDataAtNode(n, i)
+	{
+		var px = Svg.mouse(n)[0],
+			x = Floats.uninterpolatef(transformedData[i].first().coord.x, transformedData[i].last().coord.x)(px / width);
+		
+		var data : Array<TransformedData> = Access.getData(n);
+		
+		return Arrays.nearest(transformedData[i], x, function(d) return d.coord.x);
+	}
+	
+	function onover(n, i)
+	{
+		if (null == labelDataPointOver)
+			return;
+		var dp = getDataAtNode(n, i);
+		tooltip.text = labelDataPointOver(dp.dp, stats).split("\n");
+		tooltip.show();
+		tooltip.moveTo(panelx + dp.coord.x * width, panely + height - (dp.coord.y + dp.coord.y0) * height / maxy);
+	}
+	
+	function onclick(n, i)
+	{
+		if (null == this.click)
+			return;
+		var dp = getDataAtNode(n, i);
+		click(dp.dp, stats);
+	}
+	
 	function prepareData()
 	{
+		defs.selectAll("linearGradient.h").remove();
 		var xscale = callback(variableIndependent.axis.scale, variableIndependent.min, variableIndependent.max),
 			xtype = variableIndependent.type,
 			x = function(d) return xscale(DataPoints.value(d, xtype)),
@@ -94,7 +138,10 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			});
 		});
 
-		var data = new Stack().offset(StackOffset.Silhouette).stack(coords.copy());
+		var data = new Stack()
+			.offset(StackOffset.Silhouette)
+			.order(StackOrder.DefaultOrder)
+			.stack(coords);
 		
 		transformedData = data.map(function(d, i) return d.map(function(d, j) {
 			return {
@@ -105,7 +152,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		
 		stats = DataPoints.stats(dps.flatten(), variableDependents[0].type);
 		
-		var maxy = data.floatMax(function(d) return d.floatMax(function(d) return d.y0 + d.y));
+		maxy = data.floatMax(function(d) return d.floatMax(function(d) return d.y0 + d.y));
 		
 		area = new Area<TransformedData>()
 			.interpolator(interpolator)
@@ -113,129 +160,92 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			.y0(function(d, i) return height - d.coord.y0 * height / maxy)
 			.y1(function(d, i) return height - (d.coord.y + d.coord.y0) * height / maxy)
 		;
-		
-/*
-		_prepdata = new Stack().offset(StackOffset.Wiggle).stack(dps.copy());
-	//	_prepdata.reverse();
-		var domx = _scalex.getDomain();
-		var minx = domx.min();
-		var stepx = Math.abs(_prepdata[0][1].x - _prepdata[0][0].x) + minx;
-		var h = _h = panel.frame.height;
-		var w = _w = panel.frame.width;
-		
-		var mx = _prepdata[0].length,
-			my = Arrays.floatMax(_prepdata, function(d) {
-				return Arrays.floatMax(d, function(d) {
-					return d.y0 + d.y;
-				});
-			}) * 1.1;
-		
-		var sx = _scalex.scale;
-		
-		_area = new thx.svg.Area<XYY0>()
-			.interpolator(_interpolator)
-			.x(function(d, i) return sx(d.x))
-			.y0(function(d, i) return h - d.y0 * h / my)
-			.y1(function(d, i) return h - (d.y + d.y0) * h / my);
-*/
-	}
-/*
-	public function updatex()
-	{
-		var s = _scalex.scale(Date.now().getTime() - _timedelta + _scalex.getDomain()[0]);
-		var layer = svg.selectAll("g.group")
-			.attr("transform").string("translate(-" + s + ",0)")
-		;
-	}
-*/
-/*
-	function transition()
-	{
-		// LAYER
-		var layer = svg.selectAll("g.group").data(prepdata);
-		// update
-		layer.update().select("path.line")
-			.transition()
-				.attr("d").stringf(area.shape)
-		;
-	}
-*/
-/*	
-	var _over : { x : Float, y : Float, y0 : Float } -> Int -> Void;
-	function over(n : HtmlDom, i : Int) 
-	{
-		if (null == _over)
-			return;
-
-		_over(getDataAtNode(n), i);
 	}
 	
-	var _out : { x : Float, y : Float, y0 : Float } -> Int -> Void;
-	function out(n : HtmlDom, i : Int) 
+	function applyGradientV(d : Array<TransformedData>, i : Int)
 	{
-		if (null == _out)
-			return;
-		
-		_out(getDataAtNode(n), i);
-	}
-	
-	function getDataAtNode(n : HtmlDom)
-	{
-		var time = _scalex.invert(Svg.mouse(n)[0]);
-		
-		var data : Array<{ x : Float, y : Float, y0 : Float }> = Access.getData(n);
-		
-		var delta = Math.POSITIVE_INFINITY,
-			pos = 0,
-			v = Math.abs(time - data[0].x);
-		while (v < delta)
+		var gn = Selection.current,
+			rgb = gn.style("fill").get(),
+			color = Colors.parse(null == rgb ? "#cccccc" : rgb),
+			id = "rg_stream_gradient_h_" + color.hex("");
+		if (defs.select('#'+id).empty())
 		{
-			delta = v;
-			v = Math.abs(time - data[++pos].x);
+			
+			var scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness).toRgbString();
+			
+			var gradient = defs
+				.append("svg:linearGradient")
+				.attr("id").string(id)
+				.attr("x1").string("0%")
+				.attr("x2").string("0%")
+				.attr("y1").string("100%")
+				.attr("y2").string("0%")
+				.attr("spreadMethod").string("pad")
+			;
+			gradient.append("svg:stop")
+				.attr("offset").string("0%")
+				.attr("stop-color").string(scolor)
+				.attr("stop-opacity").float(1);
+			gradient.append("svg:stop")
+				.attr("offset").string("100%")
+				.attr("stop-color").string(color.toRgbString())
+				.attr("stop-opacity").float(1);
 		}
-		return data[pos-1];
+		gn.attr("style").string("fill:url(#" + id + ")");
 	}
 	
-	public function setTooltip(over : { x : Float, y : Float, y0 : Float } -> Int -> Void, out : { x : Float, y : Float, y0 : Float } -> Int -> Void)
+	static var vid = 0;
+	function applyGradientH(d : Array<TransformedData>, i : Int)
 	{
-		_over = over;
-		_out = out;
-	}
-
-	function redraw()
-	{
-
-		if (null == _data)
-			return;
+		var gn = Selection.current,
+			rgb = gn.style("fill").get(),
+			color = Hsl.toHsl(Colors.parse(null == rgb ? "#cccccc" : rgb)),
+			id = "rg_stream_gradient_v_" + vid++;
 		
-		svg.select("#" + _cpid + " rect")
-			.attr("width").float(_w)
-			.attr("height").float(_h + _clipPadding * 2);
-
-		// LAYER
-		var layer = svg.selectAll("g.group").data(_prepdata);
+		var gradient = defs
+			.append("svg:linearGradient")
+			.attr("class").string("x")
+			.attr("id").string(id)
+			.attr("x1").string("0%")
+			.attr("x2").string("100%")
+			.attr("y1").string("0%")
+			.attr("y2").string("0%")
+	//		.attr("spreadMethod").string("pad")
+		;
 		
-		// update
-		layer.update()
-			.attr("transform").string("translate(0,0)")
-			.select("path.line").attr("d").stringf(_area.shape);
-
-		// enter
-		layer.enter()
-			.append("svg:g")
-			.attr("class").string("group")
-			.attr("transform").string("translate(0,0)")
-			.onNode("mousemove", over)
-			.onNode("mouseout", out)
-			.append("svg:path")
-				.attr("class").stringf(function(d, i) return "line item-" + i)
-				.attr("d").stringf(_area.shape)
-				;
-		// exit
-		layer.exit().remove();
-
-	}
+		var bx = d.first().coord.x,
+			ax = d.last().coord.x,
+			span = ax - bx,
+			percent = function(x : Float) {
+				return Math.round((x - bx) / span * 10000) / 100;
+			},
+			max = d.floatMax(function(d) return d.coord.y);
+		
+//		var lastv = 0.0, tollerance = 0.25;
+		for (i in 0...d.length)
+		{
+			var dp = d[i],
+				v = 1 + (dp.coord.y / max - 0.5) * gradientLightness;
+//			if (Floats.equals(v, lastv, tollerance))
+//				continue;
+			gradient.append("svg:stop")
+				.attr("offset").string(percent(dp.coord.x) +  "%")
+				.attr("stop-color").string(Hsl.darker(color, v).toCss())
+				.attr("stop-opacity").float(1);
+//			lastv = v;
+		}
+/*
+		gradient.append("svg:stop")
+			.attr("offset").string("0%")
+			.attr("stop-color").string(scolor)
+			.attr("stop-opacity").float(1);
+		gradient.append("svg:stop")
+			.attr("offset").string("100%")
+			.attr("stop-color").string(color.toRgbString())
+			.attr("stop-opacity").float(1);
 */
+		gn.attr("style").string("fill:url(#" + id + ")");
+	}
 }
 
 typedef XYY0 = {

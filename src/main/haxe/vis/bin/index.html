@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		end = "now",
 		range = ReportGrid.date.range(start, end, "hour"),
 		data1 = range.map(function(d,i) {
-			var count = ReportGrid.math.random() * 100;
+			var count = ReportGrid.math.random() * 100 + 10;
 			return {
 				".#time:hour" : d,
 				event : "impression",
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data2 = range.map(function(d,i) {
-			var count = ReportGrid.math.random() * 20;
+			var count = ReportGrid.math.random() * 40 + 10;
 			return {
 				".#time:hour" : d,
 				event : "click",
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data3 = range.map(function(d,i) {
-			var count = ReportGrid.math.random() * 10;
+			var count = ReportGrid.math.random() * 20 + 10;
 			return {
 				".#time:hour" : d,
 				event : "conversion",
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				},
 //				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			click : function(dp) { alert(dp[".platform"]); },
+			click : function(dp) { alert(dp.event + ": " + ReportGrid.format(dp.count)); },
 			height: 200,
 			symbol : function(ds, stats) {
 				return ReportGrid.symbol.get("circle", 20);

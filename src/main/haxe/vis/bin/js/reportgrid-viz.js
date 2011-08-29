@@ -3609,18 +3609,24 @@ thx.js.AccessDataTweenText.prototype.__class__ = thx.js.AccessDataTweenText;
 rg.view.svg.chart.StreamGraph = function(panel) {
 	if( panel === $_ ) return;
 	rg.view.svg.chart.CartesianChart.call(this,panel);
-	this.interpolator = thx.svg.LineInterpolator.Basis;
+	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
+	this.gradientLightness = 0.75;
 }
 rg.view.svg.chart.StreamGraph.__name__ = ["rg","view","svg","chart","StreamGraph"];
 rg.view.svg.chart.StreamGraph.__super__ = rg.view.svg.chart.CartesianChart;
 for(var k in rg.view.svg.chart.CartesianChart.prototype ) rg.view.svg.chart.StreamGraph.prototype[k] = rg.view.svg.chart.CartesianChart.prototype[k];
 rg.view.svg.chart.StreamGraph.prototype.interpolator = null;
+rg.view.svg.chart.StreamGraph.prototype.gradientLightness = null;
 rg.view.svg.chart.StreamGraph.prototype.dps = null;
 rg.view.svg.chart.StreamGraph.prototype.area = null;
 rg.view.svg.chart.StreamGraph.prototype.transformedData = null;
 rg.view.svg.chart.StreamGraph.prototype.stats = null;
+rg.view.svg.chart.StreamGraph.prototype.defs = null;
+rg.view.svg.chart.StreamGraph.prototype.maxy = null;
 rg.view.svg.chart.StreamGraph.prototype.init = function() {
+	this.defs = this.g.append("svg:defs");
 	this.g.classed().add("stream-chart");
+	this.tooltip = new rg.view.svg.widget.Baloon(this.g);
 }
 rg.view.svg.chart.StreamGraph.prototype.setVariables = function(variableIndependents,variableDependents) {
 	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents);
@@ -3634,13 +3640,34 @@ rg.view.svg.chart.StreamGraph.prototype.redraw = function() {
 	if(null == this.transformedData) return;
 	var layer = this.g.selectAll("g.group").data(this.transformedData);
 	layer.update().select("path.line").attr("d").stringf($closure(this.area,"shape"));
-	layer.enter().append("svg:g").attr("class").string("group").append("svg:path").attr("class").stringf(function(d,i) {
+	var node = layer.enter().append("svg:g").attr("class").string("group").onNode("mousemove",$closure(this,"onover")).onNode("click",$closure(this,"onclick")).append("svg:path").attr("class").stringf(function(d,i) {
 		return "line item-" + i;
 	}).attr("d").stringf($closure(this.area,"shape"));
+	node.each($closure(this,"applyGradientH"));
 	layer.exit().remove();
+}
+rg.view.svg.chart.StreamGraph.prototype.getDataAtNode = function(n,i) {
+	var px = thx.js.Svg.mouse(n)[0], x = (Floats.uninterpolatef(this.transformedData[i][0].coord.x,Arrays.last(this.transformedData[i]).coord.x))(px / this.width);
+	var data = Reflect.field(n,"__data__");
+	return Arrays.nearest(this.transformedData[i],x,function(d) {
+		return d.coord.x;
+	});
+}
+rg.view.svg.chart.StreamGraph.prototype.onover = function(n,i) {
+	if(null == this.labelDataPointOver) return;
+	var dp = this.getDataAtNode(n,i);
+	this.tooltip.setText(this.labelDataPointOver(dp.dp,this.stats).split("\n"));
+	this.tooltip.show();
+	this.tooltip.moveTo(this.panelx + dp.coord.x * this.width,this.panely + this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy);
+}
+rg.view.svg.chart.StreamGraph.prototype.onclick = function(n,i) {
+	if(null == this.click) return;
+	var dp = this.getDataAtNode(n,i);
+	this.click(dp.dp,this.stats);
 }
 rg.view.svg.chart.StreamGraph.prototype.prepareData = function() {
 	var me = this;
+	this.defs.selectAll("linearGradient.h").remove();
 	var xscale = (function(f,a1,a2) {
 		return function(a3) {
 			return f(a1,a2,a3);
@@ -3659,14 +3686,14 @@ rg.view.svg.chart.StreamGraph.prototype.prepareData = function() {
 			return { x : x(d1), y : Math.max(0,y(d1))};
 		});
 	});
-	var data = new thx.geom.layout.Stack().offset(thx.geom.layout.StackOffset.Silhouette).stack(coords.copy());
+	var data = new thx.geom.layout.Stack().offset(thx.geom.layout.StackOffset.Silhouette).order(thx.geom.layout.StackOrder.DefaultOrder).stack(coords);
 	this.transformedData = data.map(function(d,i) {
 		return d.map(function(d1,j) {
 			return { coord : d1, dp : me.dps[i][j]};
 		});
 	});
 	this.stats = rg.util.DataPoints.stats(Arrays.flatten(this.dps),this.variableDependents[0].type);
-	var maxy = Arrays.floatMax(data,function(d) {
+	this.maxy = Arrays.floatMax(data,function(d) {
 		return Arrays.floatMax(d,function(d1) {
 			return d1.y0 + d1.y;
 		});
@@ -3674,10 +3701,36 @@ rg.view.svg.chart.StreamGraph.prototype.prepareData = function() {
 	this.area = new thx.svg.Area().interpolator(this.interpolator).x(function(d,i) {
 		return d.coord.x * me.width;
 	}).y0(function(d,i) {
-		return me.height - d.coord.y0 * me.height / maxy;
+		return me.height - d.coord.y0 * me.height / me.maxy;
 	}).y1(function(d,i) {
-		return me.height - (d.coord.y + d.coord.y0) * me.height / maxy;
+		return me.height - (d.coord.y + d.coord.y0) * me.height / me.maxy;
 	});
+}
+rg.view.svg.chart.StreamGraph.prototype.applyGradientV = function(d,i) {
+	var gn = thx.js.Selection.getCurrent(), rgb = gn.style("fill").get(), color = thx.color.Colors.parse(null == rgb?"#cccccc":rgb), id = "rg_stream_gradient_h_" + color.hex("");
+	if(this.defs.select("#" + id).empty()) {
+		var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
+		var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
+		gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
+		gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+	}
+	gn.attr("style").string("fill:url(#" + id + ")");
+}
+rg.view.svg.chart.StreamGraph.prototype.applyGradientH = function(d,i) {
+	var gn = thx.js.Selection.getCurrent(), rgb = gn.style("fill").get(), color = thx.color.Hsl.toHsl(thx.color.Colors.parse(null == rgb?"#cccccc":rgb)), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
+	var gradient = this.defs.append("svg:linearGradient").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
+	var bx = d[0].coord.x, ax = d[d.length - 1].coord.x, span = ax - bx, percent = function(x) {
+		return Math.round((x - bx) / span * 10000) / 100;
+	}, max = Arrays.floatMax(d,function(d1) {
+		return d1.coord.y;
+	});
+	var _g1 = 0, _g = d.length;
+	while(_g1 < _g) {
+		var i1 = _g1++;
+		var dp = d[i1], v = 1 + (dp.coord.y / max - 0.5) * this.gradientLightness;
+		gradient.append("svg:stop").attr("offset").string(percent(dp.coord.x) + "%").attr("stop-color").string(thx.color.Hsl.darker(color,v).hex("#")).attr("stop-opacity")["float"](1);
+	}
+	gn.attr("style").string("fill:url(#" + id + ")");
 }
 rg.view.svg.chart.StreamGraph.prototype.__class__ = rg.view.svg.chart.StreamGraph;
 rg.data.VariableDependentContext = function(variable,partial) {
@@ -16185,6 +16238,7 @@ thx.xml.Namespace.prefix = (function() {
 	h.set("xmlns","http://www.w3.org/2000/xmlns/");
 	return h;
 })();
+rg.view.svg.chart.StreamGraph.vid = 0;
 Ints._reparse = new EReg("^([+-])?\\d+$","");
 rg.view.layout.LayoutCartesian.ALT_RIGHT = 20;
 rg.view.layout.LayoutCartesian.ALT_LEFT = 20;
