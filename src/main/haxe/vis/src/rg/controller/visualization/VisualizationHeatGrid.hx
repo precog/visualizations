@@ -12,6 +12,12 @@ class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 {
 	public var infoHeatGrid : InfoHeatGrid;
 	
+	override function initAxes()
+	{
+		xvariable = cast independentVariables[0];
+		yvariables = [cast independentVariables[1]];
+	}
+	
 	override function initChart()
 	{
 		var chart = new HeatGrid(layout.getPanel(layout.mainPanelName));

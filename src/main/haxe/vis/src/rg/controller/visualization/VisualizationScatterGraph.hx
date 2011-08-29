@@ -9,10 +9,19 @@ import rg.view.svg.chart.ScatterGraph;
 import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
+using Arrays;
+import rg.data.Variable;
+import rg.data.IAxis;
 
 class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<DataPoint>>>
 {
 	public var infoScatter : InfoScatterGraph;
+		
+	override function initAxes()
+	{
+		xvariable = cast independentVariables[0];
+		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+	}
 	
 	override function initChart()
 	{

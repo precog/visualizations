@@ -7,10 +7,11 @@ package rg.controller.info;
 import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.data.Stats;
+import rg.data.IAxis;
 
 class InfoLabel 
 {
-	public var title : Array<Variable<Dynamic>> -> Array<DataPoint> -> String;
+	public var title : Array<Variable<Dynamic, IAxis<Dynamic>>> -> Array<DataPoint> -> String;
 	public var datapoint : DataPoint -> Stats -> String;
 	public var datapointover : DataPoint -> Stats -> String;
 	

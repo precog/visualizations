@@ -22,7 +22,47 @@
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
-
+	var ageranges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"],
+		heights   = ["up to 1 foot", "2 feet", "3 feet", "4 feet", "5 feet", "6 feet", "over"],
+		data = [];
+	ageranges.forEach(function(age) {
+		data = data.concat(heights.map(function(height) {
+			return {
+				height : height,
+				age    : age,
+				value  : ReportGrid.math.random()
+			};
+		}));
+	});
+	
+	ReportGrid.heatGrid("#chart1", {
+		axes : [{
+			type : "age",
+			values : ageranges,
+			variable : "independent"
+		}, {
+			type : "height",
+			values : heights,
+			variable : "independent"
+		}, {
+			type : "value",
+			views : [0,1],
+			variable : "dependent"
+		}],
+		data : [ { src : { data : data } } ],
+		options : {
+			label : {
+				datapointover : function(dp) { 
+					return dp.event + ": " + ReportGrid.format(dp["count"]); 
+				},
+//				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			click : function(dp) { alert(dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value)); },
+			height: 300,
+			width: 300
+		}
+	});
+/*
 	var start = "100 hours ago",
 		end = "now",
 		range = ReportGrid.date.range(start, end, "hour"),
@@ -117,6 +157,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		}
 	});
+*/
 }, false)
 </script>
 </head>

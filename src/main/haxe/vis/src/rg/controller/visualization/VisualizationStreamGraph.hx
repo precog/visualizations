@@ -8,10 +8,19 @@ import rg.data.Segmenter;
 import rg.view.svg.chart.StreamGraph;
 import rg.controller.info.InfoStreamGraph;
 import rg.data.DataPoint;
+import rg.data.IAxis;
+import rg.data.Variable;
+using Arrays;
 
 class VisualizationStreamGraph extends VisualizationCartesian<Array<Array<DataPoint>>>
 {
 	public var infoStream : InfoStreamGraph;
+	
+	override function initAxes()
+	{
+		xvariable = cast independentVariables[0];
+		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+	}
 	
 	override function initChart()
 	{

@@ -460,10 +460,10 @@ rg.controller.visualization.Visualization.prototype.setVariables = function(inde
 	this.dependentVariables = dependentVariables;
 }
 rg.controller.visualization.Visualization.prototype.init = function() {
-	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 28, className : "rg.controller.visualization.Visualization", methodName : "init"});
+	throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 29, className : "rg.controller.visualization.Visualization", methodName : "init"});
 }
 rg.controller.visualization.Visualization.prototype.feedData = function(data) {
-	haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 33, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+	haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 34, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
 }
 rg.controller.visualization.Visualization.prototype.getVariables = function() {
 	return this.independentVariables.map(function(d,i) {
@@ -496,7 +496,10 @@ rg.controller.visualization.VisualizationCartesian.prototype.chart = null;
 rg.controller.visualization.VisualizationCartesian.prototype.xlabel = null;
 rg.controller.visualization.VisualizationCartesian.prototype.ylabels = null;
 rg.controller.visualization.VisualizationCartesian.prototype.title = null;
+rg.controller.visualization.VisualizationCartesian.prototype.xvariable = null;
+rg.controller.visualization.VisualizationCartesian.prototype.yvariables = null;
 rg.controller.visualization.VisualizationCartesian.prototype.init = function() {
+	this.initAxes();
 	this.initYAxes();
 	this.initXAxis();
 	this.initTitle();
@@ -504,24 +507,27 @@ rg.controller.visualization.VisualizationCartesian.prototype.init = function() {
 	this.initChart();
 	this.initCartesianChart();
 }
+rg.controller.visualization.VisualizationCartesian.prototype.initAxes = function() {
+	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 40, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initAxes"});
+}
 rg.controller.visualization.VisualizationCartesian.prototype.initPadding = function() {
 	this.layout.adjustPadding();
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initYAxes = function() {
 	this.ylabels = [];
-	var _g1 = 0, _g = this.dependentVariables.length;
+	var _g1 = 0, _g = this.yvariables.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var tickmarks = this.createTickmarks(this.dependentVariables[i].type,"y" + i);
+		var tickmarks = this.createTickmarks(this.yvariables[i].type,"y" + i);
 		if(null == tickmarks) continue;
 		this.ylabels.push({ id : i, tickmarks : tickmarks});
 	}
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initXAxis = function() {
-	this.xlabel = this.createTickmarks(this.independentVariables[0].type,"x");
+	this.xlabel = this.createTickmarks(this.xvariable.type,"x");
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initChart = function() {
-	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 60, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
+	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 70, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initCartesianChart = function() {
 	this.chart.animated = this.info.animation.animated;
@@ -547,24 +553,24 @@ rg.controller.visualization.VisualizationCartesian.prototype.feedData = function
 	var _g1 = 0, _g = this.ylabels.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var item = this.ylabels[i], variable = this.dependentVariables[item.id];
+		var item = this.ylabels[i], variable = this.yvariables[item.id];
 		item.tickmarks.update(variable.axis,variable.min,variable.max);
 		var size = Math.round(item.tickmarks.desiredSize);
 		this.layout.suggestSize("y" + item.id,size);
 	}
 	if(null != this.xlabel) {
-		var variable = this.independentVariables[0];
+		var variable = this.xvariable;
 		this.xlabel.update(variable.axis,variable.min,variable.max);
 		var size = Math.round(this.xlabel.desiredSize);
 		this.layout.suggestSize("x",size);
 	}
-	this.chart.setVariables(this.independentVariables,this.dependentVariables);
+	this.chart.setVariables([this.xvariable],this.yvariables);
 	this.chart.data(this.transformData(data));
 }
 rg.controller.visualization.VisualizationCartesian.prototype.transformData = function(dps) {
 	return (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 119, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 129, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
 		return $r;
 	}(this));
 }
@@ -607,6 +613,12 @@ rg.controller.visualization.VisualizationStreamGraph.__name__ = ["rg","controlle
 rg.controller.visualization.VisualizationStreamGraph.__super__ = rg.controller.visualization.VisualizationCartesian;
 for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationStreamGraph.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
 rg.controller.visualization.VisualizationStreamGraph.prototype.infoStream = null;
+rg.controller.visualization.VisualizationStreamGraph.prototype.initAxes = function() {
+	this.xvariable = this.independentVariables[0];
+	this.yvariables = this.dependentVariables.map(function(d,_) {
+		return d;
+	});
+}
 rg.controller.visualization.VisualizationStreamGraph.prototype.initChart = function() {
 	var chart = new rg.view.svg.chart.StreamGraph(this.layout.getPanel(this.layout.mainPanelName));
 	chart.interpolator = this.infoStream.interpolation;
@@ -932,6 +944,12 @@ rg.controller.visualization.VisualizationBarChart.__name__ = ["rg","controller",
 rg.controller.visualization.VisualizationBarChart.__super__ = rg.controller.visualization.VisualizationCartesian;
 for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationBarChart.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
 rg.controller.visualization.VisualizationBarChart.prototype.infoBar = null;
+rg.controller.visualization.VisualizationBarChart.prototype.initAxes = function() {
+	this.xvariable = this.independentVariables[0];
+	this.yvariables = this.dependentVariables.map(function(d,_) {
+		return d;
+	});
+}
 rg.controller.visualization.VisualizationBarChart.prototype.initChart = function() {
 	var chart = new rg.view.svg.chart.BarChart(this.layout.getPanel(this.layout.mainPanelName));
 	chart.stacked = this.infoBar.stacked;
@@ -2855,6 +2873,12 @@ rg.controller.visualization.VisualizationLineChart.__name__ = ["rg","controller"
 rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.visualization.VisualizationCartesian;
 for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationLineChart.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
 rg.controller.visualization.VisualizationLineChart.prototype.infoLine = null;
+rg.controller.visualization.VisualizationLineChart.prototype.initAxes = function() {
+	this.xvariable = this.independentVariables[0];
+	this.yvariables = this.dependentVariables.map(function(d,_) {
+		return d;
+	});
+}
 rg.controller.visualization.VisualizationLineChart.prototype.initChart = function() {
 	var chart = new rg.view.svg.chart.LineChart(this.layout.getPanel(this.layout.mainPanelName));
 	chart.symbol = this.infoLine.symbol;
@@ -2885,6 +2909,10 @@ rg.controller.visualization.VisualizationHeatGrid.__name__ = ["rg","controller",
 rg.controller.visualization.VisualizationHeatGrid.__super__ = rg.controller.visualization.VisualizationCartesian;
 for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationHeatGrid.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
 rg.controller.visualization.VisualizationHeatGrid.prototype.infoHeatGrid = null;
+rg.controller.visualization.VisualizationHeatGrid.prototype.initAxes = function() {
+	this.xvariable = this.independentVariables[0];
+	this.yvariables = [this.independentVariables[1]];
+}
 rg.controller.visualization.VisualizationHeatGrid.prototype.initChart = function() {
 	var chart = new rg.view.svg.chart.HeatGrid(this.layout.getPanel(this.layout.mainPanelName));
 	this.chart = chart;
@@ -3818,23 +3846,24 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	return new rg.data.DataContext(info.name,processor);
 }
 rg.controller.factory.FactoryDataContext.prototype.__class__ = rg.controller.factory.FactoryDataContext;
-rg.data.Variable = function(type,scaleDistribution,min,max) {
+rg.data.Variable = function(type,axis,scaleDistribution,min,max) {
 	if( type === $_ ) return;
 	this.type = type;
 	this.scaleDistribution = scaleDistribution;
 	this.min = min;
 	this.max = max;
+	this.axis = axis;
 }
 rg.data.Variable.__name__ = ["rg","data","Variable"];
 rg.data.Variable.prototype.type = null;
 rg.data.Variable.prototype.min = null;
 rg.data.Variable.prototype.max = null;
 rg.data.Variable.prototype.scaleDistribution = null;
+rg.data.Variable.prototype.axis = null;
 rg.data.Variable.prototype.__class__ = rg.data.Variable;
 rg.data.VariableIndependent = function(type,axis,scaleDistribution,min,max) {
 	if( type === $_ ) return;
-	rg.data.Variable.call(this,type,scaleDistribution,min,max);
-	this.axis = axis;
+	rg.data.Variable.call(this,type,axis,scaleDistribution,min,max);
 }
 rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
 rg.data.VariableIndependent.__super__ = rg.data.Variable;
@@ -3847,7 +3876,6 @@ rg.data.VariableIndependent.forOrdinal = function(type,scaleDistribution,values)
 	var axis = new rg.data.AxisOrdinal(values);
 	return new rg.data.VariableIndependent(type,axis,scaleDistribution,axis.getFirst(),axis.getLast());
 }
-rg.data.VariableIndependent.prototype.axis = null;
 rg.data.VariableIndependent.prototype.range = function() {
 	var a = Types["as"](this.axis,rg.data.AxisGroupByTime);
 	if(null != a) return a.range(a.getFirst(),a.getLast()); else return this.axis.range(this.min,this.max);
@@ -11828,6 +11856,12 @@ rg.controller.visualization.VisualizationScatterGraph.__name__ = ["rg","controll
 rg.controller.visualization.VisualizationScatterGraph.__super__ = rg.controller.visualization.VisualizationCartesian;
 for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationScatterGraph.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
 rg.controller.visualization.VisualizationScatterGraph.prototype.infoScatter = null;
+rg.controller.visualization.VisualizationScatterGraph.prototype.initAxes = function() {
+	this.xvariable = this.independentVariables[0];
+	this.yvariables = this.dependentVariables.map(function(d,_) {
+		return d;
+	});
+}
 rg.controller.visualization.VisualizationScatterGraph.prototype.initChart = function() {
 	var chart = new rg.view.svg.chart.ScatterGraph(this.layout.getPanel(this.layout.mainPanelName));
 	chart.symbol = this.infoScatter.symbol;
@@ -12943,13 +12977,11 @@ rg.controller.info.InfoDataSource.prototype.groupBy = null;
 rg.controller.info.InfoDataSource.prototype.__class__ = rg.controller.info.InfoDataSource;
 rg.data.VariableDependent = function(type,axis,scaleDistribution,min,max) {
 	if( type === $_ ) return;
-	rg.data.Variable.call(this,type,scaleDistribution,min,max);
-	this.axis = axis;
+	rg.data.Variable.call(this,type,axis,scaleDistribution,min,max);
 }
 rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
 rg.data.VariableDependent.__super__ = rg.data.Variable;
 for(var k in rg.data.Variable.prototype ) rg.data.VariableDependent.prototype[k] = rg.data.Variable.prototype[k];
-rg.data.VariableDependent.prototype.axis = null;
 rg.data.VariableDependent.prototype.setAxis = function(axis) {
 	this.axis = axis;
 }

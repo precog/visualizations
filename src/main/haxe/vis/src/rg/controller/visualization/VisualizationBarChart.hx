@@ -9,11 +9,19 @@ import rg.view.svg.chart.BarChart;
 import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
+import rg.data.Variable;
+import rg.data.IAxis;
 using Arrays;
 
 class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
 {
 	public var infoBar : InfoBarChart;
+	
+	override function initAxes()
+	{
+		xvariable = cast independentVariables[0];
+		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+	}
 	
 	override function initChart()
 	{

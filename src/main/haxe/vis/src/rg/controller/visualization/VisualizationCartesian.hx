@@ -6,11 +6,13 @@
 package rg.controller.visualization;
 import rg.controller.info.InfoCartesianChart;
 import rg.data.DataPoint;
+import rg.data.Variable;
 import rg.util.DataPoints;
 import rg.view.svg.layer.TickmarksOrtho;
 import rg.view.svg.chart.CartesianChart;
 import rg.view.svg.layer.Title;
 import thx.error.AbstractMethod;
+import rg.data.IAxis;
 
 class VisualizationCartesian<T> extends VisualizationSvg
 {
@@ -19,15 +21,23 @@ class VisualizationCartesian<T> extends VisualizationSvg
 	var xlabel : TickmarksOrtho;
 	var ylabels : Array<{ id : Int, tickmarks : TickmarksOrtho }>;
 	var title : Null<Title>;
+	var xvariable : Variable<Dynamic, IAxis<Dynamic>>;
+	var yvariables : Array<Variable<Dynamic, IAxis<Dynamic>>>;
 	
 	override function init() 
 	{
+		initAxes();
 		initYAxes();
 		initXAxis();
 		initTitle();
 		initPadding();
 		initChart();
 		initCartesianChart();
+	}
+	
+	function initAxes()
+	{
+		throw new AbstractMethod();
 	}
 	
 	function initPadding()
@@ -38,9 +48,9 @@ class VisualizationCartesian<T> extends VisualizationSvg
 	function initYAxes()
 	{
 		ylabels = [];
-		for (i in 0...dependentVariables.length)
+		for (i in 0...yvariables.length)
 		{
-			var tickmarks = createTickmarks(dependentVariables[i].type, "y" + i);
+			var tickmarks = createTickmarks(yvariables[i].type, "y" + i);
 			if (null == tickmarks)
 				continue;
 			ylabels.push({ 
@@ -52,7 +62,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 	
 	function initXAxis()
 	{
-		xlabel = createTickmarks(independentVariables[0].type, "x");
+		xlabel = createTickmarks(xvariable.type, "x");
 	}
 	
 	function initChart()
@@ -96,7 +106,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		for (i in 0...ylabels.length)
 		{
 			var item = ylabels[i],
-				variable = dependentVariables[item.id];
+				variable = yvariables[item.id];
 			item.tickmarks.update(variable.axis, variable.min, variable.max);
 			var size = Math.round(item.tickmarks.desiredSize);
 			layout.suggestSize("y" + item.id, size);
@@ -104,13 +114,13 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		
 		if (null != xlabel)
 		{
-			var variable = independentVariables[0];
+			var variable = xvariable;
 			xlabel.update(variable.axis, variable.min, variable.max);
 			var size = Math.round(xlabel.desiredSize);
 			layout.suggestSize("x", size);
 		}
 		
-		chart.setVariables(independentVariables, dependentVariables);
+		chart.setVariables(cast [xvariable], cast yvariables);
 		chart.data(transformData(data));
 	}
 	

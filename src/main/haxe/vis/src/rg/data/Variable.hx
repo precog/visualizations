@@ -5,18 +5,20 @@
 
 package rg.data;
 
-class Variable<T>
+class Variable<T, TAxis : IAxis<T>>
 {
 	public var type : String;
 	public var min : Null<T>;
 	public var max : Null<T>;
 	public var scaleDistribution : Null<ScaleDistribution>;
+	public var axis(default, null) : TAxis;
 	
-	function new(type : String, scaleDistribution : Null<ScaleDistribution>, ?min : T, ?max : T) 
+	public function new(type : String, axis : TAxis, scaleDistribution : Null<ScaleDistribution>, ?min : T, ?max : T) 
 	{
 		this.type = type;
 		this.scaleDistribution = scaleDistribution;
 		this.min = min;
 		this.max = max;
+		this.axis = axis;
 	}
 }

@@ -5,14 +5,23 @@
 
 package rg.controller.visualization;
 import rg.controller.info.InfoLineChart;
+import rg.data.Variable;
 import rg.view.svg.chart.LineChart;
 import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
+import rg.data.IAxis;
+using Arrays;
 
 class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
 {
 	public var infoLine : InfoLineChart;
+	
+	override function initAxes()
+	{
+		xvariable = cast independentVariables[0];
+		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+	}
 	
 	override function initChart()
 	{
