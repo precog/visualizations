@@ -51,6 +51,7 @@ class JSBridge
 		o.leaderBoard = function(el, options) return o.viz(el, options, "leaderboard");
 		o.barChart    = function(el, options) return o.viz(el, options, "barchart");
 		o.funnelChart = function(el, options) return o.viz(el, options, "funnelchart");
+		o.streamGraph = function(el, options) return o.viz(el, options, "streamgraph");
 		
 		// utility functions
 		o.format  = Dynamics.format;

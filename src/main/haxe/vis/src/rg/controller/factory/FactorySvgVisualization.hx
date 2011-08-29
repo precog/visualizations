@@ -8,10 +8,12 @@ import rg.controller.info.InfoBarChart;
 import rg.controller.info.InfoFunnelChart;
 import rg.controller.info.InfoLineChart;
 import rg.controller.info.InfoPieChart;
+import rg.controller.info.InfoStreamGraph;
 import rg.controller.visualization.VisualizationBarChart;
 import rg.controller.visualization.VisualizationFunnelChart;
 import rg.controller.visualization.VisualizationLineChart;
 import rg.controller.visualization.VisualizationPieChart;
+import rg.controller.visualization.VisualizationStreamGraph;
 import rg.controller.visualization.VisualizationSvg;
 import rg.view.layout.Layout;
 import thx.error.Error;
@@ -42,6 +44,10 @@ class FactorySvgVisualization
 			case "funnelchart":
 				var chart = new VisualizationFunnelChart(layout);
 				chart.info = new InfoFunnelChart().feed(options);
+				return chart;
+			case "streamgraph":
+				var chart = new VisualizationStreamGraph(layout);
+				chart.info = new InfoStreamGraph().feed(options);
 				return chart;
 			default:
 				throw new Error("unsupported visualization type '{0}'", type);
