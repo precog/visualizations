@@ -16,16 +16,19 @@ class VisualizationStreamGraph extends VisualizationCartesian<Array<Array<DataPo
 	override function initChart()
 	{
 		var chart = new StreamGraph(layout.getPanel(layout.mainPanelName));
-/*
+		
+		chart.interpolator = infoStream.interpolation;
 		switch(infoStream.effect)
 		{
 			case NoEffect:
-				chart.displayGradient = false;
-			case Gradient(lightness):
-				chart.displayGradient = true;
+				chart.gradientStyle = 0;
+			case GradientVertical(lightness):
+				chart.gradientStyle = 1;
+				chart.gradientLightness = lightness;
+			case GradientHorizontal(lightness):
+				chart.gradientStyle = 2;
 				chart.gradientLightness = lightness;
 		}
-*/
 
 		this.chart = chart;
 	}

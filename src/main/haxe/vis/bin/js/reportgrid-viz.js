@@ -609,6 +609,23 @@ for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.c
 rg.controller.visualization.VisualizationStreamGraph.prototype.infoStream = null;
 rg.controller.visualization.VisualizationStreamGraph.prototype.initChart = function() {
 	var chart = new rg.view.svg.chart.StreamGraph(this.layout.getPanel(this.layout.mainPanelName));
+	chart.interpolator = this.infoStream.interpolation;
+	var $e = (this.infoStream.effect);
+	switch( $e[1] ) {
+	case 0:
+		chart.gradientStyle = 0;
+		break;
+	case 2:
+		var lightness = $e[2];
+		chart.gradientStyle = 1;
+		chart.gradientLightness = lightness;
+		break;
+	case 1:
+		var lightness = $e[2];
+		chart.gradientStyle = 2;
+		chart.gradientLightness = lightness;
+		break;
+	}
 	this.chart = chart;
 }
 rg.controller.visualization.VisualizationStreamGraph.prototype.transformData = function(dps) {
@@ -1486,6 +1503,23 @@ rg.view.layout.Anchor.Left.__enum__ = rg.view.layout.Anchor;
 rg.view.layout.Anchor.Right = ["Right",3];
 rg.view.layout.Anchor.Right.toString = $estr;
 rg.view.layout.Anchor.Right.__enum__ = rg.view.layout.Anchor;
+rg.view.svg.chart.StreamEffects = function() { }
+rg.view.svg.chart.StreamEffects.__name__ = ["rg","view","svg","chart","StreamEffects"];
+rg.view.svg.chart.StreamEffects.getLightness = function(p,alt) {
+	if(null == p) return alt; else return Std.parseFloat(p);
+}
+rg.view.svg.chart.StreamEffects.parse = function(s) {
+	var parts = s.toLowerCase().split("-");
+	switch(parts.shift()) {
+	case "gradient":case "gradientv":case "gradientvert":case "gradientvertical":
+		return rg.view.svg.chart.StreamEffect.GradientVertical(rg.view.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	case "gradienth":case "gradienthoriz":case "gradienthorizontal":
+		return rg.view.svg.chart.StreamEffect.GradientHorizontal(rg.view.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	default:
+		return rg.view.svg.chart.StreamEffect.NoEffect;
+	}
+}
+rg.view.svg.chart.StreamEffects.prototype.__class__ = rg.view.svg.chart.StreamEffects;
 rg.controller.info.InfoDomType = function(p) {
 }
 rg.controller.info.InfoDomType.__name__ = ["rg","controller","info","InfoDomType"];
@@ -3611,12 +3645,14 @@ rg.view.svg.chart.StreamGraph = function(panel) {
 	rg.view.svg.chart.CartesianChart.call(this,panel);
 	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
 	this.gradientLightness = 0.75;
+	this.gradientStyle = 1;
 }
 rg.view.svg.chart.StreamGraph.__name__ = ["rg","view","svg","chart","StreamGraph"];
 rg.view.svg.chart.StreamGraph.__super__ = rg.view.svg.chart.CartesianChart;
 for(var k in rg.view.svg.chart.CartesianChart.prototype ) rg.view.svg.chart.StreamGraph.prototype[k] = rg.view.svg.chart.CartesianChart.prototype[k];
 rg.view.svg.chart.StreamGraph.prototype.interpolator = null;
 rg.view.svg.chart.StreamGraph.prototype.gradientLightness = null;
+rg.view.svg.chart.StreamGraph.prototype.gradientStyle = null;
 rg.view.svg.chart.StreamGraph.prototype.dps = null;
 rg.view.svg.chart.StreamGraph.prototype.area = null;
 rg.view.svg.chart.StreamGraph.prototype.transformedData = null;
@@ -3643,7 +3679,7 @@ rg.view.svg.chart.StreamGraph.prototype.redraw = function() {
 	var node = layer.enter().append("svg:g").attr("class").string("group").onNode("mousemove",$closure(this,"onover")).onNode("click",$closure(this,"onclick")).append("svg:path").attr("class").stringf(function(d,i) {
 		return "line item-" + i;
 	}).attr("d").stringf($closure(this.area,"shape"));
-	node.each($closure(this,"applyGradientH"));
+	if(this.gradientStyle != 0) node.each(this.gradientStyle == 1?$closure(this,"applyGradientV"):$closure(this,"applyGradientH"));
 	layer.exit().remove();
 }
 rg.view.svg.chart.StreamGraph.prototype.getDataAtNode = function(n,i) {
@@ -3922,13 +3958,25 @@ Iterables.prototype.__class__ = Iterables;
 rg.controller.info.InfoStreamGraph = function(p) {
 	if( p === $_ ) return;
 	rg.controller.info.InfoCartesianChart.call(this);
+	this.interpolation = thx.svg.LineInterpolator.Cardinal();
+	this.effect = rg.view.svg.chart.StreamEffect.GradientVertical(0.75);
 }
 rg.controller.info.InfoStreamGraph.__name__ = ["rg","controller","info","InfoStreamGraph"];
 rg.controller.info.InfoStreamGraph.__super__ = rg.controller.info.InfoCartesianChart;
 for(var k in rg.controller.info.InfoCartesianChart.prototype ) rg.controller.info.InfoStreamGraph.prototype[k] = rg.controller.info.InfoCartesianChart.prototype[k];
 rg.controller.info.InfoStreamGraph.filters = function() {
-	return [].concat(rg.controller.info.InfoCartesianChart.filters());
+	return [{ field : "interpolation", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
+	}},{ field : "effect", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "effect", value : rg.view.svg.chart.StreamEffects.parse(v)}];
+	}}].concat(rg.controller.info.InfoCartesianChart.filters());
 }
+rg.controller.info.InfoStreamGraph.prototype.interpolation = null;
+rg.controller.info.InfoStreamGraph.prototype.effect = null;
 rg.controller.info.InfoStreamGraph.prototype.__class__ = rg.controller.info.InfoStreamGraph;
 thx.js.DataChoice = function(update,enter,exit) {
 	if( update === $_ ) return;
@@ -10558,7 +10606,7 @@ rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,l
 		return chart;
 	case "streamgraph":
 		var chart = new rg.controller.visualization.VisualizationStreamGraph(layout);
-		chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoStreamGraph(),options);
+		chart.info = chart.infoStream = rg.controller.info.Info.feed(new rg.controller.info.InfoStreamGraph(),options);
 		return chart;
 	default:
 		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 53, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
@@ -11877,6 +11925,12 @@ rg.data.Tickmark.prototype.toString = function() {
 }
 rg.data.Tickmark.prototype.__class__ = rg.data.Tickmark;
 rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
+rg.view.svg.chart.StreamEffect = { __ename__ : ["rg","view","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
+rg.view.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
+rg.view.svg.chart.StreamEffect.NoEffect.toString = $estr;
+rg.view.svg.chart.StreamEffect.NoEffect.__enum__ = rg.view.svg.chart.StreamEffect;
+rg.view.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
+rg.view.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.data.AxisNumeric = function(p) {
 }
 rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];

@@ -47,7 +47,7 @@ class FactorySvgVisualization
 				return chart;
 			case "streamgraph":
 				var chart = new VisualizationStreamGraph(layout);
-				chart.info = new InfoStreamGraph().feed(options);
+				chart.info = chart.infoStream = new InfoStreamGraph().feed(options);
 				return chart;
 			default:
 				throw new Error("unsupported visualization type '{0}'", type);

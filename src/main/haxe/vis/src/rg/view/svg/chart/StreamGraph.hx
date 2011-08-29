@@ -30,10 +30,12 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		super(panel);
 		interpolator = LineInterpolator.Cardinal(0.6);
 		gradientLightness = 0.75;
+		gradientStyle = 1;
 	}
 	
 	public var interpolator : LineInterpolator;
 	public var gradientLightness : Float;
+	public var gradientStyle : Int; // 0: none, 1: vertical, 2: horizontal
 	
 	var dps : Array<Array<DataPoint>>;
 	var area : Area<TransformedData>;
@@ -87,7 +89,8 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 				.attr("class").stringf(function(d, i) return "line item-" + i)
 				.attr("d").stringf(area.shape)
 				;
-		node.each(applyGradientH);
+		if(gradientStyle != 0)
+			node.each(gradientStyle == 1 ? applyGradientV : applyGradientH);
 		// exit
 		layer.exit().remove();
 	}
