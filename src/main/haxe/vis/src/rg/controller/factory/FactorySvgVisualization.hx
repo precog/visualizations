@@ -8,11 +8,13 @@ import rg.controller.info.InfoBarChart;
 import rg.controller.info.InfoFunnelChart;
 import rg.controller.info.InfoLineChart;
 import rg.controller.info.InfoPieChart;
+import rg.controller.info.InfoScatterGraph;
 import rg.controller.info.InfoStreamGraph;
 import rg.controller.visualization.VisualizationBarChart;
 import rg.controller.visualization.VisualizationFunnelChart;
 import rg.controller.visualization.VisualizationLineChart;
 import rg.controller.visualization.VisualizationPieChart;
+import rg.controller.visualization.VisualizationScatterGraph;
 import rg.controller.visualization.VisualizationStreamGraph;
 import rg.controller.visualization.VisualizationSvg;
 import rg.view.layout.Layout;
@@ -48,6 +50,10 @@ class FactorySvgVisualization
 			case "streamgraph":
 				var chart = new VisualizationStreamGraph(layout);
 				chart.info = chart.infoStream = new InfoStreamGraph().feed(options);
+				return chart;
+			case "scattergraph":
+				var chart = new VisualizationScatterGraph(layout);
+				chart.info = chart.infoScatter = new InfoScatterGraph().feed(options);
 				return chart;
 			default:
 				throw new Error("unsupported visualization type '{0}'", type);

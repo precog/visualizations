@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		end = "now",
 		range = ReportGrid.date.range(start, end, "hour"),
 		data1 = range.map(function(d,i) {
-			var count = ReportGrid.math.random() * 100 + 10;
+			var count = Math.round(Math.tan(i / range.length * Math.PI * 4) * 100);
 			return {
 				".#time:hour" : d,
 				event : "impression",
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data2 = range.map(function(d,i) {
-			var count = ReportGrid.math.random() * 40 + 10;
+			var count = Math.round(Math.sin(i / range.length * Math.PI * 4) * 100);
 			return {
 				".#time:hour" : d,
 				event : "click",
@@ -45,33 +45,58 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data3 = range.map(function(d,i) {
-			var count = ReportGrid.math.random() * 20 + 10;
+			var count = Math.round(Math.cos(i / range.length * Math.PI * 4) * 50);
 			return {
 				".#time:hour" : d,
 				event : "conversion",
 				conversion : count,
 				count : count
 			};
+		}),
+		data4 = range.map(function(d,i) {
+			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 100);
+			return {
+				".#time:hour" : d,
+				event : "other",
+				other : count,
+				count : count
+			};
+		}),
+		data5 = range.map(function(d,i) {
+			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 50);
+			return {
+				".#time:hour" : d,
+				event : "other2",
+				other : count,
+				count : count
+			};
 		})
 	;
 //	console.log(ReportGrid.dump(data));
 	var alt = 0;
-
-	ReportGrid.streamGraph("#chart1", {
+	
+	ReportGrid.scatterGraph("#chart1", {
 		axes : [{
 			type : ".#time:hour",
 			view : [start, end],
 			variable : "independent"
 		}, {
-			type : "count"
+			type : "impression"
+		}, {
+			type : "click"
+		}, {
+			type : "conversion"
+		}, {
+			type : "other"
 		}],
 		data : [
 			{ src : { data : data1 } }, 
 			{ src : { data : data2 } },
-			{ src : { data : data3 } }
+			{ src : { data : data3 } }, 
+			{ src : { data : data4 } },
+			{ src : { data : data5 } }
 		],
 		options : {
-			segmenton : "event",
 			animation : {
 				animated : true,
 				duration : 500,
@@ -84,91 +109,12 @@ document.addEventListener("DOMContentLoaded", function(){
 				},
 //				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			click : function(dp) { alert(dp.event + ": " + ReportGrid.format(dp.count)); },
+			click : function(dp) { alert(dp[".platform"]); },
 			height: 200,
-			symbol : function(ds, stats) {
-				return ReportGrid.symbol.get("circle", 20);
-			},
 			line : {
 //				interpolation : "cardinal",
 				effect : "gradient"
 			}
-		}
-	});
-
-	var ageRanges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"];
-//	var ages = ["0-13", "14-15", "16-20", "21-35", "36+"];
-	ReportGrid.streamGraph("#chart2", {
-		axes : [{
-			type : "age",
-			values : ageRanges,
-			view : ["0-13", "100+"],
-			variable : "independent"
-		}, {
-			type : "count",
-			view : [0, 40],
-			variable : "dependent"
-		}],
-		data : [{
-			src : {
-				data : ageRanges.map(function(d,i) {
-					return {
-						count : ReportGrid.math.random() * 35 + 5,
-						age : d
-					};
-				})
-			}
-		}],
-		options : {
-			height : 120,
-			line : {
-				interpolation : "linear"
-			},
-			label : {
-				datapointover : function(dp) { 
-					return ReportGrid.format(dp["count"]); 
-				},
-				axis : function(name) { return ReportGrid.humanize(name); }
-			},
-			displayarea : true,
-			effect : "gradienth-1.5"
-		}
-	});
-	
-	var interests = ["sport", "tv", "internet", "art", "history", "diy"];
-	ReportGrid.streamGraph("#chart3", {
-		axes : [{
-			type : "age",
-			values : ageRanges,
-			view : ["0-13", "100+"],
-			variable : "independent"
-		}, {
-			type : "interest",
-			view : ["sport", "diy"],
-			values : interests,
-			variable : "dependent"
-		}],
-		data : [{
-			src : {
-				data : ageRanges.map(function(d,i) {
-					return {
-						interest : interests[Math.floor(ReportGrid.math.random()*interests.length)],
-						age : d
-					};
-				})
-			}
-		}],
-		options : {
-			height : 120,
-			label : {
-				title : "Interests by Age Groups",
-				datapointover : function(dp) { 
-					return dp["age"] + ": " + dp["interest"]; 
-				},
-				axis : function(name) { return ReportGrid.humanize(name); }
-			},
-			displayarea : true,
-			effect : "gradientv-0.5"
 		}
 	});
 }, false)

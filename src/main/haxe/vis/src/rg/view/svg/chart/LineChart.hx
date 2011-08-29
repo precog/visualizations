@@ -30,7 +30,6 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 {
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
-	public var segmenton : Null<String>;
 	public var lineInterpolator : LineInterpolator;
 	public var lineEffect : LineEffect;
 	public var y0property : String;

@@ -45,13 +45,14 @@ class JSBridge
 		}
 		
 		// define public visualization constrcutors
-		o.lineChart   = function(el, options) return o.viz(el, options, "linechart");
-		o.pieChart    = function(el, options) return o.viz(el, options, "piechart");
-		o.pivotTable  = function(el, options) return o.viz(el, options, "pivottable");
-		o.leaderBoard = function(el, options) return o.viz(el, options, "leaderboard");
-		o.barChart    = function(el, options) return o.viz(el, options, "barchart");
-		o.funnelChart = function(el, options) return o.viz(el, options, "funnelchart");
-		o.streamGraph = function(el, options) return o.viz(el, options, "streamgraph");
+		o.lineChart    = function(el, options) return o.viz(el, options, "linechart");
+		o.pieChart     = function(el, options) return o.viz(el, options, "piechart");
+		o.pivotTable   = function(el, options) return o.viz(el, options, "pivottable");
+		o.leaderBoard  = function(el, options) return o.viz(el, options, "leaderboard");
+		o.barChart     = function(el, options) return o.viz(el, options, "barchart");
+		o.funnelChart  = function(el, options) return o.viz(el, options, "funnelchart");
+		o.streamGraph  = function(el, options) return o.viz(el, options, "streamgraph");
+		o.scatterGraph = function(el, options) return o.viz(el, options, "scattergraph");
 		
 		// utility functions
 		o.format  = Dynamics.format;

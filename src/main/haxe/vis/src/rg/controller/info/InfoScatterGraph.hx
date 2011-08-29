@@ -6,26 +6,18 @@
 package rg.controller.info;
 import rg.data.DataPoint;
 import rg.data.Stats;
-import thx.svg.LineInterpolator;
-import thx.svg.LineInterpolators;
-import rg.view.svg.chart.LineEffect;
-import rg.view.svg.chart.LineEffects;
+import rg.view.svg.util.SymbolCache;
 using rg.controller.info.Info;
 
-class InfoLineChart extends InfoCartesianChart
+class InfoScatterGraph extends InfoCartesianChart
 {
-	public var effect : LineEffect;
-	public var interpolation : LineInterpolator;
 	public var symbol : DataPoint -> Stats -> String;
 	public var symbolStyle : DataPoint -> Stats -> String;
-	public var displayarea : Bool;
 
 	public function new()
 	{
 		super();
-		effect = LineEffect.Gradient(0.75, 2);
-		interpolation = LineInterpolator.Linear;
-		displayarea = false;
+		symbol = function(dp, s) return SymbolCache.cache.get("circle", 16);
 	}
 	
 	public static function filters()
@@ -44,24 +36,13 @@ class InfoLineChart extends InfoCartesianChart
 				field : "symbolStyle",
 				value : v
 			}]
-		}, {
-			field : "displayarea",
-			validator : function(v) return Std.is(v, Bool),
-			filter : null
-		}, {
+		}/*, {
 			field : "effect",
 			validator : function(v) return Std.is(v, String),
 			filter : function(v) return [{
 				field : "effect",
 				value : LineEffects.parse(v)
 			}]
-		}, {
-			field : "interpolation",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "interpolation",
-				value : LineInterpolators.parse(v)
-			}]
-		}].concat(cast InfoCartesianChart.filters());
+		}*/].concat(cast InfoCartesianChart.filters());
 	}
 }

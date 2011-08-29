@@ -46,9 +46,9 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	
 	override function init()
 	{
+		super.init();
 		defs = g.append("svg:defs");
 		g.classed().add("stream-chart");
-		tooltip = new Baloon(g);
 	}
 	
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)

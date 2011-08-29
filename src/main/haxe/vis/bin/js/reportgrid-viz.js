@@ -3660,9 +3660,9 @@ rg.view.svg.chart.StreamGraph.prototype.stats = null;
 rg.view.svg.chart.StreamGraph.prototype.defs = null;
 rg.view.svg.chart.StreamGraph.prototype.maxy = null;
 rg.view.svg.chart.StreamGraph.prototype.init = function() {
+	rg.view.svg.chart.CartesianChart.prototype.init.call(this);
 	this.defs = this.g.append("svg:defs");
 	this.g.classed().add("stream-chart");
-	this.tooltip = new rg.view.svg.widget.Baloon(this.g);
 }
 rg.view.svg.chart.StreamGraph.prototype.setVariables = function(variableIndependents,variableDependents) {
 	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents);
@@ -6242,6 +6242,7 @@ rg.controller.info.InfoLineChart = function(p) {
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.effect = rg.view.svg.chart.LineEffect.Gradient(0.75,2);
 	this.interpolation = thx.svg.LineInterpolator.Linear;
+	this.displayarea = false;
 }
 rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
 rg.controller.info.InfoLineChart.__super__ = rg.controller.info.InfoCartesianChart;
@@ -10152,6 +10153,9 @@ rg.JSBridge.main = function() {
 	o.streamGraph = function(el,options) {
 		return o.viz(el,options,"streamgraph");
 	};
+	o.scatterGraph = function(el,options) {
+		return o.viz(el,options,"scattergraph");
+	};
 	o.format = Dynamics.format;
 	o.compare = Dynamics.compare;
 	o.dump = Dynamics.string;
@@ -10173,7 +10177,7 @@ rg.JSBridge.main = function() {
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 96, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 97, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(o) {
@@ -10608,8 +10612,12 @@ rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,l
 		var chart = new rg.controller.visualization.VisualizationStreamGraph(layout);
 		chart.info = chart.infoStream = rg.controller.info.Info.feed(new rg.controller.info.InfoStreamGraph(),options);
 		return chart;
+	case "scattergraph":
+		var chart = new rg.controller.visualization.VisualizationScatterGraph(layout);
+		chart.info = chart.infoScatter = rg.controller.info.Info.feed(new rg.controller.info.InfoScatterGraph(),options);
+		return chart;
 	default:
-		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 53, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 59, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 	}
 }
 rg.controller.factory.FactorySvgVisualization.prototype.__class__ = rg.controller.factory.FactorySvgVisualization;
@@ -11333,6 +11341,32 @@ rg.controller.App.prototype.getLayout = function(id,options,container) {
 	return layout;
 }
 rg.controller.App.prototype.__class__ = rg.controller.App;
+rg.controller.info.InfoScatterGraph = function(p) {
+	if( p === $_ ) return;
+	rg.controller.info.InfoCartesianChart.call(this);
+	this.symbol = function(dp,s) {
+		return rg.view.svg.util.SymbolCache.cache.get("circle",16);
+	};
+}
+rg.controller.info.InfoScatterGraph.__name__ = ["rg","controller","info","InfoScatterGraph"];
+rg.controller.info.InfoScatterGraph.__super__ = rg.controller.info.InfoCartesianChart;
+for(var k in rg.controller.info.InfoCartesianChart.prototype ) rg.controller.info.InfoScatterGraph.prototype[k] = rg.controller.info.InfoCartesianChart.prototype[k];
+rg.controller.info.InfoScatterGraph.filters = function() {
+	return [{ field : "symbol", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
+			return v;
+		}:v}];
+	}},{ field : "symbolstyle", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "symbolStyle", value : v}];
+	}}].concat(rg.controller.info.InfoCartesianChart.filters());
+}
+rg.controller.info.InfoScatterGraph.prototype.symbol = null;
+rg.controller.info.InfoScatterGraph.prototype.symbolStyle = null;
+rg.controller.info.InfoScatterGraph.prototype.__class__ = rg.controller.info.InfoScatterGraph;
 thx.js.AccessTweenStyle = function(name,transition,tweens) {
 	if( name === $_ ) return;
 	thx.js.AccessTween.call(this,transition,tweens);
@@ -11752,6 +11786,32 @@ rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
 }
 rg.data.source.DataSourceReportGrid.prototype.__class__ = rg.data.source.DataSourceReportGrid;
 rg.data.source.DataSourceReportGrid.__interfaces__ = [rg.data.IDataSource];
+rg.controller.visualization.VisualizationScatterGraph = function(layout) {
+	if( layout === $_ ) return;
+	rg.controller.visualization.VisualizationCartesian.call(this,layout);
+}
+rg.controller.visualization.VisualizationScatterGraph.__name__ = ["rg","controller","visualization","VisualizationScatterGraph"];
+rg.controller.visualization.VisualizationScatterGraph.__super__ = rg.controller.visualization.VisualizationCartesian;
+for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationScatterGraph.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
+rg.controller.visualization.VisualizationScatterGraph.prototype.infoScatter = null;
+rg.controller.visualization.VisualizationScatterGraph.prototype.initChart = function() {
+	var chart = new rg.view.svg.chart.ScatterGraph(this.layout.getPanel(this.layout.mainPanelName));
+	chart.symbol = this.infoScatter.symbol;
+	chart.symbolStyle = this.infoScatter.symbolStyle;
+	if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.data.ScaleDistribution.ScaleFill;
+	this.chart = chart;
+}
+rg.controller.visualization.VisualizationScatterGraph.prototype.transformData = function(dps) {
+	var results = [], segmenter = new rg.data.Segmenter(this.info.segment.on,this.info.segment.transform,this.info.segment.scale);
+	var _g = 0, _g1 = this.dependentVariables;
+	while(_g < _g1.length) {
+		var variable = _g1[_g];
+		++_g;
+		results.push(rg.util.DataPoints.filterByDependents(dps,[variable]));
+	}
+	return results;
+}
+rg.controller.visualization.VisualizationScatterGraph.prototype.__class__ = rg.controller.visualization.VisualizationScatterGraph;
 thx.js.Svg = function() { }
 thx.js.Svg.__name__ = ["thx","js","Svg"];
 thx.js.Svg.mouse = function(dom) {
@@ -12077,7 +12137,6 @@ rg.view.svg.chart.LineChart.coordsFromTransform = function(s) {
 }
 rg.view.svg.chart.LineChart.prototype.symbol = null;
 rg.view.svg.chart.LineChart.prototype.symbolStyle = null;
-rg.view.svg.chart.LineChart.prototype.segmenton = null;
 rg.view.svg.chart.LineChart.prototype.lineInterpolator = null;
 rg.view.svg.chart.LineChart.prototype.lineEffect = null;
 rg.view.svg.chart.LineChart.prototype.y0property = null;
@@ -14345,6 +14404,124 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 	return Arrays.exists(rg.util.Periodicity.validGroupValues,value);
 }
 rg.util.Periodicity.prototype.__class__ = rg.util.Periodicity;
+rg.view.svg.chart.ScatterGraph = function(panel) {
+	if( panel === $_ ) return;
+	rg.view.svg.chart.CartesianChart.call(this,panel);
+	this.addClass("scatter-graph");
+	this.chart = this.g.append("svg:g");
+}
+rg.view.svg.chart.ScatterGraph.__name__ = ["rg","view","svg","chart","ScatterGraph"];
+rg.view.svg.chart.ScatterGraph.__super__ = rg.view.svg.chart.CartesianChart;
+for(var k in rg.view.svg.chart.CartesianChart.prototype ) rg.view.svg.chart.ScatterGraph.prototype[k] = rg.view.svg.chart.CartesianChart.prototype[k];
+rg.view.svg.chart.ScatterGraph.coordsFromTransform = function(s) {
+	if(!rg.view.svg.chart.ScatterGraph.retransform.match(s)) return [0.0,0]; else return [Std.parseFloat(rg.view.svg.chart.ScatterGraph.retransform.matched(1)),Std.parseFloat(rg.view.svg.chart.ScatterGraph.retransform.matched(2))];
+}
+rg.view.svg.chart.ScatterGraph.prototype.symbol = null;
+rg.view.svg.chart.ScatterGraph.prototype.symbolStyle = null;
+rg.view.svg.chart.ScatterGraph.prototype.chart = null;
+rg.view.svg.chart.ScatterGraph.prototype.dps = null;
+rg.view.svg.chart.ScatterGraph.prototype.x = function(d,i) {
+	var value = Reflect.field(d,this.variableIndependent.type), scaled = this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,value), scaledw = scaled * this.width;
+	return scaledw;
+}
+rg.view.svg.chart.ScatterGraph.prototype.getY1 = function(pos) {
+	var h = this.height, v = this.variableDependents[pos];
+	return function(d,i) {
+		var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
+		return h - scaledh;
+	};
+}
+rg.view.svg.chart.ScatterGraph.prototype.classf = function(pos,cls) {
+	return function(_,i) {
+		return cls + " item-" + pos;
+	};
+}
+rg.view.svg.chart.ScatterGraph.prototype.data = function(dps) {
+	this.dps = dps;
+	this.redraw();
+}
+rg.view.svg.chart.ScatterGraph.prototype.resize = function() {
+	rg.view.svg.chart.CartesianChart.prototype.resize.call(this);
+	this.redraw();
+}
+rg.view.svg.chart.ScatterGraph.prototype.redraw = function() {
+	var me = this;
+	if(null == this.dps || null == this.dps[0] || null == this.dps[0][0]) return;
+	var axisgroup = this.chart.selectAll("g.group").data(this.dps);
+	var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
+		return "group group-" + i;
+	});
+	axisgroup.exit().remove();
+	var _g1 = 0, _g = this.dps.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(data,this.variableDependents[i].type)];
+		var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.variableDependents, onclick = ((function() {
+			return function(f,a1) {
+				return (function() {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})();
+			};
+		})())($closure(this,"onclick"),stats[0]), onmouseover = ((function() {
+			return function(f,a1) {
+				return (function() {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})();
+			};
+		})())($closure(this,"onmouseover"),stats[0]);
+		var enter = gsymbol.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbol")).attr("transform").stringf(this.getTranslatePointf(i));
+		if(null != this.click) enter.on("click",onclick);
+		if(null != this.labelDataPointOver) enter.onNode("mouseover",onmouseover);
+		var spath = enter.append("svg:path").attr("d").stringf((function(stats) {
+			return function(dp,_) {
+				return me.symbol(dp,stats[0]);
+			};
+		})(stats));
+		if(null != this.symbolStyle) spath.attr("style").stringf((function(stats) {
+			return function(dp,_) {
+				return me.symbolStyle(dp,stats[0]);
+			};
+		})(stats));
+		if(null != this.labelDataPoint) {
+			var f = [this.labelDataPoint];
+			enter.eachNode((function(f,stats) {
+				return function(n,i1) {
+					var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
+					label.setText(f[0](dp,stats[0]));
+				};
+			})(f,stats));
+		}
+		gsymbol.update().selectAll("g.symbol").dataf((function() {
+			return function(d,i1) {
+				return d;
+			};
+		})()).update().attr("transform").stringf(this.getTranslatePointf(i));
+		gsymbol.exit().remove();
+	}
+}
+rg.view.svg.chart.ScatterGraph.prototype.getTranslatePointf = function(pos) {
+	var x = $closure(this,"x"), y = this.getY1(pos);
+	return function(dp,i) {
+		return "translate(" + x(dp) + "," + y(dp,i) + ")";
+	};
+}
+rg.view.svg.chart.ScatterGraph.prototype.onmouseover = function(stats,n,i) {
+	var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
+	if(null == text) this.tooltip.hide(); else {
+		var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.ScatterGraph.coordsFromTransform(sel.attr("transform").get());
+		this.tooltip.show();
+		this.tooltip.setText(text.split("\n"));
+		this.tooltip.moveTo(this.panelx + coords[0],this.panely + coords[1]);
+	}
+}
+rg.view.svg.chart.ScatterGraph.prototype.onclick = function(stats,dp,i) {
+	this.click(dp,stats);
+}
+rg.view.svg.chart.ScatterGraph.prototype.__class__ = rg.view.svg.chart.ScatterGraph;
 thx.svg.Area = function(x,y0,y1,interpolator) {
 	if( x === $_ ) return;
 	this._x = x;
@@ -16224,6 +16401,7 @@ thx.languages.En.getLanguage();
 	rg.controller.Visualizations.layoutDefault.set("streamgraph","x");
 	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
 	rg.controller.Visualizations.layoutDefault.set("funnelchart","simple");
+	rg.controller.Visualizations.layoutDefault.set("scattergraph","cartesian");
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
 	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
@@ -16353,7 +16531,7 @@ thx.js.BaseTransition._inheritid = 0;
 rg.controller.App.lastid = 0;
 thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
-rg.controller.Visualizations.svg = ["linechart","piechart","barchart","funnelchart","streamgraph"];
+rg.controller.Visualizations.svg = ["linechart","piechart","barchart","funnelchart","streamgraph","scattergraph"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","cartesian","x"];
 rg.view.svg.chart.LineChart.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
@@ -16373,4 +16551,5 @@ thx.color.Colors._reParse = new EReg("^\\s*(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
+rg.view.svg.chart.ScatterGraph.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
 rg.JSBridge.main()
