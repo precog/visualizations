@@ -11,7 +11,7 @@ import rg.view.layout.Layout;
 class Visualizations 
 {
 	public static var html = ["pivottable", "leaderboard"];
-	public static var svg = ["linechart", "piechart", "barchart", "funnelchart", "streamgraph", "scattergraph"];
+	public static var svg = ["linechart", "piechart", "barchart", "funnelchart", "streamgraph", "scattergraph", "heatgrid"];
 	public static var visualizations = svg.concat(html);
 	public static var layouts = ["simple", "cartesian", "x"];
 	public static var layoutDefault : Hash<String>;
@@ -34,7 +34,8 @@ class Visualizations
 		layoutDefault.set("streamgraph",	"x");
 		layoutDefault.set("piechart",		"simple");
 		layoutDefault.set("funnelchart",	"simple");
-		layoutDefault.set("scattergraph",		"cartesian");
+		layoutDefault.set("scattergraph",	"cartesian");
+		layoutDefault.set("heatgrid",		"cartesian");
 		
 		layoutType.set("simple",    rg.view.layout.LayoutSimple);
 		layoutType.set("cartesian", rg.view.layout.LayoutCartesian);

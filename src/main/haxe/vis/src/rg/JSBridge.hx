@@ -53,6 +53,7 @@ class JSBridge
 		o.funnelChart  = function(el, options) return o.viz(el, options, "funnelchart");
 		o.streamGraph  = function(el, options) return o.viz(el, options, "streamgraph");
 		o.scatterGraph = function(el, options) return o.viz(el, options, "scattergraph");
+		o.heatGrid     = function(el, options) return o.viz(el, options, "heatgrid");
 		
 		// utility functions
 		o.format  = Dynamics.format;

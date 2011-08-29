@@ -6,12 +6,14 @@
 package rg.controller.factory;
 import rg.controller.info.InfoBarChart;
 import rg.controller.info.InfoFunnelChart;
+import rg.controller.info.InfoHeatGrid;
 import rg.controller.info.InfoLineChart;
 import rg.controller.info.InfoPieChart;
 import rg.controller.info.InfoScatterGraph;
 import rg.controller.info.InfoStreamGraph;
 import rg.controller.visualization.VisualizationBarChart;
 import rg.controller.visualization.VisualizationFunnelChart;
+import rg.controller.visualization.VisualizationHeatGrid;
 import rg.controller.visualization.VisualizationLineChart;
 import rg.controller.visualization.VisualizationPieChart;
 import rg.controller.visualization.VisualizationScatterGraph;
@@ -54,6 +56,10 @@ class FactorySvgVisualization
 			case "scattergraph":
 				var chart = new VisualizationScatterGraph(layout);
 				chart.info = chart.infoScatter = new InfoScatterGraph().feed(options);
+				return chart;
+			case "heatgrid":
+				var chart = new VisualizationHeatGrid(layout);
+				chart.info = chart.infoHeatGrid = new InfoHeatGrid().feed(options);
 				return chart;
 			default:
 				throw new Error("unsupported visualization type '{0}'", type);

@@ -2877,6 +2877,22 @@ rg.controller.visualization.VisualizationLineChart.prototype.transformData = fun
 	return results;
 }
 rg.controller.visualization.VisualizationLineChart.prototype.__class__ = rg.controller.visualization.VisualizationLineChart;
+rg.controller.visualization.VisualizationHeatGrid = function(layout) {
+	if( layout === $_ ) return;
+	rg.controller.visualization.VisualizationCartesian.call(this,layout);
+}
+rg.controller.visualization.VisualizationHeatGrid.__name__ = ["rg","controller","visualization","VisualizationHeatGrid"];
+rg.controller.visualization.VisualizationHeatGrid.__super__ = rg.controller.visualization.VisualizationCartesian;
+for(var k in rg.controller.visualization.VisualizationCartesian.prototype ) rg.controller.visualization.VisualizationHeatGrid.prototype[k] = rg.controller.visualization.VisualizationCartesian.prototype[k];
+rg.controller.visualization.VisualizationHeatGrid.prototype.infoHeatGrid = null;
+rg.controller.visualization.VisualizationHeatGrid.prototype.initChart = function() {
+	var chart = new rg.view.svg.chart.HeatGrid(this.layout.getPanel(this.layout.mainPanelName));
+	this.chart = chart;
+}
+rg.controller.visualization.VisualizationHeatGrid.prototype.transformData = function(dps) {
+	return dps;
+}
+rg.controller.visualization.VisualizationHeatGrid.prototype.__class__ = rg.controller.visualization.VisualizationHeatGrid;
 if(!thx.math) thx.math = {}
 thx.math.Const = function() { }
 thx.math.Const.__name__ = ["thx","math","Const"];
@@ -5510,6 +5526,17 @@ rg.data.DataContext.__name__ = ["rg","data","DataContext"];
 rg.data.DataContext.prototype.name = null;
 rg.data.DataContext.prototype.data = null;
 rg.data.DataContext.prototype.__class__ = rg.data.DataContext;
+rg.controller.info.InfoHeatGrid = function(p) {
+	if( p === $_ ) return;
+	rg.controller.info.InfoCartesianChart.call(this);
+}
+rg.controller.info.InfoHeatGrid.__name__ = ["rg","controller","info","InfoHeatGrid"];
+rg.controller.info.InfoHeatGrid.__super__ = rg.controller.info.InfoCartesianChart;
+for(var k in rg.controller.info.InfoCartesianChart.prototype ) rg.controller.info.InfoHeatGrid.prototype[k] = rg.controller.info.InfoCartesianChart.prototype[k];
+rg.controller.info.InfoHeatGrid.filters = function() {
+	return [].concat(rg.controller.info.InfoCartesianChart.filters());
+}
+rg.controller.info.InfoHeatGrid.prototype.__class__ = rg.controller.info.InfoHeatGrid;
 thx.color.NamedColors = function() { }
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
 thx.color.NamedColors.aliceblue = null;
@@ -10156,6 +10183,9 @@ rg.JSBridge.main = function() {
 	o.scatterGraph = function(el,options) {
 		return o.viz(el,options,"scattergraph");
 	};
+	o.heatGrid = function(el,options) {
+		return o.viz(el,options,"heatgrid");
+	};
 	o.format = Dynamics.format;
 	o.compare = Dynamics.compare;
 	o.dump = Dynamics.string;
@@ -10177,7 +10207,7 @@ rg.JSBridge.main = function() {
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 97, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 98, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(o) {
@@ -10616,8 +10646,12 @@ rg.controller.factory.FactorySvgVisualization.prototype.create = function(type,l
 		var chart = new rg.controller.visualization.VisualizationScatterGraph(layout);
 		chart.info = chart.infoScatter = rg.controller.info.Info.feed(new rg.controller.info.InfoScatterGraph(),options);
 		return chart;
+	case "heatgrid":
+		var chart = new rg.controller.visualization.VisualizationHeatGrid(layout);
+		chart.info = chart.infoHeatGrid = rg.controller.info.Info.feed(new rg.controller.info.InfoHeatGrid(),options);
+		return chart;
 	default:
-		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 59, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+		throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 65, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 	}
 }
 rg.controller.factory.FactorySvgVisualization.prototype.__class__ = rg.controller.factory.FactorySvgVisualization;
@@ -14667,6 +14701,14 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = 
 }
 rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeSeries;
 rg.data.source.rgquery.transform.TransformCountTimeSeries.__interfaces__ = [rg.data.source.ITransform];
+rg.view.svg.chart.HeatGrid = function(panel) {
+	if( panel === $_ ) return;
+	rg.view.svg.chart.CartesianChart.call(this,panel);
+}
+rg.view.svg.chart.HeatGrid.__name__ = ["rg","view","svg","chart","HeatGrid"];
+rg.view.svg.chart.HeatGrid.__super__ = rg.view.svg.chart.CartesianChart;
+for(var k in rg.view.svg.chart.CartesianChart.prototype ) rg.view.svg.chart.HeatGrid.prototype[k] = rg.view.svg.chart.CartesianChart.prototype[k];
+rg.view.svg.chart.HeatGrid.prototype.__class__ = rg.view.svg.chart.HeatGrid;
 $_ = {}
 js.Boot.__res = {}
 js.Boot.__init();
@@ -16402,6 +16444,7 @@ thx.languages.En.getLanguage();
 	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
 	rg.controller.Visualizations.layoutDefault.set("funnelchart","simple");
 	rg.controller.Visualizations.layoutDefault.set("scattergraph","cartesian");
+	rg.controller.Visualizations.layoutDefault.set("heatgrid","cartesian");
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
 	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
@@ -16531,7 +16574,7 @@ thx.js.BaseTransition._inheritid = 0;
 rg.controller.App.lastid = 0;
 thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
-rg.controller.Visualizations.svg = ["linechart","piechart","barchart","funnelchart","streamgraph","scattergraph"];
+rg.controller.Visualizations.svg = ["linechart","piechart","barchart","funnelchart","streamgraph","scattergraph","heatgrid"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","cartesian","x"];
 rg.view.svg.chart.LineChart.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*\\)","");
