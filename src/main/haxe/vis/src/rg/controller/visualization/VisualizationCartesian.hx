@@ -136,6 +136,11 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		chart.destroy();
 	}
 	
+	function setTickmarksDefaults(tickmarks : TickmarksOrtho, i : Int, type : String, pname : String)
+	{
+		
+	}
+	
 	function createTickmarks(i : Int, type : String, pname : String)
 	{
 		var displayMinor = info.displayMinor(type),
@@ -152,6 +157,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 				return null;
 				
 			tickmarks = new TickmarksOrtho(context.panel, context.anchor);
+			setTickmarksDefaults(tickmarks, i, type, pname);
 			if (!displayLabel)
 				tickmarks.displayLabel = false;
 			else if (null != info.label.tickmark)
@@ -166,10 +172,14 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			tickmarks.paddingLabel = info.paddingLabel;
 			
 			var s = info.labelOrientation(type);
-			tickmarks.labelOrientation = null == s ? null : LabelOrientations.parse(s);
+			if (null != s)
+				tickmarks.labelOrientation = LabelOrientations.parse(s);
 			s = info.labelAnchor(type);
-			tickmarks.labelAnchor = null == s ? null : GridAnchors.parse(s);
-			tickmarks.labelAngle = info.labelAngle(type);
+			if (null != s)
+				tickmarks.labelAnchor = GridAnchors.parse(s);
+			var a;
+			if(null != (a = info.labelAngle(type)))
+				tickmarks.labelAngle = a;
 		}
 		
 		tickmarks.displayAnchorLine = info.displayAnchorLine(type);

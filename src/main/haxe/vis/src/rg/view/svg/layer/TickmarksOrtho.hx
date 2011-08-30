@@ -183,7 +183,7 @@ class TickmarksOrtho extends Layer
 		var d : ITickmark<Dynamic> = thx.js.Access.getData(n);
 		if (!d.major)
 			return;
-		var label = new Label(Dom.selectNode(n), true, true, false);
+		var label = new Label(Dom.selectNode(n), false, true, false);
 		label.anchor = labelAnchor;
 		label.orientation = labelOrientation;
 		var padding = paddingLabel;

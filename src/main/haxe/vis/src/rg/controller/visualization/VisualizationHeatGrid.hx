@@ -6,6 +6,8 @@
 package rg.controller.visualization;
 import rg.controller.info.InfoHeatGrid;
 import rg.view.svg.chart.HeatGrid;
+import rg.view.svg.layer.TickmarksOrtho;
+import rg.view.svg.widget.GridAnchor;
 import rg.data.DataPoint;
 
 class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
@@ -25,25 +27,21 @@ class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 		chart.useContour = infoHeatGrid.contour;
 		chart.colorStart = infoHeatGrid.startColor;
 		chart.colorEnd   = infoHeatGrid.endColor;
-/*
-		chart.stacked = infoBar.stacked;
-		switch(infoBar.effect)
-		{
-			case NoEffect:
-				chart.displayGradient = false;
-			case Gradient(lightness):
-				chart.displayGradient = true;
-				chart.gradientLightness = lightness;
-		}
-		chart.padding = infoBar.barPadding;
-		chart.paddingAxis = infoBar.barPaddingAxis;
-		chart.paddingDataPoint = infoBar.barPaddingDataPoint;
-*/
+
 		this.chart = chart;
 	}
 
 	override function transformData(dps : Array<DataPoint>) : Array<DataPoint>
 	{
 		return dps;
+	}
+	
+	override function setTickmarksDefaults(tickmarks : TickmarksOrtho, i : Int, type : String, pname : String)
+	{
+		if (i != 0)
+			return;
+
+		tickmarks.labelAnchor = GridAnchor.Left;
+		tickmarks.labelAngle = 180;
 	}
 }

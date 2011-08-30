@@ -577,6 +577,8 @@ rg.controller.visualization.VisualizationCartesian.prototype.transformData = fun
 rg.controller.visualization.VisualizationCartesian.prototype.destroy = function() {
 	this.chart.destroy();
 }
+rg.controller.visualization.VisualizationCartesian.prototype.setTickmarksDefaults = function(tickmarks,i,type,pname) {
+}
 rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = function(i,type,pname) {
 	var me = this;
 	var displayMinor = this.info.displayMinor(type), displayMajor = this.info.displayMajor(type), displayLabel = this.info.displayLabel(type), title = null != this.info.label.axis?this.info.label.axis(type):null, tickmarks = null, context;
@@ -584,6 +586,7 @@ rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = f
 		context = this.layout.getContext(pname);
 		if(null == context) return null;
 		tickmarks = new rg.view.svg.layer.TickmarksOrtho(context.panel,context.anchor);
+		this.setTickmarksDefaults(tickmarks,i,type,pname);
 		if(!displayLabel) tickmarks.displayLabel = false; else if(null != this.info.label.tickmark) tickmarks.tickLabel = function(d) {
 			return me.info.label.tickmark(d,type);
 		};
@@ -595,10 +598,11 @@ rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = f
 		tickmarks.paddingMajor = this.info.paddingTickMajor;
 		tickmarks.paddingLabel = this.info.paddingLabel;
 		var s = this.info.labelOrientation(type);
-		tickmarks.labelOrientation = null == s?null:rg.view.svg.widget.LabelOrientations.parse(s);
+		if(null != s) tickmarks.labelOrientation = rg.view.svg.widget.LabelOrientations.parse(s);
 		s = this.info.labelAnchor(type);
-		tickmarks.labelAnchor = null == s?null:rg.view.svg.widget.GridAnchors.parse(s);
-		tickmarks.labelAngle = this.info.labelAngle(type);
+		if(null != s) tickmarks.labelAnchor = rg.view.svg.widget.GridAnchors.parse(s);
+		var a;
+		if(null != (a = this.info.labelAngle(type))) tickmarks.labelAngle = a;
 	}
 	tickmarks.displayAnchorLine = this.info.displayAnchorLine(type);
 	if(null != title && null != (context = this.layout.getContext(pname + "title"))) {
@@ -2957,6 +2961,11 @@ rg.controller.visualization.VisualizationHeatGrid.prototype.initChart = function
 }
 rg.controller.visualization.VisualizationHeatGrid.prototype.transformData = function(dps) {
 	return dps;
+}
+rg.controller.visualization.VisualizationHeatGrid.prototype.setTickmarksDefaults = function(tickmarks,i,type,pname) {
+	if(i != 0) return;
+	tickmarks.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
+	tickmarks.labelAngle = 180;
 }
 rg.controller.visualization.VisualizationHeatGrid.prototype.__class__ = rg.controller.visualization.VisualizationHeatGrid;
 if(!thx.math) thx.math = {}
@@ -9158,7 +9167,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype.redraw = function() {
 rg.view.svg.layer.TickmarksOrtho.prototype.createLabel = function(n,i) {
 	var d = Reflect.field(n,"__data__");
 	if(!d.getMajor()) return;
-	var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,false);
+	var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
 	label.setAnchor(this.labelAnchor);
 	label.setOrientation(this.labelOrientation);
 	var padding = this.paddingLabel;
