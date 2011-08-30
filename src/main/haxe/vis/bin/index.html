@@ -88,7 +88,19 @@ document.addEventListener("DOMContentLoaded", function(){
 			click : function(dp) { alert(dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value)); },
 			height: 200,
 			width: 240,
-			contour : true
+			contour : true,
+			labelangle : function(t) {
+				if(t == "age")
+					return 45;
+				else
+					return null;
+			},
+			labelanchor : function(t) {
+				if(t == "age")
+					return "right";
+				else
+					return null;
+			}
 		}
 	});
 /*

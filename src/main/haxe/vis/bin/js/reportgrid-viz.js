@@ -508,7 +508,7 @@ rg.controller.visualization.VisualizationCartesian.prototype.init = function() {
 	this.initCartesianChart();
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initAxes = function() {
-	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 40, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initAxes"});
+	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 42, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initAxes"});
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initPadding = function() {
 	this.layout.adjustPadding();
@@ -518,16 +518,16 @@ rg.controller.visualization.VisualizationCartesian.prototype.initYAxes = functio
 	var _g1 = 0, _g = this.yvariables.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var tickmarks = this.createTickmarks(this.yvariables[i].type,"y" + i);
+		var tickmarks = this.createTickmarks(i + 1,this.yvariables[i].type,"y" + i);
 		if(null == tickmarks) continue;
 		this.ylabels.push({ id : i, tickmarks : tickmarks});
 	}
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initXAxis = function() {
-	this.xlabel = this.createTickmarks(this.xvariable.type,"x");
+	this.xlabel = this.createTickmarks(0,this.xvariable.type,"x");
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initChart = function() {
-	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 70, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
+	throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 72, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
 }
 rg.controller.visualization.VisualizationCartesian.prototype.initCartesianChart = function() {
 	this.chart.animated = this.info.animation.animated;
@@ -570,14 +570,14 @@ rg.controller.visualization.VisualizationCartesian.prototype.feedData = function
 rg.controller.visualization.VisualizationCartesian.prototype.transformData = function(dps) {
 	return (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 129, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 131, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
 		return $r;
 	}(this));
 }
 rg.controller.visualization.VisualizationCartesian.prototype.destroy = function() {
 	this.chart.destroy();
 }
-rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = function(type,pname) {
+rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = function(i,type,pname) {
 	var me = this;
 	var displayMinor = this.info.displayMinor(type), displayMajor = this.info.displayMajor(type), displayLabel = this.info.displayLabel(type), title = null != this.info.label.axis?this.info.label.axis(type):null, tickmarks = null, context;
 	if(displayMinor || displayMajor || displayLabel) {
@@ -594,6 +594,11 @@ rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = f
 		tickmarks.paddingMinor = this.info.paddingTickMinor;
 		tickmarks.paddingMajor = this.info.paddingTickMajor;
 		tickmarks.paddingLabel = this.info.paddingLabel;
+		var s = this.info.labelOrientation(type);
+		tickmarks.labelOrientation = null == s?null:rg.view.svg.widget.LabelOrientations.parse(s);
+		s = this.info.labelAnchor(type);
+		tickmarks.labelAnchor = null == s?null:rg.view.svg.widget.GridAnchors.parse(s);
+		tickmarks.labelAngle = this.info.labelAngle(type);
 	}
 	tickmarks.displayAnchorLine = this.info.displayAnchorLine(type);
 	if(null != title && null != (context = this.layout.getContext(pname + "title"))) {
@@ -1361,6 +1366,15 @@ rg.controller.info.InfoCartesianChart = function(p) {
 	this.displayAnchorLine = function(_) {
 		return false;
 	};
+	this.labelOrientation = function(_) {
+		return null;
+	};
+	this.labelAnchor = function(_) {
+		return null;
+	};
+	this.labelAngle = function(_) {
+		return null;
+	};
 	this.lengthTickMinor = 2;
 	this.lengthTickMajor = 5;
 	this.paddingTickMinor = 1;
@@ -1451,6 +1465,24 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return Std["is"](v,Float);
 	}, filter : function(v) {
 		return [{ field : "paddingLabel", value : v}];
+	}},{ field : "labelorientation", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "labelOrientation", value : Std["is"](v,String)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "labelanchor", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "labelAnchor", value : Std["is"](v,String)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "labelangle", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "labelAngle", value : Std["is"](v,Float)?function(_) {
+			return v;
+		}:v}];
 	}}];
 }
 rg.controller.info.InfoCartesianChart.prototype.animation = null;
@@ -1462,6 +1494,9 @@ rg.controller.info.InfoCartesianChart.prototype.displayMinor = null;
 rg.controller.info.InfoCartesianChart.prototype.displayMajor = null;
 rg.controller.info.InfoCartesianChart.prototype.displayLabel = null;
 rg.controller.info.InfoCartesianChart.prototype.displayAnchorLine = null;
+rg.controller.info.InfoCartesianChart.prototype.labelOrientation = null;
+rg.controller.info.InfoCartesianChart.prototype.labelAnchor = null;
+rg.controller.info.InfoCartesianChart.prototype.labelAngle = null;
 rg.controller.info.InfoCartesianChart.prototype.lengthTickMinor = null;
 rg.controller.info.InfoCartesianChart.prototype.lengthTickMajor = null;
 rg.controller.info.InfoCartesianChart.prototype.paddingTickMinor = null;
@@ -6409,6 +6444,46 @@ rg.view.frame.Stack.prototype.toString = function() {
 	return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
 }
 rg.view.frame.Stack.prototype.__class__ = rg.view.frame.Stack;
+rg.view.svg.widget.GridAnchors = function() { }
+rg.view.svg.widget.GridAnchors.__name__ = ["rg","view","svg","widget","GridAnchors"];
+rg.view.svg.widget.GridAnchors.parse = function(s) {
+	return (function($this) {
+		var $r;
+		switch(s.toLowerCase()) {
+		case "topleft":
+			$r = rg.view.svg.widget.GridAnchor.TopLeft;
+			break;
+		case "top":
+			$r = rg.view.svg.widget.GridAnchor.Top;
+			break;
+		case "topright":
+			$r = rg.view.svg.widget.GridAnchor.TopRight;
+			break;
+		case "left":
+			$r = rg.view.svg.widget.GridAnchor.Left;
+			break;
+		case "center":
+			$r = rg.view.svg.widget.GridAnchor.Center;
+			break;
+		case "right":
+			$r = rg.view.svg.widget.GridAnchor.Right;
+			break;
+		case "bottomleft":
+			$r = rg.view.svg.widget.GridAnchor.BottomLeft;
+			break;
+		case "bottom":
+			$r = rg.view.svg.widget.GridAnchor.Bottom;
+			break;
+		case "bottomright":
+			$r = rg.view.svg.widget.GridAnchor.BottomRight;
+			break;
+		default:
+			$r = rg.view.svg.widget.GridAnchor.Center;
+		}
+		return $r;
+	}(this));
+}
+rg.view.svg.widget.GridAnchors.prototype.__class__ = rg.view.svg.widget.GridAnchors;
 rg.view.svg.chart.LineEffect = { __ename__ : ["rg","view","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
 rg.view.svg.chart.LineEffect.NoEffect = ["NoEffect",0];
 rg.view.svg.chart.LineEffect.NoEffect.toString = $estr;
@@ -7185,6 +7260,22 @@ thx.math.EaseMode.EaseInEaseOut.__enum__ = thx.math.EaseMode;
 thx.math.EaseMode.EaseOutEaseIn = ["EaseOutEaseIn",3];
 thx.math.EaseMode.EaseOutEaseIn.toString = $estr;
 thx.math.EaseMode.EaseOutEaseIn.__enum__ = thx.math.EaseMode;
+rg.view.svg.widget.LabelOrientations = function() { }
+rg.view.svg.widget.LabelOrientations.__name__ = ["rg","view","svg","widget","LabelOrientations"];
+rg.view.svg.widget.LabelOrientations.parse = function(s) {
+	return (function($this) {
+		var $r;
+		switch(s.toLowerCase()) {
+		case "ortho":case "orthogonal":
+			$r = rg.view.svg.widget.LabelOrientation.Orthogonal;
+			break;
+		default:
+			$r = rg.view.svg.widget.LabelOrientation.Aligned;
+		}
+		return $r;
+	}(this));
+}
+rg.view.svg.widget.LabelOrientations.prototype.__class__ = rg.view.svg.widget.LabelOrientations;
 rg.view.svg.chart.PieChart = function(panel) {
 	if( panel === $_ ) return;
 	rg.view.svg.panel.Layer.call(this,panel);
@@ -8972,7 +9063,6 @@ rg.view.svg.layer.TickmarksOrtho = function(panel,anchor) {
 	this.paddingMajor = 1;
 	this.paddingLabel = 10;
 	this.g.classed().add("tickmarks");
-	this.initf();
 }
 rg.view.svg.layer.TickmarksOrtho.__name__ = ["rg","view","svg","layer","TickmarksOrtho"];
 rg.view.svg.layer.TickmarksOrtho.__super__ = rg.view.svg.panel.Layer;
@@ -9068,7 +9158,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype.redraw = function() {
 rg.view.svg.layer.TickmarksOrtho.prototype.createLabel = function(n,i) {
 	var d = Reflect.field(n,"__data__");
 	if(!d.getMajor()) return;
-	var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
+	var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,false);
 	label.setAnchor(this.labelAnchor);
 	label.setOrientation(this.labelOrientation);
 	var padding = this.paddingLabel;
@@ -9180,6 +9270,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype.initf = function() {
 	}
 }
 rg.view.svg.layer.TickmarksOrtho.prototype.init = function() {
+	this.initf();
 	if(this.displayAnchorLine) {
 		this.g.append("svg:line").attr("class").string("anchor-line");
 		this.updateAnchorLine();

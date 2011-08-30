@@ -12,6 +12,8 @@ import rg.view.svg.layer.TickmarksOrtho;
 import rg.view.svg.chart.CartesianChart;
 import rg.view.svg.layer.Title;
 import thx.error.AbstractMethod;
+import rg.view.svg.widget.LabelOrientations;
+import rg.view.svg.widget.GridAnchors;
 import rg.data.IAxis;
 
 class VisualizationCartesian<T> extends VisualizationSvg
@@ -50,7 +52,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		ylabels = [];
 		for (i in 0...yvariables.length)
 		{
-			var tickmarks = createTickmarks(yvariables[i].type, "y" + i);
+			var tickmarks = createTickmarks(i + 1, yvariables[i].type, "y" + i);
 			if (null == tickmarks)
 				continue;
 			ylabels.push({ 
@@ -62,7 +64,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 	
 	function initXAxis()
 	{
-		xlabel = createTickmarks(xvariable.type, "x");
+		xlabel = createTickmarks(0, xvariable.type, "x");
 	}
 	
 	function initChart()
@@ -134,7 +136,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		chart.destroy();
 	}
 	
-	function createTickmarks(type : String, pname : String)
+	function createTickmarks(i : Int, type : String, pname : String)
 	{
 		var displayMinor = info.displayMinor(type),
 			displayMajor = info.displayMajor(type),
@@ -162,6 +164,12 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			tickmarks.paddingMinor = info.paddingTickMinor;
 			tickmarks.paddingMajor = info.paddingTickMajor;
 			tickmarks.paddingLabel = info.paddingLabel;
+			
+			var s = info.labelOrientation(type);
+			tickmarks.labelOrientation = null == s ? null : LabelOrientations.parse(s);
+			s = info.labelAnchor(type);
+			tickmarks.labelAnchor = null == s ? null : GridAnchors.parse(s);
+			tickmarks.labelAngle = info.labelAngle(type);
 		}
 		
 		tickmarks.displayAnchorLine = info.displayAnchorLine(type);

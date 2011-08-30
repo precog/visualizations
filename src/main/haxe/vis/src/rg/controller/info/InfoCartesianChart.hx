@@ -20,7 +20,11 @@ class InfoCartesianChart
 	public var displayMajor : String -> Bool;
 	public var displayLabel : String -> Bool;
 	public var displayAnchorLine : String -> Bool;
-	
+
+	public var labelOrientation : String -> Null<String>;
+	public var labelAnchor : String -> Null<String>;
+	public var labelAngle : String -> Null<Float>;
+
 	public var lengthTickMinor : Float;
 	public var lengthTickMajor : Float;
 	public var paddingTickMinor : Float;
@@ -37,13 +41,17 @@ class InfoCartesianChart
 		displayLabel = function(_) return true;
 		displayAnchorLine = function(_) return false;
 		
+		labelOrientation = function(_) return null;
+		labelAnchor = function(_) return null;
+		labelAngle = function(_) return null;
+		
 		lengthTickMinor = 2;
 		lengthTickMajor = 5;
 		paddingTickMinor = 1;
 		paddingTickMajor = 1;
 		paddingLabel = 10;
 	}
-	
+
 	public static function filters()
 	{
 		return [{
@@ -177,6 +185,27 @@ class InfoCartesianChart
 			filter : function(v) return [{
 				field : "paddingLabel",
 				value : v
+			}]
+		}, {
+			field : "labelorientation",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, String),
+			filter : function(v : Dynamic) return [{
+				field : "labelOrientation",
+				value : Std.is(v, String) ? function(_) return v : v
+			}]
+		}, {
+			field : "labelanchor",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, String),
+			filter : function(v : Dynamic) return [{
+				field : "labelAnchor",
+				value : Std.is(v, String) ? function(_) return v : v
+			}]
+		}, {
+			field : "labelangle",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Float),
+			filter : function(v : Dynamic) return [{
+				field : "labelAngle",
+				value : Std.is(v, Float) ? function(_) return v : v
 			}]
 		}];
 	}
