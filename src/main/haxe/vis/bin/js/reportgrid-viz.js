@@ -818,8 +818,8 @@ rg.view.svg.chart.CartesianChart = function(panel) {
 rg.view.svg.chart.CartesianChart.__name__ = ["rg","view","svg","chart","CartesianChart"];
 rg.view.svg.chart.CartesianChart.__super__ = rg.view.svg.panel.Layer;
 for(var k in rg.view.svg.panel.Layer.prototype ) rg.view.svg.chart.CartesianChart.prototype[k] = rg.view.svg.panel.Layer.prototype[k];
-rg.view.svg.chart.CartesianChart.prototype.variableDependents = null;
-rg.view.svg.chart.CartesianChart.prototype.variableIndependent = null;
+rg.view.svg.chart.CartesianChart.prototype.yVariables = null;
+rg.view.svg.chart.CartesianChart.prototype.xVariable = null;
 rg.view.svg.chart.CartesianChart.prototype.animated = null;
 rg.view.svg.chart.CartesianChart.prototype.animationDuration = null;
 rg.view.svg.chart.CartesianChart.prototype.animationEase = null;
@@ -830,8 +830,8 @@ rg.view.svg.chart.CartesianChart.prototype.panelx = null;
 rg.view.svg.chart.CartesianChart.prototype.panely = null;
 rg.view.svg.chart.CartesianChart.prototype.tooltip = null;
 rg.view.svg.chart.CartesianChart.prototype.setVariables = function(variableIndependents,variableDependents) {
-	this.variableIndependent = variableIndependents[0];
-	this.variableDependents = variableDependents;
+	this.xVariable = variableIndependents[0];
+	this.yVariables = variableDependents;
 }
 rg.view.svg.chart.CartesianChart.prototype.data = function(dps) {
 	throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 49, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
@@ -874,7 +874,7 @@ rg.view.svg.chart.BarChart.prototype.paddingAxis = null;
 rg.view.svg.chart.BarChart.prototype.paddingDataPoint = null;
 rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 	var values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
-	if(null != (discrete = Types["as"](this.variableIndependent.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - this.padding * (values - 1)) / values; else span = (this.width - this.padding * (values - 1)) / values;
+	if(null != (discrete = Types["as"](this.xVariable.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - this.padding * (values - 1)) / values; else span = (this.width - this.padding * (values - 1)) / values;
 	var getGroup = function(name,container) {
 		var gr = axisgs.get(name);
 		if(null == gr) {
@@ -891,7 +891,7 @@ rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 		var _g3 = 0, _g2 = valuedps.length;
 		while(_g3 < _g2) {
 			var j = _g3++;
-			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.variableDependents[j].type, yaxis = this.variableDependents[j].axis, ymin = this.variableDependents[j].min, ymax = this.variableDependents[j].max, w = Math.max(1,(waxis - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + this.paddingAxis), ystats = rg.util.DataPoints.stats(flatdata,this.variableDependents[j].type), over = (function(f,a1) {
+			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min, ymax = this.yVariables[j].max, w = Math.max(1,(waxis - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + this.paddingAxis), ystats = rg.util.DataPoints.stats(flatdata,this.yVariables[j].type), over = (function(f,a1) {
 				return function(a2,a3) {
 					return f(a1,a2,a3);
 				};
@@ -904,7 +904,7 @@ rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 			var _g5 = 0, _g4 = axisdps.length;
 			while(_g5 < _g4) {
 				var k = _g5++;
-				var dp = axisdps[k], seggroup = getGroup("item-" + k,axisg), x = this.width * this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,Reflect.field(dp,this.variableIndependent.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
+				var dp = axisdps[k], seggroup = getGroup("item-" + k,axisg), x = this.width * this.xVariable.axis.scale(this.xVariable.min,this.xVariable.max,Reflect.field(dp,this.xVariable.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
 				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + this.paddingDataPoint)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over);
 				bar.node()["__data__"] = dp;
 				if(this.displayGradient) bar.eachNode($closure(this,"applyGradient"));
@@ -3708,8 +3708,8 @@ rg.view.svg.chart.StreamGraph.prototype.init = function() {
 	this.defs = this.g.append("svg:defs");
 	this.g.classed().add("stream-chart");
 }
-rg.view.svg.chart.StreamGraph.prototype.setVariables = function(variableIndependents,variableDependents) {
-	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents);
+rg.view.svg.chart.StreamGraph.prototype.setVariables = function(xVariables,yVariables) {
+	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,xVariables,yVariables);
 }
 rg.view.svg.chart.StreamGraph.prototype.data = function(dps) {
 	this.dps = dps;
@@ -3752,13 +3752,13 @@ rg.view.svg.chart.StreamGraph.prototype.prepareData = function() {
 		return function(a3) {
 			return f(a1,a2,a3);
 		};
-	})($closure(this.variableIndependent.axis,"scale"),this.variableIndependent.min,this.variableIndependent.max), xtype = this.variableIndependent.type, x = function(d) {
+	})($closure(this.xVariable.axis,"scale"),this.xVariable.min,this.xVariable.max), xtype = this.xVariable.type, x = function(d) {
 		return xscale(Reflect.field(d,xtype));
 	}, yscale = (function(f,a1,a2) {
 		return function(a3) {
 			return f(a1,a2,a3);
 		};
-	})($closure(this.variableDependents[0].axis,"scale"),this.variableDependents[0].min,this.variableDependents[0].max), ytype = this.variableDependents[0].type, y = function(d) {
+	})($closure(this.yVariables[0].axis,"scale"),this.yVariables[0].min,this.yVariables[0].max), ytype = this.yVariables[0].type, y = function(d) {
 		return yscale(Reflect.field(d,ytype));
 	};
 	var coords = this.dps.map(function(d,i) {
@@ -3772,7 +3772,7 @@ rg.view.svg.chart.StreamGraph.prototype.prepareData = function() {
 			return { coord : d1, dp : me.dps[i][j]};
 		});
 	});
-	this.stats = rg.util.DataPoints.stats(Arrays.flatten(this.dps),this.variableDependents[0].type);
+	this.stats = rg.util.DataPoints.stats(Arrays.flatten(this.dps),this.yVariables[0].type);
 	this.maxy = Arrays.floatMax(data,function(d) {
 		return Arrays.floatMax(d,function(d1) {
 			return d1.y0 + d1.y;
@@ -12212,11 +12212,11 @@ rg.view.svg.chart.LineChart.prototype.linePathShape = null;
 rg.view.svg.chart.LineChart.prototype.chart = null;
 rg.view.svg.chart.LineChart.prototype.dps = null;
 rg.view.svg.chart.LineChart.prototype.segment = null;
-rg.view.svg.chart.LineChart.prototype.setVariables = function(variableIndependents,variableDependents) {
+rg.view.svg.chart.LineChart.prototype.setVariables = function(variableIndependents,yVariables) {
 	var me = this;
-	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents);
+	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables);
 	this.linePathShape = [];
-	var _g1 = 0, _g = variableDependents.length;
+	var _g1 = 0, _g = yVariables.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		var line = [new thx.svg.Line($closure(this,"x"),this.getY1(i))];
@@ -12230,11 +12230,11 @@ rg.view.svg.chart.LineChart.prototype.setVariables = function(variableIndependen
 	}
 }
 rg.view.svg.chart.LineChart.prototype.x = function(d,i) {
-	var value = Reflect.field(d,this.variableIndependent.type), scaled = this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,value), scaledw = scaled * this.width;
+	var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min,this.xVariable.max,value), scaledw = scaled * this.width;
 	return scaledw;
 }
 rg.view.svg.chart.LineChart.prototype.getY1 = function(pos) {
-	var h = this.height, v = this.variableDependents[pos], y0 = this.y0property;
+	var h = this.height, v = this.yVariables[pos], y0 = this.y0property;
 	if(null != y0) return function(d,i) {
 		var v1 = Reflect.field(d,v.type), value = Std["is"](v1,Float)?v1 + rg.util.DataPoints.valueAlt(d,y0,v.min):v1, scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
 		return h - scaledh;
@@ -12244,7 +12244,7 @@ rg.view.svg.chart.LineChart.prototype.getY1 = function(pos) {
 	};
 }
 rg.view.svg.chart.LineChart.prototype.getY0 = function(pos) {
-	var h = this.height, y0 = this.y0property, v = this.variableDependents[pos];
+	var h = this.height, y0 = this.y0property, v = this.yVariables[pos];
 	return function(d,i) {
 		var value = rg.util.DataPoints.valueAlt(d,y0,v.min), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
 		return h - scaledh;
@@ -12266,7 +12266,7 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 	while(_g1 < _g) {
 		var i = _g1++;
 		this.segments = dps[i];
-		var gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(Arrays.flatten(this.segments),this.variableDependents[i].type)];
+		var gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(Arrays.flatten(this.segments),this.yVariables[i].type)];
 		var segmentgroup = gi.selectAll("path.line").data(this.segments);
 		if(null != this.y0property) {
 			var area = new thx.svg.Area($closure(this,"x"),this.getY0(i),this.getY1(i));
@@ -12322,7 +12322,7 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 		}
 		segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
 		segmentgroup.exit().remove();
-		var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.variableDependents, onclick = ((function() {
+		var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.yVariables, onclick = ((function() {
 			return function(f,a1) {
 				return (function() {
 					return function(a2,a3) {
@@ -14487,11 +14487,11 @@ rg.view.svg.chart.ScatterGraph.prototype.symbolStyle = null;
 rg.view.svg.chart.ScatterGraph.prototype.chart = null;
 rg.view.svg.chart.ScatterGraph.prototype.dps = null;
 rg.view.svg.chart.ScatterGraph.prototype.x = function(d,i) {
-	var value = Reflect.field(d,this.variableIndependent.type), scaled = this.variableIndependent.axis.scale(this.variableIndependent.min,this.variableIndependent.max,value), scaledw = scaled * this.width;
+	var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min,this.xVariable.max,value), scaledw = scaled * this.width;
 	return scaledw;
 }
 rg.view.svg.chart.ScatterGraph.prototype.getY1 = function(pos) {
-	var h = this.height, v = this.variableDependents[pos];
+	var h = this.height, v = this.yVariables[pos];
 	return function(d,i) {
 		var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min,v.max,value), scaledh = scaled * h;
 		return h - scaledh;
@@ -14521,8 +14521,8 @@ rg.view.svg.chart.ScatterGraph.prototype.redraw = function() {
 	var _g1 = 0, _g = this.dps.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(data,this.variableDependents[i].type)];
-		var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.variableDependents, onclick = ((function() {
+		var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [rg.util.DataPoints.stats(data,this.yVariables[i].type)];
+		var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.yVariables, onclick = ((function() {
 			return function(f,a1) {
 				return (function() {
 					return function(a2,a3) {
@@ -14740,6 +14740,24 @@ rg.view.svg.chart.HeatGrid = function(panel) {
 rg.view.svg.chart.HeatGrid.__name__ = ["rg","view","svg","chart","HeatGrid"];
 rg.view.svg.chart.HeatGrid.__super__ = rg.view.svg.chart.CartesianChart;
 for(var k in rg.view.svg.chart.CartesianChart.prototype ) rg.view.svg.chart.HeatGrid.prototype[k] = rg.view.svg.chart.CartesianChart.prototype[k];
+rg.view.svg.chart.HeatGrid.prototype.dps = null;
+rg.view.svg.chart.HeatGrid.prototype.init = function() {
+	rg.view.svg.chart.CartesianChart.prototype.init.call(this);
+	this.g.classed().add("heat-grid");
+}
+rg.view.svg.chart.HeatGrid.prototype.resize = function() {
+	rg.view.svg.chart.CartesianChart.prototype.resize.call(this);
+	this.redraw();
+}
+rg.view.svg.chart.HeatGrid.prototype.data = function(dps) {
+	this.dps = dps;
+	this.redraw();
+}
+rg.view.svg.chart.HeatGrid.prototype.redraw = function() {
+	if(null == this.dps || 0 == this.dps.length) return;
+	var choice = this.g.selectAll("rect").data(this.dps);
+	choice.enter().append("svg:rect");
+}
 rg.view.svg.chart.HeatGrid.prototype.__class__ = rg.view.svg.chart.HeatGrid;
 $_ = {}
 js.Boot.__res = {}

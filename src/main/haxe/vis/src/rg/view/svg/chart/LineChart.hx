@@ -48,11 +48,11 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		chart = g.append("svg:g");
 	}
 	
-	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>)
 	{
-		super.setVariables(variableIndependents, variableDependents);
+		super.setVariables(variableIndependents, yVariables);
 		linePathShape = [];
-		for (i in 0...variableDependents.length)
+		for (i in 0...yVariables.length)
 		{
 			var line = new Line(x, getY1(i));
 			if (null != lineInterpolator)
@@ -67,8 +67,8 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	
 	function x(d : DataPoint, ?i) 
 	{
-		var value   = DataPoints.value(d, variableIndependent.type),
-			scaled  = variableIndependent.axis.scale(variableIndependent.min, variableIndependent.max, value),
+		var value   = DataPoints.value(d, xVariable.type),
+			scaled  = xVariable.axis.scale(xVariable.min, xVariable.max, value),
 			scaledw = scaled * width;
 		return scaledw;
 	}
@@ -76,7 +76,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	function getY1(pos : Int)
 	{
 		var h = height,
-			v = variableDependents[pos],
+			v = yVariables[pos],
 			y0 = y0property;
 		if (null != y0)
 		{
@@ -103,7 +103,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	{
 		var h = height,
 			y0 = y0property,
-			v = variableDependents[pos];
+			v = yVariables[pos];
 		return function(d : DataPoint, i : Int)
 		{
 			var value   = DataPoints.valueAlt(d, y0, v.min),
@@ -138,7 +138,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		{
 			segments = dps[i];
 			var gi = chart.select("g.group-" + i),
-				stats = DataPoints.stats(segments.flatten(), variableDependents[i].type);
+				stats = DataPoints.stats(segments.flatten(), yVariables[i].type);
 			
 			// TODO add id function
 			var segmentgroup = gi.selectAll("path.line").data(segments);
@@ -211,7 +211,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			segmentgroup.exit().remove();
 		
 			var gsymbols = gi.selectAll("g.symbols").data(segments),
-				vars = this.variableDependents,
+				vars = this.yVariables,
 				onclick = callback(onclick, stats),
 				onmouseover = callback(onmouseover, stats);
 			var enter = gsymbols.enter()

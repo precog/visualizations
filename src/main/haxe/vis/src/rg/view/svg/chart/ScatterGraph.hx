@@ -44,8 +44,8 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 
 	function x(d : DataPoint, ?i) 
 	{
-		var value   = DataPoints.value(d, variableIndependent.type),
-			scaled  = variableIndependent.axis.scale(variableIndependent.min, variableIndependent.max, value),
+		var value   = DataPoints.value(d, xVariable.type),
+			scaled  = xVariable.axis.scale(xVariable.min, xVariable.max, value),
 			scaledw = scaled * width;
 		return scaledw;
 	}
@@ -53,7 +53,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 	function getY1(pos : Int)
 	{
 		var h = height,
-			v = variableDependents[pos];
+			v = yVariables[pos];
 		return function(d : DataPoint, i : Int)
 		{
 			var value   = DataPoints.value(d, v.type),
@@ -98,9 +98,9 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		{
 			var data = dps[i],
 				gi = chart.select("g.group-" + i),
-				stats = DataPoints.stats(data, variableDependents[i].type);
+				stats = DataPoints.stats(data, yVariables[i].type);
 			var gsymbol = gi.selectAll("g.symbol").data(data),
-				vars = this.variableDependents,
+				vars = this.yVariables,
 				onclick = callback(onclick, stats),
 				onmouseover = callback(onmouseover, stats);
 			var enter = gsymbol.enter()

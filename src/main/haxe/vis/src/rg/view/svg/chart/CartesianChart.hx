@@ -17,8 +17,8 @@ import rg.view.svg.panel.Panels;
 
 class CartesianChart<T> extends Layer
 {
-	public var variableDependents : Array<VariableDependent<Dynamic>>;
-	public var variableIndependent : VariableIndependent<Dynamic>;
+	public var yVariables : Array<VariableDependent<Dynamic>>;
+	public var xVariable : VariableIndependent<Dynamic>;
 	public var animated : Bool;
 	public var animationDuration : Int;
 	public var animationEase : Float -> Float;
@@ -40,8 +40,8 @@ class CartesianChart<T> extends Layer
 	
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
-		this.variableIndependent = variableIndependents[0];
-		this.variableDependents = variableDependents;
+		this.xVariable  = variableIndependents[0];
+		this.yVariables = variableDependents;
 	}
 	
 	public function data(dps : T)

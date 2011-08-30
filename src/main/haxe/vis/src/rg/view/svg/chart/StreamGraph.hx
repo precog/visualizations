@@ -51,9 +51,9 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		g.classed().add("stream-chart");
 	}
 	
-	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	override function setVariables(xVariables : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>)
 	{
-		super.setVariables(variableIndependents, variableDependents);
+		super.setVariables(xVariables, yVariables);
 		
 	}
 
@@ -126,11 +126,11 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	function prepareData()
 	{
 		defs.selectAll("linearGradient.h").remove();
-		var xscale = callback(variableIndependent.axis.scale, variableIndependent.min, variableIndependent.max),
-			xtype = variableIndependent.type,
+		var xscale = callback(xVariable.axis.scale, xVariable.min, xVariable.max),
+			xtype = xVariable.type,
 			x = function(d) return xscale(DataPoints.value(d, xtype)),
-			yscale = callback(variableDependents[0].axis.scale, variableDependents[0].min, variableDependents[0].max),
-			ytype = variableDependents[0].type,
+			yscale = callback(yVariables[0].axis.scale, yVariables[0].min, yVariables[0].max),
+			ytype = yVariables[0].type,
 			y = function(d) return yscale(DataPoints.value(d, ytype));
 		var coords = dps.map(function(d : Array<DataPoint>, i) {
 			return d.map(function(d, i) {
@@ -153,7 +153,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			}
 		}));
 		
-		stats = DataPoints.stats(dps.flatten(), variableDependents[0].type);
+		stats = DataPoints.stats(dps.flatten(), yVariables[0].type);
 		
 		maxy = data.floatMax(function(d) return d.floatMax(function(d) return d.y0 + d.y));
 		
