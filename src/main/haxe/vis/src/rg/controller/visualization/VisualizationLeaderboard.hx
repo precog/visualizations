@@ -31,6 +31,8 @@ class VisualizationLeaderboard extends VisualizationHtml
 		chart.animationDuration = info.animation.duration;
 		chart.animationDelay = info.animation.delay;
 		chart.animationEase = info.animation.ease;
+		chart.displayGradient = info.displayGradient;
+		chart.useMax = info.gradientOnMax;
 		
 		if (null != info.click)
 			chart.click = info.click;

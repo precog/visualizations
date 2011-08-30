@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>ReportGrid.Visualizations</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+<!--
+	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
+-->
+	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
+<!--
+	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
+-->
+	<script src="js/reportgrid-core.js?tokenId=C7A18C95-3619-415B-A89B-4CE47693E4CC"></script>
+	<script src="js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+	ReportGrid.leaderBoard("#chart", {
+		axes : [{
+			type : ".platform",
+			variable : "independent"
+		}, {
+			type : "count"
+		}],
+		data : {
+			src : { data : [{
+				".platform" : "PC",
+				count : 100
+			}, {
+				".platform" : "iOS",
+				count : 80
+			}, {
+				".platform" : "Mac",
+				count : 60
+			}, {
+				".platform" : "Android",
+				count : 50
+			}, {
+				".platform" : "linux",
+				count : 30
+			}, {
+				".platform" : "WebOS",
+				count : 5
+			}] }
+//			src : { path : "/rgadnet", event : "impression", query : ".platform" }
+		},
+		options : {
+			animation : {
+				animated : true,
+				duration : 250,
+//				ease : function(f) { return f; },
+				delay : 250
+			},
+			label : {
+				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+			},
+			click : function(dp) { alert(dp[".platform"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			effect : "gradient-max"
+		}
+	});
+
+}, false)
+</script>
+</head>
+<body>
+	<div id="chart"></div>
+	<div id="haxe:trace"></div>
+</body>
+</html>

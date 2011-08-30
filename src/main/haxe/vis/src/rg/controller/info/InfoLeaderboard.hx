@@ -14,10 +14,15 @@ class InfoLeaderboard
 	public var label : InfoLabel;
 	public var click : DataPoint -> Void;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
+	public var displayGradient : Bool;
+	public var gradientOnMax : Bool;
+	
 	public function new() 
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabel();
+		displayGradient = false;
+		gradientOnMax = false;
 	}
 	
 	public static function filters()
@@ -51,6 +56,39 @@ class InfoLeaderboard
 				field : "sortDataPoint",
 				value : v
 			}]
+		}, {
+			field : "effect",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) 
+			{
+				switch(v.toLowerCase())
+				{
+					case "gradient", "gradient-tot":
+						return [{
+							field : "displayGradient",
+							value : true
+						}, {
+							field : "gradientOnMax",
+							value : false
+						}];
+					case "gradient-max":
+						return [{
+							field : "displayGradient",
+							value : true
+						}, {
+							field : "gradientOnMax",
+							value : true
+						}];
+					default: // none
+						return [{
+							field : "displayGradient",
+							value : false
+						}, {
+							field : "gradientOnMax",
+							value : true
+						}];
+				};
+			}
 		}];
 	}
 }

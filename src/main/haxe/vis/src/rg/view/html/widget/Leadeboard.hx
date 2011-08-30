@@ -28,6 +28,8 @@ class Leadeboard
 	public var animationEase : Float -> Float;
 	public var click : DataPoint -> Void;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
+	public var displayGradient : Bool;
+	public var useMax : Bool;
 	
 	var container : Selection;
 	var list : Selection;
@@ -42,6 +44,8 @@ class Leadeboard
 		animationEase = Equations.elasticf();
 		animationDelay = 150;
 		_created = 0;
+		displayGradient = true;
+		useMax = false;
 	}
 	
 	public dynamic function labelDataPoint(dp : DataPoint, stats : Stats)
@@ -70,6 +74,11 @@ class Leadeboard
 		variableIndependent = variableIndependents[0];
 	}
 	
+	function backgroundSize(dp, i)
+	{
+		return (100 * DataPoints.value(dp, variableDependent.type) / (useMax ? stats.max : stats.tot)) + "%";
+	}
+	
 	public function data(dps : Array<DataPoint>)
 	{
 		var name = variableDependent.type;
@@ -83,9 +92,12 @@ class Leadeboard
 		// enter
 		var enter = choice.enter()
 			.append("li")
-				.style("background-size").stringf(function(d, i) return (100*DataPoints.value(d, name)/stats.tot)+"%")
+				.attr("class").stringf(function(_, i) return (displayGradient ? "" : "nogradient ") + "item-" + i)
+				
 				.text().stringf(description)
 				.attr("title").stringf(title);
+		if (displayGradient)
+			enter.style("background-size").stringf(backgroundSize);
 		if (null != click)
 			enter.on("click.user", onClick);
 		if (animated)
@@ -97,12 +109,13 @@ class Leadeboard
 		}
 		
 		// update
-		choice.update()
+		var update = choice.update()
 			.select("li")
-				.style("background-size").stringf(function(d, i) return (100*DataPoints.value(d, name)/stats.tot)+"%")
 				.text().stringf(description)
 				.attr("title").stringf(title)
 		;
+		if (displayGradient)
+			update.style("background-size").stringf(backgroundSize);
 		// exit
 		if (animated)
 		{

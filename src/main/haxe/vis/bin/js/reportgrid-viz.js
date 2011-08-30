@@ -1606,6 +1606,8 @@ rg.view.html.widget.Leadeboard = function(container) {
 	this.animationEase = thx.math.Equations.elasticf();
 	this.animationDelay = 150;
 	this._created = 0;
+	this.displayGradient = true;
+	this.useMax = false;
 }
 rg.view.html.widget.Leadeboard.__name__ = ["rg","view","html","widget","Leadeboard"];
 rg.view.html.widget.Leadeboard.prototype.variableIndependent = null;
@@ -1616,6 +1618,8 @@ rg.view.html.widget.Leadeboard.prototype.animationDelay = null;
 rg.view.html.widget.Leadeboard.prototype.animationEase = null;
 rg.view.html.widget.Leadeboard.prototype.click = null;
 rg.view.html.widget.Leadeboard.prototype.sortDataPoint = null;
+rg.view.html.widget.Leadeboard.prototype.displayGradient = null;
+rg.view.html.widget.Leadeboard.prototype.useMax = null;
 rg.view.html.widget.Leadeboard.prototype.container = null;
 rg.view.html.widget.Leadeboard.prototype.list = null;
 rg.view.html.widget.Leadeboard.prototype._created = null;
@@ -1637,19 +1641,23 @@ rg.view.html.widget.Leadeboard.prototype.setVariables = function(variableIndepen
 	this.variableDependent = variableDependents[0];
 	this.variableIndependent = variableIndependents[0];
 }
+rg.view.html.widget.Leadeboard.prototype.backgroundSize = function(dp,i) {
+	return 100 * Reflect.field(dp,this.variableDependent.type) / (this.useMax?this.stats.max:this.stats.tot) + "%";
+}
 rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
+	var me = this;
 	var name = this.variableDependent.type;
 	if(null != this.sortDataPoint) dps.sort(this.sortDataPoint);
 	var stats = this.stats = rg.util.DataPoints.stats(dps,this.variableDependent.type);
 	var choice = this.list.selectAll("li").data(dps,$closure(this,"id"));
-	var enter = choice.enter().append("li").style("background-size").stringf(function(d,i) {
-		return 100 * Reflect.field(d,name) / stats.tot + "%";
+	var enter = choice.enter().append("li").attr("class").stringf(function(_,i) {
+		return (me.displayGradient?"":"nogradient ") + "item-" + i;
 	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
+	if(this.displayGradient) enter.style("background-size").stringf($closure(this,"backgroundSize"));
 	if(null != this.click) enter.on("click.user",$closure(this,"onClick"));
 	if(this.animated) enter.style("opacity")["float"](0).eachNode($closure(this,"fadeIn")); else enter.style("opacity")["float"](1);
-	choice.update().select("li").style("background-size").stringf(function(d,i) {
-		return 100 * Reflect.field(d,name) / stats.tot + "%";
-	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
+	var update = choice.update().select("li").text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
+	if(this.displayGradient) update.style("background-size").stringf($closure(this,"backgroundSize"));
 	if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
 }
 rg.view.html.widget.Leadeboard.prototype.onClick = function(dp,_) {
@@ -4022,6 +4030,8 @@ rg.controller.visualization.VisualizationLeaderboard.prototype.init = function()
 	this.chart.animationDuration = this.info.animation.duration;
 	this.chart.animationDelay = this.info.animation.delay;
 	this.chart.animationEase = this.info.animation.ease;
+	this.chart.displayGradient = this.info.displayGradient;
+	this.chart.useMax = this.info.gradientOnMax;
 	if(null != this.info.click) this.chart.click = this.info.click;
 	if(null != this.info.sortDataPoint) this.chart.sortDataPoint = this.info.sortDataPoint;
 	this.chart.init();
@@ -9421,6 +9431,8 @@ rg.controller.info.InfoLeaderboard = function(p) {
 	if( p === $_ ) return;
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabel();
+	this.displayGradient = false;
+	this.gradientOnMax = false;
 }
 rg.controller.info.InfoLeaderboard.__name__ = ["rg","controller","info","InfoLeaderboard"];
 rg.controller.info.InfoLeaderboard.filters = function() {
@@ -9440,12 +9452,25 @@ rg.controller.info.InfoLeaderboard.filters = function() {
 		return Reflect.isFunction(v);
 	}, filter : function(v) {
 		return [{ field : "sortDataPoint", value : v}];
+	}},{ field : "effect", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		switch(v.toLowerCase()) {
+		case "gradient":case "gradient-tot":
+			return [{ field : "displayGradient", value : true},{ field : "gradientOnMax", value : false}];
+		case "gradient-max":
+			return [{ field : "displayGradient", value : true},{ field : "gradientOnMax", value : true}];
+		default:
+			return [{ field : "displayGradient", value : false},{ field : "gradientOnMax", value : true}];
+		}
 	}}];
 }
 rg.controller.info.InfoLeaderboard.prototype.animation = null;
 rg.controller.info.InfoLeaderboard.prototype.label = null;
 rg.controller.info.InfoLeaderboard.prototype.click = null;
 rg.controller.info.InfoLeaderboard.prototype.sortDataPoint = null;
+rg.controller.info.InfoLeaderboard.prototype.displayGradient = null;
+rg.controller.info.InfoLeaderboard.prototype.gradientOnMax = null;
 rg.controller.info.InfoLeaderboard.prototype.__class__ = rg.controller.info.InfoLeaderboard;
 Lambda = function() { }
 Lambda.__name__ = ["Lambda"];
