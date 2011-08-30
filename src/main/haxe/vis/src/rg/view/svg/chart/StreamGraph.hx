@@ -51,10 +51,9 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		g.classed().add("stream-chart");
 	}
 	
-	override function setVariables(xVariables : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>)
+	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
-		super.setVariables(xVariables, yVariables);
-		
+		super.setVariables(variableIndependents, variableDependents);
 	}
 
 	override public function data(dps : Array<Array<DataPoint>>)

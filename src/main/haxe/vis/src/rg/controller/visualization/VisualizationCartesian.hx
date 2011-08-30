@@ -120,7 +120,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			layout.suggestSize("x", size);
 		}
 		
-		chart.setVariables(cast [xvariable], cast yvariables);
+		chart.setVariables(independentVariables, dependentVariables);
 		chart.data(transformData(data));
 	}
 	

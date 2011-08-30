@@ -564,7 +564,7 @@ rg.controller.visualization.VisualizationCartesian.prototype.feedData = function
 		var size = Math.round(this.xlabel.desiredSize);
 		this.layout.suggestSize("x",size);
 	}
-	this.chart.setVariables([this.xvariable],this.yvariables);
+	this.chart.setVariables(this.independentVariables,this.dependentVariables);
 	this.chart.data(this.transformData(data));
 }
 rg.controller.visualization.VisualizationCartesian.prototype.transformData = function(dps) {
@@ -834,7 +834,7 @@ rg.view.svg.chart.CartesianChart.prototype.setVariables = function(variableIndep
 	this.yVariables = variableDependents;
 }
 rg.view.svg.chart.CartesianChart.prototype.data = function(dps) {
-	throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 49, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
+	throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 51, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
 }
 rg.view.svg.chart.CartesianChart.prototype.resize = function() {
 	var coords = rg.view.svg.panel.Panels.boundingBox(this.panel);
@@ -3040,6 +3040,41 @@ IntHash.prototype.toString = function() {
 	return s.b.join("");
 }
 IntHash.prototype.__class__ = IntHash;
+if(!thx.math.scale) thx.math.scale = {}
+thx.math.scale.Linears = function() { }
+thx.math.scale.Linears.__name__ = ["thx","math","scale","Linears"];
+thx.math.scale.Linears.forString = function() {
+	return new thx.math.scale.LinearT().interpolatef(Strings.interpolatef);
+}
+thx.math.scale.Linears.forHsl = function() {
+	return new thx.math.scale.LinearT().interpolatef(thx.color.Hsl.interpolatef);
+}
+thx.math.scale.Linears.forHslString = function() {
+	return new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		if(Strings.empty(a) || Strings.empty(b)) return function(_) {
+			return "";
+		};
+		var ca = thx.color.Hsl.toHsl(thx.color.Colors.parse(a)), cb = thx.color.Hsl.toHsl(thx.color.Colors.parse(b)), i = thx.color.Hsl.interpolatef(ca,cb,f);
+		return function(t) {
+			return i(t).toHslString();
+		};
+	});
+}
+thx.math.scale.Linears.forRgb = function() {
+	return new thx.math.scale.LinearT().interpolatef(thx.color.Rgb.interpolatef);
+}
+thx.math.scale.Linears.forRgbString = function() {
+	return new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		if(Strings.empty(a) || Strings.empty(b)) return function(_) {
+			return "";
+		};
+		var ca = thx.color.Colors.parse(a), cb = thx.color.Colors.parse(b), i = thx.color.Rgb.interpolatef(ca,cb,f);
+		return function(t) {
+			return i(t).toRgbString();
+		};
+	});
+}
+thx.math.scale.Linears.prototype.__class__ = thx.math.scale.Linears;
 rg.view.svg.widget.LabelOrientation = { __ename__ : ["rg","view","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
 rg.view.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.view.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
 rg.view.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
@@ -3708,8 +3743,8 @@ rg.view.svg.chart.StreamGraph.prototype.init = function() {
 	this.defs = this.g.append("svg:defs");
 	this.g.classed().add("stream-chart");
 }
-rg.view.svg.chart.StreamGraph.prototype.setVariables = function(xVariables,yVariables) {
-	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,xVariables,yVariables);
+rg.view.svg.chart.StreamGraph.prototype.setVariables = function(variableIndependents,variableDependents) {
+	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents);
 }
 rg.view.svg.chart.StreamGraph.prototype.data = function(dps) {
 	this.dps = dps;
@@ -4409,7 +4444,6 @@ thx.error.Error.prototype.toString = function() {
 	}
 }
 thx.error.Error.prototype.__class__ = thx.error.Error;
-if(!thx.math.scale) thx.math.scale = {}
 thx.math.scale.IScale = function() { }
 thx.math.scale.IScale.__name__ = ["thx","math","scale","IScale"];
 thx.math.scale.IScale.prototype.scale = null;
@@ -5062,6 +5096,96 @@ rg.controller.info.InfoPieChart.prototype.sortDataPoint = null;
 rg.controller.info.InfoPieChart.prototype.dontfliplabel = null;
 rg.controller.info.InfoPieChart.prototype.click = null;
 rg.controller.info.InfoPieChart.prototype.__class__ = rg.controller.info.InfoPieChart;
+thx.math.scale.LinearT = function(p) {
+	if( p === $_ ) return;
+	this._domain = [0.0,1.0];
+	this._range = null;
+	this.f = thx.math.scale.LinearT._f;
+	this._clamp = false;
+	this.rescale();
+}
+thx.math.scale.LinearT.__name__ = ["thx","math","scale","LinearT"];
+thx.math.scale.LinearT._f = function(_,_1,_2) {
+	return function(_3) {
+		return null;
+	};
+}
+thx.math.scale.LinearT.scaleBilinear = function(domain,range,uninterpolate,interpolate) {
+	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
+	return function(x) {
+		return i(u(x));
+	};
+}
+thx.math.scale.LinearT.scalePolylinear = function(domain,range,uninterpolate,interpolate) {
+	var u = [], i = [];
+	var _g1 = 1, _g = domain.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		u.push(uninterpolate(domain[j - 1],domain[j]));
+		i.push(interpolate(range[j - 1],range[j],null));
+	}
+	return function(x) {
+		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
+		return i[j](u[j](x));
+	};
+}
+thx.math.scale.LinearT.prototype._domain = null;
+thx.math.scale.LinearT.prototype._range = null;
+thx.math.scale.LinearT.prototype.f = null;
+thx.math.scale.LinearT.prototype._clamp = null;
+thx.math.scale.LinearT.prototype._output = null;
+thx.math.scale.LinearT.prototype.rescale = function() {
+	if(null == this._range) return this;
+	var linear = this._domain.length == 2?thx.math.scale.LinearT.scaleBilinear:thx.math.scale.LinearT.scalePolylinear, uninterpolate = this._clamp?Floats.uninterpolateClampf:Floats.uninterpolatef;
+	this._output = linear(this._domain,this._range,uninterpolate,this.f);
+	return this;
+}
+thx.math.scale.LinearT.prototype.scale = function(x,_) {
+	return this._output(x);
+}
+thx.math.scale.LinearT.prototype.getDomain = function() {
+	return this._domain;
+}
+thx.math.scale.LinearT.prototype.domain = function(d) {
+	this._domain = d;
+	return this.rescale();
+}
+thx.math.scale.LinearT.prototype.getRange = function() {
+	return this._range;
+}
+thx.math.scale.LinearT.prototype.range = function(r) {
+	this._range = r;
+	return this.rescale();
+}
+thx.math.scale.LinearT.prototype.getInterpolate = function() {
+	return this.f;
+}
+thx.math.scale.LinearT.prototype.interpolatef = function(x) {
+	this.f = x;
+	return this.rescale();
+}
+thx.math.scale.LinearT.prototype.getClamp = function() {
+	return this._clamp;
+}
+thx.math.scale.LinearT.prototype.clamp = function(v) {
+	this._clamp = v;
+	return this.rescale();
+}
+thx.math.scale.LinearT.prototype.tickRange = function(m) {
+	var start = Math.min(this._domain[0],this._domain[1]), stop = Math.max(this._domain[0],this._domain[1]), span = stop - start, step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / (span / step);
+	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= -75) step *= 2;
+	return { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
+}
+thx.math.scale.LinearT.prototype.ticks = function(m) {
+	var range = this.tickRange(m);
+	return Floats.range(range.start,range.stop,range.step);
+}
+thx.math.scale.LinearT.prototype.tickFormat = function(m) {
+	var n = Math.max(0,-Math.floor(Math.log(this.tickRange(m).step) / 2.302585092994046 + .01));
+	return Floats.formatf("D:" + n);
+}
+thx.math.scale.LinearT.prototype.__class__ = thx.math.scale.LinearT;
+thx.math.scale.LinearT.__interfaces__ = [thx.math.scale.IScale];
 rg.view.frame.Frame = function(p) {
 	if( p === $_ ) return;
 	this.x = this.y = this.width = this.height = 0;
@@ -14736,11 +14860,24 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.__interfaces__ = [rg.d
 rg.view.svg.chart.HeatGrid = function(panel) {
 	if( panel === $_ ) return;
 	rg.view.svg.chart.CartesianChart.call(this,panel);
+	this.colorStart = thx.color.NamedColors.red;
+	this.colorEnd = thx.color.NamedColors.green;
 }
 rg.view.svg.chart.HeatGrid.__name__ = ["rg","view","svg","chart","HeatGrid"];
 rg.view.svg.chart.HeatGrid.__super__ = rg.view.svg.chart.CartesianChart;
 for(var k in rg.view.svg.chart.CartesianChart.prototype ) rg.view.svg.chart.HeatGrid.prototype[k] = rg.view.svg.chart.CartesianChart.prototype[k];
+rg.view.svg.chart.HeatGrid.prototype.colorStart = null;
+rg.view.svg.chart.HeatGrid.prototype.colorEnd = null;
 rg.view.svg.chart.HeatGrid.prototype.dps = null;
+rg.view.svg.chart.HeatGrid.prototype.scale = null;
+rg.view.svg.chart.HeatGrid.prototype.variableDependent = null;
+rg.view.svg.chart.HeatGrid.prototype.setVariables = function(variableIndependents,variableDependents) {
+	this.xVariable = variableIndependents[0];
+	this.yVariables = [variableIndependents[1]];
+	this.variableDependent = variableDependents[0];
+	var min = this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,this.variableDependent.min), max = this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,this.variableDependent.max);
+	this.scale = thx.math.scale.Linears.forHsl().range([thx.color.Hsl.toHsl(this.colorStart),thx.color.Hsl.toHsl(this.colorEnd)]).domain([min,max]);
+}
 rg.view.svg.chart.HeatGrid.prototype.init = function() {
 	rg.view.svg.chart.CartesianChart.prototype.init.call(this);
 	this.g.classed().add("heat-grid");
@@ -14753,10 +14890,27 @@ rg.view.svg.chart.HeatGrid.prototype.data = function(dps) {
 	this.dps = dps;
 	this.redraw();
 }
+rg.view.svg.chart.HeatGrid.prototype.scaleValue = function(dp,i) {
+	var v = Reflect.field(dp,this.variableDependent.type), sv = this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,v);
+	return this.scale.scale(v);
+}
 rg.view.svg.chart.HeatGrid.prototype.redraw = function() {
+	var me = this;
 	if(null == this.dps || 0 == this.dps.length) return;
-	var choice = this.g.selectAll("rect").data(this.dps);
-	choice.enter().append("svg:rect");
+	var xrange = this.range(this.xVariable), yrange = this.range(this.yVariables[0]), cols = xrange.length, rows = yrange.length, w = this.width / cols, h = this.height / rows, choice = this.g.selectAll("rect").data(this.dps);
+	choice.enter().append("svg:rect").attr("x").floatf(function(dp,i) {
+		return xrange.indexOf(Reflect.field(dp,me.xVariable.type)) * w;
+	}).attr("y").floatf(function(dp,i) {
+		return me.height - (1 + yrange.indexOf(Reflect.field(dp,me.yVariables[0].type))) * h;
+	}).attr("width")["float"](w).attr("height")["float"](h).style("fill").colorf($closure(this,"scaleValue"));
+}
+rg.view.svg.chart.HeatGrid.prototype.range = function(variable) {
+	var v = Std["is"](variable,rg.data.VariableIndependent)?variable:null;
+	if(null != v) return v.range();
+	var tickmarks = variable.axis.ticks(variable.min,variable.max);
+	return tickmarks.map(function(d,i) {
+		return d.getValue();
+	});
 }
 rg.view.svg.chart.HeatGrid.prototype.__class__ = rg.view.svg.chart.HeatGrid;
 $_ = {}
@@ -16553,6 +16707,7 @@ thx.math.Const.HALF_PI = 1.570796326794896619;
 thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
+thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
 rg.view.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
 thx.xml.Namespace.prefix = (function() {
 	var h = new Hash();

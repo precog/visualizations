@@ -14,11 +14,13 @@ import rg.data.Stats;
 import rg.view.svg.widget.Baloon;
 import thx.math.Equations;
 import rg.view.svg.panel.Panels;
+import rg.data.Variable;
+import rg.data.IAxis;
 
 class CartesianChart<T> extends Layer
 {
-	public var yVariables : Array<VariableDependent<Dynamic>>;
-	public var xVariable : VariableIndependent<Dynamic>;
+	public var yVariables : Array<Variable<Dynamic, IAxis<Dynamic>>>;
+	public var xVariable : Variable<Dynamic, IAxis<Dynamic>>;
 	public var animated : Bool;
 	public var animationDuration : Int;
 	public var animationEase : Float -> Float;
@@ -40,8 +42,8 @@ class CartesianChart<T> extends Layer
 	
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
-		this.xVariable  = variableIndependents[0];
-		this.yVariables = variableDependents;
+		this.xVariable  = cast variableIndependents[0];
+		this.yVariables = cast variableDependents;
 	}
 	
 	public function data(dps : T)
