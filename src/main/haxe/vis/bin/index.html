@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		options : {
 			label : {
 				datapointover : function(dp) { 
-					return dp.event + ": " + ReportGrid.format(dp["count"]); 
+					return dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value); 
 				},
 //				axis : function(name) { return ReportGrid.humanize(name); }
 			},

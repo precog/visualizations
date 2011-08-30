@@ -21,6 +21,7 @@ class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 	override function initChart()
 	{
 		var chart = new HeatGrid(layout.getPanel(layout.mainPanelName));
+		
 /*
 		chart.stacked = infoBar.stacked;
 		switch(infoBar.effect)

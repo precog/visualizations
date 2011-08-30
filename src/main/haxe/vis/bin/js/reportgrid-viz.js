@@ -14894,15 +14894,43 @@ rg.view.svg.chart.HeatGrid.prototype.scaleValue = function(dp,i) {
 	var v = Reflect.field(dp,this.variableDependent.type), sv = this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,v);
 	return this.scale.scale(v);
 }
+rg.view.svg.chart.HeatGrid.prototype.xrange = null;
+rg.view.svg.chart.HeatGrid.prototype.yrange = null;
+rg.view.svg.chart.HeatGrid.prototype.cols = null;
+rg.view.svg.chart.HeatGrid.prototype.rows = null;
+rg.view.svg.chart.HeatGrid.prototype.w = null;
+rg.view.svg.chart.HeatGrid.prototype.h = null;
+rg.view.svg.chart.HeatGrid.prototype.stats = null;
+rg.view.svg.chart.HeatGrid.prototype.x = function(dp,i) {
+	return this.xrange.indexOf(Reflect.field(dp,this.xVariable.type)) * this.w;
+}
+rg.view.svg.chart.HeatGrid.prototype.y = function(dp,i) {
+	return this.height - (1 + this.yrange.indexOf(Reflect.field(dp,this.yVariables[0].type))) * this.h;
+}
 rg.view.svg.chart.HeatGrid.prototype.redraw = function() {
-	var me = this;
 	if(null == this.dps || 0 == this.dps.length) return;
-	var xrange = this.range(this.xVariable), yrange = this.range(this.yVariables[0]), cols = xrange.length, rows = yrange.length, w = this.width / cols, h = this.height / rows, choice = this.g.selectAll("rect").data(this.dps);
-	choice.enter().append("svg:rect").attr("x").floatf(function(dp,i) {
-		return xrange.indexOf(Reflect.field(dp,me.xVariable.type)) * w;
-	}).attr("y").floatf(function(dp,i) {
-		return me.height - (1 + yrange.indexOf(Reflect.field(dp,me.yVariables[0].type))) * h;
-	}).attr("width")["float"](w).attr("height")["float"](h).style("fill").colorf($closure(this,"scaleValue"));
+	this.stats = rg.util.DataPoints.stats(this.dps,this.variableDependent.type);
+	this.xrange = this.range(this.xVariable);
+	this.yrange = this.range(this.yVariables[0]);
+	this.cols = this.xrange.length;
+	this.rows = this.yrange.length;
+	this.w = this.width / this.cols;
+	this.h = this.height / this.rows;
+	var choice = this.g.selectAll("rect").data(this.dps);
+	choice.enter().append("svg:rect").attr("x").floatf($closure(this,"x")).attr("y").floatf($closure(this,"y")).attr("width")["float"](this.w).attr("height")["float"](this.h).style("fill").colorf($closure(this,"scaleValue")).on("click",$closure(this,"onclick")).on("mouseover",$closure(this,"onmouseover"));
+}
+rg.view.svg.chart.HeatGrid.prototype.onmouseover = function(dp,i) {
+	if(null == this.labelDataPointOver) return;
+	var text = this.labelDataPointOver(dp,this.stats);
+	if(null == text) this.tooltip.hide(); else {
+		this.tooltip.setText(text.split("\n"));
+		this.tooltip.moveTo(this.panelx + this.x(dp,i) + this.w / 2,this.panely + this.y(dp,i) + this.h / 2);
+		this.tooltip.show();
+	}
+}
+rg.view.svg.chart.HeatGrid.prototype.onclick = function(dp,i) {
+	if(null == this.click) return;
+	this.click(dp,this.stats);
 }
 rg.view.svg.chart.HeatGrid.prototype.range = function(variable) {
 	var v = Std["is"](variable,rg.data.VariableIndependent)?variable:null;

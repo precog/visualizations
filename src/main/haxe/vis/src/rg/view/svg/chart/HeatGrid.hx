@@ -4,6 +4,7 @@
  */
 
 package rg.view.svg.chart;
+import rg.data.Stats;
 import rg.data.VariableDependent;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
@@ -71,42 +72,62 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		return scale.scale(v);
 	}
 	
+	var xrange : Array<Dynamic>;
+	var yrange : Array<Dynamic>;
+	var cols : Int;
+	var rows : Int;
+	var w : Float;
+	var h : Float;
+	var stats : Stats;
+	
+	function x(dp, i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w
+	function y(dp, i) return height - (1 + Arrays.indexOf(yrange, DataPoints.value(dp, yVariables[0].type))) * h
+	
 	function redraw()
 	{
 		if (null == dps || 0 == dps.length)
 			return;
-		
-		var xrange = range(cast xVariable),
-			yrange = range(yVariables[0]),
-			cols = xrange.length,
-			rows = yrange.length,
-			w = width / cols,
-			h = height / rows,
-			choice = g.selectAll("rect").data(dps);
-/*
-		for (col in 0...cols)
-		{
-			for (row in 0...rows)
-			{
-				g.append("svg:rect")
-					.attr("x").float(col * w)
-					.attr("y").float(height - (1 + row) * h)
-					.attr("width").float(w)
-					.attr("height").float(h)
-//					.style("stroke").string("#ccc")
-					.style("fill").string("#eee")
-				;
-			}
-		}
-*/
+
+		stats = DataPoints.stats(dps, variableDependent.type);
+		xrange = range(cast xVariable);
+		yrange = range(yVariables[0]);
+		cols = xrange.length;
+		rows = yrange.length;
+		w = width / cols;
+		h = height / rows;
+
+		var choice = g.selectAll("rect").data(dps);
+
 		choice.enter().append("svg:rect")
-			.attr("x").floatf(function(dp,i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w)
-			.attr("y").floatf(function(dp,i) return height - (1 + Arrays.indexOf(yrange, DataPoints.value(dp, yVariables[0].type))) * h)
+			.attr("x").floatf(x)
+			.attr("y").floatf(y)
 			.attr("width").float(w)
 			.attr("height").float(h)
-//			.style("stroke").string("#ccc")
 			.style("fill").colorf(scaleValue)
+			.on("click", onclick)
+			.on("mouseover", onmouseover)
 		;
+	}
+	
+	function onmouseover(dp : DataPoint, i : Int)
+	{
+		if (null == labelDataPointOver)
+			return;
+		var text = labelDataPointOver(dp, stats);
+		if (null == text)
+			tooltip.hide();
+		else {
+			tooltip.text = text.split("\n");
+			tooltip.moveTo(panelx + x(dp, i) + w / 2, panely + y(dp, i) + h / 2);
+			tooltip.show();
+		}
+	}
+	
+	function onclick(dp : DataPoint, i : Int)
+	{
+		if (null == click)
+			return;
+		click(dp, stats);
 	}
 	
 	function range(variable : rg.data.Variable<Dynamic, IAxis<Dynamic>>) : Array<Dynamic>
