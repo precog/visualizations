@@ -9,6 +9,7 @@ import rg.data.VariableDependent;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
 import thx.color.Rgb;
+import thx.geom.Contour;
 import thx.js.Selection;
 import rg.data.VariableIndependent;
 import rg.data.IAxis;
@@ -17,21 +18,26 @@ import thx.math.scale.LinearT;
 import thx.color.Hsl;
 import thx.color.NamedColors;
 import rg.util.DataPoints;
+import thx.svg.Line;
+import thx.svg.LineInterpolator;
 using Arrays;
 
 class HeatGrid extends CartesianChart<Array<DataPoint>>
 {
 	public var colorStart : Rgb;
 	public var colorEnd : Rgb;
+	public var useContour : Bool;
 	var dps : Array<DataPoint>;
-	var scale : LinearT<Hsl>;
+	var colorScale : LinearT<Rgb>;
 	var variableDependent : VariableDependent<Dynamic>;
 	
 	public function new(panel : Panel) 
 	{
 		super(panel);
-		colorStart = NamedColors.red;
+		colorStart = NamedColors.yellow;
 		colorEnd = NamedColors.green;
+		levels = 20;
+		useContour = false;
 	}
 	
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
@@ -42,8 +48,8 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		
 		var min = variableDependent.axis.scale(variableDependent.min, variableDependent.max, variableDependent.min),
 			max = variableDependent.axis.scale(variableDependent.min, variableDependent.max, variableDependent.max);
-		scale = Linears.forHsl()
-			.range([Hsl.toHsl(colorStart), Hsl.toHsl(colorEnd)])
+		colorScale = Linears.forRgb()
+			.range([colorStart, colorEnd])
 			.domain([min, max]);
 	}
 	
@@ -65,11 +71,20 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		redraw();
 	}
 	
-	function scaleValue(dp, i)
+	function value(dp)
 	{
-		var v = DataPoints.value(dp, variableDependent.type),
-			sv = variableDependent.axis.scale(variableDependent.min, variableDependent.max, v);
-		return scale.scale(v);
+		var v = DataPoints.value(dp, variableDependent.type);
+		return scale(v);
+	}
+	
+	function scale(v)
+	{
+		return variableDependent.axis.scale(variableDependent.min, variableDependent.max, v);
+	}
+	
+	function scaleValue(dp, ?i)
+	{
+		return colorScale.scale(value(dp));
 	}
 	
 	var xrange : Array<Dynamic>;
@@ -79,6 +94,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	var w : Float;
 	var h : Float;
 	var stats : Stats;
+	var levels : Int;
 	
 	function x(dp, i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w
 	function y(dp, i) return height - (1 + Arrays.indexOf(yrange, DataPoints.value(dp, yVariables[0].type))) * h
@@ -96,8 +112,88 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		w = width / cols;
 		h = height / rows;
 
-		var choice = g.selectAll("rect").data(dps);
+		if (useContour)
+			drawContour();
+		else
+			drawSquares();
+	}
+	
+	function drawContour()
+	{
+		var map = xrange.map(function(v, i) return dps.filter(function(dp) return DataPoints.value(dp, xVariable.type) == v)).map(function(arr, i) {
+				var r = [];
+				for (i in 0...rows)
+					r.push(arr.filter(function(dp) return DataPoints.value(dp, yVariables[0].type) == yrange[i]).shift());
+				return r;
+			}), 
+			level = 0.0,
+			min = scale(variableDependent.min),
+			max = scale(variableDependent.max),
+			span = max - min,
+			padding;
+//		trace(map);
 
+		function grid(x : Int, y : Int) {
+			var ys = map[x];
+			if (null == ys)
+				return false;
+			var dp = ys[y];
+			if (null == dp)
+				return false;
+			var v = value(dp);
+			return v >= level;
+		};
+		
+		for (i in 0...levels)
+		{
+			var color = colorScale.scale(level);
+			padding = 0; // i * h / (levels + 1);
+			level = min + (span / levels) * i;
+			
+			var map = createGridMap(grid);
+			
+			function createContour(?start)
+			{
+				var contour = Contour.contour(grid, start).map(function(d, i) {
+					map.remove(d[1] + "-" + d[0]);
+					return [padding + d[0] * w, padding + height - d[1] * h];
+				});
+				if (contour.length > 0)
+					contour.push(contour[0]);
+				
+				var line = Line.pointArray(LineInterpolator.Linear).shape(contour);
+				g.append("svg:path")
+					.attr("d").string(line)
+					.style("fill").color(color)
+				;
+			}
+			
+			createContour();
+//			if(level == 0)
+//				trace(map);
+//			var it = map.iterator();
+//			while (it.hasNext())
+//			{
+//				createContour(it.next());
+//				it = map.iterator();
+//			}
+		}
+		
+	}
+	
+	function createGridMap(grid)
+	{
+		var map = new Hash();
+		for(r in 0...rows)
+			for (c in 0...cols)
+				if(grid(c, r))
+					map.set(r + "-" + c, [r, c]);
+		return map;
+	}
+	
+	function drawSquares()
+	{
+		var choice = g.selectAll("rect").data(dps);
 		choice.enter().append("svg:rect")
 			.attr("x").floatf(x)
 			.attr("y").floatf(y)

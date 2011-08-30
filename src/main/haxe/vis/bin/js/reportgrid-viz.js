@@ -2915,6 +2915,9 @@ rg.controller.visualization.VisualizationHeatGrid.prototype.initAxes = function(
 }
 rg.controller.visualization.VisualizationHeatGrid.prototype.initChart = function() {
 	var chart = new rg.view.svg.chart.HeatGrid(this.layout.getPanel(this.layout.mainPanelName));
+	chart.useContour = this.infoHeatGrid.contour;
+	chart.colorStart = this.infoHeatGrid.startColor;
+	chart.colorEnd = this.infoHeatGrid.endColor;
 	this.chart = chart;
 }
 rg.controller.visualization.VisualizationHeatGrid.prototype.transformData = function(dps) {
@@ -5681,13 +5684,28 @@ rg.data.DataContext.prototype.__class__ = rg.data.DataContext;
 rg.controller.info.InfoHeatGrid = function(p) {
 	if( p === $_ ) return;
 	rg.controller.info.InfoCartesianChart.call(this);
+	this.startColor = thx.color.NamedColors.white;
+	this.endColor = thx.color.NamedColors.blue;
 }
 rg.controller.info.InfoHeatGrid.__name__ = ["rg","controller","info","InfoHeatGrid"];
 rg.controller.info.InfoHeatGrid.__super__ = rg.controller.info.InfoCartesianChart;
 for(var k in rg.controller.info.InfoCartesianChart.prototype ) rg.controller.info.InfoHeatGrid.prototype[k] = rg.controller.info.InfoCartesianChart.prototype[k];
 rg.controller.info.InfoHeatGrid.filters = function() {
-	return [].concat(rg.controller.info.InfoCartesianChart.filters());
+	return [{ field : "contour", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "startcolor", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "startColor", value : thx.color.Colors.parse(v)}];
+	}},{ field : "endcolor", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "endColor", value : thx.color.Colors.parse(v)}];
+	}}].concat(rg.controller.info.InfoCartesianChart.filters());
 }
+rg.controller.info.InfoHeatGrid.prototype.contour = null;
+rg.controller.info.InfoHeatGrid.prototype.startColor = null;
+rg.controller.info.InfoHeatGrid.prototype.endColor = null;
 rg.controller.info.InfoHeatGrid.prototype.__class__ = rg.controller.info.InfoHeatGrid;
 thx.color.NamedColors = function() { }
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
@@ -13812,6 +13830,51 @@ rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
 	return { column_headers : column_headers, row_headers : row_headers, columns : columns, rows : rows, stats : tcalc};
 }
 rg.view.html.widget.PivotTable.prototype.__class__ = rg.view.html.widget.PivotTable;
+thx.geom.Contour = function() { }
+thx.geom.Contour.__name__ = ["thx","geom","Contour"];
+thx.geom.Contour.contourStart = function(grid) {
+	var x = 0, y = 0;
+	while(true) {
+		if(grid(x,y)) return [x,y];
+		if(x == 0) {
+			x = y + 1;
+			y = 0;
+		} else {
+			x = x - 1;
+			y = y + 1;
+		}
+	}
+	return null;
+}
+thx.geom.Contour.contour = function(grid,start) {
+	var s = null == start?thx.geom.Contour.contourStart(grid):start, c = [], x = s[0], y = s[1], dx = 0, dy = 0, pdx = null, pdy = null, i = 0;
+	do {
+		i = 0;
+		if(grid(x - 1,y - 1)) i += 1;
+		if(grid(x,y - 1)) i += 2;
+		if(grid(x - 1,y)) i += 4;
+		if(grid(x,y)) i += 8;
+		if(i == 6) {
+			dx = pdy == -1?-1:1;
+			dy = 0;
+		} else if(i == 9) {
+			dx = 0;
+			dy = pdx == 1?-1:1;
+		} else {
+			dx = thx.geom.Contour.contourDx[i];
+			dy = thx.geom.Contour.contourDy[i];
+		}
+		if(dx != pdx && dy != pdy) {
+			c.push([x,y]);
+			pdx = dx;
+			pdy = dy;
+		}
+		x += dx;
+		y += dy;
+	} while(s[0] != x || s[1] != y);
+	return c;
+}
+thx.geom.Contour.prototype.__class__ = thx.geom.Contour;
 rg.view.svg.chart.BarEffect = { __ename__ : ["rg","view","svg","chart","BarEffect"], __constructs__ : ["NoEffect","Gradient"] }
 rg.view.svg.chart.BarEffect.NoEffect = ["NoEffect",0];
 rg.view.svg.chart.BarEffect.NoEffect.toString = $estr;
@@ -14860,23 +14923,26 @@ rg.data.source.rgquery.transform.TransformCountTimeSeries.__interfaces__ = [rg.d
 rg.view.svg.chart.HeatGrid = function(panel) {
 	if( panel === $_ ) return;
 	rg.view.svg.chart.CartesianChart.call(this,panel);
-	this.colorStart = thx.color.NamedColors.red;
+	this.colorStart = thx.color.NamedColors.yellow;
 	this.colorEnd = thx.color.NamedColors.green;
+	this.levels = 20;
+	this.useContour = false;
 }
 rg.view.svg.chart.HeatGrid.__name__ = ["rg","view","svg","chart","HeatGrid"];
 rg.view.svg.chart.HeatGrid.__super__ = rg.view.svg.chart.CartesianChart;
 for(var k in rg.view.svg.chart.CartesianChart.prototype ) rg.view.svg.chart.HeatGrid.prototype[k] = rg.view.svg.chart.CartesianChart.prototype[k];
 rg.view.svg.chart.HeatGrid.prototype.colorStart = null;
 rg.view.svg.chart.HeatGrid.prototype.colorEnd = null;
+rg.view.svg.chart.HeatGrid.prototype.useContour = null;
 rg.view.svg.chart.HeatGrid.prototype.dps = null;
-rg.view.svg.chart.HeatGrid.prototype.scale = null;
+rg.view.svg.chart.HeatGrid.prototype.colorScale = null;
 rg.view.svg.chart.HeatGrid.prototype.variableDependent = null;
 rg.view.svg.chart.HeatGrid.prototype.setVariables = function(variableIndependents,variableDependents) {
 	this.xVariable = variableIndependents[0];
 	this.yVariables = [variableIndependents[1]];
 	this.variableDependent = variableDependents[0];
 	var min = this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,this.variableDependent.min), max = this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,this.variableDependent.max);
-	this.scale = thx.math.scale.Linears.forHsl().range([thx.color.Hsl.toHsl(this.colorStart),thx.color.Hsl.toHsl(this.colorEnd)]).domain([min,max]);
+	this.colorScale = thx.math.scale.Linears.forRgb().range([this.colorStart,this.colorEnd]).domain([min,max]);
 }
 rg.view.svg.chart.HeatGrid.prototype.init = function() {
 	rg.view.svg.chart.CartesianChart.prototype.init.call(this);
@@ -14890,9 +14956,15 @@ rg.view.svg.chart.HeatGrid.prototype.data = function(dps) {
 	this.dps = dps;
 	this.redraw();
 }
+rg.view.svg.chart.HeatGrid.prototype.value = function(dp) {
+	var v = Reflect.field(dp,this.variableDependent.type);
+	return this.scale(v);
+}
+rg.view.svg.chart.HeatGrid.prototype.scale = function(v) {
+	return this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,v);
+}
 rg.view.svg.chart.HeatGrid.prototype.scaleValue = function(dp,i) {
-	var v = Reflect.field(dp,this.variableDependent.type), sv = this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,v);
-	return this.scale.scale(v);
+	return this.colorScale.scale(this.value(dp));
 }
 rg.view.svg.chart.HeatGrid.prototype.xrange = null;
 rg.view.svg.chart.HeatGrid.prototype.yrange = null;
@@ -14901,6 +14973,7 @@ rg.view.svg.chart.HeatGrid.prototype.rows = null;
 rg.view.svg.chart.HeatGrid.prototype.w = null;
 rg.view.svg.chart.HeatGrid.prototype.h = null;
 rg.view.svg.chart.HeatGrid.prototype.stats = null;
+rg.view.svg.chart.HeatGrid.prototype.levels = null;
 rg.view.svg.chart.HeatGrid.prototype.x = function(dp,i) {
 	return this.xrange.indexOf(Reflect.field(dp,this.xVariable.type)) * this.w;
 }
@@ -14916,6 +14989,72 @@ rg.view.svg.chart.HeatGrid.prototype.redraw = function() {
 	this.rows = this.yrange.length;
 	this.w = this.width / this.cols;
 	this.h = this.height / this.rows;
+	if(this.useContour) this.drawContour(); else this.drawSquares();
+}
+rg.view.svg.chart.HeatGrid.prototype.drawContour = function() {
+	var me = this;
+	var map = this.xrange.map(function(v,i) {
+		return Arrays.filter(me.dps,function(dp) {
+			return Reflect.field(dp,me.xVariable.type) == v;
+		});
+	}).map(function(arr,i) {
+		var r = [];
+		var _g1 = 0, _g = me.rows;
+		while(_g1 < _g) {
+			var i1 = [_g1++];
+			r.push(Arrays.filter(arr,(function(i1) {
+				return function(dp) {
+					return Reflect.field(dp,me.yVariables[0].type) == me.yrange[i1[0]];
+				};
+			})(i1)).shift());
+		}
+		return r;
+	}), level = 0.0, min = this.scale(this.variableDependent.min), max = this.scale(this.variableDependent.max), span = max - min, padding;
+	var grid = function(x,y) {
+		var ys = map[x];
+		if(null == ys) return false;
+		var dp = ys[y];
+		if(null == dp) return false;
+		var v = me.value(dp);
+		return v >= level;
+	};
+	var _g1 = 0, _g = this.levels;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var color = [this.colorScale.scale(level)];
+		padding = 0;
+		level = min + span / this.levels * i;
+		var map1 = [this.createGridMap(grid)];
+		var createContour = (function(map1,color) {
+			return function(start) {
+				var contour = thx.geom.Contour.contour(grid,start).map((function(map1) {
+					return function(d,i1) {
+						map1[0].remove(d[1] + "-" + d[0]);
+						return [padding + d[0] * me.w,padding + me.height - d[1] * me.h];
+					};
+				})(map1));
+				if(contour.length > 0) contour.push(contour[0]);
+				var line = thx.svg.Line.pointArray(thx.svg.LineInterpolator.Linear).shape(contour);
+				me.g.append("svg:path").attr("d").string(line).style("fill").color(color[0]);
+			};
+		})(map1,color);
+		createContour();
+	}
+}
+rg.view.svg.chart.HeatGrid.prototype.createGridMap = function(grid) {
+	var map = new Hash();
+	var _g1 = 0, _g = this.rows;
+	while(_g1 < _g) {
+		var r = _g1++;
+		var _g3 = 0, _g2 = this.cols;
+		while(_g3 < _g2) {
+			var c = _g3++;
+			if(grid(c,r)) map.set(r + "-" + c,[r,c]);
+		}
+	}
+	return map;
+}
+rg.view.svg.chart.HeatGrid.prototype.drawSquares = function() {
 	var choice = this.g.selectAll("rect").data(this.dps);
 	choice.enter().append("svg:rect").attr("x").floatf($closure(this,"x")).attr("y").floatf($closure(this,"y")).attr("width")["float"](this.w).attr("height")["float"](this.h).style("fill").colorf($closure(this,"scaleValue")).on("click",$closure(this,"onclick")).on("mouseover",$closure(this,"onmouseover"));
 }
@@ -16819,6 +16958,8 @@ rg.controller.factory.FactoryLayout.DEFAULT_WIDTH = 400;
 rg.controller.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 rg.view.html.widget.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.view.html.widget.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
+thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
+thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.Timer.timeout = 0;
 thx.js.Timer.queue = null;
 thx.js.Timer.interval = 0;

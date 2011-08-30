@@ -62,6 +62,35 @@ document.addEventListener("DOMContentLoaded", function(){
 			width: 240
 		}
 	});
+	
+	ReportGrid.heatGrid("#chart2", {
+		axes : [{
+			type : "age",
+			values : ageranges,
+			variable : "independent"
+		}, {
+			type : "height",
+			values : heights,
+			variable : "independent"
+		}, {
+			type : "value",
+			views : [0,1],
+			variable : "dependent"
+		}],
+		data : [ { src : { data : data } } ],
+		options : {
+			label : {
+				datapointover : function(dp) { 
+					return dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value); 
+				},
+//				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			click : function(dp) { alert(dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value)); },
+			height: 200,
+			width: 240,
+			contour : true
+		}
+	});
 /*
 	var start = "100 hours ago",
 		end = "now",
