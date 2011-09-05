@@ -7302,7 +7302,8 @@ rg.view.svg.chart.PieChart = function(panel) {
 	this.g.append("svg:defs");
 	this.pie = new thx.geom.layout.Pie();
 	this.animated = false;
-	this.animationDuration = 0;
+	this.animationDuration = 7000;
+	this.animationEase = thx.math.Equations.elasticf();
 	this.gradientLightness = 1.5;
 	this.animationDelay = 0;
 	this.innerRadius = 0.0;

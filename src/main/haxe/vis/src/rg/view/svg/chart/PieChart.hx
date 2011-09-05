@@ -87,31 +87,6 @@ class PieChart extends Layer
 	{
 		return Ints.format(Reflect.field(dp, variableDependent.type));
 	}
-/*
-	function createSampleLabel(orientation, anchor, angle : Float)
-	{
-		var x1 = radius,
-			y1 = radius,
-			len = 70,
-			x2 = x1 + len * Math.cos(Const.TO_RADIAN * angle),
-			y2 = y1 + len * Math.sin(Const.TO_RADIAN * angle);
-		
-		
-			
-		g.append("svg:line")
-			.attr("x1").float(x1)
-			.attr("x2").float(x2)
-			.attr("y1").float(y1)
-			.attr("y2").float(y2)
-			.style("stroke").string("#FF0000");
-		
-		var sample = new Label(g, false);
-		sample.text = (angle % 360) + "º";
-		sample.orientation = orientation;
-		sample.anchor = anchor;
-		sample.place(x2, y2, angle);
-	}
-*/
 	
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
@@ -121,10 +96,6 @@ class PieChart extends Layer
 	public function init()
 	{
 		resize();
-
-//		var steps = 12;
-//		for (i in 0...steps)
-//			createSampleLabel(LabelOrientation.Orthogonal, GridAnchor.Top, 90 + i * 360 / steps);
 	}
 
 	override function resize()
