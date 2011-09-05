@@ -4,13 +4,13 @@
  */
 
 package rg.controller.info;
-import rg.view.svg.chart.BarEffect;
-import rg.view.svg.chart.BarEffects;
+import rg.view.svg.chart.GradientEffect;
+import rg.view.svg.chart.GradientEffects;
 
 class InfoBarChart extends InfoCartesianChart
 {
 	public var stacked : Bool;
-	public var effect : BarEffect;
+	public var effect : GradientEffect;
 	public var barPaddingDataPoint : Float;
 	public var barPaddingAxis: Float;
 	public var barPadding : Float;
@@ -18,7 +18,7 @@ class InfoBarChart extends InfoCartesianChart
 	{
 		super();
 		stacked = true;
-		effect = BarEffect.Gradient(0.75);
+		effect = GradientEffect.Gradient(0.75);
 		barPadding = 16;
 		barPaddingAxis = 4;
 		barPaddingDataPoint = 2;
@@ -35,7 +35,7 @@ class InfoBarChart extends InfoCartesianChart
 			validator : function(v) return Std.is(v, String),
 			filter : function(v) return [{
 				field : "effect",
-				value : BarEffects.parse(v)
+				value : GradientEffects.parse(v)
 			}]
 		}, {
 			field : "barpadding",

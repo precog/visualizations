@@ -5,9 +5,9 @@
 
 package rg.view.svg.chart;
 
-class BarEffects 
+class GradientEffects 
 {
-	public static function parse(s : String) : BarEffect 
+	public static function parse(s : String) : GradientEffect 
 	{
 		var parts = s.toLowerCase().split("-");
 		switch(parts.shift())
@@ -17,9 +17,9 @@ class BarEffects
 					parameters = parts.pop();
 				if (null != parameters)
 					lightness = Std.parseFloat(parameters.split(",").shift());
-				return BarEffect.Gradient(lightness);
+				return GradientEffect.Gradient(lightness);
 			default:
-				return BarEffect.NoEffect;
+				return GradientEffect.NoEffect;
 		}
 	}
 }

@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			width: 240
 		}
 	});
-	
+/*
 	ReportGrid.heatGrid("#chart2", {
 		axes : [{
 			type : "age",
@@ -100,101 +100,6 @@ document.addEventListener("DOMContentLoaded", function(){
 					return "right";
 				else
 					return null;
-			}
-		}
-	});
-/*
-	var start = "100 hours ago",
-		end = "now",
-		range = ReportGrid.date.range(start, end, "hour"),
-		data1 = range.map(function(d,i) {
-			var count = Math.round(Math.tan(i / range.length * Math.PI * 4) * 100);
-			return {
-				".#time:hour" : d,
-				event : "impression",
-				impression : count,
-				count : count
-			};
-		}),
-		data2 = range.map(function(d,i) {
-			var count = Math.round(Math.sin(i / range.length * Math.PI * 4) * 100);
-			return {
-				".#time:hour" : d,
-				event : "click",
-				click : count,
-				count : count
-			};
-		}),
-		data3 = range.map(function(d,i) {
-			var count = Math.round(Math.cos(i / range.length * Math.PI * 4) * 50);
-			return {
-				".#time:hour" : d,
-				event : "conversion",
-				conversion : count,
-				count : count
-			};
-		}),
-		data4 = range.map(function(d,i) {
-			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 100);
-			return {
-				".#time:hour" : d,
-				event : "other",
-				other : count,
-				count : count
-			};
-		}),
-		data5 = range.map(function(d,i) {
-			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 50);
-			return {
-				".#time:hour" : d,
-				event : "other2",
-				other : count,
-				count : count
-			};
-		})
-	;
-//	console.log(ReportGrid.dump(data));
-	var alt = 0;
-	
-	ReportGrid.scatterGraph("#chart1", {
-		axes : [{
-			type : ".#time:hour",
-			view : [start, end],
-			variable : "independent"
-		}, {
-			type : "impression"
-		}, {
-			type : "click"
-		}, {
-			type : "conversion"
-		}, {
-			type : "other"
-		}],
-		data : [
-			{ src : { data : data1 } }, 
-			{ src : { data : data2 } },
-			{ src : { data : data3 } }, 
-			{ src : { data : data4 } },
-			{ src : { data : data5 } }
-		],
-		options : {
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
-			},
-			label : {
-				datapointover : function(dp) { 
-					return dp.event + ": " + ReportGrid.format(dp["count"]); 
-				},
-//				axis : function(name) { return ReportGrid.humanize(name); }
-			},
-			click : function(dp) { alert(dp[".platform"]); },
-			height: 200,
-			line : {
-//				interpolation : "cardinal",
-				effect : "gradient"
 			}
 		}
 	});

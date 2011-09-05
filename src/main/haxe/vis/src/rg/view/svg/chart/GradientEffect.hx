@@ -5,7 +5,7 @@
 
 package rg.view.svg.chart;
 
-enum BarEffect 
+enum GradientEffect
 {
 	NoEffect;
 	Gradient(lightness : Float);

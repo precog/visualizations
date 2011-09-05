@@ -1520,7 +1520,7 @@ rg.controller.info.InfoBarChart = function(p) {
 	if( p === $_ ) return;
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.stacked = true;
-	this.effect = rg.view.svg.chart.BarEffect.Gradient(0.75);
+	this.effect = rg.view.svg.chart.GradientEffect.Gradient(0.75);
 	this.barPadding = 16;
 	this.barPaddingAxis = 4;
 	this.barPaddingDataPoint = 2;
@@ -1534,7 +1534,7 @@ rg.controller.info.InfoBarChart.filters = function() {
 	}, filter : null},{ field : "effect", validator : function(v) {
 		return Std["is"](v,String);
 	}, filter : function(v) {
-		return [{ field : "effect", value : rg.view.svg.chart.BarEffects.parse(v)}];
+		return [{ field : "effect", value : rg.view.svg.chart.GradientEffects.parse(v)}];
 	}},{ field : "barpadding", validator : function(v) {
 		return Std["is"](v,Float);
 	}, filter : function(v) {
@@ -2801,6 +2801,11 @@ thx.js.Dom.selectNodeData = function(node) {
 }
 thx.js.Dom.event = null;
 thx.js.Dom.prototype.__class__ = thx.js.Dom;
+rg.view.svg.chart.GradientEffect = { __ename__ : ["rg","view","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
+rg.view.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
+rg.view.svg.chart.GradientEffect.NoEffect.toString = $estr;
+rg.view.svg.chart.GradientEffect.NoEffect.__enum__ = rg.view.svg.chart.GradientEffect;
+rg.view.svg.chart.GradientEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.view.svg.chart.GradientEffect; $x.toString = $estr; return $x; }
 rg.util.RGStrings = function() { }
 rg.util.RGStrings.__name__ = ["rg","util","RGStrings"];
 rg.util.RGStrings.humanize = function(d) {
@@ -10185,20 +10190,6 @@ Dates.compare = function(a,b) {
 	return Floats.compare(a.getTime(),b.getTime());
 }
 Dates.prototype.__class__ = Dates;
-rg.view.svg.chart.BarEffects = function() { }
-rg.view.svg.chart.BarEffects.__name__ = ["rg","view","svg","chart","BarEffects"];
-rg.view.svg.chart.BarEffects.parse = function(s) {
-	var parts = s.toLowerCase().split("-");
-	switch(parts.shift()) {
-	case "gradient":
-		var lightness = 0.75, parameters = parts.pop();
-		if(null != parameters) lightness = Std.parseFloat(parameters.split(",").shift());
-		return rg.view.svg.chart.BarEffect.Gradient(lightness);
-	default:
-		return rg.view.svg.chart.BarEffect.NoEffect;
-	}
-}
-rg.view.svg.chart.BarEffects.prototype.__class__ = rg.view.svg.chart.BarEffects;
 rg.controller.factory.FactoryVariableContexts = function(knownproperties) {
 	if( knownproperties === $_ ) return;
 	this.knownProperties = knownproperties;
@@ -12191,6 +12182,20 @@ thx.js.Svg.mouse = function(dom) {
 	return [point.x,point.y];
 }
 thx.js.Svg.prototype.__class__ = thx.js.Svg;
+rg.view.svg.chart.GradientEffects = function() { }
+rg.view.svg.chart.GradientEffects.__name__ = ["rg","view","svg","chart","GradientEffects"];
+rg.view.svg.chart.GradientEffects.parse = function(s) {
+	var parts = s.toLowerCase().split("-");
+	switch(parts.shift()) {
+	case "gradient":
+		var lightness = 0.75, parameters = parts.pop();
+		if(null != parameters) lightness = Std.parseFloat(parameters.split(",").shift());
+		return rg.view.svg.chart.GradientEffect.Gradient(lightness);
+	default:
+		return rg.view.svg.chart.GradientEffect.NoEffect;
+	}
+}
+rg.view.svg.chart.GradientEffects.prototype.__class__ = rg.view.svg.chart.GradientEffects;
 rg.view.svg.layer.Title = function(panel,text,anchor,padding,className,shadow,outline) {
 	if( panel === $_ ) return;
 	if(outline == null) outline = false;
@@ -14023,11 +14028,6 @@ thx.geom.Contour.contour = function(grid,start) {
 	return c;
 }
 thx.geom.Contour.prototype.__class__ = thx.geom.Contour;
-rg.view.svg.chart.BarEffect = { __ename__ : ["rg","view","svg","chart","BarEffect"], __constructs__ : ["NoEffect","Gradient"] }
-rg.view.svg.chart.BarEffect.NoEffect = ["NoEffect",0];
-rg.view.svg.chart.BarEffect.NoEffect.toString = $estr;
-rg.view.svg.chart.BarEffect.NoEffect.__enum__ = rg.view.svg.chart.BarEffect;
-rg.view.svg.chart.BarEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.view.svg.chart.BarEffect; $x.toString = $estr; return $x; }
 thx.js.Timer = function() { }
 thx.js.Timer.__name__ = ["thx","js","Timer"];
 thx.js.Timer.timer = function(f,delay) {
