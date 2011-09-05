@@ -30,6 +30,7 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.innerRadius = info.innerradius;
 		chart.outerRadius = info.outerradius;
 		chart.overRadius  = info.overradius;
+		chart.tooltipRadius = info.tooltipradius;
 		chart.gradientLightness = info.gradientlightness;
 		
 		// labels
@@ -52,20 +53,27 @@ class VisualizationPieChart extends VisualizationSvg
 			chart.mouseClick = info.click;
 		
 		// TITLE
-		var panelContextTitle = layout.getContext("title");
-		if (null == panelContextTitle)
-			return;
-		title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
+		if (null != info.label.title)
+		{
+			var panelContextTitle = layout.getContext("title");
+			if (null == panelContextTitle)
+				return;
+			title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
+		}
 	}
 	
 	// TODO move sort to axis
 	override function feedData(data : Array<DataPoint>)
 	{
 		chart.setVariables(independentVariables, dependentVariables);
-		if (null != title && null != info.label.title)
+		if (null != title)
 		{
-			title.text = info.label.title(variables, data);
-			layout.suggestSize("title", title.idealHeight());
+			if (null != info.label.title)
+			{
+				title.text = info.label.title(variables, data);
+				layout.suggestSize("title", title.idealHeight());
+			} else
+				layout.suggestSize("title", 0);
 		}
 		if (null != info.sortDataPoint)
 		{

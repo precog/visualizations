@@ -842,10 +842,8 @@ rg.view.svg.chart.Chart.prototype.resize = function() {
 	this.panely = coords.y;
 }
 rg.view.svg.chart.Chart.prototype.init = function() {
-	if(null != this.labelDataPointOver) {
-		this.tooltip = new rg.view.svg.widget.Baloon(this.g);
-		this.resize();
-	}
+	if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Baloon(this.g);
+	this.resize();
 }
 rg.view.svg.chart.Chart.prototype.moveTooltip = function(x,y,animated) {
 	this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
@@ -5087,6 +5085,7 @@ rg.controller.info.InfoPieChart = function(p) {
 	this.labelorientation = rg.view.svg.widget.LabelOrientation.Aligned;
 	this.outerradius = 0.9;
 	this.overradius = 0.95;
+	this.tooltipradius = 0.5;
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabel();
 	this.gradientlightness = 1.5;
@@ -5102,7 +5101,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	switch(name) {
 	case "fixed":
 		var v = Std.parseFloat(s.split("-")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 58, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 		return rg.view.svg.widget.LabelOrientation.FixedAngle(v);
 	case "ortho":case "orthogonal":
 		return rg.view.svg.widget.LabelOrientation.Orthogonal;
@@ -5111,7 +5110,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	case "horizontal":
 		return rg.view.svg.widget.LabelOrientation.FixedAngle(0);
 	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 67, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 69, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 	}
 }
 rg.controller.info.InfoPieChart.filters = function() {
@@ -5135,6 +5134,8 @@ rg.controller.info.InfoPieChart.filters = function() {
 		return Std["is"](v,Float);
 	}, filter : null},{ field : "overradius", validator : function(v) {
 		return Std["is"](v,Float);
+	}, filter : null},{ field : "tooltipradius", validator : function(v) {
+		return Std["is"](v,Float);
 	}, filter : null},{ field : "animation", validator : function(v) {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
@@ -5157,6 +5158,7 @@ rg.controller.info.InfoPieChart.prototype.labelorientation = null;
 rg.controller.info.InfoPieChart.prototype.innerradius = null;
 rg.controller.info.InfoPieChart.prototype.outerradius = null;
 rg.controller.info.InfoPieChart.prototype.overradius = null;
+rg.controller.info.InfoPieChart.prototype.tooltipradius = null;
 rg.controller.info.InfoPieChart.prototype.animation = null;
 rg.controller.info.InfoPieChart.prototype.label = null;
 rg.controller.info.InfoPieChart.prototype.gradientlightness = null;
@@ -5298,6 +5300,7 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	this.chart.innerRadius = this.info.innerradius;
 	this.chart.outerRadius = this.info.outerradius;
 	this.chart.overRadius = this.info.overradius;
+	this.chart.tooltipRadius = this.info.tooltipradius;
 	this.chart.gradientLightness = this.info.gradientlightness;
 	this.chart.labelDataPoint = this.info.label.datapoint;
 	this.chart.labelDataPointOver = this.info.label.datapointover;
@@ -5310,15 +5313,19 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	this.chart.animationEase = this.info.animation.ease;
 	this.chart.animationDelay = this.info.animation.delay;
 	if(null != this.info.click) this.chart.mouseClick = this.info.click;
-	var panelContextTitle = this.layout.getContext("title");
-	if(null == panelContextTitle) return;
-	this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+	if(null != this.info.label.title) {
+		var panelContextTitle = this.layout.getContext("title");
+		if(null == panelContextTitle) return;
+		this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+	}
 }
 rg.controller.visualization.VisualizationPieChart.prototype.feedData = function(data) {
 	this.chart.setVariables(this.independentVariables,this.dependentVariables);
-	if(null != this.title && null != this.info.label.title) {
-		this.title.setText(this.info.label.title(this.getVariables(),data));
-		this.layout.suggestSize("title",this.title.idealHeight());
+	if(null != this.title) {
+		if(null != this.info.label.title) {
+			this.title.setText(this.info.label.title(this.getVariables(),data));
+			this.layout.suggestSize("title",this.title.idealHeight());
+		} else this.layout.suggestSize("title",0);
 	}
 	if(null != this.info.sortDataPoint) data.sort(this.info.sortDataPoint);
 	this.chart.init();
@@ -7318,6 +7325,7 @@ rg.view.svg.chart.PieChart = function(panel) {
 	this.outerRadius = 0.9;
 	this.overRadius = 0.95;
 	this.labelRadius = 0.45;
+	this.tooltipRadius = 0.5;
 	this.labels = new Hash();
 	this.labelDisplay = true;
 	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
@@ -7330,6 +7338,7 @@ rg.view.svg.chart.PieChart.prototype.innerRadius = null;
 rg.view.svg.chart.PieChart.prototype.outerRadius = null;
 rg.view.svg.chart.PieChart.prototype.overRadius = null;
 rg.view.svg.chart.PieChart.prototype.labelRadius = null;
+rg.view.svg.chart.PieChart.prototype.tooltipRadius = null;
 rg.view.svg.chart.PieChart.prototype.arcNormal = null;
 rg.view.svg.chart.PieChart.prototype.arcStart = null;
 rg.view.svg.chart.PieChart.prototype.arcBig = null;
@@ -7347,11 +7356,8 @@ rg.view.svg.chart.PieChart.prototype.mouseClick = null;
 rg.view.svg.chart.PieChart.prototype.setVariables = function(variableIndependents,variableDependents) {
 	this.variableDependent = variableDependents[0];
 }
-rg.view.svg.chart.PieChart.prototype.init = function() {
-	rg.view.svg.chart.Chart.prototype.init.call(this);
-	this.resize();
-}
 rg.view.svg.chart.PieChart.prototype.resize = function() {
+	rg.view.svg.chart.Chart.prototype.resize.call(this);
 	this.radius = Math.min(this.width,this.height) / 2;
 	this.arcStart = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.innerRadius);
 	this.arcNormal = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.outerRadius);
@@ -7385,9 +7391,10 @@ rg.view.svg.chart.PieChart.prototype.onMouseOver = function(dom,i) {
 	if(null == this.labelDataPointOver) return;
 	var d = Reflect.field(dom,"__data__"), text = this.labelDataPointOver(d.dp,this.stats);
 	if(null == text) this.tooltip.hide(); else {
+		var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2, r = this.radius * this.tooltipRadius;
 		this.tooltip.show();
 		this.tooltip.setText(text.split("\n"));
-		this.moveTooltip(100,100);
+		this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r);
 	}
 }
 rg.view.svg.chart.PieChart.prototype.onMouseClick = function(dom,i) {
@@ -8920,6 +8927,7 @@ rg.view.svg.chart.FunnelChart.prototype.data = function(dps) {
 	this.redraw();
 }
 rg.view.svg.chart.FunnelChart.prototype.resize = function() {
+	rg.view.svg.chart.Chart.prototype.resize.call(this);
 	this.redraw();
 }
 rg.view.svg.chart.FunnelChart.prototype.dpvalue = function(dp) {

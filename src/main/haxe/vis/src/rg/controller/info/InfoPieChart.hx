@@ -19,6 +19,7 @@ class InfoPieChart
 	public var innerradius : Float;
 	public var outerradius : Float;
 	public var overradius : Float;
+	public var tooltipradius : Float;
 	public var animation : InfoAnimation;
 	public var label : InfoLabel;
 	public var gradientlightness : Float;
@@ -35,6 +36,7 @@ class InfoPieChart
 		labelorientation = LabelOrientation.Aligned;
 		outerradius = 0.9;
 		overradius = 0.95;
+		tooltipradius = 0.5;
 		animation = new InfoAnimation();
 		label = new InfoLabel();
 		gradientlightness = 1.5;
@@ -106,6 +108,10 @@ class InfoPieChart
 			filter : null
 		}, {
 			field : "overradius",
+			validator : function(v) return Std.is(v, Float),
+			filter : null
+		}, {
+			field : "tooltipradius",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {

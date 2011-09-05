@@ -36,6 +36,7 @@ class PieChart extends Chart
 	public var outerRadius : Float;
 	public var overRadius : Float;
 	public var labelRadius : Float;
+	public var tooltipRadius : Float;
 	
 	var arcNormal : Arc<{ startAngle : Float, endAngle : Float }>;
 	var arcStart : Arc<{ startAngle : Float, endAngle : Float }>;
@@ -67,6 +68,7 @@ class PieChart extends Chart
 		outerRadius = 0.9;
 		overRadius = 0.95;
 		labelRadius = 0.45;
+		tooltipRadius = 0.5;
 		labels = new Hash();
 		
 		labelDisplay = true;
@@ -79,14 +81,9 @@ class PieChart extends Chart
 		variableDependent = variableDependents[0];
 	}
 
-	override public function init()
-	{
-		super.init();
-		resize();
-	}
-
 	override function resize()
 	{
+		super.resize();
 		radius = Math.min(width, height) / 2;
 		arcStart = Arc.fromAngleObject()
 			.innerRadius(radius * innerRadius)
@@ -162,16 +159,18 @@ class PieChart extends Chart
 	{
 		if (null == labelDataPointOver)
 			return;
-		var d : { dp : DataPoint } = Access.getData(dom),
+		var d : { dp : DataPoint, startAngle : Float, endAngle : Float } = Access.getData(dom),
 			text = labelDataPointOver(d.dp, stats);
 
 		if (null == text)
 			tooltip.hide();
 		else 
 		{
+			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2,
+				r = radius * tooltipRadius;
 			tooltip.show();
 			tooltip.text = text.split("\n");
-			moveTooltip(100, 100);
+			moveTooltip(width / 2 + Math.cos(a) * r, height / 2 + Math.sin(a) * r);
 		}
 	}
 	

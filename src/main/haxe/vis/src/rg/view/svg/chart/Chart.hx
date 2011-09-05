@@ -45,8 +45,8 @@ class Chart extends Layer
 		if (null != labelDataPointOver)
 		{
 			tooltip = new Baloon(g);
-			resize();
 		}
+		resize();
 	}
 	
 	function moveTooltip(x : Float, y : Float, ?animated : Bool)

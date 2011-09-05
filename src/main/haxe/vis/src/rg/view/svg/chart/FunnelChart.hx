@@ -76,7 +76,11 @@ class FunnelChart extends Chart
 		redraw();
 	}
 	
-	override function resize() redraw()
+	override function resize() 
+	{
+		super.resize();
+		redraw();
+	}
 	
 	function dpvalue(dp : DataPoint) return DataPoints.value(dp, variableDependent.type)
 	
