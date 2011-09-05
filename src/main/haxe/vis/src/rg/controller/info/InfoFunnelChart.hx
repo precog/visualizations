@@ -6,6 +6,8 @@
 package rg.controller.info;
 import rg.data.DataPoint;
 import rg.data.Stats;
+import rg.view.svg.chart.GradientEffect;
+import rg.view.svg.chart.GradientEffects;
 using rg.controller.info.Info;
 
 class InfoFunnelChart 
@@ -16,7 +18,7 @@ class InfoFunnelChart
 	public var click : DataPoint -> Stats -> Void;
 	public var padding : Float;
 	public var flatness : Float;
-	public var applyGradient : Bool;
+	public var effect : GradientEffect;
 	public var arrowSize : Float;
 	
 	public function new()
@@ -25,7 +27,7 @@ class InfoFunnelChart
 		label = new InfoLabel();
 		padding = 2.5;
 		flatness = 1.0;
-		applyGradient = true;
+		effect = GradientEffect.Gradient(0.75);
 		arrowSize = 30;
 	}
 
@@ -68,11 +70,11 @@ class InfoFunnelChart
 			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {
-			field : "style",
-			validator : function(v) return v == "gradient" || v == "none",
+			field : "effect",
+			validator : GradientEffects.canParse,
 			filter : function(v) return [ {
-				field : "applyGradient",
-				value : v == "gradient"
+				field : "effect",
+				value : GradientEffects.parse(v)
 			}]
 		}, {
 			field : "arrowsize",

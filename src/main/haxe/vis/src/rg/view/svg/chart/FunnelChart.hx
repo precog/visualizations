@@ -31,7 +31,8 @@ class FunnelChart extends Chart
 	public var mouseClick : DataPoint -> Stats -> Void;
 	public var padding : Float;
 	public var flatness : Float;
-	public var applyGradient : Bool;
+	public var displayGradient : Bool;
+	public var gradientLightness : Float;
 	public var arrowSize : Float;
 			
 	var variableIndependent : VariableIndependent<Dynamic>;
@@ -45,7 +46,8 @@ class FunnelChart extends Chart
 		padding = 2.5;
 		flatness = 1.0;
 		arrowSize = 30;
-		applyGradient = true;
+		gradientLightness = 1;
+		displayGradient = true;
 	}
 	
 	public dynamic function labelFormatDataPoint(dp : DataPoint, stats : Stats)
@@ -148,8 +150,8 @@ class FunnelChart extends Chart
 		;
 		if (null != this.mouseClick)
 			top.onNode("click", function(_, _) mouseClick(dps[0], stats));
-		if(applyGradient)
-			internalSection(path);
+		if(displayGradient)
+			internalGradient(path);
 		var topheight : Float = Math.ceil(untyped path.node().getBBox().height / 2) + 1;
 		
 		// calculate bottom
@@ -185,8 +187,8 @@ class FunnelChart extends Chart
 				var d2 = 'C' + t.join('C');
 				return diagonal1.diagonal(d, i) + conj2(d, i) + d2 + conj1(d, i);
 			});
-		if(applyGradient)
-			enter.eachNode(externalSection);
+		if(displayGradient)
+			enter.eachNode(externalGradient);
 		
 		var ga = g.selectAll("g.arrow")
 			.data(dps)
@@ -248,13 +250,11 @@ class FunnelChart extends Chart
 			.append("svg:defs");
 	}
 
-	function internalSection(d : Selection)
+	function internalGradient(d : Selection)
 	{
 		var c = d.style("fill").get(),
 			color = Colors.parse(null == c ? "#ccc" : c);
-			
-		d.style("fill").string(Hsl.darker(Hsl.toHsl(color), 0.6).toRgbString());
-		
+
 		var stops = defs
 			.append("svg:radialGradient")
 			.attr("id").string("rg_funnel_int_gradient_0")
@@ -265,18 +265,18 @@ class FunnelChart extends Chart
 		;
 		stops.append("svg:stop")
 			.attr("offset").string("0%")
-			.attr("stop-color").string(Hsl.darker(Hsl.toHsl(color), 1.25).toRgbString())
+			.attr("stop-color").string(Hsl.darker(Hsl.toHsl(color), 1.25 * gradientLightness).toRgbString())
 		;
 
 		stops.append("svg:stop")
 			.attr("offset").string("100%")
-			.attr("stop-color").string(Hsl.darker(Hsl.toHsl(color), 0.4).toRgbString())
+			.attr("stop-color").string(Hsl.darker(Hsl.toHsl(color), 0.4 * gradientLightness).toRgbString())
 		;
 			
 		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
 	}
 
-	function externalSection(n, i : Int)
+	function externalGradient(n, i : Int)
 	{
 		var g = Dom.selectNode(n),
 			d = g.select("path"),
@@ -302,7 +302,7 @@ class FunnelChart extends Chart
 			.attr("stop-color").string(top)
 		;
 		
-		var middlecolor = Hsl.darker(color, 1 + Math.log(ratio) / 2.5).toCss();
+		var middlecolor = Hsl.darker(color, 1 + Math.log(ratio) / (2.5 * gradientLightness)).toCss();
 
 		stops.append("svg:stop")
 			.attr("offset").string("50%")

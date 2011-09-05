@@ -7,6 +7,7 @@ package rg.controller.visualization;
 import rg.controller.info.InfoFunnelChart;
 import rg.view.layout.Layout;
 import rg.view.svg.chart.FunnelChart;
+import rg.view.svg.chart.GradientEffect;
 import rg.view.svg.layer.Title;
 import rg.data.DataPoint;
 import rg.util.DataPoints;
@@ -37,7 +38,15 @@ class VisualizationFunnelChart extends VisualizationSvg
 			
 		chart.padding = info.padding;
 		chart.flatness = info.flatness;
-		chart.applyGradient = info.applyGradient;
+		switch(info.effect)
+		{
+			case Gradient(v):
+				chart.displayGradient = true;
+				chart.gradientLightness = v;
+			case NoEffect:
+				chart.displayGradient = false;
+		}
+		
 		chart.arrowSize = info.arrowSize;
 		
 		// TITLE

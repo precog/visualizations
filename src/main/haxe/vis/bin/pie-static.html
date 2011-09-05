@@ -7,7 +7,6 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
 	<link rel="stylesheet" href="css/rg-debug.css" type="text/css"/>
 <!--
 	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
@@ -60,8 +59,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				datapointover : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
 			},
 			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
-			effect : "gradient-max"
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); }
 		}
 	});
 }, false)

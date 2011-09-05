@@ -5,6 +5,8 @@
 
 package rg.controller.info;
 import rg.data.DataPoint;
+import rg.view.svg.chart.GradientEffect;
+import rg.view.svg.chart.GradientEffects;
 import rg.view.svg.widget.LabelOrientation;
 import thx.error.Error;
 using rg.controller.info.Info;
@@ -22,7 +24,7 @@ class InfoPieChart
 	public var tooltipradius : Float;
 	public var animation : InfoAnimation;
 	public var label : InfoLabel;
-	public var gradientlightness : Float;
+	public var effect : GradientEffect;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var dontfliplabel : Bool;
 	
@@ -39,7 +41,7 @@ class InfoPieChart
 		tooltipradius = 0.5;
 		animation = new InfoAnimation();
 		label = new InfoLabel();
-		gradientlightness = 1.5;
+		effect = GradientEffect.Gradient(0.65);
 		dontfliplabel = true;
 	}
 	
@@ -73,10 +75,6 @@ class InfoPieChart
 	public static function filters()
 	{
 		return [{
-			field : "gradientlightness",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
 			field : "labelradius",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
@@ -139,6 +137,13 @@ class InfoPieChart
 			field : "click",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
+		}, {
+			field : "effect",
+			validator : GradientEffects.canParse,
+			filter : function(v) return [ {
+				field : "effect",
+				value : GradientEffects.parse(v)
+			}]
 		}];
 	}
 }

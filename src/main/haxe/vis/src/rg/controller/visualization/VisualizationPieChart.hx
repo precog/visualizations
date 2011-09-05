@@ -31,7 +31,14 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.outerRadius = info.outerradius;
 		chart.overRadius  = info.overradius;
 		chart.tooltipRadius = info.tooltipradius;
-		chart.gradientLightness = info.gradientlightness;
+		switch(info.effect)
+		{
+			case Gradient(v):
+				chart.displayGradient = true;
+				chart.gradientLightness = v;
+			case NoEffect:
+				chart.displayGradient = false;
+		}
 		
 		// labels
 		chart.labelDataPoint = info.label.datapoint;

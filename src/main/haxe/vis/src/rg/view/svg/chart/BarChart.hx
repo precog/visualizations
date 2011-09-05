@@ -157,7 +157,6 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			id = "rg_bar_gradient_" + color.hex("");
 		if (defs.select('#'+id).empty())
 		{
-			
 			var scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness).toRgbString();
 			
 			var gradient = defs

@@ -46,6 +46,7 @@ class PieChart extends Chart
 	var stats : { min : Float, max : Float, tot : Float };
 	var variableDependent : VariableDependent<Dynamic>;
 	public var gradientLightness : Float;
+	public var displayGradient : Bool;
 	public var animationDelay : Int;
 	
 	public var labelDisplay : Bool;
@@ -62,7 +63,8 @@ class PieChart extends Chart
 		addClass("pie-chart");
 		g.append("svg:defs");
 		pie = new Pie();
-		gradientLightness = 1.5;
+		gradientLightness = 0.75;
+		displayGradient = true;
 		animationDelay = 0;
 		innerRadius = 0.0;
 		outerRadius = 0.9;
@@ -122,7 +124,8 @@ class PieChart extends Chart
 		var path = arc
 			.append("svg:path")
 			.attr("class").string("slice");
-		arc.eachNode(applyGradient);
+		if(displayGradient)
+			arc.eachNode(applyGradient);
 		if (animated)
 		{
 			path.attr("d").stringf(arcShape(arcStart));
@@ -270,11 +273,11 @@ class PieChart extends Chart
 			;
 			stops.append("svg:stop")
 				.attr("offset").string((100*innerRadius)+"%")
-				.attr("stop-color").string(scolor)
+				.attr("stop-color").string(color)
 				.attr("stop-opacity").float(1);
 			stops.append("svg:stop")
 				.attr("offset").string("100%")
-				.attr("stop-color").string(color)
+				.attr("stop-color").string(scolor)
 				.attr("stop-opacity").float(1);
 		}
 		gn.select("path.slice")

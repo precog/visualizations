@@ -2006,7 +2006,7 @@ rg.controller.info.InfoFunnelChart = function(p) {
 	this.label = new rg.controller.info.InfoLabel();
 	this.padding = 2.5;
 	this.flatness = 1.0;
-	this.applyGradient = true;
+	this.effect = rg.view.svg.chart.GradientEffect.Gradient(0.75);
 	this.arrowSize = 30;
 }
 rg.controller.info.InfoFunnelChart.__name__ = ["rg","controller","info","InfoFunnelChart"];
@@ -2031,10 +2031,8 @@ rg.controller.info.InfoFunnelChart.filters = function() {
 		return [{ field : "padding", value : v}];
 	}},{ field : "flatness", validator : function(v) {
 		return Std["is"](v,Float);
-	}, filter : null},{ field : "style", validator : function(v) {
-		return v == "gradient" || v == "none";
-	}, filter : function(v) {
-		return [{ field : "applyGradient", value : v == "gradient"}];
+	}, filter : null},{ field : "effect", validator : rg.view.svg.chart.GradientEffects.canParse, filter : function(v) {
+		return [{ field : "effect", value : rg.view.svg.chart.GradientEffects.parse(v)}];
 	}},{ field : "arrowsize", validator : function(v) {
 		return Std["is"](v,Float);
 	}, filter : function(v) {
@@ -2047,7 +2045,7 @@ rg.controller.info.InfoFunnelChart.prototype.sortDataPoint = null;
 rg.controller.info.InfoFunnelChart.prototype.click = null;
 rg.controller.info.InfoFunnelChart.prototype.padding = null;
 rg.controller.info.InfoFunnelChart.prototype.flatness = null;
-rg.controller.info.InfoFunnelChart.prototype.applyGradient = null;
+rg.controller.info.InfoFunnelChart.prototype.effect = null;
 rg.controller.info.InfoFunnelChart.prototype.arrowSize = null;
 rg.controller.info.InfoFunnelChart.prototype.__class__ = rg.controller.info.InfoFunnelChart;
 if(!thx.js) thx.js = {}
@@ -5093,7 +5091,7 @@ rg.controller.info.InfoPieChart = function(p) {
 	this.tooltipradius = 0.5;
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabel();
-	this.gradientlightness = 1.5;
+	this.effect = rg.view.svg.chart.GradientEffect.Gradient(0.65);
 	this.dontfliplabel = true;
 }
 rg.controller.info.InfoPieChart.__name__ = ["rg","controller","info","InfoPieChart"];
@@ -5106,7 +5104,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	switch(name) {
 	case "fixed":
 		var v = Std.parseFloat(s.split("-")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 62, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 		return rg.view.svg.widget.LabelOrientation.FixedAngle(v);
 	case "ortho":case "orthogonal":
 		return rg.view.svg.widget.LabelOrientation.Orthogonal;
@@ -5115,13 +5113,11 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	case "horizontal":
 		return rg.view.svg.widget.LabelOrientation.FixedAngle(0);
 	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 69, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 71, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 	}
 }
 rg.controller.info.InfoPieChart.filters = function() {
-	return [{ field : "gradientlightness", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "labelradius", validator : function(v) {
+	return [{ field : "labelradius", validator : function(v) {
 		return Std["is"](v,Float);
 	}, filter : null},{ field : "dontfliplabel", validator : function(v) {
 		return Std["is"](v,Bool);
@@ -5155,7 +5151,9 @@ rg.controller.info.InfoPieChart.filters = function() {
 		return [{ field : "sortDataPoint", value : v}];
 	}},{ field : "click", validator : function(v) {
 		return Reflect.isFunction(v);
-	}, filter : null}];
+	}, filter : null},{ field : "effect", validator : rg.view.svg.chart.GradientEffects.canParse, filter : function(v) {
+		return [{ field : "effect", value : rg.view.svg.chart.GradientEffects.parse(v)}];
+	}}];
 }
 rg.controller.info.InfoPieChart.prototype.labelradius = null;
 rg.controller.info.InfoPieChart.prototype.labeldisplay = null;
@@ -5166,7 +5164,7 @@ rg.controller.info.InfoPieChart.prototype.overradius = null;
 rg.controller.info.InfoPieChart.prototype.tooltipradius = null;
 rg.controller.info.InfoPieChart.prototype.animation = null;
 rg.controller.info.InfoPieChart.prototype.label = null;
-rg.controller.info.InfoPieChart.prototype.gradientlightness = null;
+rg.controller.info.InfoPieChart.prototype.effect = null;
 rg.controller.info.InfoPieChart.prototype.sortDataPoint = null;
 rg.controller.info.InfoPieChart.prototype.dontfliplabel = null;
 rg.controller.info.InfoPieChart.prototype.click = null;
@@ -5306,7 +5304,17 @@ rg.controller.visualization.VisualizationPieChart.prototype.init = function() {
 	this.chart.outerRadius = this.info.outerradius;
 	this.chart.overRadius = this.info.overradius;
 	this.chart.tooltipRadius = this.info.tooltipradius;
-	this.chart.gradientLightness = this.info.gradientlightness;
+	var $e = (this.info.effect);
+	switch( $e[1] ) {
+	case 1:
+		var v = $e[2];
+		this.chart.displayGradient = true;
+		this.chart.gradientLightness = v;
+		break;
+	case 0:
+		this.chart.displayGradient = false;
+		break;
+	}
 	this.chart.labelDataPoint = this.info.label.datapoint;
 	this.chart.labelDataPointOver = this.info.label.datapointover;
 	this.chart.labelRadius = this.info.labelradius;
@@ -7324,7 +7332,8 @@ rg.view.svg.chart.PieChart = function(panel) {
 	this.addClass("pie-chart");
 	this.g.append("svg:defs");
 	this.pie = new thx.geom.layout.Pie();
-	this.gradientLightness = 1.5;
+	this.gradientLightness = 0.75;
+	this.displayGradient = true;
 	this.animationDelay = 0;
 	this.innerRadius = 0.0;
 	this.outerRadius = 0.9;
@@ -7352,6 +7361,7 @@ rg.view.svg.chart.PieChart.prototype.radius = null;
 rg.view.svg.chart.PieChart.prototype.stats = null;
 rg.view.svg.chart.PieChart.prototype.variableDependent = null;
 rg.view.svg.chart.PieChart.prototype.gradientLightness = null;
+rg.view.svg.chart.PieChart.prototype.displayGradient = null;
 rg.view.svg.chart.PieChart.prototype.animationDelay = null;
 rg.view.svg.chart.PieChart.prototype.labelDisplay = null;
 rg.view.svg.chart.PieChart.prototype.labelOrientation = null;
@@ -7381,7 +7391,7 @@ rg.view.svg.chart.PieChart.prototype.data = function(dp) {
 		return "group item-" + i;
 	}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
 	var path = arc.append("svg:path").attr("class").string("slice");
-	arc.eachNode($closure(this,"applyGradient"));
+	if(this.displayGradient) arc.eachNode($closure(this,"applyGradient"));
 	if(this.animated) {
 		path.attr("d").stringf(this.arcShape(this.arcStart));
 		arc.eachNode($closure(this,"fadein")).onNode("mouseover.label",$closure(this,"onMouseOver")).onNode("mouseover.animation",$closure(this,"highlight")).onNode("mouseout.animation",$closure(this,"backtonormal"));
@@ -7450,8 +7460,8 @@ rg.view.svg.chart.PieChart.prototype.applyGradient = function(n,i) {
 		var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
 		var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
 		var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
-		stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
-		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color).attr("stop-opacity")["float"](1);
+		stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(color).attr("stop-opacity")["float"](1);
+		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
 	}
 	gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
 }
@@ -8899,7 +8909,8 @@ rg.view.svg.chart.FunnelChart = function(panel) {
 	this.padding = 2.5;
 	this.flatness = 1.0;
 	this.arrowSize = 30;
-	this.applyGradient = true;
+	this.gradientLightness = 1;
+	this.displayGradient = true;
 }
 rg.view.svg.chart.FunnelChart.__name__ = ["rg","view","svg","chart","FunnelChart"];
 rg.view.svg.chart.FunnelChart.__super__ = rg.view.svg.chart.Chart;
@@ -8907,7 +8918,8 @@ for(var k in rg.view.svg.chart.Chart.prototype ) rg.view.svg.chart.FunnelChart.p
 rg.view.svg.chart.FunnelChart.prototype.mouseClick = null;
 rg.view.svg.chart.FunnelChart.prototype.padding = null;
 rg.view.svg.chart.FunnelChart.prototype.flatness = null;
-rg.view.svg.chart.FunnelChart.prototype.applyGradient = null;
+rg.view.svg.chart.FunnelChart.prototype.displayGradient = null;
+rg.view.svg.chart.FunnelChart.prototype.gradientLightness = null;
 rg.view.svg.chart.FunnelChart.prototype.arrowSize = null;
 rg.view.svg.chart.FunnelChart.prototype.variableIndependent = null;
 rg.view.svg.chart.FunnelChart.prototype.variableDependent = null;
@@ -8981,7 +8993,7 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 	if(null != this.mouseClick) top.onNode("click",function(_,_1) {
 		me.mouseClick(me.dps[0],me.stats);
 	});
-	if(this.applyGradient) this.internalSection(path);
+	if(this.displayGradient) this.internalGradient(path);
 	var topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
 	var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside item-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
 	bottom.remove();
@@ -9002,7 +9014,7 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 		var d2 = "C" + t.join("C");
 		return diagonal1.diagonal(d,i) + conj2(d,i) + d2 + conj1(d,i);
 	});
-	if(this.applyGradient) enter.eachNode($closure(this,"externalSection"));
+	if(this.displayGradient) enter.eachNode($closure(this,"externalGradient"));
 	var ga = this.g.selectAll("g.arrow").data(this.dps).enter().append("svg:g").attr("class").string("arrow").attr("transform").stringf(function(d,i) {
 		return "translate(" + me.width / 2 + "," + (topheight + h * i + me.arrowSize / 2) + ")";
 	});
@@ -9030,20 +9042,19 @@ rg.view.svg.chart.FunnelChart.prototype.init = function() {
 	rg.view.svg.chart.Chart.prototype.init.call(this);
 	this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
 }
-rg.view.svg.chart.FunnelChart.prototype.internalSection = function(d) {
+rg.view.svg.chart.FunnelChart.prototype.internalGradient = function(d) {
 	var c = d.style("fill").get(), color = thx.color.Colors.parse(null == c?"#ccc":c);
-	d.style("fill").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),0.6).toRgbString());
 	var stops = this.defs.append("svg:radialGradient").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
-	stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),1.25).toRgbString());
-	stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),0.4).toRgbString());
+	stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),1.25 * this.gradientLightness).toRgbString());
+	stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),0.4 * this.gradientLightness).toRgbString());
 	d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
 }
-rg.view.svg.chart.FunnelChart.prototype.externalSection = function(n,i) {
+rg.view.svg.chart.FunnelChart.prototype.externalGradient = function(n,i) {
 	var g = thx.js.Dom.selectNode(n), d = g.select("path"), c = d.style("fill").get(), color = thx.color.Hsl.toHsl(thx.color.Colors.parse(null == c?"#ccc":c)), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
 	var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
 	var top = color.hex("#");
 	stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
-	var middlecolor = thx.color.Hsl.darker(color,1 + Math.log(ratio) / 2.5).hex("#");
+	var middlecolor = thx.color.Hsl.darker(color,1 + Math.log(ratio) / (2.5 * this.gradientLightness)).hex("#");
 	stops.append("svg:stop").attr("offset").string("50%").attr("stop-color").string(middlecolor);
 	stops.append("svg:stop").attr("offset").string("90%").attr("stop-color").string(top);
 	d.attr("style").string("fill:url(#" + id + ")");
@@ -9067,7 +9078,17 @@ rg.controller.visualization.VisualizationFunnelChart.prototype.init = function()
 	if(null != this.info.click) this.chart.mouseClick = this.info.click;
 	this.chart.padding = this.info.padding;
 	this.chart.flatness = this.info.flatness;
-	this.chart.applyGradient = this.info.applyGradient;
+	var $e = (this.info.effect);
+	switch( $e[1] ) {
+	case 1:
+		var v = $e[2];
+		this.chart.displayGradient = true;
+		this.chart.gradientLightness = v;
+		break;
+	case 0:
+		this.chart.displayGradient = false;
+		break;
+	}
 	this.chart.arrowSize = this.info.arrowSize;
 	if(null != this.info.label.title) {
 		var panelContextTitle = this.layout.getContext("title");
@@ -12184,6 +12205,21 @@ thx.js.Svg.mouse = function(dom) {
 thx.js.Svg.prototype.__class__ = thx.js.Svg;
 rg.view.svg.chart.GradientEffects = function() { }
 rg.view.svg.chart.GradientEffects.__name__ = ["rg","view","svg","chart","GradientEffects"];
+rg.view.svg.chart.GradientEffects.canParse = function(d) {
+	if(!Std["is"](d,String)) return false;
+	var s = d, parts = s.toLowerCase().split("-");
+	return (function($this) {
+		var $r;
+		switch(parts[0]) {
+		case "gradient":case "noeffect":
+			$r = true;
+			break;
+		default:
+			$r = false;
+		}
+		return $r;
+	}(this));
+}
 rg.view.svg.chart.GradientEffects.parse = function(s) {
 	var parts = s.toLowerCase().split("-");
 	switch(parts.shift()) {
