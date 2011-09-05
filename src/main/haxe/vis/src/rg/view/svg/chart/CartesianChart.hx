@@ -17,27 +17,14 @@ import rg.view.svg.panel.Panels;
 import rg.data.Variable;
 import rg.data.IAxis;
 
-class CartesianChart<T> extends Layer
+class CartesianChart<T> extends Chart
 {
 	public var yVariables : Array<Variable<Dynamic, IAxis<Dynamic>>>;
 	public var xVariable : Variable<Dynamic, IAxis<Dynamic>>;
-	public var animated : Bool;
-	public var animationDuration : Int;
-	public var animationEase : Float -> Float;
-	public var click : DataPoint -> Stats -> Void;
-	public var labelDataPoint : DataPoint -> Stats -> String;
-	public var labelDataPointOver : DataPoint -> Stats -> String;
-	
-	var panelx : Float;
-	var panely : Float;
-	var tooltip : Baloon;
 	
 	public function new(panel : Panel)
 	{
 		super(panel);
-		animated = true;
-		animationDuration = 1500;
-		animationEase = Equations.linear;
 	}
 	
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
@@ -49,21 +36,5 @@ class CartesianChart<T> extends Layer
 	public function data(dps : T)
 	{
 		throw new AbstractMethod();
-	}
-	
-	override function resize()
-	{
-		var coords = Panels.boundingBox(panel);
-		panelx = coords.x;
-		panely = coords.y;
-	}
-	
-	public function init()
-	{
-		if (null != labelDataPointOver)
-		{
-			tooltip = new Baloon(g);
-			resize();
-		}
 	}
 }

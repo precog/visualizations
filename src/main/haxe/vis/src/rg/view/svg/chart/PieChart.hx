@@ -7,6 +7,7 @@ package rg.view.svg.chart;
 import haxe.Md5;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
+import rg.view.svg.widget.Baloon;
 import thx.culture.FormatNumber;
 import thx.js.Selection;
 import rg.view.svg.panel.Layer;
@@ -29,7 +30,7 @@ using Arrays;
 
 // TODO add overDataPoint
 // TODO improve automatic title when the axis is time
-class PieChart extends Layer
+class PieChart extends Chart
 {
 	public var innerRadius : Float;
 	public var outerRadius : Float;
@@ -43,9 +44,6 @@ class PieChart extends Layer
 	var radius : Float;
 	var stats : { min : Float, max : Float, tot : Float };
 	var variableDependent : VariableDependent<Dynamic>;
-	public var animated : Bool;
-	public var animationDuration : Int;
-	public var animationEase : Float -> Float;
 	public var gradientLightness : Float;
 	public var animationDelay : Int;
 	
@@ -63,8 +61,6 @@ class PieChart extends Layer
 		addClass("pie-chart");
 		g.append("svg:defs");
 		pie = new Pie();
-		animated = false;
-		animationDuration = 0;
 		gradientLightness = 1.5;
 		animationDelay = 0;
 		innerRadius = 0.0;
@@ -77,24 +73,15 @@ class PieChart extends Layer
 		labelOrientation = LabelOrientation.Orthogonal;
 		labelDontFlip = true;
 	}
-
-	public dynamic function labelFormatDataPoint(dp : DataPoint, stats : Stats)
-	{
-		return FormatNumber.percent(100 * Reflect.field(dp, variableDependent.type) / stats.tot, 1);
-	}
-	
-	public dynamic function labelFormatDataPointOver(dp : DataPoint, stats : Stats)
-	{
-		return Ints.format(Reflect.field(dp, variableDependent.type));
-	}
 	
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
 		variableDependent = variableDependents[0];
 	}
 
-	public function init()
+	override public function init()
 	{
+		super.init();
 		resize();
 	}
 
@@ -144,6 +131,7 @@ class PieChart extends Layer
 			path.attr("d").stringf(arcShape(arcStart));
 			arc
 				.eachNode(fadein)
+				.onNode("mouseover.label", onMouseOver)
 				.onNode("mouseover.animation", highlight)
 				.onNode("mouseout.animation", backtonormal);
 		} else {
@@ -170,6 +158,23 @@ class PieChart extends Layer
 			.remove();
 	}
 	
+	function onMouseOver(dom, i)
+	{
+		if (null == labelDataPointOver)
+			return;
+		var d : { dp : DataPoint } = Access.getData(dom),
+			text = labelDataPointOver(d.dp, stats);
+
+		if (null == text)
+			tooltip.hide();
+		else 
+		{
+			tooltip.show();
+			tooltip.text = text.split("\n");
+			moveTooltip(100, 100);
+		}
+	}
+	
 	function onMouseClick(dom, i)
 	{
 		var d : { dp : DataPoint } = Access.getData(dom);
@@ -192,11 +197,14 @@ class PieChart extends Layer
 			label = labels.get(d.id),
 			r = radius * labelRadius,
 			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-		label.text = labelFormatDataPoint(d.dp, stats);
-		label.place(
-			-2.5 + Math.cos(a) * r, 
-			-2.5 + Math.sin(a) * r,
-			Const.TO_DEGREE * a);
+		if (null != labelDataPoint)
+		{
+			label.text = labelDataPoint(d.dp, stats);
+			label.place(
+				-2.5 + Math.cos(a) * r, 
+				-2.5 + Math.sin(a) * r,
+				Const.TO_DEGREE * a);
+		}
 	}
 	
 	function appendLabel(dom, i : Int)
@@ -216,12 +224,15 @@ class PieChart extends Layer
 			case Orthogonal:
 				label.anchor = GridAnchor.Top;
 		}
-		label.text = labelFormatDataPoint(d.dp, stats);
-		label.place(
-			-2.5 + Math.cos(a) * r, 
-			-2.5 + Math.sin(a) * r,
-			Const.TO_DEGREE * a);
-		labels.set(d.id, label);
+		if (null != labelDataPoint)
+		{
+			label.text = labelDataPoint(d.dp, stats);
+			label.place(
+				-2.5 + Math.cos(a) * r, 
+				-2.5 + Math.sin(a) * r,
+				Const.TO_DEGREE * a);
+			labels.set(d.id, label);
+		}
 	}
 	
 	function applyGradient(n, i : Int)

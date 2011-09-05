@@ -26,7 +26,7 @@ import thx.svg.Symbol;
 import rg.util.DataPoints;
 using Arrays;
 
-class FunnelChart extends Layer
+class FunnelChart extends Chart
 {
 	public var mouseClick : DataPoint -> Stats -> Void;
 	public var padding : Float;
@@ -237,8 +237,9 @@ class FunnelChart extends Layer
 		});
 	}
 	
-	public function init()
+	override public function init()
 	{
+		super.init();
 		defs = g.classed().add("funnel-chart")
 			.append("svg:defs");
 	}

@@ -111,7 +111,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		var dp = getDataAtNode(n, i);
 		tooltip.text = labelDataPointOver(dp.dp, stats).split("\n");
 		tooltip.show();
-		tooltip.moveTo(panelx + dp.coord.x * width, panely + height - (dp.coord.y + dp.coord.y0) * height / maxy);
+		moveTooltip(dp.coord.x * width, height - (dp.coord.y + dp.coord.y0) * height / maxy);
 	}
 	
 	function onclick(n, i)

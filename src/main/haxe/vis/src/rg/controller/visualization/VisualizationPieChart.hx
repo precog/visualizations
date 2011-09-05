@@ -33,10 +33,8 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.gradientLightness = info.gradientlightness;
 		
 		// labels
-		if(null != info.label.datapoint)
-			chart.labelFormatDataPoint = info.label.datapoint;
-		if(null != info.label.datapoint)
-			chart.labelFormatDataPointOver = info.label.datapointover;
+		chart.labelDataPoint = info.label.datapoint;
+		chart.labelDataPointOver = info.label.datapointover;
 
 		chart.labelRadius = info.labelradius;
 		chart.labelDisplay = info.labeldisplay;

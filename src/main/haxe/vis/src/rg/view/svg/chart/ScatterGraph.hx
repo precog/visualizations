@@ -163,7 +163,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 				coords = coordsFromTransform(sel.attr("transform").get());
 			tooltip.show();
 			tooltip.text = text.split("\n");
-			tooltip.moveTo(panelx + coords[0], panely + coords[1]);
+			moveTooltip(coords[0], coords[1]);
 		}
 	}
 	
