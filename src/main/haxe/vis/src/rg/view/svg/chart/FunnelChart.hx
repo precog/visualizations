@@ -28,13 +28,14 @@ using Arrays;
 
 class FunnelChart extends Chart
 {
-	public var mouseClick : DataPoint -> Stats -> Void;
+//	public var click : DataPoint -> Stats -> Void;
 	public var padding : Float;
 	public var flatness : Float;
 	public var displayGradient : Bool;
 	public var gradientLightness : Float;
 	public var arrowSize : Float;
-			
+	public var labelArrow : DataPoint -> Stats -> String;
+
 	var variableIndependent : VariableIndependent<Dynamic>;
 	var variableDependent : VariableDependent<Dynamic>;
 	var defs : Selection;
@@ -48,24 +49,28 @@ class FunnelChart extends Chart
 		arrowSize = 30;
 		gradientLightness = 1;
 		displayGradient = true;
+		
+		labelArrow = defaultLabelArrow;
+		labelDataPoint = defaultLabelDataPoint;
+		labelDataPointOver = defaultLabelDataPointOver;
 	}
 	
-	public dynamic function labelFormatDataPoint(dp : DataPoint, stats : Stats)
+	public function defaultLabelArrow(dp : DataPoint, stats : Stats)
 	{
 		var value = Reflect.field(dp, variableDependent.type) / stats.max;
 		return FormatNumber.percent(100 * value, 0);
 	}
 	
-	public dynamic function labelFormatAxis(dp : DataPoint, stats : Stats)
+	public function defaultLabelDataPoint(dp : DataPoint, stats : Stats)
 	{
-		return RGStrings.humanize(DataPoints.value(dp, variableIndependent.type)).split(" ").join("\n") + "\n" + Dynamics.format(dpvalue(dp));
+		return RGStrings.humanize(DataPoints.value(dp, variableIndependent.type)).split(" ").join("\n");
 	}
 	
-	public dynamic function labelFormatDataPointOver(dp : DataPoint, stats : Stats)
+	public function defaultLabelDataPointOver(dp : DataPoint, stats : Stats)
 	{
 		return Ints.format(Reflect.field(dp, variableDependent.type));
 	}
-	
+
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
 		variableIndependent = variableIndependents[0];
@@ -87,6 +92,8 @@ class FunnelChart extends Chart
 	function dpvalue(dp : DataPoint) return DataPoints.value(dp, variableDependent.type)
 	
 	var stats : Stats;
+	var topheight : Float;
+	var h : Float;
 	function scale(value : Dynamic)
 	{
 		return variableDependent.axis.scale(variableDependent.min, variableDependent.max, value);
@@ -110,7 +117,6 @@ class FunnelChart extends Chart
 			wscale = function(v) {
 				return scale(v) / max * (width-2) / 2;
 			},
-			h : Float,
 			fx1 = function(v) return (width / 2 - wscale(v)),
 			fx2 = function(v) return width - fx1(v),
 			diagonal1 = new Diagonal()
@@ -148,11 +154,12 @@ class FunnelChart extends Chart
 			.attr("class").string("funnel-inside item-0")
 			.attr("d").string(conjr(dps[0]))
 		;
-		if (null != this.mouseClick)
-			top.onNode("click", function(_, _) mouseClick(dps[0], stats));
+		if (null != click)
+			top.onNode("click", function(_, _) click(dps[0], stats));
 		if(displayGradient)
 			internalGradient(path);
-		var topheight : Float = Math.ceil(untyped path.node().getBBox().height / 2) + 1;
+		top.onNode("mouseover", function(_, _) mouseOver(dps[0], 0, stats));
+		topheight = Math.ceil(untyped path.node().getBBox().height / 2) + 1;
 		
 		// calculate bottom
 		var index = dps.length - 1,
@@ -176,8 +183,9 @@ class FunnelChart extends Chart
 			+ (topheight + i * (padding + h))
 			+ ")")
 		;
-		if (null != this.mouseClick)
-			enter.on("click", function(d, i) mouseClick(d, stats));
+		if (null != click)
+			enter.on("click", function(d, _) click(d, stats));
+		enter.on("mouseover", function(d, i) mouseOver(d, i, stats));
 		var funnel = enter
 			.append("svg:path")
 			.attr("class").stringf(function(d, i) return "funnel-outside item-" + i)
@@ -200,7 +208,9 @@ class FunnelChart extends Chart
 			});
 		
 		ga.each(function(d, i) {
-			var text = labelFormatDataPoint(d, stats);
+			if (null == labelArrow)
+				return;
+			var text = labelArrow(d, stats);
 			if (null == text)
 				return;
 			var node = Selection.current;
@@ -226,7 +236,9 @@ class FunnelChart extends Chart
 		});
 		
 		ga.each(function(d, i) {
-			var text = labelFormatAxis(d, stats);
+			if (null == labelDataPoint)
+				return;
+			var text = labelDataPoint(d, stats);
 			if (null == text)
 				return;
 			var baloon = new Baloon(g);
@@ -243,9 +255,28 @@ class FunnelChart extends Chart
 		});
 	}
 	
+	function mouseOver(dp : DataPoint, i : Int, stats : Stats)
+	{
+		if (null == labelDataPointOver)
+			return;
+		var text = labelDataPointOver(dp, stats);
+		if (null == text)
+			tooltip.hide()
+		else
+		{
+			tooltip.show();
+			tooltip.text = text.split("\n");
+			moveTooltip(width / 2, topheight + h * .6 + (h + padding) * i, true);
+		}
+	}
+	
 	override public function init()
 	{
 		super.init();
+		if (null != tooltip)
+		{
+			tooltip.preferredSide = 1;
+		}
 		defs = g.classed().add("funnel-chart")
 			.append("svg:defs");
 	}

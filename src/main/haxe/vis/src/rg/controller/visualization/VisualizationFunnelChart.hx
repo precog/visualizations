@@ -28,13 +28,15 @@ class VisualizationFunnelChart extends VisualizationSvg
 
 		// labels
 		if(null != info.label.datapoint)
-			chart.labelFormatDataPoint = info.label.datapoint;
+			chart.labelDataPoint = info.label.datapoint;
 		if(null != info.label.datapoint)
-			chart.labelFormatDataPointOver = info.label.datapointover;
+			chart.labelDataPointOver = info.label.datapointover;
+		if (null != info.label.arrow)
+			chart.labelArrow = info.label.arrow;
 		
 		// events
 		if(null != info.click)
-			chart.mouseClick = info.click;
+			chart.click = info.click;
 			
 		chart.padding = info.padding;
 		chart.flatness = info.flatness;

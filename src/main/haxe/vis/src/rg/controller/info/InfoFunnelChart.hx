@@ -13,7 +13,7 @@ using rg.controller.info.Info;
 class InfoFunnelChart 
 {
 	public var animation : InfoAnimation;
-	public var label : InfoLabel;
+	public var label : InfoLabelFunnel;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var click : DataPoint -> Stats -> Void;
 	public var padding : Float;
@@ -24,7 +24,7 @@ class InfoFunnelChart
 	public function new()
 	{
 		animation = new InfoAnimation();
-		label = new InfoLabel();
+		label = new InfoLabelFunnel();
 		padding = 2.5;
 		flatness = 1.0;
 		effect = GradientEffect.Gradient(0.75);
@@ -45,7 +45,7 @@ class InfoFunnelChart
 			validator : function(v) return Types.isAnonymous(v),
 			filter : function(v) return [{
 				field : "label",
-				value : new InfoLabel().feed(v)
+				value : new InfoLabelFunnel().feed(v)
 			}]
 		}, {
 			field : "sort",

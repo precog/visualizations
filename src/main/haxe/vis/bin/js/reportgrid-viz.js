@@ -2003,7 +2003,7 @@ rg.view.svg.chart.LineEffects.prototype.__class__ = rg.view.svg.chart.LineEffect
 rg.controller.info.InfoFunnelChart = function(p) {
 	if( p === $_ ) return;
 	this.animation = new rg.controller.info.InfoAnimation();
-	this.label = new rg.controller.info.InfoLabel();
+	this.label = new rg.controller.info.InfoLabelFunnel();
 	this.padding = 2.5;
 	this.flatness = 1.0;
 	this.effect = rg.view.svg.chart.GradientEffect.Gradient(0.75);
@@ -2018,7 +2018,7 @@ rg.controller.info.InfoFunnelChart.filters = function() {
 	}},{ field : "label", validator : function(v) {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelFunnel(),v)}];
 	}},{ field : "sort", validator : function(v) {
 		return Reflect.isFunction(v);
 	}, filter : function(v) {
@@ -8911,28 +8911,31 @@ rg.view.svg.chart.FunnelChart = function(panel) {
 	this.arrowSize = 30;
 	this.gradientLightness = 1;
 	this.displayGradient = true;
+	this.labelArrow = $closure(this,"defaultLabelArrow");
+	this.labelDataPoint = $closure(this,"defaultLabelDataPoint");
+	this.labelDataPointOver = $closure(this,"defaultLabelDataPointOver");
 }
 rg.view.svg.chart.FunnelChart.__name__ = ["rg","view","svg","chart","FunnelChart"];
 rg.view.svg.chart.FunnelChart.__super__ = rg.view.svg.chart.Chart;
 for(var k in rg.view.svg.chart.Chart.prototype ) rg.view.svg.chart.FunnelChart.prototype[k] = rg.view.svg.chart.Chart.prototype[k];
-rg.view.svg.chart.FunnelChart.prototype.mouseClick = null;
 rg.view.svg.chart.FunnelChart.prototype.padding = null;
 rg.view.svg.chart.FunnelChart.prototype.flatness = null;
 rg.view.svg.chart.FunnelChart.prototype.displayGradient = null;
 rg.view.svg.chart.FunnelChart.prototype.gradientLightness = null;
 rg.view.svg.chart.FunnelChart.prototype.arrowSize = null;
+rg.view.svg.chart.FunnelChart.prototype.labelArrow = null;
 rg.view.svg.chart.FunnelChart.prototype.variableIndependent = null;
 rg.view.svg.chart.FunnelChart.prototype.variableDependent = null;
 rg.view.svg.chart.FunnelChart.prototype.defs = null;
 rg.view.svg.chart.FunnelChart.prototype.dps = null;
-rg.view.svg.chart.FunnelChart.prototype.labelFormatDataPoint = function(dp,stats) {
+rg.view.svg.chart.FunnelChart.prototype.defaultLabelArrow = function(dp,stats) {
 	var value = Reflect.field(dp,this.variableDependent.type) / stats.max;
 	return thx.culture.FormatNumber.percent(100 * value,0);
 }
-rg.view.svg.chart.FunnelChart.prototype.labelFormatAxis = function(dp,stats) {
-	return rg.util.RGStrings.humanize(Reflect.field(dp,this.variableIndependent.type)).split(" ").join("\n") + "\n" + Dynamics.format(this.dpvalue(dp));
+rg.view.svg.chart.FunnelChart.prototype.defaultLabelDataPoint = function(dp,stats) {
+	return rg.util.RGStrings.humanize(Reflect.field(dp,this.variableIndependent.type)).split(" ").join("\n");
 }
-rg.view.svg.chart.FunnelChart.prototype.labelFormatDataPointOver = function(dp,stats) {
+rg.view.svg.chart.FunnelChart.prototype.defaultLabelDataPointOver = function(dp,stats) {
 	return Ints.format(Reflect.field(dp,this.variableDependent.type));
 }
 rg.view.svg.chart.FunnelChart.prototype.setVariables = function(variableIndependents,variableDependents) {
@@ -8951,6 +8954,8 @@ rg.view.svg.chart.FunnelChart.prototype.dpvalue = function(dp) {
 	return Reflect.field(dp,this.variableDependent.type);
 }
 rg.view.svg.chart.FunnelChart.prototype.stats = null;
+rg.view.svg.chart.FunnelChart.prototype.topheight = null;
+rg.view.svg.chart.FunnelChart.prototype.h = null;
 rg.view.svg.chart.FunnelChart.prototype.scale = function(value) {
 	return this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,value);
 }
@@ -8965,16 +8970,16 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 	this.stats = rg.util.DataPoints.stats(this.dps,this.variableDependent.type);
 	var max = this.scale(this.stats.max), wscale = function(v) {
 		return me.scale(v) / max * (me.width - 2) / 2;
-	}, h, fx1 = function(v) {
+	}, fx1 = function(v) {
 		return me.width / 2 - wscale(v);
 	}, fx2 = function(v) {
 		return me.width - fx1(v);
 	}, diagonal1 = new thx.svg.Diagonal().sourcef(function(o,i) {
 		return [fx1(me.dpvalue(o)),0.0];
 	}).targetf(function(o,i) {
-		return [fx1(me.next(i)),h];
+		return [fx1(me.next(i)),me.h];
 	}), diagonal2 = new thx.svg.Diagonal().sourcef(function(o,i) {
-		return [fx2(me.next(i)),h];
+		return [fx2(me.next(i)),me.h];
 	}).targetf(function(o,i) {
 		return [fx2(me.dpvalue(o)),0.0];
 	}), conj = function(v,r,dir) {
@@ -8990,21 +8995,27 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 	};
 	var top = this.g.append("svg:g");
 	var path = top.append("svg:path").attr("class").string("funnel-inside item-0").attr("d").string(conjr(this.dps[0]));
-	if(null != this.mouseClick) top.onNode("click",function(_,_1) {
-		me.mouseClick(me.dps[0],me.stats);
+	if(null != this.click) top.onNode("click",function(_,_1) {
+		me.click(me.dps[0],me.stats);
 	});
 	if(this.displayGradient) this.internalGradient(path);
-	var topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
+	top.onNode("mouseover",function(_,_1) {
+		me.mouseOver(me.dps[0],0,me.stats);
+	});
+	this.topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
 	var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside item-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
 	bottom.remove();
-	h = (this.height - topheight - bottomheight - (this.dps.length - 1) * this.padding) / this.dps.length;
-	top.attr("transform").string("translate(0," + topheight + ")");
+	this.h = (this.height - this.topheight - bottomheight - (this.dps.length - 1) * this.padding) / this.dps.length;
+	top.attr("transform").string("translate(0," + this.topheight + ")");
 	var section = this.g.selectAll("g.section").data(this.dps);
 	var enter = section.enter().append("svg:g").attr("class").string("section").attr("transform").stringf(function(d,i) {
-		return "translate(0," + (topheight + i * (me.padding + h)) + ")";
+		return "translate(0," + (me.topheight + i * (me.padding + me.h)) + ")";
 	});
-	if(null != this.mouseClick) enter.on("click",function(d,i) {
-		me.mouseClick(d,me.stats);
+	if(null != this.click) enter.on("click",function(d,_) {
+		me.click(d,me.stats);
+	});
+	enter.on("mouseover",function(d,i) {
+		me.mouseOver(d,i,me.stats);
 	});
 	var funnel = enter.append("svg:path").attr("class").stringf(function(d,i) {
 		return "funnel-outside item-" + i;
@@ -9016,10 +9027,11 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 	});
 	if(this.displayGradient) enter.eachNode($closure(this,"externalGradient"));
 	var ga = this.g.selectAll("g.arrow").data(this.dps).enter().append("svg:g").attr("class").string("arrow").attr("transform").stringf(function(d,i) {
-		return "translate(" + me.width / 2 + "," + (topheight + h * i + me.arrowSize / 2) + ")";
+		return "translate(" + me.width / 2 + "," + (me.topheight + me.h * i + me.arrowSize / 2) + ")";
 	});
 	ga.each(function(d,i) {
-		var text = me.labelFormatDataPoint(d,me.stats);
+		if(null == me.labelArrow) return;
+		var text = me.labelArrow(d,me.stats);
 		if(null == text) return;
 		var node = thx.js.Selection.getCurrent();
 		node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
@@ -9029,17 +9041,28 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 		label.setText(text);
 	});
 	ga.each(function(d,i) {
-		var text = me.labelFormatAxis(d,me.stats);
+		if(null == me.labelDataPoint) return;
+		var text = me.labelDataPoint(d,me.stats);
 		if(null == text) return;
 		var baloon = new rg.view.svg.widget.Baloon(me.g);
 		baloon.setBoundingBox({ x : me.width / 2 + me.arrowSize / 3 * 2, y : 0, width : me.width, height : me.height});
 		baloon.setPreferredSide(3);
 		baloon.setText(text.split("\n"));
-		baloon.moveTo(me.width / 2,topheight + h * .6 + (h + me.padding) * i,false);
+		baloon.moveTo(me.width / 2,me.topheight + me.h * .6 + (me.h + me.padding) * i,false);
 	});
+}
+rg.view.svg.chart.FunnelChart.prototype.mouseOver = function(dp,i,stats) {
+	if(null == this.labelDataPointOver) return;
+	var text = this.labelDataPointOver(dp,stats);
+	if(null == text) this.tooltip.hide(); else {
+		this.tooltip.show();
+		this.tooltip.setText(text.split("\n"));
+		this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,true);
+	}
 }
 rg.view.svg.chart.FunnelChart.prototype.init = function() {
 	rg.view.svg.chart.Chart.prototype.init.call(this);
+	if(null != this.tooltip) this.tooltip.setPreferredSide(1);
 	this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
 }
 rg.view.svg.chart.FunnelChart.prototype.internalGradient = function(d) {
@@ -9073,9 +9096,10 @@ rg.controller.visualization.VisualizationFunnelChart.prototype.chart = null;
 rg.controller.visualization.VisualizationFunnelChart.prototype.init = function() {
 	var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 	this.chart = new rg.view.svg.chart.FunnelChart(panelChart);
-	if(null != this.info.label.datapoint) this.chart.labelFormatDataPoint = this.info.label.datapoint;
-	if(null != this.info.label.datapoint) this.chart.labelFormatDataPointOver = this.info.label.datapointover;
-	if(null != this.info.click) this.chart.mouseClick = this.info.click;
+	if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
+	if(null != this.info.label.datapoint) this.chart.labelDataPointOver = this.info.label.datapointover;
+	if(null != this.info.label.arrow) this.chart.labelArrow = this.info.label.arrow;
+	if(null != this.info.click) this.chart.click = this.info.click;
 	this.chart.padding = this.info.padding;
 	this.chart.flatness = this.info.flatness;
 	var $e = (this.info.effect);
@@ -10874,6 +10898,20 @@ rg.view.svg.widget.GridAnchor.Bottom.__enum__ = rg.view.svg.widget.GridAnchor;
 rg.view.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
 rg.view.svg.widget.GridAnchor.BottomRight.toString = $estr;
 rg.view.svg.widget.GridAnchor.BottomRight.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.controller.info.InfoLabelFunnel = function(p) {
+	if( p === $_ ) return;
+	rg.controller.info.InfoLabel.call(this);
+}
+rg.controller.info.InfoLabelFunnel.__name__ = ["rg","controller","info","InfoLabelFunnel"];
+rg.controller.info.InfoLabelFunnel.__super__ = rg.controller.info.InfoLabel;
+for(var k in rg.controller.info.InfoLabel.prototype ) rg.controller.info.InfoLabelFunnel.prototype[k] = rg.controller.info.InfoLabel.prototype[k];
+rg.controller.info.InfoLabelFunnel.filters = function() {
+	return [{ field : "arrow", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
+}
+rg.controller.info.InfoLabelFunnel.prototype.arrow = null;
+rg.controller.info.InfoLabelFunnel.prototype.__class__ = rg.controller.info.InfoLabelFunnel;
 haxe.Log = function() { }
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
