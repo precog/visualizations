@@ -8,7 +8,7 @@ import rg.view.svg.panel.Panel;
 import rg.view.svg.panel.Layer;
 import rg.data.DataPoint;
 import rg.data.Stats;
-import rg.view.svg.widget.Baloon;
+import rg.view.svg.widget.Balloon;
 import thx.math.Equations;
 import rg.view.svg.panel.Panels;
 
@@ -23,7 +23,7 @@ class Chart extends Layer
 	
 	var panelx : Float;
 	var panely : Float;
-	var tooltip : Baloon;
+	var tooltip : Balloon;
 
 	public function new(panel : Panel) 
 	{
@@ -44,7 +44,7 @@ class Chart extends Layer
 	{
 		if (null != labelDataPointOver)
 		{
-			tooltip = new Baloon(g);
+			tooltip = new Balloon(g);
 		}
 		resize();
 	}

@@ -9,7 +9,7 @@ import rg.controller.factory.FactoryAxis;
 import rg.data.VariableIndependentContext;
 import rg.data.VariableDependentContext;
 import rg.data.source.DataSourceReportGrid;
-
+import rg.util.DataPoints;
 using Arrays;
 
 class DataProcessor
@@ -23,13 +23,14 @@ class DataProcessor
 	public function new(sources : Sources<Dynamic>) 
 	{
 		this.sources = sources;
+		sources.onLoading.add(preprocess);
 		sources.onLoad.add(process);
 		onData = new Dispatcher();
 	}
 	
 	public dynamic function transform(s : Array<Array<DataPoint>>) : Array<DataPoint>
 	{
-		return s[0];
+		return s.flatten();
 	}
 	
 	public function load()
@@ -37,10 +38,11 @@ class DataProcessor
 		var tmin = null, tmax = null;
 		for (variable in independentVariables)
 		{
-			if(!Std.is(variable.variable.axis, AxisTime) && !Std.is(variable.variable.axis, AxisGroupByTime))
+			var v = variable.variable;
+			if(!Std.is(v.axis, AxisTime) && !Std.is(v.axis, AxisGroupByTime))
 				continue;
-			tmin = variable.variable.min;
-			tmax = variable.variable.max;
+			tmin = v.min != 0 ? v.min : null;
+			tmax = v.max != 0 ? v.max : null;
 			break;
 		}
 		if (null != tmin || null != tmax)
@@ -50,8 +52,10 @@ class DataProcessor
 				var query = Types.as(ds, DataSourceReportGrid);
 				if (null == query)
 					continue;
-				query.start = tmin;
-				query.end = tmax;
+				if(null != tmin)
+					query.start = tmin;
+				if(null != tmax)
+					query.end = tmax;
 			}
 		}
 		sources.load();
@@ -72,6 +76,27 @@ class DataProcessor
 				return false;
 		}
 		return true;
+	}
+	
+	static function emptyStats() return { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 }
+	static function updateStats(variable : rg.data.Variable<Dynamic, IAxis<Dynamic>>, dps : Array<DataPoint>)
+	{
+		var stats = DataPoints.stats(dps, variable.type);
+		if (stats.min < variable.stats.min)
+			variable.stats.min = stats.min;
+		if (stats.max > variable.stats.max)
+			variable.stats.max = stats.max;
+		variable.stats.tot += stats.tot;
+	}
+	
+	function preprocess()
+	{
+		// reset stats
+		for (ctx in independentVariables)
+			ctx.variable.stats = emptyStats();
+		
+		for (ctx in dependentVariables)
+			ctx.variable.stats = emptyStats();
 	}
 	
 	function process(data : Array<Array<DataPoint>>)
@@ -108,6 +133,7 @@ class DataProcessor
 	{
 		for (ctx in dependentVariables)
 		{
+			updateStats(ctx.variable, data);
 			if (ctx.partial)
 			{
 				var variable = ctx.variable,
@@ -155,7 +181,8 @@ class DataProcessor
 	
 	function fillIndependentVariables(data : Array<Array<DataPoint>>)
 	{
-		var toprocess = false;
+		var toprocess = false,
+			flatten = data.flatten();
 		for (ctx in independentVariables)
 		{
 			if (ctx.partial)
@@ -168,10 +195,10 @@ class DataProcessor
 				discrete.scaleDistribution = ctx.variable.scaleDistribution;
 				ctx.variable.scaleDistribution = null; // reset to avoid multiple assign
 			}
+			updateStats(cast ctx.variable, flatten);
 		}
 		if (toprocess)
 		{
-			var flatten = data.flatten();
 			for (ctx in independentVariables)
 			{
 				if (ctx.partial)

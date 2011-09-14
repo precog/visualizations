@@ -42,17 +42,16 @@ class AxisTime implements IAxisDiscrete<Float>
 		switch(periodicity)
 		{
 			case "day":
-				if (units < 28)
+				if (units <= 31)
 					return true;
 				if (units < 121)
 				{
-					var d = Date.fromTime(value).getDate(),
-						delta = 4;
-					return Periodicity.firstInSeries("month", value) || (d > delta && d < (31-delta) && Periodicity.firstInSeries("week", value));
+					var d = Date.fromTime(value).getDate();
+					return Periodicity.firstInSeries("month", value) || Periodicity.firstInSeries("week", value);
 				}
 				return Periodicity.firstInSeries("month", value);
 			case "week":
-				if (units < 28)
+				if (units < 31)
 					return true;
 				else
 					return Date.fromTime(value).getDate() <= 7;

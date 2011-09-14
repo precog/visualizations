@@ -13938,7 +13938,7 @@ rg.view.svg.widget.ChartCartesian.prototype.init = function() {
 	$s.push("rg.view.svg.widget.ChartCartesian::init");
 	var $spos = $s.length;
 	if(null != this.labelDataPointOver) {
-		this.tooltip = new rg.view.svg.widget.Baloon(this.g);
+		this.tooltip = new rg.view.svg.widget.Balloon(this.g);
 		var x = 0.0, y = 0.0, w = 0.0, h = 0.0;
 		var p = this.panel, frame;
 		while(null != p) {
@@ -17340,9 +17340,9 @@ rg.data.source.rgquery.QueryParser.prototype.addWhereCondition = function(name,o
 	$s.pop();
 }
 rg.data.source.rgquery.QueryParser.prototype.__class__ = rg.data.source.rgquery.QueryParser;
-rg.view.svg.widget.Baloon = function(container,bindOnTop) {
+rg.view.svg.widget.Balloon = function(container,bindOnTop) {
 	if( container === $_ ) return;
-	$s.push("rg.view.svg.widget.Baloon::new");
+	$s.push("rg.view.svg.widget.Balloon::new");
 	var $spos = $s.length;
 	if(bindOnTop == null) bindOnTop = false;
 	if(bindOnTop) {
@@ -17359,19 +17359,19 @@ rg.view.svg.widget.Baloon = function(container,bindOnTop) {
 	this.paddingHorizontal = 3.5;
 	this.paddingVertical = 1.5;
 	this.transition_id = 0;
-	this.baloon = this.container.append("svg:g").attr("pointer-events").string("none").attr("class").string("baloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
-	this.frame = this.baloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
+	this.balloon = this.container.append("svg:g").attr("pointer-events").string("none").attr("class").string("balloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
+	this.frame = this.balloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
 	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)");
 	this.connectorShapeV = thx.svg.Diagonal.forObject();
 	this.connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
-		$s.push("rg.view.svg.widget.Baloon::new@75");
+		$s.push("rg.view.svg.widget.Balloon::new@75");
 		var $spos = $s.length;
 		var $tmp = [d[1],d[0]];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	});
-	this.connector = this.baloon.append("svg:path").attr("class").string("baloon-connector").style("fill").string("none").style("display").string("none").attr("transform").string("translate(0, 0)");
+	this.connector = this.balloon.append("svg:path").attr("class").string("balloon-connector").style("fill").string("none").style("display").string("none").attr("transform").string("translate(0, 0)");
 	this.frame.append("svg:path").attr("class").string("bg");
 	this.labelsContainer = this.frame.append("svg:g").attr("class").string("labels");
 	this.labels = [];
@@ -17381,44 +17381,44 @@ rg.view.svg.widget.Baloon = function(container,bindOnTop) {
 	temp.destroy();
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.__name__ = ["rg","view","svg","widget","Baloon"];
-rg.view.svg.widget.Baloon.prototype.text = null;
-rg.view.svg.widget.Baloon.prototype.x = null;
-rg.view.svg.widget.Baloon.prototype.y = null;
-rg.view.svg.widget.Baloon.prototype.boxWidth = null;
-rg.view.svg.widget.Baloon.prototype.boxHeight = null;
-rg.view.svg.widget.Baloon.prototype.visible = null;
-rg.view.svg.widget.Baloon.prototype.lineHeight = null;
-rg.view.svg.widget.Baloon.prototype.roundedCorner = null;
-rg.view.svg.widget.Baloon.prototype.paddingHorizontal = null;
-rg.view.svg.widget.Baloon.prototype.paddingVertical = null;
-rg.view.svg.widget.Baloon.prototype.preferredSide = null;
-rg.view.svg.widget.Baloon.prototype.minwidth = null;
-rg.view.svg.widget.Baloon.prototype.labels = null;
-rg.view.svg.widget.Baloon.prototype.container = null;
-rg.view.svg.widget.Baloon.prototype.baloon = null;
-rg.view.svg.widget.Baloon.prototype.frame = null;
-rg.view.svg.widget.Baloon.prototype.labelsContainer = null;
-rg.view.svg.widget.Baloon.prototype.connector = null;
-rg.view.svg.widget.Baloon.prototype.duration = null;
-rg.view.svg.widget.Baloon.prototype.ease = null;
-rg.view.svg.widget.Baloon.prototype.connectorShapeV = null;
-rg.view.svg.widget.Baloon.prototype.connectorShapeH = null;
-rg.view.svg.widget.Baloon.prototype.boundingBox = null;
-rg.view.svg.widget.Baloon.prototype.addClass = function(name) {
-	$s.push("rg.view.svg.widget.Baloon::addClass");
+rg.view.svg.widget.Balloon.__name__ = ["rg","view","svg","widget","Balloon"];
+rg.view.svg.widget.Balloon.prototype.text = null;
+rg.view.svg.widget.Balloon.prototype.x = null;
+rg.view.svg.widget.Balloon.prototype.y = null;
+rg.view.svg.widget.Balloon.prototype.boxWidth = null;
+rg.view.svg.widget.Balloon.prototype.boxHeight = null;
+rg.view.svg.widget.Balloon.prototype.visible = null;
+rg.view.svg.widget.Balloon.prototype.lineHeight = null;
+rg.view.svg.widget.Balloon.prototype.roundedCorner = null;
+rg.view.svg.widget.Balloon.prototype.paddingHorizontal = null;
+rg.view.svg.widget.Balloon.prototype.paddingVertical = null;
+rg.view.svg.widget.Balloon.prototype.preferredSide = null;
+rg.view.svg.widget.Balloon.prototype.minwidth = null;
+rg.view.svg.widget.Balloon.prototype.labels = null;
+rg.view.svg.widget.Balloon.prototype.container = null;
+rg.view.svg.widget.Balloon.prototype.balloon = null;
+rg.view.svg.widget.Balloon.prototype.frame = null;
+rg.view.svg.widget.Balloon.prototype.labelsContainer = null;
+rg.view.svg.widget.Balloon.prototype.connector = null;
+rg.view.svg.widget.Balloon.prototype.duration = null;
+rg.view.svg.widget.Balloon.prototype.ease = null;
+rg.view.svg.widget.Balloon.prototype.connectorShapeV = null;
+rg.view.svg.widget.Balloon.prototype.connectorShapeH = null;
+rg.view.svg.widget.Balloon.prototype.boundingBox = null;
+rg.view.svg.widget.Balloon.prototype.addClass = function(name) {
+	$s.push("rg.view.svg.widget.Balloon::addClass");
 	var $spos = $s.length;
 	this.frame.select("path.bg").classed().add(name);
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.removeClass = function(name) {
-	$s.push("rg.view.svg.widget.Baloon::removeClass");
+rg.view.svg.widget.Balloon.prototype.removeClass = function(name) {
+	$s.push("rg.view.svg.widget.Balloon::removeClass");
 	var $spos = $s.length;
 	this.frame.select("path.bg").classed().remove(name);
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.createLabel = function(i) {
-	$s.push("rg.view.svg.widget.Baloon::createLabel");
+rg.view.svg.widget.Balloon.prototype.createLabel = function(i) {
+	$s.push("rg.view.svg.widget.Balloon::createLabel");
 	var $spos = $s.length;
 	var label = new rg.view.svg.widget.Label(this.labelsContainer,true,true,false);
 	label.addClass("line-" + i);
@@ -17429,8 +17429,8 @@ rg.view.svg.widget.Baloon.prototype.createLabel = function(i) {
 	return label;
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.setPreferredSide = function(v) {
-	$s.push("rg.view.svg.widget.Baloon::setPreferredSide");
+rg.view.svg.widget.Balloon.prototype.setPreferredSide = function(v) {
+	$s.push("rg.view.svg.widget.Balloon::setPreferredSide");
 	var $spos = $s.length;
 	this.preferredSide = Ints.clamp(v,0,3);
 	this.redraw();
@@ -17438,8 +17438,8 @@ rg.view.svg.widget.Baloon.prototype.setPreferredSide = function(v) {
 	return v;
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.setText = function(v) {
-	$s.push("rg.view.svg.widget.Baloon::setText");
+rg.view.svg.widget.Balloon.prototype.setText = function(v) {
+	$s.push("rg.view.svg.widget.Balloon::setText");
 	var $spos = $s.length;
 	while(this.labels.length > v.length) {
 		var label = this.labels.pop();
@@ -17461,8 +17461,8 @@ rg.view.svg.widget.Baloon.prototype.setText = function(v) {
 	return v;
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.setLineHeight = function(v) {
-	$s.push("rg.view.svg.widget.Baloon::setLineHeight");
+rg.view.svg.widget.Balloon.prototype.setLineHeight = function(v) {
+	$s.push("rg.view.svg.widget.Balloon::setLineHeight");
 	var $spos = $s.length;
 	this.lineHeight = v;
 	this.redraw();
@@ -17470,16 +17470,16 @@ rg.view.svg.widget.Baloon.prototype.setLineHeight = function(v) {
 	return v;
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.setPadding = function(h,v) {
-	$s.push("rg.view.svg.widget.Baloon::setPadding");
+rg.view.svg.widget.Balloon.prototype.setPadding = function(h,v) {
+	$s.push("rg.view.svg.widget.Balloon::setPadding");
 	var $spos = $s.length;
 	this.paddingHorizontal = h;
 	this.paddingVertical = v;
 	this.redraw();
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.setRoundedCorner = function(v) {
-	$s.push("rg.view.svg.widget.Baloon::setRoundedCorner");
+rg.view.svg.widget.Balloon.prototype.setRoundedCorner = function(v) {
+	$s.push("rg.view.svg.widget.Balloon::setRoundedCorner");
 	var $spos = $s.length;
 	this.roundedCorner = v;
 	this.redraw();
@@ -17487,8 +17487,8 @@ rg.view.svg.widget.Baloon.prototype.setRoundedCorner = function(v) {
 	return v;
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.setBoundingBox = function(v) {
-	$s.push("rg.view.svg.widget.Baloon::setBoundingBox");
+rg.view.svg.widget.Balloon.prototype.setBoundingBox = function(v) {
+	$s.push("rg.view.svg.widget.Balloon::setBoundingBox");
 	var $spos = $s.length;
 	this.boundingBox = v;
 	this.redraw();
@@ -17496,8 +17496,8 @@ rg.view.svg.widget.Baloon.prototype.setBoundingBox = function(v) {
 	return v;
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.getBoundingBox = function() {
-	$s.push("rg.view.svg.widget.Baloon::getBoundingBox");
+rg.view.svg.widget.Balloon.prototype.getBoundingBox = function() {
+	$s.push("rg.view.svg.widget.Balloon::getBoundingBox");
 	var $spos = $s.length;
 	if(null == this.boundingBox) this.setBoundingBox(this.container.node().getBBox());
 	var $tmp = this.boundingBox;
@@ -17505,15 +17505,15 @@ rg.view.svg.widget.Baloon.prototype.getBoundingBox = function() {
 	return $tmp;
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.transition_id = null;
-rg.view.svg.widget.Baloon.prototype.moveTo = function(x,y,animate) {
-	$s.push("rg.view.svg.widget.Baloon::moveTo");
+rg.view.svg.widget.Balloon.prototype.transition_id = null;
+rg.view.svg.widget.Balloon.prototype.moveTo = function(x,y,animate) {
+	$s.push("rg.view.svg.widget.Balloon::moveTo");
 	var $spos = $s.length;
 	if(animate == null) animate = true;
 	if(animate) {
 		var $int = thx.math.Equations.elasticf(), tid = ++this.transition_id, ix = Floats.interpolatef(this.x,x,this.ease), iy = Floats.interpolatef(this.y,y,this.ease), duration = this.duration, mt = $closure(this,"_moveTo"), me = this;
 		thx.js.Timer.timer(function(t) {
-			$s.push("rg.view.svg.widget.Baloon::moveTo@194");
+			$s.push("rg.view.svg.widget.Balloon::moveTo@194");
 			var $spos = $s.length;
 			if(tid != me.transition_id) {
 				$s.pop();
@@ -17532,8 +17532,8 @@ rg.view.svg.widget.Baloon.prototype.moveTo = function(x,y,animate) {
 	} else this._moveTo(x,y);
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype._moveTo = function(x,y) {
-	$s.push("rg.view.svg.widget.Baloon::_moveTo");
+rg.view.svg.widget.Balloon.prototype._moveTo = function(x,y) {
+	$s.push("rg.view.svg.widget.Balloon::_moveTo");
 	var $spos = $s.length;
 	var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
 	var tx = 0.0, ty = 0.0, side = this.preferredSide, found = 1;
@@ -17754,35 +17754,35 @@ rg.view.svg.widget.Baloon.prototype._moveTo = function(x,y) {
 			break;
 		}
 	}
-	this.baloon.attr("transform").string("translate(" + (this.x = x) + ", " + (this.y = y) + ")");
+	this.balloon.attr("transform").string("translate(" + (this.x = x) + ", " + (this.y = y) + ")");
 	this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.view.svg.widget.BaloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
 	if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(o):this.connectorShapeH.diagonal(o));
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.show = function() {
-	$s.push("rg.view.svg.widget.Baloon::show");
+rg.view.svg.widget.Balloon.prototype.show = function() {
+	$s.push("rg.view.svg.widget.Balloon::show");
 	var $spos = $s.length;
 	if(!this.visible) {
 		$s.pop();
 		return;
 	}
 	this.visible = true;
-	this.baloon.style("display").string("block");
+	this.balloon.style("display").string("block");
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.hide = function() {
-	$s.push("rg.view.svg.widget.Baloon::hide");
+rg.view.svg.widget.Balloon.prototype.hide = function() {
+	$s.push("rg.view.svg.widget.Balloon::hide");
 	var $spos = $s.length;
 	if(this.visible) {
 		$s.pop();
 		return;
 	}
 	this.visible = false;
-	this.baloon.style("display").string("none");
+	this.balloon.style("display").string("none");
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.redraw = function() {
-	$s.push("rg.view.svg.widget.Baloon::redraw");
+rg.view.svg.widget.Balloon.prototype.redraw = function() {
+	$s.push("rg.view.svg.widget.Balloon::redraw");
 	var $spos = $s.length;
 	if(null == this.text || this.text.length == 0) {
 		$s.pop();
@@ -17804,7 +17804,7 @@ rg.view.svg.widget.Baloon.prototype.redraw = function() {
 	bg.transition().ease(this.ease).delay(null,this.duration);
 	$s.pop();
 }
-rg.view.svg.widget.Baloon.prototype.__class__ = rg.view.svg.widget.Baloon;
+rg.view.svg.widget.Balloon.prototype.__class__ = rg.view.svg.widget.Balloon;
 hxevents.EventException = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
 hxevents.EventException.StopPropagation = ["StopPropagation",0];
 hxevents.EventException.StopPropagation.toString = $estr;

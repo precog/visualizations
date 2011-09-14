@@ -89,7 +89,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					ymax = yVariables[j].max,
 					w = Math.max(1, (waxis - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
 					offset = - span / 2 + j * (waxis + paddingAxis),
-					ystats = DataPoints.stats(flatdata, yVariables[j].type),
+					ystats = yVariables[j].stats,
 					over = callback(onmouseover, ystats),
 					click = callback(onclick, ystats)
 				;

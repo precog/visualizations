@@ -19,38 +19,38 @@
 	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
 	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
 -->
-	<script src="js/reportgrid-core.js?tokenId=C7A18C95-3619-415B-A89B-4CE47693E4CC"></script>
+	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.leaderBoard("#chart", {
 		axes : [{
-			type : ".platform",
+			type : ".browser",
 			variable : "independent"
 		}, {
 			type : "count"
 		}],
 		data : {
 			src : { data : [{
-				".platform" : "PC",
+				".browser" : "PC",
 				count : 100
 			}, {
-				".platform" : "iOS",
+				".browser" : "iOS",
 				count : 80
 			}, {
-				".platform" : "Mac",
+				".browser" : "Mac",
 				count : 60
 			}, {
-				".platform" : "Android",
+				".browser" : "Android",
 				count : 50
 			}, {
-				".platform" : "linux",
+				".browser" : "linux",
 				count : 30
 			}, {
-				".platform" : "WebOS",
+				".browser" : "WebOS",
 				count : 5
 			}] }
-//			src : { path : "/rgadnet", event : "impression", query : ".platform" }
+//			src : { path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "impression", query : ".browser" }
 		},
 		options : {
 			animation : {
@@ -60,10 +60,10 @@ document.addEventListener("DOMContentLoaded", function(){
 				delay : 250
 			},
 			label : {
-				datapoint : function(dp) { return dp[".platform"] + ": " + ReportGrid.format(dp["count"]); }
+				datapoint : function(dp) { return dp[".browser"] + ": " + ReportGrid.format(dp["count"]); }
 			},
-			click : function(dp) { alert(dp[".platform"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".platform"], d1[".platform"]); },
+			click : function(dp) { alert(dp[".browser"]); },
+			sort : function(d1, d2) { return ReportGrid.compare(d2[".browser"], d1[".browser"]); },
 			effect : "gradient-max"
 		}
 	});

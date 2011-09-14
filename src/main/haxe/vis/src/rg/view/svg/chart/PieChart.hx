@@ -7,7 +7,7 @@ package rg.view.svg.chart;
 import haxe.Md5;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
-import rg.view.svg.widget.Baloon;
+import rg.view.svg.widget.Balloon;
 import thx.culture.FormatNumber;
 import thx.js.Selection;
 import rg.view.svg.panel.Layer;
@@ -112,7 +112,7 @@ class PieChart extends Chart
 			return DataPoints.value(dp, pv) > 0;
 		});
 		
-		stats = DataPoints.stats(dp, variableDependent.type);
+		stats = variableDependent.stats;
 		// data
 		var choice = g.selectAll("g.group").data(pief(dp), id);
 		
@@ -131,12 +131,12 @@ class PieChart extends Chart
 			path.attr("d").stringf(arcShape(arcStart));
 			arc
 				.eachNode(fadein)
-				.onNode("mouseover.label", onMouseOver)
 				.onNode("mouseover.animation", highlight)
 				.onNode("mouseout.animation", backtonormal);
 		} else {
 			path.attr("d").stringf(arcShape(arcNormal));
 		}
+		arc.onNode("mouseover.label", onMouseOver);
 		if (labelDisplay)
 			arc.eachNode(appendLabel);
 		if (null != mouseClick)

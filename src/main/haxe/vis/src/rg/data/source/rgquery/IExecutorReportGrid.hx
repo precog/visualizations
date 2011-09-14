@@ -18,9 +18,4 @@ interface IExecutorReportGrid
 	public function intersect(path : String, options : { }, success : Dynamic<Dynamic> -> Void, ?error : String -> Void) : Void;
 }
 
-typedef TimeSeriesType =
-{
-	type : String,
-	periodicity : String,
-	data : Array<Array<Float>>
-}
+typedef TimeSeriesType = Array<Array<Dynamic>>;

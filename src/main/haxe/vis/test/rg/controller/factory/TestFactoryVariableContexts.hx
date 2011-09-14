@@ -6,7 +6,7 @@
 package rg.controller.factory;
 
 import rg.controller.info.InfoVariable;
-import thx.collections.Set;
+import thx.collection.Set;
 import utest.Assert;
 using rg.controller.info.Info;
  

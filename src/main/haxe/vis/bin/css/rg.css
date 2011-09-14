@@ -1,75 +1,4 @@
-/* COLORS */
-
-.rg .item-0
-{
-	border-color: #1f77b4;
-	stroke: #1f77b4;
-	fill: #1f77b4;
-}
-
-.rg .item-1
-{
-	border-color: #ff7f0e;
-	stroke: #ff7f0e;
-	fill: #ff7f0e;
-}
-
-
-.rg .item-2
-{
-	border-color: #2ca02c;
-	stroke: #2ca02c;
-	fill: #2ca02c;
-}
-
-.rg .item-3
-{
-	border-color: #d62728;
-	stroke: #d62728;
-	fill: #d62728;
-}
-
-.rg .item-4
-{
-	border-color: #9467bd;
-	stroke: #9467bd;
-	fill: #9467bd;
-}
-	
-.rg .item-5
-{
-	border-color: #8c564b;
-	stroke: #8c564b;
-	fill: #8c564b;
-}
-	
-.rg .item-6
-{
-	border-color: #e377c2;
-	stroke: #e377c2;
-	fill: #e377c2;
-}
-	
-.rg .item-7
-{
-	border-color: #7f7f7f;
-	stroke: #7f7f7f;
-	fill: #7f7f7f;
-}
-	
-.rg .item-8
-{
-	border-color: #bcbd22;
-	stroke: #bcbd22;
-	fill: #bcbd22;
-}
-	
-.rg .item-9
-{
-	border-color: #17becf;
-	stroke: #17becf;
-	fill: #17becf;
-}
+@import url('rg-colors-default.css');
 
 /* SVG */
 .rg 
@@ -266,6 +195,22 @@
 {
 	stroke-width: 1;
 	stroke: #333;
+}
+
+.rg g.rule line
+{
+	stroke-width: 1;
+	stroke: #ccc;
+	stroke-dasharray: 1,3;
+	shape-rendering: crispEdges;
+}
+
+.rg g.rule line.major
+{
+	stroke-width: 1;
+	stroke: #999;
+	stroke-dasharray: 3,5;
+	shape-rendering: crispEdges;
 }
 
 .rg rect.panel-frame
@@ -539,20 +484,20 @@ ul.leaderboard
 	font-weight: bold;
 }
 
-.rg path.baloon-connector
+.rg path.balloon-connector
 {
 	stroke: #999;
 	stroke-width: 1;
 	stroke-dasharray: 2, 1;
 }
 
-.rg .baloon .label text.nooutline, .rg .baloon .label text.shadow.nooutline
+.rg .balloon .label text.nooutline, .rg .balloon .label text.shadow.nooutline
 {
 	font-size: 10px;
 	font-weight: bold;
 }
 
-.rg .baloon path.bg
+.rg .balloon path.bg
 {
 	fill : #fafafa;
 	stroke : #ddd;
@@ -560,7 +505,7 @@ ul.leaderboard
 	stroke-width : 1;
 }
 
-.rg .baloon path.shadow
+.rg .balloon path.shadow
 {
 	opacity : 0.4;
 	fill : #000;
@@ -574,3 +519,4 @@ ul.leaderboard
 	shape-rendering: crispEdges;
 	stroke-width: 1;
 }
+

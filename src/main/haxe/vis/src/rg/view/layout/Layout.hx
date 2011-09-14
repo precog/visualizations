@@ -42,6 +42,11 @@ class Layout
 		suggestPanelSize(panel, size);
 	}
 	
+	public function destroy()
+	{
+		container.selectAll("*").remove();
+	}
+	
 	function suggestPanelSize(panel : Panel, size : Int)
 	{
 		var stackitem = Types.as(panel.frame, StackItem);

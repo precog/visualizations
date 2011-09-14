@@ -13,6 +13,7 @@ import thx.date.DateParser;
 import thx.js.Dom;
 import thx.error.Error;
 import thx.math.Random;
+import rg.controller.MVPOptions;
 //import thx.svg.Symbol;
 import rg.view.svg.util.SymbolCache;
  
@@ -26,41 +27,47 @@ class JSBridge
 	static function main() 
 	{
 		// retrieve ReportGrid core
-		var o : Dynamic = untyped __js__("window.ReportGrid");
-		if (null == o)
+		var r : Dynamic = untyped __js__("window.ReportGrid");
+		if (null == r)
 			log(new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script").toString());
 		
 		// init app
-		var app = new App(o);	
+		var app = new App(r);	
 		
 		// define bridge function
-		o.viz = function(el : Dynamic, options : Dynamic, type : String)
+		r.viz = function(el : Dynamic, options : Dynamic, type : String)
 		{
-			try {
-				return app.visualization(select(el), chartopt(options, type));
-			} catch (e : Dynamic) {
-				log(Std.string(e));
-				return null;
+			var o = chartopt(options, type);
+			trace(Dynamics.string(o));
+			function execute(opt : Dynamic)
+			{
+				trace(Dynamics.string(opt));
+				try {
+					app.visualization(select(el), opt);
+				} catch (e : Dynamic) {
+					log(Std.string(e));
+				}
 			}
+			MVPOptions.complete(r, o, execute);
 		}
 		
 		// define public visualization constrcutors
-		o.lineChart    = function(el, options) return o.viz(el, options, "linechart");
-		o.pieChart     = function(el, options) return o.viz(el, options, "piechart");
-		o.pivotTable   = function(el, options) return o.viz(el, options, "pivottable");
-		o.leaderBoard  = function(el, options) return o.viz(el, options, "leaderboard");
-		o.barChart     = function(el, options) return o.viz(el, options, "barchart");
-		o.funnelChart  = function(el, options) return o.viz(el, options, "funnelchart");
-		o.streamGraph  = function(el, options) return o.viz(el, options, "streamgraph");
-		o.scatterGraph = function(el, options) return o.viz(el, options, "scattergraph");
-		o.heatGrid     = function(el, options) return o.viz(el, options, "heatgrid");
+		r.lineChart    = function(el, options) return r.viz(el, options, "linechart");
+		r.pieChart     = function(el, options) return r.viz(el, options, "piechart");
+		r.pivotTable   = function(el, options) return r.viz(el, options, "pivottable");
+		r.leaderBoard  = function(el, options) return r.viz(el, options, "leaderboard");
+		r.barChart     = function(el, options) return r.viz(el, options, "barchart");
+		r.funnelChart  = function(el, options) return r.viz(el, options, "funnelchart");
+		r.streamGraph  = function(el, options) return r.viz(el, options, "streamgraph");
+		r.scatterGraph = function(el, options) return r.viz(el, options, "scattergraph");
+		r.heatGrid     = function(el, options) return r.viz(el, options, "heatgrid");
 		
 		// utility functions
-		o.format  = Dynamics.format;
-		o.compare = Dynamics.compare;
-		o.dump    = Dynamics.string;
-		o.symbol  = SymbolCache.cache;
-		o.date = { 
+		r.format  = Dynamics.format;
+		r.compare = Dynamics.compare;
+		r.dump    = Dynamics.string;
+		r.symbol  = SymbolCache.cache;
+		r.date = { 
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
 					a = DateParser.parse(a);
@@ -79,13 +86,13 @@ class JSBridge
 			},
 			parse : DateParser.parse
 		};
-		o.humanize = function(v : Dynamic)
+		r.humanize = function(v : Dynamic)
 		{
 			if (Std.is(v, String) && Properties.isTime(v))
 				return Properties.periodicity(v);
 			return RGStrings.humanize(v);
 		}
-		o.math = {
+		r.math = {
 			random : new Random(666).float
 		}
 	}
@@ -104,7 +111,7 @@ class JSBridge
 	{
 		o = opt(o);
 		o.options = opt(o.options);
-		o.options.visualization =  viz;
+		o.options.visualization =  null != viz ? viz : o.options.visualization;
 		return o;
 	}
 }

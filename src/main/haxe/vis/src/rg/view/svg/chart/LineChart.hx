@@ -139,7 +139,6 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			segments = dps[i];
 			var gi = chart.select("g.group-" + i),
 				stats = DataPoints.stats(segments.flatten(), yVariables[i].type);
-			
 			// TODO add id function
 			var segmentgroup = gi.selectAll("path.line").data(segments);
 			

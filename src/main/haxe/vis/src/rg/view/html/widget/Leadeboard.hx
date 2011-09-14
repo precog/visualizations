@@ -85,7 +85,7 @@ class Leadeboard
 		if (null != sortDataPoint)
 			dps.sort(sortDataPoint);
 		
-		var stats = this.stats = DataPoints.stats(dps, variableDependent.type);
+		var stats = this.stats = variableDependent.stats;
 			
 		var choice = list.selectAll("li").data(dps, id);
 		

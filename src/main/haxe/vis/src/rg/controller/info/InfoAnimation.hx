@@ -16,7 +16,7 @@ class InfoAnimation
 	
 	public function new()
 	{
-		animated = true;
+		animated = false;
 		duration = 1500;
 		delay = 150;
 		ease = Equations.elasticf();

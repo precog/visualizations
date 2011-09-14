@@ -98,7 +98,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		{
 			var data = dps[i],
 				gi = chart.select("g.group-" + i),
-				stats = DataPoints.stats(data, yVariables[i].type);
+				stats = yVariables[i].stats;
 			var gsymbol = gi.selectAll("g.symbol").data(data),
 				vars = this.yVariables,
 				onclick = callback(onclick, stats),

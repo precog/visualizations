@@ -10,6 +10,43 @@ using Arrays;
 
 class Periodicity 
 {
+	public static function defaultPeriodicity(span : Float)
+	{
+		if (null == span || 0 == span)
+			return "eternity";
+		if (span <= 6 * 60 * 60 * 1000)
+			return "minute";
+		else if (span <=  2 * 24 * 60 * 60 * 1000)
+			return "hour";
+		else if (span <=  14 * 24 * 60 * 60 * 1000)
+			return "day";
+		else if (span <=  180 * 24 * 60 * 60 * 1000)
+			return "month";
+		else
+			return "year";
+	}
+	
+	public static function defaultRange(periodicity : String) : Array<Float>
+	{
+		return switch(periodicity)
+		{
+			case "eternity":
+				[0.0, 0.0];
+			case "minute":
+				parsePair("6 hours ago", "now");
+			case "hour":
+				parsePair("2 days ago", "now");
+			case "day":
+				parsePair("14 days ago", "today");
+//			case "week":
+//				parsePair("6 weeks ago", "today");
+			case "month":
+				parsePair("6 months ago", "today");
+			case "year":
+				parsePair("6 years ago", "today");
+		}
+	}
+	
 	static var validPeriods = ["minute", "hour", "day", "week", "month", "year", "eternity"];
 	public static function isValid(v : String) 
 	{
@@ -255,27 +292,6 @@ class Periodicity
 			case "day":				"hour";
 			case "week", "month":	"day"; 
 			default: "minute";
-		}
-	}
-	
-	public static function defaultRange(periodicity : String) : Array<Float>
-	{
-		return switch(periodicity)
-		{
-			case "eternity":
-				[0.0, 0.0];
-			case "minute":
-				parsePair("6 hours ago", "now");
-			case "hour":
-				parsePair("2 days ago", "now");
-			case "day":
-				parsePair("14 days ago", "today");
-			case "week":
-				parsePair("6 weeks ago", "today");
-			case "month":
-				parsePair("6 months ago", "today");
-			case "year":
-				parsePair("6 years ago", "today");
 		}
 	}
 	

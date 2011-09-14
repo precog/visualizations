@@ -9,7 +9,7 @@ import haxe.Md5;
 import rg.data.DataPoint;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
-import thx.collections.HashList;
+import thx.collection.HashList;
 using Arrays;
 
 class DataPoints 

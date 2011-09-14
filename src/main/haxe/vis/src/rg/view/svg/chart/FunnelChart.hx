@@ -21,7 +21,7 @@ import thx.color.Hsl;
 import thx.color.NamedColors;
 import thx.math.scale.Linear;
 import thx.svg.Diagonal;
-import rg.view.svg.widget.Baloon;
+import rg.view.svg.widget.Balloon;
 import thx.svg.Symbol;
 import rg.util.DataPoints;
 using Arrays;
@@ -112,7 +112,7 @@ class FunnelChart extends Chart
 		g.selectAll("radialGradient").remove();
 		
 		// prepare
-		stats = DataPoints.stats(dps, variableDependent.type);
+		stats = variableDependent.stats;
 		var max = scale(stats.max),
 			wscale = function(v) {
 				return scale(v) / max * (width-2) / 2;
@@ -241,17 +241,17 @@ class FunnelChart extends Chart
 			var text = labelDataPoint(d, stats);
 			if (null == text)
 				return;
-			var baloon = new Baloon(g);
-			baloon.boundingBox = cast {
+			var balloon = new Balloon(g);
+			balloon.boundingBox = cast {
 				x : width / 2 + arrowSize / 3 * 2,
 				y : 0,
 				width : width,
 				height : height
 			};
-			baloon.preferredSide = 3;
+			balloon.preferredSide = 3;
 			
-			baloon.text = text.split("\n");
-			baloon.moveTo(width / 2, topheight + h * .6 + (h + padding) * i, false);
+			balloon.text = text.split("\n");
+			balloon.moveTo(width / 2, topheight + h * .6 + (h + padding) * i, false);
 		});
 	}
 	

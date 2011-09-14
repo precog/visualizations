@@ -86,7 +86,7 @@ class DataSourceReportGrid implements IDataSource
 		this.path = path;
 		this.start = start;
 		this.end = end;
-		
+		trace(start);
 		this.onLoad = new Dispatcher();
 	}
 	
@@ -106,9 +106,12 @@ class DataSourceReportGrid implements IDataSource
 			
 		if (where.length > 1)
 		{
-			var w = { };
+			var w : Dynamic = { };
 			for (c in where)
-				Reflect.setField(w, propertyName(c), c.value);
+			{
+				w.variable = propertyName(c);
+				w.value = c.value;
+			}
 			Reflect.setField(o, "where", w);
 		}
 		return o;
@@ -163,6 +166,7 @@ class DataSourceReportGrid implements IDataSource
 		} else {
 			transform = new TransformCountTimeIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			var o = basicOptions(true);
+			trace(o);
 			o.properties = exp.map(function(p, i) {
 				return {
 					property : propertyName(p),

@@ -16,10 +16,14 @@ class InfoCartesianChart
 	public var label : InfoLabelAxis;
 	public var y0property : String;
 	
-	public var displayMinor : String -> Bool;
-	public var displayMajor : String -> Bool;
-	public var displayLabel : String -> Bool;
-	public var displayAnchorLine : String -> Bool;
+	public var displayMinorTick : String -> Bool;
+	public var displayMajorTick : String -> Bool;
+	public var displayLabelTick : String -> Bool;
+	public var displayAnchorLineTick : String -> Bool;
+	
+	public var displayMinorRule : String -> Bool;
+	public var displayMajorRule : String -> Bool;
+	public var displayAnchorLineRule : String -> Bool;
 
 	public var labelOrientation : String -> Null<String>;
 	public var labelAnchor : String -> Null<String>;
@@ -36,10 +40,14 @@ class InfoCartesianChart
 		animation = new InfoAnimation();
 		label = new InfoLabelAxis();
 		segment = new InfoSegment();
-		displayMinor = function(_) return true;
-		displayMajor = function(_) return true;
-		displayLabel = function(_) return true;
-		displayAnchorLine = function(_) return false;
+		displayMinorTick = function(_) return true;
+		displayMajorTick = function(_) return true;
+		displayLabelTick = function(_) return true;
+		displayAnchorLineTick = function(_) return false;
+		
+		displayMinorRule = function(_) return false;
+		displayMajorRule = function(_) return false;
+		displayAnchorLineRule = function(_) return false;
 		
 		labelOrientation = function(_) return null;
 		labelAnchor = function(_) return null;
@@ -94,41 +102,72 @@ class InfoCartesianChart
 			field : "displaytickmarks",
 			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
 			filter : function(v : Dynamic) return [{
-				field : "displayMinor",
+				field : "displayMinorTick",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}, {
-				field : "displayMajor",
+				field : "displayMajorTick",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}, {
-				field : "displayLabel",
+				field : "displayLabelTick",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}]
 		}, {
 			field : "displaytickminor",
 			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
 			filter : function(v : Dynamic) return [{
-				field : "displayMinor",
+				field : "displayMinorTick",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}]
 		}, {
 			field : "displaytickmajor",
 			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
 			filter : function(v : Dynamic) return [{
-				field : "displayMajor",
+				field : "displayMajorTick",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}]
 		}, {
 			field : "displayticklabel",
 			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
 			filter : function(v : Dynamic) return [{
-				field : "displayLabel",
+				field : "displayLabelTick",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}]
 		}, {
-			field : "displayanchorline",
+			field : "displayanchorlinetick",
 			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
 			filter : function(v : Dynamic) return [{
-				field : "displayAnchorLine",
+				field : "displayAnchorLineTick",
+				value : Std.is(v, Bool) ? function(_) return v : v
+			}]
+		}, {
+			field : "displayrules",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
+			filter : function(v : Dynamic) return [{
+				field : "displayMinorRule",
+				value : Std.is(v, Bool) ? function(_) return v : v
+			}, {
+				field : "displayMajorRule",
+				value : Std.is(v, Bool) ? function(_) return v : v
+			}]
+		}, {
+			field : "displayruleminor",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
+			filter : function(v : Dynamic) return [{
+				field : "displayMinorRule",
+				value : Std.is(v, Bool) ? function(_) return v : v
+			}]
+		}, {
+			field : "displayrulemajor",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
+			filter : function(v : Dynamic) return [{
+				field : "displayMajorRule",
+				value : Std.is(v, Bool) ? function(_) return v : v
+			}]
+		}, {
+			field : "displayanchorlinerule",
+			validator : function(v : Dynamic) return Reflect.isFunction(v) || Std.is(v, Bool),
+			filter : function(v : Dynamic) return [{
+				field : "displayAnchorLineRule",
 				value : Std.is(v, Bool) ? function(_) return v : v
 			}]
 		}, {

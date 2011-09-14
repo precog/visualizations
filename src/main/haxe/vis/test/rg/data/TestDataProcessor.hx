@@ -7,7 +7,7 @@ package rg.data;
 
 import rg.util.Periodicity;
 import rg.data.source.DataSourceArray;
-import thx.collections.HashList;
+import thx.collection.HashList;
 import utest.Assert;
 using Objects;
 using Arrays;

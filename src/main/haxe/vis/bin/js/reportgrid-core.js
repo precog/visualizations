@@ -186,6 +186,10 @@ var ReportGrid = window.ReportGrid || {};
       else if (property.substr(0, 1) == ".") return property;
       else return "." + property;
     },
+	
+	getBoundResults: function(o) {
+		return o.top ? '/top/' + o.top : (o.bottom ? '/bottom/' + o.bottom : '');
+	},
 
     splitPathVar: function(pathVar) {
       if (pathVar.length == 0) return ["/", ""];
@@ -228,14 +232,17 @@ var ReportGrid = window.ReportGrid || {};
         if (o instanceof Date) {
            return o.getUTCMilliseconds();
         }
-
         return o;
       }
       else {
         var time = o[name];
 
-        if (time != null) {
-          if (time instanceof Date) {
+        if (time !== null) {
+          if(name == "timestamp" && (time === "none" || time === false))
+          {
+            o[name] = false;
+          }
+          else if (time instanceof Date) {
             o[name] = time.getUTCMilliseconds();
           }
           else if (time instanceof String) {
@@ -246,19 +253,31 @@ var ReportGrid = window.ReportGrid || {};
         return o[name];
       }
     },
-
-    rangeHeaderFromStartEnd: function(options) {
-      var headers = {};
-
-      if (options.start !== undefined || options.end !== undefined) {
-        var start = Util.normalizeTime(options.start) || ReportGrid.Time.Zero;
-        var end   = Util.normalizeTime(options.end)   || ReportGrid.Time.Inf;
-
-        headers.Range = 'time=' + start + '-' + end;
-      }
-
-      return headers;
-    }
+	
+	defaultQuery: function(o) {
+		var q = { tokenId : $.Config.tokenId },
+			start = Util.normalizeTime(o.start),
+			end = Util.normalizeTime(o.end);
+		if(start || end)
+		{
+			q.start = start || $.Time.Zero;
+			q.end = end || $.Time.Inf;
+		}
+		if(o.location)
+		{
+			q.location = o.location;
+		}
+		return q;
+	},
+	
+	groupQuery: function(o) {
+		var q = Util.defaultQuery(o);
+		if(o.groupBy)
+			q.groupBy = o.groupBy;
+		if(o.groups)
+			q.groups = typeof o.groups == "string" ? o.groups : o.groups.join(",");
+		return q;
+	}
   }
 
   var Network = {
@@ -271,7 +290,7 @@ var ReportGrid = window.ReportGrid || {};
       var success  = options.success;
       var failure  = options.failure || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var createNewXmlHttpRequest = function() {
         if (window.XMLHttpRequest) {
@@ -327,7 +346,7 @@ var ReportGrid = window.ReportGrid || {};
       var success  = options.success;
       var failure  = options.failure || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var random   = Math.floor(Math.random() * 214748363);
       var funcName = 'ReportGridJsonpCallback' + random.toString();
@@ -341,8 +360,11 @@ var ReportGrid = window.ReportGrid || {};
         }
 
         document.head.removeChild(document.getElementById(funcName));
-
-        delete window[funcName];
+        try{
+            delete window[funcName];
+        }catch(e){
+            window[funcName] = undefined;
+        }
       }
 
       var extraQuery = {};
@@ -451,9 +473,9 @@ var ReportGrid = window.ReportGrid || {};
 
   $.Extend($.Config,
     {
-      analyticsServer: "http://api.reportgrid.com/services/analytics/v0/",
-	  useJsonp : "true",
-	  enableLog : "false"
+      analyticsServer: "http://api.reportgrid.com/services/analytics/v1/",
+      useJsonp : "true",
+      enableLog : "false"
     }
   );
   
@@ -507,6 +529,7 @@ var ReportGrid = window.ReportGrid || {};
    *
    * The options.count and options.timestamp are optional, and default to 1 and
    * the current time, respectively.
+   * The options.timestamp parameter can be set to "none" (or false) to not track time at all
    *
    * ReportGrid.track("/merchants/Starbucks/locations/USA_CO_Boulder/1/", {
    *   "event": {
@@ -518,7 +541,11 @@ var ReportGrid = window.ReportGrid || {};
    * });
    */
   ReportGrid.track = function(path_, options, success, failure) {
-    var path = Util.sanitizePath(path_);
+    if(typeof path_ == "string")
+      path_ = [path_];
+    var paths = [];
+    for(var i = 0; i < path_.length; i++)
+      paths.push(Util.sanitizePath(path_[i]));
 
     // Handle "event" instead of "events":
     if (options.event != null) {
@@ -542,12 +569,16 @@ var ReportGrid = window.ReportGrid || {};
     }
 
     var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (options.timestamp || "current time");
-    http.post(
-      $.Config.analyticsServer + '/vfs' + path,
-      options,
-      Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
-    );
+    for(var i = 0; i < paths.length; i++)
+    {
+      path = paths[i];
+      http.post(
+        $.Config.analyticsServer + '/vfs' + path,
+        options,
+        Util.createCallbacks(success, failure, description),
+        {tokenId: $.Config.tokenId }
+      );
+    }
   }
 
   /**
@@ -625,7 +656,7 @@ var ReportGrid = window.ReportGrid || {};
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/count',
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
+      Util.defaultQuery(options)
     );
   }
 
@@ -634,13 +665,14 @@ var ReportGrid = window.ReportGrid || {};
    * in events of the specified type.
    *
    * Options:
-   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year", "none" | false] - The granularity of time that you want to see results at.
    *  * start - the start of the time period to query
    *  * end   - the end of the time period to query
    *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
+   *  * groups : "1,2,3" or [1,2,3] - An optional property (it only makes sense when used in conjunction with "groupBy"); when used filters the group by the specified values.
    *
    * ReportGrid.propertySeries("/atm-events/", {property: "transaction", periodicity: "hour"});
-   * > {"type":"timeseries", "periodicity":"hour", "data":{"4512239238":2323}}
+   * > [[{timestamp:1315954800000},10],[...]]
    *
    * Or, if using groupBy:
    * > {"type":"deltas", "zero":0, "data":{"0":293, "1": 386, ..., "59": 222}}
@@ -649,18 +681,14 @@ var ReportGrid = window.ReportGrid || {};
     var path     = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property);
     var peri     = options.periodicity || "eternity";
-    var query    = { tokenId: $.Config.tokenId };
-    if(options.groupBy)
-        query.groupBy = options.groupBy;
-	var headers  = Util.rangeHeaderFromStartEnd(options);
+    var query    = Util.groupQuery(options);
 
     var description = 'Get series for property ' + path + property + ' (periodicity = ' + peri + ')';
 
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/series/' + peri,
       Util.createCallbacks(success, failure, description),
-      query,
-      headers
+      query
     );
   }
 
@@ -675,11 +703,11 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
 
     var description = 'Get all values of property ' + path + property;
-	var top = options.top ? 'top/' + options.top : (options.bottom ? 'bottom/' + options.bottom : '');
+    var bounds = Util.getBoundResults(options);
     http.get(
-      $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + top,
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/values' + bounds,
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
+      Util.defaultQuery(options)
     );
   }
 
@@ -702,7 +730,7 @@ var ReportGrid = window.ReportGrid || {};
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + encodeURIComponent(valueJson) + '/count',
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
+      Util.defaultQuery(options)
     );
   }
 
@@ -711,12 +739,13 @@ var ReportGrid = window.ReportGrid || {};
    * specified value.
    *
    * Options:
-   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year", "none" | false] - The granularity of time that you want to see results at.
    *  * start - the start of the time period to query
    *  * end   - the end of the time period to query
    *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
+   *  * groups : "1,2,3" or [1,2,3] - An optional property (it only makes sense when used in conjunction with "groupBy"); when used filters the group by the specified values.
    *
-   * ReportGrid.propertyValueSeries("/transactions/", {property: "click.gender", value: "male" periodicity: "hour"});
+   * ReportGrid.propertyValueSeries("/transactions/", {property: "click.gender", value: "male", periodicity: "hour"});
    * > {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":293}}
    *
    * Or, if using groupBy:
@@ -727,10 +756,7 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
     var value    = options.value;
     var peri     = options.periodicity || "eternity";
-    var query    = { tokenId: $.Config.tokenId };
-    if(options.groupBy)
-        query.groupBy = options.groupBy;
-    var headers = Util.rangeHeaderFromStartEnd(options);
+    var query    = Util.groupQuery(options);
 
     var valueJson = JSON.stringify(value);
 
@@ -739,8 +765,7 @@ var ReportGrid = window.ReportGrid || {};
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + encodeURIComponent(valueJson) + '/series/' + peri,
       Util.createCallbacks(success, failure, description),
-      query,
-      headers
+      query
     );
   }
 
@@ -763,7 +788,7 @@ var ReportGrid = window.ReportGrid || {};
         where:  options.where
       },
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
+      Util.defaultQuery(options)
     );
   }
 
@@ -774,13 +799,14 @@ var ReportGrid = window.ReportGrid || {};
    *
    * Options:
    *
-   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year", "none" | false] - The granularity of time that you want to see results at.
    *  * start - the start of the time period
    *  * end - the end of the time period
    *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
    *                                                        For example, if you batch minute data by hour, then the result will contain a dataset
    *                                                        with 60 entries; the first entry will contain the sum of counts for the first minute
    *                                                        of each hour in the specified time range, etc.
+   *  * groups : "1,2,3" or [1,2,3] - An optional property (it only makes sense when used in conjunction with "groupBy"); when used filters the group by the specified values.
    *
    * ReportGrid.searchSeries("/advertisers/Nike", {periodicity: "hour", where: {".impression.carrier": "AT&T"}});
    * > {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":293, "234345468":222, ...}}
@@ -794,21 +820,13 @@ var ReportGrid = window.ReportGrid || {};
 
     var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
 
-	var ob = {
-	  select: "series/" + peri,
+    var ob = {
+      select: "series/" + peri,
       from:   path,
       where:  options.where
-	};
-	var query    = { tokenId: $.Config.tokenId };
-    if(options.groupBy)
-        query.groupBy = options.groupBy;
-
-    var start = Util.normalizeTime(options, 'start');
-    var end = Util.normalizeTime(options, 'end');
-	
-	if(start) ob.start = start;
-	if(end) ob.end = end;
-	
+    };
+    var query = Util.groupQuery(options);
+    
     http.post(
       $.Config.analyticsServer + '/search',
       ob,
@@ -824,14 +842,14 @@ var ReportGrid = window.ReportGrid || {};
    * Options:
    *
    *  * properties - The property/value pairs that each selected event must have. You may specify properties up to the order defined by your token.
-   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year", "none" | false] - The granularity of time that you want to see results at.
    *  * start - the start of the time period
    *  * end - the end of the time period
    *  * groupBy: ["hour", "day", "week", "month", "year"] - An optional property; if specified, this will be used to batch the returned counts.
    *                                                        For example, if you batch minute data by hour, then the result will contain a dataset
    *                                                        with 60 entries; the first entry will contain the sum of counts for the first minute
    *                                                        of each hour in the specified time range, etc.
-   *
+   *  * groups : "1,2,3" or [1,2,3] - An optional property (it only makes sense when used in conjunction with "groupBy"); when used filters the group by the specified values.
    *
    * ReportGrid.intersect("/advertisers/Nike", {periodicity: "hour", properties: [{"property" : ".impression.platform", "limit" : 3, "order" : "descending"}]});
    * > {
@@ -848,31 +866,39 @@ var ReportGrid = window.ReportGrid || {};
    *   }
    */
   ReportGrid.intersect = function(path_, options, success, failure) {
-	var path = Util.sanitizePath(path_);
-	var peri = options.periodicity || "eternity";
+    var path = Util.sanitizePath(path_);
+    var peri = options.periodicity || "eternity";
 
-	var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
-	
-	var ob = {
-	  select:     "series/" + peri,
-	  from:       path,
-	  properties: options.properties
-	};
-    var query    = { tokenId: $.Config.tokenId };
-    if(options.groupBy)
-        query.groupBy = options.groupBy;
-    var start = Util.normalizeTime(options, 'start');
-    var end = Util.normalizeTime(options, 'end');
+    var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
+    
+    var ob = {
+      select:     "series/" + peri,
+      from:       path,
+      properties: options.properties
+    };
 
-	if(start) ob.start = start;
-	if(end) ob.end = end;
-	
-	http.post(
-	  $.Config.analyticsServer + '/intersect',
-	  ob,
-	  Util.createCallbacks(success, failure, description),
+    var query = Util.groupQuery(options);
+
+    http.post(
+      $.Config.analyticsServer + '/intersect',
+      ob,
+      Util.createCallbacks(success, failure, description),
       query
-	);
+    );
+  }
+  
+  ReportGrid.histogram = function(path_, options, success, failure) {
+    var path = Util.sanitizePath(path_);
+	var property = Util.sanitizeProperty(options.property);
+    var description = 'Histogram ' + path + property;
+    var query = Util.defaultQuery(options);
+	var bounds = Util.getBoundResults(options);
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,
+      Util.createCallbacks(success, failure, description),
+      query
+    );
   }
 
   /** Lists all tokens.
@@ -889,12 +915,12 @@ var ReportGrid = window.ReportGrid || {};
 
   ReportGrid.token = function(token, success, failure) {
     var http = $.Http();
-	if(typeof(token) != "string")
-	{
-		failure = success;
-		success = token;
-		token = $.Config.tokenId;
-	}
+    if(typeof(token) != "string")
+    {
+        failure = success;
+        success = token;
+        token = $.Config.tokenId;
+    }
     http.get(
       $.Config.analyticsServer + '/tokens/' + token,
       Util.createCallbacks(success, failure, 'List all tokens'),

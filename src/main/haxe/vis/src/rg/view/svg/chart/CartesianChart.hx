@@ -11,7 +11,7 @@ import rg.view.svg.panel.Panel;
 import thx.error.AbstractMethod;
 import rg.data.DataPoint;
 import rg.data.Stats;
-import rg.view.svg.widget.Baloon;
+import rg.view.svg.widget.Balloon;
 import thx.math.Equations;
 import rg.view.svg.panel.Panels;
 import rg.data.Variable;

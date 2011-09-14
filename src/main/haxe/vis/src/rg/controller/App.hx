@@ -66,11 +66,13 @@ class App
 		}
 
 		var visualization : Visualization = null;
+			
 		var infoviz = new InfoVisualizationType().feed(params.options);
+		
 		switch(new InfoDomType().feed(params.options).kind)
 		{
 			case Svg:
-				var layout = getLayout(id, params.options, el);
+				var layout = getLayout(id, params.options, el, infoviz.replace);
 				visualization = new FactorySvgVisualization().create(infoviz.type, layout, params.options);
 			case Html:
 				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
@@ -88,10 +90,16 @@ class App
 		return visualization;
 	}
 	
-	public function getLayout(id : String, options : Dynamic, container : Selection)
+	public function getLayout(id : String, options : Dynamic, container : Selection, replace : Bool)
 	{
-		if (layouts.exists(id))
-			return layouts.get(id);
+		var old = layouts.get(id);
+		if (null != old)
+		{
+			if (replace)
+				old.destroy();
+			else
+				return old;
+		}
 		var info = new InfoLayout().feed(options),
 			layout = new FactoryLayout().create(info, container);
 		layouts.set(id, layout);

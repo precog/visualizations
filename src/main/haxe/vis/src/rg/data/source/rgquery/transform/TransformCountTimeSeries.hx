@@ -29,13 +29,12 @@ class TransformCountTimeSeries implements ITransform<TimeSeriesType>
 			unit = this.unit,
 			event = this.event,
 			periodicity = this.periodicity;
-		if (null == data.data)
-			return [];
-		var result = data.data.map(function(d, _) {
+		var result = data.map(function(d, _) {
+//			var dp = Objects.clone(properties);
 			var p : DataPoint = cast Objects.addFields(
 				Dynamics.clone(properties), 
 				[Properties.timeProperty(periodicity), unit, "event"], 
-				[d[0], d[1], event]);
+				[d[0].timestamp, d[1], event]);
 			return p;
 		});
 		return result;

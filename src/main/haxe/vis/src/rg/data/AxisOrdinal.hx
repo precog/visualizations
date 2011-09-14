@@ -5,10 +5,10 @@
 
 package rg.data;
 import thx.error.Error;
-import thx.collections.Set;
+import thx.collection.Set;
 import rg.data.ScaleDistribution;
 using Arrays;
-using thx.collections.Sets;
+using thx.collection.Sets;
 
 class AxisOrdinal<T> implements IAxisOrdinal<T>
 {

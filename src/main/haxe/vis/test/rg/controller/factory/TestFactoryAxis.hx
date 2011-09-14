@@ -8,7 +8,7 @@ package rg.controller.factory;
 import rg.data.AxisTime;
 import rg.data.AxisOrdinal;
 import rg.data.AxisGroupByTime;
-import thx.collections.Set;
+import thx.collection.Set;
 import utest.Assert;
 import rg.util.Properties;
 

@@ -7,8 +7,12 @@ package rg.controller.info;
 
 class InfoVisualizationType 
 {
+	public var replace : Bool;
 	public var type : Null<String>;
-	public function new() { }
+	public function new() 
+	{
+		replace = true;
+	}
 	
 	public static function filters() 
 	{
@@ -19,6 +23,10 @@ class InfoVisualizationType
 				value : v.toLowerCase(),
 				field : "type"
 			}]
+		}, {
+			field : "replace",
+			validator : function(v) return Std.is(v, Bool),
+			filtern : null
 		}];
 	}
 }

@@ -20,7 +20,7 @@
 	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
 	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
 -->
-	<script src="js/reportgrid-core.js?tokenId=C7A18C95-3619-415B-A89B-4CE47693E4CC"></script>
+	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			type: "count"
 		}],
 		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".ageRange" }
+			src: { path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "impression", query : ".ageRange" }
 		},
 		options : {
 			height : 400,
@@ -88,12 +88,12 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	ReportGrid.pieChart("#chart1", {
 		axes : [{
-			type: ".platform"
+			type: ".browser"
 		}, {
 			type: "count"
 		}],
 		data : {
-			src: { path : "/rgadnet", event : "impression", query : ".platform" }
+			src: { path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "impression", query : ".browser" }
 		},
 		options : {
 			innerradius : 0.25,
@@ -116,9 +116,9 @@ document.addEventListener("DOMContentLoaded", function(){
 		}],
 		data : {
 			src: [
-				{ path : "/rgadnet", event : "impression" },
-				{ path : "/rgadnet", event : "click" },
-				{ path : "/rgadnet", event : "conversion" }
+				{ path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "impression" },
+				{ path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "click" },
+				{ path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "conversion" }
 			]
 		},
 		options : {
@@ -144,9 +144,9 @@ document.addEventListener("DOMContentLoaded", function(){
 		}],
 		data : {
 			src: [
-				{ path : "/rgadnet", event : "impression" },
-				{ path : "/rgadnet", event : "click" },
-				{ path : "/rgadnet", event : "conversion" }
+				{ path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "impression" },
+				{ path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "click" },
+				{ path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "conversion" }
 			]
 		},
 		options : {
@@ -177,12 +177,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		if(last) last.destroy();
 		last = ReportGrid.pieChart("#chart2", {
 			axes : [{
-				type: ".platform"
+				type: ".browser"
 			}, {
 				type: "count"
 			}],
 			data : {
-				src: { path : "/rgadnet", event : name, query : ".platform" }
+				src: { path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : name, query : ".browser" }
 			},
 			options : {
 				innerradius : 0.25,
@@ -197,9 +197,9 @@ document.addEventListener("DOMContentLoaded", function(){
 						if(v / total < 0.05)
 							return null;
 						if(v / total < 0.1)
-							return dp[".platform"];
+							return dp[".browser"];
 						else
-							return dp[".platform"] + ": " + Math.round(v/1000) + "k";
+							return dp[".browser"] + ": " + Math.round(v/1000) + "k";
 					}
 				}
 			}

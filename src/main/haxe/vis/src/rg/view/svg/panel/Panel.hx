@@ -14,6 +14,7 @@ class Panel
 	public var frame(default, null) : Frame;
 	public var g(default, null) : Selection;
 	public var parent(default, null) : Container;
+	
 	var _layers : Array<Layer>;
 
 	public function new(frame : StackItem)

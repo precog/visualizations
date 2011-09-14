@@ -9,7 +9,7 @@ import rg.data.source.rgquery.QueryAst;
 import rg.data.IDataSource;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.Properties;
-import thx.collections.Set;
+import thx.collection.Set;
 import rg.data.VariableDependentContext;
 import rg.data.VariableIndependentContext;
 import rg.data.IAxisDiscrete;

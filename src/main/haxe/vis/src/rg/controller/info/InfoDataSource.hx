@@ -16,6 +16,8 @@ class InfoDataSource
 	public var data : Null<Array<DataPoint>>;
 	public var name : Null<String>;
 	public var groupBy : Null<String>;
+	public var start : Null<Float>;
+	public var end : Null<Float>;
 	
 	public function new() {}
 	
@@ -36,6 +38,14 @@ class InfoDataSource
 		}, {
 			field : "name",
 			validator : function(v) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "start",
+			validator : function(v) return Std.is(v, Float),
+			filter : null
+		}, {
+			field : "end",
+			validator : function(v) return Std.is(v, Float),
 			filter : null
 		}, {
 			field : "data",

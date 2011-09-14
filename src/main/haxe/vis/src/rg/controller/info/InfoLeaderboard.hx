@@ -21,7 +21,7 @@ class InfoLeaderboard
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabel();
-		displayGradient = false;
+		displayGradient = true;
 		gradientOnMax = false;
 	}
 	

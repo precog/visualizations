@@ -8,7 +8,7 @@ import rg.data.DataPoint;
 import rg.data.Stats;
 import rg.util.DataPoints;
 import rg.view.svg.panel.Panel;
-import rg.view.svg.widget.Baloon;
+import rg.view.svg.widget.Balloon;
 import thx.svg.LineInterpolator;
 import thx.geom.layout.Stack;
 import rg.data.VariableIndependent;
@@ -152,7 +152,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			}
 		}));
 		
-		stats = DataPoints.stats(dps.flatten(), yVariables[0].type);
+		stats = yVariables[0].stats;
 		
 		maxy = data.floatMax(function(d) return d.floatMax(function(d) return d.y0 + d.y));
 		

@@ -104,7 +104,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		if (null == dps || 0 == dps.length)
 			return;
 
-		stats = DataPoints.stats(dps, variableDependent.type);
+		stats = variableDependent.stats;
 		xrange = range(cast xVariable);
 		yrange = range(yVariables[0]);
 		cols = xrange.length;
