@@ -34,7 +34,7 @@ class FactoryAxis
 		if (Properties.isTime(type))
 		{
 			if (null != groupBy)
-				return new AxisGroupByTime(groupBy);
+				return new AxisGroupByTime(Properties.periodicity(type));
 			else
 				return new AxisTime(Properties.periodicity(type));
 		} else

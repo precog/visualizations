@@ -52,9 +52,9 @@ class DataProcessor
 				var query = Types.as(ds, DataSourceReportGrid);
 				if (null == query)
 					continue;
-				if(null != tmin)
+				if(null != tmin && null == query.start)
 					query.start = tmin;
-				if(null != tmax)
+				if(null != tmax && null == query.end)
 					query.end = tmax;
 			}
 		}

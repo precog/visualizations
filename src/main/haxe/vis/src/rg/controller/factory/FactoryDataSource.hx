@@ -44,7 +44,8 @@ class FactoryDataSource
 		{
 			return createFromData(info.data);
 		} 
-		if (null != info.path && null != info.event) {
+		if (null != info.path && null != info.event)
+		{
 			return createFromQuery(info.path, info.event, info.query, info.groupBy, info.start, info.end);
 		}
 		throw new Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters");

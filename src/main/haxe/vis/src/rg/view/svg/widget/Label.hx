@@ -80,7 +80,11 @@ class Label
 	
 	public function getSize() : { width : Float, height : Float }
 	{
-		return untyped g.node().getBBox();
+		try {
+			return untyped g.node().getBBox();
+		} catch (e : Dynamic) {
+			return { width : 0.0, height : 0.0 };
+		}
 	}
 	
 	public function place(x : Float, y : Float, angle : Float)

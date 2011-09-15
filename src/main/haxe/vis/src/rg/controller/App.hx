@@ -20,7 +20,6 @@ import rg.controller.info.InfoVisualizationOption;
 import rg.controller.factory.FactoryDataContext;
 import rg.controller.factory.FactoryDataSource;
 import rg.data.DataPoint;
-import rg.data.source.DataSourceReportGrid;
 import rg.view.layout.Layout;
 import rg.controller.factory.FactoryHtmlVisualization;
 import rg.controller.factory.FactorySvgVisualization;

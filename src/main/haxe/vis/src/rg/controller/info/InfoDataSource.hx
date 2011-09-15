@@ -16,6 +16,7 @@ class InfoDataSource
 	public var data : Null<Array<DataPoint>>;
 	public var name : Null<String>;
 	public var groupBy : Null<String>;
+	public var groups : Null<Array<String>>;
 	public var start : Null<Float>;
 	public var end : Null<Float>;
 	
@@ -63,6 +64,13 @@ class InfoDataSource
 			filter : function(v)
 			{
 				return [{ field : "groupBy", value : v }];
+			}
+		}, {
+			field : "groupfilter",
+			validator : function(v : Dynamic) return Std.is(v, String) || Std.is(v, Array),
+			filter : function(v)
+			{
+				return [{ field : "groups", value : Std.is(v, String) ? cast v.split(",") : v }];
 			}
 		}];
 	}

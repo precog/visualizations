@@ -3734,21 +3734,32 @@ rg.data.AxisGroupByTime.__name__ = ["rg","data","AxisGroupByTime"];
 rg.data.AxisGroupByTime.__super__ = rg.data.AxisOrdinal;
 for(var k in rg.data.AxisOrdinal.prototype ) rg.data.AxisGroupByTime.prototype[k] = rg.data.AxisOrdinal.prototype[k];
 rg.data.AxisGroupByTime.valuesByGroup = function(groupby) {
-	switch(groupby) {
-	case "minute":
-		return Ints.range(1,60);
-	case "hour":
-		return Ints.range(1,24);
+	return Ints.range(rg.data.AxisGroupByTime.defaultMin(groupby),rg.data.AxisGroupByTime.defaultMax(groupby) + 1);
+}
+rg.data.AxisGroupByTime.defaultMin = function(periodicity) {
+	switch(periodicity) {
+	case "minute":case "hour":case "week":case "month":
+		return 0;
 	case "day":
-		return Ints.range(1,31);
-	case "week":
-		return Ints.range(1,7);
-	case "month":
-		return Ints.range(1,12);
-	case "year":
-		return Ints.range(1,365);
+		return 1;
 	default:
-		throw new thx.error.Error("invalid groupby value '{0}'",null,groupby,{ fileName : "AxisGroupByTime.hx", lineNumber : 29, className : "rg.data.AxisGroupByTime", methodName : "valuesByGroup"});
+		throw new thx.error.Error("invalid periodicity '{0}' for groupBy min",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 34, className : "rg.data.AxisGroupByTime", methodName : "defaultMin"});
+	}
+}
+rg.data.AxisGroupByTime.defaultMax = function(periodicity) {
+	switch(periodicity) {
+	case "minute":
+		return 59;
+	case "hour":
+		return 23;
+	case "day":
+		return 31;
+	case "week":
+		return 6;
+	case "month":
+		return 11;
+	default:
+		throw new thx.error.Error("invalid periodicity '{0}' for groupBy max",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 48, className : "rg.data.AxisGroupByTime", methodName : "defaultMax"});
 	}
 }
 rg.data.AxisGroupByTime.prototype.groupBy = null;
@@ -5828,7 +5839,7 @@ rg.controller.factory.FactoryDataSource.prototype.create = function(info) {
 	}
 	if(null != info.data) return this.createFromData(info.data);
 	if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.groupBy,info.start,info.end);
-	throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 50, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+	throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 51, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 }
 rg.controller.factory.FactoryDataSource.prototype.createFromData = function(data) {
 	return new rg.data.source.DataSourceArray(data);
@@ -7068,7 +7079,11 @@ rg.view.svg.widget.Label.prototype.removeClass = function(name) {
 	this.g.classed().remove(name);
 }
 rg.view.svg.widget.Label.prototype.getSize = function() {
-	return this.g.node().getBBox();
+	try {
+		return this.g.node().getBBox();
+	} catch( e ) {
+		return { width : 0.0, height : 0.0};
+	}
 }
 rg.view.svg.widget.Label.prototype.place = function(x,y,angle) {
 	this.x = x;
@@ -8578,7 +8593,15 @@ rg.controller.MVPOptions.buildQuery = function(type,property,periodicity) {
 	}
 }
 rg.controller.MVPOptions.complete = function(executor,o,handler) {
-	var start = null, end = null, path = "/", events = [], property = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity;
+	var start = null, end = null, path = "/", events = [], property = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null;
+	if(null != o.groupby) {
+		groupby = o.groupby;
+		Reflect.deleteField(o,"groupby");
+		if(null != o.groupfilter) {
+			groupfilter = o.groupfilter;
+			Reflect.deleteField(o,"groupfilter");
+		}
+	}
 	if(null != o.property) {
 		property = (o.property.substr(0,1) == "."?"":".") + o.property;
 		Reflect.deleteField(o,"property");
@@ -8646,6 +8669,10 @@ rg.controller.MVPOptions.complete = function(executor,o,handler) {
 					o2["start"] = start;
 					o2["end"] = end;
 				}
+				if(null != groupby) {
+					o2["groupby"] = groupby;
+					if(null != groupfilter) o2["groupfilter"] = groupfilter;
+				}
 				src.push(o2);
 			}
 			if(null == o1.options.segmenton) o1.options.segmenton = null == property?"event":property;
@@ -8655,7 +8682,8 @@ rg.controller.MVPOptions.complete = function(executor,o,handler) {
 	chain.addAction(function(o1,handler1) {
 		if(null == o1.axes) switch(o1.options.visualization) {
 		default:
-			o1.axes = [{ type : ".#time:" + periodicity, view : [start,end]}];
+			var axis = null != groupby?{ type : ".#time:" + periodicity, groupby : groupby}:{ type : ".#time:" + periodicity, view : [start,end]};
+			o1.axes = [axis];
 		}
 		handler1(o1);
 	});
@@ -10201,6 +10229,44 @@ rg.controller.factory.FactoryVariableContexts.prototype.createDependents = funct
 	return result;
 }
 rg.controller.factory.FactoryVariableContexts.prototype.__class__ = rg.controller.factory.FactoryVariableContexts;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformCountGroupIntersect"];
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.groupby = null;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.event = null;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.transform = function(data) {
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) return [];
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var arr = item.value;
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Reflect.field(arr[i][0],this.periodicity),arr[i][1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+	}
+	return result;
+}
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountGroupIntersect;
+rg.data.source.rgquery.transform.TransformCountGroupIntersect.__interfaces__ = [rg.data.source.ITransform];
 rg.data.AxisTime = function(periodicity) {
 	if( periodicity === $_ ) return;
 	this.periodicity = periodicity;
@@ -11885,7 +11951,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 73, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 74, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -11904,7 +11970,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 79, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 80, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
@@ -11916,7 +11982,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 	case 0:
 		break;
 	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 85, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 86, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 	}
 	this.path = path;
 	this.start = start;
@@ -11931,7 +11997,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 207, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 214, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -11983,14 +12049,17 @@ rg.data.source.DataSourceReportGrid.prototype.mapProperties = function(d,_) {
 	case 2:
 		return { event : this.event, property : null, limit : null, order : null};
 	default:
-		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 62, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 63, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 	}
 }
 rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeriodicity) {
 	if(appendPeriodicity == null) appendPeriodicity = true;
 	var o = { };
 	if(null != this.start) o["start"] = this.start;
-	if(null != this.end) o["end"] = rg.util.Periodicity.next(this.periodicity,this.end);
+	if(null != this.end) {
+		var e = rg.util.Periodicity.next(this.periodicity,this.end);
+		o["end"] = e;
+	}
 	if(appendPeriodicity) {
 		o["periodicity"] = this.periodicity;
 		if(null != this.groupBy) o["groupBy"] = this.groupBy;
@@ -12018,7 +12087,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 128, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
+				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 133, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
 				return $r;
 			}($this));
 		}
@@ -12026,7 +12095,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 	}(this));
 }
 rg.data.source.DataSourceReportGrid.prototype.load = function() {
-	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 136, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 141, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 		if(this.periodicity == "eternity") {
 			this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 			var o = this.basicOptions(false);
@@ -12051,7 +12120,9 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 			}
 		}
 	} else {
-		if(this.periodicity == "eternity") this.transform = new rg.data.source.rgquery.transform.TransformCountIntersect({ },this.exp.map(function(d,_) {
+		if(this.groupBy != null) this.transform = new rg.data.source.rgquery.transform.TransformCountGroupIntersect({ },this.exp.map(function(d,_) {
+			return d.property;
+		}),this.event,this.periodicity,this.unit()); else if(this.periodicity == "eternity") this.transform = new rg.data.source.rgquery.transform.TransformCountIntersect({ },this.exp.map(function(d,_) {
 			return d.property;
 		}),this.event); else this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },this.exp.map(function(d,_) {
 			return d.property;
@@ -12064,7 +12135,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 	}
 }
 rg.data.source.DataSourceReportGrid.prototype.error = function(msg) {
-	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 188, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 195, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 }
 rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
 	var data = this.transform.transform(src);
@@ -12385,15 +12456,15 @@ rg.controller.factory.FactoryVariableIndependent.prototype.create = function(inf
 		min = Dates.snap(this.defaultMin(this.normalizeTime(info.min),periodicity),periodicity);
 		max = Dates.snap(this.defaultMax(this.normalizeTime(info.max),periodicity),periodicity);
 	} else if(Std["is"](axis,rg.data.AxisGroupByTime)) {
-		var periodicity = ((function($this) {
+		var groupaxis = (function($this) {
 			var $r;
 			var $t = axis;
 			if(Std["is"]($t,rg.data.AxisGroupByTime)) $t; else throw "Class cast error";
 			$r = $t;
 			return $r;
-		}(this))).groupBy;
-		min = this.defaultMin(this.normalizeTime(info.min),periodicity);
-		max = this.defaultMax(this.normalizeTime(info.max),periodicity);
+		}(this));
+		min = null != info.min?info.min:rg.data.AxisGroupByTime.defaultMin(groupaxis.groupBy);
+		max = null != info.max?info.max:rg.data.AxisGroupByTime.defaultMax(groupaxis.groupBy);
 	}
 	var variable = new rg.data.VariableIndependent(info.type,axis,info.scaleDistribution,min,max);
 	return variable;
@@ -12408,7 +12479,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = funct
 		return $r;
 	}(this))).getTime();
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
-	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 55, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
+	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 57, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
 	if(null != min) return min;
@@ -12428,7 +12499,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function
 	case "year":
 		return thx.date.DateParser.parse("6 years ago").getTime();
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 79, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
+		throw new thx.error.Error("invalid periodicity '{0}' for min",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 81, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
 	}
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function(max,periodicity) {
@@ -12441,7 +12512,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function
 	case "day":case "week":case "month":case "year":
 		return thx.date.DateParser.parse("today").getTime();
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}'",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 96, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
+		throw new thx.error.Error("invalid periodicity '{0}' for max",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 98, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
 	}
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;
@@ -12753,7 +12824,7 @@ rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,sam
 }
 rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,samples,groupBy) {
 	if(rg.util.Properties.isTime(type)) {
-		if(null != groupBy) return new rg.data.AxisGroupByTime(groupBy); else return new rg.data.AxisTime(rg.util.Properties.periodicity(type));
+		if(null != groupBy) return new rg.data.AxisGroupByTime(rg.util.Properties.periodicity(type)); else return new rg.data.AxisTime(rg.util.Properties.periodicity(type));
 	} else return new rg.data.AxisOrdinal(samples);
 }
 rg.controller.factory.FactoryAxis.prototype.__class__ = rg.controller.factory.FactoryAxis;
@@ -13282,6 +13353,10 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return Std["is"](v,String) && rg.util.Periodicity.isValid(v);
 	}, filter : function(v) {
 		return [{ field : "groupBy", value : v}];
+	}},{ field : "groupfilter", validator : function(v) {
+		return Std["is"](v,String) || Std["is"](v,Array);
+	}, filter : function(v) {
+		return [{ field : "groups", value : Std["is"](v,String)?v.split(","):v}];
 	}}];
 }
 rg.controller.info.InfoDataSource.prototype.query = null;
@@ -13291,6 +13366,7 @@ rg.controller.info.InfoDataSource.prototype.namedData = null;
 rg.controller.info.InfoDataSource.prototype.data = null;
 rg.controller.info.InfoDataSource.prototype.name = null;
 rg.controller.info.InfoDataSource.prototype.groupBy = null;
+rg.controller.info.InfoDataSource.prototype.groups = null;
 rg.controller.info.InfoDataSource.prototype.start = null;
 rg.controller.info.InfoDataSource.prototype.end = null;
 rg.controller.info.InfoDataSource.prototype.__class__ = rg.controller.info.InfoDataSource;
@@ -13326,6 +13402,30 @@ thx.math.Ease.mode = function(easemode,f) {
 	}
 }
 thx.math.Ease.prototype.__class__ = thx.math.Ease;
+rg.controller.info.InfoVisualizationOption = function(p) {
+}
+rg.controller.info.InfoVisualizationOption.__name__ = ["rg","controller","info","InfoVisualizationOption"];
+rg.controller.info.InfoVisualizationOption.filters = function() {
+	return [{ field : "axes", validator : function(v) {
+		return Std["is"](v,Array) || Reflect.isObject(v);
+	}, filter : function(v) {
+		return [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			return rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v1);
+		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v)]}];
+	}},{ field : "data", validator : function(v) {
+		return Std["is"](v,Array) || Reflect.isObject(v);
+	}, filter : function(v) {
+		return [{ field : "data", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			return rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v1);
+		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v)]}];
+	}},{ field : "options", validator : function(v) {
+		return Reflect.isObject(v);
+	}, filter : null}];
+}
+rg.controller.info.InfoVisualizationOption.prototype.variables = null;
+rg.controller.info.InfoVisualizationOption.prototype.data = null;
+rg.controller.info.InfoVisualizationOption.prototype.options = null;
+rg.controller.info.InfoVisualizationOption.prototype.__class__ = rg.controller.info.InfoVisualizationOption;
 thx.math.Equations = function() { }
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
@@ -13388,30 +13488,6 @@ thx.math.Equations.polynomialf = function(e) {
 	};
 }
 thx.math.Equations.prototype.__class__ = thx.math.Equations;
-rg.controller.info.InfoVisualizationOption = function(p) {
-}
-rg.controller.info.InfoVisualizationOption.__name__ = ["rg","controller","info","InfoVisualizationOption"];
-rg.controller.info.InfoVisualizationOption.filters = function() {
-	return [{ field : "axes", validator : function(v) {
-		return Std["is"](v,Array) || Reflect.isObject(v);
-	}, filter : function(v) {
-		return [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			return rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v1);
-		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v)]}];
-	}},{ field : "data", validator : function(v) {
-		return Std["is"](v,Array) || Reflect.isObject(v);
-	}, filter : function(v) {
-		return [{ field : "data", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			return rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v1);
-		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v)]}];
-	}},{ field : "options", validator : function(v) {
-		return Reflect.isObject(v);
-	}, filter : null}];
-}
-rg.controller.info.InfoVisualizationOption.prototype.variables = null;
-rg.controller.info.InfoVisualizationOption.prototype.data = null;
-rg.controller.info.InfoVisualizationOption.prototype.options = null;
-rg.controller.info.InfoVisualizationOption.prototype.__class__ = rg.controller.info.InfoVisualizationOption;
 rg.controller.factory.FactoryLayout = function(p) {
 }
 rg.controller.factory.FactoryLayout.__name__ = ["rg","controller","factory","FactoryLayout"];
@@ -13505,8 +13581,8 @@ rg.data.DataProcessor.prototype.load = function() {
 			var ds = $it0.next();
 			var query = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
 			if(null == query) continue;
-			if(null != tmin) query.start = tmin;
-			if(null != tmax) query.end = tmax;
+			if(null != tmin && null == query.start) query.start = tmin;
+			if(null != tmax && null == query.end) query.end = tmax;
 		}
 	}
 	this.sources.load();

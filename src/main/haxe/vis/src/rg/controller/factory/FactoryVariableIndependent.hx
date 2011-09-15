@@ -25,6 +25,7 @@ class FactoryVariableIndependent
 			axis = axiscreateer.createDiscrete(info.type, info.values, info.groupBy),
 			min = info.min,
 			max = info.max;
+
 		if (null == min && null != info.values)
 			min = Arrays.first(info.values);
 		if (null == max && null != info.values)
@@ -36,9 +37,10 @@ class FactoryVariableIndependent
 			max = Dates.snap(defaultMax(normalizeTime(info.max), periodicity), periodicity);
 		} else if (Std.is(axis, AxisGroupByTime))
 		{
-			var periodicity = cast(axis, AxisGroupByTime).groupBy;
-			min = defaultMin(normalizeTime(info.min), periodicity);
-			max = defaultMax(normalizeTime(info.max), periodicity);
+			var groupaxis = cast(axis, AxisGroupByTime);
+			
+			min = null != info.min ? info.min : AxisGroupByTime.defaultMin(groupaxis.groupBy);
+			max = null != info.max ? info.max : AxisGroupByTime.defaultMax(groupaxis.groupBy);
 		}
 		var variable = new VariableIndependent(info.type, axis, info.scaleDistribution, min, max);
 		return variable;
@@ -76,7 +78,7 @@ class FactoryVariableIndependent
 			case "year":
 				return DateParser.parse("6 years ago").getTime();
 			default:
-				throw new Error("invalid periodicity '{0}'", periodicity);
+				throw new Error("invalid periodicity '{0}' for min", periodicity);
 		}
 	}
 	
@@ -93,7 +95,7 @@ class FactoryVariableIndependent
 			case "day", "week", "month", "year":
 				return DateParser.parse("today").getTime();
 			default:
-				throw new Error("invalid periodicity '{0}'", periodicity);
+				throw new Error("invalid periodicity '{0}' for max", periodicity);
 		}
 	}
 }

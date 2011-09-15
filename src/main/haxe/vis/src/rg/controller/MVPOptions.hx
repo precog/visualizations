@@ -47,9 +47,22 @@ class MVPOptions
 			property = null,
 			chain = new ChainedExecutor(handler),
 			query,
-			periodicity;
+			periodicity,
+			groupby = null,
+			groupfilter = null;
 
 		// capture defaults
+		// grouping
+		if (null != o.groupby)
+		{
+			groupby = o.groupby;
+			Reflect.deleteField(o, "groupby");
+			if (null != o.groupfilter)
+			{
+				groupfilter = o.groupfilter;
+				Reflect.deleteField(o, "groupfilter");
+			}
+		}
 		// property
 		if (null != o.property)
 		{
@@ -144,6 +157,14 @@ class MVPOptions
 						Reflect.setField(o, "start", start);
 						Reflect.setField(o, "end", end);
 					}
+					if (null != groupby)
+					{
+						Reflect.setField(o, "groupby", groupby);
+						if (null != groupfilter)
+						{
+							Reflect.setField(o, "groupfilter", groupfilter);
+						}
+					}
 					src.push( o );
 				}
 				if (null == o.options.segmenton)
@@ -167,7 +188,11 @@ class MVPOptions
 							o.axes = [{ type : ".#time:" + periodicity, view : [start, end] }];
 						}*/
 					default:
-						o.axes = [{ type : ".#time:" + periodicity, view : [start, end] }];
+						var axis = if (null != groupby)
+							{ type : ".#time:" + periodicity, groupby : groupby }
+						else
+							cast { type : ".#time:" + periodicity, view : [start, end] };
+						o.axes = [axis];
 				}
 			}
 			handler(o);

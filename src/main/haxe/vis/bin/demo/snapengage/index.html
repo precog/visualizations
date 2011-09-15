@@ -89,7 +89,8 @@ $(function(){
 			options : { 
 				displayrules : function(type) { return type.substr(0, 7) != '.#time:' },
 				displayanchorlinetick : function(type) { return type.substr(0, 7) == '.#time:' },
-				label : { datapointover : label.sourceType }
+				label : { datapointover : label.sourceType },
+				barpadding : 3
 			}
 		});
 		
@@ -118,14 +119,20 @@ $(function(){
 			property : "browser",
 //			options : { label : { datapointover : label.sourceType } }
 		});
+		
+		executeFilterBased();
 	}
 	
 	function executeFilterBased()
 	{
 		ReportGrid.barChart("#activity", {
-			path : path, event : "case", periodicity : "day",
+			path : path, event : "case", start : start, end : end,
+			periodicity : "hour", groupby : "day",
 			property : "sourceType",
-//			options : { label : { datapoint : label.sourceTypePercent, datapointover : label.sourceType } }
+			options : {
+				label : { datapoint : label.sourceTypePercent, datapointover : label.sourceType },
+				barpadding : 3
+			}
 		});
 	}
 	
@@ -186,7 +193,7 @@ body
 .container
 {
 	float: left;
-	margin-right: 8px;
+	margin: 0 8px 8px 0;
 	padding: 8px;
 	background-color: #fff;
 	-moz-border-radius: 10px;
@@ -211,13 +218,13 @@ body
 .chart
 {
 	float: left;
-	width: 240px;
-	height: 240px;
+	width: 180px; /* 240px */
+	height: 180px; /* 240px */
 }
 
 .wide
 {
-	width: 670px;
+	width: 360px; /* 670px*/;
 }
 
 h1
@@ -237,6 +244,10 @@ h1:hover {
 </style>
 </head>
 <body>
+	<div class="container">
+		<input type="text" id="daterange" />
+	</div>
+	
 	<h1>activity by hour of the day</h1>
 	<div class="container">
 		<select name="DropDownTimezone" id="DropDownTimezone">
@@ -289,9 +300,6 @@ h1:hover {
 		<div class="clear"></div>
 	</div>
 	
-	<div class="container">
-		<input type="text" id="daterange" />
-	</div>
 	<h1>requests</h1>
 	<div class="container">
 		<div id="caseslegend" class="chart"></div>
@@ -312,6 +320,7 @@ h1:hover {
 		<div class="clear"></div>
 	</div>
 	
-	<div id="haxe:trace"></div>
+	<div class="clear"></div>
+	<div id="haxe:trace" style="clear:left;font-family:monospace;font-size:10pt;white-space:preserve;background-color:#eee;padding:8px;margin-top:16px"></div>
 </body>
 </html>

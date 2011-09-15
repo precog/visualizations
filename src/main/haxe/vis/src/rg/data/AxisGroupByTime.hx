@@ -18,15 +18,34 @@ class AxisGroupByTime extends AxisOrdinal<Int>
 	
 	public static function valuesByGroup(groupby : String)
 	{
-		switch(groupby)
+		return Ints.range(defaultMin(groupby), defaultMax(groupby) + 1);
+	}
+	
+
+	public static function defaultMin(periodicity : String)
+	{
+		switch(periodicity)
 		{
-			case "minute": return Ints.range(1, 60);
-			case "hour":   return Ints.range(1, 24);
-			case "day":    return Ints.range(1, 31);
-			case "week":   return Ints.range(1, 7);
-			case "month":  return Ints.range(1, 12);
-			case "year":   return Ints.range(1, 365);
-			default: throw new Error("invalid groupby value '{0}'", groupby);
+			case "minute", "hour", "week", "month":
+				return 0;
+			case "day":
+				return 1;
+			default:
+				throw new Error("invalid periodicity '{0}' for groupBy min", periodicity);
+		}
+	}
+	
+	public static function defaultMax(periodicity : String)
+	{
+		switch(periodicity)
+		{
+			case "minute":	return 59;
+			case "hour":	return 23;
+			case "day":		return 31;
+			case "week":	return 6;
+			case "month":	return 11;
+			default:
+				throw new Error("invalid periodicity '{0}' for groupBy max", periodicity);
 		}
 	}
 }
