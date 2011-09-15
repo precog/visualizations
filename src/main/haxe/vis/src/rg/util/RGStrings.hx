@@ -27,9 +27,14 @@ class RGStrings
 				v2 = Ints.canParse(v2) ? Ints.format(Ints.parse(v2)) : Floats.format(Floats.parse(v2));
 			else
 				v2 = '';
-			return range.matchedLeft() + v1 + "-" + v2 + range.matchedRight();
+			return hstring(range.matchedLeft()) + v1 + "-" + v2 + hstring(range.matchedRight());
 		} else {
-			return Strings.humanize(s);
+			return hstring(s);
 		}
+	}
+	
+	static function hstring(s : String)
+	{
+		return Strings.capitalize(Strings.humanize(s));
 	}
 }

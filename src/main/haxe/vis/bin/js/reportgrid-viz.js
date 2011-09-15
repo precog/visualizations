@@ -1673,6 +1673,7 @@ rg.view.html.widget.Leadeboard.prototype.labelDataPointOver = function(dp,stats)
 }
 rg.view.html.widget.Leadeboard.prototype.init = function() {
 	this.list = this.container.append("ul").attr("class").string("leaderboard");
+	this.container.append("div").attr("class").string("clear");
 }
 rg.view.html.widget.Leadeboard.prototype.setVariables = function(variableIndependents,variableDependents) {
 	this.variableDependent = variableDependents[0];
@@ -2823,8 +2824,11 @@ rg.util.RGStrings.humanize = function(d) {
 		var v1 = rg.util.RGStrings.range.matched(1), v2 = rg.util.RGStrings.range.matched(2);
 		if(null != v1) v1 = Ints.canParse(v1)?Ints.format(Ints.parse(v1)):Floats.format(Floats.parse(v1)); else v1 = "";
 		if(null != v2) v2 = Ints.canParse(v2)?Ints.format(Ints.parse(v2)):Floats.format(Floats.parse(v2)); else v2 = "";
-		return rg.util.RGStrings.range.matchedLeft() + v1 + "-" + v2 + rg.util.RGStrings.range.matchedRight();
-	} else return Strings.humanize(s);
+		return rg.util.RGStrings.hstring(rg.util.RGStrings.range.matchedLeft()) + v1 + "-" + v2 + rg.util.RGStrings.hstring(rg.util.RGStrings.range.matchedRight());
+	} else return rg.util.RGStrings.hstring(s);
+}
+rg.util.RGStrings.hstring = function(s) {
+	return Strings.capitalize(Strings.humanize(s));
 }
 rg.util.RGStrings.prototype.__class__ = rg.util.RGStrings;
 thx.color.Hsl = function(h,s,l) {
@@ -3988,15 +3992,6 @@ rg.view.svg.chart.StreamGraph.prototype.applyGradientH = function(d,i) {
 	gn.attr("style").string("fill:url(#" + id + ")");
 }
 rg.view.svg.chart.StreamGraph.prototype.__class__ = rg.view.svg.chart.StreamGraph;
-rg.data.VariableDependentContext = function(variable,partial) {
-	if( variable === $_ ) return;
-	this.variable = variable;
-	this.partial = partial;
-}
-rg.data.VariableDependentContext.__name__ = ["rg","data","VariableDependentContext"];
-rg.data.VariableDependentContext.prototype.partial = null;
-rg.data.VariableDependentContext.prototype.variable = null;
-rg.data.VariableDependentContext.prototype.__class__ = rg.data.VariableDependentContext;
 if(!rg.controller.factory) rg.controller.factory = {}
 rg.controller.factory.FactoryDataContext = function(factoryDataSource) {
 	if( factoryDataSource === $_ ) return;
@@ -4021,6 +4016,15 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	return new rg.data.DataContext(info.name,processor);
 }
 rg.controller.factory.FactoryDataContext.prototype.__class__ = rg.controller.factory.FactoryDataContext;
+rg.data.VariableDependentContext = function(variable,partial) {
+	if( variable === $_ ) return;
+	this.variable = variable;
+	this.partial = partial;
+}
+rg.data.VariableDependentContext.__name__ = ["rg","data","VariableDependentContext"];
+rg.data.VariableDependentContext.prototype.partial = null;
+rg.data.VariableDependentContext.prototype.variable = null;
+rg.data.VariableDependentContext.prototype.__class__ = rg.data.VariableDependentContext;
 rg.data.Variable = function(type,axis,scaleDistribution,min,max) {
 	if( type === $_ ) return;
 	this.type = type;
@@ -6367,6 +6371,36 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
+if(!rg.data.source.rgquery.transform) rg.data.source.rgquery.transform = {}
+rg.data.source.rgquery.transform.TransformCountIntersect = function(properties,fields,event) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformCountIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformCountIntersect"];
+rg.data.source.rgquery.transform.TransformCountIntersect.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformCountIntersect.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformCountIntersect.prototype.event = null;
+rg.data.source.rgquery.transform.TransformCountIntersect.prototype.transform = function(data) {
+	var items = Objects.flatten(data,this.fields.length);
+	if(null == items || 0 == items.length) return [];
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var count = item.value, p = Dynamics.clone(this.properties);
+		Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+		p[".#time:eternity"] = 0;
+		p.count = count;
+		p.event = this.event;
+		result.push(p);
+	}
+	return result;
+}
+rg.data.source.rgquery.transform.TransformCountIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountIntersect;
+rg.data.source.rgquery.transform.TransformCountIntersect.__interfaces__ = [rg.data.source.ITransform];
 rg.view.frame.Stack = function(width,height,orientation) {
 	if( width === $_ ) return;
 	this.orientation = null == orientation?rg.view.frame.Orientation.Vertical:orientation;
@@ -8576,8 +8610,6 @@ rg.controller.MVPOptions.complete = function(executor,o,handler) {
 		start = range[0];
 		end = range[1];
 	}
-	haxe.Log.trace(start,{ fileName : "MVPOptions.hx", lineNumber : 88, className : "rg.controller.MVPOptions", methodName : "complete"});
-	haxe.Log.trace(end,{ fileName : "MVPOptions.hx", lineNumber : 89, className : "rg.controller.MVPOptions", methodName : "complete"});
 	if(null != o.path) {
 		path = o.path;
 		Reflect.deleteField(o,"path");
@@ -8643,7 +8675,6 @@ rg.controller.MVPOptions.complete = function(executor,o,handler) {
 		case "linechart":case "barchart":
 			var axes = o1.axes, type = axes[axes.length - 1].type;
 			o1.options.label = { datapointover : function(dp,stats) {
-				haxe.Log.trace(property + ": " + Reflect.field(dp,property),{ fileName : "MVPOptions.hx", lineNumber : 204, className : "rg.controller.MVPOptions", methodName : "complete"});
 				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):null != o1.options.segmenton?Reflect.field(dp,o1.options.segmenton):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
 			}};
 			break;
@@ -8653,6 +8684,15 @@ rg.controller.MVPOptions.complete = function(executor,o,handler) {
 				var v = Reflect.field(dp,type);
 				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapointover : function(dp,stats) {
+				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+			}};
+			break;
+		case "leaderboard":
+			var axes = o1.axes, type = axes[axes.length - 1].type;
+			o1.options.label = { datapointover : function(dp,stats) {
+				var v = Reflect.field(dp,type);
+				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
+			}, datapoint : function(dp,stats) {
 				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
 			}};
 			break;
@@ -9309,7 +9349,6 @@ thx.svg.LineInterpolators.argument = function(s) {
 	if(null == v) return null; else return Std.parseFloat(v);
 }
 thx.svg.LineInterpolators.prototype.__class__ = thx.svg.LineInterpolators;
-if(!rg.data.source.rgquery.transform) rg.data.source.rgquery.transform = {}
 rg.data.source.rgquery.transform.TransformCount = function(properties,event,unit) {
 	if( properties === $_ ) return;
 	this.properties = properties;
@@ -10336,9 +10375,7 @@ rg.JSBridge.main = function() {
 	var app = new rg.controller.App(r);
 	r.viz = function(el,options,type) {
 		var o = rg.JSBridge.chartopt(options,type);
-		haxe.Log.trace(Dynamics.string(o),{ fileName : "JSBridge.hx", lineNumber : 41, className : "rg.JSBridge", methodName : "main"});
 		var execute = function(opt) {
-			haxe.Log.trace(Dynamics.string(opt),{ fileName : "JSBridge.hx", lineNumber : 44, className : "rg.JSBridge", methodName : "main"});
 			try {
 				app.visualization(rg.JSBridge.select(el),opt);
 			} catch( e ) {
@@ -10510,6 +10547,12 @@ rg.view.layout.LayoutX.prototype.adjustPadding = function() {
 	if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
 }
 rg.view.layout.LayoutX.prototype.__class__ = rg.view.layout.LayoutX;
+rg.data.source.rgquery.transform.Transforms = function() { }
+rg.data.source.rgquery.transform.Transforms.__name__ = ["rg","data","source","rgquery","transform","Transforms"];
+rg.data.source.rgquery.transform.Transforms.typedValue = function(s,_) {
+	if(s.substr(0,1) == "\"") return StringTools.replace(s.substr(1,s.length - 2),"\\\"","\""); else if((s = s.toLowerCase()) == "true") return true; else if(s == "false") return false; else return Std.parseFloat(s);
+}
+rg.data.source.rgquery.transform.Transforms.prototype.__class__ = rg.data.source.rgquery.transform.Transforms;
 rg.controller.info.InfoDataContext = function(p) {
 	if( p === $_ ) return;
 	this.sources = [];
@@ -11554,6 +11597,7 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
 		break;
 	case 0:
+		if(infoviz.replace) el.selectAll("*").remove();
 		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
 		break;
 	}
@@ -11841,7 +11885,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 71, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 73, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -11860,7 +11904,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 77, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 79, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
@@ -11872,12 +11916,11 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 	case 0:
 		break;
 	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 83, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 85, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 	}
 	this.path = path;
 	this.start = start;
 	this.end = end;
-	haxe.Log.trace(start,{ fileName : "DataSourceReportGrid.hx", lineNumber : 89, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 	this.onLoad = new hxevents.Dispatcher();
 }
 rg.data.source.DataSourceReportGrid.__name__ = ["rg","data","source","DataSourceReportGrid"];
@@ -11888,7 +11931,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 202, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 207, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -11940,14 +11983,14 @@ rg.data.source.DataSourceReportGrid.prototype.mapProperties = function(d,_) {
 	case 2:
 		return { event : this.event, property : null, limit : null, order : null};
 	default:
-		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 60, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 62, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 	}
 }
 rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeriodicity) {
 	if(appendPeriodicity == null) appendPeriodicity = true;
 	var o = { };
 	if(null != this.start) o["start"] = this.start;
-	if(null != this.end) o["end"] = this.end;
+	if(null != this.end) o["end"] = rg.util.Periodicity.next(this.periodicity,this.end);
 	if(appendPeriodicity) {
 		o["periodicity"] = this.periodicity;
 		if(null != this.groupBy) o["groupBy"] = this.groupBy;
@@ -11975,7 +12018,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 125, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
+				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 128, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
 				return $r;
 			}($this));
 		}
@@ -11983,7 +12026,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 	}(this));
 }
 rg.data.source.DataSourceReportGrid.prototype.load = function() {
-	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 133, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 136, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 		if(this.periodicity == "eternity") {
 			this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 			var o = this.basicOptions(false);
@@ -12008,11 +12051,12 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 			}
 		}
 	} else {
-		this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },this.exp.map(function(d,_) {
+		if(this.periodicity == "eternity") this.transform = new rg.data.source.rgquery.transform.TransformCountIntersect({ },this.exp.map(function(d,_) {
+			return d.property;
+		}),this.event); else this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },this.exp.map(function(d,_) {
 			return d.property;
 		}),this.event,this.periodicity,this.unit());
 		var o = this.basicOptions(true);
-		haxe.Log.trace(o,{ fileName : "DataSourceReportGrid.hx", lineNumber : 169, className : "rg.data.source.DataSourceReportGrid", methodName : "load"});
 		o.properties = this.exp.map(function(p,i) {
 			return { property : rg.data.source.DataSourceReportGrid.propertyName(p), limit : p.limit, order : p.order};
 		});
@@ -12020,7 +12064,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 	}
 }
 rg.data.source.DataSourceReportGrid.prototype.error = function(msg) {
-	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 183, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 188, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 }
 rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
 	var data = this.transform.transform(src);
@@ -14970,7 +15014,7 @@ rg.util.Periodicity.next = function(periodicity,date,step) {
 		var $r;
 		switch(periodicity) {
 		case "eternity":
-			$r = 0.0;
+			$r = date;
 			break;
 		case "minute":
 			$r = date + 60000 * step;
@@ -15408,9 +15452,6 @@ rg.data.source.rgquery.transform.TransformCountTimeIntersect = function(properti
 	this.event = event;
 }
 rg.data.source.rgquery.transform.TransformCountTimeIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformCountTimeIntersect"];
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue = function(s,_) {
-	if(s.substr(0,1) == "\"") return StringTools.replace(s.substr(1,s.length - 2),"\\\"","\""); else if((s = s.toLowerCase()) == "true") return true; else if(s == "false") return false; else return Std.parseFloat(s);
-}
 rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.properties = null;
 rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.unit = null;
 rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.periodicity = null;
@@ -15429,7 +15470,7 @@ rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.transform
 		while(_g2 < _g1) {
 			var i = _g2++;
 			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.TransformCountTimeIntersect.typedValue));
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
 			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[arr[i][0].timestamp,arr[i][1]]);
 			p.event = this.event;
 			result.push(p);

@@ -38,10 +38,10 @@ class JSBridge
 		r.viz = function(el : Dynamic, options : Dynamic, type : String)
 		{
 			var o = chartopt(options, type);
-			trace(Dynamics.string(o));
+//			trace(Dynamics.string(o));
 			function execute(opt : Dynamic)
 			{
-				trace(Dynamics.string(opt));
+//				trace(Dynamics.string(opt));
 				try {
 					app.visualization(select(el), opt);
 				} catch (e : Dynamic) {

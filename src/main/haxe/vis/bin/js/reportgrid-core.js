@@ -260,8 +260,8 @@ var ReportGrid = window.ReportGrid || {};
 			end = Util.normalizeTime(o.end);
 		if(start || end)
 		{
-			q.start = start || $.Time.Zero;
-			q.end = end || $.Time.Inf;
+			q.start = start || ReportGrid.Zero;
+			q.end = end || ReportGrid.Inf;
 		}
 		if(o.location)
 		{
@@ -872,7 +872,7 @@ var ReportGrid = window.ReportGrid || {};
     var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
     
     var ob = {
-      select:     "series/" + peri,
+      select:     peri == 'eternity' ? 'count' : "series/" + peri,
       from:       path,
       properties: options.properties
     };

@@ -236,7 +236,7 @@
 	font-weight: bold;
 }
 
-ul.leaderboard
+.rg ul.leaderboard
 {
 	list-style: none;
 	margin: 0;
@@ -245,9 +245,10 @@ ul.leaderboard
 
 .rg ul.leaderboard li
 {
-	color: #000;
 	font-family:Tahoma,Arial,Helvetica,sans-serif;
-	font-size: 10pt;
+	font-size: 9pt;
+	color: #222;
+	text-shadow: 1px 1px 1px #999;
 }
 
 .rg .leaderboard li.nogradient
@@ -291,6 +292,11 @@ ul.leaderboard
 	-moz-border-radius: 6px;
 	border-radius: 6px;
 	
+}
+
+.rg div.clear
+{
+	clear: left;
 }
 
 /* PIVOT TABLE */

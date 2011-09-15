@@ -77,7 +77,7 @@ $(function(){
 			options : { label : { datapoint : label.sourceTypePercent, datapointover : label.sourceType } }
 		});
 		
-		ReportGrid.leaderBoard("#legend", {
+		ReportGrid.leaderBoard("#caseslegend", {
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
 			property : "sourceType",
 			options : { label : { datapoint : label.sourceType, datapointover : label.sourceTypePercent } }
@@ -95,8 +95,7 @@ $(function(){
 		
 		ReportGrid.leaderBoard("#oses", {
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
-			property : "os",
-//			options : { label : { datapoint : label.sourceType, datapointover : label.sourceTypePercent } }
+			property : "os"
 		});
 		
 		ReportGrid.lineChart("#osestime", {
@@ -123,10 +122,8 @@ $(function(){
 	
 	function executeFilterBased()
 	{
-		console.log(utc);
-		console.log(days);
-		ReportGrid.pieChart("#activity", {
-			path : path, event : "case", periodicity : "eternity",
+		ReportGrid.barChart("#activity", {
+			path : path, event : "case", periodicity : "day",
 			property : "sourceType",
 //			options : { label : { datapoint : label.sourceTypePercent, datapointover : label.sourceType } }
 		});
@@ -173,7 +170,43 @@ $(function(){
 });
 </script>
 <style type="text/css">
-body { font-size: 73%; font-family: Verdana }
+*
+{
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	font-size: 73%;
+	background-color: #aaa;
+	padding: 8px;
+}
+
+.container
+{
+	float: left;
+	margin-right: 8px;
+	padding: 8px;
+	background-color: #fff;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	
+	box-shadow: 8px 10px 10px rgba(0,0,0,0.5),
+	inset 8px 10px 10px rgba(255,255,255,0.75);
+	-o-box-shadow: 8px 10px 10px rgba(0,0,0,0.5),
+	inset 8px 10px 10px rgba(255,255,255,0.75);
+	-webkit-box-shadow: 8px 10px 10px rgba(0,0,0,0.5),
+	inset 8px 10px 10px rgba(255,255,255,0.75);
+	-moz-box-shadow: 8px 10px 10px rgba(0,0,0,0.5),
+	inset 8px 10px 10px rgba(255,255,255,0.75);
+}
+
+.clear
+{
+	clear: left;
+}
 
 .chart
 {
@@ -190,68 +223,95 @@ body { font-size: 73%; font-family: Verdana }
 h1
 {
 	clear: left;
+	padding: 8px 0 2px 0; 
+	font-size:20px;
+	color: #fff;
+	text-shadow: 0px 1px 2px #000;
 }
+
+h1:hover {
+	color: #fff;
+}
+
 
 </style>
 </head>
 <body>
-	<input type="text" id="daterange" />
-	<h1>requests</h1>
-	<div id="cases" class="chart"></div>
-	<div id="casestime" class="chart wide"></div>
-	<div id="legend"></div>
-	<h1>operating systems</h1>
-	<div id="oses"></div>
-	<div id="osestime" class="chart wide"></div>
-	<h1>browsers</h1>
-	<div id="browsers"></div>
-	<div id="browserstime" class="chart wide"></div>
 	<h1>activity by hour of the day</h1>
-	<select name="DropDownTimezone" id="DropDownTimezone">
-		<option value="-12.0">(GMT -12:00) Eniwetok, Kwajalein</option>
-		<option value="-11.0">(GMT -11:00) Midway Island, Samoa</option>
-		<option value="-10.0">(GMT -10:00) Hawaii</option>
-		<option value="-9.0">(GMT -9:00) Alaska</option>
-		<option value="-8.0">(GMT -8:00) Pacific Time (US &amp; Canada)</option>
-		<option value="-7.0">(GMT -7:00) Mountain Time (US &amp; Canada)</option>
-		<option value="-6.0">(GMT -6:00) Central Time (US &amp; Canada), Mexico City</option>
-		<option value="-5.0">(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima</option>
-		<option value="-4.0">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz</option>
-		<option value="-3.5">(GMT -3:30) Newfoundland</option>
-		<option value="-3.0">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option>
-		<option value="-2.0">(GMT -2:00) Mid-Atlantic</option>
-		<option value="-1.0">(GMT -1:00 hour) Azores, Cape Verde Islands</option>
-		<option value="0.0" selected>(GMT) Western Europe Time, London, Lisbon, Casablanca</option>
-		<option value="1.0">(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris</option>
-		<option value="2.0">(GMT +2:00) Kaliningrad, South Africa</option>
-		<option value="3.0">(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg</option>
-		<option value="3.5">(GMT +3:30) Tehran</option>
-		<option value="4.0">(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi</option>
-		<option value="4.5">(GMT +4:30) Kabul</option>
-		<option value="5.0">(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent</option>
-		<option value="5.5">(GMT +5:30) Bombay, Calcutta, Madras, New Delhi</option>
-		<option value="5.75">(GMT +5:45) Kathmandu</option>
-		<option value="6.0">(GMT +6:00) Almaty, Dhaka, Colombo</option>
-		<option value="7.0">(GMT +7:00) Bangkok, Hanoi, Jakarta</option>
-		<option value="8.0">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option>
-		<option value="9.0">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option>
-		<option value="9.5">(GMT +9:30) Adelaide, Darwin</option>
-		<option value="10.0">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option>
-		<option value="11.0">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option>
-		<option value="12.0">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
-	</select>
-	
-	<div class="filter">
-		<label><input type="checkbox" checked class="dayfilter" value="1" />Monday</label>
-		<label><input type="checkbox" checked class="dayfilter" value="2"/>Tuesday</label>
-		<label><input type="checkbox" checked class="dayfilter" value="3"/>Wednesday</label>
-		<label><input type="checkbox" checked class="dayfilter" value="4"/>Thursday</label>
-		<label><input type="checkbox" checked class="dayfilter" value="5"/>Friday</label>
-		<label><input type="checkbox" checked class="dayfilter" value="6"/>Saturday</label>
-		<label><input type="checkbox" checked class="dayfilter" value="7"/>Sunday</label>
+	<div class="container">
+		<select name="DropDownTimezone" id="DropDownTimezone">
+			<option value="-12.0">(GMT -12:00) Eniwetok, Kwajalein</option>
+			<option value="-11.0">(GMT -11:00) Midway Island, Samoa</option>
+			<option value="-10.0">(GMT -10:00) Hawaii</option>
+			<option value="-9.0">(GMT -9:00) Alaska</option>
+			<option value="-8.0">(GMT -8:00) Pacific Time (US &amp; Canada)</option>
+			<option value="-7.0">(GMT -7:00) Mountain Time (US &amp; Canada)</option>
+			<option value="-6.0">(GMT -6:00) Central Time (US &amp; Canada), Mexico City</option>
+			<option value="-5.0">(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima</option>
+			<option value="-4.0">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz</option>
+			<option value="-3.5">(GMT -3:30) Newfoundland</option>
+			<option value="-3.0">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option>
+			<option value="-2.0">(GMT -2:00) Mid-Atlantic</option>
+			<option value="-1.0">(GMT -1:00 hour) Azores, Cape Verde Islands</option>
+			<option value="0.0" selected>(GMT) Western Europe Time, London, Lisbon, Casablanca</option>
+			<option value="1.0">(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris</option>
+			<option value="2.0">(GMT +2:00) Kaliningrad, South Africa</option>
+			<option value="3.0">(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg</option>
+			<option value="3.5">(GMT +3:30) Tehran</option>
+			<option value="4.0">(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi</option>
+			<option value="4.5">(GMT +4:30) Kabul</option>
+			<option value="5.0">(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent</option>
+			<option value="5.5">(GMT +5:30) Bombay, Calcutta, Madras, New Delhi</option>
+			<option value="5.75">(GMT +5:45) Kathmandu</option>
+			<option value="6.0">(GMT +6:00) Almaty, Dhaka, Colombo</option>
+			<option value="7.0">(GMT +7:00) Bangkok, Hanoi, Jakarta</option>
+			<option value="8.0">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option>
+			<option value="9.0">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option>
+			<option value="9.5">(GMT +9:30) Adelaide, Darwin</option>
+			<option value="10.0">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option>
+			<option value="11.0">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option>
+			<option value="12.0">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
+		</select>
+		<br/>
+		<br/>
+		<div class="filter">
+			<label><input type="checkbox" checked class="dayfilter" value="1"/> Mon</label>
+			<label><input type="checkbox" checked class="dayfilter" value="2"/> Tue</label>
+			<label><input type="checkbox" checked class="dayfilter" value="3"/> Wed</label>
+			<label><input type="checkbox" checked class="dayfilter" value="4"/> Thu</label>
+			<label><input type="checkbox" checked class="dayfilter" value="5"/> Fri</label>
+			<label><input type="checkbox" checked class="dayfilter" value="6"/> Sat</label>
+			<label><input type="checkbox" checked class="dayfilter" value="7"/> Sun</label>
+		</div>
+	</div>
+	<div class="container">
+		<div id="activity" class="chart wide"></div>
+		<div class="clear"></div>
 	</div>
 	
-	<div id="activity" class="chart wide"></div>
+	<div class="container">
+		<input type="text" id="daterange" />
+	</div>
+	<h1>requests</h1>
+	<div class="container">
+		<div id="caseslegend" class="chart"></div>
+		<div id="cases" class="chart"></div>
+		<div id="casestime" class="chart wide"></div>
+		<div class="clear"></div>
+	</div>
+	<h1>operating systems</h1>
+	<div class="container">
+		<div id="oses" class="chart"></div>
+		<div id="osestime" class="chart wide"></div>
+		<div class="clear"></div>
+	</div>
+	<h1>browsers</h1>
+	<div class="container">
+		<div id="browsers" class="chart"></div>
+		<div id="browserstime" class="chart wide"></div>
+		<div class="clear"></div>
+	</div>
+	
 	<div id="haxe:trace"></div>
 </body>
 </html>

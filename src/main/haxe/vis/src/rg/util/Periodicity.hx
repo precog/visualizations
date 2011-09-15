@@ -153,7 +153,7 @@ class Periodicity
 			return date;
 		return switch(periodicity)
 		{
-			case "eternity": 0.0;
+			case "eternity": date;
 			case "minute": date + 60000 * step;
 			case "hour": date + 60 * 60000 * step;
 			case "day": date + 24 * 60 * 60000 * step;

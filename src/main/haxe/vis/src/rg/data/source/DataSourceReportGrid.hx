@@ -9,11 +9,13 @@ import rg.data.IDataSource;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.QueryAst;
 import rg.data.source.rgquery.transform.TransformCount;
+import rg.data.source.rgquery.transform.TransformCountIntersect;
 import rg.data.source.rgquery.transform.TransformCountTimeSeries;
 import rg.data.source.rgquery.transform.TransformCountTimeIntersect;
 import thx.error.Error;
 import rg.data.source.ITransform;
 import rg.util.Properties;
+import rg.util.Periodicity;
 using Arrays;
 
 class DataSourceReportGrid implements IDataSource
@@ -86,7 +88,6 @@ class DataSourceReportGrid implements IDataSource
 		this.path = path;
 		this.start = start;
 		this.end = end;
-		trace(start);
 		this.onLoad = new Dispatcher();
 	}
 	
@@ -96,7 +97,9 @@ class DataSourceReportGrid implements IDataSource
 		if (null != start)
 			Reflect.setField(o, "start", start);
 		if (null != end)
-			Reflect.setField(o, "end", end);
+		{
+			Reflect.setField(o, "end", Periodicity.next(periodicity, end)); // since end is not inclusive we have to extend the query span
+		}
 		if (appendPeriodicity)
 		{
 			Reflect.setField(o, "periodicity", periodicity);
@@ -164,9 +167,11 @@ class DataSourceReportGrid implements IDataSource
 				}
 			}
 		} else {
-			transform = new TransformCountTimeIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
+			if (periodicity == "eternity")
+				transform = new TransformCountIntersect( { }, exp.map(function(d, _) return d.property), event);
+			else
+				transform = new TransformCountTimeIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			var o = basicOptions(true);
-			trace(o);
 			o.properties = exp.map(function(p, i) {
 				return {
 					property : propertyName(p),

@@ -66,6 +66,7 @@ class Leadeboard
 	{
 		list = container.append("ul")
 			.attr("class").string("leaderboard");
+		container.append("div").attr("class").string("clear");
 	}
 	
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)

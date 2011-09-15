@@ -41,7 +41,7 @@ class TransformCountTimeIntersect implements ITransform<Dynamic>
 				var p : Dynamic = Dynamics.clone(properties);
 				Objects.addFields(p,
 					fields,
-					item.fields.map(typedValue)
+					item.fields.map(Transforms.typedValue)
 				);
 				Objects.addFields(p, 
 					[Properties.timeProperty(periodicity), unit],
@@ -52,17 +52,5 @@ class TransformCountTimeIntersect implements ITransform<Dynamic>
 			}
 		}
 		return result;
-	}
-	
-	static function typedValue(s : String, ?_) : Dynamic
-	{
-		if (s.substr(0, 1) == '"')
-			return StringTools.replace(s.substr(1, s.length - 2), '\\"', '"');
-		else if ((s = s.toLowerCase()) == "true")
-			return true;
-		else if (s == "false")
-			return false;
-		else
-			return Std.parseFloat(s);
 	}
 }

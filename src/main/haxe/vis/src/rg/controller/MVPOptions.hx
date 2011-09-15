@@ -85,8 +85,7 @@ class MVPOptions
 			start = range[0];
 			end = range[1];
 		}
-trace(start);
-trace(end);
+
 		// path
 		if (null != o.path)
 		{
@@ -201,7 +200,6 @@ trace(end);
 							type = axes[axes.length - 1].type;
 						o.options.label = {
 							datapointover : function(dp, stats) {
-								trace(property + ": " + DataPoints.value(dp, property));
 								return
 									Properties.humanize(
 										null != property 
@@ -228,6 +226,30 @@ trace(end);
 							},
 
 							datapointover : function(dp, stats) {
+								return
+									Properties.humanize(
+										null != property 
+										? DataPoints.value(dp, property)
+										: type
+									) + ": " + 
+									RGStrings.humanize(DataPoints.value(dp, type))
+								;
+							}
+						};
+					case "leaderboard":
+						var axes : Array<Dynamic> = o.axes,
+							type = axes[axes.length - 1].type;
+						o.options.label = {
+							datapointover : function(dp, stats) {
+								var v = DataPoints.value(dp, type);
+								return
+									stats.tot != 0.0 
+									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
+									: RGStrings.humanize(v)
+								;
+							},
+
+							datapoint : function(dp, stats) {
 								return
 									Properties.humanize(
 										null != property 

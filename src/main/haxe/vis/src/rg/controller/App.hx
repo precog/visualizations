@@ -75,6 +75,8 @@ class App
 				var layout = getLayout(id, params.options, el, infoviz.replace);
 				visualization = new FactorySvgVisualization().create(infoviz.type, layout, params.options);
 			case Html:
+				if (infoviz.replace)
+					el.selectAll("*").remove();
 				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
 		}
 		visualization.setVariables(
