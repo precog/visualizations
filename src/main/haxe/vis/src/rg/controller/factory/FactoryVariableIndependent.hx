@@ -38,7 +38,6 @@ class FactoryVariableIndependent
 		} else if (Std.is(axis, AxisGroupByTime))
 		{
 			var groupaxis = cast(axis, AxisGroupByTime);
-			
 			min = null != info.min ? info.min : AxisGroupByTime.defaultMin(groupaxis.groupBy);
 			max = null != info.max ? info.max : AxisGroupByTime.defaultMax(groupaxis.groupBy);
 		}

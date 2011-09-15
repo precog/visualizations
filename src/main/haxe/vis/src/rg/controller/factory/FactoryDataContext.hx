@@ -35,17 +35,40 @@ class FactoryDataContext
 			processor.transform = function(dps : Array<Array<DataPoint>>)
 			{
 //				trace(dps);
-				var res = untyped info.transform.apply(__this__, dps);
+				var res : Dynamic = untyped info.transform.apply(__this__, dps);
+				if (null == res)
+					return [[]];
+				if (!Std.is(res, Array))
+					res = [res];
+				if (!Std.is(res[0], Array))
+					res = [res];
 //				trace(res);
 				return res;
 			}
 		}
-		/*
+		
+		if (null != info.scale)
+		{
+			processor.scale = function(dps : Array<Array<DataPoint>>)
+			{
+//				trace(dps);
+				var res : Dynamic = untyped info.scale.apply(__this__, dps);
+				if (null == res)
+					return [[]];
+				if (!Std.is(res, Array))
+					res = [res];
+				if (!Std.is(res[0], Array))
+					res = [res];
+//				trace(res);
+				return res;
+			}
+		}
+/*
 		if (null != info.scale)
 		{
 			processor.scale = info.scale;
 		}
-		*/
+*/
 		return new DataContext(info.name, processor);
 	}
 }

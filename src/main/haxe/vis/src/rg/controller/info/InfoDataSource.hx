@@ -16,6 +16,7 @@ class InfoDataSource
 	public var data : Null<Array<DataPoint>>;
 	public var name : Null<String>;
 	public var groupBy : Null<String>;
+	public var timeZone : Null<String>;
 	public var groups : Null<Array<String>>;
 	public var start : Null<Float>;
 	public var end : Null<Float>;
@@ -48,6 +49,12 @@ class InfoDataSource
 			field : "end",
 			validator : function(v) return Std.is(v, Float),
 			filter : null
+		}, {
+			field : "timezone",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) {
+				return [{ field : "timeZone", value : v }];
+			}
 		}, {
 			field : "data",
 			validator : function(v) return Std.is(v, String) || (Std.is(v, Array) && Arrays.all(v, function(v) return Types.isAnonymous(v))),

@@ -35,6 +35,7 @@ class DataSourceReportGrid implements IDataSource
 	public var start : Float;
 	public var end : Float;
 	public var groupBy : Null<String>;
+	public var timeZone : Null<String>;
 	
 	var transform : ITransform<Dynamic>;
 	
@@ -64,11 +65,12 @@ class DataSourceReportGrid implements IDataSource
 		}
 	}
 	
-	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?groupby : String, ?start : Float, ?end : Float)
+	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?groupby : String, ?timezone : String, ?start : Float, ?end : Float)
 	{
 		this.query = query;
 		this.executor = executor;
 		this.groupBy = groupby;
+		this.timeZone = timezone;
 		var e = normalize(query.exp);
 		this.event = event;
 		this.periodicity = switch(e.pop()) { case Time(p): p; default: throw new Error("normalization failed, the last value should always be a Time expression"); };
@@ -95,21 +97,20 @@ class DataSourceReportGrid implements IDataSource
 	function basicOptions(appendPeriodicity = true) : Dynamic
 	{
 		var o = { };
-//		if (null == groupBy)
+		if (null != start)
+			Reflect.setField(o, "start", start);
+		if (null != end)
 		{
-			if (null != start)
-				Reflect.setField(o, "start", start);
-			if (null != end)
-			{
-				var e = Periodicity.next(periodicity, end);
-				Reflect.setField(o, "end", e); // since end is not inclusive we have to extend the query span
-			}
+			var e = Periodicity.next(periodicity, end);
+			Reflect.setField(o, "end", e); // since end is not inclusive we have to extend the query span
 		}
 		if (appendPeriodicity)
 		{
 			Reflect.setField(o, "periodicity", periodicity);
 			if (null != groupBy)
 				Reflect.setField(o, "groupBy", groupBy);
+			if (null != timeZone)
+				Reflect.setField(o, "timeZone", timeZone);
 		}
 			
 		if (where.length > 1)

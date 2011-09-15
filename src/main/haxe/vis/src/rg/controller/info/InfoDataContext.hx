@@ -10,7 +10,7 @@ class InfoDataContext
 {
 	public var name : Null<String>;
 	public var transform : Null<Dynamic>;
-//	public var scale : Null<Dynamic>;
+	public var scale : Null<Dynamic>;
 	public var sources : Array<InfoDataSource>;
 	
 	public function new()
@@ -28,11 +28,11 @@ class InfoDataContext
 			field : "transform",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
-		}/*, {
+		}, {
 			field : "scale",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
-		}*/, {
+		}, {
 			field : "src",
 			validator : function(v) return (Std.is(v, Array) && Arrays.all(v, function(v) return Types.isAnonymous(v))) || Types.isAnonymous(v),
 			filter : function(v)

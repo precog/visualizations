@@ -33,6 +33,11 @@ class DataProcessor
 		return s.flatten();
 	}
 	
+	public dynamic function scale(s : Array<Array<DataPoint>>) : Array<Array<DataPoint>>
+	{
+		return s;
+	}
+	
 	public function load()
 	{
 		var tmin = null, tmax = null;
@@ -106,6 +111,8 @@ class DataProcessor
 			onData.dispatch([]);
 			return;
 		}
+		
+		data = scale(data);
 		fillIndependentVariables(data);
 
 		var dataPoints : Array<DataPoint> = [];

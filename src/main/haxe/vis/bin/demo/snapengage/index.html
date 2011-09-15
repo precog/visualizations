@@ -14,8 +14,9 @@
 	<link rel="stylesheet" href="css/redmond/jquery-ui-1.7.1.custom.css" type="text/css" title="ui-theme" />
 		
 	<link rel="stylesheet" type="text/css" href="../../css/rg.css"/>
-	<link rel="stylesheet" href="../../css/rg-colors20.css" type="text/css"/>
+	<link rel="stylesheet" href="../../css/rg-colors-spectral-10-div.css" type="text/css"/>
 <!--
+	<link rel="stylesheet" href="css/rg-colors-snapengage.css" type="text/css"/>
 	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
 -->
 	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
@@ -64,7 +65,7 @@ $(function(){
 		start = null,
 		end   = null,
 		utc   = 0,
-		days  = [1,2,3,4,5,6,7];
+		days  = [true,true,true,true,true,true,true];
 		
 	function executeRangeBased()
 	{
@@ -125,9 +126,57 @@ $(function(){
 	
 	function executeFilterBased()
 	{
+		console.log(utc);
 		ReportGrid.barChart("#activity", {
-			path : path, event : "case", start : start, end : end,
-			periodicity : "hour", groupby : "day",
+			axes : [{
+				type : ".#time:hour",
+				groupby : "day"
+			}],
+			data : {
+				src : { 
+					path : path, event : "case", 
+					query : ".sourceType * .#time:hour", 
+					groupby : "week",
+					start : start,
+					end : end,
+					timezone : utc
+				},
+				scale : function(dps)
+				{
+					var results = {};
+					for(var i = 0; i < dps.length; i++)
+					{
+						var pos = dps[i][".#time:hour"] % 24,
+							st = dps[i][".sourceType"],
+							wd = Math.floor(dps[i][".#time:hour"] / 24);
+						
+						if(!days[wd])
+							continue;
+						if(!results[st])
+							results[st] = [];
+						if(results[st][pos])
+							results[st][pos]["count"] += dps[i]["count"];
+						else
+						{
+							results[st][pos] = dps[i];
+							results[st][pos][".#time:hour"] = pos;
+						}
+					}
+					var result = [];
+					for(var k in results)
+					{
+						result = result.concat(results[k]);
+					}
+					return result;
+				},
+				tranform : function(d)
+				{
+					console.log(d);
+					return d;
+				}
+			},
+//			path : path, event : "case", start : start, end : end,
+			periodicity : "hour", groupby : "week",
 			property : "sourceType",
 			options : {
 				label : { datapoint : label.sourceTypePercent, datapointover : label.sourceType },
@@ -138,7 +187,7 @@ $(function(){
 	
 	function onDateRangeChange()
 	{
-		var inputs = range.val().split("-").map(function(d) { return +Date.parse(d)});
+		var inputs = range.val().split("-").map(function(d) { return +ReportGrid.date.parse(d)});
 		if(!inputs[0])
 			return;
 		if(inputs.length == 1)
@@ -147,33 +196,30 @@ $(function(){
 		end = inputs[1]
 		delay(executeRangeBased);
 	}
-	
-	function onUTCChange()
-	{
-		delay(executeFilterBased);
-	}
-	
-	function onDayFilterChange()
-	{
-		delay(executeFilterBased);
-	}
 
 	var range = $('#daterange').daterangepicker({
 		arrows : true,
 		onChange : onDateRangeChange
 	})
-	
-	utc = $('#DropDownTimezone').change(function() {
-		utc = this.value;
-		delay(executeFilterBased);
-	}).val();
-	
-	days = $('.dayfilter').change(function() {
-	// TODO
-	}); // TODO
 
+	function changeDays()
+	{
+		$('.dayfilter').each(function(i, d) { days[i] = d.checked; });
+		delay(executeFilterBased, 500);
+	}
+	
+	function changeUtc()
+	{
+		utc = $('.timezone').val();
+		delay(executeFilterBased);
+	}
+	
+	$('.timezone').change(changeUtc);
+	$('.dayfilter').change(changeDays); // TODO
+
+	changeUtc();
+	changeDays();
 	onDateRangeChange();
-	executeFilterBased();
 });
 </script>
 <style type="text/css">
@@ -218,13 +264,13 @@ body
 .chart
 {
 	float: left;
-	width: 180px; /* 240px */
-	height: 180px; /* 240px */
+	width: 240px; /* 240px */
+	height: 240px; /* 240px */
 }
 
 .wide
 {
-	width: 360px; /* 670px*/;
+	width: 670px; /* 670px*/;
 }
 
 h1
@@ -245,12 +291,9 @@ h1:hover {
 </head>
 <body>
 	<div class="container">
-		<input type="text" id="daterange" />
-	</div>
-	
-	<h1>activity by hour of the day</h1>
-	<div class="container">
-		<select name="DropDownTimezone" id="DropDownTimezone">
+		<input type="text" id="daterange" value="2 weeks ago - today" />
+		<br/>
+		<select class="timezone" id="DropDownTimezone">
 			<option value="-12.0">(GMT -12:00) Eniwetok, Kwajalein</option>
 			<option value="-11.0">(GMT -11:00) Midway Island, Samoa</option>
 			<option value="-10.0">(GMT -10:00) Hawaii</option>
@@ -295,6 +338,8 @@ h1:hover {
 			<label><input type="checkbox" checked class="dayfilter" value="7"/> Sun</label>
 		</div>
 	</div>
+	
+	<h1>activity by hour of the day</h1>
 	<div class="container">
 		<div id="activity" class="chart wide"></div>
 		<div class="clear"></div>

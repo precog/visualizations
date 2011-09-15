@@ -4022,6 +4022,16 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	var processor = new rg.data.DataProcessor(new rg.data.Sources(sources));
 	if(null != info.transform) processor.transform = function(dps) {
 		var res = info.transform.apply(this,dps);
+		if(null == res) return [[]];
+		if(!Std["is"](res,Array)) res = [res];
+		if(!Std["is"](res[0],Array)) res = [res];
+		return res;
+	};
+	if(null != info.scale) processor.scale = function(dps) {
+		var res = info.scale.apply(this,dps);
+		if(null == res) return [[]];
+		if(!Std["is"](res,Array)) res = [res];
+		if(!Std["is"](res[0],Array)) res = [res];
 		return res;
 	};
 	return new rg.data.DataContext(info.name,processor);
@@ -5838,15 +5848,15 @@ rg.controller.factory.FactoryDataSource.prototype.create = function(info) {
 		return data;
 	}
 	if(null != info.data) return this.createFromData(info.data);
-	if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.groupBy,info.start,info.end);
+	if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.groupBy,info.timeZone,info.start,info.end);
 	throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 51, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 }
 rg.controller.factory.FactoryDataSource.prototype.createFromData = function(data) {
 	return new rg.data.source.DataSourceArray(data);
 }
-rg.controller.factory.FactoryDataSource.prototype.createFromQuery = function(path,event,query,groupby,start,end) {
+rg.controller.factory.FactoryDataSource.prototype.createFromQuery = function(path,event,query,groupby,timeZone,start,end) {
 	if(null == query) query = "";
-	return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),groupby,start,end);
+	return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),groupby,timeZone,start,end);
 }
 rg.controller.factory.FactoryDataSource.prototype.__class__ = rg.controller.factory.FactoryDataSource;
 rg.data.DataContext = function(name,data) {
@@ -10629,6 +10639,8 @@ rg.controller.info.InfoDataContext.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "transform", validator : function(v) {
 		return Reflect.isFunction(v);
+	}, filter : null},{ field : "scale", validator : function(v) {
+		return Reflect.isFunction(v);
 	}, filter : null},{ field : "src", validator : function(v) {
 		return Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
 			return Reflect.isObject(v1) && null == Type.getClass(v1);
@@ -10641,6 +10653,7 @@ rg.controller.info.InfoDataContext.filters = function() {
 }
 rg.controller.info.InfoDataContext.prototype.name = null;
 rg.controller.info.InfoDataContext.prototype.transform = null;
+rg.controller.info.InfoDataContext.prototype.scale = null;
 rg.controller.info.InfoDataContext.prototype.sources = null;
 rg.controller.info.InfoDataContext.prototype.__class__ = rg.controller.info.InfoDataContext;
 Enums = function() { }
@@ -11933,11 +11946,12 @@ hxevents.Dispatcher.prototype.has = function(h) {
 	}
 }
 hxevents.Dispatcher.prototype.__class__ = hxevents.Dispatcher;
-rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby,start,end) {
+rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby,timezone,start,end) {
 	if( executor === $_ ) return;
 	this.query = query;
 	this.executor = executor;
 	this.groupBy = groupby;
+	this.timeZone = timezone;
 	var e = rg.data.source.DataSourceReportGrid.normalize(query.exp);
 	this.event = event;
 	this.periodicity = (function($this) {
@@ -11951,7 +11965,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 74, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 76, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -11970,7 +11984,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 80, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 82, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
@@ -11982,7 +11996,7 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 	case 0:
 		break;
 	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 86, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 88, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 	}
 	this.path = path;
 	this.start = start;
@@ -11997,7 +12011,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 214, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 215, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -12037,6 +12051,7 @@ rg.data.source.DataSourceReportGrid.prototype.path = null;
 rg.data.source.DataSourceReportGrid.prototype.start = null;
 rg.data.source.DataSourceReportGrid.prototype.end = null;
 rg.data.source.DataSourceReportGrid.prototype.groupBy = null;
+rg.data.source.DataSourceReportGrid.prototype.timeZone = null;
 rg.data.source.DataSourceReportGrid.prototype.transform = null;
 rg.data.source.DataSourceReportGrid.prototype.query = null;
 rg.data.source.DataSourceReportGrid.prototype.onLoad = null;
@@ -12049,7 +12064,7 @@ rg.data.source.DataSourceReportGrid.prototype.mapProperties = function(d,_) {
 	case 2:
 		return { event : this.event, property : null, limit : null, order : null};
 	default:
-		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 63, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+		throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 64, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 	}
 }
 rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeriodicity) {
@@ -12063,6 +12078,7 @@ rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeri
 	if(appendPeriodicity) {
 		o["periodicity"] = this.periodicity;
 		if(null != this.groupBy) o["groupBy"] = this.groupBy;
+		if(null != this.timeZone) o["timeZone"] = this.timeZone;
 	}
 	if(this.where.length > 1) {
 		var w = { };
@@ -12087,7 +12103,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 133, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
+				throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 134, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
 				return $r;
 			}($this));
 		}
@@ -12095,7 +12111,7 @@ rg.data.source.DataSourceReportGrid.prototype.unit = function() {
 	}(this));
 }
 rg.data.source.DataSourceReportGrid.prototype.load = function() {
-	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 141, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+	if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 142, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 		if(this.periodicity == "eternity") {
 			this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 			var o = this.basicOptions(false);
@@ -12135,7 +12151,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 	}
 }
 rg.data.source.DataSourceReportGrid.prototype.error = function(msg) {
-	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 195, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+	throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 196, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 }
 rg.data.source.DataSourceReportGrid.prototype.success = function(src) {
 	var data = this.transform.transform(src);
@@ -12479,7 +12495,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = funct
 		return $r;
 	}(this))).getTime();
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
-	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 57, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
+	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 56, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
 	if(null != min) return min;
@@ -12499,7 +12515,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function
 	case "year":
 		return thx.date.DateParser.parse("6 years ago").getTime();
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for min",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 81, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
+		throw new thx.error.Error("invalid periodicity '{0}' for min",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 80, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
 	}
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function(max,periodicity) {
@@ -12512,7 +12528,7 @@ rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function
 	case "day":case "week":case "month":case "year":
 		return thx.date.DateParser.parse("today").getTime();
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for max",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 98, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
+		throw new thx.error.Error("invalid periodicity '{0}' for max",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 97, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
 	}
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;
@@ -13343,7 +13359,11 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return Std["is"](v,Float);
 	}, filter : null},{ field : "end", validator : function(v) {
 		return Std["is"](v,Float);
-	}, filter : null},{ field : "data", validator : function(v) {
+	}, filter : null},{ field : "timezone", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "timeZone", value : v}];
+	}},{ field : "data", validator : function(v) {
 		return Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
 			return Reflect.isObject(v1) && null == Type.getClass(v1);
 		});
@@ -13366,6 +13386,7 @@ rg.controller.info.InfoDataSource.prototype.namedData = null;
 rg.controller.info.InfoDataSource.prototype.data = null;
 rg.controller.info.InfoDataSource.prototype.name = null;
 rg.controller.info.InfoDataSource.prototype.groupBy = null;
+rg.controller.info.InfoDataSource.prototype.timeZone = null;
 rg.controller.info.InfoDataSource.prototype.groups = null;
 rg.controller.info.InfoDataSource.prototype.start = null;
 rg.controller.info.InfoDataSource.prototype.end = null;
@@ -13563,6 +13584,9 @@ rg.data.DataProcessor.prototype.dependentVariables = null;
 rg.data.DataProcessor.prototype.transform = function(s) {
 	return Arrays.flatten(s);
 }
+rg.data.DataProcessor.prototype.scale = function(s) {
+	return s;
+}
 rg.data.DataProcessor.prototype.load = function() {
 	var tmin = null, tmax = null;
 	var _g = 0, _g1 = this.independentVariables;
@@ -13623,6 +13647,7 @@ rg.data.DataProcessor.prototype.process = function(data) {
 		this.onData.dispatch([]);
 		return;
 	}
+	data = this.scale(data);
 	this.fillIndependentVariables(data);
 	var dataPoints = [];
 	var variablesset = this.getVariableIndependentValues();
