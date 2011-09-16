@@ -160,20 +160,11 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		else
 		{
 			var sel = thx.js.Dom.selectNode(n),
-				coords = coordsFromTransform(sel.attr("transform").get());
+				coords = Coords.fromTransform(sel.attr("transform").get());
 			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(coords[0], coords[1]);
 		}
-	}
-	
-	static var retransform = ~/translate\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)/;
-	static function coordsFromTransform(s : String)
-	{
-		if (!retransform.match(s))
-			return [0.0, 0];
-		else
-			return [Std.parseFloat(retransform.matched(1)), Std.parseFloat(retransform.matched(2))];
 	}
 	
 	function onclick(stats : Stats, dp : DataPoint, i : Int)

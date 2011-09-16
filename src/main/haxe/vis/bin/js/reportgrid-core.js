@@ -267,6 +267,10 @@ var ReportGrid = window.ReportGrid || {};
 		{
 			q.location = o.location;
 		}
+		if(o.timeZone)
+		{
+			q.timeZone = o.timeZone;
+		}
 		return q;
 	},
 	

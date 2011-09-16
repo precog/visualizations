@@ -10,9 +10,11 @@ import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.QueryAst;
 import rg.data.source.rgquery.transform.TransformCount;
 import rg.data.source.rgquery.transform.TransformCountGroupIntersect;
+import rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc;
 import rg.data.source.rgquery.transform.TransformCountIntersect;
 import rg.data.source.rgquery.transform.TransformCountTimeSeries;
 import rg.data.source.rgquery.transform.TransformCountTimeIntersect;
+import rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc;
 import thx.error.Error;
 import rg.data.source.ITransform;
 import rg.util.Properties;
@@ -174,9 +176,15 @@ class DataSourceReportGrid implements IDataSource
 			}
 		} else {
 			if (groupBy != null)
-				transform = new TransformCountGroupIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
-			else if (periodicity == "eternity")
+			{
+				if (timeZone != null)
+					transform = new TransformCountGroupIntersectUtc( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
+				else
+					transform = new TransformCountGroupIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
+			} else if (periodicity == "eternity")
 				transform = new TransformCountIntersect( { }, exp.map(function(d, _) return d.property), event);
+			else if (timeZone != null)
+				transform = new TransformCountTimeIntersectUtc( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			else
 				transform = new TransformCountTimeIntersect( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			var o = basicOptions(true);

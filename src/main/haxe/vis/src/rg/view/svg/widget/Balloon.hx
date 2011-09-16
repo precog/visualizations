@@ -186,20 +186,17 @@ class Balloon
 			var int = Equations.elasticf(),
 				tid = ++transition_id,
 				ix = Floats.interpolatef(this.x, x, ease),
-				iy = Floats.interpolatef(this.y, y, ease),
-				duration = duration,
-				mt = _moveTo,
-				me = this;
+				iy = Floats.interpolatef(this.y, y, ease);
 
 			Timer.timer(function(t) {
-				if (tid != me.transition_id)
+				if (tid != transition_id)
 					return true;
 				if (t > duration)
 				{
-					mt(x, y);
+					_moveTo(x, y);
 					return true;
 				}
-				mt(ix(t / duration), iy(t / duration) );
+				_moveTo(ix(t / duration), iy(t / duration) );
 				return false;
 			}, 0);
 		} else {
