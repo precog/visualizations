@@ -464,7 +464,8 @@
 
 .rg .scatter-graph g.symbol path
 {
-	stroke: none;
+	stroke: inherit;
+	fill: none;
 }
 
 .rg .pie-chart path

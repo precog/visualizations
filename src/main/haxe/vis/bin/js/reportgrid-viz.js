@@ -15514,7 +15514,7 @@ rg.view.svg.chart.ScatterGraph.prototype.getY1 = function(pos) {
 }
 rg.view.svg.chart.ScatterGraph.prototype.classf = function(pos,cls) {
 	return function(_,i) {
-		return cls + " stroke-" + pos;
+		return cls + " stroke-" + pos + " fill-" + pos;
 	};
 }
 rg.view.svg.chart.ScatterGraph.prototype.data = function(dps) {
