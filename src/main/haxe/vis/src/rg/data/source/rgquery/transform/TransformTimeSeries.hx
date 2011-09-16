@@ -9,7 +9,7 @@ import rg.util.Properties;
 import rg.data.source.rgquery.IExecutorReportGrid;
 using Arrays;
 
-class TransformCountTimeSeries implements ITransform<TimeSeriesType>
+class TransformTimeSeries implements ITransform<TimeSeriesType>
 {
 	var properties : Dynamic;
 	var unit : String;

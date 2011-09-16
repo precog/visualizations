@@ -4046,6 +4046,33 @@ rg.data.VariableDependentContext.__name__ = ["rg","data","VariableDependentConte
 rg.data.VariableDependentContext.prototype.partial = null;
 rg.data.VariableDependentContext.prototype.variable = null;
 rg.data.VariableDependentContext.prototype.__class__ = rg.data.VariableDependentContext;
+rg.data.source.ITransform = function() { }
+rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
+rg.data.source.ITransform.prototype.transform = null;
+rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
+if(!rg.data.source.rgquery.transform) rg.data.source.rgquery.transform = {}
+rg.data.source.rgquery.transform.TransformTimeSeries = function(properties,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformTimeSeries.__name__ = ["rg","data","source","rgquery","transform","TransformTimeSeries"];
+rg.data.source.rgquery.transform.TransformTimeSeries.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformTimeSeries.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformTimeSeries.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformTimeSeries.prototype.event = null;
+rg.data.source.rgquery.transform.TransformTimeSeries.prototype.transform = function(data) {
+	var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
+	var result = data.map(function(d,_) {
+		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0].timestamp,d[1],event]);
+		return p;
+	});
+	return result;
+}
+rg.data.source.rgquery.transform.TransformTimeSeries.prototype.__class__ = rg.data.source.rgquery.transform.TransformTimeSeries;
+rg.data.source.rgquery.transform.TransformTimeSeries.__interfaces__ = [rg.data.source.ITransform];
 rg.data.Variable = function(type,axis,scaleDistribution,min,max) {
 	if( type === $_ ) return;
 	this.type = type;
@@ -4225,6 +4252,43 @@ rg.controller.info.InfoStreamGraph.filters = function() {
 rg.controller.info.InfoStreamGraph.prototype.interpolation = null;
 rg.controller.info.InfoStreamGraph.prototype.effect = null;
 rg.controller.info.InfoStreamGraph.prototype.__class__ = rg.controller.info.InfoStreamGraph;
+rg.data.source.rgquery.transform.TransformIntersectTime = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformIntersectTime.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectTime"];
+rg.data.source.rgquery.transform.TransformIntersectTime.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformIntersectTime.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformIntersectTime.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformIntersectTime.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformIntersectTime.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersectTime.prototype.transform = function(data) {
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) return [];
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var arr = item.value;
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[arr[i][0].timestamp,arr[i][1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+	}
+	return result;
+}
+rg.data.source.rgquery.transform.TransformIntersectTime.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectTime;
+rg.data.source.rgquery.transform.TransformIntersectTime.__interfaces__ = [rg.data.source.ITransform];
 thx.js.DataChoice = function(update,enter,exit) {
 	if( update === $_ ) return;
 	this._update = update;
@@ -4493,10 +4557,6 @@ thx.js.UpdateSelection.prototype.exit = function() {
 	return this._choice.exit();
 }
 thx.js.UpdateSelection.prototype.__class__ = thx.js.UpdateSelection;
-rg.data.source.ITransform = function() { }
-rg.data.source.ITransform.__name__ = ["rg","data","source","ITransform"];
-rg.data.source.ITransform.prototype.transform = null;
-rg.data.source.ITransform.prototype.__class__ = rg.data.source.ITransform;
 thx.culture.Culture = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__super__ = thx.culture.Info;
@@ -6051,45 +6111,6 @@ rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) {
 rg.view.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
-if(!rg.data.source.rgquery.transform) rg.data.source.rgquery.transform = {}
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc = function(properties,fields,event,periodicity,unit) {
-	if( properties === $_ ) return;
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.__name__ = ["rg","data","source","rgquery","transform","TransformCountTimeIntersectUtc"];
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.prototype.unit = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.prototype.periodicity = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.prototype.fields = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.prototype.event = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.prototype.transform = function(data) {
-	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-	if(null == items || 0 == items.length) return [];
-	var result = [];
-	var _g = 0;
-	while(_g < items.length) {
-		var item = items[_g];
-		++_g;
-		var arr = item.value;
-		var _g2 = 0, _g1 = arr.length;
-		while(_g2 < _g1) {
-			var i = _g2++;
-			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Date.fromString(arr[i][0].datetime),arr[i][1]]);
-			p.event = this.event;
-			result.push(p);
-		}
-	}
-	haxe.Log.trace(result,{ fileName : "TransformCountTimeIntersectUtc.hx", lineNumber : 54, className : "rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc", methodName : "transform"});
-	return result;
-}
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc;
-rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc.__interfaces__ = [rg.data.source.ITransform];
 rg.view.layout.Layout = function(width,height,container) {
 	if( width === $_ ) return;
 	this.container = container;
@@ -6431,35 +6452,6 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
-rg.data.source.rgquery.transform.TransformCountIntersect = function(properties,fields,event) {
-	if( properties === $_ ) return;
-	this.properties = properties;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.source.rgquery.transform.TransformCountIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformCountIntersect"];
-rg.data.source.rgquery.transform.TransformCountIntersect.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformCountIntersect.prototype.fields = null;
-rg.data.source.rgquery.transform.TransformCountIntersect.prototype.event = null;
-rg.data.source.rgquery.transform.TransformCountIntersect.prototype.transform = function(data) {
-	var items = Objects.flatten(data,this.fields.length);
-	if(null == items || 0 == items.length) return [];
-	var result = [];
-	var _g = 0;
-	while(_g < items.length) {
-		var item = items[_g];
-		++_g;
-		var count = item.value, p = Dynamics.clone(this.properties);
-		Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-		p[".#time:eternity"] = 0;
-		p.count = count;
-		p.event = this.event;
-		result.push(p);
-	}
-	return result;
-}
-rg.data.source.rgquery.transform.TransformCountIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountIntersect;
-rg.data.source.rgquery.transform.TransformCountIntersect.__interfaces__ = [rg.data.source.ITransform];
 rg.view.frame.Stack = function(width,height,orientation) {
 	if( width === $_ ) return;
 	this.orientation = null == orientation?rg.view.frame.Orientation.Vertical:orientation;
@@ -8731,6 +8723,11 @@ rg.controller.MVPOptions.complete = function(executor,o,handler) {
 		if(null == o1.axes) switch(o1.options.visualization) {
 		default:
 			var axis = null != groupby?{ type : ".#time:" + periodicity, groupby : groupby}:{ type : ".#time:" + periodicity, view : [start,end]};
+			switch(o1.options.visualization) {
+			case "barchart":
+				axis.scalemode = "fit";
+				break;
+			}
 			o1.axes = [axis];
 		}
 		handler1(o1);
@@ -9998,6 +9995,44 @@ rg.view.svg.panel.Space.prototype.resize = function(width,height) {
 	sf.setLayout(0,0,width,height);
 }
 rg.view.svg.panel.Space.prototype.__class__ = rg.view.svg.panel.Space;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectGroupUtc"];
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.groupby = null;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.transform = function(data) {
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) return [];
+	var result = [], shift = Reflect.field(items[0].value[0][0],this.periodicity);
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var arr = item.value;
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Reflect.field(arr[i][0],this.periodicity) - shift,arr[i][1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+	}
+	return result;
+}
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectGroupUtc;
+rg.data.source.rgquery.transform.TransformIntersectGroupUtc.__interfaces__ = [rg.data.source.ITransform];
 Dates = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
@@ -10277,44 +10312,6 @@ rg.controller.factory.FactoryVariableContexts.prototype.createDependents = funct
 	return result;
 }
 rg.controller.factory.FactoryVariableContexts.prototype.__class__ = rg.controller.factory.FactoryVariableContexts;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect = function(properties,fields,event,periodicity,unit) {
-	if( properties === $_ ) return;
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformCountGroupIntersect"];
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.unit = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.periodicity = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.groupby = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.fields = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.event = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.transform = function(data) {
-	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-	if(null == items || 0 == items.length) return [];
-	var result = [];
-	var _g = 0;
-	while(_g < items.length) {
-		var item = items[_g];
-		++_g;
-		var arr = item.value;
-		var _g2 = 0, _g1 = arr.length;
-		while(_g2 < _g1) {
-			var i = _g2++;
-			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Reflect.field(arr[i][0],this.periodicity),arr[i][1]]);
-			p.event = this.event;
-			result.push(p);
-		}
-	}
-	return result;
-}
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountGroupIntersect;
-rg.data.source.rgquery.transform.TransformCountGroupIntersect.__interfaces__ = [rg.data.source.ITransform];
 rg.data.AxisTime = function(periodicity) {
 	if( periodicity === $_ ) return;
 	this.periodicity = periodicity;
@@ -12162,7 +12159,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 				this.executor.propertyCount(this.path,o,$closure(this,"success"),$closure(this,"error"));
 			}
 		} else {
-			this.transform = new rg.data.source.rgquery.transform.TransformCountTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
+			this.transform = new rg.data.source.rgquery.transform.TransformTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
 			var o = this.basicOptions(true);
 			if(this.where.length > 1) this.executor.searchSeries(this.path,o,$closure(this,"success"),$closure(this,"error")); else if(this.where.length == 1) {
 				o.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
@@ -12175,16 +12172,16 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 		}
 	} else {
 		if(this.groupBy != null) {
-			if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc({ },this.exp.map(function(d,_) {
+			if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformIntersectGroupUtc({ },this.exp.map(function(d,_) {
 				return d.property;
-			}),this.event,this.periodicity,this.unit()); else this.transform = new rg.data.source.rgquery.transform.TransformCountGroupIntersect({ },this.exp.map(function(d,_) {
+			}),this.event,this.periodicity,this.unit()); else this.transform = new rg.data.source.rgquery.transform.TransformIntersectGroup({ },this.exp.map(function(d,_) {
 				return d.property;
 			}),this.event,this.periodicity,this.unit());
-		} else if(this.periodicity == "eternity") this.transform = new rg.data.source.rgquery.transform.TransformCountIntersect({ },this.exp.map(function(d,_) {
+		} else if(this.periodicity == "eternity") this.transform = new rg.data.source.rgquery.transform.TransformIntersect({ },this.exp.map(function(d,_) {
 			return d.property;
-		}),this.event); else if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersectUtc({ },this.exp.map(function(d,_) {
+		}),this.event); else if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformIntersectUtc({ },this.exp.map(function(d,_) {
 			return d.property;
-		}),this.event,this.periodicity,this.unit()); else this.transform = new rg.data.source.rgquery.transform.TransformCountTimeIntersect({ },this.exp.map(function(d,_) {
+		}),this.event,this.periodicity,this.unit()); else this.transform = new rg.data.source.rgquery.transform.TransformIntersectTime({ },this.exp.map(function(d,_) {
 			return d.property;
 		}),this.event,this.periodicity,this.unit());
 		var o = this.basicOptions(true);
@@ -12585,6 +12582,35 @@ rg.data.VariableIndependentContext.__name__ = ["rg","data","VariableIndependentC
 rg.data.VariableIndependentContext.prototype.partial = null;
 rg.data.VariableIndependentContext.prototype.variable = null;
 rg.data.VariableIndependentContext.prototype.__class__ = rg.data.VariableIndependentContext;
+rg.data.source.rgquery.transform.TransformIntersect = function(properties,fields,event) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformIntersect"];
+rg.data.source.rgquery.transform.TransformIntersect.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformIntersect.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformIntersect.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersect.prototype.transform = function(data) {
+	var items = Objects.flatten(data,this.fields.length);
+	if(null == items || 0 == items.length) return [];
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var count = item.value, p = Dynamics.clone(this.properties);
+		Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+		p[".#time:eternity"] = 0;
+		p.count = count;
+		p.event = this.event;
+		result.push(p);
+	}
+	return result;
+}
+rg.data.source.rgquery.transform.TransformIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersect;
+rg.data.source.rgquery.transform.TransformIntersect.__interfaces__ = [rg.data.source.ITransform];
 rg.view.svg.chart.LineChart = function(panel) {
 	if( panel === $_ ) return;
 	rg.view.svg.chart.CartesianChart.call(this,panel);
@@ -12738,7 +12764,7 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 		})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
 		if(null != this.click) gsymbol.on("click",onclick);
 		if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
-		gsymbol.append("svg:circle").attr("r")["float"](4).style("fill").string("#000000").style("fill-opacity")["float"](0.0).style("stroke").string("none");
+		gsymbol.append("svg:circle").attr("r")["float"](6).style("fill").string("#000000").style("fill-opacity")["float"](0.0).style("stroke").string("none");
 		if(null != this.symbol) {
 			var sp = [this.symbol];
 			var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
@@ -12791,6 +12817,44 @@ rg.view.svg.chart.LineChart.prototype.onclick = function(stats,dp,i) {
 	this.click(dp,stats);
 }
 rg.view.svg.chart.LineChart.prototype.__class__ = rg.view.svg.chart.LineChart;
+rg.data.source.rgquery.transform.TransformIntersectGroup = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformIntersectGroup.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectGroup"];
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.groupby = null;
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.transform = function(data) {
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) return [];
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var arr = item.value;
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Reflect.field(arr[i][0],this.periodicity),arr[i][1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+	}
+	return result;
+}
+rg.data.source.rgquery.transform.TransformIntersectGroup.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectGroup;
+rg.data.source.rgquery.transform.TransformIntersectGroup.__interfaces__ = [rg.data.source.ITransform];
 rg.data.source.rgquery.QueryParser = function(p) {
 }
 rg.data.source.rgquery.QueryParser.__name__ = ["rg","data","source","rgquery","QueryParser"];
@@ -13103,44 +13167,6 @@ rg.view.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset)
 	return buf + "Z";
 }
 rg.view.svg.widget.BalloonShape.prototype.__class__ = rg.view.svg.widget.BalloonShape;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc = function(properties,fields,event,periodicity,unit) {
-	if( properties === $_ ) return;
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.__name__ = ["rg","data","source","rgquery","transform","TransformCountGroupIntersectUtc"];
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.unit = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.periodicity = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.groupby = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.fields = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.event = null;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.transform = function(data) {
-	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-	if(null == items || 0 == items.length) return [];
-	var result = [], shift = Reflect.field(items[0].value[0][0],this.periodicity);
-	var _g = 0;
-	while(_g < items.length) {
-		var item = items[_g];
-		++_g;
-		var arr = item.value;
-		var _g2 = 0, _g1 = arr.length;
-		while(_g2 < _g1) {
-			var i = _g2++;
-			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Reflect.field(arr[i][0],this.periodicity) - shift,arr[i][1]]);
-			p.event = this.event;
-			result.push(p);
-		}
-	}
-	return result;
-}
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc;
-rg.data.source.rgquery.transform.TransformCountGroupIntersectUtc.__interfaces__ = [rg.data.source.ITransform];
 Objects = function() { }
 Objects.__name__ = ["Objects"];
 Objects.field = function(o,fieldname,alt) {
@@ -13601,6 +13627,44 @@ rg.controller.factory.FactoryLayout.prototype.create = function(info,container) 
 	return layout;
 }
 rg.controller.factory.FactoryLayout.prototype.__class__ = rg.controller.factory.FactoryLayout;
+rg.data.source.rgquery.transform.TransformIntersectUtc = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformIntersectUtc.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectUtc"];
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.transform = function(data) {
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) return [];
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var arr = item.value;
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Date.fromString(arr[i][0].datetime),arr[i][1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+	}
+	haxe.Log.trace(result,{ fileName : "TransformIntersectUtc.hx", lineNumber : 54, className : "rg.data.source.rgquery.transform.TransformIntersectUtc", methodName : "transform"});
+	return result;
+}
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectUtc;
+rg.data.source.rgquery.transform.TransformIntersectUtc.__interfaces__ = [rg.data.source.ITransform];
 thx.error.NotImplemented = function(posInfo) {
 	if( posInfo === $_ ) return;
 	thx.error.Error.call(this,"method {0}.{1}() needs to be implemented",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "NotImplemented.hx", lineNumber : 13, className : "thx.error.NotImplemented", methodName : "new"});
@@ -15065,7 +15129,7 @@ rg.util.Periodicity = function() { }
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.defaultPeriodicity = function(span) {
 	if(null == span || 0 == span) return "eternity";
-	if(span <= 21600000) return "minute"; else if(span <= 172800000) return "hour"; else if(span <= 1209600000) return "day"; else if(span <= 15552000 * 1000) return "month"; else return "year";
+	if(span <= 21600000) return "minute"; else if(span <= 172800000) return "hour"; else if(span <= 5184000 * 1000) return "day"; else if(span <= 62208000 * 1000) return "month"; else return "year";
 }
 rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
@@ -15621,65 +15685,6 @@ thx.svg.Area.prototype.y1 = function(v) {
 	return this;
 }
 thx.svg.Area.prototype.__class__ = thx.svg.Area;
-rg.data.source.rgquery.transform.TransformCountTimeIntersect = function(properties,fields,event,periodicity,unit) {
-	if( properties === $_ ) return;
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformCountTimeIntersect"];
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.unit = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.periodicity = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.fields = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.event = null;
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.transform = function(data) {
-	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-	if(null == items || 0 == items.length) return [];
-	var result = [];
-	var _g = 0;
-	while(_g < items.length) {
-		var item = items[_g];
-		++_g;
-		var arr = item.value;
-		var _g2 = 0, _g1 = arr.length;
-		while(_g2 < _g1) {
-			var i = _g2++;
-			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[arr[i][0].timestamp,arr[i][1]]);
-			p.event = this.event;
-			result.push(p);
-		}
-	}
-	return result;
-}
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeIntersect;
-rg.data.source.rgquery.transform.TransformCountTimeIntersect.__interfaces__ = [rg.data.source.ITransform];
-rg.data.source.rgquery.transform.TransformCountTimeSeries = function(properties,event,periodicity,unit) {
-	if( properties === $_ ) return;
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.event = event;
-}
-rg.data.source.rgquery.transform.TransformCountTimeSeries.__name__ = ["rg","data","source","rgquery","transform","TransformCountTimeSeries"];
-rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.unit = null;
-rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.periodicity = null;
-rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.event = null;
-rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.transform = function(data) {
-	var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
-	var result = data.map(function(d,_) {
-		var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0].timestamp,d[1],event]);
-		return p;
-	});
-	return result;
-}
-rg.data.source.rgquery.transform.TransformCountTimeSeries.prototype.__class__ = rg.data.source.rgquery.transform.TransformCountTimeSeries;
-rg.data.source.rgquery.transform.TransformCountTimeSeries.__interfaces__ = [rg.data.source.ITransform];
 thx.collection.Sets = function() { }
 thx.collection.Sets.__name__ = ["thx","collection","Sets"];
 thx.collection.Sets.indexOf = function(set,value) {

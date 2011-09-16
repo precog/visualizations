@@ -61,7 +61,7 @@ $(function(){
 	{
 		if(null == start || null == end)
 			return;
-			
+
 		ReportGrid.pieChart("#cases", {
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
 			property : "sourceType",
@@ -73,7 +73,7 @@ $(function(){
 			property : "sourceType",
 			options : { label : { datapoint : label.sourceType, datapointover : label.sourceTypePercent } }
 		});
-		
+
 		ReportGrid.barChart("#casestime", {
 			path : path, event : "case", start : start, end : end,
 			property : "sourceType",
@@ -84,7 +84,7 @@ $(function(){
 				barpadding : 3
 			}
 		});
-		
+
 		ReportGrid.leaderBoard("#oses", {
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
 			property : "os"
@@ -110,13 +110,11 @@ $(function(){
 			property : "browser",
 //			options : { label : { datapointover : label.sourceType } }
 		});
-		
 		executeFilterBased();
 	}
 	
 	function executeFilterBased()
 	{
-		console.log(utc);
 		ReportGrid.barChart("#activity", {
 			axes : [{
 				type : ".#time:hour",

@@ -8,7 +8,7 @@ import rg.data.DataPoint;
 import rg.util.Properties;
 using Arrays;
 
-class TransformCountTimeIntersect implements ITransform<Dynamic>
+class TransformIntersectTime implements ITransform<Dynamic>
 {
 	var properties : Dynamic;
 	var unit : String;

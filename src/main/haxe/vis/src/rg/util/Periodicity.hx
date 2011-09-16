@@ -18,9 +18,9 @@ class Periodicity
 			return "minute";
 		else if (span <=  2 * 24 * 60 * 60 * 1000)
 			return "hour";
-		else if (span <=  14 * 24 * 60 * 60 * 1000)
+		else if (span <=  60 * 24 * 60 * 60 * 1000)
 			return "day";
-		else if (span <=  180 * 24 * 60 * 60 * 1000)
+		else if (span <=  720 * 24 * 60 * 60 * 1000)
 			return "month";
 		else
 			return "year";

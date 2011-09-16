@@ -9,7 +9,7 @@ import rg.util.Properties;
 import thx.date.DateParser;
 using Arrays;
 
-class TransformCountGroupIntersectUtc implements ITransform<Dynamic>
+class TransformIntersectGroupUtc implements ITransform<Dynamic>
 {
 	var properties : Dynamic;
 	var unit : String;

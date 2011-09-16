@@ -188,10 +188,15 @@ class MVPOptions
 							o.axes = [{ type : ".#time:" + periodicity, view : [start, end] }];
 						}*/
 					default:
-						var axis = if (null != groupby)
+						var axis : Dynamic = if (null != groupby)
 							{ type : ".#time:" + periodicity, groupby : groupby }
 						else
 							cast { type : ".#time:" + periodicity, view : [start, end] };
+						switch(o.options.visualization)
+						{
+							case "barchart":
+								axis.scalemode = "fit";
+						}
 						o.axes = [axis];
 				}
 			}
