@@ -151,7 +151,7 @@ class FunnelChart extends Chart
 		var top = g.append("svg:g");
 		var path = top
 			.append("svg:path")
-			.attr("class").string("funnel-inside item-0")
+			.attr("class").string("funnel-inside fill-0")
 			.attr("d").string(conjr(dps[0]))
 		;
 		if (null != click)
@@ -165,7 +165,7 @@ class FunnelChart extends Chart
 		var index = dps.length - 1,
 			bottom = g
 				.append("svg:path")
-				.attr("class").string("funnel-inside item-" + index)
+				.attr("class").string("funnel-inside fill-" + index)
 				.attr("d").string(conjr(dps[index])),
 			bottomheight : Float = Math.ceil(untyped bottom.node().getBBox().height / 2) + 1;
 		bottom.remove();
@@ -188,7 +188,7 @@ class FunnelChart extends Chart
 		enter.on("mouseover", function(d, i) mouseOver(d, i, stats));
 		var funnel = enter
 			.append("svg:path")
-			.attr("class").stringf(function(d, i) return "funnel-outside item-" + i)
+			.attr("class").stringf(function(d, i) return "funnel-outside fill-" + i)
 			.attr("d").stringf(function(d, i) {
 				var t = diagonal2.diagonal(d, i).split('C');
 				t.shift();

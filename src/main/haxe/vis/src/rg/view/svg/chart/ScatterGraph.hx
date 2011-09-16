@@ -65,7 +65,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 	
 	public function classf(pos : Int, cls : String)
 	{
-		return function(_, i : Int) return cls + " item-" + (pos);
+		return function(_, i : Int) return cls + " stroke-" + (pos);
 	}
 	
 	override function data(dps : Array<Array<DataPoint>>)

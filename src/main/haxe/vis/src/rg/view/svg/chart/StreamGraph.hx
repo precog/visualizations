@@ -85,7 +85,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			.onNode("click", onclick)
 //			.onNode("mouseout", out)
 			.append("svg:path")
-				.attr("class").stringf(function(d, i) return "line item-" + i)
+				.attr("class").stringf(function(d, i) return "line fill-" + i)
 				.attr("d").stringf(area.shape)
 				;
 		if(gradientStyle != 0)

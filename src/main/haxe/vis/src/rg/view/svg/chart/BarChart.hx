@@ -99,7 +99,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				for (k in 0...axisdps.length)
 				{
 					var dp = axisdps[k],
-						seggroup = getGroup("item-" + k, axisg),
+						seggroup = getGroup("fill-" + k, axisg),
 						x = width * xVariable.axis.scale(xVariable.min, xVariable.max, DataPoints.value(dp, xVariable.type)),
 						y = prev,
 						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height;
@@ -140,8 +140,8 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				w = sel.attr("width").getFloat();
 
 //			for (j in 0...segments.length)
-//				tooltip.removeClass("item-" + j);
-//			tooltip.addClass("item-" + seg);
+//				tooltip.removeClass("fill-" + j);
+//			tooltip.addClass("fill-" + seg);
 			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(x + w / 2, y);

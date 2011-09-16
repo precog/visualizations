@@ -119,7 +119,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	{
 		return function(_, i : Int)
 		{
-			return cls + " item-" + (pos + i);
+			return cls + " stroke-" + (pos + i);
 		}
 	}
 	
@@ -296,8 +296,8 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				coords = Coords.fromTransform(sel.attr("transform").get());
 
 //			for (j in 0...segments.length)
-//				tooltip.removeClass("item-" + j);
-//			tooltip.addClass("item-" + seg);
+//				tooltip.removeClass("stroke-" + j);
+//			tooltip.addClass("stroke-" + seg);
 			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(coords[0], coords[1]);

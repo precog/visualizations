@@ -93,7 +93,7 @@ class Leadeboard
 		// enter
 		var enter = choice.enter()
 			.append("li")
-				.attr("class").stringf(function(_, i) return (displayGradient ? "" : "nogradient ") + "item-" + i)
+				.attr("class").stringf(function(_, i) return (displayGradient ? "" : "nogradient ") + "stroke-" + i)
 				
 				.text().stringf(description)
 				.attr("title").stringf(title);

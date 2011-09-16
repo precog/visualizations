@@ -119,7 +119,7 @@ class PieChart extends Chart
 		// enter
 		var enter = choice.enter();
 		var arc = enter.append("svg:g")
-			.attr("class").stringf(function(d, i) return "group item-" + i)
+			.attr("class").stringf(function(d, i) return "group fill-" + i)
 			.attr("transform").string("translate(" + radius + "," + radius + ")");
 		var path = arc
 			.append("svg:path")

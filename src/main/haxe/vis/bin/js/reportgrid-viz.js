@@ -912,7 +912,7 @@ rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 			var _g5 = 0, _g4 = axisdps.length;
 			while(_g5 < _g4) {
 				var k = _g5++;
-				var dp = axisdps[k], seggroup = getGroup("item-" + k,axisg), x = this.width * this.xVariable.axis.scale(this.xVariable.min,this.xVariable.max,Reflect.field(dp,this.xVariable.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
+				var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * this.xVariable.axis.scale(this.xVariable.min,this.xVariable.max,Reflect.field(dp,this.xVariable.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
 				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + this.paddingDataPoint)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over);
 				bar.node()["__data__"] = dp;
 				if(this.displayGradient) bar.eachNode($closure(this,"applyGradient"));
@@ -1689,7 +1689,7 @@ rg.view.html.widget.Leadeboard.prototype.data = function(dps) {
 	var stats = this.stats = this.variableDependent.stats;
 	var choice = this.list.selectAll("li").data(dps,$closure(this,"id"));
 	var enter = choice.enter().append("li").attr("class").stringf(function(_,i) {
-		return (me.displayGradient?"":"nogradient ") + "item-" + i;
+		return (me.displayGradient?"":"nogradient ") + "stroke-" + i;
 	}).text().stringf($closure(this,"description")).attr("title").stringf($closure(this,"title"));
 	if(this.displayGradient) enter.style("background-size").stringf($closure(this,"backgroundSize"));
 	if(null != this.click) enter.on("click.user",$closure(this,"onClick"));
@@ -3911,7 +3911,7 @@ rg.view.svg.chart.StreamGraph.prototype.redraw = function() {
 	var layer = this.g.selectAll("g.group").data(this.transformedData);
 	layer.update().select("path.line").attr("d").stringf($closure(this.area,"shape"));
 	var node = layer.enter().append("svg:g").attr("class").string("group").onNode("mousemove",$closure(this,"onover")).onNode("click",$closure(this,"onclick")).append("svg:path").attr("class").stringf(function(d,i) {
-		return "line item-" + i;
+		return "line fill-" + i;
 	}).attr("d").stringf($closure(this.area,"shape"));
 	if(this.gradientStyle != 0) node.each(this.gradientStyle == 1?$closure(this,"applyGradientV"):$closure(this,"applyGradientH"));
 	layer.exit().remove();
@@ -7557,7 +7557,7 @@ rg.view.svg.chart.PieChart.prototype.data = function(dp) {
 	var choice = this.g.selectAll("g.group").data(this.pief(dp),$closure(this,"id"));
 	var enter = choice.enter();
 	var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-		return "group item-" + i;
+		return "group fill-" + i;
 	}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
 	var path = arc.append("svg:path").attr("class").string("slice");
 	if(this.displayGradient) arc.eachNode($closure(this,"applyGradient"));
@@ -8935,7 +8935,7 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 		return " M " + fx1(v) + " 0 " + conj(v,false,0) + conj(v,true,1);
 	};
 	var top = this.g.append("svg:g");
-	var path = top.append("svg:path").attr("class").string("funnel-inside item-0").attr("d").string(conjr(this.dps[0]));
+	var path = top.append("svg:path").attr("class").string("funnel-inside fill-0").attr("d").string(conjr(this.dps[0]));
 	if(null != this.click) top.onNode("click",function(_,_1) {
 		me.click(me.dps[0],me.stats);
 	});
@@ -8944,7 +8944,7 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 		me.mouseOver(me.dps[0],0,me.stats);
 	});
 	this.topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
-	var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside item-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
+	var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside fill-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
 	bottom.remove();
 	this.h = (this.height - this.topheight - bottomheight - (this.dps.length - 1) * this.padding) / this.dps.length;
 	top.attr("transform").string("translate(0," + this.topheight + ")");
@@ -8959,7 +8959,7 @@ rg.view.svg.chart.FunnelChart.prototype.redraw = function() {
 		me.mouseOver(d,i,me.stats);
 	});
 	var funnel = enter.append("svg:path").attr("class").stringf(function(d,i) {
-		return "funnel-outside item-" + i;
+		return "funnel-outside fill-" + i;
 	}).attr("d").stringf(function(d,i) {
 		var t = diagonal2.diagonal(d,i).split("C");
 		t.shift();
@@ -12670,7 +12670,7 @@ rg.view.svg.chart.LineChart.prototype.getY0 = function(pos) {
 rg.view.svg.chart.LineChart.prototype.segments = null;
 rg.view.svg.chart.LineChart.prototype.classf = function(pos,cls) {
 	return function(_,i) {
-		return cls + " item-" + (pos + i);
+		return cls + " stroke-" + (pos + i);
 	};
 }
 rg.view.svg.chart.LineChart.prototype.data = function(dps) {
@@ -15514,7 +15514,7 @@ rg.view.svg.chart.ScatterGraph.prototype.getY1 = function(pos) {
 }
 rg.view.svg.chart.ScatterGraph.prototype.classf = function(pos,cls) {
 	return function(_,i) {
-		return cls + " item-" + pos;
+		return cls + " stroke-" + pos;
 	};
 }
 rg.view.svg.chart.ScatterGraph.prototype.data = function(dps) {
