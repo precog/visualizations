@@ -182,7 +182,7 @@ class DataSourceReportGrid implements IDataSource
 				else
 					transform = new TransformIntersectGroup( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			} else if (periodicity == "eternity")
-				transform = new TransformIntersect( { }, exp.map(function(d, _) return d.property), event);
+				transform = new TransformIntersect( { }, exp.map(function(d, _) return d.property), event, exp[0].order != "ascending");
 			else if (timeZone != null)
 				transform = new TransformIntersectUtc( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			else

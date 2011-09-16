@@ -13,11 +13,13 @@ class TransformIntersect implements ITransform<Dynamic>
 	var properties : Dynamic;
 	var fields : Array<String>;
 	var event : String;
-	public function new(properties : Dynamic, fields : Array<String>, event : String) 
+	var orderDescending : Bool;
+	public function new(properties : Dynamic, fields : Array<String>, event : String, orderDescending : Bool) 
 	{
 		this.properties = properties;
 		this.fields = fields;
 		this.event = event;
+		this.orderDescending = orderDescending;
 	}
 	
 	public function transform(data : Dynamic) : Array<DataPoint>
@@ -39,6 +41,16 @@ class TransformIntersect implements ITransform<Dynamic>
 			p.count = count;
 			p.event = event;
 			result.push(p);
+		}
+		if(orderDescending)
+		{
+			result.sort(function(a, b) {
+				return Ints.compare(b.count, a.count);
+			});
+		} else {
+			result.sort(function(a, b) {
+				return Ints.compare(a.count, b.count);
+			});
 		}
 		return result;
 	}

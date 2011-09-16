@@ -44,6 +44,7 @@ class VisualizationLeaderboard extends VisualizationHtml
 	
 	override function feedData(data : Array<DataPoint>)
 	{
+		
 		chart.setVariables(independentVariables, dependentVariables);
 		chart.data(data);
 	}

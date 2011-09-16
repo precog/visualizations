@@ -4280,7 +4280,7 @@ rg.data.source.rgquery.transform.TransformIntersectTime.prototype.transform = fu
 			var i = _g2++;
 			var p = Dynamics.clone(properties);
 			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[arr[i][0].timestamp,arr[i][1]]);
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[this.periodicity != "minute" && this.periodicity != "hour"?Dates.snap(arr[i][0].timestamp,this.periodicity):arr[i][0].timestamp,arr[i][1]]);
 			p.event = this.event;
 			result.push(p);
 		}
@@ -12179,7 +12179,7 @@ rg.data.source.DataSourceReportGrid.prototype.load = function() {
 			}),this.event,this.periodicity,this.unit());
 		} else if(this.periodicity == "eternity") this.transform = new rg.data.source.rgquery.transform.TransformIntersect({ },this.exp.map(function(d,_) {
 			return d.property;
-		}),this.event); else if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformIntersectUtc({ },this.exp.map(function(d,_) {
+		}),this.event,this.exp[0].order != "ascending"); else if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformIntersectUtc({ },this.exp.map(function(d,_) {
 			return d.property;
 		}),this.event,this.periodicity,this.unit()); else this.transform = new rg.data.source.rgquery.transform.TransformIntersectTime({ },this.exp.map(function(d,_) {
 			return d.property;
@@ -12582,16 +12582,18 @@ rg.data.VariableIndependentContext.__name__ = ["rg","data","VariableIndependentC
 rg.data.VariableIndependentContext.prototype.partial = null;
 rg.data.VariableIndependentContext.prototype.variable = null;
 rg.data.VariableIndependentContext.prototype.__class__ = rg.data.VariableIndependentContext;
-rg.data.source.rgquery.transform.TransformIntersect = function(properties,fields,event) {
+rg.data.source.rgquery.transform.TransformIntersect = function(properties,fields,event,orderDescending) {
 	if( properties === $_ ) return;
 	this.properties = properties;
 	this.fields = fields;
 	this.event = event;
+	this.orderDescending = orderDescending;
 }
 rg.data.source.rgquery.transform.TransformIntersect.__name__ = ["rg","data","source","rgquery","transform","TransformIntersect"];
 rg.data.source.rgquery.transform.TransformIntersect.prototype.properties = null;
 rg.data.source.rgquery.transform.TransformIntersect.prototype.fields = null;
 rg.data.source.rgquery.transform.TransformIntersect.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersect.prototype.orderDescending = null;
 rg.data.source.rgquery.transform.TransformIntersect.prototype.transform = function(data) {
 	var items = Objects.flatten(data,this.fields.length);
 	if(null == items || 0 == items.length) return [];
@@ -12607,6 +12609,11 @@ rg.data.source.rgquery.transform.TransformIntersect.prototype.transform = functi
 		p.event = this.event;
 		result.push(p);
 	}
+	if(this.orderDescending) result.sort(function(a,b) {
+		return b.count - a.count;
+	}); else result.sort(function(a,b) {
+		return a.count - b.count;
+	});
 	return result;
 }
 rg.data.source.rgquery.transform.TransformIntersect.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersect;

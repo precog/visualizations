@@ -131,7 +131,8 @@ $(function(){
 				},
 				scale : function(dps)
 				{
-					var results = {};
+					var results = {},
+						keys = [];
 					for(var i = 0; i < dps.length; i++)
 					{
 						var pos = dps[i][".#time:hour"] % 24,
@@ -140,8 +141,12 @@ $(function(){
 						
 						if(!days[wd])
 							continue;
+
 						if(!results[st])
+						{
+							keys.push(st);
 							results[st] = [];
+						}
 						if(results[st][pos])
 							results[st][pos]["count"] += dps[i]["count"];
 						else
@@ -151,15 +156,14 @@ $(function(){
 						}
 					}
 					var result = [];
-					for(var k in results)
+					for(var i = 0; i < keys.length; i++)
 					{
-						result = result.concat(results[k]);
+						result = result.concat(results[keys[i]]);
 					}
 					return result;
 				},
 				tranform : function(d)
 				{
-					console.log(d);
 					return d;
 				}
 			},
@@ -175,7 +179,7 @@ $(function(){
 	
 	function onDateRangeChange()
 	{
-		var inputs = range.val().split("-").map(function(d) { return +ReportGrid.date.parse(d)});
+		var inputs = range.val().split("-").map(function(d) { return + (d = ReportGrid.date.parse(d)) - d.getTimezoneOffset() * 60000});
 		if(!inputs[0])
 			return;
 		if(inputs.length == 1)
