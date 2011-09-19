@@ -16,7 +16,7 @@ import rg.view.svg.widget.Label;
 import thx.culture.FormatNumber;
 import thx.js.Selection;
 import thx.js.Dom;
-import thx.color.Colors;
+import rg.view.svg.util.RGColors;
 import thx.color.Hsl;
 import thx.color.NamedColors;
 import thx.math.scale.Linear;
@@ -283,10 +283,8 @@ class FunnelChart extends Chart
 
 	function internalGradient(d : Selection)
 	{
-		var c = d.style("fill").get(),
-			color = Colors.parse(null == c ? "#ccc" : c);
-
-		var stops = defs
+		var color = RGColors.parse(d.style("fill").get(), "#cccccc"),
+			stops = defs
 			.append("svg:radialGradient")
 			.attr("id").string("rg_funnel_int_gradient_0")
 			.attr("cx").string("50%")
@@ -311,8 +309,7 @@ class FunnelChart extends Chart
 	{
 		var g = Dom.selectNode(n),
 			d = g.select("path"),
-			c = d.style("fill").get(),
-			color = Hsl.toHsl(Colors.parse(null == c ? "#ccc" : c)),
+			color = Hsl.toHsl(RGColors.parse(d.style("fill").get(), "#cccccc")),
 			vn = next(i),
 			vc = dpvalue(dps[i]),
 			ratio = Math.round(vn / vc * 100) / 100,

@@ -26,6 +26,7 @@ import rg.data.Stats;
 import rg.view.svg.widget.LabelOrientation;
 import rg.view.svg.widget.Label;
 import rg.view.svg.widget.GridAnchor;
+import rg.view.svg.util.RGColors;
 using Arrays;
 
 // TODO add overDataPoint
@@ -249,11 +250,8 @@ class PieChart extends Chart
 				t = gn.append("svg:path").attr("d").string(shape),
 				box : { x : Float, y : Float, width : Float, height : Float } = untyped t.node().getBBox();
 			t.remove();
-			var color = slice.style("fill").get();
-			if (null == color)
-				color = "#cccccc";
-			
-			var scolor = Hsl.darker(Hsl.toHsl(Colors.parse(color)), gradientLightness).toRgbString();
+			var color = RGColors.parse(slice.style("fill").get(), "#cccccc"),
+				scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness);
 				
 			var ratio = box.width / box.height,
 				cx = -box.x * 100 / box.width / ratio,
@@ -273,11 +271,11 @@ class PieChart extends Chart
 			;
 			stops.append("svg:stop")
 				.attr("offset").string((100*innerRadius)+"%")
-				.attr("stop-color").string(color)
+				.attr("stop-color").string(color.toRgbString())
 				.attr("stop-opacity").float(1);
 			stops.append("svg:stop")
 				.attr("offset").string("100%")
-				.attr("stop-color").string(scolor)
+				.attr("stop-color").string(scolor.toRgbString())
 				.attr("stop-opacity").float(1);
 		}
 		gn.select("path.slice")

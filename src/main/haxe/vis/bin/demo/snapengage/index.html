@@ -12,14 +12,15 @@
 	<script type="text/javascript" src="js/daterangepicker.jQuery.js"></script>
 	<link rel="stylesheet" href="css/ui.daterangepicker.css" type="text/css" />
 	<link rel="stylesheet" href="css/redmond/jquery-ui-1.7.1.custom.css" type="text/css" title="ui-theme" />
-
-	<link rel="stylesheet" type="text/css" href="../../css/rg.css"/>
-	<link rel="stylesheet" href="css/rg-snapengage.css" type="text/css"/>
 <!--
-	<link rel="stylesheet" href="css/rg-colors-snapengage.css" type="text/css"/>
+	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
+	<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
+	<script src="http://api.reportgrid.com/js/reportgrid-viz.js"></script>
 -->
+	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
 	<script src="../../js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="../../js/reportgrid-viz.js"></script>
+
 <script type="text/javascript">
 $(function(){
 	
@@ -44,17 +45,11 @@ $(function(){
 		};
 		return label;
 	})();
-/*
-	var labelSourceTypePercent = (function() {
-		var sourceTypes = { 1 : "Message", 2 : "Live Chat" };
-		return function(dp, stats) {
-		return ReportGrid.format(Math.round(1000 * dp.count / stats.tot) / 10, "P:1");
-	};
-*/
-	var path = "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/",
+
+	var path = null,
 		start = null,
 		end   = null,
-		utc   = 0,
+		utc   = $('#timezone').val(),
 		days  = [true,true,true,true,true,true,true];
 		
 	function executeRangeBased()
@@ -77,7 +72,7 @@ $(function(){
 		ReportGrid.barChart("#casestime", {
 			path : path, event : "case", start : start, end : end,
 			property : "sourceType",
-			options : { 
+			options : {
 				displayrules : function(type) { return type.substr(0, 7) != '.#time:' },
 				displayanchorlinetick : function(type) { return type.substr(0, 7) == '.#time:' },
 				label : { datapointover : label.sourceType },
@@ -95,7 +90,7 @@ $(function(){
 			property : "os",
 			options : {
 				displayrules : function(type) { return type == 'count' }
-//				label : { datapointover : label.sourceType } 
+//				label : { datapointover : label.sourceType }
 			}
 		});
 		
@@ -121,9 +116,9 @@ $(function(){
 				groupby : "day"
 			}],
 			data : {
-				src : { 
-					path : path, event : "case", 
-					query : ".sourceType * .#time:hour", 
+				src : {
+					path : path, event : "case",
+					query : ".sourceType * .#time:hour",
 					groupby : "week",
 					start : start,
 					end : end,
@@ -171,47 +166,52 @@ $(function(){
 			periodicity : "hour", groupby : "week",
 			property : "sourceType",
 			options : {
-				label : { datapoint : label.sourceTypePercent, datapointover : label.sourceType },
+				label : { datapointover : label.sourceTypePercent },
 				barpadding : 3
 			}
 		});
 	}
 	
-	function onDateRangeChange()
+	function setDateRange()
 	{
-		var inputs = range.val().split("-").map(function(d) { return + (d = ReportGrid.date.parse(d)) - d.getTimezoneOffset() * 60000});
+		var inputs = $('#daterange').val().split("-").map(function(d) { return + (d = ReportGrid.date.parse(d)) - d.getTimezoneOffset() * 60000});
 		if(!inputs[0])
 			return;
 		if(inputs.length == 1)
 			inputs[1] = inputs[0] + 24 * 3600000;
 		start = inputs[0];
 		end = inputs[1]
-		delay(executeRangeBased);
-	}
-
-	var range = $('#daterange').daterangepicker({
-		arrows : true,
-		onChange : onDateRangeChange
-	})
-
-	function changeDays()
-	{
-		$('.dayfilter').each(function(i, d) { days[i] = d.checked; });
-		delay(executeFilterBased, 500);
 	}
 	
-	function changeUtc()
-	{
+	function setPath() { path = $('#path').val(); }
+	function setUtc() { utc = $('#timezone').val(); }
+	function setDays() { $('.dayfilter').each(function(i, d) { days[i] = d.checked; }); }
+	
+	$('#path').change(function() {
+		setPath();
+		delay(executeRangeBased);
+	});
+	$('#daterange').daterangepicker({
+		arrows : true,
+		onChange : function () {
+			setDateRange();
+			delay(executeRangeBased);
+		}
+	})
+	$('#timezone').change(function (){
 		utc = $('.timezone').val();
 		delay(executeFilterBased);
-	}
-	
-	$('.timezone').change(changeUtc);
-	$('.dayfilter').change(changeDays); // TODO
+	});
+	$('.dayfilter').change(function (){
+		setDays();
+		delay(executeFilterBased);
+	});
 
-	changeUtc();
-	changeDays();
-	onDateRangeChange();
+	setPath();
+	setDateRange();
+	setUtc();
+	setDays();
+	executeRangeBased();
 });
 </script>
 <style type="text/css">
@@ -268,7 +268,7 @@ body
 h1
 {
 	clear: left;
-	padding: 8px 0 2px 0; 
+	padding: 8px 0 2px 0;
 	font-size:20px;
 	color: #fff;
 	text-shadow: 0px 1px 2px #000;
@@ -283,9 +283,19 @@ h1:hover {
 </head>
 <body>
 	<div class="container">
+		<select id="path">
+			<option value="/snapEngage/11155847/bf7337a6-6c7f-4ff9-8e50-a7bb771c036a/">Movistar</option>
+			<option value="/snapEngage/16631719/2520940e-70e9-49ba-a9ff-ec772c1949ba/">Ubertor</option>
+			<option value="/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/">Magento</option>
+			<option value="/snapEngage/11419064/d1f2393e-a5ce-4a36-bbe7-a82952e64d0d/" selected>NetDNA</option>
+			<option value="/snapEngage/8351775/d33df7f1-8a54-416a-ade2-c464691f2287/">1800PackRat</option>
+			<option value="/snapEngage/11197326/d97ee4d8-592b-400a-9460-951fba586f09/">Evite</option>
+		</select>
+		<br/>
+		<br/>
 		<input type="text" id="daterange" value="2 weeks ago - today" />
 		<br/>
-		<select class="timezone" id="DropDownTimezone">
+		<select id="timezone">
 			<option value="-12.0">(GMT -12:00) Eniwetok, Kwajalein</option>
 			<option value="-11.0">(GMT -11:00) Midway Island, Samoa</option>
 			<option value="-10.0">(GMT -10:00) Hawaii</option>

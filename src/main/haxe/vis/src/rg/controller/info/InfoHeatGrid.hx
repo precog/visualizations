@@ -6,19 +6,22 @@
 package rg.controller.info;
 import thx.color.Rgb;
 import thx.color.NamedColors;
-import thx.color.Colors;
+import rg.view.svg.util.RGColors;
 using rg.controller.info.Info;
 
 class InfoHeatGrid extends InfoCartesianChart
 {
+	static var defaultStartColor = NamedColors.white;
+	static var defaultEndColor = NamedColors.blue;
+	
 	public var contour : Bool;
 	public var startColor : Rgb;
 	public var endColor : Rgb;
 	public function new()
 	{
 		super();
-		startColor = NamedColors.white;
-		endColor = NamedColors.blue;
+		startColor = defaultStartColor;
+		endColor = defaultEndColor;
 	}
 	
 	public static function filters()
@@ -32,14 +35,14 @@ class InfoHeatGrid extends InfoCartesianChart
 			validator : function(v) return Std.is(v, String),
 			filter : function(v) return [{
 				field : "startColor",
-				value : Colors.parse(v)
+				value : RGColors.parse(v, defaultStartColor.toCss())
 			}]
 		}, {
 			field : "endcolor",
 			validator : function(v) return Std.is(v, String),
 			filter : function(v) return [{
 				field : "endColor",
-				value : Colors.parse(v)
+				value : RGColors.parse(v, defaultEndColor.toCss())
 			}]
 		}].concat(cast InfoCartesianChart.filters());
 	}

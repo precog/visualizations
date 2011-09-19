@@ -16,6 +16,7 @@ import rg.data.IAxisDiscrete;
 import thx.js.Dom;
 import thx.color.Hsl;
 import thx.color.Colors;
+import rg.view.svg.util.RGColors;
 import rg.data.Stats;
 using Arrays;
 
@@ -152,9 +153,9 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	{
 		var gn = Dom.selectNodeData(n),
 			dp = Access.getData(n),
-			rgb = gn.style("fill").get(),
-			color = Colors.parse(null == rgb ? "#cccccc" : rgb),
+			color = RGColors.parse(gn.style("fill").get(), "#cccccc"),
 			id = "rg_bar_gradient_" + color.hex("");
+		
 		if (defs.select('#'+id).empty())
 		{
 			var scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness).toRgbString();

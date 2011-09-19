@@ -9,7 +9,7 @@ import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
-import thx.color.Colors;
+import rg.view.svg.util.RGColors;
 import thx.color.Hsl;
 import thx.js.Selection;
 import rg.util.DataPoints;
@@ -161,10 +161,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 						.append("svg:path")
 						.attr("class").stringf(classf(i, "line"))
 						.eachNode(function(n, i) {
-							var color : String = Dom.selectNode(n).style("stroke").get();
-							if (null == color)
-								color = "#000000";
-							var start = Hsl.toHsl(Colors.parse(color)),
+							var start = Hsl.toHsl(RGColors.parse(Dom.selectNode(n).style("stroke").get(), "#000000")),
 								end = Hsl.darker(start, lightness);
 							fs[i] = Hsl.interpolatef(end, start);
 						}).remove();

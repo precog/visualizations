@@ -16,10 +16,10 @@ import rg.data.VariableDependent;
 import thx.svg.Area;
 import thx.js.Dom;
 import thx.js.Selection;
-import thx.color.Colors;
 import thx.color.Hsl;
 import thx.js.Svg;
 import thx.js.Access;
+import rg.view.svg.util.RGColors;
 using Arrays;
 
 
@@ -167,8 +167,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	function applyGradientV(d : Array<TransformedData>, i : Int)
 	{
 		var gn = Selection.current,
-			rgb = gn.style("fill").get(),
-			color = Colors.parse(null == rgb ? "#cccccc" : rgb),
+			color = RGColors.parse(gn.style("fill").get(), "#cccccc"),
 			id = "rg_stream_gradient_h_" + color.hex("");
 		if (defs.select('#'+id).empty())
 		{
@@ -200,8 +199,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	function applyGradientH(d : Array<TransformedData>, i : Int)
 	{
 		var gn = Selection.current,
-			rgb = gn.style("fill").get(),
-			color = Hsl.toHsl(Colors.parse(null == rgb ? "#cccccc" : rgb)),
+			color = Hsl.toHsl(RGColors.parse(gn.style("fill").get(), "#cccccc")),
 			id = "rg_stream_gradient_v_" + vid++;
 		
 		var gradient = defs
