@@ -72,23 +72,19 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		})
 	;
-//	console.log(ReportGrid.dump(data));
-	var alt = 0;
 	
 	ReportGrid.lineChart("#chart1", {
-		axes : [{
-			type : ".#time:hour",
-			view : [start, end],
-			variable : "independent"
-		}, {
-			type : "impression"
-		}, {
-			type : "click"
-		}, {
-			type : "conversion"
-		}, {
-			type : "other"
-		}],
+		axes : [
+			{
+				type : ".#time:hour",
+				view : [start, end],
+				variable : "independent"
+			},
+			{ type : "impression" },
+			{ type : "click" },
+			{ type : "conversion" },
+			{ type : "other" }
+		],
 		data : [
 			{ src : { data : data1 } }, 
 			{ src : { data : data2 } },
@@ -98,32 +94,15 @@ document.addEventListener("DOMContentLoaded", function(){
 		],
 		options : {
 			segmenton : "event",
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
-			},
-			label : {
-				datapointover : function(dp) { 
-					return dp.event + ": " + ReportGrid.format(dp["count"]); 
-				},
-//				axis : function(name) { return ReportGrid.humanize(name); }
-			},
+			label : { datapointover : function(dp) {  return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
 			click : function(dp) { alert(dp[".browser"]); },
 			height: 200,
-			symbol : function(ds, stats) {
-				return ReportGrid.symbol.get("circle", 20);
-			},
-			line : {
-//				interpolation : "cardinal",
-				effect : "gradient"
-			}
+			symbol : function(ds, stats) { return ReportGrid.symbol.get("circle", 20); },
+			line : { effect : "gradient" }
 		}
 	});
 
 	var ageRanges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"];
-//	var ages = ["0-13", "14-15", "16-20", "21-35", "36+"];
 	ReportGrid.lineChart("#chart2", {
 		axes : [{
 			type : "age",
@@ -147,13 +126,9 @@ document.addEventListener("DOMContentLoaded", function(){
 		}],
 		options : {
 			height : 120,
-			line : {
-				interpolation : "linear"
-			},
+			line : { interpolation : "linear" },
 			label : {
-				datapointover : function(dp) { 
-					return ReportGrid.format(dp["count"]); 
-				},
+				datapointover : function(dp) { return ReportGrid.format(dp["count"]); },
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
 			displayarea : true
@@ -187,9 +162,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			height : 120,
 			label : {
 				title : "Interests by Age Groups",
-				datapointover : function(dp) { 
-					return dp["age"] + ": " + dp["interest"]; 
-				},
+				datapointover : function(dp) { return dp["age"] + ": " + dp["interest"]; },
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
 			displayarea : true

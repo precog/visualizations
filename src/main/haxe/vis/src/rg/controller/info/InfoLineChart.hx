@@ -16,8 +16,8 @@ class InfoLineChart extends InfoCartesianChart
 {
 	public var effect : LineEffect;
 	public var interpolation : LineInterpolator;
-	public var symbol : DataPoint -> Stats -> String;
-	public var symbolStyle : DataPoint -> Stats -> String;
+	public var symbol : DataPoint -> Stats<Dynamic> -> String;
+	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
 	public var displayarea : Bool;
 
 	public function new()

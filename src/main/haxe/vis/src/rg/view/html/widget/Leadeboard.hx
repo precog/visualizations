@@ -35,7 +35,7 @@ class Leadeboard
 	var list : Selection;
 
 	var _created : Int;
-	var stats : Stats;
+	var stats : StatsNumeric;
 	public function new(container : Selection) 
 	{
 		this.container = container;
@@ -48,14 +48,14 @@ class Leadeboard
 		useMax = false;
 	}
 	
-	public dynamic function labelDataPoint(dp : DataPoint, stats : Stats)
+	public dynamic function labelDataPoint(dp : DataPoint, stats : StatsNumeric)
 	{
 		var p = DataPoints.value(dp, variableIndependent.type);
 		var v = DataPoints.value(dp, variableDependent.type);
 		return Properties.humanize(p) + ": " + FormatNumber.percent(100 * v / stats.tot, 1);
 	}
 	
-	public dynamic function labelDataPointOver(dp : DataPoint, stats : Stats)
+	public dynamic function labelDataPointOver(dp : DataPoint, stats : StatsNumeric)
 	{
 		var p = variableDependent.type;
 		var v = DataPoints.value(dp, variableDependent.type);
@@ -86,7 +86,7 @@ class Leadeboard
 		if (null != sortDataPoint)
 			dps.sort(sortDataPoint);
 		
-		var stats = this.stats = variableDependent.stats;
+		var stats = this.stats = cast(variableDependent.stats, StatsNumeric);
 			
 		var choice = list.selectAll("li").data(dps, id);
 		

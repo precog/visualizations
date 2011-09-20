@@ -41,7 +41,7 @@ class PivotTable
 	public var click : DataPoint -> Void;
 	
 	var container : Selection;
-	var stats : Stats;
+	var stats : StatsNumeric;
 	
 	public function new(container : Selection) 
 	{
@@ -55,13 +55,13 @@ class PivotTable
 		incolumns = 1;
 	}
 	
-	public dynamic function labelDataPoint(dp : DataPoint, stats : Stats)
+	public dynamic function labelDataPoint(dp : DataPoint, stats : StatsNumeric)
 	{
 		var v = DataPoints.value(dp, cellVariable.type);
 		return FormatNumber.int(v);
 	}
 	
-	public dynamic function labelDataPointOver(dp : DataPoint, stats : Stats)
+	public dynamic function labelDataPointOver(dp : DataPoint, stats : StatsNumeric)
 	{
 		var v = DataPoints.value(dp, cellVariable.type);
 		return FormatNumber.percent(100 * v / stats.tot, 1);
@@ -83,12 +83,12 @@ class PivotTable
 	}
 	
 	
-	public dynamic function labelTotal(v : Float, stats : Stats)
+	public dynamic function labelTotal(v : Float, stats : StatsNumeric)
 	{
 		return FormatNumber.int(v);
 	}
 	
-	public dynamic function labelTotalOver(v : Float, stats : Stats)
+	public dynamic function labelTotalOver(v : Float, stats : StatsNumeric)
 	{
 		return FormatNumber.percent(100 * v / stats.tot, 1);
 	}
@@ -99,7 +99,7 @@ class PivotTable
 			table = container.append("table").classed().add("pivot-table"),
 			thead = table.append("thead"),
 			leftspan = d.rows.length > 0 ? d.rows[0].values.length : 0,
-			color = Hsl.interpolatef(colorStart, colorEnd);
+			color = Rgb.interpolatef(colorStart, colorEnd);
 		stats = d.stats;
 
 		// HEADER
@@ -320,20 +320,21 @@ class PivotTable
 	function transformData(dps : Array<DataPoint>): {
 		column_headers : Array<String>,
 		row_headers : Array<String>,
-		columns : Array<{ values : Array<Dynamic>, stats : Stats }>,
-		rows : Array<{ values : Array<Dynamic>, cells : Array<DataPoint>, stats : Stats}>,
-		stats : Stats
+		columns : Array<{ values : Array<Dynamic>, stats : StatsNumeric }>,
+		rows : Array<{ values : Array<Dynamic>, cells : Array<DataPoint>, stats : StatsNumeric} >,
+		stats : StatsNumeric
 	}
 	{
 		var column_headers = [],
 			row_headers = [],
 			columns = [],
 			rows = [],
-			tcalc = {
-				min : Math.POSITIVE_INFINITY,
-				max : Math.NEGATIVE_INFINITY,
-				tot : 0.0
-			};
+			tcalc = new StatsNumeric();
+//			{
+//				min : Math.POSITIVE_INFINITY,
+//				max : Math.NEGATIVE_INFINITY,
+//				tot : 0.0
+//			};
 			
 		var variable;
 		// columns : build first level
@@ -372,7 +373,7 @@ class PivotTable
 		for (i in 0...columns.length)
 		{
 			var column = columns[i],
-				ccalc = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
+				ccalc = new StatsNumeric(); // { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
 			column.stats = ccalc;
 			for (dp in dps.filter(function(dp) { 
 				for (j in 0...headers.length)
@@ -387,6 +388,9 @@ class PivotTable
 				var v = Reflect.field(dp, cellVariable.type);
 				if (null == v)
 					continue;
+				ccalc.add(v);
+				tcalc.add(v);
+/*
 				if (v < ccalc.min)
 				{
 					ccalc.min = v;
@@ -400,8 +404,9 @@ class PivotTable
 						tcalc.max = v;
 				}
 				ccalc.tot += v;
+*/
 			}
-			tcalc.tot += ccalc.tot;
+//			tcalc.tot += ccalc.tot;
 		}
 		
 		// rows : build first level
@@ -440,7 +445,7 @@ class PivotTable
 			headers = row_headers;
 		for (row in rows)
 		{
-			row.stats = { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
+			row.stats = new StatsNumeric(); // { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
 			row.cells = [];
 			
 			var rdps = dps.filter(function(d) {
@@ -470,6 +475,8 @@ class PivotTable
 					continue;
 				}
 				row.cells.push(dp);
+				row.stats.add(v);
+/*
 				if (v < row.stats.min)
 				{
 					row.stats.min = v;
@@ -483,6 +490,7 @@ class PivotTable
 //						tcalc.max = v;
 				}
 				row.stats.tot += v;
+*/
 			}
 		}
 			

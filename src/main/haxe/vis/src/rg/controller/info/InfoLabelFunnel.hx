@@ -10,7 +10,7 @@ import rg.data.Stats;
 
 class InfoLabelFunnel extends InfoLabel
 {
-	public var arrow : DataPoint -> Stats -> String;
+	public var arrow : DataPoint -> Stats<Dynamic> -> String;
 	
 	public static function filters()
 	{

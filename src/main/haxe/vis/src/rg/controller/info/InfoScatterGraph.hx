@@ -11,8 +11,8 @@ using rg.controller.info.Info;
 
 class InfoScatterGraph extends InfoCartesianChart
 {
-	public var symbol : DataPoint -> Stats -> String;
-	public var symbolStyle : DataPoint -> Stats -> String;
+	public var symbol : DataPoint -> Stats<Dynamic> -> String;
+	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
 
 	public function new()
 	{

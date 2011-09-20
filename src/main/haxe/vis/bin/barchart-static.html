@@ -7,17 +7,6 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
-	<link rel="stylesheet" type="text/css" href="css/rg-colors-dark2-8-qual.css"/>
-	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
-<!--
-	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
--->
 	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -26,8 +15,9 @@ document.addEventListener("DOMContentLoaded", function(){
 	var start = "10 days ago",
 		end = "now",
 		range = ReportGrid.date.range(start, end, "day"),
+		f = function(f,i,v) { return Math.abs(Math.round(f(i/ range.length * Math.PI * 4) * 100))},
 		data1 = range.map(function(d,i) {
-			var count = Math.round(Math.tan(i / range.length * Math.PI * 4) * 100);
+			var count = f(Math.tan, i, 100);
 			return {
 				".#time:day" : d,
 				event : "impression",
@@ -36,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data2 = range.map(function(d,i) {
-			var count = Math.round(Math.sin(i / range.length * Math.PI * 4) * 100);
+			var count = f(Math.sin, i, 100); //Math.round(Math.sin(i / range.length * Math.PI * 4) * 100);
 			return {
 				".#time:day" : d,
 				event : "click",
@@ -45,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data3 = range.map(function(d,i) {
-			var count = Math.round(Math.cos(i / range.length * Math.PI * 4) * 50);
+			var count = f(Math.cos, i, 50); //Math.round(Math.cos(i / range.length * Math.PI * 4) * 50);
 			return {
 				".#time:day" : d,
 				event : "conversion",
@@ -54,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data4 = range.map(function(d,i) {
-			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 100);
+			var count = f(Math.atan, i, 100); //Math.round(Math.atan(i / range.length * Math.PI * 4) * 100);
 			return {
 				".#time:day" : d,
 				event : "other",
@@ -63,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		}),
 		data5 = range.map(function(d,i) {
-			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 50);
+			var count = f(Math.atan, i, 50); //Math.round(Math.atan(i / range.length * Math.PI * 4) * 50);
 			return {
 				".#time:day" : d,
 				event : "other2",
@@ -72,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		})
 	;
-//	console.log(ReportGrid.dump(data));
+
 	var alt = 0,
 		mathData = [
 			{ src : { data : data1 } }, 
@@ -84,86 +74,46 @@ document.addEventListener("DOMContentLoaded", function(){
 	
 	ReportGrid.barChart("#chart1", {
 		axes : [{
-			type : ".#time:day",
-			view : [start, end],
-			variable : "independent",
-			scalemode : "fit"
-		}, {
-			type : "impression"
-		}, {
-			type : "click"
-		}, {
-			type : "conversion"
-		}, {
-			type : "other",
-			view : [0, 250]
-		}],
+				type : ".#time:day",
+				view : [start, end],
+				variable : "independent",
+				scalemode : "fit"
+			},
+			{ type : "impression" }, 
+			{ type : "click" },
+			{ type : "conversion" },
+			{
+				type : "other",
+				view : [0, 500]
+			}
+		],
 		data : mathData,
 		options : {
 			segmenton : "event",
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
-			},
-			label : {
-				datapointover : function(dp) { 
-					return dp.event + ": " + ReportGrid.format(dp["count"]); 
-				},
-//				axis : function(name) { return ReportGrid.humanize(name); }
-			},
+			label : { datapointover : function(dp) { return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
 			click : function(dp) { alert(dp[".browser"]); },
-			height: 200,
-			symbol : function(ds, stats) {
-				return ReportGrid.symbol.get("circle", 20);
-			},
-			line : {
-//				interpolation : "cardinal",
-				effect : "gradient"
-			}
+			height: 200
 		}
 	});
 	
 	ReportGrid.barChart("#chart2", {
 		axes : [{
-			type : ".#time:day",
-			view : [start, end],
-			variable : "independent",
-			scalemode : "fit"
-		}, {
-			type : "impression"
-		}, {
-			type : "click"
-		}, {
-			type : "conversion"
-		}, {
-			type : "other"
-		}],
+				type : ".#time:day",
+				view : [start, end],
+				variable : "independent",
+				scalemode : "fit"
+			}, 
+			{ type : "impression" }, 
+			{ type : "click" },
+			{ type : "conversion" },
+			{ type : "other" }
+		],
 		data : mathData,
 		options : {
 			segmenton : "event",
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
-			},
-			label : {
-				datapointover : function(dp) { 
-					return dp.event + ": " + ReportGrid.format(dp["count"]); 
-				},
-//				axis : function(name) { return ReportGrid.humanize(name); }
-			},
+			label : { datapointover : function(dp) {  return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
 			click : function(dp) { alert(dp[".browser"]); },
 			height: 200,
-			symbol : function(ds, stats) {
-				return ReportGrid.symbol.get("circle", 20);
-			},
-			line : {
-//				interpolation : "cardinal",
-				effect : "gradient"
-			},
 			stacked : false,
 			effect : "none"
 		}
@@ -200,17 +150,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		data : ageGenderData,
 		options : {
 			height : 120,
-			line : {
-				interpolation : "linear"
-			},
-			label : {
-				datapointover : function(dp) { 
-					return ReportGrid.format(dp["count"]); 
-				},
-				axis : function(name) { return ReportGrid.humanize(name); }
-			},
-			displayarea : true,
-			displayanchorline : function(v) { return v == 'age' }
+			label : { datapointover : function(dp) {  return ReportGrid.format(dp["count"]);  }, axis : function(name) { return ReportGrid.humanize(name); } },
+			displayanchorlinetick : function(v) { return v == 'age' }
 		}
 	});
 	
@@ -228,18 +169,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		data : ageGenderData,
 		options : {
 			height : 120,
-			line : {
-				interpolation : "linear"
-			},
 			label : {
-				datapointover : function(dp, s) { 
-					return ReportGrid.format(100 * dp["count"] / s.tot, "P"); 
-				},
+				datapointover : function(dp, s) {  return ReportGrid.format(100 * dp["count"] / s.tot, "P");  },
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			displayarea : true,
 			stacked : false,
-			displayanchorline : function(v) { return v == 'age' }
+			displayanchorlinetick : function(v) { return v == 'age' }
 		}
 	});
 
@@ -270,16 +205,11 @@ document.addEventListener("DOMContentLoaded", function(){
 			height : 120,
 			label : {
 				title : "Interests by Age Groups",
-				datapointover : function(dp, s) { 
-					return dp["age"] + ": " + dp["interest"]; 
-				},
+				datapointover : function(dp, s) { return dp["age"] + ": " + dp["interest"];  },
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			displayarea : true,
-			line : { effect : "none" },
-			symbol : ReportGrid.symbol.get("circle", 36),
 			titleontop : true,
-			displayanchorline : function(v) { return v == 'age' }
+			displayanchorlinetick : function(v) { return v == 'age' }
 		}
 	});
 }, false)

@@ -28,8 +28,8 @@ using Arrays;
 
 class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 {
-	public var symbol : DataPoint -> Stats -> String;
-	public var symbolStyle : DataPoint -> Stats -> String;
+	public var symbol : DataPoint -> Stats<Dynamic> -> String;
+	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
 
 	var chart : Selection;
 	var dps : Array<Array<DataPoint>>;
@@ -151,7 +151,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		};
 	}
 	
-	function onmouseover(stats : Stats, n : js.Dom.HtmlDom, i : Int)
+	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
 	{
 		var dp = Access.getData(n),
 			text = labelDataPointOver(dp, stats);
@@ -167,7 +167,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		}
 	}
 	
-	function onclick(stats : Stats, dp : DataPoint, i : Int)
+	function onclick(stats : Stats<Dynamic>, dp : DataPoint, i : Int)
 	{
 		click(dp, stats);
 	}

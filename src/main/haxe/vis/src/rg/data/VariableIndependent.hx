@@ -7,6 +7,7 @@ package rg.data;
 
 class VariableIndependent<T> extends Variable<T, IAxisDiscrete<T>>
 {
+/*
 	public static function forTime(type : String, periodicity : String, scaleDistribution : Null<ScaleDistribution>, ?min : Float, ?max : Float)
 	{
 		var axis = new AxisTime(periodicity);
@@ -18,6 +19,7 @@ class VariableIndependent<T> extends Variable<T, IAxisDiscrete<T>>
 		var axis = new AxisOrdinal(values);
 		return new VariableIndependent(type, axis, scaleDistribution, axis.first, axis.last);
 	}
+*/
 /*	
 	public var axis(default, null) : IAxisDiscrete<T>;
 	public function new(type : String, axis : IAxisDiscrete<T>, scaleDistribution : Null<ScaleDistribution>, ?min : T, ?max : T) 

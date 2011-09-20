@@ -7,6 +7,7 @@ package rg.util;
 
 import haxe.Md5;
 import rg.data.DataPoint;
+import rg.data.Stats;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
 import thx.collection.HashList;
@@ -77,8 +78,15 @@ class DataPoints
 		return (null == (v = Reflect.field(dp, property))) ? alt : v;
 	}
 	
-	public static function stats(dps : Array<DataPoint>, property : String) 
+	public static function values(dps : Array<DataPoint>, property : String)
 	{
+		return dps.map(function(dp, _) return value(dp, property)).filter(function(d) return d != null);
+	}
+	
+//	public static function stats(dps : Array<DataPoint>, property : String)
+//	{
+//		return new Stats().addMany(dps.map(function(dp, _) return value(dp, property)).filter(function(d) return d != null));
+/*
 		var min = Math.POSITIVE_INFINITY,
 			max = Math.NEGATIVE_INFINITY,
 			tot = 0.0;
@@ -100,7 +108,8 @@ class DataPoints
 			max : max,
 			tot : tot
 		};
-	}
+*/
+//	}
 	
 	public static function id(dp : DataPoint, dependentProperties : Array<String>)
 	{

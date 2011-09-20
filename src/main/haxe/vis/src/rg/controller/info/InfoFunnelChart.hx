@@ -15,7 +15,7 @@ class InfoFunnelChart
 	public var animation : InfoAnimation;
 	public var label : InfoLabelFunnel;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
-	public var click : DataPoint -> Stats -> Void;
+	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var padding : Float;
 	public var flatness : Float;
 	public var effect : GradientEffect;

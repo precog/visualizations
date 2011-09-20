@@ -12,8 +12,8 @@ import rg.data.IAxis;
 class InfoLabel 
 {
 	public var title : Array<Variable<Dynamic, IAxis<Dynamic>>> -> Array<DataPoint> -> String;
-	public var datapoint : DataPoint -> Stats -> String;
-	public var datapointover : DataPoint -> Stats -> String;
+	public var datapoint : DataPoint -> Stats<Dynamic> -> String;
+	public var datapointover : DataPoint -> Stats<Dynamic> -> String;
 	
 	public function new() { }
 	

@@ -90,20 +90,17 @@ $(function(){
 			property : "os",
 			options : {
 				displayrules : function(type) { return type == 'count' }
-//				label : { datapointover : label.sourceType }
 			}
 		});
 		
 		ReportGrid.leaderBoard("#browsers", {
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
-			property : "browser",
-//			options : { label : { datapoint : label.sourceType, datapointover : label.sourceTypePercent } }
+			property : "browser"
 		});
 		
 		ReportGrid.lineChart("#browserstime", {
 			path : path, event : "case", start : start, end : end,
-			property : "browser",
-//			options : { label : { datapointover : label.sourceType } }
+			property : "browser"
 		});
 		executeFilterBased();
 	}
@@ -162,11 +159,10 @@ $(function(){
 					return d;
 				}
 			},
-//			path : path, event : "case", start : start, end : end,
 			periodicity : "hour", groupby : "week",
 			property : "sourceType",
 			options : {
-				label : { datapointover : label.sourceTypePercent },
+				label : { datapointover : label.sourceType },
 				barpadding : 3
 			}
 		});
@@ -184,7 +180,7 @@ $(function(){
 	}
 	
 	function setPath() { path = $('#path').val(); }
-	function setUtc() { utc = $('#timezone').val(); }
+	function setUtc()  { utc = $('#timezone').val(); }
 	function setDays() { $('.dayfilter').each(function(i, d) { days[i] = d.checked; }); }
 	
 	$('#path').change(function() {
@@ -199,7 +195,7 @@ $(function(){
 		}
 	})
 	$('#timezone').change(function (){
-		utc = $('.timezone').val();
+		setUtc();
 		delay(executeFilterBased);
 	});
 	$('.dayfilter').change(function (){

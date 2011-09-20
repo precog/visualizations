@@ -93,7 +93,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	var rows : Int;
 	var w : Float;
 	var h : Float;
-	var stats : Stats;
+	var stats : Stats<Dynamic>;
 	var levels : Int;
 	
 	function x(dp, i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w

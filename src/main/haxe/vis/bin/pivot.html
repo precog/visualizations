@@ -8,43 +8,20 @@
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
 	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
-<!--
-	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
--->
-	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
-<!--
-	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
--->
 	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.pivotTable("#chart", {
-		axes : [{
-			type: ".ageRange"
-		}, {
-			type: ".gender"
-		}/*, {
-			type: ".#time:week",
-			view : ["4 weeks ago", "now"]
-		}*/, {
-			type: "count"
-		}],
+		axes : [
+			{ type: ".browser" },
+			{ type: ".os" },
+			{ type: "count" }
+		],
 		data : {
-			src: { path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "impression", query : ".ageRange * .gender" /* * .#time:week */ }
+			src: { path : "/snapEngage/11155847/bf7337a6-6c7f-4ff9-8e50-a7bb771c036a/", event : "case", query : ".browser * .os" /* * .#time:week */ }
 		},
-		options : {
-			columnaxes : 1,
-			startcolor : "#ff0000",
-			endcolor : "#000000",
-			displayheatmap : true,
-			click : function(dp) { alert(ReportGrid.dump(dp)) }
-		}
+		options : { click : function(dp) { alert(ReportGrid.dump(dp)) } }
 	});
 
 }, false)

@@ -17,9 +17,9 @@ class Chart extends Layer
 	public var animated : Bool;
 	public var animationDuration : Int;
 	public var animationEase : Float -> Float;
-	public var click : DataPoint -> Stats -> Void;
-	public var labelDataPoint : DataPoint -> Stats -> String;
-	public var labelDataPointOver : DataPoint -> Stats -> String;
+	public var click : DataPoint -> Stats<Dynamic> -> Void;
+	public var labelDataPoint : DataPoint -> Stats<Dynamic> -> String;
+	public var labelDataPointOver : DataPoint -> Stats<Dynamic> -> String;
 	
 	var panelx : Float;
 	var panely : Float;

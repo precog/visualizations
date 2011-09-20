@@ -44,7 +44,7 @@ class PieChart extends Chart
 	var arcBig : Arc<{ startAngle : Float, endAngle : Float }>;
 	var pie : Pie<Float>;
 	var radius : Float;
-	var stats : { min : Float, max : Float, tot : Float };
+	var stats : Stats<Dynamic>;
 	var variableDependent : VariableDependent<Dynamic>;
 	public var gradientLightness : Float;
 	public var displayGradient : Bool;

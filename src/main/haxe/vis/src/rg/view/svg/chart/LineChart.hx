@@ -28,8 +28,8 @@ using Arrays;
 
 class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 {
-	public var symbol : DataPoint -> Stats -> String;
-	public var symbolStyle : DataPoint -> Stats -> String;
+	public var symbol : DataPoint -> Stats<Dynamic> -> String;
+	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
 	public var lineInterpolator : LineInterpolator;
 	public var lineEffect : LineEffect;
 	public var y0property : String;
@@ -138,7 +138,8 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		{
 			segments = dps[i];
 			var gi = chart.select("g.group-" + i),
-				stats = DataPoints.stats(segments.flatten(), yVariables[i].type);
+				stats = new Stats();
+			stats.addMany(DataPoints.values(segments.flatten(), yVariables[i].type));
 			// TODO add id function
 			var segmentgroup = gi.selectAll("path.line").data(segments);
 			
@@ -281,7 +282,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		};
 	}
 	
-	function onmouseover(stats : Stats, n : js.Dom.HtmlDom, i : Int)
+	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
 	{
 		var dp = Access.getData(n),
 			text = labelDataPointOver(dp, stats);
@@ -301,7 +302,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		}
 	}
 	
-	function onclick(stats : Stats, dp : DataPoint, i : Int)
+	function onclick(stats : Stats<Dynamic>, dp : DataPoint, i : Int)
 	{
 		click(dp, stats);
 	}

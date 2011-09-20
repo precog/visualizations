@@ -34,7 +34,7 @@ class FunnelChart extends Chart
 	public var displayGradient : Bool;
 	public var gradientLightness : Float;
 	public var arrowSize : Float;
-	public var labelArrow : DataPoint -> Stats -> String;
+	public var labelArrow : DataPoint -> Stats<Dynamic> -> String;
 
 	var variableIndependent : VariableIndependent<Dynamic>;
 	var variableDependent : VariableDependent<Dynamic>;
@@ -55,18 +55,18 @@ class FunnelChart extends Chart
 		labelDataPointOver = defaultLabelDataPointOver;
 	}
 	
-	public function defaultLabelArrow(dp : DataPoint, stats : Stats)
+	public function defaultLabelArrow(dp : DataPoint, stats : Stats<Dynamic>)
 	{
 		var value = Reflect.field(dp, variableDependent.type) / stats.max;
 		return FormatNumber.percent(100 * value, 0);
 	}
 	
-	public function defaultLabelDataPoint(dp : DataPoint, stats : Stats)
+	public function defaultLabelDataPoint(dp : DataPoint, stats : Stats<Dynamic>)
 	{
 		return RGStrings.humanize(DataPoints.value(dp, variableIndependent.type)).split(" ").join("\n");
 	}
 	
-	public function defaultLabelDataPointOver(dp : DataPoint, stats : Stats)
+	public function defaultLabelDataPointOver(dp : DataPoint, stats : Stats<Dynamic>)
 	{
 		return Ints.format(Reflect.field(dp, variableDependent.type));
 	}
@@ -91,12 +91,12 @@ class FunnelChart extends Chart
 	
 	function dpvalue(dp : DataPoint) return DataPoints.value(dp, variableDependent.type)
 	
-	var stats : Stats;
+	var stats : Stats<Dynamic>;
 	var topheight : Float;
 	var h : Float;
 	function scale(value : Dynamic)
 	{
-		return variableDependent.axis.scale(variableDependent.min, variableDependent.max, value);
+		return variableDependent.axis.scale(0, variableDependent.max, value);
 	}
 
 	function next(i : Int) return dpvalue(dps[(i + 1) < dps.length ? i + 1 : i])
@@ -255,7 +255,7 @@ class FunnelChart extends Chart
 		});
 	}
 	
-	function mouseOver(dp : DataPoint, i : Int, stats : Stats)
+	function mouseOver(dp : DataPoint, i : Int, stats : Stats<Dynamic>)
 	{
 		if (null == labelDataPointOver)
 			return;

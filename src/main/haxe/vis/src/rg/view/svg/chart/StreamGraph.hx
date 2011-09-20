@@ -40,7 +40,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	var dps : Array<Array<DataPoint>>;
 	var area : Area<TransformedData>;
 	var transformedData : Array<Array<TransformedData>>;
-	var stats : Stats;
+	var stats : Stats<Dynamic>;
 	var defs : Selection;
 	var maxy : Float;
 	

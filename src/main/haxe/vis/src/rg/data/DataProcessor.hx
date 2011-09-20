@@ -86,22 +86,25 @@ class DataProcessor
 	static function emptyStats() return { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 }
 	static function updateStats(variable : rg.data.Variable<Dynamic, IAxis<Dynamic>>, dps : Array<DataPoint>)
 	{
-		var stats = DataPoints.stats(dps, variable.type);
-		if (stats.min < variable.stats.min)
-			variable.stats.min = stats.min;
-		if (stats.max > variable.stats.max)
-			variable.stats.max = stats.max;
-		variable.stats.tot += stats.tot;
+		variable.stats.addMany(DataPoints.values(dps, variable.type));
+//		var stats = DataPoints.stats(dps, variable.type);
+//		if (stats.min < variable.stats.min)
+//			variable.stats.min = stats.min;
+//		if (stats.max > variable.stats.max)
+//			variable.stats.max = stats.max;
+//		variable.stats.tot += stats.tot;
 	}
 	
 	function preprocess()
 	{
 		// reset stats
 		for (ctx in independentVariables)
-			ctx.variable.stats = emptyStats();
+			ctx.variable.stats.reset();
+//			ctx.variable.stats = emptyStats();
 		
 		for (ctx in dependentVariables)
-			ctx.variable.stats = emptyStats();
+			ctx.variable.stats.reset();
+//			ctx.variable.stats = emptyStats();
 	}
 	
 	function process(data : Array<Array<DataPoint>>)
@@ -140,42 +143,28 @@ class DataProcessor
 	{
 		for (ctx in dependentVariables)
 		{
-			updateStats(ctx.variable, data);
 			if (ctx.partial)
 			{
 				var variable = ctx.variable,
-					values = data.map(function(dp, _) return Reflect.field(dp, variable.type)).filter(function(v) return null != v);
+					values = DataPoints.values(data, variable.type);
 				if (values.length == 0)
 					continue;
-				var value,
-					compare = Dynamics.comparef(value = values[0]);
+
 				if (null == variable.axis)
 				{
 					variable.setAxis(new FactoryAxis().create(
 						variable.type,
-						Std.is(value, Float)
+						Std.is(values[0], Float)
 					));
 				}
+				variable.stats.addMany(values);
+				
 				if (null == variable.min)
-				{
-					variable.min = value;
-					for (j in 1...values.length)
-					{
-						value = values[j];
-						if (compare(variable.min, value) > 0)
-							variable.min = value;
-					}
-				}
+					variable.min = variable.stats.min;
 				if (null == variable.max)
-				{
-					variable.max = value;
-					for (j in 1...values.length)
-					{
-						value = values[j];
-						if (compare(variable.max, value) < 0)
-							variable.max = value;
-					}
-				}
+					variable.max = variable.stats.max;
+			} else {
+				updateStats(ctx.variable, data);
 			}
 			var discrete;
 			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))

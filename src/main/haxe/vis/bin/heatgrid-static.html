@@ -7,17 +7,6 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
-
-	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
-<!--
-	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
--->
 	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -38,72 +27,19 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.heatGrid("#chart1", {
 		axes : [{
 			type : "age",
-			values : ageranges,
 			variable : "independent"
 		}, {
 			type : "height",
-			values : heights,
 			variable : "independent"
-		}, {
-			type : "value",
-			views : [0,1],
-			variable : "dependent"
-		}],
+		}, { type : "value" }],
 		data : [ { src : { data : data } } ],
 		options : {
-			label : {
-				datapointover : function(dp) { 
-					return dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value); 
-				},
-//				axis : function(name) { return ReportGrid.humanize(name); }
-			},
+			label : { datapointover : function(dp) { return dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value); } },
 			click : function(dp) { alert(dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value)); },
 			height: 200,
 			width: 240
 		}
 	});
-/*
-	ReportGrid.heatGrid("#chart2", {
-		axes : [{
-			type : "age",
-			values : ageranges,
-			variable : "independent"
-		}, {
-			type : "height",
-			values : heights,
-			variable : "independent"
-		}, {
-			type : "value",
-			views : [0,1],
-			variable : "dependent"
-		}],
-		data : [ { src : { data : data } } ],
-		options : {
-			label : {
-				datapointover : function(dp) { 
-					return dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value); 
-				},
-//				axis : function(name) { return ReportGrid.humanize(name); }
-			},
-			click : function(dp) { alert(dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value)); },
-			height: 200,
-			width: 240,
-			contour : true,
-			labelangle : function(t) {
-				if(t == "age")
-					return 45;
-				else
-					return null;
-			},
-			labelanchor : function(t) {
-				if(t == "age")
-					return "right";
-				else
-					return null;
-			}
-		}
-	});
-*/
 }, false)
 </script>
 </head>

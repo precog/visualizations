@@ -7,18 +7,6 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-<!--
-	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
--->
-	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
-<!--
-	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
--->
 	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -31,40 +19,25 @@ document.addEventListener("DOMContentLoaded", function(){
 			type : "count"
 		}],
 		data : {
-			src : { data : [{
-				".browser" : "PC",
-				count : 100
-			}, {
-				".browser" : "iOS",
-				count : 80
-			}, {
-				".browser" : "Mac",
-				count : 60
-			}, {
-				".browser" : "Android",
-				count : 50
-			}, {
-				".browser" : "linux",
-				count : 30
-			}, {
-				".browser" : "WebOS",
-				count : 5
-			}] }
-//			src : { path : "/snapEngage/8919535/b152a11d-3f04-4097-aa72-0400464f907a/", event : "impression", query : ".browser" }
+			src : { data : [
+				{ ".browser" : "PC", count : 100 },
+				{ ".browser" : "iOS", count : 80 },
+				{ ".browser" : "Mac", count : 60 },
+				{ ".browser" : "Android", count : 50 },
+				{ ".browser" : "linux", count : 30 },
+				{ ".browser" : "WebOS", count : 5 }
+			]}
 		},
 		options : {
 			animation : {
 				animated : true,
 				duration : 250,
-//				ease : function(f) { return f; },
 				delay : 250
 			},
-			label : {
-				datapoint : function(dp) { return dp[".browser"] + ": " + ReportGrid.format(dp["count"]); }
-			},
+			label : { datapoint : function(dp) { return dp[".browser"] + ": " + ReportGrid.format(dp["count"]); } },
 			click : function(dp) { alert(dp[".browser"]); },
-			sort : function(d1, d2) { return ReportGrid.compare(d2[".browser"], d1[".browser"]); },
-			effect : "gradient-max"
+//			sort : function(d1, d2) { return ReportGrid.compare(d2[".browser"], d1[".browser"]); },
+			effect : "gradient-tot"
 		}
 	});
 

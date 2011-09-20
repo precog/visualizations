@@ -7,17 +7,6 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
-
-	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
-<!--
-	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
--->
 	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -27,13 +16,9 @@ document.addEventListener("DOMContentLoaded", function(){
 			type : "event",
 			values : ['impression', 'click', 'conversion'],
 			variable : "independent"
-		}, {
-			type : "count",
-			view : [0,4]
-		}],
+		}, { type : "count" }],
 		data : [{
-			src : 
-			{ 
+			src :  { 
 				data : [
 					{ event : 'impression', count : 4000000000 }, 
 					{ event : 'click',      count : 2000000000 },
@@ -46,9 +31,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			flatness : 0.001,
 			segmentpadding : 10,
 			arrowsize : 40,
-			click : function(d,s) { 
-				alert(ReportGrid.format(d) + " " + ReportGrid.format(s));
-			}
+			click : function(d,s) { alert(ReportGrid.format(d) + " " + ReportGrid.format(s)); }
 		}
 	});
 	
@@ -58,8 +41,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			values : ['impression', 'click', 'conversion'],
 			variable : "independent"
 		}, {
-			type : "count",
-			view : [0,4]
+			type : "count"
 		}],
 		data : [{
 			src : 
@@ -79,8 +61,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			values : ['impression', 'click', 'conversion', 'multi conversion'],
 			variable : "independent"
 		}, {
-			type : "count",
-			view : [0,125]
+			type : "count"
 		}],
 		data : [{
 			src : 

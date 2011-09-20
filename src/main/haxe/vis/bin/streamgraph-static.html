@@ -7,17 +7,6 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<link rel="stylesheet" type="text/css" href="css/rg-debug2.css"/>
-
-	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
-<!--
-	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
-	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
--->
 	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -54,8 +43,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 		})
 	;
-//	console.log(ReportGrid.dump(data));
-	var alt = 0;
 
 	ReportGrid.streamGraph("#chart1", {
 		axes : [{
@@ -72,42 +59,22 @@ document.addEventListener("DOMContentLoaded", function(){
 		],
 		options : {
 			segmenton : "event",
-			animation : {
-				animated : true,
-				duration : 500,
-				ease : function(f) { return f; },
-				delay : 500
-			},
-			label : {
-				datapointover : function(dp) { 
-					return dp.event + ": " + ReportGrid.format(dp["count"]); 
-				},
-//				axis : function(name) { return ReportGrid.humanize(name); }
-			},
+			label : { datapointover : function(dp) {  return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
 			click : function(dp) { alert(dp.event + ": " + ReportGrid.format(dp.count)); },
-			height: 200,
-			symbol : function(ds, stats) {
-				return ReportGrid.symbol.get("circle", 20);
-			},
-			line : {
-//				interpolation : "cardinal",
-				effect : "gradient"
-			}
+			height: 200
 		}
 	});
 
 	var ageRanges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"];
-//	var ages = ["0-13", "14-15", "16-20", "21-35", "36+"];
+
 	ReportGrid.streamGraph("#chart2", {
 		axes : [{
 			type : "age",
 			values : ageRanges,
-			view : ["0-13", "100+"],
 			variable : "independent"
 		}, {
 			type : "count",
-			view : [0, 40],
-			variable : "dependent"
+			view : [0, 40]
 		}],
 		data : [{
 			src : {
@@ -121,16 +88,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		}],
 		options : {
 			height : 120,
-			line : {
-				interpolation : "linear"
-			},
 			label : {
 				datapointover : function(dp) { 
 					return ReportGrid.format(dp["count"]); 
 				},
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			displayarea : true,
 			effect : "gradienth-1.5"
 		}
 	});
@@ -162,12 +125,9 @@ document.addEventListener("DOMContentLoaded", function(){
 			height : 120,
 			label : {
 				title : "Interests by Age Groups",
-				datapointover : function(dp) { 
-					return dp["age"] + ": " + dp["interest"]; 
-				},
+				datapointover : function(dp) {  return dp["age"] + ": " + dp["interest"];  },
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			displayarea : true,
 			effect : "gradientv-0.5"
 		}
 	});

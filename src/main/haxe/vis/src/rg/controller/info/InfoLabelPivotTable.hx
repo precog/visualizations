@@ -10,8 +10,8 @@ import rg.data.Stats;
 
 class InfoLabelPivotTable extends InfoLabelAxis
 {
-	public var total : Float -> Stats -> String;
-	public var totalover : Float -> Stats -> String;
+	public var total : Float -> Stats<Dynamic> -> String;
+	public var totalover : Float -> Stats<Dynamic> -> String;
 	
 	public static function filters()
 	{

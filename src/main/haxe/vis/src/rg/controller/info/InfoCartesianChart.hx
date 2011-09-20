@@ -12,7 +12,7 @@ class InfoCartesianChart
 {
 	public var animation : InfoAnimation;
 	public var segment : InfoSegment;
-	public var click : DataPoint -> Stats -> Void;
+	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var label : InfoLabelAxis;
 	public var y0property : String;
 	
