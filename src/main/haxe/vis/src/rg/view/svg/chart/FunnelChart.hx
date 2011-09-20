@@ -96,7 +96,7 @@ class FunnelChart extends Chart
 	var h : Float;
 	function scale(value : Dynamic)
 	{
-		return variableDependent.axis.scale(0, variableDependent.max, value);
+		return variableDependent.axis.scale(variableDependent.min, variableDependent.max, value);
 	}
 
 	function next(i : Int) return dpvalue(dps[(i + 1) < dps.length ? i + 1 : i])

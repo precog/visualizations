@@ -8886,7 +8886,7 @@ rg.view.svg.chart.FunnelChart.prototype.stats = null;
 rg.view.svg.chart.FunnelChart.prototype.topheight = null;
 rg.view.svg.chart.FunnelChart.prototype.h = null;
 rg.view.svg.chart.FunnelChart.prototype.scale = function(value) {
-	return this.variableDependent.axis.scale(0,this.variableDependent.max,value);
+	return this.variableDependent.axis.scale(this.variableDependent.min,this.variableDependent.max,value);
 }
 rg.view.svg.chart.FunnelChart.prototype.next = function(i) {
 	return this.dpvalue(this.dps[i + 1 < this.dps.length?i + 1:i]);
@@ -13880,7 +13880,7 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 			if(values.length == 0) continue;
 			if(null == variable.axis) variable.setAxis(new rg.controller.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float)));
 			variable.stats.addMany(values);
-			if(null == variable.min) variable.min = variable.stats.min;
+			if(null == variable.min) variable.min = Std["is"](variable.stats,rg.data.StatsNumeric)?0:variable.stats.min;
 			if(null == variable.max) variable.max = variable.stats.max;
 		} else rg.data.DataProcessor.updateStats(ctx.variable,data);
 		var discrete;

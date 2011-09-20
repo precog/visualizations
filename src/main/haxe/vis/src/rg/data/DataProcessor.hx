@@ -10,6 +10,7 @@ import rg.data.VariableIndependentContext;
 import rg.data.VariableDependentContext;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.DataPoints;
+import rg.data.Stats;
 using Arrays;
 
 class DataProcessor
@@ -160,7 +161,7 @@ class DataProcessor
 				variable.stats.addMany(values);
 				
 				if (null == variable.min)
-					variable.min = variable.stats.min;
+					variable.min = Std.is(variable.stats, StatsNumeric) ? 0 : variable.stats.min;
 				if (null == variable.max)
 					variable.max = variable.stats.max;
 			} else {
