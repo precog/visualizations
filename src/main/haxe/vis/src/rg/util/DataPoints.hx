@@ -45,7 +45,7 @@ class DataPoints
 	{
 		for (variable in variables)
 		{
-			var values = variable.axis.range(variable.min, variable.max);
+			var values = variable.axis.range(variable.minValue(), variable.maxValue());
 			dps = dps.filter(function(dp) {
 				var v = Reflect.field(dp, variable.type);
 				if (null == v)
@@ -85,9 +85,9 @@ class DataPoints
 		
 	public static function id(dp : DataPoint, dependentProperties : Array<String>)
 	{
-		var o = Objects.clone(dp);
+		var cdp = Objects.clone(dp);
 		for (p in dependentProperties)
-			Reflect.deleteField(o, p);
-		return Md5.encode(Dynamics.string(o));
+			Reflect.deleteField(cdp, p);
+		return Md5.encode(Dynamics.string(cdp));
 	}
 }

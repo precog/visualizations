@@ -172,16 +172,14 @@ class Periodicity
 	public static function minForPeriodicityInSeries(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
 	{
 		return Arrays.floatMin(arr, function(d) {
-			var o = Reflect.field(d, periodicity);
-			return Arrays.floatMin(Reflect.fields(o), function(d) return Std.parseFloat(d));
+			return Arrays.floatMin(Reflect.fields(Reflect.field(d, periodicity)), function(d) return Std.parseFloat(d));
 		});
 	}
 	
 	public static function maxForPeriodicityInSeries(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
 	{
 		return Arrays.floatMax(arr, function(d) {
-			var o = Reflect.field(d, periodicity);
-			return Arrays.floatMax(Reflect.fields(o), function(d) return Std.parseFloat(d));
+			return Arrays.floatMax(Reflect.fields(Reflect.field(d, periodicity)), function(d) return Std.parseFloat(d));
 		});
 	}
 	

@@ -68,7 +68,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	function x(d : DataPoint, ?i) 
 	{
 		var value   = DataPoints.value(d, xVariable.type),
-			scaled  = xVariable.axis.scale(xVariable.min, xVariable.max, value),
+			scaled  = xVariable.axis.scale(xVariable.minValue(), xVariable.maxValue(), value),
 			scaledw = scaled * width;
 		return scaledw;
 	}
@@ -83,8 +83,8 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			return function(d : DataPoint, i : Int)
 			{
 				var v1 = DataPoints.value(d, v.type),
-					value   = Std.is(v1, Float) ? (v1 + DataPoints.valueAlt(d, y0, v.min)) : v1,
-					scaled  = v.axis.scale(v.min, v.max, value),
+					value   = Std.is(v1, Float) ? (v1 + DataPoints.valueAlt(d, y0, v.minValue())) : v1,
+					scaled  = v.axis.scale(v.minValue(), v.maxValue(), value),
 					scaledh = scaled * h;
 				return h - scaledh;
 			}
@@ -92,7 +92,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			return function(d : DataPoint, i : Int)
 			{
 				var value   = DataPoints.value(d, v.type),
-					scaled  = v.axis.scale(v.min, v.max, value),
+					scaled  = v.axis.scale(v.minValue(), v.maxValue(), value),
 					scaledh = scaled * h;
 				return h - scaledh;
 			}
@@ -106,8 +106,8 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			v = yVariables[pos];
 		return function(d : DataPoint, i : Int)
 		{
-			var value   = DataPoints.valueAlt(d, y0, v.min),
-				scaled  = v.axis.scale(v.min, v.max, value),
+			var value   = DataPoints.valueAlt(d, y0, v.minValue()),
+				scaled  = v.axis.scale(v.minValue(), v.maxValue(), value),
 				scaledh = scaled * h;
 			return h - scaledh;
 		}

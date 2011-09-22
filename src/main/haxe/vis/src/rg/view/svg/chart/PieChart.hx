@@ -310,13 +310,13 @@ class PieChart extends Chart
 			.attr("d").stringf(arcShape(arcNormal));
 	}
 	
-	function id(o : Dynamic, i : Int) return o.id
+	function id(dp : Dynamic, i : Int) return dp.id
 	
 	function makeid(dp : DataPoint)
 	{
-		var o = Objects.clone(dp);
-		Reflect.deleteField(o, variableDependent.type);
-		return Md5.encode(Dynamics.string(o));
+		var c = Objects.clone(dp);
+		Reflect.deleteField(c, variableDependent.type);
+		return Md5.encode(Dynamics.string(c));
 	}
 	
 	function arcShape(a : Arc<{ startAngle : Float, endAngle : Float }>)

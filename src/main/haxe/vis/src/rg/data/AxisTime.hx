@@ -94,4 +94,15 @@ class AxisTime implements IAxisDiscrete<Float>
 	{
 		return this.scaleDistribution = v;
 	}
+	
+	public function min(stats : Stats<Float>) : Float
+	{
+//		trace("min: " + stats.min + " " + Dates.snap(stats.min, periodicity));
+		return Dates.snap(stats.min, periodicity);
+	}
+	public function max(stats : Stats<Float>) : Float
+	{
+//		trace("max: " + stats.max + " " + Dates.snap(stats.max, periodicity));
+		return Dates.snap(stats.max, periodicity);
+	}
 }

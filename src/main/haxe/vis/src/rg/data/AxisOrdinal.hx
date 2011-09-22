@@ -4,6 +4,7 @@
  */
 
 package rg.data;
+import thx.benchmark.SpeedTest;
 import thx.error.Error;
 import thx.collection.Set;
 import rg.data.ScaleDistribution;
@@ -48,7 +49,11 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 		var s = values.indexOf(start),
 			e = values.indexOf(end);
 		if (s < 0)
+		{
+			trace(start);
+			trace(values);
 			throw new Error("the start bound '{0}' is not part of the acceptable values {1}", [start, values]);
+		}
 		if (e < 0)
 			throw new Error("the end bound '{0}' is not part of the acceptable values {1}", [end, values]);
 		return values.array().slice(s, e + 1);
@@ -83,4 +88,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	{
 		return this.scaleDistribution = v;
 	}
+	
+	public function min(stats : Stats<T>) : T return stats.min
+	public function max(stats : Stats<T>) : T return stats.max
 }

@@ -444,29 +444,29 @@ class Balloon
 			found = 0;
 		}
 
-		var o = null, off = 1.0;
+		var coords = null, off = 1.0;
 		if (0 == diagonal)
 		{
 			connector.style("display").string("none");
 		} else {
 			connector.style("display").string("block");
-			o = {
+			coords = {
 				x0 : off, y0 : off, x1 : off, y1 : off
 			};
 			switch(side)
 			{
 				case 0:
-					o.x1 = tx + off + offset + 2 * roundedCorner;
-					o.y1 = ty + off - roundedCorner;
+					coords.x1 = tx + off + offset + 2 * roundedCorner;
+					coords.y1 = ty + off - roundedCorner;
 				case 1:
-					o.y1 = tx + off + boxWidth + roundedCorner;
-					o.x1 = ty + off + offset + roundedCorner;
+					coords.y1 = tx + off + boxWidth + roundedCorner;
+					coords.x1 = ty + off + offset + roundedCorner;
 				case 2:
-					o.x1 = tx + off + offset + 2 * roundedCorner;
-					o.y1 = ty + off + boxHeight + roundedCorner;
+					coords.x1 = tx + off + offset + 2 * roundedCorner;
+					coords.y1 = ty + off + boxHeight + roundedCorner;
 				case 3:
-					o.y1 = tx + off + - roundedCorner;
-					o.x1 = ty + off + offset + roundedCorner;
+					coords.y1 = tx + off + - roundedCorner;
+					coords.x1 = ty + off + offset + roundedCorner;
 			}
 		}
 		
@@ -476,7 +476,7 @@ class Balloon
 			.selectAll("path").attr("d").string(BalloonShape.shape(boxWidth, boxHeight, roundedCorner, roundedCorner, side, offset));
 		
 		if (0 != diagonal)
-			connector.attr("d").string(side % 2 == 0 ? connectorShapeV.diagonal(o) : connectorShapeH.diagonal(o));
+			connector.attr("d").string(side % 2 == 0 ? connectorShapeV.diagonal(coords) : connectorShapeH.diagonal(coords));
 	}
 	
 	public function show()

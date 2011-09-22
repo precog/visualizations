@@ -8,6 +8,7 @@ import rg.controller.info.InfoVariable;
 import rg.data.AxisTime;
 import rg.data.AxisGroupByTime;
 import rg.data.IAxis;
+import rg.data.Stats;
 import rg.data.VariableIndependent;
 import thx.date.DateParser;
 import thx.error.Error;
@@ -22,29 +23,27 @@ class FactoryVariableIndependent
 		if (null == info.type)
 			return null;
 		var axiscreateer = new FactoryAxis(),
-			axis = axiscreateer.createDiscrete(info.type, info.values, info.groupBy),
-			min = info.min,
-			max = info.max;
-
-		if (null == min && null != info.values)
-			min = Arrays.first(info.values);
-		if (null == max && null != info.values)
-			max = Arrays.last(info.values);
-		if (Std.is(axis, AxisTime))
-		{
-			var periodicity = cast(axis, AxisTime).periodicity;
-			min = null != info.min ? Dates.snap(normalizeTime(info.min), periodicity) : null;
-			max = null != info.max ? Dates.snap(normalizeTime(info.max), periodicity) : null;
-		} else if (Std.is(axis, AxisGroupByTime))
-		{
-			var groupaxis = cast(axis, AxisGroupByTime);
-			min = null != info.min ? info.min : AxisGroupByTime.defaultMin(groupaxis.groupBy);
-			max = null != info.max ? info.max : AxisGroupByTime.defaultMax(groupaxis.groupBy);
-		}
-		var variable = new VariableIndependent(info.type, axis, info.scaleDistribution, min, max);
-		return variable;
+			axis = axiscreateer.createDiscrete(info.type, info.values, info.groupBy);
+		return new VariableIndependent(info.type, axis, info.scaleDistribution, convertBound(axis, info.min), convertBound(axis, info.max));
 	}
 	
+	public static function convertBound(axis : IAxis<Dynamic>, value : Dynamic) : Stats<Dynamic> -> Dynamic
+	{
+		if (null == value || Reflect.isFunction(value))
+			return value;
+		if (Std.is(axis, AxisTime))
+		{
+			if (Std.is(value, Date))
+				value = cast(value, Date).getTime();
+			if (Std.is(value, Float))
+				return function(_) return value;
+			if (Std.is(value, String))
+				return function(_) return DateParser.parse(value).getTime();
+			throw new Error("invalid value '{0}' for time bound", [value]);
+		}
+		return function(_) return value;
+	}
+/*	
 	function normalizeTime(v : Dynamic) : Null<Float>
 	{
 		if (null == v || Std.is(v, Float))
@@ -55,4 +54,5 @@ class FactoryVariableIndependent
 			return DateParser.parse(v).getTime();
 		throw new Error("unable to normalize the value '{0}' into a valid date value", v);
 	}
+*/
 }

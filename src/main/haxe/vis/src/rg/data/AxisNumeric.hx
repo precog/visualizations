@@ -49,4 +49,20 @@ class AxisNumeric implements IAxis<Float>
 			step *= 2; 
 		return step;
 	}
+	
+	public function min(stats : Stats<Float>) : Float
+	{
+		if (stats.min < 0)
+			return stats.min;
+		else
+			return 0.0;
+	}
+	
+	public function max(stats : Stats<Float>) : Float
+	{
+		if (stats.max < 0)
+			return 0.0;
+		else
+			return stats.max;
+	}
 }

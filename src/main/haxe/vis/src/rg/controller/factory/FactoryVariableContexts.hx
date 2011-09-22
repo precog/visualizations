@@ -43,11 +43,11 @@ class FactoryVariableContexts
 			if (moveon)
 				continue;
 			v = independentFactory.create(i);
-			if (null != (ordinal = Types.as(v, AxisOrdinal)))
+			if (null != (ordinal = Types.as(v.axis, AxisOrdinal)))
 			{
 				ctx = new VariableIndependentContext(v, ordinal.values == null || 0 == ordinal.values.length);
 			} else {
-				ctx = new VariableIndependentContext(v, null == v.max || null == v.min );
+				ctx = new VariableIndependentContext(v, false);
 			}
 			result.push(ctx);
 		}
@@ -68,13 +68,16 @@ class FactoryVariableContexts
 			if (moveon)
 				continue;
 
-			var isnumeric = null != i.min ? Std.is(i.min, Float) : (i.max ? Std.is(i.max, Float) : false),
-				v = dependentFactory.create(i, isnumeric);
+			var //isnumeric = null != i.min ? Std.is(i.min, Float) : (i.max ? Std.is(i.max, Float) : false),
+				v = dependentFactory.create(i, null/*isnumeric*/);
 			result.push(new VariableDependentContext(v, 
-				   null == v.max 
-				|| null == v.min
-				|| null == v.axis
-				|| (null != (ordinal = Types.as(v, AxisOrdinal)) && 0 == ordinal.values.length)));
+//				   null == v.max 
+//				|| null == v.min
+//				|| 
+
+				null == v.axis
+				|| (null != (ordinal = Types.as(v.axis, AxisOrdinal)) && 0 == ordinal.values.length)
+				));
 		}
 		return result;
 	}

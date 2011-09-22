@@ -45,7 +45,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 	function x(d : DataPoint, ?i) 
 	{
 		var value   = DataPoints.value(d, xVariable.type),
-			scaled  = xVariable.axis.scale(xVariable.min, xVariable.max, value),
+			scaled  = xVariable.axis.scale(xVariable.minValue(), xVariable.maxValue(), value),
 			scaledw = scaled * width;
 		return scaledw;
 	}
@@ -57,7 +57,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		return function(d : DataPoint, i : Int)
 		{
 			var value   = DataPoints.value(d, v.type),
-				scaled  = v.axis.scale(v.min, v.max, value),
+				scaled  = v.axis.scale(v.minValue(), v.maxValue(), value),
 				scaledh = scaled * h;
 			return h - scaledh;
 		}

@@ -9,13 +9,13 @@ import thx.error.Error;
 
 class Info 
 {
-	public static function feed<T>(info : T, o : { }) : T
+	public static function feed<T>(info : T, ob : { }) : T
 	{
 		var cl = Type.getClass(info),
 			method = Reflect.field(cl, "filters");
 		if (null == method)
 		{
-			Objects.copyTo(o, info);
+			Objects.copyTo(ob, info);
 			return info;
 		}
 		
@@ -23,9 +23,9 @@ class Info
 			value : Dynamic;
 		for (filter in filters)
 		{
-			if (Reflect.hasField(o, filter.field))
+			if (Reflect.hasField(ob, filter.field))
 			{
-				if (null != filter.validator && !filter.validator(value = Reflect.field(o, filter.field)))
+				if (null != filter.validator && !filter.validator(value = Reflect.field(ob, filter.field)))
 					throw new Error("the parameter '{0}' can't have value '{1}'", [filter.field, value]);
 
 				var items = null == filter.filter ? [ { field : filter.field, value : value } ] : filter.filter(value);

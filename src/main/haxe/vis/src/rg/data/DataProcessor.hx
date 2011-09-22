@@ -61,17 +61,12 @@ class DataProcessor
 		}
 		return true;
 	}
-	
+
 	function preprocess()
 	{
-		// reset stats
-		for (ctx in independentVariables)
-			ctx.variable.stats.reset();
-		
-		for (ctx in dependentVariables)
-			ctx.variable.stats.reset();
+
 	}
-	
+
 	function process(data : Array<Array<DataPoint>>)
 	{
 		if (null == data || data.length == 0 || data[0].length == 0)
@@ -101,6 +96,7 @@ class DataProcessor
 			dataPoints = dataPoints.concat(transformed);
 		}
 		fillDependentVariables(dataPoints);
+		
 		onData.dispatch(dataPoints);
 	}
 
@@ -108,10 +104,21 @@ class DataProcessor
 	{
 		for (ctx in dependentVariables)
 		{
+			var variable = ctx.variable,
+				values = DataPoints.values(data, variable.type);
+			if (values.length == 0)
+				continue;
+			if (null == variable.axis)
+			{
+				variable.setAxis(new FactoryAxis().create(
+					variable.type,
+					Std.is(values[0], Float)
+				));
+			}
+			variable.stats.addMany(values);
+			/*
 			if (ctx.partial)
 			{
-				var variable = ctx.variable,
-					values = DataPoints.values(data, variable.type);
 				if (values.length == 0)
 					continue;
 
@@ -122,15 +129,13 @@ class DataProcessor
 						Std.is(values[0], Float)
 					));
 				}
-				variable.stats.addMany(values);
 				
-				if (null == variable.min)
-					variable.min = variable.stats.isNumeric ? 0 : variable.stats.min;
-				if (null == variable.max)
-					variable.max = variable.stats.max;
-			} else {
-				ctx.variable.stats.addMany(DataPoints.values(data, ctx.variable.type));
+//				if (null == variable.min)
+//					variable.min = variable.stats.isNumeric ? 0 : variable.stats.min;
+//				if (null == variable.max)
+//					variable.max = variable.stats.max;
 			}
+			*/
 			var discrete;
 			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
 			{
@@ -146,6 +151,7 @@ class DataProcessor
 			flatten = data.flatten();
 		for (ctx in independentVariables)
 		{
+			ctx.variable.stats.addMany(DataPoints.values(flatten, ctx.variable.type));
 			if (ctx.partial)
 				toprocess = true;
 			var discrete;
@@ -167,7 +173,6 @@ class DataProcessor
 	
 	function fillIndependentVariable(variable : VariableIndependent<Dynamic>, data : Array<DataPoint>)
 	{
-		variable.stats.addMany(DataPoints.values(data, variable.type));
 		var ordinal = Types.as(variable.axis, AxisOrdinal);
 		if (null != ordinal)
 		{
@@ -175,15 +180,15 @@ class DataProcessor
 				ordinal.values = Set.ofArray(variable.stats.values);
 		}
 		
-		if (null == variable.min)
-			variable.min = variable.stats.min;
+//		if (null == variable.min)
+//			variable.min = variable.stats.min;
 			
-		if (null == variable.max)
-			variable.max = variable.stats.max;
+//		if (null == variable.max)
+//			variable.max = variable.stats.max;
 	}
 	
 	function getVariableIndependentValues()
 	{
-		return independentVariables.map(function(d, i) return d.variable.axis.range(d.variable.min, d.variable.max)).product();
+		return independentVariables.map(function(d, i) return d.variable.axis.range(d.variable.minValue(), d.variable.maxValue())).product();
 	}
 }

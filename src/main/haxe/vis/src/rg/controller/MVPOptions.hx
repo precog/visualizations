@@ -36,7 +36,7 @@ class MVPOptions
 		}
 	}
 	
-	public static function complete(executor : IExecutorReportGrid, o : Dynamic, handler : Dynamic -> Void) 
+	public static function complete(executor : IExecutorReportGrid, opt : Dynamic, handler : Dynamic -> Void) 
 	{
 		var start = null,
 			end = null,
@@ -51,43 +51,43 @@ class MVPOptions
 
 		// capture defaults
 		// grouping
-		if (null != o.groupby)
+		if (null != opt.groupby)
 		{
-			groupby = o.groupby;
-			Reflect.deleteField(o, "groupby");
-			if (null != o.groupfilter)
+			groupby = opt.groupby;
+			Reflect.deleteField(opt, "groupby");
+			if (null != opt.groupfilter)
 			{
-				groupfilter = o.groupfilter;
-				Reflect.deleteField(o, "groupfilter");
+				groupfilter = opt.groupfilter;
+				Reflect.deleteField(opt, "groupfilter");
 			}
 		}
 		// property
-		if (null != o.property)
+		if (null != opt.property)
 		{
-			property = (o.property.substr(0, 1) == '.' ? '' : '.') + o.property;
-			Reflect.deleteField(o, "property");
+			property = (opt.property.substr(0, 1) == '.' ? '' : '.') + opt.property;
+			Reflect.deleteField(opt, "property");
 		}
 		
 		// start/end
-		if (null != o.start)
+		if (null != opt.start)
 		{
-			start = timestamp(o.start);
-			Reflect.deleteField(o, "start");
+			start = timestamp(opt.start);
+			Reflect.deleteField(opt, "start");
 		}
-		if (null != o.end)
+		if (null != opt.end)
 		{
-			end = timestamp(o.end);
-			Reflect.deleteField(o, "end");
+			end = timestamp(opt.end);
+			Reflect.deleteField(opt, "end");
 		}
 		
-		if (null != o.periodicity)
+		if (null != opt.periodicity)
 		{
-			periodicity = o.periodicity;
-			Reflect.deleteField(o, "periodicity");
+			periodicity = opt.periodicity;
+			Reflect.deleteField(opt, "periodicity");
 		} else if (null != start) {
 			periodicity = Periodicity.defaultPeriodicity(end - start);
 		} else {
-			periodicity = switch(o.options.visualization) { case "piechart": "eternity"; default: "day"; };
+			periodicity = switch(opt.options.visualization) { case "piechart": "eternity"; default: "day"; };
 		}
 		
 		if (null == start && "eternity" != periodicity)
@@ -98,85 +98,85 @@ class MVPOptions
 		}
 
 		// path
-		if (null != o.path)
+		if (null != opt.path)
 		{
-			path = o.path;
-			Reflect.deleteField(o, "path");
+			path = opt.path;
+			Reflect.deleteField(opt, "path");
 		}
 		
 		// event/events
-		if (null != o.events)
+		if (null != opt.events)
 		{
-			events = o.events;
-			Reflect.deleteField(o, "events");
+			events = opt.events;
+			Reflect.deleteField(opt, "events");
 		}
-		if (null != o.event)
+		if (null != opt.event)
 		{
-			events = [o.event];
-			Reflect.deleteField(o, "event");
+			events = [opt.event];
+			Reflect.deleteField(opt, "event");
 		}
 		
 		// query
-		if (null != o.query)
+		if (null != opt.query)
 		{
-			query = o.query;
-			Reflect.deleteField(o, "query");
+			query = opt.query;
+			Reflect.deleteField(opt, "query");
 			// TODO this may not work correctly if time is not the last condition in the query
 			if (Properties.isTime(query))
 				periodicity = Properties.periodicity(query);
 		} else
-			query = buildQuery(o.options.visualization, property, periodicity);
+			query = buildQuery(opt.options.visualization, property, periodicity);
 
 		// ensure events
-		chain.addAction(function(o : Dynamic, handler : Dynamic -> Void)
+		chain.addAction(function(opt : Dynamic, handler : Dynamic -> Void)
 		{
-			if (null == o.data && events.length == 0)
+			if (null == opt.data && events.length == 0)
 			{
 				executor.children(path, { type : "property" }, function(arr) {
 					events = arr;
-					handler(o);
+					handler(opt);
 				});
 			} else
-				handler(o);
+				handler(opt);
 		});
 		
 		// ensure data
-		chain.addAction(function(o : Dynamic, handler : Dynamic -> Void)
+		chain.addAction(function(opt : Dynamic, handler : Dynamic -> Void)
 		{
-			if (null == o.data)
+			if (null == opt.data)
 			{
 				var src = [];
-				o.data = [{ src : src }];
+				opt.data = [{ src : src }];
 				for (event in events)
 				{
-					var o = { path : path, event : event, query : query };
+					var opt = { path : path, event : event, query : query };
 					if (null != start)
 					{
-						Reflect.setField(o, "start", start);
-						Reflect.setField(o, "end", end);
+						Reflect.setField(opt, "start", start);
+						Reflect.setField(opt, "end", end);
 					}
 					if (null != groupby)
 					{
-						Reflect.setField(o, "groupby", groupby);
+						Reflect.setField(opt, "groupby", groupby);
 						if (null != groupfilter)
 						{
-							Reflect.setField(o, "groupfilter", groupfilter);
+							Reflect.setField(opt, "groupfilter", groupfilter);
 						}
 					}
-					src.push( o );
+					src.push( opt );
 				}
-				if (null == o.options.segmenton)
-					o.options.segmenton = null == property ? "event" : property;
+				if (null == opt.options.segmenton)
+					opt.options.segmenton = null == property ? "event" : property;
 			}
-			handler(o);
+			handler(opt);
 		});
 		
 		// ensure axes
-		chain.addAction(function(o : Dynamic, handler : Dynamic -> Void)
+		chain.addAction(function(opt : Dynamic, handler : Dynamic -> Void)
 		{
-			if (null == o.axes)
+			if (null == opt.axes)
 			{
-				switch(o.options.visualization)
+				switch(opt.options.visualization)
 				{
 					default:
 						var axis : Dynamic = if (null != groupby)
@@ -184,21 +184,21 @@ class MVPOptions
 						else {
 							cast { type : ".#time:" + periodicity };
 						}
-						switch(o.options.visualization)
+						switch(opt.options.visualization)
 						{
 							case "barchart":
 								axis.scalemode = "fit";
 						}
-						o.axes = [axis];
+						opt.axes = [axis];
 				}
 			}
-			handler(o);
+			handler(opt);
 		});
 		
 		// ensure axes have an dependent variable
-		chain.addAction(function(o : Dynamic, handler : Dynamic -> Void)
+		chain.addAction(function(opt : Dynamic, handler : Dynamic -> Void)
 		{
-			var axes : Array<Dynamic> = o.axes,
+			var axes : Array<Dynamic> = opt.axes,
 				hasdependent = false;
 			for (axis in axes)
 			{
@@ -206,28 +206,28 @@ class MVPOptions
 					hasdependent = true;
 			}
 			if (!hasdependent)
-				o.axes.push({ type : "count" });
-			handler(o);
+				opt.axes.push({ type : "count" });
+			handler(opt);
 		});
 		
 		// ensure labels
-		chain.addAction(function(o : Dynamic, handler : Dynamic -> Void)
+		chain.addAction(function(opt : Dynamic, handler : Dynamic -> Void)
 		{
-			if (null == o.options.label)
+			if (null == opt.options.label)
 			{
-				switch(o.options.visualization)
+				switch(opt.options.visualization)
 				{
 					case "linechart", "barchart":
-						var axes : Array<Dynamic> = o.axes,
+						var axes : Array<Dynamic> = opt.axes,
 							type = axes[axes.length - 1].type;
-						o.options.label = {
+						opt.options.label = {
 							datapointover : function(dp, stats) {
 								return
 									Properties.humanize(
 										null != property 
 										? DataPoints.value(dp, property)
-										: null != o.options.segmenton
-										? DataPoints.value(dp, o.options.segmenton)
+										: null != opt.options.segmenton
+										? DataPoints.value(dp, opt.options.segmenton)
 										: type
 									) + ": " + 
 									RGStrings.humanize(DataPoints.value(dp, type))
@@ -235,9 +235,9 @@ class MVPOptions
 							}
 						};
 					case "piechart":
-						var axes : Array<Dynamic> = o.axes,
+						var axes : Array<Dynamic> = opt.axes,
 							type = axes[axes.length - 1].type;
-						o.options.label = {
+						opt.options.label = {
 							datapoint : function(dp, stats) {
 								var v = DataPoints.value(dp, type);
 								return
@@ -259,9 +259,9 @@ class MVPOptions
 							}
 						};
 					case "leaderboard":
-						var axes : Array<Dynamic> = o.axes,
+						var axes : Array<Dynamic> = opt.axes,
 							type = axes[axes.length - 1].type;
-						o.options.label = {
+						opt.options.label = {
 							datapointover : function(dp, stats) {
 								var v = DataPoints.value(dp, type);
 								return
@@ -284,9 +284,10 @@ class MVPOptions
 						};
 				}
 			}
-			handler(o);
+			
+			handler(opt);
 		});
 
-		chain.execute(o);
+		chain.execute(opt);
 	}
 }

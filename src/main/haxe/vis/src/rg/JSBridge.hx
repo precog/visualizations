@@ -37,8 +37,8 @@ class JSBridge
 		// define bridge function
 		r.viz = function(el : Dynamic, options : Dynamic, type : String)
 		{
-			var o = chartopt(options, type);
-//			trace(Dynamics.string(o));
+			var copt = chartopt(options, type);
+//			trace(Dynamics.string(copt));
 			function execute(opt : Dynamic)
 			{
 //				trace(Dynamics.string(opt));
@@ -58,7 +58,7 @@ class JSBridge
 					log(Std.string(e));
 				}
 			}
-			MVPOptions.complete(r, o, execute);
+			MVPOptions.complete(r, copt, execute);
 		}
 		
 		// define public visualization constrcutors
@@ -116,12 +116,12 @@ class JSBridge
 		return s;
 	}
 	
-	static inline function opt(o : Dynamic) return null == o ? { } : o
-	static function chartopt(o : Dynamic, viz : String)
+	static inline function opt(ob : Dynamic) return null == ob ? { } : ob
+	static function chartopt(ob : Dynamic, viz : String)
 	{
-		o = opt(o);
-		o.options = opt(o.options);
-		o.options.visualization =  null != viz ? viz : o.options.visualization;
-		return o;
+		ob = opt(ob);
+		ob.options = opt(ob.options);
+		ob.options.visualization =  null != viz ? viz : ob.options.visualization;
+		return ob;
 	}
 }

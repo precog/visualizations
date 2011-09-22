@@ -98,21 +98,21 @@ class DataSourceReportGrid implements IDataSource
 	
 	function basicOptions(appendPeriodicity = true) : Dynamic
 	{
-		var o = { };
+		var opt = { };
 		if (null != timeStart)
-			Reflect.setField(o, "start", timeStart);
+			Reflect.setField(opt, "start", timeStart);
 		if (null != timeEnd)
 		{
 			var e = Periodicity.next(periodicity, timeEnd);
-			Reflect.setField(o, "end", e); // since end is not inclusive we have to extend the query span
+			Reflect.setField(opt, "end", e); // since end is not inclusive we have to extend the query span
 		}
 		if (appendPeriodicity)
 		{
-			Reflect.setField(o, "periodicity", periodicity);
+			Reflect.setField(opt, "periodicity", periodicity);
 			if (null != groupBy)
-				Reflect.setField(o, "groupBy", groupBy);
+				Reflect.setField(opt, "groupBy", groupBy);
 			if (null != timeZone)
-				Reflect.setField(o, "timeZone", timeZone);
+				Reflect.setField(opt, "timeZone", timeZone);
 		}
 			
 		if (where.length > 1)
@@ -123,9 +123,9 @@ class DataSourceReportGrid implements IDataSource
 				w.variable = propertyName(c);
 				w.value = c.value;
 			}
-			Reflect.setField(o, "where", w);
+			Reflect.setField(opt, "where", w);
 		}
-		return o;
+		return opt;
 	}
 	
 	function unit()
@@ -147,31 +147,31 @@ class DataSourceReportGrid implements IDataSource
 			if (periodicity == "eternity")
 			{
 				transform = new TransformCount( { }, event, unit());
-				var o : Dynamic = basicOptions(false);
+				var opt : Dynamic = basicOptions(false);
 				if (where.length > 1)
-					executor.searchCount(path, o, success, error);
+					executor.searchCount(path, opt, success, error);
 				else if (where.length == 1)
 				{
-					o.property = propertyName(exp[0]);
-					o.value = where[0].value;
-					executor.propertyValueCount(path, o, success, error);
+					opt.property = propertyName(exp[0]);
+					opt.value = where[0].value;
+					executor.propertyValueCount(path, opt, success, error);
 				} else {
-					o.property = propertyName(exp[0]);
-					executor.propertyCount(path, o, success, error);
+					opt.property = propertyName(exp[0]);
+					executor.propertyCount(path, opt, success, error);
 				}
 			} else {
 				transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
-				var o : Dynamic = basicOptions(true);
+				var opt : Dynamic = basicOptions(true);
 				if (where.length > 1)
-					executor.searchSeries(path, o, success, error);
+					executor.searchSeries(path, opt, success, error);
 				else if (where.length == 1)
 				{
-					o.property = propertyName(exp[0]);
-					o.value = where[0].value;
-					executor.propertyValueSeries(path, o, success, error);
+					opt.property = propertyName(exp[0]);
+					opt.value = where[0].value;
+					executor.propertyValueSeries(path, opt, success, error);
 				} else {
-					o.property = propertyName(exp[0]);
-					executor.propertySeries(path, o, success, error);
+					opt.property = propertyName(exp[0]);
+					executor.propertySeries(path, opt, success, error);
 				}
 			}
 		} else {
@@ -187,15 +187,15 @@ class DataSourceReportGrid implements IDataSource
 				transform = new TransformIntersectUtc( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
 			else
 				transform = new TransformIntersectTime( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
-			var o = basicOptions(true);
-			o.properties = exp.map(function(p, i) {
+			var opt = basicOptions(true);
+			opt.properties = exp.map(function(p, i) {
 				return {
 					property : propertyName(p),
 					limit : p.limit,
 					order : p.order
 				};
 			});
-			executor.intersect(path, o, success, error);
+			executor.intersect(path, opt, success, error);
 		}
 	}
 	

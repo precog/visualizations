@@ -21,11 +21,11 @@ class ChainedExecutor<T>
 		actions.push(handler);
 	}
 	
-	public function execute(o : T)
+	public function execute(ob : T)
 	{
 		if (actions.length == 0)
-			handler(o);
+			handler(ob);
 		else
-			actions.shift()(o, execute);
+			actions.shift()(ob, execute);
 	}
 }

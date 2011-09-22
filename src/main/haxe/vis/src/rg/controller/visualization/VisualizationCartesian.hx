@@ -125,7 +125,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		{
 			var item = ylabels[i],
 				variable = yvariables[item.id];
-			item.tickmarks.update(variable.axis, variable.min, variable.max);
+			item.tickmarks.update(variable.axis, variable.minValue(), variable.maxValue());
 			var size = Math.round(item.tickmarks.desiredSize);
 			layout.suggestSize("y" + item.id, size);
 		}
@@ -134,13 +134,13 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		{
 			var item = yrules[i],
 				variable = yvariables[item.id];
-			item.rules.update(variable.axis, variable.min, variable.max);
+			item.rules.update(variable.axis, variable.minValue(), variable.maxValue());
 		}
 		
 		if (null != xlabel)
 		{
 			var variable = xvariable;
-			xlabel.update(variable.axis, variable.min, variable.max);
+			xlabel.update(variable.axis, variable.minValue(), variable.maxValue());
 			var size = Math.round(xlabel.desiredSize);
 			layout.suggestSize("x", size);
 		}
@@ -148,7 +148,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		if (null != xrule)
 		{
 			var variable = xvariable;
-			xrule.update(variable.axis, variable.min, variable.max);
+			xrule.update(variable.axis, variable.minValue(), variable.maxValue());
 		}
 		
 		chart.setVariables(independentVariables, dependentVariables);

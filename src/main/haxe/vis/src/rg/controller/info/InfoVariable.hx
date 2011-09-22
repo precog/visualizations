@@ -8,6 +8,7 @@ package rg.controller.info;
 import rg.util.Periodicity;
 import rg.data.DataPoint;
 import rg.data.ScaleDistribution;
+import rg.data.Stats;
 using Arrays;
 
 class InfoVariable extends Info
@@ -80,7 +81,7 @@ class InfoVariable extends Info
 	
 	static function testViewValue(v : Dynamic)
 	{
-		return v == null || Types.isPrimitive(v) || Std.is(v, Date);
+		return v == null || Types.isPrimitive(v) || Std.is(v, Date) || Reflect.isFunction(v);
 	}
 }
 

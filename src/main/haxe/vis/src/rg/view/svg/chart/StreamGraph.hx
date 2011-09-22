@@ -125,10 +125,10 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	function prepareData()
 	{
 		defs.selectAll("linearGradient.h").remove();
-		var xscale = callback(xVariable.axis.scale, xVariable.min, xVariable.max),
+		var xscale = callback(xVariable.axis.scale, xVariable.minValue(), xVariable.maxValue()),
 			xtype = xVariable.type,
 			x = function(d) return xscale(DataPoints.value(d, xtype)),
-			yscale = callback(yVariables[0].axis.scale, yVariables[0].min, yVariables[0].max),
+			yscale = callback(yVariables[0].axis.scale, yVariables[0].minValue(), yVariables[0].maxValue()),
 			ytype = yVariables[0].type,
 			y = function(d) return yscale(DataPoints.value(d, ytype));
 		var coords = dps.map(function(d : Array<DataPoint>, i) {

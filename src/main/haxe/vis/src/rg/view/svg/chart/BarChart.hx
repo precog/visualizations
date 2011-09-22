@@ -86,8 +86,8 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					axisg = getGroup("group-" + j, chart),
 					ytype = yVariables[j].type,
 					yaxis = yVariables[j].axis,
-					ymin = yVariables[j].min,
-					ymax = yVariables[j].max,
+					ymin = yVariables[j].minValue(),
+					ymax = yVariables[j].maxValue(),
 					w = Math.max(1, (waxis - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
 					offset = - span / 2 + j * (waxis + paddingAxis),
 					ystats = yVariables[j].stats,
@@ -101,7 +101,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				{
 					var dp = axisdps[k],
 						seggroup = getGroup("fill-" + k, axisg),
-						x = width * xVariable.axis.scale(xVariable.min, xVariable.max, DataPoints.value(dp, xVariable.type)),
+						x = width * xVariable.axis.scale(xVariable.minValue(), xVariable.maxValue(), DataPoints.value(dp, xVariable.type)),
 						y = prev,
 						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height;
 					var bar = seggroup.append("svg:rect")

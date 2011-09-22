@@ -17,12 +17,12 @@ class FactoryAxis
 {
 	public function new() { }
 	
-	public function create(type : String, isnumeric : Bool, ?samples : Array<Dynamic>) : IAxis<Dynamic>
+	public function create(type : String, isnumeric : Null<Bool>, ?samples : Array<Dynamic>) : IAxis<Dynamic>
 	{
 		if (null != samples)
 		{
 			return new AxisOrdinal(samples);
-		} else if(isnumeric) {
+		} else if(true == isnumeric) {
 			return new AxisNumeric();
 		} else {
 			return null;
