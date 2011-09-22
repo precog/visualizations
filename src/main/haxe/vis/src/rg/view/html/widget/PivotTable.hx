@@ -342,7 +342,7 @@ class PivotTable
 		{
 			variable = columnVariables[i];
 			column_headers.push(variable.type);
-			for (value in variable.range())
+			for (value in range(variable))
 			{
 				columns.push({
 					values : [value],
@@ -359,7 +359,7 @@ class PivotTable
 			columns = [];
 			for (src in tmp)
 			{
-				for (value in variable.range())
+				for (value in range(variable))
 				{
 					var column = Objects.clone(src);
 					column.values.push(value);
@@ -414,7 +414,7 @@ class PivotTable
 		{
 			variable = rowVariables[i];
 			row_headers.push(variable.type);
-			for (value in variable.range())
+			for (value in range(variable))
 			{
 				rows.push({
 					values : [value],
@@ -432,7 +432,7 @@ class PivotTable
 			rows = [];
 			for (src in tmp)
 			{
-				for (value in variable.range())
+				for (value in range(variable))
 				{
 					var row = Objects.clone(src);
 					row.values.push(value);
@@ -501,5 +501,10 @@ class PivotTable
 			rows : rows,
 			stats : tcalc
 		};
+	}
+	
+	function range(variable : VariableIndependent<Dynamic>)
+	{
+		return variable.axis.range(variable.min, variable.max);
 	}
 }

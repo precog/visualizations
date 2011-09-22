@@ -230,7 +230,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	{
 		var v = Types.as(variable, VariableIndependent);
 		if (null != v)
-			return v.range();
+			return v.axis.range(v.min, v.max);
 		var tickmarks = variable.axis.ticks(variable.min, variable.max);
 		return tickmarks.map(function(d, i) return d.value);
 	}

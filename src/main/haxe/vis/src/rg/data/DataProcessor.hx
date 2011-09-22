@@ -212,9 +212,8 @@ class DataProcessor
 		var ordinal = Types.as(variable.axis, AxisOrdinal);
 		if (null != ordinal)
 		{
-			if (null == ordinal.values)
+			if (null == ordinal.values || ordinal.values.length == 0)
 				ordinal.values = Set.ofArray(variable.stats.values);
-			return;
 		}
 		
 		if (null == variable.min)
@@ -226,6 +225,6 @@ class DataProcessor
 	
 	function getVariableIndependentValues()
 	{
-		return independentVariables.map(function(d, i) return d.variable.range()).product();
+		return independentVariables.map(function(d, i) return d.variable.axis.range(d.variable.min, d.variable.max)).product();
 	}
 }

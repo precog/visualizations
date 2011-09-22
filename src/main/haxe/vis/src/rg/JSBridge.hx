@@ -44,6 +44,16 @@ class JSBridge
 //				trace(Dynamics.string(opt));
 				try {
 					app.visualization(select(el), opt);
+				} catch (e : Error) {
+#if release
+					log(e.toString);
+#else
+					var msg = "ERROR AT " + e.toStringError();
+#if debug // stack trace is available
+					msg += "\n\n  " + rg.util.RGStacks.exceptionStack().join("\n  ");
+#end
+					log(msg);
+#end
 				} catch (e : Dynamic) {
 					log(Std.string(e));
 				}
