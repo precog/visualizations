@@ -112,30 +112,13 @@ class DataProcessor
 			{
 				variable.setAxis(new FactoryAxis().create(
 					variable.type,
-					Std.is(values[0], Float)
+					Std.is(values[0], Float),
+					variable,
+					null
 				));
 			}
 			variable.stats.addMany(values);
-			/*
-			if (ctx.partial)
-			{
-				if (values.length == 0)
-					continue;
 
-				if (null == variable.axis)
-				{
-					variable.setAxis(new FactoryAxis().create(
-						variable.type,
-						Std.is(values[0], Float)
-					));
-				}
-				
-//				if (null == variable.min)
-//					variable.min = variable.stats.isNumeric ? 0 : variable.stats.min;
-//				if (null == variable.max)
-//					variable.max = variable.stats.max;
-			}
-			*/
 			var discrete;
 			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
 			{
@@ -147,13 +130,10 @@ class DataProcessor
 	
 	function fillIndependentVariables(data : Array<Array<DataPoint>>)
 	{
-		var toprocess = false,
-			flatten = data.flatten();
+		var flatten = data.flatten();
 		for (ctx in independentVariables)
 		{
 			ctx.variable.stats.addMany(DataPoints.values(flatten, ctx.variable.type));
-			if (ctx.partial)
-				toprocess = true;
 			var discrete;
 			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
 			{
@@ -161,32 +141,8 @@ class DataProcessor
 				ctx.variable.scaleDistribution = null; // reset to avoid multiple assign
 			}
 		}
-		if (toprocess)
-		{
-			for (ctx in independentVariables)
-			{
-				if (ctx.partial)
-					fillIndependentVariable(ctx.variable, flatten);
-			}
-		}
 	}
-	
-	function fillIndependentVariable(variable : VariableIndependent<Dynamic>, data : Array<DataPoint>)
-	{
-		var ordinal = Types.as(variable.axis, AxisOrdinal);
-		if (null != ordinal)
-		{
-			if (null == ordinal.values || ordinal.values.length == 0)
-				ordinal.values = Set.ofArray(variable.stats.values);
-		}
-		
-//		if (null == variable.min)
-//			variable.min = variable.stats.min;
-			
-//		if (null == variable.max)
-//			variable.max = variable.stats.max;
-	}
-	
+
 	function getVariableIndependentValues()
 	{
 		return independentVariables.map(function(d, i) return d.variable.axis.range(d.variable.minValue(), d.variable.maxValue())).product();

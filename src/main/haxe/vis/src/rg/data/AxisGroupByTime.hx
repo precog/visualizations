@@ -6,7 +6,7 @@
 package rg.data;
 import thx.error.Error;
 
-class AxisGroupByTime extends AxisOrdinal<Int>
+class AxisGroupByTime extends AxisOrdinalFixedValues<Int>
 {
 	public function new(groupby : String)
 	{

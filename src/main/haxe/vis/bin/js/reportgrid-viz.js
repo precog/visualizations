@@ -3921,15 +3921,19 @@ rg.controller.factory.FactoryAxis = function(p) {
 	$s.pop();
 }
 rg.controller.factory.FactoryAxis.__name__ = ["rg","controller","factory","FactoryAxis"];
-rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,samples) {
+rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,variable,samples) {
 	$s.push("rg.controller.factory.FactoryAxis::create");
 	var $spos = $s.length;
-	if(null != samples) {
-		var $tmp = new rg.data.AxisOrdinal(samples);
+	if(null != samples && samples.length > 0) {
+		var $tmp = new rg.data.AxisOrdinalFixedValues(samples);
 		$s.pop();
 		return $tmp;
 	} else if(true == isnumeric) {
 		var $tmp = new rg.data.AxisNumeric();
+		$s.pop();
+		return $tmp;
+	} else if(false == isnumeric) {
+		var $tmp = new rg.data.AxisOrdinalStats(variable);
 		$s.pop();
 		return $tmp;
 	} else {
@@ -3938,7 +3942,7 @@ rg.controller.factory.FactoryAxis.prototype.create = function(type,isnumeric,sam
 	}
 	$s.pop();
 }
-rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,samples,groupBy) {
+rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,variable,samples,groupBy) {
 	$s.push("rg.controller.factory.FactoryAxis::createDiscrete");
 	var $spos = $s.length;
 	if(rg.util.Properties.isTime(type)) {
@@ -3951,11 +3955,14 @@ rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,sampl
 			$s.pop();
 			return $tmp;
 		}
-	} else {
-		var $tmp = new rg.data.AxisOrdinal(samples);
+	} else if(null != samples && samples.length > 0) {
+		var $tmp = new rg.data.AxisOrdinalFixedValues(samples);
 		$s.pop();
 		return $tmp;
 	}
+	var $tmp = new rg.data.AxisOrdinalStats(variable);
+	$s.pop();
+	return $tmp;
 	$s.pop();
 }
 rg.controller.factory.FactoryAxis.prototype.__class__ = rg.controller.factory.FactoryAxis;
@@ -4469,11 +4476,10 @@ rg.data.IAxisOrdinal.prototype.allTicks = null;
 rg.data.IAxisOrdinal.prototype.values = null;
 rg.data.IAxisOrdinal.prototype.__class__ = rg.data.IAxisOrdinal;
 rg.data.IAxisOrdinal.__interfaces__ = [rg.data.IAxisDiscrete];
-rg.data.AxisOrdinal = function(arr,set) {
-	if( arr === $_ ) return;
+rg.data.AxisOrdinal = function(p) {
+	if( p === $_ ) return;
 	$s.push("rg.data.AxisOrdinal::new");
 	var $spos = $s.length;
-	if(null != arr) this.setValues(thx.collection.Set.ofArray(arr)); else if(null != set) this.setValues(set); else this.setValues(new thx.collection.Set());
 	this.setScaleDistribution(rg.data.ScaleDistribution.ScaleFit);
 	$s.pop();
 }
@@ -4509,14 +4515,14 @@ rg.data.AxisOrdinal.prototype.ticks = function(start,end,upperBound) {
 rg.data.AxisOrdinal.prototype.range = function(start,end) {
 	$s.push("rg.data.AxisOrdinal::range");
 	var $spos = $s.length;
-	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end);
+	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end);
 	if(s < 0) {
-		haxe.Log.trace(start,{ fileName : "AxisOrdinal.hx", lineNumber : 53, className : "rg.data.AxisOrdinal", methodName : "range"});
-		haxe.Log.trace(this.getValues(),{ fileName : "AxisOrdinal.hx", lineNumber : 54, className : "rg.data.AxisOrdinal", methodName : "range"});
-		throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 55, className : "rg.data.AxisOrdinal", methodName : "range"});
+		haxe.Log.trace(start,{ fileName : "AxisOrdinal.hx", lineNumber : 47, className : "rg.data.AxisOrdinal", methodName : "range"});
+		haxe.Log.trace(this.getValues(),{ fileName : "AxisOrdinal.hx", lineNumber : 48, className : "rg.data.AxisOrdinal", methodName : "range"});
+		throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 49, className : "rg.data.AxisOrdinal", methodName : "range"});
 	}
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 58, className : "rg.data.AxisOrdinal", methodName : "range"});
-	var $tmp = this.getValues().array().slice(s,e + 1);
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 52, className : "rg.data.AxisOrdinal", methodName : "range"});
+	var $tmp = this.getValues().slice(s,e + 1);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4524,10 +4530,10 @@ rg.data.AxisOrdinal.prototype.range = function(start,end) {
 rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisOrdinal::scale");
 	var $spos = $s.length;
-	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end), p = this.getValues()._v.indexOf(v);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 68, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 70, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 72, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end), p = this.getValues().indexOf(v);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 62, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 66, className : "rg.data.AxisOrdinal", methodName : "scale"});
 	var $tmp = rg.data.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
 	$s.pop();
 	return $tmp;
@@ -4536,7 +4542,7 @@ rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
 rg.data.AxisOrdinal.prototype.getFirst = function() {
 	$s.push("rg.data.AxisOrdinal::getFirst");
 	var $spos = $s.length;
-	var $tmp = this.getValues()._v[0];
+	var $tmp = this.getValues()[0];
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4544,7 +4550,7 @@ rg.data.AxisOrdinal.prototype.getFirst = function() {
 rg.data.AxisOrdinal.prototype.getLast = function() {
 	$s.push("rg.data.AxisOrdinal::getLast");
 	var $spos = $s.length;
-	var $tmp = Arrays.last(this.getValues()._v);
+	var $tmp = Arrays.last(this.getValues());
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4552,15 +4558,11 @@ rg.data.AxisOrdinal.prototype.getLast = function() {
 rg.data.AxisOrdinal.prototype.getValues = function() {
 	$s.push("rg.data.AxisOrdinal::getValues");
 	var $spos = $s.length;
-	var $tmp = this.values;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisOrdinal.prototype.setValues = function(v) {
-	$s.push("rg.data.AxisOrdinal::setValues");
-	var $spos = $s.length;
-	var $tmp = this.values = v;
+	var $tmp = (function($this) {
+		var $r;
+		throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 72, className : "rg.data.AxisOrdinal", methodName : "getValues"});
+		return $r;
+	}(this));
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4570,7 +4572,7 @@ rg.data.AxisOrdinal.prototype.getAllTicks = function() {
 	var $spos = $s.length;
 	var t = $closure(this,"toTickmark"), f = this.getFirst(), l = this.getLast();
 	var $tmp = this.range(f,l).map(function(d,i) {
-		$s.push("rg.data.AxisOrdinal::getAllTicks@85");
+		$s.push("rg.data.AxisOrdinal::getAllTicks@78");
 		var $spos = $s.length;
 		var $tmp = t(f,l,d);
 		$s.pop();
@@ -5451,6 +5453,27 @@ thx.culture.Language.add = function(language) {
 	$s.pop();
 }
 thx.culture.Language.prototype.__class__ = thx.culture.Language;
+rg.data.AxisOrdinalStats = function(variable) {
+	if( variable === $_ ) return;
+	$s.push("rg.data.AxisOrdinalStats::new");
+	var $spos = $s.length;
+	rg.data.AxisOrdinal.call(this);
+	this.variable = variable;
+	$s.pop();
+}
+rg.data.AxisOrdinalStats.__name__ = ["rg","data","AxisOrdinalStats"];
+rg.data.AxisOrdinalStats.__super__ = rg.data.AxisOrdinal;
+for(var k in rg.data.AxisOrdinal.prototype ) rg.data.AxisOrdinalStats.prototype[k] = rg.data.AxisOrdinal.prototype[k];
+rg.data.AxisOrdinalStats.prototype.variable = null;
+rg.data.AxisOrdinalStats.prototype.getValues = function() {
+	$s.push("rg.data.AxisOrdinalStats::getValues");
+	var $spos = $s.length;
+	var $tmp = this.variable.stats.values;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinalStats.prototype.__class__ = rg.data.AxisOrdinalStats;
 rg.data.Tickmarks = function() { }
 rg.data.Tickmarks.__name__ = ["rg","data","Tickmarks"];
 rg.data.Tickmarks.bound = function(tickmarks,max) {
@@ -15094,76 +15117,6 @@ rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,
 	$s.pop();
 }
 rg.controller.factory.FactoryHtmlVisualization.prototype.__class__ = rg.controller.factory.FactoryHtmlVisualization;
-rg.data.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
-	if( value === $_ ) return;
-	$s.push("rg.data.TickmarkTime::new");
-	var $spos = $s.length;
-	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
-	this.periodicity = periodicity;
-	$s.pop();
-}
-rg.data.TickmarkTime.__name__ = ["rg","data","TickmarkTime"];
-rg.data.TickmarkTime.__super__ = rg.data.TickmarkOrdinal;
-for(var k in rg.data.TickmarkOrdinal.prototype ) rg.data.TickmarkTime.prototype[k] = rg.data.TickmarkOrdinal.prototype[k];
-rg.data.TickmarkTime.prototype.periodicity = null;
-rg.data.TickmarkTime.prototype.getLabel = function() {
-	$s.push("rg.data.TickmarkTime::getLabel");
-	var $spos = $s.length;
-	var $tmp = rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.TickmarkTime.prototype.__class__ = rg.data.TickmarkTime;
-rg.data.source.rgquery.transform.TransformIntersectUtc = function(properties,fields,event,periodicity,unit) {
-	if( properties === $_ ) return;
-	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::new");
-	var $spos = $s.length;
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TransformIntersectUtc.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectUtc"];
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.unit = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.periodicity = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.fields = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.event = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.transform = function(data) {
-	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::transform");
-	var $spos = $s.length;
-	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-	if(null == items || 0 == items.length) {
-		var $tmp = [];
-		$s.pop();
-		return $tmp;
-	}
-	var result = [];
-	var _g = 0;
-	while(_g < items.length) {
-		var item = items[_g];
-		++_g;
-		var arr = item.value;
-		var _g2 = 0, _g1 = arr.length;
-		while(_g2 < _g1) {
-			var i = _g2++;
-			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Date.fromString(arr[i][0].datetime),arr[i][1]]);
-			p.event = this.event;
-			result.push(p);
-		}
-	}
-	haxe.Log.trace(result,{ fileName : "TransformIntersectUtc.hx", lineNumber : 54, className : "rg.data.source.rgquery.transform.TransformIntersectUtc", methodName : "transform"});
-	$s.pop();
-	return result;
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectUtc;
-rg.data.source.rgquery.transform.TransformIntersectUtc.__interfaces__ = [rg.data.source.ITransform];
 List = function(p) {
 	if( p === $_ ) return;
 	$s.push("List::new");
@@ -15350,6 +15303,76 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
+rg.data.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
+	if( value === $_ ) return;
+	$s.push("rg.data.TickmarkTime::new");
+	var $spos = $s.length;
+	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
+	this.periodicity = periodicity;
+	$s.pop();
+}
+rg.data.TickmarkTime.__name__ = ["rg","data","TickmarkTime"];
+rg.data.TickmarkTime.__super__ = rg.data.TickmarkOrdinal;
+for(var k in rg.data.TickmarkOrdinal.prototype ) rg.data.TickmarkTime.prototype[k] = rg.data.TickmarkOrdinal.prototype[k];
+rg.data.TickmarkTime.prototype.periodicity = null;
+rg.data.TickmarkTime.prototype.getLabel = function() {
+	$s.push("rg.data.TickmarkTime::getLabel");
+	var $spos = $s.length;
+	var $tmp = rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkTime.prototype.__class__ = rg.data.TickmarkTime;
+rg.data.source.rgquery.transform.TransformIntersectUtc = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::new");
+	var $spos = $s.length;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TransformIntersectUtc.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectUtc"];
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.transform = function(data) {
+	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::transform");
+	var $spos = $s.length;
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var arr = item.value;
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Date.fromString(arr[i][0].datetime),arr[i][1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+	}
+	haxe.Log.trace(result,{ fileName : "TransformIntersectUtc.hx", lineNumber : 54, className : "rg.data.source.rgquery.transform.TransformIntersectUtc", methodName : "transform"});
+	$s.pop();
+	return result;
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectUtc;
+rg.data.source.rgquery.transform.TransformIntersectUtc.__interfaces__ = [rg.data.source.ITransform];
 if(!thx.util) thx.util = {}
 thx.util.Message = function(message,params,param) {
 	if( message === $_ ) return;
@@ -15828,15 +15851,12 @@ Enums.compare = function(a,b) {
 	$s.pop();
 }
 Enums.prototype.__class__ = Enums;
-rg.data.Variable = function(type,axis,scaleDistribution,minf,maxf) {
+rg.data.Variable = function(type,scaleDistribution) {
 	if( type === $_ ) return;
 	$s.push("rg.data.Variable::new");
 	var $spos = $s.length;
 	this.type = type;
 	this.scaleDistribution = scaleDistribution;
-	this.setMinF(minf);
-	this.setMaxF(maxf);
-	this.setAxis(axis);
 	$s.pop();
 }
 rg.data.Variable.__name__ = ["rg","data","Variable"];
@@ -15889,7 +15909,7 @@ rg.data.Variable.prototype.getMinF = function() {
 	$s.push("rg.data.Variable::getMinF");
 	var $spos = $s.length;
 	if(null == this.minf) {
-		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 52, className : "rg.data.Variable", methodName : "getMinF"});
+		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 49, className : "rg.data.Variable", methodName : "getMinF"});
 		this.setMinF($closure(this.axis,"min"));
 	}
 	var $tmp = this.minf;
@@ -15901,7 +15921,7 @@ rg.data.Variable.prototype.getMaxF = function() {
 	$s.push("rg.data.Variable::getMaxF");
 	var $spos = $s.length;
 	if(null == this.maxf) {
-		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 65, className : "rg.data.Variable", methodName : "getMaxF"});
+		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 62, className : "rg.data.Variable", methodName : "getMaxF"});
 		this.setMaxF($closure(this.axis,"max"));
 	}
 	var $tmp = this.maxf;
@@ -15910,11 +15930,11 @@ rg.data.Variable.prototype.getMaxF = function() {
 	$s.pop();
 }
 rg.data.Variable.prototype.__class__ = rg.data.Variable;
-rg.data.VariableIndependent = function(type,axis,scaleDistribution,minf,maxf) {
+rg.data.VariableIndependent = function(type,scaleDistribution) {
 	if( type === $_ ) return;
 	$s.push("rg.data.VariableIndependent::new");
 	var $spos = $s.length;
-	rg.data.Variable.call(this,type,axis,scaleDistribution,minf,maxf);
+	rg.data.Variable.call(this,type,scaleDistribution);
 	$s.pop();
 }
 rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
@@ -18841,8 +18861,10 @@ rg.controller.factory.FactoryVariableDependent.prototype.create = function(info,
 	$s.push("rg.controller.factory.FactoryVariableDependent::create");
 	var $spos = $s.length;
 	if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 19, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
-	var axiscreator = new rg.controller.factory.FactoryAxis(), axis = axiscreator.create(info.type,isnumeric,info.values);
-	var variable = new rg.data.VariableDependent(info.type,axis,info.scaleDistribution,rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min),rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.max));
+	var axiscreator = new rg.controller.factory.FactoryAxis(), variable = new rg.data.VariableDependent(info.type,info.scaleDistribution), axis = axiscreator.create(info.type,isnumeric,variable,info.values);
+	variable.setAxis(axis);
+	variable.setMinF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min));
+	variable.setMaxF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.max));
 	$s.pop();
 	return variable;
 	$s.pop();
@@ -19917,7 +19939,7 @@ rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,va
 		}(this))).getTime();
 		if(Std["is"](value,Float)) {
 			var $tmp = function(_) {
-				$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@39");
+				$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@43");
 				var $spos = $s.length;
 				$s.pop();
 				return value;
@@ -19928,7 +19950,7 @@ rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,va
 		}
 		if(Std["is"](value,String)) {
 			var $tmp = function(_) {
-				$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@41");
+				$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@45");
 				var $spos = $s.length;
 				var $tmp = thx.date.DateParser.parse(value).getTime();
 				$s.pop();
@@ -19938,10 +19960,10 @@ rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,va
 			$s.pop();
 			return $tmp;
 		}
-		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 42, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "convertBound"});
+		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 46, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "convertBound"});
 	}
 	var $tmp = function(_) {
-		$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@44");
+		$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@48");
 		var $spos = $s.length;
 		$s.pop();
 		return value;
@@ -19958,10 +19980,12 @@ rg.controller.factory.FactoryVariableIndependent.prototype.create = function(inf
 		$s.pop();
 		return null;
 	}
-	var axiscreateer = new rg.controller.factory.FactoryAxis(), axis = axiscreateer.createDiscrete(info.type,info.values,info.groupBy);
-	var $tmp = new rg.data.VariableIndependent(info.type,axis,info.scaleDistribution,rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min),rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.max));
+	var axiscreateer = new rg.controller.factory.FactoryAxis(), variable = new rg.data.VariableIndependent(info.type,info.scaleDistribution), axis = axiscreateer.createDiscrete(info.type,variable,info.values,info.groupBy);
+	variable.setAxis(axis);
+	variable.setMinF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min));
+	variable.setMaxF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.max));
 	$s.pop();
-	return $tmp;
+	return variable;
 	$s.pop();
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;
@@ -22051,11 +22075,11 @@ thx.js.UpdateSelection.prototype.exit = function() {
 	$s.pop();
 }
 thx.js.UpdateSelection.prototype.__class__ = thx.js.UpdateSelection;
-rg.data.VariableDependent = function(type,axis,scaleDistribution,minf,maxf) {
+rg.data.VariableDependent = function(type,scaleDistribution) {
 	if( type === $_ ) return;
 	$s.push("rg.data.VariableDependent::new");
 	var $spos = $s.length;
-	rg.data.Variable.call(this,type,axis,scaleDistribution,minf,maxf);
+	rg.data.Variable.call(this,type,scaleDistribution);
 	$s.pop();
 }
 rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
@@ -22226,17 +22250,37 @@ rg.view.frame.StackItem.prototype.setDisposition = function(v) {
 	$s.pop();
 }
 rg.view.frame.StackItem.prototype.__class__ = rg.view.frame.StackItem;
+rg.data.AxisOrdinalFixedValues = function(arr) {
+	if( arr === $_ ) return;
+	$s.push("rg.data.AxisOrdinalFixedValues::new");
+	var $spos = $s.length;
+	rg.data.AxisOrdinal.call(this);
+	this.values = arr;
+	$s.pop();
+}
+rg.data.AxisOrdinalFixedValues.__name__ = ["rg","data","AxisOrdinalFixedValues"];
+rg.data.AxisOrdinalFixedValues.__super__ = rg.data.AxisOrdinal;
+for(var k in rg.data.AxisOrdinal.prototype ) rg.data.AxisOrdinalFixedValues.prototype[k] = rg.data.AxisOrdinal.prototype[k];
+rg.data.AxisOrdinalFixedValues.prototype.getValues = function() {
+	$s.push("rg.data.AxisOrdinalFixedValues::getValues");
+	var $spos = $s.length;
+	var $tmp = this.values;
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisOrdinalFixedValues.prototype.__class__ = rg.data.AxisOrdinalFixedValues;
 rg.data.AxisGroupByTime = function(groupby) {
 	if( groupby === $_ ) return;
 	$s.push("rg.data.AxisGroupByTime::new");
 	var $spos = $s.length;
-	rg.data.AxisOrdinal.call(this,rg.data.AxisGroupByTime.valuesByGroup(groupby));
+	rg.data.AxisOrdinalFixedValues.call(this,rg.data.AxisGroupByTime.valuesByGroup(groupby));
 	this.groupBy = groupby;
 	$s.pop();
 }
 rg.data.AxisGroupByTime.__name__ = ["rg","data","AxisGroupByTime"];
-rg.data.AxisGroupByTime.__super__ = rg.data.AxisOrdinal;
-for(var k in rg.data.AxisOrdinal.prototype ) rg.data.AxisGroupByTime.prototype[k] = rg.data.AxisOrdinal.prototype[k];
+rg.data.AxisGroupByTime.__super__ = rg.data.AxisOrdinalFixedValues;
+for(var k in rg.data.AxisOrdinalFixedValues.prototype ) rg.data.AxisGroupByTime.prototype[k] = rg.data.AxisOrdinalFixedValues.prototype[k];
 rg.data.AxisGroupByTime.valuesByGroup = function(groupby) {
 	$s.push("rg.data.AxisGroupByTime::valuesByGroup");
 	var $spos = $s.length;
@@ -24921,7 +24965,7 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 		++_g;
 		var variable = ctx.variable, values = rg.util.DataPoints.values(data,variable.type);
 		if(values.length == 0) continue;
-		if(null == variable.axis) variable.setAxis(new rg.controller.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float)));
+		if(null == variable.axis) variable.setAxis(new rg.controller.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float),variable,null));
 		variable.stats.addMany(values);
 		var discrete;
 		if(null != ctx.variable.scaleDistribution && null != (discrete = Types["as"](ctx.variable.axis,rg.data.IAxisDiscrete))) {
@@ -24934,35 +24978,17 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
 	$s.push("rg.data.DataProcessor::fillIndependentVariables");
 	var $spos = $s.length;
-	var toprocess = false, flatten = Arrays.flatten(data);
+	var flatten = Arrays.flatten(data);
 	var _g = 0, _g1 = this.independentVariables;
 	while(_g < _g1.length) {
 		var ctx = _g1[_g];
 		++_g;
 		ctx.variable.stats.addMany(rg.util.DataPoints.values(flatten,ctx.variable.type));
-		if(ctx.partial) toprocess = true;
 		var discrete;
 		if(null != ctx.variable.scaleDistribution && null != (discrete = Types["as"](ctx.variable.axis,rg.data.IAxisDiscrete))) {
 			discrete.setScaleDistribution(ctx.variable.scaleDistribution);
 			ctx.variable.scaleDistribution = null;
 		}
-	}
-	if(toprocess) {
-		var _g = 0, _g1 = this.independentVariables;
-		while(_g < _g1.length) {
-			var ctx = _g1[_g];
-			++_g;
-			if(ctx.partial) this.fillIndependentVariable(ctx.variable,flatten);
-		}
-	}
-	$s.pop();
-}
-rg.data.DataProcessor.prototype.fillIndependentVariable = function(variable,data) {
-	$s.push("rg.data.DataProcessor::fillIndependentVariable");
-	var $spos = $s.length;
-	var ordinal = Types["as"](variable.axis,rg.data.AxisOrdinal);
-	if(null != ordinal) {
-		if(null == ordinal.getValues() || ordinal.getValues().length == 0) ordinal.setValues(thx.collection.Set.ofArray(variable.stats.values));
 	}
 	$s.pop();
 }
@@ -24970,7 +24996,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@192");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@148");
 		var $spos = $s.length;
 		var $tmp = d.variable.axis.range(d.variable.minValue(),d.variable.maxValue());
 		$s.pop();

@@ -18,13 +18,10 @@ class Variable<T, TAxis : IAxis<T>>
 	public var minf(getMinF, setMinF) : Stats<T> -> T;
 	public var maxf(getMaxF, setMaxF) : Stats<T> -> T;
 	
-	public function new(type : String, axis : TAxis, scaleDistribution : Null<ScaleDistribution>, minf : Null<Stats<T> -> T>, maxf : Null<Stats<T> -> T>) 
+	public function new(type : String, scaleDistribution : Null<ScaleDistribution>) 
 	{
 		this.type = type;
 		this.scaleDistribution = scaleDistribution;
-		this.minf = minf;
-		this.maxf = maxf;
-		setAxis(axis);
 	}
 	
 	public function setAxis(axis : TAxis)

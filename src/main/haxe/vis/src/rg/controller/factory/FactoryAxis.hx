@@ -5,31 +5,35 @@
 
 package rg.controller.factory;
 import rg.data.AxisGroupByTime;
-import rg.data.AxisOrdinal;
+import rg.data.AxisOrdinalFixedValues;
+import rg.data.AxisOrdinalStats;
 import rg.data.AxisNumeric;
 import rg.data.AxisTime;
 import rg.data.IAxis;
 import rg.data.IAxisDiscrete;
 import rg.util.Properties;
+import rg.data.Variable;
 import thx.error.Error;
 
 class FactoryAxis 
 {
 	public function new() { }
 	
-	public function create(type : String, isnumeric : Null<Bool>, ?samples : Array<Dynamic>) : IAxis<Dynamic>
+	public function create(type : String, isnumeric : Null<Bool>, variable : Variable<Dynamic, IAxis<Dynamic>>, samples : Null<Array<Dynamic>>) : IAxis<Dynamic>
 	{
-		if (null != samples)
+		if (null != samples && samples.length > 0)
 		{
-			return new AxisOrdinal(samples);
+			return new AxisOrdinalFixedValues(samples);
 		} else if(true == isnumeric) {
 			return new AxisNumeric();
+		} else if(false == isnumeric) {
+			return new AxisOrdinalStats(variable);
 		} else {
 			return null;
 		}
 	}
 	
-	public function createDiscrete(type : String, samples : Array<Dynamic>, groupBy : Null<String>) : IAxisDiscrete<Dynamic>
+	public function createDiscrete(type : String, variable : Variable<Dynamic, IAxis<Dynamic>>, samples : Array<Dynamic>, groupBy : Null<String>) : IAxisDiscrete<Dynamic>
 	{
 		if (Properties.isTime(type))
 		{
@@ -37,8 +41,11 @@ class FactoryAxis
 				return new AxisGroupByTime(Properties.periodicity(type));
 			else
 				return new AxisTime(Properties.periodicity(type));
-		} else
-			return new AxisOrdinal(samples);
+		} else if (null != samples && samples.length > 0)
+		{
+			return new AxisOrdinalFixedValues(samples);
+		}
+			return new AxisOrdinalStats(variable);
 	}
 }
 

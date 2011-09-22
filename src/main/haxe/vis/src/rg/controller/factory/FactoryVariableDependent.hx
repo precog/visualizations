@@ -18,8 +18,11 @@ class FactoryVariableDependent
 		if (null == info.type)
 			throw new Error("cannot create an axis if type is not specified");
 		var axiscreator = new FactoryAxis(),
-			axis = axiscreator.create(info.type, isnumeric, info.values);
-		var variable = new VariableDependent(info.type, axis, info.scaleDistribution, FactoryVariableIndependent.convertBound(axis, info.min), FactoryVariableIndependent.convertBound(axis, info.max));
+			variable = new VariableDependent(info.type, info.scaleDistribution),
+			axis = axiscreator.create(info.type, isnumeric, variable, info.values);
+		variable.setAxis(axis);
+		variable.minf = FactoryVariableIndependent.convertBound(axis, info.min);
+		variable.maxf = FactoryVariableIndependent.convertBound(axis, info.max);
 		return variable;
 	}
 }

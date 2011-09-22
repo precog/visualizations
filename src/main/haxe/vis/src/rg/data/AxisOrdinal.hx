@@ -5,8 +5,8 @@
 
 package rg.data;
 import thx.benchmark.SpeedTest;
+import thx.error.AbstractMethod;
 import thx.error.Error;
-import thx.collection.Set;
 import rg.data.ScaleDistribution;
 using Arrays;
 using thx.collection.Sets;
@@ -15,18 +15,12 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 {
 	public var first(getFirst, null) : T;
 	public var last(getLast, null) : T;
-	public var values(getValues, setValues): Set<T>;
+	public var values(getValues, null): Array<T>;
 	public var allTicks (getAllTicks, null): Array<ITickmark<T>>;
 	public var scaleDistribution(default, setScaleDistribution) : ScaleDistribution;
 
-	public function new(?arr : Array<T>, ?set: Set<T>)
+	private function new()
 	{
-		if (null != arr)
-			values = Set.ofArray(arr);
-		else if (null != set)
-			values = set;
-		else
-			values = new Set();
 		this.scaleDistribution = ScaleFit;
 	}
 	
@@ -56,7 +50,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 		}
 		if (e < 0)
 			throw new Error("the end bound '{0}' is not part of the acceptable values {1}", [end, values]);
-		return values.array().slice(s, e + 1);
+		return values.slice(s, e + 1);
 	}
 	
 	public function scale(start : T, end : T, v : T)
@@ -75,8 +69,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	
 	function getFirst() return values.first()
 	function getLast() return values.last()
-	function getValues() return values
-	function setValues(v : Set<T>) return values = v
+	function getValues() : Array<T> return throw new AbstractMethod()
 	function getAllTicks()
 	{
 		var t = toTickmark,

@@ -23,8 +23,12 @@ class FactoryVariableIndependent
 		if (null == info.type)
 			return null;
 		var axiscreateer = new FactoryAxis(),
-			axis = axiscreateer.createDiscrete(info.type, info.values, info.groupBy);
-		return new VariableIndependent(info.type, axis, info.scaleDistribution, convertBound(axis, info.min), convertBound(axis, info.max));
+			variable = new VariableIndependent(info.type, info.scaleDistribution),
+			axis = axiscreateer.createDiscrete(info.type, cast variable, info.values, info.groupBy);
+		variable.setAxis(axis);
+		variable.minf = convertBound(axis, info.min);
+		variable.maxf = convertBound(axis, info.max);
+		return variable;
 	}
 	
 	public static function convertBound(axis : IAxis<Dynamic>, value : Dynamic) : Stats<Dynamic> -> Dynamic
