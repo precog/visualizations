@@ -4482,8 +4482,8 @@ rg.data.AxisOrdinal.prototype.range = function(start,end) {
 	$s.push("rg.data.AxisOrdinal::range");
 	var $spos = $s.length;
 	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 53, className : "rg.data.AxisOrdinal", methodName : "range"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 55, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 51, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 53, className : "rg.data.AxisOrdinal", methodName : "range"});
 	var $tmp = this.getValues().array().slice(s,e + 1);
 	$s.pop();
 	return $tmp;
@@ -4493,9 +4493,9 @@ rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisOrdinal::scale");
 	var $spos = $s.length;
 	var s = this.getValues()._v.indexOf(start), e = this.getValues()._v.indexOf(end), p = this.getValues()._v.indexOf(v);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 65, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 67, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 69, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 63, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 65, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 67, className : "rg.data.AxisOrdinal", methodName : "scale"});
 	var $tmp = rg.data.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
 	$s.pop();
 	return $tmp;
@@ -4538,7 +4538,7 @@ rg.data.AxisOrdinal.prototype.getAllTicks = function() {
 	var $spos = $s.length;
 	var t = $closure(this,"toTickmark"), f = this.getFirst(), l = this.getLast();
 	var $tmp = this.range(f,l).map(function(d,i) {
-		$s.push("rg.data.AxisOrdinal::getAllTicks@82");
+		$s.push("rg.data.AxisOrdinal::getAllTicks@80");
 		var $spos = $s.length;
 		var $tmp = t(f,l,d);
 		$s.pop();
@@ -13911,7 +13911,7 @@ rg.view.svg.chart.HeatGrid.prototype.drawContour = function() {
 		$s.pop();
 	}), level = 0.0, min = this.scale(this.variableDependent.min), max = this.scale(this.variableDependent.max), span = max - min, padding;
 	var grid = function(x,y) {
-		$s.push("rg.view.svg.chart.HeatGrid::drawContour@136");
+		$s.push("rg.view.svg.chart.HeatGrid::drawContour@135");
 		var $spos = $s.length;
 		var ys = map[x];
 		if(null == ys) {
@@ -13937,16 +13937,16 @@ rg.view.svg.chart.HeatGrid.prototype.drawContour = function() {
 		level = min + span / this.levels * i;
 		var map1 = [this.createGridMap(grid)];
 		var createContour = (function(map1,color) {
-			$s.push("rg.view.svg.chart.HeatGrid::drawContour@155");
+			$s.push("rg.view.svg.chart.HeatGrid::drawContour@154");
 			var $spos = $s.length;
 			var $tmp = function(start) {
-				$s.push("rg.view.svg.chart.HeatGrid::drawContour@155@155");
+				$s.push("rg.view.svg.chart.HeatGrid::drawContour@154@154");
 				var $spos = $s.length;
 				var contour = thx.geom.Contour.contour(grid,start).map((function(map1) {
-					$s.push("rg.view.svg.chart.HeatGrid::drawContour@155@155@157");
+					$s.push("rg.view.svg.chart.HeatGrid::drawContour@154@154@156");
 					var $spos = $s.length;
 					var $tmp = function(d,i1) {
-						$s.push("rg.view.svg.chart.HeatGrid::drawContour@155@155@157@157");
+						$s.push("rg.view.svg.chart.HeatGrid::drawContour@154@154@156@156");
 						var $spos = $s.length;
 						map1[0].remove(d[1] + "-" + d[0]);
 						var $tmp = [padding + d[0] * me.w,padding + me.height - d[1] * me.h];
@@ -14031,7 +14031,7 @@ rg.view.svg.chart.HeatGrid.prototype.range = function(variable) {
 	}
 	var tickmarks = variable.axis.ticks(variable.min,variable.max);
 	var $tmp = tickmarks.map(function(d,i) {
-		$s.push("rg.view.svg.chart.HeatGrid::range@235");
+		$s.push("rg.view.svg.chart.HeatGrid::range@226");
 		var $spos = $s.length;
 		var $tmp = d.getValue();
 		$s.pop();
@@ -24548,12 +24548,6 @@ rg.data.DataProcessor = function(sources) {
 	$s.pop();
 }
 rg.data.DataProcessor.__name__ = ["rg","data","DataProcessor"];
-rg.data.DataProcessor.updateStats = function(variable,dps) {
-	$s.push("rg.data.DataProcessor::updateStats");
-	var $spos = $s.length;
-	variable.stats.addMany(rg.util.DataPoints.values(dps,variable.type));
-	$s.pop();
-}
 rg.data.DataProcessor.prototype.sources = null;
 rg.data.DataProcessor.prototype.onData = null;
 rg.data.DataProcessor.prototype.independentVariables = null;
@@ -24583,10 +24577,10 @@ rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 	$s.push("rg.data.DataProcessor::filterSubset");
 	var $spos = $s.length;
 	var $tmp = Arrays.filter(subset,(function(f,a1) {
-		$s.push("rg.data.DataProcessor::filterSubset@77");
+		$s.push("rg.data.DataProcessor::filterSubset@50");
 		var $spos = $s.length;
 		var $tmp = function(a2) {
-			$s.push("rg.data.DataProcessor::filterSubset@77@77");
+			$s.push("rg.data.DataProcessor::filterSubset@50@50");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2);
 			$s.pop();
@@ -24681,7 +24675,7 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 			variable.stats.addMany(values);
 			if(null == variable.min) variable.min = variable.stats.isNumeric?0:variable.stats.min;
 			if(null == variable.max) variable.max = variable.stats.max;
-		} else rg.data.DataProcessor.updateStats(ctx.variable,data);
+		} else ctx.variable.stats.addMany(rg.util.DataPoints.values(data,ctx.variable.type));
 		var discrete;
 		if(null != ctx.variable.scaleDistribution && null != (discrete = Types["as"](ctx.variable.axis,rg.data.IAxisDiscrete))) {
 			discrete.setScaleDistribution(ctx.variable.scaleDistribution);
@@ -24731,7 +24725,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@228");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@187");
 		var $spos = $s.length;
 		var $tmp = d.variable.axis.range(d.variable.min,d.variable.max);
 		$s.pop();

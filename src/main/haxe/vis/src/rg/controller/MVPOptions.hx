@@ -31,8 +31,6 @@ class MVPOptions
 	{
 		switch(type)
 		{
-//			case "piechart":
-//				return null != property ? property : ".#time:" + periodicity;
 			default:
 				return (null != property ? property + " * " : "") + ".#time:" + periodicity;
 		}

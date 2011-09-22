@@ -82,35 +82,7 @@ class DataPoints
 	{
 		return dps.map(function(dp, _) return value(dp, property)).filter(function(d) return d != null);
 	}
-	
-//	public static function stats(dps : Array<DataPoint>, property : String)
-//	{
-//		return new Stats().addMany(dps.map(function(dp, _) return value(dp, property)).filter(function(d) return d != null));
-/*
-		var min = Math.POSITIVE_INFINITY,
-			max = Math.NEGATIVE_INFINITY,
-			tot = 0.0;
-			
-		for (dp in dps)
-		{
-			var v = Reflect.field(dp, property);
-			if (null == v)
-				continue;
-			if (v < min)
-				min = v;
-			if (v > max)
-				max = v;
-			tot += v;
-		}
 		
-		return {
-			min : min,
-			max : max,
-			tot : tot
-		};
-*/
-//	}
-	
 	public static function id(dp : DataPoint, dependentProperties : Array<String>)
 	{
 		var o = Objects.clone(dp);

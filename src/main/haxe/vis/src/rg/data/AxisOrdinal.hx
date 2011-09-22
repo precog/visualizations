@@ -17,8 +17,6 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	public var values(getValues, setValues): Set<T>;
 	public var allTicks (getAllTicks, null): Array<ITickmark<T>>;
 	public var scaleDistribution(default, setScaleDistribution) : ScaleDistribution;
-// TODO, this should probably go outside this class, probably should affect the ITickmark collection
-// public var ordering(getOrdering, null): T -> T -> Int;
 
 	public function new(?arr : Array<T>, ?set: Set<T>)
 	{

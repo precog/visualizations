@@ -131,7 +131,6 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			max = scale(variableDependent.max),
 			span = max - min,
 			padding;
-//		trace(map);
 
 		function grid(x : Int, y : Int) {
 			var ys = map[x];
@@ -169,14 +168,6 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			}
 			
 			createContour();
-//			if(level == 0)
-//				trace(map);
-//			var it = map.iterator();
-//			while (it.hasNext())
-//			{
-//				createContour(it.next());
-//				it = map.iterator();
-//			}
 		}
 		
 	}

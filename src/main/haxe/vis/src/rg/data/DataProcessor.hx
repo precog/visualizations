@@ -42,33 +42,6 @@ class DataProcessor
 	
 	public function load()
 	{
-/*
-		var tmin = null, tmax = null;
-		for (variable in independentVariables)
-		{
-			var v = variable.variable;
-			if(!Std.is(v.axis, AxisTime) && !Std.is(v.axis, AxisGroupByTime))
-				continue;
-			tmin = v.min != 0 ? v.min : null;
-			tmax = v.max != 0 ? v.max : null;
-			break;
-		}
-*/
-/*
-		if (null != tmin || null != tmax)
-		{
-			for (ds in sources)
-			{
-				var query = Types.as(ds, DataSourceReportGrid);
-				if (null == query)
-					continue;
-				if(null != tmin && null == query.start)
-					query.start = tmin;
-				if(null != tmax && null == query.end)
-					query.end = tmax;
-			}
-		}
-*/
 		sources.load();
 	}
 
@@ -89,28 +62,14 @@ class DataProcessor
 		return true;
 	}
 	
-//	static function emptyStats() return { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 }
-	static function updateStats(variable : rg.data.Variable<Dynamic, IAxis<Dynamic>>, dps : Array<DataPoint>)
-	{
-		variable.stats.addMany(DataPoints.values(dps, variable.type));
-//		var stats = DataPoints.stats(dps, variable.type);
-//		if (stats.min < variable.stats.min)
-//			variable.stats.min = stats.min;
-//		if (stats.max > variable.stats.max)
-//			variable.stats.max = stats.max;
-//		variable.stats.tot += stats.tot;
-	}
-	
 	function preprocess()
 	{
 		// reset stats
 		for (ctx in independentVariables)
 			ctx.variable.stats.reset();
-//			ctx.variable.stats = emptyStats();
 		
 		for (ctx in dependentVariables)
 			ctx.variable.stats.reset();
-//			ctx.variable.stats = emptyStats();
 	}
 	
 	function process(data : Array<Array<DataPoint>>)
@@ -170,7 +129,7 @@ class DataProcessor
 				if (null == variable.max)
 					variable.max = variable.stats.max;
 			} else {
-				updateStats(ctx.variable, data);
+				ctx.variable.stats.addMany(DataPoints.values(data, ctx.variable.type));
 			}
 			var discrete;
 			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))

@@ -17,15 +17,7 @@ class AxisTime implements IAxisDiscrete<Float>
 		this.periodicity = periodicity;
 		this.scaleDistribution = ScaleFill;
 	}
-/*
-	function toTickmark(start: Float, end : Float, value: Float): ITickmark<Float>
-	{
-		var span = end - start,
-			major = isMajor(start, end, value);
-		return new TickmarkTime(value, major, (value - start) / span, periodicity);
-//		return Tickmarks.forFloat(start, end, value, true);
-	}
-*/
+
 	static var snapping = {
 		minute : [ { to : 10, s : 1 }, { to : 20, s : 2 }, { to : 30, s : 5 }, { to : 60, s : 10 }, { to : 120, s : 30 }, { to : 240, s : 60 }, { to : 960, s : 240 } ],
 		minutetop : 480,

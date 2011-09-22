@@ -261,40 +261,7 @@ class PivotTable
 		if (counter > 1)
 			th.attr("colspan").float(counter);
 	}
-/*
-	public dynamic function formatCell(value : Float)
-	{
-		return Floats.format(value, "I");
-	}
-*//*
-	public dynamic function formatHeader(value : String)
-	{
-		return RGStrings.humanize(value.ltrim("#"));
-	}
-*/
-	/*
-	public dynamic function formatValue(value : Dynamic, header : String)
-	{
-		if (Std.is(value, String))
-		{
-			return Strings.trim(value, '"');
-		}
-		
-		if (Std.is(value, Float))
-		{
-			if ('#' == header.substr(0, 1))
-				return Periodicity.format(header.substr(1), Std.parseFloat(value));
-			return Floats.format(value);
-		}
-		
-		if (Std.is(value, Int))
-		{
-			return Ints.format(value);
-		}
 
-		return Dynamics.string(value);
-	}
-	*/
 	public function init()
 	{
 		
@@ -330,11 +297,6 @@ class PivotTable
 			columns = [],
 			rows = [],
 			tcalc = new StatsNumeric();
-//			{
-//				min : Math.POSITIVE_INFINITY,
-//				max : Math.NEGATIVE_INFINITY,
-//				tot : 0.0
-//			};
 			
 		var variable;
 		// columns : build first level
@@ -390,23 +352,7 @@ class PivotTable
 					continue;
 				ccalc.add(v);
 				tcalc.add(v);
-/*
-				if (v < ccalc.min)
-				{
-					ccalc.min = v;
-					if (v < tcalc.min)
-						tcalc.min = v;
-				}
-				if (v > ccalc.max)
-				{
-					ccalc.max = v;
-					if (v > tcalc.max)
-						tcalc.max = v;
-				}
-				ccalc.tot += v;
-*/
 			}
-//			tcalc.tot += ccalc.tot;
 		}
 		
 		// rows : build first level
@@ -445,7 +391,7 @@ class PivotTable
 			headers = row_headers;
 		for (row in rows)
 		{
-			row.stats = new StatsNumeric(); // { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
+			row.stats = new StatsNumeric();
 			row.cells = [];
 			
 			var rdps = dps.filter(function(d) {
@@ -476,21 +422,6 @@ class PivotTable
 				}
 				row.cells.push(dp);
 				row.stats.add(v);
-/*
-				if (v < row.stats.min)
-				{
-					row.stats.min = v;
-//					if (v < tcalc.min)
-//						tcalc.min = v;
-				}
-				if (v > row.stats.max)
-				{
-					row.stats.max = v;
-//					if (v > tcalc.max)
-//						tcalc.max = v;
-				}
-				row.stats.tot += v;
-*/
 			}
 		}
 			
