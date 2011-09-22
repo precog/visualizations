@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			{ src : { data : data4 } },
 			{ src : { data : data5 } }
 		];
-/*
+
 	ReportGrid.barChart("#chart1", {
 		axes : [{
 				type : ".#time:day",
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			effect : "none"
 		}
 	});
-*/
+
 	var ageRanges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"];
 	var genders = ["male", "female", "undisclosed", "unknown"];
 
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			gender : genders[Math.floor(ReportGrid.math.random()*genders.length)]
 		};
 	}
-	/*
+
 	var ageGenderData = [
 		{ src : { data : ageRanges.map(ageGender) }, },
 		{ src : { data : ageRanges.map(ageGender) }, },
@@ -137,8 +137,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		{ src : { data : ageRanges.map(ageGender) }, },
 		{ src : { data : ageRanges.map(ageGender) }, },
 	];
-	*/
-/*
+
 	ReportGrid.barChart("#chart3", {
 		axes : [{
 			type : "age",
@@ -180,8 +179,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			displayanchorlinetick : function(v) { return v == 'age' }
 		}
 	});
-*/
-//*/
+
 	var interests = ["sport", "tv", "internet", "art", "history", "diy"];
 	ReportGrid.barChart("#chart5", {
 		axes : [{

@@ -10,14 +10,14 @@ import rg.data.IDataSource;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.Properties;
 import thx.collection.Set;
-import rg.data.VariableDependentContext;
-import rg.data.VariableIndependentContext;
 import rg.data.IAxisDiscrete;
 import rg.data.AxisOrdinal;
 import rg.data.AxisTime;
 import rg.data.DataContext;
+import rg.data.VariableIndependent;
+import rg.data.VariableDependent;
 
-class FactoryVariableContexts 
+class FactoryVariable
 {
 	var knownProperties : Set<String>;
 	var independentFactory : FactoryVariableIndependent;
@@ -29,9 +29,9 @@ class FactoryVariableContexts
 		dependentFactory = new FactoryVariableDependent();
 	}
 	
-	public function createIndependents(info : Array<InfoVariable>) : Array<VariableIndependentContext<Dynamic>>
+	public function createIndependents(info : Array<InfoVariable>) : Array<VariableIndependent<Dynamic>>
 	{
-		var result = [], ordinal, discrete, v, ctx;
+		var result = [], ordinal, discrete, ctx;
 		for (i in info)
 		{
 			var moveon = switch(i.variableType)
@@ -42,19 +42,12 @@ class FactoryVariableContexts
 			}
 			if (moveon)
 				continue;
-			v = independentFactory.create(i);
-			if (null != (ordinal = Types.as(v.axis, AxisOrdinal)))
-			{
-				ctx = new VariableIndependentContext(v, ordinal.values == null || 0 == ordinal.values.length);
-			} else {
-				ctx = new VariableIndependentContext(v, false);
-			}
-			result.push(ctx);
+			result.push(independentFactory.create(i));
 		}
 		return result;
 	}
 	
-	public function createDependents(info : Array<InfoVariable>) : Array<VariableDependentContext<Dynamic>>
+	public function createDependents(info : Array<InfoVariable>) : Array<VariableDependent<Dynamic>>
 	{
 		var result = [], ordinal;
 		for (i in info)
@@ -67,17 +60,7 @@ class FactoryVariableContexts
 			}
 			if (moveon)
 				continue;
-
-			var //isnumeric = null != i.min ? Std.is(i.min, Float) : (i.max ? Std.is(i.max, Float) : false),
-				v = dependentFactory.create(i, null/*isnumeric*/);
-			result.push(new VariableDependentContext(v, 
-//				   null == v.max 
-//				|| null == v.min
-//				|| 
-
-				null == v.axis
-				|| (null != (ordinal = Types.as(v.axis, AxisOrdinal)) && 0 == ordinal.values.length)
-				));
+			result.push(dependentFactory.create(i, null/*isnumeric*/));
 		}
 		return result;
 	}
@@ -106,6 +89,6 @@ class FactoryVariableContexts
 				}
 			}
 		}
-		return new FactoryVariableContexts(kp);
+		return new FactoryVariable(kp);
 	}
 }

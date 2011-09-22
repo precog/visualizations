@@ -6,8 +6,6 @@
 package rg.data;
 import hxevents.Dispatcher;
 import rg.controller.factory.FactoryAxis;
-import rg.data.VariableIndependentContext;
-import rg.data.VariableDependentContext;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.DataPoints;
 import rg.data.Stats;
@@ -19,8 +17,8 @@ class DataProcessor
 	public var sources(default, null) : Sources<Dynamic>;
 	
 	public var onData(default, null) : Dispatcher<Array<DataPoint>>;
-	public var independentVariables : Array<VariableIndependentContext<Dynamic>>;
-	public var dependentVariables : Array<VariableDependentContext<Dynamic>>;
+	public var independentVariables : Array<VariableIndependent<Dynamic>>;
+	public var dependentVariables : Array<VariableDependent<Dynamic>>;
 	
 	public function new(sources : Sources<Dynamic>) 
 	{
@@ -55,7 +53,7 @@ class DataProcessor
 		var name;
 		for (i in 0...independentVariables.length)
 		{
-			name = independentVariables[i].variable.type;
+			name = independentVariables[i].type;
 			if (Reflect.field(dp, name) != variables[i])
 				return false;
 		}
@@ -102,10 +100,9 @@ class DataProcessor
 
 	function fillDependentVariables(data : Array<DataPoint>)
 	{
-		for (ctx in dependentVariables)
+		for (variable in dependentVariables)
 		{
-			var variable = ctx.variable,
-				values = DataPoints.values(data, variable.type);
+			var values = DataPoints.values(data, variable.type);
 			if (values.length == 0)
 				continue;
 			if (null == variable.axis)
@@ -120,10 +117,10 @@ class DataProcessor
 			variable.stats.addMany(values);
 
 			var discrete;
-			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
+			if (null != variable.scaleDistribution && null != (discrete = Types.as(variable.axis, IAxisDiscrete)))
 			{
-				discrete.scaleDistribution = ctx.variable.scaleDistribution;
-				ctx.variable.scaleDistribution = null; // reset to avoid multiple assign
+				discrete.scaleDistribution = variable.scaleDistribution;
+				variable.scaleDistribution = null; // reset to avoid multiple assign
 			}
 		}
 	}
@@ -131,20 +128,20 @@ class DataProcessor
 	function fillIndependentVariables(data : Array<Array<DataPoint>>)
 	{
 		var flatten = data.flatten();
-		for (ctx in independentVariables)
+		for (variable in independentVariables)
 		{
-			ctx.variable.stats.addMany(DataPoints.values(flatten, ctx.variable.type));
+			variable.stats.addMany(DataPoints.values(flatten, variable.type));
 			var discrete;
-			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
+			if (null != variable.scaleDistribution && null != (discrete = Types.as(variable.axis, IAxisDiscrete)))
 			{
-				discrete.scaleDistribution = ctx.variable.scaleDistribution;
-				ctx.variable.scaleDistribution = null; // reset to avoid multiple assign
+				discrete.scaleDistribution = variable.scaleDistribution;
+				variable.scaleDistribution = null; // reset to avoid multiple assign
 			}
 		}
 	}
 
 	function getVariableIndependentValues()
 	{
-		return independentVariables.map(function(d, i) return d.variable.axis.range(d.variable.minValue(), d.variable.maxValue())).product();
+		return independentVariables.map(function(variable, i) return variable.axis.range(variable.minValue(), variable.maxValue())).product();
 	}
 }

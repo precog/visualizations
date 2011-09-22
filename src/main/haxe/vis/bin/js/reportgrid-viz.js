@@ -3186,18 +3186,6 @@ Dates.compare = function(a,b) {
 	$s.pop();
 }
 Dates.prototype.__class__ = Dates;
-rg.data.VariableIndependentContext = function(variable,partial) {
-	if( variable === $_ ) return;
-	$s.push("rg.data.VariableIndependentContext::new");
-	var $spos = $s.length;
-	this.variable = variable;
-	this.partial = partial;
-	$s.pop();
-}
-rg.data.VariableIndependentContext.__name__ = ["rg","data","VariableIndependentContext"];
-rg.data.VariableIndependentContext.prototype.partial = null;
-rg.data.VariableIndependentContext.prototype.variable = null;
-rg.data.VariableIndependentContext.prototype.__class__ = rg.data.VariableIndependentContext;
 rg.view.svg.panel.Layer = function(panel) {
 	if( panel === $_ ) return;
 	$s.push("rg.view.svg.panel.Layer::new");
@@ -6543,120 +6531,6 @@ rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
 rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
 rg.view.frame.Orientation.Horizontal.toString = $estr;
 rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
-rg.controller.factory.FactoryVariableContexts = function(knownproperties) {
-	if( knownproperties === $_ ) return;
-	$s.push("rg.controller.factory.FactoryVariableContexts::new");
-	var $spos = $s.length;
-	this.knownProperties = knownproperties;
-	this.independentFactory = new rg.controller.factory.FactoryVariableIndependent();
-	this.dependentFactory = new rg.controller.factory.FactoryVariableDependent();
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableContexts.__name__ = ["rg","controller","factory","FactoryVariableContexts"];
-rg.controller.factory.FactoryVariableContexts.createFromDataContexts = function(contexts) {
-	$s.push("rg.controller.factory.FactoryVariableContexts::createFromDataContexts");
-	var $spos = $s.length;
-	var kp = new thx.collection.Set();
-	var _g = 0;
-	while(_g < contexts.length) {
-		var ctx = contexts[_g];
-		++_g;
-		var $it0 = ctx.data.sources.iterator();
-		while( $it0.hasNext() ) {
-			var ds = $it0.next();
-			var query = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
-			if(null == query) continue;
-			var _g1 = 0, _g2 = query.query.exp;
-			while(_g1 < _g2.length) {
-				var exp = _g2[_g1];
-				++_g1;
-				var $e = (exp);
-				switch( $e[1] ) {
-				case 0:
-					var p = $e[2];
-					kp.add(rg.util.Properties.timeProperty(p));
-					break;
-				case 1:
-					var n = $e[2];
-					kp.add(n);
-					break;
-				case 2:
-					kp.add("event");
-					break;
-				}
-			}
-		}
-	}
-	var $tmp = new rg.controller.factory.FactoryVariableContexts(kp);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableContexts.prototype.knownProperties = null;
-rg.controller.factory.FactoryVariableContexts.prototype.independentFactory = null;
-rg.controller.factory.FactoryVariableContexts.prototype.dependentFactory = null;
-rg.controller.factory.FactoryVariableContexts.prototype.createIndependents = function(info) {
-	$s.push("rg.controller.factory.FactoryVariableContexts::createIndependents");
-	var $spos = $s.length;
-	var result = [], ordinal, discrete, v, ctx;
-	var _g = 0;
-	while(_g < info.length) {
-		var i = info[_g];
-		++_g;
-		var moveon = (function($this) {
-			var $r;
-			switch( (i.variableType)[1] ) {
-			case 1:
-				$r = false;
-				break;
-			case 0:
-				$r = !$this.knownProperties.exists(i.type);
-				break;
-			default:
-				$r = true;
-			}
-			return $r;
-		}(this));
-		if(moveon) continue;
-		v = this.independentFactory.create(i);
-		if(null != (ordinal = Types["as"](v.axis,rg.data.AxisOrdinal))) ctx = new rg.data.VariableIndependentContext(v,ordinal.getValues() == null || 0 == ordinal.getValues().length); else ctx = new rg.data.VariableIndependentContext(v,false);
-		result.push(ctx);
-	}
-	$s.pop();
-	return result;
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableContexts.prototype.createDependents = function(info) {
-	$s.push("rg.controller.factory.FactoryVariableContexts::createDependents");
-	var $spos = $s.length;
-	var result = [], ordinal;
-	var _g = 0;
-	while(_g < info.length) {
-		var i = info[_g];
-		++_g;
-		var moveon = (function($this) {
-			var $r;
-			switch( (i.variableType)[1] ) {
-			case 2:
-				$r = false;
-				break;
-			case 0:
-				$r = $this.knownProperties.exists(i.type);
-				break;
-			default:
-				$r = true;
-			}
-			return $r;
-		}(this));
-		if(moveon) continue;
-		var v = this.dependentFactory.create(i,null);
-		result.push(new rg.data.VariableDependentContext(v,null == v.axis || null != (ordinal = Types["as"](v.axis,rg.data.AxisOrdinal)) && 0 == ordinal.getValues().length));
-	}
-	$s.pop();
-	return result;
-	$s.pop();
-}
-rg.controller.factory.FactoryVariableContexts.prototype.__class__ = rg.controller.factory.FactoryVariableContexts;
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	if( months === $_ ) return;
@@ -9662,6 +9536,117 @@ thx.culture.core.NumberInfo.prototype.groupsSeparator = null;
 thx.culture.core.NumberInfo.prototype.patternNegative = null;
 thx.culture.core.NumberInfo.prototype.patternPositive = null;
 thx.culture.core.NumberInfo.prototype.__class__ = thx.culture.core.NumberInfo;
+rg.controller.factory.FactoryVariable = function(knownproperties) {
+	if( knownproperties === $_ ) return;
+	$s.push("rg.controller.factory.FactoryVariable::new");
+	var $spos = $s.length;
+	this.knownProperties = knownproperties;
+	this.independentFactory = new rg.controller.factory.FactoryVariableIndependent();
+	this.dependentFactory = new rg.controller.factory.FactoryVariableDependent();
+	$s.pop();
+}
+rg.controller.factory.FactoryVariable.__name__ = ["rg","controller","factory","FactoryVariable"];
+rg.controller.factory.FactoryVariable.createFromDataContexts = function(contexts) {
+	$s.push("rg.controller.factory.FactoryVariable::createFromDataContexts");
+	var $spos = $s.length;
+	var kp = new thx.collection.Set();
+	var _g = 0;
+	while(_g < contexts.length) {
+		var ctx = contexts[_g];
+		++_g;
+		var $it0 = ctx.data.sources.iterator();
+		while( $it0.hasNext() ) {
+			var ds = $it0.next();
+			var query = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
+			if(null == query) continue;
+			var _g1 = 0, _g2 = query.query.exp;
+			while(_g1 < _g2.length) {
+				var exp = _g2[_g1];
+				++_g1;
+				var $e = (exp);
+				switch( $e[1] ) {
+				case 0:
+					var p = $e[2];
+					kp.add(rg.util.Properties.timeProperty(p));
+					break;
+				case 1:
+					var n = $e[2];
+					kp.add(n);
+					break;
+				case 2:
+					kp.add("event");
+					break;
+				}
+			}
+		}
+	}
+	var $tmp = new rg.controller.factory.FactoryVariable(kp);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariable.prototype.knownProperties = null;
+rg.controller.factory.FactoryVariable.prototype.independentFactory = null;
+rg.controller.factory.FactoryVariable.prototype.dependentFactory = null;
+rg.controller.factory.FactoryVariable.prototype.createIndependents = function(info) {
+	$s.push("rg.controller.factory.FactoryVariable::createIndependents");
+	var $spos = $s.length;
+	var result = [], ordinal, discrete, ctx;
+	var _g = 0;
+	while(_g < info.length) {
+		var i = info[_g];
+		++_g;
+		var moveon = (function($this) {
+			var $r;
+			switch( (i.variableType)[1] ) {
+			case 1:
+				$r = false;
+				break;
+			case 0:
+				$r = !$this.knownProperties.exists(i.type);
+				break;
+			default:
+				$r = true;
+			}
+			return $r;
+		}(this));
+		if(moveon) continue;
+		result.push(this.independentFactory.create(i));
+	}
+	$s.pop();
+	return result;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariable.prototype.createDependents = function(info) {
+	$s.push("rg.controller.factory.FactoryVariable::createDependents");
+	var $spos = $s.length;
+	var result = [], ordinal;
+	var _g = 0;
+	while(_g < info.length) {
+		var i = info[_g];
+		++_g;
+		var moveon = (function($this) {
+			var $r;
+			switch( (i.variableType)[1] ) {
+			case 2:
+				$r = false;
+				break;
+			case 0:
+				$r = $this.knownProperties.exists(i.type);
+				break;
+			default:
+				$r = true;
+			}
+			return $r;
+		}(this));
+		if(moveon) continue;
+		result.push(this.dependentFactory.create(i,null));
+	}
+	$s.pop();
+	return result;
+	$s.pop();
+}
+rg.controller.factory.FactoryVariable.prototype.__class__ = rg.controller.factory.FactoryVariable;
 js.Boot = function() { }
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__unhtml = function(s) {
@@ -13766,7 +13751,7 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		return $tmp;
 		$s.pop();
 	});
-	var factoryVariableContexts = rg.controller.factory.FactoryVariableContexts.createFromDataContexts(datacontexts);
+	var factoryVariableContexts = rg.controller.factory.FactoryVariable.createFromDataContexts(datacontexts);
 	var independentVariables = factoryVariableContexts.createIndependents(params.variables);
 	var dependentVariables = factoryVariableContexts.createDependents(params.variables);
 	var _g = 0;
@@ -13788,25 +13773,11 @@ rg.controller.App.prototype.visualization = function(el,jsoptions) {
 		visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
 		break;
 	}
-	visualization.setVariables(independentVariables.map(function(c,_) {
-		$s.push("rg.controller.App::visualization@82");
-		var $spos = $s.length;
-		var $tmp = c.variable;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}),dependentVariables.map(function(c,_) {
-		$s.push("rg.controller.App::visualization@83");
-		var $spos = $s.length;
-		var $tmp = c.variable;
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}));
+	visualization.setVariables(independentVariables,dependentVariables);
 	visualization.init();
 	var request = new rg.data.DataRequest(cache,datacontexts);
 	request.onData = function(datapoints) {
-		$s.push("rg.controller.App::visualization@87");
+		$s.push("rg.controller.App::visualization@85");
 		var $spos = $s.length;
 		visualization.feedData(datapoints);
 		$s.pop();
@@ -15117,6 +15088,76 @@ rg.controller.factory.FactoryHtmlVisualization.prototype.create = function(type,
 	$s.pop();
 }
 rg.controller.factory.FactoryHtmlVisualization.prototype.__class__ = rg.controller.factory.FactoryHtmlVisualization;
+rg.data.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
+	if( value === $_ ) return;
+	$s.push("rg.data.TickmarkTime::new");
+	var $spos = $s.length;
+	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
+	this.periodicity = periodicity;
+	$s.pop();
+}
+rg.data.TickmarkTime.__name__ = ["rg","data","TickmarkTime"];
+rg.data.TickmarkTime.__super__ = rg.data.TickmarkOrdinal;
+for(var k in rg.data.TickmarkOrdinal.prototype ) rg.data.TickmarkTime.prototype[k] = rg.data.TickmarkOrdinal.prototype[k];
+rg.data.TickmarkTime.prototype.periodicity = null;
+rg.data.TickmarkTime.prototype.getLabel = function() {
+	$s.push("rg.data.TickmarkTime::getLabel");
+	var $spos = $s.length;
+	var $tmp = rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.TickmarkTime.prototype.__class__ = rg.data.TickmarkTime;
+rg.data.source.rgquery.transform.TransformIntersectUtc = function(properties,fields,event,periodicity,unit) {
+	if( properties === $_ ) return;
+	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::new");
+	var $spos = $s.length;
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TransformIntersectUtc.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectUtc"];
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.properties = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.unit = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.periodicity = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.fields = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.event = null;
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.transform = function(data) {
+	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::transform");
+	var $spos = $s.length;
+	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+	if(null == items || 0 == items.length) {
+		var $tmp = [];
+		$s.pop();
+		return $tmp;
+	}
+	var result = [];
+	var _g = 0;
+	while(_g < items.length) {
+		var item = items[_g];
+		++_g;
+		var arr = item.value;
+		var _g2 = 0, _g1 = arr.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Date.fromString(arr[i][0].datetime),arr[i][1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+	}
+	haxe.Log.trace(result,{ fileName : "TransformIntersectUtc.hx", lineNumber : 54, className : "rg.data.source.rgquery.transform.TransformIntersectUtc", methodName : "transform"});
+	$s.pop();
+	return result;
+	$s.pop();
+}
+rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectUtc;
+rg.data.source.rgquery.transform.TransformIntersectUtc.__interfaces__ = [rg.data.source.ITransform];
 List = function(p) {
 	if( p === $_ ) return;
 	$s.push("List::new");
@@ -15303,76 +15344,6 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
-rg.data.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
-	if( value === $_ ) return;
-	$s.push("rg.data.TickmarkTime::new");
-	var $spos = $s.length;
-	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
-	this.periodicity = periodicity;
-	$s.pop();
-}
-rg.data.TickmarkTime.__name__ = ["rg","data","TickmarkTime"];
-rg.data.TickmarkTime.__super__ = rg.data.TickmarkOrdinal;
-for(var k in rg.data.TickmarkOrdinal.prototype ) rg.data.TickmarkTime.prototype[k] = rg.data.TickmarkOrdinal.prototype[k];
-rg.data.TickmarkTime.prototype.periodicity = null;
-rg.data.TickmarkTime.prototype.getLabel = function() {
-	$s.push("rg.data.TickmarkTime::getLabel");
-	var $spos = $s.length;
-	var $tmp = rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.TickmarkTime.prototype.__class__ = rg.data.TickmarkTime;
-rg.data.source.rgquery.transform.TransformIntersectUtc = function(properties,fields,event,periodicity,unit) {
-	if( properties === $_ ) return;
-	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::new");
-	var $spos = $s.length;
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TransformIntersectUtc.__name__ = ["rg","data","source","rgquery","transform","TransformIntersectUtc"];
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.properties = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.unit = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.periodicity = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.fields = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.event = null;
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.transform = function(data) {
-	$s.push("rg.data.source.rgquery.transform.TransformIntersectUtc::transform");
-	var $spos = $s.length;
-	var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-	if(null == items || 0 == items.length) {
-		var $tmp = [];
-		$s.pop();
-		return $tmp;
-	}
-	var result = [];
-	var _g = 0;
-	while(_g < items.length) {
-		var item = items[_g];
-		++_g;
-		var arr = item.value;
-		var _g2 = 0, _g1 = arr.length;
-		while(_g2 < _g1) {
-			var i = _g2++;
-			var p = Dynamics.clone(properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[Date.fromString(arr[i][0].datetime),arr[i][1]]);
-			p.event = this.event;
-			result.push(p);
-		}
-	}
-	haxe.Log.trace(result,{ fileName : "TransformIntersectUtc.hx", lineNumber : 54, className : "rg.data.source.rgquery.transform.TransformIntersectUtc", methodName : "transform"});
-	$s.pop();
-	return result;
-	$s.pop();
-}
-rg.data.source.rgquery.transform.TransformIntersectUtc.prototype.__class__ = rg.data.source.rgquery.transform.TransformIntersectUtc;
-rg.data.source.rgquery.transform.TransformIntersectUtc.__interfaces__ = [rg.data.source.ITransform];
 if(!thx.util) thx.util = {}
 thx.util.Message = function(message,params,param) {
 	if( message === $_ ) return;
@@ -18839,18 +18810,6 @@ hxevents.EventException = { __ename__ : ["hxevents","EventException"], __constru
 hxevents.EventException.StopPropagation = ["StopPropagation",0];
 hxevents.EventException.StopPropagation.toString = $estr;
 hxevents.EventException.StopPropagation.__enum__ = hxevents.EventException;
-rg.data.VariableDependentContext = function(variable,partial) {
-	if( variable === $_ ) return;
-	$s.push("rg.data.VariableDependentContext::new");
-	var $spos = $s.length;
-	this.variable = variable;
-	this.partial = partial;
-	$s.pop();
-}
-rg.data.VariableDependentContext.__name__ = ["rg","data","VariableDependentContext"];
-rg.data.VariableDependentContext.prototype.partial = null;
-rg.data.VariableDependentContext.prototype.variable = null;
-rg.data.VariableDependentContext.prototype.__class__ = rg.data.VariableDependentContext;
 rg.controller.factory.FactoryVariableDependent = function(p) {
 	$s.push("rg.controller.factory.FactoryVariableDependent::new");
 	var $spos = $s.length;
@@ -24884,10 +24843,10 @@ rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 	$s.push("rg.data.DataProcessor::filterSubset");
 	var $spos = $s.length;
 	var $tmp = Arrays.filter(subset,(function(f,a1) {
-		$s.push("rg.data.DataProcessor::filterSubset@50");
+		$s.push("rg.data.DataProcessor::filterSubset@48");
 		var $spos = $s.length;
 		var $tmp = function(a2) {
-			$s.push("rg.data.DataProcessor::filterSubset@50@50");
+			$s.push("rg.data.DataProcessor::filterSubset@48@48");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2);
 			$s.pop();
@@ -24909,7 +24868,7 @@ rg.data.DataProcessor.prototype.filterDatapoint = function(variables,dp) {
 	var _g1 = 0, _g = this.independentVariables.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		name = this.independentVariables[i].variable.type;
+		name = this.independentVariables[i].type;
 		if(Reflect.field(dp,name) != variables[i]) {
 			$s.pop();
 			return false;
@@ -24961,16 +24920,16 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 	var $spos = $s.length;
 	var _g = 0, _g1 = this.dependentVariables;
 	while(_g < _g1.length) {
-		var ctx = _g1[_g];
+		var variable = _g1[_g];
 		++_g;
-		var variable = ctx.variable, values = rg.util.DataPoints.values(data,variable.type);
+		var values = rg.util.DataPoints.values(data,variable.type);
 		if(values.length == 0) continue;
 		if(null == variable.axis) variable.setAxis(new rg.controller.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float),variable,null));
 		variable.stats.addMany(values);
 		var discrete;
-		if(null != ctx.variable.scaleDistribution && null != (discrete = Types["as"](ctx.variable.axis,rg.data.IAxisDiscrete))) {
-			discrete.setScaleDistribution(ctx.variable.scaleDistribution);
-			ctx.variable.scaleDistribution = null;
+		if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.data.IAxisDiscrete))) {
+			discrete.setScaleDistribution(variable.scaleDistribution);
+			variable.scaleDistribution = null;
 		}
 	}
 	$s.pop();
@@ -24981,13 +24940,13 @@ rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
 	var flatten = Arrays.flatten(data);
 	var _g = 0, _g1 = this.independentVariables;
 	while(_g < _g1.length) {
-		var ctx = _g1[_g];
+		var variable = _g1[_g];
 		++_g;
-		ctx.variable.stats.addMany(rg.util.DataPoints.values(flatten,ctx.variable.type));
+		variable.stats.addMany(rg.util.DataPoints.values(flatten,variable.type));
 		var discrete;
-		if(null != ctx.variable.scaleDistribution && null != (discrete = Types["as"](ctx.variable.axis,rg.data.IAxisDiscrete))) {
-			discrete.setScaleDistribution(ctx.variable.scaleDistribution);
-			ctx.variable.scaleDistribution = null;
+		if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.data.IAxisDiscrete))) {
+			discrete.setScaleDistribution(variable.scaleDistribution);
+			variable.scaleDistribution = null;
 		}
 	}
 	$s.pop();
@@ -24995,10 +24954,10 @@ rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
 rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
-	var $tmp = Arrays.product(this.independentVariables.map(function(d,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@148");
+	var $tmp = Arrays.product(this.independentVariables.map(function(variable,i) {
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@145");
 		var $spos = $s.length;
-		var $tmp = d.variable.axis.range(d.variable.minValue(),d.variable.maxValue());
+		var $tmp = variable.axis.range(variable.minValue(),variable.maxValue());
 		$s.pop();
 		return $tmp;
 		$s.pop();

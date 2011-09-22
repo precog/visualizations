@@ -5,7 +5,7 @@
 
 package rg.controller;
 import rg.controller.factory.FactoryLayout;
-import rg.controller.factory.FactoryVariableContexts;
+import rg.controller.factory.FactoryVariable;
 import rg.controller.info.InfoDataContext;
 import rg.controller.info.InfoDomType;
 import rg.controller.info.InfoLayout;
@@ -55,7 +55,7 @@ class App
 		var factoryDataSource = new FactoryDataSource(cache, executor);
 		var factoryDataContext = new FactoryDataContext(factoryDataSource);
 		var datacontexts = params.data.map(function(d : InfoDataContext, _) return factoryDataContext.create(d));
-		var factoryVariableContexts = FactoryVariableContexts.createFromDataContexts(datacontexts);
+		var factoryVariableContexts = FactoryVariable.createFromDataContexts(datacontexts);
 		var independentVariables = factoryVariableContexts.createIndependents(params.variables);
 		var dependentVariables = factoryVariableContexts.createDependents(params.variables);
 		for (context in datacontexts)
@@ -78,9 +78,7 @@ class App
 					el.selectAll("*").remove();
 				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
 		}
-		visualization.setVariables(
-			independentVariables.map(function(c, _) return c.variable),
-			dependentVariables.map(function(c, _) return c.variable));
+		visualization.setVariables(independentVariables, dependentVariables);
 		visualization.init();
 		
 		var request = new DataRequest(cache, datacontexts);
