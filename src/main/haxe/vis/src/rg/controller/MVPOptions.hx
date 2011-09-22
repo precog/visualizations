@@ -180,18 +180,12 @@ class MVPOptions
 			{
 				switch(o.options.visualization)
 				{
-/*					case "piechart":
-						if (null != property)
-						{
-							o.axes = [{ type : property }];
-						} else {
-							o.axes = [{ type : ".#time:" + periodicity, view : [start, end] }];
-						}*/
 					default:
 						var axis : Dynamic = if (null != groupby)
 							{ type : ".#time:" + periodicity, groupby : groupby }
-						else
-							cast { type : ".#time:" + periodicity, view : [start, end] };
+						else {
+							cast { type : ".#time:" + periodicity };
+						}
 						switch(o.options.visualization)
 						{
 							case "barchart":

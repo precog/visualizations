@@ -33,8 +33,8 @@ class FactoryVariableIndependent
 		if (Std.is(axis, AxisTime))
 		{
 			var periodicity = cast(axis, AxisTime).periodicity;
-			min = Dates.snap(defaultMin(normalizeTime(info.min), periodicity), periodicity);
-			max = Dates.snap(defaultMax(normalizeTime(info.max), periodicity), periodicity);
+			min = null != info.min ? Dates.snap(normalizeTime(info.min), periodicity) : null;
+			max = null != info.max ? Dates.snap(normalizeTime(info.max), periodicity) : null;
 		} else if (Std.is(axis, AxisGroupByTime))
 		{
 			var groupaxis = cast(axis, AxisGroupByTime);
@@ -55,7 +55,7 @@ class FactoryVariableIndependent
 			return DateParser.parse(v).getTime();
 		throw new Error("unable to normalize the value '{0}' into a valid date value", v);
 	}
-	
+/*
 	function defaultMin(min : Null<Float>, periodicity : String)
 	{
 		if(null != min)
@@ -97,4 +97,5 @@ class FactoryVariableIndependent
 				throw new Error("invalid periodicity '{0}' for max", periodicity);
 		}
 	}
+*/
 }

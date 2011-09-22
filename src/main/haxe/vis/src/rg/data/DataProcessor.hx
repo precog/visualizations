@@ -11,6 +11,7 @@ import rg.data.VariableDependentContext;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.DataPoints;
 import rg.data.Stats;
+import thx.collection.Set;
 using Arrays;
 
 class DataProcessor
@@ -41,6 +42,7 @@ class DataProcessor
 	
 	public function load()
 	{
+/*
 		var tmin = null, tmax = null;
 		for (variable in independentVariables)
 		{
@@ -51,6 +53,8 @@ class DataProcessor
 			tmax = v.max != 0 ? v.max : null;
 			break;
 		}
+*/
+/*
 		if (null != tmin || null != tmax)
 		{
 			for (ds in sources)
@@ -64,6 +68,7 @@ class DataProcessor
 					query.end = tmax;
 			}
 		}
+*/
 		sources.load();
 	}
 
@@ -84,7 +89,7 @@ class DataProcessor
 		return true;
 	}
 	
-	static function emptyStats() return { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 }
+//	static function emptyStats() return { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 }
 	static function updateStats(variable : rg.data.Variable<Dynamic, IAxis<Dynamic>>, dps : Array<DataPoint>)
 	{
 		variable.stats.addMany(DataPoints.values(dps, variable.type));
@@ -161,7 +166,7 @@ class DataProcessor
 				variable.stats.addMany(values);
 				
 				if (null == variable.min)
-					variable.min = Std.is(variable.stats, StatsNumeric) ? 0 : variable.stats.min;
+					variable.min = variable.stats.isNumeric ? 0 : variable.stats.min;
 				if (null == variable.max)
 					variable.max = variable.stats.max;
 			} else {
@@ -183,16 +188,13 @@ class DataProcessor
 		for (ctx in independentVariables)
 		{
 			if (ctx.partial)
-			{
 				toprocess = true;
-			}
 			var discrete;
 			if (null != ctx.variable.scaleDistribution && null != (discrete = Types.as(ctx.variable.axis, IAxisDiscrete)))
 			{
 				discrete.scaleDistribution = ctx.variable.scaleDistribution;
 				ctx.variable.scaleDistribution = null; // reset to avoid multiple assign
 			}
-			updateStats(cast ctx.variable, flatten);
 		}
 		if (toprocess)
 		{
@@ -206,25 +208,20 @@ class DataProcessor
 	
 	function fillIndependentVariable(variable : VariableIndependent<Dynamic>, data : Array<DataPoint>)
 	{
-		// AxisTime should never be in a context with partial = true that why we cast to AxisOrdinal
-		var axis : AxisOrdinal<Dynamic> = cast variable.axis,
-			property = variable.type,
-			values = axis.values,
-			value;
-		for (dp in data)
+		variable.stats.addMany(DataPoints.values(data, variable.type));
+		var ordinal = Types.as(variable.axis, AxisOrdinal);
+		if (null != ordinal)
 		{
-			if (Reflect.hasField(dp, property))
-			{
-				value = Reflect.field(dp, property);
-				if (!values.exists(value))
-				{
-					if (values.length == 0)
-						variable.min = value;
-					values.add(value);
-					variable.max = value;
-				}
-			}
+			if (null == ordinal.values)
+				ordinal.values = Set.ofArray(variable.stats.values);
+			return;
 		}
+		
+		if (null == variable.min)
+			variable.min = variable.stats.min;
+			
+		if (null == variable.max)
+			variable.max = variable.stats.max;
 	}
 	
 	function getVariableIndependentValues()

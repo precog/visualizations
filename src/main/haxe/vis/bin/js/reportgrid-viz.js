@@ -1744,7 +1744,7 @@ rg.data.IAxisOrdinal.prototype.__class__ = rg.data.IAxisOrdinal;
 rg.data.IAxisOrdinal.__interfaces__ = [rg.data.IAxisDiscrete];
 rg.data.AxisOrdinal = function(arr,set) {
 	if( arr === $_ ) return;
-	if(null != arr) this.values = thx.collection.Set.ofArray(arr); else if(null != set) this.values = set; else this.values = new thx.collection.Set();
+	if(null != arr) this.setValues(thx.collection.Set.ofArray(arr)); else if(null != set) this.setValues(set); else this.setValues(new thx.collection.Set());
 	this.setScaleDistribution(rg.data.ScaleDistribution.ScaleFit);
 }
 rg.data.AxisOrdinal.__name__ = ["rg","data","AxisOrdinal"];
@@ -1783,6 +1783,9 @@ rg.data.AxisOrdinal.prototype.getLast = function() {
 }
 rg.data.AxisOrdinal.prototype.getValues = function() {
 	return this.values;
+}
+rg.data.AxisOrdinal.prototype.setValues = function(v) {
+	return this.values = v;
 }
 rg.data.AxisOrdinal.prototype.getAllTicks = function() {
 	var t = $closure(this,"toTickmark"), f = this.getFirst(), l = this.getLast();
@@ -8710,7 +8713,7 @@ rg.controller.MVPOptions.complete = function(executor,o,handler) {
 	chain.addAction(function(o1,handler1) {
 		if(null == o1.axes) switch(o1.options.visualization) {
 		default:
-			var axis = null != groupby?{ type : ".#time:" + periodicity, groupby : groupby}:{ type : ".#time:" + periodicity, view : [start,end]};
+			var axis = null != groupby?{ type : ".#time:" + periodicity, groupby : groupby}:{ type : ".#time:" + periodicity};
 			switch(o1.options.visualization) {
 			case "barchart":
 				axis.scalemode = "fit";
@@ -9475,6 +9478,7 @@ rg.controller.info.InfoLeaderboard.prototype.__class__ = rg.controller.info.Info
 rg.data.Stats = function(sortf) {
 	if( sortf === $_ ) return;
 	this.sortf = sortf;
+	this.isNumeric = false;
 	this.reset();
 }
 rg.data.Stats.__name__ = ["rg","data","Stats"];
@@ -9483,6 +9487,7 @@ rg.data.Stats.prototype.max = null;
 rg.data.Stats.prototype.count = null;
 rg.data.Stats.prototype.values = null;
 rg.data.Stats.prototype.sortf = null;
+rg.data.Stats.prototype.isNumeric = null;
 rg.data.Stats.prototype.reset = function() {
 	this.min = null;
 	this.max = null;
@@ -9517,6 +9522,7 @@ rg.data.StatsNumeric = function(sortf) {
 	if( sortf === $_ ) return;
 	if(null == sortf) sortf = Floats.compare;
 	rg.data.Stats.call(this,sortf);
+	this.isNumeric = true;
 }
 rg.data.StatsNumeric.__name__ = ["rg","data","StatsNumeric"];
 rg.data.StatsNumeric.__super__ = rg.data.Stats;
@@ -10337,7 +10343,7 @@ rg.controller.factory.FactoryVariableContexts.prototype.createIndependents = fun
 		}(this));
 		if(moveon) continue;
 		v = this.independentFactory.create(i);
-		if(null != (ordinal = Std["is"](v,rg.data.AxisOrdinal)?v:null)) ctx = new rg.data.VariableIndependentContext(v,0 == ordinal.getValues().length); else if(Std["is"](v.axis,rg.data.AxisTime)) ctx = new rg.data.VariableIndependentContext(v,false); else ctx = new rg.data.VariableIndependentContext(v,null == v.max || null == v.min);
+		if(null != (ordinal = Std["is"](v,rg.data.AxisOrdinal)?v:null)) ctx = new rg.data.VariableIndependentContext(v,ordinal.getValues() == null || 0 == ordinal.getValues().length); else ctx = new rg.data.VariableIndependentContext(v,null == v.max || null == v.min);
 		result.push(ctx);
 	}
 	return result;
@@ -12091,8 +12097,8 @@ rg.data.source.DataSourceReportGrid = function(executor,path,event,query,groupby
 		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 90, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 	}
 	this.path = path;
-	this.start = start;
-	this.end = end;
+	this.timeStart = start;
+	this.timeEnd = end;
 	this.onLoad = new hxevents.Dispatcher();
 }
 rg.data.source.DataSourceReportGrid.__name__ = ["rg","data","source","DataSourceReportGrid"];
@@ -12140,8 +12146,8 @@ rg.data.source.DataSourceReportGrid.prototype.where = null;
 rg.data.source.DataSourceReportGrid.prototype.periodicity = null;
 rg.data.source.DataSourceReportGrid.prototype.event = null;
 rg.data.source.DataSourceReportGrid.prototype.path = null;
-rg.data.source.DataSourceReportGrid.prototype.start = null;
-rg.data.source.DataSourceReportGrid.prototype.end = null;
+rg.data.source.DataSourceReportGrid.prototype.timeStart = null;
+rg.data.source.DataSourceReportGrid.prototype.timeEnd = null;
 rg.data.source.DataSourceReportGrid.prototype.groupBy = null;
 rg.data.source.DataSourceReportGrid.prototype.timeZone = null;
 rg.data.source.DataSourceReportGrid.prototype.transform = null;
@@ -12162,9 +12168,9 @@ rg.data.source.DataSourceReportGrid.prototype.mapProperties = function(d,_) {
 rg.data.source.DataSourceReportGrid.prototype.basicOptions = function(appendPeriodicity) {
 	if(appendPeriodicity == null) appendPeriodicity = true;
 	var o = { };
-	if(null != this.start) o["start"] = this.start;
-	if(null != this.end) {
-		var e = rg.util.Periodicity.next(this.periodicity,this.end);
+	if(null != this.timeStart) o["start"] = this.timeStart;
+	if(null != this.timeEnd) {
+		var e = rg.util.Periodicity.next(this.periodicity,this.timeEnd);
 		o["end"] = e;
 	}
 	if(appendPeriodicity) {
@@ -12567,8 +12573,8 @@ rg.controller.factory.FactoryVariableIndependent.prototype.create = function(inf
 			$r = $t;
 			return $r;
 		}(this))).periodicity;
-		min = Dates.snap(this.defaultMin(this.normalizeTime(info.min),periodicity),periodicity);
-		max = Dates.snap(this.defaultMax(this.normalizeTime(info.max),periodicity),periodicity);
+		min = null != info.min?Dates.snap(this.normalizeTime(info.min),periodicity):null;
+		max = null != info.max?Dates.snap(this.normalizeTime(info.max),periodicity):null;
 	} else if(Std["is"](axis,rg.data.AxisGroupByTime)) {
 		var groupaxis = (function($this) {
 			var $r;
@@ -12594,40 +12600,6 @@ rg.controller.factory.FactoryVariableIndependent.prototype.normalizeTime = funct
 	}(this))).getTime();
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
 	throw new thx.error.Error("unable to normalize the value '{0}' into a valid date value",v,null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 56, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "normalizeTime"});
-}
-rg.controller.factory.FactoryVariableIndependent.prototype.defaultMin = function(min,periodicity) {
-	if(null != min) return min;
-	switch(periodicity) {
-	case "eternity":
-		return null;
-	case "minute":
-		return thx.date.DateParser.parse("360 minutes ago").getTime();
-	case "hour":
-		return thx.date.DateParser.parse("24 hours ago").getTime();
-	case "day":
-		return thx.date.DateParser.parse("30 days ago").getTime();
-	case "week":
-		return thx.date.DateParser.parse("16 weeks ago").getTime();
-	case "month":
-		return thx.date.DateParser.parse("12 months ago").getTime();
-	case "year":
-		return thx.date.DateParser.parse("6 years ago").getTime();
-	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for min",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 80, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMin"});
-	}
-}
-rg.controller.factory.FactoryVariableIndependent.prototype.defaultMax = function(max,periodicity) {
-	if(null != max) return max;
-	switch(periodicity) {
-	case "eternity":
-		return null;
-	case "minute":case "hour":
-		return thx.date.DateParser.parse("now").getTime();
-	case "day":case "week":case "month":case "year":
-		return thx.date.DateParser.parse("today").getTime();
-	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for max",null,periodicity,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 97, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "defaultMax"});
-	}
 }
 rg.controller.factory.FactoryVariableIndependent.prototype.__class__ = rg.controller.factory.FactoryVariableIndependent;
 rg.data.VariableIndependentContext = function(variable,partial) {
@@ -13771,9 +13743,6 @@ rg.data.DataProcessor = function(sources) {
 	this.onData = new hxevents.Dispatcher();
 }
 rg.data.DataProcessor.__name__ = ["rg","data","DataProcessor"];
-rg.data.DataProcessor.emptyStats = function() {
-	return { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0};
-}
 rg.data.DataProcessor.updateStats = function(variable,dps) {
 	variable.stats.addMany(rg.util.DataPoints.values(dps,variable.type));
 }
@@ -13788,27 +13757,6 @@ rg.data.DataProcessor.prototype.scale = function(s) {
 	return s;
 }
 rg.data.DataProcessor.prototype.load = function() {
-	var tmin = null, tmax = null;
-	var _g = 0, _g1 = this.independentVariables;
-	while(_g < _g1.length) {
-		var variable = _g1[_g];
-		++_g;
-		var v = variable.variable;
-		if(!Std["is"](v.axis,rg.data.AxisTime) && !Std["is"](v.axis,rg.data.AxisGroupByTime)) continue;
-		tmin = v.min != 0?v.min:null;
-		tmax = v.max != 0?v.max:null;
-		break;
-	}
-	if(null != tmin || null != tmax) {
-		var $it0 = this.sources.iterator();
-		while( $it0.hasNext() ) {
-			var ds = $it0.next();
-			var query = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
-			if(null == query) continue;
-			if(null != tmin && null == query.start) query.start = tmin;
-			if(null != tmax && null == query.end) query.end = tmax;
-		}
-	}
 	this.sources.load();
 }
 rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
@@ -13880,7 +13828,7 @@ rg.data.DataProcessor.prototype.fillDependentVariables = function(data) {
 			if(values.length == 0) continue;
 			if(null == variable.axis) variable.setAxis(new rg.controller.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float)));
 			variable.stats.addMany(values);
-			if(null == variable.min) variable.min = Std["is"](variable.stats,rg.data.StatsNumeric)?0:variable.stats.min;
+			if(null == variable.min) variable.min = variable.stats.isNumeric?0:variable.stats.min;
 			if(null == variable.max) variable.max = variable.stats.max;
 		} else rg.data.DataProcessor.updateStats(ctx.variable,data);
 		var discrete;
@@ -13902,7 +13850,6 @@ rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
 			discrete.setScaleDistribution(ctx.variable.scaleDistribution);
 			ctx.variable.scaleDistribution = null;
 		}
-		rg.data.DataProcessor.updateStats(ctx.variable,flatten);
 	}
 	if(toprocess) {
 		var _g = 0, _g1 = this.independentVariables;
@@ -13914,20 +13861,14 @@ rg.data.DataProcessor.prototype.fillIndependentVariables = function(data) {
 	}
 }
 rg.data.DataProcessor.prototype.fillIndependentVariable = function(variable,data) {
-	var axis = variable.axis, property = variable.type, values = axis.getValues(), value;
-	var _g = 0;
-	while(_g < data.length) {
-		var dp = data[_g];
-		++_g;
-		if(Reflect.hasField(dp,property)) {
-			value = Reflect.field(dp,property);
-			if(!values.exists(value)) {
-				if(values.length == 0) variable.min = value;
-				values.add(value);
-				variable.max = value;
-			}
-		}
+	variable.stats.addMany(rg.util.DataPoints.values(data,variable.type));
+	var ordinal = Types["as"](variable.axis,rg.data.AxisOrdinal);
+	if(null != ordinal) {
+		if(null == ordinal.getValues()) ordinal.setValues(thx.collection.Set.ofArray(variable.stats.values));
+		return;
 	}
+	if(null == variable.min) variable.min = variable.stats.min;
+	if(null == variable.max) variable.max = variable.stats.max;
 }
 rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	return Arrays.product(this.independentVariables.map(function(d,i) {

@@ -14,7 +14,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 {
 	public var first(getFirst, null) : T;
 	public var last(getLast, null) : T;
-	public var values(getValues, null): Set<T>;
+	public var values(getValues, setValues): Set<T>;
 	public var allTicks (getAllTicks, null): Array<ITickmark<T>>;
 	public var scaleDistribution(default, setScaleDistribution) : ScaleDistribution;
 // TODO, this should probably go outside this class, probably should affect the ITickmark collection
@@ -73,6 +73,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	function getFirst() return values.first()
 	function getLast() return values.last()
 	function getValues() return values
+	function setValues(v : Set<T>) return values = v
 	function getAllTicks()
 	{
 		var t = toTickmark,

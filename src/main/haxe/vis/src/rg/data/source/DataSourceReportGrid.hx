@@ -34,8 +34,8 @@ class DataSourceReportGrid implements IDataSource
 	// general query stuff
 	public var event(default, null) : String;
 	public var path(default, null) : String;
-	public var start : Float;
-	public var end : Float;
+	public var timeStart : Float;
+	public var timeEnd : Float;
 	public var groupBy : Null<String>;
 	public var timeZone : Null<String>;
 	
@@ -91,19 +91,19 @@ class DataSourceReportGrid implements IDataSource
 		}
 		
 		this.path = path;
-		this.start = start;
-		this.end = end;
+		this.timeStart = start;
+		this.timeEnd = end;
 		this.onLoad = new Dispatcher();
 	}
 	
 	function basicOptions(appendPeriodicity = true) : Dynamic
 	{
 		var o = { };
-		if (null != start)
-			Reflect.setField(o, "start", start);
-		if (null != end)
+		if (null != timeStart)
+			Reflect.setField(o, "start", timeStart);
+		if (null != timeEnd)
 		{
-			var e = Periodicity.next(periodicity, end);
+			var e = Periodicity.next(periodicity, timeEnd);
 			Reflect.setField(o, "end", e); // since end is not inclusive we have to extend the query span
 		}
 		if (appendPeriodicity)

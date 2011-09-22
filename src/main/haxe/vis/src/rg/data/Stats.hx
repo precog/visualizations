@@ -14,10 +14,12 @@ class Stats<T>
 	public var count(default, null) : Int;
 	public var values(default, null) : Array<T>;
 	public var sortf(default, null) : T -> T -> Int;
+	public var isNumeric(default, null) : Bool;
 	
 	public function new(?sortf : T -> T -> Int)
 	{
 		this.sortf = sortf;
+		isNumeric = false;
 		reset();
 	}
 	
@@ -69,6 +71,7 @@ class StatsNumeric extends Stats<Float>
 		if (null == sortf)
 			sortf = Floats.compare;
 		super(sortf);
+		isNumeric = true;
 	}
 	
 	override function reset() : Stats<Float>

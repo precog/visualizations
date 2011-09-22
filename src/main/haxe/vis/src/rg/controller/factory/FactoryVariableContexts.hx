@@ -45,9 +45,7 @@ class FactoryVariableContexts
 			v = independentFactory.create(i);
 			if (null != (ordinal = Types.as(v, AxisOrdinal)))
 			{
-				ctx = new VariableIndependentContext(v, 0 == ordinal.values.length);
-			} else if (Std.is(v.axis, AxisTime)) {
-				ctx = new VariableIndependentContext(v, false);
+				ctx = new VariableIndependentContext(v, ordinal.values == null || 0 == ordinal.values.length);
 			} else {
 				ctx = new VariableIndependentContext(v, null == v.max || null == v.min );
 			}
