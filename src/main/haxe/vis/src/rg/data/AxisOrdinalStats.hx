@@ -4,12 +4,7 @@
  */
 
 package rg.data;
-import thx.benchmark.SpeedTest;
-import thx.error.Error;
-import thx.collection.Set;
 import rg.data.ScaleDistribution;
-using Arrays;
-using thx.collection.Sets;
 
 class AxisOrdinalStats<T> extends AxisOrdinal<T>
 {

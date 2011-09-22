@@ -4,12 +4,10 @@
  */
 
 package rg.data;
-import thx.benchmark.SpeedTest;
 import thx.error.AbstractMethod;
 import thx.error.Error;
 import rg.data.ScaleDistribution;
 using Arrays;
-using thx.collection.Sets;
 
 class AxisOrdinal<T> implements IAxisOrdinal<T>
 {

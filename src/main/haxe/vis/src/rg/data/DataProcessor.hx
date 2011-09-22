@@ -9,7 +9,6 @@ import rg.controller.factory.FactoryAxis;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.DataPoints;
 import rg.data.Stats;
-import thx.collection.Set;
 using Arrays;
 
 class DataProcessor

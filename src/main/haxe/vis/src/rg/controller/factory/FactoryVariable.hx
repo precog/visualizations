@@ -5,14 +5,9 @@
 
 package rg.controller.factory;
 import rg.controller.info.InfoVariable;
-import rg.data.source.rgquery.QueryAst;
-import rg.data.IDataSource;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.Properties;
 import thx.collection.Set;
-import rg.data.IAxisDiscrete;
-import rg.data.AxisOrdinal;
-import rg.data.AxisTime;
 import rg.data.DataContext;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;

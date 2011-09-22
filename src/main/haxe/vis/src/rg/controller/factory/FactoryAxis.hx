@@ -48,10 +48,3 @@ class FactoryAxis
 			return new AxisOrdinalStats(variable);
 	}
 }
-
-enum AxisHint
-{
-	Unknown;
-	Numeric;
-	Samples(values : Array<Dynamic>);
-}

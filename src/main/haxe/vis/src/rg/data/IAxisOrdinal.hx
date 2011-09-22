@@ -4,7 +4,6 @@
  */
 
 package rg.data;
-import thx.collection.Set;
 
 interface IAxisOrdinal<T> implements IAxisDiscrete<T> 
 {

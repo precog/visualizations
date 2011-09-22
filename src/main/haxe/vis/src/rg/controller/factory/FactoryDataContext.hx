@@ -7,8 +7,6 @@ package rg.controller.factory;
 import rg.controller.info.InfoDataContext;
 import rg.data.DataContext;
 import rg.data.DataProcessor;
-import rg.data.IDataSource;
-import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.Sources;
 import thx.error.Error;
 import rg.data.DataPoint;
@@ -34,7 +32,6 @@ class FactoryDataContext
 		{
 			processor.transform = function(dps : Array<Array<DataPoint>>)
 			{
-//				trace(dps);
 				var res : Dynamic = untyped info.transform.apply(__this__, dps);
 				if (null == res)
 					return [[]];
@@ -42,7 +39,6 @@ class FactoryDataContext
 					res = [res];
 				if (!Std.is(res[0], Array))
 					res = [res];
-//				trace(res);
 				return res;
 			}
 		}
@@ -51,7 +47,6 @@ class FactoryDataContext
 		{
 			processor.scale = function(dps : Array<Array<DataPoint>>)
 			{
-//				trace(dps);
 				var res : Dynamic = untyped info.scale.apply(__this__, dps);
 				if (null == res)
 					return [[]];
@@ -59,16 +54,9 @@ class FactoryDataContext
 					res = [res];
 				if (!Std.is(res[0], Array))
 					res = [res];
-//				trace(res);
 				return res;
 			}
 		}
-/*
-		if (null != info.scale)
-		{
-			processor.scale = info.scale;
-		}
-*/
 		return new DataContext(info.name, processor);
 	}
 }

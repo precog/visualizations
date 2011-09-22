@@ -47,16 +47,4 @@ class FactoryVariableIndependent
 		}
 		return function(_) return value;
 	}
-/*	
-	function normalizeTime(v : Dynamic) : Null<Float>
-	{
-		if (null == v || Std.is(v, Float))
-			return v;
-		if (Std.is(v, Date))
-			return cast(v, Date).getTime();
-		if (Std.is(v, String))
-			return DateParser.parse(v).getTime();
-		throw new Error("unable to normalize the value '{0}' into a valid date value", v);
-	}
-*/
 }

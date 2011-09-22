@@ -4,8 +4,6 @@
  */
 
 package rg.data;
-import thx.error.NotImplemented;
-import thx.math.Const;
 using Arrays;
 
 class AxisNumeric implements IAxis<Float>

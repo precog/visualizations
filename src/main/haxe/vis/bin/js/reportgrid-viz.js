@@ -964,6 +964,131 @@ rg.data.source.rgquery.transform.TransformTimeSeries.prototype.transform = funct
 }
 rg.data.source.rgquery.transform.TransformTimeSeries.prototype.__class__ = rg.data.source.rgquery.transform.TransformTimeSeries;
 rg.data.source.rgquery.transform.TransformTimeSeries.__interfaces__ = [rg.data.source.ITransform];
+rg.data.AxisNumeric = function(p) {
+	$s.push("rg.data.AxisNumeric::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
+rg.data.AxisNumeric._step = function(span,m) {
+	$s.push("rg.data.AxisNumeric::_step");
+	var $spos = $s.length;
+	var step = Math.pow(m,Math.floor(Math.log(span / m) / Math.log(m))), err = m / (span / step);
+	if(err <= .05) step *= 10; else if(err <= .2) step *= 5; else if(err <= .4) step *= 4; else if(err <= .6) step *= 2;
+	$s.pop();
+	return step;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
+	$s.push("rg.data.AxisNumeric::scale");
+	var $spos = $s.length;
+	if(start == end) {
+		$s.pop();
+		return start;
+	}
+	var $tmp = (Floats.uninterpolatef(start,end))(v);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
+	$s.push("rg.data.AxisNumeric::ticks");
+	var $spos = $s.length;
+	var span, step = 1.0, minors, majors;
+	if(start % step == 0 && end % step == 0 && (span = end - start) < 10 && span >= step) {
+		majors = Floats.range(start,end + step,step);
+		minors = null;
+	} else {
+		minors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,10)),step);
+		majors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,5)),step);
+	}
+	var $tmp = rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
+		$s.push("rg.data.AxisNumeric::ticks@31");
+		var $spos = $s.length;
+		var $tmp = new rg.data.Tickmark(d,true,(d - start) / (end - start));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}):minors.map(function(d,i) {
+		$s.push("rg.data.AxisNumeric::ticks@32");
+		var $spos = $s.length;
+		var $tmp = new rg.data.Tickmark(d,majors.remove(d),(d - start) / (end - start));
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}),maxTicks);
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.min = function(stats) {
+	$s.push("rg.data.AxisNumeric::min");
+	var $spos = $s.length;
+	if(stats.min < 0) {
+		var $tmp = stats.min;
+		$s.pop();
+		return $tmp;
+	} else {
+		$s.pop();
+		return 0.0;
+	}
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.max = function(stats) {
+	$s.push("rg.data.AxisNumeric::max");
+	var $spos = $s.length;
+	if(stats.max < 0) {
+		$s.pop();
+		return 0.0;
+	} else {
+		var $tmp = stats.max;
+		$s.pop();
+		return $tmp;
+	}
+	$s.pop();
+}
+rg.data.AxisNumeric.prototype.__class__ = rg.data.AxisNumeric;
+rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
+if(!rg.controller.info) rg.controller.info = {}
+rg.controller.info.InfoSegment = function(p) {
+	$s.push("rg.controller.info.InfoSegment::new");
+	var $spos = $s.length;
+	$s.pop();
+}
+rg.controller.info.InfoSegment.__name__ = ["rg","controller","info","InfoSegment"];
+rg.controller.info.InfoSegment.filters = function() {
+	$s.push("rg.controller.info.InfoSegment::filters");
+	var $spos = $s.length;
+	var $tmp = [{ field : "on", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@20");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "transform", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@24");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "scale", validator : function(v) {
+		$s.push("rg.controller.info.InfoSegment::filters@28");
+		var $spos = $s.length;
+		var $tmp = Reflect.isFunction(v);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null}];
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.controller.info.InfoSegment.prototype.on = null;
+rg.controller.info.InfoSegment.prototype.transform = null;
+rg.controller.info.InfoSegment.prototype.scale = null;
+rg.controller.info.InfoSegment.prototype.__class__ = rg.controller.info.InfoSegment;
 IntHash = function(p) {
 	if( p === $_ ) return;
 	$s.push("IntHash::new");
@@ -1064,131 +1189,6 @@ IntHash.prototype.toString = function() {
 	$s.pop();
 }
 IntHash.prototype.__class__ = IntHash;
-rg.data.AxisNumeric = function(p) {
-	$s.push("rg.data.AxisNumeric::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
-rg.data.AxisNumeric._step = function(span,m) {
-	$s.push("rg.data.AxisNumeric::_step");
-	var $spos = $s.length;
-	var step = Math.pow(m,Math.floor(Math.log(span / m) / Math.log(m))), err = m / (span / step);
-	if(err <= .05) step *= 10; else if(err <= .2) step *= 5; else if(err <= .4) step *= 4; else if(err <= .6) step *= 2;
-	$s.pop();
-	return step;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.scale = function(start,end,v) {
-	$s.push("rg.data.AxisNumeric::scale");
-	var $spos = $s.length;
-	if(start == end) {
-		$s.pop();
-		return start;
-	}
-	var $tmp = (Floats.uninterpolatef(start,end))(v);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
-	$s.push("rg.data.AxisNumeric::ticks");
-	var $spos = $s.length;
-	var span, step = 1.0, minors, majors;
-	if(start % step == 0 && end % step == 0 && (span = end - start) < 10 && span >= step) {
-		majors = Floats.range(start,end + step,step);
-		minors = null;
-	} else {
-		minors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,10)),step);
-		majors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,5)),step);
-	}
-	var $tmp = rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
-		$s.push("rg.data.AxisNumeric::ticks@33");
-		var $spos = $s.length;
-		var $tmp = new rg.data.Tickmark(d,true,(d - start) / (end - start));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}):minors.map(function(d,i) {
-		$s.push("rg.data.AxisNumeric::ticks@34");
-		var $spos = $s.length;
-		var $tmp = new rg.data.Tickmark(d,majors.remove(d),(d - start) / (end - start));
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}),maxTicks);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.min = function(stats) {
-	$s.push("rg.data.AxisNumeric::min");
-	var $spos = $s.length;
-	if(stats.min < 0) {
-		var $tmp = stats.min;
-		$s.pop();
-		return $tmp;
-	} else {
-		$s.pop();
-		return 0.0;
-	}
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.max = function(stats) {
-	$s.push("rg.data.AxisNumeric::max");
-	var $spos = $s.length;
-	if(stats.max < 0) {
-		$s.pop();
-		return 0.0;
-	} else {
-		var $tmp = stats.max;
-		$s.pop();
-		return $tmp;
-	}
-	$s.pop();
-}
-rg.data.AxisNumeric.prototype.__class__ = rg.data.AxisNumeric;
-rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
-if(!rg.controller.info) rg.controller.info = {}
-rg.controller.info.InfoSegment = function(p) {
-	$s.push("rg.controller.info.InfoSegment::new");
-	var $spos = $s.length;
-	$s.pop();
-}
-rg.controller.info.InfoSegment.__name__ = ["rg","controller","info","InfoSegment"];
-rg.controller.info.InfoSegment.filters = function() {
-	$s.push("rg.controller.info.InfoSegment::filters");
-	var $spos = $s.length;
-	var $tmp = [{ field : "on", validator : function(v) {
-		$s.push("rg.controller.info.InfoSegment::filters@20");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "transform", validator : function(v) {
-		$s.push("rg.controller.info.InfoSegment::filters@24");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "scale", validator : function(v) {
-		$s.push("rg.controller.info.InfoSegment::filters@28");
-		var $spos = $s.length;
-		var $tmp = Reflect.isFunction(v);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null}];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-rg.controller.info.InfoSegment.prototype.on = null;
-rg.controller.info.InfoSegment.prototype.transform = null;
-rg.controller.info.InfoSegment.prototype.scale = null;
-rg.controller.info.InfoSegment.prototype.__class__ = rg.controller.info.InfoSegment;
 rg.controller.visualization.VisualizationCartesian = function(layout) {
 	if( layout === $_ ) return;
 	$s.push("rg.controller.visualization.VisualizationCartesian::new");
@@ -3954,14 +3954,6 @@ rg.controller.factory.FactoryAxis.prototype.createDiscrete = function(type,varia
 	$s.pop();
 }
 rg.controller.factory.FactoryAxis.prototype.__class__ = rg.controller.factory.FactoryAxis;
-rg.controller.factory.AxisHint = { __ename__ : ["rg","controller","factory","AxisHint"], __constructs__ : ["Unknown","Numeric","Samples"] }
-rg.controller.factory.AxisHint.Unknown = ["Unknown",0];
-rg.controller.factory.AxisHint.Unknown.toString = $estr;
-rg.controller.factory.AxisHint.Unknown.__enum__ = rg.controller.factory.AxisHint;
-rg.controller.factory.AxisHint.Numeric = ["Numeric",1];
-rg.controller.factory.AxisHint.Numeric.toString = $estr;
-rg.controller.factory.AxisHint.Numeric.__enum__ = rg.controller.factory.AxisHint;
-rg.controller.factory.AxisHint.Samples = function(values) { var $x = ["Samples",2,values]; $x.__enum__ = rg.controller.factory.AxisHint; $x.toString = $estr; return $x; }
 thx.js.AccessProperty = function(name,selection) {
 	if( name === $_ ) return;
 	$s.push("thx.js.AccessProperty::new");
@@ -4500,8 +4492,8 @@ rg.data.AxisOrdinal.prototype.range = function(start,end) {
 	$s.push("rg.data.AxisOrdinal::range");
 	var $spos = $s.length;
 	var values = this.values(), s = values.indexOf(start), e = values.indexOf(end);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 43, className : "rg.data.AxisOrdinal", methodName : "range"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 45, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 41, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 43, className : "rg.data.AxisOrdinal", methodName : "range"});
 	var $tmp = values.slice(s,e + 1);
 	$s.pop();
 	return $tmp;
@@ -4511,9 +4503,9 @@ rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisOrdinal::scale");
 	var $spos = $s.length;
 	var values = this.values(), s = values.indexOf(start), e = values.indexOf(end), p = values.indexOf(v);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 56, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 58, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 60, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 54, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 56, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 58, className : "rg.data.AxisOrdinal", methodName : "scale"});
 	var $tmp = rg.data.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
 	$s.pop();
 	return $tmp;
@@ -4540,7 +4532,7 @@ rg.data.AxisOrdinal.prototype.values = function() {
 	var $spos = $s.length;
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 66, className : "rg.data.AxisOrdinal", methodName : "values"});
+		throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.data.AxisOrdinal", methodName : "values"});
 		return $r;
 	}(this));
 	$s.pop();
@@ -4553,7 +4545,7 @@ rg.data.AxisOrdinal.prototype.allTicks = function() {
 	var me = this;
 	var f = this.first(), l = this.last();
 	var $tmp = this.range(f,l).map(function(d,i) {
-		$s.push("rg.data.AxisOrdinal::allTicks@71");
+		$s.push("rg.data.AxisOrdinal::allTicks@69");
 		var $spos = $s.length;
 		var $tmp = me.toTickmark(f,l,d);
 		$s.pop();
@@ -8410,7 +8402,7 @@ rg.controller.factory.FactoryDataContext.prototype.factoryDataSource = null;
 rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	$s.push("rg.controller.factory.FactoryDataContext::create");
 	var $spos = $s.length;
-	if(info.sources.length == 0) throw new thx.error.Error("the data object does not contain valid data sources information",null,null,{ fileName : "FactoryDataContext.hx", lineNumber : 27, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
+	if(info.sources.length == 0) throw new thx.error.Error("the data object does not contain valid data sources information",null,null,{ fileName : "FactoryDataContext.hx", lineNumber : 25, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
 	var sources = [];
 	var _g = 0, _g1 = info.sources;
 	while(_g < _g1.length) {
@@ -8420,7 +8412,7 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 	}
 	var processor = new rg.data.DataProcessor(new rg.data.Sources(sources));
 	if(null != info.transform) processor.transform = function(dps) {
-		$s.push("rg.controller.factory.FactoryDataContext::create@35");
+		$s.push("rg.controller.factory.FactoryDataContext::create@33");
 		var $spos = $s.length;
 		var res = info.transform.apply(this,dps);
 		if(null == res) {
@@ -8435,7 +8427,7 @@ rg.controller.factory.FactoryDataContext.prototype.create = function(info) {
 		$s.pop();
 	};
 	if(null != info.scale) processor.scale = function(dps) {
-		$s.push("rg.controller.factory.FactoryDataContext::create@52");
+		$s.push("rg.controller.factory.FactoryDataContext::create@48");
 		var $spos = $s.length;
 		var res = info.scale.apply(this,dps);
 		if(null == res) {
@@ -15885,7 +15877,7 @@ rg.data.Variable.prototype.getMaxF = function() {
 	$s.push("rg.data.Variable::getMaxF");
 	var $spos = $s.length;
 	if(null == this.maxf) {
-		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 62, className : "rg.data.Variable", methodName : "getMaxF"});
+		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 60, className : "rg.data.Variable", methodName : "getMaxF"});
 		this.setMaxF($closure(this.axis,"max"));
 	}
 	var $tmp = this.maxf;
@@ -15905,49 +15897,6 @@ rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
 rg.data.VariableIndependent.__super__ = rg.data.Variable;
 for(var k in rg.data.Variable.prototype ) rg.data.VariableIndependent.prototype[k] = rg.data.Variable.prototype[k];
 rg.data.VariableIndependent.prototype.__class__ = rg.data.VariableIndependent;
-thx.collection.Sets = function() { }
-thx.collection.Sets.__name__ = ["thx","collection","Sets"];
-thx.collection.Sets.indexOf = function(set,value) {
-	$s.push("thx.collection.Sets::indexOf");
-	var $spos = $s.length;
-	var $tmp = set._v.indexOf(value);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.collection.Sets.first = function(set) {
-	$s.push("thx.collection.Sets::first");
-	var $spos = $s.length;
-	var $tmp = set._v[0];
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.collection.Sets.last = function(set) {
-	$s.push("thx.collection.Sets::last");
-	var $spos = $s.length;
-	var $tmp = Arrays.last(set._v);
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.collection.Sets.order = function(set,f) {
-	$s.push("thx.collection.Sets::order");
-	var $spos = $s.length;
-	set._v.sort(null == f?Dynamics.compare:f);
-	$s.pop();
-	return set;
-	$s.pop();
-}
-thx.collection.Sets.arr = function(set) {
-	$s.push("thx.collection.Sets::arr");
-	var $spos = $s.length;
-	var $tmp = set._v;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.collection.Sets.prototype.__class__ = thx.collection.Sets;
 thx.math.scale.LinearT = function(p) {
 	if( p === $_ ) return;
 	$s.push("thx.math.scale.LinearT::new");
@@ -16597,7 +16546,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype.redraw = function() {
 	var tick = this.g.selectAll("g.tick").data(data,$closure(this,"id"));
 	var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
 	if(this.displayMinor) enter.filter(function(d,i) {
-		$s.push("rg.view.svg.layer.TickmarksOrtho::redraw@139");
+		$s.push("rg.view.svg.layer.TickmarksOrtho::redraw@138");
 		var $spos = $s.length;
 		var $tmp = !d.major;
 		$s.pop();
@@ -16605,7 +16554,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype.redraw = function() {
 		$s.pop();
 	}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($closure(this,"tickClass"));
 	if(this.displayMajor) enter.filter(function(d,i) {
-		$s.push("rg.view.svg.layer.TickmarksOrtho::redraw@150");
+		$s.push("rg.view.svg.layer.TickmarksOrtho::redraw@149");
 		var $spos = $s.length;
 		var $tmp = d.major;
 		$s.pop();
@@ -16919,149 +16868,6 @@ rg.view.svg.layer.TickmarksOrtho.prototype.tickClass = function(d,i) {
 	$s.pop();
 }
 rg.view.svg.layer.TickmarksOrtho.prototype.__class__ = rg.view.svg.layer.TickmarksOrtho;
-if(!thx.benchmark) thx.benchmark = {}
-thx.benchmark.SpeedTest = function(repetitions,testDelay,averages) {
-	if( repetitions === $_ ) return;
-	$s.push("thx.benchmark.SpeedTest::new");
-	var $spos = $s.length;
-	if(averages == null) averages = 5;
-	if(testDelay == null) testDelay = 0;
-	if(repetitions == null) repetitions = 10000;
-	this.testDelay = testDelay;
-	this.averages = averages;
-	this.repetitions = repetitions;
-	this.tests = [];
-	this.descriptions = [];
-	this.reference = -1;
-	$s.pop();
-}
-thx.benchmark.SpeedTest.__name__ = ["thx","benchmark","SpeedTest"];
-thx.benchmark.SpeedTest.getTimer = function() {
-	$s.push("thx.benchmark.SpeedTest::getTimer");
-	var $spos = $s.length;
-	var $tmp = Date.now().getTime();
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.benchmark.SpeedTest.prototype.add = function(description,f,isReference) {
-	$s.push("thx.benchmark.SpeedTest::add");
-	var $spos = $s.length;
-	if(isReference == null) isReference = false;
-	this.descriptions.push(description);
-	var id = this.tests.length;
-	this.tests.push({ id : id, f : f});
-	if(isReference) this.reference = id;
-	$s.pop();
-	return this;
-	$s.pop();
-}
-thx.benchmark.SpeedTest.prototype.execute = function(handler) {
-	$s.push("thx.benchmark.SpeedTest::execute");
-	var $spos = $s.length;
-	this.handler = handler;
-	if(null == this.handler) this.handler = function(s) {
-		$s.push("thx.benchmark.SpeedTest::execute@34");
-		var $spos = $s.length;
-		haxe.Log.trace("\n" + s,{ fileName : "SpeedTest.hx", lineNumber : 34, className : "thx.benchmark.SpeedTest", methodName : "execute"});
-		$s.pop();
-	};
-	this.results = [];
-	var _g1 = 0, _g = this.tests.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		this.results[i] = 0;
-	}
-	this.toPerform = this.averages;
-	this.handleRound();
-	$s.pop();
-}
-thx.benchmark.SpeedTest.prototype.reference = null;
-thx.benchmark.SpeedTest.prototype.testDelay = null;
-thx.benchmark.SpeedTest.prototype.averages = null;
-thx.benchmark.SpeedTest.prototype.repetitions = null;
-thx.benchmark.SpeedTest.prototype.tests = null;
-thx.benchmark.SpeedTest.prototype.descriptions = null;
-thx.benchmark.SpeedTest.prototype.results = null;
-thx.benchmark.SpeedTest.prototype.toPerform = null;
-thx.benchmark.SpeedTest.prototype.handler = null;
-thx.benchmark.SpeedTest.prototype.test = function(f) {
-	$s.push("thx.benchmark.SpeedTest::test");
-	var $spos = $s.length;
-	var start = Date.now().getTime();
-	f(this.repetitions);
-	var $tmp = Date.now().getTime() - start;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.benchmark.SpeedTest.prototype.takeRound = function() {
-	$s.push("thx.benchmark.SpeedTest::takeRound");
-	var $spos = $s.length;
-	var arr = this.tests.copy();
-	while(arr.length > 0) {
-		var t = arr.splice(Std.random(arr.length),1)[0];
-		this.results[t.id] += this.test(t.f);
-	}
-	this.handleRound();
-	$s.pop();
-}
-thx.benchmark.SpeedTest.prototype.handleRound = function() {
-	$s.push("thx.benchmark.SpeedTest::handleRound");
-	var $spos = $s.length;
-	this.toPerform--;
-	if(this.toPerform >= 0) haxe.Timer.delay($closure(this,"takeRound"),this.testDelay); else this.handler(this.getOutput());
-	$s.pop();
-}
-thx.benchmark.SpeedTest.prototype.getOutput = function() {
-	$s.push("thx.benchmark.SpeedTest::getOutput");
-	var $spos = $s.length;
-	var sl = 0;
-	var slowest = -1.0;
-	var bd = 0;
-	var ad = 0;
-	var r = [];
-	var _g1 = 0, _g = this.descriptions.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var d = this.descriptions[i];
-		if(d.length > sl) sl = d.length;
-		if(slowest < 0 || slowest < this.results[i]) slowest = this.results[i];
-		var n = ("" + this.results[i] / this.averages).split(".");
-		if(bd < n[0].length) bd = n[0].length;
-		if(n.length == 1) n[1] = ""; else if(n[1].length > 4) n[1] = n[1].substr(0,4);
-		if(n[1].length > ad) ad = n[1].length;
-		r.push(n);
-	}
-	sl += 3;
-	var s = new StringBuf();
-	s.b[s.b.length] = "test repeated " + this.repetitions + " time(s), average on " + this.averages + " cycle(s)\n\n";
-	if(this.reference >= 0) slowest = this.results[this.reference];
-	var _g1 = 0, _g = this.descriptions.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var d = this.descriptions[i];
-		s.b[s.b.length] = StringTools.rpad(d,".",sl);
-		s.b[s.b.length] = ": ";
-		s.b[s.b.length] = StringTools.lpad(r[i][0]," ",bd);
-		s.b[s.b.length] = ".";
-		s.b[s.b.length] = StringTools.rpad(r[i][1],"0",ad);
-		s.b[s.b.length] = " ms. ";
-		if(this.reference < 0) {
-			var v = Math.round(100 * slowest / this.results[i]);
-			s.b[s.b.length] = v + " %";
-		} else if(this.reference == i) s.b[s.b.length] = "       reference"; else {
-			var v = Math.round(100 * slowest / this.results[i]);
-			if(v < 100) s.b[s.b.length] = "(" + StringTools.lpad("" + (100 - v)," ",3) + "%) slower"; else if(v == 100) s.b[s.b.length] = "       same"; else s.b[s.b.length] = " " + StringTools.lpad("" + (v - 100)," ",3) + "%  faster";
-		}
-		s.b[s.b.length] = "\n";
-	}
-	var $tmp = s.b.join("");
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-thx.benchmark.SpeedTest.prototype.__class__ = thx.benchmark.SpeedTest;
 rg.util.Properties = function() { }
 rg.util.Properties.__name__ = ["rg","util","Properties"];
 rg.util.Properties.isTime = function(s) {
@@ -18812,7 +18618,7 @@ rg.controller.factory.FactoryVariableDependent.__name__ = ["rg","controller","fa
 rg.controller.factory.FactoryVariableDependent.prototype.create = function(info,isnumeric) {
 	$s.push("rg.controller.factory.FactoryVariableDependent::create");
 	var $spos = $s.length;
-	if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 19, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
+	if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 18, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
 	var axiscreator = new rg.controller.factory.FactoryAxis(), variable = new rg.data.VariableDependent(info.type,info.scaleDistribution), axis = axiscreator.create(info.type,isnumeric,variable,info.values);
 	variable.setAxis(axis);
 	variable.setMinF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min));
@@ -24837,10 +24643,10 @@ rg.data.DataProcessor.prototype.filterSubset = function(subset,variables) {
 	$s.push("rg.data.DataProcessor::filterSubset");
 	var $spos = $s.length;
 	var $tmp = Arrays.filter(subset,(function(f,a1) {
-		$s.push("rg.data.DataProcessor::filterSubset@48");
+		$s.push("rg.data.DataProcessor::filterSubset@47");
 		var $spos = $s.length;
 		var $tmp = function(a2) {
-			$s.push("rg.data.DataProcessor::filterSubset@48@48");
+			$s.push("rg.data.DataProcessor::filterSubset@47@47");
 			var $spos = $s.length;
 			var $tmp = f(a1,a2);
 			$s.pop();
@@ -24949,7 +24755,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	$s.push("rg.data.DataProcessor::getVariableIndependentValues");
 	var $spos = $s.length;
 	var $tmp = Arrays.product(this.independentVariables.map(function(variable,i) {
-		$s.push("rg.data.DataProcessor::getVariableIndependentValues@145");
+		$s.push("rg.data.DataProcessor::getVariableIndependentValues@144");
 		var $spos = $s.length;
 		var $tmp = variable.axis.range(variable.minValue(),variable.maxValue());
 		$s.pop();
@@ -27903,76 +27709,6 @@ rg.data.Tickmark.prototype.toString = function() {
 }
 rg.data.Tickmark.prototype.__class__ = rg.data.Tickmark;
 rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
-haxe.Timer = function(time_ms) {
-	if( time_ms === $_ ) return;
-	$s.push("haxe.Timer::new");
-	var $spos = $s.length;
-	var arr = haxe_timers;
-	this.id = arr.length;
-	arr[this.id] = this;
-	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
-	$s.pop();
-}
-haxe.Timer.__name__ = ["haxe","Timer"];
-haxe.Timer.delay = function(f,time_ms) {
-	$s.push("haxe.Timer::delay");
-	var $spos = $s.length;
-	var t = new haxe.Timer(time_ms);
-	t.run = function() {
-		$s.push("haxe.Timer::delay@79");
-		var $spos = $s.length;
-		t.stop();
-		f();
-		$s.pop();
-	};
-	$s.pop();
-	return t;
-	$s.pop();
-}
-haxe.Timer.measure = function(f,pos) {
-	$s.push("haxe.Timer::measure");
-	var $spos = $s.length;
-	var t0 = haxe.Timer.stamp();
-	var r = f();
-	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
-	$s.pop();
-	return r;
-	$s.pop();
-}
-haxe.Timer.stamp = function() {
-	$s.push("haxe.Timer::stamp");
-	var $spos = $s.length;
-	var $tmp = Date.now().getTime() / 1000;
-	$s.pop();
-	return $tmp;
-	$s.pop();
-}
-haxe.Timer.prototype.id = null;
-haxe.Timer.prototype.timerId = null;
-haxe.Timer.prototype.stop = function() {
-	$s.push("haxe.Timer::stop");
-	var $spos = $s.length;
-	if(this.id == null) {
-		$s.pop();
-		return;
-	}
-	window.clearInterval(this.timerId);
-	var arr = haxe_timers;
-	arr[this.id] = null;
-	if(this.id > 100 && this.id == arr.length - 1) {
-		var p = this.id - 1;
-		while(p >= 0 && arr[p] == null) p--;
-		arr = arr.slice(0,p + 1);
-	}
-	this.id = null;
-	$s.pop();
-}
-haxe.Timer.prototype.run = function() {
-	$s.push("haxe.Timer::run");
-	var $spos = $s.length;
-	$s.pop();
-}
-haxe.Timer.prototype.__class__ = haxe.Timer;
 rg.view.svg.chart.StreamEffect = { __ename__ : ["rg","view","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
 rg.view.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
 rg.view.svg.chart.StreamEffect.NoEffect.toString = $estr;
@@ -30125,7 +29861,6 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
-if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
 js.Lib.onerror = null;
@@ -30230,7 +29965,6 @@ rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|
 thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
-thx.benchmark.SpeedTest.MAXDECIMALS = 4;
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
 rg.util.Properties.TIME_TOKEN = "#time:";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];

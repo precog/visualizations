@@ -49,8 +49,6 @@ class Variable<T, TAxis : IAxis<T>>
 				throw new Error("axis is null in '{0}' variable (required by min)", [type]);
 			minf = axis.min;
 		}
-		//	throw "NOOOOO!";
-		// TODO add default function based on axis
 		return minf;
 	}
 	
@@ -62,8 +60,6 @@ class Variable<T, TAxis : IAxis<T>>
 				throw new Error("axis is null in '{0}' variable (required by max)", [type]);
 			maxf = axis.max;
 		}
-		//	throw "NOOOOO! MAX " + (null == axis);
-		// TODO add default function based on axis
 		return maxf;
 	}
 }

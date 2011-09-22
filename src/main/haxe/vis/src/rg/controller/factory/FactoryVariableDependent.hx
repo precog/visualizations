@@ -5,7 +5,6 @@
 
 package rg.controller.factory;
 import rg.controller.info.InfoVariable;
-import rg.data.IAxis;
 import rg.data.VariableDependent;
 import thx.error.Error;
 

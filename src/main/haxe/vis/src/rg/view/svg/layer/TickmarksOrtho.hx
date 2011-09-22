@@ -58,7 +58,6 @@ class TickmarksOrtho extends Layer
 		paddingLabel = 10;
 		
 		g.classed().add("tickmarks");
-//		initf();
 	}
 	
 	var axis : IAxis<Dynamic>;
