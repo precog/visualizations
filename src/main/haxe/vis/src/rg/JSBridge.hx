@@ -105,6 +105,8 @@ class JSBridge
 		r.math = {
 			random : new Random(666).float
 		}
+		
+		r.version = thx.util.MacroVersion.fullVersion();
 	}
 	
 	// make sure a thx.js.Selection is passed

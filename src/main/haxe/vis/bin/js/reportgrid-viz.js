@@ -6319,13 +6319,14 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	r.math = { random : $closure(new thx.math.Random(666),"float")};
+	r.version = "1.0.0.6";
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
 	$s.push("rg.JSBridge::select");
 	var $spos = $s.length;
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 115, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 117, className : "rg.JSBridge", methodName : "select"});
 	$s.pop();
 	return s;
 	$s.pop();
@@ -8387,6 +8388,10 @@ rg.data.IDataSource.prototype.__class__ = rg.data.IDataSource;
 thx.math.Const = function() { }
 thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype.__class__ = thx.math.Const;
+if(!thx.util) thx.util = {}
+thx.util.MacroVersion = function() { }
+thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
+thx.util.MacroVersion.prototype.__class__ = thx.util.MacroVersion;
 rg.controller.factory.FactoryDataContext = function(factoryDataSource) {
 	if( factoryDataSource === $_ ) return;
 	$s.push("rg.controller.factory.FactoryDataContext::new");
@@ -15326,7 +15331,6 @@ List.prototype.map = function(f) {
 	$s.pop();
 }
 List.prototype.__class__ = List;
-if(!thx.util) thx.util = {}
 thx.util.Message = function(message,params,param) {
 	if( message === $_ ) return;
 	$s.push("thx.util.Message::new");
