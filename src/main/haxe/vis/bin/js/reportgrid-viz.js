@@ -4472,10 +4472,6 @@ rg.data.AxisOrdinal = function(p) {
 	$s.pop();
 }
 rg.data.AxisOrdinal.__name__ = ["rg","data","AxisOrdinal"];
-rg.data.AxisOrdinal.prototype.first = null;
-rg.data.AxisOrdinal.prototype.last = null;
-rg.data.AxisOrdinal.prototype.values = null;
-rg.data.AxisOrdinal.prototype.allTicks = null;
 rg.data.AxisOrdinal.prototype.scaleDistribution = null;
 rg.data.AxisOrdinal.prototype.toTickmark = function(start,end,value) {
 	$s.push("rg.data.AxisOrdinal::toTickmark");
@@ -4503,14 +4499,10 @@ rg.data.AxisOrdinal.prototype.ticks = function(start,end,upperBound) {
 rg.data.AxisOrdinal.prototype.range = function(start,end) {
 	$s.push("rg.data.AxisOrdinal::range");
 	var $spos = $s.length;
-	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end);
-	if(s < 0) {
-		haxe.Log.trace(start,{ fileName : "AxisOrdinal.hx", lineNumber : 47, className : "rg.data.AxisOrdinal", methodName : "range"});
-		haxe.Log.trace(this.getValues(),{ fileName : "AxisOrdinal.hx", lineNumber : 48, className : "rg.data.AxisOrdinal", methodName : "range"});
-		throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 49, className : "rg.data.AxisOrdinal", methodName : "range"});
-	}
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 52, className : "rg.data.AxisOrdinal", methodName : "range"});
-	var $tmp = this.getValues().slice(s,e + 1);
+	var values = this.values(), s = values.indexOf(start), e = values.indexOf(end);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 43, className : "rg.data.AxisOrdinal", methodName : "range"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 45, className : "rg.data.AxisOrdinal", methodName : "range"});
+	var $tmp = values.slice(s,e + 1);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -4518,51 +4510,52 @@ rg.data.AxisOrdinal.prototype.range = function(start,end) {
 rg.data.AxisOrdinal.prototype.scale = function(start,end,v) {
 	$s.push("rg.data.AxisOrdinal::scale");
 	var $spos = $s.length;
-	var s = this.getValues().indexOf(start), e = this.getValues().indexOf(end), p = this.getValues().indexOf(v);
-	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 62, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.data.AxisOrdinal", methodName : "scale"});
-	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,this.getValues()],null,{ fileName : "AxisOrdinal.hx", lineNumber : 66, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	var values = this.values(), s = values.indexOf(start), e = values.indexOf(end), p = values.indexOf(v);
+	if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 56, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 58, className : "rg.data.AxisOrdinal", methodName : "scale"});
+	if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 60, className : "rg.data.AxisOrdinal", methodName : "scale"});
 	var $tmp = rg.data.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisOrdinal.prototype.getFirst = function() {
-	$s.push("rg.data.AxisOrdinal::getFirst");
+rg.data.AxisOrdinal.prototype.first = function() {
+	$s.push("rg.data.AxisOrdinal::first");
 	var $spos = $s.length;
-	var $tmp = this.getValues()[0];
+	var $tmp = this.values()[0];
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisOrdinal.prototype.getLast = function() {
-	$s.push("rg.data.AxisOrdinal::getLast");
+rg.data.AxisOrdinal.prototype.last = function() {
+	$s.push("rg.data.AxisOrdinal::last");
 	var $spos = $s.length;
-	var $tmp = Arrays.last(this.getValues());
+	var $tmp = Arrays.last(this.values());
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisOrdinal.prototype.getValues = function() {
-	$s.push("rg.data.AxisOrdinal::getValues");
+rg.data.AxisOrdinal.prototype.values = function() {
+	$s.push("rg.data.AxisOrdinal::values");
 	var $spos = $s.length;
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 72, className : "rg.data.AxisOrdinal", methodName : "getValues"});
+		throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 66, className : "rg.data.AxisOrdinal", methodName : "values"});
 		return $r;
 	}(this));
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisOrdinal.prototype.getAllTicks = function() {
-	$s.push("rg.data.AxisOrdinal::getAllTicks");
+rg.data.AxisOrdinal.prototype.allTicks = function() {
+	$s.push("rg.data.AxisOrdinal::allTicks");
 	var $spos = $s.length;
-	var t = $closure(this,"toTickmark"), f = this.getFirst(), l = this.getLast();
+	var me = this;
+	var f = this.first(), l = this.last();
 	var $tmp = this.range(f,l).map(function(d,i) {
-		$s.push("rg.data.AxisOrdinal::getAllTicks@78");
+		$s.push("rg.data.AxisOrdinal::allTicks@71");
 		var $spos = $s.length;
-		var $tmp = t(f,l,d);
+		var $tmp = me.toTickmark(f,l,d);
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -5453,8 +5446,8 @@ rg.data.AxisOrdinalStats.__name__ = ["rg","data","AxisOrdinalStats"];
 rg.data.AxisOrdinalStats.__super__ = rg.data.AxisOrdinal;
 for(var k in rg.data.AxisOrdinal.prototype ) rg.data.AxisOrdinalStats.prototype[k] = rg.data.AxisOrdinal.prototype[k];
 rg.data.AxisOrdinalStats.prototype.variable = null;
-rg.data.AxisOrdinalStats.prototype.getValues = function() {
-	$s.push("rg.data.AxisOrdinalStats::getValues");
+rg.data.AxisOrdinalStats.prototype.values = function() {
+	$s.push("rg.data.AxisOrdinalStats::values");
 	var $spos = $s.length;
 	var $tmp = this.variable.stats.values;
 	$s.pop();
@@ -22214,16 +22207,17 @@ rg.data.AxisOrdinalFixedValues = function(arr) {
 	$s.push("rg.data.AxisOrdinalFixedValues::new");
 	var $spos = $s.length;
 	rg.data.AxisOrdinal.call(this);
-	this.values = arr;
+	this._values = arr;
 	$s.pop();
 }
 rg.data.AxisOrdinalFixedValues.__name__ = ["rg","data","AxisOrdinalFixedValues"];
 rg.data.AxisOrdinalFixedValues.__super__ = rg.data.AxisOrdinal;
 for(var k in rg.data.AxisOrdinal.prototype ) rg.data.AxisOrdinalFixedValues.prototype[k] = rg.data.AxisOrdinal.prototype[k];
-rg.data.AxisOrdinalFixedValues.prototype.getValues = function() {
-	$s.push("rg.data.AxisOrdinalFixedValues::getValues");
+rg.data.AxisOrdinalFixedValues.prototype._values = null;
+rg.data.AxisOrdinalFixedValues.prototype.values = function() {
+	$s.push("rg.data.AxisOrdinalFixedValues::values");
 	var $spos = $s.length;
-	var $tmp = this.values;
+	var $tmp = this._values;
 	$s.pop();
 	return $tmp;
 	$s.pop();

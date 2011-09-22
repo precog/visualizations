@@ -8,8 +8,8 @@ import thx.collection.Set;
 
 interface IAxisOrdinal<T> implements IAxisDiscrete<T> 
 {
-	public var first (getFirst, null): T;
-	public var last  (getLast,  null): T;
-	public var allTicks (getAllTicks, null): Array<ITickmark<T>>;
-	public var values(getValues, null) : Array<T>;
+	public function first(): T;
+	public function last(): T;
+	public function allTicks(): Array<ITickmark<T>>;
+	public function values() : Array<T>;
 }

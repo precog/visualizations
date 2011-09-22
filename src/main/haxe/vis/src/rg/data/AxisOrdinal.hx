@@ -13,10 +13,6 @@ using thx.collection.Sets;
 
 class AxisOrdinal<T> implements IAxisOrdinal<T>
 {
-	public var first(getFirst, null) : T;
-	public var last(getLast, null) : T;
-	public var values(getValues, null): Array<T>;
-	public var allTicks (getAllTicks, null): Array<ITickmark<T>>;
 	public var scaleDistribution(default, setScaleDistribution) : ScaleDistribution;
 
 	private function new()
@@ -40,14 +36,11 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	
 	public function range(start: T, end: T)
 	{
-		var s = values.indexOf(start),
+		var values = values(),
+			s = values.indexOf(start),
 			e = values.indexOf(end);
 		if (s < 0)
-		{
-			trace(start);
-			trace(values);
 			throw new Error("the start bound '{0}' is not part of the acceptable values {1}", [start, values]);
-		}
 		if (e < 0)
 			throw new Error("the end bound '{0}' is not part of the acceptable values {1}", [end, values]);
 		return values.slice(s, e + 1);
@@ -55,7 +48,8 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	
 	public function scale(start : T, end : T, v : T)
 	{
-		var s = values.indexOf(start),
+		var values = values(),
+			s = values.indexOf(start),
 			e = values.indexOf(end),
 			p = values.indexOf(v);
 		if (s < 0)
@@ -67,15 +61,14 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 		return ScaleDistributions.distribute(scaleDistribution, p - s, e - s + 1); // (p - s) / (e - s);
 	}
 	
-	function getFirst() return values.first()
-	function getLast() return values.last()
-	function getValues() : Array<T> return throw new AbstractMethod()
-	function getAllTicks()
+	public function first() return values().first()
+	public function last() return values().last()
+	public function values() : Array<T> return throw new AbstractMethod()
+	public function allTicks()
 	{
-		var t = toTickmark,
-			f = first,
-			l = last;
-		return range(f, l).map(function(d, i) return t(f, l, d));
+		var f = first(),
+			l = last();
+		return range(f, l).map(function(d, i) return toTickmark(f, l, d));
 	}
 	function setScaleDistribution(v : ScaleDistribution)
 	{

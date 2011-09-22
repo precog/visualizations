@@ -13,11 +13,12 @@ using thx.collection.Sets;
 
 class AxisOrdinalFixedValues<T> extends AxisOrdinal<T>
 {
+	var _values : Array<T>;
 	public function new(arr : Array<T>)
 	{
 		super();
-		values = arr;
+		_values = arr;
 	}
 	
-	override function getValues() return values
+	override function values() return _values
 }
