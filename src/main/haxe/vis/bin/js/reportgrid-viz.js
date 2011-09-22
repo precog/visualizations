@@ -1623,7 +1623,6 @@ rg.data.Stats = function(sortf) {
 	$s.push("rg.data.Stats::new");
 	var $spos = $s.length;
 	this.sortf = sortf;
-	this.isNumeric = false;
 	this.reset();
 	$s.pop();
 }
@@ -1633,7 +1632,6 @@ rg.data.Stats.prototype.max = null;
 rg.data.Stats.prototype.count = null;
 rg.data.Stats.prototype.values = null;
 rg.data.Stats.prototype.sortf = null;
-rg.data.Stats.prototype.isNumeric = null;
 rg.data.Stats.prototype.reset = function() {
 	$s.push("rg.data.Stats::reset");
 	var $spos = $s.length;
@@ -1685,7 +1683,6 @@ rg.data.StatsNumeric = function(sortf) {
 	var $spos = $s.length;
 	if(null == sortf) sortf = Floats.compare;
 	rg.data.Stats.call(this,sortf);
-	this.isNumeric = true;
 	$s.pop();
 }
 rg.data.StatsNumeric.__name__ = ["rg","data","StatsNumeric"];
