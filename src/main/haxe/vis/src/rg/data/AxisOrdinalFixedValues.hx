@@ -14,5 +14,8 @@ class AxisOrdinalFixedValues<T> extends AxisOrdinal<T>
 		_values = arr;
 	}
 	
-	override function values() return _values
+	override function values()
+	{
+		return _values;
+	}
 }

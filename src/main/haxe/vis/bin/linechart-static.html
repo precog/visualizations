@@ -77,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		axes : [
 			{
 				type : ".#time:hour",
-//				view : [start, end],
 				variable : "independent"
 			},
 			{ type : "impression" },
@@ -106,12 +105,9 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.lineChart("#chart2", {
 		axes : [{
 			type : "age",
-//			values : ageRanges,
-//			view : ["0-13", "100+"],
 			variable : "independent"
 		}, {
 			type : "count",
-//			view : [0, 40],
 			variable : "dependent"
 		}],
 		data : [{
@@ -139,12 +135,9 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.lineChart("#chart3", {
 		axes : [{
 			type : "age",
-			values : ageRanges,
-			view : ["0-13", "100+"],
 			variable : "independent"
 		}, {
 			type : "interest",
-			view : ["sport", "diy"],
 			values : interests,
 			variable : "dependent"
 		}],

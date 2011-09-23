@@ -29,11 +29,9 @@ class Variable<T, TAxis : IAxis<T>>
 	{
 		this.axis = axis;
 		if (Std.is(axis, AxisNumeric))
-		{
 			stats = cast new StatsNumeric();
-		} else {
+		else
 			stats = new Stats<T>();
-		}
 	}
 	
 	public function min() return minf(stats, meta)

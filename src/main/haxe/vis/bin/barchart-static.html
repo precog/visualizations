@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.barChart("#chart2", {
 		axes : [{
 				type : ".#time:day",
-				view : [start, end],
 				variable : "independent",
 				scalemode : "fit"
 			}, 
@@ -139,12 +138,9 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.barChart("#chart3", {
 		axes : [{
 			type : "age",
-			values : ageRanges,
-			view : ["0-13", "100+"],
 			variable : "independent"
 		}, {
-			type : "count",
-			variable : "dependent"
+			type : "count"
 		}],
 		data : ageGenderData,
 		options : {
@@ -157,12 +153,9 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.barChart("#chart4", {
 		axes : [{
 			type : "age",
-			values : ageRanges,
-			view : ["0-13", "100+"],
 			variable : "independent"
 		}, {
-			type : "count",
-			variable : "dependent"
+			type : "count"
 		}],
 		data : ageGenderData,
 		options : {
@@ -180,12 +173,9 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.barChart("#chart5", {
 		axes : [{
 			type : "age",
-			values : ageRanges,
-			view : ["0-13", "100+"],
 			variable : "independent"
 		}, {
 			type : "interest",
-			view : ["sport", "diy"],
 			values : interests,
 			variable : "dependent"
 		}],

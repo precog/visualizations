@@ -73,6 +73,6 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 		return this.scaleDistribution = v;
 	}
 	
-	public function min(stats : Stats<T>, meta : Dynamic) : T return stats.min
-	public function max(stats : Stats<T>, meta : Dynamic) : T return stats.max
+	public function min(stats : Stats<T>, meta : Dynamic) : T return values().first()
+	public function max(stats : Stats<T>, meta : Dynamic) : T return values().last()
 }

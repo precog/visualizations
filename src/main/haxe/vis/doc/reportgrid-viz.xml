@@ -532,25 +532,25 @@ Other things to do. Nested placeholders
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
-		<transformData set="method" line="158"><f a="dps">
+		<transformData set="method" line="161"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="rg.controller.visualization.VisualizationCartesian.T"/>
 </f></transformData>
-		<destroy public="1" set="method" line="163" override="1"><f a=""><e path="Void"/></f></destroy>
-		<setTickmarksDefaults set="method" line="168"><f a="tickmarks:i:type:pname">
+		<destroy public="1" set="method" line="166" override="1"><f a=""><e path="Void"/></f></destroy>
+		<setTickmarksDefaults set="method" line="171"><f a="tickmarks:i:type:pname">
 	<c path="rg.view.svg.layer.TickmarksOrtho"/>
 	<c path="Int"/>
 	<c path="String"/>
 	<c path="String"/>
 	<e path="Void"/>
 </f></setTickmarksDefaults>
-		<createTickmarks set="method" line="173"><f a="i:type:pname">
+		<createTickmarks set="method" line="176"><f a="i:type:pname">
 	<c path="Int"/>
 	<c path="String"/>
 	<c path="String"/>
 	<c path="rg.view.svg.layer.TickmarksOrtho"/>
 </f></createTickmarks>
-		<createRules set="method" line="229"><f a="i:type:orientation">
+		<createRules set="method" line="232"><f a="i:type:orientation">
 	<c path="Int"/>
 	<c path="String"/>
 	<e path="rg.view.frame.Orientation"/>
@@ -896,17 +896,17 @@ Other things to do. Nested placeholders
 </f></animationEase>
 		<click public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<e path="Void"/>
 </f></click>
 		<labelDataPoint public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></labelDataPoint>
 		<labelDataPointOver public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></labelDataPointOver>
 		<panelx><c path="Float"/></panelx>
@@ -939,9 +939,10 @@ Other things to do. Nested placeholders
 	<d/>
 	<c path="rg.data.IAxis"><d/></c>
 </c></xVariable>
-		<setVariables public="1" set="method" line="30"><f a="variableIndependents:variableDependents">
+		<setVariables public="1" set="method" line="30"><f a="variableIndependents:variableDependents:data">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
+	<c path="rg.view.svg.chart.CartesianChart.T"/>
 	<e path="Void"/>
 </f></setVariables>
 		<data public="1" set="method" line="36"><f a="dps">
@@ -968,28 +969,34 @@ Other things to do. Nested placeholders
 		<padding public="1"><c path="Float"/></padding>
 		<paddingAxis public="1"><c path="Float"/></paddingAxis>
 		<paddingDataPoint public="1"><c path="Float"/></paddingDataPoint>
-		<data public="1" set="method" line="49" override="1"><f a="dps">
+		<setVariables public="1" set="method" line="52" override="1"><f a="variableIndependents:yVariables:data">
+	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
+	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
+	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
+	<e path="Void"/>
+</f></setVariables>
+		<data public="1" set="method" line="80" override="1"><f a="dps">
 	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
 	<e path="Void"/>
 </f></data>
-		<onclick set="method" line="124"><f a="ystats:dp:i">
-	<t path="rg.data.Stats"/>
+		<onclick set="method" line="155"><f a="ystats:dp:i">
+	<c path="rg.data.Stats"><d/></c>
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onclick>
-		<onmouseover set="method" line="129"><f a="ystats:n:i">
-	<t path="rg.data.Stats"/>
+		<onmouseover set="method" line="160"><f a="ystats:n:i">
+	<c path="rg.data.Stats"><d/></c>
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
-		<applyGradient set="method" line="151"><f a="n:i">
+		<applyGradient set="method" line="182"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></applyGradient>
-		<new public="1" set="method" line="35"><f a="panel">
+		<new public="1" set="method" line="38"><f a="panel">
 	<c path="rg.view.svg.panel.Panel"/>
 	<e path="Void"/>
 </f></new>
@@ -1098,16 +1105,15 @@ Other things to do. Nested placeholders
  </haxe_doc>
 	</class>
 	<class path="rg.controller.info.InfoCartesianChart" params="" file="src/rg/controller/info/InfoCartesianChart.hx">
-		<filters public="1" set="method" line="63" static="1"><f a=""><c path="Array"><d/></c></f></filters>
+		<filters public="1" set="method" line="62" static="1"><f a=""><c path="Array"><d/></c></f></filters>
 		<animation public="1"><c path="rg.controller.info.InfoAnimation"/></animation>
 		<segment public="1"><c path="rg.controller.info.InfoSegment"/></segment>
 		<click public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<e path="Void"/>
 </f></click>
 		<label public="1"><c path="rg.controller.info.InfoLabelAxis"/></label>
-		<y0property public="1"><c path="String"/></y0property>
 		<displayMinorTick public="1"><f a="">
 	<c path="String"/>
 	<e path="Bool"/>
@@ -1153,7 +1159,7 @@ Other things to do. Nested placeholders
 		<paddingTickMinor public="1"><c path="Float"/></paddingTickMinor>
 		<paddingTickMajor public="1"><c path="Float"/></paddingTickMajor>
 		<paddingLabel public="1"><c path="Float"/></paddingLabel>
-		<new public="1" set="method" line="38"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="37"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -1235,15 +1241,15 @@ Other things to do. Nested placeholders
 		<container><c path="thx.js.Selection"/></container>
 		<list><c path="thx.js.Selection"/></list>
 		<_created><c path="Int"/></_created>
-		<stats><t path="rg.data.Stats"/></stats>
+		<stats><c path="rg.data.StatsNumeric"/></stats>
 		<labelDataPoint public="1" set="dynamic" line="51"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPoint>
 		<labelDataPointOver public="1" set="dynamic" line="58"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPointOver>
 		<init public="1" set="method" line="65"><f a=""><e path="Void"/></f></init>
@@ -1308,6 +1314,16 @@ Other things to do. Nested placeholders
 	<c path="Int"/>
 	<c path="Array"><c path="rg.data.ITickmark"><c path="rg.data.IAxis.T"/></c></c>
 </f></ticks>
+		<max public="1" set="method"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="rg.data.IAxis.T"/></c>
+	<d/>
+	<c path="rg.data.IAxis.T"/>
+</f></max>
+		<min public="1" set="method"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="rg.data.IAxis.T"/></c>
+	<d/>
+	<c path="rg.data.IAxis.T"/>
+</f></min>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -1328,10 +1344,10 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.data.IAxisOrdinal" params="T" file="src/rg/data/IAxisOrdinal.hx" interface="1">
 		<implements path="rg.data.IAxisDiscrete"><c path="rg.data.IAxisOrdinal.T"/></implements>
-		<first public="1" get="getFirst" set="null"><c path="rg.data.IAxisOrdinal.T"/></first>
-		<last public="1" get="getLast" set="null"><c path="rg.data.IAxisOrdinal.T"/></last>
-		<allTicks public="1" get="getAllTicks" set="null"><c path="Array"><c path="rg.data.ITickmark"><c path="rg.data.IAxisOrdinal.T"/></c></c></allTicks>
-		<values public="1" get="getValues" set="null"><c path="thx.collection.Set"><c path="rg.data.IAxisOrdinal.T"/></c></values>
+		<first public="1" set="method"><f a=""><c path="rg.data.IAxisOrdinal.T"/></f></first>
+		<last public="1" set="method"><f a=""><c path="rg.data.IAxisOrdinal.T"/></f></last>
+		<allTicks public="1" set="method"><f a=""><c path="Array"><c path="rg.data.ITickmark"><c path="rg.data.IAxisOrdinal.T"/></c></c></f></allTicks>
+		<values public="1" set="method"><f a=""><c path="Array"><c path="rg.data.IAxisOrdinal.T"/></c></f></values>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -1339,47 +1355,49 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.data.AxisOrdinal" params="T" file="src/rg/data/AxisOrdinal.hx">
 		<implements path="rg.data.IAxisOrdinal"><c path="rg.data.AxisOrdinal.T"/></implements>
-		<first public="1" get="getFirst" set="null"><c path="rg.data.AxisOrdinal.T"/></first>
-		<last public="1" get="getLast" set="null"><c path="rg.data.AxisOrdinal.T"/></last>
-		<values public="1" get="getValues" set="null"><c path="thx.collection.Set"><c path="rg.data.AxisOrdinal.T"/></c></values>
-		<allTicks public="1" get="getAllTicks" set="null"><c path="Array"><c path="rg.data.ITickmark"><c path="rg.data.AxisOrdinal.T"/></c></c></allTicks>
 		<scaleDistribution public="1" set="setScaleDistribution"><e path="rg.data.ScaleDistribution"/></scaleDistribution>
-		<toTickmark set="method" line="34"><f a="start:end:value">
+		<toTickmark set="method" line="21"><f a="start:end:value">
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="rg.data.ITickmark"><c path="rg.data.AxisOrdinal.T"/></c>
 </f></toTickmark>
-		<ticks public="1" set="method" line="40"><f a="start:end:?upperBound">
+		<ticks public="1" set="method" line="27"><f a="start:end:?upperBound">
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="Int"/>
 	<c path="Array"><c path="rg.data.ITickmark"><c path="rg.data.AxisOrdinal.T"/></c></c>
 </f></ticks>
-		<range public="1" set="method" line="48"><f a="start:end">
+		<range public="1" set="method" line="35"><f a="start:end">
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="Array"><c path="rg.data.AxisOrdinal.T"/></c>
 </f></range>
-		<scale public="1" set="method" line="59"><f a="start:end:v">
+		<scale public="1" set="method" line="47"><f a="start:end:v">
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="rg.data.AxisOrdinal.T"/>
 	<c path="Float"/>
 </f></scale>
-		<getFirst set="method" line="73"><f a=""><t path="Null"><c path="rg.data.AxisOrdinal.T"/></t></f></getFirst>
-		<getLast set="method" line="74"><f a=""><t path="Null"><c path="rg.data.AxisOrdinal.T"/></t></f></getLast>
-		<getValues set="method" line="75"><f a=""><c path="thx.collection.Set"><c path="rg.data.AxisOrdinal.T"/></c></f></getValues>
-		<getAllTicks set="method" line="76"><f a=""><c path="Array"><c path="rg.data.ITickmark"><c path="rg.data.AxisOrdinal.T"/></c></c></f></getAllTicks>
-		<setScaleDistribution set="method" line="83"><f a="v">
+		<first public="1" set="method" line="62"><f a=""><t path="Null"><c path="rg.data.AxisOrdinal.T"/></t></f></first>
+		<last public="1" set="method" line="63"><f a=""><t path="Null"><c path="rg.data.AxisOrdinal.T"/></t></f></last>
+		<values public="1" set="method" line="64"><f a=""><c path="Array"><c path="rg.data.AxisOrdinal.T"/></c></f></values>
+		<allTicks public="1" set="method" line="65"><f a=""><c path="Array"><c path="rg.data.ITickmark"><c path="rg.data.AxisOrdinal.T"/></c></c></f></allTicks>
+		<setScaleDistribution set="method" line="71"><f a="v">
 	<e path="rg.data.ScaleDistribution"/>
 	<e path="rg.data.ScaleDistribution"/>
 </f></setScaleDistribution>
-		<new public="1" set="method" line="23"><f a="?arr:?set">
-	<c path="Array"><c path="rg.data.AxisOrdinal.T"/></c>
-	<c path="thx.collection.Set"><c path="rg.data.AxisOrdinal.T"/></c>
-	<e path="Void"/>
-</f></new>
+		<min public="1" set="method" line="76"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="rg.data.AxisOrdinal.T"/></c>
+	<d/>
+	<c path="rg.data.AxisOrdinal.T"/>
+</f></min>
+		<max public="1" set="method" line="77"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="rg.data.AxisOrdinal.T"/></c>
+	<d/>
+	<c path="rg.data.AxisOrdinal.T"/>
+</f></max>
+		<new set="method" line="16"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -1394,7 +1412,7 @@ Other things to do. Nested placeholders
  </haxe_doc>
 	</enum>
 	<class path="rg.controller.info.Info" params="" file="src/rg/controller/info/Info.hx">
-		<feed public="1" params="T" set="method" line="12" static="1"><f a="info:o">
+		<feed public="1" params="T" set="method" line="12" static="1"><f a="info:ob">
 	<c path="feed.T"/>
 	<a/>
 	<c path="feed.T"/>
@@ -1670,7 +1688,7 @@ Other things to do. Nested placeholders
 </f></sortDataPoint>
 		<click public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<e path="Void"/>
 </f></click>
 		<padding public="1"><c path="Float"/></padding>
@@ -6866,8 +6884,21 @@ Other things to do. Nested placeholders
 	<e path="Void"/>
 </f></alert>
 </a></typedef>
+	<class path="rg.data.AxisOrdinalFixedValues" params="T" file="src/rg/data/AxisOrdinalFixedValues.hx">
+		<extends path="rg.data.AxisOrdinal"><c path="rg.data.AxisOrdinalFixedValues.T"/></extends>
+		<_values><c path="Array"><c path="rg.data.AxisOrdinalFixedValues.T"/></c></_values>
+		<values public="1" set="method" line="17" override="1"><f a=""><c path="Array"><c path="rg.data.AxisOrdinalFixedValues.T"/></c></f></values>
+		<new public="1" set="method" line="11"><f a="arr">
+	<c path="Array"><c path="rg.data.AxisOrdinalFixedValues.T"/></c>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.data.AxisGroupByTime" params="" file="src/rg/data/AxisGroupByTime.hx">
-		<extends path="rg.data.AxisOrdinal"><c path="Int"/></extends>
+		<extends path="rg.data.AxisOrdinalFixedValues"><c path="Int"/></extends>
 		<valuesByGroup public="1" set="method" line="19" static="1"><f a="groupby">
 	<c path="String"/>
 	<c path="Array"><c path="Int"/></c>
@@ -7130,20 +7161,21 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.view.svg.chart.StreamGraph" params="" file="src/rg/view/svg/chart/StreamGraph.hx">
 		<extends path="rg.view.svg.chart.CartesianChart"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></extends>
-		<vid line="199" static="1"><c path="Int"/></vid>
+		<vid line="198" static="1"><c path="Int"/></vid>
 		<interpolator public="1"><e path="thx.svg.LineInterpolator"/></interpolator>
 		<gradientLightness public="1"><c path="Float"/></gradientLightness>
 		<gradientStyle public="1"><c path="Int"/></gradientStyle>
 		<dps><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></dps>
 		<area><c path="thx.svg.Area"><t path="rg.view.svg.chart.TransformedData"/></c></area>
 		<transformedData><c path="Array"><c path="Array"><t path="rg.view.svg.chart.TransformedData"/></c></c></transformedData>
-		<stats><t path="rg.data.Stats"/></stats>
+		<stats><c path="rg.data.Stats"><d/></c></stats>
 		<defs><c path="thx.js.Selection"/></defs>
 		<maxy><c path="Float"/></maxy>
 		<init public="1" set="method" line="47" override="1"><f a=""><e path="Void"/></f></init>
-		<setVariables public="1" set="method" line="54" override="1"><f a="variableIndependents:variableDependents">
+		<setVariables public="1" set="method" line="54" override="1"><f a="variableIndependents:variableDependents:data">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
+	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 	<e path="Void"/>
 </f></setVariables>
 		<data public="1" set="method" line="59" override="1"><f a="dps">
@@ -7172,7 +7204,7 @@ Other things to do. Nested placeholders
 	<c path="Int"/>
 	<e path="Void"/>
 </f></applyGradientV>
-		<applyGradientH set="method" line="200"><f a="d:i">
+		<applyGradientH set="method" line="199"><f a="d:i">
 	<c path="Array"><t path="rg.view.svg.chart.TransformedData"/></c>
 	<c path="Int"/>
 	<e path="Void"/>
@@ -7197,25 +7229,12 @@ Other things to do. Nested placeholders
 </a></typedef>
 	<class path="rg.controller.factory.FactoryDataContext" params="" file="src/rg/controller/factory/FactoryDataContext.hx">
 		<factoryDataSource><c path="rg.controller.factory.FactoryDataSource"/></factoryDataSource>
-		<create public="1" set="method" line="24"><f a="info">
+		<create public="1" set="method" line="22"><f a="info">
 	<c path="rg.controller.info.InfoDataContext"/>
 	<c path="rg.data.DataContext"/>
 </f></create>
-		<new public="1" set="method" line="19"><f a="factoryDataSource">
+		<new public="1" set="method" line="17"><f a="factoryDataSource">
 	<c path="rg.controller.factory.FactoryDataSource"/>
-	<e path="Void"/>
-</f></new>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
-	<class path="rg.data.VariableDependentContext" params="T" file="src/rg/data/VariableDependentContext.hx">
-		<partial public="1"><e path="Bool"/></partial>
-		<variable public="1"><c path="rg.data.VariableDependent"><c path="rg.data.VariableDependentContext.T"/></c></variable>
-		<new public="1" set="method" line="12"><f a="variable:partial">
-	<c path="rg.data.VariableDependent"><c path="rg.data.VariableDependentContext.T"/></c>
-	<e path="Bool"/>
 	<e path="Void"/>
 </f></new>
 		<haxe_doc>
@@ -7257,17 +7276,63 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.data.Variable" params="T:TAxis" file="src/rg/data/Variable.hx">
 		<type public="1"><c path="String"/></type>
-		<min public="1"><t path="Null"><c path="rg.data.Variable.T"/></t></min>
-		<max public="1"><t path="Null"><c path="rg.data.Variable.T"/></t></max>
 		<scaleDistribution public="1"><t path="Null"><e path="rg.data.ScaleDistribution"/></t></scaleDistribution>
 		<axis public="1" set="null"><c path="rg.data.Variable.TAxis"/></axis>
-		<stats public="1"><t path="Null"><t path="rg.data.Stats"/></t></stats>
-		<new public="1" set="method" line="19"><f a="type:axis:scaleDistribution:?min:?max">
-	<c path="String"/>
+		<stats public="1" set="null"><c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c></stats>
+		<meta public="1" set="null"><d/></meta>
+		<minf public="1" get="getMinF" set="setMinF"><f a=":">
+	<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+	<d/>
+	<c path="rg.data.Variable.T"/>
+</f></minf>
+		<maxf public="1" get="getMaxF" set="setMaxF"><f a=":">
+	<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+	<d/>
+	<c path="rg.data.Variable.T"/>
+</f></maxf>
+		<setAxis public="1" set="method" line="28"><f a="axis">
 	<c path="rg.data.Variable.TAxis"/>
+	<e path="Void"/>
+</f></setAxis>
+		<min public="1" set="method" line="37"><f a=""><c path="rg.data.Variable.T"/></f></min>
+		<max public="1" set="method" line="38"><f a=""><c path="rg.data.Variable.T"/></f></max>
+		<setMinF set="method" line="40"><f a="f">
+	<f a=":">
+		<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+		<d/>
+		<c path="rg.data.Variable.T"/>
+	</f>
+	<f a=":">
+		<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+		<d/>
+		<c path="rg.data.Variable.T"/>
+	</f>
+</f></setMinF>
+		<setMaxF set="method" line="41"><f a="f">
+	<f a=":">
+		<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+		<d/>
+		<c path="rg.data.Variable.T"/>
+	</f>
+	<f a=":">
+		<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+		<d/>
+		<c path="rg.data.Variable.T"/>
+	</f>
+</f></setMaxF>
+		<getMinF set="method" line="43"><f a=""><f a=":">
+	<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+	<d/>
+	<c path="rg.data.Variable.T"/>
+</f></f></getMinF>
+		<getMaxF set="method" line="54"><f a=""><f a=":">
+	<c path="rg.data.Stats"><c path="rg.data.Variable.T"/></c>
+	<d/>
+	<c path="rg.data.Variable.T"/>
+</f></f></getMaxF>
+		<new public="1" set="method" line="21"><f a="type:scaleDistribution">
+	<c path="String"/>
 	<t path="Null"><e path="rg.data.ScaleDistribution"/></t>
-	<c path="rg.data.Variable.T"/>
-	<c path="rg.data.Variable.T"/>
 	<e path="Void"/>
 </f></new>
 		<haxe_doc>
@@ -7280,27 +7345,9 @@ Other things to do. Nested placeholders
 			<c path="rg.data.VariableIndependent.T"/>
 			<c path="rg.data.IAxisDiscrete"><c path="rg.data.VariableIndependent.T"/></c>
 		</extends>
-		<forTime public="1" set="method" line="10" static="1"><f a="type:periodicity:scaleDistribution:?min:?max">
-	<c path="String"/>
-	<c path="String"/>
-	<t path="Null"><e path="rg.data.ScaleDistribution"/></t>
-	<c path="Float"/>
-	<c path="Float"/>
-	<c path="rg.data.VariableIndependent"><c path="Float"/></c>
-</f></forTime>
-		<forOrdinal public="1" params="T" set="method" line="16" static="1"><f a="type:scaleDistribution:?values">
+		<new public="1" set="method" line="8"><f a="type:scaleDistribution">
 	<c path="String"/>
 	<t path="Null"><e path="rg.data.ScaleDistribution"/></t>
-	<c path="Array"><c path="forOrdinal.T"/></c>
-	<c path="rg.data.VariableIndependent"><c path="forOrdinal.T"/></c>
-</f></forOrdinal>
-		<range public="1" set="method" line="29"><f a=""><c path="Array"><c path="rg.data.VariableIndependent.T"/></c></f></range>
-		<new public="1" set="method" line="8"><f a="type:axis:scaleDistribution:?min:?max">
-	<c path="String"/>
-	<c path="rg.data.IAxisDiscrete"><c path="rg.data.VariableIndependent.T"/></c>
-	<t path="Null"><e path="rg.data.ScaleDistribution"/></t>
-	<c path="rg.data.VariableIndependent.T"/>
-	<c path="rg.data.VariableIndependent.T"/>
 	<e path="Void"/>
 </f></new>
 		<haxe_doc>
@@ -7799,14 +7846,19 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="thx.error.Error" params="" file="C:\Projects\thx\src/thx/error/Error.hx">
 		<extends path="thx.util.Message"/>
+		<errorPositionPattern public="1" line="14" static="1"><c path="String"/></errorPositionPattern>
 		<pos public="1" set="null"><t path="haxe.PosInfos"/></pos>
 		<inner public="1" set="null"><c path="thx.error.Error"/></inner>
-		<setInner public="1" set="method" line="22"><f a="inner">
+		<setInner public="1" set="method" line="24"><f a="inner">
 	<c path="thx.error.Error"/>
 	<c path="thx.error.Error"/>
 </f></setInner>
-		<toString public="1" set="method" line="28" override="1"><f a=""><c path="String"/></f></toString>
-		<new public="1" set="method" line="16"><f a="message:?params:?param:?pos">
+		<toStringError public="1" set="method" line="30"><f a="?pattern">
+	<c path="String"/>
+	<c path="String"/>
+</f></toStringError>
+		<toString public="1" set="method" line="36" override="1"><f a=""><c path="String"/></f></toString>
+		<new public="1" set="method" line="18"><f a="message:?params:?param:?pos">
 	<c path="String"/>
 	<c path="Array"><d/></c>
 	<d/>
@@ -8589,43 +8641,39 @@ Other things to do. Nested placeholders
  </haxe_doc>
 	</class>
 	<class path="rg.util.DataPoints" params="" file="src/rg/util/DataPoints.hx">
-		<partition public="1" set="method" line="17" static="1"><f a="dps:property:?def">
+		<partition public="1" set="method" line="18" static="1"><f a="dps:property:?def">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="String"/>
 	<c path="String"/>
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 </f></partition>
-		<filterByIndependents public="1" set="method" line="43" static="1"><f a="dps:variables">
+		<filterByIndependents public="1" set="method" line="44" static="1"><f a="dps:variables">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 </f></filterByIndependents>
-		<filterByDependents public="1" set="method" line="58" static="1"><f a="dps:variables">
+		<filterByDependents public="1" set="method" line="59" static="1"><f a="dps:variables">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 </f></filterByDependents>
-		<value public="1" get="inline" set="null" line="72" static="1"><f a="dp:property">
+		<value public="1" get="inline" set="null" line="73" static="1"><f a="dp:property">
 	<t path="rg.data.DataPoint"/>
 	<c path="String"/>
 	<d/>
 </f></value>
-		<valueAlt public="1" params="T" get="inline" set="null" line="74" static="1"><f a="dp:property:alt">
+		<valueAlt public="1" params="T" get="inline" set="null" line="75" static="1"><f a="dp:property:alt">
 	<t path="rg.data.DataPoint"/>
 	<c path="String"/>
 	<c path="valueAlt.T"/>
 	<c path="valueAlt.T"/>
 </f></valueAlt>
-		<stats public="1" set="method" line="80" static="1"><f a="dps:property">
+		<values public="1" set="method" line="81" static="1"><f a="dps:property">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="String"/>
-	<a>
-		<tot><c path="Float"/></tot>
-		<min><c path="Float"/></min>
-		<max><c path="Float"/></max>
-	</a>
-</f></stats>
-		<id public="1" set="method" line="105" static="1"><f a="dp:dependentProperties">
+	<c path="Array"><unknown/></c>
+</f></values>
+		<id public="1" set="method" line="86" static="1"><f a="dp:dependentProperties">
 	<t path="rg.data.DataPoint"/>
 	<c path="Array"><c path="String"/></c>
 	<c path="String"/>
@@ -8866,31 +8914,6 @@ Other things to do. Nested placeholders
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
-	<class path="rg.controller.info.InfoHeatGrid" params="" file="src/rg/controller/info/InfoHeatGrid.hx">
-		<extends path="rg.controller.info.InfoCartesianChart"/>
-		<filters public="1" set="method" line="24" static="1"><f a=""><c path="Array"><a>
-	<validator><f a="v">
-	<unknown/>
-	<e path="Bool"/>
-</f></validator>
-	<filter><f a="v">
-	<c path="String"/>
-	<c path="Array"><a>
-	<value><c path="thx.color.Rgb"/></value>
-	<field><c path="String"/></field>
-</a></c>
-</f></filter>
-	<field><c path="String"/></field>
-</a></c></f></filters>
-		<contour public="1"><e path="Bool"/></contour>
-		<startColor public="1"><c path="thx.color.Rgb"/></startColor>
-		<endColor public="1"><c path="thx.color.Rgb"/></endColor>
-		<new public="1" set="method" line="17"><f a=""><e path="Void"/></f></new>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
 	<class path="thx.color.NamedColors" params="" file="C:\Projects\thx\src/thx/color/NamedColors.hx">
 		<aliceblue public="1" set="null" static="1"><c path="thx.color.Rgb"/></aliceblue>
 		<antiquewhite public="1" set="null" static="1"><c path="thx.color.Rgb"/></antiquewhite>
@@ -9040,6 +9063,33 @@ Other things to do. Nested placeholders
 		<yellow public="1" set="null" static="1"><c path="thx.color.Rgb"/></yellow>
 		<yellowgreen public="1" set="null" static="1"><c path="thx.color.Rgb"/></yellowgreen>
 		<byName public="1" set="null" static="1"><c path="Hash"><c path="thx.color.Rgb"/></c></byName>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="rg.controller.info.InfoHeatGrid" params="" file="src/rg/controller/info/InfoHeatGrid.hx">
+		<extends path="rg.controller.info.InfoCartesianChart"/>
+		<defaultStartColor line="14" static="1"><c path="thx.color.Rgb"/></defaultStartColor>
+		<defaultEndColor line="15" static="1"><c path="thx.color.Rgb"/></defaultEndColor>
+		<filters public="1" set="method" line="27" static="1"><f a=""><c path="Array"><a>
+	<validator><f a="v">
+	<unknown/>
+	<e path="Bool"/>
+</f></validator>
+	<filter><f a="v">
+	<c path="String"/>
+	<c path="Array"><a>
+	<value><c path="thx.color.Rgb"/></value>
+	<field><c path="String"/></field>
+</a></c>
+</f></filter>
+	<field><c path="String"/></field>
+</a></c></f></filters>
+		<contour public="1"><e path="Bool"/></contour>
+		<startColor public="1"><c path="thx.color.Rgb"/></startColor>
+		<endColor public="1"><c path="thx.color.Rgb"/></endColor>
+		<new public="1" set="method" line="20"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -9346,7 +9396,7 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.controller.info.InfoLineChart" params="" file="src/rg/controller/info/InfoLineChart.hx">
 		<extends path="rg.controller.info.InfoCartesianChart"/>
-		<filters public="1" set="method" line="31" static="1"><f a=""><c path="Array"><a>
+		<filters public="1" set="method" line="32" static="1"><f a=""><c path="Array"><a>
 	<validator><f a="v">
 	<unknown/>
 	<e path="Bool"/>
@@ -9364,16 +9414,17 @@ Other things to do. Nested placeholders
 		<interpolation public="1"><e path="thx.svg.LineInterpolator"/></interpolation>
 		<symbol public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbol>
 		<symbolStyle public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbolStyle>
 		<displayarea public="1"><e path="Bool"/></displayarea>
-		<new public="1" set="method" line="23"><f a=""><e path="Void"/></f></new>
+		<y0property public="1"><c path="String"/></y0property>
+		<new public="1" set="method" line="24"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -9404,12 +9455,12 @@ Other things to do. Nested placeholders
 </f></title>
 		<datapoint public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></datapoint>
 		<datapointover public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></datapointover>
 		<new public="1" set="method" line="18"><f a=""><e path="Void"/></f></new>
@@ -9472,12 +9523,12 @@ Other things to do. Nested placeholders
 </a></c></f></filters>
 		<total public="1"><f a=":">
 	<c path="Float"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></total>
 		<totalover public="1"><f a=":">
 	<c path="Float"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></totalover>
 		<new public="1" set="method" line="11"><f a=""><e path="Void"/></f></new>
@@ -10045,11 +10096,7 @@ Other things to do. Nested placeholders
 </a></c></arcBig>
 		<pie><c path="thx.geom.layout.Pie"><c path="Float"/></c></pie>
 		<radius><c path="Float"/></radius>
-		<stats><a>
-	<tot><c path="Float"/></tot>
-	<min><c path="Float"/></min>
-	<max><c path="Float"/></max>
-</a></stats>
+		<stats><c path="rg.data.Stats"><d/></c></stats>
 		<variableDependent><c path="rg.data.VariableDependent"><d/></c></variableDependent>
 		<gradientLightness public="1"><c path="Float"/></gradientLightness>
 		<displayGradient public="1"><e path="Bool"/></displayGradient>
@@ -10062,71 +10109,71 @@ Other things to do. Nested placeholders
 	<t path="rg.data.DataPoint"/>
 	<e path="Void"/>
 </f></mouseClick>
-		<setVariables public="1" set="method" line="81"><f a="variableIndependents:variableDependents">
+		<setVariables public="1" set="method" line="82"><f a="variableIndependents:variableDependents">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
 	<e path="Void"/>
 </f></setVariables>
-		<resize set="method" line="86" override="1"><f a=""><e path="Void"/></f></resize>
-		<data public="1" set="method" line="107"><f a="dp">
+		<resize set="method" line="87" override="1"><f a=""><e path="Void"/></f></resize>
+		<data public="1" set="method" line="108"><f a="dp">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></data>
-		<onMouseOver set="method" line="161"><f a="dom:i">
+		<onMouseOver set="method" line="162"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onMouseOver>
-		<onMouseClick set="method" line="180"><f a="dom:i">
+		<onMouseClick set="method" line="181"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onMouseClick>
-		<removeLabel set="method" line="186"><f a="dom:i">
+		<removeLabel set="method" line="187"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></removeLabel>
-		<updateLabel set="method" line="195"><f a="dom:i">
+		<updateLabel set="method" line="196"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></updateLabel>
-		<appendLabel set="method" line="212"><f a="dom:i">
+		<appendLabel set="method" line="213"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></appendLabel>
-		<applyGradient set="method" line="240"><f a="n:i">
+		<applyGradient set="method" line="241"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></applyGradient>
-		<fadein set="method" line="287"><f a="n:i">
+		<fadein set="method" line="285"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></fadein>
-		<highlight set="method" line="299"><f a="d:i">
+		<highlight set="method" line="297"><f a="d:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></highlight>
-		<backtonormal set="method" line="307"><f a="d:i">
+		<backtonormal set="method" line="305"><f a="d:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></backtonormal>
-		<id set="method" line="315"><f a="o:i">
+		<id set="method" line="313"><f a="dp:i">
 	<d/>
 	<c path="Int"/>
 	<c path="String"/>
 </f></id>
-		<makeid set="method" line="317"><f a="dp">
+		<makeid set="method" line="315"><f a="dp">
 	<t path="rg.data.DataPoint"/>
 	<c path="String"/>
 </f></makeid>
-		<arcShape set="method" line="324"><f a="a">
+		<arcShape set="method" line="322"><f a="a">
 	<c path="thx.svg.Arc"><a>
 	<startAngle><c path="Float"/></startAngle>
 	<endAngle><c path="Float"/></endAngle>
@@ -10142,7 +10189,7 @@ Other things to do. Nested placeholders
 		<c path="String"/>
 	</f>
 </f></arcShape>
-		<pief set="method" line="332"><f a="dp">
+		<pief set="method" line="330"><f a="dp">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><a>
 	<startAngle><c path="Float"/></startAngle>
@@ -10151,8 +10198,8 @@ Other things to do. Nested placeholders
 	<dp><t path="rg.data.DataPoint"/></dp>
 </a></c>
 </f></pief>
-		<destroy public="1" set="method" line="346" override="1"><f a=""><e path="Void"/></f></destroy>
-		<new public="1" set="method" line="60"><f a="panel">
+		<destroy public="1" set="method" line="344" override="1"><f a=""><e path="Void"/></f></destroy>
+		<new public="1" set="method" line="61"><f a="panel">
 	<c path="rg.view.svg.panel.Panel"/>
 	<e path="Void"/>
 </f></new>
@@ -10554,8 +10601,8 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.controller.info.InfoVariable" params="" file="src/rg/controller/info/InfoVariable.hx">
 		<extends path="rg.controller.info.Info"/>
-		<filters public="1" set="method" line="28" static="1"><f a=""><c path="Array"><t path="rg.controller.info.FieldFilter"/></c></f></filters>
-		<testViewValue set="method" line="81" static="1"><f a="v">
+		<filters public="1" set="method" line="29" static="1"><f a=""><c path="Array"><t path="rg.controller.info.FieldFilter"/></c></f></filters>
+		<testViewValue set="method" line="82" static="1"><f a="v">
 	<d/>
 	<e path="Bool"/>
 </f></testViewValue>
@@ -10566,7 +10613,7 @@ Other things to do. Nested placeholders
 		<groupBy public="1"><t path="Null"><c path="String"/></t></groupBy>
 		<variableType public="1"><e path="rg.controller.info.VariableType"/></variableType>
 		<scaleDistribution public="1"><t path="Null"><e path="rg.data.ScaleDistribution"/></t></scaleDistribution>
-		<new public="1" set="method" line="23"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="24"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -10756,11 +10803,9 @@ Other things to do. Nested placeholders
  </haxe_doc>
 	</class>
 	<class path="rg.controller.info.InfoPivotTable" params="" file="src/rg/controller/info/InfoPivotTable.hx">
-		<parseColor set="method" line="42" static="1"><f a="s">
-	<c path="String"/>
-	<c path="thx.color.Hsl"/>
-</f></parseColor>
-		<filters public="1" set="method" line="50" static="1"><f a=""><c path="Array"><d/></c></f></filters>
+		<defaultStartColor line="15" static="1"><c path="thx.color.Hsl"/></defaultStartColor>
+		<defaultEndColor line="16" static="1"><c path="thx.color.Hsl"/></defaultEndColor>
+		<filters public="1" set="method" line="44" static="1"><f a=""><c path="Array"><d/></c></f></filters>
 		<label public="1"><c path="rg.controller.info.InfoLabelPivotTable"/></label>
 		<heatmapColorStart public="1"><c path="thx.color.Hsl"/></heatmapColorStart>
 		<heatmapColorEnd public="1"><c path="thx.color.Hsl"/></heatmapColorEnd>
@@ -10772,7 +10817,7 @@ Other things to do. Nested placeholders
 	<t path="rg.data.DataPoint"/>
 	<e path="Void"/>
 </f></click>
-		<new public="1" set="method" line="28"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="30"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -10819,7 +10864,7 @@ Other things to do. Nested placeholders
 	<c path="String"/>
 	<c path="String"/>
 </f></buildQuery>
-		<complete public="1" set="method" line="41" static="1"><f a="executor:o:handler">
+		<complete public="1" set="method" line="39" static="1"><f a="executor:opt:handler">
 	<c path="rg.data.source.rgquery.IExecutorReportGrid"/>
 	<d/>
 	<f a="">
@@ -10898,7 +10943,7 @@ Other things to do. Nested placeholders
 		<arrowSize public="1"><c path="Float"/></arrowSize>
 		<labelArrow public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></labelArrow>
 		<variableIndependent><c path="rg.data.VariableIndependent"><d/></c></variableIndependent>
@@ -10907,17 +10952,17 @@ Other things to do. Nested placeholders
 		<dps><c path="Array"><t path="rg.data.DataPoint"/></c></dps>
 		<defaultLabelArrow public="1" set="method" line="58"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></defaultLabelArrow>
 		<defaultLabelDataPoint public="1" set="method" line="64"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></defaultLabelDataPoint>
 		<defaultLabelDataPointOver public="1" set="method" line="69"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></defaultLabelDataPointOver>
 		<setVariables public="1" set="method" line="74"><f a="variableIndependents:variableDependents">
@@ -10934,7 +10979,7 @@ Other things to do. Nested placeholders
 	<t path="rg.data.DataPoint"/>
 	<c path="Float"/>
 </f></dpvalue>
-		<stats><t path="rg.data.Stats"/></stats>
+		<stats><c path="rg.data.Stats"><d/></c></stats>
 		<topheight><c path="Float"/></topheight>
 		<h><c path="Float"/></h>
 		<scale set="method" line="97"><f a="value">
@@ -10949,7 +10994,7 @@ Other things to do. Nested placeholders
 		<mouseOver set="method" line="258"><f a="dp:i:stats">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<e path="Void"/>
 </f></mouseOver>
 		<init public="1" set="method" line="273" override="1"><f a=""><e path="Void"/></f></init>
@@ -10957,7 +11002,7 @@ Other things to do. Nested placeholders
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></internalGradient>
-		<externalGradient set="method" line="310"><f a="n:i">
+		<externalGradient set="method" line="308"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
@@ -11049,134 +11094,134 @@ Other things to do. Nested placeholders
 		<axis><c path="rg.data.IAxis"><d/></c></axis>
 		<min><d/></min>
 		<max><d/></max>
-		<resize set="method" line="68" override="1"><f a=""><e path="Void"/></f></resize>
-		<update public="1" set="method" line="77"><f a="axis:min:max">
+		<resize set="method" line="67" override="1"><f a=""><e path="Void"/></f></resize>
+		<update public="1" set="method" line="76"><f a="axis:min:max">
 	<c path="rg.data.IAxis"><d/></c>
 	<d/>
 	<d/>
 	<e path="Void"/>
 </f></update>
-		<updateAnchorLine set="method" line="85"><f a=""><e path="Void"/></f></updateAnchorLine>
-		<maxTicks set="method" line="113"><f a=""><c path="Int"/></f></maxTicks>
-		<id set="method" line="123"><f a="d:i">
+		<updateAnchorLine set="method" line="84"><f a=""><e path="Void"/></f></updateAnchorLine>
+		<maxTicks set="method" line="112"><f a=""><c path="Int"/></f></maxTicks>
+		<id set="method" line="122"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="String"/>
 </f></id>
-		<redraw set="method" line="125"><f a=""><e path="Void"/></f></redraw>
-		<createLabel set="method" line="181"><f a="n:i">
+		<redraw set="method" line="124"><f a=""><e path="Void"/></f></redraw>
+		<createLabel set="method" line="180"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></createLabel>
-		<initf set="method" line="214"><f a=""><e path="Void"/></f></initf>
-		<init public="1" set="method" line="283"><f a=""><e path="Void"/></f></init>
-		<t get="inline" set="null" line="293"><f a="x:y">
+		<initf set="method" line="213"><f a=""><e path="Void"/></f></initf>
+		<init public="1" set="method" line="282"><f a=""><e path="Void"/></f></init>
+		<t get="inline" set="null" line="292"><f a="x:y">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="String"/>
 </f></t>
-		<translateTop set="method" line="295"><f a="d:i">
+		<translateTop set="method" line="294"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="String"/>
 </f></translateTop>
-		<translateBottom set="method" line="296"><f a="d:i">
+		<translateBottom set="method" line="295"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="String"/>
 </f></translateBottom>
-		<translateLeft set="method" line="297"><f a="d:i">
+		<translateLeft set="method" line="296"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="String"/>
 </f></translateLeft>
-		<translateRight set="method" line="298"><f a="d:i">
+		<translateRight set="method" line="297"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="String"/>
 </f></translateRight>
-		<x1Top set="method" line="300"><f a="d:i">
+		<x1Top set="method" line="299"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></x1Top>
-		<x1Bottom set="method" line="301"><f a="d:i">
+		<x1Bottom set="method" line="300"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></x1Bottom>
-		<x1Left set="method" line="302"><f a="d:i">
+		<x1Left set="method" line="301"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></x1Left>
-		<x1Right set="method" line="303"><f a="d:i">
+		<x1Right set="method" line="302"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></x1Right>
-		<y1Top set="method" line="304"><f a="d:i">
+		<y1Top set="method" line="303"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></y1Top>
-		<y1Bottom set="method" line="305"><f a="d:i">
+		<y1Bottom set="method" line="304"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></y1Bottom>
-		<y1Left set="method" line="306"><f a="d:i">
+		<y1Left set="method" line="305"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></y1Left>
-		<y1Right set="method" line="307"><f a="d:i">
+		<y1Right set="method" line="306"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></y1Right>
-		<x2Top set="method" line="309"><f a="d:i">
+		<x2Top set="method" line="308"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></x2Top>
-		<x2Bottom set="method" line="310"><f a="d:i">
+		<x2Bottom set="method" line="309"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></x2Bottom>
-		<x2Left set="method" line="311"><f a="d:i">
+		<x2Left set="method" line="310"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></x2Left>
-		<x2Right set="method" line="312"><f a="d:i">
+		<x2Right set="method" line="311"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></x2Right>
-		<y2Top set="method" line="314"><f a="d:i">
+		<y2Top set="method" line="313"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></y2Top>
-		<y2Bottom set="method" line="315"><f a="d:i">
+		<y2Bottom set="method" line="314"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></y2Bottom>
-		<y2Left set="method" line="316"><f a="d:i">
+		<y2Left set="method" line="315"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></y2Left>
-		<y2Right set="method" line="317"><f a="d:i">
+		<y2Right set="method" line="316"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="Int"/>
 </f></y2Right>
-		<tickClass set="method" line="319"><f a="d:i">
+		<tickClass set="method" line="318"><f a="d:i">
 	<c path="rg.data.ITickmark"><d/></c>
 	<c path="Int"/>
 	<c path="String"/>
@@ -11247,17 +11292,59 @@ Other things to do. Nested placeholders
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
-	<typedef path="rg.data.Stats" params="" file="src/rg/data/Stats.hx">
-		<a>
-			<tot><c path="Float"/></tot>
-			<min><c path="Float"/></min>
-			<max><c path="Float"/></max>
-		</a>
+	<class path="rg.data.Stats" params="T" file="src/rg/data/Stats.hx">
+		<min public="1" set="null"><t path="Null"><c path="rg.data.Stats.T"/></t></min>
+		<max public="1" set="null"><t path="Null"><c path="rg.data.Stats.T"/></t></max>
+		<count public="1" set="null"><c path="Int"/></count>
+		<values public="1" set="null"><c path="Array"><c path="rg.data.Stats.T"/></c></values>
+		<sortf public="1" set="null"><f a=":">
+	<c path="rg.data.Stats.T"/>
+	<c path="rg.data.Stats.T"/>
+	<c path="Int"/>
+</f></sortf>
+		<reset public="1" set="method" line="24"><f a=""><c path="rg.data.Stats"><c path="rg.data.Stats.T"/></c></f></reset>
+		<add public="1" set="method" line="33"><f a="v">
+	<c path="rg.data.Stats.T"/>
+	<c path="rg.data.Stats"><c path="rg.data.Stats.T"/></c>
+</f></add>
+		<addMany public="1" set="method" line="47"><f a="it">
+	<t path="Iterable"><c path="rg.data.Stats.T"/></t>
+	<c path="rg.data.Stats"><c path="rg.data.Stats.T"/></c>
+</f></addMany>
+		<new public="1" set="method" line="18"><f a="?sortf">
+	<f a=":">
+		<c path="rg.data.Stats.T"/>
+		<c path="rg.data.Stats.T"/>
+		<c path="Int"/>
+	</f>
+	<e path="Void"/>
+</f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
  </haxe_doc>
-	</typedef>
+	</class>
+	<class path="rg.data.StatsNumeric" params="" file="src/rg/data/Stats.hx" module="rg.data.Stats">
+		<extends path="rg.data.Stats"><c path="Float"/></extends>
+		<tot public="1"><c path="Float"/></tot>
+		<reset public="1" set="method" line="74" override="1"><f a=""><c path="rg.data.Stats"><c path="Float"/></c></f></reset>
+		<add public="1" set="method" line="81" override="1"><f a="v">
+	<c path="Float"/>
+	<c path="rg.data.Stats"><c path="Float"/></c>
+</f></add>
+		<addMany public="1" set="method" line="88" override="1"><f a="it">
+	<t path="Iterable"><c path="Float"/></t>
+	<c path="rg.data.Stats"><c path="Float"/></c>
+</f></addMany>
+		<new public="1" set="method" line="67"><f a="?sortf">
+	<f a=":">
+		<c path="Float"/>
+		<c path="Float"/>
+		<c path="Int"/>
+	</f>
+	<e path="Void"/>
+</f></new>
+	</class>
 	<class path="Lambda" params="" file="C:\Projects\haxe/std/Lambda.hx">
 		<array public="1" params="A" set="method" line="35" static="1">
 			<f a="it">
@@ -11920,34 +12007,9 @@ Other things to do. Nested placeholders
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
-	<class path="rg.controller.factory.FactoryVariableContexts" params="" file="src/rg/controller/factory/FactoryVariableContexts.hx">
-		<createFromDataContexts public="1" set="method" line="84" static="1"><f a="contexts">
-	<c path="Array"><c path="rg.data.DataContext"/></c>
-	<c path="rg.controller.factory.FactoryVariableContexts"/>
-</f></createFromDataContexts>
-		<knownProperties><c path="thx.collection.Set"><c path="String"/></c></knownProperties>
-		<independentFactory><c path="rg.controller.factory.FactoryVariableIndependent"/></independentFactory>
-		<dependentFactory><c path="rg.controller.factory.FactoryVariableDependent"/></dependentFactory>
-		<createIndependents public="1" set="method" line="32"><f a="info">
-	<c path="Array"><c path="rg.controller.info.InfoVariable"/></c>
-	<c path="Array"><c path="rg.data.VariableIndependentContext"><d/></c></c>
-</f></createIndependents>
-		<createDependents public="1" set="method" line="59"><f a="info">
-	<c path="Array"><c path="rg.controller.info.InfoVariable"/></c>
-	<c path="Array"><c path="rg.data.VariableDependentContext"><d/></c></c>
-</f></createDependents>
-		<new public="1" set="method" line="25"><f a="knownproperties">
-	<c path="thx.collection.Set"><c path="String"/></c>
-	<e path="Void"/>
-</f></new>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
 	<class path="rg.data.AxisTime" params="" file="src/rg/data/AxisTime.hx">
 		<implements path="rg.data.IAxisDiscrete"><c path="Float"/></implements>
-		<snapping line="29" static="1"><a>
+		<snapping line="21" static="1"><a>
 	<yeartop><c path="Int"/></yeartop>
 	<year><c path="Array"><a>
 	<to><c path="Int"/></to>
@@ -11971,32 +12033,42 @@ Other things to do. Nested placeholders
 </a></snapping>
 		<periodicity public="1" set="null"><c path="String"/></periodicity>
 		<scaleDistribution public="1" set="setScaleDistribution"><e path="rg.data.ScaleDistribution"/></scaleDistribution>
-		<isMajor set="method" line="40"><f a="units:value">
+		<isMajor set="method" line="32"><f a="units:value">
 	<c path="Int"/>
 	<c path="Float"/>
 	<e path="Bool"/>
 </f></isMajor>
-		<ticks public="1" set="method" line="76"><f a="start:end:?upperBound">
+		<ticks public="1" set="method" line="68"><f a="start:end:?upperBound">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Int"/>
 	<c path="Array"><c path="rg.data.ITickmark"><c path="Float"/></c></c>
 </f></ticks>
-		<range public="1" set="method" line="90"><f a="start:end">
+		<range public="1" set="method" line="82"><f a="start:end">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Array"><c path="Float"/></c>
 </f></range>
-		<scale public="1" set="method" line="95"><f a="start:end:v">
+		<scale public="1" set="method" line="87"><f a="start:end:v">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 </f></scale>
-		<setScaleDistribution set="method" line="101"><f a="v">
+		<setScaleDistribution set="method" line="93"><f a="v">
 	<e path="rg.data.ScaleDistribution"/>
 	<e path="rg.data.ScaleDistribution"/>
 </f></setScaleDistribution>
+		<min public="1" set="method" line="98"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="Float"/></c>
+	<d/>
+	<c path="Float"/>
+</f></min>
+		<max public="1" set="method" line="103"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="Float"/></c>
+	<d/>
+	<c path="Float"/>
+</f></max>
 		<new public="1" set="method" line="15"><f a="periodicity">
 	<c path="String"/>
 	<e path="Void"/>
@@ -12152,15 +12224,15 @@ Other things to do. Nested placeholders
 	<e path="Void"/>
 </f></log>
 		<main set="method" line="27" static="1"><f a=""><e path="Void"/></f></main>
-		<select set="method" line="101" static="1"><f a="el">
+		<select set="method" line="113" static="1"><f a="el">
 	<d/>
 	<c path="thx.js.Selection"/>
 </f></select>
-		<opt get="inline" set="null" line="109" static="1"><f a="o">
+		<opt get="inline" set="null" line="121" static="1"><f a="ob">
 	<d/>
 	<unknown/>
 </f></opt>
-		<chartopt set="method" line="110" static="1"><f a="o:viz">
+		<chartopt set="method" line="122" static="1"><f a="ob:viz">
 	<d/>
 	<c path="String"/>
 	<unknown/>
@@ -12372,7 +12444,7 @@ Other things to do. Nested placeholders
 </a></c></f></filters>
 		<arrow public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></arrow>
 		<new public="1" set="method" line="11"><f a=""><e path="Void"/></f></new>
@@ -12463,20 +12535,6 @@ Other things to do. Nested placeholders
 	<c path="rg.controller.visualization.VisualizationSvg"/>
 </f></create>
 		<new public="1" set="method" line="30"><f a=""><e path="Void"/></f></new>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
-	<class path="rg.data.source.DataSourceArray" params="" file="src/rg/data/source/DataSourceArray.hx">
-		<implements path="rg.data.IDataSource"/>
-		<data><c path="Array"><t path="rg.data.DataPoint"/></c></data>
-		<onLoad public="1" set="null"><c path="hxevents.Dispatcher"><c path="Array"><t path="rg.data.DataPoint"/></c></c></onLoad>
-		<load public="1" set="method" line="21"><f a=""><e path="Void"/></f></load>
-		<new public="1" set="method" line="15"><f a="data">
-	<c path="Array"><t path="rg.data.DataPoint"/></c>
-	<e path="Void"/>
-</f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -12863,6 +12921,20 @@ customs for missing features
 	<c path="String"/>
 </f></weekDayNameShort>
 	</class>
+	<class path="rg.data.source.DataSourceArray" params="" file="src/rg/data/source/DataSourceArray.hx">
+		<implements path="rg.data.IDataSource"/>
+		<data><c path="Array"><t path="rg.data.DataPoint"/></c></data>
+		<onLoad public="1" set="null"><c path="hxevents.Dispatcher"><c path="Array"><t path="rg.data.DataPoint"/></c></c></onLoad>
+		<load public="1" set="method" line="21"><f a=""><e path="Void"/></f></load>
+		<new public="1" set="method" line="15"><f a="data">
+	<c path="Array"><t path="rg.data.DataPoint"/></c>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.controller.info.InfoSegment" params="" file="src/rg/controller/info/InfoSegment.hx">
 		<filters public="1" set="method" line="16" static="1"><f a=""><c path="Array"><a>
 	<validator><f a="v">
@@ -13015,12 +13087,12 @@ customs for missing features
  </haxe_doc>
 	</class>
 	<class path="rg.controller.factory.FactoryVariableDependent" params="" file="src/rg/controller/factory/FactoryVariableDependent.hx">
-		<create public="1" set="method" line="16"><f a="info:isnumeric">
+		<create public="1" set="method" line="15"><f a="info:isnumeric">
 	<c path="rg.controller.info.InfoVariable"/>
 	<e path="Bool"/>
 	<c path="rg.data.VariableDependent"><d/></c>
 </f></create>
-		<new public="1" set="method" line="14"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="13"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -13132,7 +13204,7 @@ customs for missing features
 	<d/>
 	<c path="rg.controller.visualization.Visualization"/>
 </f></visualization>
-		<getLayout public="1" set="method" line="94"><f a="id:options:container:replace">
+		<getLayout public="1" set="method" line="92"><f a="id:options:container:replace">
 	<c path="String"/>
 	<d/>
 	<c path="thx.js.Selection"/>
@@ -13166,12 +13238,12 @@ customs for missing features
 </a></c></f></filters>
 		<symbol public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbol>
 		<symbolStyle public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbolStyle>
 		<new public="1" set="method" line="17"><f a=""><e path="Void"/></f></new>
@@ -13480,8 +13552,8 @@ customs for missing features
 		<periodicity><c path="String"/></periodicity>
 		<event public="1" set="null"><c path="String"/></event>
 		<path public="1" set="null"><c path="String"/></path>
-		<start public="1"><c path="Float"/></start>
-		<end public="1"><c path="Float"/></end>
+		<timeStart public="1"><c path="Float"/></timeStart>
+		<timeEnd public="1"><c path="Float"/></timeEnd>
 		<groupBy public="1"><t path="Null"><c path="String"/></t></groupBy>
 		<timeZone public="1"><t path="Null"><c path="String"/></t></timeZone>
 		<transform><c path="rg.data.source.ITransform"><d/></c></transform>
@@ -13630,18 +13702,6 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
-	<class path="rg.data.ScaleDistributions" params="" file="src/rg/data/ScaleDistributions.hx">
-		<distribute public="1" set="method" line="10" static="1"><f a="scale:pos:values">
-	<e path="rg.data.ScaleDistribution"/>
-	<c path="Int"/>
-	<c path="Int"/>
-	<c path="Float"/>
-</f></distribute>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
 	<class path="rg.data.Tickmark" params="T" file="src/rg/data/Tickmark.hx">
 		<implements path="rg.data.ITickmark"><c path="rg.data.Tickmark.T"/></implements>
 		<delta public="1" get="getDelta" set="null"><c path="Float"/></delta>
@@ -13664,6 +13724,18 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="rg.data.ScaleDistributions" params="" file="src/rg/data/ScaleDistributions.hx">
+		<distribute public="1" set="method" line="10" static="1"><f a="scale:pos:values">
+	<e path="rg.data.ScaleDistribution"/>
+	<c path="Int"/>
+	<c path="Int"/>
+	<c path="Float"/>
+</f></distribute>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<enum path="rg.view.svg.chart.StreamEffect" params="" file="src/rg/view/svg/chart/StreamEffect.hx">
 		<NoEffect/>
 		<GradientVertical a="lightness"><c path="Float"/></GradientVertical>
@@ -13675,24 +13747,34 @@ customs for missing features
 	</enum>
 	<class path="rg.data.AxisNumeric" params="" file="src/rg/data/AxisNumeric.hx">
 		<implements path="rg.data.IAxis"><c path="Float"/></implements>
-		<_step set="method" line="38" static="1"><f a="span:m">
+		<_step set="method" line="36" static="1"><f a="span:m">
 	<c path="Float"/>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></_step>
-		<scale public="1" set="method" line="14"><f a="start:end:v">
+		<scale public="1" set="method" line="12"><f a="start:end:v">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 </f></scale>
-		<ticks public="1" set="method" line="21"><f a="start:end:?maxTicks">
+		<ticks public="1" set="method" line="19"><f a="start:end:?maxTicks">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Int"/>
 	<c path="Array"><c path="rg.data.ITickmark"><c path="Float"/></c></c>
 </f></ticks>
-		<new public="1" set="method" line="13"><f a=""><e path="Void"/></f></new>
+		<min public="1" set="method" line="51"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="Float"/></c>
+	<d/>
+	<c path="Float"/>
+</f></min>
+		<max public="1" set="method" line="60"><f a="stats:meta">
+	<c path="rg.data.Stats"><c path="Float"/></c>
+	<d/>
+	<c path="Float"/>
+</f></max>
+		<new public="1" set="method" line="11"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -13782,38 +13864,20 @@ customs for missing features
 </haxe_doc>
 	</class>
 	<class path="rg.controller.factory.FactoryVariableIndependent" params="" file="src/rg/controller/factory/FactoryVariableIndependent.hx">
-		<create public="1" set="method" line="20"><f a="info">
+		<convertBound public="1" set="method" line="34" static="1"><f a="axis:value">
+	<c path="rg.data.IAxis"><d/></c>
+	<d/>
+	<f a=":">
+		<c path="rg.data.Stats"><d/></c>
+		<d/>
+		<d/>
+	</f>
+</f></convertBound>
+		<create public="1" set="method" line="21"><f a="info">
 	<c path="rg.controller.info.InfoVariable"/>
 	<c path="rg.data.VariableIndependent"><d/></c>
 </f></create>
-		<normalizeTime set="method" line="48"><f a="v">
-	<d/>
-	<t path="Null"><c path="Float"/></t>
-</f></normalizeTime>
-		<defaultMin set="method" line="59"><f a="min:periodicity">
-	<t path="Null"><c path="Float"/></t>
-	<c path="String"/>
-	<t path="Null"><c path="Float"/></t>
-</f></defaultMin>
-		<defaultMax set="method" line="84"><f a="max:periodicity">
-	<t path="Null"><c path="Float"/></t>
-	<c path="String"/>
-	<t path="Null"><c path="Float"/></t>
-</f></defaultMax>
-		<new public="1" set="method" line="18"><f a=""><e path="Void"/></f></new>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
-	<class path="rg.data.VariableIndependentContext" params="T" file="src/rg/data/VariableIndependentContext.hx">
-		<partial public="1"><e path="Bool"/></partial>
-		<variable public="1"><c path="rg.data.VariableIndependent"><c path="rg.data.VariableIndependentContext.T"/></c></variable>
-		<new public="1" set="method" line="12"><f a="variable:partial">
-	<c path="rg.data.VariableIndependent"><c path="rg.data.VariableIndependentContext.T"/></c>
-	<e path="Bool"/>
-	<e path="Void"/>
-</f></new>
+		<new public="1" set="method" line="19"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -13845,12 +13909,12 @@ customs for missing features
 		<extends path="rg.view.svg.chart.CartesianChart"><c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c></extends>
 		<symbol public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbol>
 		<symbolStyle public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbolStyle>
 		<lineInterpolator public="1"><e path="thx.svg.LineInterpolator"/></lineInterpolator>
@@ -13864,17 +13928,18 @@ customs for missing features
 		<chart><c path="thx.js.Selection"/></chart>
 		<dps><c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c></dps>
 		<segment><c path="Int"/></segment>
-		<setVariables public="1" set="method" line="51" override="1"><f a="variableIndependents:yVariables">
+		<setVariables public="1" set="method" line="51" override="1"><f a="variableIndependents:yVariables:data">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
+	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
 	<e path="Void"/>
 </f></setVariables>
-		<x set="method" line="68"><f a="d:?i">
+		<x set="method" line="58"><f a="d:?i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></x>
-		<getY1 set="method" line="76"><f a="pos">
+		<getY1 set="method" line="66"><f a="pos">
 	<c path="Int"/>
 	<f a="d:i">
 		<t path="rg.data.DataPoint"/>
@@ -13882,7 +13947,7 @@ customs for missing features
 		<c path="Float"/>
 	</f>
 </f></getY1>
-		<getY0 set="method" line="102"><f a="pos">
+		<getY0 set="method" line="92"><f a="pos">
 	<c path="Int"/>
 	<f a="d:i">
 		<t path="rg.data.DataPoint"/>
@@ -13891,7 +13956,7 @@ customs for missing features
 	</f>
 </f></getY0>
 		<segments><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></segments>
-		<classf public="1" set="method" line="118"><f a="pos:cls">
+		<classsf public="1" set="method" line="108"><f a="pos:cls">
 	<c path="Int"/>
 	<c path="String"/>
 	<f a="_:i">
@@ -13899,12 +13964,21 @@ customs for missing features
 		<c path="Int"/>
 		<c path="String"/>
 	</f>
-</f></classf>
-		<data public="1" set="method" line="126" override="1"><f a="dps">
+</f></classsf>
+		<classff public="1" set="method" line="116"><f a="pos:cls">
+	<c path="Int"/>
+	<c path="String"/>
+	<f a="_:i">
+		<c path="Array"><t path="rg.data.DataPoint"/></c>
+		<c path="Int"/>
+		<c path="String"/>
+	</f>
+</f></classff>
+		<data public="1" set="method" line="124" override="1"><f a="dps">
 	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
 	<e path="Void"/>
 </f></data>
-		<getTranslatePointf set="method" line="277"><f a="pos">
+		<getTranslatePointf set="method" line="286"><f a="pos">
 	<c path="Int"/>
 	<f a="dp:i">
 		<t path="rg.data.DataPoint"/>
@@ -13912,14 +13986,14 @@ customs for missing features
 		<c path="String"/>
 	</f>
 </f></getTranslatePointf>
-		<onmouseover set="method" line="287"><f a="stats:n:i">
-	<t path="rg.data.Stats"/>
+		<onmouseover set="method" line="296"><f a="stats:n:i">
+	<c path="rg.data.Stats"><d/></c>
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
-		<onclick set="method" line="307"><f a="stats:dp:i">
-	<t path="rg.data.Stats"/>
+		<onclick set="method" line="316"><f a="stats:dp:i">
+	<c path="rg.data.Stats"><d/></c>
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
@@ -13999,29 +14073,32 @@ customs for missing features
  </haxe_doc>
 	</class>
 	<class path="rg.controller.factory.FactoryAxis" params="" file="src/rg/controller/factory/FactoryAxis.hx">
-		<create public="1" set="method" line="20"><f a="type:isnumeric:?samples">
+		<create public="1" set="method" line="22"><f a="type:isnumeric:variable:samples">
 	<c path="String"/>
-	<e path="Bool"/>
-	<c path="Array"><d/></c>
+	<t path="Null"><e path="Bool"/></t>
+	<c path="rg.data.Variable">
+		<d/>
+		<c path="rg.data.IAxis"><d/></c>
+	</c>
+	<t path="Null"><c path="Array"><d/></c></t>
 	<c path="rg.data.IAxis"><d/></c>
 </f></create>
-		<createDiscrete public="1" set="method" line="32"><f a="type:samples:groupBy">
+		<createDiscrete public="1" set="method" line="36"><f a="type:variable:samples:groupBy">
 	<c path="String"/>
+	<c path="rg.data.Variable">
+		<d/>
+		<c path="rg.data.IAxis"><d/></c>
+	</c>
 	<c path="Array"><d/></c>
 	<t path="Null"><c path="String"/></t>
 	<c path="rg.data.IAxisDiscrete"><d/></c>
 </f></createDiscrete>
-		<new public="1" set="method" line="18"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="20"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
-	<enum path="rg.controller.factory.AxisHint" params="" file="src/rg/controller/factory/FactoryAxis.hx" module="rg.controller.factory.FactoryAxis">
-		<Unknown/>
-		<Samples a="values"><c path="Array"><d/></c></Samples>
-		<Numeric/>
-	</enum>
 	<enum path="rg.view.layout.ScalePattern" params="" file="src/rg/view/layout/ScalePattern.hx">
 		<ScalesBefore/>
 		<ScalesAlternating/>
@@ -14168,7 +14245,7 @@ customs for missing features
 	</f>
 	<e path="Void"/>
 </f></addAction>
-		<execute public="1" set="method" line="24"><f a="o">
+		<execute public="1" set="method" line="24"><f a="ob">
 	<c path="rg.util.ChainedExecutor.T"/>
 	<e path="Void"/>
 </f></execute>
@@ -14490,16 +14567,9 @@ customs for missing features
 			<c path="rg.data.VariableDependent.T"/>
 			<c path="rg.data.IAxis"><c path="rg.data.VariableDependent.T"/></c>
 		</extends>
-		<setAxis public="1" set="method" line="18"><f a="axis">
-	<c path="rg.data.IAxis"><c path="rg.data.VariableDependent.T"/></c>
-	<e path="Void"/>
-</f></setAxis>
-		<new public="1" set="method" line="8"><f a="type:axis:scaleDistribution:?min:?max">
+		<new public="1" set="method" line="8"><f a="type:scaleDistribution">
 	<c path="String"/>
-	<c path="rg.data.IAxis"><c path="rg.data.VariableDependent.T"/></c>
 	<t path="Null"><e path="rg.data.ScaleDistribution"/></t>
-	<c path="rg.data.VariableDependent.T"/>
-	<c path="rg.data.VariableDependent.T"/>
 	<e path="Void"/>
 </f></new>
 		<haxe_doc>
@@ -14601,6 +14671,25 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="rg.data.AxisOrdinalStats" params="T" file="src/rg/data/AxisOrdinalStats.hx">
+		<extends path="rg.data.AxisOrdinal"><c path="rg.data.AxisOrdinalStats.T"/></extends>
+		<variable><c path="rg.data.Variable">
+	<c path="rg.data.AxisOrdinalStats.T"/>
+	<c path="rg.data.IAxis"><c path="rg.data.AxisOrdinalStats.T"/></c>
+</c></variable>
+		<values public="1" set="method" line="19" override="1"><f a=""><c path="Array"><c path="rg.data.AxisOrdinalStats.T"/></c></f></values>
+		<new public="1" set="method" line="13"><f a="variable">
+	<c path="rg.data.Variable">
+		<c path="rg.data.AxisOrdinalStats.T"/>
+		<c path="rg.data.IAxis"><c path="rg.data.AxisOrdinalStats.T"/></c>
+	</c>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.controller.factory.FactoryLayout" params="" file="src/rg/controller/factory/FactoryLayout.hx">
 		<LIMIT_WIDTH public="1" get="inline" set="null" line="14" static="1"><c path="Int"/></LIMIT_WIDTH>
 		<LIMIT_HEIGHT public="1" get="inline" set="null" line="15" static="1"><c path="Int"/></LIMIT_HEIGHT>
@@ -14680,62 +14769,44 @@ customs for missing features
  </haxe_doc>
 	</class>
 	<class path="rg.data.DataProcessor" params="" file="src/rg/data/DataProcessor.hx">
-		<emptyStats set="method" line="86" static="1"><f a=""><a>
-	<tot><c path="Float"/></tot>
-	<min><c path="Float"/></min>
-	<max><c path="Float"/></max>
-</a></f></emptyStats>
-		<updateStats set="method" line="87" static="1"><f a="variable:dps">
-	<c path="rg.data.Variable">
-		<d/>
-		<c path="rg.data.IAxis"><d/></c>
-	</c>
-	<c path="Array"><t path="rg.data.DataPoint"/></c>
-	<e path="Void"/>
-</f></updateStats>
 		<sources public="1" set="null"><c path="rg.data.Sources"><d/></c></sources>
 		<onData public="1" set="null"><c path="hxevents.Dispatcher"><c path="Array"><t path="rg.data.DataPoint"/></c></c></onData>
-		<independentVariables public="1"><c path="Array"><c path="rg.data.VariableIndependentContext"><d/></c></c></independentVariables>
-		<dependentVariables public="1"><c path="Array"><c path="rg.data.VariableDependentContext"><d/></c></c></dependentVariables>
-		<transform public="1" set="dynamic" line="31"><f a="s">
+		<independentVariables public="1"><c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c></independentVariables>
+		<dependentVariables public="1"><c path="Array"><c path="rg.data.VariableDependent"><d/></c></c></dependentVariables>
+		<transform public="1" set="dynamic" line="30"><f a="s">
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 </f></transform>
-		<scale public="1" set="dynamic" line="36"><f a="s">
+		<scale public="1" set="dynamic" line="35"><f a="s">
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 </f></scale>
-		<load public="1" set="method" line="41"><f a=""><e path="Void"/></f></load>
-		<filterSubset set="method" line="69"><f a="subset:variables">
+		<load public="1" set="method" line="40"><f a=""><e path="Void"/></f></load>
+		<filterSubset set="method" line="45"><f a="subset:variables">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><d/></c>
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 </f></filterSubset>
-		<filterDatapoint set="method" line="74"><f a="variables:dp">
+		<filterDatapoint set="method" line="50"><f a="variables:dp">
 	<c path="Array"><d/></c>
 	<t path="rg.data.DataPoint"/>
 	<e path="Bool"/>
 </f></filterDatapoint>
-		<preprocess set="method" line="97"><f a=""><e path="Void"/></f></preprocess>
-		<process set="method" line="107"><f a="data">
+		<preprocess set="method" line="62"><f a=""><e path="Void"/></f></preprocess>
+		<process set="method" line="67"><f a="data">
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 	<e path="Void"/>
 </f></process>
-		<fillDependentVariables set="method" line="139"><f a="data">
+		<fillDependentVariables set="method" line="100"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></fillDependentVariables>
-		<fillIndependentVariables set="method" line="189"><f a="data">
+		<fillIndependentVariables set="method" line="127"><f a="data">
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 	<e path="Void"/>
 </f></fillIndependentVariables>
-		<fillIndependentVariable set="method" line="217"><f a="variable:data">
-	<c path="rg.data.VariableIndependent"><d/></c>
-	<c path="Array"><t path="rg.data.DataPoint"/></c>
-	<e path="Void"/>
-</f></fillIndependentVariable>
-		<getVariableIndependentValues set="method" line="240"><f a=""><c path="Array"><c path="Array"><unknown/></c></c></f></getVariableIndependentValues>
-		<new public="1" set="method" line="23"><f a="sources">
+		<getVariableIndependentValues set="method" line="142"><f a=""><c path="Array"><c path="Array"><unknown/></c></c></f></getVariableIndependentValues>
+		<new public="1" set="method" line="22"><f a="sources">
 	<c path="rg.data.Sources"><d/></c>
 	<e path="Void"/>
 </f></new>
@@ -14807,15 +14878,15 @@ customs for missing features
 	<e path="Void"/>
 </f></click>
 		<container><c path="thx.js.Selection"/></container>
-		<stats><t path="rg.data.Stats"/></stats>
+		<stats><c path="rg.data.StatsNumeric"/></stats>
 		<labelDataPoint public="1" set="dynamic" line="58"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPoint>
 		<labelDataPointOver public="1" set="dynamic" line="64"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPointOver>
 		<labelAxis public="1" set="dynamic" line="70"><f a="v">
@@ -14829,12 +14900,12 @@ customs for missing features
 </f></labelAxisValue>
 		<labelTotal public="1" set="dynamic" line="86"><f a="v:stats">
 	<c path="Float"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelTotal>
 		<labelTotalOver public="1" set="dynamic" line="91"><f a="v:stats">
 	<c path="Float"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelTotalOver>
 		<data public="1" set="method" line="96"><f a="dps">
@@ -14879,32 +14950,61 @@ customs for missing features
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></prependSpacer>
-		<init public="1" set="method" line="298"><f a=""><e path="Void"/></f></init>
-		<setVariables public="1" set="method" line="303"><f a="variableIndependents:variableDependents">
+		<init public="1" set="method" line="265"><f a=""><e path="Void"/></f></init>
+		<setVariables public="1" set="method" line="270"><f a="variableIndependents:variableDependents">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
 	<e path="Void"/>
 </f></setVariables>
-		<destroy public="1" set="method" line="315"><f a=""><e path="Void"/></f></destroy>
-		<transformData set="method" line="320"><f a="dps">
+		<destroy public="1" set="method" line="282"><f a=""><e path="Void"/></f></destroy>
+		<transformData set="method" line="287"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<a>
-		<stats><t path="rg.data.Stats"/></stats>
+		<stats><c path="rg.data.StatsNumeric"/></stats>
 		<rows><c path="Array"><a>
 	<values><c path="Array"><d/></c></values>
-	<stats><t path="rg.data.Stats"/></stats>
+	<stats><c path="rg.data.StatsNumeric"/></stats>
 	<cells><c path="Array"><t path="rg.data.DataPoint"/></c></cells>
 </a></c></rows>
 		<row_headers><c path="Array"><c path="String"/></c></row_headers>
 		<columns><c path="Array"><a>
 	<values><c path="Array"><d/></c></values>
-	<stats><t path="rg.data.Stats"/></stats>
+	<stats><c path="rg.data.StatsNumeric"/></stats>
 </a></c></columns>
 		<column_headers><c path="Array"><c path="String"/></c></column_headers>
 	</a>
 </f></transformData>
+		<range set="method" line="437"><f a="variable">
+	<c path="rg.data.VariableIndependent"><d/></c>
+	<c path="Array"><d/></c>
+</f></range>
 		<new public="1" set="method" line="46"><f a="container">
 	<c path="thx.js.Selection"/>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="rg.controller.factory.FactoryVariable" params="" file="src/rg/controller/factory/FactoryVariable.hx">
+		<createFromDataContexts public="1" set="method" line="63" static="1"><f a="contexts">
+	<c path="Array"><c path="rg.data.DataContext"/></c>
+	<c path="rg.controller.factory.FactoryVariable"/>
+</f></createFromDataContexts>
+		<knownProperties><c path="thx.collection.Set"><c path="String"/></c></knownProperties>
+		<independentFactory><c path="rg.controller.factory.FactoryVariableIndependent"/></independentFactory>
+		<dependentFactory><c path="rg.controller.factory.FactoryVariableDependent"/></dependentFactory>
+		<createIndependents public="1" set="method" line="27"><f a="info">
+	<c path="Array"><c path="rg.controller.info.InfoVariable"/></c>
+	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
+</f></createIndependents>
+		<createDependents public="1" set="method" line="45"><f a="info">
+	<c path="Array"><c path="rg.controller.info.InfoVariable"/></c>
+	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
+</f></createDependents>
+		<new public="1" set="method" line="20"><f a="knownproperties">
+	<c path="thx.collection.Set"><c path="String"/></c>
 	<e path="Void"/>
 </f></new>
 		<haxe_doc>
@@ -15248,6 +15348,10 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="thx.util.MacroVersion" params="" file="C:\Projects\thx\src/thx/util/MacroVersion.hx"><haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc></class>
 	<class path="thx.error.AbstractMethod" params="" file="C:\Projects\thx\src/thx/error/AbstractMethod.hx">
 		<extends path="thx.error.Error"/>
 		<new public="1" set="method" line="12"><f a="?posInfo">
@@ -15489,51 +15593,62 @@ customs for missing features
 	<c path="String"/>
 	<c path="Float"/>
 </f></minForPeriodicityInSeries>
-		<maxForPeriodicityInSeries public="1" set="method" line="180" static="1"><f a="arr:periodicity">
+		<maxForPeriodicityInSeries public="1" set="method" line="179" static="1"><f a="arr:periodicity">
 	<c path="Array"><d><d><c path="Int"/></d></d></c>
 	<c path="String"/>
 	<c path="Float"/>
 </f></maxForPeriodicityInSeries>
-		<formatf public="1" set="method" line="188" static="1"><f a="periodicity">
+		<formatf public="1" set="method" line="186" static="1"><f a="periodicity">
 	<c path="String"/>
 	<f a="">
 		<c path="Float"/>
 		<c path="String"/>
 	</f>
 </f></formatf>
-		<format public="1" set="method" line="200" static="1"><f a="periodicity:v">
+		<format public="1" set="method" line="198" static="1"><f a="periodicity:v">
 	<c path="String"/>
 	<c path="Float"/>
 	<c path="String"/>
 </f></format>
-		<smartFormat public="1" set="method" line="214" static="1"><f a="periodicity:v">
+		<smartFormat public="1" set="method" line="212" static="1"><f a="periodicity:v">
 	<c path="String"/>
 	<c path="Float"/>
 	<c path="String"/>
 </f></smartFormat>
-		<firstInSeries public="1" set="method" line="251" static="1"><f a="periodicity:v">
+		<firstInSeries public="1" set="method" line="249" static="1"><f a="periodicity:v">
 	<c path="String"/>
 	<c path="Float"/>
 	<e path="Bool"/>
 </f></firstInSeries>
-		<nextPeriodicity public="1" set="method" line="274" static="1"><f a="periodicity">
+		<nextPeriodicity public="1" set="method" line="272" static="1"><f a="periodicity">
 	<c path="String"/>
 	<c path="String"/>
 </f></nextPeriodicity>
-		<prevPeriodicity public="1" set="method" line="286" static="1"><f a="periodicity">
+		<prevPeriodicity public="1" set="method" line="284" static="1"><f a="periodicity">
 	<c path="String"/>
 	<c path="String"/>
 </f></prevPeriodicity>
-		<parsePair set="method" line="298" static="1"><f a="start:end">
+		<parsePair set="method" line="296" static="1"><f a="start:end">
 	<c path="String"/>
 	<c path="String"/>
 	<c path="Array"><c path="Float"/></c>
 </f></parsePair>
-		<validGroupValues line="307" static="1"><c path="Array"><c path="String"/></c></validGroupValues>
-		<isValidGroupBy public="1" set="method" line="308" static="1"><f a="value">
+		<validGroupValues line="305" static="1"><c path="Array"><c path="String"/></c></validGroupValues>
+		<isValidGroupBy public="1" set="method" line="306" static="1"><f a="value">
 	<c path="String"/>
 	<e path="Bool"/>
 </f></isValidGroupBy>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="rg.view.svg.util.RGColors" params="" file="src/rg/view/svg/util/RGColors.hx">
+		<parse public="1" set="method" line="11" static="1"><f a="s:alt">
+	<c path="String"/>
+	<c path="String"/>
+	<c path="thx.color.Rgb"/>
+</f></parse>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -15543,12 +15658,12 @@ customs for missing features
 		<extends path="rg.view.svg.chart.CartesianChart"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></extends>
 		<symbol public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbol>
 		<symbolStyle public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbolStyle>
 		<chart><c path="thx.js.Selection"/></chart>
@@ -15590,13 +15705,13 @@ customs for missing features
 	</f>
 </f></getTranslatePointf>
 		<onmouseover set="method" line="154"><f a="stats:n:i">
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
 		<onclick set="method" line="170"><f a="stats:dp:i">
-	<t path="rg.data.Stats"/>
+	<c path="rg.data.Stats"><d/></c>
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
@@ -15743,38 +15858,6 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</typedef>
-	<class path="thx.collection.Sets" params="" file="C:\Projects\thx\src/thx/collection/Sets.hx">
-		<indexOf public="1" params="T" get="inline" set="null" line="10" static="1"><f a="set:value">
-	<c path="thx.collection.Set"><c path="indexOf.T"/></c>
-	<c path="indexOf.T"/>
-	<c path="Int"/>
-</f></indexOf>
-		<first public="1" params="T" get="inline" set="null" line="15" static="1"><f a="set">
-	<c path="thx.collection.Set"><c path="first.T"/></c>
-	<t path="Null"><c path="first.T"/></t>
-</f></first>
-		<last public="1" params="T" get="inline" set="null" line="20" static="1"><f a="set">
-	<c path="thx.collection.Set"><c path="last.T"/></c>
-	<t path="Null"><c path="last.T"/></t>
-</f></last>
-		<order public="1" params="T" get="inline" set="null" line="25" static="1"><f a="set:?f">
-	<c path="thx.collection.Set"><c path="order.T"/></c>
-	<f a=":">
-		<c path="order.T"/>
-		<c path="order.T"/>
-		<c path="Int"/>
-	</f>
-	<c path="thx.collection.Set"><c path="order.T"/></c>
-</f></order>
-		<arr params="T" get="inline" set="null" line="31" static="1"><f a="set">
-	<a><_v><c path="Array"><c path="arr.T"/></c></_v></a>
-	<c path="Array"><c path="arr.T"/></c>
-</f></arr>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
 	<class path="rg.view.svg.chart.Coords" params="" file="src/rg/view/svg/chart/Coords.hx">
 		<retransform line="10" static="1"><c path="EReg"/></retransform>
 		<fromTransform public="1" set="method" line="11" static="1"><f a="s">
@@ -15794,9 +15877,10 @@ customs for missing features
 		<dps><c path="Array"><t path="rg.data.DataPoint"/></c></dps>
 		<colorScale><c path="thx.math.scale.LinearT"><c path="thx.color.Rgb"/></c></colorScale>
 		<variableDependent><c path="rg.data.VariableDependent"><d/></c></variableDependent>
-		<setVariables public="1" set="method" line="43" override="1"><f a="variableIndependents:variableDependents">
+		<setVariables public="1" set="method" line="43" override="1"><f a="variableIndependents:variableDependents:data">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
+	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></setVariables>
 		<init public="1" set="method" line="56" override="1"><f a=""><e path="Void"/></f></init>
@@ -15810,7 +15894,7 @@ customs for missing features
 	<c path="Float"/>
 </f></value>
 		<scale set="method" line="80"><f a="v">
-	<t path="Null"><d/></t>
+	<unknown/>
 	<c path="Float"/>
 </f></scale>
 		<scaleValue set="method" line="85"><f a="dp:?i">
@@ -15824,7 +15908,7 @@ customs for missing features
 		<rows><c path="Int"/></rows>
 		<w><c path="Float"/></w>
 		<h><c path="Float"/></h>
-		<stats><t path="rg.data.Stats"/></stats>
+		<stats><c path="rg.data.Stats"><d/></c></stats>
 		<levels><c path="Int"/></levels>
 		<x set="method" line="99"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
@@ -15838,7 +15922,7 @@ customs for missing features
 </f></y>
 		<redraw set="method" line="102"><f a=""><e path="Void"/></f></redraw>
 		<drawContour set="method" line="121"><f a=""><e path="Void"/></f></drawContour>
-		<createGridMap set="method" line="184"><f a="grid">
+		<createGridMap set="method" line="175"><f a="grid">
 	<f a=":">
 		<c path="Int"/>
 		<c path="Int"/>
@@ -15846,18 +15930,18 @@ customs for missing features
 	</f>
 	<c path="Hash"><c path="Array"><c path="Int"/></c></c>
 </f></createGridMap>
-		<drawSquares set="method" line="194"><f a=""><e path="Void"/></f></drawSquares>
-		<onmouseover set="method" line="208"><f a="dp:i">
+		<drawSquares set="method" line="185"><f a=""><e path="Void"/></f></drawSquares>
+		<onmouseover set="method" line="199"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
-		<onclick set="method" line="222"><f a="dp:i">
+		<onclick set="method" line="213"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onclick>
-		<range set="method" line="229"><f a="variable">
+		<range set="method" line="220"><f a="variable">
 	<c path="rg.data.Variable">
 		<d/>
 		<c path="rg.data.IAxis"><d/></c>

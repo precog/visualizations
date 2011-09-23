@@ -46,7 +46,7 @@ class JSBridge
 					app.visualization(select(el), opt);
 				} catch (e : Error) {
 #if release
-					log(e.toString);
+					log(e.toString());
 #else
 					var msg = "ERROR AT " + e.toStringError();
 #if debug // stack trace is available
