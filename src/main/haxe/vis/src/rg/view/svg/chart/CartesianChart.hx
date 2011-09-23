@@ -27,7 +27,7 @@ class CartesianChart<T> extends Chart
 		super(panel);
 	}
 	
-	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data :T)
 	{
 		this.xVariable  = cast variableIndependents[0];
 		this.yVariables = cast variableDependents;

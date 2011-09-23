@@ -47,7 +47,7 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 	{
 		var results = [],
 			variable = independentVariables[0],
-			values = variable.axis.range(variable.minValue(), variable.maxValue());
+			values = variable.axis.range(variable.min(), variable.max());
 		for (value in values)
 		{
 			var axisresults = [];

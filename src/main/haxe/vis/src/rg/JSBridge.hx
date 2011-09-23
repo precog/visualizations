@@ -21,8 +21,8 @@ class JSBridge
 {
 	static function log(msg : String)
 	{
-		var console : String -> Void = untyped __js__("(window.console && window.console.warn) || alert");
-		console(msg);
+		var c : String -> Void = untyped __js__("(window.console && window.console.warn) || alert");
+		c(msg);
 	}
 	static function main() 
 	{

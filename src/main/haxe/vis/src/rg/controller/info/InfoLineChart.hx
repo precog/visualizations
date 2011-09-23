@@ -19,6 +19,7 @@ class InfoLineChart extends InfoCartesianChart
 	public var symbol : DataPoint -> Stats<Dynamic> -> String;
 	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
 	public var displayarea : Bool;
+	public var y0property : String;
 
 	public function new()
 	{
@@ -44,6 +45,10 @@ class InfoLineChart extends InfoCartesianChart
 				field : "symbolStyle",
 				value : v
 			}]
+		}, {
+			field : "y0property",
+			validator : function(v) return Std.is(v, String),
+			filter : null
 		}, {
 			field : "displayarea",
 			validator : function(v) return Std.is(v, Bool),

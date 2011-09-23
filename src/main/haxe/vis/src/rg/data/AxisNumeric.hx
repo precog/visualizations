@@ -48,19 +48,21 @@ class AxisNumeric implements IAxis<Float>
 		return step;
 	}
 	
-	public function min(stats : Stats<Float>) : Float
+	public function min(stats : Stats<Float>, meta : Dynamic) : Float
 	{
-		if (stats.min < 0)
-			return stats.min;
+		var min = null == meta.min ? stats.min : meta.min;
+		if (min < 0)
+			return min;
 		else
 			return 0.0;
 	}
 	
-	public function max(stats : Stats<Float>) : Float
+	public function max(stats : Stats<Float>, meta : Dynamic) : Float
 	{
-		if (stats.max < 0)
+		var max = null == meta.max ? stats.max : meta.max;
+		if (max < 0)
 			return 0.0;
 		else
-			return stats.max;
+			return max;
 	}
 }

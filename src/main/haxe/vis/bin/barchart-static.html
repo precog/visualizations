@@ -75,7 +75,6 @@ document.addEventListener("DOMContentLoaded", function(){
 	ReportGrid.barChart("#chart1", {
 		axes : [{
 				type : ".#time:day",
-				view : [start, end],
 				variable : "independent",
 				scalemode : "fit"
 			},
@@ -83,8 +82,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			{ type : "click" },
 			{ type : "conversion" },
 			{
-				type : "other",
-				view : [0, 500]
+				type : "other"
 			}
 		],
 		data : mathData,
@@ -146,7 +144,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			variable : "independent"
 		}, {
 			type : "count",
-			view : [0, 120],
 			variable : "dependent"
 		}],
 		data : ageGenderData,
@@ -165,7 +162,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			variable : "independent"
 		}, {
 			type : "count",
-			view : [0, 40],
 			variable : "dependent"
 		}],
 		data : ageGenderData,

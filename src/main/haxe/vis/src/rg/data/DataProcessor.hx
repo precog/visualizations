@@ -141,6 +141,6 @@ class DataProcessor
 
 	function getVariableIndependentValues()
 	{
-		return independentVariables.map(function(variable, i) return variable.axis.range(variable.minValue(), variable.maxValue())).product();
+		return independentVariables.map(function(variable, i) return variable.axis.range(variable.min(), variable.max())).product();
 	}
 }

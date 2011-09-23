@@ -45,7 +45,7 @@ class DataPoints
 	{
 		for (variable in variables)
 		{
-			var values = variable.axis.range(variable.minValue(), variable.maxValue());
+			var values = variable.axis.range(variable.min(), variable.max());
 			dps = dps.filter(function(dp) {
 				var v = Reflect.field(dp, variable.type);
 				if (null == v)

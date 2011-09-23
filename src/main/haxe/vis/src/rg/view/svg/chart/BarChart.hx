@@ -18,6 +18,8 @@ import thx.color.Hsl;
 import thx.color.Colors;
 import rg.view.svg.util.RGColors;
 import rg.data.Stats;
+import rg.data.VariableIndependent;
+import rg.data.VariableDependent;
 using Arrays;
 
 class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
@@ -45,6 +47,34 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		padding = 10;
 		paddingAxis = 4;
 		paddingDataPoint = 2;
+	}
+	
+	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
+	{
+		super.setVariables(variableIndependents, yVariables, data);
+		if (stacked)
+		{
+			for (v in this.yVariables)
+				v.meta.max = Math.NEGATIVE_INFINITY;
+			
+			// datapoints
+			for (i in 0...data.length)
+			{
+				// y axis
+				for (j in 0...data[i].length)
+				{
+					var v = yVariables[j],
+						t = 0.0;
+					// segment
+					for (k in 0...data[i][j].length)
+					{
+						t += DataPoints.valueAlt(data[i][j][k], v.type, 0.0);
+					}
+					if (v.meta.max < t)
+						v.meta.max = t;
+				}
+			}
+		}
 	}
 	
 	override function data(dps : Array<Array<Array<DataPoint>>>)
@@ -86,8 +116,8 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					axisg = getGroup("group-" + j, chart),
 					ytype = yVariables[j].type,
 					yaxis = yVariables[j].axis,
-					ymin = yVariables[j].minValue(),
-					ymax = yVariables[j].maxValue(),
+					ymin = yVariables[j].min(),
+					ymax = yVariables[j].max(),
 					w = Math.max(1, (waxis - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
 					offset = - span / 2 + j * (waxis + paddingAxis),
 					ystats = yVariables[j].stats,
@@ -101,7 +131,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				{
 					var dp = axisdps[k],
 						seggroup = getGroup("fill-" + k, axisg),
-						x = width * xVariable.axis.scale(xVariable.minValue(), xVariable.maxValue(), DataPoints.value(dp, xVariable.type)),
+						x = width * xVariable.axis.scale(xVariable.min(), xVariable.max(), DataPoints.value(dp, xVariable.type)),
 						y = prev,
 						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height;
 					var bar = seggroup.append("svg:rect")

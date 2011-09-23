@@ -14,7 +14,6 @@ class InfoCartesianChart
 	public var segment : InfoSegment;
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var label : InfoLabelAxis;
-	public var y0property : String;
 	
 	public var displayMinorTick : String -> Bool;
 	public var displayMajorTick : String -> Bool;
@@ -83,10 +82,6 @@ class InfoCartesianChart
 				field : "segment",
 				value : new InfoSegment().feed(v)
 			}]
-		}, {
-			field : "y0property",
-			validator : function(v) return Std.is(v, String),
-			filter : null
 		}, {
 			field : "click",
 			validator : function(v) return Reflect.isFunction(v),

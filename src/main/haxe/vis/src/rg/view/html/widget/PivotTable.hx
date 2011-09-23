@@ -436,6 +436,6 @@ class PivotTable
 	
 	function range(variable : VariableIndependent<Dynamic>)
 	{
-		return variable.axis.range(variable.minValue(), variable.maxValue());
+		return variable.axis.range(variable.min(), variable.max());
 	}
 }

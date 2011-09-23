@@ -40,14 +40,14 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		useContour = false;
 	}
 	
-	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
+	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
 	{
 		xVariable = cast variableIndependents[0];
 		yVariables = cast [variableIndependents[1]];
 		variableDependent = variableDependents[0];
 		
-		var min = variableDependent.axis.scale(variableDependent.minValue(), variableDependent.maxValue(), variableDependent.minValue()),
-			max = variableDependent.axis.scale(variableDependent.minValue(), variableDependent.maxValue(), variableDependent.maxValue());
+		var min = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), variableDependent.min()),
+			max = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), variableDependent.max());
 		colorScale = Linears.forRgb()
 			.range([colorStart, colorEnd])
 			.domain([min, max]);
@@ -79,7 +79,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	
 	function scale(v)
 	{
-		return variableDependent.axis.scale(variableDependent.minValue(), variableDependent.maxValue(), v);
+		return variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), v);
 	}
 	
 	function scaleValue(dp, ?i)
@@ -127,8 +127,8 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				return r;
 			}), 
 			level = 0.0,
-			min = scale(variableDependent.minValue()),
-			max = scale(variableDependent.maxValue()),
+			min = scale(variableDependent.min()),
+			max = scale(variableDependent.max()),
 			span = max - min,
 			padding;
 
@@ -221,8 +221,8 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	{
 		var v = Types.as(variable, VariableIndependent);
 		if (null != v)
-			return v.axis.range(v.minValue(), v.maxValue());
-		var tickmarks = variable.axis.ticks(variable.minValue(), variable.maxValue());
+			return v.axis.range(v.min(), v.max());
+		var tickmarks = variable.axis.ticks(variable.min(), variable.max());
 		return tickmarks.map(function(d, i) return d.value);
 	}
 }

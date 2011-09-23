@@ -1021,29 +1021,29 @@ rg.data.AxisNumeric.prototype.ticks = function(start,end,maxTicks) {
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisNumeric.prototype.min = function(stats) {
+rg.data.AxisNumeric.prototype.min = function(stats,meta) {
 	$s.push("rg.data.AxisNumeric::min");
 	var $spos = $s.length;
-	if(stats.min < 0) {
-		var $tmp = stats.min;
+	var min = null == meta.min?stats.min:meta.min;
+	if(min < 0) {
 		$s.pop();
-		return $tmp;
+		return min;
 	} else {
 		$s.pop();
 		return 0.0;
 	}
 	$s.pop();
 }
-rg.data.AxisNumeric.prototype.max = function(stats) {
+rg.data.AxisNumeric.prototype.max = function(stats,meta) {
 	$s.push("rg.data.AxisNumeric::max");
 	var $spos = $s.length;
-	if(stats.max < 0) {
+	var max = null == meta.max?stats.max:meta.max;
+	if(max < 0) {
 		$s.pop();
 		return 0.0;
 	} else {
-		var $tmp = stats.max;
 		$s.pop();
-		return $tmp;
+		return max;
 	}
 	$s.pop();
 }
@@ -1297,11 +1297,13 @@ rg.controller.visualization.VisualizationCartesian.prototype.feedData = function
 		this.title.setText(this.info.label.title(this.getVariables(),data));
 		this.layout.suggestSize("title",this.title.idealHeight());
 	}
+	var transformed = this.transformData(data);
+	this.chart.setVariables(this.independentVariables,this.dependentVariables,transformed);
 	var _g1 = 0, _g = this.ylabels.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		var item = this.ylabels[i], variable = this.yvariables[item.id];
-		item.tickmarks.update(variable.axis,variable.minValue(),variable.maxValue());
+		item.tickmarks.update(variable.axis,variable.min(),variable.max());
 		var size = Math.round(item.tickmarks.desiredSize);
 		this.layout.suggestSize("y" + item.id,size);
 	}
@@ -1309,20 +1311,19 @@ rg.controller.visualization.VisualizationCartesian.prototype.feedData = function
 	while(_g1 < _g) {
 		var i = _g1++;
 		var item = this.yrules[i], variable = this.yvariables[item.id];
-		item.rules.update(variable.axis,variable.minValue(),variable.maxValue());
+		item.rules.update(variable.axis,variable.min(),variable.max());
 	}
 	if(null != this.xlabel) {
 		var variable = this.xvariable;
-		this.xlabel.update(variable.axis,variable.minValue(),variable.maxValue());
+		this.xlabel.update(variable.axis,variable.min(),variable.max());
 		var size = Math.round(this.xlabel.desiredSize);
 		this.layout.suggestSize("x",size);
 	}
 	if(null != this.xrule) {
 		var variable = this.xvariable;
-		this.xrule.update(variable.axis,variable.minValue(),variable.maxValue());
+		this.xrule.update(variable.axis,variable.min(),variable.max());
 	}
-	this.chart.setVariables(this.independentVariables,this.dependentVariables);
-	this.chart.data(this.transformData(data));
+	this.chart.data(transformed);
 	$s.pop();
 }
 rg.controller.visualization.VisualizationCartesian.prototype.transformData = function(dps) {
@@ -1330,7 +1331,7 @@ rg.controller.visualization.VisualizationCartesian.prototype.transformData = fun
 	var $spos = $s.length;
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 160, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 163, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
 		return $r;
 	}(this));
 	$s.pop();
@@ -1362,7 +1363,7 @@ rg.controller.visualization.VisualizationCartesian.prototype.createTickmarks = f
 		tickmarks = new rg.view.svg.layer.TickmarksOrtho(context.panel,context.anchor);
 		this.setTickmarksDefaults(tickmarks,i,type,pname);
 		if(!displayLabel) tickmarks.displayLabel = false; else if(null != this.info.label.tickmark) tickmarks.tickLabel = function(d) {
-			$s.push("rg.controller.visualization.VisualizationCartesian::createTickmarks@194");
+			$s.push("rg.controller.visualization.VisualizationCartesian::createTickmarks@197");
 			var $spos = $s.length;
 			var $tmp = me.info.label.tickmark(d,type);
 			$s.pop();
@@ -1464,7 +1465,7 @@ rg.controller.visualization.VisualizationBarChart.prototype.initChart = function
 rg.controller.visualization.VisualizationBarChart.prototype.transformData = function(dps) {
 	$s.push("rg.controller.visualization.VisualizationBarChart::transformData");
 	var $spos = $s.length;
-	var results = [], variable = this.independentVariables[0], values = variable.axis.range(variable.minValue(),variable.maxValue());
+	var results = [], variable = this.independentVariables[0], values = variable.axis.range(variable.min(),variable.max());
 	var _g = 0;
 	while(_g < values.length) {
 		var value = [values[_g]];
@@ -3309,7 +3310,7 @@ rg.view.svg.chart.CartesianChart.__super__ = rg.view.svg.chart.Chart;
 for(var k in rg.view.svg.chart.Chart.prototype ) rg.view.svg.chart.CartesianChart.prototype[k] = rg.view.svg.chart.Chart.prototype[k];
 rg.view.svg.chart.CartesianChart.prototype.yVariables = null;
 rg.view.svg.chart.CartesianChart.prototype.xVariable = null;
-rg.view.svg.chart.CartesianChart.prototype.setVariables = function(variableIndependents,variableDependents) {
+rg.view.svg.chart.CartesianChart.prototype.setVariables = function(variableIndependents,variableDependents,data) {
 	$s.push("rg.view.svg.chart.CartesianChart::setVariables");
 	var $spos = $s.length;
 	this.xVariable = variableIndependents[0];
@@ -3342,7 +3343,7 @@ rg.view.svg.chart.ScatterGraph.prototype.dps = null;
 rg.view.svg.chart.ScatterGraph.prototype.x = function(d,i) {
 	$s.push("rg.view.svg.chart.ScatterGraph::x");
 	var $spos = $s.length;
-	var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.minValue(),this.xVariable.maxValue(),value), scaledw = scaled * this.width;
+	var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
 	$s.pop();
 	return scaledw;
 	$s.pop();
@@ -3354,7 +3355,7 @@ rg.view.svg.chart.ScatterGraph.prototype.getY1 = function(pos) {
 	var $tmp = function(d,i) {
 		$s.push("rg.view.svg.chart.ScatterGraph::getY1@57");
 		var $spos = $s.length;
-		var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.minValue(),v.maxValue(),value), scaledh = scaled * h;
+		var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
 		var $tmp = h - scaledh;
 		$s.pop();
 		return $tmp;
@@ -4561,7 +4562,7 @@ rg.data.AxisOrdinal.prototype.setScaleDistribution = function(v) {
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisOrdinal.prototype.min = function(stats) {
+rg.data.AxisOrdinal.prototype.min = function(stats,meta) {
 	$s.push("rg.data.AxisOrdinal::min");
 	var $spos = $s.length;
 	var $tmp = stats.min;
@@ -4569,7 +4570,7 @@ rg.data.AxisOrdinal.prototype.min = function(stats) {
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisOrdinal.prototype.max = function(stats) {
+rg.data.AxisOrdinal.prototype.max = function(stats,meta) {
 	$s.push("rg.data.AxisOrdinal::max");
 	var $spos = $s.length;
 	var $tmp = stats.max;
@@ -6036,7 +6037,7 @@ rg.view.html.widget.PivotTable.prototype.transformData = function(dps) {
 rg.view.html.widget.PivotTable.prototype.range = function(variable) {
 	$s.push("rg.view.html.widget.PivotTable::range");
 	var $spos = $s.length;
-	var $tmp = variable.axis.range(variable.minValue(),variable.maxValue());
+	var $tmp = variable.axis.range(variable.min(),variable.max());
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -6069,13 +6070,42 @@ rg.view.svg.chart.BarChart.prototype.displayGradient = null;
 rg.view.svg.chart.BarChart.prototype.padding = null;
 rg.view.svg.chart.BarChart.prototype.paddingAxis = null;
 rg.view.svg.chart.BarChart.prototype.paddingDataPoint = null;
+rg.view.svg.chart.BarChart.prototype.setVariables = function(variableIndependents,yVariables,data) {
+	$s.push("rg.view.svg.chart.BarChart::setVariables");
+	var $spos = $s.length;
+	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables,data);
+	if(this.stacked) {
+		var _g = 0, _g1 = this.yVariables;
+		while(_g < _g1.length) {
+			var v = _g1[_g];
+			++_g;
+			v.meta.max = Math.NEGATIVE_INFINITY;
+		}
+		var _g1 = 0, _g = data.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var _g3 = 0, _g2 = data[i].length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var v = yVariables[j], t = 0.0;
+				var _g5 = 0, _g4 = data[i][j].length;
+				while(_g5 < _g4) {
+					var k = _g5++;
+					t += rg.util.DataPoints.valueAlt(data[i][j][k],v.type,0.0);
+				}
+				if(v.meta.max < t) v.meta.max = t;
+			}
+		}
+	}
+	$s.pop();
+}
 rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 	$s.push("rg.view.svg.chart.BarChart::data");
 	var $spos = $s.length;
 	var values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
 	if(null != (discrete = Types["as"](this.xVariable.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - this.padding * (values - 1)) / values; else span = (this.width - this.padding * (values - 1)) / values;
 	var getGroup = function(name,container) {
-		$s.push("rg.view.svg.chart.BarChart::data@63");
+		$s.push("rg.view.svg.chart.BarChart::data@93");
 		var $spos = $s.length;
 		var gr = axisgs.get(name);
 		if(null == gr) {
@@ -6094,11 +6124,11 @@ rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 		var _g3 = 0, _g2 = valuedps.length;
 		while(_g3 < _g2) {
 			var j = _g3++;
-			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].minValue(), ymax = this.yVariables[j].maxValue(), w = Math.max(1,(waxis - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + this.paddingAxis), ystats = this.yVariables[j].stats, over = (function(f,a1) {
-				$s.push("rg.view.svg.chart.BarChart::data@94");
+			var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), w = Math.max(1,(waxis - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + this.paddingAxis), ystats = this.yVariables[j].stats, over = (function(f,a1) {
+				$s.push("rg.view.svg.chart.BarChart::data@124");
 				var $spos = $s.length;
 				var $tmp = function(a2,a3) {
-					$s.push("rg.view.svg.chart.BarChart::data@94@94");
+					$s.push("rg.view.svg.chart.BarChart::data@124@124");
 					var $spos = $s.length;
 					var $tmp = f(a1,a2,a3);
 					$s.pop();
@@ -6109,10 +6139,10 @@ rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 				return $tmp;
 				$s.pop();
 			})($closure(this,"onmouseover"),ystats), click = (function(f,a1) {
-				$s.push("rg.view.svg.chart.BarChart::data@95");
+				$s.push("rg.view.svg.chart.BarChart::data@125");
 				var $spos = $s.length;
 				var $tmp = function(a2,a3) {
-					$s.push("rg.view.svg.chart.BarChart::data@95@95");
+					$s.push("rg.view.svg.chart.BarChart::data@125@125");
 					var $spos = $s.length;
 					var $tmp = f(a1,a2,a3);
 					$s.pop();
@@ -6127,7 +6157,7 @@ rg.view.svg.chart.BarChart.prototype.data = function(dps) {
 			var _g5 = 0, _g4 = axisdps.length;
 			while(_g5 < _g4) {
 				var k = _g5++;
-				var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * this.xVariable.axis.scale(this.xVariable.minValue(),this.xVariable.maxValue(),Reflect.field(dp,this.xVariable.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
+				var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),Reflect.field(dp,this.xVariable.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
 				var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + this.paddingDataPoint)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over);
 				bar.node()["__data__"] = dp;
 				if(this.displayGradient) bar.eachNode($closure(this,"applyGradient"));
@@ -6174,8 +6204,8 @@ rg.JSBridge.__name__ = ["rg","JSBridge"];
 rg.JSBridge.log = function(msg) {
 	$s.push("rg.JSBridge::log");
 	var $spos = $s.length;
-	var console = (window.console && window.console.warn) || alert;
-	console(msg);
+	var c = (window.console && window.console.warn) || alert;
+	c(msg);
 	$s.pop();
 }
 rg.JSBridge.main = function() {
@@ -6319,7 +6349,7 @@ rg.JSBridge.main = function() {
 		$s.pop();
 	};
 	r.math = { random : $closure(new thx.math.Random(666),"float")};
-	r.version = "1.0.0.6";
+	r.version = "1.0.1.58";
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
@@ -6668,7 +6698,7 @@ rg.data.AxisTime.prototype.setScaleDistribution = function(v) {
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisTime.prototype.min = function(stats) {
+rg.data.AxisTime.prototype.min = function(stats,meta) {
 	$s.push("rg.data.AxisTime::min");
 	var $spos = $s.length;
 	var $tmp = Dates.snap(stats.min,this.periodicity);
@@ -6676,7 +6706,7 @@ rg.data.AxisTime.prototype.min = function(stats) {
 	return $tmp;
 	$s.pop();
 }
-rg.data.AxisTime.prototype.max = function(stats) {
+rg.data.AxisTime.prototype.max = function(stats,meta) {
 	$s.push("rg.data.AxisTime::max");
 	var $spos = $s.length;
 	var $tmp = Dates.snap(stats.max,this.periodicity);
@@ -11421,7 +11451,7 @@ rg.view.svg.chart.FunnelChart.prototype.h = null;
 rg.view.svg.chart.FunnelChart.prototype.scale = function(value) {
 	$s.push("rg.view.svg.chart.FunnelChart::scale");
 	var $spos = $s.length;
-	var $tmp = this.variableDependent.axis.scale(this.variableDependent.minValue(),this.variableDependent.maxValue(),value);
+	var $tmp = this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),value);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -11688,70 +11718,70 @@ rg.controller.info.InfoCartesianChart = function(p) {
 	this.label = new rg.controller.info.InfoLabelAxis();
 	this.segment = new rg.controller.info.InfoSegment();
 	this.displayMinorTick = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@43");
+		$s.push("rg.controller.info.InfoCartesianChart::new@42");
 		var $spos = $s.length;
 		$s.pop();
 		return true;
 		$s.pop();
 	};
 	this.displayMajorTick = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@44");
+		$s.push("rg.controller.info.InfoCartesianChart::new@43");
 		var $spos = $s.length;
 		$s.pop();
 		return true;
 		$s.pop();
 	};
 	this.displayLabelTick = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@45");
+		$s.push("rg.controller.info.InfoCartesianChart::new@44");
 		var $spos = $s.length;
 		$s.pop();
 		return true;
 		$s.pop();
 	};
 	this.displayAnchorLineTick = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@46");
+		$s.push("rg.controller.info.InfoCartesianChart::new@45");
 		var $spos = $s.length;
 		$s.pop();
 		return false;
 		$s.pop();
 	};
 	this.displayMinorRule = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@48");
+		$s.push("rg.controller.info.InfoCartesianChart::new@47");
 		var $spos = $s.length;
 		$s.pop();
 		return false;
 		$s.pop();
 	};
 	this.displayMajorRule = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@49");
+		$s.push("rg.controller.info.InfoCartesianChart::new@48");
 		var $spos = $s.length;
 		$s.pop();
 		return false;
 		$s.pop();
 	};
 	this.displayAnchorLineRule = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@50");
+		$s.push("rg.controller.info.InfoCartesianChart::new@49");
 		var $spos = $s.length;
 		$s.pop();
 		return false;
 		$s.pop();
 	};
 	this.labelOrientation = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@52");
+		$s.push("rg.controller.info.InfoCartesianChart::new@51");
 		var $spos = $s.length;
 		$s.pop();
 		return null;
 		$s.pop();
 	};
 	this.labelAnchor = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@53");
+		$s.push("rg.controller.info.InfoCartesianChart::new@52");
 		var $spos = $s.length;
 		$s.pop();
 		return null;
 		$s.pop();
 	};
 	this.labelAngle = function(_) {
-		$s.push("rg.controller.info.InfoCartesianChart::new@54");
+		$s.push("rg.controller.info.InfoCartesianChart::new@53");
 		var $spos = $s.length;
 		$s.pop();
 		return null;
@@ -11769,99 +11799,92 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 	$s.push("rg.controller.info.InfoCartesianChart::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "animation", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@67");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@66");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@68");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@67");
 		var $spos = $s.length;
 		var $tmp = [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "segmenton", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@74");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@73");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@75");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@74");
 		var $spos = $s.length;
 		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),{ on : v})}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "segment", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@81");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@80");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@82");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@81");
 		var $spos = $s.length;
 		var $tmp = [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "y0property", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@88");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "click", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@92");
+	}},{ field : "click", validator : function(v) {
+		$s.push("rg.controller.info.InfoCartesianChart::filters@87");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "label", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@96");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@91");
 		var $spos = $s.length;
 		var $tmp = Reflect.isObject(v) && null == Type.getClass(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@97");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@92");
 		var $spos = $s.length;
 		var $tmp = [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelAxis(),v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "displaytickmarks", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@103");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@98");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@104");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@99");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@104@106");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@99@101");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
 			$s.pop();
 		}:v},{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@104@109");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@99@104");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
 			$s.pop();
 		}:v},{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@104@112");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@99@107");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -11871,17 +11894,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displaytickminor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@116");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@111");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@117");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@112");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@117@119");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@112@114");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -11891,17 +11914,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displaytickmajor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@123");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@118");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@124");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@119");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@124@126");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@119@121");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -11911,17 +11934,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayticklabel", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@130");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@125");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@131");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@126");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@131@133");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@126@128");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -11931,17 +11954,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayanchorlinetick", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@137");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@132");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@138");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@133");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayAnchorLineTick", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@138@140");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@133@135");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -11951,23 +11974,23 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayrules", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@144");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@139");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@145");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@140");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@145@147");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@140@142");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
 			$s.pop();
 		}:v},{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@145@150");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@140@145");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -11977,17 +12000,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayruleminor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@154");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@149");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@155");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@150");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@155@157");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@150@152");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -11997,17 +12020,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayrulemajor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@161");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@156");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@162");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@157");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@162@164");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@157@159");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -12017,17 +12040,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "displayanchorlinerule", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@168");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@163");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@169");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@164");
 		var $spos = $s.length;
 		var $tmp = [{ field : "displayAnchorLineRule", value : Std["is"](v,Bool)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@169@171");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@164@166");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -12037,115 +12060,115 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "lengthtick", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@175");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@170");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@176");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@171");
 		var $spos = $s.length;
 		var $tmp = [{ field : "lengthTickMajor", value : v},{ field : "lengthTickMinor", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "lengthtickminor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@185");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@180");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@186");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@181");
 		var $spos = $s.length;
 		var $tmp = [{ field : "lengthTickMinor", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "lengthtickmajor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@192");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@187");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@193");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@188");
 		var $spos = $s.length;
 		var $tmp = [{ field : "lengthTickMajor", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "paddingtick", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@199");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@194");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@200");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@195");
 		var $spos = $s.length;
 		var $tmp = [{ field : "paddingTickMajor", value : v},{ field : "paddingTickMinor", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "paddingtickminor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@209");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@204");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@210");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@205");
 		var $spos = $s.length;
 		var $tmp = [{ field : "paddingTickMinor", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "paddingtickmajor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@216");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@211");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@217");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@212");
 		var $spos = $s.length;
 		var $tmp = [{ field : "paddingTickMajor", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "paddingticklabel", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@223");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@218");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@224");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@219");
 		var $spos = $s.length;
 		var $tmp = [{ field : "paddingLabel", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "labelorientation", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@230");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@225");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@231");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@226");
 		var $spos = $s.length;
 		var $tmp = [{ field : "labelOrientation", value : Std["is"](v,String)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@231@233");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@226@228");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -12155,17 +12178,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "labelanchor", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@237");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@232");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@238");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@233");
 		var $spos = $s.length;
 		var $tmp = [{ field : "labelAnchor", value : Std["is"](v,String)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@238@240");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@233@235");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -12175,17 +12198,17 @@ rg.controller.info.InfoCartesianChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "labelangle", validator : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@244");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@239");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v) || Std["is"](v,Float);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoCartesianChart::filters@245");
+		$s.push("rg.controller.info.InfoCartesianChart::filters@240");
 		var $spos = $s.length;
 		var $tmp = [{ field : "labelAngle", value : Std["is"](v,Float)?function(_) {
-			$s.push("rg.controller.info.InfoCartesianChart::filters@245@247");
+			$s.push("rg.controller.info.InfoCartesianChart::filters@240@242");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -12203,7 +12226,6 @@ rg.controller.info.InfoCartesianChart.prototype.animation = null;
 rg.controller.info.InfoCartesianChart.prototype.segment = null;
 rg.controller.info.InfoCartesianChart.prototype.click = null;
 rg.controller.info.InfoCartesianChart.prototype.label = null;
-rg.controller.info.InfoCartesianChart.prototype.y0property = null;
 rg.controller.info.InfoCartesianChart.prototype.displayMinorTick = null;
 rg.controller.info.InfoCartesianChart.prototype.displayMajorTick = null;
 rg.controller.info.InfoCartesianChart.prototype.displayLabelTick = null;
@@ -13811,13 +13833,13 @@ rg.view.svg.chart.HeatGrid.prototype.useContour = null;
 rg.view.svg.chart.HeatGrid.prototype.dps = null;
 rg.view.svg.chart.HeatGrid.prototype.colorScale = null;
 rg.view.svg.chart.HeatGrid.prototype.variableDependent = null;
-rg.view.svg.chart.HeatGrid.prototype.setVariables = function(variableIndependents,variableDependents) {
+rg.view.svg.chart.HeatGrid.prototype.setVariables = function(variableIndependents,variableDependents,data) {
 	$s.push("rg.view.svg.chart.HeatGrid::setVariables");
 	var $spos = $s.length;
 	this.xVariable = variableIndependents[0];
 	this.yVariables = [variableIndependents[1]];
 	this.variableDependent = variableDependents[0];
-	var min = this.variableDependent.axis.scale(this.variableDependent.minValue(),this.variableDependent.maxValue(),this.variableDependent.minValue()), max = this.variableDependent.axis.scale(this.variableDependent.minValue(),this.variableDependent.maxValue(),this.variableDependent.maxValue());
+	var min = this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),this.variableDependent.min()), max = this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),this.variableDependent.max());
 	this.colorScale = thx.math.scale.Linears.forRgb().range([this.colorStart,this.colorEnd]).domain([min,max]);
 	$s.pop();
 }
@@ -13854,7 +13876,7 @@ rg.view.svg.chart.HeatGrid.prototype.value = function(dp) {
 rg.view.svg.chart.HeatGrid.prototype.scale = function(v) {
 	$s.push("rg.view.svg.chart.HeatGrid::scale");
 	var $spos = $s.length;
-	var $tmp = this.variableDependent.axis.scale(this.variableDependent.minValue(),this.variableDependent.maxValue(),v);
+	var $tmp = this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),v);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -13952,7 +13974,7 @@ rg.view.svg.chart.HeatGrid.prototype.drawContour = function() {
 		$s.pop();
 		return r;
 		$s.pop();
-	}), level = 0.0, min = this.scale(this.variableDependent.minValue()), max = this.scale(this.variableDependent.maxValue()), span = max - min, padding;
+	}), level = 0.0, min = this.scale(this.variableDependent.min()), max = this.scale(this.variableDependent.max()), span = max - min, padding;
 	var grid = function(x,y) {
 		$s.push("rg.view.svg.chart.HeatGrid::drawContour@135");
 		var $spos = $s.length;
@@ -14068,11 +14090,11 @@ rg.view.svg.chart.HeatGrid.prototype.range = function(variable) {
 	var $spos = $s.length;
 	var v = Std["is"](variable,rg.data.VariableIndependent)?variable:null;
 	if(null != v) {
-		var $tmp = v.axis.range(v.minValue(),v.maxValue());
+		var $tmp = v.axis.range(v.min(),v.max());
 		$s.pop();
 		return $tmp;
 	}
-	var tickmarks = variable.axis.ticks(variable.minValue(),variable.maxValue());
+	var tickmarks = variable.axis.ticks(variable.min(),variable.max());
 	var $tmp = tickmarks.map(function(d,i) {
 		$s.push("rg.view.svg.chart.HeatGrid::range@226");
 		var $spos = $s.length;
@@ -14698,7 +14720,7 @@ rg.util.DataPoints.filterByIndependents = function(dps,variables) {
 	while(_g < variables.length) {
 		var variable = [variables[_g]];
 		++_g;
-		var values = [variable[0].axis.range(variable[0].minValue(),variable[0].maxValue())];
+		var values = [variable[0].axis.range(variable[0].min(),variable[0].max())];
 		dps = Arrays.filter(dps,(function(values,variable) {
 			$s.push("rg.util.DataPoints::filterByIndependents@49");
 			var $spos = $s.length;
@@ -15814,6 +15836,7 @@ rg.data.Variable = function(type,scaleDistribution) {
 	var $spos = $s.length;
 	this.type = type;
 	this.scaleDistribution = scaleDistribution;
+	this.meta = { };
 	$s.pop();
 }
 rg.data.Variable.__name__ = ["rg","data","Variable"];
@@ -15821,6 +15844,7 @@ rg.data.Variable.prototype.type = null;
 rg.data.Variable.prototype.scaleDistribution = null;
 rg.data.Variable.prototype.axis = null;
 rg.data.Variable.prototype.stats = null;
+rg.data.Variable.prototype.meta = null;
 rg.data.Variable.prototype.minf = null;
 rg.data.Variable.prototype.maxf = null;
 rg.data.Variable.prototype.setAxis = function(axis) {
@@ -15830,18 +15854,18 @@ rg.data.Variable.prototype.setAxis = function(axis) {
 	if(Std["is"](axis,rg.data.AxisNumeric)) this.stats = new rg.data.StatsNumeric(); else this.stats = new rg.data.Stats();
 	$s.pop();
 }
-rg.data.Variable.prototype.minValue = function() {
-	$s.push("rg.data.Variable::minValue");
+rg.data.Variable.prototype.min = function() {
+	$s.push("rg.data.Variable::min");
 	var $spos = $s.length;
-	var $tmp = (this.getMinF())(this.stats);
+	var $tmp = (this.getMinF())(this.stats,this.meta);
 	$s.pop();
 	return $tmp;
 	$s.pop();
 }
-rg.data.Variable.prototype.maxValue = function() {
-	$s.push("rg.data.Variable::maxValue");
+rg.data.Variable.prototype.max = function() {
+	$s.push("rg.data.Variable::max");
 	var $spos = $s.length;
-	var $tmp = (this.getMaxF())(this.stats);
+	var $tmp = (this.getMaxF())(this.stats,this.meta);
 	$s.pop();
 	return $tmp;
 	$s.pop();
@@ -15866,7 +15890,7 @@ rg.data.Variable.prototype.getMinF = function() {
 	$s.push("rg.data.Variable::getMinF");
 	var $spos = $s.length;
 	if(null == this.minf) {
-		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 49, className : "rg.data.Variable", methodName : "getMinF"});
+		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 50, className : "rg.data.Variable", methodName : "getMinF"});
 		this.setMinF($closure(this.axis,"min"));
 	}
 	var $tmp = this.minf;
@@ -15878,7 +15902,7 @@ rg.data.Variable.prototype.getMaxF = function() {
 	$s.push("rg.data.Variable::getMaxF");
 	var $spos = $s.length;
 	if(null == this.maxf) {
-		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 60, className : "rg.data.Variable", methodName : "getMaxF"});
+		if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 61, className : "rg.data.Variable", methodName : "getMaxF"});
 		this.setMaxF($closure(this.axis,"max"));
 	}
 	var $tmp = this.maxf;
@@ -19697,7 +19721,7 @@ rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,va
 			return $r;
 		}(this))).getTime();
 		if(Std["is"](value,Float)) {
-			var $tmp = function(_) {
+			var $tmp = function(_,_1) {
 				$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@43");
 				var $spos = $s.length;
 				$s.pop();
@@ -19708,7 +19732,7 @@ rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,va
 			return $tmp;
 		}
 		if(Std["is"](value,String)) {
-			var $tmp = function(_) {
+			var $tmp = function(_,_1) {
 				$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@45");
 				var $spos = $s.length;
 				var $tmp = thx.date.DateParser.parse(value).getTime();
@@ -19721,7 +19745,7 @@ rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,va
 		}
 		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 46, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "convertBound"});
 	}
-	var $tmp = function(_) {
+	var $tmp = function(_,_1) {
 		$s.push("rg.controller.factory.FactoryVariableIndependent::convertBound@48");
 		var $spos = $s.length;
 		$s.pop();
@@ -19781,40 +19805,16 @@ rg.view.svg.chart.LineChart.prototype.linePathShape = null;
 rg.view.svg.chart.LineChart.prototype.chart = null;
 rg.view.svg.chart.LineChart.prototype.dps = null;
 rg.view.svg.chart.LineChart.prototype.segment = null;
-rg.view.svg.chart.LineChart.prototype.setVariables = function(variableIndependents,yVariables) {
+rg.view.svg.chart.LineChart.prototype.setVariables = function(variableIndependents,yVariables,data) {
 	$s.push("rg.view.svg.chart.LineChart::setVariables");
 	var $spos = $s.length;
-	var me = this;
-	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables);
-	this.linePathShape = [];
-	var _g1 = 0, _g = yVariables.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var line = [new thx.svg.Line($closure(this,"x"),this.getY1(i))];
-		if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
-		this.linePathShape[i] = (function(line) {
-			$s.push("rg.view.svg.chart.LineChart::setVariables@60");
-			var $spos = $s.length;
-			var $tmp = function(dp,i1) {
-				$s.push("rg.view.svg.chart.LineChart::setVariables@60@60");
-				var $spos = $s.length;
-				me.segment = i1;
-				var $tmp = line[0].shape(dp,i1);
-				$s.pop();
-				return $tmp;
-				$s.pop();
-			};
-			$s.pop();
-			return $tmp;
-			$s.pop();
-		})(line);
-	}
+	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables,data);
 	$s.pop();
 }
 rg.view.svg.chart.LineChart.prototype.x = function(d,i) {
 	$s.push("rg.view.svg.chart.LineChart::x");
 	var $spos = $s.length;
-	var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.minValue(),this.xVariable.maxValue(),value), scaledw = scaled * this.width;
+	var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
 	$s.pop();
 	return scaledw;
 	$s.pop();
@@ -19825,9 +19825,9 @@ rg.view.svg.chart.LineChart.prototype.getY1 = function(pos) {
 	var h = this.height, v = this.yVariables[pos], y0 = this.y0property;
 	if(null != y0) {
 		var $tmp = function(d,i) {
-			$s.push("rg.view.svg.chart.LineChart::getY1@83");
+			$s.push("rg.view.svg.chart.LineChart::getY1@73");
 			var $spos = $s.length;
-			var v1 = Reflect.field(d,v.type), value = Std["is"](v1,Float)?v1 + rg.util.DataPoints.valueAlt(d,y0,v.minValue()):v1, scaled = v.axis.scale(v.minValue(),v.maxValue(),value), scaledh = scaled * h;
+			var v1 = Reflect.field(d,v.type), value = Std["is"](v1,Float)?v1 + rg.util.DataPoints.valueAlt(d,y0,v.min()):v1, scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
 			var $tmp = h - scaledh;
 			$s.pop();
 			return $tmp;
@@ -19837,9 +19837,9 @@ rg.view.svg.chart.LineChart.prototype.getY1 = function(pos) {
 		return $tmp;
 	} else {
 		var $tmp = function(d,i) {
-			$s.push("rg.view.svg.chart.LineChart::getY1@92");
+			$s.push("rg.view.svg.chart.LineChart::getY1@82");
 			var $spos = $s.length;
-			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.minValue(),v.maxValue(),value), scaledh = scaled * h;
+			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
 			var $tmp = h - scaledh;
 			$s.pop();
 			return $tmp;
@@ -19855,9 +19855,9 @@ rg.view.svg.chart.LineChart.prototype.getY0 = function(pos) {
 	var $spos = $s.length;
 	var h = this.height, y0 = this.y0property, v = this.yVariables[pos];
 	var $tmp = function(d,i) {
-		$s.push("rg.view.svg.chart.LineChart::getY0@107");
+		$s.push("rg.view.svg.chart.LineChart::getY0@97");
 		var $spos = $s.length;
-		var value = rg.util.DataPoints.valueAlt(d,y0,v.minValue()), scaled = v.axis.scale(v.minValue(),v.maxValue(),value), scaledh = scaled * h;
+		var value = rg.util.DataPoints.valueAlt(d,y0,v.min()), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
 		var $tmp = h - scaledh;
 		$s.pop();
 		return $tmp;
@@ -19868,13 +19868,28 @@ rg.view.svg.chart.LineChart.prototype.getY0 = function(pos) {
 	$s.pop();
 }
 rg.view.svg.chart.LineChart.prototype.segments = null;
-rg.view.svg.chart.LineChart.prototype.classf = function(pos,cls) {
-	$s.push("rg.view.svg.chart.LineChart::classf");
+rg.view.svg.chart.LineChart.prototype.classsf = function(pos,cls) {
+	$s.push("rg.view.svg.chart.LineChart::classsf");
 	var $spos = $s.length;
 	var $tmp = function(_,i) {
-		$s.push("rg.view.svg.chart.LineChart::classf@120");
+		$s.push("rg.view.svg.chart.LineChart::classsf@110");
 		var $spos = $s.length;
 		var $tmp = cls + " stroke-" + (pos + i);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	};
+	$s.pop();
+	return $tmp;
+	$s.pop();
+}
+rg.view.svg.chart.LineChart.prototype.classff = function(pos,cls) {
+	$s.push("rg.view.svg.chart.LineChart::classff");
+	var $spos = $s.length;
+	var $tmp = function(_,i) {
+		$s.push("rg.view.svg.chart.LineChart::classff@118");
+		var $spos = $s.length;
+		var $tmp = cls + " fill-" + (pos + i);
 		$s.pop();
 		return $tmp;
 		$s.pop();
@@ -19886,9 +19901,33 @@ rg.view.svg.chart.LineChart.prototype.classf = function(pos,cls) {
 rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 	$s.push("rg.view.svg.chart.LineChart::data");
 	var $spos = $s.length;
+	var me = this;
+	this.linePathShape = [];
+	var _g1 = 0, _g = this.yVariables.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var line = [new thx.svg.Line($closure(this,"x"),this.getY1(i))];
+		if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
+		this.linePathShape[i] = (function(line) {
+			$s.push("rg.view.svg.chart.LineChart::data@132");
+			var $spos = $s.length;
+			var $tmp = function(dp,i1) {
+				$s.push("rg.view.svg.chart.LineChart::data@132@132");
+				var $spos = $s.length;
+				me.segment = i1;
+				var $tmp = line[0].shape(dp,i1);
+				$s.pop();
+				return $tmp;
+				$s.pop();
+			};
+			$s.pop();
+			return $tmp;
+			$s.pop();
+		})(line);
+	}
 	var axisgroup = this.chart.selectAll("g.group").data(dps);
 	var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
-		$s.push("rg.view.svg.chart.LineChart::data@132");
+		$s.push("rg.view.svg.chart.LineChart::data@143");
 		var $spos = $s.length;
 		var $tmp = "group group-" + i;
 		$s.pop();
@@ -19906,7 +19945,7 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 		if(null != this.y0property) {
 			var area = new thx.svg.Area($closure(this,"x"),this.getY0(i),this.getY1(i));
 			if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line area")).attr("d").stringf($closure(area,"shape"));
+			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classff(i,"line area")).attr("d").stringf($closure(area,"shape"));
 		}
 		var $e = (this.lineEffect);
 		switch( $e[1] ) {
@@ -19915,11 +19954,11 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 			var levels1 = [levels];
 			var lightness1 = [lightness];
 			var fs = [[]];
-			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).eachNode((function(fs,lightness1) {
-				$s.push("rg.view.svg.chart.LineChart::data@164");
+			segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).eachNode((function(fs,lightness1) {
+				$s.push("rg.view.svg.chart.LineChart::data@175");
 				var $spos = $s.length;
 				var $tmp = function(n,i1) {
-					$s.push("rg.view.svg.chart.LineChart::data@164@164");
+					$s.push("rg.view.svg.chart.LineChart::data@175@175");
 					var $spos = $s.length;
 					var start = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(thx.js.Dom.selectNode(n).style("stroke").get(),"#000000")), end = thx.color.Hsl.darker(start,lightness1[0]);
 					fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
@@ -19933,10 +19972,10 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 			while(_g2 < levels1[0]) {
 				var j = [_g2++];
 				segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
-					$s.push("rg.view.svg.chart.LineChart::data@175");
+					$s.push("rg.view.svg.chart.LineChart::data@186");
 					var $spos = $s.length;
 					var $tmp = function(_,i1) {
-						$s.push("rg.view.svg.chart.LineChart::data@175@175");
+						$s.push("rg.view.svg.chart.LineChart::data@186@186");
 						var $spos = $s.length;
 						var $tmp = fs[0][i1](j[0] / levels1[0]).hex("#");
 						$s.pop();
@@ -19954,12 +19993,12 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 			var _g2 = 0;
 			while(_g2 < levels) {
 				var j = _g2++;
-				segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
+				segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
 			}
 			break;
 		default:
 		}
-		var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classf(i,"line")).attr("d").stringf(this.linePathShape[i]);
+		var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).attr("d").stringf(this.linePathShape[i]);
 		switch( (this.lineEffect)[1] ) {
 		case 1:
 			path.classed().add("gradient");
@@ -19974,16 +20013,16 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 		segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
 		segmentgroup.exit().remove();
 		var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.yVariables, onclick = ((function() {
-			$s.push("rg.view.svg.chart.LineChart::data@212");
+			$s.push("rg.view.svg.chart.LineChart::data@223");
 			var $spos = $s.length;
 			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.chart.LineChart::data@212@212");
+				$s.push("rg.view.svg.chart.LineChart::data@223@223");
 				var $spos = $s.length;
 				var $tmp = (function() {
-					$s.push("rg.view.svg.chart.LineChart::data@212@212@212");
+					$s.push("rg.view.svg.chart.LineChart::data@223@223@223");
 					var $spos = $s.length;
 					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.chart.LineChart::data@212@212@212@212");
+						$s.push("rg.view.svg.chart.LineChart::data@223@223@223@223");
 						var $spos = $s.length;
 						var $tmp = f(a1,a2,a3);
 						$s.pop();
@@ -20002,16 +20041,16 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 			return $tmp;
 			$s.pop();
 		})())($closure(this,"onclick"),stats[0]), onmouseover = ((function() {
-			$s.push("rg.view.svg.chart.LineChart::data@213");
+			$s.push("rg.view.svg.chart.LineChart::data@224");
 			var $spos = $s.length;
 			var $tmp = function(f,a1) {
-				$s.push("rg.view.svg.chart.LineChart::data@213@213");
+				$s.push("rg.view.svg.chart.LineChart::data@224@224");
 				var $spos = $s.length;
 				var $tmp = (function() {
-					$s.push("rg.view.svg.chart.LineChart::data@213@213@213");
+					$s.push("rg.view.svg.chart.LineChart::data@224@224@224");
 					var $spos = $s.length;
 					var $tmp = function(a2,a3) {
-						$s.push("rg.view.svg.chart.LineChart::data@213@213@213@213");
+						$s.push("rg.view.svg.chart.LineChart::data@224@224@224@224");
 						var $spos = $s.length;
 						var $tmp = f(a1,a2,a3);
 						$s.pop();
@@ -20030,12 +20069,12 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 			return $tmp;
 			$s.pop();
 		})())($closure(this,"onmouseover"),stats[0]);
-		var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbols"));
+		var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classsf(i,"symbols"));
 		var gsymbol = enter.selectAll("g.symbol").dataf((function() {
-			$s.push("rg.view.svg.chart.LineChart::data@219");
+			$s.push("rg.view.svg.chart.LineChart::data@230");
 			var $spos = $s.length;
 			var $tmp = function(d,i1) {
-				$s.push("rg.view.svg.chart.LineChart::data@219@219");
+				$s.push("rg.view.svg.chart.LineChart::data@230@230");
 				var $spos = $s.length;
 				$s.pop();
 				return d;
@@ -20051,10 +20090,10 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 		if(null != this.symbol) {
 			var sp = [this.symbol];
 			var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
-				$s.push("rg.view.svg.chart.LineChart::data@243");
+				$s.push("rg.view.svg.chart.LineChart::data@254");
 				var $spos = $s.length;
 				var $tmp = function(dp,_) {
-					$s.push("rg.view.svg.chart.LineChart::data@243@243");
+					$s.push("rg.view.svg.chart.LineChart::data@254@254");
 					var $spos = $s.length;
 					var $tmp = sp[0](dp,stats[0]);
 					$s.pop();
@@ -20068,10 +20107,10 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 			if(null != this.symbolStyle) {
 				var ss = [this.symbolStyle];
 				spath.attr("style").stringf((function(ss,stats) {
-					$s.push("rg.view.svg.chart.LineChart::data@247");
+					$s.push("rg.view.svg.chart.LineChart::data@258");
 					var $spos = $s.length;
 					var $tmp = function(dp,_) {
-						$s.push("rg.view.svg.chart.LineChart::data@247@247");
+						$s.push("rg.view.svg.chart.LineChart::data@258@258");
 						var $spos = $s.length;
 						var $tmp = ss[0](dp,stats[0]);
 						$s.pop();
@@ -20087,10 +20126,10 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 		if(null != this.labelDataPoint) {
 			var f = [this.labelDataPoint];
 			gsymbol.eachNode((function(f,stats) {
-				$s.push("rg.view.svg.chart.LineChart::data@254");
+				$s.push("rg.view.svg.chart.LineChart::data@265");
 				var $spos = $s.length;
 				var $tmp = function(n,i1) {
-					$s.push("rg.view.svg.chart.LineChart::data@254@254");
+					$s.push("rg.view.svg.chart.LineChart::data@265@265");
 					var $spos = $s.length;
 					var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
 					label.setText(f[0](dp,stats[0]));
@@ -20102,10 +20141,10 @@ rg.view.svg.chart.LineChart.prototype.data = function(dps) {
 			})(f,stats));
 		}
 		gsymbols.update().selectAll("g.symbol").dataf((function() {
-			$s.push("rg.view.svg.chart.LineChart::data@266");
+			$s.push("rg.view.svg.chart.LineChart::data@277");
 			var $spos = $s.length;
 			var $tmp = function(d,i1) {
-				$s.push("rg.view.svg.chart.LineChart::data@266@266");
+				$s.push("rg.view.svg.chart.LineChart::data@277@277");
 				var $spos = $s.length;
 				$s.pop();
 				return d;
@@ -20124,7 +20163,7 @@ rg.view.svg.chart.LineChart.prototype.getTranslatePointf = function(pos) {
 	var $spos = $s.length;
 	var x = $closure(this,"x"), y = this.getY1(pos);
 	var $tmp = function(dp,i) {
-		$s.push("rg.view.svg.chart.LineChart::getTranslatePointf@279");
+		$s.push("rg.view.svg.chart.LineChart::getTranslatePointf@290");
 		var $spos = $s.length;
 		var $tmp = "translate(" + x(dp) + "," + y(dp,i) + ")";
 		$s.pop();
@@ -20787,10 +20826,10 @@ rg.view.svg.chart.StreamGraph.prototype.init = function() {
 	this.g.classed().add("stream-chart");
 	$s.pop();
 }
-rg.view.svg.chart.StreamGraph.prototype.setVariables = function(variableIndependents,variableDependents) {
+rg.view.svg.chart.StreamGraph.prototype.setVariables = function(variableIndependents,variableDependents,data) {
 	$s.push("rg.view.svg.chart.StreamGraph::setVariables");
 	var $spos = $s.length;
-	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents);
+	rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents,data);
 	$s.pop();
 }
 rg.view.svg.chart.StreamGraph.prototype.data = function(dps) {
@@ -20882,7 +20921,7 @@ rg.view.svg.chart.StreamGraph.prototype.prepareData = function() {
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	})($closure(this.xVariable.axis,"scale"),this.xVariable.minValue(),this.xVariable.maxValue()), xtype = this.xVariable.type, x = function(d) {
+	})($closure(this.xVariable.axis,"scale"),this.xVariable.min(),this.xVariable.max()), xtype = this.xVariable.type, x = function(d) {
 		$s.push("rg.view.svg.chart.StreamGraph::prepareData@130");
 		var $spos = $s.length;
 		var $tmp = xscale(Reflect.field(d,xtype));
@@ -20903,7 +20942,7 @@ rg.view.svg.chart.StreamGraph.prototype.prepareData = function() {
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	})($closure(this.yVariables[0].axis,"scale"),this.yVariables[0].minValue(),this.yVariables[0].maxValue()), ytype = this.yVariables[0].type, y = function(d) {
+	})($closure(this.yVariables[0].axis,"scale"),this.yVariables[0].min(),this.yVariables[0].max()), ytype = this.yVariables[0].type, y = function(d) {
 		$s.push("rg.view.svg.chart.StreamGraph::prepareData@133");
 		var $spos = $s.length;
 		var $tmp = yscale(Reflect.field(d,ytype));
@@ -23520,17 +23559,17 @@ rg.controller.info.InfoLineChart.filters = function() {
 	$s.push("rg.controller.info.InfoLineChart::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "symbol", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@35");
+		$s.push("rg.controller.info.InfoLineChart::filters@36");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) || Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@36");
+		$s.push("rg.controller.info.InfoLineChart::filters@37");
 		var $spos = $s.length;
 		var $tmp = [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
-			$s.push("rg.controller.info.InfoLineChart::filters@36@38");
+			$s.push("rg.controller.info.InfoLineChart::filters@37@39");
 			var $spos = $s.length;
 			$s.pop();
 			return v;
@@ -23540,49 +23579,56 @@ rg.controller.info.InfoLineChart.filters = function() {
 		return $tmp;
 		$s.pop();
 	}},{ field : "symbolstyle", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@42");
+		$s.push("rg.controller.info.InfoLineChart::filters@43");
 		var $spos = $s.length;
 		var $tmp = Reflect.isFunction(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@43");
+		$s.push("rg.controller.info.InfoLineChart::filters@44");
 		var $spos = $s.length;
 		var $tmp = [{ field : "symbolStyle", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
-	}},{ field : "displayarea", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@49");
+	}},{ field : "y0property", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@50");
+		var $spos = $s.length;
+		var $tmp = Std["is"](v,String);
+		$s.pop();
+		return $tmp;
+		$s.pop();
+	}, filter : null},{ field : "displayarea", validator : function(v) {
+		$s.push("rg.controller.info.InfoLineChart::filters@54");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,Bool);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "effect", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@53");
+		$s.push("rg.controller.info.InfoLineChart::filters@58");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@54");
+		$s.push("rg.controller.info.InfoLineChart::filters@59");
 		var $spos = $s.length;
 		var $tmp = [{ field : "effect", value : rg.view.svg.chart.LineEffects.parse(v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "interpolation", validator : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@60");
+		$s.push("rg.controller.info.InfoLineChart::filters@65");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoLineChart::filters@61");
+		$s.push("rg.controller.info.InfoLineChart::filters@66");
 		var $spos = $s.length;
 		var $tmp = [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
 		$s.pop();
@@ -23598,6 +23644,7 @@ rg.controller.info.InfoLineChart.prototype.interpolation = null;
 rg.controller.info.InfoLineChart.prototype.symbol = null;
 rg.controller.info.InfoLineChart.prototype.symbolStyle = null;
 rg.controller.info.InfoLineChart.prototype.displayarea = null;
+rg.controller.info.InfoLineChart.prototype.y0property = null;
 rg.controller.info.InfoLineChart.prototype.__class__ = rg.controller.info.InfoLineChart;
 if(!thx.xml) thx.xml = {}
 thx.xml.Namespace = function() { }
@@ -24758,7 +24805,7 @@ rg.data.DataProcessor.prototype.getVariableIndependentValues = function() {
 	var $tmp = Arrays.product(this.independentVariables.map(function(variable,i) {
 		$s.push("rg.data.DataProcessor::getVariableIndependentValues@144");
 		var $spos = $s.length;
-		var $tmp = variable.axis.range(variable.minValue(),variable.maxValue());
+		var $tmp = variable.axis.range(variable.min(),variable.max());
 		$s.pop();
 		return $tmp;
 		$s.pop();

@@ -31,7 +31,7 @@ class FactoryVariableIndependent
 		return variable;
 	}
 	
-	public static function convertBound(axis : IAxis<Dynamic>, value : Dynamic) : Stats<Dynamic> -> Dynamic
+	public static function convertBound(axis : IAxis<Dynamic>, value : Dynamic) : Stats<Dynamic> -> Dynamic -> Dynamic
 	{
 		if (null == value || Reflect.isFunction(value))
 			return value;
@@ -40,11 +40,11 @@ class FactoryVariableIndependent
 			if (Std.is(value, Date))
 				value = cast(value, Date).getTime();
 			if (Std.is(value, Float))
-				return function(_) return value;
+				return function(_, _) return value;
 			if (Std.is(value, String))
-				return function(_) return DateParser.parse(value).getTime();
+				return function(_, _) return DateParser.parse(value).getTime();
 			throw new Error("invalid value '{0}' for time bound", [value]);
 		}
-		return function(_) return value;
+		return function(_, _) return value;
 	}
 }
