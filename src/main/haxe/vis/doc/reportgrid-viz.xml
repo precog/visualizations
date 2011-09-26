@@ -1324,6 +1324,7 @@ Other things to do. Nested placeholders
 	<d/>
 	<c path="rg.data.IAxis.T"/>
 </f></min>
+		<createStats public="1" set="method"><f a=""><c path="rg.data.Stats"><c path="rg.data.IAxis.T"/></c></f></createStats>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -1397,6 +1398,7 @@ Other things to do. Nested placeholders
 	<d/>
 	<c path="rg.data.AxisOrdinal.T"/>
 </f></max>
+		<createStats public="1" set="method" line="79"><f a=""><c path="rg.data.Stats"><c path="rg.data.AxisOrdinal.T"/></c></f></createStats>
 		<new set="method" line="16"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
@@ -11978,26 +11980,27 @@ Other things to do. Nested placeholders
 		<c path="Date"/>
 	</f>
 </f></interpolatef>
-		<snap public="1" set="method" line="86" static="1"><f a="time:period">
+		<snap public="1" set="method" line="86" static="1"><f a="time:period:?mode">
 	<c path="Float"/>
 	<c path="String"/>
+	<c path="Int"/>
 	<c path="Float"/>
 </f></snap>
-		<snapToWeekDay public="1" set="method" line="113" static="1"><f a="time:day">
+		<snapToWeekDay public="1" set="method" line="167" static="1"><f a="time:day">
 	<c path="Float"/>
 	<c path="String"/>
 	<c path="Float"/>
 </f></snapToWeekDay>
-		<_reparse line="140" static="1"><c path="EReg"/></_reparse>
-		<canParse public="1" set="method" line="141" static="1"><f a="s">
+		<_reparse line="194" static="1"><c path="EReg"/></_reparse>
+		<canParse public="1" set="method" line="195" static="1"><f a="s">
 	<c path="String"/>
 	<e path="Bool"/>
 </f></canParse>
-		<parse public="1" set="method" line="146" static="1"><f a="s">
+		<parse public="1" set="method" line="200" static="1"><f a="s">
 	<c path="String"/>
 	<c path="Date"/>
 </f></parse>
-		<compare public="1" get="inline" set="null" line="155" static="1"><f a="a:b">
+		<compare public="1" get="inline" set="null" line="209" static="1"><f a="a:b">
 	<c path="Date"/>
 	<c path="Date"/>
 	<c path="Int"/>
@@ -12009,7 +12012,7 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.data.AxisTime" params="" file="src/rg/data/AxisTime.hx">
 		<implements path="rg.data.IAxisDiscrete"><c path="Float"/></implements>
-		<snapping line="21" static="1"><a>
+		<snapping line="22" static="1"><a>
 	<yeartop><c path="Int"/></yeartop>
 	<year><c path="Array"><a>
 	<to><c path="Int"/></to>
@@ -12033,43 +12036,44 @@ Other things to do. Nested placeholders
 </a></snapping>
 		<periodicity public="1" set="null"><c path="String"/></periodicity>
 		<scaleDistribution public="1" set="setScaleDistribution"><e path="rg.data.ScaleDistribution"/></scaleDistribution>
-		<isMajor set="method" line="32"><f a="units:value">
+		<isMajor set="method" line="33"><f a="units:value">
 	<c path="Int"/>
 	<c path="Float"/>
 	<e path="Bool"/>
 </f></isMajor>
-		<ticks public="1" set="method" line="68"><f a="start:end:?upperBound">
+		<ticks public="1" set="method" line="69"><f a="start:end:?upperBound">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Int"/>
 	<c path="Array"><c path="rg.data.ITickmark"><c path="Float"/></c></c>
 </f></ticks>
-		<range public="1" set="method" line="82"><f a="start:end">
+		<range public="1" set="method" line="81"><f a="start:end">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Array"><c path="Float"/></c>
 </f></range>
-		<scale public="1" set="method" line="87"><f a="start:end:v">
+		<scale public="1" set="method" line="86"><f a="start:end:v">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 </f></scale>
-		<setScaleDistribution set="method" line="93"><f a="v">
+		<setScaleDistribution set="method" line="92"><f a="v">
 	<e path="rg.data.ScaleDistribution"/>
 	<e path="rg.data.ScaleDistribution"/>
 </f></setScaleDistribution>
-		<min public="1" set="method" line="98"><f a="stats:meta">
+		<min public="1" set="method" line="97"><f a="stats:meta">
 	<c path="rg.data.Stats"><c path="Float"/></c>
 	<d/>
 	<c path="Float"/>
 </f></min>
-		<max public="1" set="method" line="103"><f a="stats:meta">
+		<max public="1" set="method" line="101"><f a="stats:meta">
 	<c path="rg.data.Stats"><c path="Float"/></c>
 	<d/>
 	<c path="Float"/>
 </f></max>
-		<new public="1" set="method" line="15"><f a="periodicity">
+		<createStats public="1" set="method" line="106"><f a=""><c path="rg.data.Stats"><c path="Float"/></c></f></createStats>
+		<new public="1" set="method" line="16"><f a="periodicity">
 	<c path="String"/>
 	<e path="Void"/>
 </f></new>
@@ -12224,15 +12228,15 @@ Other things to do. Nested placeholders
 	<e path="Void"/>
 </f></log>
 		<main set="method" line="27" static="1"><f a=""><e path="Void"/></f></main>
-		<select set="method" line="113" static="1"><f a="el">
+		<select set="method" line="117" static="1"><f a="el">
 	<d/>
 	<c path="thx.js.Selection"/>
 </f></select>
-		<opt get="inline" set="null" line="121" static="1"><f a="ob">
+		<opt get="inline" set="null" line="125" static="1"><f a="ob">
 	<d/>
 	<unknown/>
 </f></opt>
-		<chartopt set="method" line="122" static="1"><f a="ob:viz">
+		<chartopt set="method" line="126" static="1"><f a="ob:viz">
 	<d/>
 	<c path="String"/>
 	<unknown/>
@@ -12333,7 +12337,7 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="StringBuf" params="" file="C:\Projects\haxe/std/StringBuf.hx">
 		<add public="1" get="inline" set="null" line="46">
-			<f a="?x">
+			<f a="x">
 				<d/>
 				<e path="Void"/>
 			</f>
@@ -12341,7 +12345,7 @@ Other things to do. Nested placeholders
 		Adds the representation of any value to the string buffer.
 	</haxe_doc>
 		</add>
-		<addSub public="1" get="inline" set="null" line="57">
+		<addSub public="1" get="inline" set="null" line="59">
 			<f a="s:pos:?len">
 				<c path="String"/>
 				<c path="Int"/>
@@ -12352,7 +12356,7 @@ Other things to do. Nested placeholders
 		Adds a part of a string to the string buffer.
 	</haxe_doc>
 		</addSub>
-		<addChar public="1" get="inline" set="null" line="73">
+		<addChar public="1" get="inline" set="null" line="75">
 			<f a="c">
 				<c path="Int"/>
 				<e path="Void"/>
@@ -12361,7 +12365,7 @@ Other things to do. Nested placeholders
 		Adds a character to the string buffer.
 	</haxe_doc>
 		</addChar>
-		<toString public="1" get="inline" set="null" line="87">
+		<toString public="1" get="inline" set="null" line="89">
 			<f a=""><c path="String"/></f>
 			<haxe_doc>
 		Returns the content of the string buffer.
@@ -13747,34 +13751,35 @@ customs for missing features
 	</enum>
 	<class path="rg.data.AxisNumeric" params="" file="src/rg/data/AxisNumeric.hx">
 		<implements path="rg.data.IAxis"><c path="Float"/></implements>
-		<_step set="method" line="36" static="1"><f a="span:m">
+		<_step set="method" line="37" static="1"><f a="span:m">
 	<c path="Float"/>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></_step>
-		<scale public="1" set="method" line="12"><f a="start:end:v">
+		<scale public="1" set="method" line="13"><f a="start:end:v">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Float"/>
 </f></scale>
-		<ticks public="1" set="method" line="19"><f a="start:end:?maxTicks">
+		<ticks public="1" set="method" line="20"><f a="start:end:?maxTicks">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="Int"/>
 	<c path="Array"><c path="rg.data.ITickmark"><c path="Float"/></c></c>
 </f></ticks>
-		<min public="1" set="method" line="51"><f a="stats:meta">
+		<min public="1" set="method" line="52"><f a="stats:meta">
 	<c path="rg.data.Stats"><c path="Float"/></c>
 	<d/>
 	<c path="Float"/>
 </f></min>
-		<max public="1" set="method" line="60"><f a="stats:meta">
+		<max public="1" set="method" line="61"><f a="stats:meta">
 	<c path="rg.data.Stats"><c path="Float"/></c>
 	<d/>
 	<c path="Float"/>
 </f></max>
-		<new public="1" set="method" line="11"><f a=""><e path="Void"/></f></new>
+		<createStats public="1" set="method" line="70"><f a=""><c path="rg.data.Stats"><c path="Float"/></c></f></createStats>
+		<new public="1" set="method" line="12"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -14797,15 +14802,15 @@ customs for missing features
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 	<e path="Void"/>
 </f></process>
-		<fillDependentVariables set="method" line="100"><f a="data">
+		<fillDependentVariables set="method" line="99"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></fillDependentVariables>
-		<fillIndependentVariables set="method" line="127"><f a="data">
+		<fillIndependentVariables set="method" line="126"><f a="data">
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 	<e path="Void"/>
 </f></fillIndependentVariables>
-		<getVariableIndependentValues set="method" line="142"><f a=""><c path="Array"><c path="Array"><unknown/></c></c></f></getVariableIndependentValues>
+		<getVariableIndependentValues set="method" line="141"><f a=""><c path="Array"><c path="Array"><unknown/></c></c></f></getVariableIndependentValues>
 		<new public="1" set="method" line="22"><f a="sources">
 	<c path="rg.data.Sources"><d/></c>
 	<e path="Void"/>
@@ -15571,70 +15576,74 @@ customs for missing features
 	<c path="String"/>
 	<c path="Int"/>
 </f></unitsBetween>
-		<units public="1" set="method" line="97" static="1"><f a="value:periodicity">
+		<units public="1" set="method" line="98" static="1"><f a="value:periodicity">
 	<c path="Float"/>
 	<c path="String"/>
 	<c path="Int"/>
 </f></units>
-		<range public="1" set="method" line="104" static="1"><f a="start:end:periodicity">
+		<range public="1" set="method" line="105" static="1"><f a="start:end:periodicity">
 	<c path="Float"/>
 	<c path="Float"/>
 	<c path="String"/>
 	<c path="Array"><c path="Float"/></c>
 </f></range>
-		<next public="1" set="method" line="148" static="1"><f a="periodicity:?date:?step">
+		<next public="1" set="method" line="149" static="1"><f a="periodicity:?date:?step">
 	<c path="String"/>
 	<c path="Float"/>
 	<c path="Int"/>
 	<c path="Float"/>
 </f></next>
-		<minForPeriodicityInSeries public="1" set="method" line="172" static="1"><f a="arr:periodicity">
+		<minForPeriodicityInSeries public="1" set="method" line="173" static="1"><f a="arr:periodicity">
 	<c path="Array"><d><d><c path="Int"/></d></d></c>
 	<c path="String"/>
 	<c path="Float"/>
 </f></minForPeriodicityInSeries>
-		<maxForPeriodicityInSeries public="1" set="method" line="179" static="1"><f a="arr:periodicity">
+		<maxForPeriodicityInSeries public="1" set="method" line="180" static="1"><f a="arr:periodicity">
 	<c path="Array"><d><d><c path="Int"/></d></d></c>
 	<c path="String"/>
 	<c path="Float"/>
 </f></maxForPeriodicityInSeries>
-		<formatf public="1" set="method" line="186" static="1"><f a="periodicity">
+		<formatf public="1" set="method" line="187" static="1"><f a="periodicity">
 	<c path="String"/>
 	<f a="">
 		<c path="Float"/>
 		<c path="String"/>
 	</f>
 </f></formatf>
-		<format public="1" set="method" line="198" static="1"><f a="periodicity:v">
+		<format public="1" set="method" line="199" static="1"><f a="periodicity:v">
 	<c path="String"/>
 	<c path="Float"/>
 	<c path="String"/>
 </f></format>
-		<smartFormat public="1" set="method" line="212" static="1"><f a="periodicity:v">
+		<smartFormat public="1" set="method" line="213" static="1"><f a="periodicity:v">
 	<c path="String"/>
 	<c path="Float"/>
 	<c path="String"/>
 </f></smartFormat>
-		<firstInSeries public="1" set="method" line="249" static="1"><f a="periodicity:v">
+		<firstInSeries public="1" set="method" line="250" static="1"><f a="periodicity:v">
 	<c path="String"/>
 	<c path="Float"/>
 	<e path="Bool"/>
 </f></firstInSeries>
-		<nextPeriodicity public="1" set="method" line="272" static="1"><f a="periodicity">
+		<nextPeriodicity public="1" set="method" line="273" static="1"><f a="periodicity">
 	<c path="String"/>
 	<c path="String"/>
 </f></nextPeriodicity>
-		<prevPeriodicity public="1" set="method" line="284" static="1"><f a="periodicity">
+		<prevPeriodicity public="1" set="method" line="285" static="1"><f a="periodicity">
 	<c path="String"/>
 	<c path="String"/>
 </f></prevPeriodicity>
-		<parsePair set="method" line="296" static="1"><f a="start:end">
+		<parsePair set="method" line="297" static="1"><f a="start:end">
 	<c path="String"/>
 	<c path="String"/>
 	<c path="Array"><c path="Float"/></c>
 </f></parsePair>
-		<validGroupValues line="305" static="1"><c path="Array"><c path="String"/></c></validGroupValues>
-		<isValidGroupBy public="1" set="method" line="306" static="1"><f a="value">
+		<dateUtc set="method" line="305" static="1"><f a="v">
+	<c path="Float"/>
+	<c path="Date"/>
+</f></dateUtc>
+		<validGroupValues line="311" static="1"><c path="Array"><c path="String"/></c></validGroupValues>
+		<isValidGroupBy public="1" set="method" line="312" static="1"><f a="value">
 	<c path="String"/>
 	<e path="Bool"/>
 </f></isValidGroupBy>

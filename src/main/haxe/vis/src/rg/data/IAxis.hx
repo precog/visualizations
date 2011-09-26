@@ -11,4 +11,5 @@ interface IAxis<T>
 	public function ticks(start : T, end : T, ?maxTicks : Int) : Array<ITickmark<T>>;
 	public function max(stats : Stats<T>, meta : Dynamic) : T;
 	public function min(stats : Stats<T>, meta : Dynamic) : T;
+	public function createStats() : Stats<T>;
 }

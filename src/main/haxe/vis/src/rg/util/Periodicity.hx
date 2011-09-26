@@ -74,6 +74,7 @@ class Periodicity
 	
 	public static function unitsBetween(start : Float, end : Float, periodicity : String) : Int
 	{
+		
 		return switch(periodicity)
 		{
 			case "eternity": 1;
@@ -104,8 +105,8 @@ class Periodicity
 	public static function range(start : Float, end : Float, periodicity : String) : Array<Float>
 	{
 		var step = 1000;
-		start = Dates.snap(start, periodicity);
-		end = Dates.snap(end, periodicity);
+//		start = Dates.snap(start, periodicity);
+//		end = Dates.snap(end, periodicity);
 		switch(periodicity)
 		{
 			case "eternity": 
@@ -119,8 +120,8 @@ class Periodicity
 			case "week":
 				step = 7 * 24 * 60 * 60000;
 			case "month":
-				var s = Date.fromTime(start),
-					e = Date.fromTime(end),
+				var s = dateUtc(start),
+					e = dateUtc(end),
 					sy = s.getFullYear(),
 					ey = e.getFullYear(),
 					sm = s.getMonth(),
@@ -138,7 +139,7 @@ class Periodicity
 				}
 				return result;
 			case "year":
-				return Ints.range(Date.fromTime(start).getFullYear(), Date.fromTime(end).getFullYear(), 1).map(function(d, i) {
+				return Ints.range(dateUtc(start).getFullYear(), dateUtc(end).getFullYear()+1, 1).map(function(d, i) {
 					return new Date(d, 0, 1, 0, 0, 0).getTime();
 				});
 		}
@@ -211,38 +212,38 @@ class Periodicity
 	
 	public static function smartFormat(periodicity : String, v : Float) : String
 	{
-		var d = Date.fromTime(v);
 		switch(periodicity)
 		{
 			case "eternity": return "all time";
 			case "minute":
 				if (firstInSeries("hour", v))
-					return FormatDate.timeShort(d);
+					return FormatDate.timeShort(Date.fromTime(v));
 				else
-					return FormatDate.format("%i", d);
+					return FormatDate.format("%i", Date.fromTime(v));
 			case "hour":
 				if (firstInSeries("day", v))
-					return FormatDate.format("%b %e", d);
+					return FormatDate.format("%b %e", dateUtc(v));
 				else
-					return FormatDate.hourShort(d);
+					return FormatDate.hourShort(Date.fromTime(v));
 			case "day":
 				if (firstInSeries("month", v))
-					return FormatDate.format("%b %e", d);
+					return FormatDate.format("%b %e", dateUtc(v));
 				else
-					return FormatDate.format("%e", d);			
+					return FormatDate.format("%e", dateUtc(v));			
 			case "week":
+				var d = dateUtc(v);
 				if (d.getDate() <= 7)
 					return FormatDate.format("%b %e", d);
 				else
 					return FormatDate.format("%e", d);
 			case "month":
 				if (firstInSeries("year", v))
-					return FormatDate.year(Date.fromTime(v));
+					return FormatDate.year(dateUtc(v));
 				else
-					return FormatDate.format("%b", d);
+					return FormatDate.format("%b", dateUtc(v));
 			case "year":
-				return FormatDate.year(d);
-			default: return periodicity + ": " + d;
+				return FormatDate.year(dateUtc(v));
+			default: return periodicity + ": " + Date.fromTime(v);
 		}
 	}
 	
@@ -301,10 +302,16 @@ class Periodicity
 		];
 	}
 	
+	static function dateUtc(v : Float) 
+	{
+		var d = Date.fromTime(v);
+		return Date.fromTime(v + 60000 * untyped d.getTimezoneOffset());
+	}
 	
 	static var validGroupValues = ["hour", "day", "week", "month", "year"];
 	public static function isValidGroupBy(value : String)
 	{
 		return validGroupValues.exists(value);
 	}
+	
 }

@@ -4,6 +4,7 @@
  */
 
 package rg.data;
+import rg.data.Stats;
 using Arrays;
 
 class AxisNumeric implements IAxis<Float>
@@ -65,4 +66,6 @@ class AxisNumeric implements IAxis<Float>
 		else
 			return max;
 	}
+	
+	public function createStats() : Stats<Float> return new StatsNumeric()
 }

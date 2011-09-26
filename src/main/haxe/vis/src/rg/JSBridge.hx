@@ -76,7 +76,7 @@ class JSBridge
 		r.format  = Dynamics.format;
 		r.compare = Dynamics.compare;
 		r.dump    = Dynamics.string;
-		r.symbol  = SymbolCache.cache;
+		r.symbol  = SymbolCache.cache.get;
 		r.date = { 
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
@@ -94,7 +94,8 @@ class JSBridge
 					b = b.getTime();
 				return Periodicity.range(a, b, p);
 			},
-			parse : DateParser.parse
+			parse : DateParser.parse,
+			snap : Dates.snap
 		};
 		r.humanize = function(v : Dynamic)
 		{
@@ -106,7 +107,10 @@ class JSBridge
 			random : new Random(666).float
 		}
 		
-		r.version = thx.util.MacroVersion.fullVersion();
+		r.info = null != r.info ? r.info : { };
+		r.info.viz = {
+			version : thx.util.MacroVersion.fullVersion()
+		};
 	}
 	
 	// make sure a thx.js.Selection is passed

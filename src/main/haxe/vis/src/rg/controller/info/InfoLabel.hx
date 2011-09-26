@@ -27,10 +27,6 @@ class InfoLabel
 				value : Std.is(v, String) ? function() return v : v
 			}]
 		}, {
-			field : "value",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
 			field : "datapoint",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null

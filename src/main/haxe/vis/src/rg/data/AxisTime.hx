@@ -6,6 +6,7 @@
 package rg.data;
 import rg.util.Periodicity;
 import rg.data.ScaleDistribution;
+import rg.data.Stats;
 using Arrays;
 
 class AxisTime implements IAxisDiscrete<Float>
@@ -71,10 +72,8 @@ class AxisTime implements IAxisDiscrete<Float>
 			units = Periodicity.unitsBetween(start, end, periodicity),
 			values = range(start, end),
 			range = values.map(function(value, i) : ITickmark<Float> {
-			var major = isMajor(units, value),
-				unit = Periodicity.unitsBetween(start, value, periodicity);
-			return new TickmarkTime(value, values, major, periodicity, scaleDistribution);
-		});
+				return new TickmarkTime(value, values, isMajor(units, value), periodicity, scaleDistribution);
+			});
 		
 		return Tickmarks.bound(range, upperBound);
 	}
@@ -97,12 +96,12 @@ class AxisTime implements IAxisDiscrete<Float>
 	
 	public function min(stats : Stats<Float>, meta : Dynamic) : Float
 	{
-//		trace("min: " + stats.min + " " + Dates.snap(stats.min, periodicity));
-		return Dates.snap(stats.min, periodicity);
+		return stats.min;
 	}
 	public function max(stats : Stats<Float>, meta : Dynamic) : Float
 	{
-//		trace("max: " + stats.max + " " + Dates.snap(stats.max, periodicity));
-		return Dates.snap(stats.max, periodicity);
+		return stats.max;
 	}
+	
+	public function createStats() : Stats<Float> return new StatsNumeric()
 }

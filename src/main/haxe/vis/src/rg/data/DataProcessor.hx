@@ -71,7 +71,6 @@ class DataProcessor
 			onData.dispatch([]);
 			return;
 		}
-		
 		data = scale(data);
 		fillIndependentVariables(data);
 

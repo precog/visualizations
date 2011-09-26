@@ -107,7 +107,7 @@ class MVPOptions
 		// event/events
 		if (null != opt.events)
 		{
-			events = opt.events;
+			events = Std.is(opt.events, Array) ? opt.events : [opt.events];
 			Reflect.deleteField(opt, "events");
 		}
 		if (null != opt.event)

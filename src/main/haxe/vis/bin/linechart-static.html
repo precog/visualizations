@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			label : { datapointover : function(dp) {  return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
 			click : function(dp) { alert(dp[".browser"]); },
 			height: 200,
-			symbol : function(ds, stats) { return ReportGrid.symbol.get("circle", 20); },
+			symbol : function(ds, stats) { return ReportGrid.symbol("circle", 20); },
 			line : { effect : "gradient" }
 		}
 	});

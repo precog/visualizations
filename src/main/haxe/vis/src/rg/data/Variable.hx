@@ -28,10 +28,10 @@ class Variable<T, TAxis : IAxis<T>>
 	public function setAxis(axis : TAxis)
 	{
 		this.axis = axis;
-		if (Std.is(axis, AxisNumeric))
-			stats = cast new StatsNumeric();
+		if (null != axis)
+			this.stats = axis.createStats();
 		else
-			stats = new Stats<T>();
+			this.stats = null;
 	}
 	
 	public function min() return minf(stats, meta)
