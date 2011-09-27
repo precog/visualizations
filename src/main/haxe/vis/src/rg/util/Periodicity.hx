@@ -302,10 +302,18 @@ class Periodicity
 		];
 	}
 	
+	static inline function timezoneOffset(d : Date) : Float
+	{
+		return untyped d.getTimezoneOffset();
+	}
+	
 	static function dateUtc(v : Float) 
 	{
-		var d = Date.fromTime(v);
-		return Date.fromTime(v + 60000 * untyped d.getTimezoneOffset());
+		var d = Date.fromTime(v),
+			offset : Float = timezoneOffset(d);
+		if (offset < 0)
+			offset = 0;
+		return Date.fromTime(v + 60000 * offset);
 	}
 	
 	static var validGroupValues = ["hour", "day", "week", "month", "year"];

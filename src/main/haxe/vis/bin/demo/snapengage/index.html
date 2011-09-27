@@ -172,13 +172,7 @@ $(function(){
 	function setDateRange()
 	{
 		var inputs = $('#daterange').val().split("-").map(function(d) { 
-			var t = ReportGrid.date.snap(+ReportGrid.date.parse(d), "day");
-//			console.log(new Date(t).toString());
-//			console.log(new Date(t + d.getTimezoneOffset() * 60000).toString());
-//			console.log(+ReportGrid.date.parse(d));
-//			console.log(+  + d.getTimezoneOffset() * 60000);
-			//return +ReportGrid.date.parse(d);
-			return t;
+			return ReportGrid.date.snap(+ReportGrid.date.parse(d), "day");
 		});
 		if(!inputs[0])
 			return;
