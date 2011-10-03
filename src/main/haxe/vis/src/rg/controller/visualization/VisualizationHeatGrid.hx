@@ -25,8 +25,7 @@ class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 		var chart = new HeatGrid(layout.getPanel(layout.mainPanelName));
 		
 		chart.useContour = infoHeatGrid.contour;
-		chart.colorStart = infoHeatGrid.startColor;
-		chart.colorEnd   = infoHeatGrid.endColor;
+		chart.colorMode = infoHeatGrid.colorScaleMode;
 
 		this.chart = chart;
 	}

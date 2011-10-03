@@ -49,11 +49,9 @@ class DataProcessor
 	
 	function filterDatapoint(variables : Array<Dynamic>, dp : DataPoint)
 	{
-		var name;
 		for (i in 0...independentVariables.length)
 		{
-			name = independentVariables[i].type;
-			if (Reflect.field(dp, name) != variables[i])
+			if (Reflect.field(dp, independentVariables[i].type) != variables[i])
 				return false;
 		}
 		return true;
@@ -73,7 +71,9 @@ class DataProcessor
 		}
 		data = scale(data);
 		fillIndependentVariables(data);
-
+		
+		var dataPoints = transform(data);
+/*
 		var dataPoints : Array<DataPoint> = [];
 		var variablesset = getVariableIndependentValues();
 		for (values in variablesset)
@@ -91,6 +91,9 @@ class DataProcessor
 			var transformed = transform(subsets);
 			dataPoints = dataPoints.concat(transformed);
 		}
+		fillDependentVariables(dataPoints);
+*/
+		
 		fillDependentVariables(dataPoints);
 		
 		onData.dispatch(dataPoints);

@@ -7,6 +7,7 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<link rel="stylesheet" type="text/css" href="css/colors/rg-colors-brbg-9-div.css"/>
 	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -40,15 +41,46 @@ document.addEventListener("DOMContentLoaded", function(){
 			width: 240
 		}
 	});
+	
+	ReportGrid.heatGrid("#chart2", {
+		axes : [{
+			type : "age",
+			variable : "independent"
+		}, {
+			type : "height",
+			variable : "independent"
+		}, { type : "value" }],
+		data : [ { src : { data : data } } ],
+		options : {
+			label : { datapointover : function(dp) { return dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value); } },
+			click : function(dp) { alert(dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value)); },
+			color : "i-orange,green",
+			height: 200,
+			width: 240
+		}
+	});
+	
+	ReportGrid.heatGrid("#chart3", {
+		axes : [{
+			type : "age",
+			variable : "independent"
+		}, {
+			type : "height",
+			variable : "independent"
+		}, { type : "value" }],
+		data : [ { src : { data : data } } ],
+		options : {
+			label : { datapointover : function(dp) { return dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value); } },
+			click : function(dp) { alert(dp.height + ", " + dp.age + ": " + ReportGrid.format(dp.value)); },
+			height: 200,
+			width: 240,
+			color : "#D7191C,#FDAE61,#FFFFBF,#A6D96A,#1A9641"
+		}
+	});
 }, false)
 </script>
 </head>
 <body>
-	<div id="chart8"></div>
-	<div id="chart7"></div>
-	<div id="chart6"></div>
-	<div id="chart5"></div>
-	<div id="chart4"></div>
 	<div id="chart3"></div>
 	<div id="chart2"></div>
 	<div id="chart1"></div>

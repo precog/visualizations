@@ -64,8 +64,8 @@ class Label
 		x = 0;
 		y = 0;
 		angle = 0;
-		Reflect.setField(this, "orientation", FixedAngle(0));
-		Reflect.setField(this, "anchor", Center);
+		orientation = FixedAngle(0);
+		anchor = Center;
 	}
 	
 	public function addClass(name : String)
@@ -160,6 +160,8 @@ class Label
 	
 	function reanchor()
 	{
+		if (null == anchor)
+			return;
 		var bb = getBB(),
 			x : Float, y : Float;
 //		b.attr("width").float(bb.width).attr("height").float(bb.height);

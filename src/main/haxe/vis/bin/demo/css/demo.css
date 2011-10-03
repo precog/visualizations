@@ -1,0 +1,131 @@
+*
+{
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	font-size: 73%;
+	background-color: #aaa;
+	padding: 8px;
+}
+
+.container
+{
+	float: left;
+	margin: 0 8px 8px 0;
+	padding: 8px;
+	background-color: #eee;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	
+	box-shadow: 4px 5px 5px  rgba(0,0,0,0.25),
+	inset 4px 5px 5px  rgba(255,255,255,0.75);
+	-o-box-shadow: 4px 5px 5px  rgba(0,0,0,0.25),
+	inset 4px 5px 5px  rgba(255,255,255,0.75);
+	-webkit-box-shadow: 4px 5px 5px  rgba(0,0,0,0.25),
+	inset 4px 5px 5px  rgba(255,255,255,0.75);
+	-moz-box-shadow: 4px 5px 5px  rgba(0,0,0,0.25),
+	inset 4px 5px 5px  rgba(255,255,255,0.75);
+}
+
+.clear
+{
+	clear: left;
+}
+
+.chart
+{
+	float: left;
+	width: 240px; /* 240px */
+	height: 240px; /* 240px */
+}
+
+.wide
+{
+	width: 670px; /* 670px*/;
+}
+
+h1
+{
+	clear: left;
+	padding: 8px 0 2px 0;
+	font-size:22px;
+	color: #fff;
+	text-shadow: 1px 1px 2px #333;
+	text-align: center;
+}
+
+h1:hover
+{
+	color: #fff;
+}
+
+ul
+{
+	list-style: none;
+}
+
+ul, ul li
+{
+	padding: 0;
+	margin: 0;
+}
+
+.container
+{
+	width: 736px;
+	margin: 0 auto;
+}
+
+.demos a.bar { background-image: url(../images/barchart.png); }
+.demos a.pie { background-image: url(../images/piechart.png); }
+.demos a.line { background-image: url(../images/linechart.png); }
+.demos a.funnel { background-image: url(../images/funnelchart.png); }
+.demos a.leaderboard { background-image: url(../images/leaderboard.png); }
+.demos a.streamgraph { background-image: url(../images/streamgraph.png); }
+.demos a.heatgrid { background-image: url(../images/heatgrid.png); }
+.demos a.pivot { background-image: url(../images/pivottable.png); }
+.demos a.scatter { background-image: url(../images/scatterplot.png); }
+
+.demos li
+{
+	display: block;
+	float: left;
+	margin: 2px;
+}
+
+.demos li a
+{
+	height: 36px;
+	padding: 10px 10px 0 50px;
+	vertical-align: middle;
+	display: block;
+	text-decoration: none;
+	color: #fff;
+	font-size: 16px;
+	text-shadow: 1px 1px 1px #888;
+	font-weight: bold;
+	background-color: #ccc;
+	
+	background-repeat: no-repeat;
+	background-position: 8px 8px;
+	min-width: 120px;
+	
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.demos li a:hover
+{
+	background-color: #999;
+}
+/*
+.demos li:last a
+{
+	padding: 10px 0 0 50px;
+}
+*/

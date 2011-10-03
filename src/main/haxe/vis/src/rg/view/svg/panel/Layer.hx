@@ -7,6 +7,7 @@ package rg.view.svg.panel;
 
 import rg.view.frame.Frame;
 import thx.js.Selection;
+using Arrays;
 
 class Layer
 {
@@ -30,7 +31,7 @@ class Layer
 	
 	public function addClass(name : String)
 	{
-		g.classed().add(name);
+		name.split(" ").each(function(d, i) g.classed().add(d));
 	}
 	
 	public function removeClass(name : String)

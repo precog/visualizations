@@ -6,6 +6,8 @@
 package rg.controller.info;
 import rg.data.DataPoint;
 import rg.util.Periodicity;
+import thx.date.DateParser;
+import thx.error.Error;
 
 class InfoDataSource
 {
@@ -43,12 +45,12 @@ class InfoDataSource
 			filter : null
 		}, {
 			field : "start",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
+			validator : validateDate,
+			filter : function(v) return [{ field : "start", value : filterDate(v) }]
 		}, {
 			field : "end",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
+			validator : validateDate,
+			filter : function(v) return [{ field : "end", value : filterDate(v) }]
 		}, {
 			field : "timezone",
 			validator : function(v) return Std.is(v, String),
@@ -80,5 +82,20 @@ class InfoDataSource
 				return [{ field : "groups", value : Std.is(v, String) ? cast v.split(",") : v }];
 			}
 		}];
+	}
+	
+	static function validateDate(v : Dynamic) return Std.is(v, Float) || Std.is(v, Date) || Std.is(v, String)
+	
+	static function filterDate(v : Dynamic) : Dynamic
+	{
+		if (null == v)
+			return null;
+		if (Std.is(v, Float))
+			return v;
+		if (Std.is(v, Date))
+			return cast(v, Date).getTime();
+		if (Std.is(v, String))
+			return DateParser.parse(v).getTime();
+		return throw new Error("invalid date '{0}' for start or end", [v]);
 	}
 }

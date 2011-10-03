@@ -4,6 +4,8 @@
  */
 
 package rg.controller.info;
+import rg.view.svg.chart.ColorScaleMode;
+import rg.view.svg.chart.ColorScaleModes;
 import thx.color.Rgb;
 import thx.color.NamedColors;
 import rg.view.svg.util.RGColors;
@@ -11,17 +13,12 @@ using rg.controller.info.Info;
 
 class InfoHeatGrid extends InfoCartesianChart
 {
-	static var defaultStartColor = NamedColors.white;
-	static var defaultEndColor = NamedColors.blue;
-	
 	public var contour : Bool;
-	public var startColor : Rgb;
-	public var endColor : Rgb;
+	public var colorScaleMode : ColorScaleMode;
 	public function new()
 	{
 		super();
-		startColor = defaultStartColor;
-		endColor = defaultEndColor;
+		colorScaleMode = ColorScaleMode.FromCss();
 	}
 	
 	public static function filters()
@@ -31,19 +28,14 @@ class InfoHeatGrid extends InfoCartesianChart
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
 		}, {
-			field : "startcolor",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "startColor",
-				value : RGColors.parse(v, defaultStartColor.toCss())
-			}]
-		}, {
-			field : "endcolor",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "endColor",
-				value : RGColors.parse(v, defaultEndColor.toCss())
-			}]
+			field : "color",
+			validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+			filter : function(v) {
+				return [{
+					field : "colorScaleMode",
+					value : ColorScaleModes.createFromDynamic(v)
+				}];
+			}
 		}].concat(cast InfoCartesianChart.filters());
 	}
 }

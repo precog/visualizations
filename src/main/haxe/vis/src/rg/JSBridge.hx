@@ -62,15 +62,16 @@ class JSBridge
 		}
 		
 		// define public visualization constrcutors
+		r.barChart     = function(el, options) return r.viz(el, options, "barchart");
+		r.geo   = function(el, options) return r.viz(el, options, "geo");
+		r.funnelChart  = function(el, options) return r.viz(el, options, "funnelchart");
+		r.heatGrid     = function(el, options) return r.viz(el, options, "heatgrid");
+		r.leaderBoard  = function(el, options) return r.viz(el, options, "leaderboard");
 		r.lineChart    = function(el, options) return r.viz(el, options, "linechart");
 		r.pieChart     = function(el, options) return r.viz(el, options, "piechart");
 		r.pivotTable   = function(el, options) return r.viz(el, options, "pivottable");
-		r.leaderBoard  = function(el, options) return r.viz(el, options, "leaderboard");
-		r.barChart     = function(el, options) return r.viz(el, options, "barchart");
-		r.funnelChart  = function(el, options) return r.viz(el, options, "funnelchart");
-		r.streamGraph  = function(el, options) return r.viz(el, options, "streamgraph");
 		r.scatterGraph = function(el, options) return r.viz(el, options, "scattergraph");
-		r.heatGrid     = function(el, options) return r.viz(el, options, "heatgrid");
+		r.streamGraph  = function(el, options) return r.viz(el, options, "streamgraph");
 		
 		// utility functions
 		r.format  = Dynamics.format;

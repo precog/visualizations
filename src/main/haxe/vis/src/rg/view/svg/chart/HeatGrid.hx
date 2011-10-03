@@ -20,24 +20,22 @@ import thx.color.NamedColors;
 import rg.util.DataPoints;
 import thx.svg.Line;
 import thx.svg.LineInterpolator;
+import rg.view.svg.chart.ColorScaleMode;
+import rg.view.svg.util.RGCss;
 using Arrays;
 
 class HeatGrid extends CartesianChart<Array<DataPoint>>
 {
-	public var colorStart : Rgb;
-	public var colorEnd : Rgb;
 	public var useContour : Bool;
+	public var colorMode(getColorMode, setColorMode) : ColorScaleMode;
 	var dps : Array<DataPoint>;
-	var colorScale : LinearT<Rgb>;
 	var variableDependent : VariableDependent<Dynamic>;
 	
 	public function new(panel : Panel) 
 	{
 		super(panel);
-		colorStart = NamedColors.yellow;
-		colorEnd = NamedColors.green;
-		levels = 20;
 		useContour = false;
+		colorMode = FromCss();
 	}
 	
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
@@ -45,12 +43,6 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		xVariable = cast variableIndependents[0];
 		yVariables = cast [variableIndependents[1]];
 		variableDependent = variableDependents[0];
-		
-		var min = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), variableDependent.min()),
-			max = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), variableDependent.max());
-		colorScale = Linears.forRgb()
-			.range([colorStart, colorEnd])
-			.domain([min, max]);
 	}
 	
 	override function init()
@@ -81,12 +73,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	{
 		return variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), v);
 	}
-	
-	function scaleValue(dp, ?i)
-	{
-		return colorScale.scale(value(dp));
-	}
-	
+
 	var xrange : Array<Dynamic>;
 	var yrange : Array<Dynamic>;
 	var cols : Int;
@@ -94,7 +81,6 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	var w : Float;
 	var h : Float;
 	var stats : Stats<Dynamic>;
-	var levels : Int;
 	
 	function x(dp, i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w
 	function y(dp, i) return height - (1 + Arrays.indexOf(yrange, DataPoints.value(dp, yVariables[0].type))) * h
@@ -120,6 +106,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	
 	function drawContour()
 	{
+/*
 		var map = xrange.map(function(v, i) return dps.filter(function(dp) return DataPoints.value(dp, xVariable.type) == v)).map(function(arr, i) {
 				var r = [];
 				for (i in 0...rows)
@@ -161,15 +148,16 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 					contour.push(contour[0]);
 				
 				var line = Line.pointArray(LineInterpolator.Linear).shape(contour);
-				g.append("svg:path")
+				var path = g.append("svg:path")
 					.attr("d").string(line)
-					.style("fill").color(color)
+//					.style("fill").color(color)
 				;
+				stylefeature(path, path);
 			}
 			
 			createContour();
 		}
-		
+*/
 	}
 	
 	function createGridMap(grid)
@@ -190,7 +178,9 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			.attr("y").floatf(y)
 			.attr("width").float(w)
 			.attr("height").float(h)
-			.style("fill").colorf(scaleValue)
+			.each(function(dp, _) {
+				stylefeature(Selection.current, dp);
+			})
 			.on("click", onclick)
 			.on("mouseover", onmouseover)
 		;
@@ -224,5 +214,51 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			return v.axis.range(v.min(), v.max());
 		var tickmarks = variable.axis.ticks(variable.min(), variable.max());
 		return tickmarks.map(function(d, i) return d.value);
+	}
+	
+	dynamic function stylefeature(svg : Selection, dp : DataPoint) {}
+
+	function getColorMode() return colorMode
+	function setColorMode(v : ColorScaleMode)
+	{
+		switch(colorMode = v)
+		{
+			case FromCss(g):
+				if (null == g)
+					g = RGCss.colorsInCss();
+				stylefeature = function(svg : Selection, dp : DataPoint)
+				{
+					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
+						index = Math.floor(g * t);
+					svg.attr("class").string("fill-" + index);
+				}
+			case Sequence(c):
+				var colors = Arrays.map(c, function(d, _) return d.toCss());
+				stylefeature = function(svg : Selection, dp : DataPoint)
+				{
+					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
+						index = Math.floor(colors.length * t);
+					svg.attr("fill").string(colors[index]);
+				}
+			case Interpolation(colors):
+				var interpolator = Rgb.interpolateStepsf(colors);
+				stylefeature = function(svg : Selection, dp : DataPoint)
+				{
+					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type));
+					svg.attr("fill").string(interpolator(t).toCss());
+				}
+			case Fixed(c):
+				var color = c.toCss();
+				stylefeature = function(svg : Selection, dp : DataPoint)
+				{
+					svg.attr("fill").string(color);
+				}
+			case Fun(f):
+				stylefeature = function(svg : Selection, dp : DataPoint)
+				{
+					svg.attr("fill").string(f(dp, variableDependent.stats));
+				}
+		}
+		return v;
 	}
 }
