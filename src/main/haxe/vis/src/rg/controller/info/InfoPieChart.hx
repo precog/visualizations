@@ -15,7 +15,6 @@ using Arrays;
 class InfoPieChart 
 {
 	public var labelradius : Float;
-	public var labeldisplay : Bool;
 	public var labelorientation : LabelOrientation;
 	
 	public var innerradius : Float;
@@ -34,7 +33,6 @@ class InfoPieChart
 	{
 		innerradius = 0.0;
 		labelradius = 0.45;
-		labeldisplay = true;
 		labelorientation = LabelOrientation.Aligned;
 		outerradius = 0.9;
 		overradius = 0.95;
@@ -82,13 +80,6 @@ class InfoPieChart
 			field : "dontfliplabel",
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
-		}, {
-			field : "displaylabels",
-			validator : function(v) return Std.is(v, Bool),
-			filter : function(v) return [{
-				field : "labeldisplay",
-				value : v
-			}]
 		}, {
 			field : "labelorientation",
 			validator : function(v) return Std.is(v, String) && validateOrientation(v),

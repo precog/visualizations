@@ -50,7 +50,6 @@ class PieChart extends Chart
 	public var displayGradient : Bool;
 	public var animationDelay : Int;
 	
-	public var labelDisplay : Bool;
 	public var labelOrientation : LabelOrientation;
 	public var labelDontFlip : Bool;
 	
@@ -74,7 +73,6 @@ class PieChart extends Chart
 		tooltipRadius = 0.5;
 		labels = new Hash();
 		
-		labelDisplay = true;
 		labelOrientation = LabelOrientation.Orthogonal;
 		labelDontFlip = true;
 	}
@@ -138,7 +136,7 @@ class PieChart extends Chart
 			path.attr("d").stringf(arcShape(arcNormal));
 		}
 		arc.onNode("mouseover.label", onMouseOver);
-		if (labelDisplay)
+		if (null != labelDataPoint)
 			arc.eachNode(appendLabel);
 		if (null != mouseClick)
 			arc.onNode("click.user", onMouseClick);
@@ -150,7 +148,7 @@ class PieChart extends Chart
 				.ease(animationEase)
 				.duration(animationDuration)
 				.attr("d").stringf(arcShape(arcNormal));
-		if (labelDisplay)
+		if (null != labelDataPoint)
 			choice.update().eachNode(updateLabel);
 		
 		// exit
@@ -200,14 +198,12 @@ class PieChart extends Chart
 			label = labels.get(d.id),
 			r = radius * labelRadius,
 			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-		if (null != labelDataPoint)
-		{
-			label.text = labelDataPoint(d.dp, stats);
-			label.place(
-				-2.5 + Math.cos(a) * r, 
-				-2.5 + Math.sin(a) * r,
-				Const.TO_DEGREE * a);
-		}
+
+		label.text = labelDataPoint(d.dp, stats);
+		label.place(
+			-2.5 + Math.cos(a) * r, 
+			-2.5 + Math.sin(a) * r,
+			Const.TO_DEGREE * a);
 	}
 	
 	function appendLabel(dom, i : Int)
@@ -227,15 +223,12 @@ class PieChart extends Chart
 			case Orthogonal:
 				label.anchor = GridAnchor.Top;
 		}
-		if (null != labelDataPoint)
-		{
-			label.text = labelDataPoint(d.dp, stats);
-			label.place(
-				-2.5 + Math.cos(a) * r, 
-				-2.5 + Math.sin(a) * r,
-				Const.TO_DEGREE * a);
-			labels.set(d.id, label);
-		}
+		label.text = labelDataPoint(d.dp, stats);
+		label.place(
+			-2.5 + Math.cos(a) * r, 
+			-2.5 + Math.sin(a) * r,
+			Const.TO_DEGREE * a);
+		labels.set(d.id, label);
 	}
 	
 	function applyGradient(n, i : Int)

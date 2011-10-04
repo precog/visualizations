@@ -45,7 +45,6 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.labelDataPointOver = info.label.datapointover;
 
 		chart.labelRadius = info.labelradius;
-		chart.labelDisplay = info.labeldisplay;
 		chart.labelOrientation = info.labelorientation;
 		chart.labelDontFlip = info.dontfliplabel;
 

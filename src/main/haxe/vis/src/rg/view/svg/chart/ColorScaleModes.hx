@@ -31,7 +31,7 @@ class ColorScaleModes
 				return ColorScaleMode.Sequence(s[1].split(",").map(function(d, i) {
 					return Colors.parse(d);
 				}));
-			case "fixed":
+			case "f", "fixed":
 				return ColorScaleMode.Fixed(Colors.parse(s[1]));
 			default:
 				if (s[0].indexOf(",") >= 0)
