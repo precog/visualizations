@@ -1706,6 +1706,103 @@
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="rg.view.svg.widget.Map" params="" file="src/rg/view/svg/widget/Map.hx">
+		<className public="1" get="null" set="setClassName"><c path="String"/></className>
+		<map public="1" set="null"><c path="Hash"><a>
+	<svg><c path="thx.js.Selection"/></svg>
+	<dp><t path="rg.data.DataPoint"/></dp>
+</a></c></map>
+		<onReady public="1" set="null"><c path="hxevents.Notifier"/></onReady>
+		<click public="1"><f a=":">
+	<t path="rg.data.DataPoint"/>
+	<c path="rg.data.Stats"><d/></c>
+	<e path="Void"/>
+</f></click>
+		<labelDataPoint public="1"><f a=":">
+	<t path="rg.data.DataPoint"/>
+	<c path="rg.data.Stats"><d/></c>
+	<c path="String"/>
+</f></labelDataPoint>
+		<labelDataPointOver public="1"><f a=":">
+	<t path="rg.data.DataPoint"/>
+	<c path="rg.data.Stats"><d/></c>
+	<c path="String"/>
+</f></labelDataPointOver>
+		<radius public="1"><f a=":">
+	<t path="rg.data.DataPoint"/>
+	<c path="rg.data.Stats"><d/></c>
+	<c path="Float"/>
+</f></radius>
+		<colorMode public="1"><e path="rg.view.svg.chart.ColorScaleMode"/></colorMode>
+		<projection><c path="thx.geo.IProjection"/></projection>
+		<g><c path="thx.js.Selection"/></g>
+		<load public="1" set="method" line="46"><f a="path:type:usejsonp">
+	<c path="String"/>
+	<c path="String"/>
+	<e path="Bool"/>
+	<e path="Void"/>
+</f></load>
+		<loadGeoJson set="method" line="57"><f a="path:usejsonp">
+	<c path="String"/>
+	<e path="Bool"/>
+	<e path="Void"/>
+</f></loadGeoJson>
+		<loadGeoJsonJsonp set="method" line="65"><f a="path">
+	<c path="String"/>
+	<e path="Void"/>
+</f></loadGeoJsonJsonp>
+		<loadGeoJsonAjax set="method" line="71"><f a="path">
+	<c path="String"/>
+	<e path="Void"/>
+</f></loadGeoJsonAjax>
+		<draw set="method" line="83"><f a="json">
+	<t path="thx.json.GeoJson"/>
+	<e path="Void"/>
+</f></draw>
+		<onMouseOver set="method" line="126"><f a="dp:?_:?_">
+	<t path="rg.data.DataPoint"/>
+	<t path="js.HtmlDom"/>
+	<c path="Int"/>
+	<e path="Void"/>
+</f></onMouseOver>
+		<onClick set="method" line="127"><f a="dp:?_:?_">
+	<t path="rg.data.DataPoint"/>
+	<t path="js.HtmlDom"/>
+	<c path="Int"/>
+	<e path="Void"/>
+</f></onClick>
+		<handlerDataPointOver public="1"><f a=":">
+	<t path="rg.data.DataPoint"/>
+	<f a=":">
+		<t path="rg.data.DataPoint"/>
+		<c path="rg.data.Stats"><d/></c>
+		<c path="String"/>
+	</f>
+	<e path="Void"/>
+</f></handlerDataPointOver>
+		<handlerClick public="1"><f a=":">
+	<t path="rg.data.DataPoint"/>
+	<f a=":">
+		<t path="rg.data.DataPoint"/>
+		<c path="rg.data.Stats"><d/></c>
+		<e path="Void"/>
+	</f>
+	<e path="Void"/>
+</f></handlerClick>
+		<setClassName set="method" line="132"><f a="cls">
+	<c path="String"/>
+	<c path="String"/>
+</f></setClassName>
+		<new public="1" set="method" line="38"><f a="container:projection">
+	<c path="thx.js.Selection"/>
+	<c path="thx.geo.IProjection"/>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.controller.info.InfoAnimation" params="" file="src/rg/controller/info/InfoAnimation.hx">
 		<filters public="1" set="method" line="25" static="1"><f a=""><c path="Array"><a>
 	<validator><f a="v">
@@ -5478,12 +5575,12 @@
 	</class>
 	<class path="rg.controller.info.InfoMap" params="" file="src/rg/controller/info/InfoMap.hx">
 		<GEOGSON_BASE_URL get="inline" set="null" line="24" static="1"><c path="String"/></GEOGSON_BASE_URL>
-		<filters public="1" set="method" line="49" static="1"><f a=""><c path="Array"><d/></c></f></filters>
-		<isValidTemplate set="method" line="132" static="1"><f a="t">
+		<filters public="1" set="method" line="51" static="1"><f a=""><c path="Array"><d/></c></f></filters>
+		<isValidTemplate set="method" line="138" static="1"><f a="t">
 	<c path="String"/>
 	<e path="Bool"/>
 </f></isValidTemplate>
-		<fromTemplate set="method" line="137" static="1"><f a="t">
+		<fromTemplate set="method" line="143" static="1"><f a="t">
 	<c path="String"/>
 	<c path="Array"><a>
 	<value><c path="String"/></value>
@@ -5512,7 +5609,8 @@
 	<c path="Float"/>
 </f></t></radius>
 		<colorScaleMode public="1"><e path="rg.view.svg.chart.ColorScaleMode"/></colorScaleMode>
-		<new public="1" set="method" line="41"><f a=""><e path="Void"/></f></new>
+		<usejson public="1"><e path="Bool"/></usejson>
+		<new public="1" set="method" line="42"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -12143,93 +12241,6 @@ customs for missing features
  </haxe_doc>
 	</class>
 	<enum path="hxevents.EventException" params="" file="C:\Projects\hxevents\src/hxevents/EventException.hx"><StopPropagation/></enum>
-	<class path="rg.view.svg.layer.Map" params="" file="src/rg/view/svg/layer/Map.hx">
-		<className public="1" get="null" set="setClassName"><c path="String"/></className>
-		<map public="1" set="null"><c path="Hash"><a>
-	<svg><c path="thx.js.Selection"/></svg>
-	<dp><t path="rg.data.DataPoint"/></dp>
-</a></c></map>
-		<onReady public="1" set="null"><c path="hxevents.Notifier"/></onReady>
-		<click public="1"><f a=":">
-	<t path="rg.data.DataPoint"/>
-	<c path="rg.data.Stats"><d/></c>
-	<e path="Void"/>
-</f></click>
-		<labelDataPoint public="1"><f a=":">
-	<t path="rg.data.DataPoint"/>
-	<c path="rg.data.Stats"><d/></c>
-	<c path="String"/>
-</f></labelDataPoint>
-		<labelDataPointOver public="1"><f a=":">
-	<t path="rg.data.DataPoint"/>
-	<c path="rg.data.Stats"><d/></c>
-	<c path="String"/>
-</f></labelDataPointOver>
-		<radius public="1"><f a=":">
-	<t path="rg.data.DataPoint"/>
-	<c path="rg.data.Stats"><d/></c>
-	<c path="Float"/>
-</f></radius>
-		<colorMode public="1"><e path="rg.view.svg.chart.ColorScaleMode"/></colorMode>
-		<projection><c path="thx.geo.IProjection"/></projection>
-		<g><c path="thx.js.Selection"/></g>
-		<load public="1" set="method" line="46"><f a="path:type">
-	<c path="String"/>
-	<c path="String"/>
-	<e path="Void"/>
-</f></load>
-		<loadGeoJson set="method" line="57"><f a="path">
-	<c path="String"/>
-	<e path="Void"/>
-</f></loadGeoJson>
-		<draw set="method" line="69"><f a="json">
-	<t path="thx.json.GeoJson"/>
-	<e path="Void"/>
-</f></draw>
-		<onMouseOver set="method" line="112"><f a="dp:?_:?_">
-	<t path="rg.data.DataPoint"/>
-	<t path="js.HtmlDom"/>
-	<c path="Int"/>
-	<e path="Void"/>
-</f></onMouseOver>
-		<onClick set="method" line="113"><f a="dp:?_:?_">
-	<t path="rg.data.DataPoint"/>
-	<t path="js.HtmlDom"/>
-	<c path="Int"/>
-	<e path="Void"/>
-</f></onClick>
-		<handlerDataPointOver public="1"><f a=":">
-	<t path="rg.data.DataPoint"/>
-	<f a=":">
-		<t path="rg.data.DataPoint"/>
-		<c path="rg.data.Stats"><d/></c>
-		<c path="String"/>
-	</f>
-	<e path="Void"/>
-</f></handlerDataPointOver>
-		<handlerClick public="1"><f a=":">
-	<t path="rg.data.DataPoint"/>
-	<f a=":">
-		<t path="rg.data.DataPoint"/>
-		<c path="rg.data.Stats"><d/></c>
-		<e path="Void"/>
-	</f>
-	<e path="Void"/>
-</f></handlerClick>
-		<setClassName set="method" line="118"><f a="cls">
-	<c path="String"/>
-	<c path="String"/>
-</f></setClassName>
-		<new public="1" set="method" line="38"><f a="container:projection">
-	<c path="thx.js.Selection"/>
-	<c path="thx.geo.IProjection"/>
-	<e path="Void"/>
-</f></new>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
 	<class path="rg.controller.factory.FactoryVariableDependent" params="" file="src/rg/controller/factory/FactoryVariableDependent.hx">
 		<create public="1" set="method" line="15"><f a="info:isnumeric">
 	<c path="rg.controller.info.InfoVariable"/>
@@ -12616,17 +12627,16 @@ customs for missing features
 		<new public="1" set="method"><f a=""><e path="Void"/></f></new>
 	</class>
 	<class path="rg.controller.info.InfoPieChart" params="" file="src/rg/controller/info/InfoPieChart.hx">
-		<validateOrientation set="method" line="48" static="1"><f a="s">
+		<validateOrientation set="method" line="46" static="1"><f a="s">
 	<c path="String"/>
 	<e path="Bool"/>
 </f></validateOrientation>
-		<filterOrientation set="method" line="54" static="1"><f a="s">
+		<filterOrientation set="method" line="52" static="1"><f a="s">
 	<c path="String"/>
 	<e path="rg.view.svg.widget.LabelOrientation"/>
 </f></filterOrientation>
-		<filters public="1" set="method" line="75" static="1"><f a=""><c path="Array"><d/></c></f></filters>
+		<filters public="1" set="method" line="73" static="1"><f a=""><c path="Array"><d/></c></f></filters>
 		<labelradius public="1"><c path="Float"/></labelradius>
-		<labeldisplay public="1"><e path="Bool"/></labeldisplay>
 		<labelorientation public="1"><e path="rg.view.svg.widget.LabelOrientation"/></labelorientation>
 		<innerradius public="1"><c path="Float"/></innerradius>
 		<outerradius public="1"><c path="Float"/></outerradius>
@@ -12645,7 +12655,7 @@ customs for missing features
 	<t path="rg.data.DataPoint"/>
 	<e path="Void"/>
 </f></click>
-		<new public="1" set="method" line="33"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="32"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -13171,11 +13181,11 @@ customs for missing features
 		<title><t path="Null"><c path="rg.view.svg.layer.Title"/></t></title>
 		<info public="1"><c path="rg.controller.info.InfoPieChart"/></info>
 		<init public="1" set="method" line="23" override="1"><f a=""><e path="Void"/></f></init>
-		<feedData public="1" set="method" line="73" override="1"><f a="data">
+		<feedData public="1" set="method" line="72" override="1"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
-		<destroy public="1" set="method" line="93" override="1"><f a=""><e path="Void"/></f></destroy>
+		<destroy public="1" set="method" line="92" override="1"><f a=""><e path="Void"/></f></destroy>
 		<new public="1" set="method" line="18"><f a="layout">
 	<c path="rg.view.layout.Layout"/>
 	<e path="Void"/>
@@ -14881,7 +14891,7 @@ customs for missing features
 		This enables you to create an instance without any side-effect.
 	</haxe_doc>
 		</createEmptyInstance>
-		<createEnum public="1" params="T" set="method" line="122" static="1">
+		<createEnum public="1" params="T" set="method" line="121" static="1">
 			<f a="e:constr:?params">
 				<c path="Enum"><c path="createEnum.T"/></c>
 				<c path="String"/>
@@ -14892,7 +14902,7 @@ customs for missing features
 		Create an instance of an enum by using a constructor name and parameters.
 	</haxe_doc>
 		</createEnum>
-		<createEnumIndex public="1" params="T" set="method" line="134" static="1">
+		<createEnumIndex public="1" params="T" set="method" line="133" static="1">
 			<f a="e:index:?params">
 				<c path="Enum"><c path="createEnumIndex.T"/></c>
 				<c path="Int"/>
@@ -14903,7 +14913,7 @@ customs for missing features
 		Create an instance of an enum by using a constructor index and parameters.
 	</haxe_doc>
 		</createEnumIndex>
-		<getInstanceFields public="1" set="method" line="140" static="1">
+		<getInstanceFields public="1" set="method" line="139" static="1">
 			<f a="c">
 				<c path="Class"><d/></c>
 				<c path="Array"><c path="String"/></c>
@@ -14912,7 +14922,7 @@ customs for missing features
 		Returns the list of instance fields.
 	</haxe_doc>
 		</getInstanceFields>
-		<getClassFields public="1" set="method" line="146" static="1">
+		<getClassFields public="1" set="method" line="145" static="1">
 			<f a="c">
 				<c path="Class"><d/></c>
 				<c path="Array"><c path="String"/></c>
@@ -14921,7 +14931,7 @@ customs for missing features
 		Returns the list of a class static fields.
 	</haxe_doc>
 		</getClassFields>
-		<getEnumConstructs public="1" set="method" line="155" static="1">
+		<getEnumConstructs public="1" set="method" line="154" static="1">
 			<f a="e">
 				<c path="Enum"><d/></c>
 				<c path="Array"><c path="String"/></c>
@@ -14930,7 +14940,7 @@ customs for missing features
 		Returns all the available constructor names for an enum.
 	</haxe_doc>
 		</getEnumConstructs>
-		<typeof public="1" set="method" line="160" static="1">
+		<typeof public="1" set="method" line="159" static="1">
 			<f a="v">
 				<d/>
 				<e path="ValueType"/>
@@ -14939,7 +14949,7 @@ customs for missing features
 		Returns the runtime type of a value.
 	</haxe_doc>
 		</typeof>
-		<enumEq public="1" params="T" set="method" line="190" static="1">
+		<enumEq public="1" params="T" set="method" line="189" static="1">
 			<f a="a:b">
 				<c path="enumEq.T"/>
 				<c path="enumEq.T"/>
@@ -14949,7 +14959,7 @@ customs for missing features
 		Recursively compare two enums constructors and parameters.
 	</haxe_doc>
 		</enumEq>
-		<enumConstructor public="1" get="inline" set="null" line="208" static="1">
+		<enumConstructor public="1" get="inline" set="null" line="207" static="1">
 			<f a="e">
 				<d/>
 				<c path="String"/>
@@ -14958,7 +14968,7 @@ customs for missing features
 		Returns the constructor of an enum
 	</haxe_doc>
 		</enumConstructor>
-		<enumParameters public="1" get="inline" set="null" line="212" static="1">
+		<enumParameters public="1" get="inline" set="null" line="211" static="1">
 			<f a="e">
 				<d/>
 				<c path="Array"><d/></c>
@@ -14967,7 +14977,7 @@ customs for missing features
 		Returns the parameters of an enum
 	</haxe_doc>
 		</enumParameters>
-		<enumIndex public="1" get="inline" set="null" line="216" static="1">
+		<enumIndex public="1" get="inline" set="null" line="215" static="1">
 			<f a="e">
 				<d/>
 				<c path="Int"/>
@@ -14976,7 +14986,7 @@ customs for missing features
 		Returns the index of the constructor of an enum
 	</haxe_doc>
 		</enumIndex>
-		<allEnums public="1" params="T" set="method" line="220" static="1">
+		<allEnums public="1" params="T" set="method" line="219" static="1">
 			<f a="e">
 				<c path="Enum"><c path="allEnums.T"/></c>
 				<c path="Array"><c path="allEnums.T"/></c>
@@ -15414,7 +15424,7 @@ customs for missing features
 		Returns the field of an object, or null if [o] is not an object or doesn't have this field.
 	</haxe_doc>
 		</field>
-		<setField public="1" get="inline" set="null" line="48" static="1">
+		<setField public="1" get="inline" set="null" line="46" static="1">
 			<f a="o:field:value">
 				<d/>
 				<c path="String"/>
@@ -15425,7 +15435,7 @@ customs for missing features
 		Set an object field value.
 	</haxe_doc>
 		</setField>
-		<callMethod public="1" get="inline" set="null" line="54" static="1">
+		<callMethod public="1" get="inline" set="null" line="50" static="1">
 			<f a="o:func:args">
 				<d/>
 				<d/>
@@ -15436,17 +15446,7 @@ customs for missing features
 		Call a method with the given object and arguments.
 	</haxe_doc>
 		</callMethod>
-		<hasGetter get="inline" set="null" line="58" static="1"><f a="o:field">
-	<d/>
-	<c path="String"/>
-	<d/>
-</f></hasGetter>
-		<hasSetter get="inline" set="null" line="62" static="1"><f a="o:field">
-	<d/>
-	<c path="String"/>
-	<d/>
-</f></hasSetter>
-		<fields public="1" set="method" line="66" static="1">
+		<fields public="1" set="method" line="54" static="1">
 			<f a="o">
 				<d/>
 				<c path="Array"><c path="String"/></c>
@@ -15455,7 +15455,7 @@ customs for missing features
 		Returns the list of fields of an object, excluding its prototype (class methods).
 	</haxe_doc>
 		</fields>
-		<isFunction public="1" set="method" line="83" static="1">
+		<isFunction public="1" set="method" line="71" static="1">
 			<f a="f">
 				<d/>
 				<e path="Bool"/>
@@ -15464,7 +15464,7 @@ customs for missing features
 		Tells if a value is a function or not.
 	</haxe_doc>
 		</isFunction>
-		<compare public="1" params="T" set="method" line="87" static="1">
+		<compare public="1" params="T" set="method" line="75" static="1">
 			<f a="a:b">
 				<c path="compare.T"/>
 				<c path="compare.T"/>
@@ -15474,7 +15474,7 @@ customs for missing features
 		Generic comparison function, does not work for methods, see [compareMethods]
 	</haxe_doc>
 		</compare>
-		<compareMethods public="1" set="method" line="91" static="1">
+		<compareMethods public="1" set="method" line="79" static="1">
 			<f a="f1:f2">
 				<d/>
 				<d/>
@@ -15484,7 +15484,7 @@ customs for missing features
 		Compare two methods closures. Returns true if it's the same method of the same instance.
 	</haxe_doc>
 		</compareMethods>
-		<isObject public="1" set="method" line="99" static="1">
+		<isObject public="1" set="method" line="87" static="1">
 			<f a="v">
 				<d/>
 				<e path="Bool"/>
@@ -15494,7 +15494,7 @@ customs for missing features
 
 	</haxe_doc>
 		</isObject>
-		<deleteField public="1" set="method" line="106" static="1">
+		<deleteField public="1" set="method" line="94" static="1">
 			<f a="o:f">
 				<d/>
 				<c path="String"/>
@@ -15504,7 +15504,7 @@ customs for missing features
 		Delete an object field.
 	</haxe_doc>
 		</deleteField>
-		<copy public="1" params="T" set="method" line="112" static="1">
+		<copy public="1" params="T" set="method" line="100" static="1">
 			<f a="o">
 				<c path="copy.T"/>
 				<c path="copy.T"/>
@@ -15513,7 +15513,7 @@ customs for missing features
 		Make a copy of the fields of an object.
 	</haxe_doc>
 		</copy>
-		<makeVarArgs public="1" set="method" line="119" static="1">
+		<makeVarArgs public="1" set="method" line="107" static="1">
 			<f a="f">
 				<f a="">
 					<c path="Array"><d/></c>
@@ -15793,7 +15793,7 @@ customs for missing features
 	<unknown/>
 </f></dpvalue>
 		<drawmap set="method" line="62"><f a="map:field">
-	<c path="rg.view.svg.layer.Map"/>
+	<c path="rg.view.svg.widget.Map"/>
 	<c path="String"/>
 	<e path="Void"/>
 </f></drawmap>
@@ -15831,7 +15831,7 @@ customs for missing features
 </f></setColorMode>
 		<init public="1" set="method" line="212" override="1"><f a=""><e path="Void"/></f></init>
 		<addMap public="1" set="method" line="221"><f a="map:field">
-	<c path="rg.view.svg.layer.Map"/>
+	<c path="rg.view.svg.widget.Map"/>
 	<c path="String"/>
 	<e path="Void"/>
 </f></addMap>
@@ -16691,7 +16691,6 @@ customs for missing features
 		<gradientLightness public="1"><c path="Float"/></gradientLightness>
 		<displayGradient public="1"><e path="Bool"/></displayGradient>
 		<animationDelay public="1"><c path="Int"/></animationDelay>
-		<labelDisplay public="1"><e path="Bool"/></labelDisplay>
 		<labelOrientation public="1"><e path="rg.view.svg.widget.LabelOrientation"/></labelOrientation>
 		<labelDontFlip public="1"><e path="Bool"/></labelDontFlip>
 		<labels><c path="Hash"><c path="rg.view.svg.widget.Label"/></c></labels>
@@ -16699,71 +16698,71 @@ customs for missing features
 	<t path="rg.data.DataPoint"/>
 	<e path="Void"/>
 </f></mouseClick>
-		<setVariables public="1" set="method" line="82"><f a="variableIndependents:variableDependents">
+		<setVariables public="1" set="method" line="80"><f a="variableIndependents:variableDependents">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
 	<e path="Void"/>
 </f></setVariables>
-		<resize set="method" line="87" override="1"><f a=""><e path="Void"/></f></resize>
-		<data public="1" set="method" line="108"><f a="dp">
+		<resize set="method" line="85" override="1"><f a=""><e path="Void"/></f></resize>
+		<data public="1" set="method" line="106"><f a="dp">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></data>
-		<onMouseOver set="method" line="162"><f a="dom:i">
+		<onMouseOver set="method" line="160"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onMouseOver>
-		<onMouseClick set="method" line="181"><f a="dom:i">
+		<onMouseClick set="method" line="179"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onMouseClick>
-		<removeLabel set="method" line="187"><f a="dom:i">
+		<removeLabel set="method" line="185"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></removeLabel>
-		<updateLabel set="method" line="196"><f a="dom:i">
+		<updateLabel set="method" line="194"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></updateLabel>
-		<appendLabel set="method" line="213"><f a="dom:i">
+		<appendLabel set="method" line="209"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></appendLabel>
-		<applyGradient set="method" line="241"><f a="n:i">
+		<applyGradient set="method" line="234"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></applyGradient>
-		<fadein set="method" line="285"><f a="n:i">
+		<fadein set="method" line="278"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></fadein>
-		<highlight set="method" line="297"><f a="d:i">
+		<highlight set="method" line="290"><f a="d:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></highlight>
-		<backtonormal set="method" line="305"><f a="d:i">
+		<backtonormal set="method" line="298"><f a="d:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></backtonormal>
-		<id set="method" line="313"><f a="dp:i">
+		<id set="method" line="306"><f a="dp:i">
 	<d/>
 	<c path="Int"/>
 	<c path="String"/>
 </f></id>
-		<makeid set="method" line="315"><f a="dp">
+		<makeid set="method" line="308"><f a="dp">
 	<t path="rg.data.DataPoint"/>
 	<c path="String"/>
 </f></makeid>
-		<arcShape set="method" line="322"><f a="a">
+		<arcShape set="method" line="315"><f a="a">
 	<c path="thx.svg.Arc"><a>
 	<startAngle><c path="Float"/></startAngle>
 	<endAngle><c path="Float"/></endAngle>
@@ -16779,7 +16778,7 @@ customs for missing features
 		<c path="String"/>
 	</f>
 </f></arcShape>
-		<pief set="method" line="330"><f a="dp">
+		<pief set="method" line="323"><f a="dp">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><a>
 	<startAngle><c path="Float"/></startAngle>
@@ -16788,8 +16787,8 @@ customs for missing features
 	<dp><t path="rg.data.DataPoint"/></dp>
 </a></c>
 </f></pief>
-		<destroy public="1" set="method" line="344" override="1"><f a=""><e path="Void"/></f></destroy>
-		<new public="1" set="method" line="61"><f a="panel">
+		<destroy public="1" set="method" line="337" override="1"><f a=""><e path="Void"/></f></destroy>
+		<new public="1" set="method" line="60"><f a="panel">
 	<c path="rg.view.svg.panel.Panel"/>
 	<e path="Void"/>
 </f></new>

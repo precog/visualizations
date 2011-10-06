@@ -8,7 +8,7 @@ import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.data.DataPoint;
 import rg.data.Stats;
-import rg.view.svg.layer.Map;
+import rg.view.svg.widget.Map;
 import rg.view.svg.panel.Panel;
 import rg.util.DataPoints;
 import rg.view.svg.widget.Label;

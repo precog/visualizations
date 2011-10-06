@@ -37,12 +37,14 @@ class InfoMap
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var radius : Null<DataPoint -> Stats<Dynamic> -> Float>;
 	public var colorScaleMode : ColorScaleMode;
+	public var usejson : Bool;
 	
 	public function new() 
 	{
 		property = "#location";
 		type = "geojson";
 		colorScaleMode = ColorScaleMode.FromCss();
+		usejson = true;
 		radius = function(_, _) return 10;
 	}
 	
@@ -92,6 +94,10 @@ class InfoMap
 		}, {
 			field : "property",
 			validator : function(v) return v == null || Std.is(v, String),
+			filter : null
+		}, {
+			field : "usejsonp",
+			validator : function(v) return Std.is(v, Bool),
 			filter : null
 		}, {
 			field : "template",
@@ -144,7 +150,7 @@ class InfoMap
 					value : "mercator"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "world-countries.json"
+					value : GEOGSON_BASE_URL + "world-countries.json.js"
 				}];
 			case "usa-states":
 				return [{
@@ -152,7 +158,7 @@ class InfoMap
 					value : "albersusa"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "usa-states.json"
+					value : GEOGSON_BASE_URL + "usa-states.json.js"
 				}];
 			case "usa-state-centroids":
 				return [{
@@ -160,7 +166,7 @@ class InfoMap
 					value : "albersusa"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "usa-state-centroids.json"
+					value : GEOGSON_BASE_URL + "usa-state-centroids.json.js"
 				}];
 			case "usa-counties":
 				return [{
@@ -168,10 +174,10 @@ class InfoMap
 					value : "albersusa"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "usa-counties.json"
+					value : GEOGSON_BASE_URL + "usa-counties.json.js"
 				}];
 			default:
-				return throw new Error("invalid projection");
+				return throw new Error("invalid template");
 		}
 	}
 }

@@ -8,7 +8,7 @@ import rg.controller.factory.FactoryGeoProjection;
 import rg.controller.info.InfoGeo;
 import rg.view.svg.chart.Geo;
 import rg.data.DataPoint;
-import rg.view.svg.layer.Map;
+import rg.view.svg.widget.Map;
 import rg.view.svg.layer.Title;
 import rg.view.svg.chart.ColorScaleMode;
 
@@ -67,7 +67,7 @@ class VisualizationGeo extends VisualizationSvg
 			
 			map.handlerClick = chart.handlerClick;
 			map.handlerDataPointOver = chart.handlerDataPointOver;
-			map.load(imap.url, imap.type);
+			map.load(imap.url, imap.type, imap.usejson);
 			chart.addMap(map, imap.property);
 		}
 	}
