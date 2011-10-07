@@ -12,6 +12,7 @@ class InfoLabelPivotTable extends InfoLabelAxis
 {
 	public var total : Float -> Stats<Dynamic> -> String;
 	public var totalover : Float -> Stats<Dynamic> -> String;
+	public var axisvalue : Dynamic -> String -> String;
 	
 	public static function filters()
 	{
@@ -21,6 +22,10 @@ class InfoLabelPivotTable extends InfoLabelAxis
 			filter : null
 		}, {
 			field : "totalover",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
+		}, {
+			field : "axisvalue",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
 		}].concat(InfoLabelAxis.filters());

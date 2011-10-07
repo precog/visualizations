@@ -21,10 +21,6 @@ class InfoLabelAxis extends InfoLabel
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
 		}, {
-			field : "axisvalue",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
 			field : "tickmark",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
