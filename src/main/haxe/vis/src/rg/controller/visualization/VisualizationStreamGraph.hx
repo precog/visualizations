@@ -44,7 +44,7 @@ class VisualizationStreamGraph extends VisualizationCartesian<Array<Array<DataPo
 
 	override function transformData(dps : Array<DataPoint>) : Array<Array<DataPoint>>
 	{
-		var segmenter = new Segmenter(info.segment.on, info.segment.transform, info.segment.scale);
+		var segmenter = new Segmenter(infoStream.segment.on, infoStream.segment.transform, infoStream.segment.scale);
 		return segmenter.segment(dps);
 	}
 }

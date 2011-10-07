@@ -20,10 +20,12 @@ class InfoLineChart extends InfoCartesianChart
 	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
 	public var displayarea : Bool;
 	public var y0property : String;
+	public var segment : InfoSegment;
 
 	public function new()
 	{
 		super();
+		segment = new InfoSegment();
 		effect = LineEffect.Gradient(0.75, 2);
 		interpolation = LineInterpolator.Linear;
 		displayarea = false;
@@ -66,6 +68,20 @@ class InfoLineChart extends InfoCartesianChart
 			filter : function(v) return [{
 				field : "interpolation",
 				value : LineInterpolators.parse(v)
+			}]
+		}, {
+			field : "segmenton",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed( { on : v } )
+			}]
+		}, {
+			field : "segment",
+			validator : function(v) return Types.isAnonymous(v),
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed(v)
 			}]
 		}].concat(cast InfoCartesianChart.filters());
 	}

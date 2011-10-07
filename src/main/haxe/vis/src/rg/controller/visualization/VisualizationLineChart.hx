@@ -48,7 +48,7 @@ class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Da
 	override function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
 	{
 		var results = [],
-			segmenter = new Segmenter(info.segment.on, info.segment.transform, info.segment.scale);
+			segmenter = new Segmenter(infoLine.segment.on, infoLine.segment.transform, infoLine.segment.scale);
 		for (i in 0...dependentVariables.length)
 		{
 			var variable = dependentVariables[i];

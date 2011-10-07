@@ -16,10 +16,12 @@ class InfoStreamGraph extends InfoCartesianChart
 {
 	public var interpolation : LineInterpolator;
 	public var effect : StreamEffect;
+	public var segment : InfoSegment;
 	
 	public function new()
 	{
 		super();
+		segment = new InfoSegment();
 		interpolation = LineInterpolator.Cardinal();
 		effect = GradientVertical(0.75);
 	}
@@ -39,6 +41,20 @@ class InfoStreamGraph extends InfoCartesianChart
 			filter : function(v : Dynamic) return [ {
 				field : "effect",
 				value : StreamEffects.parse(v)
+			}]
+		}, {
+			field : "segmenton",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed( { on : v } )
+			}]
+		}, {
+			field : "segment",
+			validator : function(v) return Types.isAnonymous(v),
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed(v)
 			}]
 		}].concat(cast InfoCartesianChart.filters());
 	}

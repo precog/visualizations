@@ -11,7 +11,7 @@ import rg.data.Stats;
 class InfoLabelAxis extends InfoLabel
 {
 	public var axis : String -> String;
-	public var axisvalue : Dynamic -> String -> String;
+//	public var axisvalue : Dynamic -> String -> String;
 	public var tickmark : Dynamic -> String -> String;
 
 	public static function filters()

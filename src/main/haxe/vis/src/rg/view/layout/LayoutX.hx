@@ -6,7 +6,6 @@
 package rg.view.layout;
 
 import rg.controller.info.InfoLayout;
-import rg.controller.info.InfoPadding;
 import rg.view.svg.panel.Panel;
 import rg.view.svg.panel.Container;
 import thx.js.Selection;

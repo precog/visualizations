@@ -11,7 +11,6 @@ using rg.controller.info.Info;
 class InfoCartesianChart 
 {
 	public var animation : InfoAnimation;
-	public var segment : InfoSegment;
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var label : InfoLabelAxis;
 	
@@ -38,7 +37,6 @@ class InfoCartesianChart
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabelAxis();
-		segment = new InfoSegment();
 		displayMinorTick = function(_) return true;
 		displayMajorTick = function(_) return true;
 		displayLabelTick = function(_) return true;
@@ -67,20 +65,6 @@ class InfoCartesianChart
 			filter : function(v) return [{
 				field : "animation",
 				value : new InfoAnimation().feed(v)
-			}]
-		}, {
-			field : "segmenton",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "segment",
-				value : new InfoSegment().feed( { on : v } )
-			}]
-		}, {
-			field : "segment",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "segment",
-				value : new InfoSegment().feed(v)
 			}]
 		}, {
 			field : "click",
