@@ -5346,12 +5346,12 @@
 </f></alert>
 </a></typedef>
 	<class path="rg.controller.info.InfoDataSource" params="" file="src/rg/controller/info/InfoDataSource.hx">
-		<filters public="1" set="method" line="28" static="1"><f a=""><c path="Array"><t path="rg.controller.info.FieldFilter"/></c></f></filters>
-		<validateDate set="method" line="87" static="1"><f a="v">
+		<filters public="1" set="method" line="27" static="1"><f a=""><c path="Array"><t path="rg.controller.info.FieldFilter"/></c></f></filters>
+		<validateDate set="method" line="82" static="1"><f a="v">
 	<d/>
 	<e path="Bool"/>
 </f></validateDate>
-		<filterDate set="method" line="89" static="1"><f a="v">
+		<filterDate set="method" line="84" static="1"><f a="v">
 	<d/>
 	<d/>
 </f></filterDate>
@@ -5360,13 +5360,12 @@
 		<event public="1"><t path="Null"><c path="String"/></t></event>
 		<namedData public="1"><t path="Null"><c path="String"/></t></namedData>
 		<data public="1"><t path="Null"><c path="Array"><t path="rg.data.DataPoint"/></c></t></data>
-		<name public="1"><t path="Null"><c path="String"/></t></name>
 		<groupBy public="1"><t path="Null"><c path="String"/></t></groupBy>
 		<timeZone public="1"><t path="Null"><c path="String"/></t></timeZone>
 		<groups public="1"><t path="Null"><c path="Array"><c path="String"/></c></t></groups>
 		<start public="1"><t path="Null"><c path="Float"/></t></start>
 		<end public="1"><t path="Null"><c path="Float"/></t></end>
-		<new public="1" set="method" line="26"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="25"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -8704,9 +8703,8 @@
  </haxe_doc>
 	</class>
 	<class path="rg.controller.info.InfoCartesianChart" params="" file="src/rg/controller/info/InfoCartesianChart.hx">
-		<filters public="1" set="method" line="62" static="1"><f a=""><c path="Array"><d/></c></f></filters>
+		<filters public="1" set="method" line="60" static="1"><f a=""><c path="Array"><d/></c></f></filters>
 		<animation public="1"><c path="rg.controller.info.InfoAnimation"/></animation>
-		<segment public="1"><c path="rg.controller.info.InfoSegment"/></segment>
 		<click public="1"><f a=":">
 	<t path="rg.data.DataPoint"/>
 	<c path="rg.data.Stats"><d/></c>
@@ -8758,7 +8756,7 @@
 		<paddingTickMinor public="1"><c path="Float"/></paddingTickMinor>
 		<paddingTickMajor public="1"><c path="Float"/></paddingTickMajor>
 		<paddingLabel public="1"><c path="Float"/></paddingLabel>
-		<new public="1" set="method" line="37"><f a=""><e path="Void"/></f></new>
+		<new public="1" set="method" line="36"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -8766,10 +8764,11 @@
 	</class>
 	<class path="rg.controller.info.InfoStreamGraph" params="" file="src/rg/controller/info/InfoStreamGraph.hx">
 		<extends path="rg.controller.info.InfoCartesianChart"/>
-		<filters public="1" set="method" line="27" static="1"><f a=""><c path="Array"><d/></c></f></filters>
+		<filters public="1" set="method" line="29" static="1"><f a=""><c path="Array"><d/></c></f></filters>
 		<interpolation public="1"><e path="thx.svg.LineInterpolator"/></interpolation>
 		<effect public="1"><e path="rg.view.svg.chart.StreamEffect"/></effect>
-		<new public="1" set="method" line="20"><f a=""><e path="Void"/></f></new>
+		<segment public="1"><c path="rg.controller.info.InfoSegment"/></segment>
+		<new public="1" set="method" line="21"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -9477,10 +9476,10 @@ Other things to do. Nested placeholders
 	</class>
 	<class path="rg.view.layout.LayoutX" params="" file="src/rg/view/layout/LayoutX.hx">
 		<extends path="rg.view.layout.Layout"/>
-		<ALT_RIGHT get="inline" set="null" line="20" static="1"><c path="Int"/></ALT_RIGHT>
-		<ALT_LEFT get="inline" set="null" line="21" static="1"><c path="Int"/></ALT_LEFT>
-		<ALT_TOP get="inline" set="null" line="22" static="1"><c path="Int"/></ALT_TOP>
-		<ALT_BOTTOM get="inline" set="null" line="23" static="1"><c path="Int"/></ALT_BOTTOM>
+		<ALT_RIGHT get="inline" set="null" line="19" static="1"><c path="Int"/></ALT_RIGHT>
+		<ALT_LEFT get="inline" set="null" line="20" static="1"><c path="Int"/></ALT_LEFT>
+		<ALT_TOP get="inline" set="null" line="21" static="1"><c path="Int"/></ALT_TOP>
+		<ALT_BOTTOM get="inline" set="null" line="22" static="1"><c path="Int"/></ALT_BOTTOM>
 		<main><c path="rg.view.svg.panel.Panel"/></main>
 		<titleOnTop><e path="Bool"/></titleOnTop>
 		<bottomcontainer><c path="rg.view.svg.panel.Container"/></bottomcontainer>
@@ -9490,32 +9489,32 @@ Other things to do. Nested placeholders
 		<xtickmarks><c path="rg.view.layout.PanelContext"/></xtickmarks>
 		<title><c path="rg.view.layout.PanelContext"/></title>
 		<xtitle><c path="rg.view.layout.PanelContext"/></xtitle>
-		<getContext public="1" set="method" line="44" override="1"><f a="name">
+		<getContext public="1" set="method" line="43" override="1"><f a="name">
 	<c path="String"/>
 	<c path="rg.view.layout.PanelContext"/>
 </f></getContext>
-		<getPanel public="1" set="method" line="61" override="1"><f a="name">
+		<getPanel public="1" set="method" line="60" override="1"><f a="name">
 	<c path="String"/>
 	<c path="rg.view.svg.panel.Panel"/>
 </f></getPanel>
-		<suggestSize public="1" set="method" line="77" override="1"><f a="name:size">
+		<suggestSize public="1" set="method" line="76" override="1"><f a="name:size">
 	<c path="String"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></suggestSize>
-		<getXTitle set="method" line="94"><f a=""><c path="rg.view.layout.PanelContext"/></f></getXTitle>
-		<getMainContainer set="method" line="101"><f a=""><c path="rg.view.svg.panel.Container"/></f></getMainContainer>
-		<getMiddleContainer set="method" line="108"><f a=""><c path="rg.view.svg.panel.Container"/></f></getMiddleContainer>
-		<getBottomContainer set="method" line="115"><f a=""><c path="rg.view.svg.panel.Container"/></f></getBottomContainer>
-		<getBottomMiddleContainer set="method" line="122"><f a=""><c path="rg.view.svg.panel.Container"/></f></getBottomMiddleContainer>
-		<getXTickmarks set="method" line="133"><f a=""><c path="rg.view.layout.PanelContext"/></f></getXTickmarks>
-		<getMain set="method" line="143"><f a=""><c path="rg.view.svg.panel.Panel"/></f></getMain>
-		<feedOptions public="1" set="method" line="150" override="1"><f a="info">
+		<getXTitle set="method" line="93"><f a=""><c path="rg.view.layout.PanelContext"/></f></getXTitle>
+		<getMainContainer set="method" line="100"><f a=""><c path="rg.view.svg.panel.Container"/></f></getMainContainer>
+		<getMiddleContainer set="method" line="107"><f a=""><c path="rg.view.svg.panel.Container"/></f></getMiddleContainer>
+		<getBottomContainer set="method" line="114"><f a=""><c path="rg.view.svg.panel.Container"/></f></getBottomContainer>
+		<getBottomMiddleContainer set="method" line="121"><f a=""><c path="rg.view.svg.panel.Container"/></f></getBottomMiddleContainer>
+		<getXTickmarks set="method" line="132"><f a=""><c path="rg.view.layout.PanelContext"/></f></getXTickmarks>
+		<getMain set="method" line="142"><f a=""><c path="rg.view.svg.panel.Panel"/></f></getMain>
+		<feedOptions public="1" set="method" line="149" override="1"><f a="info">
 	<c path="rg.controller.info.InfoLayout"/>
 	<e path="Void"/>
 </f></feedOptions>
-		<adjustPadding public="1" set="method" line="156" override="1"><f a=""><e path="Void"/></f></adjustPadding>
-		<new public="1" set="method" line="38"><f a="width:height:container">
+		<adjustPadding public="1" set="method" line="155" override="1"><f a=""><e path="Void"/></f></adjustPadding>
+		<new public="1" set="method" line="37"><f a="width:height:container">
 	<c path="Int"/>
 	<c path="Int"/>
 	<c path="thx.js.Selection"/>
@@ -13972,7 +13971,7 @@ customs for missing features
 	</class>
 	<class path="rg.controller.info.InfoScatterGraph" params="" file="src/rg/controller/info/InfoScatterGraph.hx">
 		<extends path="rg.controller.info.InfoCartesianChart"/>
-		<filters public="1" set="method" line="23" static="1"><f a=""><c path="Array"><a>
+		<filters public="1" set="method" line="25" static="1"><f a=""><c path="Array"><a>
 	<validator><f a="v">
 	<unknown/>
 	<e path="Bool"/>
@@ -13996,7 +13995,8 @@ customs for missing features
 	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></symbolStyle>
-		<new public="1" set="method" line="17"><f a=""><e path="Void"/></f></new>
+		<segment public="1"><c path="rg.controller.info.InfoSegment"/></segment>
+		<new public="1" set="method" line="18"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -14551,11 +14551,6 @@ customs for missing features
 	<c path="String"/>
 	<c path="String"/>
 </f></axis>
-		<axisvalue public="1"><f a=":">
-	<d/>
-	<c path="String"/>
-	<c path="String"/>
-</f></axisvalue>
 		<tickmark public="1"><f a=":">
 	<d/>
 	<c path="String"/>
@@ -14740,7 +14735,7 @@ customs for missing features
 	</class>
 	<class path="rg.controller.info.InfoLineChart" params="" file="src/rg/controller/info/InfoLineChart.hx">
 		<extends path="rg.controller.info.InfoCartesianChart"/>
-		<filters public="1" set="method" line="32" static="1"><f a=""><c path="Array"><a>
+		<filters public="1" set="method" line="34" static="1"><f a=""><c path="Array"><a>
 	<validator><f a="v">
 	<unknown/>
 	<e path="Bool"/>
@@ -14768,7 +14763,8 @@ customs for missing features
 </f></symbolStyle>
 		<displayarea public="1"><e path="Bool"/></displayarea>
 		<y0property public="1"><c path="String"/></y0property>
-		<new public="1" set="method" line="24"><f a=""><e path="Void"/></f></new>
+		<segment public="1"><c path="rg.controller.info.InfoSegment"/></segment>
+		<new public="1" set="method" line="25"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -17234,7 +17230,7 @@ customs for missing features
 	</class>
 	<class path="rg.controller.info.InfoLabelPivotTable" params="" file="src/rg/controller/info/InfoLabelPivotTable.hx">
 		<extends path="rg.controller.info.InfoLabelAxis"/>
-		<filters public="1" set="method" line="16" static="1"><f a=""><c path="Array"><a>
+		<filters public="1" set="method" line="17" static="1"><f a=""><c path="Array"><a>
 	<validator><f a="v">
 	<unknown/>
 	<e path="Bool"/>
@@ -17258,6 +17254,11 @@ customs for missing features
 	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></totalover>
+		<axisvalue public="1"><f a=":">
+	<d/>
+	<c path="String"/>
+	<c path="String"/>
+</f></axisvalue>
 		<new public="1" set="method" line="11"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
