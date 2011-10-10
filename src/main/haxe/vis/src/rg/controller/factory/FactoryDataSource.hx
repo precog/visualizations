@@ -37,7 +37,7 @@ class FactoryDataSource
 		{
 			var data = cache.get(info.namedData);
 			if (null == data)
-				throw new Error("the data source named '{0}' cannot be found in the current context", info.name);
+				throw new Error("the data source named '{0}' cannot be found in the current context", info.namedData);
 			return data;
 		}
 		if (null != info.data)

@@ -4116,66 +4116,59 @@ rg.controller.info.InfoDataSource.filters = function() {
 	$s.push("rg.controller.info.InfoDataSource::filters");
 	var $spos = $s.length;
 	var $tmp = [{ field : "query", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@32");
+		$s.push("rg.controller.info.InfoDataSource::filters@31");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "path", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@36");
+		$s.push("rg.controller.info.InfoDataSource::filters@35");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "event", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@40");
-		var $spos = $s.length;
-		var $tmp = Std["is"](v,String);
-		$s.pop();
-		return $tmp;
-		$s.pop();
-	}, filter : null},{ field : "name", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@44");
+		$s.push("rg.controller.info.InfoDataSource::filters@39");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : null},{ field : "start", validator : rg.controller.info.InfoDataSource.validateDate, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@49");
+		$s.push("rg.controller.info.InfoDataSource::filters@44");
 		var $spos = $s.length;
 		var $tmp = [{ field : "start", value : rg.controller.info.InfoDataSource.filterDate(v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "end", validator : rg.controller.info.InfoDataSource.validateDate, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@53");
+		$s.push("rg.controller.info.InfoDataSource::filters@48");
 		var $spos = $s.length;
 		var $tmp = [{ field : "end", value : rg.controller.info.InfoDataSource.filterDate(v)}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "timezone", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@56");
+		$s.push("rg.controller.info.InfoDataSource::filters@51");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@57");
+		$s.push("rg.controller.info.InfoDataSource::filters@52");
 		var $spos = $s.length;
 		var $tmp = [{ field : "timeZone", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "data", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@62");
+		$s.push("rg.controller.info.InfoDataSource::filters@57");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			$s.push("rg.controller.info.InfoDataSource::filters@62@62");
+			$s.push("rg.controller.info.InfoDataSource::filters@57@57");
 			var $spos = $s.length;
 			var $tmp = Reflect.isObject(v1) && null == Type.getClass(v1);
 			$s.pop();
@@ -4186,7 +4179,7 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@63");
+		$s.push("rg.controller.info.InfoDataSource::filters@58");
 		var $spos = $s.length;
 		if(Std["is"](v,Array)) {
 			var $tmp = [{ field : "data", value : v}];
@@ -4199,28 +4192,28 @@ rg.controller.info.InfoDataSource.filters = function() {
 		}
 		$s.pop();
 	}},{ field : "groupby", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@72");
+		$s.push("rg.controller.info.InfoDataSource::filters@67");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) && rg.util.Periodicity.isValid(v);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@73");
+		$s.push("rg.controller.info.InfoDataSource::filters@68");
 		var $spos = $s.length;
 		var $tmp = [{ field : "groupBy", value : v}];
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}},{ field : "groupfilter", validator : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@79");
+		$s.push("rg.controller.info.InfoDataSource::filters@74");
 		var $spos = $s.length;
 		var $tmp = Std["is"](v,String) || Std["is"](v,Array);
 		$s.pop();
 		return $tmp;
 		$s.pop();
 	}, filter : function(v) {
-		$s.push("rg.controller.info.InfoDataSource::filters@80");
+		$s.push("rg.controller.info.InfoDataSource::filters@75");
 		var $spos = $s.length;
 		var $tmp = [{ field : "groups", value : Std["is"](v,String)?v.split(","):v}];
 		$s.pop();
@@ -4268,7 +4261,7 @@ rg.controller.info.InfoDataSource.filterDate = function(v) {
 	}
 	var $tmp = (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 99, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
+		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 94, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
 		return $r;
 	}(this));
 	$s.pop();
@@ -4280,7 +4273,6 @@ rg.controller.info.InfoDataSource.prototype.path = null;
 rg.controller.info.InfoDataSource.prototype.event = null;
 rg.controller.info.InfoDataSource.prototype.namedData = null;
 rg.controller.info.InfoDataSource.prototype.data = null;
-rg.controller.info.InfoDataSource.prototype.name = null;
 rg.controller.info.InfoDataSource.prototype.groupBy = null;
 rg.controller.info.InfoDataSource.prototype.timeZone = null;
 rg.controller.info.InfoDataSource.prototype.groups = null;
@@ -7158,7 +7150,7 @@ rg.JSBridge.main = function() {
 	};
 	r.math = { random : $closure(new thx.math.Random(666),"float")};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.0.1.676"};
+	r.info.viz = { version : "1.0.1.680"};
 	$s.pop();
 }
 rg.JSBridge.select = function(el) {
@@ -20361,7 +20353,7 @@ rg.controller.factory.FactoryDataSource.prototype.create = function(info) {
 	var $spos = $s.length;
 	if(null != info.namedData) {
 		var data = this.cache.get(info.namedData);
-		if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.name,{ fileName : "FactoryDataSource.hx", lineNumber : 40, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+		if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 40, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 		$s.pop();
 		return data;
 	}
@@ -24688,7 +24680,7 @@ rg.data.DataRequest.prototype.processQueue = function() {
 rg.data.DataRequest.prototype.receiveData = function(name,data) {
 	$s.push("rg.data.DataRequest::receiveData");
 	var $spos = $s.length;
-	if(null == name) this.cache.set(name,new rg.data.source.DataSourceArray(data));
+	if(null != name) this.cache.set(name,new rg.data.source.DataSourceArray(data));
 	this.collectedData = this.collectedData.concat(data);
 	this.processQueue();
 	$s.pop();

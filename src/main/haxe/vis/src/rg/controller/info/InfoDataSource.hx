@@ -16,7 +16,6 @@ class InfoDataSource
 	public var event : Null<String>;
 	public var namedData : Null<String>;
 	public var data : Null<Array<DataPoint>>;
-	public var name : Null<String>;
 	public var groupBy : Null<String>;
 	public var timeZone : Null<String>;
 	public var groups : Null<Array<String>>;
@@ -24,7 +23,7 @@ class InfoDataSource
 	public var end : Null<Float>;
 	
 	public function new() {}
-	
+
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -37,10 +36,6 @@ class InfoDataSource
 			filter : null
 		}, {
 			field : "event",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "name",
 			validator : function(v) return Std.is(v, String),
 			filter : null
 		}, {

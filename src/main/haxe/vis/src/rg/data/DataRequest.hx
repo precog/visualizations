@@ -47,7 +47,7 @@ class DataRequest
 	
 	function receiveData(name : String,  data : Array<DataPoint>)
 	{
-		if (null == name)
+		if (null != name)
 			cache.set(name, new DataSourceArray(data));
 		collectedData = collectedData.concat(data);
 		processQueue();
