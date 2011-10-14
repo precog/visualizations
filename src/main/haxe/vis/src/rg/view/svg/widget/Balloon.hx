@@ -174,7 +174,14 @@ class Balloon
 	function getBoundingBox()
 	{
 		if (null == boundingBox)
-			boundingBox = untyped container.node().getBBox();
+		{
+			try
+			{
+				boundingBox = untyped container.node().getBBox();
+			} catch (e : Dynamic) {
+				return { width : 0.0, height : 0.0, x : 0.0, y : 0.0 };
+			}
+		}
 		return boundingBox;
 	}
 	
