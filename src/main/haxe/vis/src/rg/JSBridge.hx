@@ -6,6 +6,8 @@
 package rg;
 import rg.controller.App;
 import rg.data.source.rgquery.IExecutorReportGrid;
+import rg.data.source.rgquery.ITrackReportGrid;
+import rg.track.DebugExecutor;
 import rg.util.Periodicity;
 import rg.util.Properties;
 import rg.util.RGStrings;
@@ -27,12 +29,13 @@ class JSBridge
 	static function main() 
 	{
 		// retrieve ReportGrid core
-		var r : Dynamic = untyped __js__("window.ReportGrid");
+		var r : Dynamic = untyped __js__("window.ReportGrid"),
+			t : ITrackReportGrid = new DebugExecutor();
 		if (null == r)
 			log(new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script").toString());
 		
 		// init app
-		var app = new App(r);	
+		var app = new App(r, t);	
 		
 		// define bridge function
 		r.viz = function(el : Dynamic, options : Dynamic, type : String)

@@ -15,13 +15,16 @@ import rg.view.frame.FrameLayout;
 class Layout 
 {
 	public var mainPanelName : String;
+	public var width(default, null) : Int;
+	public var height(default, null) : Int;
+	
 	var space : Space;
-	var container : Selection;
+	public var container(default, null) : Selection;
 	public function new(width : Int, height : Int, container : Selection) 
 	{
 		this.container = container;
 		container.classed().add("rg");
-		space = new Space(width, height, container);
+		space = new Space(this.width = width, this.height = height, container);
 	}
 	
 	public function getContext(name : String) : PanelContext

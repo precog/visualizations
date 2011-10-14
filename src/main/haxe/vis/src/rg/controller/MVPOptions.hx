@@ -127,6 +127,23 @@ class MVPOptions
 		} else
 			query = buildQuery(opt.options.visualization, property, periodicity);
 
+		// ensure hash for tracking
+		chain.addAction(function(opt : Dynamic, handler : Dynamic -> Void)
+		{
+			if (null == opt.track)
+				opt.track = { enabled : true };
+			if (opt.track.enabled)
+			{
+				opt.track = {
+					enabled : true,
+					hash : "FAKEHASH"
+				};
+				handler(opt);
+			} else {
+				handler(opt);
+			}
+		});
+			
 		// ensure events
 		chain.addAction(function(opt : Dynamic, handler : Dynamic -> Void)
 		{

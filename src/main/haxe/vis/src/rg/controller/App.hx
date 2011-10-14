@@ -9,10 +9,13 @@ import rg.controller.factory.FactoryVariable;
 import rg.controller.info.InfoDataContext;
 import rg.controller.info.InfoDomType;
 import rg.controller.info.InfoLayout;
+import rg.controller.info.InfoTrack;
 import rg.controller.info.InfoVisualizationType;
 import rg.controller.visualization.Visualization;
 import rg.data.DataRequest;
 import rg.data.source.rgquery.IExecutorReportGrid;
+import rg.data.source.rgquery.ITrackReportGrid;
+import rg.track.Tracker;
 import thx.error.Error;
 import thx.error.NotImplemented;
 import thx.js.Selection;
@@ -35,10 +38,12 @@ class App
 	}
 	
 	var executor : IExecutorReportGrid;
+	var tracker : ITrackReportGrid;
 	var layouts : Hash<Layout>;
-	public function new(executor : IExecutorReportGrid)
+	public function new(executor : IExecutorReportGrid, tracker : ITrackReportGrid)
 	{
 		this.executor = executor;
+		this.tracker = tracker;
 		this.layouts = new Hash();
 	}
 	
@@ -86,6 +91,16 @@ class App
 			visualization.feedData(datapoints);
 		};
 		request.request();
+		
+		// tracking
+		var track = new InfoTrack().feed(jsoptions.track);
+		if (track.enabled)
+		{
+			var paths = track.paths.map(function(d, _) return StringTools.replace(d, "{hash}", track.hash));
+			Tracker.instance(tracker, paths, track.token)
+				.addVisualization(visualization, jsoptions);
+		}
+		
 		return visualization;
 	}
 	

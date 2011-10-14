@@ -37,7 +37,15 @@ class TransformIntersectGroupUtc implements ITransform<Dynamic>
 
 		var result = [],
 			// TODO, dirty fix ... needs to be removed
-			shift = Reflect.field(items[0].value[0][0], periodicity);
+			shift = 0.0;
+		for (i in 0...items.length)
+		{
+			try 
+			{
+				shift = Reflect.field(items[i].value[0][0], periodicity);
+				break;
+			} catch (e:Dynamic) { }
+		}
 		for (item in items)
 		{
 			var arr : Array<Array<Dynamic>> = item.value;
