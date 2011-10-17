@@ -150,6 +150,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				}
 			}
 		}
+		ready.dispatch();
 	}
 	
 	function onclick(ystats : Stats<Dynamic>, dp : DataPoint, i : Int)

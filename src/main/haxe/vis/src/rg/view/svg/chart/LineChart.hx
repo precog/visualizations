@@ -281,6 +281,8 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				
 			gsymbols.exit().remove();
 		}
+		
+		ready.dispatch();
 	}
 
 	function getTranslatePointf(pos : Int)

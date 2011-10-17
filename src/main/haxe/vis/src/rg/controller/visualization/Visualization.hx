@@ -10,6 +10,7 @@ import rg.data.VariableIndependent;
 import rg.data.DataPoint;
 import rg.data.Variable;
 import rg.data.IAxis;
+import hxevents.Notifier;
 using Arrays;
 
 class Visualization 
@@ -17,11 +18,13 @@ class Visualization
 	public var independentVariables(default, null) : Array<VariableIndependent<Dynamic>>;
 	public var dependentVariables(default, null) : Array<VariableDependent<Dynamic>>;
 	public var variables(getVariables, null) : Array<Variable<Dynamic, IAxis<Dynamic>>>;
+	public var ready(default, null) : Notifier;
 	
 	public function setVariables(independentVariables : Array<VariableIndependent<Dynamic>>, dependentVariables : Array<VariableDependent<Dynamic>>)
 	{
 		this.independentVariables = independentVariables;
 		this.dependentVariables = dependentVariables;
+		ready = new Notifier();
 	}
 	
 	public function init()

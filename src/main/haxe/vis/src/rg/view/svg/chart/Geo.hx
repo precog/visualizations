@@ -85,6 +85,8 @@ class Geo extends Chart
 				label.place(c[0], c[1], 0);
 			}
 		}
+		if (queue.length == 0)
+			ready.dispatch();
 	}
 	
 	public function handlerDataPointOver(dp : DataPoint, f)

@@ -155,6 +155,8 @@ class PieChart extends Chart
 		choice.exit()
 			.eachNode(removeLabel)
 			.remove();
+
+		ready.dispatch();
 	}
 	
 	function onMouseOver(dom, i)

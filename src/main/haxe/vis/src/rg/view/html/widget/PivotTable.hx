@@ -17,6 +17,7 @@ import rg.util.DataPoints;
 import thx.culture.FormatNumber;
 import thx.js.Access;
 import rg.util.Properties;
+import hxevents.Notifier;
 using Strings;
 using Arrays;
 
@@ -31,6 +32,7 @@ class PivotTable
 	public var displayHeatMap : Bool;
 	public var colorStart : Hsl;
 	public var colorEnd : Hsl;
+	public var ready(default, null) : Notifier;
 	
 	var columnVariables : Array<VariableIndependent<Dynamic>>;
 	var rowVariables : Array<VariableIndependent<Dynamic>>;
@@ -45,6 +47,7 @@ class PivotTable
 	
 	public function new(container : Selection) 
 	{
+		this.ready = new Notifier();
 		this.container = container;
 		
 		displayColumnTotal = true;
@@ -230,6 +233,7 @@ class PivotTable
 					.text().string(formatTotal(d.stats.tot))
 					.attr("title").string(formatTotalOver(d.stats.tot));
 		}
+		ready.dispatch();
 	}
 	
 	function onClick(dp, ?_, ?_)

@@ -92,6 +92,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			node.each(gradientStyle == 1 ? applyGradientV : applyGradientH);
 		// exit
 		layer.exit().remove();
+		ready.dispatch();
 	}
 	
 	function getDataAtNode(n, i)

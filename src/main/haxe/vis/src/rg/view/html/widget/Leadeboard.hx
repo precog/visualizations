@@ -14,6 +14,7 @@ import rg.data.DataPoint;
 import rg.util.DataPoints;
 import thx.math.Equations;
 import thx.js.Dom;
+import hxevents.Notifier;
 using Arrays;
 
 // TODO MOVE SORTING TO AXIS
@@ -30,6 +31,7 @@ class Leadeboard
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var displayGradient : Bool;
 	public var useMax : Bool;
+	public var ready(default, null) : Notifier;
 	
 	var container : Selection;
 	var list : Selection;
@@ -38,6 +40,7 @@ class Leadeboard
 	var stats : StatsNumeric;
 	public function new(container : Selection) 
 	{
+		ready = new Notifier();
 		this.container = container;
 		animated = true;
 		animationDuration = 1500;
@@ -129,6 +132,7 @@ class Leadeboard
 		} else {
 			choice.exit().remove();
 		}
+		ready.dispatch();
 	}
 	
 	function onClick(dp : DataPoint, ?_)

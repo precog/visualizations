@@ -139,6 +139,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 				
 			gsymbol.exit().remove();
 		}
+		ready.dispatch();
 	}
 
 	function getTranslatePointf(pos : Int)

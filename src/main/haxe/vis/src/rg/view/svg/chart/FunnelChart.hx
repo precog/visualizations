@@ -253,6 +253,7 @@ class FunnelChart extends Chart
 			balloon.text = text.split("\n");
 			balloon.moveTo(width / 2, topheight + h * .6 + (h + padding) * i, false);
 		});
+		ready.dispatch();
 	}
 	
 	function mouseOver(dp : DataPoint, i : Int, stats : Stats<Dynamic>)

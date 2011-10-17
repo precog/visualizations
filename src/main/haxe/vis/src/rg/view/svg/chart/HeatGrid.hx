@@ -102,6 +102,8 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			drawContour();
 		else
 			drawSquares();
+		
+		ready.dispatch();
 	}
 	
 	function drawContour()

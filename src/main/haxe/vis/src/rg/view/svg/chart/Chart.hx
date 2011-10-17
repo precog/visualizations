@@ -11,6 +11,7 @@ import rg.data.Stats;
 import rg.view.svg.widget.Balloon;
 import thx.math.Equations;
 import rg.view.svg.panel.Panels;
+import hxevents.Notifier;
 
 class Chart extends Layer
 {
@@ -20,6 +21,7 @@ class Chart extends Layer
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var labelDataPoint : DataPoint -> Stats<Dynamic> -> String;
 	public var labelDataPointOver : DataPoint -> Stats<Dynamic> -> String;
+	public var ready(default, null) : Notifier;
 	
 	var panelx : Float;
 	var panely : Float;
@@ -31,6 +33,7 @@ class Chart extends Layer
 		animated = true;
 		animationDuration = 1500;
 		animationEase = Equations.linear;
+		ready = new Notifier(); 
 	}
 	
 	override function resize()
