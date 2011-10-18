@@ -1,3 +1,4 @@
 {
-	'localToRemoteUrlAccessEnabled' : true
+	'localToRemoteUrlAccessEnabled' : true,
+	'maxDiskCacheSize' : 4096
 }
