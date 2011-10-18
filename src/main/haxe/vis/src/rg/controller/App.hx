@@ -98,11 +98,8 @@ class App
 		};
 		request.request();
 		
-		trace(jsoptions.track);
-		
 		// tracking
-		var track = new InfoTrack().feed(jsoptions.track);
-		trace(track);
+		var track = new InfoTrack().feed(jsoptions.options.track);
 		if (track.enabled)
 		{
 			var paths = track.paths.map(function(d, _) return StringTools.replace(d, "{hash}", track.hash));

@@ -1905,14 +1905,12 @@ rg.controller.info.Info.feed = function(info,ob) {
 		return info;
 	}
 	var filters = method.apply(cl,[]), value;
-	haxe.Log.trace(ob,{ fileName : "Info.hx", lineNumber : 24, className : "rg.controller.info.Info", methodName : "feed"});
 	var _g = 0;
 	while(_g < filters.length) {
 		var filter = filters[_g];
 		++_g;
-		haxe.Log.trace(filter.field,{ fileName : "Info.hx", lineNumber : 27, className : "rg.controller.info.Info", methodName : "feed"});
 		if(Reflect.hasField(ob,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 31, className : "rg.controller.info.Info", methodName : "feed"});
+			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 29, className : "rg.controller.info.Info", methodName : "feed"});
 			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
 			var _g1 = 0;
 			while(_g1 < items.length) {
@@ -4481,7 +4479,7 @@ rg.JSBridge.main = function() {
 	};
 	r.math = { random : ($_=new thx.math.Random(666),$_.float.$bind($_))};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.0.1.905"};
+	r.info.viz = { version : "1.0.1.919"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -9216,9 +9214,7 @@ rg.controller.App.prototype = {
 			visualization.feedData(datapoints);
 		};
 		request.request();
-		haxe.Log.trace(jsoptions.track,{ fileName : "App.hx", lineNumber : 101, className : "rg.controller.App", methodName : "visualization"});
-		var track = rg.controller.info.Info.feed(new rg.controller.info.InfoTrack(),jsoptions.track);
-		haxe.Log.trace(track,{ fileName : "App.hx", lineNumber : 105, className : "rg.controller.App", methodName : "visualization"});
+		var track = rg.controller.info.Info.feed(new rg.controller.info.InfoTrack(),jsoptions.options.track);
 		if(track.enabled) {
 			var paths = track.paths.map(function(d,_) {
 				return StringTools.replace(d,"{hash}",track.hash);
@@ -14985,7 +14981,7 @@ rg.util.ChainedExecutor.prototype = {
 	,execute: function(ob) {
 		if(this.pos == this.actions.length) {
 			this.pos = 0;
-			this.handler.apply(null,[ob]);
+			this.handler(ob);
 		} else this.actions[this.pos++](ob,this.execute.$bind(this));
 	}
 	,__class__: rg.util.ChainedExecutor
@@ -17920,35 +17916,35 @@ rg.controller.MVPOptions.buildQuery = function(type,property,periodicity) {
 		return (null != property?property + " * ":"") + ".#time:" + periodicity;
 	}
 }
-rg.controller.MVPOptions.complete = function(executor,params,handler) {
+rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	var start = null, end = null, path = "/", events = [], property = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null;
-	if(null == params.options) params.options = { };
-	if(null != params.groupby) {
-		groupby = params.groupby;
-		Reflect.deleteField(params,"groupby");
-		if(null != params.groupfilter) {
-			groupfilter = params.groupfilter;
-			Reflect.deleteField(params,"groupfilter");
+	if(null == parameters.options) parameters.options = { };
+	if(null != parameters.groupby) {
+		groupby = parameters.groupby;
+		Reflect.deleteField(parameters,"groupby");
+		if(null != parameters.groupfilter) {
+			groupfilter = parameters.groupfilter;
+			Reflect.deleteField(parameters,"groupfilter");
 		}
 	}
-	if(null != params.property) {
-		property = (params.property.substr(0,1) == "."?"":".") + params.property;
-		Reflect.deleteField(params,"property");
+	if(null != parameters.property) {
+		property = (parameters.property.substr(0,1) == "."?"":".") + parameters.property;
+		Reflect.deleteField(parameters,"property");
 	}
-	if(null != params.start) {
-		start = rg.controller.MVPOptions.timestamp(params.start);
-		Reflect.deleteField(params,"start");
+	if(null != parameters.start) {
+		start = rg.controller.MVPOptions.timestamp(parameters.start);
+		Reflect.deleteField(parameters,"start");
 	}
-	if(null != params.end) {
-		end = rg.controller.MVPOptions.timestamp(params.end);
-		Reflect.deleteField(params,"end");
+	if(null != parameters.end) {
+		end = rg.controller.MVPOptions.timestamp(parameters.end);
+		Reflect.deleteField(parameters,"end");
 	}
-	if(null != params.periodicity) {
-		periodicity = params.periodicity;
-		Reflect.deleteField(params,"periodicity");
+	if(null != parameters.periodicity) {
+		periodicity = parameters.periodicity;
+		Reflect.deleteField(parameters,"periodicity");
 	} else if(null != start) periodicity = rg.util.Periodicity.defaultPeriodicity(end - start); else periodicity = (function($this) {
 		var $r;
-		switch(params.options.visualization) {
+		switch(parameters.options.visualization) {
 		case "piechart":
 			$r = "eternity";
 			break;
@@ -17962,96 +17958,95 @@ rg.controller.MVPOptions.complete = function(executor,params,handler) {
 		start = range[0];
 		end = range[1];
 	}
-	if(null != params.path) {
-		path = params.path;
-		Reflect.deleteField(params,"path");
+	if(null != parameters.path) {
+		path = parameters.path;
+		Reflect.deleteField(parameters,"path");
 	}
-	if(null != params.events) {
-		events = Std["is"](params.events,Array)?params.events:[params.events];
-		Reflect.deleteField(params,"events");
+	if(null != parameters.events) {
+		events = Std["is"](parameters.events,Array)?parameters.events:[parameters.events];
+		Reflect.deleteField(parameters,"events");
 	}
-	if(null != params.event) {
-		events = [params.event];
-		Reflect.deleteField(params,"event");
+	if(null != parameters.event) {
+		events = [parameters.event];
+		Reflect.deleteField(parameters,"event");
 	}
-	if(null != params.query) {
-		query = params.query;
-		Reflect.deleteField(params,"query");
+	if(null != parameters.query) {
+		query = parameters.query;
+		Reflect.deleteField(parameters,"query");
 		if(rg.util.Properties.isTime(query)) periodicity = rg.util.Properties.periodicity(query);
-	} else query = rg.controller.MVPOptions.buildQuery(params.options.visualization,property,periodicity);
-	chain.addAction(function(params1,handler1) {
-		var opt = params1.options;
+	} else query = rg.controller.MVPOptions.buildQuery(parameters.options.visualization,property,periodicity);
+	chain.addAction(function(params,handler1) {
+		var opt = params.options;
 		if(null == opt.track) opt.track = { enabled : true};
-		haxe.Log.trace(params1,{ fileName : "MVPOptions.hx", lineNumber : 138, className : "rg.controller.MVPOptions", methodName : "complete"});
 		if(opt.track.enabled) {
 			opt.track = { enabled : true, hash : "FAKEHASH"};
-			handler1(params1);
-		} else handler1(params1);
+			handler1(params);
+		} else handler1(params);
 	});
-	chain.addAction(function(params1,handler1) {
-		if(null == params1.data && events.length == 0) executor.children(path,{ type : "property"},function(arr) {
+	chain.addAction(function(params,handler1) {
+		if(null == params.data && events.length == 0) executor.children(path,{ type : "property"},function(arr) {
 			events = arr;
-			handler1(params1);
-		}); else handler1(params1);
+			handler1(params);
+		}); else handler1(params);
 	});
-	chain.addAction(function(params1,handler1) {
-		if(null == params1.data) {
+	chain.addAction(function(params,handler1) {
+		if(null == params.data) {
 			var src = [];
-			params1.data = [{ src : src}];
+			params.data = [{ src : src}];
 			var _g = 0;
 			while(_g < events.length) {
 				var event = events[_g];
 				++_g;
-				var params2 = { path : path, event : event, query : query};
+				var params1 = { path : path, event : event, query : query};
 				if(null != start) {
-					params2["start"] = start;
-					params2["end"] = end;
+					params1["start"] = start;
+					params1["end"] = end;
 				}
 				if(null != groupby) {
-					params2["groupby"] = groupby;
-					if(null != groupfilter) params2["groupfilter"] = groupfilter;
+					params1["groupby"] = groupby;
+					if(null != groupfilter) params1["groupfilter"] = groupfilter;
 				}
-				src.push(params2);
+				src.push(params1);
 			}
-			if(null == params1.options.segmenton) params1.options.segmenton = null == property?"event":property;
+			if(null == params.options.segmenton) params.options.segmenton = null == property?"event":property;
 		}
-		handler1(params1);
+		handler1(params);
 	});
-	chain.addAction(function(params1,handler1) {
-		if(null == params1.axes) switch(params1.options.visualization) {
+	chain.addAction(function(params,handler1) {
+		if(null == params.axes) switch(params.options.visualization) {
 		default:
 			var axis = null != groupby?{ type : ".#time:" + periodicity, groupby : groupby}:{ type : ".#time:" + periodicity};
-			switch(params1.options.visualization) {
+			switch(params.options.visualization) {
 			case "barchart":
 				axis.scalemode = "fit";
 				break;
 			}
-			params1.axes = [axis];
+			params.axes = [axis];
 		}
-		handler1(params1);
+		handler1(params);
 	});
-	chain.addAction(function(params1,handler1) {
-		var axes = params1.axes, hasdependent = false;
+	chain.addAction(function(params,handler1) {
+		var axes = params.axes, hasdependent = false;
 		var _g = 0;
 		while(_g < axes.length) {
 			var axis = axes[_g];
 			++_g;
 			if(query.indexOf(axis.type) < 0) hasdependent = true;
 		}
-		if(!hasdependent) params1.axes.push({ type : "count"});
-		handler1(params1);
+		if(!hasdependent) params.axes.push({ type : "count"});
+		handler1(params);
 	});
-	chain.addAction(function(params1,handler1) {
-		if(null == params1.options.label) switch(params1.options.visualization) {
+	chain.addAction(function(params,handler1) {
+		if(null == params.options.label) switch(params.options.visualization) {
 		case "linechart":case "barchart":
-			var axes = params1.axes, type = axes[axes.length - 1].type;
-			params1.options.label = { datapointover : function(dp,stats) {
-				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):null != params1.options.segmenton?Reflect.field(dp,params1.options.segmenton):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+			var axes = params.axes, type = axes[axes.length - 1].type;
+			params.options.label = { datapointover : function(dp,stats) {
+				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):null != params.options.segmenton?Reflect.field(dp,params.options.segmenton):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
 			}};
 			break;
 		case "piechart":
-			var axes = params1.axes, type = axes[axes.length - 1].type;
-			params1.options.label = { datapoint : function(dp,stats) {
+			var axes = params.axes, type = axes[axes.length - 1].type;
+			params.options.label = { datapoint : function(dp,stats) {
 				var v = Reflect.field(dp,type);
 				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapointover : function(dp,stats) {
@@ -18059,8 +18054,8 @@ rg.controller.MVPOptions.complete = function(executor,params,handler) {
 			}};
 			break;
 		case "leaderboard":
-			var axes = params1.axes, type = axes[axes.length - 1].type;
-			params1.options.label = { datapointover : function(dp,stats) {
+			var axes = params.axes, type = axes[axes.length - 1].type;
+			params.options.label = { datapointover : function(dp,stats) {
 				var v = Reflect.field(dp,type);
 				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapoint : function(dp,stats) {
@@ -18068,9 +18063,9 @@ rg.controller.MVPOptions.complete = function(executor,params,handler) {
 			}};
 			break;
 		}
-		handler1(params1);
+		handler1(params);
 	});
-	chain.execute(params);
+	chain.execute(parameters);
 }
 rg.controller.MVPOptions.prototype = {
 	__class__: rg.controller.MVPOptions

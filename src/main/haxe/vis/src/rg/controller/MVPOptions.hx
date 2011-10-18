@@ -36,7 +36,7 @@ class MVPOptions
 		}
 	}
 	
-	public static function complete(executor : IExecutorReportGrid, params : Dynamic, handler : Dynamic -> Void) 
+	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void) 
 	{
 		var start = null,
 			end = null,
@@ -49,47 +49,47 @@ class MVPOptions
 			groupby = null,
 			groupfilter = null;
 
-		if (null == params.options)
-			params.options = { };
+		if (null == parameters.options)
+			parameters.options = { };
 		// capture defaults
 		// grouping
-		if (null != params.groupby)
+		if (null != parameters.groupby)
 		{
-			groupby = params.groupby;
-			Reflect.deleteField(params, "groupby");
-			if (null != params.groupfilter)
+			groupby = parameters.groupby;
+			Reflect.deleteField(parameters, "groupby");
+			if (null != parameters.groupfilter)
 			{
-				groupfilter = params.groupfilter;
-				Reflect.deleteField(params, "groupfilter");
+				groupfilter = parameters.groupfilter;
+				Reflect.deleteField(parameters, "groupfilter");
 			}
 		}
 		// property
-		if (null != params.property)
+		if (null != parameters.property)
 		{
-			property = (params.property.substr(0, 1) == '.' ? '' : '.') + params.property;
-			Reflect.deleteField(params, "property");
+			property = (parameters.property.substr(0, 1) == '.' ? '' : '.') + parameters.property;
+			Reflect.deleteField(parameters, "property");
 		}
 		
 		// start/end
-		if (null != params.start)
+		if (null != parameters.start)
 		{
-			start = timestamp(params.start);
-			Reflect.deleteField(params, "start");
+			start = timestamp(parameters.start);
+			Reflect.deleteField(parameters, "start");
 		}
-		if (null != params.end)
+		if (null != parameters.end)
 		{
-			end = timestamp(params.end);
-			Reflect.deleteField(params, "end");
+			end = timestamp(parameters.end);
+			Reflect.deleteField(parameters, "end");
 		}
 		
-		if (null != params.periodicity)
+		if (null != parameters.periodicity)
 		{
-			periodicity = params.periodicity;
-			Reflect.deleteField(params, "periodicity");
+			periodicity = parameters.periodicity;
+			Reflect.deleteField(parameters, "periodicity");
 		} else if (null != start) {
 			periodicity = Periodicity.defaultPeriodicity(end - start);
 		} else {
-			periodicity = switch(params.options.visualization) { case "piechart": "eternity"; default: "day"; };
+			periodicity = switch(parameters.options.visualization) { case "piechart": "eternity"; default: "day"; };
 		}
 		
 		if (null == start && "eternity" != periodicity)
@@ -100,34 +100,34 @@ class MVPOptions
 		}
 
 		// path
-		if (null != params.path)
+		if (null != parameters.path)
 		{
-			path = params.path;
-			Reflect.deleteField(params, "path");
+			path = parameters.path;
+			Reflect.deleteField(parameters, "path");
 		}
 		
 		// event/events
-		if (null != params.events)
+		if (null != parameters.events)
 		{
-			events = Std.is(params.events, Array) ? params.events : [params.events];
-			Reflect.deleteField(params, "events");
+			events = Std.is(parameters.events, Array) ? parameters.events : [parameters.events];
+			Reflect.deleteField(parameters, "events");
 		}
-		if (null != params.event)
+		if (null != parameters.event)
 		{
-			events = [params.event];
-			Reflect.deleteField(params, "event");
+			events = [parameters.event];
+			Reflect.deleteField(parameters, "event");
 		}
 		
 		// query
-		if (null != params.query)
+		if (null != parameters.query)
 		{
-			query = params.query;
-			Reflect.deleteField(params, "query");
+			query = parameters.query;
+			Reflect.deleteField(parameters, "query");
 			// TODO this may not work correctly if time is not the last condition in the query
 			if (Properties.isTime(query))
 				periodicity = Properties.periodicity(query);
 		} else
-			query = buildQuery(params.options.visualization, property, periodicity);
+			query = buildQuery(parameters.options.visualization, property, periodicity);
 
 		// ensure hash for tracking
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
@@ -135,7 +135,6 @@ class MVPOptions
 			var opt : Dynamic = params.options;
 			if (null == opt.track)
 				opt.track = { enabled : true };
-			trace(params);
 			if (opt.track.enabled)
 			{
 				opt.track = {
@@ -147,7 +146,7 @@ class MVPOptions
 				handler(params);
 			}
 		});
-			
+
 		// ensure events
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -309,6 +308,6 @@ class MVPOptions
 			handler(params);
 		});
 
-		chain.execute(params);
+		chain.execute(parameters);
 	}
 }
