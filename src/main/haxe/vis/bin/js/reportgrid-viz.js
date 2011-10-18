@@ -4479,7 +4479,7 @@ rg.JSBridge.main = function() {
 	};
 	r.math = { random : ($_=new thx.math.Random(666),$_.float.$bind($_))};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.0.1.919"};
+	r.info.viz = { version : "1.0.1.920"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);

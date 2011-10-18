@@ -18,14 +18,15 @@ function waitFor(testFx, onReady, timeOutMillis) {
                     clearInterval(interval); //< Stop this interval
                 }
             }
-        }, 250); //< repeat check every 250ms
+        }, 10); //< repeat check every 250ms
 };
 
 
-var page = new WebPage(); //require('webpage').create();
+var start = new Date().getTime(),
+    page = new WebPage(); //require('webpage').create();
 
 // Open Twitter on 'sencha' profile and, onPageLoad, do...
-page.open("page/index.html", function (status) {
+page.open("src/index.html", function (status) {
     // Check for page load success
     if (status !== "success") {
         console.log("Unable to access network");
@@ -35,8 +36,8 @@ page.open("page/index.html", function (status) {
             // Check in the page if a specific element is now visible
             return page.evaluate(function() { return typeof RG_READY != "undefined" && RG_READY; /*document.getElementById("rgdone");*/ });
         }, function() {
-           console.log("rendering.");
-           page.render("sample.png");
+           console.log("rendering, total execution time: " + (new Date().getTime() - start) + "ms.");
+           page.render("sample.pdf");
            phantom.exit();
         });        
     }
