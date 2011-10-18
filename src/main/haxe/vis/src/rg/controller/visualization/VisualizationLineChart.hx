@@ -26,6 +26,7 @@ class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Da
 	override function initChart()
 	{
 		var chart = new LineChart(layout.getPanel(layout.mainPanelName));
+		chart.ready.add(function() ready.dispatch());
 		
 		chart.symbol = infoLine.symbol;
 		chart.symbolStyle = infoLine.symbolStyle;

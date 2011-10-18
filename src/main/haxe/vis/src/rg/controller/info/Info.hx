@@ -21,8 +21,10 @@ class Info
 		
 		var filters : Array<FieldFilter> = Reflect.callMethod(cl, method, []),
 			value : Dynamic;
+		trace(ob);
 		for (filter in filters)
 		{
+			trace(filter.field);
 			if (Reflect.hasField(ob, filter.field))
 			{
 				if (null != filter.validator && !filter.validator(value = Reflect.field(ob, filter.field)))

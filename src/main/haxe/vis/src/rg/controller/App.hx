@@ -8,6 +8,7 @@ import rg.controller.factory.FactoryLayout;
 import rg.controller.factory.FactoryVariable;
 import rg.controller.info.InfoDataContext;
 import rg.controller.info.InfoDomType;
+import rg.controller.info.InfoGeneral;
 import rg.controller.info.InfoLayout;
 import rg.controller.info.InfoTrack;
 import rg.controller.info.InfoVisualizationType;
@@ -70,7 +71,9 @@ class App
 		}
 
 		var visualization : Visualization = null;
-			
+		
+		var general = new InfoGeneral().feed(params.options);
+		
 		var infoviz = new InfoVisualizationType().feed(params.options);
 		
 		switch(new InfoDomType().feed(params.options).kind)
@@ -83,17 +86,23 @@ class App
 					el.selectAll("*").remove();
 				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
 		}
+
 		visualization.setVariables(independentVariables, dependentVariables);
 		visualization.init();
-		
+		if (null != general.ready)
+			visualization.ready.add(general.ready);
+
 		var request = new DataRequest(cache, datacontexts);
 		request.onData = function(datapoints : Array<DataPoint>) {
 			visualization.feedData(datapoints);
 		};
 		request.request();
 		
+		trace(jsoptions.track);
+		
 		// tracking
 		var track = new InfoTrack().feed(jsoptions.track);
+		trace(track);
 		if (track.enabled)
 		{
 			var paths = track.paths.map(function(d, _) return StringTools.replace(d, "{hash}", track.hash));

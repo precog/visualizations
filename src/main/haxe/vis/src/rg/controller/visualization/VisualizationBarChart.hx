@@ -26,6 +26,7 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 	override function initChart()
 	{
 		var chart = new BarChart(layout.getPanel(layout.mainPanelName));
+		chart.ready.add(function() ready.dispatch());
 		
 		chart.stacked = infoBar.stacked;
 		switch(infoBar.effect)

@@ -25,6 +25,7 @@ class VisualizationFunnelChart extends VisualizationSvg
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new FunnelChart(panelChart);
+		chart.ready.add(function() ready.dispatch());
 
 		// labels
 		if(null != info.label.datapoint)

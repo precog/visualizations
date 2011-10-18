@@ -23,6 +23,7 @@ class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 	override function initChart()
 	{
 		var chart = new HeatGrid(layout.getPanel(layout.mainPanelName));
+		chart.ready.add(function() ready.dispatch());
 		
 		chart.useContour = infoHeatGrid.contour;
 		chart.colorMode = infoHeatGrid.colorScaleMode;

@@ -26,6 +26,7 @@ class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<DataP
 	override function initChart()
 	{
 		var chart = new ScatterGraph(layout.getPanel(layout.mainPanelName));
+		chart.ready.add(function() ready.dispatch());
 		
 		chart.symbol = infoScatter.symbol;
 		chart.symbolStyle = infoScatter.symbolStyle;

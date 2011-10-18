@@ -42,8 +42,8 @@ class JSBridge
 		{
 			var copt = chartopt(options, type);
 //			trace(Dynamics.string(copt));
-			function execute(opt : Dynamic)
-			{
+
+			MVPOptions.complete(r, copt, function(opt : Dynamic) {
 //				trace(Dynamics.string(opt));
 				try {
 					app.visualization(select(el), opt);
@@ -60,8 +60,7 @@ class JSBridge
 				} catch (e : Dynamic) {
 					log(Std.string(e));
 				}
-			}
-			MVPOptions.complete(r, copt, execute);
+			});
 		}
 		
 		// define public visualization constrcutors

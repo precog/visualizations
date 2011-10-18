@@ -26,6 +26,7 @@ class VisualizationPivotTable extends VisualizationHtml
 	override function init()
 	{
 		chart = new PivotTable(container);
+		chart.ready.add(function() ready.dispatch());
 		
 		chart.displayColumnTotal = info.displayColumnTotal;
 		chart.displayHeatMap = info.displayHeatmap;

@@ -32,6 +32,7 @@ class VisualizationGeo extends VisualizationSvg
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new Geo(panelChart);
+		chart.ready.add(function() ready.dispatch());
 /*
 		// labels
 		chart.labelDataPoint = info.label.datapoint;

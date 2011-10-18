@@ -25,6 +25,7 @@ class VisualizationPieChart extends VisualizationSvg
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new PieChart(panelChart);
+		chart.ready.add(function() ready.dispatch());
 		
 		// aesthetic
 		chart.innerRadius = info.innerradius;

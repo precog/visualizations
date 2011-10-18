@@ -21,6 +21,7 @@ class VisualizationLeaderboard extends VisualizationHtml
 	override function init()
 	{
 		chart = new Leadeboard(container);
+		chart.ready.add(function() ready.dispatch());
 		
 		if (null != info.label.datapoint)
 			chart.labelDataPoint = info.label.datapoint;

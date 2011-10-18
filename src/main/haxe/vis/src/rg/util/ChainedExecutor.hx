@@ -8,12 +8,14 @@ package rg.util;
 class ChainedExecutor<T>
 {
 	var handler : Dynamic -> Void;
-	var actions : Array<T -> (T -> Void) -> Void>;
+	var actions : Array < T -> (T -> Void) -> Void > ;
+	var pos : Int;
 	
 	public function new(handler : T -> Void)
 	{
 		this.handler = handler;
 		actions = [];
+		pos = 0;
 	}
 	
 	public function addAction(handler : T -> (T -> Void) -> Void )
@@ -23,9 +25,14 @@ class ChainedExecutor<T>
 	
 	public function execute(ob : T)
 	{
-		if (actions.length == 0)
+		if (pos == actions.length)
+		{
+			pos = 0;
 			handler(ob);
+		}
 		else
-			actions.shift()(ob, execute);
+		{
+			actions[pos++](ob, execute);
+		}
 	}
 }
