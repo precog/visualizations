@@ -7,7 +7,6 @@ package rg;
 import rg.controller.App;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.ITrackReportGrid;
-import rg.track.DebugExecutor;
 import rg.util.Periodicity;
 import rg.util.Properties;
 import rg.util.RGStrings;
@@ -30,7 +29,14 @@ class JSBridge
 	{
 		// retrieve ReportGrid core
 		var r : Dynamic = untyped __js__("window.ReportGrid"),
-			t : ITrackReportGrid = new DebugExecutor();
+			t : ITrackReportGrid = 
+#if release
+				new rg.track.ReportGridExecutor();
+#elseif debug
+				new rg.track.DebugExecutor();
+#else
+				null;
+#end
 		if (null == r)
 			log(new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script").toString());
 		

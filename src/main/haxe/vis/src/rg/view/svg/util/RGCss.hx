@@ -4,11 +4,21 @@
  */
 
 package rg.view.svg.util;
+import js.Lib;
 import thx.js.Dom;
 import thx.js.Selection;
 
 class RGCss 
 {
+	public static function cssSources()
+	{
+		var sources = [];
+		Dom.selectAll('link[rel="stylesheet"]').eachNode(function(n, _) {
+			sources.push(untyped n.href);
+		});
+		return sources;
+	}
+	
 	public static function colorsInCss()
 	{
 		var container = Dom.select("body").append("svg:svg").attr("class").string("rg");

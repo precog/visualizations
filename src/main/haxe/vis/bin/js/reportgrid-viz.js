@@ -273,23 +273,32 @@ thx.js.AccessDataClassed.prototype = $extend(thx.js.AccessClassed.prototype,{
 });
 if(!rg.controller) rg.controller = {}
 if(!rg.controller.visualization) rg.controller.visualization = {}
-rg.controller.visualization.Visualization = function() { }
+rg.controller.visualization.Visualization = function(container) {
+	this.container = container;
+}
 rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
 rg.controller.visualization.Visualization.prototype = {
 	independentVariables: null
 	,dependentVariables: null
 	,variables: null
+	,container: null
 	,ready: null
+	,hasRendered: null
 	,setVariables: function(independentVariables,dependentVariables) {
+		var me = this;
 		this.independentVariables = independentVariables;
 		this.dependentVariables = dependentVariables;
+		this.hasRendered = false;
 		this.ready = new hxevents.Notifier();
+		this.ready.addOnce(function() {
+			me.hasRendered = true;
+		});
 	}
 	,init: function() {
-		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 32, className : "rg.controller.visualization.Visualization", methodName : "init"});
+		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 42, className : "rg.controller.visualization.Visualization", methodName : "init"});
 	}
 	,feedData: function(data) {
-		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 37, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 47, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
 	}
 	,getVariables: function() {
 		return this.independentVariables.map(function(d,i) {
@@ -300,9 +309,21 @@ rg.controller.visualization.Visualization.prototype = {
 	}
 	,destroy: function() {
 	}
+	,addReadyOnce: function(handler) {
+		this.ready.addOnce(handler);
+		if(this.hasRendered) handler();
+	}
+	,addReady: function(handler) {
+		this.ready.add(handler);
+		if(this.hasRendered) handler();
+	}
+	,removeReady: function(handler) {
+		this.ready.remove(handler);
+	}
 	,__class__: rg.controller.visualization.Visualization
 }
 rg.controller.visualization.VisualizationSvg = function(layout) {
+	rg.controller.visualization.Visualization.call(this,layout.container);
 	this.layout = layout;
 }
 rg.controller.visualization.VisualizationSvg.__name__ = ["rg","controller","visualization","VisualizationSvg"];
@@ -987,6 +1008,48 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 	}
 	,__class__: rg.controller.visualization.VisualizationBarChart
 });
+if(!rg.controller.interactive) rg.controller.interactive = {}
+rg.controller.interactive.Downloader = function(container,serviceurl,backgroundcolor) {
+	this.container = container;
+	this.serviceUrl = serviceurl;
+	this.defaultBackgroundColor = backgroundcolor;
+}
+rg.controller.interactive.Downloader.__name__ = ["rg","controller","interactive","Downloader"];
+rg.controller.interactive.Downloader.getClassName = function(container) {
+	var name = container.attr("class").get();
+	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
+	return "" == name?null:name;
+}
+rg.controller.interactive.Downloader.getTokenId = function() {
+	return Dynamics.string(ReportGrid.$.Config.tokenId);
+}
+rg.controller.interactive.Downloader.prototype = {
+	serviceUrl: null
+	,defaultBackgroundColor: null
+	,container: null
+	,download: function(format,backgroundcolor) {
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 34, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		var ob = { tokenId : rg.controller.interactive.Downloader.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
+		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
+		if(null != bg) ob.backgroundcolor = bg;
+		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
+		if(null != cls) ob.className = cls;
+		var http = new haxe.Http(this.serviceUrl);
+		http.onData = this.success.$bind(this);
+		var buf = [];
+		var _g = 0, _g1 = Reflect.fields(ob);
+		while(_g < _g1.length) {
+			var field = _g1[_g];
+			++_g;
+			http.setParameter(field,Reflect.field(ob,field));
+		}
+		http.request(true);
+	}
+	,success: function(content) {
+		js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
+	}
+	,__class__: rg.controller.interactive.Downloader
+}
 rg.controller.info.InfoFunnelChart = function() {
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabelFunnel();
@@ -1700,7 +1763,7 @@ rg.view.svg.panel.Container.prototype = $extend(rg.view.svg.panel.Panel.prototyp
 rg.view.svg.panel.Space = function(width,height,domcontainer) {
 	this.panel = new rg.view.frame.StackItem(rg.view.frame.FrameLayout.Fill(0,0));
 	rg.view.svg.panel.Container.call(this,this.panel,rg.view.frame.Orientation.Vertical);
-	this.init(this.svg = domcontainer.append("svg:svg"));
+	this.init(this.svg = domcontainer.append("svg:svg").attr("xmlns").string("http://www.w3.org/2000/svg"));
 	this.resize(width,height);
 }
 rg.view.svg.panel.Space.__name__ = ["rg","view","svg","panel","Space"];
@@ -1899,6 +1962,7 @@ rg.track.Tracker.prototype = {
 rg.controller.info.Info = function() { }
 rg.controller.info.Info.__name__ = ["rg","controller","info","Info"];
 rg.controller.info.Info.feed = function(info,ob) {
+	if(null == ob) return info;
 	var cl = Type.getClass(info), method = Reflect.field(cl,"filters");
 	if(null == method) {
 		Objects.copyTo(ob,info);
@@ -1910,7 +1974,7 @@ rg.controller.info.Info.feed = function(info,ob) {
 		var filter = filters[_g];
 		++_g;
 		if(Reflect.hasField(ob,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 29, className : "rg.controller.info.Info", methodName : "feed"});
+			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 31, className : "rg.controller.info.Info", methodName : "feed"});
 			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
 			var _g1 = 0;
 			while(_g1 < items.length) {
@@ -2019,83 +2083,6 @@ js.Cookie.remove = function(name,path,domain) {
 }
 js.Cookie.prototype = {
 	__class__: js.Cookie
-}
-if(!thx.geo) thx.geo = {}
-thx.geo.IProjection = function() { }
-thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
-thx.geo.IProjection.prototype = {
-	project: null
-	,invert: null
-	,__class__: thx.geo.IProjection
-}
-thx.geo.Albers = function() {
-	this._origin = [-98.0,38];
-	this._parallels = [29.5,45.5];
-	this._scale = 1000;
-	this._translate = [480.0,250];
-	this.reload();
-}
-thx.geo.Albers.__name__ = ["thx","geo","Albers"];
-thx.geo.Albers.__interfaces__ = [thx.geo.IProjection];
-thx.geo.Albers.prototype = {
-	origin: null
-	,parallels: null
-	,translate: null
-	,scale: null
-	,lng0: null
-	,n: null
-	,C: null
-	,p0: null
-	,_origin: null
-	,_parallels: null
-	,_translate: null
-	,_scale: null
-	,project: function(coords) {
-		var t = this.n * (0.01745329251994329577 * coords[0] - this.lng0), p = Math.sqrt(this.C - 2 * this.n * Math.sin(0.01745329251994329577 * coords[1])) / this.n;
-		return [this.getScale() * p * Math.sin(t) + this.getTranslate()[0],this.getScale() * (p * Math.cos(t) - this.p0) + this.getTranslate()[1]];
-	}
-	,invert: function(coords) {
-		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale(), p0y = this.p0 + y, t = Math.atan2(x,p0y), p = Math.sqrt(x * x + p0y * p0y);
-		return [(this.lng0 + t / this.n) / 0.01745329251994329577,Math.asin((this.C - p * p * this.n * this.n) / (2 * this.n)) / 0.01745329251994329577];
-	}
-	,getOrigin: function() {
-		return this._origin.copy();
-	}
-	,setOrigin: function(origin) {
-		this._origin = [origin[0],origin[1]];
-		this.reload();
-		return origin;
-	}
-	,getParallels: function() {
-		return this._parallels.copy();
-	}
-	,setParallels: function(parallels) {
-		this._parallels = [parallels[0],parallels[1]];
-		this.reload();
-		return parallels;
-	}
-	,getTranslate: function() {
-		return this._translate.copy();
-	}
-	,setTranslate: function(translate) {
-		this._translate = [translate[0],translate[1]];
-		return translate;
-	}
-	,reload: function() {
-		var phi1 = 0.01745329251994329577 * this.getParallels()[0], phi2 = 0.01745329251994329577 * this.getParallels()[1], lat0 = 0.01745329251994329577 * this.getOrigin()[1], s = Math.sin(phi1), c = Math.cos(phi1);
-		this.lng0 = 0.01745329251994329577 * this.getOrigin()[0];
-		this.n = .5 * (s + Math.sin(phi2));
-		this.C = c * c + 2 * this.n * s;
-		this.p0 = Math.sqrt(this.C - 2 * this.n * Math.sin(lat0)) / this.n;
-		return this;
-	}
-	,setScale: function(scale) {
-		return this._scale = scale;
-	}
-	,getScale: function() {
-		return this._scale;
-	}
-	,__class__: thx.geo.Albers
 }
 var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
@@ -2388,6 +2375,83 @@ Dates.compare = function(a,b) {
 }
 Dates.prototype = {
 	__class__: Dates
+}
+if(!thx.geo) thx.geo = {}
+thx.geo.IProjection = function() { }
+thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
+thx.geo.IProjection.prototype = {
+	project: null
+	,invert: null
+	,__class__: thx.geo.IProjection
+}
+thx.geo.Albers = function() {
+	this._origin = [-98.0,38];
+	this._parallels = [29.5,45.5];
+	this._scale = 1000;
+	this._translate = [480.0,250];
+	this.reload();
+}
+thx.geo.Albers.__name__ = ["thx","geo","Albers"];
+thx.geo.Albers.__interfaces__ = [thx.geo.IProjection];
+thx.geo.Albers.prototype = {
+	origin: null
+	,parallels: null
+	,translate: null
+	,scale: null
+	,lng0: null
+	,n: null
+	,C: null
+	,p0: null
+	,_origin: null
+	,_parallels: null
+	,_translate: null
+	,_scale: null
+	,project: function(coords) {
+		var t = this.n * (0.01745329251994329577 * coords[0] - this.lng0), p = Math.sqrt(this.C - 2 * this.n * Math.sin(0.01745329251994329577 * coords[1])) / this.n;
+		return [this.getScale() * p * Math.sin(t) + this.getTranslate()[0],this.getScale() * (p * Math.cos(t) - this.p0) + this.getTranslate()[1]];
+	}
+	,invert: function(coords) {
+		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale(), p0y = this.p0 + y, t = Math.atan2(x,p0y), p = Math.sqrt(x * x + p0y * p0y);
+		return [(this.lng0 + t / this.n) / 0.01745329251994329577,Math.asin((this.C - p * p * this.n * this.n) / (2 * this.n)) / 0.01745329251994329577];
+	}
+	,getOrigin: function() {
+		return this._origin.copy();
+	}
+	,setOrigin: function(origin) {
+		this._origin = [origin[0],origin[1]];
+		this.reload();
+		return origin;
+	}
+	,getParallels: function() {
+		return this._parallels.copy();
+	}
+	,setParallels: function(parallels) {
+		this._parallels = [parallels[0],parallels[1]];
+		this.reload();
+		return parallels;
+	}
+	,getTranslate: function() {
+		return this._translate.copy();
+	}
+	,setTranslate: function(translate) {
+		this._translate = [translate[0],translate[1]];
+		return translate;
+	}
+	,reload: function() {
+		var phi1 = 0.01745329251994329577 * this.getParallels()[0], phi2 = 0.01745329251994329577 * this.getParallels()[1], lat0 = 0.01745329251994329577 * this.getOrigin()[1], s = Math.sin(phi1), c = Math.cos(phi1);
+		this.lng0 = 0.01745329251994329577 * this.getOrigin()[0];
+		this.n = .5 * (s + Math.sin(phi2));
+		this.C = c * c + 2 * this.n * s;
+		this.p0 = Math.sqrt(this.C - 2 * this.n * Math.sin(lat0)) / this.n;
+		return this;
+	}
+	,setScale: function(scale) {
+		return this._scale = scale;
+	}
+	,getScale: function() {
+		return this._scale;
+	}
+	,__class__: thx.geo.Albers
 }
 rg.view.svg.panel.Layer = function(panel) {
 	this.frame = (this.panel = panel).frame;
@@ -4410,8 +4474,8 @@ rg.JSBridge.log = function(msg) {
 	c(msg);
 }
 rg.JSBridge.main = function() {
-	var r = window.ReportGrid, t = new rg.track.DebugExecutor();
-	if(null == r) rg.JSBridge.log(new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 35, className : "rg.JSBridge", methodName : "main"}).toString());
+	var r = window.ReportGrid, t = null;
+	if(null == r) rg.JSBridge.log(new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 41, className : "rg.JSBridge", methodName : "main"}).toString());
 	var app = new rg.controller.App(r,t);
 	r.viz = function(el,options,type) {
 		var copt = rg.JSBridge.chartopt(options,type);
@@ -4479,11 +4543,11 @@ rg.JSBridge.main = function() {
 	};
 	r.math = { random : ($_=new thx.math.Random(666),$_.float.$bind($_))};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.0.1.920"};
+	r.info.viz = { version : "1.0.1.966"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 124, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 130, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(ob) {
@@ -5667,39 +5731,6 @@ thx.date.DateParser.plusPm = function(s) {
 }
 thx.date.DateParser.prototype = {
 	__class__: thx.date.DateParser
-}
-if(typeof haxe=='undefined') var haxe = {}
-haxe.Firebug = function() { }
-haxe.Firebug.__name__ = ["haxe","Firebug"];
-haxe.Firebug.detect = function() {
-	try {
-		return console != null && console.error != null;
-	} catch( e ) {
-		return false;
-	}
-}
-haxe.Firebug.redirectTraces = function() {
-	haxe.Log.trace = haxe.Firebug.trace;
-	js.Lib.setErrorHandler(haxe.Firebug.onError);
-}
-haxe.Firebug.onError = function(err,stack) {
-	var buf = err + "\n";
-	var _g = 0;
-	while(_g < stack.length) {
-		var s = stack[_g];
-		++_g;
-		buf += "Called from " + s + "\n";
-	}
-	haxe.Firebug.trace(buf,null);
-	return true;
-}
-haxe.Firebug.trace = function(v,inf) {
-	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
-	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
-	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
-}
-haxe.Firebug.prototype = {
-	__class__: haxe.Firebug
 }
 rg.controller.info.InfoGeo = function() {
 	this.label = new rg.controller.info.InfoLabel();
@@ -9208,19 +9239,23 @@ rg.controller.App.prototype = {
 		}
 		visualization.setVariables(independentVariables,dependentVariables);
 		visualization.init();
-		if(null != general.ready) visualization.ready.add(general.ready);
+		if(null != general.ready) visualization.addReady(general.ready);
 		var request = new rg.data.DataRequest(cache,datacontexts);
 		request.onData = function(datapoints) {
 			visualization.feedData(datapoints);
 		};
 		request.request();
 		var track = rg.controller.info.Info.feed(new rg.controller.info.InfoTrack(),jsoptions.options.track);
-		if(track.enabled) {
+		if(null != this.tracker && track.enabled) {
 			var paths = track.paths.map(function(d,_) {
 				return StringTools.replace(d,"{hash}",track.hash);
 			});
 			rg.track.Tracker.instance(this.tracker,paths,track.token).addVisualization(visualization,jsoptions);
 		}
+		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
+		if(null != download.handler) visualization.addReadyOnce(function() {
+			download.handler(($_=new rg.controller.interactive.Downloader(visualization.container,download.service,download.background),$_.download.$bind($_)));
+		});
 		return visualization;
 	}
 	,getLayout: function(id,options,container,replace) {
@@ -9612,6 +9647,19 @@ rg.view.frame.Stack.prototype = {
 	}
 	,__class__: rg.view.frame.Stack
 }
+rg.view.svg.util.Jsonp = function() { }
+rg.view.svg.util.Jsonp.__name__ = ["rg","view","svg","util","Jsonp"];
+rg.view.svg.util.Jsonp.get = function(path,success,failure,query,headers) {
+	var api = ReportGrid.$.Http.Jsonp.get;
+	api(path,{ success : success, failure : failure},query,headers);
+}
+rg.view.svg.util.Jsonp.post = function(path,content,success,failure,query,headers) {
+	var api = ReportGrid.$.Http.Jsonp.post;
+	api(path,content,{ success : success, failure : failure},query,headers);
+}
+rg.view.svg.util.Jsonp.prototype = {
+	__class__: rg.view.svg.util.Jsonp
+}
 rg.view.layout.ScalePattern = { __ename__ : ["rg","view","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
 rg.view.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
 rg.view.layout.ScalePattern.ScalesBefore.toString = $estr;
@@ -9935,6 +9983,25 @@ thx.svg.Arc.prototype = {
 		return [Math.cos(a) * r,Math.sin(a) * r];
 	}
 	,__class__: thx.svg.Arc
+}
+rg.controller.info.InfoDownload = function() {
+	this.service = "http://rgrender/";
+}
+rg.controller.info.InfoDownload.__name__ = ["rg","controller","info","InfoDownload"];
+rg.controller.info.InfoDownload.filters = function() {
+	return [{ field : "handler", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "service", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "background", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null}];
+}
+rg.controller.info.InfoDownload.prototype = {
+	handler: null
+	,service: null
+	,background: null
+	,__class__: rg.controller.info.InfoDownload
 }
 rg.controller.factory.FactoryHtmlVisualization = function() {
 }
@@ -11089,6 +11156,13 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 });
 rg.view.svg.util.RGCss = function() { }
 rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
+rg.view.svg.util.RGCss.cssSources = function() {
+	var sources = [];
+	thx.js.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
+		sources.push(n.href);
+	});
+	return sources;
+}
 rg.view.svg.util.RGCss.colorsInCss = function() {
 	var container = thx.js.Dom.select("body").append("svg:svg").attr("class").string("rg");
 	var first = rg.view.svg.util.RGCss.createBlock(container,0).style("fill").get(), length = 0;
@@ -11491,6 +11565,7 @@ thx.geom.layout.Pie.prototype = {
 	}
 	,__class__: thx.geom.layout.Pie
 }
+if(typeof haxe=='undefined') var haxe = {}
 haxe.Md5 = function() {
 }
 haxe.Md5.__name__ = ["haxe","Md5"];
@@ -12097,22 +12172,6 @@ thx.svg.CentroidTypes.prototype = {
 		return this.geo.projection.project(d);
 	}
 	,__class__: thx.svg.CentroidTypes
-}
-rg.data.source.rgquery.ITrackReportGrid = function() { }
-rg.data.source.rgquery.ITrackReportGrid.__name__ = ["rg","data","source","rgquery","ITrackReportGrid"];
-rg.data.source.rgquery.ITrackReportGrid.prototype = {
-	track: null
-	,__class__: rg.data.source.rgquery.ITrackReportGrid
-}
-rg.track.DebugExecutor = function() {
-}
-rg.track.DebugExecutor.__name__ = ["rg","track","DebugExecutor"];
-rg.track.DebugExecutor.__interfaces__ = [rg.data.source.rgquery.ITrackReportGrid];
-rg.track.DebugExecutor.prototype = {
-	track: function(path,events,success,error,token) {
-		haxe.Firebug.trace("path: " + path + ", token: " + token + "\n" + Dynamics.string(events),{ fileName : "DebugExecutor.hx", lineNumber : 14, className : "rg.track.DebugExecutor", methodName : "track"});
-	}
-	,__class__: rg.track.DebugExecutor
 }
 thx.geom.layout.Stack = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
@@ -14882,14 +14941,13 @@ rg.data.AxisGroupByTime.prototype = $extend(rg.data.AxisOrdinalFixedValues.proto
 	,__class__: rg.data.AxisGroupByTime
 });
 rg.controller.visualization.VisualizationHtml = function(container) {
-	this.container = container;
+	rg.controller.visualization.Visualization.call(this,container);
 	container.classed().add("rg");
 }
 rg.controller.visualization.VisualizationHtml.__name__ = ["rg","controller","visualization","VisualizationHtml"];
 rg.controller.visualization.VisualizationHtml.__super__ = rg.controller.visualization.Visualization;
 rg.controller.visualization.VisualizationHtml.prototype = $extend(rg.controller.visualization.Visualization.prototype,{
-	container: null
-	,__class__: rg.controller.visualization.VisualizationHtml
+	__class__: rg.controller.visualization.VisualizationHtml
 });
 rg.controller.visualization.VisualizationLeaderboard = function(container) {
 	rg.controller.visualization.VisualizationHtml.call(this,container);
@@ -18812,6 +18870,12 @@ rg.view.svg.widget.GridAnchor.Bottom.__enum__ = rg.view.svg.widget.GridAnchor;
 rg.view.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
 rg.view.svg.widget.GridAnchor.BottomRight.toString = $estr;
 rg.view.svg.widget.GridAnchor.BottomRight.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.data.source.rgquery.ITrackReportGrid = function() { }
+rg.data.source.rgquery.ITrackReportGrid.__name__ = ["rg","data","source","rgquery","ITrackReportGrid"];
+rg.data.source.rgquery.ITrackReportGrid.prototype = {
+	track: null
+	,__class__: rg.data.source.rgquery.ITrackReportGrid
+}
 thx.svg.Symbol = function() { }
 thx.svg.Symbol.__name__ = ["thx","svg","Symbol"];
 thx.svg.Symbol.triangleDown = function(size) {
@@ -20830,6 +20894,7 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
 rg.track.Tracker.PREFIX = "rgv_";
 rg.track.Tracker.KEY_ENGAGEMENTS = rg.track.Tracker.PREFIX + "engagements";
 rg.track.Tracker.KEY_VISITS = rg.track.Tracker.PREFIX + "visits";
