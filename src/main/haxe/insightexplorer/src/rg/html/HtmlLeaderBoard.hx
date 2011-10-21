@@ -53,6 +53,7 @@ class HtmlLeaderBoard
 				.style("background-size").stringf(function(d, i) return (100*d.value/total)+"%")
 				.text().stringf(_description)
 				.attr("title").stringf(_title)
+				.attr("class").stringf(function(_,i) return "item-" + i)
 				.style("opacity").float(0)
 					.eachNode(_fadeIn)
 		;
