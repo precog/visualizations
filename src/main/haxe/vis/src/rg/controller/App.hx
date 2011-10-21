@@ -8,10 +8,12 @@ import rg.controller.factory.FactoryLayout;
 import rg.controller.factory.FactoryVariable;
 import rg.controller.info.InfoDataContext;
 import rg.controller.info.InfoDomType;
+import rg.controller.info.InfoDownload;
 import rg.controller.info.InfoGeneral;
 import rg.controller.info.InfoLayout;
 import rg.controller.info.InfoTrack;
 import rg.controller.info.InfoVisualizationType;
+import rg.controller.interactive.Downloader;
 import rg.controller.visualization.Visualization;
 import rg.data.DataRequest;
 import rg.data.source.rgquery.IExecutorReportGrid;
@@ -90,7 +92,7 @@ class App
 		visualization.setVariables(independentVariables, dependentVariables);
 		visualization.init();
 		if (null != general.ready)
-			visualization.ready.add(general.ready);
+			visualization.addReady(general.ready);
 
 		var request = new DataRequest(cache, datacontexts);
 		request.onData = function(datapoints : Array<DataPoint>) {
@@ -100,11 +102,21 @@ class App
 		
 		// tracking
 		var track = new InfoTrack().feed(jsoptions.options.track);
-		if (track.enabled)
+		if (null != tracker && track.enabled)
 		{
 			var paths = track.paths.map(function(d, _) return StringTools.replace(d, "{hash}", track.hash));
 			Tracker.instance(tracker, paths, track.token)
 				.addVisualization(visualization, jsoptions);
+		}
+		
+		// download
+		var download = new InfoDownload().feed(jsoptions.options.download);
+
+		if (null != download.handler)
+		{
+			visualization.addReadyOnce(function() {
+				download.handler(new Downloader(visualization.container, download.service, download.background).download);
+			});
 		}
 		
 		return visualization;

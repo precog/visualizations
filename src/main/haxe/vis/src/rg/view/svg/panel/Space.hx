@@ -19,7 +19,7 @@ class Space extends Container
 	{
 		panel = new StackItem(Fill(0, 0));
 		super(panel, Vertical);
-		init(svg = domcontainer.append("svg:svg"));
+		init(svg = domcontainer.append("svg:svg").attr("xmlns").string("http://www.w3.org/2000/svg"));
 		resize(width, height);
 	}
 	

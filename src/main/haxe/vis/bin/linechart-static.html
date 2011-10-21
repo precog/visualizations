@@ -158,7 +158,22 @@ document.addEventListener("DOMContentLoaded", function(){
 				datapointover : function(dp) { return dp["age"] + ": " + dp["interest"]; },
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
-			displayarea : true
+			displayarea : true,
+			download : {
+				handler : function(callback) {
+					function exportPdf() { callback("pdf"); }
+					function exportPng() { callback("png"); }
+					function createButton(format, action)
+					{
+						var el = document.createElement("button");
+						el.innerHTML = format;
+						el.onclick = action;
+						document.body.appendChild(el);
+					}
+					createButton("pdf", exportPdf);
+					createButton("png", exportPng);
+				}
+			}
 		}
 	});
 }, false)

@@ -11,6 +11,8 @@ class Info
 {
 	public static function feed<T>(info : T, ob : { }) : T
 	{
+		if (null == ob)
+			return info;
 		var cl = Type.getClass(info),
 			method = Reflect.field(cl, "filters");
 		if (null == method)

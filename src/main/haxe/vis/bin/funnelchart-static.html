@@ -31,7 +31,17 @@ document.addEventListener("DOMContentLoaded", function(){
 			flatness : 0.001,
 			segmentpadding : 10,
 			arrowsize : 40,
-			click : function(d,s) { alert(ReportGrid.format(d) + " " + ReportGrid.format(s)); }
+			click : function(d,s) { alert(ReportGrid.format(d) + " " + ReportGrid.format(s)); },
+			download : {
+				handler : function(callback) {
+					function exportChart() { callback("pdf"); }
+					var el = document.createElement("button");
+					el.innerHTML = "download";
+					el.onclick = exportChart;
+					document.body.appendChild(el);
+//					exportChart();
+				}
+			}
 		}
 	});
 	
