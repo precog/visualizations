@@ -15,7 +15,7 @@ class InfoDownload
 	
 	public function new() 
 	{
-		service = "http://rgrender/";
+		service = "http://devtest01.reportgrid.com:20000/";
 	}
 	
 	public static function filters()
