@@ -24,9 +24,13 @@ function waitFor(testFx, onReady, timeOutMillis) {
 
 var input = phantom.args[0],
     output = phantom.args[1],
+    width = parseInt(phantom.args[2]),
+    height = parseInt(phantom.args[3]),
     start = new Date().getTime(),
     page = new WebPage();
 
+page.viewportSize = { width: width, height: height };
+page.paperSize = { format : "letter", orientation: 'landscape', border: "1cm" };
 page.open(input, function (status) {
     // Check for page load success
     if (status !== "success") {

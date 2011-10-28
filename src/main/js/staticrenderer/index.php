@@ -24,12 +24,9 @@ if(isset($_GET['file']))
 	}
 	
 	header("Content-Description: File Transfer");
-//	header('Content-Type: application/octet-stream');
 	header("Content-Disposition: attachment; filename=visualization.$format");
 	header("Content-Transfer-Encoding: binary");
 	header("Content-Length: " . filesize($path));
-	
-	
 	
 	readfile($path);
 	exit;
@@ -38,65 +35,34 @@ if(isset($_GET['file']))
 try
 {
 	$config = Config::fromQueryString($_REQUEST);
-//	dump($config);
-/*
-	if('html' == $config->format)
-	{
-		printTemplate($config);
-	} else {
-		*/
-		$hash = $config->hash();
-		$output = path($hash,'xhtml');
-		if(!file_exists($output))
-			captureTemplate($config, $output);
+	$hash = $config->hash();
+	$output = path($hash,'xhtml');
+//	if(!file_exists($output))
+		captureTemplate($config, $output);
 
-		$imagepath = path($hash, $config->format);
+	$imagepath = path($hash, $config->format());
 
-		if(!file_exists($imagepath))
-			$out = renderVisualization($output, $imagepath);
-		
-		echo "$hash.{$config->format}";
-		/*
-		if(isset($_GET['callback']))
-		{
-			$url = url($hash, $config->format);
-			echo $_GET['callback']."('$url');";
-		} else {
-			switch($config->format)
-			{
-				case "png":
-					header("Content-Type: image/png");
-					break;
-				case "jpg":
-					header("Content-Type: image/jpeg");
-					break;
-				case "pdf":
-					header("Content-Type: application/pdf");
-					break;
-			}
-			header("Content-Disposition", "attachment; filename=reportgridvisualization.{$config->format}");
-			header("Content-Length: " . filesize($imagepath));
-			readfile($path);
-		}
-		*/
+//	if(!file_exists($imagepath))
+		$out = renderVisualization($output, $imagepath, $config->width(), $config->height());
+	
+	echo "$hash.{$config->format()}";
 		exit;
-//	}
 } catch(Exception $e) {
 	echo $e->getMessage();
 	exit;
 }
 
-function renderVisualization($input, $output)
+function renderVisualization($input, $output, $width, $height)
 {
-	return phantom("renderer.js", $input, $output);
+	return phantom("renderer.js", $input, $output, $width, $height);
 }
 
-function phantom($script, $input, $output)
+function phantom($script, $input, $output, $width, $height)
 {
 	$dir = __DIR__;
 	$bin = escapeshellcmd(PHANTOMJS);
 	$options = " --config=$dir/phantom/config.json";
-	$args = "$dir/$input  $dir/$output";
+	$args = "$dir/$input  $dir/$output $width $height";
 	$script = "$dir/phantom/$script";
 	$cmd = "$bin$options $script $args";
 
@@ -136,7 +102,7 @@ function captureTemplate($config, $output)
 
 function printTemplate($config)
 {
-	if($config->params)
+	if($config->params())
 		require_once('template/visualization.template.php');
 	else
 		require_once('template/xml.template.php');

@@ -18,7 +18,11 @@ class InfoDownload
 	
 	public function new() 
 	{
+#if release
 		service = "http://devtest01.reportgrid.com:20000/";
+#else
+		service = "http://rgrender/";
+#end
 	}
 	
 	public static function filters()

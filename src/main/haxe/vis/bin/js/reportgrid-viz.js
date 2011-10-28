@@ -1247,7 +1247,7 @@ rg.view.svg.widget.Balloon = function(container,bindOnTop) {
 	if(bindOnTop) {
 		var parent = container.node();
 		while(null != parent && parent.nodeName != "svg") parent = parent.parentNode;
-		this.container = null == parent?container:thx.js.Selection.create([new thx.js.Group([parent])]);
+		this.container = null == parent?container:thx.js.Dom.selectNode(parent);
 	} else this.container = container;
 	this.visible = true;
 	this.duration = 500;
@@ -2639,7 +2639,7 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 				var f = [this.labelDataPoint];
 				enter.eachNode((function(f,stats) {
 					return function(n,i1) {
-						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Selection.create([new thx.js.Group([n])]),true,true,true);
+						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
 						label.setText(f[0](dp,stats[0]));
 					};
 				})(f,stats));
@@ -2662,7 +2662,7 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 	,onmouseover: function(stats,n,i) {
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Selection.create([new thx.js.Group([n])]), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
@@ -3680,12 +3680,12 @@ thx.js.BaseSelection.prototype = {
 		var qname = thx.xml.Namespace.qualify(name);
 		var insertDom = function(node) {
 			var n = js.Lib.document.createElement(name);
-			node.insertBefore(n,null != before?before:thx.js.Dom.doc.select(beforeSelector).node());
+			node.insertBefore(n,null != before?before:thx.js.Dom.select(beforeSelector).node());
 			return n;
 		};
 		var insertNsDom = function(node) {
 			var n = js.Lib.document.createElementNS(qname.space,qname.local);
-			node.insertBefore(n,null != before?before:thx.js.Dom.doc.select(beforeSelector).node());
+			node.insertBefore(n,null != before?before:thx.js.Dom.select(beforeSelector).node());
 			return n;
 		};
 		return this._select(null == qname?insertDom:insertNsDom);
@@ -3786,7 +3786,7 @@ thx.js.BaseSelection.prototype = {
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 566, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 563, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -3886,15 +3886,11 @@ thx.js.Selection = function(groups) {
 }
 thx.js.Selection.__name__ = ["thx","js","Selection"];
 thx.js.Selection.current = null;
-thx.js.Selection.currentNode = null;
 thx.js.Selection.create = function(groups) {
 	return new thx.js.Selection(groups);
 }
 thx.js.Selection.getCurrent = function() {
-	return thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]);
-}
-thx.js.Selection.getCurrentNode = function() {
-	return thx.js.Group.current;
+	return thx.js.Dom.selectNode(thx.js.Group.current);
 }
 thx.js.Selection.__super__ = thx.js.UnboundSelection;
 thx.js.Selection.prototype = $extend(thx.js.UnboundSelection.prototype,{
@@ -4501,14 +4497,14 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,onmouseover: function(ystats,n,i) {
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,ystats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Selection.create([new thx.js.Group([n])]), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
+			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
 			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(x + w / 2,y);
 		}
 	}
 	,applyGradient: function(n,i) {
-		var gn = thx.js.ResumeSelection.create([new thx.js.Group([n])]), dp = Reflect.field(n,"__data__"), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
+		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
 			var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
 			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
@@ -4595,10 +4591,10 @@ rg.JSBridge.main = function() {
 	};
 	r.math = { random : ($_=new thx.math.Random(666),$_.float.$bind($_))};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.0.1.1032"};
+	r.info.viz = { version : "1.0.1.1034"};
 }
 rg.JSBridge.select = function(el) {
-	var s = Std["is"](el,String)?thx.js.Dom.doc.select(el):thx.js.Selection.create([new thx.js.Group([el])]);
+	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
 	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 130, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
@@ -4705,7 +4701,7 @@ rg.view.html.widget.Leadeboard.prototype = {
 	}
 	,fadeIn: function(n,i) {
 		var me = this;
-		thx.js.ResumeSelection.create([new thx.js.Group([n])]).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
+		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
 			me._created++;
 		});
 	}
@@ -5971,7 +5967,7 @@ thx.js.Svg.__name__ = ["thx","js","Svg"];
 thx.js.Svg.mouse = function(dom) {
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
 	if(thx.js.Svg._usepage && (js.Lib.window.scrollX || js.Lib.window.scrollY)) {
-		var svg = thx.js.Selection.create([new thx.js.Group([js.Lib.document.body])]).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
+		var svg = thx.js.Dom.selectNode(js.Lib.document.body).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
 		var ctm = svg.node().getScreenCTM();
 		thx.js.Svg._usepage = !(ctm.f || ctm.e);
 		svg.remove();
@@ -7828,7 +7824,7 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 			if(null == me.labelArrow) return;
 			var text = me.labelArrow(d,me.stats);
 			if(null == text) return;
-			var node = thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]);
+			var node = thx.js.Selection.getCurrent();
 			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
 			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
 			var label = new rg.view.svg.widget.Label(node,true,true,true);
@@ -7868,7 +7864,7 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
 	}
 	,externalGradient: function(n,i) {
-		var g = thx.js.Selection.create([new thx.js.Group([n])]), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
+		var g = thx.js.Dom.selectNode(n), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
 		var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
 		var top = color.hex("#");
 		stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
@@ -9406,7 +9402,7 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		var me = this;
 		var choice = this.g.selectAll("rect").data(this.dps);
 		choice.enter().append("svg:rect").attr("x").floatf(this.x.$bind(this)).attr("y").floatf(this.y.$bind(this)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
-			me.stylefeature(thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]),dp);
+			me.stylefeature(thx.js.Selection.getCurrent(),dp);
 		}).on("click",this.onclick.$bind(this)).on("mouseover",this.onmouseover.$bind(this));
 	}
 	,onmouseover: function(dp,i) {
@@ -10042,7 +10038,7 @@ thx.svg.Arc.prototype = {
 	,__class__: thx.svg.Arc
 }
 rg.controller.info.InfoDownload = function() {
-	this.service = "http://devtest01.reportgrid.com:20000/";
+	this.service = "http://rgrender/";
 }
 rg.controller.info.InfoDownload.__name__ = ["rg","controller","info","InfoDownload"];
 rg.controller.info.InfoDownload.filters = function() {
@@ -11030,7 +11026,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 	,createLabel: function(n,i) {
 		var d = Reflect.field(n,"__data__");
 		if(!d.getMajor()) return;
-		var label = new rg.view.svg.widget.Label(thx.js.Selection.create([new thx.js.Group([n])]),false,true,false);
+		var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
 		label.setAnchor(this.labelAnchor);
 		label.setOrientation(this.labelOrientation);
 		var padding = this.paddingLabel;
@@ -11220,13 +11216,13 @@ rg.view.svg.util.RGCss = function() { }
 rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
 rg.view.svg.util.RGCss.cssSources = function() {
 	var sources = [];
-	thx.js.Dom.doc.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
+	thx.js.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
 		sources.push(n.href);
 	});
 	return sources;
 }
 rg.view.svg.util.RGCss.colorsInCss = function() {
-	var container = thx.js.Dom.doc.select("body").append("svg:svg").attr("class").string("rg");
+	var container = thx.js.Dom.select("body").append("svg:svg").attr("class").string("rg");
 	var first = rg.view.svg.util.RGCss.createBlock(container,0).style("fill").get(), length = 0;
 	var _g = 1;
 	while(_g < 1000) {
@@ -13485,7 +13481,7 @@ rg.view.html.widget.DownloaderMenu.prototype = {
 			break;
 		case 0:
 			var selector = $e[2];
-			thx.js.Dom.doc.select(selector).node().appendChild(el);
+			thx.js.Dom.select(selector).node().appendChild(el);
 			break;
 		case 1:
 			this.menu.classed().add("top").classed().add("left");
@@ -13677,7 +13673,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 				var fs = [[]];
 				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).eachNode((function(fs,lightness1) {
 					return function(n,i1) {
-						var start = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(thx.js.Selection.create([new thx.js.Group([n])]).style("stroke").get(),"#000000")), end = thx.color.Hsl.darker(start,lightness1[0]);
+						var start = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(thx.js.Dom.selectNode(n).style("stroke").get(),"#000000")), end = thx.color.Hsl.darker(start,lightness1[0]);
 						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
 					};
 				})(fs,lightness1)).remove();
@@ -13761,7 +13757,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 				var f = [this.labelDataPoint];
 				gsymbol.eachNode((function(f,stats) {
 					return function(n,i1) {
-						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Selection.create([new thx.js.Group([n])]),true,true,true);
+						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
 						label.setText(f[0](dp,stats[0]));
 					};
 				})(f,stats));
@@ -13784,7 +13780,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 	,onmouseover: function(stats,n,i) {
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Selection.create([new thx.js.Group([n])]), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
@@ -14297,7 +14293,7 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		});
 	}
 	,applyGradientV: function(d,i) {
-		var gn = thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
+		var gn = thx.js.Selection.getCurrent(), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
 			var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
 			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
@@ -14307,7 +14303,7 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		gn.attr("style").string("fill:url(#" + id + ")");
 	}
 	,applyGradientH: function(d,i) {
-		var gn = thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
+		var gn = thx.js.Selection.getCurrent(), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
 		var gradient = this.defs.append("svg:linearGradient").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
 		var bx = d[0].coord.x, ax = d[d.length - 1].coord.x, span = ax - bx, percent = function(x) {
 			return Math.round((x - bx) / span * 10000) / 100;
@@ -14789,12 +14785,12 @@ thx.js.PreEnterSelection.prototype = {
 	,insert: function(name,before,beforeSelector) {
 		var qname = thx.xml.Namespace.qualify(name);
 		var insertDom = function(node) {
-			var n = js.Lib.document.createElement(name), bf = null != before?before:thx.js.Selection.create([new thx.js.Group([node])]).select(beforeSelector).node();
+			var n = js.Lib.document.createElement(name), bf = null != before?before:thx.js.Dom.selectNode(node).select(beforeSelector).node();
 			node.insertBefore(n,bf);
 			return n;
 		};
 		var insertNsDom = function(node) {
-			var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:thx.js.Selection.create([new thx.js.Group([node])]).select(beforeSelector).node();
+			var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:thx.js.Dom.selectNode(node).select(beforeSelector).node();
 			node.insertBefore(n,bf);
 			return n;
 		};
@@ -18557,18 +18553,18 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		this.mouseClick(d.dp);
 	}
 	,removeLabel: function(dom,i) {
-		var n = thx.js.Selection.create([new thx.js.Group([dom])]), d = Reflect.field(dom,"__data__");
+		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
 		var label = this.labels.get(d.id);
 		label.destroy();
 		this.labels.remove(d.id);
 	}
 	,updateLabel: function(dom,i) {
-		var n = thx.js.Selection.create([new thx.js.Group([dom])]), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 		label.setText(this.labelDataPoint(d.dp,this.stats));
 		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 	}
 	,appendLabel: function(dom,i) {
-		var n = thx.js.Selection.create([new thx.js.Group([dom])]), label = new rg.view.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+		var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 		label.setOrientation(this.labelOrientation);
 		switch( (this.labelOrientation)[1] ) {
 		case 0:
@@ -18586,7 +18582,7 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		this.labels.set(d.id,label);
 	}
 	,applyGradient: function(n,i) {
-		var gn = thx.js.ResumeSelection.create([new thx.js.Group([n])]), dp = Reflect.field(n,"__data__"), id = dp.id;
+		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
 		if(this.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
 			var slice = gn.select("path.slice"), shape = this.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = t.node().getBBox();
 			t.remove();
@@ -18600,15 +18596,15 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
 	}
 	,fadein: function(n,i) {
-		var gn = thx.js.ResumeSelection.create([new thx.js.Group([n])]), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
+		var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
 		gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay).attr("d").string(shape);
 	}
 	,highlight: function(d,i) {
-		var slice = thx.js.ResumeSelection.create([new thx.js.Group([d])]).selectAll("path");
+		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
 		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcBig));
 	}
 	,backtonormal: function(d,i) {
-		var slice = thx.js.ResumeSelection.create([new thx.js.Group([d])]).selectAll("path");
+		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
 		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
 	}
 	,id: function(dp,i) {

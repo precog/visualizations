@@ -4,15 +4,20 @@ class Config
 {
 	private static $VALID_FORMATS = array('png', 'pdf', 'jpg', 'html');
 	private static $VALID_ELEMENTS = array('div', 'span');
-	var $tokenId;
-	var $css;
-	var $id;
-	var $className;
-	var $format;
-	var $xml;
-	var $params;
-	var $backgroundColor;
-	var $element;
+	private static $POST_CSS = array('../css/clean.css');
+
+	private $tokenId;
+	private $css;
+	private $id;
+	private $className;
+	private $format;
+	private $xml;
+	private $params;
+	private $paramsObject;
+	private $backgroundColor;
+	private $element;
+	private $width;
+	private $height;
 
 	public function __construct($tokenId, $css, $id, $className, $format, $xml, $params, $backgroundColor, $element)
 	{
@@ -87,6 +92,7 @@ class Config
 		{
 			if(get_magic_quotes_gpc())
 				$this->params = stripslashes($this->params);
+			$this->paramsObject = json_decode($this->params, true);
 //			$this->params = json_encode(json_decode($this->params, true), true);
 		}
 
@@ -102,5 +108,43 @@ class Config
 	public static function fromQueryString($params)
 	{
 		return new Config(@$params['tokenId'], @$params['css'], @$params['id'], @$params['className'], @$params['format'], @$params['xml'], @$params['params'], @$params['backgroundcolor'], @$params['element']);
+	}
+
+	public function tokenId() { return $this->tokenId; }
+	public function css() { return array_merge($this->css, Config::$POST_CSS); }
+	public function id() { return $this->id; }
+	public function className() { return $this->className; }
+	public function format() { return $this->format; }
+	public function xml() { return $this->xml; }
+	public function params() { return $this->params; }
+	public function backgroundColor() { return $this->backgroundColor ? $this->backgroundColor : ($this->format == 'jpg' ? '#ffffff' : null); }
+	public function element() { return $this->element; }
+	public function width()
+	{
+		if(null == $this->width)
+		{
+			if(null != $this->xml)
+			{
+				preg_match('/width="(\d+)"/', $this->xml, $matches);
+				$this->width = intval($matches[1]);
+			} else {
+				$this->width = $this->paramsObject['options']['width'];
+			}
+		}
+		return $this->width;
+	}
+	public function height()
+	{
+		if(null == $this->height)
+		{
+			if(null != $this->xml)
+			{
+				preg_match('/height="(\d+)"/', $this->xml, $matches);
+				$this->height = intval($matches[1]);
+			} else {
+				$this->height = $this->paramsObject['options']['height'];
+			}
+		}
+		return $this->height;
 	}
 }
