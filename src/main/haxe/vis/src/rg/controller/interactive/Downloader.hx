@@ -28,7 +28,7 @@ class Downloader
 		this.defaultBackgroundColor = backgroundcolor;
 	}
 	
-	public function download(format : String, backgroundcolor : Null<String>)
+	public function download(format : String, backgroundcolor : Null<String>, ?handler : Void -> Void)
 	{
 		if (!Arrays.exists(ALLOWED_FORMATS, format))
 			throw new Error("The download format '{0}' is not correct", [format]);
@@ -49,7 +49,7 @@ class Downloader
 //		trace(ob);
 		
 		var http = new Http(serviceUrl);
-		http.onData = success;
+		http.onData = callback(success, handler);
 		var buf = [];
 		for (field in Reflect.fields(ob))
 			http.setParameter(field, Reflect.field(ob, field));
@@ -75,8 +75,10 @@ class Downloader
 		return Dynamics.string(untyped __js__("ReportGrid.$.Config.tokenId"));
 	}
 	
-	function success(content : String)
+	function success(handler : Void -> Void, content : String)
 	{
 		Lib.window.location.href = serviceUrl + "?file=" + content;
+		if (null != handler)
+			handler();
 	}
 }

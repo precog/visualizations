@@ -1027,7 +1027,7 @@ rg.controller.interactive.Downloader.prototype = {
 	serviceUrl: null
 	,defaultBackgroundColor: null
 	,container: null
-	,download: function(format,backgroundcolor) {
+	,download: function(format,backgroundcolor,handler) {
 		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 34, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.controller.interactive.Downloader.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
@@ -1035,7 +1035,11 @@ rg.controller.interactive.Downloader.prototype = {
 		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
 		if(null != cls) ob.className = cls;
 		var http = new haxe.Http(this.serviceUrl);
-		http.onData = this.success.$bind(this);
+		http.onData = (function(f,a1) {
+			return function(a2) {
+				return f(a1,a2);
+			};
+		})(this.success.$bind(this),handler);
 		var buf = [];
 		var _g = 0, _g1 = Reflect.fields(ob);
 		while(_g < _g1.length) {
@@ -1045,8 +1049,9 @@ rg.controller.interactive.Downloader.prototype = {
 		}
 		http.request(true);
 	}
-	,success: function(content) {
+	,success: function(handler,content) {
 		js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
+		if(null != handler) handler();
 	}
 	,__class__: rg.controller.interactive.Downloader
 }
@@ -1242,7 +1247,7 @@ rg.view.svg.widget.Balloon = function(container,bindOnTop) {
 	if(bindOnTop) {
 		var parent = container.node();
 		while(null != parent && parent.nodeName != "svg") parent = parent.parentNode;
-		this.container = null == parent?container:thx.js.Dom.selectNode(parent);
+		this.container = null == parent?container:thx.js.Selection.create([new thx.js.Group([parent])]);
 	} else this.container = container;
 	this.visible = true;
 	this.duration = 500;
@@ -2634,7 +2639,7 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 				var f = [this.labelDataPoint];
 				enter.eachNode((function(f,stats) {
 					return function(n,i1) {
-						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
+						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Selection.create([new thx.js.Group([n])]),true,true,true);
 						label.setText(f[0](dp,stats[0]));
 					};
 				})(f,stats));
@@ -2657,7 +2662,7 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 	,onmouseover: function(stats,n,i) {
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			var sel = thx.js.Selection.create([new thx.js.Group([n])]), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
@@ -2785,6 +2790,31 @@ rg.controller.info.InfoAnimation.prototype = {
 	,ease: null
 	,delay: null
 	,__class__: rg.controller.info.InfoAnimation
+}
+if(!rg.view.html) rg.view.html = {}
+if(!rg.view.html.widget) rg.view.html.widget = {}
+rg.view.html.widget.DownloaderPositions = function() { }
+rg.view.html.widget.DownloaderPositions.__name__ = ["rg","view","html","widget","DownloaderPositions"];
+rg.view.html.widget.DownloaderPositions.parse = function(v) {
+	switch(v.toLowerCase()) {
+	case "topleft":
+		return rg.view.html.widget.DownloaderPosition.TopLeft;
+	case "topright":case "auto":
+		return rg.view.html.widget.DownloaderPosition.TopRight;
+	case "bottomleft":
+		return rg.view.html.widget.DownloaderPosition.BottomLeft;
+	case "bottomright":
+		return rg.view.html.widget.DownloaderPosition.BottomRight;
+	case "before":
+		return rg.view.html.widget.DownloaderPosition.Before;
+	case "after":
+		return rg.view.html.widget.DownloaderPosition.After;
+	default:
+		return rg.view.html.widget.DownloaderPosition.ElementSelector(v);
+	}
+}
+rg.view.html.widget.DownloaderPositions.prototype = {
+	__class__: rg.view.html.widget.DownloaderPositions
 }
 rg.controller.info.InfoDataSource = function() {
 }
@@ -3650,12 +3680,12 @@ thx.js.BaseSelection.prototype = {
 		var qname = thx.xml.Namespace.qualify(name);
 		var insertDom = function(node) {
 			var n = js.Lib.document.createElement(name);
-			node.insertBefore(n,null != before?before:thx.js.Dom.select(beforeSelector).node());
+			node.insertBefore(n,null != before?before:thx.js.Dom.doc.select(beforeSelector).node());
 			return n;
 		};
 		var insertNsDom = function(node) {
 			var n = js.Lib.document.createElementNS(qname.space,qname.local);
-			node.insertBefore(n,null != before?before:thx.js.Dom.select(beforeSelector).node());
+			node.insertBefore(n,null != before?before:thx.js.Dom.doc.select(beforeSelector).node());
 			return n;
 		};
 		return this._select(null == qname?insertDom:insertNsDom);
@@ -3756,7 +3786,7 @@ thx.js.BaseSelection.prototype = {
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 563, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 566, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -3856,11 +3886,15 @@ thx.js.Selection = function(groups) {
 }
 thx.js.Selection.__name__ = ["thx","js","Selection"];
 thx.js.Selection.current = null;
+thx.js.Selection.currentNode = null;
 thx.js.Selection.create = function(groups) {
 	return new thx.js.Selection(groups);
 }
 thx.js.Selection.getCurrent = function() {
-	return thx.js.Dom.selectNode(thx.js.Group.current);
+	return thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]);
+}
+thx.js.Selection.getCurrentNode = function() {
+	return thx.js.Group.current;
 }
 thx.js.Selection.__super__ = thx.js.UnboundSelection;
 thx.js.Selection.prototype = $extend(thx.js.UnboundSelection.prototype,{
@@ -3910,6 +3944,26 @@ thx.js.Dom.event = null;
 thx.js.Dom.prototype = {
 	__class__: thx.js.Dom
 }
+rg.view.html.widget.DownloaderPosition = { __ename__ : ["rg","view","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
+rg.view.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.view.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
+rg.view.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
+rg.view.html.widget.DownloaderPosition.TopLeft.toString = $estr;
+rg.view.html.widget.DownloaderPosition.TopLeft.__enum__ = rg.view.html.widget.DownloaderPosition;
+rg.view.html.widget.DownloaderPosition.TopRight = ["TopRight",2];
+rg.view.html.widget.DownloaderPosition.TopRight.toString = $estr;
+rg.view.html.widget.DownloaderPosition.TopRight.__enum__ = rg.view.html.widget.DownloaderPosition;
+rg.view.html.widget.DownloaderPosition.BottomLeft = ["BottomLeft",3];
+rg.view.html.widget.DownloaderPosition.BottomLeft.toString = $estr;
+rg.view.html.widget.DownloaderPosition.BottomLeft.__enum__ = rg.view.html.widget.DownloaderPosition;
+rg.view.html.widget.DownloaderPosition.BottomRight = ["BottomRight",4];
+rg.view.html.widget.DownloaderPosition.BottomRight.toString = $estr;
+rg.view.html.widget.DownloaderPosition.BottomRight.__enum__ = rg.view.html.widget.DownloaderPosition;
+rg.view.html.widget.DownloaderPosition.Before = ["Before",5];
+rg.view.html.widget.DownloaderPosition.Before.toString = $estr;
+rg.view.html.widget.DownloaderPosition.Before.__enum__ = rg.view.html.widget.DownloaderPosition;
+rg.view.html.widget.DownloaderPosition.After = ["After",6];
+rg.view.html.widget.DownloaderPosition.After.toString = $estr;
+rg.view.html.widget.DownloaderPosition.After.__enum__ = rg.view.html.widget.DownloaderPosition;
 rg.controller.info.InfoTrack = function() {
 	this.enabled = true;
 	this.token = "SUPERFAKETOKEN";
@@ -4021,8 +4075,6 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
 }
-if(!rg.view.html) rg.view.html = {}
-if(!rg.view.html.widget) rg.view.html.widget = {}
 rg.view.html.widget.PivotTable = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
@@ -4449,14 +4501,14 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,onmouseover: function(ystats,n,i) {
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,ystats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
+			var sel = thx.js.Selection.create([new thx.js.Group([n])]), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
 			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(x + w / 2,y);
 		}
 	}
 	,applyGradient: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
+		var gn = thx.js.ResumeSelection.create([new thx.js.Group([n])]), dp = Reflect.field(n,"__data__"), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
 			var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
 			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
@@ -4543,10 +4595,10 @@ rg.JSBridge.main = function() {
 	};
 	r.math = { random : ($_=new thx.math.Random(666),$_.float.$bind($_))};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.0.1.966"};
+	r.info.viz = { version : "1.0.1.1032"};
 }
 rg.JSBridge.select = function(el) {
-	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
+	var s = Std["is"](el,String)?thx.js.Dom.doc.select(el):thx.js.Selection.create([new thx.js.Group([el])]);
 	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 130, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
@@ -4653,7 +4705,7 @@ rg.view.html.widget.Leadeboard.prototype = {
 	}
 	,fadeIn: function(n,i) {
 		var me = this;
-		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
+		thx.js.ResumeSelection.create([new thx.js.Group([n])]).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
 			me._created++;
 		});
 	}
@@ -5919,7 +5971,7 @@ thx.js.Svg.__name__ = ["thx","js","Svg"];
 thx.js.Svg.mouse = function(dom) {
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
 	if(thx.js.Svg._usepage && (js.Lib.window.scrollX || js.Lib.window.scrollY)) {
-		var svg = thx.js.Dom.selectNode(js.Lib.document.body).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
+		var svg = thx.js.Selection.create([new thx.js.Group([js.Lib.document.body])]).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
 		var ctm = svg.node().getScreenCTM();
 		thx.js.Svg._usepage = !(ctm.f || ctm.e);
 		svg.remove();
@@ -7776,7 +7828,7 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 			if(null == me.labelArrow) return;
 			var text = me.labelArrow(d,me.stats);
 			if(null == text) return;
-			var node = thx.js.Selection.getCurrent();
+			var node = thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]);
 			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
 			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
 			var label = new rg.view.svg.widget.Label(node,true,true,true);
@@ -7816,7 +7868,7 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
 	}
 	,externalGradient: function(n,i) {
-		var g = thx.js.Dom.selectNode(n), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
+		var g = thx.js.Selection.create([new thx.js.Group([n])]), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
 		var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
 		var top = color.hex("#");
 		stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
@@ -9253,9 +9305,14 @@ rg.controller.App.prototype = {
 			rg.track.Tracker.instance(this.tracker,paths,track.token).addVisualization(visualization,jsoptions);
 		}
 		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
-		if(null != download.handler) visualization.addReadyOnce(function() {
-			download.handler(($_=new rg.controller.interactive.Downloader(visualization.container,download.service,download.background),$_.download.$bind($_)));
-		});
+		if(null != download.position || null != download.handler) {
+			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
+			if(null != download.handler) visualization.addReadyOnce(function() {
+				download.handler(downloader.download.$bind(downloader));
+			}); else visualization.addReadyOnce(function() {
+				var widget = new rg.view.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,visualization.container);
+			});
+		}
 		return visualization;
 	}
 	,getLayout: function(id,options,container,replace) {
@@ -9349,7 +9406,7 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		var me = this;
 		var choice = this.g.selectAll("rect").data(this.dps);
 		choice.enter().append("svg:rect").attr("x").floatf(this.x.$bind(this)).attr("y").floatf(this.y.$bind(this)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
-			me.stylefeature(thx.js.Selection.getCurrent(),dp);
+			me.stylefeature(thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]),dp);
 		}).on("click",this.onclick.$bind(this)).on("mouseover",this.onmouseover.$bind(this));
 	}
 	,onmouseover: function(dp,i) {
@@ -9985,7 +10042,7 @@ thx.svg.Arc.prototype = {
 	,__class__: thx.svg.Arc
 }
 rg.controller.info.InfoDownload = function() {
-	this.service = "http://rgrender/";
+	this.service = "http://devtest01.reportgrid.com:20000/";
 }
 rg.controller.info.InfoDownload.__name__ = ["rg","controller","info","InfoDownload"];
 rg.controller.info.InfoDownload.filters = function() {
@@ -9995,12 +10052,17 @@ rg.controller.info.InfoDownload.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "background", validator : function(v) {
 		return Std["is"](v,String);
-	}, filter : null}];
+	}, filter : null},{ field : "position", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "position", value : rg.view.html.widget.DownloaderPositions.parse(v)}];
+	}}];
 }
 rg.controller.info.InfoDownload.prototype = {
 	handler: null
 	,service: null
 	,background: null
+	,position: null
 	,__class__: rg.controller.info.InfoDownload
 }
 rg.controller.factory.FactoryHtmlVisualization = function() {
@@ -10968,7 +11030,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 	,createLabel: function(n,i) {
 		var d = Reflect.field(n,"__data__");
 		if(!d.getMajor()) return;
-		var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
+		var label = new rg.view.svg.widget.Label(thx.js.Selection.create([new thx.js.Group([n])]),false,true,false);
 		label.setAnchor(this.labelAnchor);
 		label.setOrientation(this.labelOrientation);
 		var padding = this.paddingLabel;
@@ -11158,13 +11220,13 @@ rg.view.svg.util.RGCss = function() { }
 rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
 rg.view.svg.util.RGCss.cssSources = function() {
 	var sources = [];
-	thx.js.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
+	thx.js.Dom.doc.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
 		sources.push(n.href);
 	});
 	return sources;
 }
 rg.view.svg.util.RGCss.colorsInCss = function() {
-	var container = thx.js.Dom.select("body").append("svg:svg").attr("class").string("rg");
+	var container = thx.js.Dom.doc.select("body").append("svg:svg").attr("class").string("rg");
 	var first = rg.view.svg.util.RGCss.createBlock(container,0).style("fill").get(), length = 0;
 	var _g = 1;
 	while(_g < 1000) {
@@ -11565,6 +11627,58 @@ thx.geom.layout.Pie.prototype = {
 	}
 	,__class__: thx.geom.layout.Pie
 }
+var Bools = function() { }
+Bools.__name__ = ["Bools"];
+Bools.format = function(v,param,params,culture) {
+	return (Bools.formatf(param,params,culture))(v);
+}
+Bools.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"B");
+	var format = params.shift();
+	switch(format) {
+	case "B":
+		return function(v) {
+			return v?"true":"false";
+		};
+	case "N":
+		return function(v) {
+			return v?"1":"0";
+		};
+	case "R":
+		if(params.length != 2) throw "bool format R requires 2 parameters";
+		return function(v) {
+			return v?params[0]:params[1];
+		};
+	default:
+		throw "Unsupported bool format: " + format;
+	}
+}
+Bools.interpolate = function(v,a,b,equation) {
+	return (Bools.interpolatef(a,b,equation))(v);
+}
+Bools.interpolatef = function(a,b,equation) {
+	if(a == b) return function(_) {
+		return a;
+	}; else {
+		var f = Floats.interpolatef(0,1,equation);
+		return function(v) {
+			return f(v) < 0.5?a:b;
+		};
+	}
+}
+Bools.canParse = function(s) {
+	s = s.toLowerCase();
+	return s == "true" || s == "false";
+}
+Bools.parse = function(s) {
+	return s.toLowerCase() == "true";
+}
+Bools.compare = function(a,b) {
+	return a == b?0:a?-1:1;
+}
+Bools.prototype = {
+	__class__: Bools
+}
 if(typeof haxe=='undefined') var haxe = {}
 haxe.Md5 = function() {
 }
@@ -11730,58 +11844,6 @@ haxe.Md5.prototype = {
 		return this.rhex(a) + this.rhex(b) + this.rhex(c) + this.rhex(d);
 	}
 	,__class__: haxe.Md5
-}
-var Bools = function() { }
-Bools.__name__ = ["Bools"];
-Bools.format = function(v,param,params,culture) {
-	return (Bools.formatf(param,params,culture))(v);
-}
-Bools.formatf = function(param,params,culture) {
-	params = thx.culture.FormatParams.params(param,params,"B");
-	var format = params.shift();
-	switch(format) {
-	case "B":
-		return function(v) {
-			return v?"true":"false";
-		};
-	case "N":
-		return function(v) {
-			return v?"1":"0";
-		};
-	case "R":
-		if(params.length != 2) throw "bool format R requires 2 parameters";
-		return function(v) {
-			return v?params[0]:params[1];
-		};
-	default:
-		throw "Unsupported bool format: " + format;
-	}
-}
-Bools.interpolate = function(v,a,b,equation) {
-	return (Bools.interpolatef(a,b,equation))(v);
-}
-Bools.interpolatef = function(a,b,equation) {
-	if(a == b) return function(_) {
-		return a;
-	}; else {
-		var f = Floats.interpolatef(0,1,equation);
-		return function(v) {
-			return f(v) < 0.5?a:b;
-		};
-	}
-}
-Bools.canParse = function(s) {
-	s = s.toLowerCase();
-	return s == "true" || s == "false";
-}
-Bools.parse = function(s) {
-	return s.toLowerCase() == "true";
-}
-Bools.compare = function(a,b) {
-	return a == b?0:a?-1:1;
-}
-Bools.prototype = {
-	__class__: Bools
 }
 thx.geo.Mercator = function() {
 	this.setScale(500);
@@ -13391,6 +13453,66 @@ rg.controller.factory.FactoryVariableIndependent.prototype = {
 	}
 	,__class__: rg.controller.factory.FactoryVariableIndependent
 }
+rg.view.html.widget.DownloaderMenu = function(handler,position,container) {
+	this.handler = handler;
+	this.formats = rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS;
+	this.title = rg.view.html.widget.DownloaderMenu.DEFAULT_TITLE;
+	this.build(position,container);
+}
+rg.view.html.widget.DownloaderMenu.__name__ = ["rg","view","html","widget","DownloaderMenu"];
+rg.view.html.widget.DownloaderMenu.prototype = {
+	handler: null
+	,formats: null
+	,title: null
+	,backgroundColor: null
+	,menu: null
+	,build: function(position,container) {
+		this.createMenu(container);
+		var el = this.menu.node();
+		var $e = (position);
+		switch( $e[1] ) {
+		case 6:
+			container.node().parentNode.insertBefore(el,container.node().nextSibling);
+			break;
+		case 5:
+			container.node().parentNode.insertBefore(el,container.node());
+			break;
+		case 3:
+			this.menu.classed().add("bottom").classed().add("left");
+			break;
+		case 4:
+			this.menu.classed().add("bottom").classed().add("right");
+			break;
+		case 0:
+			var selector = $e[2];
+			thx.js.Dom.doc.select(selector).node().appendChild(el);
+			break;
+		case 1:
+			this.menu.classed().add("top").classed().add("left");
+			break;
+		case 2:
+			this.menu.classed().add("top").classed().add("right");
+			break;
+		}
+	}
+	,createMenu: function(container) {
+		this.menu = container.append("div").attr("class").string("rg menu");
+		var options = this.menu.append("div").attr("class").string("options");
+		var title = options.append("div").attr("class").string("title").html().string(this.title);
+		var list = options.append("ul").selectAll("li").data(this.formats);
+		list.enter().append("li").on("click.download",this.click.$bind(this)).html().stringf(function(d,i) {
+			return d;
+		});
+	}
+	,click: function(format,_) {
+		var me = this;
+		this.menu.classed().add("downloading");
+		this.handler(format,this.backgroundColor,function() {
+			me.menu.classed().remove("downloading");
+		});
+	}
+	,__class__: rg.view.html.widget.DownloaderMenu
+}
 rg.controller.visualization.VisualizationGeo = function(layout) {
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
 }
@@ -13555,7 +13677,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 				var fs = [[]];
 				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).eachNode((function(fs,lightness1) {
 					return function(n,i1) {
-						var start = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(thx.js.Dom.selectNode(n).style("stroke").get(),"#000000")), end = thx.color.Hsl.darker(start,lightness1[0]);
+						var start = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(thx.js.Selection.create([new thx.js.Group([n])]).style("stroke").get(),"#000000")), end = thx.color.Hsl.darker(start,lightness1[0]);
 						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
 					};
 				})(fs,lightness1)).remove();
@@ -13639,7 +13761,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 				var f = [this.labelDataPoint];
 				gsymbol.eachNode((function(f,stats) {
 					return function(n,i1) {
-						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
+						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Selection.create([new thx.js.Group([n])]),true,true,true);
 						label.setText(f[0](dp,stats[0]));
 					};
 				})(f,stats));
@@ -13662,7 +13784,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 	,onmouseover: function(stats,n,i) {
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			var sel = thx.js.Selection.create([new thx.js.Group([n])]), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
@@ -14175,7 +14297,7 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		});
 	}
 	,applyGradientV: function(d,i) {
-		var gn = thx.js.Selection.getCurrent(), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
+		var gn = thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
 			var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
 			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
@@ -14185,7 +14307,7 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		gn.attr("style").string("fill:url(#" + id + ")");
 	}
 	,applyGradientH: function(d,i) {
-		var gn = thx.js.Selection.getCurrent(), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
+		var gn = thx.js.Selection.create([new thx.js.Group([thx.js.Group.current])]), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
 		var gradient = this.defs.append("svg:linearGradient").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
 		var bx = d[0].coord.x, ax = d[d.length - 1].coord.x, span = ax - bx, percent = function(x) {
 			return Math.round((x - bx) / span * 10000) / 100;
@@ -14667,12 +14789,12 @@ thx.js.PreEnterSelection.prototype = {
 	,insert: function(name,before,beforeSelector) {
 		var qname = thx.xml.Namespace.qualify(name);
 		var insertDom = function(node) {
-			var n = js.Lib.document.createElement(name), bf = null != before?before:thx.js.Dom.selectNode(node).select(beforeSelector).node();
+			var n = js.Lib.document.createElement(name), bf = null != before?before:thx.js.Selection.create([new thx.js.Group([node])]).select(beforeSelector).node();
 			node.insertBefore(n,bf);
 			return n;
 		};
 		var insertNsDom = function(node) {
-			var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:thx.js.Dom.selectNode(node).select(beforeSelector).node();
+			var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:thx.js.Selection.create([new thx.js.Group([node])]).select(beforeSelector).node();
 			node.insertBefore(n,bf);
 			return n;
 		};
@@ -18435,18 +18557,18 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		this.mouseClick(d.dp);
 	}
 	,removeLabel: function(dom,i) {
-		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
+		var n = thx.js.Selection.create([new thx.js.Group([dom])]), d = Reflect.field(dom,"__data__");
 		var label = this.labels.get(d.id);
 		label.destroy();
 		this.labels.remove(d.id);
 	}
 	,updateLabel: function(dom,i) {
-		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+		var n = thx.js.Selection.create([new thx.js.Group([dom])]), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 		label.setText(this.labelDataPoint(d.dp,this.stats));
 		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 	}
 	,appendLabel: function(dom,i) {
-		var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+		var n = thx.js.Selection.create([new thx.js.Group([dom])]), label = new rg.view.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 		label.setOrientation(this.labelOrientation);
 		switch( (this.labelOrientation)[1] ) {
 		case 0:
@@ -18464,7 +18586,7 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		this.labels.set(d.id,label);
 	}
 	,applyGradient: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
+		var gn = thx.js.ResumeSelection.create([new thx.js.Group([n])]), dp = Reflect.field(n,"__data__"), id = dp.id;
 		if(this.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
 			var slice = gn.select("path.slice"), shape = this.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = t.node().getBBox();
 			t.remove();
@@ -18478,15 +18600,15 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
 	}
 	,fadein: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
+		var gn = thx.js.ResumeSelection.create([new thx.js.Group([n])]), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
 		gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay).attr("d").string(shape);
 	}
 	,highlight: function(d,i) {
-		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+		var slice = thx.js.ResumeSelection.create([new thx.js.Group([d])]).selectAll("path");
 		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcBig));
 	}
 	,backtonormal: function(d,i) {
-		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+		var slice = thx.js.ResumeSelection.create([new thx.js.Group([d])]).selectAll("path");
 		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
 	}
 	,id: function(dp,i) {
@@ -20992,6 +21114,8 @@ rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
 rg.util.Properties.TIME_TOKEN = "#time:";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.data.source.rgquery.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
+rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
+rg.view.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
 rg.view.layout.LayoutCartesian.ALT_RIGHT = 20;
 rg.view.layout.LayoutCartesian.ALT_LEFT = 20;
 rg.view.layout.LayoutCartesian.ALT_TOP = 8;

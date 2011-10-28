@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		options : {
 			click : function(dp) { alert(ReportGrid.dump(dp)) },
 			download : {
+				position : "after"
+				/*
 				handler : function(callback) {
 					function exportPdf() { callback("pdf"); }
 					function exportPng() { callback("png"); }
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function(){
 					createButton("png", exportPng);
 //					exportChart();
 				}
+				*/
 			}
 		}
 	});

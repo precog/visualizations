@@ -29,6 +29,7 @@ import rg.data.DataPoint;
 import rg.view.layout.Layout;
 import rg.controller.factory.FactoryHtmlVisualization;
 import rg.controller.factory.FactorySvgVisualization;
+import rg.view.html.widget.DownloaderMenu;
 using rg.controller.info.Info;
 using Arrays;
 
@@ -112,11 +113,20 @@ class App
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
 
-		if (null != download.handler)
+		if (null != download.position || null != download.handler)
 		{
-			visualization.addReadyOnce(function() {
-				download.handler(new Downloader(visualization.container, download.service, download.background).download);
-			});
+			var downloader = new Downloader(visualization.container, download.service, download.background);
+			
+			if (null != download.handler)
+				visualization.addReadyOnce(function() download.handler(downloader.download));
+			else
+			{
+				visualization.addReadyOnce(function()
+				{
+					var widget = new DownloaderMenu(downloader.download, download.position, visualization.container);
+				});
+				
+			}
 		}
 		
 		return visualization;
