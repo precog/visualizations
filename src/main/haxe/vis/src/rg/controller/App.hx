@@ -123,7 +123,7 @@ class App
 			{
 				visualization.addReadyOnce(function()
 				{
-					var widget = new DownloaderMenu(downloader.download, download.position, visualization.container);
+					var widget = new DownloaderMenu(downloader.download, download.position, download.formats, visualization.container);
 				});
 				
 			}

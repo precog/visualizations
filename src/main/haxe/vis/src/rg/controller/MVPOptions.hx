@@ -11,6 +11,7 @@ import rg.util.DataPoints;
 import rg.util.RGStrings;
 import thx.date.DateParser;
 import rg.util.Periodicity;
+import thx.error.Error;
 
 // TODO add property options
 // TODO add value options
@@ -51,6 +52,7 @@ class MVPOptions
 
 		if (null == parameters.options)
 			parameters.options = { };
+		var options : Dynamic = parameters.options;
 		// capture defaults
 		// grouping
 		if (null != parameters.groupby)
@@ -89,7 +91,7 @@ class MVPOptions
 		} else if (null != start) {
 			periodicity = Periodicity.defaultPeriodicity(end - start);
 		} else {
-			periodicity = switch(parameters.options.visualization) { case "piechart": "eternity"; default: "day"; };
+			periodicity = switch(options.visualization) { case "piechart": "eternity"; default: "day"; };
 		}
 		
 		if (null == start && "eternity" != periodicity)
@@ -127,8 +129,21 @@ class MVPOptions
 			if (Properties.isTime(query))
 				periodicity = Properties.periodicity(query);
 		} else
-			query = buildQuery(parameters.options.visualization, property, periodicity);
+			query = buildQuery(options.visualization, property, periodicity);
 
+		// misc options
+		if (null != options.download && !Types.isAnonymous(options.download))
+		{
+			var v : Dynamic = options.download;
+			Reflect.deleteField(options, "download");
+			if (v == true)
+				options.download = { position : "auto" };
+			else if (Std.is(v, String))
+				options.download = { position : v };
+			else
+				throw new Error("invalid value for download '{0}'", [v]);
+		}
+			
 		// ensure hash for tracking
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{

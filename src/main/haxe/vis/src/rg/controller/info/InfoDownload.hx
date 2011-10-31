@@ -15,6 +15,7 @@ class InfoDownload
 	public var service : String;
 	public var background : Null<String>;
 	public var position : Null<DownloaderPosition>;
+	public var formats : Array<String>;
 	
 	public function new() 
 	{
@@ -23,6 +24,7 @@ class InfoDownload
 #else
 		service = "http://rgrender/";
 #end
+		formats = ['png', 'jpg'];
 	}
 	
 	public static function filters()
@@ -38,6 +40,10 @@ class InfoDownload
 		}, {
 			field : "background",
 			validator : function(v) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "formats",
+			validator : function(v) return Std.is(v, Array),
 			filter : null
 		}, {
 			field : "position",

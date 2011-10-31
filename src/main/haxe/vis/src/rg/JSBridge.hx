@@ -112,10 +112,9 @@ class JSBridge
 				return Properties.periodicity(v);
 			return RGStrings.humanize(v);
 		}
-		r.math = {
-			random : new Random(666).float
-		}
-		
+		var rand = new Random(666);
+		r.math = { random : function() return rand.float() }
+
 		r.info = null != r.info ? r.info : { };
 		r.info.viz = {
 			version : thx.util.MacroVersion.fullVersion()
