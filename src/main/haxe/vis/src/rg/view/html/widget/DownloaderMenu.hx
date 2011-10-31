@@ -17,10 +17,10 @@ class DownloaderMenu
 	var title : String;
 	var backgroundColor : String;
 	var menu : Selection;
-	public function new(handler : String -> Null<String> -> (Void -> Void) -> Void, position : DownloaderPosition, container : Selection) 
+	public function new(handler : String -> Null<String> -> (Void -> Void) -> Void, position : DownloaderPosition, formats : Array<String>, container : Selection) 
 	{
 		this.handler = handler;
-		this.formats = DEFAULT_FORMATS;
+		this.formats = null == formats ? DEFAULT_FORMATS : formats;
 		this.title = DEFAULT_TITLE;
 		build(position, container);
 	}

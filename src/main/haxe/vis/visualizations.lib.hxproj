@@ -1,16 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project version="2">
+<project>
   <!-- Output SWF options -->
   <output>
-    <movie outputType="Application" />
+    <movie disabled="False" />
     <movie input="" />
     <movie path="bin\js\reportgrid-viz.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
-    <movie version="0" />
-    <movie minorVersion="0" />
-    <movie platform="JavaScript" />
+    <movie version="11" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
@@ -48,6 +46,4 @@
     <option testMovie="OpenDocument" />
     <option testMovieCommand="http://localhost/rg/geo-static.html" />
   </options>
-  <!-- Plugin storage -->
-  <storage />
 </project>
