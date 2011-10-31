@@ -32,19 +32,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			segmentpadding : 10,
 			arrowsize : 40,
 			click : function(d,s) { alert(ReportGrid.format(d) + " " + ReportGrid.format(s)); },
-			download : {
-				position : "bottomright"
-/*
-				handler : function(callback) {
-					function exportChart() { callback("pdf"); }
-					var el = document.createElement("button");
-					el.innerHTML = "download";
-					el.onclick = exportChart;
-					document.body.appendChild(el);
-//					exportChart();
-				}
-*/
-			}
+			download : "bottomright"
 		}
 	});
 	
@@ -66,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				]
 			}
 		}],
-		options : { download : { position : "topright" } }
+		options : { download : true }
 	});
 
 	ReportGrid.funnelChart("#chart3", {
@@ -88,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				]
 			}
 		}],
-		options : { download : { position : "bottomleft" } }
+		options : { download : true }
 	});
 
 }, false)

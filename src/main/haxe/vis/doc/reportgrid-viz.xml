@@ -255,21 +255,40 @@
 	<d/>
 	<c path="rg.data.IAxis"><d/></c>
 </c></c></variables>
-		<setVariables public="1" set="method" line="21"><f a="independentVariables:dependentVariables">
+		<container public="1" set="null"><c path="thx.js.Selection"/></container>
+		<ready><c path="hxevents.Notifier"/></ready>
+		<hasRendered><e path="Bool"/></hasRendered>
+		<setVariables public="1" set="method" line="31"><f a="independentVariables:dependentVariables">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
 	<e path="Void"/>
 </f></setVariables>
-		<init public="1" set="method" line="27"><f a=""><e path="Void"/></f></init>
-		<feedData public="1" set="method" line="32"><f a="data">
+		<init public="1" set="method" line="40"><f a=""><e path="Void"/></f></init>
+		<feedData public="1" set="method" line="45"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
-		<getVariables set="method" line="37"><f a=""><c path="Array"><c path="rg.data.Variable">
+		<getVariables set="method" line="50"><f a=""><c path="Array"><c path="rg.data.Variable">
 	<d/>
 	<c path="rg.data.IAxis"><d/></c>
 </c></c></f></getVariables>
-		<destroy public="1" set="method" line="44"><f a=""><e path="Void"/></f></destroy>
+		<destroy public="1" set="method" line="57"><f a=""><e path="Void"/></f></destroy>
+		<addReadyOnce public="1" set="method" line="62"><f a="handler">
+	<f a=""><e path="Void"/></f>
+	<e path="Void"/>
+</f></addReadyOnce>
+		<addReady public="1" set="method" line="69"><f a="handler">
+	<f a=""><e path="Void"/></f>
+	<e path="Void"/>
+</f></addReady>
+		<removeReady public="1" set="method" line="76"><f a="handler">
+	<f a=""><e path="Void"/></f>
+	<e path="Void"/>
+</f></removeReady>
+		<new set="method" line="26"><f a="container">
+	<c path="thx.js.Selection"/>
+	<e path="Void"/>
+</f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -891,12 +910,44 @@
 		<infoBar public="1"><c path="rg.controller.info.InfoBarChart"/></infoBar>
 		<initAxes set="method" line="20" override="1"><f a=""><e path="Void"/></f></initAxes>
 		<initChart set="method" line="26" override="1"><f a=""><e path="Void"/></f></initChart>
-		<transformData set="method" line="46" override="1"><f a="dps">
+		<transformData set="method" line="47" override="1"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
 </f></transformData>
 		<new public="1" set="method" line="16"><f a="layout">
 	<c path="rg.view.layout.Layout"/>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="rg.controller.interactive.Downloader" params="" file="src/rg/controller/interactive/Downloader.hx">
+		<ALLOWED_FORMATS line="18" static="1"><c path="Array"><c path="String"/></c></ALLOWED_FORMATS>
+		<getClassName set="method" line="66" static="1"><f a="container">
+	<c path="thx.js.Selection"/>
+	<t path="Null"><c path="String"/></t>
+</f></getClassName>
+		<getTokenId set="method" line="73" static="1"><f a=""><c path="String"/></f></getTokenId>
+		<serviceUrl><c path="String"/></serviceUrl>
+		<defaultBackgroundColor><c path="String"/></defaultBackgroundColor>
+		<container><c path="thx.js.Selection"/></container>
+		<download public="1" set="method" line="31"><f a="format:backgroundcolor:?handler">
+	<c path="String"/>
+	<t path="Null"><c path="String"/></t>
+	<f a=""><e path="Void"/></f>
+	<e path="Void"/>
+</f></download>
+		<success set="method" line="78"><f a="handler:content">
+	<f a=""><e path="Void"/></f>
+	<c path="String"/>
+	<e path="Void"/>
+</f></success>
+		<new public="1" set="method" line="24"><f a="container:serviceurl:backgroundcolor">
+	<c path="thx.js.Selection"/>
+	<c path="String"/>
+	<t path="Null"><c path="String"/></t>
 	<e path="Void"/>
 </f></new>
 		<haxe_doc>
@@ -1135,20 +1186,20 @@
 	<height><c path="Float"/></height>
 </a></f></getBoundingBox>
 		<transition_id><c path="Int"/></transition_id>
-		<moveTo public="1" set="method" line="182"><f a="x:y:?animate">
+		<moveTo public="1" set="method" line="189"><f a="x:y:?animate">
 	<c path="Float"/>
 	<c path="Float"/>
 	<e path="Bool"/>
 	<e path="Void"/>
 </f></moveTo>
-		<_moveTo set="method" line="207"><f a="x:y">
+		<_moveTo set="method" line="214"><f a="x:y">
 	<c path="Float"/>
 	<c path="Float"/>
 	<e path="Void"/>
 </f></_moveTo>
-		<show public="1" set="method" line="482"><f a=""><e path="Void"/></f></show>
-		<hide public="1" set="method" line="490"><f a=""><e path="Void"/></f></hide>
-		<redraw set="method" line="498"><f a=""><e path="Void"/></f></redraw>
+		<show public="1" set="method" line="489"><f a=""><e path="Void"/></f></show>
+		<hide public="1" set="method" line="497"><f a=""><e path="Void"/></f></hide>
+		<redraw set="method" line="505"><f a=""><e path="Void"/></f></redraw>
 		<new public="1" set="method" line="41"><f a="container:?bindOnTop">
 	<c path="thx.js.Selection"/>
 	<e path="Bool"/>
@@ -1262,6 +1313,93 @@
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="rg.track.Tracker" params="" file="src/rg/track/Tracker.hx">
+		<PREFIX line="22" static="1"><c path="String"/></PREFIX>
+		<KEY_ENGAGEMENTS line="23" static="1"><c path="String"/></KEY_ENGAGEMENTS>
+		<KEY_VISITS line="24" static="1"><c path="String"/></KEY_VISITS>
+		<KEY_ENGAGEMENT_TIMESTAMP line="25" static="1"><c path="String"/></KEY_ENGAGEMENT_TIMESTAMP>
+		<KEY_ENGAGEMENT_TIME line="26" static="1"><c path="String"/></KEY_ENGAGEMENT_TIME>
+		<DELAY_FIRST_VISIT line="27" static="1"><c path="Int"/></DELAY_FIRST_VISIT>
+		<_instance static="1"><c path="rg.track.Tracker"/></_instance>
+		<ENGAGE_PAGE line="29" static="1"><c path="String"/></ENGAGE_PAGE>
+		<ENGAGE_VIZ line="30" static="1"><c path="String"/></ENGAGE_VIZ>
+		<delaypositions line="31" static="1"><c path="Array"><c path="Int"/></c></delaypositions>
+		<instance public="1" set="method" line="44" static="1"><f a="executor:paths:token">
+	<c path="rg.data.source.rgquery.ITrackReportGrid"/>
+	<c path="Array"><c path="String"/></c>
+	<c path="String"/>
+	<c path="rg.track.Tracker"/>
+</f></instance>
+		<executor><c path="rg.data.source.rgquery.ITrackReportGrid"/></executor>
+		<storage><c path="js.Storage"/></storage>
+		<paths><c path="Array"><c path="String"/></c></paths>
+		<token><c path="String"/></token>
+		<engagements><c path="thx.collection.Set"><c path="String"/></c></engagements>
+		<visualizations><c path="Array"><d/></c></visualizations>
+		<start><c path="Float"/></start>
+		<delaypos><c path="Int"/></delaypos>
+		<visits><c path="Int"/></visits>
+		<updateVisits set="method" line="70"><f a=""><e path="Void"/></f></updateVisits>
+		<addEngagement set="method" line="79"><f a="visualization">
+	<c path="String"/>
+	<e path="Void"/>
+</f></addEngagement>
+		<addVisualization public="1" set="method" line="89"><f a="visualization:params">
+	<c path="rg.controller.visualization.Visualization"/>
+	<d/>
+	<e path="Void"/>
+</f></addVisualization>
+		<trackVisualization set="method" line="96"><f a="visualization:params">
+	<c path="rg.controller.visualization.Visualization"/>
+	<d/>
+	<e path="Void"/>
+</f></trackVisualization>
+		<createEngagementDelay set="method" line="120"><f a=""><e path="Void"/></f></createEngagementDelay>
+		<trackInteraction set="method" line="129"><f a="visualization:action:?_:?_">
+	<c path="String"/>
+	<c path="String"/>
+	<t path="js.HtmlDom"/>
+	<c path="Int"/>
+	<e path="Void"/>
+</f></trackInteraction>
+		<trackEngagements set="method" line="139"><f a=""><e path="Bool"/></f></trackEngagements>
+		<delayedTrackVisits set="method" line="154"><f a="isfirstvisit">
+	<e path="Bool"/>
+	<e path="Void"/>
+</f></delayedTrackVisits>
+		<trackFirstVisit set="method" line="163"><f a=""><e path="Void"/></f></trackFirstVisit>
+		<trackVisit set="method" line="169"><f a=""><e path="Void"/></f></trackVisit>
+		<updateEngagementTime set="method" line="176"><f a=""><e path="Void"/></f></updateEngagementTime>
+		<extractEngagements set="method" line="182"><f a=""><c path="Array"><a><visualization set="null"><unknown/></visualization></a></c></f></extractEngagements>
+		<bucketTime set="method" line="205"><f a="pos">
+	<c path="Int"/>
+	<c path="String"/>
+</f></bucketTime>
+		<engKey set="method" line="214"><f a="key">
+	<c path="String"/>
+	<c path="String"/>
+</f></engKey>
+		<remove set="method" line="216"><f a="key">
+	<c path="String"/>
+	<c path="String"/>
+</f></remove>
+		<execute set="method" line="223"><f a="params">
+	<a/>
+	<e path="Void"/>
+</f></execute>
+		<baseEvent set="method" line="231"><f a=""><d/></f></baseEvent>
+		<visitEvent set="method" line="242"><f a=""><d/></f></visitEvent>
+		<new set="method" line="51"><f a="executor:paths:token">
+	<c path="rg.data.source.rgquery.ITrackReportGrid"/>
+	<c path="Array"><c path="String"/></c>
+	<c path="String"/>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.controller.info.Info" params="" file="src/rg/controller/info/Info.hx">
 		<feed public="1" params="T" set="method" line="12" static="1"><f a="info:ob">
 	<c path="feed.T"/>
@@ -1298,71 +1436,56 @@
 		<Independent/>
 		<Dependent/>
 	</enum>
-	<class path="thx.geo.IProjection" params="" file="C:\Projects\thx\src/thx/geo/IProjection.hx" interface="1">
-		<project public="1" set="method"><f a="coords">
-	<c path="Array"><c path="Float"/></c>
-	<c path="Array"><c path="Float"/></c>
-</f></project>
-		<invert public="1" set="method"><f a="coords">
-	<c path="Array"><c path="Float"/></c>
-	<c path="Array"><c path="Float"/></c>
-</f></invert>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
-	<class path="thx.geo.Albers" params="" file="C:\Projects\thx\src/thx/geo/Albers.hx">
-		<implements path="thx.geo.IProjection"/>
-		<origin public="1" get="getOrigin" set="setOrigin"><c path="Array"><c path="Float"/></c></origin>
-		<parallels public="1" get="getParallels" set="setParallels"><c path="Array"><c path="Float"/></c></parallels>
-		<translate public="1" get="getTranslate" set="setTranslate"><c path="Array"><c path="Float"/></c></translate>
-		<scale public="1" get="getScale" set="setScale"><c path="Float"/></scale>
-		<lng0><c path="Float"/></lng0>
-		<n><c path="Float"/></n>
-		<C><c path="Float"/></C>
-		<p0><c path="Float"/></p0>
-		<_origin><c path="Array"><c path="Float"/></c></_origin>
-		<_parallels><c path="Array"><c path="Float"/></c></_parallels>
-		<_translate><c path="Array"><c path="Float"/></c></_translate>
-		<_scale><c path="Float"/></_scale>
-		<project public="1" set="method" line="37"><f a="coords">
-	<c path="Array"><c path="Float"/></c>
-	<c path="Array"><c path="Float"/></c>
-</f></project>
-		<invert public="1" set="method" line="47"><f a="coords">
-	<c path="Array"><c path="Float"/></c>
-	<c path="Array"><c path="Float"/></c>
-</f></invert>
-		<getOrigin set="method" line="60"><f a=""><c path="Array"><c path="Float"/></c></f></getOrigin>
-		<setOrigin set="method" line="61"><f a="origin">
-	<c path="Array"><c path="Float"/></c>
-	<c path="Array"><c path="Float"/></c>
-</f></setOrigin>
-		<getParallels set="method" line="68"><f a=""><c path="Array"><c path="Float"/></c></f></getParallels>
-		<setParallels set="method" line="69"><f a="parallels">
-	<c path="Array"><c path="Float"/></c>
-	<c path="Array"><c path="Float"/></c>
-</f></setParallels>
-		<getTranslate set="method" line="76"><f a=""><c path="Array"><c path="Float"/></c></f></getTranslate>
-		<setTranslate set="method" line="77"><f a="translate">
-	<c path="Array"><c path="Float"/></c>
-	<c path="Array"><c path="Float"/></c>
-</f></setTranslate>
-		<reload set="method" line="83"><f a=""><c path="thx.geo.Albers"/></f></reload>
-		<setScale set="method" line="97"><f a="scale">
-	<c path="Float"/>
-	<c path="Float"/>
-</f></setScale>
-		<getScale set="method" line="98"><f a=""><c path="Float"/></f></getScale>
-		<new public="1" set="method" line="28"><f a=""><e path="Void"/></f></new>
-		<haxe_doc>
- * Based on D3.js by Michael Bostock
- * @author Franco Ponticelli
- * Derived from Tom Carden's Albers implementation for Protovis.
- * http://gist.github.com/476238
- * http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
- </haxe_doc>
+	<class path="js.Cookie" params="" file="C:\Projects\haxe/std/js/Cookie.hx">
+		<set public="1" set="method" line="8" static="1">
+			<f a="name:value:?expireDelay:?path:?domain">
+				<c path="String"/>
+				<c path="String"/>
+				<c path="Int"/>
+				<c path="String"/>
+				<c path="String"/>
+				<e path="Void"/>
+			</f>
+			<haxe_doc>
+		Create or update a cookie.
+		expireDelay (seconds), if null, the cookie expires at end of session
+	</haxe_doc>
+		</set>
+		<all public="1" set="method" line="26" static="1">
+			<f a=""><c path="Hash"><c path="String"/></c></f>
+			<haxe_doc>
+		Returns all cookies
+	</haxe_doc>
+		</all>
+		<get public="1" set="method" line="42" static="1">
+			<f a="name">
+				<c path="String"/>
+				<t path="Null"><c path="String"/></t>
+			</f>
+			<haxe_doc>
+		Returns value of a cookie.
+	</haxe_doc>
+		</get>
+		<exists public="1" set="method" line="49" static="1">
+			<f a="name">
+				<c path="String"/>
+				<e path="Bool"/>
+			</f>
+			<haxe_doc>
+		Returns true if a cookie [name] exists
+	</haxe_doc>
+		</exists>
+		<remove public="1" set="method" line="56" static="1">
+			<f a="name:?path:?domain">
+				<c path="String"/>
+				<c path="String"/>
+				<c path="String"/>
+				<e path="Void"/>
+			</f>
+			<haxe_doc>
+		Remove a cookie
+	</haxe_doc>
+		</remove>
 	</class>
 	<class path="EReg" params="" file="C:\Projects\haxe/std/js/_std/EReg.hx">
 		<r><d/></r>
@@ -1376,7 +1499,7 @@
 		Updates the internal state accordingly.
 	</haxe_doc>
 		</match>
-		<matched public="1" set="method" line="43">
+		<matched public="1" set="method" line="41">
 			<f a="n">
 				<c path="Int"/>
 				<c path="String"/>
@@ -1387,21 +1510,21 @@
 		is returned.
 	</haxe_doc>
 		</matched>
-		<matchedLeft public="1" set="method" line="47">
+		<matchedLeft public="1" set="method" line="45">
 			<f a=""><c path="String"/></f>
 			<haxe_doc>
 		Returns the part of the string that was as the left of
 		of the matched substring.
 	</haxe_doc>
 		</matchedLeft>
-		<matchedRight public="1" set="method" line="53">
+		<matchedRight public="1" set="method" line="50">
 			<f a=""><c path="String"/></f>
 			<haxe_doc>
 		Returns the part of the string that was at the right of
 		of the matched substring.
 	</haxe_doc>
 		</matchedRight>
-		<matchedPos public="1" set="method" line="62">
+		<matchedPos public="1" set="method" line="56">
 			<f a=""><a>
 	<pos><c path="Int"/></pos>
 	<len><c path="Int"/></len>
@@ -1411,7 +1534,7 @@
 		original matched string.
 	</haxe_doc>
 		</matchedPos>
-		<split public="1" set="method" line="67">
+		<split public="1" set="method" line="61">
 			<f a="s">
 				<c path="String"/>
 				<c path="Array"><c path="String"/></c>
@@ -1421,7 +1544,7 @@
 		the separators.
 	</haxe_doc>
 		</split>
-		<replace public="1" set="method" line="73">
+		<replace public="1" set="method" line="67">
 			<f a="s:by">
 				<c path="String"/>
 				<c path="String"/>
@@ -1433,7 +1556,7 @@
 		while replacing. [$$] means the [$] character.
 	</haxe_doc>
 		</replace>
-		<customReplace public="1" set="method" line="77">
+		<customReplace public="1" set="method" line="71">
 			<f a="s:f">
 				<c path="String"/>
 				<f a="">
@@ -1528,6 +1651,72 @@
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="thx.geo.IProjection" params="" file="C:\Projects\thx\src/thx/geo/IProjection.hx" interface="1">
+		<project public="1" set="method"><f a="coords">
+	<c path="Array"><c path="Float"/></c>
+	<c path="Array"><c path="Float"/></c>
+</f></project>
+		<invert public="1" set="method"><f a="coords">
+	<c path="Array"><c path="Float"/></c>
+	<c path="Array"><c path="Float"/></c>
+</f></invert>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="thx.geo.Albers" params="" file="C:\Projects\thx\src/thx/geo/Albers.hx">
+		<implements path="thx.geo.IProjection"/>
+		<origin public="1" get="getOrigin" set="setOrigin"><c path="Array"><c path="Float"/></c></origin>
+		<parallels public="1" get="getParallels" set="setParallels"><c path="Array"><c path="Float"/></c></parallels>
+		<translate public="1" get="getTranslate" set="setTranslate"><c path="Array"><c path="Float"/></c></translate>
+		<scale public="1" get="getScale" set="setScale"><c path="Float"/></scale>
+		<lng0><c path="Float"/></lng0>
+		<n><c path="Float"/></n>
+		<C><c path="Float"/></C>
+		<p0><c path="Float"/></p0>
+		<_origin><c path="Array"><c path="Float"/></c></_origin>
+		<_parallels><c path="Array"><c path="Float"/></c></_parallels>
+		<_translate><c path="Array"><c path="Float"/></c></_translate>
+		<_scale><c path="Float"/></_scale>
+		<project public="1" set="method" line="37"><f a="coords">
+	<c path="Array"><c path="Float"/></c>
+	<c path="Array"><c path="Float"/></c>
+</f></project>
+		<invert public="1" set="method" line="47"><f a="coords">
+	<c path="Array"><c path="Float"/></c>
+	<c path="Array"><c path="Float"/></c>
+</f></invert>
+		<getOrigin set="method" line="60"><f a=""><c path="Array"><c path="Float"/></c></f></getOrigin>
+		<setOrigin set="method" line="61"><f a="origin">
+	<c path="Array"><c path="Float"/></c>
+	<c path="Array"><c path="Float"/></c>
+</f></setOrigin>
+		<getParallels set="method" line="68"><f a=""><c path="Array"><c path="Float"/></c></f></getParallels>
+		<setParallels set="method" line="69"><f a="parallels">
+	<c path="Array"><c path="Float"/></c>
+	<c path="Array"><c path="Float"/></c>
+</f></setParallels>
+		<getTranslate set="method" line="76"><f a=""><c path="Array"><c path="Float"/></c></f></getTranslate>
+		<setTranslate set="method" line="77"><f a="translate">
+	<c path="Array"><c path="Float"/></c>
+	<c path="Array"><c path="Float"/></c>
+</f></setTranslate>
+		<reload set="method" line="83"><f a=""><c path="thx.geo.Albers"/></f></reload>
+		<setScale set="method" line="97"><f a="scale">
+	<c path="Float"/>
+	<c path="Float"/>
+</f></setScale>
+		<getScale set="method" line="98"><f a=""><c path="Float"/></f></getScale>
+		<new public="1" set="method" line="28"><f a=""><e path="Void"/></f></new>
+		<haxe_doc>
+ * Based on D3.js by Michael Bostock
+ * @author Franco Ponticelli
+ * Derived from Tom Carden's Albers implementation for Protovis.
+ * http://gist.github.com/476238
+ * http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
+ </haxe_doc>
+	</class>
 	<class path="rg.view.svg.panel.Layer" params="" file="src/rg/view/svg/panel/Layer.hx">
 		<panel><c path="rg.view.svg.panel.Panel"/></panel>
 		<frame><c path="rg.view.frame.Frame"/></frame>
@@ -1586,18 +1775,19 @@
 	<c path="rg.data.Stats"><d/></c>
 	<c path="String"/>
 </f></labelDataPointOver>
+		<ready public="1" set="null"><c path="hxevents.Notifier"/></ready>
 		<panelx><c path="Float"/></panelx>
 		<panely><c path="Float"/></panely>
 		<tooltip><c path="rg.view.svg.widget.Balloon"/></tooltip>
-		<resize set="method" line="36" override="1"><f a=""><e path="Void"/></f></resize>
-		<init public="1" set="method" line="43"><f a=""><e path="Void"/></f></init>
-		<moveTooltip set="method" line="52"><f a="x:y:?animated">
+		<resize set="method" line="39" override="1"><f a=""><e path="Void"/></f></resize>
+		<init public="1" set="method" line="46"><f a=""><e path="Void"/></f></init>
+		<moveTooltip set="method" line="55"><f a="x:y:?animated">
 	<c path="Float"/>
 	<c path="Float"/>
 	<e path="Bool"/>
 	<e path="Void"/>
 </f></moveTooltip>
-		<new public="1" set="method" line="28"><f a="panel">
+		<new public="1" set="method" line="30"><f a="panel">
 	<c path="rg.view.svg.panel.Panel"/>
 	<e path="Void"/>
 </f></new>
@@ -1677,7 +1867,7 @@
 </f></data>
 		<resize set="method" line="77" override="1"><f a=""><e path="Void"/></f></resize>
 		<redraw set="method" line="83"><f a=""><e path="Void"/></f></redraw>
-		<getTranslatePointf set="method" line="144"><f a="pos">
+		<getTranslatePointf set="method" line="145"><f a="pos">
 	<c path="Int"/>
 	<f a="dp:i">
 		<t path="rg.data.DataPoint"/>
@@ -1685,13 +1875,13 @@
 		<c path="String"/>
 	</f>
 </f></getTranslatePointf>
-		<onmouseover set="method" line="154"><f a="stats:n:i">
+		<onmouseover set="method" line="155"><f a="stats:n:i">
 	<c path="rg.data.Stats"><d/></c>
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
-		<onclick set="method" line="170"><f a="stats:dp:i">
+		<onclick set="method" line="171"><f a="stats:dp:i">
 	<c path="rg.data.Stats"><d/></c>
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
@@ -1820,6 +2010,16 @@
 </f></ease>
 		<delay public="1"><c path="Int"/></delay>
 		<new public="1" set="method" line="17"><f a=""><e path="Void"/></f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="rg.view.html.widget.DownloaderPositions" params="" file="src/rg/view/html/widget/DownloaderPositions.hx">
+		<parse public="1" set="method" line="11" static="1"><f a="v">
+	<c path="String"/>
+	<e path="rg.view.html.widget.DownloaderPosition"/>
+</f></parse>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -5521,6 +5721,21 @@
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="DynamicsT" params="" file="C:\Projects\thx\src/DynamicsT.hx">
+		<toHash public="1" params="T" set="method" line="8" static="1"><f a="ob">
+	<d><c path="toHash.T"/></d>
+	<c path="Hash"><c path="toHash.T"/></c>
+</f></toHash>
+		<copyToHash public="1" params="T" set="method" line="14" static="1"><f a="ob:hash">
+	<d><c path="copyToHash.T"/></d>
+	<c path="Hash"><c path="copyToHash.T"/></c>
+	<c path="Hash"><c path="copyToHash.T"/></c>
+</f></copyToHash>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="thx.js.AccessProperty" params="That" file="C:\Projects\thx\src/thx/js/AccessProperty.hx">
 		<extends path="thx.js.Access"><c path="thx.js.AccessProperty.That"/></extends>
 		<name><c path="String"/></name>
@@ -6253,7 +6468,22 @@
  </haxe_doc>
 	</class>
 	<class path="thx.js.BaseSelection" params="This" file="C:\Projects\thx\src/thx/js/Selection.hx" module="thx.js.Selection">
-		<bindJoin params="TData" set="method" line="576" static="1"><f a="join:group:groupData:update:enter:exit">
+		<listenerEnterLeave set="method" line="501" static="1"><f a="f:dom:i">
+	<f a=":">
+		<t path="js.HtmlDom"/>
+		<c path="Int"/>
+		<e path="Void"/>
+	</f>
+	<t path="js.HtmlDom"/>
+	<c path="Int"/>
+	<e path="Void"/>
+</f></listenerEnterLeave>
+		<isChild set="method" line="510" static="1"><f a="parent:child">
+	<t path="js.HtmlDom"/>
+	<t path="js.HtmlDom"/>
+	<e path="Bool"/>
+</f></isChild>
+		<bindJoin params="TData" set="method" line="613" static="1"><f a="join:group:groupData:update:enter:exit">
 	<f a=":">
 		<c path="bindJoin.TData"/>
 		<c path="Int"/>
@@ -6266,7 +6496,7 @@
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<e path="Void"/>
 </f></bindJoin>
-		<bind params="TData" set="method" line="638" static="1"><f a="group:groupData:update:enter:exit">
+		<bind params="TData" set="method" line="675" static="1"><f a="group:groupData:update:enter:exit">
 	<c path="thx.js.Group"/>
 	<c path="Array"><c path="bind.TData"/></c>
 	<c path="Array"><c path="thx.js.Group"/></c>
@@ -6274,23 +6504,23 @@
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<e path="Void"/>
 </f></bind>
-		<parentNode public="1"><t path="js.HtmlDom"/></parentNode>
+		<parentNode><t path="js.HtmlDom"/></parentNode>
 		<groups><c path="Array"><c path="thx.js.Group"/></c></groups>
-		<select public="1" set="method" line="362"><f a="selector">
+		<select public="1" set="method" line="365"><f a="selector">
 	<c path="String"/>
 	<c path="thx.js.BaseSelection.This"/>
 </f></select>
-		<selectAll public="1" set="method" line="369"><f a="selector">
+		<selectAll public="1" set="method" line="372"><f a="selector">
 	<c path="String"/>
 	<c path="thx.js.BaseSelection.This"/>
 </f></selectAll>
-		<_this get="inline" set="null" line="376"><f a=""><c path="thx.js.BaseSelection.This"/></f></_this>
-		<append public="1" set="method" line="379"><f a="name">
+		<_this get="inline" set="null" line="379"><f a=""><c path="thx.js.BaseSelection.This"/></f></_this>
+		<append public="1" set="method" line="382"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.BaseSelection.This"/>
 </f></append>
-		<remove public="1" set="method" line="399"><f a=""><c path="thx.js.BaseSelection.This"/></f></remove>
-		<eachNode public="1" set="method" line="408"><f a="f">
+		<remove public="1" set="method" line="402"><f a=""><c path="thx.js.BaseSelection.This"/></f></remove>
+		<eachNode public="1" set="method" line="411"><f a="f">
 	<f a=":">
 		<t path="js.HtmlDom"/>
 		<c path="Int"/>
@@ -6298,13 +6528,13 @@
 	</f>
 	<c path="thx.js.BaseSelection.This"/>
 </f></eachNode>
-		<insert public="1" set="method" line="415"><f a="name:?before:?beforeSelector">
+		<insert public="1" set="method" line="418"><f a="name:?before:?beforeSelector">
 	<c path="String"/>
 	<t path="js.HtmlDom"/>
 	<c path="String"/>
 	<c path="thx.js.BaseSelection.This"/>
 </f></insert>
-		<sortNode public="1" set="method" line="433"><f a="comparator">
+		<sortNode public="1" set="method" line="436"><f a="comparator">
 	<f a=":">
 		<t path="js.HtmlDom"/>
 		<t path="js.HtmlDom"/>
@@ -6312,16 +6542,16 @@
 	</f>
 	<c path="thx.js.BaseSelection"><c path="thx.js.BaseSelection.This"/></c>
 </f></sortNode>
-		<firstNode public="1" params="T" set="method" line="457"><f a="f">
+		<firstNode public="1" params="T" set="method" line="460"><f a="f">
 	<f a="">
 		<t path="js.HtmlDom"/>
 		<c path="firstNode.T"/>
 	</f>
 	<t path="Null"><c path="firstNode.T"/></t>
 </f></firstNode>
-		<node public="1" set="method" line="466"><f a=""><t path="js.HtmlDom"/></f></node>
-		<empty public="1" set="method" line="471"><f a=""><e path="Bool"/></f></empty>
-		<filterNode public="1" set="method" line="476"><f a="f">
+		<node public="1" set="method" line="469"><f a=""><t path="js.HtmlDom"/></f></node>
+		<empty public="1" set="method" line="474"><f a=""><e path="Bool"/></f></empty>
+		<filterNode public="1" set="method" line="479"><f a="f">
 	<f a=":">
 		<t path="js.HtmlDom"/>
 		<c path="Int"/>
@@ -6329,7 +6559,7 @@
 	</f>
 	<c path="thx.js.BaseSelection.This"/>
 </f></filterNode>
-		<onNode public="1" set="method" line="499"><f a="type:?listener:?capture">
+		<onNode public="1" set="method" line="524"><f a="type:?listener:?capture">
 	<c path="String"/>
 	<f a=":">
 		<t path="js.HtmlDom"/>
@@ -6339,48 +6569,48 @@
 	<e path="Bool"/>
 	<c path="thx.js.BaseSelection.This"/>
 </f></onNode>
-		<createSelection set="method" line="527"><f a="groups">
+		<createSelection set="method" line="564"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.BaseSelection.This"/>
 </f></createSelection>
-		<_select set="method" line="532"><f a="selectf">
+		<_select set="method" line="569"><f a="selectf">
 	<f a="">
 		<t path="js.HtmlDom"/>
 		<t path="js.HtmlDom"/>
 	</f>
 	<c path="thx.js.BaseSelection.This"/>
 </f></_select>
-		<_selectAll set="method" line="558"><f a="selectallf">
+		<_selectAll set="method" line="595"><f a="selectallf">
 	<f a="">
 		<t path="js.HtmlDom"/>
 		<c path="Array"><t path="js.HtmlDom"/></c>
 	</f>
 	<c path="thx.js.BaseSelection.This"/>
 </f></_selectAll>
-		<new set="method" line="356"><f a="groups">
+		<new set="method" line="359"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<e path="Void"/>
 </f></new>
 	</class>
 	<class path="thx.js.UnboundSelection" params="This" file="C:\Projects\thx\src/thx/js/Selection.hx" module="thx.js.Selection">
 		<extends path="thx.js.BaseSelection"><c path="thx.js.UnboundSelection.This"/></extends>
-		<html public="1" set="method" line="37"><f a=""><c path="thx.js.AccessHtml"><c path="thx.js.UnboundSelection.This"/></c></f></html>
-		<text public="1" set="method" line="38"><f a=""><c path="thx.js.AccessText"><c path="thx.js.UnboundSelection.This"/></c></f></text>
-		<attr public="1" set="method" line="39"><f a="name">
+		<html public="1" set="method" line="40"><f a=""><c path="thx.js.AccessHtml"><c path="thx.js.UnboundSelection.This"/></c></f></html>
+		<text public="1" set="method" line="41"><f a=""><c path="thx.js.AccessText"><c path="thx.js.UnboundSelection.This"/></c></f></text>
+		<attr public="1" set="method" line="42"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.AccessAttribute"><c path="thx.js.UnboundSelection.This"/></c>
 </f></attr>
-		<classed public="1" set="method" line="40"><f a=""><c path="thx.js.AccessClassed"><c path="thx.js.UnboundSelection.This"/></c></f></classed>
-		<property public="1" set="method" line="41"><f a="name">
+		<classed public="1" set="method" line="43"><f a=""><c path="thx.js.AccessClassed"><c path="thx.js.UnboundSelection.This"/></c></f></classed>
+		<property public="1" set="method" line="44"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.AccessProperty"><c path="thx.js.UnboundSelection.This"/></c>
 </f></property>
-		<style public="1" set="method" line="42"><f a="name">
+		<style public="1" set="method" line="45"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.AccessStyle"><c path="thx.js.UnboundSelection.This"/></c>
 </f></style>
-		<transition public="1" set="method" line="46"><f a=""><c path="thx.js.UnboundTransition"/></f></transition>
-		<data public="1" params="T" set="method" line="52"><f a="d:?join">
+		<transition public="1" set="method" line="49"><f a=""><c path="thx.js.UnboundTransition"/></f></transition>
+		<data public="1" params="T" set="method" line="55"><f a="d:?join">
 	<c path="Array"><c path="data.T"/></c>
 	<f a=":">
 		<c path="data.T"/>
@@ -6389,11 +6619,11 @@
 	</f>
 	<c path="thx.js.DataChoice"><c path="data.T"/></c>
 </f></data>
-		<selectAllData public="1" params="T" set="method" line="68"><f a="selector">
+		<selectAllData public="1" params="T" set="method" line="71"><f a="selector">
 	<c path="String"/>
 	<c path="thx.js.ResumeSelection"><c path="selectAllData.T"/></c>
 </f></selectAllData>
-		<new set="method" line="35"><f a="groups">
+		<new set="method" line="38"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<e path="Void"/>
 </f></new>
@@ -6401,16 +6631,18 @@
 	<class path="thx.js.Selection" params="" file="C:\Projects\thx\src/thx/js/Selection.hx">
 		<extends path="thx.js.UnboundSelection"><c path="thx.js.Selection"/></extends>
 		<current public="1" get="getCurrent" set="null" static="1"><c path="thx.js.Selection"/></current>
-		<create public="1" set="method" line="25" static="1"><f a="groups">
+		<currentNode public="1" get="getCurrentNode" set="null" static="1"><t path="js.HtmlDom"/></currentNode>
+		<create public="1" set="method" line="27" static="1"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.Selection"/>
 </f></create>
-		<getCurrent set="method" line="32" static="1"><f a=""><c path="thx.js.Selection"/></f></getCurrent>
-		<createSelection set="method" line="27" override="1"><f a="groups">
+		<getCurrent get="inline" set="null" line="34" static="1"><f a=""><c path="thx.js.Selection"/></f></getCurrent>
+		<getCurrentNode get="inline" set="null" line="35" static="1"><f a=""><t path="js.HtmlDom"/></f></getCurrentNode>
+		<createSelection set="method" line="29" override="1"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.Selection"/>
 </f></createSelection>
-		<new set="method" line="26"><f a="groups">
+		<new set="method" line="28"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<e path="Void"/>
 </f></new>
@@ -6457,25 +6689,58 @@
 	<class path="thx.js.Dom" params="" file="C:\Projects\thx\src/thx/js/Dom.hx">
 		<doc public="1" line="15" static="1"><c path="thx.js.Selection"/></doc>
 		<selectionEngine public="1" line="22" static="1"><c path="thx.js.SizzleEngine"/></selectionEngine>
-		<select public="1" set="method" line="24" static="1"><f a="selector">
+		<select public="1" get="inline" set="null" line="24" static="1"><f a="selector">
 	<c path="String"/>
 	<c path="thx.js.Selection"/>
 </f></select>
-		<selectAll public="1" set="method" line="29" static="1"><f a="selector">
+		<selectAll public="1" get="inline" set="null" line="29" static="1"><f a="selector">
 	<c path="String"/>
 	<c path="thx.js.Selection"/>
 </f></selectAll>
-		<selectNode public="1" set="method" line="34" static="1"><f a="node">
+		<selectNode public="1" get="inline" set="null" line="34" static="1"><f a="node">
 	<t path="js.HtmlDom"/>
 	<c path="thx.js.Selection"/>
 </f></selectNode>
-		<selectNodeData public="1" params="T" set="method" line="39" static="1"><f a="node">
+		<selectNodeData public="1" params="T" get="inline" set="null" line="39" static="1"><f a="node">
 	<t path="js.HtmlDom"/>
 	<c path="thx.js.ResumeSelection"><c path="selectNodeData.T"/></c>
 </f></selectNodeData>
 		<event public="1" static="1"><t path="js.Event"/></event>
 		<haxe_doc>
  * Based on D3.js by Michael Bostock
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<enum path="rg.view.html.widget.DownloaderPosition" params="" file="src/rg/view/html/widget/DownloaderPosition.hx">
+		<TopRight/>
+		<TopLeft/>
+		<ElementSelector a="selector"><c path="String"/></ElementSelector>
+		<BottomRight/>
+		<BottomLeft/>
+		<Before/>
+		<After/>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</enum>
+	<class path="rg.controller.info.InfoTrack" params="" file="src/rg/controller/info/InfoTrack.hx">
+		<TRACKING_TOKEN get="inline" set="null" line="11" static="1"><c path="String"/></TRACKING_TOKEN>
+		<filters public="1" set="method" line="28" static="1"><f a=""><c path="Array"><a>
+	<validator><f a="v">
+	<unknown/>
+	<e path="Bool"/>
+</f></validator>
+	<filter><unknown/></filter>
+	<field><c path="String"/></field>
+</a></c></f></filters>
+		<enabled public="1"><e path="Bool"/></enabled>
+		<token public="1"><c path="String"/></token>
+		<paths public="1"><c path="Array"><c path="String"/></c></paths>
+		<hash public="1"><c path="String"/></hash>
+		<new public="1" set="method" line="17"><f a=""><e path="Void"/></f></new>
+		<haxe_doc>
+ * ...
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
@@ -6559,13 +6824,14 @@
  </haxe_doc>
 	</class>
 	<class path="rg.view.html.widget.PivotTable" params="" file="src/rg/view/html/widget/PivotTable.hx">
-		<defaultColorStart line="26" static="1"><c path="thx.color.Hsl"/></defaultColorStart>
-		<defaultColorEnd line="27" static="1"><c path="thx.color.Hsl"/></defaultColorEnd>
+		<defaultColorStart line="27" static="1"><c path="thx.color.Hsl"/></defaultColorStart>
+		<defaultColorEnd line="28" static="1"><c path="thx.color.Hsl"/></defaultColorEnd>
 		<displayColumnTotal public="1"><e path="Bool"/></displayColumnTotal>
 		<displayRowTotal public="1"><e path="Bool"/></displayRowTotal>
 		<displayHeatMap public="1"><e path="Bool"/></displayHeatMap>
 		<colorStart public="1"><c path="thx.color.Hsl"/></colorStart>
 		<colorEnd public="1"><c path="thx.color.Hsl"/></colorEnd>
+		<ready public="1" set="null"><c path="hxevents.Notifier"/></ready>
 		<columnVariables><c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c></columnVariables>
 		<rowVariables><c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c></rowVariables>
 		<cellVariable><c path="rg.data.VariableDependent"><d/></c></cellVariable>
@@ -6576,85 +6842,85 @@
 </f></click>
 		<container><c path="thx.js.Selection"/></container>
 		<stats><c path="rg.data.StatsNumeric"/></stats>
-		<labelDataPoint public="1" set="dynamic" line="58"><f a="dp:stats">
+		<labelDataPoint public="1" set="dynamic" line="61"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
 	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPoint>
-		<labelDataPointOver public="1" set="dynamic" line="64"><f a="dp:stats">
+		<labelDataPointOver public="1" set="dynamic" line="67"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
 	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPointOver>
-		<labelAxis public="1" set="dynamic" line="70"><f a="v">
+		<labelAxis public="1" set="dynamic" line="73"><f a="v">
 	<c path="String"/>
 	<c path="String"/>
 </f></labelAxis>
-		<labelAxisValue public="1" set="dynamic" line="75"><f a="v:axis">
+		<labelAxisValue public="1" set="dynamic" line="78"><f a="v:axis">
 	<d/>
 	<c path="String"/>
 	<c path="String"/>
 </f></labelAxisValue>
-		<labelTotal public="1" set="dynamic" line="86"><f a="v:stats">
+		<labelTotal public="1" set="dynamic" line="89"><f a="v:stats">
 	<c path="Float"/>
 	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelTotal>
-		<labelTotalOver public="1" set="dynamic" line="91"><f a="v:stats">
+		<labelTotalOver public="1" set="dynamic" line="94"><f a="v:stats">
 	<c path="Float"/>
 	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelTotalOver>
-		<data public="1" set="method" line="96"><f a="dps">
+		<data public="1" set="method" line="99"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></data>
-		<onClick set="method" line="235"><f a="dp:?_:?_">
+		<onClick set="method" line="239"><f a="dp:?_:?_">
 	<t path="rg.data.DataPoint"/>
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onClick>
-		<formatTotal set="method" line="240"><f a="v:?_">
+		<formatTotal set="method" line="244"><f a="v:?_">
 	<c path="Float"/>
 	<unknown/>
 	<c path="String"/>
 </f></formatTotal>
-		<formatTotalOver set="method" line="241"><f a="v:?_">
+		<formatTotalOver set="method" line="245"><f a="v:?_">
 	<c path="Float"/>
 	<unknown/>
 	<c path="String"/>
 </f></formatTotalOver>
-		<formatDataPoint set="method" line="242"><f a="dp:?_">
+		<formatDataPoint set="method" line="246"><f a="dp:?_">
 	<t path="rg.data.DataPoint"/>
 	<unknown/>
 	<c path="String"/>
 </f></formatDataPoint>
-		<formatDataPointOver set="method" line="243"><f a="dp:?_">
+		<formatDataPointOver set="method" line="247"><f a="dp:?_">
 	<t path="rg.data.DataPoint"/>
 	<unknown/>
 	<c path="String"/>
 </f></formatDataPointOver>
-		<buildValue set="method" line="245"><f a="value:header:counter:tr">
+		<buildValue set="method" line="249"><f a="value:header:counter:tr">
 	<d/>
 	<c path="String"/>
 	<c path="Int"/>
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></buildValue>
-		<prependSpacer set="method" line="255"><f a="counter:tr">
+		<prependSpacer set="method" line="259"><f a="counter:tr">
 	<c path="Int"/>
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></prependSpacer>
-		<init public="1" set="method" line="265"><f a=""><e path="Void"/></f></init>
-		<setVariables public="1" set="method" line="270"><f a="variableIndependents:variableDependents">
+		<init public="1" set="method" line="269"><f a=""><e path="Void"/></f></init>
+		<setVariables public="1" set="method" line="274"><f a="variableIndependents:variableDependents">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
 	<e path="Void"/>
 </f></setVariables>
-		<destroy public="1" set="method" line="282"><f a=""><e path="Void"/></f></destroy>
-		<transformData set="method" line="287"><f a="dps">
+		<destroy public="1" set="method" line="286"><f a=""><e path="Void"/></f></destroy>
+		<transformData set="method" line="291"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<a>
 		<stats><c path="rg.data.StatsNumeric"/></stats>
@@ -6671,11 +6937,11 @@
 		<column_headers><c path="Array"><c path="String"/></c></column_headers>
 	</a>
 </f></transformData>
-		<range set="method" line="437"><f a="variable">
+		<range set="method" line="441"><f a="variable">
 	<c path="rg.data.VariableIndependent"><d/></c>
 	<c path="Array"><d/></c>
 </f></range>
-		<new public="1" set="method" line="46"><f a="container">
+		<new public="1" set="method" line="48"><f a="container">
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></new>
@@ -6705,19 +6971,19 @@
 	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
 	<e path="Void"/>
 </f></data>
-		<onclick set="method" line="155"><f a="ystats:dp:i">
+		<onclick set="method" line="156"><f a="ystats:dp:i">
 	<c path="rg.data.Stats"><d/></c>
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onclick>
-		<onmouseover set="method" line="160"><f a="ystats:n:i">
+		<onmouseover set="method" line="161"><f a="ystats:n:i">
 	<c path="rg.data.Stats"><d/></c>
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
-		<applyGradient set="method" line="182"><f a="n:i">
+		<applyGradient set="method" line="183"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
@@ -6732,20 +6998,20 @@
  </haxe_doc>
 	</class>
 	<class path="rg.JSBridge" params="" file="src/rg/JSBridge.hx">
-		<log set="method" line="22" static="1"><f a="msg">
+		<log set="method" line="23" static="1"><f a="msg">
 	<c path="String"/>
 	<e path="Void"/>
 </f></log>
-		<main set="method" line="27" static="1"><f a=""><e path="Void"/></f></main>
-		<select set="method" line="118" static="1"><f a="el">
+		<main set="method" line="28" static="1"><f a=""><e path="Void"/></f></main>
+		<select set="method" line="125" static="1"><f a="el">
 	<d/>
 	<c path="thx.js.Selection"/>
 </f></select>
-		<opt get="inline" set="null" line="126" static="1"><f a="ob">
+		<opt get="inline" set="null" line="133" static="1"><f a="ob">
 	<d/>
 	<unknown/>
 </f></opt>
-		<chartopt set="method" line="127" static="1"><f a="ob:viz">
+		<chartopt set="method" line="134" static="1"><f a="ob:viz">
 	<d/>
 	<c path="String"/>
 	<unknown/>
@@ -6786,61 +7052,62 @@
 </f></sortDataPoint>
 		<displayGradient public="1"><e path="Bool"/></displayGradient>
 		<useMax public="1"><e path="Bool"/></useMax>
+		<ready public="1" set="null"><c path="hxevents.Notifier"/></ready>
 		<container><c path="thx.js.Selection"/></container>
 		<list><c path="thx.js.Selection"/></list>
 		<_created><c path="Int"/></_created>
 		<stats><c path="rg.data.StatsNumeric"/></stats>
-		<labelDataPoint public="1" set="dynamic" line="51"><f a="dp:stats">
+		<labelDataPoint public="1" set="dynamic" line="54"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
 	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPoint>
-		<labelDataPointOver public="1" set="dynamic" line="58"><f a="dp:stats">
+		<labelDataPointOver public="1" set="dynamic" line="61"><f a="dp:stats">
 	<t path="rg.data.DataPoint"/>
 	<c path="rg.data.StatsNumeric"/>
 	<c path="String"/>
 </f></labelDataPointOver>
-		<init public="1" set="method" line="65"><f a=""><e path="Void"/></f></init>
-		<setVariables public="1" set="method" line="72"><f a="variableIndependents:variableDependents">
+		<init public="1" set="method" line="68"><f a=""><e path="Void"/></f></init>
+		<setVariables public="1" set="method" line="75"><f a="variableIndependents:variableDependents">
 	<c path="Array"><c path="rg.data.VariableIndependent"><d/></c></c>
 	<c path="Array"><c path="rg.data.VariableDependent"><d/></c></c>
 	<e path="Void"/>
 </f></setVariables>
-		<backgroundSize set="method" line="78"><f a="dp:i">
+		<backgroundSize set="method" line="81"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<c path="String"/>
 </f></backgroundSize>
-		<data public="1" set="method" line="83"><f a="dps">
+		<data public="1" set="method" line="86"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></data>
-		<onClick set="method" line="132"><f a="dp:?_">
+		<onClick set="method" line="138"><f a="dp:?_">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onClick>
-		<fadeIn set="method" line="137"><f a="n:i">
+		<fadeIn set="method" line="143"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></fadeIn>
-		<description set="method" line="149"><f a="dp:i">
+		<description set="method" line="155"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<c path="String"/>
 </f></description>
-		<title set="method" line="154"><f a="dp:i">
+		<title set="method" line="160"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<c path="String"/>
 </f></title>
-		<id set="method" line="159"><f a="dp:?_">
+		<id set="method" line="165"><f a="dp:?_">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<c path="String"/>
 </f></id>
-		<new public="1" set="method" line="39"><f a="container">
+		<new public="1" set="method" line="41"><f a="container">
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></new>
@@ -7834,7 +8101,7 @@
 		<infoStream public="1"><c path="rg.controller.info.InfoStreamGraph"/></infoStream>
 		<initAxes set="method" line="19" override="1"><f a=""><e path="Void"/></f></initAxes>
 		<initChart set="method" line="25" override="1"><f a=""><e path="Void"/></f></initChart>
-		<transformData set="method" line="45" override="1"><f a="dps">
+		<transformData set="method" line="46" override="1"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 </f></transformData>
@@ -7886,40 +8153,42 @@
 	</class>
 	<class path="rg.view.layout.Layout" params="" file="src/rg/view/layout/Layout.hx">
 		<mainPanelName public="1"><c path="String"/></mainPanelName>
+		<width public="1" set="null"><c path="Int"/></width>
+		<height public="1" set="null"><c path="Int"/></height>
 		<space><c path="rg.view.svg.panel.Space"/></space>
-		<container><c path="thx.js.Selection"/></container>
-		<getContext public="1" set="method" line="27"><f a="name">
+		<container public="1" set="null"><c path="thx.js.Selection"/></container>
+		<getContext public="1" set="method" line="30"><f a="name">
 	<c path="String"/>
 	<c path="rg.view.layout.PanelContext"/>
 </f></getContext>
-		<getPanel public="1" set="method" line="32"><f a="name">
+		<getPanel public="1" set="method" line="35"><f a="name">
 	<c path="String"/>
 	<c path="rg.view.svg.panel.Panel"/>
 </f></getPanel>
-		<suggestSize public="1" set="method" line="37"><f a="name:size">
+		<suggestSize public="1" set="method" line="40"><f a="name:size">
 	<c path="String"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></suggestSize>
-		<destroy public="1" set="method" line="45"><f a=""><e path="Void"/></f></destroy>
-		<suggestPanelSize set="method" line="50"><f a="panel:size">
+		<destroy public="1" set="method" line="48"><f a=""><e path="Void"/></f></destroy>
+		<suggestPanelSize set="method" line="53"><f a="panel:size">
 	<c path="rg.view.svg.panel.Panel"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></suggestPanelSize>
-		<suggestPanelPadding set="method" line="64"><f a="panel:before:after">
+		<suggestPanelPadding set="method" line="67"><f a="panel:before:after">
 	<c path="rg.view.svg.panel.Panel"/>
 	<t path="Null"><c path="Int"/></t>
 	<t path="Null"><c path="Int"/></t>
 	<e path="Void"/>
 </f></suggestPanelPadding>
 		<paddings><c path="rg.controller.info.InfoPadding"/></paddings>
-		<feedOptions public="1" set="method" line="88"><f a="info">
+		<feedOptions public="1" set="method" line="91"><f a="info">
 	<c path="rg.controller.info.InfoLayout"/>
 	<e path="Void"/>
 </f></feedOptions>
-		<adjustPadding public="1" set="method" line="94"><f a=""><e path="Void"/></f></adjustPadding>
-		<new public="1" set="method" line="20"><f a="width:height:container">
+		<adjustPadding public="1" set="method" line="97"><f a=""><e path="Void"/></f></adjustPadding>
+		<new public="1" set="method" line="23"><f a="width:height:container">
 	<c path="Int"/>
 	<c path="Int"/>
 	<c path="thx.js.Selection"/>
@@ -8293,12 +8562,7 @@
 	<e path="Void"/>
 </f></__trace>
 		<__clear_trace set="method" line="50" static="1"><f a=""><e path="Void"/></f></__clear_trace>
-		<__closure set="method" line="62" static="1"><f a="o:f">
-	<c path="Array"><a><apply set="null"><unknown/></apply></a></c>
-	<c path="Int"/>
-	<f a=""><unknown/></f>
-</f></__closure>
-		<__string_rec set="method" line="74" static="1"><f a="o:s">
+		<__string_rec set="method" line="62" static="1"><f a="o:s">
 	<a>
 		<toString set="null"><f a=""><c path="String"/></f></toString>
 		<length set="null"><c path="Int"/></length>
@@ -8313,17 +8577,17 @@
 	<a><length set="null"><c path="Int"/></length></a>
 	<c path="String"/>
 </f></__string_rec>
-		<__interfLoop set="method" line="146" static="1"><f a="cc:cl">
+		<__interfLoop set="method" line="134" static="1"><f a="cc:cl">
 	<d/>
 	<d/>
 	<e path="Bool"/>
 </f></__interfLoop>
-		<__instanceof set="method" line="161" static="1"><f a="o:cl">
+		<__instanceof set="method" line="149" static="1"><f a="o:cl">
 	<d/>
 	<t path="#Array"/>
 	<e path="Bool"/>
 </f></__instanceof>
-		<__init set="method" line="194" static="1"><f a=""><e path="Void"/></f></__init>
+		<__init set="method" line="182" static="1"><f a=""><e path="Void"/></f></__init>
 	</class>
 	<class path="Dynamics" params="" file="C:\Projects\thx\src/Dynamics.hx">
 		<format public="1" set="method" line="11" static="1"><f a="v:?param:?params:?nullstring:?culture">
@@ -8677,18 +8941,18 @@
 	<c path="Float"/>
 </f></next>
 		<redraw set="method" line="104"><f a=""><e path="Void"/></f></redraw>
-		<mouseOver set="method" line="258"><f a="dp:i:stats">
+		<mouseOver set="method" line="259"><f a="dp:i:stats">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<c path="rg.data.Stats"><d/></c>
 	<e path="Void"/>
 </f></mouseOver>
-		<init public="1" set="method" line="273" override="1"><f a=""><e path="Void"/></f></init>
-		<internalGradient set="method" line="284"><f a="d">
+		<init public="1" set="method" line="274" override="1"><f a=""><e path="Void"/></f></init>
+		<internalGradient set="method" line="285"><f a="d">
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></internalGradient>
-		<externalGradient set="method" line="308"><f a="n:i">
+		<externalGradient set="method" line="309"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
@@ -8779,7 +9043,7 @@
 		<infoLine public="1"><c path="rg.controller.info.InfoLineChart"/></infoLine>
 		<initAxes set="method" line="20" override="1"><f a=""><e path="Void"/></f></initAxes>
 		<initChart set="method" line="26" override="1"><f a=""><e path="Void"/></f></initChart>
-		<transformData set="method" line="48" override="1"><f a="dps">
+		<transformData set="method" line="49" override="1"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
 </f></transformData>
@@ -9599,12 +9863,53 @@ Other things to do. Nested placeholders
  </haxe_doc>
 	</class>
 	<enum path="thx.json._JsonDecoder.StreamError" params="" file="C:\Projects\thx\src/thx/json/JsonDecoder.hx" private="1" module="thx.json.JsonDecoder"><Eof/></enum>
+	<enum path="thx.js.HostType" params="" file="C:\Projects\thx\src/thx/js/ClientHost.hx" module="thx.js.ClientHost">
+		<UnknownServer/>
+		<Unknown a="what"><c path="String"/></Unknown>
+		<Safari a="version"><c path="String"/></Safari>
+		<Opera a="version"><c path="String"/></Opera>
+		<NodeJs/>
+		<IE a="version"><c path="String"/></IE>
+		<Firefox a="version"><c path="String"/></Firefox>
+		<Chrome a="version"><c path="String"/></Chrome>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</enum>
+	<enum path="thx.js.EnvironmentType" params="" file="C:\Projects\thx\src/thx/js/ClientHost.hx" module="thx.js.ClientHost">
+		<UnknownEnvironment/>
+		<Server/>
+		<Mobile/>
+		<Desktop/>
+	</enum>
+	<enum path="thx.js.OSType" params="" file="C:\Projects\thx\src/thx/js/ClientHost.hx" module="thx.js.ClientHost">
+		<Windows a="version"><c path="String"/></Windows>
+		<UnknownOs/>
+		<Mac/>
+		<Linux/>
+		<IOs/>
+		<Android/>
+	</enum>
+	<class path="thx.js.ClientHost" params="" file="C:\Projects\thx\src/thx/js/ClientHost.hx">
+		<host public="1" set="null" static="1"><e path="thx.js.HostType"/></host>
+		<environment public="1" set="null" static="1"><e path="thx.js.EnvironmentType"/></environment>
+		<os public="1" set="null" static="1"><e path="thx.js.OSType"/></os>
+		<isIE public="1" set="method" line="44" static="1"><f a=""><e path="Bool"/></f></isIE>
+		<hostVersion public="1" set="method" line="49" static="1"><f a=""><c path="String"/></f></hostVersion>
+		<hostString public="1" set="method" line="60" static="1"><f a=""><c path="String"/></f></hostString>
+		<osString public="1" set="method" line="71" static="1"><f a=""><c path="String"/></f></osString>
+		<osVersion public="1" set="method" line="76" static="1"><f a=""><c path="String"/></f></osVersion>
+		<environmentString public="1" set="method" line="87" static="1"><f a=""><c path="String"/></f></environmentString>
+		<userAgent set="method" line="92" static="1"><f a=""><c path="String"/></f></userAgent>
+		<hasNavigator set="method" line="93" static="1"><f a=""><e path="Bool"/></f></hasNavigator>
+	</class>
 	<class path="rg.controller.visualization.VisualizationScatterGraph" params="" file="src/rg/controller/visualization/VisualizationScatterGraph.hx">
 		<extends path="rg.controller.visualization.VisualizationCartesian"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></extends>
 		<infoScatter public="1"><c path="rg.controller.info.InfoScatterGraph"/></infoScatter>
 		<initAxes set="method" line="20" override="1"><f a=""><e path="Void"/></f></initAxes>
 		<initChart set="method" line="26" override="1"><f a=""><e path="Void"/></f></initChart>
-		<transformData set="method" line="39" override="1"><f a="dps">
+		<transformData set="method" line="40" override="1"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c>
 </f></transformData>
@@ -9618,24 +9923,26 @@ Other things to do. Nested placeholders
  </haxe_doc>
 	</class>
 	<class path="rg.controller.App" params="" file="src/rg/controller/App.hx">
-		<lastid line="31" static="1"><c path="Int"/></lastid>
-		<nextid set="method" line="32" static="1"><f a=""><c path="String"/></f></nextid>
+		<lastid line="38" static="1"><c path="Int"/></lastid>
+		<nextid set="method" line="39" static="1"><f a=""><c path="String"/></f></nextid>
 		<executor><c path="rg.data.source.rgquery.IExecutorReportGrid"/></executor>
+		<tracker><c path="rg.data.source.rgquery.ITrackReportGrid"/></tracker>
 		<layouts><c path="Hash"><c path="rg.view.layout.Layout"/></c></layouts>
-		<visualization public="1" set="method" line="45"><f a="el:jsoptions">
+		<visualization public="1" set="method" line="54"><f a="el:jsoptions">
 	<c path="thx.js.Selection"/>
 	<d/>
 	<c path="rg.controller.visualization.Visualization"/>
 </f></visualization>
-		<getLayout public="1" set="method" line="92"><f a="id:options:container:replace">
+		<getLayout public="1" set="method" line="135"><f a="id:options:container:replace">
 	<c path="String"/>
 	<d/>
 	<c path="thx.js.Selection"/>
 	<e path="Bool"/>
 	<t path="Null"><c path="rg.view.layout.Layout"/></t>
 </f></getLayout>
-		<new public="1" set="method" line="39"><f a="executor">
+		<new public="1" set="method" line="47"><f a="executor:tracker">
 	<c path="rg.data.source.rgquery.IExecutorReportGrid"/>
+	<c path="rg.data.source.rgquery.ITrackReportGrid"/>
 	<e path="Void"/>
 </f></new>
 		<haxe_doc>
@@ -9687,8 +9994,8 @@ Other things to do. Nested placeholders
 	<c path="Float"/>
 </f></y>
 		<redraw set="method" line="88"><f a=""><e path="Void"/></f></redraw>
-		<drawContour set="method" line="107"><f a=""><e path="Void"/></f></drawContour>
-		<createGridMap set="method" line="163"><f a="grid">
+		<drawContour set="method" line="109"><f a=""><e path="Void"/></f></drawContour>
+		<createGridMap set="method" line="165"><f a="grid">
 	<f a=":">
 		<c path="Int"/>
 		<c path="Int"/>
@@ -9696,31 +10003,31 @@ Other things to do. Nested placeholders
 	</f>
 	<c path="Hash"><c path="Array"><c path="Int"/></c></c>
 </f></createGridMap>
-		<drawSquares set="method" line="173"><f a=""><e path="Void"/></f></drawSquares>
-		<onmouseover set="method" line="189"><f a="dp:i">
+		<drawSquares set="method" line="175"><f a=""><e path="Void"/></f></drawSquares>
+		<onmouseover set="method" line="191"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
-		<onclick set="method" line="203"><f a="dp:i">
+		<onclick set="method" line="205"><f a="dp:i">
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onclick>
-		<range set="method" line="210"><f a="variable">
+		<range set="method" line="212"><f a="variable">
 	<c path="rg.data.Variable">
 		<d/>
 		<c path="rg.data.IAxis"><d/></c>
 	</c>
 	<c path="Array"><d/></c>
 </f></range>
-		<stylefeature set="dynamic" line="219"><f a="svg:dp">
+		<stylefeature set="dynamic" line="221"><f a="svg:dp">
 	<c path="thx.js.Selection"/>
 	<t path="rg.data.DataPoint"/>
 	<e path="Void"/>
 </f></stylefeature>
-		<getColorMode set="method" line="221"><f a=""><e path="rg.view.svg.chart.ColorScaleMode"/></f></getColorMode>
-		<setColorMode set="method" line="222"><f a="v">
+		<getColorMode set="method" line="223"><f a=""><e path="rg.view.svg.chart.ColorScaleMode"/></f></getColorMode>
+		<setColorMode set="method" line="224"><f a="v">
 	<e path="rg.view.svg.chart.ColorScaleMode"/>
 	<e path="rg.view.svg.chart.ColorScaleMode"/>
 </f></setColorMode>
@@ -9802,6 +10109,43 @@ Other things to do. Nested placeholders
 	<c path="Int"/>
 	<e path="Void"/>
 </f></setLayout></a></typedef>
+	<class path="rg.view.svg.util.Jsonp" params="" file="src/rg/view/svg/util/Jsonp.hx">
+		<get public="1" set="method" line="10" static="1"><f a="path:success:failure:query:headers">
+	<c path="String"/>
+	<f a="">
+		<c path="String"/>
+		<e path="Void"/>
+	</f>
+	<t path="Null"><f a=":">
+	<c path="Int"/>
+	<c path="String"/>
+	<e path="Void"/>
+</f></t>
+	<a/>
+	<a/>
+	<e path="Void"/>
+</f></get>
+		<post public="1" set="method" line="16" static="1"><f a="path:content:success:failure:query:headers">
+	<c path="String"/>
+	<a/>
+	<f a="">
+		<c path="String"/>
+		<e path="Void"/>
+	</f>
+	<t path="Null"><f a=":">
+	<c path="Int"/>
+	<c path="String"/>
+	<e path="Void"/>
+</f></t>
+	<a/>
+	<a/>
+	<e path="Void"/>
+</f></post>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<enum path="rg.view.layout.ScalePattern" params="" file="src/rg/view/layout/ScalePattern.hx">
 		<ScalesBefore/>
 		<ScalesAlternating/>
@@ -10156,6 +10500,40 @@ Other things to do. Nested placeholders
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="rg.controller.info.InfoDownload" params="" file="src/rg/controller/info/InfoDownload.hx">
+		<filters public="1" set="method" line="30" static="1"><f a=""><c path="Array"><a>
+	<validator><f a="v">
+	<unknown/>
+	<e path="Bool"/>
+</f></validator>
+	<filter><f a="v">
+	<c path="String"/>
+	<c path="Array"><a>
+	<value><e path="rg.view.html.widget.DownloaderPosition"/></value>
+	<field><c path="String"/></field>
+</a></c>
+</f></filter>
+	<field><c path="String"/></field>
+</a></c></f></filters>
+		<handler public="1"><f a="">
+	<f a="::">
+		<c path="String"/>
+		<c path="String"/>
+		<f a=""><e path="Void"/></f>
+		<e path="Void"/>
+	</f>
+	<e path="Void"/>
+</f></handler>
+		<service public="1"><c path="String"/></service>
+		<background public="1"><t path="Null"><c path="String"/></t></background>
+		<position public="1"><t path="Null"><e path="rg.view.html.widget.DownloaderPosition"/></t></position>
+		<formats public="1"><c path="Array"><c path="String"/></c></formats>
+		<new public="1" set="method" line="20"><f a=""><e path="Void"/></f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.controller.factory.FactoryHtmlVisualization" params="" file="src/rg/controller/factory/FactoryHtmlVisualization.hx">
 		<create public="1" set="method" line="22"><f a="type:container:options">
 	<c path="String"/>
@@ -10459,6 +10837,31 @@ Other things to do. Nested placeholders
 	<c path="Array"><c path="Int"/></c>
 	<c path="Array"><c path="Array"><c path="Int"/></c></c>
 </f></contour>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="js.Storage" params="" file="src/js/Storage.hx" interface="1">
+		<length public="1" set="null"><c path="Int"/></length>
+		<key public="1" set="method"><f a="index">
+	<c path="Int"/>
+	<t path="Null"><c path="String"/></t>
+</f></key>
+		<getItem public="1" set="method"><f a="key">
+	<c path="String"/>
+	<c path="String"/>
+</f></getItem>
+		<setItem public="1" set="method"><f a="key:value">
+	<c path="String"/>
+	<c path="String"/>
+	<e path="Void"/>
+</f></setItem>
+		<removeItem public="1" set="method"><f a="key">
+	<c path="String"/>
+	<e path="Void"/>
+</f></removeItem>
+		<clear public="1" set="method"><f a=""><e path="Void"/></f></clear>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -11258,12 +11661,42 @@ customs for missing features
  </haxe_doc>
 	</class>
 	<class path="rg.view.svg.util.RGCss" params="" file="src/rg/view/svg/util/RGCss.hx">
-		<colorsInCss public="1" set="method" line="12" static="1"><f a=""><c path="Int"/></f></colorsInCss>
-		<createBlock set="method" line="30" static="1"><f a="container:pos">
+		<cssSources public="1" set="method" line="13" static="1"><f a=""><c path="Array"><unknown/></c></f></cssSources>
+		<colorsInCss public="1" set="method" line="22" static="1"><f a=""><c path="Int"/></f></colorsInCss>
+		<createBlock set="method" line="40" static="1"><f a="container:pos">
 	<c path="thx.js.Selection"/>
 	<c path="Int"/>
 	<c path="thx.js.Selection"/>
 </f></createBlock>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<class path="js.CookieStorageFallback" params="" file="src/js/CookieStorageFallback.hx">
+		<implements path="js.Storage"/>
+		<DEFAULT_PATH line="12" static="1"><c path="String"/></DEFAULT_PATH>
+		<DEFAULT_EXPIRATION line="13" static="1"><c path="Int"/></DEFAULT_EXPIRATION>
+		<length public="1" set="null"><c path="Int"/></length>
+		<key public="1" set="method" line="22"><f a="index">
+	<c path="Int"/>
+	<t path="Null"><c path="String"/></t>
+</f></key>
+		<getItem public="1" set="method" line="28"><f a="key">
+	<c path="String"/>
+	<t path="Null"><c path="String"/></t>
+</f></getItem>
+		<setItem public="1" set="method" line="33"><f a="key:value">
+	<c path="String"/>
+	<c path="String"/>
+	<e path="Void"/>
+</f></setItem>
+		<removeItem public="1" set="method" line="40"><f a="key">
+	<c path="String"/>
+	<e path="Void"/>
+</f></removeItem>
+		<clear public="1" set="method" line="46"><f a=""><e path="Void"/></f></clear>
+		<new public="1" set="method" line="15"><f a=""><e path="Void"/></f></new>
 		<haxe_doc>
  * ...
  * @author Franco Ponticelli
@@ -11601,6 +12034,63 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="Bools" params="" file="C:\Projects\thx\src/Bools.hx">
+		<format public="1" set="method" line="11" static="1"><f a="v:?param:?params:?culture">
+	<e path="Bool"/>
+	<c path="String"/>
+	<c path="Array"><c path="String"/></c>
+	<c path="thx.culture.Culture"/>
+	<c path="String"/>
+</f></format>
+		<formatf public="1" set="method" line="16" static="1"><f a="?param:?params:?culture">
+	<c path="String"/>
+	<c path="Array"><c path="String"/></c>
+	<c path="thx.culture.Culture"/>
+	<f a="v">
+		<e path="Bool"/>
+		<c path="String"/>
+	</f>
+</f></formatf>
+		<interpolate public="1" set="method" line="35" static="1"><f a="v:a:b:?equation">
+	<c path="Float"/>
+	<e path="Bool"/>
+	<e path="Bool"/>
+	<f a="">
+		<c path="Float"/>
+		<c path="Float"/>
+	</f>
+	<e path="Bool"/>
+</f></interpolate>
+		<interpolatef public="1" set="method" line="40" static="1"><f a="a:b:?equation">
+	<e path="Bool"/>
+	<e path="Bool"/>
+	<f a="">
+		<c path="Float"/>
+		<c path="Float"/>
+	</f>
+	<f a="_">
+		<c path="Float"/>
+		<e path="Bool"/>
+	</f>
+</f></interpolatef>
+		<canParse public="1" set="method" line="51" static="1"><f a="s">
+	<c path="String"/>
+	<e path="Bool"/>
+</f></canParse>
+		<parse public="1" set="method" line="57" static="1"><f a="s">
+	<c path="String"/>
+	<e path="Bool"/>
+</f></parse>
+		<compare public="1" get="inline" set="null" line="62" static="1"><f a="a:b">
+	<e path="Bool"/>
+	<e path="Bool"/>
+	<c path="Int"/>
+</f></compare>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="haxe.Md5" params="" file="C:\Projects\haxe/std/haxe/Md5.hx">
 		<encode public="1" set="method" line="32" static="1"><f a="s">
 	<c path="String"/>
@@ -11696,63 +12186,6 @@ customs for missing features
 		<haxe_doc>
 	Creates a MD5 of a String.
 </haxe_doc>
-	</class>
-	<class path="Bools" params="" file="C:\Projects\thx\src/Bools.hx">
-		<format public="1" set="method" line="11" static="1"><f a="v:?param:?params:?culture">
-	<e path="Bool"/>
-	<c path="String"/>
-	<c path="Array"><c path="String"/></c>
-	<c path="thx.culture.Culture"/>
-	<c path="String"/>
-</f></format>
-		<formatf public="1" set="method" line="16" static="1"><f a="?param:?params:?culture">
-	<c path="String"/>
-	<c path="Array"><c path="String"/></c>
-	<c path="thx.culture.Culture"/>
-	<f a="v">
-		<e path="Bool"/>
-		<c path="String"/>
-	</f>
-</f></formatf>
-		<interpolate public="1" set="method" line="35" static="1"><f a="v:a:b:?equation">
-	<c path="Float"/>
-	<e path="Bool"/>
-	<e path="Bool"/>
-	<f a="">
-		<c path="Float"/>
-		<c path="Float"/>
-	</f>
-	<e path="Bool"/>
-</f></interpolate>
-		<interpolatef public="1" set="method" line="40" static="1"><f a="a:b:?equation">
-	<e path="Bool"/>
-	<e path="Bool"/>
-	<f a="">
-		<c path="Float"/>
-		<c path="Float"/>
-	</f>
-	<f a="_">
-		<c path="Float"/>
-		<e path="Bool"/>
-	</f>
-</f></interpolatef>
-		<canParse public="1" set="method" line="51" static="1"><f a="s">
-	<c path="String"/>
-	<e path="Bool"/>
-</f></canParse>
-		<parse public="1" set="method" line="57" static="1"><f a="s">
-	<c path="String"/>
-	<e path="Bool"/>
-</f></parse>
-		<compare public="1" get="inline" set="null" line="62" static="1"><f a="a:b">
-	<e path="Bool"/>
-	<e path="Bool"/>
-	<c path="Int"/>
-</f></compare>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
 	</class>
 	<class path="thx.geo.Mercator" params="" file="C:\Projects\thx\src/thx/geo/Mercator.hx">
 		<implements path="thx.geo.IProjection"/>
@@ -12188,6 +12621,14 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</enum>
+	<class path="js.LocalStorage" params="" file="src/js/LocalStorage.hx">
+		<instance public="1" set="null" static="1"><c path="js.Storage"/></instance>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<enum path="hxevents.EventException" params="" file="C:\Projects\hxevents\src/hxevents/EventException.hx"><StopPropagation/></enum>
 	<class path="rg.controller.info.InfoVisualizationOption" params="" file="src/rg/controller/info/InfoVisualizationOption.hx">
 		<filters public="1" set="method" line="18" static="1"><f a=""><c path="Array"><t path="rg.controller.info.FieldFilter"/></c></f></filters>
 		<variables public="1"><c path="Array"><c path="rg.controller.info.InfoVariable"/></c></variables>
@@ -12239,7 +12680,22 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
-	<enum path="hxevents.EventException" params="" file="C:\Projects\hxevents\src/hxevents/EventException.hx"><StopPropagation/></enum>
+	<class path="rg.controller.info.InfoGeneral" params="" file="src/rg/controller/info/InfoGeneral.hx">
+		<filter public="1" set="method" line="15" static="1"><f a=""><c path="Array"><a>
+	<value><unknown/></value>
+	<validator><f a="v">
+	<unknown/>
+	<e path="Bool"/>
+</f></validator>
+	<field><c path="String"/></field>
+</a></c></f></filter>
+		<ready public="1"><f a=""><e path="Void"/></f></ready>
+		<new public="1" set="method" line="13"><f a=""><e path="Void"/></f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.controller.factory.FactoryVariableDependent" params="" file="src/rg/controller/factory/FactoryVariableDependent.hx">
 		<create public="1" set="method" line="15"><f a="info:isnumeric">
 	<c path="rg.controller.info.InfoVariable"/>
@@ -12691,17 +13147,61 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="rg.view.html.widget.DownloaderMenu" params="" file="src/rg/view/html/widget/DownloaderMenu.hx">
+		<DEFAULT_FORMATS line="13" static="1"><c path="Array"><c path="String"/></c></DEFAULT_FORMATS>
+		<DEFAULT_TITLE line="14" static="1"><c path="String"/></DEFAULT_TITLE>
+		<handler><f a="::">
+	<c path="String"/>
+	<t path="Null"><c path="String"/></t>
+	<f a=""><e path="Void"/></f>
+	<e path="Void"/>
+</f></handler>
+		<formats><c path="Array"><c path="String"/></c></formats>
+		<title><c path="String"/></title>
+		<backgroundColor><c path="String"/></backgroundColor>
+		<menu><c path="thx.js.Selection"/></menu>
+		<build set="method" line="28"><f a="position:container">
+	<e path="rg.view.html.widget.DownloaderPosition"/>
+	<c path="thx.js.Selection"/>
+	<e path="Void"/>
+</f></build>
+		<createMenu set="method" line="51"><f a="container">
+	<c path="thx.js.Selection"/>
+	<e path="Void"/>
+</f></createMenu>
+		<click set="method" line="73"><f a="format:_">
+	<c path="String"/>
+	<c path="Int"/>
+	<e path="Void"/>
+</f></click>
+		<new public="1" set="method" line="20"><f a="handler:position:formats:container">
+	<f a="::">
+		<c path="String"/>
+		<t path="Null"><c path="String"/></t>
+		<f a=""><e path="Void"/></f>
+		<e path="Void"/>
+	</f>
+	<e path="rg.view.html.widget.DownloaderPosition"/>
+	<c path="Array"><c path="String"/></c>
+	<c path="thx.js.Selection"/>
+	<e path="Void"/>
+</f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="rg.controller.visualization.VisualizationGeo" params="" file="src/rg/controller/visualization/VisualizationGeo.hx">
 		<extends path="rg.controller.visualization.VisualizationSvg"/>
 		<info public="1"><c path="rg.controller.info.InfoGeo"/></info>
 		<title><t path="Null"><c path="rg.view.svg.layer.Title"/></t></title>
 		<chart><c path="rg.view.svg.chart.Geo"/></chart>
 		<init public="1" set="method" line="21" override="1"><f a=""><e path="Void"/></f></init>
-		<feedData public="1" set="method" line="75" override="1"><f a="data">
+		<feedData public="1" set="method" line="76" override="1"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
-		<destroy public="1" set="method" line="92" override="1"><f a=""><e path="Void"/></f></destroy>
+		<destroy public="1" set="method" line="93" override="1"><f a=""><e path="Void"/></f></destroy>
 		<new public="1" set="method" line="15"><f a="layout">
 	<c path="rg.view.layout.Layout"/>
 	<e path="Void"/>
@@ -12911,7 +13411,7 @@ customs for missing features
 	<c path="Array"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></c>
 	<e path="Void"/>
 </f></data>
-		<getTranslatePointf set="method" line="286"><f a="pos">
+		<getTranslatePointf set="method" line="288"><f a="pos">
 	<c path="Int"/>
 	<f a="dp:i">
 		<t path="rg.data.DataPoint"/>
@@ -12919,13 +13419,13 @@ customs for missing features
 		<c path="String"/>
 	</f>
 </f></getTranslatePointf>
-		<onmouseover set="method" line="296"><f a="stats:n:i">
+		<onmouseover set="method" line="298"><f a="stats:n:i">
 	<c path="rg.data.Stats"><d/></c>
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onmouseover>
-		<onclick set="method" line="316"><f a="stats:dp:i">
+		<onclick set="method" line="318"><f a="stats:dp:i">
 	<c path="rg.data.Stats"><d/></c>
 	<t path="rg.data.DataPoint"/>
 	<c path="Int"/>
@@ -13108,7 +13608,7 @@ customs for missing features
 	</class>
 	<class path="rg.view.svg.chart.StreamGraph" params="" file="src/rg/view/svg/chart/StreamGraph.hx">
 		<extends path="rg.view.svg.chart.CartesianChart"><c path="Array"><c path="Array"><t path="rg.data.DataPoint"/></c></c></extends>
-		<vid line="198" static="1"><c path="Int"/></vid>
+		<vid line="199" static="1"><c path="Int"/></vid>
 		<interpolator public="1"><e path="thx.svg.LineInterpolator"/></interpolator>
 		<gradientLightness public="1"><c path="Float"/></gradientLightness>
 		<gradientStyle public="1"><c path="Int"/></gradientStyle>
@@ -13130,28 +13630,28 @@ customs for missing features
 	<e path="Void"/>
 </f></data>
 		<redraw set="method" line="66"><f a=""><e path="Void"/></f></redraw>
-		<getDataAtNode set="method" line="97"><f a="n:i">
+		<getDataAtNode set="method" line="98"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<t path="rg.view.svg.chart.TransformedData"/>
 </f></getDataAtNode>
-		<onover set="method" line="107"><f a="n:i">
+		<onover set="method" line="108"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onover>
-		<onclick set="method" line="117"><f a="n:i">
+		<onclick set="method" line="118"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onclick>
-		<prepareData set="method" line="125"><f a=""><e path="Void"/></f></prepareData>
-		<applyGradientV set="method" line="167"><f a="d:i">
+		<prepareData set="method" line="126"><f a=""><e path="Void"/></f></prepareData>
+		<applyGradientV set="method" line="168"><f a="d:i">
 	<c path="Array"><t path="rg.view.svg.chart.TransformedData"/></c>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></applyGradientV>
-		<applyGradientH set="method" line="199"><f a="d:i">
+		<applyGradientH set="method" line="200"><f a="d:i">
 	<c path="Array"><t path="rg.view.svg.chart.TransformedData"/></c>
 	<c path="Int"/>
 	<e path="Void"/>
@@ -13180,11 +13680,11 @@ customs for missing features
 		<title><t path="Null"><c path="rg.view.svg.layer.Title"/></t></title>
 		<info public="1"><c path="rg.controller.info.InfoPieChart"/></info>
 		<init public="1" set="method" line="23" override="1"><f a=""><e path="Void"/></f></init>
-		<feedData public="1" set="method" line="72" override="1"><f a="data">
+		<feedData public="1" set="method" line="73" override="1"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
-		<destroy public="1" set="method" line="92" override="1"><f a=""><e path="Void"/></f></destroy>
+		<destroy public="1" set="method" line="93" override="1"><f a=""><e path="Void"/></f></destroy>
 		<new public="1" set="method" line="18"><f a="layout">
 	<c path="rg.view.layout.Layout"/>
 	<e path="Void"/>
@@ -13199,11 +13699,11 @@ customs for missing features
 		<infoHeatGrid public="1"><c path="rg.controller.info.InfoHeatGrid"/></infoHeatGrid>
 		<initAxes set="method" line="17" override="1"><f a=""><e path="Void"/></f></initAxes>
 		<initChart set="method" line="23" override="1"><f a=""><e path="Void"/></f></initChart>
-		<transformData set="method" line="33" override="1"><f a="dps">
+		<transformData set="method" line="34" override="1"><f a="dps">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 </f></transformData>
-		<setTickmarksDefaults set="method" line="38" override="1"><f a="tickmarks:i:type:pname">
+		<setTickmarksDefaults set="method" line="39" override="1"><f a="tickmarks:i:type:pname">
 	<c path="rg.view.svg.layer.TickmarksOrtho"/>
 	<c path="Int"/>
 	<c path="String"/>
@@ -13315,10 +13815,10 @@ customs for missing features
 		<_update><c path="Array"><c path="thx.js.Group"/></c></_update>
 		<_enter><c path="Array"><c path="thx.js.Group"/></c></_enter>
 		<_exit><c path="Array"><c path="thx.js.Group"/></c></_exit>
-		<enter public="1" set="method" line="87"><f a=""><c path="thx.js.PreEnterSelection"><c path="thx.js.DataChoice.T"/></c></f></enter>
-		<exit public="1" set="method" line="92"><f a=""><c path="thx.js.ExitSelection"><c path="thx.js.DataChoice.T"/></c></f></exit>
-		<update public="1" set="method" line="97"><f a=""><c path="thx.js.UpdateSelection"><c path="thx.js.DataChoice.T"/></c></f></update>
-		<new public="1" set="method" line="80"><f a="update:enter:exit">
+		<enter public="1" set="method" line="90"><f a=""><c path="thx.js.PreEnterSelection"><c path="thx.js.DataChoice.T"/></c></f></enter>
+		<exit public="1" set="method" line="95"><f a=""><c path="thx.js.ExitSelection"><c path="thx.js.DataChoice.T"/></c></f></exit>
+		<update public="1" set="method" line="100"><f a=""><c path="thx.js.UpdateSelection"><c path="thx.js.DataChoice.T"/></c></f></update>
+		<new public="1" set="method" line="83"><f a="update:enter:exit">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="Array"><c path="thx.js.Group"/></c>
@@ -13327,41 +13827,41 @@ customs for missing features
 	</class>
 	<class path="thx.js.BoundSelection" params="T:This" file="C:\Projects\thx\src/thx/js/Selection.hx" module="thx.js.Selection">
 		<extends path="thx.js.BaseSelection"><c path="thx.js.BoundSelection.This"/></extends>
-		<html public="1" set="method" line="114"><f a=""><c path="thx.js.AccessDataHtml">
+		<html public="1" set="method" line="117"><f a=""><c path="thx.js.AccessDataHtml">
 	<c path="thx.js.BoundSelection.T"/>
 	<c path="thx.js.BoundSelection.This"/>
 </c></f></html>
-		<text public="1" set="method" line="115"><f a=""><c path="thx.js.AccessDataText">
+		<text public="1" set="method" line="118"><f a=""><c path="thx.js.AccessDataText">
 	<c path="thx.js.BoundSelection.T"/>
 	<c path="thx.js.BoundSelection.This"/>
 </c></f></text>
-		<attr public="1" set="method" line="116"><f a="name">
+		<attr public="1" set="method" line="119"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.AccessDataAttribute">
 		<c path="thx.js.BoundSelection.T"/>
 		<c path="thx.js.BoundSelection.This"/>
 	</c>
 </f></attr>
-		<classed public="1" set="method" line="117"><f a=""><c path="thx.js.AccessDataClassed">
+		<classed public="1" set="method" line="120"><f a=""><c path="thx.js.AccessDataClassed">
 	<c path="thx.js.BoundSelection.T"/>
 	<c path="thx.js.BoundSelection.This"/>
 </c></f></classed>
-		<property public="1" set="method" line="118"><f a="name">
+		<property public="1" set="method" line="121"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.AccessDataProperty">
 		<c path="thx.js.BoundSelection.T"/>
 		<c path="thx.js.BoundSelection.This"/>
 	</c>
 </f></property>
-		<style public="1" set="method" line="119"><f a="name">
+		<style public="1" set="method" line="122"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.AccessDataStyle">
 		<c path="thx.js.BoundSelection.T"/>
 		<c path="thx.js.BoundSelection.This"/>
 	</c>
 </f></style>
-		<transition public="1" set="method" line="122"><f a=""><c path="thx.js.BoundTransition"><c path="thx.js.BoundSelection.T"/></c></f></transition>
-		<data public="1" params="T" set="method" line="133"><f a="d:?join">
+		<transition public="1" set="method" line="125"><f a=""><c path="thx.js.BoundTransition"><c path="thx.js.BoundSelection.T"/></c></f></transition>
+		<data public="1" params="T" set="method" line="136"><f a="d:?join">
 	<c path="Array"><c path="data.T"/></c>
 	<f a=":">
 		<c path="data.T"/>
@@ -13370,7 +13870,7 @@ customs for missing features
 	</f>
 	<c path="thx.js.DataChoice"><c path="data.T"/></c>
 </f></data>
-		<dataf public="1" params="TOut" set="method" line="149"><f a="fd:?join">
+		<dataf public="1" params="TOut" set="method" line="152"><f a="fd:?join">
 	<f a=":">
 		<c path="thx.js.BoundSelection.T"/>
 		<c path="Int"/>
@@ -13383,8 +13883,8 @@ customs for missing features
 	</f>
 	<c path="thx.js.DataChoice"><c path="dataf.TOut"/></c>
 </f></dataf>
-		<selfData public="1" params="TOut" set="method" line="165"><f a=""><c path="Array"><c path="selfData.TOut"/></c></f></selfData>
-		<each public="1" params="T" set="method" line="170"><f a="f">
+		<selfData public="1" params="TOut" set="method" line="168"><f a=""><c path="Array"><c path="selfData.TOut"/></c></f></selfData>
+		<each public="1" params="T" set="method" line="173"><f a="f">
 	<f a=":">
 		<c path="each.T"/>
 		<c path="Int"/>
@@ -13392,7 +13892,7 @@ customs for missing features
 	</f>
 	<c path="thx.js.BoundSelection.This"/>
 </f></each>
-		<sort public="1" params="T" set="method" line="175"><f a="comparator">
+		<sort public="1" params="T" set="method" line="178"><f a="comparator">
 	<f a=":">
 		<c path="sort.T"/>
 		<c path="sort.T"/>
@@ -13400,7 +13900,7 @@ customs for missing features
 	</f>
 	<c path="thx.js.BaseSelection"><c path="thx.js.BoundSelection.This"/></c>
 </f></sort>
-		<filter public="1" params="T" set="method" line="180"><f a="f">
+		<filter public="1" params="T" set="method" line="183"><f a="f">
 	<f a=":">
 		<c path="filter.T"/>
 		<c path="Int"/>
@@ -13408,7 +13908,7 @@ customs for missing features
 	</f>
 	<c path="thx.js.BoundSelection.This"/>
 </f></filter>
-		<map public="1" params="TIn:TOut" set="method" line="185"><f a="f">
+		<map public="1" params="TIn:TOut" set="method" line="188"><f a="f">
 	<f a=":">
 		<c path="map.TIn"/>
 		<c path="Int"/>
@@ -13416,14 +13916,14 @@ customs for missing features
 	</f>
 	<c path="thx.js.BoundSelection.This"/>
 </f></map>
-		<first public="1" params="TIn:TOut" set="method" line="203"><f a="f">
+		<first public="1" params="TIn:TOut" set="method" line="206"><f a="f">
 	<f a="">
 		<c path="first.TIn"/>
 		<c path="first.TOut"/>
 	</f>
 	<c path="first.TOut"/>
 </f></first>
-		<on public="1" params="T" set="method" line="208"><f a="type:?listener:?capture">
+		<on public="1" params="T" set="method" line="211"><f a="type:?listener:?capture">
 	<c path="String"/>
 	<f a=":">
 		<c path="on.T"/>
@@ -13433,7 +13933,7 @@ customs for missing features
 	<e path="Bool"/>
 	<c path="thx.js.BoundSelection.This"/>
 </f></on>
-		<new public="1" set="method" line="127"><f a="groups">
+		<new public="1" set="method" line="130"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<e path="Void"/>
 </f></new>
@@ -13443,15 +13943,15 @@ customs for missing features
 			<c path="thx.js.ResumeSelection.T"/>
 			<c path="thx.js.ResumeSelection"><c path="thx.js.ResumeSelection.T"/></c>
 		</extends>
-		<create public="1" params="T" set="method" line="105" static="1"><f a="groups">
+		<create public="1" params="T" set="method" line="108" static="1"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.ResumeSelection"><c path="create.T"/></c>
 </f></create>
-		<createSelection set="method" line="106" override="1"><f a="groups">
+		<createSelection set="method" line="109" override="1"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.ResumeSelection"><c path="thx.js.ResumeSelection.T"/></c>
 </f></createSelection>
-		<new public="1" set="method" line="103"><f a="groups">
+		<new public="1" set="method" line="106"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<e path="Void"/>
 </f></new>
@@ -13459,28 +13959,28 @@ customs for missing features
 	<class path="thx.js.PreEnterSelection" params="T" file="C:\Projects\thx\src/thx/js/Selection.hx" module="thx.js.Selection">
 		<groups><c path="Array"><c path="thx.js.Group"/></c></groups>
 		<_choice><c path="thx.js.DataChoice"><c path="thx.js.PreEnterSelection.T"/></c></_choice>
-		<append public="1" set="method" line="226"><f a="name">
+		<append public="1" set="method" line="229"><f a="name">
 	<c path="String"/>
 	<c path="thx.js.EnterSelection"><c path="thx.js.PreEnterSelection.T"/></c>
 </f></append>
-		<insert public="1" set="method" line="246"><f a="name:?before:?beforeSelector">
+		<insert public="1" set="method" line="249"><f a="name:?before:?beforeSelector">
 	<c path="String"/>
 	<t path="js.HtmlDom"/>
 	<c path="String"/>
 	<c path="thx.js.EnterSelection"><c path="thx.js.PreEnterSelection.T"/></c>
 </f></insert>
-		<createSelection set="method" line="266"><f a="groups">
+		<createSelection set="method" line="269"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.EnterSelection"><c path="thx.js.PreEnterSelection.T"/></c>
 </f></createSelection>
-		<_select set="method" line="271"><f a="selectf">
+		<_select set="method" line="274"><f a="selectf">
 	<f a="">
 		<t path="js.HtmlDom"/>
 		<t path="js.HtmlDom"/>
 	</f>
 	<c path="thx.js.EnterSelection"><c path="thx.js.PreEnterSelection.T"/></c>
 </f></_select>
-		<new public="1" set="method" line="220"><f a="enter:choice">
+		<new public="1" set="method" line="223"><f a="enter:choice">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.DataChoice"><c path="thx.js.PreEnterSelection.T"/></c>
 	<e path="Void"/>
@@ -13492,13 +13992,13 @@ customs for missing features
 			<c path="thx.js.EnterSelection"><c path="thx.js.EnterSelection.T"/></c>
 		</extends>
 		<_choice><c path="thx.js.DataChoice"><c path="thx.js.EnterSelection.T"/></c></_choice>
-		<createSelection set="method" line="305" override="1"><f a="groups">
+		<createSelection set="method" line="308" override="1"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.EnterSelection"><c path="thx.js.EnterSelection.T"/></c>
 </f></createSelection>
-		<exit public="1" set="method" line="310"><f a=""><c path="thx.js.ExitSelection"><c path="thx.js.EnterSelection.T"/></c></f></exit>
-		<update public="1" set="method" line="311"><f a=""><c path="thx.js.UpdateSelection"><c path="thx.js.EnterSelection.T"/></c></f></update>
-		<new public="1" set="method" line="299"><f a="enter:choice">
+		<exit public="1" set="method" line="313"><f a=""><c path="thx.js.ExitSelection"><c path="thx.js.EnterSelection.T"/></c></f></exit>
+		<update public="1" set="method" line="314"><f a=""><c path="thx.js.UpdateSelection"><c path="thx.js.EnterSelection.T"/></c></f></update>
+		<new public="1" set="method" line="302"><f a="enter:choice">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.DataChoice"><c path="thx.js.EnterSelection.T"/></c>
 	<e path="Void"/>
@@ -13507,13 +14007,13 @@ customs for missing features
 	<class path="thx.js.ExitSelection" params="T" file="C:\Projects\thx\src/thx/js/Selection.hx" module="thx.js.Selection">
 		<extends path="thx.js.UnboundSelection"><c path="thx.js.ExitSelection"><c path="thx.js.ExitSelection.T"/></c></extends>
 		<_choice><c path="thx.js.DataChoice"><c path="thx.js.ExitSelection.T"/></c></_choice>
-		<createSelection set="method" line="323" override="1"><f a="groups">
+		<createSelection set="method" line="326" override="1"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.ExitSelection"><c path="thx.js.ExitSelection.T"/></c>
 </f></createSelection>
-		<enter public="1" set="method" line="328"><f a=""><c path="thx.js.PreEnterSelection"><c path="thx.js.ExitSelection.T"/></c></f></enter>
-		<update public="1" set="method" line="329"><f a=""><c path="thx.js.UpdateSelection"><c path="thx.js.ExitSelection.T"/></c></f></update>
-		<new public="1" set="method" line="317"><f a="exit:choice">
+		<enter public="1" set="method" line="331"><f a=""><c path="thx.js.PreEnterSelection"><c path="thx.js.ExitSelection.T"/></c></f></enter>
+		<update public="1" set="method" line="332"><f a=""><c path="thx.js.UpdateSelection"><c path="thx.js.ExitSelection.T"/></c></f></update>
+		<new public="1" set="method" line="320"><f a="exit:choice">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.DataChoice"><c path="thx.js.ExitSelection.T"/></c>
 	<e path="Void"/>
@@ -13525,13 +14025,13 @@ customs for missing features
 			<c path="thx.js.UpdateSelection"><c path="thx.js.UpdateSelection.T"/></c>
 		</extends>
 		<_choice><c path="thx.js.DataChoice"><c path="thx.js.UpdateSelection.T"/></c></_choice>
-		<createSelection set="method" line="341" override="1"><f a="groups">
+		<createSelection set="method" line="344" override="1"><f a="groups">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.UpdateSelection"><c path="thx.js.UpdateSelection.T"/></c>
 </f></createSelection>
-		<enter public="1" set="method" line="346"><f a=""><c path="thx.js.PreEnterSelection"><c path="thx.js.UpdateSelection.T"/></c></f></enter>
-		<exit public="1" set="method" line="347"><f a=""><c path="thx.js.ExitSelection"><c path="thx.js.UpdateSelection.T"/></c></f></exit>
-		<new public="1" set="method" line="335"><f a="update:choice">
+		<enter public="1" set="method" line="349"><f a=""><c path="thx.js.PreEnterSelection"><c path="thx.js.UpdateSelection.T"/></c></f></enter>
+		<exit public="1" set="method" line="350"><f a=""><c path="thx.js.ExitSelection"><c path="thx.js.UpdateSelection.T"/></c></f></exit>
+		<new public="1" set="method" line="338"><f a="update:choice">
 	<c path="Array"><c path="thx.js.Group"/></c>
 	<c path="thx.js.DataChoice"><c path="thx.js.UpdateSelection.T"/></c>
 	<e path="Void"/>
@@ -13656,8 +14156,7 @@ customs for missing features
 	</class>
 	<class path="rg.controller.visualization.VisualizationHtml" params="" file="src/rg/controller/visualization/VisualizationHtml.hx">
 		<extends path="rg.controller.visualization.Visualization"/>
-		<container public="1" set="null"><c path="thx.js.Selection"/></container>
-		<new public="1" set="method" line="12"><f a="container">
+		<new public="1" set="method" line="11"><f a="container">
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
 </f></new>
@@ -13671,7 +14170,7 @@ customs for missing features
 		<info public="1"><c path="rg.controller.info.InfoLeaderboard"/></info>
 		<chart><c path="rg.view.html.widget.Leadeboard"/></chart>
 		<init public="1" set="method" line="21" override="1"><f a=""><e path="Void"/></f></init>
-		<feedData public="1" set="method" line="45" override="1"><f a="data">
+		<feedData public="1" set="method" line="46" override="1"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
@@ -13753,7 +14252,8 @@ customs for missing features
 	</f>
 	<e path="Void"/>
 </f></c></actions>
-		<addAction public="1" set="method" line="19"><f a="handler">
+		<pos><c path="Int"/></pos>
+		<addAction public="1" set="method" line="21"><f a="handler">
 	<f a=":">
 		<c path="rg.util.ChainedExecutor.T"/>
 		<f a="">
@@ -13764,11 +14264,11 @@ customs for missing features
 	</f>
 	<e path="Void"/>
 </f></addAction>
-		<execute public="1" set="method" line="24"><f a="ob">
+		<execute public="1" set="method" line="26"><f a="ob">
 	<c path="rg.util.ChainedExecutor.T"/>
 	<e path="Void"/>
 </f></execute>
-		<new public="1" set="method" line="13"><f a="handler">
+		<new public="1" set="method" line="14"><f a="handler">
 	<f a="">
 		<c path="rg.util.ChainedExecutor.T"/>
 		<e path="Void"/>
@@ -13969,6 +14469,14 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="haxe.Log" params="" file="C:\Projects\haxe/std/haxe/Log.hx">
+		<trace public="1" set="dynamic" line="29" static="1"><f a="v:?infos">
+	<d/>
+	<t path="haxe.PosInfos"/>
+	<e path="Void"/>
+</f></trace>
+		<clear public="1" set="dynamic" line="43" static="1"><f a=""><e path="Void"/></f></clear>
+	</class>
 	<class path="rg.controller.info.InfoScatterGraph" params="" file="src/rg/controller/info/InfoScatterGraph.hx">
 		<extends path="rg.controller.info.InfoCartesianChart"/>
 		<filters public="1" set="method" line="25" static="1"><f a=""><c path="Array"><a>
@@ -14001,14 +14509,6 @@ customs for missing features
  * ...
  * @author Franco Ponticelli
  </haxe_doc>
-	</class>
-	<class path="haxe.Log" params="" file="C:\Projects\haxe/std/haxe/Log.hx">
-		<trace public="1" set="dynamic" line="29" static="1"><f a="v:?infos">
-	<d/>
-	<t path="haxe.PosInfos"/>
-	<e path="Void"/>
-</f></trace>
-		<clear public="1" set="dynamic" line="43" static="1"><f a=""><e path="Void"/></f></clear>
 	</class>
 	<enum path="rg.view.svg.widget.LabelOrientation" params="" file="src/rg/view/svg/widget/LabelOrientation.hx">
 		<Orthogonal/>
@@ -14887,7 +15387,7 @@ customs for missing features
 		This enables you to create an instance without any side-effect.
 	</haxe_doc>
 		</createEmptyInstance>
-		<createEnum public="1" params="T" set="method" line="121" static="1">
+		<createEnum public="1" params="T" set="method" line="122" static="1">
 			<f a="e:constr:?params">
 				<c path="Enum"><c path="createEnum.T"/></c>
 				<c path="String"/>
@@ -14898,7 +15398,7 @@ customs for missing features
 		Create an instance of an enum by using a constructor name and parameters.
 	</haxe_doc>
 		</createEnum>
-		<createEnumIndex public="1" params="T" set="method" line="133" static="1">
+		<createEnumIndex public="1" params="T" set="method" line="134" static="1">
 			<f a="e:index:?params">
 				<c path="Enum"><c path="createEnumIndex.T"/></c>
 				<c path="Int"/>
@@ -14909,7 +15409,7 @@ customs for missing features
 		Create an instance of an enum by using a constructor index and parameters.
 	</haxe_doc>
 		</createEnumIndex>
-		<getInstanceFields public="1" set="method" line="139" static="1">
+		<getInstanceFields public="1" set="method" line="140" static="1">
 			<f a="c">
 				<c path="Class"><d/></c>
 				<c path="Array"><c path="String"/></c>
@@ -14918,7 +15418,7 @@ customs for missing features
 		Returns the list of instance fields.
 	</haxe_doc>
 		</getInstanceFields>
-		<getClassFields public="1" set="method" line="145" static="1">
+		<getClassFields public="1" set="method" line="147" static="1">
 			<f a="c">
 				<c path="Class"><d/></c>
 				<c path="Array"><c path="String"/></c>
@@ -14927,7 +15427,7 @@ customs for missing features
 		Returns the list of a class static fields.
 	</haxe_doc>
 		</getClassFields>
-		<getEnumConstructs public="1" set="method" line="154" static="1">
+		<getEnumConstructs public="1" set="method" line="156" static="1">
 			<f a="e">
 				<c path="Enum"><d/></c>
 				<c path="Array"><c path="String"/></c>
@@ -14936,7 +15436,7 @@ customs for missing features
 		Returns all the available constructor names for an enum.
 	</haxe_doc>
 		</getEnumConstructs>
-		<typeof public="1" set="method" line="159" static="1">
+		<typeof public="1" set="method" line="161" static="1">
 			<f a="v">
 				<d/>
 				<e path="ValueType"/>
@@ -14945,7 +15445,7 @@ customs for missing features
 		Returns the runtime type of a value.
 	</haxe_doc>
 		</typeof>
-		<enumEq public="1" params="T" set="method" line="189" static="1">
+		<enumEq public="1" params="T" set="method" line="191" static="1">
 			<f a="a:b">
 				<c path="enumEq.T"/>
 				<c path="enumEq.T"/>
@@ -14955,7 +15455,7 @@ customs for missing features
 		Recursively compare two enums constructors and parameters.
 	</haxe_doc>
 		</enumEq>
-		<enumConstructor public="1" get="inline" set="null" line="207" static="1">
+		<enumConstructor public="1" get="inline" set="null" line="209" static="1">
 			<f a="e">
 				<d/>
 				<c path="String"/>
@@ -14964,7 +15464,7 @@ customs for missing features
 		Returns the constructor of an enum
 	</haxe_doc>
 		</enumConstructor>
-		<enumParameters public="1" get="inline" set="null" line="211" static="1">
+		<enumParameters public="1" get="inline" set="null" line="213" static="1">
 			<f a="e">
 				<d/>
 				<c path="Array"><d/></c>
@@ -14973,7 +15473,7 @@ customs for missing features
 		Returns the parameters of an enum
 	</haxe_doc>
 		</enumParameters>
-		<enumIndex public="1" get="inline" set="null" line="215" static="1">
+		<enumIndex public="1" get="inline" set="null" line="217" static="1">
 			<f a="e">
 				<d/>
 				<c path="Int"/>
@@ -14982,7 +15482,7 @@ customs for missing features
 		Returns the index of the constructor of an enum
 	</haxe_doc>
 		</enumIndex>
-		<allEnums public="1" params="T" set="method" line="219" static="1">
+		<allEnums public="1" params="T" set="method" line="221" static="1">
 			<f a="e">
 				<c path="Enum"><c path="allEnums.T"/></c>
 				<c path="Array"><c path="allEnums.T"/></c>
@@ -15374,11 +15874,11 @@ customs for missing features
 		<title><t path="Null"><c path="rg.view.svg.layer.Title"/></t></title>
 		<chart><c path="rg.view.svg.chart.FunnelChart"/></chart>
 		<init public="1" set="method" line="23" override="1"><f a=""><e path="Void"/></f></init>
-		<feedData public="1" set="method" line="65" override="1"><f a="data">
+		<feedData public="1" set="method" line="66" override="1"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
-		<destroy public="1" set="method" line="88" override="1"><f a=""><e path="Void"/></f></destroy>
+		<destroy public="1" set="method" line="89" override="1"><f a=""><e path="Void"/></f></destroy>
 		<new public="1" set="method" line="17"><f a="layout">
 	<c path="rg.view.layout.Layout"/>
 	<e path="Void"/>
@@ -15534,6 +16034,63 @@ customs for missing features
 	<c path="Int"/>
 	<e path="Void"/>
 </f></setLayout></a></typedef>
+	<class path="Hashes" params="" file="C:\Projects\thx\src/Hashes.hx">
+		<toDynamic public="1" params="T" set="method" line="11" static="1"><f a="hash">
+	<c path="Hash"><c path="toDynamic.T"/></c>
+	<d><c path="toDynamic.T"/></d>
+</f></toDynamic>
+		<importObject public="1" params="T" set="method" line="19" static="1"><f a="hash:ob">
+	<c path="Hash"><c path="importObject.T"/></c>
+	<d><c path="importObject.T"/></d>
+	<c path="Hash"><c path="importObject.T"/></c>
+</f></importObject>
+		<copyTo public="1" params="T" set="method" line="24" static="1"><f a="from:to">
+	<c path="Hash"><c path="copyTo.T"/></c>
+	<c path="Hash"><c path="copyTo.T"/></c>
+	<c path="Hash"><c path="copyTo.T"/></c>
+</f></copyTo>
+		<clone public="1" params="T" set="method" line="31" static="1"><f a="src">
+	<c path="Hash"><c path="clone.T"/></c>
+	<c path="Hash"><c path="clone.T"/></c>
+</f></clone>
+		<arrayOfKeys public="1" get="inline" set="null" line="38" static="1"><f a="hash">
+	<c path="Hash"><d/></c>
+	<c path="Array"><c path="String"/></c>
+</f></arrayOfKeys>
+		<setOfKeys public="1" set="method" line="43" static="1"><f a="hash">
+	<c path="Hash"><d/></c>
+	<c path="thx.collection.Set"><c path="String"/></c>
+</f></setOfKeys>
+		<count public="1" set="method" line="51" static="1"><f a="hash">
+	<c path="Hash"><d/></c>
+	<c path="Int"/>
+</f></count>
+		<mergef public="1" params="T" set="method" line="65" static="1"><f a="hash:new_hash:f">
+	<c path="Hash"><c path="mergef.T"/></c>
+	<c path="Hash"><c path="mergef.T"/></c>
+	<f a="::">
+		<c path="String"/>
+		<c path="mergef.T"/>
+		<c path="mergef.T"/>
+		<c path="mergef.T"/>
+	</f>
+	<e path="Void"/>
+</f></mergef>
+		<merge public="1" params="T" set="method" line="78" static="1"><f a="hash:new_hash">
+	<c path="Hash"><c path="merge.T"/></c>
+	<c path="Hash"><c path="merge.T"/></c>
+	<e path="Void"/>
+</f></merge>
+		<clear public="1" set="method" line="83" static="1"><f a="hash">
+	<c path="Hash"><d/></c>
+	<e path="Void"/>
+</f></clear>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
+	<typedef path="FriendHash" params="" file="C:\Projects\thx\src/Hashes.hx" module="Hashes"><a><h><d/></h></a></typedef>
 	<class path="rg.controller.info.InfoLeaderboard" params="" file="src/rg/controller/info/InfoLeaderboard.hx">
 		<filters public="1" set="method" line="28" static="1"><f a=""><c path="Array"><d/></c></f></filters>
 		<animation public="1"><c path="rg.controller.info.InfoAnimation"/></animation>
@@ -15793,7 +16350,7 @@ customs for missing features
 	<c path="String"/>
 	<e path="Void"/>
 </f></drawmap>
-		<handlerDataPointOver public="1" set="method" line="90"><f a="dp:f">
+		<handlerDataPointOver public="1" set="method" line="92"><f a="dp:f">
 	<t path="rg.data.DataPoint"/>
 	<f a=":">
 		<t path="rg.data.DataPoint"/>
@@ -15805,7 +16362,7 @@ customs for missing features
 	</f>
 	<e path="Void"/>
 </f></handlerDataPointOver>
-		<handlerClick public="1" set="method" line="104"><f a="dp:f">
+		<handlerClick public="1" set="method" line="106"><f a="dp:f">
 	<t path="rg.data.DataPoint"/>
 	<f a=":">
 		<t path="rg.data.DataPoint"/>
@@ -15814,19 +16371,19 @@ customs for missing features
 	</f>
 	<e path="Void"/>
 </f></handlerClick>
-		<stylefeature set="dynamic" line="109"><f a="svg:dp">
+		<stylefeature set="dynamic" line="111"><f a="svg:dp">
 	<c path="thx.js.Selection"/>
 	<t path="rg.data.DataPoint"/>
 	<e path="Void"/>
 </f></stylefeature>
-		<redraw set="method" line="114"><f a=""><e path="Void"/></f></redraw>
-		<getColorMode set="method" line="120"><f a=""><e path="rg.view.svg.chart.ColorScaleMode"/></f></getColorMode>
-		<setColorMode set="method" line="121"><f a="v">
+		<redraw set="method" line="116"><f a=""><e path="Void"/></f></redraw>
+		<getColorMode set="method" line="122"><f a=""><e path="rg.view.svg.chart.ColorScaleMode"/></f></getColorMode>
+		<setColorMode set="method" line="123"><f a="v">
 	<e path="rg.view.svg.chart.ColorScaleMode"/>
 	<e path="rg.view.svg.chart.ColorScaleMode"/>
 </f></setColorMode>
-		<init public="1" set="method" line="212" override="1"><f a=""><e path="Void"/></f></init>
-		<addMap public="1" set="method" line="221"><f a="map:field">
+		<init public="1" set="method" line="214" override="1"><f a=""><e path="Void"/></f></init>
+		<addMap public="1" set="method" line="223"><f a="map:field">
 	<c path="rg.view.svg.widget.Map"/>
 	<c path="String"/>
 	<e path="Void"/>
@@ -15939,11 +16496,11 @@ customs for missing features
 		<info public="1"><c path="rg.controller.info.InfoPivotTable"/></info>
 		<chart><c path="rg.view.html.widget.PivotTable"/></chart>
 		<init public="1" set="method" line="26" override="1"><f a=""><e path="Void"/></f></init>
-		<feedData public="1" set="method" line="62" override="1"><f a="data">
+		<feedData public="1" set="method" line="63" override="1"><f a="data">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></feedData>
-		<destroy public="1" set="method" line="68" override="1"><f a=""><e path="Void"/></f></destroy>
+		<destroy public="1" set="method" line="69" override="1"><f a=""><e path="Void"/></f></destroy>
 		<new public="1" set="method" line="21"><f a="container">
 	<c path="thx.js.Selection"/>
 	<e path="Void"/>
@@ -16168,22 +16725,6 @@ customs for missing features
 	<class path="haxe.macro.Tools" params="" file="C:\Projects\haxe/std/haxe/macro/Tools.hx" extern="1"><haxe_doc>
 	Some macro utility methods that can be used on different platforms
 </haxe_doc></class>
-	<class path="rg.controller.factory.FactoryLayout" params="" file="src/rg/controller/factory/FactoryLayout.hx">
-		<LIMIT_WIDTH public="1" get="inline" set="null" line="14" static="1"><c path="Int"/></LIMIT_WIDTH>
-		<LIMIT_HEIGHT public="1" get="inline" set="null" line="15" static="1"><c path="Int"/></LIMIT_HEIGHT>
-		<DEFAULT_WIDTH public="1" get="inline" set="null" line="16" static="1"><c path="Int"/></DEFAULT_WIDTH>
-		<DEFAULT_HEIGHT public="1" get="inline" set="null" line="17" static="1"><c path="Int"/></DEFAULT_HEIGHT>
-		<create public="1" set="method" line="21"><f a="info:container">
-	<c path="rg.controller.info.InfoLayout"/>
-	<c path="thx.js.Selection"/>
-	<c path="rg.view.layout.Layout"/>
-</f></create>
-		<new public="1" set="method" line="19"><f a=""><e path="Void"/></f></new>
-		<haxe_doc>
- * ...
- * @author Franco Ponticelli
- </haxe_doc>
-	</class>
 	<class path="StringBuf" params="" file="C:\Projects\haxe/std/StringBuf.hx">
 		<add public="1" get="inline" set="null" line="46">
 			<f a="x">
@@ -16232,6 +16773,22 @@ customs for missing features
 	A String buffer is an efficient way to build a big string by
 	appending small elements together.
 </haxe_doc>
+	</class>
+	<class path="rg.controller.factory.FactoryLayout" params="" file="src/rg/controller/factory/FactoryLayout.hx">
+		<LIMIT_WIDTH public="1" get="inline" set="null" line="14" static="1"><c path="Int"/></LIMIT_WIDTH>
+		<LIMIT_HEIGHT public="1" get="inline" set="null" line="15" static="1"><c path="Int"/></LIMIT_HEIGHT>
+		<DEFAULT_WIDTH public="1" get="inline" set="null" line="16" static="1"><c path="Int"/></DEFAULT_WIDTH>
+		<DEFAULT_HEIGHT public="1" get="inline" set="null" line="17" static="1"><c path="Int"/></DEFAULT_HEIGHT>
+		<create public="1" set="method" line="21"><f a="info:container">
+	<c path="rg.controller.info.InfoLayout"/>
+	<c path="thx.js.Selection"/>
+	<c path="rg.view.layout.Layout"/>
+</f></create>
+		<new public="1" set="method" line="19"><f a=""><e path="Void"/></f></new>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
 	</class>
 	<enum path="rg.view.svg.chart.LineEffect" params="" file="src/rg/view/svg/chart/LineEffect.hx">
 		<NoEffect/>
@@ -16460,17 +17017,17 @@ customs for missing features
 		<Orthographic/>
 	</enum>
 	<class path="rg.controller.MVPOptions" params="" file="src/rg/controller/MVPOptions.hx">
-		<timestamp set="method" line="20" static="1"><f a="d">
+		<timestamp set="method" line="21" static="1"><f a="d">
 	<d/>
 	<c path="Float"/>
 </f></timestamp>
-		<buildQuery set="method" line="30" static="1"><f a="type:property:periodicity">
+		<buildQuery set="method" line="31" static="1"><f a="type:property:periodicity">
 	<c path="String"/>
 	<t path="Null"><c path="String"/></t>
 	<c path="String"/>
 	<c path="String"/>
 </f></buildQuery>
-		<complete public="1" set="method" line="39" static="1"><f a="executor:opt:handler">
+		<complete public="1" set="method" line="40" static="1"><f a="executor:parameters:handler">
 	<c path="rg.data.source.rgquery.IExecutorReportGrid"/>
 	<d/>
 	<f a="">
@@ -16704,61 +17261,61 @@ customs for missing features
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<e path="Void"/>
 </f></data>
-		<onMouseOver set="method" line="160"><f a="dom:i">
+		<onMouseOver set="method" line="162"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onMouseOver>
-		<onMouseClick set="method" line="179"><f a="dom:i">
+		<onMouseClick set="method" line="181"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></onMouseClick>
-		<removeLabel set="method" line="185"><f a="dom:i">
+		<removeLabel set="method" line="187"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></removeLabel>
-		<updateLabel set="method" line="194"><f a="dom:i">
+		<updateLabel set="method" line="196"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></updateLabel>
-		<appendLabel set="method" line="209"><f a="dom:i">
+		<appendLabel set="method" line="211"><f a="dom:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></appendLabel>
-		<applyGradient set="method" line="234"><f a="n:i">
+		<applyGradient set="method" line="236"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></applyGradient>
-		<fadein set="method" line="278"><f a="n:i">
+		<fadein set="method" line="280"><f a="n:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></fadein>
-		<highlight set="method" line="290"><f a="d:i">
+		<highlight set="method" line="292"><f a="d:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></highlight>
-		<backtonormal set="method" line="298"><f a="d:i">
+		<backtonormal set="method" line="300"><f a="d:i">
 	<t path="js.HtmlDom"/>
 	<c path="Int"/>
 	<e path="Void"/>
 </f></backtonormal>
-		<id set="method" line="306"><f a="dp:i">
+		<id set="method" line="308"><f a="dp:i">
 	<d/>
 	<c path="Int"/>
 	<c path="String"/>
 </f></id>
-		<makeid set="method" line="308"><f a="dp">
+		<makeid set="method" line="310"><f a="dp">
 	<t path="rg.data.DataPoint"/>
 	<c path="String"/>
 </f></makeid>
-		<arcShape set="method" line="315"><f a="a">
+		<arcShape set="method" line="317"><f a="a">
 	<c path="thx.svg.Arc"><a>
 	<startAngle><c path="Float"/></startAngle>
 	<endAngle><c path="Float"/></endAngle>
@@ -16774,7 +17331,7 @@ customs for missing features
 		<c path="String"/>
 	</f>
 </f></arcShape>
-		<pief set="method" line="323"><f a="dp">
+		<pief set="method" line="325"><f a="dp">
 	<c path="Array"><t path="rg.data.DataPoint"/></c>
 	<c path="Array"><a>
 	<startAngle><c path="Float"/></startAngle>
@@ -16783,7 +17340,7 @@ customs for missing features
 	<dp><t path="rg.data.DataPoint"/></dp>
 </a></c>
 </f></pief>
-		<destroy public="1" set="method" line="337" override="1"><f a=""><e path="Void"/></f></destroy>
+		<destroy public="1" set="method" line="339" override="1"><f a=""><e path="Void"/></f></destroy>
 		<new public="1" set="method" line="60"><f a="panel">
 	<c path="rg.view.svg.panel.Panel"/>
 	<e path="Void"/>
@@ -17056,6 +17613,32 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</class>
+	<class path="haxe.Timer" params="" file="C:\Projects\haxe/std/haxe/Timer.hx">
+		<delay public="1" set="method" line="77" static="1"><f a="f:time_ms">
+	<f a=""><e path="Void"/></f>
+	<c path="Int"/>
+	<c path="haxe.Timer"/>
+</f></delay>
+		<measure public="1" params="T" set="method" line="88" static="1"><f a="f:?pos">
+	<f a=""><c path="measure.T"/></f>
+	<t path="haxe.PosInfos"/>
+	<c path="measure.T"/>
+</f></measure>
+		<stamp public="1" set="method" line="98" static="1">
+			<f a=""><c path="Float"/></f>
+			<haxe_doc>
+		Returns a timestamp, in seconds
+	</haxe_doc>
+		</stamp>
+		<id><t path="Null"><c path="Int"/></t></id>
+		<timerId><c path="Int"/></timerId>
+		<stop public="1" set="method" line="52"><f a=""><e path="Void"/></f></stop>
+		<run public="1" set="dynamic" line="74"><f a=""><e path="Void"/></f></run>
+		<new public="1" set="method" line="37"><f a="time_ms">
+	<c path="Int"/>
+	<e path="Void"/>
+</f></new>
+	</class>
 	<enum path="rg.view.svg.chart.StreamEffect" params="" file="src/rg/view/svg/chart/StreamEffect.hx">
 		<NoEffect/>
 		<GradientVertical a="lightness"><c path="Float"/></GradientVertical>
@@ -17100,6 +17683,23 @@ customs for missing features
  * @author Franco Ponticelli
  </haxe_doc>
 	</enum>
+	<class path="rg.data.source.rgquery.ITrackReportGrid" params="" file="src/rg/data/source/rgquery/ITrackReportGrid.hx" interface="1">
+		<track public="1" set="method"><f a="path:events:?success:?error:?token">
+	<c path="String"/>
+	<a/>
+	<f a=""><e path="Void"/></f>
+	<f a="">
+		<c path="String"/>
+		<e path="Void"/>
+	</f>
+	<c path="String"/>
+	<e path="Void"/>
+</f></track>
+		<haxe_doc>
+ * ...
+ * @author Franco Ponticelli
+ </haxe_doc>
+	</class>
 	<class path="thx.svg.Symbol" params="" file="C:\Projects\thx\src/thx/svg/Symbol.hx">
 		<sqrt3 line="11" static="1"><c path="Float"/></sqrt3>
 		<tan30 line="12" static="1"><c path="Float"/></tan30>
