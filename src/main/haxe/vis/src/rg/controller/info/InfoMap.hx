@@ -12,17 +12,12 @@ import rg.view.svg.chart.ColorScaleModes;
 import thx.color.Colors;
 import thx.error.Error;
 import thx.geo.Azimuthal;
+import rg.RGConst;
 using rg.controller.info.Info;
 using Arrays;
 
 class InfoMap 
 {
-	static inline var GEOGSON_BASE_URL =
-	#if release 
-		"http://api.reportgrid.com/geo/json/"
-	#else
-		"geo/json/"
-	#end;
 	public var url : String;
 	public var type : String;
 	public var scale : Float;
@@ -150,7 +145,7 @@ class InfoMap
 					value : "mercator"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "world-countries.json.js"
+					value : RGConst.BASE_URL_GEOJSON + "world-countries.json.js"
 				}];
 			case "usa-states":
 				return [{
@@ -158,7 +153,7 @@ class InfoMap
 					value : "albersusa"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "usa-states.json.js"
+					value : RGConst.BASE_URL_GEOJSON + "usa-states.json.js"
 				}];
 			case "usa-state-centroids":
 				return [{
@@ -166,7 +161,7 @@ class InfoMap
 					value : "albersusa"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "usa-state-centroids.json.js"
+					value : RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"
 				}];
 			case "usa-counties":
 				return [{
@@ -174,7 +169,7 @@ class InfoMap
 					value : "albersusa"
 				}, {
 					field : "url",
-					value : GEOGSON_BASE_URL + "usa-counties.json.js"
+					value : RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"
 				}];
 			default:
 				return throw new Error("invalid template");

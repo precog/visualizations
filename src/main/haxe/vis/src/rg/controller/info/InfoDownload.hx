@@ -8,6 +8,7 @@ package rg.controller.info;
 using rg.controller.info.Info;
 import rg.view.html.widget.DownloaderPosition;
 import rg.view.html.widget.DownloaderPositions;
+import rg.RGConst;
 
 class InfoDownload 
 {
@@ -19,11 +20,7 @@ class InfoDownload
 	
 	public function new() 
 	{
-#if release
-		service = "http://devtest01.reportgrid.com:20000/";
-#else
-		service = "http://rgrender/";
-#end
+		service = RGConst.SERVICE_RENDERING_STATIC;
 		formats = ['png', 'jpg'];
 	}
 	

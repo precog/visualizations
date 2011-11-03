@@ -58,11 +58,13 @@ class QueryParser
 		TOKEN_INDIVIDUAL_PARSE = new EReg('^' + _PNAME + _LIMIT + _COND+"?" + "$", "i");
 		TOKEN_FIRST_PARSE = new EReg('^' + _PNAME + _LIMIT + _COND + "$", "i");
 		TOKEN_CONDITION_PARSE = new EReg('^' + _PNAME + _COND + "$", "i");
+		SPLIT_CONDITIONS = new EReg('"\\s*,\\s*"', "g");
 	}
 	
 	static var TOKEN_INDIVIDUAL_PARSE : EReg;
 	static var TOKEN_FIRST_PARSE : EReg;
 	static var TOKEN_CONDITION_PARSE : EReg;
+	static var SPLIT_CONDITIONS : EReg;
 	function parseToken(token : String)
 	{
 		var pos;
@@ -130,7 +132,11 @@ class QueryParser
 		switch(operator)
 		{
 			case '=':
-				where.push(Equality(name, parseValue(StringTools.rtrim(value))));
+				var v = SPLIT_CONDITIONS.split(parseValue(value));
+				if (v.length > 1)
+					where.push(In(name, v))
+				else
+					where.push(Equality(name, v[0]));
 			default:
 				throw new Error("invalid operator '{0}'", operator);
 		}

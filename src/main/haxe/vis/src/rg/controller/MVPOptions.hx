@@ -6,18 +6,22 @@
 package rg.controller;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.util.ChainedExecutor;
+import rg.util.Jsonp;
 import rg.util.Properties;
 import rg.util.DataPoints;
 import rg.util.RGStrings;
 import thx.date.DateParser;
 import rg.util.Periodicity;
 import thx.error.Error;
+import rg.util.RG;
+using Arrays;
 
 // TODO add property options
 // TODO add value options
 // TODO default labeling
 class MVPOptions 
 {
+	static var defaultHash : String;
 	static function timestamp(d : Dynamic) : Float
 	{
 		if (Std.is(d, String))
@@ -28,13 +32,29 @@ class MVPOptions
 			return d;
 	}
 	
-	static function buildQuery(type : String, property : Null<String>, periodicity : String)
+	static function quote(v : String, ?_)
 	{
-		switch(type)
+		return '"' + StringTools.replace(v, '"', '\\"') + '"';
+	}
+	
+	static function buildQuery(type : String, property : Null<String>, values : Null<Array<String>>, periodicity : String)
+	{
+		var p = null;
+		if (null != property)
 		{
-			default:
-				return (null != property ? property + " * " : "") + ".#time:" + periodicity;
+			p = property;
+			if (null != values)
+			{
+				p += " = " + values.map(quote).join(",");
+			}
 		}
+		
+		var q = switch(type)
+		{
+			default: (null != p ? p + " * " : "") + ".#time:" + periodicity;
+		}
+		
+		return q;
 	}
 	
 	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void) 
@@ -44,6 +64,7 @@ class MVPOptions
 			path = "/",
 			events : Array<String> = [],
 			property = null,
+			values : Array<String> = null,
 			chain = new ChainedExecutor(handler),
 			query,
 			periodicity,
@@ -111,13 +132,25 @@ class MVPOptions
 		// event/events
 		if (null != parameters.events)
 		{
-			events = Std.is(parameters.events, Array) ? parameters.events : [parameters.events];
+			events = Std.is(parameters.events, Array) ? parameters.events : [cast parameters.events];
 			Reflect.deleteField(parameters, "events");
 		}
 		if (null != parameters.event)
 		{
-			events = [parameters.event];
+			events = [cast parameters.event];
 			Reflect.deleteField(parameters, "event");
+		}
+		
+		// value/values
+		if (null != parameters.values)
+		{
+			values = Std.is(parameters.values, Array) ? parameters.values : [cast parameters.values];
+			Reflect.deleteField(parameters, "values");
+		}
+		if (null != parameters.value)
+		{
+			values = [cast parameters.value];
+			Reflect.deleteField(parameters, "value");
 		}
 		
 		// query
@@ -129,7 +162,7 @@ class MVPOptions
 			if (Properties.isTime(query))
 				periodicity = Properties.periodicity(query);
 		} else
-			query = buildQuery(options.visualization, property, periodicity);
+			query = buildQuery(options.visualization, property, values, periodicity);
 
 		// misc options
 		if (null != options.download && !Types.isAnonymous(options.download))
@@ -148,15 +181,28 @@ class MVPOptions
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
 			var opt : Dynamic = params.options;
+
 			if (null == opt.track)
-				opt.track = { enabled : true };
-			if (opt.track.enabled)
+				opt.track = { enabled : false };
+			if (null == opt.track.hash)
+				opt.track.hash = defaultHash;
+			if ("" == opt.track.hash)
+				opt.track.enabled = false;
+			if (opt.track.enabled && null == opt.track.hash)
 			{
-				opt.track = {
-					enabled : true,
-					hash : "FAKEHASH"
-				};
-				handler(params);
+				var tokenid = RG.getTokenId(),
+					service = null != opt.track.hashService ? opt.track.hashService : RGConst.SERVICE_VISTRACK_HASH;
+				service = StringTools.replace(service, "{$token}", tokenid);
+				Jsonp.get(service, function(hash) {
+					opt.track = {
+						enabled : hash != "",
+						hash : defaultHash = hash
+					};
+					handler(params);
+				}, function(_, e) {
+					opt.track.enabled = false;
+					handler(params);
+				}, null, null);
 			} else {
 				handler(params);
 			}
@@ -201,7 +247,7 @@ class MVPOptions
 					src.push( params );
 				}
 				if (null == params.options.segmenton)
-					params.options.segmenton = null == property ? "event" : property;
+					params.options.segmenton = null != values ? "value" : null == property ? "event" : property;
 			}
 			handler(params);
 		});
@@ -259,7 +305,9 @@ class MVPOptions
 							datapointover : function(dp, stats) {
 								return
 									Properties.humanize(
-										null != property 
+										null != values
+										? DataPoints.value(dp, "value")
+										: null != property 
 										? DataPoints.value(dp, property)
 										: null != params.options.segmenton
 										? DataPoints.value(dp, params.options.segmenton)
@@ -285,7 +333,9 @@ class MVPOptions
 							datapointover : function(dp, stats) {
 								return
 									Properties.humanize(
-										null != property 
+										null != values
+										? DataPoints.value(dp, "value")
+										: null != property 
 										? DataPoints.value(dp, property)
 										: type
 									) + ": " + 

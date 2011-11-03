@@ -1,5 +1,5 @@
-v. 1.1.x
-
+v. 1.1.2
+ * added support for values in simplified query model
 v. 1.1.1
  * added options.format to restrict the available formats for download
  * options.download can be a configuration object, a boolean value or a string (anchor position)

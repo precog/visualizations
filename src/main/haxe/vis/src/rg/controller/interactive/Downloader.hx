@@ -7,11 +7,12 @@ package rg.controller.interactive;
 
 import haxe.Http;
 import js.Lib;
-import rg.view.svg.util.Jsonp;
+import rg.util.Jsonp;
 import rg.view.svg.util.RGCss;
 import thx.error.Error;
 import thx.js.Selection;
 import thx.json.Json;
+import rg.util.RG;
 
 class Downloader 
 {
@@ -33,7 +34,7 @@ class Downloader
 		if (!Arrays.exists(ALLOWED_FORMATS, format))
 			throw new Error("The download format '{0}' is not correct", [format]);
 		var ob : Dynamic = {
-			tokenId : getTokenId(),
+			tokenId : RG.getTokenId(),
 			css : RGCss.cssSources(),
 			id : container.attr("id").get(),
 			format : format,
@@ -68,11 +69,6 @@ class Downloader
 		var name = container.attr("class").get();
 		name = StringTools.trim((~/\s+/g).replace((~/(^rg$|^rg\s+|\s+rg\s+|\s+rg$)/g).replace(name, " "), " "));
 		return ("" == name) ? null : name;
-	}
-	
-	static function getTokenId() : String
-	{
-		return Dynamics.string(untyped __js__("ReportGrid.$.Config.tokenId"));
 	}
 	
 	function success(handler : Void -> Void, content : String)

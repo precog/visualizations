@@ -21,6 +21,7 @@ enum QExp
 enum QCondition
 {
 	Equality(property : String, v : Dynamic);
+	In(property : String, v : Array<Dynamic>);
 }
 
 enum QOperation

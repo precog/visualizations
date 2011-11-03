@@ -16,10 +16,10 @@ class InfoTrack
 	
 	public function new()
 	{
-		enabled = true;
+		enabled = false;
 		token = TRACKING_TOKEN;
 		paths = [
-//			"/",
+			"/",
 			"/{hash}/"
 		];
 		hash = null;
@@ -41,7 +41,7 @@ class InfoTrack
 			filter : null
 		},{
 			field : "hash",
-			validator : function(v) return Std.is(v, String),
+			validator : function(v) return v == null || Std.is(v, String),
 			filter : null
 		}];
 	}

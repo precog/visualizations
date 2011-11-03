@@ -243,7 +243,7 @@ class PieChart extends Chart
 			var slice = gn.select("path.slice"),
 				shape = arcNormal.shape(Access.getData(n)),
 				t = gn.append("svg:path").attr("d").string(shape),
-				box : { x : Float, y : Float, width : Float, height : Float } = untyped t.node().getBBox();
+				box : { x : Float, y : Float, width : Float, height : Float } = try { untyped t.node().getBBox(); } catch (e : Dynamic) { { x : 0.0, y : 0.0, width : 0.0, height : 0.0 }; };
 			t.remove();
 			var color = RGColors.parse(slice.style("fill").get(), "#cccccc"),
 				scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness);
