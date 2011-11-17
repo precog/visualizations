@@ -31,8 +31,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			flatness : 0.001,
 			segmentpadding : 10,
 			arrowsize : 40,
-			click : function(d,s) { alert(ReportGrid.format(d) + " " + ReportGrid.format(s)); },
-			download : "bottomright"
+			click : function(d,s) { alert(ReportGrid.format(d) + " " + ReportGrid.format(s)); }
 		}
 	});
 	
@@ -53,8 +52,7 @@ document.addEventListener("DOMContentLoaded", function(){
 					{ event : 'conversion', count : 4000000 }
 				]
 			}
-		}],
-		options : { download : true }
+		}]
 	});
 
 	ReportGrid.funnelChart("#chart3", {
@@ -75,8 +73,7 @@ document.addEventListener("DOMContentLoaded", function(){
 					{ event : 'multi conversion', count :  1000000 }
 				]
 			}
-		}],
-		options : { download : true }
+		}]
 	});
 
 }, false)

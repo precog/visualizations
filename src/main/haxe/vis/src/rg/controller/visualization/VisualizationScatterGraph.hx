@@ -12,6 +12,7 @@ import rg.util.DataPoints;
 using Arrays;
 import rg.data.Variable;
 import rg.data.IAxis;
+import rg.data.ScaleDistribution;
 
 class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<DataPoint>>>
 {

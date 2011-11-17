@@ -5,4 +5,4 @@
 -D release
 -main rg.JSBridge
 --no-traces
--cmd deploy.bat
+-cmd ./deploy.sh

@@ -16,6 +16,7 @@ class ChainedExecutor<T>
 		this.handler = handler;
 		actions = [];
 		pos = 0;
+		executor = Reflect.field(this, 'execute');
 	}
 	
 	public function addAction(handler : T -> (T -> Void) -> Void )
@@ -35,4 +36,6 @@ class ChainedExecutor<T>
 			actions[pos++](ob, execute);
 		}
 	}
+
+	var executor : T -> Void;
 }

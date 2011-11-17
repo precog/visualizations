@@ -97,6 +97,7 @@ class App
 
 		var request = new DataRequest(cache, datacontexts);
 		request.onData = function(datapoints : Array<DataPoint>) {
+//			trace(datapoints);
 			visualization.feedData(datapoints);
 		};
 		request.request();

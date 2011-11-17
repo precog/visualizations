@@ -68,10 +68,10 @@ class JSBridge
 				}
 			});
 		}
-		
+
 		// define public visualization constrcutors
 		r.barChart     = function(el, options) return r.viz(el, options, "barchart");
-		r.geo   = function(el, options) return r.viz(el, options, "geo");
+		r.geo          = function(el, options) return r.viz(el, options, "geo");
 		r.funnelChart  = function(el, options) return r.viz(el, options, "funnelchart");
 		r.heatGrid     = function(el, options) return r.viz(el, options, "heatgrid");
 		r.leaderBoard  = function(el, options) return r.viz(el, options, "leaderboard");

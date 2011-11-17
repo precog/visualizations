@@ -12,6 +12,7 @@ import rg.data.Segmenter;
 import rg.util.DataPoints;
 import rg.data.IAxis;
 using Arrays;
+import rg.data.ScaleDistribution;
 
 class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
 {

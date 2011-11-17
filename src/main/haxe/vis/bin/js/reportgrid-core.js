@@ -61,8 +61,7 @@ var ReportGrid = window.ReportGrid || {};
       for (var i = 0; i < scripts.length; i++) {
         var script = scripts[i];
         var src = script.getAttribute('src');
-
-        if (src && src.indexOf(fragment) != -1) {
+        if (src && ((typeof fragment == "string" && src.indexOf(fragment) != -1) || src.match(fragment))) {
           return script;
         }
       }
@@ -70,7 +69,7 @@ var ReportGrid = window.ReportGrid || {};
       return undefined;
     },
     getConfiguration: function() {
-      return Util.parseQueryParameters(Util.findScript('reportgrid').getAttribute('src'));
+      return Util.parseQueryParameters(Util.findScript(/reportgrid[^\/.]*\.js/).getAttribute('src'));
     },
 
     parseQueryParameters: function(url) {
@@ -767,13 +766,17 @@ var ReportGrid = window.ReportGrid || {};
     var path = Util.sanitizePath(path_);
 
     var description = 'Select count from ' + path + ' where ' + JSON.stringify(options.where);
-
+    
+    var where = [];
+    for(key in options.where)
+        where.push({ variable : key, value : options.where[key]});
+    
     http.post(
       $.Config.analyticsServer + '/search',
       {
         select: "count",
         from:   path,
-        where:  options.where
+        where:  where
       },
       Util.createCallbacks(success, failure, description),
       Util.defaultQuery(options)
@@ -807,11 +810,15 @@ var ReportGrid = window.ReportGrid || {};
     var peri  = options.periodicity || "eternity";
 
     var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
+    
+    var where = [];
+    for(key in options.where)
+        where.push({ variable : key, value : options.where[key]});
 
     var ob = {
       select: "series/" + peri,
       from:   path,
-      where:  options.where
+      where:  where
     };
     var query = Util.groupQuery(options);
     

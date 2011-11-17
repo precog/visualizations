@@ -141,6 +141,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 						.attr("y").float(height - h - y)
 						.attr("height").float(h)
 						.onNode("mouseover", over)
+						.onNode("click", callback(click, dp))
 					;
 					Access.setData(bar.node(), dp);
 					if(displayGradient)
@@ -153,7 +154,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		ready.dispatch();
 	}
 	
-	function onclick(ystats : Stats<Dynamic>, dp : DataPoint, i : Int)
+	function onclick(ystats : Stats<Dynamic>, dp : DataPoint, _, i : Int)
 	{
 		click(dp, ystats);
 	}

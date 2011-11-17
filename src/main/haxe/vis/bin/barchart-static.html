@@ -146,22 +146,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		options : {
 			height : 120,
 			label : { datapointover : function(dp) {  return ReportGrid.format(dp["count"]);  }, axis : function(name) { return ReportGrid.humanize(name); } },
-			displayanchorlinetick : function(v) { return v == 'age' },
-			download : {
-				handler : function(callback) {
-					function exportPdf() { callback("pdf"); }
-					function exportPng() { callback("png"); }
-					function createButton(format, action)
-					{
-						var el = document.createElement("button");
-						el.innerHTML = format;
-						el.onclick = action;
-						document.body.appendChild(el);
-					}
-					createButton("pdf", exportPdf);
-					createButton("png", exportPng);
-				}
-			}
+			displayanchorlinetick : function(v) { return v == 'age' }
 		}
 	});
 	
@@ -180,22 +165,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				axis : function(name) { return ReportGrid.humanize(name); }
 			},
 			stacked : false,
-			displayanchorlinetick : function(v) { return v == 'age' },
-			download : {
-				handler : function(callback) {
-					function exportPdf() { callback("pdf"); }
-					function exportPng() { callback("png"); }
-					function createButton(format, action)
-					{
-						var el = document.createElement("button");
-						el.innerHTML = format;
-						el.onclick = action;
-						document.body.appendChild(el);
-					}
-					createButton("pdf", exportPdf);
-					createButton("png", exportPng);
-				}
-			}
+			displayanchorlinetick : function(v) { return v == 'age' }
 		}
 	});
 

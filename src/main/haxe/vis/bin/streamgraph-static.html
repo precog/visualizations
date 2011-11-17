@@ -61,22 +61,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			segmenton : "event",
 			label : { datapointover : function(dp) {  return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
 			click : function(dp) { alert(dp.event + ": " + ReportGrid.format(dp.count)); },
-			height: 200,
-			download : {
-				handler : function(callback) {
-					function exportPdf() { callback("pdf"); }
-					function exportPng() { callback("png"); }
-					function createButton(format, action)
-					{
-						var el = document.createElement("button");
-						el.innerHTML = format;
-						el.onclick = action;
-						document.body.appendChild(el);
-					}
-					createButton("pdf", exportPdf);
-					createButton("png", exportPng);
-				}
-			}
+			height: 200
 		}
 	});
 

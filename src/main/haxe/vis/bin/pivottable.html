@@ -21,26 +21,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			src: { path : "/snapEngage/11155847/bf7337a6-6c7f-4ff9-8e50-a7bb771c036a/", event : "case", query : ".browser * .os" /* * .#time:week */ }
 		},
 		options : {
-			click : function(dp) { alert(ReportGrid.dump(dp)) },
-			download : {
-				position : "after"
-				/*
-				handler : function(callback) {
-					function exportPdf() { callback("pdf"); }
-					function exportPng() { callback("png"); }
-					function createButton(format, action)
-					{
-						var el = document.createElement("button");
-						el.innerHTML = format;
-						el.onclick = action;
-						document.body.appendChild(el);
-					}
-					createButton("pdf", exportPdf);
-					createButton("png", exportPng);
-//					exportChart();
-				}
-				*/
-			}
+			click : function(dp) { alert(ReportGrid.dump(dp)) }
 		}
 	});
 

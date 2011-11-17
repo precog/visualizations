@@ -35,6 +35,6 @@ class RGStrings
 	
 	static function hstring(s : String)
 	{
-		return Strings.capitalize(Strings.humanize(s));
+		return Strings.ucwords(Strings.humanize(s));
 	}
 }

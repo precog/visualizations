@@ -252,6 +252,15 @@ class MVPOptions
 			handler(params);
 		});
 		
+		function timeAxis(?o : Dynamic) : Dynamic {
+			if(null == o)
+				o = {};
+			Reflect.setField(o, "type", ".#time:" + periodicity);
+			if (null != groupby)
+				return Reflect.setField(o, "groupby", groupby);
+			return o;
+		}
+
 		// ensure axes
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -259,18 +268,19 @@ class MVPOptions
 			{
 				switch(params.options.visualization)
 				{
+					case "funnelchart":
+						params.axes = [{ type : "event", variable : "independent" }, { type : "count"}];
+					case "barchart":
+						var axis : Dynamic = { scalemode : "fit" };
+						params.axes = [];
+						if(periodicity == "eternity") {
+							Objects.copyTo({ type : null == params.options.segmenton ? "event" : params.options.segmenton, variable : "independent" }, axis);
+							params.axes.push({ type : "count" });
+						} else
+							axis = timeAxis(axis);
+						params.axes.insert(0, axis);
 					default:
-						var axis : Dynamic = if (null != groupby)
-							{ type : ".#time:" + periodicity, groupby : groupby }
-						else {
-							cast { type : ".#time:" + periodicity };
-						}
-						switch(params.options.visualization)
-						{
-							case "barchart":
-								axis.scalemode = "fit";
-						}
-						params.axes = [axis];
+						params.axes = [timeAxis()];
 				}
 			}
 			handler(params);
@@ -298,6 +308,8 @@ class MVPOptions
 			{
 				switch(params.options.visualization)
 				{
+//					case "funnelchart":
+						
 					case "linechart", "barchart":
 						var axes : Array<Dynamic> = params.axes,
 							type = axes[axes.length - 1].type;
@@ -369,7 +381,7 @@ class MVPOptions
 						};
 				}
 			}
-			
+
 			handler(params);
 		});
 
