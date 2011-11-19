@@ -13,11 +13,13 @@ class TransformCounts implements ITransform<Array<{ count : Int, value : Dynamic
 	var properties : Dynamic;
 	var unit : String;
 	var event : String;
-	public function new(properties : Dynamic, event : String, unit : String) 
+	var unitvalue : String;
+	public function new(properties : Dynamic, event : String, unit : String, unitvalue = "value") 
 	{
 		this.properties = properties;
 		this.unit = unit;
 		this.event = event;
+		this.unitvalue = unitvalue;
 	}
 	
 	public function transform(data : Array<{ count : Int, value : Dynamic }>) : Array<DataPoint>
@@ -26,7 +28,7 @@ class TransformCounts implements ITransform<Array<{ count : Int, value : Dynamic
 			var dp = { event : event };
 			Objects.copyTo(properties, dp);
 			Objects.addField(dp, unit, d.count);
-			Objects.addField(dp, "value", d.value);
+			Objects.addField(dp, unitvalue, d.value);
 			return dp;
 		});
 		return result;

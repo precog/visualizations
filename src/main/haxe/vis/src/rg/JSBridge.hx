@@ -130,7 +130,7 @@ class JSBridge
 		return s;
 	}
 	
-	static inline function opt(ob : Dynamic) return null == ob ? { } : ob
+	static inline function opt(ob : Dynamic) return null == ob ? { } : Objects.clone(ob)
 	static function chartopt(ob : Dynamic, viz : String)
 	{
 		ob = opt(ob);

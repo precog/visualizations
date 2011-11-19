@@ -147,7 +147,7 @@ class DataSourceReportGrid implements IDataSource
 		}
 	}
 	
-	static function chainExecution<T>(actions : Array<{ method : ExCallback<T>, value : Dynamic }>, success : Dynamic -> Void, error : String -> Void)
+	static function parallelExecution<T>(actions : Array<{ method : ExCallback<T>, value : Dynamic }>, success : Dynamic -> Void, error : String -> Void)
 	{
 		var tot = actions.length,
 			result = [];
@@ -164,7 +164,6 @@ class DataSourceReportGrid implements IDataSource
 				t = cast r;
 			else
 				t = [r];
-				
 			for (item in t)
 			{
 				var ob : Dynamic = Types.isAnonymous(item) ? item : { count : item };
@@ -177,8 +176,25 @@ class DataSourceReportGrid implements IDataSource
 				complete();
 		}
 		
-		for (action in actions)
-			action.method(callback(handler, action.value), error);
+		var i = 0;
+		while(i < actions.length)
+			actions[i].method(callback(handler, actions[i++].value), error);
+	}
+
+	static function serialExecution<T>(value : T, actions : Array<T -> (T -> Void) -> (String -> Void) -> Void>, success : Dynamic -> Void, error : String -> Void)
+	{
+		function next() 
+		{
+			if(actions.length == 0)
+				return success;
+			else
+				return function(v : T) {
+					var action = actions.shift();
+					action(v, next(), error);
+				}
+		}
+
+		actions.shift()(value, next(), error);
 	}
 
 	public function load()
@@ -197,20 +213,56 @@ class DataSourceReportGrid implements IDataSource
 					executor.searchCount(path, opt, success, error);
 				} else if (where.length == 1)
 				{
-					opt.property = propertyName(exp[0]);
-					if (where[0].values.length > 1)
-					{
-						transform = new TransformCounts( { }, event, unit());
-						var actions : Array<{ method : ExCallback<Int>, value : Dynamic }> = cast where[0].values.map(function(v, _) {
+					if(exp.length > 1) {
+						var whereproperties = where.map(function(w, _) return w.property),
+							valueproperty = exp.filter(function(v) return !whereproperties.exists(v.property)).shift();
+						transform = new TransformCounts( { }, event, unit(), valueproperty.property);
+						var counts : Dynamic = {}; 
+						var actions = [];
+						actions.push(function(value : Dynamic, s : Dynamic -> Void, e : String -> Void) {
+							//public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
 							var o : Dynamic = Objects.clone(opt);
-							o.value = v;
-							return { method : callback(executor.propertyValueCount, path, o), value : v };
+							o.property = propertyName(valueproperty);
+							executor.propertyValues(path, o, s, e);
 						});
-						chainExecution(actions, success, error);
+						actions.push(function(values : Array<String>, s : Dynamic -> Void, e : String -> Void) {
+							var subs = [];
+							for(v in values)
+							{
+								var o : Dynamic = Objects.clone(opt);
+								o.where = {};
+								Reflect.setField(o.where, propertyName(valueproperty), v);
+								for(w in where)
+								{
+									var p = propertyName(w);
+									for(v in w.values)
+										Reflect.setField(o.where, p, v);
+								}
+								subs.push(cast {
+									method : callback(executor.searchCount, path, o),
+									value : v
+								});
+							}
+
+							parallelExecution(subs, s, e);
+						});
+						serialExecution(null, actions, success, error);
 					} else {
-						transform = new TransformCount( { }, event, unit());
-						opt.value = where[0].values[0];
-						executor.propertyValueCount(path, opt, success, error);
+						opt.property = propertyName(exp[0]);
+						if (where[0].values.length > 1)
+						{
+							transform = new TransformCounts( { }, event, unit());
+							var actions : Array<{ method : ExCallback<Int>, value : Dynamic }> = cast where[0].values.map(function(v, _) {
+								var o : Dynamic = Objects.clone(opt);
+								o.value = v;
+								return { method : callback(executor.propertyValueCount, path, o), value : v };
+							});
+							parallelExecution(actions, success, error);
+						} else {
+							transform = new TransformCount( { }, event, unit());
+							opt.value = where[0].values[0];
+							executor.propertyValueCount(path, opt, success, error);
+						}
 					}
 				} else {
 					transform = new TransformCount( { }, event, unit());
@@ -225,23 +277,59 @@ class DataSourceReportGrid implements IDataSource
 					executor.searchSeries(path, opt, success, error);
 				} else if (where.length == 1)
 				{
-					opt.property = propertyName(exp[0]);
-					if (where[0].values.length > 1)
-					{
-						transform = new TransformTimeSeriesValues( { periodicity : periodicity }, event, periodicity, unit());
-						var actions : Array<{ method : ExCallback<TimeSeriesType>, value : Dynamic }> = cast where[0].values.map(function(v, _) {
+					if(exp.length > 1) {
+						var whereproperties = where.map(function(w, _) return w.property),
+							valueproperty = exp.filter(function(v) return !whereproperties.exists(v.property)).shift();
+						transform = new TransformTimeSeriesValues( { periodicity : periodicity }, event, periodicity, unit(), valueproperty.property);
+						var counts : Dynamic = {}; 
+						var actions = [];
+						actions.push(function(value : Dynamic, s : Dynamic -> Void, e : String -> Void) {
+							//public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
 							var o : Dynamic = Objects.clone(opt);
-							o.value = v;
-							return { method : callback(executor.propertyValueSeries, path, o), value : v };
+							o.property = propertyName(valueproperty);
+							executor.propertyValues(path, o, s, e);
 						});
-						chainExecution(actions, success, error);
-						
-//						opt.value = where[0].values;
-//						executor.propertyValuesSeries(path, opt, success, error);
+						actions.push(function(values : Array<String>, s : Dynamic -> Void, e : String -> Void) {
+							var subs = [];
+							for(v in values)
+							{
+								var o : Dynamic = Objects.clone(opt);
+								o.where = {};
+								Reflect.setField(o.where, propertyName(valueproperty), v);
+								for(w in where)
+								{
+									var p = propertyName(w);
+									for(v in w.values)
+										Reflect.setField(o.where, p, v);
+								}
+								subs.push(cast {
+									method : callback(executor.searchSeries, path, o),
+									value : v
+								});
+							}
+
+							parallelExecution(subs, s, e);
+						});
+						serialExecution(null, actions, success, error);
 					} else {
-						transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
-						opt.value = where[0].values[0];
-						executor.propertyValueSeries(path, opt, success, error);
+						opt.property = propertyName(exp[0]);
+						if (where[0].values.length > 1)
+						{
+							transform = new TransformTimeSeriesValues( { periodicity : periodicity }, event, periodicity, unit());
+							var actions : Array<{ method : ExCallback<TimeSeriesType>, value : Dynamic }> = cast where[0].values.map(function(v, _) {
+								var o : Dynamic = Objects.clone(opt);
+								o.value = v;
+								return { method : callback(executor.propertyValueSeries, path, o), value : v };
+							});
+							parallelExecution(actions, success, error);
+							
+	//						opt.value = where[0].values;
+	//						executor.propertyValuesSeries(path, opt, success, error);
+						} else {
+							transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
+							opt.value = where[0].values[0];
+							executor.propertyValueSeries(path, opt, success, error);
+						}
 					}
 				} else {
 					transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
@@ -343,12 +431,14 @@ class DataSourceReportGrid implements IDataSource
 		*/
 	}
 	
+	static function prefixProperty(s : String) return (s.substr(0, 1) == '.') ? s : ('.' + s)
+
 	static function propertyName(p : { property : String, event : String } )
 	{
-		if (null == p.property)
-			return p.event;
+		if(null == p.property)
+			return prefixProperty(p.event);
 		else
-			return p.event + p.property;
+			return prefixProperty(p.event) + prefixProperty(p.property);
 	}
 
 	static function isTimeProperty(exp : QExp) : Bool
@@ -363,5 +453,5 @@ class DataSourceReportGrid implements IDataSource
 	}
 }
 
-typedef SV = String -> Void;
-typedef ExCallback<T> = (T -> Void) -> Null<SV> -> Void;
+typedef StringVoid = String -> Void;
+typedef ExCallback<T> = (T -> Void) -> Null<StringVoid> -> Void;

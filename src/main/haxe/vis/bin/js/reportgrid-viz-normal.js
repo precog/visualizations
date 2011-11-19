@@ -3981,7 +3981,7 @@ rg.view.html.widget.DownloaderPosition.After.toString = $estr;
 rg.view.html.widget.DownloaderPosition.After.__enum__ = rg.view.html.widget.DownloaderPosition;
 rg.controller.info.InfoTrack = $hxClasses["rg.controller.info.InfoTrack"] = function() {
 	this.enabled = false;
-	this.token = "SUPERFAKETOKEN";
+	this.token = rg.RGConst.TRACKING_TOKEN;
 	this.paths = ["/","/{hash}/"];
 	this.hash = null;
 }
@@ -4616,7 +4616,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1252"};
+	r.info.viz = { version : "1.1.3.1355"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -4624,10 +4624,10 @@ rg.JSBridge.select = function(el) {
 	return s;
 }
 rg.JSBridge.opt = function(ob) {
-	return null == ob?{ }:ob;
+	return null == ob?{ }:Objects.clone(ob);
 }
 rg.JSBridge.chartopt = function(ob,viz) {
-	ob = null == ob?{ }:ob;
+	ob = null == ob?{ }:Objects.clone(ob);
 	ob.options = rg.JSBridge.opt(ob.options);
 	ob.options.visualization = null != viz?viz:ob.options.visualization;
 	return ob;
@@ -4648,10 +4648,12 @@ rg.data.ScaleDistribution.ScaleBefore.__enum__ = rg.data.ScaleDistribution;
 rg.data.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
 rg.data.ScaleDistribution.ScaleAfter.toString = $estr;
 rg.data.ScaleDistribution.ScaleAfter.__enum__ = rg.data.ScaleDistribution;
-rg.data.source.rgquery.transform.TransformCounts = $hxClasses["rg.data.source.rgquery.transform.TransformCounts"] = function(properties,event,unit) {
+rg.data.source.rgquery.transform.TransformCounts = $hxClasses["rg.data.source.rgquery.transform.TransformCounts"] = function(properties,event,unit,unitvalue) {
+	if(unitvalue == null) unitvalue = "value";
 	this.properties = properties;
 	this.unit = unit;
 	this.event = event;
+	this.unitvalue = unitvalue;
 }
 rg.data.source.rgquery.transform.TransformCounts.__name__ = ["rg","data","source","rgquery","transform","TransformCounts"];
 rg.data.source.rgquery.transform.TransformCounts.__interfaces__ = [rg.data.source.ITransform];
@@ -4659,13 +4661,14 @@ rg.data.source.rgquery.transform.TransformCounts.prototype = {
 	properties: null
 	,unit: null
 	,event: null
+	,unitvalue: null
 	,transform: function(data) {
 		var me = this;
 		var result = data.map(function(d,i) {
 			var dp = { event : me.event};
 			Objects.copyTo(me.properties,dp);
 			Objects.addField(dp,me.unit,d.count);
-			Objects.addField(dp,"value",d.value);
+			Objects.addField(dp,me.unitvalue,d.value);
 			return dp;
 		});
 		return result;
@@ -6083,9 +6086,8 @@ rg.controller.factory.FactoryDataContext.prototype = {
 		var processor = new rg.data.DataProcessor(new rg.data.Sources(sources));
 		if(null != info.transform) processor.transform = function(dps) {
 			var res = info.transform.apply(this,dps);
-			if(null == res) return [[]];
+			if(null == res) return [];
 			if(!Std["is"](res,Array)) res = [res];
-			if(!Std["is"](res[0],Array)) res = [res];
 			return res;
 		};
 		if(null != info.scale) processor.scale = function(dps) {
@@ -7382,7 +7384,7 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 }
 rg.data.source.DataSourceReportGrid.__name__ = ["rg","data","source","DataSourceReportGrid"];
 rg.data.source.DataSourceReportGrid.__interfaces__ = [rg.data.IDataSource];
-rg.data.source.DataSourceReportGrid.chainExecution = function(actions,success,error) {
+rg.data.source.DataSourceReportGrid.parallelExecution = function(actions,success,error) {
 	var tot = actions.length, result = [];
 	var complete = function() {
 		success(result);
@@ -7401,16 +7403,27 @@ rg.data.source.DataSourceReportGrid.chainExecution = function(actions,success,er
 		tot--;
 		if(tot == 0) complete();
 	};
-	var _g = 0;
-	while(_g < actions.length) {
-		var action = actions[_g];
-		++_g;
-		action.method((function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
+	var i = 0;
+	while(i < actions.length) actions[i].method((function(f,a1) {
+		return function(a2) {
+			return f(a1,a2);
+		};
+	})(handler,actions[i++].value),error);
+}
+rg.data.source.DataSourceReportGrid.serialExecution = function(value,actions,success,error) {
+	var next = (function($this) {
+		var $r;
+		var next = null;
+		next = function() {
+			if(actions.length == 0) return success; else return function(v) {
+				var action = actions.shift();
+				action(v,next(),error);
 			};
-		})(handler,action.value),error);
-	}
+		};
+		$r = next;
+		return $r;
+	}(this));
+	(actions.shift())(value,next(),error);
 }
 rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 	if(exp.length > 1) {
@@ -7419,7 +7432,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 298, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 386, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -7438,8 +7451,11 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		}
 	} else return [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")];
 }
+rg.data.source.DataSourceReportGrid.prefixProperty = function(s) {
+	return s.substr(0,1) == "."?s:"." + s;
+}
 rg.data.source.DataSourceReportGrid.propertyName = function(p) {
-	if(null == p.property) return p.event; else return p.event + p.property;
+	if(null == p.property) return rg.data.source.DataSourceReportGrid.prefixProperty(p.event); else return rg.data.source.DataSourceReportGrid.prefixProperty(p.event) + rg.data.source.DataSourceReportGrid.prefixProperty(p.property);
 }
 rg.data.source.DataSourceReportGrid.isTimeProperty = function(exp) {
 	switch( (exp)[1] ) {
@@ -7521,30 +7537,76 @@ rg.data.source.DataSourceReportGrid.prototype = {
 	}
 	,load: function() {
 		var me = this;
-		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 188, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 204, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 			if(this.periodicity == "eternity") {
 				var opt = this.basicOptions(false);
 				if(this.where.length > 1) {
 					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 					this.executor.searchCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				} else if(this.where.length == 1) {
-					opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
-					if(this.where[0].values.length > 1) {
-						this.transform = new rg.data.source.rgquery.transform.TransformCounts({ },this.event,this.unit());
-						var actions = this.where[0].values.map(function(v,_) {
+					if(this.exp.length > 1) {
+						var whereproperties = this.where.map(function(w,_) {
+							return w.property;
+						}), valueproperty = Arrays.filter(this.exp,function(v) {
+							return !Arrays.exists(whereproperties,v.property);
+						}).shift();
+						this.transform = new rg.data.source.rgquery.transform.TransformCounts({ },this.event,this.unit(),valueproperty.property);
+						var counts = { };
+						var actions = [];
+						actions.push(function(value,s,e) {
 							var o = Objects.clone(opt);
-							o.value = v;
-							return { method : (function(f,a1,a2) {
-								return function(a3,a4) {
-									return f(a1,a2,a3,a4);
-								};
-							})(($_=me.executor,$_.propertyValueCount.$bind($_)),me.path,o), value : v};
+							o.property = rg.data.source.DataSourceReportGrid.propertyName(valueproperty);
+							me.executor.propertyValues(me.path,o,s,e);
 						});
-						rg.data.source.DataSourceReportGrid.chainExecution(actions,this.success.$bind(this),this.error.$bind(this));
+						actions.push(function(values,s,e) {
+							var subs = [];
+							var _g = 0;
+							while(_g < values.length) {
+								var v = values[_g];
+								++_g;
+								var o = Objects.clone(opt);
+								o.where = { };
+								o.where[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
+								var _g1 = 0, _g2 = me.where;
+								while(_g1 < _g2.length) {
+									var w = _g2[_g1];
+									++_g1;
+									var p = rg.data.source.DataSourceReportGrid.propertyName(w);
+									var _g3 = 0, _g4 = w.values;
+									while(_g3 < _g4.length) {
+										var v1 = _g4[_g3];
+										++_g3;
+										o.where[p] = v1;
+									}
+								}
+								subs.push({ method : (function(f,a1,a2) {
+									return function(a3,a4) {
+										return f(a1,a2,a3,a4);
+									};
+								})(($_=me.executor,$_.searchCount.$bind($_)),me.path,o), value : v});
+							}
+							rg.data.source.DataSourceReportGrid.parallelExecution(subs,s,e);
+						});
+						rg.data.source.DataSourceReportGrid.serialExecution(null,actions,this.success.$bind(this),this.error.$bind(this));
 					} else {
-						this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
-						opt.value = this.where[0].values[0];
-						this.executor.propertyValueCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+						opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
+						if(this.where[0].values.length > 1) {
+							this.transform = new rg.data.source.rgquery.transform.TransformCounts({ },this.event,this.unit());
+							var actions = this.where[0].values.map(function(v,_) {
+								var o = Objects.clone(opt);
+								o.value = v;
+								return { method : (function(f,a1,a2) {
+									return function(a3,a4) {
+										return f(a1,a2,a3,a4);
+									};
+								})(($_=me.executor,$_.propertyValueCount.$bind($_)),me.path,o), value : v};
+							});
+							rg.data.source.DataSourceReportGrid.parallelExecution(actions,this.success.$bind(this),this.error.$bind(this));
+						} else {
+							this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+							opt.value = this.where[0].values[0];
+							this.executor.propertyValueCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+						}
 					}
 				} else {
 					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
@@ -7557,23 +7619,69 @@ rg.data.source.DataSourceReportGrid.prototype = {
 					this.transform = new rg.data.source.rgquery.transform.TransformTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
 					this.executor.searchSeries(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				} else if(this.where.length == 1) {
-					opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
-					if(this.where[0].values.length > 1) {
-						this.transform = new rg.data.source.rgquery.transform.TransformTimeSeriesValues({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
-						var actions = this.where[0].values.map(function(v,_) {
+					if(this.exp.length > 1) {
+						var whereproperties = this.where.map(function(w,_) {
+							return w.property;
+						}), valueproperty = Arrays.filter(this.exp,function(v) {
+							return !Arrays.exists(whereproperties,v.property);
+						}).shift();
+						this.transform = new rg.data.source.rgquery.transform.TransformTimeSeriesValues({ periodicity : this.periodicity},this.event,this.periodicity,this.unit(),valueproperty.property);
+						var counts = { };
+						var actions = [];
+						actions.push(function(value,s,e) {
 							var o = Objects.clone(opt);
-							o.value = v;
-							return { method : (function(f,a1,a2) {
-								return function(a3,a4) {
-									return f(a1,a2,a3,a4);
-								};
-							})(($_=me.executor,$_.propertyValueSeries.$bind($_)),me.path,o), value : v};
+							o.property = rg.data.source.DataSourceReportGrid.propertyName(valueproperty);
+							me.executor.propertyValues(me.path,o,s,e);
 						});
-						rg.data.source.DataSourceReportGrid.chainExecution(actions,this.success.$bind(this),this.error.$bind(this));
+						actions.push(function(values,s,e) {
+							var subs = [];
+							var _g = 0;
+							while(_g < values.length) {
+								var v = values[_g];
+								++_g;
+								var o = Objects.clone(opt);
+								o.where = { };
+								o.where[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
+								var _g1 = 0, _g2 = me.where;
+								while(_g1 < _g2.length) {
+									var w = _g2[_g1];
+									++_g1;
+									var p = rg.data.source.DataSourceReportGrid.propertyName(w);
+									var _g3 = 0, _g4 = w.values;
+									while(_g3 < _g4.length) {
+										var v1 = _g4[_g3];
+										++_g3;
+										o.where[p] = v1;
+									}
+								}
+								subs.push({ method : (function(f,a1,a2) {
+									return function(a3,a4) {
+										return f(a1,a2,a3,a4);
+									};
+								})(($_=me.executor,$_.searchSeries.$bind($_)),me.path,o), value : v});
+							}
+							rg.data.source.DataSourceReportGrid.parallelExecution(subs,s,e);
+						});
+						rg.data.source.DataSourceReportGrid.serialExecution(null,actions,this.success.$bind(this),this.error.$bind(this));
 					} else {
-						this.transform = new rg.data.source.rgquery.transform.TransformTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
-						opt.value = this.where[0].values[0];
-						this.executor.propertyValueSeries(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+						opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
+						if(this.where[0].values.length > 1) {
+							this.transform = new rg.data.source.rgquery.transform.TransformTimeSeriesValues({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
+							var actions = this.where[0].values.map(function(v,_) {
+								var o = Objects.clone(opt);
+								o.value = v;
+								return { method : (function(f,a1,a2) {
+									return function(a3,a4) {
+										return f(a1,a2,a3,a4);
+									};
+								})(($_=me.executor,$_.propertyValueSeries.$bind($_)),me.path,o), value : v};
+							});
+							rg.data.source.DataSourceReportGrid.parallelExecution(actions,this.success.$bind(this),this.error.$bind(this));
+						} else {
+							this.transform = new rg.data.source.rgquery.transform.TransformTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
+							opt.value = this.where[0].values[0];
+							this.executor.propertyValueSeries(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+						}
 					}
 				} else {
 					this.transform = new rg.data.source.rgquery.transform.TransformTimeSeries({ periodicity : this.periodicity},this.event,this.periodicity,this.unit());
@@ -7603,7 +7711,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 279, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 367, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -17079,8 +17187,8 @@ rg.data.DataProcessor.prototype = {
 			return;
 		}
 		data = this.scale(data);
-		this.fillIndependentVariables(data);
 		var dataPoints = this.transform(data);
+		this.fillIndependentVariables(dataPoints);
 		this.fillDependentVariables(dataPoints);
 		this.onData.dispatch(dataPoints);
 	}
@@ -17100,8 +17208,7 @@ rg.data.DataProcessor.prototype = {
 			}
 		}
 	}
-	,fillIndependentVariables: function(data) {
-		var flatten = Arrays.flatten(data);
+	,fillIndependentVariables: function(flatten) {
 		var _g = 0, _g1 = this.independentVariables;
 		while(_g < _g1.length) {
 			var variable = _g1[_g];
@@ -17121,11 +17228,13 @@ rg.data.DataProcessor.prototype = {
 	}
 	,__class__: rg.data.DataProcessor
 }
-rg.data.source.rgquery.transform.TransformTimeSeriesValues = $hxClasses["rg.data.source.rgquery.transform.TransformTimeSeriesValues"] = function(properties,event,periodicity,unit) {
+rg.data.source.rgquery.transform.TransformTimeSeriesValues = $hxClasses["rg.data.source.rgquery.transform.TransformTimeSeriesValues"] = function(properties,event,periodicity,unit,unitvalue) {
+	if(unitvalue == null) unitvalue = "value";
 	this.properties = properties;
 	this.unit = unit;
 	this.periodicity = periodicity;
 	this.event = event;
+	this.unitvalue = unitvalue;
 }
 rg.data.source.rgquery.transform.TransformTimeSeriesValues.__name__ = ["rg","data","source","rgquery","transform","TransformTimeSeriesValues"];
 rg.data.source.rgquery.transform.TransformTimeSeriesValues.__interfaces__ = [rg.data.source.ITransform];
@@ -17134,10 +17243,12 @@ rg.data.source.rgquery.transform.TransformTimeSeriesValues.prototype = {
 	,unit: null
 	,periodicity: null
 	,event: null
+	,unitvalue: null
 	,transform: function(data) {
+		var me = this;
 		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
 		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event","value"],[d.count[0].timestamp,d.count[1],event,d.value]);
+			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event",me.unitvalue],[d.count[0].timestamp,d.count[1],event,d.value]);
 			return p;
 		});
 		return result;
@@ -21308,7 +21419,6 @@ thx.js.Dom.doc = (function() {
 	return gs;
 })();
 thx.js.Dom.selectionEngine = new thx.js.SizzleEngine();
-rg.controller.info.InfoTrack.TRACKING_TOKEN = "SUPERFAKETOKEN";
 rg.view.html.widget.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.view.html.widget.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.data.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
@@ -21382,7 +21492,8 @@ thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
 rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://devtest01.reportgrid.com:20000/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapp01.reportgrid.com:20000/";
+rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");

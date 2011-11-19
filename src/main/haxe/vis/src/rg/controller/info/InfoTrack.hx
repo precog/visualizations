@@ -4,11 +4,11 @@
  */
 
 package rg.controller.info;
+import rg.RGConst;
 using rg.controller.info.Info;
 
 class InfoTrack 
 {
-	static inline var TRACKING_TOKEN = "SUPERFAKETOKEN";
 	public var enabled : Bool;
 	public var token : String;
 	public var paths : Array<String>;
@@ -17,7 +17,7 @@ class InfoTrack
 	public function new()
 	{
 		enabled = false;
-		token = TRACKING_TOKEN;
+		token = RGConst.TRACKING_TOKEN;
 		paths = [
 			"/",
 			"/{hash}/"

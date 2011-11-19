@@ -1,6 +1,9 @@
 v. 1.1.3
  * added support for histogram when the bar chart is generated with eternity
  * added support for simplified query to generate funnel charts from the event names
+ * fixed bug when reusing the same options object
+ * fixed bug with transformations returning an array of arrays
+ * fixed bug with intersections with where conditions
 v. 1.1.2
  * added support for values in simplified query model
 v. 1.1.1

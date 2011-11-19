@@ -34,11 +34,11 @@ class FactoryDataContext
 			{
 				var res : Dynamic = untyped info.transform.apply(__this__, dps);
 				if (null == res)
-					return [[]];
+					return [];
 				if (!Std.is(res, Array))
 					res = [res];
-				if (!Std.is(res[0], Array))
-					res = [res];
+//				if (!Std.is(res[0], Array))
+//					res = [res];
 				return res;
 			}
 		}

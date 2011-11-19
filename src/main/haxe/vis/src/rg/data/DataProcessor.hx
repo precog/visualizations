@@ -70,9 +70,9 @@ class DataProcessor
 			return;
 		}
 		data = scale(data);
-		fillIndependentVariables(data);
 		
 		var dataPoints = transform(data);
+		fillIndependentVariables(dataPoints);
 /*
 		var dataPoints : Array<DataPoint> = [];
 		var variablesset = getVariableIndependentValues();
@@ -126,9 +126,8 @@ class DataProcessor
 		}
 	}
 	
-	function fillIndependentVariables(data : Array<Array<DataPoint>>)
+	function fillIndependentVariables(flatten : Array<DataPoint>)
 	{
-		var flatten = data.flatten();
 		for (variable in independentVariables)
 		{
 			variable.stats.addMany(DataPoints.values(flatten, variable.type));
