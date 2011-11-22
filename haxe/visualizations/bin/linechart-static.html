@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>ReportGrid.Visualizations</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<link rel="stylesheet" type="text/css" href="css/rg-debug2.css"/>
+
+	<!-- FOR DIFFENT COLOR SCHEMES TRY THE FOLLOWINGS: -->
+<!--
+	<link rel="stylesheet" href="css/rg-colors20.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20b.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors20c.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-blue.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-green.css" type="text/css"/>
+	<link rel="stylesheet" href="css/rg-colors-mono-red.css" type="text/css"/>
+-->
+	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
+	<script src="js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+
+	var start = "100 hours ago",
+		end = "now",
+		range = ReportGrid.date.range(start, end, "hour"),
+		data1 = range.map(function(d,i) {
+			var count = Math.round(Math.tan(i / range.length * Math.PI * 4) * 100);
+			return {
+				".#time:hour" : d,
+				event : "impression",
+				impression : count,
+				count : count
+			};
+		}),
+		data2 = range.map(function(d,i) {
+			var count = Math.round(Math.sin(i / range.length * Math.PI * 4) * 100);
+			return {
+				".#time:hour" : d,
+				event : "click",
+				click : count,
+				count : count
+			};
+		}),
+		data3 = range.map(function(d,i) {
+			var count = Math.round(Math.cos(i / range.length * Math.PI * 4) * 50);
+			return {
+				".#time:hour" : d,
+				event : "conversion",
+				conversion : count,
+				count : count
+			};
+		}),
+		data4 = range.map(function(d,i) {
+			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 100);
+			return {
+				".#time:hour" : d,
+				event : "other",
+				other : count,
+				count : count
+			};
+		}),
+		data5 = range.map(function(d,i) {
+			var count = Math.round(Math.atan(i / range.length * Math.PI * 4) * 50);
+			return {
+				".#time:hour" : d,
+				event : "other2",
+				other : count,
+				count : count
+			};
+		})
+	;
+	
+	ReportGrid.lineChart("#chart1", {
+		axes : [
+			{
+				type : ".#time:hour",
+				variable : "independent"
+			},
+			{ type : "impression" },
+			{ type : "click" },
+			{ type : "conversion" },
+			{ type : "other" }
+		],
+		data : [
+			{ src : { data : data1 } }, 
+			{ src : { data : data2 } },
+			{ src : { data : data3 } }, 
+			{ src : { data : data4 } },
+			{ src : { data : data5 } }
+		],
+		options : {
+			segmenton : "event",
+			label : { datapointover : function(dp) {  return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
+			click : function(dp) { alert(dp[".browser"]); },
+			height: 200,
+			symbol : function(ds, stats) { return ReportGrid.symbol("circle", 20); },
+			line : { effect : "gradient" }
+		}
+	});
+
+	var ageRanges = ["0-13", "14-15", "16-20", "21-35",  "91-100", "100+"];
+	ReportGrid.lineChart("#chart2", {
+		axes : [{
+			type : "age",
+			variable : "independent"
+		}, {
+			type : "count",
+			variable : "dependent"
+		}],
+		data : [{
+			src : {
+				data : ageRanges.map(function(d,i) {
+					return {
+						count : ReportGrid.math.random() * 35 + 5,
+						age : d
+					};
+				})
+			}
+		}],
+		options : {
+			height : 120,
+			line : { interpolation : "linear" },
+			label : {
+				datapointover : function(dp) { return ReportGrid.format(dp["count"]); },
+				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			displayarea : true
+		}
+	});
+	
+	var interests = ["sport", "tv", "internet", "art", "history", "diy"];
+	ReportGrid.lineChart("#chart3", {
+		axes : [{
+			type : "age",
+			variable : "independent"
+		}, {
+			type : "interest",
+			values : interests,
+			variable : "dependent"
+		}],
+		data : [{
+			src : {
+				data : ageRanges.map(function(d,i) {
+					return {
+						interest : interests[Math.floor(ReportGrid.math.random()*interests.length)],
+						age : d
+					};
+				})
+			}
+		}],
+		options : {
+			height : 120,
+			label : {
+				title : "Interests by Age Groups",
+				datapointover : function(dp) { return dp["age"] + ": " + dp["interest"]; },
+				axis : function(name) { return ReportGrid.humanize(name); }
+			},
+			displayarea : true
+		}
+	});
+}, false)
+</script>
+</head>
+<body>
+	<div id="chart8"></div>
+	<div id="chart7"></div>
+	<div id="chart6"></div>
+	<div id="chart5"></div>
+	<div id="chart4"></div>
+	<div id="chart3"></div>
+	<div id="chart2"></div>
+	<div id="chart1"></div>
+	<div id="haxe:trace"></div>
+</body>
+</html>

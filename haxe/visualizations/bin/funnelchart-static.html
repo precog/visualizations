@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>ReportGrid.Visualizations</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<script src="js/reportgrid-core.js?tokenId=66178806-8389-42CA-9E6B-86B4285F487A"></script>
+	<script src="js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+	ReportGrid.funnelChart("#chart1", {
+		axes : [{
+			type : "event",
+			values : ['impression', 'click', 'conversion'],
+			variable : "independent"
+		}, { type : "count" }],
+		data : [{
+			src :  { 
+				data : [
+					{ event : 'impression', count : 4000000000 }, 
+					{ event : 'click',      count : 2000000000 },
+					{ event : 'conversion', count : 1000000000 }
+				]
+			}
+		}],
+		options : {
+			style : "none",
+			flatness : 0.001,
+			segmentpadding : 10,
+			arrowsize : 40,
+			click : function(d,s) { alert(ReportGrid.format(d) + " " + ReportGrid.format(s)); }
+		}
+	});
+	
+	ReportGrid.funnelChart("#chart2", {
+		axes : [{
+			type : "event",
+			values : ['impression', 'click', 'conversion'],
+			variable : "independent"
+		}, {
+			type : "count"
+		}],
+		data : [{
+			src : 
+			{ 
+				data : [
+					{ event : 'impression', count : 1000000 }, 
+					{ event : 'click',      count : 2000000 },
+					{ event : 'conversion', count : 4000000 }
+				]
+			}
+		}]
+	});
+
+	ReportGrid.funnelChart("#chart3", {
+		axes : [{
+			type : "event",
+			values : ['impression', 'click', 'conversion', 'multi conversion'],
+			variable : "independent"
+		}, {
+			type : "count"
+		}],
+		data : [{
+			src : 
+			{ 
+				data : [
+					{ event : 'impression',       count : 27000000 }, 
+					{ event : 'click',            count :  9000000 },
+					{ event : 'conversion',       count :  3000000 },
+					{ event : 'multi conversion', count :  1000000 }
+				]
+			}
+		}]
+	});
+
+}, false)
+</script>
+</head>
+<body>
+	<div id="chart8"></div>
+	<div id="chart7"></div>
+	<div id="chart6"></div>
+	<div id="chart5"></div>
+	<div id="chart4"></div>
+	<div id="chart3" style="width:250px;height:250px;float:left"></div>
+	<div id="chart2" style="width:250px;height:250px;float:left"></div>
+	<div id="chart1" style="width:250px;height:250px;float:left"></div>
+	<div id="haxe:trace"></div>
+</body>
+</html>
