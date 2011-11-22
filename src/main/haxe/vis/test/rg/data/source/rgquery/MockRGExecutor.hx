@@ -9,7 +9,7 @@ import rg.data.source.rgquery.IExecutorReportGrid;
 class MockRGExecutor implements IExecutorReportGrid
 {
 	public var callStack : Array<{ method : String, args : Array<Dynamic> }>;
-	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void) 
+	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void)
 	{
 		callStack.push({ method : "children", args : [path, options] });
 	}
@@ -45,8 +45,8 @@ class MockRGExecutor implements IExecutorReportGrid
 	{
 		callStack.push({ method : "intersect", args : [path, options] });
 	}
-	
-	public function new() 
+
+	public function new()
 	{
 		callStack = [];
 	}

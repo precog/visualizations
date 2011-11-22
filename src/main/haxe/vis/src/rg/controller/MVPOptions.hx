@@ -19,7 +19,7 @@ using Arrays;
 // TODO add property options
 // TODO add value options
 // TODO default labeling
-class MVPOptions 
+class MVPOptions
 {
 	static var defaultHash : String;
 	static function timestamp(d : Dynamic) : Float
@@ -31,12 +31,12 @@ class MVPOptions
 		else
 			return d;
 	}
-	
+
 	static function quote(v : String, ?_)
 	{
 		return '"' + StringTools.replace(v, '"', '\\"') + '"';
 	}
-	
+
 	static function buildQuery(type : String, property : Null<String>, values : Null<Array<String>>, periodicity : String)
 	{
 		var p = null;
@@ -48,16 +48,16 @@ class MVPOptions
 				p += " = " + values.map(quote).join(",");
 			}
 		}
-		
+
 		var q = switch(type)
 		{
 			default: (null != p ? p + " * " : "") + ".#time:" + periodicity;
 		}
-		
+
 		return q;
 	}
-	
-	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void) 
+
+	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void)
 	{
 		var start = null,
 			end = null,
@@ -92,7 +92,7 @@ class MVPOptions
 			property = (parameters.property.substr(0, 1) == '.' ? '' : '.') + parameters.property;
 			Reflect.deleteField(parameters, "property");
 		}
-		
+
 		// start/end
 		if (null != parameters.start)
 		{
@@ -104,7 +104,7 @@ class MVPOptions
 			end = timestamp(parameters.end);
 			Reflect.deleteField(parameters, "end");
 		}
-		
+
 		if (null != parameters.periodicity)
 		{
 			periodicity = parameters.periodicity;
@@ -112,10 +112,10 @@ class MVPOptions
 		} else if (null != start) {
 			periodicity = Periodicity.defaultPeriodicity(end - start);
 		} else {
-			periodicity = switch(options.visualization) { case "piechart": "eternity"; default: "day"; };
+			periodicity = switch(options.visualization) { case "piechart", "funnelchart": "eternity"; default: "day"; };
 		}
-		
-		if (null == start && "eternity" != periodicity)
+
+		if (null == start && "eternity" != periodicity && null != periodicity)
 		{
 			var range = Periodicity.defaultRange(periodicity);
 			start = range[0];
@@ -128,7 +128,7 @@ class MVPOptions
 			path = parameters.path;
 			Reflect.deleteField(parameters, "path");
 		}
-		
+
 		// event/events
 		if (null != parameters.events)
 		{
@@ -140,7 +140,7 @@ class MVPOptions
 			events = [cast parameters.event];
 			Reflect.deleteField(parameters, "event");
 		}
-		
+
 		// value/values
 		if (null != parameters.values)
 		{
@@ -152,7 +152,7 @@ class MVPOptions
 			values = [cast parameters.value];
 			Reflect.deleteField(parameters, "value");
 		}
-		
+
 		// query
 		if (null != parameters.query)
 		{
@@ -176,7 +176,7 @@ class MVPOptions
 			else
 				throw new Error("invalid value for download '{0}'", [v]);
 		}
-			
+
 		// ensure hash for tracking
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -220,7 +220,7 @@ class MVPOptions
 			} else
 				handler(params);
 		});
-		
+
 		// ensure data
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -251,7 +251,7 @@ class MVPOptions
 			}
 			handler(params);
 		});
-		
+
 		function timeAxis(?o : Dynamic) : Dynamic {
 			if(null == o)
 				o = {};
@@ -285,7 +285,7 @@ class MVPOptions
 			}
 			handler(params);
 		});
-		
+
 		// ensure axes have an dependent variable
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -300,7 +300,7 @@ class MVPOptions
 				params.axes.push({ type : "count" });
 			handler(params);
 		});
-		
+
 		// ensure labels
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -309,7 +309,7 @@ class MVPOptions
 				switch(params.options.visualization)
 				{
 //					case "funnelchart":
-						
+
 					case "linechart", "barchart":
 						var axes : Array<Dynamic> = params.axes,
 							type = axes[axes.length - 1].type;
@@ -319,12 +319,12 @@ class MVPOptions
 									Properties.humanize(
 										null != values
 										? DataPoints.value(dp, "value")
-										: null != property 
+										: null != property
 										? DataPoints.value(dp, property)
 										: null != params.options.segmenton
 										? DataPoints.value(dp, params.options.segmenton)
 										: type
-									) + ": " + 
+									) + ": " +
 									RGStrings.humanize(DataPoints.value(dp, type))
 								;
 							}
@@ -336,7 +336,7 @@ class MVPOptions
 							datapoint : function(dp, stats) {
 								var v = DataPoints.value(dp, type);
 								return
-									stats.tot != 0.0 
+									stats.tot != 0.0
 									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
 									: RGStrings.humanize(v)
 								;
@@ -347,10 +347,10 @@ class MVPOptions
 									Properties.humanize(
 										null != values
 										? DataPoints.value(dp, "value")
-										: null != property 
+										: null != property
 										? DataPoints.value(dp, property)
 										: type
-									) + ": " + 
+									) + ": " +
 									RGStrings.humanize(DataPoints.value(dp, type))
 								;
 							}
@@ -362,7 +362,7 @@ class MVPOptions
 							datapointover : function(dp, stats) {
 								var v = DataPoints.value(dp, type);
 								return
-									stats.tot != 0.0 
+									stats.tot != 0.0
 									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
 									: RGStrings.humanize(v)
 								;
@@ -371,17 +371,17 @@ class MVPOptions
 							datapoint : function(dp, stats) {
 								return
 									Properties.humanize(
-										null != property 
+										null != property
 										? DataPoints.value(dp, property)
 										: type
-									) + ": " + 
+									) + ": " +
 									RGStrings.humanize(DataPoints.value(dp, type))
 								;
 							}
 						};
 				}
 			}
-
+trace(Dynamics.string(params));
 			handler(params);
 		});
 

@@ -6,24 +6,24 @@
 package rg.data.source.rgquery.transform;
 using Objects;
 
-class TestCountTimeIntersectTransform extends TestBase
+class TestTransformIntersectTime extends TestBase
 {
 	public function testTransform()
 	{
-		var transform = new TransformCountTimeIntersect({ }, [".platform"], "impression", "day", "count");
-		
-		var data = ( { } ).addFields(['"iphone"', '"android"'], [ 
+		var transform = new TransformIntersectTime({ }, [".platform"], "impression", "day", "count");
+
+		var data = ( { } ).addFields(['"iphone"', '"android"'], [
 			{
 				type : "timeseries",
 				periodicity : "day",
 				data: [[1310342400000, 7], [1310428800000, 5]]
-			}, 
+			},
 			{
 				type : "timeseries",
 				periodicity : "day",
 				data: [[1310342400000, 1972], [1310428800000, 2]]
 			}]);
-		
+
 		assertDataPoints([{
 			event : "impression",
 			count : 7
@@ -38,17 +38,17 @@ class TestCountTimeIntersectTransform extends TestBase
 			count : 2,
 		}.addFields([".#time:day", ".platform"], [1310428800000, "android"])], transform.transform(data));
 	}
-	
+
 	public function testTransformDeep()
 	{
-		var transform = new TransformCountTimeIntersect({ }, [".floatValue", ".boolValue", ".platform"], "impression", "day", "count");
-		
+		var transform = new TransformIntersectTime({ }, [".floatValue", ".boolValue", ".platform"], "impression", "day", "count");
+
 		var data = ( { } ).addField("1.2", ( { } ).addField("true", ( { } ).addField('"iphone"', {
 			type : "timeseries",
 			periodicity : "day",
 			data: [[1310342400000, 7], [1310428800000, 5]]
 		})));
-		
+
 		assertDataPoints([{
 			event : "impression",
 			count : 7

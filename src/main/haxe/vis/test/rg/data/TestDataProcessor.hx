@@ -12,7 +12,7 @@ import utest.Assert;
 using Objects;
 using Arrays;
 
-class TestDataProcessor 
+class TestDataProcessor
 {
 	public function testOnData()
 	{
@@ -23,8 +23,8 @@ class TestDataProcessor
 		var datacontexts = [new DataContext("count", processor)];
 		var request = new DataRequest(cache, datacontexts);
 
-		processor.independentVariables = [new VariableIndependentContext(new VariableIndependent("event", new AxisOrdinal(), null), true)];
-		processor.dependentVariables = [new VariableDependentContext(new VariableDependent("count", null, null), true)];
+		processor.independentVariables = [new VariableIndependent("event", new AxisOrdinal(), null)];
+		processor.dependentVariables = [new VariableDependent("count", null, null)];
 
 		processor.onData.add(function(d) {
 			Assert.same([{
@@ -54,13 +54,13 @@ class TestDataProcessor
 			Assert.equals("male", vi.min);
 			Assert.equals("female", vi.max);
 			Assert.same(["male", "female"], vi.range());
-			
+
 			Assert.equals(2, vd.min);
 			Assert.equals(3, vd.max);
 		});
 		sources.load();
 	}
-	
+
 	public function testEvents()
 	{
 		var cache = new Hash();
@@ -84,7 +84,7 @@ class TestDataProcessor
 		});
 		sources.load();
 	}
-	
+
 	public function testTransform()
 	{
 		var samples = 10,
@@ -113,22 +113,22 @@ class TestDataProcessor
 			.addField("count", d)
 			.addField("event", "impression")
 		)));
-		
+
 		var iv : Array<VariableIndependentContext<Dynamic>> = [],
 			dv : Array<VariableDependentContext<Dynamic>> = [],
 			periodicity = "hour";
-			
+
 		iv.push(new VariableIndependentContext(VariableIndependent.forTime(".#time:hour", periodicity, null, start, end), false));
 		iv.push(new VariableIndependentContext(VariableIndependent.forOrdinal(".ageRange", null), true));
 		iv.push(new VariableIndependentContext(VariableIndependent.forOrdinal(".gender", null, ["male", "female"]), false));
-		
+
 		dv.push(new VariableDependentContext(new VariableDependent("count", new AxisNumeric(), null, 0, 10), false));
 
 		var sources = new Sources(src),
 			processor = new DataProcessor(sources);
 		processor.independentVariables = iv;
 		processor.dependentVariables = dv;
-		
+
 		processor.transform = function(sets : Array<Array<DataPoint>>)
 		{
 			var set = Arrays.flatten(sets);
@@ -138,7 +138,7 @@ class TestDataProcessor
 				el.count += item.count;
 			return [el];
 		}
-		
+
 		processor.onData.add(function(data) {
 			var expected = [
 				({event : "impression"}).addFields([".#time:hour", ".ageRange", ".gender", "count"], [1310425200000, "1-12", "male", 2]),
@@ -147,9 +147,9 @@ class TestDataProcessor
 			];
 			Assert.same(expected, data);
 		});
-		
+
 		sources.load();
 	}
-	
+
 	public function new() { }
 }

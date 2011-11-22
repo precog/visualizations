@@ -4,6 +4,8 @@ v. 1.1.3
  * fixed bug when reusing the same options object
  * fixed bug with transformations returning an array of arrays
  * fixed bug with intersections with where conditions
+ * properties in queries can now contain spaces and must be quoted
+ * simplified model for funnel chart now defaults to "eternity" periodicity
 v. 1.1.2
  * added support for values in simplified query model
 v. 1.1.1

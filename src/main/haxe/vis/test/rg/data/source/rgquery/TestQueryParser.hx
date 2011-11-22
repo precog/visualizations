@@ -9,9 +9,9 @@ import haxe.PosInfos;
 import utest.Assert;
 import rg.data.source.rgquery.QueryAst;
 
-class TestQueryParser 
+class TestQueryParser
 {
-	public function test() 
+	public function test()
 	{
 		assertParse(
 			[Event],
@@ -32,28 +32,28 @@ class TestQueryParser
 			[Equality(".click.gender", "female")],
 			".click.gender = 'female'"
 		);
-		
+
 		assertParse(
 			[Property(".click"), Time("hour")],
 			QOperation.Count,
 			[],
 			".click * .#time:hour"
 		);
-		
+
 		assertParse(
 			[Property(".click", 10)],
 			QOperation.Count,
 			[],
 			".click(10)"
 		);
-		
+
 		assertParse(
 			[Property(".click", 10, false)],
 			QOperation.Count,
 			[],
 			".click(10, asc)"
 		);
-		
+
 		assertParse(
 			[Property(".click", 10, true)],
 			QOperation.Count,
@@ -64,7 +64,45 @@ class TestQueryParser
 		//".sale.amount:sum * .#time:day"
 		//".click.ageRange * .click.gender * .#time.day"
 	}
-	
+
+	public function testCleanName()
+	{
+		Assert.equals(".Spaced Name", QueryParser.cleanName(".'Spaced Name'"));
+		Assert.equals(".Spaced Name.Spaced Name", QueryParser.cleanName(".'Spaced Name'.'Spaced Name'"));
+		Assert.equals(".Spaced Name.Spaced Name.Spaced Name", QueryParser.cleanName(".'Spaced Name'.'Spaced Name'.'Spaced Name'"));
+	}
+
+	public function testQuotedProperty()
+	{
+		assertParse(
+			[Property(".Spaced Event.Spaced Property")],
+			QOperation.Count,
+			[],
+			'."Spaced Event"."Spaced Property"'
+		);
+
+		assertParse(
+			[Property(".Spaced Event.Spaced Property")],
+			QOperation.Count,
+			[],
+			".'Spaced Event'.'Spaced Property'"
+		);
+
+		assertParse(
+			[Property(".Spaced Property")],
+			QOperation.Count,
+			[],
+			'."Spaced Property"'
+		);
+
+		assertParse(
+			[Property("Spaced Property")],
+			QOperation.Count,
+			[],
+			"'Spaced Property'"
+		);
+	}
+
 	function assertParse(exp : Array<QExp>, operation : QOperation, where : Array<QCondition>, s : String, ?pos : PosInfos)
 	{
 		var parser = new QueryParser();
@@ -72,6 +110,6 @@ class TestQueryParser
 			test = parser.parse(s);
 		Assert.same(expected, test, "expected: " + Dynamics.string(expected) + " but was " + Dynamics.string(test), pos);
 	}
-	
+
 	public function new() { }
 }

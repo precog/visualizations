@@ -40,8 +40,8 @@ class FunnelChart extends Chart
 	var variableDependent : VariableDependent<Dynamic>;
 	var defs : Selection;
 	var dps : Array<DataPoint>;
-	
-	public function new(panel : Panel) 
+
+	public function new(panel : Panel)
 	{
 		super(panel);
 		padding = 2.5;
@@ -49,23 +49,23 @@ class FunnelChart extends Chart
 		arrowSize = 30;
 		gradientLightness = 1;
 		displayGradient = true;
-		
+
 		labelArrow = defaultLabelArrow;
 		labelDataPoint = defaultLabelDataPoint;
 		labelDataPointOver = defaultLabelDataPointOver;
 	}
-	
+
 	public function defaultLabelArrow(dp : DataPoint, stats : Stats<Dynamic>)
 	{
 		var value = Reflect.field(dp, variableDependent.type) / stats.max;
 		return FormatNumber.percent(100 * value, 0);
 	}
-	
+
 	public function defaultLabelDataPoint(dp : DataPoint, stats : Stats<Dynamic>)
 	{
 		return RGStrings.humanize(DataPoints.value(dp, variableIndependent.type)).split(" ").join("\n");
 	}
-	
+
 	public function defaultLabelDataPointOver(dp : DataPoint, stats : Stats<Dynamic>)
 	{
 		return Ints.format(Reflect.field(dp, variableDependent.type));
@@ -76,21 +76,21 @@ class FunnelChart extends Chart
 		variableIndependent = variableIndependents[0];
 		variableDependent = variableDependents[0];
 	}
-	
+
 	public function data(dps : Array<DataPoint>)
 	{
 		this.dps = dps;
 		redraw();
 	}
-	
-	override function resize() 
+
+	override function resize()
 	{
 		super.resize();
 		redraw();
 	}
-	
+
 	function dpvalue(dp : DataPoint) return DataPoints.value(dp, variableDependent.type)
-	
+
 	var stats : Stats<Dynamic>;
 	var topheight : Float;
 	var h : Float;
@@ -100,7 +100,7 @@ class FunnelChart extends Chart
 	}
 
 	function next(i : Int) return dpvalue(dps[(i + 1) < dps.length ? i + 1 : i])
-	
+
 	function redraw()
 	{
 
@@ -110,7 +110,7 @@ class FunnelChart extends Chart
 		// cleanup
 		g.selectAll("g").remove();
 		g.selectAll("radialGradient").remove();
-		
+
 		// prepare
 		stats = variableDependent.stats;
 		var max = scale(stats.max),
@@ -125,7 +125,7 @@ class FunnelChart extends Chart
 			diagonal2 = new Diagonal()
 				.sourcef(function(o, i) return [ fx2(next(i)), h ] )
 				.targetf(function(o, i) return [ fx2(dpvalue(o)), 0.0 ] ),
-			conj = function(v : Float, r : Bool, dir : Int) 
+			conj = function(v : Float, r : Bool, dir : Int)
 			{
 				var x2 = r ? fx1(v) - fx2(v) : fx2(v) - fx1(v),
 					a = 5,
@@ -147,7 +147,7 @@ class FunnelChart extends Chart
 				return " M " + fx1(v) + " 0 " +conj(v, false, 0) + conj(v, true, 1);
 			}
 		;
-		
+
 		var top = g.append("svg:g");
 		var path = top
 			.append("svg:path")
@@ -160,7 +160,7 @@ class FunnelChart extends Chart
 			internalGradient(path);
 		top.onNode("mouseover", function(_, _) mouseOver(dps[0], 0, stats));
 		topheight = Math.ceil(untyped path.node().getBBox().height / 2) + 1;
-		
+
 		// calculate bottom
 		var index = dps.length - 1,
 			bottom = g
@@ -169,17 +169,17 @@ class FunnelChart extends Chart
 				.attr("d").string(conjr(dps[index])),
 			bottomheight : Float = Math.ceil(untyped bottom.node().getBBox().height / 2) + 1;
 		bottom.remove();
-		
+
 		// calculate h
 		h = ((height - topheight - bottomheight) - (dps.length - 1) * padding) / dps.length;
 
-		top.attr("transform").string("translate(0," + topheight + ")");
+		top.attr("transform").string("translate(0," + (1 + topheight) + ")");
 
 		var section = g.selectAll("g.section").data(dps);
 		var enter = section.enter()
 			.append("svg:g")
 			.attr("class").string("section")
-			.attr("transform").stringf(function(d, i) return "translate(0," 
+			.attr("transform").stringf(function(d, i) return "translate(0,"
 			+ (topheight + i * (padding + h))
 			+ ")")
 		;
@@ -197,7 +197,7 @@ class FunnelChart extends Chart
 			});
 		if(displayGradient)
 			enter.eachNode(externalGradient);
-		
+
 		var ga = g.selectAll("g.arrow")
 			.data(dps)
 			.enter()
@@ -206,7 +206,7 @@ class FunnelChart extends Chart
 			.attr("transform").stringf(function(d, i) {
 				return "translate(" + (width / 2) + "," + (topheight + h * i + arrowSize / 2) + ")";
 			});
-		
+
 		ga.each(function(d, i) {
 			if (null == labelArrow)
 				return;
@@ -214,7 +214,7 @@ class FunnelChart extends Chart
 			if (null == text)
 				return;
 			var node = Selection.current;
-			
+
 			node
 				.append("svg:path")
 				.attr("transform").string("scale(1.1,0.85)translate(1,1)")
@@ -223,18 +223,18 @@ class FunnelChart extends Chart
 				.attr("opacity").float(.25)
 				.attr("d").string(Symbol.arrowDownWide(arrowSize*arrowSize))
 			;
-				
+
 			node
 				.append("svg:path")
 				.attr("transform").string("scale(1.1,0.8)")
 				.attr("d").string(Symbol.arrowDownWide(arrowSize*arrowSize))
 			;
-			
+
 			var label = new Label(node, true, true, true);
 			label.anchor = GridAnchor.Bottom;
 			label.text = text;
 		});
-		
+
 		ga.each(function(d, i) {
 			if (null == labelDataPoint)
 				return;
@@ -249,13 +249,13 @@ class FunnelChart extends Chart
 				height : height
 			};
 			balloon.preferredSide = 3;
-			
+
 			balloon.text = text.split("\n");
 			balloon.moveTo(width / 2, topheight + h * .6 + (h + padding) * i, false);
 		});
 		ready.dispatch();
 	}
-	
+
 	function mouseOver(dp : DataPoint, i : Int, stats : Stats<Dynamic>)
 	{
 		if (null == labelDataPointOver)
@@ -270,7 +270,7 @@ class FunnelChart extends Chart
 			moveTooltip(width / 2, topheight + h * .6 + (h + padding) * i, true);
 		}
 	}
-	
+
 	override public function init()
 	{
 		super.init();
@@ -302,7 +302,7 @@ class FunnelChart extends Chart
 			.attr("offset").string("100%")
 			.attr("stop-color").string(Hsl.darker(Hsl.toHsl(color), 0.4 * gradientLightness).toRgbString())
 		;
-			
+
 		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
 	}
 
@@ -323,26 +323,26 @@ class FunnelChart extends Chart
 			.attr("cy").string("0%")
 			.attr("r").string("110%")
 		;
-		
+
 		var top = color.toCss();
-		
+
 		stops.append("svg:stop")
 			.attr("offset").string("10%")
 			.attr("stop-color").string(top)
 		;
-		
+
 		var middlecolor = Hsl.darker(color, 1 + Math.log(ratio) / (2.5 * gradientLightness)).toCss();
 
 		stops.append("svg:stop")
 			.attr("offset").string("50%")
 			.attr("stop-color").string(middlecolor)
 		;
-		
+
 		stops.append("svg:stop")
 			.attr("offset").string("90%")
 			.attr("stop-color").string(top)
 		;
-			
+
 		d.attr("style").string("fill:url(#" + id + ")");
 	}
 }

@@ -26,13 +26,13 @@ using Arrays;
 class DataSourceReportGrid implements IDataSource
 {
 	var executor : IExecutorReportGrid;
-	
+
 	// specific query stuff
 	var exp : Array<{ property : String, event : String, limit : Int, order : String }>;
 	var operation : QOperation;
 	var where : Array<{ property : String, event : String, values : Array<Dynamic> }>;
 	var periodicity : String;
-	
+
 	// general query stuff
 	public var event(default, null) : String;
 	public var path(default, null) : String;
@@ -40,12 +40,12 @@ class DataSourceReportGrid implements IDataSource
 	public var timeEnd : Float;
 	public var groupBy : Null<String>;
 	public var timeZone : Null<String>;
-	
+
 	var transform : ITransform<Dynamic>;
-	
+
 	public var query(default, null) : Query;
 	public var onLoad(default, null) : Dispatcher<Array<DataPoint>>;
-	
+
 	function mapProperties(d, _)
 	{
 		switch(d)
@@ -62,13 +62,13 @@ class DataSourceReportGrid implements IDataSource
 					event : event,
 					property : null,
 					limit : null,
-					order : null	
+					order : null
 				};
 			default:
 				throw new Error("normalization failed, only Property values should be allowed");
 		}
 	}
-	
+
 	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?groupby : String, ?timezone : String, ?start : Float, ?end : Float)
 	{
 		this.query = query;
@@ -93,22 +93,22 @@ class DataSourceReportGrid implements IDataSource
 			};
 			default: throw new Error("invalid data for 'where' condition"); } );
 		this.operation = query.operation;
-		
+
 		switch(operation)
 		{
 			case Count: //
 			default: throw new Error("RGDataSource doesn't support operation '{0}'", operation);
 		}
-		
+
 		this.path = path;
 		this.timeStart = start;
 		this.timeEnd = end;
 		this.onLoad = new Dispatcher();
 	}
-	
+
 	function basicOptions(appendPeriodicity = true) : Dynamic
 	{
-		var opt = { };
+		var opt : Dynamic = { };
 		if (null != timeStart)
 			Reflect.setField(opt, "start", timeStart);
 		if (null != timeEnd)
@@ -124,20 +124,24 @@ class DataSourceReportGrid implements IDataSource
 			if (null != timeZone)
 				Reflect.setField(opt, "timeZone", timeZone);
 		}
-			
+
 		if (where.length > 1)
 		{
-			var w : Dynamic = { };
+			var arr = [];
 			for (c in where)
 			{
-				w.variable = propertyName(c);
-				w.value = c.values[0];
+				for(v in c.values)
+				{
+					var cond : Dynamic = { };
+					Reflect.setField(cond, propertyName(c), v);
+					arr.push(cond);
+				}
 			}
-			Reflect.setField(opt, "where", w);
+			opt.where = arr;
 		}
 		return opt;
 	}
-	
+
 	function unit()
 	{
 		return switch(operation)
@@ -146,17 +150,17 @@ class DataSourceReportGrid implements IDataSource
 			default: throw new Error("unsupported operation '{0}'", operation);
 		}
 	}
-	
+
 	static function parallelExecution<T>(actions : Array<{ method : ExCallback<T>, value : Dynamic }>, success : Dynamic -> Void, error : String -> Void)
 	{
 		var tot = actions.length,
 			result = [];
-			
+
 		function complete()
 		{
 			success(result);
 		}
-		
+
 		function handler(v : Dynamic, r : T)
 		{
 			var t : Array<Dynamic>;
@@ -175,7 +179,7 @@ class DataSourceReportGrid implements IDataSource
 			if (tot == 0)
 				complete();
 		}
-		
+
 		var i = 0;
 		while(i < actions.length)
 			actions[i].method(callback(handler, actions[i++].value), error);
@@ -183,7 +187,7 @@ class DataSourceReportGrid implements IDataSource
 
 	static function serialExecution<T>(value : T, actions : Array<T -> (T -> Void) -> (String -> Void) -> Void>, success : Dynamic -> Void, error : String -> Void)
 	{
-		function next() 
+		function next()
 		{
 			if(actions.length == 0)
 				return success;
@@ -217,7 +221,7 @@ class DataSourceReportGrid implements IDataSource
 						var whereproperties = where.map(function(w, _) return w.property),
 							valueproperty = exp.filter(function(v) return !whereproperties.exists(v.property)).shift();
 						transform = new TransformCounts( { }, event, unit(), valueproperty.property);
-						var counts : Dynamic = {}; 
+						var counts : Dynamic = {};
 						var actions = [];
 						actions.push(function(value : Dynamic, s : Dynamic -> Void, e : String -> Void) {
 							//public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
@@ -230,7 +234,10 @@ class DataSourceReportGrid implements IDataSource
 							for(v in values)
 							{
 								var o : Dynamic = Objects.clone(opt);
-								o.where = {};
+								var cond = {};
+								Reflect.setField(cond, propertyName(valueproperty), v);
+								o.where.push(cond);
+								/*
 								Reflect.setField(o.where, propertyName(valueproperty), v);
 								for(w in where)
 								{
@@ -238,6 +245,7 @@ class DataSourceReportGrid implements IDataSource
 									for(v in w.values)
 										Reflect.setField(o.where, p, v);
 								}
+								*/
 								subs.push(cast {
 									method : callback(executor.searchCount, path, o),
 									value : v
@@ -281,7 +289,7 @@ class DataSourceReportGrid implements IDataSource
 						var whereproperties = where.map(function(w, _) return w.property),
 							valueproperty = exp.filter(function(v) return !whereproperties.exists(v.property)).shift();
 						transform = new TransformTimeSeriesValues( { periodicity : periodicity }, event, periodicity, unit(), valueproperty.property);
-						var counts : Dynamic = {}; 
+						var counts : Dynamic = {};
 						var actions = [];
 						actions.push(function(value : Dynamic, s : Dynamic -> Void, e : String -> Void) {
 							//public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
@@ -293,8 +301,12 @@ class DataSourceReportGrid implements IDataSource
 							var subs = [];
 							for(v in values)
 							{
-								var o : Dynamic = Objects.clone(opt);
-								o.where = {};
+								var o : Dynamic = Objects.clone(opt),
+									cond = {};
+								Reflect.setField(cond, propertyName(valueproperty), v);
+								o.where.push(cond);
+								//o.where = {};
+								/*
 								Reflect.setField(o.where, propertyName(valueproperty), v);
 								for(w in where)
 								{
@@ -302,6 +314,7 @@ class DataSourceReportGrid implements IDataSource
 									for(v in w.values)
 										Reflect.setField(o.where, p, v);
 								}
+								*/
 								subs.push(cast {
 									method : callback(executor.searchSeries, path, o),
 									value : v
@@ -322,7 +335,7 @@ class DataSourceReportGrid implements IDataSource
 								return { method : callback(executor.propertyValueSeries, path, o), value : v };
 							});
 							parallelExecution(actions, success, error);
-							
+
 	//						opt.value = where[0].values;
 	//						executor.propertyValuesSeries(path, opt, success, error);
 						} else {
@@ -361,18 +374,18 @@ class DataSourceReportGrid implements IDataSource
 			executor.intersect(path, opt, success, error);
 		}
 	}
-	
+
 	public dynamic function error(msg : String)
 	{
 		throw new Error(msg);
 	}
-	
+
 	function success(src : Dynamic)
 	{
 		var data = transform.transform(src);
 		onLoad.dispatch(data);
 	}
-	
+
 	public static function normalize(exp : Array<QExp>)
 	{
 		if (exp.length > 1)
@@ -430,7 +443,7 @@ class DataSourceReportGrid implements IDataSource
 		}
 		*/
 	}
-	
+
 	static function prefixProperty(s : String) return (s.substr(0, 1) == '.') ? s : ('.' + s)
 
 	static function propertyName(p : { property : String, event : String } )

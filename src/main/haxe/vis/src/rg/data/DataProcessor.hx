@@ -14,29 +14,29 @@ using Arrays;
 class DataProcessor
 {
 	public var sources(default, null) : Sources<Dynamic>;
-	
+
 	public var onData(default, null) : Dispatcher<Array<DataPoint>>;
 	public var independentVariables : Array<VariableIndependent<Dynamic>>;
 	public var dependentVariables : Array<VariableDependent<Dynamic>>;
-	
-	public function new(sources : Sources<Dynamic>) 
+
+	public function new(sources : Sources<Dynamic>)
 	{
 		this.sources = sources;
 		sources.onLoading.add(preprocess);
 		sources.onLoad.add(process);
 		onData = new Dispatcher();
 	}
-	
+
 	public dynamic function transform(s : Array<Array<DataPoint>>) : Array<DataPoint>
 	{
 		return s.flatten();
 	}
-	
+
 	public dynamic function scale(s : Array<Array<DataPoint>>) : Array<Array<DataPoint>>
 	{
 		return s;
 	}
-	
+
 	public function load()
 	{
 		sources.load();
@@ -46,7 +46,7 @@ class DataProcessor
 	{
 		return subset.filter(callback(filterDatapoint, variables));
 	}
-	
+
 	function filterDatapoint(variables : Array<Dynamic>, dp : DataPoint)
 	{
 		for (i in 0...independentVariables.length)
@@ -70,7 +70,7 @@ class DataProcessor
 			return;
 		}
 		data = scale(data);
-		
+
 		var dataPoints = transform(data);
 		fillIndependentVariables(dataPoints);
 /*
@@ -93,9 +93,9 @@ class DataProcessor
 		}
 		fillDependentVariables(dataPoints);
 */
-		
+
 		fillDependentVariables(dataPoints);
-		
+
 		onData.dispatch(dataPoints);
 	}
 
@@ -125,7 +125,7 @@ class DataProcessor
 			}
 		}
 	}
-	
+
 	function fillIndependentVariables(flatten : Array<DataPoint>)
 	{
 		for (variable in independentVariables)

@@ -11,7 +11,7 @@ import rg.data.source.rgquery.QueryAst;
 import utest.Assert;
 using Objects;
 
-class TestRGDataSource 
+class TestRGDataSource
 {
 	function profile(query : Query, ?groupby : String)
 	{
@@ -21,30 +21,30 @@ class TestRGDataSource
 		ds.load();
 		return executor.callStack;
 	}
-	
+
 	function assert(a : Dynamic, b : Dynamic, ?pos : PosInfos)
 	{
 		Assert.same(a, b, "expected " + Dynamics.string(a) + " but was " + Dynamics.string(b), pos);
 	}
-	
+
 	public function testEventCount()
 	{
 		assert([{
-			{ method : "propertyCount", args : ["/", { property : "click"}] } 
+			{ method : "propertyCount", args : ["/", { property : ".click"}] }
 		}], profile( {
 			exp : [Event],
 			operation : Count,
 			where : []
 		}));
 	}
-	
+
 	public function testPropertyValuesCount()
 	{
 		assert([{
 			method : "intersect", args : ["/", {
-				periodicity : "eternity", 
+				periodicity : "eternity",
 				properties : [{
-					property : "click.unique",
+					property : ".click.unique",
 					limit : 10,
 					order : "descending"
 				}]
@@ -59,71 +59,78 @@ class TestRGDataSource
 	public function testEventSeries()
 	{
 		assert([{
-			{ method : "propertySeries", args : ["/", { property : "click", periodicity : "day"}] } 
+			{ method : "propertySeries", args : ["/", { property : ".click", periodicity : "day"}] }
 		}], profile( {
 			exp : [Time("day")],
 			operation : Count,
 			where : []
 		}));
 	}
-	
+
 	public function testGroupByOption()
 	{
 		assert([{
-			{ method : "propertySeries", args : ["/", { property : "click", periodicity : "day", groupBy : "week" }] } 
+			{ method : "propertySeries", args : ["/", { property : ".click", periodicity : "day", groupBy : "week" }] }
 		}], profile( {
 			exp : [Time("day")],
 			operation : Count,
 			where : []
 		}, "week"));
 	}
-	
+
 	public function testPropertyValuesSeries()
 	{
 		assert([{
 			method : "intersect", args : ["/", {
-				periodicity : "day", 
+				periodicity : "day",
 				properties : [{
-					property : "click.unique",
+					property : ".click.unique",
 					limit : 10,
 					order : "descending"
 				}]
-			}] 
+			}]
 		}], profile( {
 			exp : [Property(".unique"), Time("day")],
 			operation : Count,
 			where : []
 		}));
 	}
-	
+
 	public function testPropertyValueCount()
 	{
 		assert([{
-			{ method : "propertyValueCount", args : ["/", { property : "click.gender", value : "female"}] } 
+			{ method : "propertyValueCount", args : ["/", { property : ".click.gender", value : "female"}] }
 		}], profile( {
 			exp : [Property(".gender")],
 			operation : Count,
 			where : [Equality(".gender", "female")]
 		}));
 	}
-	
+
 	public function testPropertyValueSeries()
 	{
 		assert([{
-			{ method : "propertyValueSeries", args : ["/", { property : "click.gender", value : "female", periodicity : "day"}] } 
+			{ method : "propertyValueSeries", args : ["/", { property : ".click.gender", value : "female", periodicity : "day"}] }
 		}], profile( {
 			exp : [Property(".gender"), Time("day")],
 			operation : Count,
 			where : [Equality(".gender", "female")]
 		}));
 	}
-	
+
 	public function testSearchValueCount()
 	{
+		var cond1 = {}, cond2 = {};
+		Reflect.setField(cond1, ".click.gender", "female");
+		Reflect.setField(cond2, ".click.ageRange", "21-30");
+
 		assert([{
-			{ method : "searchCount", args : ["/", { where : ({}).addFields(["click.gender", "click.ageRange"], ["female", "21-30"]) }] } 
+			{ method : "searchCount", args : ["/", 
+// TODO FIX THIS!!!!!, where should be an array of values
+			{ where : [ cond1, cond2 ]}
+			] }
 		}], profile( {
-			exp : [Event], 
+			exp : [Event],
 			operation : Count,
 			where : [
 				Equality(".gender", "female"),
@@ -131,11 +138,21 @@ class TestRGDataSource
 			]
 		}));
 	}
-	
+
 	public function testSearchSeries()
 	{
+		var cond1 = {}, cond2 = {};
+		Reflect.setField(cond1, ".click.gender", "female");
+		Reflect.setField(cond2, ".click.ageRange", "21-30");
+
 		assert([{
-			{ method : "searchSeries", args : ["/", { periodicity : "day", where : ({}).addFields(["click.gender", "click.ageRange"], ["female", "21-30"]) }] } 
+			method : "searchSeries",
+			args : [
+				"/", {
+					periodicity : "day",
+					where : [cond1, cond2]
+				}
+			]
 		}], profile( {
 			exp : [Event, Time("day")],
 			operation : Count,
@@ -145,23 +162,23 @@ class TestRGDataSource
 			]
 		}));
 	}
-	
+
 	public function testIntersectOverTime()
 	{
 		assert([{
-			method : "intersect", 
-			args : ["/", { 
-				periodicity : "day", 
+			method : "intersect",
+			args : ["/", {
+				periodicity : "day",
 				properties : [{
-					property : "click.gender",
+					property : ".click.gender",
 					limit : 5,
 					order : "descending"
 				}, {
-					property : "click.platform",
+					property : ".click.platform",
 					limit : 7,
 					order : "ascending"
 				}, {
-					property : "click.ageRange",
+					property : ".click.ageRange",
 					limit : 10,
 					order : "descending"
 				}]
@@ -176,24 +193,24 @@ class TestRGDataSource
 			where : []
 		}));
 	}
-	
+
 	public function testNormalization()
 	{
 		assert(
 			[Event, Time("eternity")],
 			DataSourceReportGrid.normalize([Event])
 		);
-		
+
 		assert(
 			[Event, Time("day")],
 			DataSourceReportGrid.normalize([Time("day")])
 		);
-		
+
 		assert(
 			[Event, Time("eternity")],
 			DataSourceReportGrid.normalize([])
 		);
-		
+
 		assert(
 			[
 				Property(".platform"),
@@ -205,7 +222,7 @@ class TestRGDataSource
 				Property(".ageRange")
 			])
 		);
-		
+
 		assert(
 			[
 				Property(".platform"),
@@ -219,6 +236,6 @@ class TestRGDataSource
 			])
 		);
 	}
-	
+
 	public function new() { }
 }

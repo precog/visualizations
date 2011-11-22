@@ -9,10 +9,10 @@ import rg.controller.info.InfoVariable;
 import thx.collection.Set;
 import utest.Assert;
 using rg.controller.info.Info;
- 
+
 class TestFactoryVariableContexts
 {
-	
+
 	public function testCreateIndependentContextsNotPartialWithTime()
 	{
 		var factory = new FactoryVariableContexts(Set.ofArray([".#time:hour"])),
@@ -24,7 +24,7 @@ class TestFactoryVariableContexts
 		Assert.isFalse(ctx.partial);
 		Assert.notNull(ctx.variable.axis);
 	}
-	
+
 	public function testCreateIndependentContextsPartial()
 	{
 		var factory = new FactoryVariableContexts(Set.ofArray(["count"])),
@@ -36,7 +36,7 @@ class TestFactoryVariableContexts
 		Assert.isTrue(ctx.partial);
 		Assert.notNull(ctx.variable.axis);
 	}
-	
+
 	public function testCreateDependentContextsPartial()
 	{
 		var factory = new FactoryVariableContexts(Set.ofArray([".#time:hour"])),
@@ -48,11 +48,11 @@ class TestFactoryVariableContexts
 		Assert.isTrue(ctx.partial);
 		Assert.isNull(ctx.variable.axis);
 	}
-	
+
 	public function testCreateIndependentContextsNotPartial()
 	{
 		var factory = new FactoryVariableContexts(Set.ofArray([".#time:hour"])),
-			iv : Array<InfoVariable> = [new InfoVariable().feed( { 
+			iv : Array<InfoVariable> = [new InfoVariable().feed( {
 				type : ".#time:hour",
 				view : ["yesterday", "now"]
 			} )],
@@ -63,11 +63,11 @@ class TestFactoryVariableContexts
 		Assert.isFalse(ctx.partial);
 		Assert.notNull(ctx.variable.axis);
 	}
-	
+
 	public function testCreateDependentContextsNotPartial()
 	{
 		var factory = new FactoryVariableContexts(Set.ofArray([".#time:hour"])),
-			dv : Array<InfoVariable> = [new InfoVariable().feed( { 
+			dv : Array<InfoVariable> = [new InfoVariable().feed( {
 				type : "count",
 				view : [0, 100]
 			} )],
@@ -78,6 +78,6 @@ class TestFactoryVariableContexts
 		Assert.isFalse(ctx.partial);
 		Assert.notNull(ctx.variable.axis);
 	}
-	
+
 	public function new() {}
 }

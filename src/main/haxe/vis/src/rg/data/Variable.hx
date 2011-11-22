@@ -17,14 +17,14 @@ class Variable<T, TAxis : IAxis<T>>
 	public var meta(default, null) : Dynamic;
 	public var minf(getMinF, setMinF) : Stats<T> -> Dynamic -> T;
 	public var maxf(getMaxF, setMaxF) : Stats<T> -> Dynamic -> T;
-	
-	public function new(type : String, scaleDistribution : Null<ScaleDistribution>) 
+
+	public function new(type : String, scaleDistribution : Null<ScaleDistribution>)
 	{
 		this.type = type;
 		this.scaleDistribution = scaleDistribution;
 		this.meta = { };
 	}
-	
+
 	public function setAxis(axis : TAxis)
 	{
 		this.axis = axis;
@@ -33,13 +33,13 @@ class Variable<T, TAxis : IAxis<T>>
 		else
 			this.stats = null;
 	}
-	
+
 	public function min() return minf(stats, meta)
 	public function max() return maxf(stats, meta)
-	
+
 	function setMinF(f : Stats<T> -> Dynamic -> T) return minf = f
 	function setMaxF(f : Stats<T> -> Dynamic -> T) return maxf = f
-	
+
 	function getMinF()
 	{
 		if (null == minf)
@@ -50,7 +50,7 @@ class Variable<T, TAxis : IAxis<T>>
 		}
 		return minf;
 	}
-	
+
 	function getMaxF()
 	{
 		if (null == maxf)

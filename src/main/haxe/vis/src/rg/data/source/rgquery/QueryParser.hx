@@ -9,21 +9,22 @@ import rg.util.Properties;
 import thx.error.Error;
 import rg.data.source.rgquery.QueryAst;
 using Arrays;
+using StringTools;
 
-class QueryParser 
+class QueryParser
 {
 	var exp : Array<QExp>;
 	var operation : QOperation;
 	var where : Array<QCondition>;
-	
+
 	public function new() { }
-	
+
 	public function parse(s : String) : Query
 	{
 		exp = [];
 		operation = Count;
 		where = [];
-		
+
 		parseExp(s);
 		return {
 			exp : exp,
@@ -31,7 +32,7 @@ class QueryParser
 			where : where
 		};
 	}
-	
+
 	function parseExp(e : String)
 	{
 		var tokens = e.split("*").map(function(d, _) return StringTools.trim(d));
@@ -47,12 +48,12 @@ class QueryParser
 				exp.push(etoken);
 		}
 	}
-	
+
 	static var TOKEN_SPLIT = ~/and/gi;
-	
+
 	static function __init__()
 	{
-		var _PNAME = "((?:\\.?#?\\w+)+)",
+		var _PNAME = "((?:\\.?#?\\w+)+|(?:\\.?\"[^\"]+\")+|(?:\\.?'[^']+')+)",
 			_LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?",
 			_COND  = "(?:\\s*([=])\\s*(.+))";
 		TOKEN_INDIVIDUAL_PARSE = new EReg('^' + _PNAME + _LIMIT + _COND+"?" + "$", "i");
@@ -60,7 +61,7 @@ class QueryParser
 		TOKEN_CONDITION_PARSE = new EReg('^' + _PNAME + _COND + "$", "i");
 		SPLIT_CONDITIONS = new EReg('"\\s*,\\s*"', "g");
 	}
-	
+
 	static var TOKEN_INDIVIDUAL_PARSE : EReg;
 	static var TOKEN_FIRST_PARSE : EReg;
 	static var TOKEN_CONDITION_PARSE : EReg;
@@ -73,7 +74,40 @@ class QueryParser
 		else
 			return processProperty(token);
 	}
-	
+
+	public static function cleanName(name : String)
+	{
+		var dot = name.startsWith('.');
+		if(dot)
+			name = name.substr(1);
+
+		var chars = ['"', "'"];
+		for(char in chars)
+		{
+			if(!name.startsWith(char))
+				continue;
+			var pos = name.indexOf(char, 1);
+			while(pos < name.length && pos >= 0)
+			{
+				if(name.substr(pos-1, 1) == "\\")
+				{
+					pos = name.indexOf(char, pos+1);
+				} else
+					break;
+			}
+			if(pos < 0)
+				throw new Error("quoted property is not properly formatted");
+			var rest = name.substr(pos+1);
+			name = name.substr(1, pos-1);
+			if(rest.length > 0)
+				name += cleanName(rest);
+
+			break;
+		}
+
+		return (dot ? '.' : '') + name;
+	}
+
 	function processProperty(token : String)
 	{
 		if ('(' == token.substr(0, 1))
@@ -89,7 +123,7 @@ class QueryParser
 				limit = Std.parseInt(TOKEN_INDIVIDUAL_PARSE.matched(2));
 			if (null != TOKEN_INDIVIDUAL_PARSE.matched(3))
 				descending = TOKEN_INDIVIDUAL_PARSE.matched(3).toLowerCase() == "desc";
-			
+
 			if (null != TOKEN_INDIVIDUAL_PARSE.matched(4))
 			{
 				addWhereCondition(
@@ -106,13 +140,13 @@ class QueryParser
 				limit = Std.parseInt(TOKEN_FIRST_PARSE.matched(2));
 			if (null != TOKEN_FIRST_PARSE.matched(3))
 				descending = TOKEN_FIRST_PARSE.matched(3).toLowerCase() == "desc";
-				
+
 			addWhereCondition(
 				TOKEN_FIRST_PARSE.matched(1),
 				TOKEN_FIRST_PARSE.matched(4),
 				TOKEN_FIRST_PARSE.matched(5)
 			);
-			
+
 			for (i in 1...parts.length)
 			{
 				if (!TOKEN_CONDITION_PARSE.match(parts[i]))
@@ -124,9 +158,10 @@ class QueryParser
 				);
 			}
 		}
-		return Property(name, limit, descending);
+
+		return Property(cleanName(name), limit, descending);
 	}
-	
+
 	function addWhereCondition(name : String, operator : String, value : String)
 	{
 		switch(operator)
@@ -141,7 +176,7 @@ class QueryParser
 				throw new Error("invalid operator '{0}'", operator);
 		}
 	}
-	
+
 	static function parseValue(s : String) : Dynamic
 	{
 		var fc = s.substr(0, 1), lc = s.substr( -1);

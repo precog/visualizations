@@ -8,7 +8,7 @@ package rg.data.source.rgquery.transform;
 import haxe.PosInfos;
 import utest.Assert;
 
-class TestBase 
+class TestBase
 {
 	public function new() { }
 
@@ -16,7 +16,7 @@ class TestBase
 	{
 		Assert.same(expected, test, pos);
 	}
-	
+
 	function assertDataPoints(expected : Array<DataPoint>, test : Array<DataPoint>, ?pos : PosInfos)
 	{
 		for (i in 0...expected.length)

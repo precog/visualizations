@@ -13,7 +13,7 @@ class AxisOrdinalFixedValues<T> extends AxisOrdinal<T>
 		super();
 		_values = arr;
 	}
-	
+
 	override function values()
 	{
 		return _values;
