@@ -1,7 +1,0 @@
--cp src
--lib thx
--lib hxevents
--js _
---no-output
--xml doc/reportgrid-viz.xml
--main rg.JSBridge

@@ -1,5 +1,0 @@
--cp src
--lib thx
--lib hxevents
--js bin/js/reportgrid-viz.js
--main rg.JSBridge

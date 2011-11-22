@@ -1,8 +1,0 @@
--cp src
--lib thx
--lib hxevents
--js bin/js/reportgrid-viz.js
--D release
--main rg.JSBridge
---no-traces
--cmd ./deploy.sh

@@ -1,8 +1,0 @@
--cp src
--cp ../insightexplorer/src
--cp ../../../../../client-libraries/haxe/src
--lib thx
--lib hxevents
--js bin/js/reportgrid-viz.js
--D noEmbedJS
-rg.Viz

@@ -1,5 +1,0 @@
--cp src
--cp ../insightexplorer/src
--cp ../widgets/src
--lib hxevents
--js bin/visualization.js

@@ -1,6 +1,0 @@
--cp src
--lib thx
--lib reportgrid
--lib hxevents
--js bin/insightexplorer.js
-rg.InsightExplorer
