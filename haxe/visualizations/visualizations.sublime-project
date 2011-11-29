@@ -2,13 +2,13 @@
 	"folders":
 	[
 		{
-			"path": "/Users/francoponticelli/Projects/reportgrid/visualizations/src/main/haxe/vis"
-		},
-		{
 			"path": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std"
 		},
 		{
 			"path": "/Users/francoponticelli/Projects/thx/src"
+		},
+		{
+			"path": "/Users/francoponticelli/Projects/reportgrid/visualizations/haxe/visualizations"
 		}
 	]
 }

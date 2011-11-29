@@ -55,7 +55,7 @@ class QueryParser
 	{
 		var _PNAME = "((?:\\.?#?\\w+)+|(?:\\.?\"[^\"]+\")+|(?:\\.?'[^']+')+)",
 			_LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?",
-			_COND  = "(?:\\s*([=])\\s*(.+))";
+			_COND  = "(?:\\s*([=])\\s*(.+)\\s*)";
 		TOKEN_INDIVIDUAL_PARSE = new EReg('^' + _PNAME + _LIMIT + _COND+"?" + "$", "i");
 		TOKEN_FIRST_PARSE = new EReg('^' + _PNAME + _LIMIT + _COND + "$", "i");
 		TOKEN_CONDITION_PARSE = new EReg('^' + _PNAME + _COND + "$", "i");
@@ -108,12 +108,16 @@ class QueryParser
 		return (dot ? '.' : '') + name;
 	}
 
+	/**
+	 * TODO splitting conditions on AND is broken and must be reimplemented using a smarter parser
+	 */
 	function processProperty(token : String)
 	{
 		if ('(' == token.substr(0, 1))
 			token = token.substr(1, token.length - 2);
-		var parts = TOKEN_SPLIT.split(token),
+		var parts = [token], //TOKEN_SPLIT.split(token),
 			name : String = null, limit : Null<Int> = null, descending : Null<Bool> = null;
+
 		if (parts.length == 1)
 		{
 			if (!TOKEN_INDIVIDUAL_PARSE.match(token))

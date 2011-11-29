@@ -4616,7 +4616,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1422"};
+	r.info.viz = { version : "1.1.3.1431"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -13023,7 +13023,7 @@ rg.data.source.rgquery.QueryParser.parseValue = function(s) {
 	if(Floats.canParse(s)) return Floats.parse(s);
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 191, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
+		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 195, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
 		return $r;
 	}(this));
 }
@@ -13060,15 +13060,15 @@ rg.data.source.rgquery.QueryParser.prototype = {
 	}
 	,processProperty: function(token) {
 		if("(" == token.substr(0,1)) token = token.substr(1,token.length - 2);
-		var parts = rg.data.source.rgquery.QueryParser.TOKEN_SPLIT.split(token), name = null, limit = null, descending = null;
+		var parts = [token], name = null, limit = null, descending = null;
 		if(parts.length == 1) {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 120, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 124, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3).toLowerCase() == "desc";
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4)) this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(5));
 		} else {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 137, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 141, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3).toLowerCase() == "desc";
@@ -13076,7 +13076,7 @@ rg.data.source.rgquery.QueryParser.prototype = {
 			var _g1 = 1, _g = parts.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 153, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 157, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 				this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(2),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(3));
 			}
 		}
@@ -13089,7 +13089,7 @@ rg.data.source.rgquery.QueryParser.prototype = {
 			if(v.length > 1) this.where.push(rg.data.source.rgquery.QCondition.In(name,v)); else this.where.push(rg.data.source.rgquery.QCondition.Equality(name,v[0]));
 			break;
 		default:
-			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 176, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
+			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 180, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
 		}
 	}
 	,__class__: rg.data.source.rgquery.QueryParser
@@ -19902,7 +19902,7 @@ rg.view.svg.util.SymbolCache.cache = new rg.view.svg.util.SymbolCache();
 	if(null == js.LocalStorage.instance) js.LocalStorage.instance = new js.CookieStorageFallback();
 }
 {
-	var _PNAME = "((?:\\.?#?\\w+)+|(?:\\.?\"[^\"]+\")+|(?:\\.?'[^']+')+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+))";
+	var _PNAME = "((?:\\.?#?\\w+)+|(?:\\.?\"[^\"]+\")+|(?:\\.?'[^']+')+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+)\\s*)";
 	rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "?" + "$","i");
 	rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "$","i");
 	rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE = new EReg("^" + _PNAME + _COND + "$","i");

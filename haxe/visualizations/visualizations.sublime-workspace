@@ -391,7 +391,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 91.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/src/main/haxe/vis"
@@ -473,10 +473,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 92.0
-	},
 	"replace":
 	{
 		"height": 62.0

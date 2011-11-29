@@ -381,7 +381,7 @@ class MVPOptions
 						};
 				}
 			}
-trace(Dynamics.string(params));
+//trace(Dynamics.string(params));
 			handler(params);
 		});
 
