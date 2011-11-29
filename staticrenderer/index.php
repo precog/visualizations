@@ -44,9 +44,6 @@ try
 //		KLogger::instance()->log("html generated at $output");
 	}
 
-//	echo $output;
-//	exit;
-
 	$imagepath = path($hash, $config->format());
 
 	if(!file_exists($imagepath)) {
@@ -67,13 +64,23 @@ function renderVisualization($input, $output, $width, $height, $format)
 	switch($format)
 	{
 		case "pdf":
+echo "ERROR:";
 			require_once('lib/WKPDF.class.php');
+
+
+echo "class included";
+
 			$render = new WKPDF();
 			$render->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
 			$render->set_page_size("letter");
 			$render->set_html(file_get_contents($input));
+echo ", pre render";
 			$render->render();
-			return $render->output(WKPDF::$PDF_SAVEFILE, $output);
+echo ", post render";
+			$out = $render->output(WKPDF::$PDF_SAVEFILE, $output);
+echo ", post output";
+exit;
+			return $out;
 			break;
 		default:
 			return phantom("renderer.js", $input, $output, $width, $height);
