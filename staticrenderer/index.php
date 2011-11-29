@@ -55,7 +55,7 @@ try
 	exit;
 } catch(Exception $e) {
 //	KLogger::instance()->log($e->getMessage());
-	echo "ERROR:" . $e->getMessage();
+	echo "ERROR:" + $e->getMessage();
 	exit;
 }
 
@@ -64,23 +64,22 @@ function renderVisualization($input, $output, $width, $height, $format)
 	switch($format)
 	{
 		case "pdf":
-echo "ERROR: before include";
-
-			use Knp\Snappy\Pdf;
-echo ", class included";
-/*
-			$pdf = new Pdf('/usr/local/bin/wkhtmltopdf-amd64');
+echo "ERROR: ";
+			require_once('lib/WKPDF.class.php');
+echo "class included";
+			$pdf = new WKPDF();
 echo ", class instantiated";
-//			$pdf->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
-//			$pdf->set_page_size("letter");
+			$pdf->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
+			$pdf->set_page_size("letter");
+echo ", loading $input";
+			$pdf->set_html(file_get_contents($input));
 echo ", pre render";
-//			$pdf->render();
+			$pdf->render();
 echo ", post render";
-			$out = $pdf->generateFromHtml(file_get_contents($input), $output);
+			$out = $pdf->output(WKPDF::$PDF_SAVEFILE, $output);
 echo ", post output";
 exit;
 			return $out;
-			*/
 			break;
 		default:
 			return phantom("renderer.js", $input, $output, $width, $height);
