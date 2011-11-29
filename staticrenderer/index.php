@@ -39,13 +39,13 @@ try
 	$hash = $config->hash();
 	$output = path($hash,'xhtml');
 
-	echo $output;
-	exit;
-
 	if(!file_exists($output)) {
 		captureTemplate($config, $output);
 //		KLogger::instance()->log("html generated at $output");
 	}
+
+	echo $output;
+	exit;
 
 	$imagepath = path($hash, $config->format());
 
