@@ -175,7 +175,7 @@ class WKPDF {
          * Convert HTML to PDF.
          */
         public function output($file){
-                $cmd = 'DISPLAY=:0 && ' . '"'.$this->cmd.'"'
+                $cmd = '"'.$this->cmd.'"'
                         .(($this->copies>1)?' --copies '.$this->copies:'')     // number of copies
                         .' --orientation '.$this->orient                       // orientation
                         .' --page-size '.$this->size                           // page size
