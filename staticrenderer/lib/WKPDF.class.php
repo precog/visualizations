@@ -175,8 +175,7 @@ class WKPDF {
          * Convert HTML to PDF.
          */
         public function output($file){
-                self::_pipeExec('DISPLAY=:0');
-                $cmd = '"'.$this->cmd.'"'
+                $cmd = 'DISPLAY=:0 && ' . '"'.$this->cmd.'"'
                         .(($this->copies>1)?' --copies '.$this->copies:'')     // number of copies
                         .' --orientation '.$this->orient                       // orientation
                         .' --page-size '.$this->size                           // page size
