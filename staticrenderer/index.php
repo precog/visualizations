@@ -66,7 +66,7 @@ function renderVisualization($input, $output, $width, $height, $format)
 		case "pdf":
 echo "ERROR: before include";
 
-			require_once('lib/snappy/Pdf.php');
+			use Knp\Snappy\Pdf;
 echo ", class included";
 /*
 			$pdf = new Pdf('/usr/local/bin/wkhtmltopdf-amd64');
