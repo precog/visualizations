@@ -184,9 +184,9 @@ class WKPDF {
                         .(($this->title!='')?' --title "'.$this->title.'"':'') // title
                         .' "'.$this->path.'" -';                               // URL and optional to write to STDOUT
                 $this->pdf=self::_pipeExec($cmd);
-                if(strpos(strtolower($this->pdf['stderr']),'error')!==false)throw new Exception('WKPDF system error: <pre>'.$this->pdf['stderr'].' for $cmd</pre>');
-                if($this->pdf['stdout']=='')throw new Exception('WKPDF didn\'t return any data. <pre>'.$this->pdf['stderr'].'</pre>');
-                if(((int)$this->pdf['return'])>1)throw new Exception('WKPDF shell error, return code '.(int)$this->pdf['return'].'.');
+                if(strpos(strtolower($this->pdf['stderr']),'error')!==false)throw new Exception('WKPDF system error: <pre>'.$this->pdf['stderr']." for $cmd</pre>");
+                if($this->pdf['stdout']=='')throw new Exception('WKPDF didn\'t return any data. <pre>'.$this->pdf['stderr']." for $cmd</pre>");
+                if(((int)$this->pdf['return'])>1)throw new Exception('WKPDF shell error, return code '.(int)$this->pdf['return']." for $cmd.");
                 $this->status=$this->pdf['stderr'];
                 return file_put_contents($file, $this->pdf['stdout']);
         }
