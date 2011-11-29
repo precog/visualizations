@@ -64,15 +64,14 @@ function renderVisualization($input, $output, $width, $height, $format)
 	switch($format)
 	{
 		case "pdf":
-echo "ERROR:";
+echo "ERROR: ";
 			require_once('lib/WKPDF.class.php');
-
-
 echo "class included";
-
 			$render = new WKPDF();
+echo ", class instantiated";
 			$render->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
 			$render->set_page_size("letter");
+echo ", loading $input";
 			$render->set_html(file_get_contents($input));
 echo ", pre render";
 			$render->render();
