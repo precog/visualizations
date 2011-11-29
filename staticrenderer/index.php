@@ -64,10 +64,10 @@ function renderVisualization($input, $output, $width, $height, $format)
 	switch($format)
 	{
 		case "pdf":
-echo "ERROR: pdf";
+echo "ERROR: before include";
 /*
 			require_once('lib/snappy/Pdf.php');
-echo "class included";
+echo ", class included";
 			$pdf = new Pdf('/usr/local/bin/wkhtmltopdf-amd64');
 echo ", class instantiated";
 //			$pdf->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
