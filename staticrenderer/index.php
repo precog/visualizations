@@ -67,7 +67,7 @@ function renderVisualization($input, $output, $width, $height, $format)
 echo "ERROR: ";
 			require_once('lib/snappy/Pdf.php');
 echo "class included";
-			$pdf = new Pdf('/usr/local/bin/wkhtmltopdf');
+			$pdf = new Pdf('/usr/local/bin/wkhtmltopdf-amd64');
 echo ", class instantiated";
 //			$pdf->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
 //			$pdf->set_page_size("letter");
