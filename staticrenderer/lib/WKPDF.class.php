@@ -2,6 +2,7 @@
 
 // Automated configuration. Modify these if they fail. (they shouldn't ;) )
 $GLOBALS['WKPDF_BASE_PATH']='/usr/local/bin/';
+$GLOBALS['WKPDF_TMP_PATH']='/opt/reportgrid/visualization/tmp/';
 $GLOBALS['WKPDF_BASE_SITE']='http://'.$_SERVER['SERVER_NAME'].'/';
 
 /**
@@ -115,7 +116,7 @@ class WKPDF {
                         throw new Exception('WKPDF static executable "'.htmlspecialchars($this->cmd).'" was not found.');
                 }
                 do{
-                        $this->tmp=$GLOBALS['WKPDF_BASE_PATH'].'tmp/'.mt_rand().'.html';
+                        $this->tmp=$GLOBALS['WKPDF_TMP_PATH'].mt_rand().'.html';
                 } while(file_exists($this->tmp));
         }
         /**
