@@ -1025,19 +1025,20 @@ rg.controller.interactive.Downloader.prototype = {
 	serviceUrl: null
 	,defaultBackgroundColor: null
 	,container: null
-	,download: function(format,backgroundcolor,handler) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 35, className : "rg.controller.interactive.Downloader", methodName : "download"});
+	,download: function(format,backgroundcolor,success,error) {
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
 		if(null != bg) ob.backgroundcolor = bg;
 		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
 		if(null != cls) ob.className = cls;
 		var http = new haxe.Http(this.serviceUrl);
-		http.onData = (function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
+		if(null != error) http.onError = error;
+		http.onData = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
 			};
-		})(this.success.$bind(this),handler);
+		})(this.complete.$bind(this),success,error);
 		var buf = [];
 		var _g = 0, _g1 = Reflect.fields(ob);
 		while(_g < _g1.length) {
@@ -1047,9 +1048,14 @@ rg.controller.interactive.Downloader.prototype = {
 		}
 		http.request(true);
 	}
-	,success: function(handler,content) {
-		js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
-		if(null != handler) handler();
+	,complete: function(success,error,content) {
+		haxe.Log.trace(content,{ fileName : "Downloader.hx", lineNumber : 79, className : "rg.controller.interactive.Downloader", methodName : "complete"});
+		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
+			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
+		} else {
+			js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
+			if(null != success) success();
+		}
 	}
 	,__class__: rg.controller.interactive.Downloader
 }
@@ -4617,7 +4623,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1432"};
+	r.info.viz = { version : "1.1.3.1444"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -13804,6 +13810,9 @@ rg.view.html.widget.DownloaderMenu.prototype = {
 		this.menu.classed().add("downloading");
 		this.handler(format,this.backgroundColor,function() {
 			me.menu.classed().remove("downloading");
+		},function(e) {
+			me.menu.classed().remove("downloading");
+			js.Lib.alert("ERROR: " + e);
 		});
 	}
 	,__class__: rg.view.html.widget.DownloaderMenu
@@ -21395,6 +21404,7 @@ window.Sizzle = Sizzle;
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
+rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 rg.track.Tracker.PREFIX = "rgv_";
 rg.track.Tracker.KEY_ENGAGEMENTS = rg.track.Tracker.PREFIX + "engagements";
 rg.track.Tracker.KEY_VISITS = rg.track.Tracker.PREFIX + "visits";

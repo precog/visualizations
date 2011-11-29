@@ -14,22 +14,23 @@ import thx.js.Selection;
 import thx.json.Json;
 import rg.util.RG;
 
-class Downloader 
+class Downloader
 {
 	static var ALLOWED_FORMATS = ['png', 'pdf', 'jpg'];
-	
+	static var ERROR_PREFIX = "ERROR:";
+
 	var serviceUrl : String;
 	var defaultBackgroundColor : String;
 	var container : Selection;
-	
-	public function new(container : Selection, serviceurl : String, backgroundcolor : Null<String>) 
+
+	public function new(container : Selection, serviceurl : String, backgroundcolor : Null<String>)
 	{
 		this.container = container;
 		this.serviceUrl = serviceurl;
 		this.defaultBackgroundColor = backgroundcolor;
 	}
-	
-	public function download(format : String, backgroundcolor : Null<String>, ?handler : Void -> Void)
+
+	public function download(format : String, backgroundcolor : Null<String>, success : Void -> Void, error : String -> Void)
 	{
 		if (!Arrays.exists(ALLOWED_FORMATS, format))
 			throw new Error("The download format '{0}' is not correct", [format]);
@@ -48,33 +49,42 @@ class Downloader
 		if (null != cls)
 			ob.className = cls;
 //		trace(ob);
-		
+
 		var http = new Http(serviceUrl);
-		http.onData = callback(success, handler);
+		if(null != error)
+			http.onError = error;
+		http.onData = callback(complete, success, error);
 		var buf = [];
 		for (field in Reflect.fields(ob))
 			http.setParameter(field, Reflect.field(ob, field));
 //			buf.push(StringTools.urlEncode(field) + "=" + StringTools.urlEncode(Reflect.field(ob, field)));
 
-		
-			
+
+
 //		http.setPostData(buf.join("&"));
 		http.request(true);
 //		Jsonp.post(serviceUrl, ob, success, null, null, null);
-		
+
 	}
-	
+
 	static function getClassName(container : Selection)
 	{
 		var name = container.attr("class").get();
 		name = StringTools.trim((~/\s+/g).replace((~/(^rg$|^rg\s+|\s+rg\s+|\s+rg$)/g).replace(name, " "), " "));
 		return ("" == name) ? null : name;
 	}
-	
-	function success(handler : Void -> Void, content : String)
+
+	function complete(success : Void -> Void, error : String -> Void, content : String)
 	{
-		Lib.window.location.href = serviceUrl + "?file=" + content;
-		if (null != handler)
-			handler();
+		trace(content);
+		if(content.substr(0, ERROR_PREFIX.length) == ERROR_PREFIX)
+		{
+			if (null != error)
+				error(content.substr(ERROR_PREFIX.length));
+		} else {
+			Lib.window.location.href = serviceUrl + "?file=" + content;
+			if (null != success)
+				success();
+		}
 	}
 }

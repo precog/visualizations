@@ -40,7 +40,7 @@ class App
 	{
 		return ":RGVIZ-" + (++lastid);
 	}
-	
+
 	var executor : IExecutorReportGrid;
 	var tracker : ITrackReportGrid;
 	var layouts : Hash<Layout>;
@@ -50,7 +50,7 @@ class App
 		this.tracker = tracker;
 		this.layouts = new Hash();
 	}
-	
+
 	public function visualization(el : Selection, jsoptions : Dynamic)
 	{
 		var node = el.node();
@@ -74,11 +74,11 @@ class App
 		}
 
 		var visualization : Visualization = null;
-		
+
 		var general = new InfoGeneral().feed(params.options);
-		
+
 		var infoviz = new InfoVisualizationType().feed(params.options);
-		
+
 		switch(new InfoDomType().feed(params.options).kind)
 		{
 			case Svg:
@@ -101,7 +101,7 @@ class App
 			visualization.feedData(datapoints);
 		};
 		request.request();
-		
+
 		// tracking
 		var track = new InfoTrack().feed(jsoptions.options.track);
 		if (null != tracker && track.enabled)
@@ -110,29 +110,31 @@ class App
 			Tracker.instance(tracker, paths, track.token)
 				.addVisualization(visualization, jsoptions);
 		}
-		
+
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
 
 		if (null != download.position || null != download.handler)
 		{
 			var downloader = new Downloader(visualization.container, download.service, download.background);
-			
+
 			if (null != download.handler)
-				visualization.addReadyOnce(function() download.handler(downloader.download));
+				visualization.addReadyOnce(function() {
+					download.handler(downloader.download);
+				});
 			else
 			{
 				visualization.addReadyOnce(function()
 				{
 					var widget = new DownloaderMenu(downloader.download, download.position, download.formats, visualization.container);
 				});
-				
+
 			}
 		}
-		
+
 		return visualization;
 	}
-	
+
 	public function getLayout(id : String, options : Dynamic, container : Selection, replace : Bool)
 	{
 		var old = layouts.get(id);
