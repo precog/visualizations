@@ -65,6 +65,7 @@ function renderVisualization($input, $output, $width, $height, $format)
 	{
 		case "pdf":
 echo "ERROR: ";
+/*
 			require_once('lib/snappy/Pdf.php');
 echo "class included";
 			$pdf = new Pdf('/usr/local/bin/wkhtmltopdf-amd64');
@@ -78,6 +79,7 @@ echo ", post render";
 echo ", post output";
 exit;
 			return $out;
+			*/
 			break;
 		default:
 			return phantom("renderer.js", $input, $output, $width, $height);
