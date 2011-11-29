@@ -2,8 +2,6 @@
 
 // Automated configuration. Modify these if they fail. (they shouldn't ;) )
 $GLOBALS['WKPDF_BASE_PATH']='/usr/local/bin/';
-$GLOBALS['WKPDF_TMP_PATH']='/opt/reportgrid/visualization/tmp/';
-$GLOBALS['WKPDF_BASE_SITE']='http://'.$_SERVER['SERVER_NAME'].'/';
 
 /**
  * @author Christian Sciberras
@@ -83,18 +81,7 @@ class WKPDF {
                 }
                 return self::$cpu;
         }
-        /**
-         * Force the client to download PDF file when finish() is called.
-         */
-        public static $PDF_DOWNLOAD='D';
-        /**
-         * Returns the PDF file as a string when finish() is called.
-         */
-        public static $PDF_ASSTRING='S';
-        /**
-         * When possible, force the client to embed PDF file when finish() is called.
-         */
-        public static $PDF_EMBEDDED='I';
+
         /**
          * PDF file is saved into the server space when finish() is called. The path is returned.
          */
@@ -107,6 +94,7 @@ class WKPDF {
          * PDF generated as landscape (horizontal).
          */
         public static $PDF_LANDSCAPE='Landscape';
+
         /**
          * Constructor: initialize command line and reserve temporary file.
          */
@@ -115,9 +103,6 @@ class WKPDF {
                 if(!file_exists($this->cmd)) {
                         throw new Exception('WKPDF static executable "'.htmlspecialchars($this->cmd).'" was not found.');
                 }
-                do{
-                        $this->tmp=$GLOBALS['WKPDF_TMP_PATH'].mt_rand().'.html';
-                } while(file_exists($this->tmp));
         }
         /**
          * Set orientation, use constants from this class.
@@ -167,13 +152,9 @@ class WKPDF {
         public function set_title($text){
                 $this->title=$text;
         }
-        /**
-         * Set html content.
-         * @param string $html New html content. It *replaces* any previous content.
-         */
-        public function set_html($html){
-                $this->html=$html;
-                file_put_contents($this->tmp,$html);
+
+        public function set_html_path($path){
+                $this->path=$path;
         }
         /**
          * Returns WKPDF print status.
@@ -194,76 +175,24 @@ class WKPDF {
          * Convert HTML to PDF.
          */
         public function render(){
-                $web=$GLOBALS['WKPDF_BASE_SITE'].$GLOBALS['WKPDF_BASE_PATH'].'tmp/'.basename($this->tmp);
                 $this->pdf=self::_pipeExec(
                         '"'.$this->cmd.'"'
-                        .(($this->copies>1)?' --copies '.$this->copies:'')                              // number of copies
-                        .' --orientation '.$this->orient                                                                // orientation
-                        .' --page-size '.$this->size                                                                    // page size
-                        .($this->toc?' --toc':'')                                                                               // table of contents
-                        .($this->grayscale?' --grayscale':'')                                                   // grayscale
-                        .(($this->title!='')?' --title "'.$this->title.'"':'')                  // title
-                        .' "'.$web.'" -'                                                                                                // URL and optional to write to STDOUT
+                        .(($this->copies>1)?' --copies '.$this->copies:'')     // number of copies
+                        .' --orientation '.$this->orient                       // orientation
+                        .' --page-size '.$this->size                           // page size
+                        .($this->toc?' --toc':'')                              // table of contents
+                        .($this->grayscale?' --grayscale':'')                  // grayscale
+                        .(($this->title!='')?' --title "'.$this->title.'"':'') // title
+                        .' "'.$this->path.'" -'                                       // URL and optional to write to STDOUT
                 );
                 if(strpos(strtolower($this->pdf['stderr']),'error')!==false)throw new Exception('WKPDF system error: <pre>'.$this->pdf['stderr'].'</pre>');
                 if($this->pdf['stdout']=='')throw new Exception('WKPDF didn\'t return any data. <pre>'.$this->pdf['stderr'].'</pre>');
                 if(((int)$this->pdf['return'])>1)throw new Exception('WKPDF shell error, return code '.(int)$this->pdf['return'].'.');
                 $this->status=$this->pdf['stderr'];
                 $this->pdf=$this->pdf['stdout'];
-                unlink($this->tmp);
         }
-        /**
-         * Return PDF with various options.
-         * @param string $mode How two output (constants from this same class).
-         * @param string $file The PDF's filename (the usage depends on $mode.
-         * @return string|boolean Depending on $mode, this may be success (boolean) or PDF (string).
-         */
-        public function output($mode,$file){
-                switch($mode){
-                        case self::$PDF_DOWNLOAD:
-                                if(!headers_sent()){
-                                        header('Content-Description: File Transfer');
-                                        header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
-                                        header('Pragma: public');
-                                        header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-                                        header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-                                        // force download dialog
-                                        header('Content-Type: application/force-download');
-                                        header('Content-Type: application/octet-stream', false);
-                                        header('Content-Type: application/download', false);
-                                        header('Content-Type: application/pdf', false);
-                                        // use the Content-Disposition header to supply a recommended filename
-                                        header('Content-Disposition: attachment; filename="'.basename($file).'";');
-                                        header('Content-Transfer-Encoding: binary');
-                                        header('Content-Length: '.strlen($this->pdf));
-                                        echo $this->pdf;
-                                }else{
-                                        throw new Exception('WKPDF download headers were already sent.');
-                                }
-                                break;
-                        case self::$PDF_ASSTRING:
-                                return $this->pdf;
-                                break;
-                        case self::$PDF_EMBEDDED:
-                                if(!headers_sent()){
-                                        header('Content-Type: application/pdf');
-                                        header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
-                                        header('Pragma: public');
-                                        header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-                                        header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-                                        header('Content-Length: '.strlen($this->pdf));
-                                        header('Content-Disposition: inline; filename="'.basename($file).'";');
-                                        echo $this->pdf;
-                                }else{
-                                        throw new Exception('WKPDF embed headers were already sent.');
-                                }
-                                break;
-                        case self::$PDF_SAVEFILE:
-                                return file_put_contents($file,$this->pdf);
-                                break;
-                        default:
-                                throw new Exception('WKPDF invalid mode "'.htmlspecialchars($mode,ENT_QUOTES).'".');
-                }
-                return false;
+
+        public function output($file){
+                return file_put_contents($file,$this->pdf);
         }
 }
