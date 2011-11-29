@@ -3,6 +3,7 @@
 define("PHANTOMJS", "DISPLAY=:0 /usr/local/bin/phantomjs");
 
 require_once('lib/config.class.php');
+require_once('lib/KLogger.class.php');
 
 if(isset($_GET['file']))
 {
@@ -37,17 +38,22 @@ try
 	$config = Config::fromQueryString($_REQUEST);
 	$hash = $config->hash();
 	$output = path($hash,'xhtml');
-//	if(!file_exists($output))
+	if(!file_exists($output)) {
 		captureTemplate($config, $output);
+		KLogger::instance()->log("html generated at $output");
+	}
 
 	$imagepath = path($hash, $config->format());
 
-//	if(!file_exists($imagepath))
+	if(!file_exists($imagepath)) {
 		$out = renderVisualization($output, $imagepath, $config->width(), $config->height(), $config->format());
+		KLogger::instance()->log("{$config->format()} generated at $imagepath");
+	}
 
 	echo "$hash.{$config->format()}";
-		exit;
+	exit;
 } catch(Exception $e) {
+	KLogger::instance()->log($e->getMessage());
 	echo $e->getMessage();
 	exit;
 }

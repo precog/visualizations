@@ -10,20 +10,20 @@ import rg.view.html.widget.DownloaderPosition;
 import rg.view.html.widget.DownloaderPositions;
 import rg.RGConst;
 
-class InfoDownload 
+class InfoDownload
 {
 	public var handler : (String -> String -> (Void -> Void) -> Void) -> Void;
 	public var service : String;
 	public var background : Null<String>;
 	public var position : Null<DownloaderPosition>;
 	public var formats : Array<String>;
-	
-	public function new() 
+
+	public function new()
 	{
 		service = RGConst.SERVICE_RENDERING_STATIC;
-		formats = ['png', 'jpg'];
+		formats = ['png', 'jpg', 'pdf'];
 	}
-	
+
 	public static function filters()
 	{
 		return [{
@@ -45,7 +45,7 @@ class InfoDownload
 		}, {
 			field : "position",
 			validator : function(v) return Std.is(v, String),
-			filter : function(v) 
+			filter : function(v)
 			{
 				return [ {
 					field : "position",
