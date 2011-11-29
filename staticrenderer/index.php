@@ -9,7 +9,7 @@ if(isset($_GET['file']))
 	$file = $_GET['file'];
 	$path = path($file);
 	$format = array_pop(explode('.', $file));
-	
+
 	switch($format)
 	{
 		case "png":
@@ -22,12 +22,12 @@ if(isset($_GET['file']))
 			header("Content-Type: application/pdf");
 			break;
 	}
-	
+
 	header("Content-Description: File Transfer");
 	header("Content-Disposition: attachment; filename=visualization.$format");
 	header("Content-Transfer-Encoding: binary");
 	header("Content-Length: " . filesize($path));
-	
+
 	readfile($path);
 	exit;
 }
@@ -43,8 +43,8 @@ try
 	$imagepath = path($hash, $config->format());
 
 //	if(!file_exists($imagepath))
-		$out = renderVisualization($output, $imagepath, $config->width(), $config->height());
-	
+		$out = renderVisualization($output, $imagepath, $config->width(), $config->height(), $config->format());
+
 	echo "$hash.{$config->format()}";
 		exit;
 } catch(Exception $e) {
@@ -52,9 +52,22 @@ try
 	exit;
 }
 
-function renderVisualization($input, $output, $width, $height)
+function renderVisualization($input, $output, $width, $height, $format)
 {
-	return phantom("renderer.js", $input, $output, $width, $height);
+	switch($format)
+	{
+		case "pdf":
+			require_once('lib/WKPDF.class.php');
+			$render = new WKPDF();
+			$render->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
+			$render->set_page_size("letter");
+			$render->set_html(file_get_contents($input));
+			$render->render();
+			return $render->output(WKPDF::$PDF_SAVEFILE, $output);
+			break;
+		default:
+			return phantom("renderer.js", $input, $output, $width, $height);
+	}
 }
 
 function phantom($script, $input, $output, $width, $height)

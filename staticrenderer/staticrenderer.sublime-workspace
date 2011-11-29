@@ -183,6 +183,14 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "index.php",
+			"settings":
+			{
+				"buffer_size": 2480,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -256,6 +264,7 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.sublime-project",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/haxe/visualizations/src/rg/data/source/rgquery/QueryParser.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/haxe/visualizations/src/rg/controller/MVPOptions.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/haxe/visualizations/bin/js/reportgrid-core.js",
@@ -382,8 +391,7 @@
 		"/Users/francoponticelli/Projects/thx/src/thx/html/Html.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/html/Element.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/html/DomHandler.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/html/CloseSelfHtmlNodeFormat.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/geom/Polygon.hx"
+		"/Users/francoponticelli/Projects/thx/src/thx/html/CloseSelfHtmlNodeFormat.hx"
 	],
 	"find":
 	{
@@ -391,7 +399,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 91.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/src/main/haxe/vis"
@@ -442,8 +450,36 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "index.php",
+					"settings":
+					{
+						"buffer_size": 2480,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -478,10 +514,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 92.0
-	},
 	"replace":
 	{
 		"height": 62.0

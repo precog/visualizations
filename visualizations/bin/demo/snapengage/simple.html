@@ -8,14 +8,17 @@
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
 	<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=87984064-827D-4C42-8BAF-42A748BA6DCA"></script>
+<!--
 	<script src="http://api.reportgrid.com/js/reportgrid-viz.js"></script>
+-->
+	<script src="../../js/reportgrid-viz.js"></script>
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
 
 	var path = "/snapengage11155847/bf7337a6-6c7f-4ff9-8e50-a7bb771c036a/";
 
-	ReportGrid.lineChart("#chart", { path : path, event : "case", property : "browser" });
+	ReportGrid.lineChart("#chart", { path : path, event : "case", property : "browser", options : { download : true } });
 
 /*
 	ReportGrid.barChart("#chart", { path : path, event : "case", property : "browser",
@@ -34,6 +37,6 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 </head>
 <body>
-	<div id="chart"></div>
+	<div id="chart" style="width:400px;height:200px"></div>
 </body>
 </html>
