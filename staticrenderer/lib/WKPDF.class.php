@@ -76,8 +76,8 @@ class WKPDF {
          */
         private static function _getCPU(){
                 if(self::$cpu==''){
-                        if(`grep -i amd /proc/cpuinfo`!='')                     self::$cpu='amd64';
-                        elseif(`grep -i intel /proc/cpuinfo`!='')       self::$cpu='i386';
+                        if(`grep -i amd /proc/cpuinfo`!='')       self::$cpu='amd64';
+                        elseif(`grep -i intel /proc/cpuinfo`!='') self::$cpu='i386';
                         else throw new Exception('WKPDF couldn\'t determine CPU ("'.`grep -i vendor_id /proc/cpuinfo`.'").');
                 }
                 return self::$cpu;
@@ -112,7 +112,7 @@ class WKPDF {
         public function __construct(){
 echo(", CONSTRUCTOR");
                 $this->cmd=$GLOBALS['WKPDF_BASE_PATH'].'wkhtmltopdf-'.self::_getCPU();
-echo(", " + $this->cmd);
+echo(", " . $this->cmd);
                 if(!file_exists($this->cmd)) {
                         echo ", WILL THROW UP";
                         throw new Exception('WKPDF static executable "'.htmlspecialchars($this->cmd).'" was not found.');

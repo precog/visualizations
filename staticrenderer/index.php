@@ -55,7 +55,7 @@ try
 	exit;
 } catch(Exception $e) {
 //	KLogger::instance()->log($e->getMessage());
-	echo "ERROR:" + $e->getMessage();
+	echo "ERROR:" . $e->getMessage();
 	exit;
 }
 
