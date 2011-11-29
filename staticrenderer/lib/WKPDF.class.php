@@ -115,7 +115,7 @@ echo(", CONSTRUCTOR");
 echo(", " + $this->cmd);
                 if(!file_exists($this->cmd)) {
                         echo ", WILL THROW UP";
-                        throw new Exception('WKPDF static executable "'.htmlspecialchars($this->cmd,ENT_QUOTES).'" was not found.');
+                        throw new Exception('WKPDF static executable "'.htmlspecialchars($this->cmd).'" was not found.');
                 }
 echo(", BEFORE LOOP");
                 do{
