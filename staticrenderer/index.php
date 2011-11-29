@@ -68,9 +68,8 @@ function renderVisualization($input, $output, $width, $height, $format)
 			$pdf = new WKPDF();
 			$pdf->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
 			$pdf->set_page_size("letter");
-			$pdf->set_html(file_get_contents($input));
-			$pdf->render();
-			$out = $pdf->output(WKPDF::$PDF_SAVEFILE, $output);
+			$pdf->set_html_path($input);
+			$out = $pdf->output($output);
 			return $out;
 			break;
 		default:

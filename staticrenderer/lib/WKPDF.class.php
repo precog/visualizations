@@ -174,7 +174,7 @@ class WKPDF {
         /**
          * Convert HTML to PDF.
          */
-        public function render(){
+        public function output($file){
                 $this->pdf=self::_pipeExec(
                         '"'.$this->cmd.'"'
                         .(($this->copies>1)?' --copies '.$this->copies:'')     // number of copies
@@ -189,10 +189,6 @@ class WKPDF {
                 if($this->pdf['stdout']=='')throw new Exception('WKPDF didn\'t return any data. <pre>'.$this->pdf['stderr'].'</pre>');
                 if(((int)$this->pdf['return'])>1)throw new Exception('WKPDF shell error, return code '.(int)$this->pdf['return'].'.');
                 $this->status=$this->pdf['stderr'];
-                $this->pdf=$this->pdf['stdout'];
-        }
-
-        public function output($file){
-                return file_put_contents($file,$this->pdf);
+                return file_put_contents($file, $this->pdf['stdout']);
         }
 }
