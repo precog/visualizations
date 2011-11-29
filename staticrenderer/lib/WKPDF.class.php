@@ -99,7 +99,7 @@ class WKPDF {
          * Constructor: initialize command line and reserve temporary file.
          */
         public function __construct(){
-                $this->cmd=$GLOBALS['WKPDF_BASE_PATH'].'wkhtmltopdf-'.self::_getCPU();
+                $this->cmd='DISPLAY=:0 ' . $GLOBALS['WKPDF_BASE_PATH'].'wkhtmltopdf-'.self::_getCPU();
                 if(!file_exists($this->cmd)) {
                         throw new Exception('WKPDF static executable "'.htmlspecialchars($this->cmd).'" was not found.');
                 }
