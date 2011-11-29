@@ -65,18 +65,16 @@ function renderVisualization($input, $output, $width, $height, $format)
 	{
 		case "pdf":
 echo "ERROR: ";
-			require_once('lib/WKPDF.class.php');
+			require_once('lib/snappy/Pdf.php');
 echo "class included";
-			$pdf = new WKPDF();
+			$pdf = new Pdf('/usr/local/bin/wkhtmltopdf');
 echo ", class instantiated";
-			$pdf->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
-			$pdf->set_page_size("letter");
-echo ", loading $input";
-			$pdf->set_html(file_get_contents($input));
+//			$pdf->set_orientation($width > $height ? WKPDF::$PDF_LANDSCAPE : WKPDF::$PDF_PORTRAIT);
+//			$pdf->set_page_size("letter");
 echo ", pre render";
-			$pdf->render();
+//			$pdf->render();
 echo ", post render";
-			$out = $pdf->output(WKPDF::$PDF_SAVEFILE, $output);
+			$out = $pdf->generateFromHtml(file_get_contents($input), $output);
 echo ", post output";
 exit;
 			return $out;
