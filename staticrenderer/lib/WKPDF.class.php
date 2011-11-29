@@ -175,17 +175,16 @@ class WKPDF {
          * Convert HTML to PDF.
          */
         public function output($file){
-                $this->pdf=self::_pipeExec(
-                        '"'.$this->cmd.'"'
+                $cmd = '"'.$this->cmd.'"'
                         .(($this->copies>1)?' --copies '.$this->copies:'')     // number of copies
                         .' --orientation '.$this->orient                       // orientation
                         .' --page-size '.$this->size                           // page size
                         .($this->toc?' --toc':'')                              // table of contents
                         .($this->grayscale?' --grayscale':'')                  // grayscale
                         .(($this->title!='')?' --title "'.$this->title.'"':'') // title
-                        .' "'.$this->path.'" -'                                       // URL and optional to write to STDOUT
-                );
-                if(strpos(strtolower($this->pdf['stderr']),'error')!==false)throw new Exception('WKPDF system error: <pre>'.$this->pdf['stderr'].'</pre>');
+                        .' "'.$this->path.'" -';                               // URL and optional to write to STDOUT
+                $this->pdf=self::_pipeExec($cmd);
+                if(strpos(strtolower($this->pdf['stderr']),'error')!==false)throw new Exception('WKPDF system error: <pre>'.$this->pdf['stderr'].' for $cmd</pre>');
                 if($this->pdf['stdout']=='')throw new Exception('WKPDF didn\'t return any data. <pre>'.$this->pdf['stderr'].'</pre>');
                 if(((int)$this->pdf['return'])>1)throw new Exception('WKPDF shell error, return code '.(int)$this->pdf['return'].'.');
                 $this->status=$this->pdf['stderr'];
