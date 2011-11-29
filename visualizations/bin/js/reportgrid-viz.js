@@ -4623,7 +4623,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1444"};
+	r.info.viz = { version : "1.1.3.1445"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -21494,7 +21494,7 @@ rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|
 thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
-rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
+rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp02.reportgrid.com:30050/auditPath?tokenId={$token}";
 rg.RGConst.BASE_URL_GEOJSON = "geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapp02.reportgrid.com:20000/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";

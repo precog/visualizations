@@ -44,8 +44,8 @@ try
 //		KLogger::instance()->log("html generated at $output");
 	}
 
-	echo $output;
-	exit;
+//	echo $output;
+//	exit;
 
 	$imagepath = path($hash, $config->format());
 
