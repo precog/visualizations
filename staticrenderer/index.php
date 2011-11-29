@@ -64,7 +64,7 @@ function renderVisualization($input, $output, $width, $height, $format)
 	switch($format)
 	{
 		case "pdf":
-echo "ERROR: ";
+echo "ERROR: pdf";
 /*
 			require_once('lib/snappy/Pdf.php');
 echo "class included";
