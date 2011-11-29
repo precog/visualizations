@@ -1,7 +1,7 @@
 <?php
 
 // Automated configuration. Modify these if they fail. (they shouldn't ;) )
-$GLOBALS['WKPDF_BASE_PATH']=str_replace(str_replace('\\','/',getcwd().'/'),'',dirname(str_replace('\\','/',__FILE__))).'/';
+$GLOBALS['WKPDF_BASE_PATH']='/usr/local/bin';
 $GLOBALS['WKPDF_BASE_SITE']='http://'.$_SERVER['SERVER_NAME'].'/';
 
 /**
