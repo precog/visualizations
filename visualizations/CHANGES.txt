@@ -1,3 +1,5 @@
+v. 1.1.4
+ * added official support for download
 v. 1.1.3
  * added support for histogram when the bar chart is generated with eternity
  * added support for simplified query to generate funnel charts from the event names

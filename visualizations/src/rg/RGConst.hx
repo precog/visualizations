@@ -5,7 +5,7 @@
 
 package rg;
 
-class RGConst 
+class RGConst
 {
 	public static var SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
 #if release
