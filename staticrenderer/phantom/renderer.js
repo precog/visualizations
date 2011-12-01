@@ -42,6 +42,6 @@ page.open(input, function (status) {
            console.log("rendering, total execution time: " + (new Date().getTime() - start) + "ms.");
            page.render(output);
            phantom.exit();
-        });        
+        });
     }
 });

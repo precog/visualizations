@@ -48,7 +48,6 @@ class Downloader
 		var cls = getClassName(container);
 		if (null != cls)
 			ob.className = cls;
-//		trace(ob);
 
 		var http = new Http(serviceUrl);
 		if(null != error)
@@ -57,14 +56,7 @@ class Downloader
 		var buf = [];
 		for (field in Reflect.fields(ob))
 			http.setParameter(field, Reflect.field(ob, field));
-//			buf.push(StringTools.urlEncode(field) + "=" + StringTools.urlEncode(Reflect.field(ob, field)));
-
-
-
-//		http.setPostData(buf.join("&"));
 		http.request(true);
-//		Jsonp.post(serviceUrl, ob, success, null, null, null);
-
 	}
 
 	static function getClassName(container : Selection)
@@ -76,7 +68,6 @@ class Downloader
 
 	function complete(success : Void -> Void, error : String -> Void, content : String)
 	{
-		trace(content);
 		if(content.substr(0, ERROR_PREFIX.length) == ERROR_PREFIX)
 		{
 			if (null != error)
