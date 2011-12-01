@@ -1,7 +1,7 @@
 <?php
 
 // Automated configuration. Modify these if they fail. (they shouldn't ;) )
-$GLOBALS['WKPDF_BASE_PATH']='/bin/wkhtmltopdf/';
+$GLOBALS['WKPDF_PATH']='/bin/wkhtmltopdf';
 
 /**
  * @author Christian Sciberras
@@ -69,18 +69,6 @@ class WKPDF {
                                 'return'=>$rtn
                         );
         }
-        /**
-         * Function that attempts to return the kind of CPU.
-         * @return string CPU kind ('amd64' or 'i386').
-         */
-        private static function _getCPU(){
-                if(self::$cpu==''){
-                        if(`grep -i amd /proc/cpuinfo`!='')                     self::$cpu='amd64';
-                        elseif(`grep -i intel /proc/cpuinfo`!='')       self::$cpu='i386';
-                        else throw new Exception('WKPDF couldn\'t determine CPU ("'.`grep -i vendor_id /proc/cpuinfo`.'").');
-                }
-                return self::$cpu;
-        }
 
         /**
          * PDF file is saved into the server space when finish() is called. The path is returned.
@@ -98,8 +86,8 @@ class WKPDF {
         /**
          * Constructor: initialize command line and reserve temporary file.
          */
-        public function __construct(){
-                $this->cmd=$GLOBALS['WKPDF_BASE_PATH'].'wkhtmltopdf-'.self::_getCPU();
+        public function __construct($cmd = null){
+                $this->cmd=$cmd ? $cmd : $GLOBALS['WKPDF_PATH'];
                 if(!file_exists($this->cmd)) {
                         throw new Exception('WKPDF static executable "'.htmlspecialchars($this->cmd).'" was not found.');
                 }
