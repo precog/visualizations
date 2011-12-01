@@ -1086,6 +1086,107 @@ rg.util.TestProperties.prototype = {
 	}
 	,__class__: rg.util.TestProperties
 }
+if(!rg.view.svg.panel) rg.view.svg.panel = {}
+rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.g = panel.g.append("svg:g");
+	this.g.attr("class").string("layer");
+	this._resize();
+}
+rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
+rg.view.svg.panel.Layer.prototype = {
+	panel: null
+	,frame: null
+	,g: null
+	,width: null
+	,height: null
+	,customClass: null
+	,addClass: function(name) {
+		var me = this;
+		name.split(" ").forEach(function(d,i) {
+			me.g.classed().add(d);
+		});
+	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
+	}
+	,toggleClass: function(name) {
+		this.g.classed().toggle(name);
+	}
+	,_resize: function() {
+		this.width = this.frame.width;
+		this.height = this.frame.height;
+		this.resize();
+	}
+	,resize: function() {
+	}
+	,destroy: function() {
+		var p = this.panel;
+		p.removeLayer(this);
+		this.g.remove();
+	}
+	,setCustomClass: function(v) {
+		if(null != this.customClass) this.g.classed().remove(this.customClass);
+		this.g.classed().add(v);
+		return this.customClass = v;
+	}
+	,__class__: rg.view.svg.panel.Layer
+}
+if(!rg.view.svg.chart) rg.view.svg.chart = {}
+rg.view.svg.chart.Chart = $hxClasses["rg.view.svg.chart.Chart"] = function(panel) {
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.linear;
+	this.ready = new hxevents.Notifier();
+}
+rg.view.svg.chart.Chart.__name__ = ["rg","view","svg","chart","Chart"];
+rg.view.svg.chart.Chart.__super__ = rg.view.svg.panel.Layer;
+rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
+	animated: null
+	,animationDuration: null
+	,animationEase: null
+	,click: null
+	,labelDataPoint: null
+	,labelDataPointOver: null
+	,ready: null
+	,panelx: null
+	,panely: null
+	,tooltip: null
+	,resize: function() {
+		var coords = rg.view.svg.panel.Panels.boundingBox(this.panel);
+		this.panelx = coords.x;
+		this.panely = coords.y;
+	}
+	,init: function() {
+		if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Balloon(this.g);
+		this.resize();
+	}
+	,moveTooltip: function(x,y,animated) {
+		this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
+	}
+	,__class__: rg.view.svg.chart.Chart
+});
+rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
+	rg.view.svg.chart.Chart.call(this,panel);
+}
+rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
+rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
+rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
+	dps: null
+	,setVariables: function(variableIndependents,variableDependents,data) {
+	}
+	,data: function(dps) {
+		this.dps = dps;
+		this.redraw();
+	}
+	,redraw: function() {
+		haxe.Log.trace(this.dps,{ fileName : "Sankey.hx", lineNumber : 28, className : "rg.view.svg.chart.Sankey", methodName : "redraw"});
+	}
+	,__class__: rg.view.svg.chart.Sankey
+});
 if(!rg.controller.interactive) rg.controller.interactive = {}
 rg.controller.interactive.Downloader = $hxClasses["rg.controller.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
 	this.container = container;
@@ -1102,19 +1203,20 @@ rg.controller.interactive.Downloader.prototype = {
 	serviceUrl: null
 	,defaultBackgroundColor: null
 	,container: null
-	,download: function(format,backgroundcolor,handler) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 35, className : "rg.controller.interactive.Downloader", methodName : "download"});
+	,download: function(format,backgroundcolor,success,error) {
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
 		if(null != bg) ob.backgroundcolor = bg;
 		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
 		if(null != cls) ob.className = cls;
 		var http = new haxe.Http(this.serviceUrl);
-		http.onData = (function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
+		if(null != error) http.onError = error;
+		http.onData = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
 			};
-		})(this.success.$bind(this),handler);
+		})(this.complete.$bind(this),success,error);
 		var buf = [];
 		var _g = 0, _g1 = Reflect.fields(ob);
 		while(_g < _g1.length) {
@@ -1124,9 +1226,14 @@ rg.controller.interactive.Downloader.prototype = {
 		}
 		http.request(true);
 	}
-	,success: function(handler,content) {
-		js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
-		if(null != handler) handler();
+	,complete: function(success,error,content) {
+		haxe.Log.trace(content,{ fileName : "Downloader.hx", lineNumber : 79, className : "rg.controller.interactive.Downloader", methodName : "complete"});
+		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
+			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
+		} else {
+			js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
+			if(null != success) success();
+		}
 	}
 	,__class__: rg.controller.interactive.Downloader
 }
@@ -1733,7 +1840,6 @@ rg.view.svg.widget.Balloon.prototype = {
 	}
 	,__class__: rg.view.svg.widget.Balloon
 }
-if(!rg.view.svg.panel) rg.view.svg.panel = {}
 rg.view.svg.panel.Panel = $hxClasses["rg.view.svg.panel.Panel"] = function(frame) {
 	this.frame = frame;
 	frame.change = this.reframe.$bind(this);
@@ -2038,7 +2144,7 @@ rg.track.Tracker.prototype = {
 		while(_g < _g1.length) {
 			var path = _g1[_g];
 			++_g;
-			this.executor.track(path,params,null,null,this.token);
+			this.executor.track(path,params,null,null,{ tokenId : this.token});
 		}
 	}
 	,baseEvent: function() {
@@ -2618,88 +2724,6 @@ thx.geo.Albers.prototype = {
 	}
 	,__class__: thx.geo.Albers
 }
-rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
-	this.frame = (this.panel = panel).frame;
-	var p = panel;
-	p.addLayer(this);
-	this.g = panel.g.append("svg:g");
-	this.g.attr("class").string("layer");
-	this._resize();
-}
-rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
-rg.view.svg.panel.Layer.prototype = {
-	panel: null
-	,frame: null
-	,g: null
-	,width: null
-	,height: null
-	,customClass: null
-	,addClass: function(name) {
-		var me = this;
-		name.split(" ").forEach(function(d,i) {
-			me.g.classed().add(d);
-		});
-	}
-	,removeClass: function(name) {
-		this.g.classed().remove(name);
-	}
-	,toggleClass: function(name) {
-		this.g.classed().toggle(name);
-	}
-	,_resize: function() {
-		this.width = this.frame.width;
-		this.height = this.frame.height;
-		this.resize();
-	}
-	,resize: function() {
-	}
-	,destroy: function() {
-		var p = this.panel;
-		p.removeLayer(this);
-		this.g.remove();
-	}
-	,setCustomClass: function(v) {
-		if(null != this.customClass) this.g.classed().remove(this.customClass);
-		this.g.classed().add(v);
-		return this.customClass = v;
-	}
-	,__class__: rg.view.svg.panel.Layer
-}
-if(!rg.view.svg.chart) rg.view.svg.chart = {}
-rg.view.svg.chart.Chart = $hxClasses["rg.view.svg.chart.Chart"] = function(panel) {
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.animated = true;
-	this.animationDuration = 1500;
-	this.animationEase = thx.math.Equations.linear;
-	this.ready = new hxevents.Notifier();
-}
-rg.view.svg.chart.Chart.__name__ = ["rg","view","svg","chart","Chart"];
-rg.view.svg.chart.Chart.__super__ = rg.view.svg.panel.Layer;
-rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
-	animated: null
-	,animationDuration: null
-	,animationEase: null
-	,click: null
-	,labelDataPoint: null
-	,labelDataPointOver: null
-	,ready: null
-	,panelx: null
-	,panely: null
-	,tooltip: null
-	,resize: function() {
-		var coords = rg.view.svg.panel.Panels.boundingBox(this.panel);
-		this.panelx = coords.x;
-		this.panely = coords.y;
-	}
-	,init: function() {
-		if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Balloon(this.g);
-		this.resize();
-	}
-	,moveTooltip: function(x,y,animated) {
-		this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
-	}
-	,__class__: rg.view.svg.chart.Chart
-});
 rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 }
@@ -5208,11 +5232,11 @@ rg.JSBridge.main = function() {
 	r.barChart = function(el,options) {
 		return r.viz(el,options,"barchart");
 	};
-	r.geo = function(el,options) {
-		return r.viz(el,options,"geo");
-	};
 	r.funnelChart = function(el,options) {
 		return r.viz(el,options,"funnelchart");
+	};
+	r.geo = function(el,options) {
+		return r.viz(el,options,"geo");
 	};
 	r.heatGrid = function(el,options) {
 		return r.viz(el,options,"heatgrid");
@@ -5228,6 +5252,9 @@ rg.JSBridge.main = function() {
 	};
 	r.pivotTable = function(el,options) {
 		return r.viz(el,options,"pivottable");
+	};
+	r.sankey = function(el,options) {
+		return r.viz(el,options,"sankey");
 	};
 	r.scatterGraph = function(el,options) {
 		return r.viz(el,options,"scattergraph");
@@ -5257,11 +5284,11 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1411"};
+	r.info.viz = { version : "1.1.3.1476"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 129, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 130, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(ob) {
@@ -6712,6 +6739,21 @@ rg.data.IDataSource.prototype = {
 	onLoad: null
 	,load: null
 	,__class__: rg.data.IDataSource
+}
+rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
+	this.label = new rg.controller.info.InfoLabel();
+}
+rg.controller.info.InfoSankey.__name__ = ["rg","controller","info","InfoSankey"];
+rg.controller.info.InfoSankey.filters = function() {
+	return [{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+	}}];
+}
+rg.controller.info.InfoSankey.prototype = {
+	label: null
+	,__class__: rg.controller.info.InfoSankey
 }
 var haxe = haxe || {}
 if(!haxe.io) haxe.io = {}
@@ -8244,7 +8286,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 399, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 401, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -8383,6 +8425,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var v = values[_g];
 								++_g;
 								var o = Objects.clone(opt);
+								if(null == o.where) o.where = [];
 								var cond = { };
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
@@ -8447,6 +8490,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var v = values[_g];
 								++_g;
 								var o = Objects.clone(opt), cond = { };
+								if(null == o.where) o.where = [];
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
 								subs.push({ method : (function(f,a1,a2) {
@@ -8506,7 +8550,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 380, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 382, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -8524,13 +8568,13 @@ rg.controller.factory.FactorySvgVisualization.prototype = {
 			var chart = new rg.controller.visualization.VisualizationBarChart(layout);
 			chart.info = chart.infoBar = rg.controller.info.Info.feed(new rg.controller.info.InfoBarChart(),options);
 			return chart;
-		case "geo":
-			var chart = new rg.controller.visualization.VisualizationGeo(layout);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoGeo(),options);
-			return chart;
 		case "funnelchart":
 			var chart = new rg.controller.visualization.VisualizationFunnelChart(layout);
 			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoFunnelChart(),options);
+			return chart;
+		case "geo":
+			var chart = new rg.controller.visualization.VisualizationGeo(layout);
+			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoGeo(),options);
 			return chart;
 		case "heatgrid":
 			var chart = new rg.controller.visualization.VisualizationHeatGrid(layout);
@@ -8544,6 +8588,10 @@ rg.controller.factory.FactorySvgVisualization.prototype = {
 			var chart = new rg.controller.visualization.VisualizationPieChart(layout);
 			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoPieChart(),options);
 			return chart;
+		case "sankey":
+			var chart = new rg.controller.visualization.VisualizationSankey(layout);
+			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoSankey(),options);
+			return chart;
 		case "scattergraph":
 			var chart = new rg.controller.visualization.VisualizationScatterGraph(layout);
 			chart.info = chart.infoScatter = rg.controller.info.Info.feed(new rg.controller.info.InfoScatterGraph(),options);
@@ -8553,7 +8601,7 @@ rg.controller.factory.FactorySvgVisualization.prototype = {
 			chart.info = chart.infoStream = rg.controller.info.Info.feed(new rg.controller.info.InfoStreamGraph(),options);
 			return chart;
 		default:
-			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 71, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 76, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 		}
 	}
 	,__class__: rg.controller.factory.FactorySvgVisualization
@@ -11663,7 +11711,7 @@ thx.svg.Arc.prototype = {
 }
 rg.controller.info.InfoDownload = $hxClasses["rg.controller.info.InfoDownload"] = function() {
 	this.service = rg.RGConst.SERVICE_RENDERING_STATIC;
-	this.formats = ["png","jpg"];
+	this.formats = ["png","jpg","pdf"];
 }
 rg.controller.info.InfoDownload.__name__ = ["rg","controller","info","InfoDownload"];
 rg.controller.info.InfoDownload.filters = function() {
@@ -14794,7 +14842,7 @@ rg.data.source.rgquery.QueryParser.parseValue = function(s) {
 	if(Floats.canParse(s)) return Floats.parse(s);
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 191, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
+		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 195, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
 		return $r;
 	}(this));
 }
@@ -14831,15 +14879,15 @@ rg.data.source.rgquery.QueryParser.prototype = {
 	}
 	,processProperty: function(token) {
 		if("(" == token.substr(0,1)) token = token.substr(1,token.length - 2);
-		var parts = rg.data.source.rgquery.QueryParser.TOKEN_SPLIT.split(token), name = null, limit = null, descending = null;
+		var parts = [token], name = null, limit = null, descending = null;
 		if(parts.length == 1) {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 120, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 124, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3).toLowerCase() == "desc";
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4)) this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(5));
 		} else {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 137, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 141, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3).toLowerCase() == "desc";
@@ -14847,7 +14895,7 @@ rg.data.source.rgquery.QueryParser.prototype = {
 			var _g1 = 1, _g = parts.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 153, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 157, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 				this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(2),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(3));
 			}
 		}
@@ -14860,7 +14908,7 @@ rg.data.source.rgquery.QueryParser.prototype = {
 			if(v.length > 1) this.where.push(rg.data.source.rgquery.QCondition.In(name,v)); else this.where.push(rg.data.source.rgquery.QCondition.Equality(name,v[0]));
 			break;
 		default:
-			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 176, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
+			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 180, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
 		}
 	}
 	,__class__: rg.data.source.rgquery.QueryParser
@@ -15686,6 +15734,9 @@ rg.view.html.widget.DownloaderMenu.prototype = {
 		this.menu.classed().add("downloading");
 		this.handler(format,this.backgroundColor,function() {
 			me.menu.classed().remove("downloading");
+		},function(e) {
+			me.menu.classed().remove("downloading");
+			js.Lib.alert("ERROR: " + e);
 		});
 	}
 	,__class__: rg.view.html.widget.DownloaderMenu
@@ -17341,6 +17392,46 @@ rg.view.frame.StackItem.prototype = $extend(rg.view.frame.Frame.prototype,{
 		return v;
 	}
 	,__class__: rg.view.frame.StackItem
+});
+rg.controller.visualization.VisualizationSankey = $hxClasses["rg.controller.visualization.VisualizationSankey"] = function(layout) {
+	rg.controller.visualization.VisualizationSvg.call(this,layout);
+}
+rg.controller.visualization.VisualizationSankey.__name__ = ["rg","controller","visualization","VisualizationSankey"];
+rg.controller.visualization.VisualizationSankey.__super__ = rg.controller.visualization.VisualizationSvg;
+rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
+	info: null
+	,title: null
+	,chart: null
+	,init: function() {
+		var me = this;
+		if(null != this.info.label.title) {
+			var panelContextTitle = this.layout.getContext("title");
+			if(null == panelContextTitle) return;
+			this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+		}
+		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
+		this.chart = new rg.view.svg.chart.Sankey(panelChart);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+	}
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
+		if(null != this.title) {
+			if(null != this.info.label.title) {
+				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.layout.suggestSize("title",this.title.idealHeight());
+			} else this.layout.suggestSize("title",0);
+		}
+		this.chart.init();
+		this.chart.data(data);
+	}
+	,destroy: function() {
+		this.chart.destroy();
+		if(null != this.title) this.title.destroy();
+		rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
+	}
+	,__class__: rg.controller.visualization.VisualizationSankey
 });
 rg.data.AxisOrdinalFixedValues = $hxClasses["rg.data.AxisOrdinalFixedValues"] = function(arr) {
 	rg.data.AxisOrdinal.call(this);
@@ -20857,7 +20948,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	} else if(null != start) periodicity = rg.util.Periodicity.defaultPeriodicity(end - start); else periodicity = (function($this) {
 		var $r;
 		switch(options.visualization) {
-		case "piechart":
+		case "piechart":case "funnelchart":
 			$r = "eternity";
 			break;
 		default:
@@ -20865,7 +20956,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 		}
 		return $r;
 	}(this));
-	if(null == start && "eternity" != periodicity) {
+	if(null == start && "eternity" != periodicity && null != periodicity) {
 		var range = rg.util.Periodicity.defaultRange(periodicity);
 		start = range[0];
 		end = range[1];
@@ -22473,7 +22564,7 @@ rg.view.svg.util.SymbolCache.cache = new rg.view.svg.util.SymbolCache();
 	if(null == js.LocalStorage.instance) js.LocalStorage.instance = new js.CookieStorageFallback();
 }
 {
-	var _PNAME = "((?:\\.?#?\\w+)+|(?:\\.?\"[^\"]+\")+|(?:\\.?'[^']+')+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+))";
+	var _PNAME = "((?:\\.?#?\\w+)+|(?:\\.?\"[^\"]+\")+|(?:\\.?'[^']+')+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+)\\s*)";
 	rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "?" + "$","i");
 	rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "$","i");
 	rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE = new EReg("^" + _PNAME + _COND + "$","i");
@@ -23961,19 +24052,21 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType = new Hash();
 	rg.controller.Visualizations.layoutArgs = new Hash();
 	rg.controller.Visualizations.layoutDefault.set("barchart","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("geo","simple");
-	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("streamgraph","x");
-	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
 	rg.controller.Visualizations.layoutDefault.set("funnelchart","simple");
-	rg.controller.Visualizations.layoutDefault.set("scattergraph","cartesian");
+	rg.controller.Visualizations.layoutDefault.set("geo","simple");
 	rg.controller.Visualizations.layoutDefault.set("heatgrid","cartesian");
-	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
+	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
+	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
+	rg.controller.Visualizations.layoutDefault.set("sankey","simple");
+	rg.controller.Visualizations.layoutDefault.set("scattergraph","cartesian");
+	rg.controller.Visualizations.layoutDefault.set("streamgraph","x");
 	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
+	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
+rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 rg.track.Tracker.PREFIX = "rgv_";
 rg.track.Tracker.KEY_ENGAGEMENTS = rg.track.Tracker.PREFIX + "engagements";
 rg.track.Tracker.KEY_VISITS = rg.track.Tracker.PREFIX + "visits";
@@ -24066,7 +24159,7 @@ thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
 rg.RGConst.BASE_URL_GEOJSON = "geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://rgrender/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapp02.reportgrid.com:20000/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;
@@ -24100,7 +24193,7 @@ thx.xml.Namespace.prefix = (function() {
 })();
 rg.view.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:,\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
-rg.controller.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph"];
+rg.controller.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","cartesian","x"];
 rg.controller.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
