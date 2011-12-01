@@ -1,7 +1,7 @@
 <?php
 
 // Automated configuration. Modify these if they fail. (they shouldn't ;) )
-$GLOBALS['WKPDF_BASE_PATH']='/bin/';
+$GLOBALS['WKPDF_BASE_PATH']='/bin/wkhtmltopdf/';
 
 /**
  * @author Christian Sciberras
