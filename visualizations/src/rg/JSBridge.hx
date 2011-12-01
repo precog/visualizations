@@ -17,19 +17,19 @@ import thx.math.Random;
 import rg.controller.MVPOptions;
 //import thx.svg.Symbol;
 import rg.view.svg.util.SymbolCache;
- 
-class JSBridge 
+
+class JSBridge
 {
 	static function log(msg : String)
 	{
 		var c : String -> Void = untyped __js__("(window.console && window.console.warn) || alert");
 		c(msg);
 	}
-	static function main() 
+	static function main()
 	{
 		// retrieve ReportGrid core
 		var r : Dynamic = untyped __js__("window.ReportGrid"),
-			t : ITrackReportGrid = 
+			t : ITrackReportGrid =
 #if release
 				new rg.track.ReportGridExecutor();
 #elseif debug
@@ -39,10 +39,10 @@ class JSBridge
 #end
 		if (null == r)
 			log(new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script").toString());
-		
+
 		// init app
-		var app = new App(r, t);	
-		
+		var app = new App(r, t);
+
 		// define bridge function
 		r.viz = function(el : Dynamic, options : Dynamic, type : String)
 		{
@@ -71,22 +71,23 @@ class JSBridge
 
 		// define public visualization constrcutors
 		r.barChart     = function(el, options) return r.viz(el, options, "barchart");
-		r.geo          = function(el, options) return r.viz(el, options, "geo");
 		r.funnelChart  = function(el, options) return r.viz(el, options, "funnelchart");
+		r.geo          = function(el, options) return r.viz(el, options, "geo");
 		r.heatGrid     = function(el, options) return r.viz(el, options, "heatgrid");
 		r.leaderBoard  = function(el, options) return r.viz(el, options, "leaderboard");
 		r.lineChart    = function(el, options) return r.viz(el, options, "linechart");
 		r.pieChart     = function(el, options) return r.viz(el, options, "piechart");
 		r.pivotTable   = function(el, options) return r.viz(el, options, "pivottable");
+		r.sankey       = function(el, options) return r.viz(el, options, "sankey");
 		r.scatterGraph = function(el, options) return r.viz(el, options, "scattergraph");
 		r.streamGraph  = function(el, options) return r.viz(el, options, "streamgraph");
-		
+
 		// utility functions
 		r.format  = Dynamics.format;
 		r.compare = Dynamics.compare;
 		r.dump    = Dynamics.string;
 		r.symbol  = SymbolCache.cache.get;
-		r.date = { 
+		r.date = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
 					a = DateParser.parse(a);
@@ -94,7 +95,7 @@ class JSBridge
 					a = Periodicity.defaultRange(p)[0];
 				if (Std.is(a, Date))
 					a = a.getTime();
-				
+
 				if (Std.is(b, String))
 					b = DateParser.parse(b);
 				if (null == b)
@@ -120,7 +121,7 @@ class JSBridge
 			version : thx.util.MacroVersion.fullVersion()
 		};
 	}
-	
+
 	// make sure a thx.js.Selection is passed
 	static function select(el : Dynamic)
 	{
@@ -129,7 +130,7 @@ class JSBridge
 			throw new Error("invalid container '{0}'", el);
 		return s;
 	}
-	
+
 	static inline function opt(ob : Dynamic) return null == ob ? { } : Objects.clone(ob)
 	static function chartopt(ob : Dynamic, viz : String)
 	{

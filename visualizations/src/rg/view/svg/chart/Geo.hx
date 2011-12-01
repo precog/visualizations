@@ -21,44 +21,43 @@ import rg.view.svg.util.RGCss;
 import rg.data.Variable;
 import rg.data.IAxis;
 
-class Geo extends Chart 
+class Geo extends Chart
 {
 	public var mapcontainer(default, null) : Selection;
 	public var colorMode(getColorMode, setColorMode) : ColorScaleMode;
 	var variableDependent : VariableDependent<Dynamic>;
 	var dps : Array<DataPoint>;
 	var queue : Array<Void->Void>;
-	
-	public function new(panel : Panel) 
+
+	public function new(panel : Panel)
 	{
 		super(panel);
 		mapcontainer = g.append("svg:g").attr("class").string("mapcontainer");
 		queue = [];
-		
+
 		colorMode = FromCss();
 	}
-	
 
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
 	{
 		variableDependent = variableDependents[0];
 	}
-	
+
 	public function data(dps : Array<DataPoint>)
 	{
 		this.dps = dps;
 		redraw();
 	}
-	
-	override function resize() 
+
+	override function resize()
 	{
 		super.resize();
 		if(null != mapcontainer)
 			mapcontainer.attr("transform").string("translate(" + (width / 2) + "," + (height / 2) + ")");
 	}
-	
+
 	function dpvalue(dp : DataPoint) return DataPoints.value(dp, variableDependent.type)
-	
+
 	function drawmap(map : Map, field : String)
 	{
 		if (null == dps || 0 == dps.length)
@@ -88,7 +87,7 @@ class Geo extends Chart
 		if (queue.length == 0)
 			ready.dispatch();
 	}
-	
+
 	public function handlerDataPointOver(dp : DataPoint, f)
 	{
 		var text = f(dp, variableDependent.stats);
@@ -102,23 +101,23 @@ class Geo extends Chart
 			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, true);
 		}
 	}
-	
+
 	public function handlerClick(dp : DataPoint, f)
 	{
 		f(dp, variableDependent.stats);
 	}
-	
+
 	dynamic function stylefeature(svg : Selection, dp : DataPoint)
 	{
 
 	}
-	
+
 	function redraw()
 	{
 		while (queue.length > 0)
 			queue.shift()();
 	}
-	
+
 	function getColorMode() return colorMode
 	function setColorMode(v : ColorScaleMode)
 	{
@@ -162,7 +161,7 @@ class Geo extends Chart
 		}
 		return v;
 	}
-/*		
+/*
 	function setColorMode(v : ColorScaleMode)
 	{
 		stylefeature = colorStyleFunction(this.colorMode = v, variableDependent);
@@ -216,10 +215,10 @@ class Geo extends Chart
 		super.init();
 		if (null == tooltip)
 			tooltip = new Balloon(g);
-		
+
 		g.classed().add("geo");
 	}
-	
+
 	public function addMap(map : Map, field : String)
 	{
 		if (null != field)

@@ -23,7 +23,7 @@ class InfoBarChart extends InfoCartesianChart
 		barPaddingAxis = 4;
 		barPaddingDataPoint = 2;
 	}
-	
+
 	public static function filters()
 	{
 		return [{

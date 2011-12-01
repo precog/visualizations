@@ -17,7 +17,7 @@ import thx.collection.Set;
 
 // TODO: load hash from service if tracking is enabled
 
-class Tracker 
+class Tracker
 {
 	static var PREFIX = "rgv_";
 	static var KEY_ENGAGEMENTS = PREFIX + "engagements";
@@ -29,8 +29,7 @@ class Tracker
 	static var ENGAGE_PAGE = "engaged_dashboard";
 	static var ENGAGE_VIZ = "engaged";
 	static var delaypositions = [5, 10, 20, 30, 45, 60, 90, 120, 180, 300, 450, 600, 900, 1200, 1500];
-	
-	
+
 	var executor : ITrackReportGrid;
 	var storage : Storage;
 	var paths : Array<String>;
@@ -40,15 +39,15 @@ class Tracker
 	var start : Float;
 	var delaypos : Int;
 	var visits : Int;
-	
-	public static function instance(executor : ITrackReportGrid, paths : Array<String>, token : String) 
+
+	public static function instance(executor : ITrackReportGrid, paths : Array<String>, token : String)
 	{
 		if (null == _instance)
 			_instance = new Tracker(executor, paths, token);
 		return _instance;
 	}
-	
-	function new(executor : ITrackReportGrid, paths : Array<String>, token : String) 
+
+	function new(executor : ITrackReportGrid, paths : Array<String>, token : String)
 	{
 		this.executor = executor;
 		this.storage = LocalStorage.instance;
@@ -66,7 +65,7 @@ class Tracker
 		// wire timer for engagement
 		updateEngagementTime();
 	}
-	
+
 	function updateVisits()
 	{
 		var v = storage.getItem(KEY_VISITS);
@@ -75,7 +74,7 @@ class Tracker
 		else
 			storage.setItem(KEY_VISITS, "" + (visits = Std.parseInt(v)+1));
 	}
-	
+
 	function addEngagement(visualization : String)
 	{
 		if (null == visualization)
@@ -85,24 +84,24 @@ class Tracker
 		engagements.add(visualization);
 		storage.setItem(KEY_ENGAGEMENTS, engagements.array().join(","));
 	}
-	
+
 	public function addVisualization(visualization : Visualization, params : Dynamic)
 	{
 		visualizations.push(params);
 		addEngagement(params.options.visualization);
 		trackVisualization(visualization, params);
 	}
-	
+
 	function trackVisualization(visualization : Visualization, params : Dynamic)
 	{
 		var event = baseEvent(),
 			svgviz = Types.as(visualization, VisualizationSvg),
 			vis = params.options.visualization;
-		
+
 		Reflect.setField(event, "visualization", vis);
 		Reflect.setField(event, "visits", visits);
 
-		
+
 		if (null != svgviz)
 		{
 			var layout = svgviz.layout;
@@ -110,13 +109,13 @@ class Tracker
 			Reflect.setField(event, "height", layout.height);
 		}
 		var container = null != svgviz ? svgviz.layout.container : cast(visualization, VisualizationHtml).container;
-		
+
 		container.onNode("mouseenter.track", callback(trackInteraction, vis, "over"));
 		container.onNode("click.track", callback(trackInteraction, vis, "click"));
-		
+
 		execute( { visualization : event } );
 	}
-	
+
 	function createEngagementDelay()
 	{
 		if (delaypos == delaypositions.length)
@@ -125,7 +124,7 @@ class Tracker
 		Timer.delay(updateEngagementTime, 1000 * delay);
 		delaypos++;
 	}
-	
+
 	function trackInteraction(visualization : String, action : String, ?_, ?_)
 	{
 		var event = baseEvent();
@@ -135,7 +134,7 @@ class Tracker
 
 		execute({ interaction : event });
 	}
-	
+
 	function trackEngagements()
 	{
 		var list = extractEngagements();
@@ -150,7 +149,7 @@ class Tracker
 		}
 		return true;
 	}
-	
+
 	function delayedTrackVisits(isfirstvisit)
 	{
 		Timer.delay(function() {
@@ -159,26 +158,26 @@ class Tracker
 			trackVisit();
 		}, 1000 * DELAY_FIRST_VISIT);
 	}
-	
+
 	function trackFirstVisit()
 	{
 		var event = visitEvent();
 		execute( { first_visit : event } );
 	}
-	
+
 	function trackVisit()
 	{
 		var event = visitEvent();
 		Reflect.setField(event, "visits", visits);
 		execute( { visit : event } );
 	}
-	
+
 	function updateEngagementTime()
 	{
 		storage.setItem(KEY_ENGAGEMENT_TIME, "" + delaypos);
 		createEngagementDelay();
 	}
-	
+
 	function extractEngagements()
 	{
 		var list = storage.getItem(KEY_ENGAGEMENTS);
@@ -196,12 +195,12 @@ class Tracker
 			Reflect.setField(event, "visits", visits - 1);
 			if ("!dashboard" != key)
 				Reflect.setField(event, "visualization", key);
-			
+
 			events.push(event);
 		}
 		return events;
 	}
-	
+
 	function bucketTime(pos : Int)
 	{
 		if (pos == 0)
@@ -210,24 +209,24 @@ class Tracker
 			return delaypositions[pos] + "+";
 		return (delaypositions[pos-1]) + "-" + (delaypositions[pos]-1);
 	}
-	
+
 	function engKey(key) return PREFIX + "eng_" + key
-	
+
 	function remove(key : String)
 	{
 		var v = storage.getItem(key);
 		storage.removeItem(key);
 		return v;
 	}
-	
+
 	function execute(params : {})
 	{
 		if (Reflect.fields(params).length == 0)
 			return;
 		for(path in paths)
-			executor.track(path, params, token);
+			executor.track(path, params, null, null, { tokenId : token });
 	}
-	
+
 	function baseEvent() : Dynamic
 	{
 		var event = {
@@ -238,7 +237,7 @@ class Tracker
 		Reflect.setField(event, "#timestamp", Date.now().getTime());
 		return event;
 	}
-	
+
 	function visitEvent() : Dynamic
 	{
 		var event = baseEvent(),

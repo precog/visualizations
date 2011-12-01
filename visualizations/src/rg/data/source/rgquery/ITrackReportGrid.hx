@@ -7,5 +7,5 @@ package rg.data.source.rgquery;
 
 interface ITrackReportGrid 
 {
-	public function track(path : String, events : { }, ?success : Void -> Void, ?error : String -> Void, ?token : String) : Void;
+	public function track(path : String, events : { }, success : Void -> Void, error : String -> Void, options : Null<{ tokenId : String }> ) : Void;
 }

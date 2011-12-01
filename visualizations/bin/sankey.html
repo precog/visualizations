@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Sankey Demo - ReportGrid.Visualizations</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<script src="js/reportgrid-core.js?tokenId=CC761200-3125-4283-A2C1-490F657D5C73"></script>
+	<script src="js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+
+	var data = [{
+		id : "clip_01",
+		count : 100,
+		parents : {}
+	}, {
+		id : "clip_02",
+		count : 30,
+		parents : { "clip_01" : 30 }
+	},{
+		id : "clip_03",
+		count : 60,
+		parents : { "clip_01" : 60}
+	},{
+		id : "clip_04",
+		count : 5,
+		parents : { "clip_01" : 5}
+	},{
+		id : "clip_05",
+		count : 25,
+		parents : { "clip_02" : 20}
+	},{
+		id : "clip_06",
+		count : 40,
+		parents : { "clip_03" : 35, "clip_04" : 5 }
+	},{
+		id : "clip_07",
+		count : 10,
+		parents : { "clip_05" : 8 }
+	},{
+		id : "clip_08",
+		count : 25,
+		parents : { "clip_05" : 15, "clip_03" : 5, "clip_10" : 4 }
+	},{
+		id : "clip_09",
+		count : 12,
+		parents : { "clip_08" : 10 }
+	},{
+		id : "clip_10",
+		count : 8,
+		parents : { "clip_09" : 5, "clip_07" : 3 }
+	}];
+
+	ReportGrid.sankey("#chart", {
+		data : { src : { data : data } },
+		options : {
+//			segmenton : "event",
+//			label : { datapointover : function(dp) { return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
+//			click : function(dp) { alert(dp[".browser"]); },
+//			height: 200
+		}
+	});
+
+
+}, false)
+</script>
+</head>
+<body>
+	<div id="chart" style="width:100%;height:500px"></div>
+	<div id="haxe:trace"></div>
+</body>
+</html>

@@ -234,6 +234,7 @@ class DataSourceReportGrid implements IDataSource
 							for(v in values)
 							{
 								var o : Dynamic = Objects.clone(opt);
+								if(null == o.where) o.where = [];
 								var cond = {};
 								Reflect.setField(cond, propertyName(valueproperty), v);
 								o.where.push(cond);
@@ -303,6 +304,7 @@ class DataSourceReportGrid implements IDataSource
 							{
 								var o : Dynamic = Objects.clone(opt),
 									cond = {};
+								if(null == o.where) o.where = [];
 								Reflect.setField(cond, propertyName(valueproperty), v);
 								o.where.push(cond);
 								//o.where = {};

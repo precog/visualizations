@@ -1059,6 +1059,107 @@ rg.controller.interactive.Downloader.prototype = {
 	}
 	,__class__: rg.controller.interactive.Downloader
 }
+if(!rg.view.svg.panel) rg.view.svg.panel = {}
+rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.g = panel.g.append("svg:g");
+	this.g.attr("class").string("layer");
+	this._resize();
+}
+rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
+rg.view.svg.panel.Layer.prototype = {
+	panel: null
+	,frame: null
+	,g: null
+	,width: null
+	,height: null
+	,customClass: null
+	,addClass: function(name) {
+		var me = this;
+		name.split(" ").forEach(function(d,i) {
+			me.g.classed().add(d);
+		});
+	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
+	}
+	,toggleClass: function(name) {
+		this.g.classed().toggle(name);
+	}
+	,_resize: function() {
+		this.width = this.frame.width;
+		this.height = this.frame.height;
+		this.resize();
+	}
+	,resize: function() {
+	}
+	,destroy: function() {
+		var p = this.panel;
+		p.removeLayer(this);
+		this.g.remove();
+	}
+	,setCustomClass: function(v) {
+		if(null != this.customClass) this.g.classed().remove(this.customClass);
+		this.g.classed().add(v);
+		return this.customClass = v;
+	}
+	,__class__: rg.view.svg.panel.Layer
+}
+if(!rg.view.svg.chart) rg.view.svg.chart = {}
+rg.view.svg.chart.Chart = $hxClasses["rg.view.svg.chart.Chart"] = function(panel) {
+	rg.view.svg.panel.Layer.call(this,panel);
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.linear;
+	this.ready = new hxevents.Notifier();
+}
+rg.view.svg.chart.Chart.__name__ = ["rg","view","svg","chart","Chart"];
+rg.view.svg.chart.Chart.__super__ = rg.view.svg.panel.Layer;
+rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
+	animated: null
+	,animationDuration: null
+	,animationEase: null
+	,click: null
+	,labelDataPoint: null
+	,labelDataPointOver: null
+	,ready: null
+	,panelx: null
+	,panely: null
+	,tooltip: null
+	,resize: function() {
+		var coords = rg.view.svg.panel.Panels.boundingBox(this.panel);
+		this.panelx = coords.x;
+		this.panely = coords.y;
+	}
+	,init: function() {
+		if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Balloon(this.g);
+		this.resize();
+	}
+	,moveTooltip: function(x,y,animated) {
+		this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
+	}
+	,__class__: rg.view.svg.chart.Chart
+});
+rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
+	rg.view.svg.chart.Chart.call(this,panel);
+}
+rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
+rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
+rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
+	dps: null
+	,setVariables: function(variableIndependents,variableDependents,data) {
+	}
+	,data: function(dps) {
+		this.dps = dps;
+		this.redraw();
+	}
+	,redraw: function() {
+		haxe.Log.trace(this.dps,{ fileName : "Sankey.hx", lineNumber : 28, className : "rg.view.svg.chart.Sankey", methodName : "redraw"});
+	}
+	,__class__: rg.view.svg.chart.Sankey
+});
 rg.controller.info.InfoFunnelChart = $hxClasses["rg.controller.info.InfoFunnelChart"] = function() {
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabelFunnel();
@@ -1642,7 +1743,6 @@ rg.view.svg.widget.Balloon.prototype = {
 	}
 	,__class__: rg.view.svg.widget.Balloon
 }
-if(!rg.view.svg.panel) rg.view.svg.panel = {}
 rg.view.svg.panel.Panel = $hxClasses["rg.view.svg.panel.Panel"] = function(frame) {
 	this.frame = frame;
 	frame.change = this.reframe.$bind(this);
@@ -1947,7 +2047,7 @@ rg.track.Tracker.prototype = {
 		while(_g < _g1.length) {
 			var path = _g1[_g];
 			++_g;
-			this.executor.track(path,params,null,null,this.token);
+			this.executor.track(path,params,null,null,{ tokenId : this.token});
 		}
 	}
 	,baseEvent: function() {
@@ -2459,88 +2559,6 @@ thx.geo.Albers.prototype = {
 	}
 	,__class__: thx.geo.Albers
 }
-rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
-	this.frame = (this.panel = panel).frame;
-	var p = panel;
-	p.addLayer(this);
-	this.g = panel.g.append("svg:g");
-	this.g.attr("class").string("layer");
-	this._resize();
-}
-rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
-rg.view.svg.panel.Layer.prototype = {
-	panel: null
-	,frame: null
-	,g: null
-	,width: null
-	,height: null
-	,customClass: null
-	,addClass: function(name) {
-		var me = this;
-		name.split(" ").forEach(function(d,i) {
-			me.g.classed().add(d);
-		});
-	}
-	,removeClass: function(name) {
-		this.g.classed().remove(name);
-	}
-	,toggleClass: function(name) {
-		this.g.classed().toggle(name);
-	}
-	,_resize: function() {
-		this.width = this.frame.width;
-		this.height = this.frame.height;
-		this.resize();
-	}
-	,resize: function() {
-	}
-	,destroy: function() {
-		var p = this.panel;
-		p.removeLayer(this);
-		this.g.remove();
-	}
-	,setCustomClass: function(v) {
-		if(null != this.customClass) this.g.classed().remove(this.customClass);
-		this.g.classed().add(v);
-		return this.customClass = v;
-	}
-	,__class__: rg.view.svg.panel.Layer
-}
-if(!rg.view.svg.chart) rg.view.svg.chart = {}
-rg.view.svg.chart.Chart = $hxClasses["rg.view.svg.chart.Chart"] = function(panel) {
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.animated = true;
-	this.animationDuration = 1500;
-	this.animationEase = thx.math.Equations.linear;
-	this.ready = new hxevents.Notifier();
-}
-rg.view.svg.chart.Chart.__name__ = ["rg","view","svg","chart","Chart"];
-rg.view.svg.chart.Chart.__super__ = rg.view.svg.panel.Layer;
-rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
-	animated: null
-	,animationDuration: null
-	,animationEase: null
-	,click: null
-	,labelDataPoint: null
-	,labelDataPointOver: null
-	,ready: null
-	,panelx: null
-	,panely: null
-	,tooltip: null
-	,resize: function() {
-		var coords = rg.view.svg.panel.Panels.boundingBox(this.panel);
-		this.panelx = coords.x;
-		this.panely = coords.y;
-	}
-	,init: function() {
-		if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Balloon(this.g);
-		this.resize();
-	}
-	,moveTooltip: function(x,y,animated) {
-		this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
-	}
-	,__class__: rg.view.svg.chart.Chart
-});
 rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 }
@@ -4574,11 +4592,11 @@ rg.JSBridge.main = function() {
 	r.barChart = function(el,options) {
 		return r.viz(el,options,"barchart");
 	};
-	r.geo = function(el,options) {
-		return r.viz(el,options,"geo");
-	};
 	r.funnelChart = function(el,options) {
 		return r.viz(el,options,"funnelchart");
+	};
+	r.geo = function(el,options) {
+		return r.viz(el,options,"geo");
 	};
 	r.heatGrid = function(el,options) {
 		return r.viz(el,options,"heatgrid");
@@ -4594,6 +4612,9 @@ rg.JSBridge.main = function() {
 	};
 	r.pivotTable = function(el,options) {
 		return r.viz(el,options,"pivottable");
+	};
+	r.sankey = function(el,options) {
+		return r.viz(el,options,"sankey");
 	};
 	r.scatterGraph = function(el,options) {
 		return r.viz(el,options,"scattergraph");
@@ -4623,11 +4644,11 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1446"};
+	r.info.viz = { version : "1.1.3.1474"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 129, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 130, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(ob) {
@@ -6064,6 +6085,21 @@ rg.data.IDataSource.prototype = {
 	,load: null
 	,__class__: rg.data.IDataSource
 }
+rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
+	this.label = new rg.controller.info.InfoLabel();
+}
+rg.controller.info.InfoSankey.__name__ = ["rg","controller","info","InfoSankey"];
+rg.controller.info.InfoSankey.filters = function() {
+	return [{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+	}}];
+}
+rg.controller.info.InfoSankey.prototype = {
+	label: null
+	,__class__: rg.controller.info.InfoSankey
+}
 thx.math.Const = $hxClasses["thx.math.Const"] = function() { }
 thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype = {
@@ -7422,7 +7458,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 399, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 401, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -7561,6 +7597,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var v = values[_g];
 								++_g;
 								var o = Objects.clone(opt);
+								if(null == o.where) o.where = [];
 								var cond = { };
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
@@ -7625,6 +7662,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var v = values[_g];
 								++_g;
 								var o = Objects.clone(opt), cond = { };
+								if(null == o.where) o.where = [];
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
 								subs.push({ method : (function(f,a1,a2) {
@@ -7684,7 +7722,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 380, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 382, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -7702,13 +7740,13 @@ rg.controller.factory.FactorySvgVisualization.prototype = {
 			var chart = new rg.controller.visualization.VisualizationBarChart(layout);
 			chart.info = chart.infoBar = rg.controller.info.Info.feed(new rg.controller.info.InfoBarChart(),options);
 			return chart;
-		case "geo":
-			var chart = new rg.controller.visualization.VisualizationGeo(layout);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoGeo(),options);
-			return chart;
 		case "funnelchart":
 			var chart = new rg.controller.visualization.VisualizationFunnelChart(layout);
 			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoFunnelChart(),options);
+			return chart;
+		case "geo":
+			var chart = new rg.controller.visualization.VisualizationGeo(layout);
+			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoGeo(),options);
 			return chart;
 		case "heatgrid":
 			var chart = new rg.controller.visualization.VisualizationHeatGrid(layout);
@@ -7722,6 +7760,10 @@ rg.controller.factory.FactorySvgVisualization.prototype = {
 			var chart = new rg.controller.visualization.VisualizationPieChart(layout);
 			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoPieChart(),options);
 			return chart;
+		case "sankey":
+			var chart = new rg.controller.visualization.VisualizationSankey(layout);
+			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoSankey(),options);
+			return chart;
 		case "scattergraph":
 			var chart = new rg.controller.visualization.VisualizationScatterGraph(layout);
 			chart.info = chart.infoScatter = rg.controller.info.Info.feed(new rg.controller.info.InfoScatterGraph(),options);
@@ -7731,7 +7773,7 @@ rg.controller.factory.FactorySvgVisualization.prototype = {
 			chart.info = chart.infoStream = rg.controller.info.Info.feed(new rg.controller.info.InfoStreamGraph(),options);
 			return chart;
 		default:
-			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 71, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 76, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 		}
 	}
 	,__class__: rg.controller.factory.FactorySvgVisualization
@@ -15320,6 +15362,46 @@ rg.view.frame.StackItem.prototype = $extend(rg.view.frame.Frame.prototype,{
 	}
 	,__class__: rg.view.frame.StackItem
 });
+rg.controller.visualization.VisualizationSankey = $hxClasses["rg.controller.visualization.VisualizationSankey"] = function(layout) {
+	rg.controller.visualization.VisualizationSvg.call(this,layout);
+}
+rg.controller.visualization.VisualizationSankey.__name__ = ["rg","controller","visualization","VisualizationSankey"];
+rg.controller.visualization.VisualizationSankey.__super__ = rg.controller.visualization.VisualizationSvg;
+rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
+	info: null
+	,title: null
+	,chart: null
+	,init: function() {
+		var me = this;
+		if(null != this.info.label.title) {
+			var panelContextTitle = this.layout.getContext("title");
+			if(null == panelContextTitle) return;
+			this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+		}
+		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
+		this.chart = new rg.view.svg.chart.Sankey(panelChart);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+	}
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
+		if(null != this.title) {
+			if(null != this.info.label.title) {
+				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.layout.suggestSize("title",this.title.idealHeight());
+			} else this.layout.suggestSize("title",0);
+		}
+		this.chart.init();
+		this.chart.data(data);
+	}
+	,destroy: function() {
+		this.chart.destroy();
+		if(null != this.title) this.title.destroy();
+		rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
+	}
+	,__class__: rg.controller.visualization.VisualizationSankey
+});
 rg.data.AxisOrdinalFixedValues = $hxClasses["rg.data.AxisOrdinalFixedValues"] = function(arr) {
 	rg.data.AxisOrdinal.call(this);
 	this._values = arr;
@@ -18327,92 +18409,6 @@ Iterators.isIterator = function(v) {
 Iterators.prototype = {
 	__class__: Iterators
 }
-thx.geo.Azimuthal = $hxClasses["thx.geo.Azimuthal"] = function() {
-	this.setMode(thx.geo.ProjectionMode.Orthographic);
-	this.setScale(200);
-	this.setTranslate([480.0,250]);
-	this.setOrigin([0.0,0]);
-}
-thx.geo.Azimuthal.__name__ = ["thx","geo","Azimuthal"];
-thx.geo.Azimuthal.__interfaces__ = [thx.geo.IProjection];
-thx.geo.Azimuthal.prototype = {
-	mode: null
-	,origin: null
-	,scale: null
-	,translate: null
-	,x0: null
-	,y0: null
-	,cy0: null
-	,sy0: null
-	,project: function(coords) {
-		var x1 = coords[0] * 0.01745329251994329577 - this.x0, y1 = coords[1] * 0.01745329251994329577, cx1 = Math.cos(x1), sx1 = Math.sin(x1), cy1 = Math.cos(y1), sy1 = Math.sin(y1), k = (function($this) {
-			var $r;
-			switch( ($this.getMode())[1] ) {
-			case 0:
-				$r = 1;
-				break;
-			case 1:
-				$r = 1 / (1 + $this.sy0 * sy1 + $this.cy0 * cy1 * cx1);
-				break;
-			}
-			return $r;
-		}(this)), x = k * cy1 * sx1, y = k * (this.sy0 * cy1 * cx1 - this.cy0 * sy1);
-		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * y + this.getTranslate()[1]];
-	}
-	,invert: function(coords) {
-		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale(), p = Math.sqrt(x * x + y * y), c = (function($this) {
-			var $r;
-			switch( ($this.getMode())[1] ) {
-			case 0:
-				$r = Math.asin(p);
-				break;
-			case 1:
-				$r = Math.atan(p);
-				break;
-			}
-			return $r;
-		}(this)), sc = Math.sin(c), cc = Math.cos(c);
-		return [(this.x0 + Math.atan2(x * sc,p * this.cy0 * cc + y * this.sy0 * sc)) / 0.01745329251994329577,Math.asin(cc * this.sy0 - y * sc * this.cy0 / p) / 0.01745329251994329577];
-	}
-	,getOrigin: function() {
-		return this.origin.copy();
-	}
-	,setOrigin: function(origin) {
-		this.origin = [origin[0],origin[1]];
-		this.x0 = origin[0] * 0.01745329251994329577;
-		this.y0 = origin[1] * 0.01745329251994329577;
-		this.cy0 = Math.cos(this.y0);
-		this.sy0 = Math.sin(this.y0);
-		return origin;
-	}
-	,getTranslate: function() {
-		return this.translate.copy();
-	}
-	,setTranslate: function(translate) {
-		this.translate = [translate[0],translate[1]];
-		return translate;
-	}
-	,setScale: function(scale) {
-		return this.scale = scale;
-	}
-	,getScale: function() {
-		return this.scale;
-	}
-	,setMode: function(mode) {
-		return this.mode = mode;
-	}
-	,getMode: function() {
-		return this.mode;
-	}
-	,__class__: thx.geo.Azimuthal
-}
-thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
-thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
-thx.geo.ProjectionMode.Orthographic.toString = $estr;
-thx.geo.ProjectionMode.Orthographic.__enum__ = thx.geo.ProjectionMode;
-thx.geo.ProjectionMode.Stereographic = ["Stereographic",1];
-thx.geo.ProjectionMode.Stereographic.toString = $estr;
-thx.geo.ProjectionMode.Stereographic.__enum__ = thx.geo.ProjectionMode;
 rg.controller.MVPOptions = $hxClasses["rg.controller.MVPOptions"] = function() { }
 rg.controller.MVPOptions.__name__ = ["rg","controller","MVPOptions"];
 rg.controller.MVPOptions.defaultHash = null;
@@ -18627,6 +18623,92 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 rg.controller.MVPOptions.prototype = {
 	__class__: rg.controller.MVPOptions
 }
+thx.geo.Azimuthal = $hxClasses["thx.geo.Azimuthal"] = function() {
+	this.setMode(thx.geo.ProjectionMode.Orthographic);
+	this.setScale(200);
+	this.setTranslate([480.0,250]);
+	this.setOrigin([0.0,0]);
+}
+thx.geo.Azimuthal.__name__ = ["thx","geo","Azimuthal"];
+thx.geo.Azimuthal.__interfaces__ = [thx.geo.IProjection];
+thx.geo.Azimuthal.prototype = {
+	mode: null
+	,origin: null
+	,scale: null
+	,translate: null
+	,x0: null
+	,y0: null
+	,cy0: null
+	,sy0: null
+	,project: function(coords) {
+		var x1 = coords[0] * 0.01745329251994329577 - this.x0, y1 = coords[1] * 0.01745329251994329577, cx1 = Math.cos(x1), sx1 = Math.sin(x1), cy1 = Math.cos(y1), sy1 = Math.sin(y1), k = (function($this) {
+			var $r;
+			switch( ($this.getMode())[1] ) {
+			case 0:
+				$r = 1;
+				break;
+			case 1:
+				$r = 1 / (1 + $this.sy0 * sy1 + $this.cy0 * cy1 * cx1);
+				break;
+			}
+			return $r;
+		}(this)), x = k * cy1 * sx1, y = k * (this.sy0 * cy1 * cx1 - this.cy0 * sy1);
+		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * y + this.getTranslate()[1]];
+	}
+	,invert: function(coords) {
+		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale(), p = Math.sqrt(x * x + y * y), c = (function($this) {
+			var $r;
+			switch( ($this.getMode())[1] ) {
+			case 0:
+				$r = Math.asin(p);
+				break;
+			case 1:
+				$r = Math.atan(p);
+				break;
+			}
+			return $r;
+		}(this)), sc = Math.sin(c), cc = Math.cos(c);
+		return [(this.x0 + Math.atan2(x * sc,p * this.cy0 * cc + y * this.sy0 * sc)) / 0.01745329251994329577,Math.asin(cc * this.sy0 - y * sc * this.cy0 / p) / 0.01745329251994329577];
+	}
+	,getOrigin: function() {
+		return this.origin.copy();
+	}
+	,setOrigin: function(origin) {
+		this.origin = [origin[0],origin[1]];
+		this.x0 = origin[0] * 0.01745329251994329577;
+		this.y0 = origin[1] * 0.01745329251994329577;
+		this.cy0 = Math.cos(this.y0);
+		this.sy0 = Math.sin(this.y0);
+		return origin;
+	}
+	,getTranslate: function() {
+		return this.translate.copy();
+	}
+	,setTranslate: function(translate) {
+		this.translate = [translate[0],translate[1]];
+		return translate;
+	}
+	,setScale: function(scale) {
+		return this.scale = scale;
+	}
+	,getScale: function() {
+		return this.scale;
+	}
+	,setMode: function(mode) {
+		return this.mode = mode;
+	}
+	,getMode: function() {
+		return this.mode;
+	}
+	,__class__: thx.geo.Azimuthal
+}
+thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
+thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
+thx.geo.ProjectionMode.Orthographic.toString = $estr;
+thx.geo.ProjectionMode.Orthographic.__enum__ = thx.geo.ProjectionMode;
+thx.geo.ProjectionMode.Stereographic = ["Stereographic",1];
+thx.geo.ProjectionMode.Stereographic.toString = $estr;
+thx.geo.ProjectionMode.Stereographic.__enum__ = thx.geo.ProjectionMode;
 rg.controller.info.InfoDomType = $hxClasses["rg.controller.info.InfoDomType"] = function() {
 }
 rg.controller.info.InfoDomType.__name__ = ["rg","controller","info","InfoDomType"];
@@ -21391,15 +21473,16 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType = new Hash();
 	rg.controller.Visualizations.layoutArgs = new Hash();
 	rg.controller.Visualizations.layoutDefault.set("barchart","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("geo","simple");
-	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("streamgraph","x");
-	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
 	rg.controller.Visualizations.layoutDefault.set("funnelchart","simple");
-	rg.controller.Visualizations.layoutDefault.set("scattergraph","cartesian");
+	rg.controller.Visualizations.layoutDefault.set("geo","simple");
 	rg.controller.Visualizations.layoutDefault.set("heatgrid","cartesian");
-	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
+	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
+	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
+	rg.controller.Visualizations.layoutDefault.set("sankey","simple");
+	rg.controller.Visualizations.layoutDefault.set("scattergraph","cartesian");
+	rg.controller.Visualizations.layoutDefault.set("streamgraph","x");
 	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
+	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
@@ -21529,7 +21612,7 @@ thx.xml.Namespace.prefix = (function() {
 })();
 rg.view.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:,\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
-rg.controller.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph"];
+rg.controller.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","cartesian","x"];
 rg.controller.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);

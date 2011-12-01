@@ -12,11 +12,11 @@ import thx.error.Error;
 using rg.controller.info.Info;
 using Arrays;
 
-class InfoPieChart 
+class InfoPieChart
 {
 	public var labelradius : Float;
 	public var labelorientation : LabelOrientation;
-	
+
 	public var innerradius : Float;
 	public var outerradius : Float;
 	public var overradius : Float;
@@ -26,9 +26,9 @@ class InfoPieChart
 	public var effect : GradientEffect;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var dontfliplabel : Bool;
-	
+
 	public var click : DataPoint -> Void;
-	
+
 	public function new()
 	{
 		innerradius = 0.0;
@@ -42,13 +42,13 @@ class InfoPieChart
 		effect = GradientEffect.Gradient(0.65);
 		dontfliplabel = true;
 	}
-	
+
 	static function validateOrientation(s : String)
 	{
 		var name = s.split("-")[0].toLowerCase();
 		return ["fixed", "ortho", "orthogonal", "align", "aligned", "horizontal"].exists(name);
 	}
-	
+
 	static function filterOrientation(s : String)
 	{
 		var name = s.split("-")[0].toLowerCase();
@@ -69,7 +69,7 @@ class InfoPieChart
 				throw new Error("invalid filter orientation '{0}'", s);
 		}
 	}
-	
+
 	public static function filters()
 	{
 		return [{

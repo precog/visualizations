@@ -187,7 +187,23 @@
 			"file": "index.php",
 			"settings":
 			{
-				"buffer_size": 2480,
+				"buffer_size": 3074,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/KLogger.class.php",
+			"settings":
+			{
+				"buffer_size": 10922,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/WKPDF.class.php",
+			"settings":
+			{
+				"buffer_size": 8624,
 				"line_ending": "Unix"
 			}
 		}
@@ -407,9 +423,20 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"WKPDF_BASE_PATH",
+			"_pipeExec",
+			"tmp",
+			"echo",
+			"WKPDF_BASE_PATH",
+			"+",
+			"+ ",
+			" +",
+			"+",
+			"echo",
+			"exit",
 			"delete",
 			"JSON",
 			"anal",
@@ -450,7 +477,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -458,15 +485,15 @@
 					"file": "index.php",
 					"settings":
 					{
-						"buffer_size": 2480,
+						"buffer_size": 3074,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								36,
+								25
 							]
 						],
 						"settings":
@@ -476,6 +503,62 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "lib/KLogger.class.php",
+					"settings":
+					{
+						"buffer_size": 10922,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10922,
+								10922
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4410.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/WKPDF.class.php",
+					"settings":
+					{
+						"buffer_size": 8624,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6504,
+								6504
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1624.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -563,6 +646,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 195.0,
+	"side_bar_width": 236.0,
 	"status_bar_visible": true
 }

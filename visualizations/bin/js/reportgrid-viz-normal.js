@@ -1025,19 +1025,20 @@ rg.controller.interactive.Downloader.prototype = {
 	serviceUrl: null
 	,defaultBackgroundColor: null
 	,container: null
-	,download: function(format,backgroundcolor,handler) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 35, className : "rg.controller.interactive.Downloader", methodName : "download"});
+	,download: function(format,backgroundcolor,success,error) {
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
 		if(null != bg) ob.backgroundcolor = bg;
 		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
 		if(null != cls) ob.className = cls;
 		var http = new haxe.Http(this.serviceUrl);
-		http.onData = (function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
+		if(null != error) http.onError = error;
+		http.onData = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
 			};
-		})(this.success.$bind(this),handler);
+		})(this.complete.$bind(this),success,error);
 		var buf = [];
 		var _g = 0, _g1 = Reflect.fields(ob);
 		while(_g < _g1.length) {
@@ -1047,9 +1048,13 @@ rg.controller.interactive.Downloader.prototype = {
 		}
 		http.request(true);
 	}
-	,success: function(handler,content) {
-		js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
-		if(null != handler) handler();
+	,complete: function(success,error,content) {
+		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
+			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
+		} else {
+			js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
+			if(null != success) success();
+		}
 	}
 	,__class__: rg.controller.interactive.Downloader
 }
@@ -4616,7 +4621,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1431"};
+	r.info.viz = { version : "1.1.3.1451"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -7432,7 +7437,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 399, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 401, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -7571,6 +7576,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var v = values[_g];
 								++_g;
 								var o = Objects.clone(opt);
+								if(null == o.where) o.where = [];
 								var cond = { };
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
@@ -7635,6 +7641,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var v = values[_g];
 								++_g;
 								var o = Objects.clone(opt), cond = { };
+								if(null == o.where) o.where = [];
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
 								subs.push({ method : (function(f,a1,a2) {
@@ -7694,7 +7701,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 380, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 382, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -10267,7 +10274,7 @@ thx.svg.Arc.prototype = {
 }
 rg.controller.info.InfoDownload = $hxClasses["rg.controller.info.InfoDownload"] = function() {
 	this.service = rg.RGConst.SERVICE_RENDERING_STATIC;
-	this.formats = ["png","jpg"];
+	this.formats = ["png","jpg","pdf"];
 }
 rg.controller.info.InfoDownload.__name__ = ["rg","controller","info","InfoDownload"];
 rg.controller.info.InfoDownload.filters = function() {
@@ -13818,6 +13825,9 @@ rg.view.html.widget.DownloaderMenu.prototype = {
 		this.menu.classed().add("downloading");
 		this.handler(format,this.backgroundColor,function() {
 			me.menu.classed().remove("downloading");
+		},function(e) {
+			me.menu.classed().remove("downloading");
+			js.Lib.alert("ERROR: " + e);
 		});
 	}
 	,__class__: rg.view.html.widget.DownloaderMenu
@@ -21403,6 +21413,7 @@ window.Sizzle = Sizzle;
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
+rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 rg.track.Tracker.PREFIX = "rgv_";
 rg.track.Tracker.KEY_ENGAGEMENTS = rg.track.Tracker.PREFIX + "engagements";
 rg.track.Tracker.KEY_VISITS = rg.track.Tracker.PREFIX + "visits";
@@ -21494,7 +21505,7 @@ thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
 rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapp01.reportgrid.com:20000/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapp02.reportgrid.com:20000/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;

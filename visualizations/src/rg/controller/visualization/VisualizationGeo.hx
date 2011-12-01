@@ -17,7 +17,7 @@ class VisualizationGeo extends VisualizationSvg
 	public var info : InfoGeo;
 	var title : Null<Title>;
 	var chart : Geo;
-	
+
 	override function init()
 	{
 		// TITLE
@@ -28,7 +28,7 @@ class VisualizationGeo extends VisualizationSvg
 				return;
 			title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
 		}
-		
+
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new Geo(panelChart);
@@ -41,9 +41,9 @@ class VisualizationGeo extends VisualizationSvg
 		// events
 		chart.click = info.click;
 */
-		
+
 		var pfactory = new FactoryGeoProjection();
-			
+
 		for (imap in info.map)
 		{
 			var projection = pfactory.create(imap),
@@ -54,7 +54,7 @@ class VisualizationGeo extends VisualizationSvg
 				map.labelDataPoint = info.label.datapoint;
 			else
 				map.labelDataPoint = imap.label.datapoint;
-				
+
 			if (null == imap.label)
 				map.labelDataPointOver = info.label.datapointover;
 			else
@@ -62,17 +62,17 @@ class VisualizationGeo extends VisualizationSvg
 
 			// events
 			map.click = imap.click;
-			
+
 			map.radius = imap.radius;
 			map.colorMode = imap.colorScaleMode;
-			
+
 			map.handlerClick = chart.handlerClick;
 			map.handlerDataPointOver = chart.handlerDataPointOver;
 			map.load(imap.url, imap.type, imap.usejson);
 			chart.addMap(map, imap.property);
 		}
 	}
-	
+
 	override function feedData(data : Array<DataPoint>)
 	{
 		chart.setVariables(independentVariables, dependentVariables, data);
@@ -89,7 +89,7 @@ class VisualizationGeo extends VisualizationSvg
 		chart.init();
 		chart.data(data);
 	}
-	
+
 	override public function destroy()
 	{
 		chart.destroy();

@@ -8,17 +8,17 @@ import rg.data.DataPoint;
 import rg.data.Stats;
 using rg.controller.info.Info;
 
-class InfoCartesianChart 
+class InfoCartesianChart
 {
 	public var animation : InfoAnimation;
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var label : InfoLabelAxis;
-	
+
 	public var displayMinorTick : String -> Bool;
 	public var displayMajorTick : String -> Bool;
 	public var displayLabelTick : String -> Bool;
 	public var displayAnchorLineTick : String -> Bool;
-	
+
 	public var displayMinorRule : String -> Bool;
 	public var displayMajorRule : String -> Bool;
 	public var displayAnchorLineRule : String -> Bool;
@@ -32,8 +32,8 @@ class InfoCartesianChart
 	public var paddingTickMinor : Float;
 	public var paddingTickMajor : Float;
 	public var paddingLabel : Float;
-	
-	public function new() 
+
+	public function new()
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabelAxis();
@@ -41,15 +41,15 @@ class InfoCartesianChart
 		displayMajorTick = function(_) return true;
 		displayLabelTick = function(_) return true;
 		displayAnchorLineTick = function(_) return false;
-		
+
 		displayMinorRule = function(_) return false;
 		displayMajorRule = function(_) return false;
 		displayAnchorLineRule = function(_) return false;
-		
+
 		labelOrientation = function(_) return null;
 		labelAnchor = function(_) return null;
 		labelAngle = function(_) return null;
-		
+
 		lengthTickMinor = 2;
 		lengthTickMajor = 5;
 		paddingTickMinor = 1;
