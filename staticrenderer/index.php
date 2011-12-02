@@ -48,7 +48,7 @@ try
 		$out = renderVisualization($output, $imagepath, $config->width(), $config->height(), $config->format());
 	}
 
-	echo "$hash.{$config->format()}";
+	echo baseUrl() . "?file=$hash.{$config->format()}";
 	exit;
 } catch(Exception $e) {
 	echo "ERROR:" . $e->getMessage();
