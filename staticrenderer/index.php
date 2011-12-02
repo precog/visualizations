@@ -88,6 +88,7 @@ function phantom($script, $input, $output, $width, $height)
 
 function serviceUrl()
 {
+	var_dump($_SERVER);
 	$base = reset(explode("?", $_SERVER['REQUEST_URI']));
 //	if(substr($base, -4) == '.php')
 //		$base = dirname($base);
