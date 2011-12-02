@@ -16,18 +16,18 @@ using Arrays;
 class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
 {
 	public var infoBar : InfoBarChart;
-	
+
 	override function initAxes()
 	{
 		xvariable = cast independentVariables[0];
 		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
 	}
-	
+
 	override function initChart()
 	{
 		var chart = new BarChart(layout.getPanel(layout.mainPanelName));
 		chart.ready.add(function() ready.dispatch());
-		
+
 		chart.stacked = infoBar.stacked;
 		switch(infoBar.effect)
 		{

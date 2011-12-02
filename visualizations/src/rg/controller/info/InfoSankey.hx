@@ -9,10 +9,15 @@ using rg.controller.info.Info;
 class InfoSankey
 {
 	public var label : InfoLabel;
-
+	public var idproperty : String;
+	public var weightproperty : String;
+	public var parentsproperty : String;
 	public function new()
 	{
 		label = new InfoLabel();
+		idproperty = "id";
+		weightproperty = "count";
+		parentsproperty = "parents";
 	}
 
 	public static function filters()

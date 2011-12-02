@@ -14,7 +14,8 @@ class RGConst
 	public static var TRACKING_TOKEN = "SUPERFAKETOKEN";
 #else
 	public static var BASE_URL_GEOJSON = "geo/json/";
-	public static var SERVICE_RENDERING_STATIC= "http://devapp01.reportgrid.com:20000/";
+	//http://devapp01.reportgrid.com:20000/
+	public static var SERVICE_RENDERING_STATIC= "http://devapi.reportgrid.com/services/renderer/v1/";
 	public static var TRACKING_TOKEN = "SUPERFAKETOKEN";
 #end
 }

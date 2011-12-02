@@ -25,7 +25,7 @@ using Arrays;
 class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 {
 	public var stacked : Bool;
-	
+
 	var chart : Selection;
 	var defs : Selection;
 	var dps : Array<Array<Array<DataPoint>>>;
@@ -34,11 +34,11 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	public var padding : Float;
 	public var paddingAxis : Float;
 	public var paddingDataPoint : Float;
-	
-	public function new(panel : Panel) 
+
+	public function new(panel : Panel)
 	{
 		super(panel);
-		
+
 		addClass("bar-chart");
 		defs = g.append("svg:defs");
 		chart = g.append("svg:g");
@@ -48,7 +48,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		paddingAxis = 4;
 		paddingDataPoint = 2;
 	}
-	
+
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
 	{
 		super.setVariables(variableIndependents, yVariables, data);
@@ -56,7 +56,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		{
 			for (v in this.yVariables)
 				v.meta.max = Math.NEGATIVE_INFINITY;
-			
+
 			// datapoints
 			for (i in 0...data.length)
 			{
@@ -76,7 +76,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			}
 		}
 	}
-	
+
 	override function data(dps : Array<Array<Array<DataPoint>>>)
 	{
 		var values = dps.length,
@@ -84,12 +84,12 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			discrete, scaledist = ScaleDistribution.ScaleFill,
 			span
 		;
-	
+
 		if (null != (discrete = Types.as(xVariable.axis, IAxisDiscrete)) && !Type.enumEq(ScaleDistribution.ScaleFill, (scaledist = discrete.scaleDistribution)))
 			span = (width - (padding * (values - 1))) / values;
 		else
 			span = (width - (padding * (values - 1))) / values;
-				
+
 		function getGroup(name : String, container : Selection)
 		{
 			var gr = axisgs.get(name);
@@ -100,7 +100,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			}
 			return gr;
 		}
-		
+
 		var flatdata = dps.flatten().flatten();
 		// dependent values
 		for (i in 0...dps.length)
@@ -108,7 +108,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			var valuedps = dps[i],
 				waxis = (span - (paddingAxis * (valuedps.length - 1))) / valuedps.length
 			;
-			
+
 			// axis values
 			for (j in 0...valuedps.length)
 			{
@@ -124,7 +124,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					over = callback(onmouseover, ystats),
 					click = callback(onclick, ystats)
 				;
-				
+
 				var prev = 0.0;
 				// segment values, datapoints
 				for (k in 0...axisdps.length)
@@ -153,12 +153,12 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		}
 		ready.dispatch();
 	}
-	
+
 	function onclick(ystats : Stats<Dynamic>, dp : DataPoint, _, i : Int)
 	{
 		click(dp, ystats);
 	}
-	
+
 	function onmouseover(ystats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
 	{
 		var dp = Access.getData(n),
@@ -180,18 +180,18 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			moveTooltip(x + w / 2, y);
 		}
 	}
-	
+
 	function applyGradient(n, i : Int)
 	{
 		var gn = Dom.selectNodeData(n),
 			dp = Access.getData(n),
 			color = RGColors.parse(gn.style("fill").get(), "#cccccc"),
 			id = "rg_bar_gradient_" + color.hex("");
-		
+
 		if (defs.select('#'+id).empty())
 		{
 			var scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness).toRgbString();
-			
+
 			var gradient = defs
 				.append("svg:linearGradient")
 				.attr("id").string(id)

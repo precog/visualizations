@@ -7,6 +7,7 @@
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
 	<script src="js/reportgrid-core.js?tokenId=CC761200-3125-4283-A2C1-490F657D5C73"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	var data = [{
 		id : "clip_01",
 		count : 100,
-		parents : {}
+		parents : { "clip_10" : 1 }
 	}, {
 		id : "clip_02",
 		count : 30,
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	},{
 		id : "clip_03",
 		count : 60,
-		parents : { "clip_01" : 60}
+		parents : { "clip_01" : 55}
 	},{
 		id : "clip_04",
 		count : 5,
@@ -51,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	},{
 		id : "clip_10",
 		count : 8,
-		parents : { "clip_09" : 5, "clip_07" : 3 }
+		parents : { "clip_08" : 1, "clip_09" : 5, "clip_07" : 3 }
 	}];
 
 	ReportGrid.sankey("#chart", {
@@ -69,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 </head>
 <body>
-	<div id="chart" style="width:100%;height:500px"></div>
+	<div id="chart" style="width:700px;height:300px"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

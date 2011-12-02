@@ -9,10 +9,10 @@ import rg.data.source.rgquery.ITrackReportGrid;
 
 class DebugExecutor implements ITrackReportGrid
 {
-	public function track(path : String, events : { }, ?success : Void -> Void, ?error : String -> Void, ?token : String)
+	public function track(path : String, events : { }, success : Void -> Void, error : String -> Void, options : { tokenId : String })
 	{
-		Firebug.trace("path: " + path + ", token: " + token + "\n" + Dynamics.string(events));
+		Firebug.trace("path: " + path + ", token: " + options.tokenId + "\n" + Dynamics.string(events));
 	}
-	
+
 	public function new() { }
 }

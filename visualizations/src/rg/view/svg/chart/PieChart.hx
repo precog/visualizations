@@ -38,7 +38,7 @@ class PieChart extends Chart
 	public var overRadius : Float;
 	public var labelRadius : Float;
 	public var tooltipRadius : Float;
-	
+
 	var arcNormal : Arc<{ startAngle : Float, endAngle : Float }>;
 	var arcStart : Arc<{ startAngle : Float, endAngle : Float }>;
 	var arcBig : Arc<{ startAngle : Float, endAngle : Float }>;
@@ -49,15 +49,15 @@ class PieChart extends Chart
 	public var gradientLightness : Float;
 	public var displayGradient : Bool;
 	public var animationDelay : Int;
-	
+
 	public var labelOrientation : LabelOrientation;
 	public var labelDontFlip : Bool;
-	
+
 	var labels : Hash<Label>;
-	
+
 	public var mouseClick : DataPoint -> Void;
-	
-	public function new(panel : Panel) 
+
+	public function new(panel : Panel)
 	{
 		super(panel);
 		addClass("pie-chart");
@@ -72,11 +72,11 @@ class PieChart extends Chart
 		labelRadius = 0.45;
 		tooltipRadius = 0.5;
 		labels = new Hash();
-		
+
 		labelOrientation = LabelOrientation.Orthogonal;
 		labelDontFlip = true;
 	}
-	
+
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
 		variableDependent = variableDependents[0];
@@ -95,14 +95,14 @@ class PieChart extends Chart
 		arcBig = Arc.fromAngleObject()
 			.innerRadius(radius * innerRadius)
 			.outerRadius(radius * overRadius);
-		
+
 		// recenter the chart
 		if (width > height)
 			g.attr("transform").string("translate(" + (width/2-height/2) + ",0)");
 		else
 			g.attr("transform").string("translate(0," + (height/2-width/2) + ")");
 	}
-	
+
 	public function data(dp : Array<DataPoint>)
 	{
 		var pv = variableDependent.type;
@@ -110,11 +110,11 @@ class PieChart extends Chart
 		dp = dp.filter(function(dp) {
 			return DataPoints.value(dp, pv) > 0;
 		});
-		
+
 		stats = variableDependent.stats;
 		// data
 		var choice = g.selectAll("g.group").data(pief(dp), id);
-		
+
 		// enter
 		var enter = choice.enter();
 		var arc = enter.append("svg:g")
@@ -150,7 +150,7 @@ class PieChart extends Chart
 				.attr("d").stringf(arcShape(arcNormal));
 		if (null != labelDataPoint)
 			choice.update().eachNode(updateLabel);
-		
+
 		// exit
 		choice.exit()
 			.eachNode(removeLabel)
@@ -158,7 +158,7 @@ class PieChart extends Chart
 
 		ready.dispatch();
 	}
-	
+
 	function onMouseOver(dom, i)
 	{
 		if (null == labelDataPointOver)
@@ -168,7 +168,7 @@ class PieChart extends Chart
 
 		if (null == text)
 			tooltip.hide();
-		else 
+		else
 		{
 			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2,
 				r = radius * tooltipRadius;
@@ -177,13 +177,13 @@ class PieChart extends Chart
 			moveTooltip(width / 2 + Math.cos(a) * r, height / 2 + Math.sin(a) * r);
 		}
 	}
-	
+
 	function onMouseClick(dom, i)
 	{
 		var d : { dp : DataPoint } = Access.getData(dom);
 		mouseClick(d.dp);
 	}
-	
+
 	function removeLabel(dom, i)
 	{
 		var n = Dom.selectNode(dom),
@@ -192,7 +192,7 @@ class PieChart extends Chart
 		label.destroy();
 		labels.remove(d.id);
 	}
-	
+
 	function updateLabel(dom, i)
 	{
 		var n = Dom.selectNode(dom),
@@ -203,11 +203,11 @@ class PieChart extends Chart
 
 		label.text = labelDataPoint(d.dp, stats);
 		label.place(
-			-2.5 + Math.cos(a) * r, 
+			-2.5 + Math.cos(a) * r,
 			-2.5 + Math.sin(a) * r,
 			Const.TO_DEGREE * a);
 	}
-	
+
 	function appendLabel(dom, i : Int)
 	{
 		var n = Dom.selectNode(dom),
@@ -218,7 +218,7 @@ class PieChart extends Chart
 		label.orientation = labelOrientation;
 		switch(labelOrientation)
 		{
-			case FixedAngle(_): 
+			case FixedAngle(_):
 				label.anchor = GridAnchor.Center;
 			case Aligned:
 				label.anchor = GridAnchor.Left;
@@ -227,12 +227,12 @@ class PieChart extends Chart
 		}
 		label.text = labelDataPoint(d.dp, stats);
 		label.place(
-			-2.5 + Math.cos(a) * r, 
+			-2.5 + Math.cos(a) * r,
 			-2.5 + Math.sin(a) * r,
 			Const.TO_DEGREE * a);
 		labels.set(d.id, label);
 	}
-	
+
 	function applyGradient(n, i : Int)
 	{
 		var gn = Dom.selectNodeData(n),
@@ -247,15 +247,15 @@ class PieChart extends Chart
 			t.remove();
 			var color = RGColors.parse(slice.style("fill").get(), "#cccccc"),
 				scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness);
-				
+
 			var ratio = box.width / box.height,
 				cx = -box.x * 100 / box.width / ratio,
 				cy = -box.y * 100 / box.height / ratio;
-			
-			var r = 100 * (box.width > box.height 
+
+			var r = 100 * (box.width > box.height
 				? Math.min(1, radius * outerRadius / box.width)
 				: Math.max(1, radius * outerRadius / box.width));
-			
+
 			var stops = g.select("defs")
 				.append("svg:radialGradient")
 				.attr("id").string("rg_pie_gradient_" + id)
@@ -276,7 +276,7 @@ class PieChart extends Chart
 		gn.select("path.slice")
 			.attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
 	}
-	
+
 	function fadein(n, i : Int)
 	{
 		var gn = Dom.selectNodeData(n),
@@ -288,7 +288,7 @@ class PieChart extends Chart
 			.attr("d").string(shape)
 		;
 	}
-	
+
 	function highlight(d, i : Int)
 	{
 		var slice = Dom.selectNodeData(d).selectAll("path");
@@ -296,7 +296,7 @@ class PieChart extends Chart
 			.transition().ease(animationEase).duration(animationDuration)
 			.attr("d").stringf(arcShape(arcBig));
 	}
-	
+
 	function backtonormal(d, i : Int)
 	{
 		var slice = Dom.selectNodeData(d).selectAll("path");
@@ -304,16 +304,16 @@ class PieChart extends Chart
 			.transition().ease(animationEase).duration(animationDuration)
 			.attr("d").stringf(arcShape(arcNormal));
 	}
-	
+
 	function id(dp : Dynamic, i : Int) return dp.id
-	
+
 	function makeid(dp : DataPoint)
 	{
 		var c = Objects.clone(dp);
 		Reflect.deleteField(c, variableDependent.type);
 		return Md5.encode(Dynamics.string(c));
 	}
-	
+
 	function arcShape(a : Arc<{ startAngle : Float, endAngle : Float }>)
 	{
 		return function(d : { startAngle : Float, endEngle : Float, id : String, dp : DataPoint }, i : Int)
@@ -321,7 +321,7 @@ class PieChart extends Chart
 			return a.shape(cast d);
 		}
 	}
-	
+
 	function pief(dp : Array<DataPoint>) : Array<{ startAngle : Float, endEngle : Float, id : String, dp : DataPoint }>
 	{
 		var name = variableDependent.type,
@@ -335,7 +335,7 @@ class PieChart extends Chart
 		}
 		return arr;
 	}
-	
+
 	override function destroy()
 	{
 		for (label in labels)
