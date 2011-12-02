@@ -88,14 +88,7 @@ function phantom($script, $input, $output, $width, $height)
 
 function serviceUrl()
 {
-	var_dump($_SERVER);
-	$base = reset(explode("?", $_SERVER['REQUEST_URI']));
-//	if(substr($base, -4) == '.php')
-//		$base = dirname($base);
-//	$base = trim($base, "/");
-//	if($base)
-//		$base .= "/";
-	return "http://{$_SERVER['SERVER_NAME']}/$base";
+	return "http://".`hostname -f`."/services/renderer/v1/";
 }
 
 function url($name, $ext = null)
