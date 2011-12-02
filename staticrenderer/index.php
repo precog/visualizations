@@ -1,6 +1,7 @@
 <?
 
 define("PHANTOMJS", "DISPLAY=:0 /usr/local/bin/phantomjs");
+define("SERVICE_PATH", "/services/renderer/v1/");
 
 require_once('lib/config.class.php');
 
@@ -88,7 +89,7 @@ function phantom($script, $input, $output, $width, $height)
 
 function serviceUrl()
 {
-	return "http://".`hostname -f`."/services/renderer/v1/";
+	return "http://".trim(`hostname -f`).SERVICE_PATH;
 }
 
 function url($name, $ext = null)

@@ -53,7 +53,7 @@ class Config
 			$this->css = explode(",",$this->css);
 		else if(!is_array($this->css))
 			throw new Exception("CSS must be a string or an array of strings");
-		
+
 		if(null == $this->id)
 			$this->id = "chart";
 
@@ -69,12 +69,12 @@ class Config
 
 		if(null == $this->format)
 			$this->format = "png";
-		else 
+		else
 			$this->format = strtolower($this->format);
-		
+
 		if(!in_array($this->format, Config::$VALID_FORMATS))
 			throw new Exception("Invalid output format '{$this->format}'");
-		
+
 		if(($this->xml && $this->params) || (!$this->xml && !$this->params))
 			throw new Exception("You must pass either the 'xml' or 'params' argument");
 
@@ -100,7 +100,7 @@ class Config
 			$this->element = 'div';
 		else
 			$this->element = strtolower($this->element);
-		
+
 		if(!in_array($this->element, Config::$VALID_ELEMENTS))
 			throw new Exception("invalid element container '{$this->element}'");
 	}
