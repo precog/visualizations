@@ -48,7 +48,7 @@ try
 		$out = renderVisualization($output, $imagepath, $config->width(), $config->height(), $config->format());
 	}
 
-	echo baseUrl() . "?file=$hash.{$config->format()}";
+	echo serviceUrl() . "?file=$hash.{$config->format()}";
 	exit;
 } catch(Exception $e) {
 	echo "ERROR:" . $e->getMessage();
@@ -86,14 +86,14 @@ function phantom($script, $input, $output, $width, $height)
 	return shell_exec($cmd);
 }
 
-function baseUrl()
+function serviceUrl()
 {
 	$base = reset(explode("?", $_SERVER['REQUEST_URI']));
-	if(substr($base, -4) == '.php')
-		$base = dirname($base);
-	$base = trim($base, "/");
-	if($base)
-		$base .= "/";
+//	if(substr($base, -4) == '.php')
+//		$base = dirname($base);
+//	$base = trim($base, "/");
+//	if($base)
+//		$base .= "/";
 	return "http://{$_SERVER['SERVER_NAME']}/$base";
 }
 

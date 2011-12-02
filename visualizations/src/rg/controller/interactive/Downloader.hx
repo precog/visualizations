@@ -73,7 +73,9 @@ class Downloader
 			if (null != error)
 				error(content.substr(ERROR_PREFIX.length));
 		} else {
-			Lib.window.location.href = serviceUrl + "?file=" + content;
+			trace(content);
+			return;
+			Lib.window.location.href = content;
 			if (null != success)
 				success();
 		}
