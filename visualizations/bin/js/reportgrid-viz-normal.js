@@ -1052,8 +1052,8 @@ rg.controller.interactive.Downloader.prototype = {
 		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
 			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
 		} else {
-			js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
 			if(null != success) success();
+			js.Lib.window.location.href = content;
 		}
 	}
 	,__class__: rg.controller.interactive.Downloader
@@ -1143,19 +1143,103 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 });
 rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
+	this.addClass("sankey");
+	this.levelWidth = 60;
+	this.padding = 20;
 }
 rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
 rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
 rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	dps: null
+	layout: null
+	,levelWidth: null
+	,padding: null
+	,levels: null
+	,max: null
+	,availableheight: null
+	,map: null
+	,edges: null
+	,padBefore: null
+	,padAfter: null
 	,setVariables: function(variableIndependents,variableDependents,data) {
 	}
-	,data: function(dps) {
-		this.dps = dps;
+	,data: function(layout) {
+		this.layout = layout;
 		this.redraw();
 	}
 	,redraw: function() {
-		null;
+		var me = this;
+		this.levels = this.layout.length;
+		this.max = this.layout[0][0].weight;
+		this.map = new Hash();
+		this.edges = [];
+		this.availableheight = this.height - Arrays.floatMax(this.layout,function(arr) {
+			return arr.length;
+		}) * this.padding;
+		this.padBefore = 20;
+		this.padAfter = 20;
+		this.layout.forEach(function(level,lvl) {
+			level.forEach(function(n,pos) {
+				me.map.set(n.id,n);
+			});
+		});
+		this.layout.forEach(function(level,lvl) {
+			level.forEach(function(n,pos) {
+				var _g = 0, _g1 = n.children;
+				while(_g < _g1.length) {
+					var child = _g1[_g];
+					++_g;
+					me.edges.push({ src : n, dst : me.map.get(child.id), weight : child.weight});
+				}
+			});
+		});
+		var rules = this.g.selectAll("g.level").data(this.layout).enter().append("svg:g").attr("class").string("level").append("svg:line").attr("class").stringf(function(_,i) {
+			return "level level-" + i;
+		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
+			return "translate(" + me.xlevel(i) + ",0)";
+		}).exit().remove();
+		var choice = rules.update().selectAll("g.node").dataf(function(d,_) {
+			return d;
+		});
+		var cont = choice.enter().append("svg:g").attr("class").string("node");
+		cont.append("svg:rect").attr("x")["float"](-this.levelWidth / 2).attr("y")["float"](0).attr("width")["float"](this.levelWidth).attr("height").floatf(this.hnode.$bind(this));
+		cont.each(function(dp,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			var label = new rg.view.svg.widget.Label(node,true,true,false);
+			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+			label.setText(dp.id);
+		});
+		choice.update().attr("transform").stringf(function(n,i) {
+			return "translate(0," + me.ynode(n,i) + ")";
+		});
+		var lines = this.g.selectAll("g.edge").data(this.edges).enter().append("svg:g").attr("class").string("edge").append("svg:line").style("stroke-opacity")["float"](0.25).style("stroke").colorf(function(d,_) {
+			return d.src.level == d.dst.level?thx.color.NamedColors.blue:d.src.level < d.dst.level?thx.color.NamedColors.green:thx.color.NamedColors.red;
+		});
+		lines.attr("x1").floatf(function(o,_) {
+			return me.xlevel(o.src.level);
+		}).attr("x2").floatf(function(o,_) {
+			return me.xlevel(o.dst.level);
+		}).attr("y1").floatf(function(o,_) {
+			return me.ynode(o.src) + me.hnode(o.src) / 2;
+		}).attr("y2").floatf(function(o,_) {
+			return me.ynode(o.dst) + me.hnode(o.dst) / 2;
+		}).style("stroke-width").floatf(function(o,_) {
+			return o.weight / me.max * me.availableheight;
+		});
+	}
+	,xlevel: function(pos,_) {
+		return (this.width - this.padBefore - this.padAfter - this.levelWidth) / (this.levels - 1) * pos + this.levelWidth / 2 + this.padBefore;
+	}
+	,ynode: function(node,_) {
+		var before = this.padding;
+		var _g1 = 0, _g = node.pos;
+		while(_g1 < _g) {
+			var i = _g1++;
+			before += this.hnode(this.layout[node.level][i]) + this.padding;
+		}
+		return before;
+	}
+	,hnode: function(node,_) {
+		return node.weight / this.max * this.availableheight;
 	}
 	,__class__: rg.view.svg.chart.Sankey
 });
@@ -4642,7 +4726,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.4.1481"};
+	r.info.viz = { version : "1.1.4.1654"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -6085,6 +6169,9 @@ rg.data.IDataSource.prototype = {
 }
 rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
 	this.label = new rg.controller.info.InfoLabel();
+	this.idproperty = "id";
+	this.weightproperty = "count";
+	this.parentsproperty = "parents";
 }
 rg.controller.info.InfoSankey.__name__ = ["rg","controller","info","InfoSankey"];
 rg.controller.info.InfoSankey.filters = function() {
@@ -6096,6 +6183,9 @@ rg.controller.info.InfoSankey.filters = function() {
 }
 rg.controller.info.InfoSankey.prototype = {
 	label: null
+	,idproperty: null
+	,weightproperty: null
+	,parentsproperty: null
 	,__class__: rg.controller.info.InfoSankey
 }
 thx.math.Const = $hxClasses["thx.math.Const"] = function() { }
@@ -15405,8 +15495,74 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
+		var map = this.mapData(data), layout = this.layoutMap(map);
 		this.chart.init();
-		this.chart.data(data);
+		this.chart.data(layout);
+	}
+	,layoutMap: function(map) {
+		var result = [], i = -1, keys = Arrays.order(Iterators.array(map.keys()),function(a,b) {
+			return Floats.compare(map.get(b).weight,map.get(a).weight);
+		});
+		var addAt = (function($this) {
+			var $r;
+			var addAt = null;
+			addAt = function(id,lvl) {
+				var node = map.get(id);
+				if(!keys.remove(id)) return;
+				var level = result[lvl];
+				if(null == level) level = result[lvl] = [];
+				level.push(node);
+				node.pos = level.length - 1;
+				node.level = lvl;
+				var _g = 0, _g1 = node.children;
+				while(_g < _g1.length) {
+					var child = _g1[_g];
+					++_g;
+					addAt(child.id,lvl + 1);
+				}
+			};
+			$r = addAt;
+			return $r;
+		}(this));
+		while(keys.length > 0) addAt(keys[0],0);
+		return result;
+	}
+	,mapData: function(data) {
+		var map = new Hash(), idfield = this.info.idproperty, weightfield = this.info.weightproperty, parentsfield = this.info.parentsproperty, id, weight, o, Dynamic, parents;
+		var _g = 0;
+		while(_g < data.length) {
+			var dp = data[_g];
+			++_g;
+			id = Reflect.field(dp,idfield);
+			if(null == id) continue;
+			o = Reflect.field(dp,parentsfield);
+			parents = Arrays.order(Reflect.fields(o).map(function(field,_) {
+				return { id : field, weight : Reflect.field(o,field)};
+			}),function(a,b) {
+				return Floats.compare(b.weight,a.weight);
+			});
+			weight = Reflect.field(dp,weightfield);
+			if(null == weight) weight = Iterators.reduce(parents.iterator(),function(tot,cur,_) {
+				return tot + cur.weight;
+			},0.0);
+			map.set(id,{ dp : dp, id : id, weight : weight, parents : parents, children : [], level : 0, pos : 0});
+		}
+		var $it0 = map.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			var n = map.get(key);
+			var _g = 0, _g1 = n.parents;
+			while(_g < _g1.length) {
+				var p = _g1[_g];
+				++_g;
+				var pn = map.get(p.id);
+				Arrays.add(pn.children,{ id : n.id, weight : p.weight});
+				pn.children.sort(function(a,b) {
+					return Floats.compare(b.weight,a.weight);
+				});
+			}
+		}
+		return map;
 	}
 	,destroy: function() {
 		this.chart.destroy();
