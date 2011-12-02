@@ -10,7 +10,8 @@ for($i=0;$i<count($css = $config->css());$i++)
 ?>
 </head>
 <body<?=$config->backgroundColor() ? ' bgcolor="'.$config->backgroundColor().'"' : ''?>>
-$config->backgroundColor();
+<?=$config->backgroundColor() ? ' bgcolor="'.$config->backgroundColor().'"' : ''?>
+<?php var_dump($config) ?>
 <<?=$config->element()?><?=$config->id()?' id="'.$config->id().'"':''?> class="rg<?=$config->className()?' '.$config->className():''?>"><?=$config->xml()?></<?=$config->element()?>>
 <script type="text/javascript"><![CDATA[
 setTimeout(function() { RG_READY = true; }, 200);
