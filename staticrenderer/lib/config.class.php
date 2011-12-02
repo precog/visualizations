@@ -117,7 +117,7 @@ class Config
 	public function format() { return $this->format; }
 	public function xml() { return $this->xml; }
 	public function params() { return $this->params; }
-	public function backgroundColor() { return $this->backgroundColor ? $this->backgroundColor : ($this->format == 'jpg' ? '#ffffff' : null); }
+	public function backgroundColor() { return $this->backgroundColor != '' ? $this->backgroundColor : ($this->format == 'jpg' ? '#ffffff' : null); }
 	public function element() { return $this->element; }
 	public function width()
 	{
