@@ -10,7 +10,7 @@ for($i=0;$i<count($css = $config->css());$i++)
 }
 ?>
 </head>
-<body<?=($config->backgroundColor() ? (' bgcolor="'.$config->backgroundColor().'"') : '')?>>
+<body<?=($config->backgroundColor() ? (' bgcolor="'.$config->backgroundColor().'" style="background-color:' . $config->backgroundColor() .'"') : '')?>>
 <<?=$config->element()?><?=$config->id()?' id="'.$config->id().'"':''?><?=$config->className()?' class="'.$config->className().'"':''?>></<?=$config->element()?>>
 <script type="text/javascript"><![CDATA[
 
