@@ -17,36 +17,36 @@ import rg.data.ScaleDistribution;
 class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
 {
 	public var infoLine : InfoLineChart;
-	
+
 	override function initAxes()
 	{
 		xvariable = cast independentVariables[0];
 		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
 	}
-	
+
 	override function initChart()
 	{
 		var chart = new LineChart(layout.getPanel(layout.mainPanelName));
 		chart.ready.add(function() ready.dispatch());
-		
+
 		chart.symbol = infoLine.symbol;
 		chart.symbolStyle = infoLine.symbolStyle;
-		
+
 		chart.lineInterpolator = infoLine.interpolation;
 		chart.lineEffect = infoLine.effect;
-		
-		
+
+
 		if(null == independentVariables[0].scaleDistribution)
 			independentVariables[0].scaleDistribution = ScaleFill;
-		
+
 		if (null != infoLine.y0property)
 			chart.y0property = infoLine.y0property;
 		else if (infoLine.displayarea)
 			chart.y0property = "";
-		
+
 		this.chart = chart;
 	}
-	
+
 	override function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
 	{
 		var results = [],

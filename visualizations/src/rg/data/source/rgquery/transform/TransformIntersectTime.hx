@@ -15,7 +15,7 @@ class TransformIntersectTime implements ITransform<Dynamic>
 	var periodicity : String;
 	var fields : Array<String>;
 	var event : String;
-	public function new(properties : Dynamic, fields : Array<String>, event : String, periodicity : String, unit : String) 
+	public function new(properties : Dynamic, fields : Array<String>, event : String, periodicity : String, unit : String)
 	{
 		this.properties = properties;
 		this.unit = unit;
@@ -23,7 +23,7 @@ class TransformIntersectTime implements ITransform<Dynamic>
 		this.fields = fields;
 		this.event = event;
 	}
-	
+
 	public function transform(data : Dynamic) : Array<DataPoint>
 	{
 		var items = Objects.flatten(data, fields.length),
@@ -31,7 +31,7 @@ class TransformIntersectTime implements ITransform<Dynamic>
 			unit = this.unit;
 		if (null == items || 0 == items.length)
 			return [];
-		
+
 		var result = [];
 		for (item in items)
 		{
@@ -43,7 +43,7 @@ class TransformIntersectTime implements ITransform<Dynamic>
 					fields,
 					item.fields.map(Transforms.typedValue)
 				);
-				Objects.addFields(p, 
+				Objects.addFields(p,
 					[Properties.timeProperty(periodicity), unit],
 					[
 						(periodicity != "minute" && periodicity != "hour")

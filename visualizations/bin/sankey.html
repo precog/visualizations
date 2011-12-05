@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	var data = [{
 		id : "clip_01",
 		count : 100,
-		parents : { "clip_10" : 1 }
+		parents : { "clip_10" : 1, "clip_06" : 10 }
 	}, {
 		id : "clip_02",
 		count : 30,
@@ -43,15 +43,15 @@ document.addEventListener("DOMContentLoaded", function(){
 		parents : { "clip_05" : 8 }
 	},{
 		id : "clip_08",
-		count : 25,
-		parents : { "clip_05" : 15, "clip_03" : 5, "clip_10" : 4 }
+		count : 30,
+		parents : { "clip_05" : 5, "clip_03" : 5, "clip_10" : 4 }
 	},{
 		id : "clip_09",
 		count : 12,
 		parents : { "clip_08" : 10 }
 	},{
 		id : "clip_10",
-		count : 8,
+		count : 9,
 		parents : { "clip_08" : 1, "clip_09" : 5, "clip_07" : 3 }
 	}];
 
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 </head>
 <body>
-	<div id="chart" style="width:700px;height:300px"></div>
+	<div id="chart" style="width:1200px;height:600px"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

@@ -8,7 +8,7 @@ import thx.culture.FormatDate;
 import thx.date.DateParser;
 using Arrays;
 
-class Periodicity 
+class Periodicity
 {
 	public static function defaultPeriodicity(span : Float)
 	{
@@ -25,7 +25,7 @@ class Periodicity
 		else
 			return "year";
 	}
-	
+
 	public static function defaultRange(periodicity : String) : Array<Float>
 	{
 		return switch(periodicity)
@@ -46,13 +46,13 @@ class Periodicity
 				parsePair("6 years ago", "today");
 		}
 	}
-	
+
 	static var validPeriods = ["minute", "hour", "day", "week", "month", "year", "eternity"];
-	public static function isValid(v : String) 
+	public static function isValid(v : String)
 	{
 		return Arrays.exists(validPeriods, v);
 	}
-	
+
 	public static function calculateBetween(a : Null<Date>, b : Null<Date>, disc = 2)
 	{
 		if (null == a || null == b)
@@ -71,10 +71,9 @@ class Periodicity
 		else
 			return "minute";
 	}
-	
+
 	public static function unitsBetween(start : Float, end : Float, periodicity : String) : Int
 	{
-		
 		return switch(periodicity)
 		{
 			case "eternity": 1;
@@ -94,14 +93,14 @@ class Periodicity
 				Math.floor(unitsBetween(start, end, "month") / 12);
 		}
 	}
-	
+
 	public static function units(value : Float, periodicity : String) {
 		return unitsBetween(0, value, periodicity) + switch(periodicity) {
 			case "hour" : 1;
 			default: 0;
 		};
 	}
-	
+
 	public static function range(start : Float, end : Float, periodicity : String) : Array<Float>
 	{
 		var step = 1000;
@@ -109,7 +108,7 @@ class Periodicity
 //		end = Dates.snap(end, periodicity);
 		switch(periodicity)
 		{
-			case "eternity": 
+			case "eternity":
 				return [0.0];
 			case "minute":
 				step = 60000;
@@ -127,7 +126,7 @@ class Periodicity
 					sm = s.getMonth(),
 					em = e.getMonth();
 				var result = [];
-				while (sy < ey || sm <= em)
+				while (sy < ey || (sy == ey && sm <= em))
 				{
 					result.push(new Date(sy, sm, 1, 0, 0, 0).getTime());
 					sm++;
@@ -143,9 +142,9 @@ class Periodicity
 					return new Date(d, 0, 1, 0, 0, 0).getTime();
 				});
 		}
-		return Floats.range(start, end + step, step); 
+		return Floats.range(start, end + step, step);
 	}
-	
+
 	public static function next(periodicity : String, ?date : Float, ?step = 1) : Float
 	{
 		if (null == date)
@@ -169,21 +168,21 @@ class Periodicity
 				new Date(d.getFullYear() + step, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()).getTime();
 		}
 	}
-	
+
 	public static function minForPeriodicityInSeries(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
 	{
 		return Arrays.floatMin(arr, function(d) {
 			return Arrays.floatMin(Reflect.fields(Reflect.field(d, periodicity)), function(d) return Std.parseFloat(d));
 		});
 	}
-	
+
 	public static function maxForPeriodicityInSeries(arr : Array<Dynamic<Dynamic<Int>>>, periodicity : String)
 	{
 		return Arrays.floatMax(arr, function(d) {
 			return Arrays.floatMax(Reflect.fields(Reflect.field(d, periodicity)), function(d) return Std.parseFloat(d));
 		});
 	}
-	
+
 	public static function formatf(periodicity : String) : Float -> String
 	{
 		return switch(periodicity)
@@ -195,7 +194,7 @@ class Periodicity
 			case "year": function(v : Float) return FormatDate.year(Date.fromTime(v));
 		}
 	}
-	
+
 	public static function format(periodicity : String, v : Float) : String
 	{
 		switch(periodicity)
@@ -209,7 +208,7 @@ class Periodicity
 			default: return periodicity + ": " + v;
 		}
 	}
-	
+
 	public static function smartFormat(periodicity : String, v : Float) : String
 	{
 		switch(periodicity)
@@ -229,7 +228,7 @@ class Periodicity
 				if (firstInSeries("month", v))
 					return FormatDate.format("%b %e", dateUtc(v));
 				else
-					return FormatDate.format("%e", dateUtc(v));			
+					return FormatDate.format("%e", dateUtc(v));
 			case "week":
 				var d = dateUtc(v);
 				if (d.getDate() <= 7)
@@ -246,7 +245,7 @@ class Periodicity
 			default: return periodicity + ": " + Date.fromTime(v);
 		}
 	}
-	
+
 	public static function firstInSeries(periodicity : String, v : Float) : Bool
 	{
 		return switch(periodicity)
@@ -269,7 +268,7 @@ class Periodicity
 			default: false;
 		}
 	}
-	
+
 	public static function nextPeriodicity(periodicity : String) : String
 	{
 		return switch(periodicity)
@@ -281,7 +280,7 @@ class Periodicity
 			default: "year";
 		}
 	}
-	
+
 	public static function prevPeriodicity(periodicity : String) : String
 	{
 		return switch(periodicity)
@@ -289,11 +288,11 @@ class Periodicity
 			case "minute":			"hour";
 			case "hour":			"minute";
 			case "day":				"hour";
-			case "week", "month":	"day"; 
+			case "week", "month":	"day";
 			default: "minute";
 		}
 	}
-	
+
 	static function parsePair(start : String, end : String) : Array<Float>
 	{
 		return [
@@ -301,13 +300,13 @@ class Periodicity
 			DateParser.parse(end).getTime()
 		];
 	}
-	
+
 	static inline function timezoneOffset(d : Date) : Float
 	{
 		return untyped d.getTimezoneOffset();
 	}
-	
-	static function dateUtc(v : Float) 
+
+	static function dateUtc(v : Float)
 	{
 		var d = Date.fromTime(v),
 			offset : Float = timezoneOffset(d);
@@ -315,11 +314,11 @@ class Periodicity
 			offset = 0;
 		return Date.fromTime(v + 60000 * offset);
 	}
-	
+
 	static var validGroupValues = ["hour", "day", "week", "month", "year"];
 	public static function isValidGroupBy(value : String)
 	{
 		return validGroupValues.exists(value);
 	}
-	
+
 }

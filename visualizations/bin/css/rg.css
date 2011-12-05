@@ -623,14 +623,29 @@
 }
 
 
-
+/*
 .rg .sankey
 {
 	shape-rendering: crispEdges;
 }
+*/
 
-.rg .sankey rect
+
+.rg .sankey .diagonal-fill, .rg .sankey .elbow-fill, .rg .sankey .hook-fill, .rg .sankey rect.node
 {
-	fill: #ddd;
-	fill-opacity: 0.5;
+	fill: #eee;
+	fill-opacity: 0.9;
+	stroke: none;
+}
+
+.rg .sankey .diagonal-fill, .rg .sankey .elbow-fill
+{
+	fill-opacity: 0.9;
+}
+
+.rg .sankey .diagonal-stroke, .rg .sankey .elbow-stroke, .rg .sankey .hook-stroke, .rg .sankey line.node
+{
+	fill: none;
+	stroke: #666;
+	stroke-width: 1.5;
 }

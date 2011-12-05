@@ -79,6 +79,17 @@ class VisualizationSankey extends VisualizationSvg
 			addAt(keys[0], 0);
 		}
 
+		for(key in map.keys())
+		{
+			var n = map.get(key);
+			n.parents.sort(function(a, b) {
+				var c = Ints.compare(map.get(a.id).level, map.get(b.id).level);
+				if(c > 0)
+					return c;
+				return Floats.compare(b.weight, a.weight);
+			});
+		}
+
 /*
 
 		for(node in map.iterator())
@@ -104,20 +115,19 @@ class VisualizationSankey extends VisualizationSvg
 			o = Reflect.field(dp, parentsfield);
 			parents = Reflect.fields(o).map(function(field, _) : { id : String, weight : Float } {
 				return { id : field, weight : Reflect.field(o, field) };
-			}).order(function(a, b) {
-				return Floats.compare(b.weight, a.weight);
 			});
+			var derivedweight = parents.reduce(function(tot, cur, _) {
+				return tot + cur.weight;
+			}, 0.0);
 			weight = Reflect.field(dp, weightfield);
 			if(null == weight)
-			{
-				weight = parents.reduce(function(tot, cur, _) {
-					return tot + cur.weight;
-				}, 0.0);
-			}
+				weight = derivedweight;
 			map.set(id, {
 				dp : dp,
 				id : id,
 				weight : weight,
+				extraweight : weight - derivedweight,
+				falloffweight : 0.0,
 				parents : parents,
 				children : [],
 				level : 0,
@@ -134,6 +144,17 @@ class VisualizationSankey extends VisualizationSvg
 				pn.children.add({ id : n.id, weight : p.weight });
 				pn.children.sort(function(a,b) return Floats.compare(b.weight, a.weight));
 			}
+		}
+
+		for(key in map.keys())
+		{
+			var n = map.get(key),
+				falloff = n.weight;
+			for(child in n.children)
+			{
+				falloff -= child.weight;
+			}
+			n.falloffweight = falloff;
 		}
 		return map;
 	}

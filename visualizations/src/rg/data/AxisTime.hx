@@ -29,7 +29,7 @@ class AxisTime implements IAxisDiscrete<Float>
 		year : [ { to : 10, s : 1 }, { to : 20, s : 2 }, { to : 50, s : 5 } ],
 		yeartop : 10
 	};
-	
+
 	function isMajor(units : Int, value : Float)
 	{
 		switch(periodicity)
@@ -65,7 +65,7 @@ class AxisTime implements IAxisDiscrete<Float>
 				return 0 == unit % top;
 		}
 	}
-	
+
 	public function ticks(start: Float, end: Float, ?upperBound: Int) : Array<ITickmark<Float>>
 	{
 		var span = end - start,
@@ -74,26 +74,25 @@ class AxisTime implements IAxisDiscrete<Float>
 			range = values.map(function(value, i) : ITickmark<Float> {
 				return new TickmarkTime(value, values, isMajor(units, value), periodicity, scaleDistribution);
 			});
-		
 		return Tickmarks.bound(range, upperBound);
 	}
-	
+
 	public function range(start: Float, end: Float)
 	{
 		return Periodicity.range(start, end, periodicity);
 	}
-	
+
 	public function scale(start : Float, end : Float, v : Float)
 	{
 		var values = range(start, end);
 		return ScaleDistributions.distribute(scaleDistribution, Arrays.indexOf(values, v), values.length);
 	}
-	
+
 	function setScaleDistribution(v : ScaleDistribution)
 	{
 		return this.scaleDistribution = v;
 	}
-	
+
 	public function min(stats : Stats<Float>, meta : Dynamic) : Float
 	{
 		return stats.min;
@@ -102,6 +101,6 @@ class AxisTime implements IAxisDiscrete<Float>
 	{
 		return stats.max;
 	}
-	
+
 	public function createStats() : Stats<Float> return new StatsNumeric()
 }

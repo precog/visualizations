@@ -187,15 +187,7 @@
 			"file": "index.php",
 			"settings":
 			{
-				"buffer_size": 3074,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lib/KLogger.class.php",
-			"settings":
-			{
-				"buffer_size": 10922,
+				"buffer_size": 2758,
 				"line_ending": "Unix"
 			}
 		},
@@ -203,7 +195,39 @@
 			"file": "lib/WKPDF.class.php",
 			"settings":
 			{
-				"buffer_size": 8624,
+				"buffer_size": 8009,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "phantom/renderer.js",
+			"settings":
+			{
+				"buffer_size": 2127,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/config.class.php",
+			"settings":
+			{
+				"buffer_size": 4165,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "template/visualization.template.php",
+			"settings":
+			{
+				"buffer_size": 1279,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "template/xml.template.php",
+			"settings":
+			{
+				"buffer_size": 807,
 				"line_ending": "Unix"
 			}
 		}
@@ -280,6 +304,8 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/staticrenderer/info.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/staticrenderer/lib/KLogger.class.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.sublime-project",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/haxe/visualizations/src/rg/data/source/rgquery/QueryParser.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/haxe/visualizations/src/rg/controller/MVPOptions.hx",
@@ -405,9 +431,7 @@
 		"/Users/francoponticelli/Projects/thx/src/thx/html/HtmlDocumentFormat.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/html/HtmlAttributeFormat.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/html/Html.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/html/Element.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/html/DomHandler.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/html/CloseSelfHtmlNodeFormat.hx"
+		"/Users/francoponticelli/Projects/thx/src/thx/html/Element.hx"
 	],
 	"find":
 	{
@@ -423,9 +447,15 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"backgroundColor",
+			"url(",
+			"baseUrl",
+			"path(",
+			"PATH",
+			"_getCPU",
 			"WKPDF_BASE_PATH",
 			"_pipeExec",
 			"tmp",
@@ -477,7 +507,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -485,15 +515,15 @@
 					"file": "index.php",
 					"settings":
 					{
-						"buffer_size": 3074,
+						"buffer_size": 2758,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								36,
-								25
+								908,
+								908
 							]
 						],
 						"settings":
@@ -502,53 +532,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 397.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "lib/KLogger.class.php",
-					"settings":
-					{
-						"buffer_size": 10922,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								10922,
-								10922
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4410.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
 					"file": "lib/WKPDF.class.php",
 					"settings":
 					{
-						"buffer_size": 8624,
+						"buffer_size": 8009,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6504,
-								6504
+								0,
+								0
 							]
 						],
 						"settings":
@@ -558,7 +560,114 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1624.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "phantom/renderer.js",
+					"settings":
+					{
+						"buffer_size": 2127,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1389,
+								1389
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "lib/config.class.php",
+					"settings":
+					{
+						"buffer_size": 4165,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3499,
+								3499
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1366.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "template/visualization.template.php",
+					"settings":
+					{
+						"buffer_size": 1279,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								416,
+								568
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "template/xml.template.php",
+					"settings":
+					{
+						"buffer_size": 807,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

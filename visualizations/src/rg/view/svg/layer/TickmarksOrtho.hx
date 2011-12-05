@@ -18,7 +18,7 @@ using Arrays;
 class TickmarksOrtho extends Layer
 {
 	public var anchor(default, null) : Anchor;
-	
+
 	public var displayMinor : Bool;
 	public var displayMajor : Bool;
 	public var displayLabel : Bool;
@@ -33,7 +33,7 @@ class TickmarksOrtho extends Layer
 	public var labelAngle : Float;
 	public var desiredSize(default, null) : Float;
 	public var tickLabel : Dynamic -> String;
-	
+
 	var translate : ITickmark<Dynamic> -> Int -> String;
 	var x1 : ITickmark<Dynamic> -> Int -> Float;
 	var y1 : ITickmark<Dynamic> -> Int -> Float;
@@ -41,12 +41,12 @@ class TickmarksOrtho extends Layer
 	var y2 : ITickmark<Dynamic> -> Int -> Float;
 	var x : ITickmark<Dynamic> -> Int -> Float;
 	var y : ITickmark<Dynamic> -> Int -> Float;
-	
-	public function new(panel : Panel, anchor : Anchor) 
+
+	public function new(panel : Panel, anchor : Anchor)
 	{
 		super(panel);
 		this.anchor = anchor;
-		
+
 		displayMinor = true;
 		displayMajor = true;
 		displayLabel = true;
@@ -56,14 +56,14 @@ class TickmarksOrtho extends Layer
 		paddingMinor = 1;
 		paddingMajor = 1;
 		paddingLabel = 10;
-		
+
 		g.classed().add("tickmarks");
 	}
-	
+
 	var axis : IAxis<Dynamic>;
 	var min : Dynamic;
 	var max : Dynamic;
-	
+
 	override function resize()
 	{
 		if (null == axis)
@@ -72,7 +72,7 @@ class TickmarksOrtho extends Layer
 			updateAnchorLine();
 		redraw();
 	}
-	
+
 	public function update(axis : IAxis<Dynamic>, min : Dynamic, max : Dynamic)
 	{
 		this.axis = axis;
@@ -80,7 +80,7 @@ class TickmarksOrtho extends Layer
 		this.max = max;
 		redraw();
 	}
-	
+
 	function updateAnchorLine()
 	{
 		var line = g.select("line.anchor-line");
@@ -108,7 +108,7 @@ class TickmarksOrtho extends Layer
 					.attr("y2").float(panel.frame.height);
 		}
 	}
-	
+
 	function maxTicks()
 	{
 		var size = switch(anchor)
@@ -118,21 +118,21 @@ class TickmarksOrtho extends Layer
 		}
 		return Math.round(size / 2.5);
 	}
-	
+
 	function id(d : ITickmark<Dynamic>, i) return "" + d.value
-	
+
 	function redraw()
 	{
 		desiredSize = Math.max(paddingMinor + lengthMinor, paddingMajor + lengthMajor);
 		var ticks = maxTicks(),
 			data = axis.ticks(min, max, ticks);
-		
+
 		// ticks
 		var tick = g.selectAll("g.tick").data(data, id);
 		var enter = tick.enter()
 			.append("svg:g").attr("class").string("tick")
 			.attr("transform").stringf(translate);
-		
+
 		if (displayMinor)
 		{
 			enter.filter(function(d, i) return !d.major)
@@ -143,7 +143,7 @@ class TickmarksOrtho extends Layer
 					.attr("y2").floatf(y2)
 					.attr("class").stringf(tickClass);
 		}
-		
+
 		if (displayMajor)
 		{
 			enter.filter(function(d, i) return d.major)
@@ -154,7 +154,7 @@ class TickmarksOrtho extends Layer
 					.attr("y2").floatf(y2)
 					.attr("class").stringf(tickClass);
 		}
-		
+
 		/*
 		if (displayMinor || displayMajor)
 		{
@@ -169,14 +169,14 @@ class TickmarksOrtho extends Layer
 		*/
 		if(displayLabel)
 			enter.eachNode(createLabel);
-		
+
 		tick.update()
 			.attr("transform").stringf(translate);
-			
+
 		tick.exit()
 			.remove();
 	}
-	
+
 	function createLabel(n, i)
 	{
 		var d : ITickmark<Dynamic> = thx.js.Access.getData(n);
@@ -198,7 +198,7 @@ class TickmarksOrtho extends Layer
 			case Right:
 				label.place(-padding, 0, labelAngle);
 		}
-		
+
 		var s = switch(anchor)
 		{
 			case Top, Bottom:
@@ -209,7 +209,7 @@ class TickmarksOrtho extends Layer
 		if (s > desiredSize)
 			desiredSize = s;
 	}
-	
+
 	function initf()
 	{
 		switch(anchor)
@@ -278,7 +278,7 @@ class TickmarksOrtho extends Layer
 			}
 		}
 	}
-	
+
 	public function init()
 	{
 		initf();
@@ -288,9 +288,9 @@ class TickmarksOrtho extends Layer
 			updateAnchorLine();
 		}
 	}
-	
+
 	inline function t(x : Float, y : Float) return "translate(" + x + "," + y + ")"
-	
+
 	function translateTop(d : ITickmark<Dynamic>, i : Int)		return t(d.delta * panel.frame.width, 0)
 	function translateBottom(d : ITickmark<Dynamic>, i : Int)	return t(d.delta * panel.frame.width, panel.frame.height)
 	function translateLeft(d : ITickmark<Dynamic>, i : Int)		return t(0, panel.frame.height - d.delta * panel.frame.height)
@@ -304,16 +304,16 @@ class TickmarksOrtho extends Layer
 	function y1Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? paddingMajor : paddingMinor)
 	function y1Left(d : ITickmark<Dynamic>, i : Int)	return 0
 	function y1Right(d : ITickmark<Dynamic>, i : Int)	return 0
-	
+
 	function x2Top(d : ITickmark<Dynamic>, i : Int)		return 0
 	function x2Bottom(d : ITickmark<Dynamic>, i : Int)	return 0
 	function x2Left(d : ITickmark<Dynamic>, i : Int)	return d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor
 	function x2Right(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor)
-	
+
 	function y2Top(d : ITickmark<Dynamic>, i : Int)		return d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor
 	function y2Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor)
 	function y2Left(d : ITickmark<Dynamic>, i : Int)	return 0
 	function y2Right(d : ITickmark<Dynamic>, i : Int)	return 0
-	
+
 	function tickClass(d : ITickmark<Dynamic>, i : Int)	return d.major ? "major" : null
 }

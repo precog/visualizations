@@ -1145,7 +1145,7 @@ rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(pan
 	rg.view.svg.chart.Chart.call(this,panel);
 	this.addClass("sankey");
 	this.levelWidth = 60;
-	this.padding = 20;
+	this.padding = 60;
 }
 rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
 rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
@@ -1192,6 +1192,42 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 				}
 			});
 		});
+		this.edges.sort(function(a,b) {
+			return Floats.compare(a.weight,b.weight);
+		});
+		var edgescontainer = this.g.select("g.edges");
+		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
+		this.edges.forEach(function(edge,_) {
+			if(edge.dst.level <= edge.src.level) return;
+			var weight = edge.weight / me.max * me.availableheight, diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer);
+			diagonal.update(me.levelWidth / 2 + me.xlevel(edge.src.level),me.ynode(edge.src) + me.ydiagonal(edge.dst.id,edge.src.children),-me.levelWidth / 2 + me.xlevel(edge.dst.level),me.nheight(edge.dst.extraweight) + me.ynode(edge.dst) + me.ydiagonal(edge.src.id,edge.dst.parents),weight,weight);
+		});
+		var _g = 0, _g1 = this.layout;
+		while(_g < _g1.length) {
+			var level = _g1[_g];
+			++_g;
+			var _g2 = 0;
+			while(_g2 < level.length) {
+				var node = level[_g2];
+				++_g2;
+				if(node.falloffweight <= 0) continue;
+				var elbow = new rg.view.svg.widget.ElbowArea(this.g), falloff = this.nheight(node.falloffweight);
+				elbow.update(rg.view.svg.widget.Orientation.RightBottom,falloff,this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node) + this.ydiagonal(null,node.children) + falloff);
+			}
+		}
+		var _g = 0, _g1 = this.layout;
+		while(_g < _g1.length) {
+			var level = _g1[_g];
+			++_g;
+			var _g2 = 0;
+			while(_g2 < level.length) {
+				var node = level[_g2];
+				++_g2;
+				if(node.extraweight <= 0) continue;
+				var elbow = new rg.view.svg.widget.ElbowArea(this.g), extra = this.nheight(node.extraweight);
+				elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,-this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node));
+			}
+		}
 		var rules = this.g.selectAll("g.level").data(this.layout).enter().append("svg:g").attr("class").string("level").append("svg:line").attr("class").stringf(function(_,i) {
 			return "level level-" + i;
 		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
@@ -1201,7 +1237,11 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			return d;
 		});
 		var cont = choice.enter().append("svg:g").attr("class").string("node");
-		cont.append("svg:rect").attr("x")["float"](-this.levelWidth / 2).attr("y")["float"](0).attr("width")["float"](this.levelWidth).attr("height").floatf(this.hnode.$bind(this));
+		if(this.levelWidth > 0) {
+			cont.append("svg:rect").attr("class").string("node").attr("x")["float"](-this.levelWidth / 2).attr("y")["float"](0).attr("width")["float"](this.levelWidth).attr("height").floatf(this.hnode.$bind(this));
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.levelWidth / 2).attr("y2")["float"](0);
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.levelWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+		}
 		cont.each(function(dp,i) {
 			var node = thx.js.Dom.selectNode(thx.js.Group.current);
 			var label = new rg.view.svg.widget.Label(node,true,true,false);
@@ -1211,7 +1251,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		choice.update().attr("transform").stringf(function(n,i) {
 			return "translate(0," + me.ynode(n,i) + ")";
 		});
-		var lines = this.g.selectAll("g.edge").data(this.edges).enter().append("svg:g").attr("class").string("edge").append("svg:line").style("stroke-opacity")["float"](0.25).style("stroke").colorf(function(d,_) {
+		var lines = this.g.selectAll("g.reference").data(this.edges).enter().append("svg:g").attr("class").string("reference").append("svg:line").style("stroke-opacity")["float"](0.1).style("stroke").colorf(function(d,_) {
 			return d.src.level == d.dst.level?thx.color.NamedColors.blue:d.src.level < d.dst.level?thx.color.NamedColors.green:thx.color.NamedColors.red;
 		});
 		lines.attr("x1").floatf(function(o,_) {
@@ -1223,8 +1263,22 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		}).attr("y2").floatf(function(o,_) {
 			return me.ynode(o.dst) + me.hnode(o.dst) / 2;
 		}).style("stroke-width").floatf(function(o,_) {
-			return o.weight / me.max * me.availableheight;
+			return me.nheight(o.weight);
 		});
+	}
+	,nheight: function(v) {
+		return v / this.max * this.availableheight;
+	}
+	,ydiagonal: function(id,edges) {
+		var weight = 0.0;
+		var _g = 0;
+		while(_g < edges.length) {
+			var edge = edges[_g];
+			++_g;
+			if(edge.id == id) break;
+			weight += edge.weight;
+		}
+		return this.nheight(weight);
 	}
 	,xlevel: function(pos,_) {
 		return (this.width - this.padBefore - this.padAfter - this.levelWidth) / (this.levels - 1) * pos + this.levelWidth / 2 + this.padBefore;
@@ -1239,7 +1293,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		return before;
 	}
 	,hnode: function(node,_) {
-		return node.weight / this.max * this.availableheight;
+		return this.nheight(node.weight);
 	}
 	,__class__: rg.view.svg.chart.Sankey
 });
@@ -2642,6 +2696,80 @@ thx.geo.Albers.prototype = {
 	}
 	,__class__: thx.geo.Albers
 }
+rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("elbow");
+	this.area = this.g.append("svg:path").attr("class").string("elbow-area");
+	this.outer = this.g.append("svg:path").attr("class").string("elbow-border outer");
+	this.inner = this.g.append("svg:path").attr("class").string("elbow-border inner");
+}
+rg.view.svg.widget.ElbowArea.__name__ = ["rg","view","svg","widget","ElbowArea"];
+rg.view.svg.widget.ElbowArea.prototype = {
+	g: null
+	,area: null
+	,outer: null
+	,inner: null
+	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
+		if(after == null) after = 10.0;
+		if(before == null) before = 0.0;
+		if(maxradius == null) maxradius = 16.0;
+		if(minradius == null) minradius = 3.0;
+		var dinner = "", douter = "", rad = weight < 0?Math.max(maxradius,weight):Math.min(maxradius,weight);
+		switch( (orientation)[1] ) {
+		case 0:
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + Math.abs(minradius) + "," + Math.abs(minradius) + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y - weight) + "L" + (before + x) + "," + (y - weight) + "A" + Math.abs(rad) + "," + Math.abs(rad) + " 0 0,1 " + (before + x + rad) + "," + (y - weight + rad) + "L" + (before + x + rad) + "," + (y + after + minradius);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			this.update(rg.view.svg.widget.Orientation.RightBottom,-weight,x,y,-minradius,-maxradius,-before,-after);
+			return;
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + minradius + "," + minradius + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y + weight) + "L" + (-before + x) + "," + (y + weight) + "A" + rad + "," + rad + " 0 0,1 " + (-before + x - rad) + "," + (y + weight - rad) + "L" + (-before + x - rad) + "," + (y - after - minradius);
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		}
+		var darea = douter + "L" + dinner.substr(1) + "x";
+		this.inner.attr("d").string(dinner);
+		this.outer.attr("d").string(douter);
+		this.area.attr("d").string(darea);
+	}
+	,__class__: rg.view.svg.widget.ElbowArea
+}
+rg.view.svg.widget.Orientation = $hxClasses["rg.view.svg.widget.Orientation"] = { __ename__ : ["rg","view","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.view.svg.widget.Orientation.RightBottom = ["RightBottom",0];
+rg.view.svg.widget.Orientation.RightBottom.toString = $estr;
+rg.view.svg.widget.Orientation.RightBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftBottom = ["LeftBottom",1];
+rg.view.svg.widget.Orientation.LeftBottom.toString = $estr;
+rg.view.svg.widget.Orientation.LeftBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.RightTop = ["RightTop",2];
+rg.view.svg.widget.Orientation.RightTop.toString = $estr;
+rg.view.svg.widget.Orientation.RightTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftTop = ["LeftTop",3];
+rg.view.svg.widget.Orientation.LeftTop.toString = $estr;
+rg.view.svg.widget.Orientation.LeftTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomRight = ["BottomRight",4];
+rg.view.svg.widget.Orientation.BottomRight.toString = $estr;
+rg.view.svg.widget.Orientation.BottomRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomLeft = ["BottomLeft",5];
+rg.view.svg.widget.Orientation.BottomLeft.toString = $estr;
+rg.view.svg.widget.Orientation.BottomLeft.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopRight = ["TopRight",6];
+rg.view.svg.widget.Orientation.TopRight.toString = $estr;
+rg.view.svg.widget.Orientation.TopRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopLeft = ["TopLeft",7];
+rg.view.svg.widget.Orientation.TopLeft.toString = $estr;
+rg.view.svg.widget.Orientation.TopLeft.__enum__ = rg.view.svg.widget.Orientation;
 rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 }
@@ -4726,7 +4854,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.4.1654"};
+	r.info.viz = { version : "1.1.4.1844"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5384,7 +5512,7 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 	case "month":
 		var s = rg.util.Periodicity.dateUtc(start), e = rg.util.Periodicity.dateUtc(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
 		var result = [];
-		while(sy < ey || sm <= em) {
+		while(sy < ey || sy == ey && sm <= em) {
 			result.push(new Date(sy,sm,1,0,0,0).getTime());
 			sm++;
 			if(sm > 11) {
@@ -6103,6 +6231,13 @@ thx.svg.Diagonal.forObject = function() {
 		return [d.x0,d.y0];
 	}).targetf(function(d,_i) {
 		return [d.x1,d.y1];
+	});
+}
+thx.svg.Diagonal.forArray = function() {
+	return new thx.svg.Diagonal().sourcef(function(d,_i) {
+		return [d[0],d[1]];
+	}).targetf(function(d,_i) {
+		return [d[2],d[3]];
 	});
 }
 thx.svg.Diagonal.prototype = {
@@ -10226,6 +10361,31 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	}
 	,__class__: thx.math.scale.Linear
 });
+rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("diagonal");
+	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
+		return [a[1],a[0]];
+	});
+	this.area = this.g.append("svg:path").attr("class").string("diagonal-area");
+	this.before = this.g.append("svg:path").attr("class").string("diagonal-border before");
+	this.after = this.g.append("svg:path").attr("class").string("diagonal-border after");
+}
+rg.view.svg.widget.DiagonalArea.__name__ = ["rg","view","svg","widget","DiagonalArea"];
+rg.view.svg.widget.DiagonalArea.prototype = {
+	g: null
+	,diagonal: null
+	,area: null
+	,before: null
+	,after: null
+	,update: function(x1,y1,x2,y2,sw,ew) {
+		var top = this.diagonal.diagonal([y1,x1,y2,x2]), bottom = this.diagonal.diagonal([y2 + ew,x2,y1 + sw,x1]);
+		var path = top + "L" + bottom.substr(1) + "z";
+		this.before.attr("d").string(top);
+		this.after.attr("d").string(bottom);
+		this.area.attr("d").string(path);
+	}
+	,__class__: rg.view.svg.widget.DiagonalArea
+}
 rg.util.DataPoints = $hxClasses["rg.util.DataPoints"] = function() { }
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
 rg.util.DataPoints.partition = function(dps,property,def) {
@@ -12221,6 +12381,193 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
+thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
+	this._order = thx.geom.layout.StackOrder.DefaultOrder;
+	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
+}
+thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
+thx.geom.layout.Stack.getStackOrder = function(order,data) {
+	switch( (order)[1] ) {
+	case 0:
+		return Ints.range(data.length);
+	case 1:
+		var n = data.length, max = data.map(thx.geom.layout.Stack.stackMaxIndex), sums = data.map(thx.geom.layout.Stack.stackReduceSum), index = Ints.range(n), top = 0.0, bottom = 0.0, tops = [], bottoms = [];
+		index.sort(function(a,b) {
+			return max[a] - max[b];
+		});
+		var _g = 0;
+		while(_g < n) {
+			var i = _g++;
+			var j = index[i];
+			if(top < bottom) {
+				top += sums[j];
+				tops.push(j);
+			} else {
+				bottom += sums[j];
+				bottoms.push(j);
+			}
+		}
+		bottoms.reverse();
+		return bottoms.concat(tops);
+	case 2:
+		var index = Ints.range(data.length);
+		index.reverse();
+		return index;
+	}
+}
+thx.geom.layout.Stack.getStackOffset = function(offset,index,data) {
+	switch( (offset)[1] ) {
+	case 0:
+		var n = data.length, m = data[0].length, sums = [], max = 0.0, o;
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			o = 0.0;
+			var _g1 = 0;
+			while(_g1 < n) {
+				var i = _g1++;
+				o += data[i][j].y;
+			}
+			if(o > max) max = o;
+			sums.push(o);
+		}
+		var i = index[0];
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			data[i][j].y0 = (max - sums[j]) / 2;
+		}
+		break;
+	case 1:
+		var n = data.length, x = data[0], m = x.length, max = 0.0, k, ii, ik, i0 = index[0], s1, s2, s3, dx, o, o0;
+		data[i0][0].y0 = o = o0 = 0.0;
+		var _g = 1;
+		while(_g < m) {
+			var j = _g++;
+			s1 = 0.0;
+			var _g1 = 0;
+			while(_g1 < n) {
+				var i = _g1++;
+				s1 += data[i][j].y;
+			}
+			s2 = 0.0;
+			dx = x[j].x - x[j - 1].x;
+			var _g1 = 0;
+			while(_g1 < n) {
+				var i = _g1++;
+				ii = index[i];
+				s3 = (data[ii][j].y - data[ii][j - 1].y) / (2 * dx);
+				var _g2 = 0;
+				while(_g2 < i) {
+					var k1 = _g2++;
+					s3 += (data[ik = index[k1]][j].y - data[ik][j - 1].y) / dx;
+				}
+				s2 += s3 * data[ii][j].y;
+			}
+			data[i0][j].y0 = o -= s1 != 0?s2 / s1 * dx:0;
+			if(o < o0) o0 = o;
+		}
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			data[i0][j].y0 -= o0;
+		}
+		break;
+	case 2:
+		var m = data[0].length, i0 = index[0];
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			data[i0][j].y0 = 0.0;
+		}
+		break;
+	}
+}
+thx.geom.layout.Stack.stackMaxIndex = function(data,_) {
+	var j = 0, v = data[0].y, k, n = data.length;
+	var _g = 1;
+	while(_g < n) {
+		var i = _g++;
+		if((k = data[i].y) > v) {
+			j = i;
+			v = k;
+		}
+	}
+	return j;
+}
+thx.geom.layout.Stack.stackReduceSum = function(data,_) {
+	return Iterators.reduce(data.iterator(),thx.geom.layout.Stack.stackSum,0.0);
+}
+thx.geom.layout.Stack.stackSum = function(p,c,i) {
+	return p + c.y;
+}
+thx.geom.layout.Stack.prototype = {
+	_order: null
+	,_offset: null
+	,stack: function(data) {
+		var n = data.length, m = data[0].length, i, j, y0, result = [];
+		var _g = 0;
+		while(_g < n) {
+			var i1 = _g++;
+			var r = [];
+			result.push(r);
+			var _g1 = 0;
+			while(_g1 < m) {
+				var j1 = _g1++;
+				var s = data[i1][j1];
+				r[j1] = { x : s.x, y : s.y, y0 : 0.0};
+			}
+		}
+		var index = thx.geom.layout.Stack.getStackOrder(this._order,result);
+		thx.geom.layout.Stack.getStackOffset(this._offset,index,result);
+		var _g = 0;
+		while(_g < m) {
+			var j1 = _g++;
+			y0 = result[index[0]][j1].y0;
+			var _g1 = 1;
+			while(_g1 < n) {
+				var i1 = _g1++;
+				result[index[i1]][j1].y0 = y0 += result[index[i1 - 1]][j1].y;
+			}
+		}
+		return result;
+	}
+	,getOrder: function() {
+		return this._order;
+	}
+	,order: function(x) {
+		this._order = x;
+		return this;
+	}
+	,getOffset: function() {
+		return this._offset;
+	}
+	,offset: function(x) {
+		this._offset = x;
+		return this;
+	}
+	,__class__: thx.geom.layout.Stack
+}
+thx.geom.layout.StackOrder = $hxClasses["thx.geom.layout.StackOrder"] = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
+thx.geom.layout.StackOrder.DefaultOrder = ["DefaultOrder",0];
+thx.geom.layout.StackOrder.DefaultOrder.toString = $estr;
+thx.geom.layout.StackOrder.DefaultOrder.__enum__ = thx.geom.layout.StackOrder;
+thx.geom.layout.StackOrder.InsideOut = ["InsideOut",1];
+thx.geom.layout.StackOrder.InsideOut.toString = $estr;
+thx.geom.layout.StackOrder.InsideOut.__enum__ = thx.geom.layout.StackOrder;
+thx.geom.layout.StackOrder.ReverseOrder = ["ReverseOrder",2];
+thx.geom.layout.StackOrder.ReverseOrder.toString = $estr;
+thx.geom.layout.StackOrder.ReverseOrder.__enum__ = thx.geom.layout.StackOrder;
+thx.geom.layout.StackOffset = $hxClasses["thx.geom.layout.StackOffset"] = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
+thx.geom.layout.StackOffset.Silhouette = ["Silhouette",0];
+thx.geom.layout.StackOffset.Silhouette.toString = $estr;
+thx.geom.layout.StackOffset.Silhouette.__enum__ = thx.geom.layout.StackOffset;
+thx.geom.layout.StackOffset.Wiggle = ["Wiggle",1];
+thx.geom.layout.StackOffset.Wiggle.toString = $estr;
+thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
+thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
+thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
+thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
 thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
 	this.setScale(500);
 	this.setTranslate([480.0,250]);
@@ -12611,193 +12958,6 @@ thx.svg.CentroidTypes.prototype = {
 	}
 	,__class__: thx.svg.CentroidTypes
 }
-thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
-	this._order = thx.geom.layout.StackOrder.DefaultOrder;
-	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
-}
-thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
-thx.geom.layout.Stack.getStackOrder = function(order,data) {
-	switch( (order)[1] ) {
-	case 0:
-		return Ints.range(data.length);
-	case 1:
-		var n = data.length, max = data.map(thx.geom.layout.Stack.stackMaxIndex), sums = data.map(thx.geom.layout.Stack.stackReduceSum), index = Ints.range(n), top = 0.0, bottom = 0.0, tops = [], bottoms = [];
-		index.sort(function(a,b) {
-			return max[a] - max[b];
-		});
-		var _g = 0;
-		while(_g < n) {
-			var i = _g++;
-			var j = index[i];
-			if(top < bottom) {
-				top += sums[j];
-				tops.push(j);
-			} else {
-				bottom += sums[j];
-				bottoms.push(j);
-			}
-		}
-		bottoms.reverse();
-		return bottoms.concat(tops);
-	case 2:
-		var index = Ints.range(data.length);
-		index.reverse();
-		return index;
-	}
-}
-thx.geom.layout.Stack.getStackOffset = function(offset,index,data) {
-	switch( (offset)[1] ) {
-	case 0:
-		var n = data.length, m = data[0].length, sums = [], max = 0.0, o;
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			o = 0.0;
-			var _g1 = 0;
-			while(_g1 < n) {
-				var i = _g1++;
-				o += data[i][j].y;
-			}
-			if(o > max) max = o;
-			sums.push(o);
-		}
-		var i = index[0];
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			data[i][j].y0 = (max - sums[j]) / 2;
-		}
-		break;
-	case 1:
-		var n = data.length, x = data[0], m = x.length, max = 0.0, k, ii, ik, i0 = index[0], s1, s2, s3, dx, o, o0;
-		data[i0][0].y0 = o = o0 = 0.0;
-		var _g = 1;
-		while(_g < m) {
-			var j = _g++;
-			s1 = 0.0;
-			var _g1 = 0;
-			while(_g1 < n) {
-				var i = _g1++;
-				s1 += data[i][j].y;
-			}
-			s2 = 0.0;
-			dx = x[j].x - x[j - 1].x;
-			var _g1 = 0;
-			while(_g1 < n) {
-				var i = _g1++;
-				ii = index[i];
-				s3 = (data[ii][j].y - data[ii][j - 1].y) / (2 * dx);
-				var _g2 = 0;
-				while(_g2 < i) {
-					var k1 = _g2++;
-					s3 += (data[ik = index[k1]][j].y - data[ik][j - 1].y) / dx;
-				}
-				s2 += s3 * data[ii][j].y;
-			}
-			data[i0][j].y0 = o -= s1 != 0?s2 / s1 * dx:0;
-			if(o < o0) o0 = o;
-		}
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			data[i0][j].y0 -= o0;
-		}
-		break;
-	case 2:
-		var m = data[0].length, i0 = index[0];
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			data[i0][j].y0 = 0.0;
-		}
-		break;
-	}
-}
-thx.geom.layout.Stack.stackMaxIndex = function(data,_) {
-	var j = 0, v = data[0].y, k, n = data.length;
-	var _g = 1;
-	while(_g < n) {
-		var i = _g++;
-		if((k = data[i].y) > v) {
-			j = i;
-			v = k;
-		}
-	}
-	return j;
-}
-thx.geom.layout.Stack.stackReduceSum = function(data,_) {
-	return Iterators.reduce(data.iterator(),thx.geom.layout.Stack.stackSum,0.0);
-}
-thx.geom.layout.Stack.stackSum = function(p,c,i) {
-	return p + c.y;
-}
-thx.geom.layout.Stack.prototype = {
-	_order: null
-	,_offset: null
-	,stack: function(data) {
-		var n = data.length, m = data[0].length, i, j, y0, result = [];
-		var _g = 0;
-		while(_g < n) {
-			var i1 = _g++;
-			var r = [];
-			result.push(r);
-			var _g1 = 0;
-			while(_g1 < m) {
-				var j1 = _g1++;
-				var s = data[i1][j1];
-				r[j1] = { x : s.x, y : s.y, y0 : 0.0};
-			}
-		}
-		var index = thx.geom.layout.Stack.getStackOrder(this._order,result);
-		thx.geom.layout.Stack.getStackOffset(this._offset,index,result);
-		var _g = 0;
-		while(_g < m) {
-			var j1 = _g++;
-			y0 = result[index[0]][j1].y0;
-			var _g1 = 1;
-			while(_g1 < n) {
-				var i1 = _g1++;
-				result[index[i1]][j1].y0 = y0 += result[index[i1 - 1]][j1].y;
-			}
-		}
-		return result;
-	}
-	,getOrder: function() {
-		return this._order;
-	}
-	,order: function(x) {
-		this._order = x;
-		return this;
-	}
-	,getOffset: function() {
-		return this._offset;
-	}
-	,offset: function(x) {
-		this._offset = x;
-		return this;
-	}
-	,__class__: thx.geom.layout.Stack
-}
-thx.geom.layout.StackOrder = $hxClasses["thx.geom.layout.StackOrder"] = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
-thx.geom.layout.StackOrder.DefaultOrder = ["DefaultOrder",0];
-thx.geom.layout.StackOrder.DefaultOrder.toString = $estr;
-thx.geom.layout.StackOrder.DefaultOrder.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOrder.InsideOut = ["InsideOut",1];
-thx.geom.layout.StackOrder.InsideOut.toString = $estr;
-thx.geom.layout.StackOrder.InsideOut.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOrder.ReverseOrder = ["ReverseOrder",2];
-thx.geom.layout.StackOrder.ReverseOrder.toString = $estr;
-thx.geom.layout.StackOrder.ReverseOrder.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOffset = $hxClasses["thx.geom.layout.StackOffset"] = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
-thx.geom.layout.StackOffset.Silhouette = ["Silhouette",0];
-thx.geom.layout.StackOffset.Silhouette.toString = $estr;
-thx.geom.layout.StackOffset.Silhouette.__enum__ = thx.geom.layout.StackOffset;
-thx.geom.layout.StackOffset.Wiggle = ["Wiggle",1];
-thx.geom.layout.StackOffset.Wiggle.toString = $estr;
-thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
-thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
-thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
-thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
 rg.data.ScaleDistributions = $hxClasses["rg.data.ScaleDistributions"] = function() { }
 rg.data.ScaleDistributions.__name__ = ["rg","data","ScaleDistributions"];
 rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
@@ -14601,48 +14761,6 @@ Types.isPrimitive = function(v) {
 Types.prototype = {
 	__class__: Types
 }
-rg.view.svg.widget.GridAnchors = $hxClasses["rg.view.svg.widget.GridAnchors"] = function() { }
-rg.view.svg.widget.GridAnchors.__name__ = ["rg","view","svg","widget","GridAnchors"];
-rg.view.svg.widget.GridAnchors.parse = function(s) {
-	return (function($this) {
-		var $r;
-		switch(s.toLowerCase()) {
-		case "topleft":
-			$r = rg.view.svg.widget.GridAnchor.TopLeft;
-			break;
-		case "top":
-			$r = rg.view.svg.widget.GridAnchor.Top;
-			break;
-		case "topright":
-			$r = rg.view.svg.widget.GridAnchor.TopRight;
-			break;
-		case "left":
-			$r = rg.view.svg.widget.GridAnchor.Left;
-			break;
-		case "center":
-			$r = rg.view.svg.widget.GridAnchor.Center;
-			break;
-		case "right":
-			$r = rg.view.svg.widget.GridAnchor.Right;
-			break;
-		case "bottomleft":
-			$r = rg.view.svg.widget.GridAnchor.BottomLeft;
-			break;
-		case "bottom":
-			$r = rg.view.svg.widget.GridAnchor.Bottom;
-			break;
-		case "bottomright":
-			$r = rg.view.svg.widget.GridAnchor.BottomRight;
-			break;
-		default:
-			$r = rg.view.svg.widget.GridAnchor.Center;
-		}
-		return $r;
-	}(this));
-}
-rg.view.svg.widget.GridAnchors.prototype = {
-	__class__: rg.view.svg.widget.GridAnchors
-}
 rg.view.svg.chart.StreamGraph = $hxClasses["rg.view.svg.chart.StreamGraph"] = function(panel) {
 	rg.view.svg.chart.CartesianChart.call(this,panel);
 	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
@@ -14773,6 +14891,48 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 	}
 	,__class__: rg.view.svg.chart.StreamGraph
 });
+rg.view.svg.widget.GridAnchors = $hxClasses["rg.view.svg.widget.GridAnchors"] = function() { }
+rg.view.svg.widget.GridAnchors.__name__ = ["rg","view","svg","widget","GridAnchors"];
+rg.view.svg.widget.GridAnchors.parse = function(s) {
+	return (function($this) {
+		var $r;
+		switch(s.toLowerCase()) {
+		case "topleft":
+			$r = rg.view.svg.widget.GridAnchor.TopLeft;
+			break;
+		case "top":
+			$r = rg.view.svg.widget.GridAnchor.Top;
+			break;
+		case "topright":
+			$r = rg.view.svg.widget.GridAnchor.TopRight;
+			break;
+		case "left":
+			$r = rg.view.svg.widget.GridAnchor.Left;
+			break;
+		case "center":
+			$r = rg.view.svg.widget.GridAnchor.Center;
+			break;
+		case "right":
+			$r = rg.view.svg.widget.GridAnchor.Right;
+			break;
+		case "bottomleft":
+			$r = rg.view.svg.widget.GridAnchor.BottomLeft;
+			break;
+		case "bottom":
+			$r = rg.view.svg.widget.GridAnchor.Bottom;
+			break;
+		case "bottomright":
+			$r = rg.view.svg.widget.GridAnchor.BottomRight;
+			break;
+		default:
+			$r = rg.view.svg.widget.GridAnchor.Center;
+		}
+		return $r;
+	}(this));
+}
+rg.view.svg.widget.GridAnchors.prototype = {
+	__class__: rg.view.svg.widget.GridAnchors
+}
 rg.controller.visualization.VisualizationPieChart = $hxClasses["rg.controller.visualization.VisualizationPieChart"] = function(layout) {
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
 }
@@ -15541,11 +15701,12 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 			}),function(a,b) {
 				return Floats.compare(b.weight,a.weight);
 			});
-			weight = Reflect.field(dp,weightfield);
-			if(null == weight) weight = Iterators.reduce(parents.iterator(),function(tot,cur,_) {
+			var derivedweight = Iterators.reduce(parents.iterator(),function(tot,cur,_) {
 				return tot + cur.weight;
 			},0.0);
-			map.set(id,{ dp : dp, id : id, weight : weight, parents : parents, children : [], level : 0, pos : 0});
+			weight = Reflect.field(dp,weightfield);
+			if(null == weight) weight = derivedweight;
+			map.set(id,{ dp : dp, id : id, weight : weight, extraweight : weight - derivedweight, falloffweight : 0.0, parents : parents, children : [], level : 0, pos : 0});
 		}
 		var $it0 = map.keys();
 		while( $it0.hasNext() ) {
@@ -15561,6 +15722,18 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 					return Floats.compare(b.weight,a.weight);
 				});
 			}
+		}
+		var $it1 = map.keys();
+		while( $it1.hasNext() ) {
+			var key = $it1.next();
+			var n = map.get(key), falloff = n.weight;
+			var _g = 0, _g1 = n.children;
+			while(_g < _g1.length) {
+				var child = _g1[_g];
+				++_g;
+				falloff -= child.weight;
+			}
+			n.falloffweight = falloff;
 		}
 		return map;
 	}

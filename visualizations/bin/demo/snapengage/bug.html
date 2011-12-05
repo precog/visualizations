@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>SnapEngage</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
+	<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=87984064-827D-4C42-8BAF-42A748BA6DCA"></script>
+	<script src="../../js/reportgrid-viz.js"></script>
+<!--
+	<script src="http://api.reportgrid.com/js/reportgrid-viz.js"></script>
+-->
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+
+	var path = "/sd5020/233d08cc-8203-4db4-9c5a-7ec216eb93a3/";
+
+	ReportGrid.lineChart("#chart", {
+		start : 1293840000000,
+		end : 1325376000000,
+		path : path,
+		event : "case",
+		property : "sourceType",
+		options : { download : true } });
+
+/*
+ReportGridJsonpCallback145847362({"1":[[{"timestamp":1293840000000},0],[{"timestamp":1296518400000},0],[{"timestamp":1298937600000},0],[{"timestamp":1301616000000},0],[{"timestamp":1304208000000},0],[{"timestamp":1306886400000},0],[{"timestamp":1309478400000},0],[{"timestamp":1312156800000},0],[{"timestamp":1314835200000},0],[{"timestamp":1317427200000},0],[{"timestamp":1320105600000},0],[{"timestamp":1322697600000},6]],"2":[[{"timestamp":1293840000000},0],[{"timestamp":1296518400000},0],[{"timestamp":1298937600000},0],[{"timestamp":1301616000000},0],[{"timestamp":1304208000000},0],[{"timestamp":1306886400000},0],[{"timestamp":1309478400000},0],[{"timestamp":1312156800000},0],[{"timestamp":1314835200000},0],[{"timestamp":1317427200000},0],[{"timestamp":1320105600000},0],[{"timestamp":1322697600000},1]]},{"headers":{},"status":{"code":200,"reason":""}});
+*/
+});
+</script>
+</head>
+<body>
+	<div id="chart" style="width:400px;height:200px"></div>
+</body>
+</html>
