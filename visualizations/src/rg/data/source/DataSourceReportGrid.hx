@@ -17,6 +17,7 @@ import rg.data.source.rgquery.transform.TransformTimeSeries;
 import rg.data.source.rgquery.transform.TransformTimeSeriesValues;
 import rg.data.source.rgquery.transform.TransformIntersectTime;
 import rg.data.source.rgquery.transform.TransformIntersectUtc;
+import rg.data.source.rgquery.transform.TransformStatisticTime;
 import thx.error.Error;
 import rg.data.source.ITransform;
 import rg.util.Properties;
@@ -69,7 +70,7 @@ class DataSourceReportGrid implements IDataSource
 		}
 	}
 
-	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, ?groupby : String, ?timezone : String, ?start : Float, ?end : Float)
+	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, operation : QOperation, ?groupby : String, ?timezone : String, ?start : Float, ?end : Float)
 	{
 		this.query = query;
 		this.executor = executor;
@@ -92,14 +93,7 @@ class DataSourceReportGrid implements IDataSource
 				values : values
 			};
 			default: throw new Error("invalid data for 'where' condition"); } );
-		this.operation = query.operation;
-
-		switch(operation)
-		{
-			case Count: //
-			default: throw new Error("RGDataSource doesn't support operation '{0}'", operation);
-		}
-
+		this.operation = operation;
 		this.path = path;
 		this.timeStart = start;
 		this.timeEnd = end;
@@ -147,7 +141,9 @@ class DataSourceReportGrid implements IDataSource
 		return switch(operation)
 		{
 			case Count: "count";
-			default: throw new Error("unsupported operation '{0}'", operation);
+			case Mean:  "mean";
+			case StandardDeviation:  "standardDeviation";
+//			default: throw new Error("unsupported operation '{0}'", operation);
 		}
 	}
 
@@ -214,6 +210,7 @@ class DataSourceReportGrid implements IDataSource
 				if (where.length > 1)
 				{
 					transform = new TransformCount( { }, event, unit());
+//trace("1");
 					executor.searchCount(path, opt, success, error);
 				} else if (where.length == 1)
 				{
@@ -227,6 +224,7 @@ class DataSourceReportGrid implements IDataSource
 							//public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
 							var o : Dynamic = Objects.clone(opt);
 							o.property = propertyName(valueproperty);
+//trace("2");
 							executor.propertyValues(path, o, s, e);
 						});
 						actions.push(function(values : Array<String>, s : Dynamic -> Void, e : String -> Void) {
@@ -247,6 +245,17 @@ class DataSourceReportGrid implements IDataSource
 										Reflect.setField(o.where, p, v);
 								}
 								*/
+								////trace("!!!!!!");
+								for(w in where)
+								{
+									var p = propertyName(w);
+									for(v in w.values)
+									{
+										cond = {};
+										Reflect.setField(cond, p, v);
+										o.where.push(cond);
+									}
+								}
 								subs.push(cast {
 									method : callback(executor.searchCount, path, o),
 									value : v
@@ -270,12 +279,14 @@ class DataSourceReportGrid implements IDataSource
 						} else {
 							transform = new TransformCount( { }, event, unit());
 							opt.value = where[0].values[0];
+//trace("3");
 							executor.propertyValueCount(path, opt, success, error);
 						}
 					}
 				} else {
 					transform = new TransformCount( { }, event, unit());
 					opt.property = propertyName(exp[0]);
+//trace("4");
 					executor.propertyCount(path, opt, success, error);
 				}
 			} else {
@@ -283,6 +294,7 @@ class DataSourceReportGrid implements IDataSource
 				if (where.length > 1)
 				{
 					transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
+//trace("5");
 					executor.searchSeries(path, opt, success, error);
 				} else if (where.length == 1)
 				{
@@ -296,6 +308,7 @@ class DataSourceReportGrid implements IDataSource
 							//public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
 							var o : Dynamic = Objects.clone(opt);
 							o.property = propertyName(valueproperty);
+//trace("6");
 							executor.propertyValues(path, o, s, e);
 						});
 						actions.push(function(values : Array<String>, s : Dynamic -> Void, e : String -> Void) {
@@ -307,6 +320,17 @@ class DataSourceReportGrid implements IDataSource
 								if(null == o.where) o.where = [];
 								Reflect.setField(cond, propertyName(valueproperty), v);
 								o.where.push(cond);
+								////trace("#####");
+								for(w in where)
+								{
+									var p = propertyName(w);
+									for(v in w.values)
+									{
+										cond = {};
+										Reflect.setField(cond, p, v);
+										o.where.push(cond);
+									}
+								}
 								//o.where = {};
 								/*
 								Reflect.setField(o.where, propertyName(valueproperty), v);
@@ -343,12 +367,14 @@ class DataSourceReportGrid implements IDataSource
 						} else {
 							transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
 							opt.value = where[0].values[0];
+//trace("7");
 							executor.propertyValueSeries(path, opt, success, error);
 						}
 					}
 				} else {
 					transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
 					opt.property = propertyName(exp[0]);
+//trace("8");
 					executor.propertySeries(path, opt, success, error);
 				}
 			}
@@ -363,17 +389,37 @@ class DataSourceReportGrid implements IDataSource
 				transform = new TransformIntersect( { }, exp.map(function(d, _) return d.property), event, exp[0].order != "ascending");
 			else if (timeZone != null)
 				transform = new TransformIntersectUtc( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
-			else
-				transform = new TransformIntersectTime( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
-			var opt = basicOptions(true);
-			opt.properties = exp.map(function(p, i) {
-				return {
-					property : propertyName(p),
-					limit : p.limit,
-					order : p.order
-				};
-			});
-			executor.intersect(path, opt, success, error);
+			else {
+				switch(operation)
+				{
+					case StandardDeviation, Mean:
+						transform = new TransformStatisticTime( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
+					case Count:
+						transform = new TransformIntersectTime( { }, exp.map(function(d, _) return d.property), event, periodicity, unit());
+				}
+			}
+			var opt : Dynamic = basicOptions(true);
+
+//trace("9");
+
+			switch(operation)
+			{
+				case Count:
+					opt.properties = exp.map(function(p, i) {
+						return {
+							property : propertyName(p),
+							limit : p.limit,
+							order : p.order
+						};
+					});
+					executor.intersect(path, opt, success, error);
+				case Mean:
+					opt.property = propertyName(exp[0]);
+					executor.propertyMeans(path, opt, success, error);
+				case StandardDeviation:
+					opt.property = propertyName(exp[0]);
+					executor.propertyStandardDeviations(path, opt, success, error);
+			}
 		}
 	}
 

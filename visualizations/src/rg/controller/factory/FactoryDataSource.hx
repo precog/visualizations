@@ -12,6 +12,7 @@ import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.QueryParser;
 import thx.error.Error;
 import rg.data.DataPoint;
+import rg.data.source.rgquery.QueryAst;
 /*
 	public var query : Null<String>;
 	public var path : Null<String>;
@@ -46,7 +47,7 @@ class FactoryDataSource
 		} 
 		if (null != info.path && null != info.event)
 		{
-			return createFromQuery(info.path, info.event, info.query, info.groupBy, info.timeZone, info.start, info.end);
+			return createFromQuery(info.path, info.event, info.query, info.statistic, info.groupBy, info.timeZone, info.start, info.end);
 		}
 		throw new Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters");
 	}
@@ -56,10 +57,10 @@ class FactoryDataSource
 		return new DataSourceArray(data);
 	}
 	
-	function createFromQuery(path : String, event : String, query : Null<String>, groupby : Null<String>, timeZone : Null<String>, start : Null<Float>, end : Null<Float>)
+	function createFromQuery(path : String, event : String, query : Null<String>, statistic : QOperation, groupby : Null<String>, timeZone : Null<String>, start : Null<Float>, end : Null<Float>)
 	{
 		if (null == query)
 			query = "";
-		return new DataSourceReportGrid(executor, path, event, parser.parse(query), groupby, timeZone, start, end);
+		return new DataSourceReportGrid(executor, path, event, parser.parse(query), statistic, groupby, timeZone, start, end);
 	}
 }

@@ -4,8 +4,12 @@ import rg.view.layout.Layout;
 import rg.view.svg.layer.Title;
 import rg.view.svg.chart.Sankey;
 import rg.data.DataPoint;
+import rg.layout.SugiyamaMethod;
 using Arrays;
 using Iterators;
+import rg.layout.Graphs;
+
+typedef N = rg.layout.Node;
 
 class VisualizationSankey extends VisualizationSvg
 {
@@ -50,6 +54,124 @@ class VisualizationSankey extends VisualizationSvg
 	}
 
 	function layoutMap(map : Hash<Node>) : Array<Array<Node>>
+	{
+		var sugiyama = new SugiyamaMethod(),
+			vertices = [],
+			edges = [];
+		Iterables.each(map, function(node : Node, _) {
+			vertices.push(node.id);
+			for(child in node.children)
+				edges.push({ a : node.id, b : child.id });
+		});
+		var glayout = sugiyama.resolve(vertices, edges),
+			gmap = Graphs.toMap(glayout);
+		var layout = [], tmap;
+		for(i in 0...glayout.length)
+		{
+			layout[i] = [];
+			for (j in 0...glayout[i].length)
+			{
+				var gnode = glayout[i][j],
+					onode = map.get(gnode.vertex),
+					nnode = {
+						dp : null,
+						id : gnode.vertex,
+						weight : 0.0,
+						extraweight : 0.0,
+						falloffweight : 0.0,
+						parents : [],
+						children : [],
+						level : i,
+						pos : j
+					};
+				if(null != onode)
+				{
+					nnode.dp = onode.dp;
+					nnode.weight = onode.weight;
+					nnode.extraweight = onode.extraweight;
+					nnode.falloffweight = onode.falloffweight;
+					tmap = new Hash();
+					for(c in onode.children)
+					{
+						tmap.set(c.id, c.weight);
+					}
+					for(dst in gnode.edgesp)
+					{
+						var id = dst;
+						while(Graphs.isDummy(id))
+							id = gmap.get(id).edgesp[0];
+						nnode.children.push({
+							id : dst,
+							weight : tmap.get(id)
+						});
+					}
+					tmap = new Hash();
+					for(c in onode.parents)
+					{
+						tmap.set(c.id, c.weight);
+					}
+					for(dst in gnode.edgesn)
+					{
+						var id = dst;
+						while(Graphs.isDummy(id))
+							id = gmap.get(id).edgesn[0];
+						nnode.parents.push({
+							id : dst,
+							weight : tmap.get(id)
+						});
+					}
+				} else {
+					// dummy node, needs to be created
+					trace(gnode);
+					var dstid = gnode.edgesp[0];
+					while(Graphs.isDummy(dstid))
+						dstid = gmap.get(dstid).edgesp[0];
+					trace(dstid);
+					for(src in gnode.edgesn)
+					{
+						var id = src;
+						while(Graphs.isDummy(id))
+							id = gmap.get(id).edgesn[0];
+						trace(src + " TO " + id);
+						var parent = map.get(id);
+						trace(parent);
+						for(edge in parent.children)
+						{
+							trace(edge);
+							if(edge.id == dstid)
+							{
+								nnode.parents.push({ id : src, weight : edge.weight });
+								break;
+							}
+						}
+					}
+					/*
+					for(dst in gnode.edgesp)
+					{
+						var id = dst;
+						while(Graphs.isDummy(id))
+							id = gmap.get(id).edgesp[0];
+						trace(dst + " TO " + id);
+						var child = map.get(id);
+						for(edge in child.parents)
+						{
+							if(edge.id == gnode.vertex)
+							{
+								nnode.children.push({ id : dst, weight : edge.weight });
+								break;
+							}
+						}
+					}
+					*/
+					trace(nnode);
+				}
+				layout[i][j] = nnode;
+			}
+		}
+		return layout;
+	}
+
+	function layoutMap2(map : Hash<Node>) : Array<Array<Node>>
 	{
 		var result = [],
 			i = -1,

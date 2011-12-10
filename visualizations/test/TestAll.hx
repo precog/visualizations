@@ -17,6 +17,11 @@ class TestAll
 		runner.addCase(new rg.controller.info.TestInfoLayout());
 		runner.addCase(new rg.controller.info.TestInfoVariable());
 		runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
+
+		runner.addCase(new rg.layout.TestGraph());
+		runner.addCase(new rg.layout.TestNode());
+		runner.addCase(new rg.layout.TestEdge());
+		runner.addCase(new rg.layout.TestSugiyamaMethod());
 //		runner.addCase(new rg.data.TestAxisOrdinal());
 //		runner.addCase(new rg.data.TestDataProcessor());
 //		runner.addCase(new rg.data.TestAxisGroupByTime());

@@ -25,32 +25,32 @@ using Arrays;
 
 class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 {
-	public function new(panel : Panel) 
+	public function new(panel : Panel)
 	{
 		super(panel);
 		interpolator = LineInterpolator.Cardinal(0.6);
 		gradientLightness = 0.75;
 		gradientStyle = 1;
 	}
-	
+
 	public var interpolator : LineInterpolator;
 	public var gradientLightness : Float;
 	public var gradientStyle : Int; // 0: none, 1: vertical, 2: horizontal
-	
+
 	var dps : Array<Array<DataPoint>>;
 	var area : Area<TransformedData>;
 	var transformedData : Array<Array<TransformedData>>;
 	var stats : Stats<Dynamic>;
 	var defs : Selection;
 	var maxy : Float;
-	
+
 	override function init()
 	{
 		super.init();
 		defs = g.append("svg:defs");
 		g.classed().add("stream-chart");
 	}
-	
+
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<DataPoint>>)
 	{
 		super.setVariables(variableIndependents, variableDependents, data);
@@ -62,7 +62,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		prepareData();
 		redraw();
 	}
-	
+
 	function redraw()
 	{
 		if (null == transformedData)
@@ -70,7 +70,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 
 		// LAYER
 		var layer = g.selectAll("g.group").data(transformedData);
-		
+
 		// update
 		layer.update()
 //			.attr("transform").string("translate(0,0)")
@@ -94,27 +94,27 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		layer.exit().remove();
 		ready.dispatch();
 	}
-	
+
 	function getDataAtNode(n, i)
 	{
 		var px = Svg.mouse(n)[0],
 			x = Floats.uninterpolatef(transformedData[i].first().coord.x, transformedData[i].last().coord.x)(px / width);
-		
+
 		var data : Array<TransformedData> = Access.getData(n);
-		
+
 		return Arrays.nearest(transformedData[i], x, function(d) return d.coord.x);
 	}
-	
+
 	function onover(n, i)
 	{
 		if (null == labelDataPointOver)
 			return;
 		var dp = getDataAtNode(n, i);
 		tooltip.text = labelDataPointOver(dp.dp, stats).split("\n");
-		tooltip.show();
+//		tooltip.show();
 		moveTooltip(dp.coord.x * width, height - (dp.coord.y + dp.coord.y0) * height / maxy);
 	}
-	
+
 	function onclick(n, i)
 	{
 		if (null == this.click)
@@ -122,7 +122,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		var dp = getDataAtNode(n, i);
 		click(dp.dp, stats);
 	}
-	
+
 	function prepareData()
 	{
 		defs.selectAll("linearGradient.h").remove();
@@ -145,18 +145,18 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			.offset(StackOffset.Silhouette)
 			.order(StackOrder.DefaultOrder)
 			.stack(coords);
-		
+
 		transformedData = data.map(function(d, i) return d.map(function(d, j) {
 			return {
 				coord : d,
 				dp : dps[i][j]
 			}
 		}));
-		
+
 		stats = yVariables[0].stats;
-		
+
 		maxy = data.floatMax(function(d) return d.floatMax(function(d) return d.y0 + d.y));
-		
+
 		area = new Area<TransformedData>()
 			.interpolator(interpolator)
 			.x(function(d, i) return d.coord.x * width)
@@ -164,7 +164,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			.y1(function(d, i) return height - (d.coord.y + d.coord.y0) * height / maxy)
 		;
 	}
-	
+
 	function applyGradientV(d : Array<TransformedData>, i : Int)
 	{
 		var gn = Selection.current,
@@ -172,9 +172,9 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			id = "rg_stream_gradient_h_" + color.hex("");
 		if (defs.select('#'+id).empty())
 		{
-			
+
 			var scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness).toRgbString();
-			
+
 			var gradient = defs
 				.append("svg:linearGradient")
 				.attr("id").string(id)
@@ -195,14 +195,14 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		}
 		gn.attr("style").string("fill:url(#" + id + ")");
 	}
-	
+
 	static var vid = 0;
 	function applyGradientH(d : Array<TransformedData>, i : Int)
 	{
 		var gn = Selection.current,
 			color = Hsl.toHsl(RGColors.parse(gn.style("fill").get(), "#cccccc")),
 			id = "rg_stream_gradient_v_" + vid++;
-		
+
 		var gradient = defs
 			.append("svg:linearGradient")
 			.attr("class").string("x")
@@ -213,7 +213,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			.attr("y2").string("0%")
 	//		.attr("spreadMethod").string("pad")
 		;
-		
+
 		var bx = d.first().coord.x,
 			ax = d.last().coord.x,
 			span = ax - bx,
@@ -221,7 +221,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 				return Math.round((x - bx) / span * 10000) / 100;
 			},
 			max = d.floatMax(function(d) return d.coord.y);
-		
+
 //		var lastv = 0.0, tollerance = 0.25;
 		for (i in 0...d.length)
 		{

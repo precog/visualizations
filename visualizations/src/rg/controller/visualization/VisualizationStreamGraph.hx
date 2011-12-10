@@ -15,18 +15,18 @@ using Arrays;
 class VisualizationStreamGraph extends VisualizationCartesian<Array<Array<DataPoint>>>
 {
 	public var infoStream : InfoStreamGraph;
-	
+
 	override function initAxes()
 	{
 		xvariable = cast independentVariables[0];
 		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
 	}
-	
+
 	override function initChart()
 	{
 		var chart = new StreamGraph(layout.getPanel(layout.mainPanelName));
 		chart.ready.add(function() ready.dispatch());
-		
+
 		chart.interpolator = infoStream.interpolation;
 		switch(infoStream.effect)
 		{

@@ -175,7 +175,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 //			for (j in 0...segments.length)
 //				tooltip.removeClass("fill-" + j);
 //			tooltip.addClass("fill-" + seg);
-			tooltip.show();
+//			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(x + w / 2, y);
 		}

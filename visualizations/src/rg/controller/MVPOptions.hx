@@ -69,12 +69,19 @@ class MVPOptions
 			query,
 			periodicity,
 			groupby = null,
-			groupfilter = null;
+			groupfilter = null,
+			statistic = null;
 
 		if (null == parameters.options)
 			parameters.options = { };
 		var options : Dynamic = parameters.options;
 		// capture defaults
+		// statistic
+		if (null != parameters.statistic)
+		{
+			statistic = parameters.statistic;
+			Reflect.deleteField(parameters, "statistic");
+		}
 		// grouping
 		if (null != parameters.groupby)
 		{
@@ -244,6 +251,14 @@ class MVPOptions
 							Reflect.setField(params, "groupfilter", groupfilter);
 						}
 					}
+					if (null != statistic)
+					{
+						Reflect.setField(params, "statistic", statistic);
+						if (null != statistic)
+						{
+							Reflect.setField(params, "statistic", statistic);
+						}
+					}
 					src.push( params );
 				}
 				if (null == params.options.segmenton)
@@ -261,6 +276,19 @@ class MVPOptions
 			return o;
 		}
 
+		function defaultStatistic() {
+			if(null == statistic) return "count";
+			return switch((""+statistic).toLowerCase())
+			{
+				case "standarddeviation", "stddeviation", "deviation":
+					"standardDeviation";
+				case "mean":
+					"mean";
+				default:
+					"count";
+			}
+		}
+
 		// ensure axes
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -269,13 +297,13 @@ class MVPOptions
 				switch(params.options.visualization)
 				{
 					case "funnelchart":
-						params.axes = [{ type : "event", variable : "independent" }, { type : "count"}];
+						params.axes = [{ type : "event", variable : "independent" }, { type : defaultStatistic()}];
 					case "barchart":
 						var axis : Dynamic = { scalemode : "fit" };
 						params.axes = [];
 						if(periodicity == "eternity") {
 							Objects.copyTo({ type : null == params.options.segmenton ? "event" : params.options.segmenton, variable : "independent" }, axis);
-							params.axes.push({ type : "count" });
+							params.axes.push({ type : defaultStatistic() });
 						} else
 							axis = timeAxis(axis);
 						params.axes.insert(0, axis);
@@ -297,7 +325,7 @@ class MVPOptions
 					hasdependent = true;
 			}
 			if (!hasdependent)
-				params.axes.push({ type : "count" });
+				params.axes.push({ type : defaultStatistic() });
 			handler(params);
 		});
 
@@ -310,7 +338,7 @@ class MVPOptions
 				{
 //					case "funnelchart":
 
-					case "linechart", "barchart":
+					case "linechart", "barchart", "streamgraph":
 						var axes : Array<Dynamic> = params.axes,
 							type = axes[axes.length - 1].type;
 						params.options.label = {
@@ -319,10 +347,12 @@ class MVPOptions
 									Properties.humanize(
 										null != values
 										? DataPoints.value(dp, "value")
-										: null != property
+										: (null != property && type == 'count')
 										? DataPoints.value(dp, property)
-										: null != params.options.segmenton
+										: (null != params.options.segmenton && type == 'count')
 										? DataPoints.value(dp, params.options.segmenton)
+										: type != 'count' && null != property
+										? type + " over " + Properties.humanize(property)
 										: type
 									) + ": " +
 									RGStrings.humanize(DataPoints.value(dp, type))

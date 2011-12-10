@@ -21,6 +21,8 @@ class Sankey extends Chart
 	public var padding : Float;
 	public var maxFalloffWidth : Float;
 	public var padLines : Float;
+	public var padFlow : Float;
+	public var minCurve : Float;
 
 	var levels : Int;
 	var max : Float;
@@ -29,6 +31,7 @@ class Sankey extends Chart
 	var edges : Array<{ src : Node, dst : Node, weight : Float }>;
 	var padBefore : Float;
 	var padAfter : Float;
+	var levelstarts : Array<Float>;
 
 	public function new(panel : Panel)
 	{
@@ -36,8 +39,10 @@ class Sankey extends Chart
 		addClass("sankey");
 		levelWidth = 60;
 		padding = 60;
-		maxFalloffWidth = 40;
+		maxFalloffWidth = 30;
 		padLines = 4.0;
+		padFlow = 5;
+		minCurve = 5;
 	}
 
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
@@ -54,13 +59,12 @@ class Sankey extends Chart
 	function redraw()
 	{
 		levels = layout.length;
-		max = layout[0][0].weight;
+		max = layout.floatMax(function(arr) return arr.reduce(function(v, c, _) return c.weight + v, 0)); //layout[0][0].weight;
 		map = new Hash();
 		edges = [];
 
+		// available height
 		availableheight = height - layout.floatMax(function(arr) return arr.length) * padding;
-
-
 
 		layout.each(function(level, lvl) {
 			level.each(function(n, pos) {
@@ -82,6 +86,37 @@ class Sankey extends Chart
 			return Floats.compare(a.weight, b.weight);
 		});
 
+		// correct max available height + max
+		for(edge in edges)
+		{
+			if(edge.src.level < edge.dst.level)
+				continue;
+			availableheight -= padLines;
+			max += edge.weight;
+		}
+		availableheight -= minCurve + padFlow;
+
+		var yref = 0.0;
+		levelstarts = [];
+		for(i in 0...layout.length)
+		{
+			var level = layout[i],
+				t = 0.0;
+			for(node in level)
+			{
+				t += padding + nheight(node.weight);
+			}
+			levelstarts[i] = t;
+			if(t > yref)
+				yref = t;
+		}
+		for(i in 0...levelstarts.length)
+		{
+			levelstarts[i] = yref - levelstarts[i]; //(yref - levelstarts[i]) / 2;
+		}
+		yref += padLines + minCurve + padFlow;
+
+		// padding before
 		padBefore = 0.0;
 
 		for(node in layout[0])
@@ -99,16 +134,15 @@ class Sankey extends Chart
 
 		padBefore += 2; // TODO border width
 
+		// padding after
 		padAfter = 0.0;
 
 		for(node in layout[layout.length-1])
 		{
 			var extrain = Math.min(nheight(node.falloffweight), maxFalloffWidth);
-			trace(extrain);
 			if(node.children.length > 0)
 			{
 				var childWeight = hafter(node.children[0].id, node.children) + nheight(node.children[0].weight) + nheight(node.falloffweight) + padLines;
-				trace(childWeight);
 				if(childWeight > extrain)
 					extrain = childWeight;
 			}
@@ -116,7 +150,7 @@ class Sankey extends Chart
 				padAfter = extrain;
 		}
 
-		padAfter += 2;
+		padAfter += 2; // TODO border width
 
 		// draw
 
@@ -126,7 +160,7 @@ class Sankey extends Chart
 		else
 			edgescontainer.selectAll("*").remove();
 
-		var yref = 540.0;
+//		var yref = 540.0;
 
 		edges.each(function(edge, _) {
 			if(edge.dst.level > edge.src.level)
@@ -170,7 +204,7 @@ class Sankey extends Chart
 			);
 		});
 
-		function normMin(v : Float) return Math.max(0, Math.min(v - 3, 5));
+		function normMin(v : Float) return Math.max(0, Math.min(v - 3, minCurve));
 
 		// fall-off
 		for(level in layout)
@@ -189,7 +223,7 @@ class Sankey extends Chart
 					normMin(falloff),  // minr
 					maxFalloffWidth, // max
 					0,  // before
-					5  // after
+					padFlow  // after
 				);
 			}
 		}
@@ -204,7 +238,6 @@ class Sankey extends Chart
 				var elbow = new ElbowArea(edgescontainer),
 					extra = nheight(node.extraweight);
 
-				trace(extra);
 				elbow.update(
 					LeftTop,
 					extra,
@@ -213,7 +246,7 @@ class Sankey extends Chart
 					normMin(extra),  // minr
 					maxFalloffWidth, // max
 					0,  // before
-					5  // after
+					padFlow  // after
 				);
 			}
 		}
@@ -281,6 +314,7 @@ class Sankey extends Chart
 		var lines = g.selectAll("g.reference").data(edges)
 			.enter()
 				.append("svg:g").attr("class").string("reference")
+/*
 				.append("svg:line")
 					.style("stroke-opacity").float(0.1)
 					.style("stroke").colorf(function(d, _)
@@ -289,7 +323,9 @@ class Sankey extends Chart
 							? NamedColors.blue
 							: (d.src.level < d.dst.level
 								? NamedColors.green
-								: NamedColors.red ));
+								: NamedColors.red ))
+*/
+		;
 		lines
 			.attr("x1").floatf(function(o, _) {
 				return xlevel(o.src.level);
@@ -353,7 +389,7 @@ class Sankey extends Chart
 
 	function ynode(node : Node, ?_)
 	{
-		var before = padding;
+		var before = padding + levelstarts[node.level];
 		for(i in 0...node.pos)
 		{
 			before += hnode(layout[node.level][i]) + padding;

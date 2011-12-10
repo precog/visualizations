@@ -265,7 +265,6 @@ class FunnelChart extends Chart
 			tooltip.hide()
 		else
 		{
-			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(width / 2, topheight + h * .6 + (h + padding) * i, true);
 		}

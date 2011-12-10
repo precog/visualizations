@@ -33,8 +33,8 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 
 	var chart : Selection;
 	var dps : Array<Array<DataPoint>>;
-	
-	public function new(panel : Panel) 
+
+	public function new(panel : Panel)
 	{
 		super(panel);
 
@@ -42,7 +42,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		chart = g.append("svg:g");
 	}
 
-	function x(d : DataPoint, ?i) 
+	function x(d : DataPoint, ?i)
 	{
 		var value   = DataPoints.value(d, xVariable.type),
 			scaled  = xVariable.axis.scale(xVariable.min(), xVariable.max(), value),
@@ -62,24 +62,24 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 			return h - scaledh;
 		}
 	}
-	
+
 	public function classf(pos : Int, cls : String)
 	{
 		return function(_, i : Int) return cls + " stroke-" + pos + " fill-" + pos;
 	}
-	
+
 	override function data(dps : Array<Array<DataPoint>>)
 	{
 		this.dps = dps;
 		redraw();
 	}
-	
+
 	override function resize()
 	{
 		super.resize();
 		redraw();
 	}
-	
+
 	function redraw()
 	{
 		if (null == dps || null == dps[0] || null == dps[0][0])
@@ -90,10 +90,10 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		var axisenter = axisgroup.enter()
 			.append("svg:g")
 			.attr("class").stringf(function(_, i) return "group group-" + i);
-		
+
 		// axis exit
 		axisgroup.exit().remove();
-		
+
 		for (i in 0...dps.length)
 		{
 			var data = dps[i],
@@ -110,7 +110,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 
 			if (null != click)
 				enter.on("click", onclick);
-			
+
 			if (null != labelDataPointOver)
 				enter.onNode("mouseover", onmouseover);
 
@@ -119,7 +119,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 
 			if (null != symbolStyle)
 				spath.attr("style").stringf(function(dp, _) return symbolStyle(dp, stats));
-			
+
 			if (null != labelDataPoint)
 			{
 				var f = this.labelDataPoint;
@@ -136,7 +136,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 				.update()
 				.attr("transform").stringf(getTranslatePointf(i))
 			;
-				
+
 			gsymbol.exit().remove();
 		}
 		ready.dispatch();
@@ -146,12 +146,12 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 	{
 		var x = this.x,
 			y = getY1(pos);
-		return function(dp, i) 
+		return function(dp, i)
 		{
 			return "translate("+x(dp)+","+y(dp,i)+")";
 		};
 	}
-	
+
 	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
 	{
 		var dp = Access.getData(n),
@@ -162,12 +162,11 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		{
 			var sel = thx.js.Dom.selectNode(n),
 				coords = Coords.fromTransform(sel.attr("transform").get());
-			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(coords[0], coords[1]);
 		}
 	}
-	
+
 	function onclick(stats : Stats<Dynamic>, dp : DataPoint, i : Int)
 	{
 		click(dp, stats);

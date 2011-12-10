@@ -22,27 +22,27 @@ class Chart extends Layer
 	public var labelDataPoint : DataPoint -> Stats<Dynamic> -> String;
 	public var labelDataPointOver : DataPoint -> Stats<Dynamic> -> String;
 	public var ready(default, null) : Notifier;
-	
+
 	var panelx : Float;
 	var panely : Float;
 	var tooltip : Balloon;
 
-	public function new(panel : Panel) 
+	public function new(panel : Panel)
 	{
 		super(panel);
 		animated = true;
 		animationDuration = 1500;
 		animationEase = Equations.linear;
-		ready = new Notifier(); 
+		ready = new Notifier();
 	}
-	
+
 	override function resize()
 	{
 		var coords = Panels.boundingBox(panel);
 		panelx = coords.x;
 		panely = coords.y;
 	}
-	
+
 	public function init()
 	{
 		if (null != labelDataPointOver)
@@ -51,9 +51,15 @@ class Chart extends Layer
 		}
 		resize();
 	}
-	
+
 	function moveTooltip(x : Float, y : Float, ?animated : Bool)
 	{
-		tooltip.moveTo(panelx + x, panely + y, animated);
+		if(0 == tooltip.x && 0 == tooltip.y || !tooltip.visible)
+		{
+			tooltip.hide();
+			tooltip.moveTo(panelx + x, panely + y, false);
+			tooltip.show(true);
+		} else
+			tooltip.moveTo(panelx + x, panely + y, animated);
 	}
 }

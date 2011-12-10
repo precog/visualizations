@@ -1,5 +1,8 @@
+v. 1.1.5
+* added support for standardDeviation and mean to visualizations
 v. 1.1.4
  * added official support for download
+ * fixed bug in query values
 v. 1.1.3
  * added support for histogram when the bar chart is generated with eternity
  * added support for simplified query to generate funnel charts from the event names

@@ -30,45 +30,45 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	public var colorMode(getColorMode, setColorMode) : ColorScaleMode;
 	var dps : Array<DataPoint>;
 	var variableDependent : VariableDependent<Dynamic>;
-	
-	public function new(panel : Panel) 
+
+	public function new(panel : Panel)
 	{
 		super(panel);
 		useContour = false;
 		colorMode = FromCss();
 	}
-	
+
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
 	{
 		xVariable = cast variableIndependents[0];
 		yVariables = cast [variableIndependents[1]];
 		variableDependent = variableDependents[0];
 	}
-	
+
 	override function init()
 	{
 		super.init();
 		g.classed().add("heat-grid");
 	}
-	
+
 	override function resize()
 	{
 		super.resize();
 		redraw();
 	}
-	
+
 	override function data(dps : Array<DataPoint>)
 	{
 		this.dps = dps;
 		redraw();
 	}
-	
+
 	function value(dp)
 	{
 		var v = DataPoints.value(dp, variableDependent.type);
 		return scale(v);
 	}
-	
+
 	function scale(v)
 	{
 		return variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), v);
@@ -81,10 +81,10 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	var w : Float;
 	var h : Float;
 	var stats : Stats<Dynamic>;
-	
+
 	function x(dp, i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w
 	function y(dp, i) return height - (1 + Arrays.indexOf(yrange, DataPoints.value(dp, yVariables[0].type))) * h
-	
+
 	function redraw()
 	{
 		if (null == dps || 0 == dps.length)
@@ -102,10 +102,10 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			drawContour();
 		else
 			drawSquares();
-		
+
 		ready.dispatch();
 	}
-	
+
 	function drawContour()
 	{
 /*
@@ -114,7 +114,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				for (i in 0...rows)
 					r.push(arr.filter(function(dp) return DataPoints.value(dp, yVariables[0].type) == yrange[i]).shift());
 				return r;
-			}), 
+			}),
 			level = 0.0,
 			min = scale(variableDependent.min()),
 			max = scale(variableDependent.max()),
@@ -131,15 +131,15 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			var v = value(dp);
 			return v >= level;
 		};
-		
+
 		for (i in 0...levels)
 		{
 			var color = colorScale.scale(level);
 			padding = 0; // i * h / (levels + 1);
 			level = min + (span / levels) * i;
-			
+
 			var map = createGridMap(grid);
-			
+
 			function createContour(?start)
 			{
 				var contour = Contour.contour(grid, start).map(function(d, i) {
@@ -148,7 +148,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				});
 				if (contour.length > 0)
 					contour.push(contour[0]);
-				
+
 				var line = Line.pointArray(LineInterpolator.Linear).shape(contour);
 				var path = g.append("svg:path")
 					.attr("d").string(line)
@@ -156,12 +156,12 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				;
 				stylefeature(path, path);
 			}
-			
+
 			createContour();
 		}
 */
 	}
-	
+
 	function createGridMap(grid)
 	{
 		var map = new Hash();
@@ -171,7 +171,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 					map.set(r + "-" + c, [r, c]);
 		return map;
 	}
-	
+
 	function drawSquares()
 	{
 		var choice = g.selectAll("rect").data(dps);
@@ -187,7 +187,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			.on("mouseover", onmouseover)
 		;
 	}
-	
+
 	function onmouseover(dp : DataPoint, i : Int)
 	{
 		if (null == labelDataPointOver)
@@ -198,17 +198,16 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		else {
 			tooltip.text = text.split("\n");
 			moveTooltip(x(dp, i) + w / 2, y(dp, i) + h / 2);
-			tooltip.show();
 		}
 	}
-	
+
 	function onclick(dp : DataPoint, i : Int)
 	{
 		if (null == click)
 			return;
 		click(dp, stats);
 	}
-	
+
 	function range(variable : rg.data.Variable<Dynamic, IAxis<Dynamic>>) : Array<Dynamic>
 	{
 		var v = Types.as(variable, VariableIndependent);
@@ -217,7 +216,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		var tickmarks = variable.axis.ticks(variable.min(), variable.max());
 		return tickmarks.map(function(d, i) return d.value);
 	}
-	
+
 	dynamic function stylefeature(svg : Selection, dp : DataPoint) {}
 
 	function getColorMode() return colorMode

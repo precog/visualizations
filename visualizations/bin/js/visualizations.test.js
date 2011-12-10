@@ -179,6 +179,7 @@ rg.data.IAxisDiscrete.prototype = {
 	scaleDistribution: null
 	,range: null
 	,__class__: rg.data.IAxisDiscrete
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 if(!thx.js) thx.js = {}
 thx.js.Access = $hxClasses["thx.js.Access"] = function(selection) {
@@ -386,6 +387,7 @@ rg.controller.visualization.Visualization.prototype = {
 		this.ready.remove(handler);
 	}
 	,__class__: rg.controller.visualization.Visualization
+	,__properties__: {get_variables:"getVariables"}
 }
 rg.controller.visualization.VisualizationSvg = $hxClasses["rg.controller.visualization.VisualizationSvg"] = function(layout) {
 	rg.controller.visualization.Visualization.call(this,layout.container);
@@ -1133,6 +1135,7 @@ rg.view.svg.panel.Layer.prototype = {
 		return this.customClass = v;
 	}
 	,__class__: rg.view.svg.panel.Layer
+	,__properties__: {set_customClass:"setCustomClass"}
 }
 if(!rg.view.svg.chart) rg.view.svg.chart = {}
 rg.view.svg.chart.Chart = $hxClasses["rg.view.svg.chart.Chart"] = function(panel) {
@@ -1171,19 +1174,243 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 });
 rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
+	this.addClass("sankey");
+	this.levelWidth = 60;
+	this.padding = 60;
+	this.maxFalloffWidth = 30;
+	this.padLines = 4.0;
+	this.padFlow = 5;
+	this.minCurve = 5;
 }
 rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
 rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
 rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	dps: null
+	layout: null
+	,levelWidth: null
+	,padding: null
+	,maxFalloffWidth: null
+	,padLines: null
+	,padFlow: null
+	,minCurve: null
+	,levels: null
+	,max: null
+	,availableheight: null
+	,map: null
+	,edges: null
+	,padBefore: null
+	,padAfter: null
+	,levelstarts: null
 	,setVariables: function(variableIndependents,variableDependents,data) {
 	}
-	,data: function(dps) {
-		this.dps = dps;
+	,data: function(layout) {
+		this.layout = layout;
 		this.redraw();
 	}
 	,redraw: function() {
-		haxe.Log.trace(this.dps,{ fileName : "Sankey.hx", lineNumber : 28, className : "rg.view.svg.chart.Sankey", methodName : "redraw"});
+		var me = this;
+		this.levels = this.layout.length;
+		this.max = Arrays.floatMax(this.layout,function(arr) {
+			return Iterators.reduce(arr.iterator(),function(v,c,_) {
+				return c.weight + v;
+			},0);
+		});
+		this.map = new Hash();
+		this.edges = [];
+		this.availableheight = this.height - Arrays.floatMax(this.layout,function(arr) {
+			return arr.length;
+		}) * this.padding;
+		this.layout.forEach(function(level,lvl) {
+			level.forEach(function(n,pos) {
+				me.map.set(n.id,n);
+			});
+		});
+		this.layout.forEach(function(level,lvl) {
+			level.forEach(function(n,pos) {
+				var _g = 0, _g1 = n.children;
+				while(_g < _g1.length) {
+					var child = _g1[_g];
+					++_g;
+					me.edges.push({ src : n, dst : me.map.get(child.id), weight : child.weight});
+				}
+			});
+		});
+		this.edges.sort(function(a,b) {
+			return Floats.compare(a.weight,b.weight);
+		});
+		var _g = 0, _g1 = this.edges;
+		while(_g < _g1.length) {
+			var edge = _g1[_g];
+			++_g;
+			if(edge.src.level < edge.dst.level) continue;
+			this.availableheight -= this.padLines;
+			this.max += edge.weight;
+		}
+		this.availableheight -= this.minCurve + this.padFlow;
+		var yref = 0.0;
+		this.levelstarts = [];
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var level = this.layout[i], t = 0.0;
+			var _g2 = 0;
+			while(_g2 < level.length) {
+				var node = level[_g2];
+				++_g2;
+				t += this.padding + this.nheight(node.weight);
+			}
+			this.levelstarts[i] = t;
+			if(t > yref) yref = t;
+		}
+		var _g1 = 0, _g = this.levelstarts.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.levelstarts[i] = yref - this.levelstarts[i];
+		}
+		yref += this.padLines + this.minCurve + this.padFlow;
+		this.padBefore = 0.0;
+		var _g = 0, _g1 = this.layout[0];
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			var extrain = Math.min(this.nheight(node.extraweight),this.maxFalloffWidth);
+			if(node.parents.length > 0) {
+				var parentWeight = this.hafter(node.parents[0].id,node.parents) + this.nheight(node.parents[0].weight);
+				if(parentWeight > extrain) extrain = parentWeight;
+			}
+			if(extrain > this.padBefore) this.padBefore = extrain;
+		}
+		this.padBefore += 2;
+		this.padAfter = 0.0;
+		var _g = 0, _g1 = this.layout[this.layout.length - 1];
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			var extrain = Math.min(this.nheight(node.falloffweight),this.maxFalloffWidth);
+			if(node.children.length > 0) {
+				var childWeight = this.hafter(node.children[0].id,node.children) + this.nheight(node.children[0].weight) + this.nheight(node.falloffweight) + this.padLines;
+				if(childWeight > extrain) extrain = childWeight;
+			}
+			if(extrain > this.padAfter) this.padAfter = extrain;
+		}
+		this.padAfter += 2;
+		var edgescontainer = this.g.select("g.edges");
+		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
+		this.edges.forEach(function(edge,_) {
+			if(edge.dst.level > edge.src.level) return;
+			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer), before = me.hafter(edge.dst.id,edge.src.children) + Math.min(me.maxFalloffWidth,me.nheight(edge.src.falloffweight)), after = me.hafter(edge.src.id,edge.dst.parents);
+			hook.update(me.levelWidth / 2 + me.xlevel(edge.src.level),me.ynode(edge.src) + me.ydiagonal(edge.dst.id,edge.src.children),-me.levelWidth / 2 + me.xlevel(edge.dst.level),me.nheight(edge.dst.extraweight) + me.ynode(edge.dst) + me.ydiagonal(edge.src.id,edge.dst.parents),weight,yref,before,after);
+			yref += weight + me.padLines;
+		});
+		this.edges.forEach(function(edge,_) {
+			if(edge.dst.level <= edge.src.level) return;
+			var weight = edge.weight / me.max * me.availableheight, diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer);
+			diagonal.update(me.levelWidth / 2 + me.xlevel(edge.src.level),me.ynode(edge.src) + me.ydiagonal(edge.dst.id,edge.src.children),-me.levelWidth / 2 + me.xlevel(edge.dst.level),me.nheight(edge.dst.extraweight) + me.ynode(edge.dst) + me.ydiagonal(edge.src.id,edge.dst.parents),weight,weight);
+		});
+		var normMin = function(v) {
+			return Math.max(0,Math.min(v - 3,me.minCurve));
+		};
+		var _g = 0, _g1 = this.layout;
+		while(_g < _g1.length) {
+			var level = _g1[_g];
+			++_g;
+			var _g2 = 0;
+			while(_g2 < level.length) {
+				var node = level[_g2];
+				++_g2;
+				if(node.falloffweight <= 0) continue;
+				var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), falloff = this.nheight(node.falloffweight);
+				elbow.update(rg.view.svg.widget.Orientation.RightBottom,falloff,this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node) + this.ydiagonal(null,node.children) + falloff,normMin(falloff),this.maxFalloffWidth,0,this.padFlow);
+			}
+		}
+		var _g = 0, _g1 = this.layout;
+		while(_g < _g1.length) {
+			var level = _g1[_g];
+			++_g;
+			var _g2 = 0;
+			while(_g2 < level.length) {
+				var node = level[_g2];
+				++_g2;
+				if(node.extraweight <= 0) continue;
+				var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), extra = this.nheight(node.extraweight);
+				elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,-this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node),normMin(extra),this.maxFalloffWidth,0,this.padFlow);
+			}
+		}
+		var rules = this.g.selectAll("g.level").data(this.layout).enter().append("svg:g").attr("class").string("level").update().attr("transform").stringf(function(_,i) {
+			return "translate(" + me.xlevel(i) + ",0)";
+		}).exit().remove();
+		var choice = rules.update().selectAll("g.node").dataf(function(d,_) {
+			return d;
+		});
+		var cont = choice.enter().append("svg:g").attr("class").string("node");
+		if(this.levelWidth > 0) {
+			cont.append("svg:rect").attr("class").string("node").attr("x")["float"](-this.levelWidth / 2).attr("y")["float"](0).attr("width")["float"](this.levelWidth).attr("height").floatf(this.hnode.$bind(this));
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.levelWidth / 2).attr("y2")["float"](0);
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.levelWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+		}
+		cont.each(function(dp,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			var label = new rg.view.svg.widget.Label(node,true,true,false);
+			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+			label.setText(dp.id);
+		});
+		choice.update().attr("transform").stringf(function(n,i) {
+			return "translate(0," + me.ynode(n,i) + ")";
+		});
+		var lines = this.g.selectAll("g.reference").data(this.edges).enter().append("svg:g").attr("class").string("reference");
+		lines.attr("x1").floatf(function(o,_) {
+			return me.xlevel(o.src.level);
+		}).attr("x2").floatf(function(o,_) {
+			return me.xlevel(o.dst.level);
+		}).attr("y1").floatf(function(o,_) {
+			return me.ynode(o.src) + me.hnode(o.src) / 2;
+		}).attr("y2").floatf(function(o,_) {
+			return me.ynode(o.dst) + me.hnode(o.dst) / 2;
+		}).style("stroke-width").floatf(function(o,_) {
+			return me.nheight(o.weight);
+		});
+	}
+	,nheight: function(v) {
+		return v / this.max * this.availableheight;
+	}
+	,ydiagonal: function(id,edges) {
+		var weight = 0.0;
+		var _g = 0;
+		while(_g < edges.length) {
+			var edge = edges[_g];
+			++_g;
+			if(edge.id == id) break;
+			weight += edge.weight;
+		}
+		return this.nheight(weight);
+	}
+	,hafter: function(id,edges) {
+		var found = false, pad = this.padLines / this.nheight(1), weight = pad;
+		var _g = 0;
+		while(_g < edges.length) {
+			var edge = edges[_g];
+			++_g;
+			if(!found) {
+				if(edge.id == id) found = true;
+				continue;
+			}
+			weight += edge.weight + pad;
+		}
+		return this.nheight(weight);
+	}
+	,xlevel: function(pos,_) {
+		return (this.width - this.padBefore - this.padAfter - this.levelWidth) / (this.levels - 1) * pos + this.levelWidth / 2 + this.padBefore;
+	}
+	,ynode: function(node,_) {
+		var before = this.padding + this.levelstarts[node.level];
+		var _g1 = 0, _g = node.pos;
+		while(_g1 < _g) {
+			var i = _g1++;
+			before += this.hnode(this.layout[node.level][i]) + this.padding;
+		}
+		return before;
+	}
+	,hnode: function(node,_) {
+		return this.nheight(node.weight);
 	}
 	,__class__: rg.view.svg.chart.Sankey
 });
@@ -1227,12 +1454,11 @@ rg.controller.interactive.Downloader.prototype = {
 		http.request(true);
 	}
 	,complete: function(success,error,content) {
-		haxe.Log.trace(content,{ fileName : "Downloader.hx", lineNumber : 79, className : "rg.controller.interactive.Downloader", methodName : "complete"});
 		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
 			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
 		} else {
-			js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
 			if(null != success) success();
+			js.Lib.window.location.href = content;
 		}
 	}
 	,__class__: rg.controller.interactive.Downloader
@@ -1377,6 +1603,102 @@ rg.controller.info.TestInfoVisualizationOption.prototype = {
 	}
 	,__class__: rg.controller.info.TestInfoVisualizationOption
 }
+if(!rg.layout) rg.layout = {}
+rg.layout.GraphCollection = $hxClasses["rg.layout.GraphCollection"] = function(graph) {
+	this.graph = graph;
+	this.collection = new IntHash();
+}
+rg.layout.GraphCollection.__name__ = ["rg","layout","GraphCollection"];
+rg.layout.GraphCollection.prototype = {
+	graph: null
+	,collection: null
+	,nextid: null
+	,length: null
+	,get: function(id) {
+		return this.collection.get(id);
+	}
+	,get_length: function() {
+		return IntHashes.count(this.collection);
+	}
+	,collectionAdd: function(item) {
+		this.collection.set(item.id,item);
+	}
+	,collectionRemove: function(item) {
+		this.collection.remove(item.id);
+	}
+	,iterator: function() {
+		return this.collection.iterator();
+	}
+	,__class__: rg.layout.GraphCollection
+	,__properties__: {get_length:"get_length"}
+}
+rg.layout.GraphEdges = $hxClasses["rg.layout.GraphEdges"] = function(graph) {
+	rg.layout.GraphCollection.call(this,graph);
+	this.edgesp = new IntHash();
+	this.edgesn = new IntHash();
+}
+rg.layout.GraphEdges.__name__ = ["rg","layout","GraphEdges"];
+rg.layout.GraphEdges.newInstance = function(graph) {
+	return new rg.layout.GraphEdges(graph);
+}
+rg.layout.GraphEdges.__super__ = rg.layout.GraphCollection;
+rg.layout.GraphEdges.prototype = $extend(rg.layout.GraphCollection.prototype,{
+	edgesp: null
+	,edgesn: null
+	,create: function(head,tail,data) {
+		if(head.graph != tail.graph || head.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 22, className : "rg.layout.GraphEdges", methodName : "create"});
+		var e = rg.layout.GEdge.create(this.graph,++this.nextid,head,tail,data);
+		this.collectionAdd(e);
+		this.connections(head.id,this.edgesp).push(e.id);
+		this.connections(tail.id,this.edgesn).push(e.id);
+		return e;
+	}
+	,remove: function(edge) {
+		if(edge.graph != this.graph) throw new thx.error.Error("the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 33, className : "rg.layout.GraphEdges", methodName : "remove"});
+		this.collectionRemove(edge);
+		edge.destroy();
+	}
+	,unlink: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 41, className : "rg.layout.GraphEdges", methodName : "unlink"});
+		this._unlink(node,this.edgesp);
+		this._unlink(node,this.edgesn);
+	}
+	,unlinkPositives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 49, className : "rg.layout.GraphEdges", methodName : "unlinkPositives"});
+		this._unlink(node,this.edgesp);
+	}
+	,unlinkNegatives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 56, className : "rg.layout.GraphEdges", methodName : "unlinkNegatives"});
+		this._unlink(node,this.edgesn);
+	}
+	,_unlink: function(node,connections) {
+		var ids = connections.get(node.id);
+		if(null == ids) return;
+		var _g = 0;
+		while(_g < ids.length) {
+			var id = ids[_g];
+			++_g;
+			this.remove(this.get(id));
+		}
+		connections.remove(node.id);
+	}
+	,clear: function() {
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var item = $it0.next();
+			this.remove(item);
+		}
+	}
+	,connections: function(id,connections) {
+		var c = connections.get(id);
+		if(null == c) connections.set(id,c = []);
+		return c;
+	}
+	,toString: function() {
+		return "GraphEdges (" + IntHashes.count(this.collection) + ")";
+	}
+	,__class__: rg.layout.GraphEdges
+});
 if(!thx.culture) thx.culture = {}
 thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
@@ -1394,6 +1716,7 @@ thx.culture.Info.prototype = {
 }
 thx.culture.Culture = $hxClasses["thx.culture.Culture"] = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
+thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
 thx.culture.Culture.cultures = null;
 thx.culture.Culture.getCultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
@@ -1839,6 +2162,7 @@ rg.view.svg.widget.Balloon.prototype = {
 		bg.transition().ease(this.ease).delay(null,this.duration);
 	}
 	,__class__: rg.view.svg.widget.Balloon
+	,__properties__: {set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox",set_preferredSide:"setPreferredSide",set_roundedCorner:"setRoundedCorner",set_lineHeight:"setLineHeight",set_text:"setText"}
 }
 rg.view.svg.panel.Panel = $hxClasses["rg.view.svg.panel.Panel"] = function(frame) {
 	this.frame = frame;
@@ -2647,6 +2971,80 @@ Dates.compare = function(a,b) {
 Dates.prototype = {
 	__class__: Dates
 }
+rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("elbow");
+	this.area = this.g.append("svg:path").attr("class").string("elbow-fill");
+	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer");
+	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner");
+}
+rg.view.svg.widget.ElbowArea.__name__ = ["rg","view","svg","widget","ElbowArea"];
+rg.view.svg.widget.ElbowArea.prototype = {
+	g: null
+	,area: null
+	,outer: null
+	,inner: null
+	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
+		if(after == null) after = 10.0;
+		if(before == null) before = 0.0;
+		if(maxradius == null) maxradius = 16.0;
+		if(minradius == null) minradius = 3.0;
+		var dinner = "", douter = "", rad = weight < 0?Math.max(maxradius,weight):Math.min(maxradius,weight);
+		switch( (orientation)[1] ) {
+		case 0:
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + Math.abs(minradius) + "," + Math.abs(minradius) + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y - weight) + "L" + (before + x) + "," + (y - weight) + "A" + Math.abs(rad) + "," + Math.abs(rad) + " 0 0,1 " + (before + x + rad) + "," + (y - weight + rad) + "L" + (before + x + rad) + "," + (y + after + minradius);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			this.update(rg.view.svg.widget.Orientation.RightBottom,-weight,x,y,-minradius,-maxradius,-before,-after);
+			return;
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + minradius + "," + minradius + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y + weight) + "L" + (-before + x) + "," + (y + weight) + "A" + rad + "," + rad + " 0 0,1 " + (-before + x - rad) + "," + (y + weight - rad) + "L" + (-before + x - rad) + "," + (y - after - minradius);
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		}
+		var darea = douter + "L" + dinner.substr(1) + "z";
+		this.inner.attr("d").string(dinner);
+		this.outer.attr("d").string(douter);
+		this.area.attr("d").string(darea);
+	}
+	,__class__: rg.view.svg.widget.ElbowArea
+}
+rg.view.svg.widget.Orientation = $hxClasses["rg.view.svg.widget.Orientation"] = { __ename__ : ["rg","view","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.view.svg.widget.Orientation.RightBottom = ["RightBottom",0];
+rg.view.svg.widget.Orientation.RightBottom.toString = $estr;
+rg.view.svg.widget.Orientation.RightBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftBottom = ["LeftBottom",1];
+rg.view.svg.widget.Orientation.LeftBottom.toString = $estr;
+rg.view.svg.widget.Orientation.LeftBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.RightTop = ["RightTop",2];
+rg.view.svg.widget.Orientation.RightTop.toString = $estr;
+rg.view.svg.widget.Orientation.RightTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftTop = ["LeftTop",3];
+rg.view.svg.widget.Orientation.LeftTop.toString = $estr;
+rg.view.svg.widget.Orientation.LeftTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomRight = ["BottomRight",4];
+rg.view.svg.widget.Orientation.BottomRight.toString = $estr;
+rg.view.svg.widget.Orientation.BottomRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomLeft = ["BottomLeft",5];
+rg.view.svg.widget.Orientation.BottomLeft.toString = $estr;
+rg.view.svg.widget.Orientation.BottomLeft.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopRight = ["TopRight",6];
+rg.view.svg.widget.Orientation.TopRight.toString = $estr;
+rg.view.svg.widget.Orientation.TopRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopLeft = ["TopLeft",7];
+rg.view.svg.widget.Orientation.TopLeft.toString = $estr;
+rg.view.svg.widget.Orientation.TopLeft.__enum__ = rg.view.svg.widget.Orientation;
 if(!thx.geo) thx.geo = {}
 thx.geo.IProjection = $hxClasses["thx.geo.IProjection"] = function() { }
 thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
@@ -2723,6 +3121,7 @@ thx.geo.Albers.prototype = {
 		return this._scale;
 	}
 	,__class__: thx.geo.Albers
+	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate",set_parallels:"setParallels",get_parallels:"getParallels",set_origin:"setOrigin",get_origin:"getOrigin"}
 }
 rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
@@ -2949,6 +3348,7 @@ rg.view.svg.widget.Map.prototype = {
 		return cls;
 	}
 	,__class__: rg.view.svg.widget.Map
+	,__properties__: {set_className:"setClassName"}
 }
 rg.controller.info.InfoAnimation = $hxClasses["rg.controller.info.InfoAnimation"] = function() {
 	this.animated = false;
@@ -3734,6 +4134,7 @@ rg.data.AxisOrdinal.prototype = {
 		return new rg.data.Stats();
 	}
 	,__class__: rg.data.AxisOrdinal
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.view.svg.panel.TestSpace = $hxClasses["rg.view.svg.panel.TestSpace"] = function() {
 }
@@ -3808,6 +4209,68 @@ rg.view.svg.panel.TestSpace.prototype = {
 		utest.Assert.equals(100,panel2.frame.height,null,{ fileName : "TestSpace.hx", lineNumber : 122, className : "rg.view.svg.panel.TestSpace", methodName : "testContainer"});
 	}
 	,__class__: rg.view.svg.panel.TestSpace
+}
+rg.view.svg.widget.HookConnectorArea = $hxClasses["rg.view.svg.widget.HookConnectorArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("hook");
+	this.area = this.g.append("svg:path").attr("class").string("hook-fill");
+	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper");
+	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower");
+}
+rg.view.svg.widget.HookConnectorArea.__name__ = ["rg","view","svg","widget","HookConnectorArea"];
+rg.view.svg.widget.HookConnectorArea.lineTo = function(x,y) {
+	return "L" + x + "," + y;
+}
+rg.view.svg.widget.HookConnectorArea.quarterTo = function(x,y,r) {
+	return "A" + Math.abs(r) + "," + Math.abs(r) + " 0 0," + (r < 0?0:1) + " " + x + "," + y;
+}
+rg.view.svg.widget.HookConnectorArea.prototype = {
+	g: null
+	,area: null
+	,upper: null
+	,lower: null
+	,update: function(x1,y1,x2,y2,weight,yreference,before,after) {
+		var min = Math.min(5,weight), upperp = this.createPath(x1,y1,x2,y2,y1 > yreference?yreference:yreference + weight,before + weight,after + weight,weight,weight), lowerp = this.createPath(x2,y2 + weight,x1,y1 + weight,y1 > yreference?yreference - weight:yreference,-after,-before,-min,min);
+		this.upper.attr("d").string(upperp);
+		this.lower.attr("d").string(lowerp);
+		this.area.attr("d").string(upperp + "L" + lowerp.substr(1) + "z");
+	}
+	,createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
+		var path = "M" + x1 + "," + y1;
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x1 + before - r1,y1);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x1 + before,y1 + r2,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x1 + before,yref - r2);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x1 + before - r1,yref,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2 - after + r1,yref);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x2 - after,yref - r2,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2 - after,y2 + r2);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x2 - after + r1,y2,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2,y2);
+		return path;
+	}
+	,createPath2: function(x1,y1,sr,x2,y2,yreference) {
+		var path = "M" + x1 + "," + y1;
+		if(yreference > y1) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x1 + sr) + "," + (y1 + sr);
+			path += "L" + (sr + x1) + "," + (yreference - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x1 + "," + yreference;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x1 + sr) + "," + (y1 - sr);
+			path += "L" + (sr + x1) + "," + (yreference + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x1 + "," + yreference;
+		}
+		path += "L" + x2 + "," + yreference;
+		if(yreference > y2) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x2 - sr) + "," + (yreference - sr);
+			path += "L" + (x2 - sr) + "," + (y2 + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x2 + "," + y2;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x2 - sr) + "," + (yreference + sr);
+			path += "L" + (x2 - sr) + "," + (y2 - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x2 + "," + y2;
+		}
+		return path;
+	}
+	,__class__: rg.view.svg.widget.HookConnectorArea
 }
 rg.controller.info.InfoVisualizationType = $hxClasses["rg.controller.info.InfoVisualizationType"] = function() {
 	this.replace = true;
@@ -4272,6 +4735,7 @@ thx.js.Selection = $hxClasses["thx.js.Selection"] = function(groups) {
 	thx.js.UnboundSelection.call(this,groups);
 }
 thx.js.Selection.__name__ = ["thx","js","Selection"];
+thx.js.Selection.__properties__ = {get_currentNode:"getCurrentNode",get_current:"getCurrent"}
 thx.js.Selection.current = null;
 thx.js.Selection.currentNode = null;
 thx.js.Selection.create = function(groups) {
@@ -4381,6 +4845,7 @@ rg.controller.info.InfoTrack.prototype = {
 }
 thx.culture.Language = $hxClasses["thx.culture.Language"] = function() { }
 thx.culture.Language.__name__ = ["thx","culture","Language"];
+thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
 thx.culture.Language.languages = null;
 thx.culture.Language.getLanguages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
@@ -5284,7 +5749,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1476"};
+	r.info.viz = { version : "1.1.4.2821"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5553,6 +6018,7 @@ rg.data.AxisTime.prototype = {
 		return new rg.data.StatsNumeric();
 	}
 	,__class__: rg.data.AxisTime
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 thx.js.Timer = $hxClasses["thx.js.Timer"] = function() { }
 thx.js.Timer.__name__ = ["thx","js","Timer"];
@@ -5822,6 +6288,24 @@ hxevents.Dispatcher.prototype = {
 	}
 	,__class__: hxevents.Dispatcher
 }
+rg.layout.TestBaseGraph = $hxClasses["rg.layout.TestBaseGraph"] = function() {
+}
+rg.layout.TestBaseGraph.__name__ = ["rg","layout","TestBaseGraph"];
+rg.layout.TestBaseGraph.prototype = {
+	graph: null
+	,setup: function() {
+		this.graph = new rg.layout.Graph();
+	}
+	,__class__: rg.layout.TestBaseGraph
+}
+rg.layout.TestGraph = $hxClasses["rg.layout.TestGraph"] = function() {
+	rg.layout.TestBaseGraph.call(this);
+}
+rg.layout.TestGraph.__name__ = ["rg","layout","TestGraph"];
+rg.layout.TestGraph.__super__ = rg.layout.TestBaseGraph;
+rg.layout.TestGraph.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
+	__class__: rg.layout.TestGraph
+});
 if(!thx.text) thx.text = {}
 thx.text.ERegs = $hxClasses["thx.text.ERegs"] = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
@@ -5957,7 +6441,7 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 	case "month":
 		var s = rg.util.Periodicity.dateUtc(start), e = rg.util.Periodicity.dateUtc(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
 		var result = [];
-		while(sy < ey || sm <= em) {
+		while(sy < ey || sy == ey && sm <= em) {
 			result.push(new Date(sy,sm,1,0,0,0).getTime());
 			sm++;
 			if(sm > 11) {
@@ -6282,6 +6766,7 @@ thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
 	thx.culture.Culture.add(this);
 }
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
+thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
 thx.cultures.EnUS.culture = null;
 thx.cultures.EnUS.getCulture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
@@ -6576,6 +7061,7 @@ thx.languages.En = $hxClasses["thx.languages.En"] = function() {
 	thx.culture.Language.add(this);
 }
 thx.languages.En.__name__ = ["thx","languages","En"];
+thx.languages.En.__properties__ = {get_language:"getLanguage"}
 thx.languages.En.language = null;
 thx.languages.En.getLanguage = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
@@ -6654,6 +7140,48 @@ rg.view.svg.util.SymbolCache.prototype = {
 	}
 	,__class__: rg.view.svg.util.SymbolCache
 }
+rg.layout.GraphElement = $hxClasses["rg.layout.GraphElement"] = function(graph,id,data) {
+	this.id = id;
+	this.data = data;
+	this.graph = graph;
+}
+rg.layout.GraphElement.__name__ = ["rg","layout","GraphElement"];
+rg.layout.GraphElement.friendDestroy = function(item) {
+	return item;
+}
+rg.layout.GraphElement.prototype = {
+	graph: null
+	,id: null
+	,data: null
+	,destroy: function() {
+		this.graph = null;
+		this.id = -1;
+	}
+	,__class__: rg.layout.GraphElement
+}
+rg.layout.GEdge = $hxClasses["rg.layout.GEdge"] = function(graph,id,head,tail,data) {
+	rg.layout.GraphElement.call(this,graph,id,data);
+	this.edges = graph.edges;
+	this.head = head;
+	this.tail = tail;
+}
+rg.layout.GEdge.__name__ = ["rg","layout","GEdge"];
+rg.layout.GEdge.create = function(graph,id,head,tail,data) {
+	return new rg.layout.GEdge(graph,id,head,tail,data);
+}
+rg.layout.GEdge.__super__ = rg.layout.GraphElement;
+rg.layout.GEdge.prototype = $extend(rg.layout.GraphElement.prototype,{
+	edges: null
+	,head: null
+	,tail: null
+	,destroy: function() {
+		rg.layout.GraphElement.prototype.destroy.call(this);
+		this.edges = null;
+		this.head = null;
+		this.tail = null;
+	}
+	,__class__: rg.layout.GEdge
+});
 if(!thx.translation) thx.translation = {}
 thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
@@ -6662,6 +7190,7 @@ thx.translation.ITranslation.prototype = {
 	,_: null
 	,__: null
 	,__class__: thx.translation.ITranslation
+	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
 if(!thx.svg) thx.svg = {}
 thx.svg.Diagonal = $hxClasses["thx.svg.Diagonal"] = function() {
@@ -6676,6 +7205,13 @@ thx.svg.Diagonal.forObject = function() {
 		return [d.x0,d.y0];
 	}).targetf(function(d,_i) {
 		return [d.x1,d.y1];
+	});
+}
+thx.svg.Diagonal.forArray = function() {
+	return new thx.svg.Diagonal().sourcef(function(d,_i) {
+		return [d[0],d[1]];
+	}).targetf(function(d,_i) {
+		return [d[2],d[3]];
 	});
 }
 thx.svg.Diagonal.prototype = {
@@ -6742,6 +7278,9 @@ rg.data.IDataSource.prototype = {
 }
 rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
 	this.label = new rg.controller.info.InfoLabel();
+	this.idproperty = "id";
+	this.weightproperty = "count";
+	this.parentsproperty = "parents";
 }
 rg.controller.info.InfoSankey.__name__ = ["rg","controller","info","InfoSankey"];
 rg.controller.info.InfoSankey.filters = function() {
@@ -6753,7 +7292,16 @@ rg.controller.info.InfoSankey.filters = function() {
 }
 rg.controller.info.InfoSankey.prototype = {
 	label: null
+	,idproperty: null
+	,weightproperty: null
+	,parentsproperty: null
 	,__class__: rg.controller.info.InfoSankey
+}
+rg.layout.TestSugiyamaMethod = $hxClasses["rg.layout.TestSugiyamaMethod"] = function() {
+}
+rg.layout.TestSugiyamaMethod.__name__ = ["rg","layout","TestSugiyamaMethod"];
+rg.layout.TestSugiyamaMethod.prototype = {
+	__class__: rg.layout.TestSugiyamaMethod
 }
 var haxe = haxe || {}
 if(!haxe.io) haxe.io = {}
@@ -7239,6 +7787,7 @@ rg.view.svg.layer.Title.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 		return v;
 	}
 	,__class__: rg.view.svg.layer.Title
+	,__properties__: $extend(rg.view.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
 });
 if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.Layout = $hxClasses["rg.view.layout.Layout"] = function(width,height,container) {
@@ -7476,6 +8025,64 @@ utest.TestResult.prototype = {
 	}
 	,__class__: utest.TestResult
 }
+rg.layout.GreedyCyclePartitioner = $hxClasses["rg.layout.GreedyCyclePartitioner"] = function() {
+}
+rg.layout.GreedyCyclePartitioner.__name__ = ["rg","layout","GreedyCyclePartitioner"];
+rg.layout.GreedyCyclePartitioner.prototype = {
+	partition: function(graph) {
+		var left = [], right = [], id;
+		var n;
+		graph = rg.layout.Graphs.clone(graph);
+		while(!(Hashes.count(graph) == 0)) {
+			while(null != (n = rg.layout.Graphs.findSink(graph))) {
+				var _g = 0, _g1 = n.edgesn;
+				while(_g < _g1.length) {
+					var negative = _g1[_g];
+					++_g;
+					right.unshift({ a : negative, b : n.vertex});
+					graph.get(negative).edgesp.remove(n.vertex);
+				}
+				graph.remove(n.vertex);
+			}
+			var _g = 0, _g1 = rg.layout.Graphs.findAllIsolated(graph);
+			while(_g < _g1.length) {
+				var isolated = _g1[_g];
+				++_g;
+				graph.remove(isolated.vertex);
+			}
+			while(null != (n = rg.layout.Graphs.findSource(graph))) {
+				var _g = 0, _g1 = n.edgesp;
+				while(_g < _g1.length) {
+					var positive = _g1[_g];
+					++_g;
+					left.push({ a : n.vertex, b : positive});
+					graph.get(positive).edgesn.remove(n.vertex);
+				}
+				graph.remove(n.vertex);
+			}
+			if(!(Hashes.count(graph) == 0)) {
+				n = rg.layout.Graphs.findMaxPositiveOverNegative(graph);
+				var _g = 0, _g1 = n.edgesn;
+				while(_g < _g1.length) {
+					var negative = _g1[_g];
+					++_g;
+					right.unshift({ a : negative, b : n.vertex});
+					graph.get(negative).edgesp.remove(n.vertex);
+				}
+				var _g = 0, _g1 = n.edgesp;
+				while(_g < _g1.length) {
+					var positive = _g1[_g];
+					++_g;
+					left.push({ a : n.vertex, b : positive});
+					graph.get(positive).edgesn.remove(n.vertex);
+				}
+				graph.remove(n.vertex);
+			}
+		}
+		return { left : left, right : right};
+	}
+	,__class__: rg.layout.GreedyCyclePartitioner
+}
 var Iterables = $hxClasses["Iterables"] = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.indexOf = function(it,v,f) {
@@ -7706,7 +8313,7 @@ js.Boot.__string_rec = function(o,s) {
 		if(hasp && !o.hasOwnProperty(k)) {
 			continue;
 		}
-		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__") {
+		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
 			continue;
 		}
 		if(str.length != 2) str += ", \n";
@@ -8176,6 +8783,163 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
+rg.layout.SugiyamaMethod = $hxClasses["rg.layout.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
+	var id = 0;
+	this.partitioner = null == partitioner?new rg.layout.GreedyCyclePartitioner():partitioner;
+	this.layer = null == layer?new rg.layout.LongestPathLayer():layer;
+	this.splitter = null == splitter?new rg.layout.EdgeSpliter():splitter;
+	this.decrosser = null == decrosser?rg.layout.GreedySwitchDecrosser.composed():decrosser;
+}
+rg.layout.SugiyamaMethod.__name__ = ["rg","layout","SugiyamaMethod"];
+rg.layout.SugiyamaMethod.createMap = function(vertices,edges) {
+	var map = new Hash();
+	var _g = 0;
+	while(_g < vertices.length) {
+		var v = vertices[_g];
+		++_g;
+		map.set(v,{ vertex : v, edgesn : [], edgesp : []});
+	}
+	var _g = 0;
+	while(_g < edges.length) {
+		var edge = edges[_g];
+		++_g;
+		map.get(edge.a).edgesp.push(edge.b);
+		map.get(edge.b).edgesn.push(edge.a);
+	}
+	return map;
+}
+rg.layout.SugiyamaMethod.drawGraph = function(graph,layout) {
+	var vertices = Iterators.array(graph.keys()), edges = Arrays.flatten(Iterators.map(graph.iterator(),function(n,_) {
+		return n.edgesp.map(function(dst,_1) {
+			return { a : n.vertex, b : dst};
+		});
+	}));
+	rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
+}
+rg.layout.SugiyamaMethod.draw = function(vertices,edges,layout) {
+	var map = new Hash(), grid = 16, padding = 25, r = 5, size = 400, rand = new thx.math.Random(6724095);
+	var el = thx.js.Dom.select("body").append("svg:svg").attr("width")["float"](size).attr("height")["float"](size).style("margin").string("4px");
+	el.append("svg:defs").append("svg:marker").attr("id").string("Triangle").attr("viewBox").string("0 0 10 10").attr("refX").string("" + (r + 8)).attr("refY").string("5").attr("markerUnits").string("strokeWidth").attr("markerWidth").string("4").attr("markerHeight").string("6").attr("orient").string("auto").append("svg:path").attr("d").string("M 0 0 L 10 5 L 0 10 z");
+	el.append("svg:rect").attr("x")["float"](0).attr("y")["float"](0).attr("width")["float"](size).attr("height")["float"](size).attr("fill").string("#eeeeee").attr("stroke").string("blue").attr("stroke-width")["float"](4);
+	var pos = function(v) {
+		return Math.floor(v * grid);
+	};
+	var loc = function(v) {
+		return padding + (size - padding * 2) / (grid - 1) * v;
+	};
+	var x = function(id) {
+		return loc(map.get(id).x);
+	};
+	var y = function(id) {
+		return loc(map.get(id).y);
+	};
+	if(null != layout) {
+		grid = layout.length;
+		var _g1 = 0, _g = layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(layout[i].length > grid) grid = layout[i].length;
+			var _g3 = 0, _g2 = layout[i].length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				map.set(layout[i][j].vertex,{ x : i, y : j});
+			}
+		}
+	} else {
+		var slots = Ints.range(grid).map(function(_,_1) {
+			return Ints.range(grid).map(function(_2,_3) {
+				return null;
+			});
+		});
+		map = new Hash();
+		vertices.forEach(function(v,_) {
+			var x1 = 0, y1 = 0;
+			while(true) {
+				x1 = pos(((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0);
+				y1 = pos(((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0);
+				if(slots[x1][y1] == null) {
+					slots[x1][y1] = true;
+					break;
+				}
+			}
+			map.set(v,{ x : x1, y : y1});
+		});
+	}
+	el.selectAll("circle").data(vertices).enter().append("svg:circle").attr("cx").floatf(function(v,_) {
+		return x(v);
+	}).attr("cy").floatf(function(v,_) {
+		return y(v);
+	}).attr("r").floatf(function(v,_) {
+		return v.substr(0,1) == "#"?0:r;
+	});
+	el.selectAll("path.edge").data(edges).enter().append("svg:path").attr("class").string("edge").attr("class").stringf(function(e,_) {
+		return e.a + "-" + e.b;
+	}).attr("stroke").stringf(function(e,_) {
+		return thx.color.Rgb.interpolateRainbow(new thx.math.Random(Std.parseInt(e.a) * 1631486 + Std.parseInt(e.b) * 936)["float"]()).hex("#");
+	}).attr("opacity")["float"](0.75).attr("stroke-width")["float"](2).attr("d").stringf(function(e,_) {
+		return "M" + x(e.a) + "," + y(e.a) + "L" + x(e.b) + "," + y(e.b);
+	}).attr("marker-end").stringf(function(e,_) {
+		return e.b.substr(0,1) == "#"?"":"url(#Triangle)";
+	});
+	el.selectAll("text").data(vertices).enter().append("svg:text").text().stringf(function(v,_) {
+		return v;
+	}).attr("text-anchor").string("middle").attr("transform").stringf(function(v,_) {
+		return "translate(" + x(v) + "," + (y(v) - 7) + ")";
+	}).attr("fill").string("#666").style("font-weight").stringf(function(v,_) {
+		return v.substr(0,1) == "#"?"normal":"bold";
+	}).style("font-size-adjust").floatf(function(v,_) {
+		return v.substr(0,1) == "#"?.4:.5;
+	});
+}
+rg.layout.SugiyamaMethod.prototype = {
+	partitioner: null
+	,layer: null
+	,splitter: null
+	,decrosser: null
+	,resolve: function(vertices,edges) {
+		edges = edges.copy();
+		vertices = vertices.copy();
+		rg.layout.SugiyamaMethod.draw(vertices,edges);
+		var remover = new rg.layout.TwoCycleRemover(), removed = remover.remove(edges), reversed = [];
+		var partitions = this.partitioner.partition(rg.layout.SugiyamaMethod.createMap(vertices,edges));
+		edges = partitions.right;
+		var _g = 0, _g1 = partitions.left;
+		while(_g < _g1.length) {
+			var pair = _g1[_g];
+			++_g;
+			edges.push({ a : pair.b, b : pair.a});
+			reversed.push(pair);
+		}
+		rg.layout.SugiyamaMethod.draw(vertices,edges);
+		var layout = this.layer.lay(rg.layout.SugiyamaMethod.createMap(vertices,edges));
+		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
+		this.splitter.split(layout);
+		vertices = rg.layout.Graphs.toVertices(layout);
+		edges = rg.layout.Graphs.toEdges(layout);
+		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
+		this.decrosser.decross(layout);
+		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
+		var map = rg.layout.SugiyamaMethod.createMap(vertices,edges);
+		haxe.Log.trace(reversed,{ fileName : "SugiyamaMethod.hx", lineNumber : 60, className : "rg.layout.SugiyamaMethod", methodName : "resolve"});
+		var _g = 0;
+		while(_g < reversed.length) {
+			var edge = reversed[_g];
+			++_g;
+			rg.layout.Graphs.reverseConnection(map,edge.b,edge.a);
+		}
+		rg.layout.SugiyamaMethod.drawGraph(map,layout);
+		haxe.Log.trace(removed,{ fileName : "SugiyamaMethod.hx", lineNumber : 69, className : "rg.layout.SugiyamaMethod", methodName : "resolve"});
+		var _g = 0;
+		while(_g < removed.length) {
+			var edge = removed[_g];
+			++_g;
+			rg.layout.Graphs.addConnection(map,edge.a,edge.b);
+		}
+		rg.layout.SugiyamaMethod.drawGraph(map,layout);
+		return layout;
+	}
+	,__class__: rg.layout.SugiyamaMethod
+}
 rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,groupby,timezone,start,end) {
 	this.query = query;
 	this.executor = executor;
@@ -8286,7 +9050,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 401, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 432, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -8429,6 +9193,20 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var cond = { };
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
+								var _g1 = 0, _g2 = me.where;
+								while(_g1 < _g2.length) {
+									var w = _g2[_g1];
+									++_g1;
+									var p = rg.data.source.DataSourceReportGrid.propertyName(w);
+									var _g3 = 0, _g4 = w.values;
+									while(_g3 < _g4.length) {
+										var v1 = _g4[_g3];
+										++_g3;
+										cond = { };
+										cond[p] = v1;
+										o.where.push(cond);
+									}
+								}
 								subs.push({ method : (function(f,a1,a2) {
 									return function(a3,a4) {
 										return f(a1,a2,a3,a4);
@@ -8493,6 +9271,20 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								if(null == o.where) o.where = [];
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
+								var _g1 = 0, _g2 = me.where;
+								while(_g1 < _g2.length) {
+									var w = _g2[_g1];
+									++_g1;
+									var p = rg.data.source.DataSourceReportGrid.propertyName(w);
+									var _g3 = 0, _g4 = w.values;
+									while(_g3 < _g4.length) {
+										var v1 = _g4[_g3];
+										++_g3;
+										cond = { };
+										cond[p] = v1;
+										o.where.push(cond);
+									}
+								}
 								subs.push({ method : (function(f,a1,a2) {
 									return function(a3,a4) {
 										return f(a1,a2,a3,a4);
@@ -8550,7 +9342,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 382, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 413, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -8756,6 +9548,7 @@ rg.data.ITickmark.prototype = {
 	,value: null
 	,label: null
 	,__class__: rg.data.ITickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.data.TickmarkOrdinal = $hxClasses["rg.data.TickmarkOrdinal"] = function(pos,values,major,scaleDistribution) {
 	if(major == null) major = true;
@@ -8795,6 +9588,7 @@ rg.data.TickmarkOrdinal.prototype = {
 		return rg.data.Tickmarks.string(this);
 	}
 	,__class__: rg.data.TickmarkOrdinal
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.controller.visualization.VisualizationLineChart = $hxClasses["rg.controller.visualization.VisualizationLineChart"] = function(layout) {
 	rg.controller.visualization.VisualizationCartesian.call(this,layout);
@@ -11147,6 +11941,7 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		return v;
 	}
 	,__class__: rg.view.svg.chart.HeatGrid
+	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
 rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
@@ -11368,6 +12163,7 @@ rg.view.frame.Stack.prototype = {
 		return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
 	}
 	,__class__: rg.view.frame.Stack
+	,__properties__: {get_length:"getLength"}
 }
 rg.view.layout.ScalePattern = $hxClasses["rg.view.layout.ScalePattern"] = { __ename__ : ["rg","view","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
 rg.view.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
@@ -11517,6 +12313,31 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	}
 	,__class__: thx.math.scale.Linear
 });
+rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("diagonal");
+	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
+		return [a[1],a[0]];
+	});
+	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill");
+	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before");
+	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after");
+}
+rg.view.svg.widget.DiagonalArea.__name__ = ["rg","view","svg","widget","DiagonalArea"];
+rg.view.svg.widget.DiagonalArea.prototype = {
+	g: null
+	,diagonal: null
+	,area: null
+	,before: null
+	,after: null
+	,update: function(x1,y1,x2,y2,sw,ew) {
+		var top = this.diagonal.diagonal([y1,x1,y2,x2]), bottom = this.diagonal.diagonal([y2 + ew,x2,y1 + sw,x1]);
+		var path = top + "L" + bottom.substr(1) + "z";
+		this.before.attr("d").string(top);
+		this.after.attr("d").string(bottom);
+		this.area.attr("d").string(path);
+	}
+	,__class__: rg.view.svg.widget.DiagonalArea
+}
 rg.util.DataPoints = $hxClasses["rg.util.DataPoints"] = function() { }
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
 rg.util.DataPoints.partition = function(dps,property,def) {
@@ -12350,6 +13171,7 @@ rg.data.Variable.prototype = {
 		return this.maxf;
 	}
 	,__class__: rg.data.Variable
+	,__properties__: {set_maxf:"setMaxF",get_maxf:"getMaxF",set_minf:"setMinF",get_minf:"getMinF"}
 }
 rg.data.VariableIndependent = $hxClasses["rg.data.VariableIndependent"] = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
@@ -12449,6 +13271,237 @@ thx.math.scale.LinearT.prototype = {
 		return Floats.formatf("D:" + n);
 	}
 	,__class__: thx.math.scale.LinearT
+}
+rg.layout.Graphs = $hxClasses["rg.layout.Graphs"] = function() { }
+rg.layout.Graphs.__name__ = ["rg","layout","Graphs"];
+rg.layout.Graphs.crossings = function(a,b) {
+	var map = new Hash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i].vertex,i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = a[i];
+		var _g2 = 0, _g3 = n1.edgesp;
+		while(_g2 < _g3.length) {
+			var dst1 = _g3[_g2];
+			++_g2;
+			var p1 = map.get(dst1);
+			if(null == p1) continue;
+			var _g5 = i + 1, _g4 = a.length;
+			while(_g5 < _g4) {
+				var j = _g5++;
+				var n2 = a[j];
+				var _g6 = 0, _g7 = n2.edgesp;
+				while(_g6 < _g7.length) {
+					var dst2 = _g7[_g6];
+					++_g6;
+					var p2 = map.get(dst2);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.layout.Graphs.layoutCrossings = function(a) {
+	var tot = 0;
+	var _g1 = 0, _g = a.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		tot += rg.layout.Graphs.crossings(a[i],a[i + 1]);
+	}
+	return tot;
+}
+rg.layout.Graphs.toMap = function(layout) {
+	var map = new Hash();
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			map.set(layout[i][j].vertex,layout[i][j]);
+		}
+	}
+	return map;
+}
+rg.layout.Graphs.toVertices = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			result.push(layout[i][j].vertex);
+		}
+	}
+	return result;
+}
+rg.layout.Graphs.toEdges = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			var v = layout[i][j].vertex;
+			var _g4 = 0, _g5 = layout[i][j].edgesp;
+			while(_g4 < _g5.length) {
+				var c = _g5[_g4];
+				++_g4;
+				result.push({ a : v, b : c});
+			}
+		}
+	}
+	return result;
+}
+rg.layout.Graphs.findMaxPositiveOverNegative = function(graph) {
+	var n = null, l = 0;
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		var diff = node.edgesp.length - node.edgesn.length;
+		if(null == n || l < diff) {
+			n = node;
+			l = diff;
+		}
+	}
+	return n;
+}
+rg.layout.Graphs.isSink = function(node) {
+	return node.edgesp.length == 0 && node.edgesn.length > 0;
+}
+rg.layout.Graphs.isSource = function(node) {
+	return node.edgesn.length == 0 && node.edgesp.length == 0;
+}
+rg.layout.Graphs.findSink = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
+	}
+	return null;
+}
+rg.layout.Graphs.findSource = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
+	}
+	return null;
+}
+rg.layout.Graphs.findAllIsolated = function(graph) {
+	var isolated = [];
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
+	}
+	return isolated;
+}
+rg.layout.Graphs.addConnection = function(graph,a,b) {
+	var path = rg.layout.Graphs.findPath(graph,b,a);
+	if(null != path && path.every(function(v,i) {
+		return i == 0 || i == path.length - 1 || rg.layout.Graphs.isDummy(v);
+	})) {
+		path.reverse();
+		rg.layout.Graphs.addConnections(graph,path);
+	} else rg.layout.Graphs.addConnections(graph,[a,b]);
+}
+rg.layout.Graphs.addConnections = function(graph,arr) {
+	var _g1 = 0, _g = arr.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a = arr[i], b = arr[i + 1];
+		graph.get(a).edgesp.push(b);
+		graph.get(b).edgesp.push(a);
+	}
+}
+rg.layout.Graphs.reverseConnection = function(graph,a,b) {
+	var path = rg.layout.Graphs.findPath(graph,a,b);
+	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 168, className : "rg.layout.Graphs", methodName : "reverseConnection"});
+	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 169, className : "rg.layout.Graphs", methodName : "reverseConnection"});
+	if(null == path) return false;
+	var _g1 = 0, _g = path.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
+		na.edgesp.remove(b1);
+		na.edgesn.push(b1);
+		nb.edgesn.remove(a1);
+		nb.edgesp.push(a1);
+	}
+	return true;
+}
+rg.layout.Graphs.findPath = function(graph,a,b) {
+	var traveled = new thx.collection.Set(), paths = [], t, r;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(path,n) {
+			var totraverse = [];
+			var _g = 0, _g1 = n.edgesn;
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				if(parent == a) return path.concat([a]); else if(rg.layout.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,a2) {
+					return function() {
+						return f(a1,a2);
+					};
+				})(traverse,path.concat([parent]),t));
+			}
+			var _g = 0;
+			while(_g < totraverse.length) {
+				var t1 = totraverse[_g];
+				++_g;
+				if(null != (r = t1())) return r;
+			}
+			return null;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	var p = traverse([b],graph.get(b));
+	if(null == p) return null;
+	p.reverse();
+	return p;
+}
+rg.layout.Graphs.isDummy = function(v) {
+	return v.substr(0,1) == "#";
+}
+rg.layout.Graphs.createDummy = function(a,b,lvl) {
+	return "#" + ++rg.layout.Graphs.id;
+}
+rg.layout.Graphs.removeNode = function(graph,node) {
+	graph.remove(node.vertex);
+}
+rg.layout.Graphs.addNode = function(graph,node) {
+	graph.set(node.vertex,node);
+}
+rg.layout.Graphs.clone = function(graph) {
+	var o = new Hash();
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		rg.layout.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.copy(), edgesp : node.edgesp.copy()});
+	}
+	return o;
+}
+rg.layout.Graphs.empty = function(graph) {
+	return Hashes.count(graph) == 0;
+}
+rg.layout.Graphs.count = function(graph) {
+	return Hashes.count(graph);
+}
+rg.layout.Graphs.prototype = {
+	__class__: rg.layout.Graphs
 }
 thx.culture.FormatDate = $hxClasses["thx.culture.FormatDate"] = function() { }
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
@@ -13787,6 +14840,31 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
+var IntHashes = $hxClasses["IntHashes"] = function() { }
+IntHashes.__name__ = ["IntHashes"];
+IntHashes.empty = function(hash) {
+	return IntHashes.count(hash) == 0;
+}
+IntHashes.count = function(hash) {
+	var i = 0;
+	var $it0 = hash.iterator();
+	while( $it0.hasNext() ) {
+		var _ = $it0.next();
+		i++;
+	}
+	return i;
+}
+IntHashes.clear = function(hash) {
+	var _hash = hash;
+	_hash.h = {}
+	if(_hash.h.__proto__ != null) {
+		_hash.h.__proto__ = null;
+		delete(_hash.h.__proto__);
+	}
+}
+IntHashes.prototype = {
+	__class__: IntHashes
+}
 haxe.StackItem = $hxClasses["haxe.StackItem"] = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
 haxe.StackItem.CFunction = ["CFunction",0];
 haxe.StackItem.CFunction.toString = $estr;
@@ -13871,6 +14949,37 @@ haxe.Stack.makeStack = function(s) {
 haxe.Stack.prototype = {
 	__class__: haxe.Stack
 }
+rg.layout.TestNode = $hxClasses["rg.layout.TestNode"] = function() {
+	rg.layout.TestBaseGraph.call(this);
+}
+rg.layout.TestNode.__name__ = ["rg","layout","TestNode"];
+rg.layout.TestNode.__super__ = rg.layout.TestBaseGraph;
+rg.layout.TestNode.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
+	testId: function() {
+		var node = this.graph.nodes.create();
+		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestNode.hx", lineNumber : 10, className : "rg.layout.TestNode", methodName : "testId"});
+	}
+	,testCount: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 15, className : "rg.layout.TestNode", methodName : "testCount"});
+		var node = this.graph.nodes.create();
+		utest.Assert.equals(1,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 17, className : "rg.layout.TestNode", methodName : "testCount"});
+		this.graph.nodes.remove(node);
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 19, className : "rg.layout.TestNode", methodName : "testCount"});
+	}
+	,testDestroy: function() {
+		var node = this.graph.nodes.create();
+		this.graph.nodes.remove(node);
+		utest.Assert.isNull(node.graph,null,{ fileName : "TestNode.hx", lineNumber : 26, className : "rg.layout.TestNode", methodName : "testDestroy"});
+		utest.Assert.isNull(node.nodes,null,{ fileName : "TestNode.hx", lineNumber : 27, className : "rg.layout.TestNode", methodName : "testDestroy"});
+		utest.Assert.isTrue(node.id < 0,null,{ fileName : "TestNode.hx", lineNumber : 28, className : "rg.layout.TestNode", methodName : "testDestroy"});
+	}
+	,testClear: function() {
+		var node = this.graph.nodes.create();
+		this.graph.nodes.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 35, className : "rg.layout.TestNode", methodName : "testClear"});
+	}
+	,__class__: rg.layout.TestNode
+});
 rg.controller.info.TestInfoVariable = $hxClasses["rg.controller.info.TestInfoVariable"] = function() {
 }
 rg.controller.info.TestInfoVariable.__name__ = ["rg","controller","info","TestInfoVariable"];
@@ -14121,6 +15230,7 @@ thx.geo.Mercator.prototype = {
 		return translate;
 	}
 	,__class__: thx.geo.Mercator
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
 }
 thx.svg.PathGeoJson = $hxClasses["thx.svg.PathGeoJson"] = function() {
 	this.setPointRadius(4.5);
@@ -14235,6 +15345,7 @@ thx.svg.PathGeoJson.prototype = {
 		return this.projection = projection;
 	}
 	,__class__: thx.svg.PathGeoJson
+	,__properties__: {set_projection:"setProjection",set_pointRadius:"setPointRadius"}
 }
 thx.svg.PathTypes = $hxClasses["thx.svg.PathTypes"] = function(geo) {
 	this.geo = geo;
@@ -14729,6 +15840,7 @@ rg.view.svg.widget.Label.prototype = {
 		this.g.remove();
 	}
 	,__class__: rg.view.svg.widget.Label
+	,__properties__: {set_anchor:"setAnchor",set_orientation:"setOrientation",set_text:"setText"}
 }
 rg.controller.factory.FactoryDataSource = $hxClasses["rg.controller.factory.FactoryDataSource"] = function(cache,executor) {
 	this.cache = cache;
@@ -15012,6 +16124,23 @@ utest.ui.common.ResultStats.prototype = {
 		this.subtract(dependant);
 	}
 	,__class__: utest.ui.common.ResultStats
+}
+rg.layout.Graph = $hxClasses["rg.layout.Graph"] = function() {
+	this.nodes = rg.layout.GraphNodes.newInstance(this);
+	this.edges = rg.layout.GraphEdges.newInstance(this);
+}
+rg.layout.Graph.__name__ = ["rg","layout","Graph"];
+rg.layout.Graph.prototype = {
+	nodes: null
+	,edges: null
+	,clear: function() {
+		this.edges.clear();
+		this.nodes.clear();
+	}
+	,toString: function() {
+		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + "), edges: " + IntHashes.count(this.edges.collection) + ")";
+	}
+	,__class__: rg.layout.Graph
 }
 rg.controller.factory.FactoryVariableDependent = $hxClasses["rg.controller.factory.FactoryVariableDependent"] = function() {
 }
@@ -16798,6 +17927,48 @@ rg.controller.visualization.VisualizationHeatGrid.prototype = $extend(rg.control
 	}
 	,__class__: rg.controller.visualization.VisualizationHeatGrid
 });
+rg.layout.EdgeSpliter = $hxClasses["rg.layout.EdgeSpliter"] = function(idf) {
+	this.idf = null == idf?rg.layout.Graphs.createDummy:idf;
+}
+rg.layout.EdgeSpliter.__name__ = ["rg","layout","EdgeSpliter"];
+rg.layout.EdgeSpliter.prototype = {
+	idf: null
+	,split: function(layout) {
+		var map = new Hash();
+		var _g1 = 0, _g = layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var _g3 = 0, _g2 = layout[i].length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				map.set(layout[i][j].vertex,{ layer : i, node : layout[i][j]});
+			}
+		}
+		var _g1 = 0, _g = layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var _g3 = 0, _g2 = layout[i].length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var node = layout[i][j];
+				var _g5 = 0, _g4 = node.edgesp.length;
+				while(_g5 < _g4) {
+					var z = _g5++;
+					var v = node.edgesp[z], child = map.get(v);
+					if(child.layer > i + 1) {
+						var n = { vertex : this.idf(node.vertex,v,i + 1), edgesn : [node.vertex], edgesp : [v]};
+						layout[i + 1].push(n);
+						map.set(n.vertex,{ layer : i + 1, node : n});
+						node.edgesp[z] = n.vertex;
+						child.node.edgesn.remove(node.vertex);
+						child.node.edgesn.push(n.vertex);
+					}
+				}
+			}
+		}
+	}
+	,__class__: rg.layout.EdgeSpliter
+}
 rg.controller.info.InfoHeatGrid = $hxClasses["rg.controller.info.InfoHeatGrid"] = function() {
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
@@ -17264,6 +18435,52 @@ thx.js.ExitSelection.prototype = $extend(thx.js.UnboundSelection.prototype,{
 	}
 	,__class__: thx.js.ExitSelection
 });
+rg.layout.LongestPathLayer = $hxClasses["rg.layout.LongestPathLayer"] = function() {
+}
+rg.layout.LongestPathLayer.__name__ = ["rg","layout","LongestPathLayer"];
+rg.layout.LongestPathLayer.prototype = {
+	lay: function(graph) {
+		var map = rg.layout.Graphs.clone(graph), layers = [[]], u = [], z = [];
+		var node;
+		while(null != (node = rg.layout.Graphs.findSink(map))) {
+			map.remove(node.vertex);
+			layers[0].push(node);
+		}
+		var $it0 = map.keys();
+		while( $it0.hasNext() ) {
+			var v = $it0.next();
+			node = graph.get(v);
+			var pos = this.distanceToASink(node,graph), layer = layers[pos];
+			if(null == layer) layer = layers[pos] = [];
+			layer.push(node);
+		}
+		layers.reverse();
+		return layers;
+	}
+	,distanceToASink: function(node,graph) {
+		var child;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(arr,lvl) {
+				var max = lvl;
+				if(lvl > Hashes.count(graph)) return lvl;
+				var _g = 0;
+				while(_g < arr.length) {
+					var v = arr[_g];
+					++_g;
+					child = graph.get(v);
+					if(child.edgesp.length == 0 && child.edgesn.length > 0) continue; else max = Ints.max(max,traverse(child.edgesp,lvl + 1));
+				}
+				return max;
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		return traverse(node.edgesp,1);
+	}
+	,__class__: rg.layout.LongestPathLayer
+}
 rg.data.VariableDependent = $hxClasses["rg.data.VariableDependent"] = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 }
@@ -17349,6 +18566,39 @@ rg.view.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 rg.view.svg.chart.ColorScaleModes.prototype = {
 	__class__: rg.view.svg.chart.ColorScaleModes
 }
+rg.layout.TwoCycleRemover = $hxClasses["rg.layout.TwoCycleRemover"] = function() {
+}
+rg.layout.TwoCycleRemover.__name__ = ["rg","layout","TwoCycleRemover"];
+rg.layout.TwoCycleRemover.prototype = {
+	edges: null
+	,remove: function(edges) {
+		this.edges = edges;
+		var i = 0, edge, removed = [];
+		while(i < edges.length) {
+			edge = edges[i];
+			if(this.removeEdge(edge.b,edge.a)) removed.push({ a : edge.b, b : edge.a});
+			i++;
+		}
+		return removed;
+	}
+	,removeEdge: function(a,b) {
+		var pos = -1;
+		var _g1 = 0, _g = this.edges.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a != this.edges[i].a || b != this.edges[i].b) continue;
+			pos = i;
+			break;
+		}
+		return this.removeEdgeAt(pos);
+	}
+	,removeEdgeAt: function(pos) {
+		if(pos < 0) return false;
+		this.edges.splice(pos,1);
+		return true;
+	}
+	,__class__: rg.layout.TwoCycleRemover
+}
 rg.view.frame.Frame = $hxClasses["rg.view.frame.Frame"] = function() {
 	this.x = this.y = this.width = this.height = 0;
 }
@@ -17392,6 +18642,7 @@ rg.view.frame.StackItem.prototype = $extend(rg.view.frame.Frame.prototype,{
 		return v;
 	}
 	,__class__: rg.view.frame.StackItem
+	,__properties__: {set_disposition:"setDisposition"}
 });
 rg.controller.visualization.VisualizationSankey = $hxClasses["rg.controller.visualization.VisualizationSankey"] = function(layout) {
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
@@ -17423,8 +18674,183 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
+		var map = this.mapData(data), layout = this.layoutMap(map);
 		this.chart.init();
-		this.chart.data(data);
+		this.chart.data(layout);
+	}
+	,layoutMap: function(map) {
+		var sugiyama = new rg.layout.SugiyamaMethod(), vertices = [], edges = [];
+		Iterators.each(map.iterator(),function(node,_) {
+			vertices.push(node.id);
+			var _g = 0, _g1 = node.children;
+			while(_g < _g1.length) {
+				var child = _g1[_g];
+				++_g;
+				edges.push({ a : node.id, b : child.id});
+			}
+		});
+		var glayout = sugiyama.resolve(vertices,edges), gmap = rg.layout.Graphs.toMap(glayout);
+		var layout = [], tmap;
+		var _g1 = 0, _g = glayout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			layout[i] = [];
+			var _g3 = 0, _g2 = glayout[i].length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var gnode = glayout[i][j], onode = map.get(gnode.vertex), nnode = { dp : null, id : gnode.vertex, weight : 0.0, extraweight : 0.0, falloffweight : 0.0, parents : [], children : [], level : i, pos : j};
+				if(null != onode) {
+					nnode.dp = onode.dp;
+					nnode.weight = onode.weight;
+					nnode.extraweight = onode.extraweight;
+					nnode.falloffweight = onode.falloffweight;
+					tmap = new Hash();
+					var _g4 = 0, _g5 = onode.children;
+					while(_g4 < _g5.length) {
+						var c = _g5[_g4];
+						++_g4;
+						tmap.set(c.id,c.weight);
+					}
+					var _g4 = 0, _g5 = gnode.edgesp;
+					while(_g4 < _g5.length) {
+						var dst = _g5[_g4];
+						++_g4;
+						var id = dst;
+						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesp[0];
+						nnode.children.push({ id : dst, weight : tmap.get(id)});
+					}
+					tmap = new Hash();
+					var _g4 = 0, _g5 = onode.parents;
+					while(_g4 < _g5.length) {
+						var c = _g5[_g4];
+						++_g4;
+						tmap.set(c.id,c.weight);
+					}
+					var _g4 = 0, _g5 = gnode.edgesn;
+					while(_g4 < _g5.length) {
+						var dst = _g5[_g4];
+						++_g4;
+						var id = dst;
+						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
+						nnode.parents.push({ id : dst, weight : tmap.get(id)});
+					}
+				} else {
+					haxe.Log.trace(gnode,{ fileName : "VisualizationSankey.hx", lineNumber : 125, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
+					var dstid = gnode.edgesp[0];
+					while(rg.layout.Graphs.isDummy(dstid)) dstid = gmap.get(dstid).edgesp[0];
+					haxe.Log.trace(dstid,{ fileName : "VisualizationSankey.hx", lineNumber : 129, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
+					var _g4 = 0, _g5 = gnode.edgesn;
+					while(_g4 < _g5.length) {
+						var src = _g5[_g4];
+						++_g4;
+						var id = src;
+						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
+						haxe.Log.trace(src + " TO " + id,{ fileName : "VisualizationSankey.hx", lineNumber : 135, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
+						var parent = map.get(id);
+						haxe.Log.trace(parent,{ fileName : "VisualizationSankey.hx", lineNumber : 137, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
+						var _g6 = 0, _g7 = parent.children;
+						while(_g6 < _g7.length) {
+							var edge = _g7[_g6];
+							++_g6;
+							haxe.Log.trace(edge,{ fileName : "VisualizationSankey.hx", lineNumber : 140, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
+							if(edge.id == dstid) {
+								nnode.parents.push({ id : src, weight : edge.weight});
+								break;
+							}
+						}
+					}
+					haxe.Log.trace(nnode,{ fileName : "VisualizationSankey.hx", lineNumber : 166, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
+				}
+				layout[i][j] = nnode;
+			}
+		}
+		return layout;
+	}
+	,layoutMap2: function(map) {
+		var result = [], i = -1, keys = Arrays.order(Iterators.array(map.keys()),function(a,b) {
+			return Floats.compare(map.get(b).weight,map.get(a).weight);
+		});
+		var addAt = (function($this) {
+			var $r;
+			var addAt = null;
+			addAt = function(id,lvl) {
+				var node = map.get(id);
+				if(!keys.remove(id)) return;
+				var level = result[lvl];
+				if(null == level) level = result[lvl] = [];
+				level.push(node);
+				node.pos = level.length - 1;
+				node.level = lvl;
+				var _g = 0, _g1 = node.children;
+				while(_g < _g1.length) {
+					var child = _g1[_g];
+					++_g;
+					addAt(child.id,lvl + 1);
+				}
+			};
+			$r = addAt;
+			return $r;
+		}(this));
+		while(keys.length > 0) addAt(keys[0],0);
+		var $it0 = map.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			var n = map.get(key);
+			n.parents.sort(function(a,b) {
+				var c = map.get(a.id).level - map.get(b.id).level;
+				if(c > 0) return c;
+				return Floats.compare(b.weight,a.weight);
+			});
+		}
+		return result;
+	}
+	,mapData: function(data) {
+		var map = new Hash(), idfield = this.info.idproperty, weightfield = this.info.weightproperty, parentsfield = this.info.parentsproperty, id, weight, o, Dynamic, parents;
+		var _g = 0;
+		while(_g < data.length) {
+			var dp = data[_g];
+			++_g;
+			id = Reflect.field(dp,idfield);
+			if(null == id) continue;
+			o = Reflect.field(dp,parentsfield);
+			parents = Reflect.fields(o).map(function(field,_) {
+				return { id : field, weight : Reflect.field(o,field)};
+			});
+			var derivedweight = Iterators.reduce(parents.iterator(),function(tot,cur,_) {
+				return tot + cur.weight;
+			},0.0);
+			weight = Reflect.field(dp,weightfield);
+			if(null == weight) weight = derivedweight;
+			map.set(id,{ dp : dp, id : id, weight : weight, extraweight : weight - derivedweight, falloffweight : 0.0, parents : parents, children : [], level : 0, pos : 0});
+		}
+		var $it0 = map.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			var n = map.get(key);
+			var _g = 0, _g1 = n.parents;
+			while(_g < _g1.length) {
+				var p = _g1[_g];
+				++_g;
+				var pn = map.get(p.id);
+				Arrays.add(pn.children,{ id : n.id, weight : p.weight});
+				pn.children.sort(function(a,b) {
+					return Floats.compare(b.weight,a.weight);
+				});
+			}
+		}
+		var $it1 = map.keys();
+		while( $it1.hasNext() ) {
+			var key = $it1.next();
+			var n = map.get(key), falloff = n.weight;
+			var _g = 0, _g1 = n.children;
+			while(_g < _g1.length) {
+				var child = _g1[_g];
+				++_g;
+				falloff -= child.weight;
+			}
+			n.falloffweight = falloff;
+		}
+		return map;
 	}
 	,destroy: function() {
 		this.chart.destroy();
@@ -18162,6 +19588,7 @@ thx.geo.AlbersUsa.prototype = {
 		return this.lower48.getTranslate();
 	}
 	,__class__: thx.geo.AlbersUsa
+	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
 rg.view.svg.panel.TestPanel = $hxClasses["rg.view.svg.panel.TestPanel"] = function() {
 }
@@ -19123,12 +20550,14 @@ Type.getInstanceFields = function(c) {
 	var a = [];
 	for(var i in c.prototype) a.push(i);
 	a.remove("__class__");
+	a.remove("__properties__");
 	return a;
 }
 Type.getClassFields = function(c) {
 	var a = Reflect.fields(c);
 	a.remove("__name__");
 	a.remove("__interfaces__");
+	a.remove("__properties__");
 	a.remove("__super__");
 	a.remove("prototype");
 	return a;
@@ -19223,6 +20652,38 @@ rg.data.DataContext.prototype = {
 	,data: null
 	,__class__: rg.data.DataContext
 }
+rg.layout.GraphNodes = $hxClasses["rg.layout.GraphNodes"] = function(graph) {
+	rg.layout.GraphCollection.call(this,graph);
+}
+rg.layout.GraphNodes.__name__ = ["rg","layout","GraphNodes"];
+rg.layout.GraphNodes.newInstance = function(graph) {
+	return new rg.layout.GraphNodes(graph);
+}
+rg.layout.GraphNodes.__super__ = rg.layout.GraphCollection;
+rg.layout.GraphNodes.prototype = $extend(rg.layout.GraphCollection.prototype,{
+	create: function(data) {
+		var n = rg.layout.GNode.create(this.graph,++this.nextid,data);
+		this.collectionAdd(n);
+		return n;
+	}
+	,remove: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 25, className : "rg.layout.GraphNodes", methodName : "remove"});
+		this.collectionRemove(node);
+		this.graph.edges.unlink(node);
+		node.destroy();
+	}
+	,clear: function() {
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var item = $it0.next();
+			this.remove(item);
+		}
+	}
+	,toString: function() {
+		return "GraphNodes (" + IntHashes.count(this.collection) + ")";
+	}
+	,__class__: rg.layout.GraphNodes
+});
 thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
 }
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
@@ -19493,6 +20954,14 @@ Reflect.field = function(o,field) {
 Reflect.setField = function(o,field,value) {
 	o[field] = value;
 }
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
+}
+Reflect.setProperty = function(o,field,value) {
+	var tmp;
+	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
+}
 Reflect.callMethod = function(o,func,args) {
 	return func.apply(o,args);
 }
@@ -19559,6 +21028,23 @@ Reflect.makeVarArgs = function(f) {
 Reflect.prototype = {
 	__class__: Reflect
 }
+rg.layout.GNode = $hxClasses["rg.layout.GNode"] = function(graph,id,data) {
+	rg.layout.GraphElement.call(this,graph,id,data);
+	this.nodes = graph.nodes;
+}
+rg.layout.GNode.__name__ = ["rg","layout","GNode"];
+rg.layout.GNode.create = function(graph,id,data) {
+	return new rg.layout.GNode(graph,id,data);
+}
+rg.layout.GNode.__super__ = rg.layout.GraphElement;
+rg.layout.GNode.prototype = $extend(rg.layout.GraphElement.prototype,{
+	nodes: null
+	,destroy: function() {
+		rg.layout.GraphElement.prototype.destroy.call(this);
+		this.nodes = null;
+	}
+	,__class__: rg.layout.GNode
+});
 var Hashes = $hxClasses["Hashes"] = function() { }
 Hashes.__name__ = ["Hashes"];
 Hashes.toDynamic = function(hash) {
@@ -19597,6 +21083,9 @@ Hashes.setOfKeys = function(hash) {
 		set.add(k);
 	}
 	return set;
+}
+Hashes.empty = function(hash) {
+	return Hashes.count(hash) == 0;
 }
 Hashes.count = function(hash) {
 	var i = 0;
@@ -19689,6 +21178,10 @@ TestAll.addTest = function(runner) {
 	runner.addCase(new rg.controller.info.TestInfoLayout());
 	runner.addCase(new rg.controller.info.TestInfoVariable());
 	runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
+	runner.addCase(new rg.layout.TestGraph());
+	runner.addCase(new rg.layout.TestNode());
+	runner.addCase(new rg.layout.TestEdge());
+	runner.addCase(new rg.layout.TestSugiyamaMethod());
 	runner.addCase(new rg.data.source.TestRGDataSource());
 	runner.addCase(new rg.data.source.rgquery.TestQueryParser());
 	runner.addCase(new rg.data.source.rgquery.transform.TestTransformCount());
@@ -20115,6 +21608,7 @@ rg.view.svg.chart.Geo.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		})(this.drawmap.$bind(this),map,field));
 	}
 	,__class__: rg.view.svg.chart.Geo
+	,__properties__: $extend(rg.view.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 rg.view.svg.chart.LineEffects = $hxClasses["rg.view.svg.chart.LineEffects"] = function() { }
 rg.view.svg.chart.LineEffects.__name__ = ["rg","view","svg","chart","LineEffects"];
@@ -20207,6 +21701,50 @@ thx.svg.LineInterpolators.argument = function(s) {
 }
 thx.svg.LineInterpolators.prototype = {
 	__class__: thx.svg.LineInterpolators
+}
+rg.layout.GreedySwitchDecrosser = $hxClasses["rg.layout.GreedySwitchDecrosser"] = function() {
+}
+rg.layout.GreedySwitchDecrosser.__name__ = ["rg","layout","GreedySwitchDecrosser"];
+rg.layout.GreedySwitchDecrosser.composed = function() {
+	return { decross : function(layout) {
+		new rg.layout.GreedySwitchDecrosser().decross(layout);
+		new rg.layout.GreedySwitch2Decrosser().decross(layout);
+	}};
+}
+rg.layout.GreedySwitchDecrosser.prototype = {
+	decross: function(layout) {
+		if(layout.length <= 1) return;
+		var len = layout.length - 1;
+		var totbefore, crossings;
+		do {
+			totbefore = rg.layout.Graphs.layoutCrossings(layout);
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				var a = layout[i], b = layout[i + 1];
+				this.decrossPair(a,b);
+			}
+			crossings = rg.layout.Graphs.layoutCrossings(layout);
+		} while(totbefore > crossings);
+	}
+	,decrossPair: function(a,b) {
+		var tot = rg.layout.Graphs.crossings(a,b), ntot = tot, t;
+		do {
+			tot = ntot;
+			var _g1 = 0, _g = b.length - 1;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.swap(b,i);
+				if((t = rg.layout.Graphs.crossings(a,b)) >= ntot) this.swap(b,i); else ntot = t;
+			}
+		} while(ntot < tot);
+	}
+	,swap: function(a,pos) {
+		var v = a[pos];
+		a[pos] = a[pos + 1];
+		a[pos + 1] = v;
+	}
+	,__class__: rg.layout.GreedySwitchDecrosser
 }
 thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
 	this.length = 0;
@@ -21185,6 +22723,7 @@ thx.geo.Azimuthal.prototype = {
 		return this.mode;
 	}
 	,__class__: thx.geo.Azimuthal
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale",set_origin:"setOrigin",get_origin:"getOrigin",set_mode:"setMode",get_mode:"getMode"}
 }
 thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
 thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
@@ -21617,6 +23156,90 @@ rg.view.svg.chart.StreamEffects.parse = function(s) {
 rg.view.svg.chart.StreamEffects.prototype = {
 	__class__: rg.view.svg.chart.StreamEffects
 }
+rg.layout.TestEdge = $hxClasses["rg.layout.TestEdge"] = function() {
+	rg.layout.TestBaseGraph.call(this);
+}
+rg.layout.TestEdge.__name__ = ["rg","layout","TestEdge"];
+rg.layout.TestEdge.__super__ = rg.layout.TestBaseGraph;
+rg.layout.TestEdge.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
+	testId: function() {
+		var node = this.graph.nodes.create();
+		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestEdge.hx", lineNumber : 10, className : "rg.layout.TestEdge", methodName : "testId"});
+	}
+	,testCount: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 15, className : "rg.layout.TestEdge", methodName : "testCount"});
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 19, className : "rg.layout.TestEdge", methodName : "testCount"});
+		this.graph.edges.remove(e);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 21, className : "rg.layout.TestEdge", methodName : "testCount"});
+	}
+	,testCreate: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(n1,e.head,null,{ fileName : "TestEdge.hx", lineNumber : 29, className : "rg.layout.TestEdge", methodName : "testCreate"});
+		utest.Assert.equals(n2,e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 30, className : "rg.layout.TestEdge", methodName : "testCreate"});
+	}
+	,testChainDeletion: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 38, className : "rg.layout.TestEdge", methodName : "testChainDeletion"});
+		this.graph.nodes.remove(n1);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 40, className : "rg.layout.TestEdge", methodName : "testChainDeletion"});
+		utest.Assert.isNull(e.edges,null,{ fileName : "TestEdge.hx", lineNumber : 41, className : "rg.layout.TestEdge", methodName : "testChainDeletion"});
+	}
+	,testDestroy: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		this.graph.edges.remove(e);
+		utest.Assert.isNull(e.graph,null,{ fileName : "TestEdge.hx", lineNumber : 50, className : "rg.layout.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isNull(e.edges,null,{ fileName : "TestEdge.hx", lineNumber : 51, className : "rg.layout.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isNull(e.head,null,{ fileName : "TestEdge.hx", lineNumber : 52, className : "rg.layout.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isNull(e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 53, className : "rg.layout.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isTrue(e.id < 0,null,{ fileName : "TestEdge.hx", lineNumber : 54, className : "rg.layout.TestEdge", methodName : "testDestroy"});
+	}
+	,testClear: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 59, className : "rg.layout.TestEdge", methodName : "testClear"});
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 63, className : "rg.layout.TestEdge", methodName : "testClear"});
+		this.graph.edges.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 65, className : "rg.layout.TestEdge", methodName : "testClear"});
+	}
+	,__class__: rg.layout.TestEdge
+});
+rg.layout.GreedySwitch2Decrosser = $hxClasses["rg.layout.GreedySwitch2Decrosser"] = function() {
+	rg.layout.GreedySwitchDecrosser.call(this);
+}
+rg.layout.GreedySwitch2Decrosser.__name__ = ["rg","layout","GreedySwitch2Decrosser"];
+rg.layout.GreedySwitch2Decrosser.__super__ = rg.layout.GreedySwitchDecrosser;
+rg.layout.GreedySwitch2Decrosser.prototype = $extend(rg.layout.GreedySwitchDecrosser.prototype,{
+	decross: function(layout) {
+		if(layout.length <= 1) return;
+		var len = layout.length - 1;
+		var totbefore, crossings;
+		do {
+			totbefore = rg.layout.Graphs.layoutCrossings(layout);
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				var a = layout[i - 1], b = layout[i], c = layout[i + 1];
+				this.decrossTriplet(a,b,c);
+			}
+			crossings = rg.layout.Graphs.layoutCrossings(layout);
+		} while(totbefore > crossings);
+	}
+	,decrossTriplet: function(a,b,c) {
+		if(null == a) this.decrossPair(b,c); else if(null == c) this.decrossPair(a,b); else {
+			var tot = rg.layout.Graphs.crossings(a,b) + rg.layout.Graphs.crossings(b,c), ntot = tot, t;
+			do {
+				tot = ntot;
+				var _g1 = 0, _g = b.length - 1;
+				while(_g1 < _g) {
+					var i = _g1++;
+					this.swap(b,i);
+					if((t = rg.layout.Graphs.crossings(a,b) + rg.layout.Graphs.crossings(b,c)) >= tot) this.swap(b,i); else ntot = t;
+				}
+			} while(ntot < tot);
+		}
+	}
+	,__class__: rg.layout.GreedySwitch2Decrosser
+});
 if(!utest._Dispatcher) utest._Dispatcher = {}
 utest._Dispatcher.EventException = $hxClasses["utest._Dispatcher.EventException"] = { __ename__ : ["utest","_Dispatcher","EventException"], __constructs__ : ["StopPropagation"] }
 utest._Dispatcher.EventException.StopPropagation = ["StopPropagation",0];
@@ -21882,6 +23505,7 @@ rg.data.Tickmark.prototype = {
 		return rg.data.Tickmarks.string(this);
 	}
 	,__class__: rg.data.Tickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 thx.color.Colors = $hxClasses["thx.color.Colors"] = function() { }
 thx.color.Colors.__name__ = ["thx","color","Colors"];
@@ -24159,8 +25783,9 @@ thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
 rg.RGConst.BASE_URL_GEOJSON = "geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapp02.reportgrid.com:20000/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapi.reportgrid.com/services/renderer/v1/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
+rg.layout.Graphs.id = 0;
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");

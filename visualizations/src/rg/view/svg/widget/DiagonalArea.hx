@@ -26,7 +26,6 @@ class DiagonalArea
 			bottom = diagonal.diagonal([y2+ew,x2,y1+sw,x1]);
 
 		var path = top + "L" + bottom.substr(1) + "z";
-		trace(path);
 
 		before.attr("d").string(top);
 		after.attr("d").string(bottom);

@@ -5,6 +5,7 @@
 
 package rg.controller.info;
 import rg.data.DataPoint;
+import rg.data.source.rgquery.QueryAst;
 import rg.util.Periodicity;
 import thx.date.DateParser;
 import thx.error.Error;
@@ -15,14 +16,18 @@ class InfoDataSource
 	public var path : Null<String>;
 	public var event : Null<String>;
 	public var namedData : Null<String>;
+	public var statistic : QOperation;
 	public var data : Null<Array<DataPoint>>;
 	public var groupBy : Null<String>;
 	public var timeZone : Null<String>;
 	public var groups : Null<Array<String>>;
 	public var start : Null<Float>;
 	public var end : Null<Float>;
-	
-	public function new() {}
+
+	public function new()
+	{
+		statistic = Count;
+	}
 
 	public static function filters() : Array<FieldFilter>
 	{
@@ -76,11 +81,26 @@ class InfoDataSource
 			{
 				return [{ field : "groups", value : Std.is(v, String) ? cast v.split(",") : v }];
 			}
+		}, {
+			field : "statistic",
+			validator : function(v : Dynamic) return Std.is(v, String),
+			filter : cast function(v)
+			{
+				return [{
+					field : "statistic",
+					value : switch((""+v).toLowerCase())
+					{
+						case "deviation", "stddeviation", "standarddeviation": StandardDeviation;
+						case "mean" : Mean;
+						default: Count;
+					}
+				}];
+			}
 		}];
 	}
-	
+
 	static function validateDate(v : Dynamic) return Std.is(v, Float) || Std.is(v, Date) || Std.is(v, String)
-	
+
 	static function filterDate(v : Dynamic) : Dynamic
 	{
 		if (null == v)

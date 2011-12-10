@@ -37,8 +37,8 @@ class Balloon
 	var ease : Float -> Float;
 	var connectorShapeV : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
 	var connectorShapeH : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
-	public var boundingBox(getBoundingBox, setBoundingBox) : { x : Float, y : Float, width : Float, height : Float }; 
-	public function new(container : Selection, bindOnTop = true) 
+	public var boundingBox(getBoundingBox, setBoundingBox) : { x : Float, y : Float, width : Float, height : Float };
+	public function new(container : Selection, bindOnTop = true)
 	{
 		if (bindOnTop)
 		{
@@ -70,7 +70,7 @@ class Balloon
 			.attr("class").string("shadow")
 			.attr("transform").string("translate(1, 1)")
 		;
-		
+
 		connectorShapeV = Diagonal.forObject();
 		connectorShapeH = Diagonal.forObject().projection(function(d,i) return [d[1], d[0]]);
 		connector = balloon.append("svg:path")
@@ -82,26 +82,26 @@ class Balloon
 		frame.append("svg:path")
 			.attr("class").string("bg")
 		;
-		
+
 		labelsContainer = frame.append("svg:g").attr("class").string("labels");
 		labels = [];
-		
+
 		var temp = createLabel(0);
 		temp.text = "HELLO";
 		lineHeight = temp.getSize().height;
 		temp.destroy();
 	}
-	
+
 	public function addClass(name : String)
 	{
 		frame.select("path.bg").classed().add(name);
 	}
-	
+
 	public function removeClass(name : String)
 	{
 		frame.select("path.bg").classed().remove(name);
 	}
-	
+
 	function createLabel(i : Int)
 	{
 		var label = new Label(labelsContainer, true, true, false);
@@ -111,14 +111,14 @@ class Balloon
 		label.place(0, i * lineHeight, 90);
 		return label;
 	}
-	
+
 	function setPreferredSide(v : Int)
 	{
 		preferredSide = Ints.clamp(v, 0, 3);
 		redraw();
 		return v;
 	}
-	
+
 	function setText(v : Array<String>)
 	{
 		while (labels.length > v.length)
@@ -126,12 +126,12 @@ class Balloon
 			var label = labels.pop();
 			label.destroy();
 		}
-		
+
 		for (i in labels.length ... v.length)
 		{
 			labels[i] = createLabel(i);
 		}
-		
+
 		for (i in 0...v.length)
 		{
 			labels[i].text = v[i];
@@ -140,28 +140,28 @@ class Balloon
 		redraw();
 		return v;
 	}
-	
+
 	function setLineHeight(v : Float)
 	{
 		lineHeight = v;
 		redraw();
 		return v;
 	}
-	
+
 	public function setPadding(h : Float, v : Float)
 	{
 		paddingHorizontal = h;
 		paddingVertical = v;
 		redraw();
 	}
-	
+
 	function setRoundedCorner(v : Float)
 	{
 		roundedCorner = v;
 		redraw();
 		return v;
 	}
-	
+
 	// TODO when null is passed remove the onresize event listener
 	function setBoundingBox(v : { x : Float, y : Float, width : Float, height : Float })
 	{
@@ -169,7 +169,7 @@ class Balloon
 		redraw();
 		return v;
 	}
-	
+
 	// TODO add onresize event on container to rescale bounds dinamically
 	function getBoundingBox()
 	{
@@ -184,7 +184,7 @@ class Balloon
 		}
 		return boundingBox;
 	}
-	
+
 	var transition_id : Int;
 	public function moveTo(x : Float, y : Float, animate = true)
 	{
@@ -210,9 +210,9 @@ class Balloon
 			_moveTo(x, y);
 		}
 	}
-	
+
 	function _moveTo(x : Float, y : Float)
-	{	
+	{
 		var bb = getBoundingBox(),
 			left = bb.x,
 			right = bb.x + bb.width,
@@ -221,7 +221,7 @@ class Balloon
 			limit = roundedCorner * 2,
 			offset = 0.0,
 			diagonal = 0; // 0: don't show, 1: vertical, 2: horizontal
-		
+
 		var	tx = 0.0, ty = 0.0, side = preferredSide, found = 1;
 
 		while (found > 0 && found < 5)
@@ -229,7 +229,7 @@ class Balloon
 			if (x >= right - limit)
 			{
 				if (y <= top + limit)
-				{	
+				{
 					if (x - right < top - y)
 					{
 						tx = - boxWidth + right - x;
@@ -476,32 +476,46 @@ class Balloon
 					coords.x1 = ty + off + offset + roundedCorner;
 			}
 		}
-		
+
 		balloon
 			.attr("transform").string("translate(" + (this.x = x) + ", " + (this.y = y) + ")");
 		frame.attr("transform").string("translate(" + tx + ", " + ty + ")")
 			.selectAll("path").attr("d").string(BalloonShape.shape(boxWidth, boxHeight, roundedCorner, roundedCorner, side, offset));
-		
+
 		if (0 != diagonal)
 			connector.attr("d").string(side % 2 == 0 ? connectorShapeV.diagonal(coords) : connectorShapeH.diagonal(coords));
 	}
-	
-	public function show()
-	{
-		if (!visible)
-			return;
-		visible = true;
-		balloon.style("display").string("block");
-	}
-	
-	public function hide()
+
+	public function show(animate : Bool)
 	{
 		if (visible)
 			return;
-		visible = false;
-		balloon.style("display").string("none");
+		visible = true;
+		balloon.style("display").string("block");
+		if(animate)
+		{
+			balloon.transition().style("opacity").float(1);
+		} else {
+			balloon.style("opacity").float(1);
+		}
 	}
-	
+
+	public function hide(animate=false)
+	{
+		if (!visible)
+			return;
+		visible = false;
+		if(animate)
+		{
+			balloon.transition().style("opacity").float(0).endNode(function(_,_) {
+				balloon.style("display").string("none");
+			});
+		} else {
+			balloon.style("opacity").float(0);
+			balloon.style("display").string("none");
+		}
+	}
+
 	function redraw()
 	{
 		if (null == text || text.length == 0)
@@ -511,7 +525,7 @@ class Balloon
 		{
 			return d + ":" + i;
 		}
-		
+
 		var //choice = frame
 			//.selectAll("text")
 			//.data(text, key),
@@ -562,7 +576,7 @@ class Balloon
 			.remove()
 		;
 */
-		
+		var last = boxWidth;
 		boxWidth = 0.0;
 		//linewidth + padding * 2;
 		var w;
@@ -570,15 +584,17 @@ class Balloon
 		{
 			if ((w = label.getSize().width) > boxWidth)
 				boxWidth = w;
+			else if(w == 0) // fix for firefox
+				boxWidth = last;
 		}
 		boxWidth += paddingHorizontal * 2;
 		boxHeight = lineHeight * labels.length + paddingVertical * 2;
-		
+
 		var bg = frame.selectAll(".bg"),
 			sw = bg.style("stroke-width").getFloat();
 		if (Math.isNaN(sw))
 			sw = 0;
-		
+
 		labelsContainer.attr("transform").string("translate(" + (boxWidth / 2) + "," + (sw + paddingVertical) + ")");
 
 		bg.transition().ease(ease)

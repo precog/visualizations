@@ -4,20 +4,260 @@
 		"selected_items":
 		[
 			[
-				"src",
+				"ab",
+				"abs( v : Float ) : Float"
+			],
+			[
+				"ma",
+				"max( a : Float , b : Float ) : Float"
+			],
+			[
+				"w",
+				"weight : Float"
+			],
+			[
+				"we",
+				"weight : Float"
+			],
+			[
+				"rec",
+				"reduce(...) : Unknown<2>"
+			],
+			[
+				"floa",
+				"floatMax(...) : Float"
+			],
+			[
+				"availalbl",
+				"availalble"
+			],
+			[
+				"le",
+				"level : Int"
+			],
+			[
+				"sr",
 				"src : rg.view.svg.chart.Node"
 			],
 			[
-				"app",
-				"append(...) : Node }>"
+				"ds",
+				"dst : rg.view.svg.chart.Node"
+			],
+			[
+				"fal",
+				"falloffweight : Float"
+			],
+			[
+				"pare",
+				"parents : Array<{ weight : Float, id : String }>"
+			],
+			[
+				"pa",
+				"parents : Array<{ weight : Float, id : String }>"
+			],
+			[
+				"par",
+				"parents : Array<{ weight : Float, id : String }>"
+			],
+			[
+				"mi",
+				"min( a : Float , b : Float ) : Float"
+			],
+			[
+				"min",
+				"min( a : Float , b : Float ) : Float"
+			],
+			[
+				"0",
+				"0"
+			],
+			[
+				"co",
+				"compare( a : Int , b : Int ) : Int"
+			],
+			[
+				"get",
+				"get(...) : DataPoint, children : Array<Unknown<0>> }>"
+			],
+			[
+				"weight",
+				"weight : Float"
+			],
+			[
+				"so",
+				"sort"
+			],
+			[
+				"b",
+				"isIterator() : Bool"
+			],
+			[
+				"max",
+				"max( a : Float , b : Float ) : Float"
+			],
+			[
+				"su",
+				"substr(...) : String"
 			],
 			[
 				"str",
-				"string(...) : Node }>"
+				"string( v : String ) : thx.js.Selection"
+			],
+			[
+				"at",
+				"attr(...) : Selection>"
 			],
 			[
 				"a",
-				"append(...) : Node }>"
+				"attr(...) : Selection>"
+			],
+			[
+				"Hoo",
+				"HookConnectorArea"
+			],
+			[
+				"s",
+				"svg"
+			],
+			[
+				"view",
+				"view"
+			],
+			[
+				"m",
+				"min( a : Float , b : Float ) : Float"
+			],
+			[
+				"opt",
+				"opt"
+			],
+			[
+				"com",
+				"compare( a : Float , b : Float ) : Int"
+			],
+			[
+				"sort",
+				"sort(...) : Void"
+			],
+			[
+				"abs",
+				"abs( v : Float ) : Float"
+			],
+			[
+				"sub",
+				"substr(...) : String"
+			],
+			[
+				"attr",
+				"attr(...) : Node>>"
+			],
+			[
+				"dst",
+				"dst : rg.view.svg.chart.Node"
+			],
+			[
+				"f",
+				"falloffweight : Float"
+			],
+			[
+				"ch",
+				"children : Array<Unknown<0>>"
+			],
+			[
+				"Se",
+				"Selection [class]"
+			],
+			[
+				"js",
+				"js"
+			],
+			[
+				"id",
+				"id : String"
+			],
+			[
+				"projec",
+				"projection(...) : Diagonal<Array<Float>>"
+			],
+			[
+				"rem",
+				"remove() : thx.js.Selection"
+			],
+			[
+				"se",
+				"selectAll(...) : thx.js.Selection"
+			],
+			[
+				"att",
+				"attr(...) : Selection>"
+			],
+			[
+				"app",
+				"append(...) : thx.js.Selection"
+			],
+			[
+				"em",
+				"empty() : Bool"
+			],
+			[
+				"ed",
+				"edges"
+			],
+			[
+				"g",
+				"g"
+			],
+			[
+				"e",
+				"each"
+			],
+			[
+				"widget",
+				"widget"
+			],
+			[
+				"area",
+				"area"
+			],
+			[
+				"stri",
+				"string"
+			],
+			[
+				"strin",
+				"string"
+			],
+			[
+				"ap",
+				"append"
+			],
+			[
+				"di",
+				"diagonal(...) : String"
+			],
+			[
+				"for",
+				"forArray() : Diagonal<Array<Float>>"
+			],
+			[
+				"D",
+				"Diagonal [class]"
+			],
+			[
+				"pro",
+				"projection(...) : Array<Float>"
+			],
+			[
+				"diagonal",
+				"diagonal"
+			],
+			[
+				"container",
+				"container"
+			],
+			[
+				"src",
+				"src : rg.view.svg.chart.Node"
 			],
 			[
 				"en",
@@ -36,10 +276,6 @@
 				"anchor : rg.view.svg.widget.GridAnchor"
 			],
 			[
-				"id",
-				"indexOf(...) : Unknown<1>"
-			],
-			[
 				"te",
 				"text : String"
 			],
@@ -56,28 +292,12 @@
 				"svg"
 			],
 			[
-				"view",
-				"view"
-			],
-			[
-				"Se",
-				"Selection [class]"
-			],
-			[
 				"hs",
 				"Hash"
 			],
 			[
 				"ea",
 				"each(...) : Node>"
-			],
-			[
-				"attr",
-				"attr(...) : Node>>"
-			],
-			[
-				"ap",
-				"append(...) : Node>"
 			],
 			[
 				"up",
@@ -88,20 +308,8 @@
 				"length : Int"
 			],
 			[
-				"max",
-				"max(...) : Node>>"
-			],
-			[
 				"red",
 				"reduce(...) : Unknown<2>"
-			],
-			[
-				"e",
-				"each"
-			],
-			[
-				"w",
-				"weight : Float"
 			],
 			[
 				"ge",
@@ -112,20 +320,8 @@
 				"push(...) : Int"
 			],
 			[
-				"ch",
-				"children : Array<{ weight : Float, id : String }>"
-			],
-			[
-				"get",
-				"get(...) : Null<rg.view.svg.chart.Node>"
-			],
-			[
 				"p",
 				"pos : Int"
-			],
-			[
-				"le",
-				"length : Int"
 			],
 			[
 				"pos",
@@ -134,10 +330,6 @@
 			[
 				"map",
 				"map(...) : Array<Unknown<1>>"
-			],
-			[
-				"dst",
-				"dst"
 			],
 			[
 				"colors",
@@ -164,14 +356,6 @@
 				"id : String"
 			],
 			[
-				"rem",
-				"remove( x : String ) : Bool"
-			],
-			[
-				"g",
-				"get(...) : Null<rg.view.svg.chart.Node>"
-			],
-			[
 				"sh",
 				"shift() : Null<String>"
 			],
@@ -180,20 +364,8 @@
 				"length : Int"
 			],
 			[
-				"com",
-				"compare( a : Float , b : Float ) : Int"
-			],
-			[
 				"o",
 				"order(...) : Array<String>"
-			],
-			[
-				"we",
-				"weight : Float"
-			],
-			[
-				"so",
-				"sort(...) : Void"
 			],
 			[
 				"ad",
@@ -224,36 +396,12 @@
 				"floatf(...) : UpdateSelection<{ weight : Float, src : String, dst : String }>"
 			],
 			[
-				"at",
-				"attr(...) : UpdateSelection<{ weight : Float, src : String, dst : String }>>"
-			],
-			[
-				"s",
-				"src : String"
-			],
-			[
 				"node",
 				"node"
 			],
 			[
-				"stri",
-				"string(...) : EnterSelection<{ weight : Float, id : String }>"
-			],
-			[
-				"att",
-				"attr(...) : EnterSelection<{ weight : Float, id : String }>>"
-			],
-			[
-				"pa",
-				"parents : Array<{ weight : Float, id : String }>"
-			],
-			[
 				"data",
 				"dataf(...) : TOut>"
-			],
-			[
-				"se",
-				"selectAll(...) : Node>"
 			],
 			[
 				"n",
@@ -328,16 +476,8 @@
 				"count"
 			],
 			[
-				"sort",
-				"parentsproperty"
-			],
-			[
 				"field",
 				"field(...) : Dynamic"
-			],
-			[
-				"ma",
-				"map(...) : Array<Unknown<1>>"
 			],
 			[
 				"fi",
@@ -374,151 +514,86 @@
 			[
 				"Da",
 				"DataPoint [class]"
-			],
-			[
-				"Sa",
-				"Sankey [class]"
-			],
-			[
-				"Titl",
-				"Title"
-			],
-			[
-				"InfoSa",
-				"InfoSankey [class]"
-			],
-			[
-				"co",
-				"controller"
-			],
-			[
-				"where",
-				"where"
-			],
-			[
-				"ale",
-				"handler"
-			],
-			[
-				"Li",
-				"Lib"
-			],
-			[
-				"su",
-				"substr(...) : String"
-			],
-			[
-				"on",
-				"onError( msg : String ) : Void"
-			],
-			[
-				"sub",
-				"substr( pos : Int , ?len : Int ) : String"
-			],
-			[
-				"inde",
-				"indexOf( str : String , ?startIndex : Int ) : Int"
-			],
-			[
-				"star",
-				"startsWith( start : String ) : Bool"
-			],
-			[
-				"Spa",
-				"Spaced"
-			],
-			[
-				"setF",
-				"setField( o : Dynamic , field : String , value : Dynamic ) : Void"
-			],
-			[
-				"val",
-				"values : Array<Dynamic>"
-			],
-			[
-				"Reflect",
-				"Reflect"
-			],
-			[
-				"gen",
-				"gender"
-			],
-			[
-				"cli",
-				"click"
-			],
-			[
-				"click",
-				"click"
-			],
-			[
-				"unit",
-				"unitvalue : String"
-			],
-			[
-				"setFi",
-				"setField"
-			],
-			[
-				"searchCou",
-				"searchCount( path : String , options : { } , success : (Int , Void) , ?error : (String , Void) ) : Void"
-			],
-			[
-				"pus",
-				"push( x : Array<Unknown<0>> ) : Int"
-			],
-			[
-				"prop",
-				"property : String"
-			],
-			[
-				"clo",
-				"clone( src : clone.T ) : clone.T"
-			],
-			[
-				"executor",
-				"executor"
-			],
-			[
-				"ln",
-				"length"
-			],
-			[
-				"shift",
-				"shift"
-			],
-			[
-				"shi",
-				"shift"
-			],
-			[
-				"length",
-				"length"
-			],
-			[
-				"property",
-				"property"
-			],
-			[
-				"fir",
-				"firstf( arr : Array<firstf.T> , f : (firstf.T , Bool) ) : Null<firstf.T>"
-			],
-			[
-				"properties",
-				"copy() : Array<{ property : String, order : String, limit : Int, event : String }>"
-			],
-			[
-				"clon",
-				"clone( src : clone.T ) : clone.T"
-			],
-			[
-				"axe",
-				"axes"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "/Users/francoponticelli/Projects/thx/src/thx/svg/Diagonal.hx",
+			"settings":
+			{
+				"buffer_size": 1543,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/thx/src/thx/svg/Line.hx",
+			"settings":
+			{
+				"buffer_size": 1415,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/css/rg.css",
+			"settings":
+			{
+				"buffer_size": 9299,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/sankey.html",
+			"settings":
+			{
+				"buffer_size": 1948,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/thx/src/thx/svg/Arc.hx",
+			"settings":
+			{
+				"buffer_size": 3088,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/rg/view/svg/widget/ElbowArea.hx",
+			"settings":
+			{
+				"buffer_size": 2154,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "package rg.view.svg.chart;\nimport rg.view.svg.panel.Panel;\nimport rg.data.VariableDependent;\nimport rg.data.VariableIndependent;\nimport rg.data.DataPoint;\nimport thx.color.NamedColors;\nimport thx.js.Selection;\nimport rg.view.svg.widget.Label;\nimport rg.view.svg.widget.GridAnchor;\nimport rg.view.svg.widget.DiagonalArea;\nimport rg.view.svg.widget.ElbowArea;\nimport rg.view.svg.widget.HookConnectorArea;\nusing Arrays;\n\n// TODO wire labels\n\nclass Sankey extends Chart\n{\n	var layout : Array<Array<Node>>;\n	public var levelWidth : Int;\n	public var padding : Float;\n	public var maxFalloffWidth : Float;\n	public var padLines : Float;\n\n	var levels : Int;\n	var max : Float;\n	var availableheight : Float;\n	var map : Hash<Node>;\n	var edges : Array<{ src : Node, dst : Node, weight : Float }>;\n	var padBefore : Float;\n	var padAfter : Float;\n\n	public function new(panel : Panel)\n	{\n		super(panel);\n		addClass(\"sankey\");\n		levelWidth = 60;\n		padding = 60;\n		maxFalloffWidth = 40;\n		padLines = 4.0;\n	}\n\n	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)\n	{\n\n	}\n\n	public function data(layout : Array<Array<Node>>)\n	{\n		this.layout = layout;\n		redraw();\n	}\n\n	function redraw()\n	{\n		levels = layout.length;\n		max = layout.floatMax(function(arr) return arr.reduce(function(v, c, _) return c.weight + v, 0)); //layout[0][0].weight;\n		map = new Hash();\n		edges = [];\n\n		// available height\n		availableheight = height - layout.floatMax(function(arr) return arr.length) * padding;\n\n		layout.each(function(level, lvl) {\n			level.each(function(n, pos) {\n				map.set(n.id, n);\n			});\n		});\n\n		layout.each(function(level, lvl) {\n			level.each(function(n, pos) {\n				for(child in n.children)\n					edges.push({\n						src : n,\n						dst : map.get(child.id),\n						weight : child.weight\n					});\n			});\n		});\n		edges.sort(function(a, b) {\n			return Floats.compare(a.weight, b.weight);\n		});\n\n		// correct max available height + max\n		for(edge in edges)\n		{\n			if(edge.src.level < edge.dst.level)\n				continue;\n			availableheight -= padLines;\n			max += edge.weight;\n		}\n\n		var yref = 0.0;\n		for(level in layout)\n		{\n			var t = 0.0;\n			for(node in level)\n			{\n				t += padding + nheight(node.weight);\n			}\n			if(t > yref)\n				yref = t;\n		}\n		yref += padLines;\n\n		// padding before\n		padBefore = 0.0;\n\n		for(node in layout[0])\n		{\n			var extrain = Math.min(nheight(node.extraweight), maxFalloffWidth);\n			if(node.parents.length > 0)\n			{\n				var parentWeight = hafter(node.parents[0].id, node.parents) + nheight(node.parents[0].weight);\n				if(parentWeight > extrain)\n					extrain = parentWeight;\n			}\n			if(extrain > padBefore)\n				padBefore = extrain;\n		}\n\n		padBefore += 2; // TODO border width\n\n		// padding after\n		padAfter = 0.0;\n\n		for(node in layout[layout.length-1])\n		{\n			var extrain = Math.min(nheight(node.falloffweight), maxFalloffWidth);\n			if(node.children.length > 0)\n			{\n				var childWeight = hafter(node.children[0].id, node.children) + nheight(node.children[0].weight) + nheight(node.falloffweight) + padLines;\n				if(childWeight > extrain)\n					extrain = childWeight;\n			}\n			if(extrain > padAfter)\n				padAfter = extrain;\n		}\n\n		padAfter += 2;\n\n		// draw\n\n		var edgescontainer = g.select(\"g.edges\");\n		if(edgescontainer.empty())\n			edgescontainer = g.append(\"svg:g\").attr(\"class\").string(\"edges\");\n		else\n			edgescontainer.selectAll(\"*\").remove();\n\n//		var yref = 540.0;\n\n		edges.each(function(edge, _) {\n			if(edge.dst.level > edge.src.level)\n				return;\n			var weight = nheight(edge.weight),\n				hook   = new HookConnectorArea(edgescontainer),\n				before = hafter(edge.dst.id, edge.src.children) + Math.min(maxFalloffWidth, nheight(edge.src.falloffweight)),\n				after  = hafter(edge.src.id, edge.dst.parents);\n\n			hook.update(\n				levelWidth / 2 + xlevel(edge.src.level),\n				ynode(edge.src) + ydiagonal(edge.dst.id, edge.src.children),\n//				ynode(edge.src) + hnode(edge.src) / 2,\n				- levelWidth / 2 + xlevel(edge.dst.level),\n				nheight(edge.dst.extraweight) + ynode(edge.dst) + ydiagonal(edge.src.id, edge.dst.parents),\n//				ynode(edge.dst) + hnode(edge.dst) / 2,\n//				weight,\n				weight,\n				yref,\n//				Math.max(nheight(edge.src.weight) + ynode(edge.src), nheight(edge.dst.weight) + ynode(edge.dst)) + 20,\n				before,\n				after\n			);\n			yref += weight + padLines;\n		});\n\n		edges.each(function(edge, _) {\n			if(edge.dst.level <= edge.src.level)\n				return;\n			var weight = edge.weight / max * availableheight,\n				diagonal = new DiagonalArea(edgescontainer);\n			diagonal.update(\n				levelWidth / 2 + xlevel(edge.src.level),\n				ynode(edge.src) + ydiagonal(edge.dst.id, edge.src.children),\n//				ynode(edge.src) + hnode(edge.src) / 2,\n				- levelWidth / 2 + xlevel(edge.dst.level),\n				nheight(edge.dst.extraweight) + ynode(edge.dst) + ydiagonal(edge.src.id, edge.dst.parents),\n//				ynode(edge.dst) + hnode(edge.dst) / 2,\n				weight,\n				weight\n			);\n		});\n\n		function normMin(v : Float) return Math.max(0, Math.min(v - 3, 5));\n\n		// fall-off\n		for(level in layout)\n		{\n			for(node in level)\n			{\n				if(node.falloffweight <= 0)\n					continue;\n				var elbow = new ElbowArea(edgescontainer),\n					falloff = nheight(node.falloffweight);\n				elbow.update(\n					RightBottom,\n					falloff,\n					levelWidth / 2 + xlevel(node.level),\n					ynode(node) + ydiagonal(null, node.children) + falloff,\n					normMin(falloff),  // minr\n					maxFalloffWidth, // max\n					0,  // before\n					5  // after\n				);\n			}\n		}\n\n		// extra-in\n		for(level in layout)\n		{\n			for(node in level)\n			{\n				if(node.extraweight <= 0)\n					continue;\n				var elbow = new ElbowArea(edgescontainer),\n					extra = nheight(node.extraweight);\n\n				elbow.update(\n					LeftTop,\n					extra,\n					- levelWidth / 2 + xlevel(node.level),\n					ynode(node), // + ydiagonal(null, node.children) + falloff\n					normMin(extra),  // minr\n					maxFalloffWidth, // max\n					0,  // before\n					5  // after\n				);\n			}\n		}\n\n		var rules = g.selectAll(\"g.level\").data(layout)\n			.enter()\n				.append(\"svg:g\").attr(\"class\").string(\"level\")\n/*				.append(\"svg:line\")\n					.attr(\"class\").stringf(function(_, i) return \"level level-\"+i)\n					.attr(\"x1\").float(0)\n					.attr(\"x2\").float(0)\n					.attr(\"y1\").float(0)\n					.attr(\"y2\").float(height)\n*/			.update()\n				.attr(\"transform\").stringf(function(_, i) {\n					return \"translate(\"+xlevel(i)+\",0)\";\n				})\n			.exit()\n				.remove();\n\n		var choice = rules.update()\n			.selectAll(\"g.node\").dataf(function(d : Array<Node>, _) return d);\n\n		var cont = choice\n			.enter()\n				.append(\"svg:g\").attr(\"class\").string(\"node\");\n\n		if(levelWidth > 0)\n		{\n			cont.append(\"svg:rect\")\n				.attr(\"class\").string(\"node\")\n				.attr(\"x\").float(-levelWidth / 2)\n				.attr(\"y\").float(0)\n				.attr(\"width\").float(levelWidth)\n				.attr(\"height\").floatf(hnode);\n\n			cont.append(\"svg:line\")\n				.attr(\"class\").string(\"node\")\n				.attr(\"x1\").float(-levelWidth / 2)\n				.attr(\"y1\").float(0)\n				.attr(\"x2\").float(levelWidth / 2)\n				.attr(\"y2\").float(0);\n\n			cont.append(\"svg:line\")\n				.attr(\"class\").string(\"node\")\n				.attr(\"x1\").float(-levelWidth / 2)\n				.attr(\"y1\").floatf(hnode)\n				.attr(\"x2\").float(levelWidth / 2)\n				.attr(\"y2\").floatf(hnode);\n		}\n\n		cont.each(function(dp, i) {\n			var node = Selection.current;\n			var label = new Label(node, true, true, false);\n			label.anchor = GridAnchor.Bottom;\n			label.text = dp.id;\n		});\n\n		choice.update().attr(\"transform\").stringf(function(n, i) {\n			return \"translate(0,\"+ynode(n, i)+\")\";\n		});\n\n// reference lines to remove\n\n		var lines = g.selectAll(\"g.reference\").data(edges)\n			.enter()\n				.append(\"svg:g\").attr(\"class\").string(\"reference\")\n				.append(\"svg:line\")\n					.style(\"stroke-opacity\").float(0.1)\n					.style(\"stroke\").colorf(function(d, _)\n						return\n							d.src.level == d.dst.level\n							? NamedColors.blue\n							: (d.src.level < d.dst.level\n								? NamedColors.green\n								: NamedColors.red ));\n		lines\n			.attr(\"x1\").floatf(function(o, _) {\n				return xlevel(o.src.level);\n			})\n			.attr(\"x2\").floatf(function(o, _) {\n				return xlevel(o.dst.level);\n			})\n			.attr(\"y1\").floatf(function(o, _) {\n				return ynode(o.src) + hnode(o.src) / 2;\n			})\n			.attr(\"y2\").floatf(function(o, _) {\n				return ynode(o.dst) + hnode(o.dst) / 2;\n			})\n			.style(\"stroke-width\").floatf(function(o, _) {\n				return nheight(o.weight);\n			})\n		;\n\n	}\n\n	function nheight(v : Float)\n	{\n		return v / max * availableheight;\n	}\n\n	function ydiagonal(id : String, edges : Array<{ id : String, weight : Float }>)\n	{\n		var weight = 0.0;\n		for(edge in edges)\n		{\n			if(edge.id == id)\n				break;\n			weight += edge.weight;\n		}\n		return nheight(weight);\n	}\n\n	function hafter(id : String, edges : Array<{ id : String, weight : Float }>)\n	{\n		var found = false,\n			pad = padLines / nheight(1),\n			weight = pad;\n		for(edge in edges)\n		{\n			if(!found)\n			{\n				if(edge.id == id)\n				//	continue;\n				found = true;\n				continue;\n			}\n			weight += edge.weight + pad;\n		}\n		return nheight(weight);\n	}\n\n	function xlevel(pos : Int, ?_)\n	{\n		return (width - padBefore - padAfter - levelWidth) / (levels - 1) * pos + (levelWidth / 2) + padBefore;\n	}\n\n	function ynode(node : Node, ?_)\n	{\n		var before = padding;\n		for(i in 0...node.pos)\n		{\n			before += hnode(layout[node.level][i]) + padding;\n		}\n		return before;\n	}\n\n	function hnode(node : Node, ?_)\n	{\n		return nheight(node.weight);\n	}\n}\n\ntypedef Node =\n{\n	dp : DataPoint,\n	id : String,\n	weight : Float,\n	extraweight : Float,\n	falloffweight : Float,\n	parents : Array<{ id : String, weight : Float }>,\n	children : Array<{ id : String, weight : Float }>,\n	level : Int,\n	pos : Int\n}",
+			"file": "src/rg/view/svg/chart/Sankey.hx",
+			"file_size": 9729,
+			"file_write_time": 1323129956000000,
+			"settings":
+			{
+				"buffer_size": 9649,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/rg/view/svg/widget/HookConnectorArea.hx",
+			"settings":
+			{
+				"buffer_size": 3186,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/rg/controller/visualization/VisualizationSankey.hx",
+			"settings":
+			{
+				"buffer_size": 3726,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -529,6 +604,14 @@
 			[
 				"tr",
 				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"ter",
+				"Preferences: Terminal Settings – Default"
 			],
 			[
 				"clas",
@@ -557,10 +640,6 @@
 			[
 				"trai",
 				"Trailing Spaces: Delete Trailing Spaces"
-			],
-			[
-				"insta",
-				"Package Control: Install Package"
 			],
 			[
 				"install",
@@ -596,6 +675,23 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationLineChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/DiagonalArea.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/Elbow.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/snapengage/simple.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/snapengage/bug.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/transform/TransformIntersectTime.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/DataSourceReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/layer/TickmarksOrtho.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/AxisTime.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/Periodicity.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationCartesian.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/QueryParser.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/Sankey.hx",
+		"/Users/francoponticelli/Library/Application Support/Sublime Text 2/Packages/Terminal/Terminal.sublime-settings",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/DiagonalArea",
 		"/Users/francoponticelli/Projects/reportgrid/website/demo/css/demo.css",
 		"/Users/francoponticelli/Projects/reportgrid/website/demo/geo-static.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/geo-static.html",
@@ -606,11 +702,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/client-libraries/php/test/test-track.php",
 		"/Users/francoponticelli/Projects/reportgrid/client-libraries/php/test/test-query.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/interactive/Downloader.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/snapengage/simple.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/css/rg.css",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/Sankey.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationSankey.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/sankey.html",
 		"/Users/francoponticelli/Projects/reportgrid/website/demo/css/geo.css",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/RGConst.hx",
@@ -641,7 +733,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/Visualizations.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoDownload.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/html/widget/DownloaderMenu.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/DataSourceReportGrid.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/track/Tracker.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/ITrackReportGrid.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/barchart-static.html",
@@ -711,19 +802,7 @@
 		"/Users/francoponticelli/Projects/thx/src/thx/translation/EmptyTranslation.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/translation/DictionaryTranslation.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/translation/DBTranslation.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/text/Paths.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/text/Inflections.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/Symbol.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/PathGeoJson.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/LineInterpolators.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/LineInternals.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/Line.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/Diagonal.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/Chord.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/Area.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/Arc.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/number/NumberParser.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/math/Random.hx"
+		"/Users/francoponticelli/Projects/thx/src/thx/text/Paths.hx"
 	],
 	"find":
 	{
@@ -743,6 +822,26 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"maxFalloffWidth",
+			"padLines",
+			"padLine",
+			"maxWidth",
+			"16",
+			"falloffweight",
+			"parents",
+			"sort",
+			"iyr",
+			"oyr",
+			"iy2",
+			"iy1",
+			"oy2",
+			"oy1",
+			"inner",
+			"outer",
+			"trace",
+			"limit",
+			"edges",
+			"conjr",
 			"$end    = $periodicity == 'eternity' ?",
 			"$start  = $periodicity == 'eternity' ?",
 			"label",
@@ -784,14 +883,265 @@
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": false,
+		"whole_word": true,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
+			"selected": 6,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "/Users/francoponticelli/Projects/thx/src/thx/svg/Diagonal.hx",
+					"settings":
+					{
+						"buffer_size": 1543,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1110,
+								1110
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/francoponticelli/Projects/thx/src/thx/svg/Line.hx",
+					"settings":
+					{
+						"buffer_size": 1415,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								923,
+								923
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "bin/css/rg.css",
+					"settings":
+					{
+						"buffer_size": 9299,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9217,
+								9217
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7943.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "bin/sankey.html",
+					"settings":
+					{
+						"buffer_size": 1948,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1891,
+								1891
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 484.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/Users/francoponticelli/Projects/thx/src/thx/svg/Arc.hx",
+					"settings":
+					{
+						"buffer_size": 3088,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								907,
+								907
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 374.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "src/rg/view/svg/widget/ElbowArea.hx",
+					"settings":
+					{
+						"buffer_size": 2154,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1155,
+								1234
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"spell_check": true,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/rg/view/svg/chart/Sankey.hx",
+					"settings":
+					{
+						"buffer_size": 9649,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1466,
+								1466
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 532.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/rg/view/svg/widget/HookConnectorArea.hx",
+					"settings":
+					{
+						"buffer_size": 3186,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2124,
+								2124
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 135.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/rg/controller/visualization/VisualizationSankey.hx",
+					"settings":
+					{
+						"buffer_size": 3726,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1958,
+								1958
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 516.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -828,7 +1178,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 92.0
+		"height": 124.0
 	},
 	"replace":
 	{
@@ -920,6 +1270,10 @@
 		"height": 500.0,
 		"selected_items":
 		[
+			[
+				"tr",
+				"/Users/francoponticelli/Projects/reportgrid/test/account/account.sublime-project"
+			]
 		],
 		"width": 380.0
 	},

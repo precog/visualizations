@@ -6,7 +6,7 @@
 	<meta name="language" content="en" />
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
-	
+
 	<script type="text/javascript" src="js/jquery-1.3.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.7.1.custom.min.js"></script>
 	<script type="text/javascript" src="js/daterangepicker.jQuery.js"></script>
@@ -23,7 +23,7 @@
 
 <script type="text/javascript">
 $(function(){
-	
+
 	var delay = (function() {
 		var span = 50, id;
 		return function(f, t) {
@@ -31,15 +31,15 @@ $(function(){
 			id = window.setTimeout(f, t || span);
 		};
 	})();
-	
+
 	var label = (function() {
 		var sourceTypes = { 1 : "Offline Request", 2 : "Live Chat" },
 			label = {};
-		
+
 		label.sourceType = function(dp, stats) {
 			return sourceTypes[dp[".sourceType"]] + ": " + ReportGrid.format(dp.count);
 		};
-		
+
 		label.sourceTypePercent = function(dp, stats) {
 			return ReportGrid.format(Math.round(1000 * dp.count / stats.tot) / 10, "P:1");
 		};
@@ -51,7 +51,7 @@ $(function(){
 		end   = null,
 		utc   = $('#timezone').val(),
 		days  = [true,true,true,true,true,true,true];
-		
+
 	function executeRangeBased()
 	{
 		if(null == start || null == end)
@@ -62,7 +62,7 @@ $(function(){
 			property : "sourceType",
 			options : { label : { datapoint : label.sourceTypePercent, datapointover : label.sourceType } }
 		});
-		
+
 		ReportGrid.leaderBoard("#caseslegend", {
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
 			property : "sourceType",
@@ -84,7 +84,7 @@ $(function(){
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
 			property : "os"
 		});
-		
+
 		ReportGrid.lineChart("#osestime", {
 			path : path, event : "case", start : start, end : end,
 			property : "os",
@@ -92,12 +92,12 @@ $(function(){
 				displayrules : function(type) { return type == 'count' }
 			}
 		});
-		
+
 		ReportGrid.leaderBoard("#browsers", {
 			path : path, event : "case", start : start, end : end, periodicity : "eternity",
 			property : "browser"
 		});
-		
+
 		ReportGrid.lineChart("#browserstime", {
 			path : path, event : "case", start : start, end : end,
 			property : "browser"
@@ -105,7 +105,7 @@ $(function(){
 
 		executeFilterBased();
 	}
-	
+
 	function executeFilterBased()
 	{
 		ReportGrid.barChart("#activity", {
@@ -131,7 +131,7 @@ $(function(){
 						var pos = dps[i][".#time:hour"] % 24,
 							st = dps[i][".sourceType"],
 							wd = Math.floor(dps[i][".#time:hour"] / 24);
-						
+
 						if(!days[wd])
 							continue;
 
@@ -168,10 +168,10 @@ $(function(){
 			}
 		});
 	}
-	
+
 	function setDateRange()
 	{
-		var inputs = $('#daterange').val().split("-").map(function(d) { 
+		var inputs = $('#daterange').val().split("-").map(function(d) {
 			return ReportGrid.date.snap(+ReportGrid.date.parse(d), "day");
 		});
 		if(!inputs[0])
@@ -181,11 +181,11 @@ $(function(){
 		start = inputs[0];
 		end = inputs[1]
 	}
-	
+
 	function setPath() { path = $('#path').val(); }
 	function setUtc()  { utc = $('#timezone').val(); }
 	function setDays() { $('.dayfilter').each(function(i, d) { days[i] = d.checked; }); }
-	
+
 	$('#path').change(function() {
 		setPath();
 		delay(executeRangeBased);
@@ -236,7 +236,7 @@ body
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
-	
+
 	box-shadow: 8px 10px 10px rgba(0,0,0,0.5),
 	inset 8px 10px 10px rgba(255,255,255,0.75);
 	-o-box-shadow: 8px 10px 10px rgba(0,0,0,0.5),
@@ -340,13 +340,13 @@ h1:hover
 			<label><input type="checkbox" checked class="dayfilter" value="7"/> Sun</label>
 		</div>
 	</div>
-	
+
 	<h1>activity by hour of the day</h1>
 	<div class="container">
 		<div id="activity" class="chart wide"></div>
 		<div class="clear"></div>
 	</div>
-	
+
 	<h1>requests</h1>
 	<div class="container">
 		<div id="caseslegend" class="chart"></div>
@@ -366,7 +366,7 @@ h1:hover
 		<div id="browserstime" class="chart wide"></div>
 		<div class="clear"></div>
 	</div>
-	
+
 	<div class="clear"></div>
 	<div id="haxe:trace" style="clear:left;font-family:monospace;font-size:10pt;white-space:preserve;background-color:#eee;padding:8px;margin-top:16px"></div>
 </body>

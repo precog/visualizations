@@ -172,7 +172,6 @@ class PieChart extends Chart
 		{
 			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2,
 				r = radius * tooltipRadius;
-			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(width / 2 + Math.cos(a) * r, height / 2 + Math.sin(a) * r);
 		}

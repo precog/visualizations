@@ -95,7 +95,6 @@ class Geo extends Chart
 			tooltip.hide()
 		else
 		{
-			tooltip.show();
 			tooltip.text = text.split("\n");
 			var centroid = Reflect.field(dp, "#centroid");
 			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, true);

@@ -33,29 +33,29 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	public var lineInterpolator : LineInterpolator;
 	public var lineEffect : LineEffect;
 	public var y0property : String;
-	
+
 	var linePathShape : Array<Array<DataPoint> -> Int -> String>;
 	var chart : Selection;
 	var dps : Array<Array<Array<DataPoint>>>;
 	var segment : Int;
-	
-	
-	public function new(panel : Panel) 
+
+
+	public function new(panel : Panel)
 	{
 		super(panel);
 
 		addClass("line-chart");
 		chart = g.append("svg:g");
 	}
-	
+
 	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
 	{
 		super.setVariables(variableIndependents, yVariables, data);
-		
+
 		// TODO: add v.meta.max for area charts (copy barchart)
 	}
-	
-	function x(d : DataPoint, ?i) 
+
+	function x(d : DataPoint, ?i)
 	{
 		var value   = DataPoints.value(d, xVariable.type),
 			scaled  = xVariable.axis.scale(xVariable.min(), xVariable.max(), value),
@@ -102,9 +102,9 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			return h - scaledh;
 		}
 	}
-	
+
 	var segments : Array<Array<DataPoint>>;
-	
+
 	public function classsf(pos : Int, cls : String)
 	{
 		return function(_, i : Int)
@@ -112,7 +112,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			return cls + " stroke-" + (pos + i);
 		}
 	}
-	
+
 	public function classff(pos : Int, cls : String)
 	{
 		return function(_, i : Int)
@@ -120,7 +120,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			return cls + " fill-" + (pos + i);
 		}
 	}
-	
+
 	override function data(dps : Array<Array<Array<DataPoint>>>)
 	{
 		linePathShape = [];
@@ -135,16 +135,16 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				return line.shape(dp, i);
 			};
 		}
-		
+
 		var axisgroup = chart.selectAll("g.group").data(dps);
 		// axis enter
 		var axisenter = axisgroup.enter()
 			.append("svg:g")
 			.attr("class").stringf(function(_, i) return "group group-" + i);
-		
+
 		// axis exit
 		axisgroup.exit().remove();
-		
+
 		for (i in 0...dps.length)
 		{
 			segments = dps[i];
@@ -153,7 +153,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			stats.addMany(DataPoints.values(segments.flatten(), yVariables[i].type));
 			// TODO add id function
 			var segmentgroup = gi.selectAll("path.line").data(segments);
-			
+
 			if (null != y0property)
 			{
 				var area = new Area(x, getY0(i), getY1(i));
@@ -164,7 +164,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					.attr("class").stringf(classff(i, "line area"))
 					.attr("d").stringf(area.shape);
 			}
-			
+
 			switch(lineEffect)
 			{
 				case LineEffect.Gradient(lightness, levels):
@@ -177,7 +177,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 								end = Hsl.darker(start, lightness);
 							fs[i] = Hsl.interpolatef(end, start);
 						}).remove();
-							
+
 					for (j in 0...levels)
 					{
 						segmentgroup.enter()
@@ -197,12 +197,12 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					}
 				default: // do nothing
 			}
-			
+
 			var path = segmentgroup.enter()
 				.append("svg:path")
 				.attr("class").stringf(classsf(i, "line"))
 				.attr("d").stringf(linePathShape[i]);
-				
+
 			switch(lineEffect)
 			{
 				case LineEffect.Gradient(_, _):
@@ -212,12 +212,12 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				case LineEffect.NoEffect:
 					path.classed().add("noeffect");
 			}
-			
+
 			segmentgroup.update()
 				.attr("d").stringf(linePathShape[i]);
-			
+
 			segmentgroup.exit().remove();
-		
+
 			var gsymbols = gi.selectAll("g.symbols").data(segments),
 				vars = this.yVariables,
 				onclick = callback(onclick, stats),
@@ -225,18 +225,18 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			var enter = gsymbols.enter()
 				.append("svg:g")
 				.attr("class").stringf(classsf(i, "symbols"));
-				
+
 			// TODO add id function
 			var gsymbol = enter.selectAll("g.symbol").dataf(function(d,i) return d).enter()
 				.append("svg:g")
 //				.attr("class").string("symbol")
-				
+
 //				.attr("class").stringf(classf(i, "symbol-"))
 				.attr("transform").stringf(getTranslatePointf(i));
 
 			if (null != click)
 				gsymbol.on("click", onclick);
-			
+
 			if (null != labelDataPointOver)
 				gsymbol.onNode("mouseover", onmouseover);
 
@@ -258,7 +258,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					spath.attr("style").stringf(function(dp, _) return ss(dp, stats));
 				}
 			}
-			
+
 			if (null != labelDataPoint)
 			{
 				var f = this.labelDataPoint;
@@ -278,10 +278,10 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				.update()
 				.attr("transform").stringf(getTranslatePointf(i))
 			;
-				
+
 			gsymbols.exit().remove();
 		}
-		
+
 		ready.dispatch();
 	}
 
@@ -289,12 +289,12 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	{
 		var x = this.x,
 			y = getY1(pos);
-		return function(dp, i) 
+		return function(dp, i)
 		{
 			return "translate("+x(dp)+","+y(dp,i)+")";
 		};
 	}
-	
+
 	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
 	{
 		var dp = Access.getData(n),
@@ -309,12 +309,11 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 //			for (j in 0...segments.length)
 //				tooltip.removeClass("stroke-" + j);
 //			tooltip.addClass("stroke-" + seg);
-			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(coords[0], coords[1]);
 		}
 	}
-	
+
 	function onclick(stats : Stats<Dynamic>, dp : DataPoint, i : Int)
 	{
 		click(dp, stats);
