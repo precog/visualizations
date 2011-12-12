@@ -3014,12 +3014,32 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 	,__class__: rg.view.svg.chart.ScatterGraph
 });
 rg.view.svg.widget.Map = $hxClasses["rg.view.svg.widget.Map"] = function(container,projection) {
+	var me = this;
 	this.g = container.append("svg:g").attr("class").string("map");
 	this.projection = projection;
 	this.map = new Hash();
+	this.ready = false;
 	this.onReady = new hxevents.Notifier();
+	this.onReady.addOnce(function() {
+		me.ready = true;
+	});
 }
 rg.view.svg.widget.Map.__name__ = ["rg","view","svg","widget","Map"];
+rg.view.svg.widget.Map.loadJsonp = function(url,handler) {
+	var api = ReportGrid.$.Http.Jsonp.get;
+	api(url,{ success : handler});
+}
+rg.view.svg.widget.Map.loadJsonAjax = function(url,handler) {
+	var http = new haxe.Http(url);
+	http.onData = function(data) {
+		var json = thx.json.Json.decode(data);
+		handler(json);
+	};
+	http.onError = function(err) {
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.view.svg.widget.Map", methodName : "loadJsonAjax"});
+	};
+	http.request(false);
+}
 rg.view.svg.widget.Map.prototype = {
 	className: null
 	,map: null
@@ -3029,37 +3049,34 @@ rg.view.svg.widget.Map.prototype = {
 	,labelDataPointOver: null
 	,radius: null
 	,colorMode: null
+	,ready: null
+	,mapping: null
 	,projection: null
 	,g: null
-	,load: function(path,type,usejsonp) {
+	,load: function(path,type,mappingurl,usejsonp) {
 		switch(type) {
 		case "geojson":
-			this.loadGeoJson(path,usejsonp);
+			this.loadGeoJson(path,mappingurl,usejsonp);
 			break;
 		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 53, className : "rg.view.svg.widget.Map", methodName : "load"});
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 57, className : "rg.view.svg.widget.Map", methodName : "load"});
 		}
 	}
-	,loadGeoJson: function(path,usejsonp) {
-		if(usejsonp) this.loadGeoJsonJsonp(path); else this.loadGeoJsonAjax(path);
-	}
-	,loadGeoJsonJsonp: function(path) {
-		var api = ReportGrid.$.Http.Jsonp.get;
-		api(path,{ success : this.draw.$bind(this)});
-	}
-	,loadGeoJsonAjax: function(path) {
+	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
 		var me = this;
-		var http = new haxe.Http(path);
-		http.onData = function(data) {
-			var json = thx.json.Json.decode(data);
-			me.draw(json);
-		};
-		http.onError = function(err) {
-			throw new thx.error.Error("unable to load GeoJSON file '{0}': {1}",[path,err],null,{ fileName : "Map.hx", lineNumber : 79, className : "rg.view.svg.widget.Map", methodName : "loadGeoJsonAjax"});
-		};
-		http.request(false);
+		var load = usejsonp?rg.view.svg.widget.Map.loadJsonp:rg.view.svg.widget.Map.loadJsonAjax;
+		if(null == mappingurl) load(geourl,this.draw.$bind(this)); else load(mappingurl,function(m) {
+			me.mapping = m;
+			load(geourl,me.draw.$bind(me));
+		});
 	}
 	,draw: function(json) {
+		var me = this;
+		var id = null != this.mapping?function(s) {
+			return Reflect.hasField(me.mapping,s)?Reflect.field(me.mapping,s):s;
+		}:function(s) {
+			return s;
+		};
 		var path = new thx.svg.PathGeoJson();
 		path.setProjection(this.projection);
 		switch(json.type) {
@@ -3071,7 +3088,7 @@ rg.view.svg.widget.Map.prototype = {
 				var dp = { };
 				dp["#centroid"] = centroid;
 				dp["#data"] = feature.properties;
-				if(null != feature.id) this.map.set(feature.id,{ svg : p, dp : dp});
+				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
 				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,a1) {
 					return function(a2,a3) {
 						return f(a1,a2,a3);
@@ -3085,7 +3102,7 @@ rg.view.svg.widget.Map.prototype = {
 			}
 			break;
 		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 119, className : "rg.view.svg.widget.Map", methodName : "draw"});
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.view.svg.widget.Map", methodName : "draw"});
 			break;
 		default:
 			this.g.append("svg:path").attr("d").string(path.path(json));
@@ -3207,7 +3224,11 @@ rg.controller.info.InfoDataSource.filters = function() {
 			}
 			return $r;
 		}(this))}];
-	}}];
+	}},{ field : "tag", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "location", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null}];
 }
 rg.controller.info.InfoDataSource.validateDate = function(v) {
 	return Std["is"](v,Float) || Std["is"](v,Date) || Std["is"](v,String);
@@ -3225,7 +3246,7 @@ rg.controller.info.InfoDataSource.filterDate = function(v) {
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 114, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
+		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 124, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
 		return $r;
 	}(this));
 }
@@ -3241,6 +3262,8 @@ rg.controller.info.InfoDataSource.prototype = {
 	,groups: null
 	,start: null
 	,end: null
+	,tag: null
+	,location: null
 	,__class__: rg.controller.info.InfoDataSource
 }
 if(!rg.controller.factory) rg.controller.factory = {}
@@ -3452,10 +3475,10 @@ thx.js.AccessDataProperty.prototype = $extend(thx.js.AccessProperty.prototype,{
 	,__class__: thx.js.AccessDataProperty
 });
 rg.controller.info.InfoMap = $hxClasses["rg.controller.info.InfoMap"] = function() {
-	this.property = "#location";
+	this.property = "location";
 	this.type = "geojson";
 	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
-	this.usejson = true;
+	this.usejsonp = true;
 	this.radius = function(_,_1) {
 		return 10;
 	};
@@ -3474,7 +3497,7 @@ rg.controller.info.InfoMap.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "translate", validator : function(v) {
 		return Std["is"](v,Array);
-	}, filter : null},{ field : "original", validator : function(v) {
+	}, filter : null},{ field : "origin", validator : function(v) {
 		return Std["is"](v,Array);
 	}, filter : null},{ field : "parallels", validator : function(v) {
 		return Std["is"](v,Array);
@@ -3504,6 +3527,10 @@ rg.controller.info.InfoMap.filters = function() {
 		return [{ field : "radius", value : Std["is"](v,Float)?function(_,_1) {
 			return v;
 		}:v}];
+	}},{ field : "mapping", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		if(Std["is"](v,String)) return [{ field : "mappingurl", value : v}]; else return [{ field : "mapping", value : v}];
 	}}];
 }
 rg.controller.info.InfoMap.isValidTemplate = function(t) {
@@ -3522,7 +3549,7 @@ rg.controller.info.InfoMap.fromTemplate = function(t) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 175, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
+			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 194, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
 			return $r;
 		}(this));
 	}
@@ -3542,7 +3569,9 @@ rg.controller.info.InfoMap.prototype = {
 	,click: null
 	,radius: null
 	,colorScaleMode: null
-	,usejson: null
+	,usejsonp: null
+	,mapping: null
+	,mappingurl: null
 	,__class__: rg.controller.info.InfoMap
 }
 thx.color.Hsl = $hxClasses["thx.color.Hsl"] = function(h,s,l) {
@@ -5048,7 +5077,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.2949"};
+	r.info.viz = { version : "1.1.5.3080"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -8033,7 +8062,7 @@ rg.layout.SugiyamaMethod.prototype = {
 	}
 	,__class__: rg.layout.SugiyamaMethod
 }
-rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,operation,groupby,timezone,start,end) {
+rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,operation,tag,location,groupby,timezone,start,end) {
 	this.query = query;
 	this.executor = executor;
 	this.groupBy = groupby;
@@ -8051,7 +8080,7 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 81, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 84, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -8074,7 +8103,7 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 95, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 98, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
@@ -8082,6 +8111,8 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 		}(this));
 	});
 	this.operation = operation;
+	this.tag = tag;
+	this.location = location;
 	this.path = path;
 	this.timeStart = start;
 	this.timeEnd = end;
@@ -8137,7 +8168,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 447, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 469, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -8182,6 +8213,8 @@ rg.data.source.DataSourceReportGrid.prototype = {
 	,timeEnd: null
 	,groupBy: null
 	,timeZone: null
+	,tag: null
+	,location: null
 	,transform: null
 	,query: null
 	,onLoad: null
@@ -8194,7 +8227,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		case 2:
 			return { event : this.event, property : null, limit : null, order : null};
 		default:
-			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 69, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 72, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 		}
 	}
 	,basicOptions: function(appendPeriodicity) {
@@ -8210,6 +8243,8 @@ rg.data.source.DataSourceReportGrid.prototype = {
 			if(null != this.groupBy) opt["groupBy"] = this.groupBy;
 			if(null != this.timeZone) opt["timeZone"] = this.timeZone;
 		}
+		if(null != this.location) opt["location"] = this.location;
+		if(null != this.tag) opt["tag"] = this.tag;
 		if(this.where.length > 1) {
 			var arr = [];
 			var _g = 0, _g1 = this.where;
@@ -8248,11 +8283,11 @@ rg.data.source.DataSourceReportGrid.prototype = {
 	}
 	,load: function() {
 		var me = this;
-		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 204, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 217, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 			if(this.periodicity == "eternity") {
 				var opt = this.basicOptions(false);
 				if(this.where.length > 1) {
-					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+					if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 					this.executor.searchCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				} else if(this.where.length == 1) {
 					if(this.exp.length > 1) {
@@ -8318,13 +8353,13 @@ rg.data.source.DataSourceReportGrid.prototype = {
 							});
 							rg.data.source.DataSourceReportGrid.parallelExecution(actions,this.success.$bind(this),this.error.$bind(this));
 						} else {
-							this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+							if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 							opt.value = this.where[0].values[0];
 							this.executor.propertyValueCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 						}
 					}
 				} else {
-					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+					if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 					opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
 					this.executor.propertyCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				}
@@ -8453,7 +8488,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 428, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 450, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -11404,6 +11439,36 @@ js.Storage.prototype = {
 	,clear: null
 	,__class__: js.Storage
 }
+rg.data.source.rgquery.transform.TransformTagCount = $hxClasses["rg.data.source.rgquery.transform.TransformTagCount"] = function(properties,event,unit,tag) {
+	this.properties = properties;
+	this.unit = unit;
+	this.event = event;
+	this.tag = tag;
+}
+rg.data.source.rgquery.transform.TransformTagCount.__name__ = ["rg","data","source","rgquery","transform","TransformTagCount"];
+rg.data.source.rgquery.transform.TransformTagCount.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformTagCount.prototype = {
+	properties: null
+	,unit: null
+	,event: null
+	,tag: null
+	,transform: function(data) {
+		var result = [], dp, value;
+		var _g = 0, _g1 = Reflect.fields(data);
+		while(_g < _g1.length) {
+			var field = _g1[_g];
+			++_g;
+			value = Reflect.field(data,field);
+			dp = { event : this.event};
+			Objects.copyTo(this.properties,dp);
+			Objects.addField(dp,this.unit,value);
+			Objects.addField(dp,this.tag,Strings.rtrim(Strings.ltrim(field,"/"),"/"));
+			result.push(dp);
+		}
+		return result;
+	}
+	,__class__: rg.data.source.rgquery.transform.TransformTagCount
+}
 var IntIter = $hxClasses["IntIter"] = function(min,max) {
 	this.min = min;
 	this.max = max;
@@ -13951,15 +14016,15 @@ rg.controller.factory.FactoryDataSource.prototype = {
 			return data;
 		}
 		if(null != info.data) return this.createFromData(info.data);
-		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.statistic,info.groupBy,info.timeZone,info.start,info.end);
+		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.statistic,info.tag,info.location,info.groupBy,info.timeZone,info.start,info.end);
 		throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 52, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 	}
 	,createFromData: function(data) {
 		return new rg.data.source.DataSourceArray(data);
 	}
-	,createFromQuery: function(path,event,query,statistic,groupby,timeZone,start,end) {
+	,createFromQuery: function(path,event,query,statistic,tag,location,groupby,timeZone,start,end) {
 		if(null == query) query = "";
-		return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),statistic,groupby,timeZone,start,end);
+		return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),statistic,tag,location,groupby,timeZone,start,end);
 	}
 	,__class__: rg.controller.factory.FactoryDataSource
 }
@@ -14041,7 +14106,7 @@ rg.data.source.rgquery.QueryParser.cleanName = function(name) {
 rg.data.source.rgquery.QueryParser.parseQuoted = function(s,q,results) {
 	var pos = s.indexOf(q,1);
 	if(pos < 0) throw new thx.error.Error("value is not correctly quoted",null,null,{ fileName : "QueryParser.hx", lineNumber : 185, className : "rg.data.source.rgquery.QueryParser", methodName : "parseQuoted"});
-	results.push(s.substr(1,pos));
+	results.push(s.substr(1,pos - 1));
 	pos = s.indexOf(",");
 	if(pos < 0) return "";
 	return s.substr(pos + 1);
@@ -14892,7 +14957,10 @@ rg.controller.visualization.VisualizationGeo.prototype = $extend(rg.controller.v
 			map.colorMode = imap.colorScaleMode;
 			map.handlerClick = ($_=this.chart,$_.handlerClick.$bind($_));
 			map.handlerDataPointOver = ($_=this.chart,$_.handlerDataPointOver.$bind($_));
-			map.load(imap.url,imap.type,imap.usejson);
+			map.mapping = imap.mapping;
+			var mappingurl = imap.mappingurl;
+			if(null != mappingurl && (!StringTools.startsWith(mappingurl,"http://") || !StringTools.startsWith(mappingurl,"https://"))) mappingurl = rg.RGConst.BASE_URL_GEOJSON + mappingurl + ".json" + (imap.usejsonp?".js":"");
+			map.load(imap.url,imap.type,mappingurl,imap.usejsonp);
 			this.chart.addMap(map,imap.property);
 		}
 	}
@@ -18805,6 +18873,7 @@ rg.view.svg.chart.Geo = $hxClasses["rg.view.svg.chart.Geo"] = function(panel) {
 	this.mapcontainer = this.g.append("svg:g").attr("class").string("mapcontainer");
 	this.queue = [];
 	this.setColorMode(rg.view.svg.chart.ColorScaleMode.FromCss());
+	this.resize();
 }
 rg.view.svg.chart.Geo.__name__ = ["rg","view","svg","chart","Geo"];
 rg.view.svg.chart.Geo.__super__ = rg.view.svg.chart.Chart;
@@ -19783,12 +19852,20 @@ rg.controller.MVPOptions.buildQuery = function(type,property,values,periodicity)
 	return q;
 }
 rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
-	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null, statistic = null;
+	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null, statistic = null, tag = null, location = null;
 	if(null == parameters.options) parameters.options = { };
 	var options = parameters.options;
 	if(null != parameters.statistic) {
 		statistic = parameters.statistic;
 		Reflect.deleteField(parameters,"statistic");
+	}
+	if(null != parameters.tag) {
+		tag = parameters.tag;
+		Reflect.deleteField(parameters,"tag");
+	}
+	if(null != parameters.location) {
+		location = parameters.location;
+		Reflect.deleteField(parameters,"location");
 	}
 	if(null != parameters.groupby) {
 		groupby = parameters.groupby;
@@ -19857,7 +19934,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 184, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 197, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	chain.addAction(function(params,handler1) {
 		var opt = params.options;
@@ -19899,10 +19976,9 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 					params1["groupby"] = groupby;
 					if(null != groupfilter) params1["groupfilter"] = groupfilter;
 				}
-				if(null != statistic) {
-					params1["statistic"] = statistic;
-					if(null != statistic) params1["statistic"] = statistic;
-				}
+				if(null != statistic) params1["statistic"] = statistic;
+				if(null != tag) params1["tag"] = tag;
+				if(null != location) params1["location"] = location;
 				src.push(params1);
 			}
 			if(null == params.options.segmenton) params.options.segmenton = null != values?"value":null == property?"event":property;

@@ -1,5 +1,6 @@
 v. 1.1.5
 * added support for standardDeviation and mean to visualizations
+* added simplified query for geo and mapping
 v. 1.1.4
  * added official support for download
  * fixed bug in query values

@@ -9,6 +9,7 @@ import rg.data.IDataSource;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.QueryAst;
 import rg.data.source.rgquery.transform.TransformCount;
+import rg.data.source.rgquery.transform.TransformTagCount;
 import rg.data.source.rgquery.transform.TransformCounts;
 import rg.data.source.rgquery.transform.TransformIntersectGroup;
 import rg.data.source.rgquery.transform.TransformIntersectGroupUtc;
@@ -41,6 +42,8 @@ class DataSourceReportGrid implements IDataSource
 	public var timeEnd : Float;
 	public var groupBy : Null<String>;
 	public var timeZone : Null<String>;
+	public var tag : Null<String>;
+	public var location : Null<String>;
 
 	var transform : ITransform<Dynamic>;
 
@@ -70,7 +73,7 @@ class DataSourceReportGrid implements IDataSource
 		}
 	}
 
-	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, operation : QOperation, ?groupby : String, ?timezone : String, ?start : Float, ?end : Float)
+	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, operation : QOperation, tag : Null<String>, location : Null<String>, groupby : Null<String>, timezone : Null<String>, start : Null<Float>, end : Null<Float>)
 	{
 		this.query = query;
 		this.executor = executor;
@@ -94,6 +97,8 @@ class DataSourceReportGrid implements IDataSource
 			};
 			default: throw new Error("invalid data for 'where' condition"); } );
 		this.operation = operation;
+		this.tag = tag;
+		this.location = location;
 		this.path = path;
 		this.timeStart = start;
 		this.timeEnd = end;
@@ -117,6 +122,14 @@ class DataSourceReportGrid implements IDataSource
 				Reflect.setField(opt, "groupBy", groupBy);
 			if (null != timeZone)
 				Reflect.setField(opt, "timeZone", timeZone);
+		}
+		if(null != location)
+		{
+			Reflect.setField(opt, "location", location);
+		}
+		if(null != tag)
+		{
+			Reflect.setField(opt, "tag", tag);
 		}
 
 		if (where.length > 1)
@@ -209,7 +222,10 @@ class DataSourceReportGrid implements IDataSource
 				var opt : Dynamic = basicOptions(false);
 				if (where.length > 1)
 				{
-					transform = new TransformCount( { }, event, unit());
+					if(null != tag)
+						transform = new TransformTagCount( { }, event, unit(), tag);
+					else
+						transform = new TransformCount( { }, event, unit());
 //trace("1");
 					executor.searchCount(path, opt, success, error);
 				} else if (where.length == 1)
@@ -277,14 +293,20 @@ class DataSourceReportGrid implements IDataSource
 							});
 							parallelExecution(actions, success, error);
 						} else {
-							transform = new TransformCount( { }, event, unit());
+							if(null != tag)
+								transform = new TransformTagCount( { }, event, unit(), tag);
+							else
+								transform = new TransformCount( { }, event, unit());
 							opt.value = where[0].values[0];
 //trace("3");
 							executor.propertyValueCount(path, opt, success, error);
 						}
 					}
 				} else {
-					transform = new TransformCount( { }, event, unit());
+					if(null != tag)
+						transform = new TransformTagCount( { }, event, unit(), tag);
+					else
+						transform = new TransformCount( { }, event, unit());
 					opt.property = propertyName(exp[0]);
 //trace("4");
 					executor.propertyCount(path, opt, success, error);
@@ -399,7 +421,7 @@ class DataSourceReportGrid implements IDataSource
 				}
 			}
 			var opt : Dynamic = basicOptions(true);
-
+trace(opt);
 //trace("9");
 
 			switch(operation)

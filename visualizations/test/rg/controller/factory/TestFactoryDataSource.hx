@@ -16,12 +16,12 @@ import utest.Assert;
 import rg.data.source.rgquery.QueryAst;
 using rg.controller.info.Info;
 
-class TestFactoryDataSource 
+class TestFactoryDataSource
 {
 	var executor : IExecutorReportGrid;
 	var cache : Hash<IDataSource>;
 	var factory : FactoryDataSource;
-	
+
 	public function testIncompleteRGQuery()
 	{
 		var info = new InfoDataSource(),
@@ -34,9 +34,9 @@ class TestFactoryDataSource
 		info.feed( { event : "click" } );
 		Assert.notNull(b.create(info));
 	}
-	
-		
-	public function testRGQueryWithEmptyQuery() 
+
+
+	public function testRGQueryWithEmptyQuery()
 	{
 		var info = new InfoDataSource().feed( { path : "/", event : "click" } ),
 			ds = factory.create(info);
@@ -47,12 +47,11 @@ class TestFactoryDataSource
 		Assert.equals("/", r.path);
 		Assert.same({
 			exp : [Event],
-			operation : Count,
 			where : []
 		},  r.query);
 	}
-	
-	public function testRGQuery() 
+
+	public function testRGQuery()
 	{
 		var info = new InfoDataSource().feed( { path : "/", event : "click", query : ".#time:hour" } ),
 			ds = factory.create(info);
@@ -63,11 +62,10 @@ class TestFactoryDataSource
 		Assert.equals("/", r.path);
 		Assert.same({
 			exp : [Time("hour")],
-			operation : Count,
 			where : []
 		},  r.query);
 	}
-	
+
 	public function testArraySource()
 	{
 		var info = new InfoDataSource().feed( { data : [ {
@@ -83,7 +81,7 @@ class TestFactoryDataSource
 		});
 		ds.load();
 	}
-	
+
 	public function testNamedSource()
 	{
 		cache.set("sample", new DataSourceArray([]));
@@ -92,20 +90,20 @@ class TestFactoryDataSource
 		Assert.notNull(ds);
 		Assert.is(ds, DataSourceArray);
 	}
-	
+
 	public function testNamedSourceForNotExistingSource()
 	{
 		var info = new InfoDataSource().feed( { data : "sample" } ),
 			b = factory;
 		Assert.raises(function() b.create(info), Error);
 	}
-	
+
 	function setup()
 	{
 		cache = new Hash();
 		executor = new MockRGExecutor();
 		factory = new FactoryDataSource(cache, executor);
 	}
-	
+
 	public function new() { }
 }

@@ -64,4 +64,19 @@ class TestEdge extends TestBaseGraph<Dynamic, Dynamic>
 		graph.edges.clear();
 		Assert.equals(0, graph.edges.length);
 	}
+
+	public function testSplit()
+	{
+		
+	}
+
+	public function testReverse()
+	{
+		
+	}
+
+	public function testReversePath()
+	{
+		
+	}
 }

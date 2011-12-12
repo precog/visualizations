@@ -14,6 +14,8 @@ rg.data.source.rgquery.IExecutorReportGrid.prototype = {
 	children: null
 	,propertyCount: null
 	,propertySeries: null
+	,propertyMeans: null
+	,propertyStandardDeviations: null
 	,propertyValues: null
 	,propertyValueCount: null
 	,propertyValueSeries: null
@@ -37,6 +39,12 @@ rg.data.source.rgquery.MockRGExecutor.prototype = {
 	}
 	,propertySeries: function(path,options,success,error) {
 		this.callStack.push({ method : "propertySeries", args : [path,options]});
+	}
+	,propertyMeans: function(path,options,success,error) {
+		this.callStack.push({ method : "propertyMeans", args : [path,options]});
+	}
+	,propertyStandardDeviations: function(path,options,success,error) {
+		this.callStack.push({ method : "propertyStandardDeviations", args : [path,options]});
 	}
 	,propertyValues: function(path,options,success,error) {
 		this.callStack.push({ method : "propertyValues", args : [path,options]});
@@ -108,10 +116,16 @@ rg.data.source.rgquery.QExp.Event.__enum__ = rg.data.source.rgquery.QExp;
 rg.data.source.rgquery.QCondition = $hxClasses["rg.data.source.rgquery.QCondition"] = { __ename__ : ["rg","data","source","rgquery","QCondition"], __constructs__ : ["Equality","In"] }
 rg.data.source.rgquery.QCondition.Equality = function(property,v) { var $x = ["Equality",0,property,v]; $x.__enum__ = rg.data.source.rgquery.QCondition; $x.toString = $estr; return $x; }
 rg.data.source.rgquery.QCondition.In = function(property,v) { var $x = ["In",1,property,v]; $x.__enum__ = rg.data.source.rgquery.QCondition; $x.toString = $estr; return $x; }
-rg.data.source.rgquery.QOperation = $hxClasses["rg.data.source.rgquery.QOperation"] = { __ename__ : ["rg","data","source","rgquery","QOperation"], __constructs__ : ["Count"] }
+rg.data.source.rgquery.QOperation = $hxClasses["rg.data.source.rgquery.QOperation"] = { __ename__ : ["rg","data","source","rgquery","QOperation"], __constructs__ : ["Count","Mean","StandardDeviation"] }
 rg.data.source.rgquery.QOperation.Count = ["Count",0];
 rg.data.source.rgquery.QOperation.Count.toString = $estr;
 rg.data.source.rgquery.QOperation.Count.__enum__ = rg.data.source.rgquery.QOperation;
+rg.data.source.rgquery.QOperation.Mean = ["Mean",1];
+rg.data.source.rgquery.QOperation.Mean.toString = $estr;
+rg.data.source.rgquery.QOperation.Mean.__enum__ = rg.data.source.rgquery.QOperation;
+rg.data.source.rgquery.QOperation.StandardDeviation = ["StandardDeviation",2];
+rg.data.source.rgquery.QOperation.StandardDeviation.toString = $estr;
+rg.data.source.rgquery.QOperation.StandardDeviation.__enum__ = rg.data.source.rgquery.QOperation;
 var thx = thx || {}
 if(!thx.collection) thx.collection = {}
 thx.collection.Set = $hxClasses["thx.collection.Set"] = function() {
@@ -1168,7 +1182,11 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 		this.resize();
 	}
 	,moveTooltip: function(x,y,animated) {
-		this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
+		if(0 == this.tooltip.x && 0 == this.tooltip.y || !this.tooltip.visible) {
+			this.tooltip.hide();
+			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
+			this.tooltip.show(true);
+		} else this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
 	}
 	,__class__: rg.view.svg.chart.Chart
 });
@@ -1605,6 +1623,7 @@ rg.controller.info.TestInfoVisualizationOption.prototype = {
 }
 if(!rg.layout) rg.layout = {}
 rg.layout.GraphCollection = $hxClasses["rg.layout.GraphCollection"] = function(graph) {
+	this.nextid = 0;
 	this.graph = graph;
 	this.collection = new IntHash();
 }
@@ -1645,30 +1664,45 @@ rg.layout.GraphEdges.__super__ = rg.layout.GraphCollection;
 rg.layout.GraphEdges.prototype = $extend(rg.layout.GraphCollection.prototype,{
 	edgesp: null
 	,edgesn: null
+	,copyTo: function(graph) {
+		var edges = new rg.layout.GraphEdges(graph), nodes = graph.nodes, head, tail;
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			head = nodes.get(edge.head.id);
+			tail = nodes.get(edge.tail.id);
+			edges._create(edge.id,head,tail,edge.data);
+		}
+		edges.nextid = this.nextid;
+		return edges;
+	}
 	,create: function(head,tail,data) {
-		if(head.graph != tail.graph || head.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 22, className : "rg.layout.GraphEdges", methodName : "create"});
-		var e = rg.layout.GEdge.create(this.graph,++this.nextid,head,tail,data);
+		if(head.graph != tail.graph || head.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 38, className : "rg.layout.GraphEdges", methodName : "create"});
+		return this._create(++this.nextid,head,tail,data);
+	}
+	,_create: function(id,head,tail,data) {
+		var e = rg.layout.GEdge.create(this.graph,id,head,tail,data);
 		this.collectionAdd(e);
-		this.connections(head.id,this.edgesp).push(e.id);
-		this.connections(tail.id,this.edgesn).push(e.id);
+		this.connections(head.id,this.edgesp).push(id);
+		this.connections(tail.id,this.edgesn).push(id);
 		return e;
 	}
 	,remove: function(edge) {
-		if(edge.graph != this.graph) throw new thx.error.Error("the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 33, className : "rg.layout.GraphEdges", methodName : "remove"});
+		if(edge.graph != this.graph) throw new thx.error.Error("the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 54, className : "rg.layout.GraphEdges", methodName : "remove"});
 		this.collectionRemove(edge);
 		edge.destroy();
 	}
 	,unlink: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 41, className : "rg.layout.GraphEdges", methodName : "unlink"});
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 62, className : "rg.layout.GraphEdges", methodName : "unlink"});
 		this._unlink(node,this.edgesp);
 		this._unlink(node,this.edgesn);
 	}
 	,unlinkPositives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 49, className : "rg.layout.GraphEdges", methodName : "unlinkPositives"});
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 70, className : "rg.layout.GraphEdges", methodName : "unlinkPositives"});
 		this._unlink(node,this.edgesp);
 	}
 	,unlinkNegatives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 56, className : "rg.layout.GraphEdges", methodName : "unlinkNegatives"});
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 77, className : "rg.layout.GraphEdges", methodName : "unlinkNegatives"});
 		this._unlink(node,this.edgesn);
 	}
 	,_unlink: function(node,connections) {
@@ -1678,7 +1712,9 @@ rg.layout.GraphEdges.prototype = $extend(rg.layout.GraphCollection.prototype,{
 		while(_g < ids.length) {
 			var id = ids[_g];
 			++_g;
-			this.remove(this.get(id));
+			var edge = this.get(id);
+			if(null == edge) continue;
+			this.remove(edge);
 		}
 		connections.remove(node.id);
 	}
@@ -2134,25 +2170,34 @@ rg.view.svg.widget.Balloon.prototype = {
 		this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.view.svg.widget.BalloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
 		if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(coords):this.connectorShapeH.diagonal(coords));
 	}
-	,show: function() {
-		if(!this.visible) return;
+	,show: function(animate) {
+		if(this.visible) return;
 		this.visible = true;
 		this.balloon.style("display").string("block");
+		if(animate) this.balloon.transition().style("opacity")["float"](1); else this.balloon.style("opacity")["float"](1);
 	}
-	,hide: function() {
-		if(this.visible) return;
+	,hide: function(animate) {
+		if(animate == null) animate = false;
+		var me = this;
+		if(!this.visible) return;
 		this.visible = false;
-		this.balloon.style("display").string("none");
+		if(animate) this.balloon.transition().style("opacity")["float"](0).endNode(function(_,_1) {
+			me.balloon.style("display").string("none");
+		}); else {
+			this.balloon.style("opacity")["float"](0);
+			this.balloon.style("display").string("none");
+		}
 	}
 	,redraw: function() {
 		if(null == this.text || this.text.length == 0) return;
+		var last = this.boxWidth;
 		this.boxWidth = 0.0;
 		var w;
 		var _g = 0, _g1 = this.labels;
 		while(_g < _g1.length) {
 			var label = _g1[_g];
 			++_g;
-			if((w = label.getSize().width) > this.boxWidth) this.boxWidth = w;
+			if((w = label.getSize().width) > this.boxWidth) this.boxWidth = w; else if(w == 0) this.boxWidth = last;
 		}
 		this.boxWidth += this.paddingHorizontal * 2;
 		this.boxHeight = this.lineHeight * this.labels.length + this.paddingVertical * 2;
@@ -3246,7 +3291,6 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
 		}
@@ -3401,6 +3445,7 @@ rg.view.html.widget.DownloaderPositions.prototype = {
 	__class__: rg.view.html.widget.DownloaderPositions
 }
 rg.controller.info.InfoDataSource = $hxClasses["rg.controller.info.InfoDataSource"] = function() {
+	this.statistic = rg.data.source.rgquery.QOperation.Count;
 }
 rg.controller.info.InfoDataSource.__name__ = ["rg","controller","info","InfoDataSource"];
 rg.controller.info.InfoDataSource.filters = function() {
@@ -3432,7 +3477,28 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return Std["is"](v,String) || Std["is"](v,Array);
 	}, filter : function(v) {
 		return [{ field : "groups", value : Std["is"](v,String)?v.split(","):v}];
-	}}];
+	}},{ field : "statistic", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "statistic", value : (function($this) {
+			var $r;
+			switch(("" + v).toLowerCase()) {
+			case "deviation":case "stddeviation":case "standarddeviation":
+				$r = rg.data.source.rgquery.QOperation.StandardDeviation;
+				break;
+			case "mean":
+				$r = rg.data.source.rgquery.QOperation.Mean;
+				break;
+			default:
+				$r = rg.data.source.rgquery.QOperation.Count;
+			}
+			return $r;
+		}(this))}];
+	}},{ field : "tag", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "location", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null}];
 }
 rg.controller.info.InfoDataSource.validateDate = function(v) {
 	return Std["is"](v,Float) || Std["is"](v,Date) || Std["is"](v,String);
@@ -3450,7 +3516,7 @@ rg.controller.info.InfoDataSource.filterDate = function(v) {
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 94, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
+		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 124, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
 		return $r;
 	}(this));
 }
@@ -3459,12 +3525,15 @@ rg.controller.info.InfoDataSource.prototype = {
 	,path: null
 	,event: null
 	,namedData: null
+	,statistic: null
 	,data: null
 	,groupBy: null
 	,timeZone: null
 	,groups: null
 	,start: null
 	,end: null
+	,tag: null
+	,location: null
 	,__class__: rg.controller.info.InfoDataSource
 }
 if(!rg.controller.factory) rg.controller.factory = {}
@@ -3620,35 +3689,35 @@ rg.controller.factory.TestFactoryDataSource.prototype = {
 		var r = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
 		utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 46, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
 		utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 47, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
-		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 48, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
+		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Event], where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 48, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
 	}
 	,testRGQuery: function() {
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ path : "/", event : "click", query : ".#time:hour"}), ds = this.factory.create(info);
-		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 59, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
-		utest.Assert["is"](ds,rg.data.source.DataSourceReportGrid,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 60, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 58, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert["is"](ds,rg.data.source.DataSourceReportGrid,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 59, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
 		var r = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
-		utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 62, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
-		utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 63, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
-		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Time("hour")], operation : rg.data.source.rgquery.QOperation.Count, where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 64, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 61, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 62, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Time("hour")], where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 63, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
 	}
 	,testArraySource: function() {
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : [{ event : "click", count : 10}], name : "sample"}), ds = this.factory.create(info);
 		ds.onLoad.add(function(data) {
-			utest.Assert.same([{ event : "click", count : 10}],data,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 79, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testArraySource"});
+			utest.Assert.same([{ event : "click", count : 10}],data,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 77, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testArraySource"});
 		});
 		ds.load();
 	}
 	,testNamedSource: function() {
 		this.cache.set("sample",new rg.data.source.DataSourceArray([]));
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : "sample"}), ds = this.factory.create(info);
-		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 92, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
-		utest.Assert["is"](ds,rg.data.source.DataSourceArray,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 93, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
+		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 90, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
+		utest.Assert["is"](ds,rg.data.source.DataSourceArray,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 91, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
 	}
 	,testNamedSourceForNotExistingSource: function() {
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : "sample"}), b = this.factory;
 		utest.Assert.raises(function() {
 			b.create(info);
-		},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 100, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSourceForNotExistingSource"});
+		},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 98, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSourceForNotExistingSource"});
 	}
 	,setup: function() {
 		this.cache = new Hash();
@@ -5650,7 +5719,6 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,ystats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(x + w / 2,y);
 		}
@@ -5749,7 +5817,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.4.2821"};
+	r.info.viz = { version : "1.1.5.3026"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -6304,8 +6372,57 @@ rg.layout.TestGraph = $hxClasses["rg.layout.TestGraph"] = function() {
 rg.layout.TestGraph.__name__ = ["rg","layout","TestGraph"];
 rg.layout.TestGraph.__super__ = rg.layout.TestBaseGraph;
 rg.layout.TestGraph.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
-	__class__: rg.layout.TestGraph
+	testClone: function() {
+		var n1 = this.graph.nodes.create(10), n2 = this.graph.nodes.create(20), e = this.graph.edges.create(n1,n2,30), clone = this.graph.clone();
+		utest.Assert.isTrue(n1 != clone.nodes.get(n1.id),null,{ fileName : "TestGraph.hx", lineNumber : 14, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.notNull(clone.nodes.get(n1.id),null,{ fileName : "TestGraph.hx", lineNumber : 15, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(n1.data,clone.nodes.get(n1.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 17, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(n2.data,clone.nodes.get(n2.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 18, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(e.data,clone.edges.get(e.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 19, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.graph.nodes.create().id,clone.nodes.create().id,null,{ fileName : "TestGraph.hx", lineNumber : 21, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.graph.edges.create(n2,n1).id,clone.edges.create(clone.nodes.get(n1.id),clone.nodes.get(n2.id)).id,null,{ fileName : "TestGraph.hx", lineNumber : 22, className : "rg.layout.TestGraph", methodName : "testClone"});
+		this.graph.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 28, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(3,IntHashes.count(clone.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 29, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 31, className : "rg.layout.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(2,IntHashes.count(clone.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 32, className : "rg.layout.TestGraph", methodName : "testClone"});
+	}
+	,testPath: function() {
+	}
+	,__class__: rg.layout.TestGraph
 });
+rg.data.source.rgquery.transform.TransformStatisticTime = $hxClasses["rg.data.source.rgquery.transform.TransformStatisticTime"] = function(properties,fields,event,periodicity,unit) {
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformStatisticTime.__name__ = ["rg","data","source","rgquery","transform","TransformStatisticTime"];
+rg.data.source.rgquery.transform.TransformStatisticTime.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformStatisticTime.prototype = {
+	properties: null
+	,unit: null
+	,periodicity: null
+	,fields: null
+	,event: null
+	,transform: function(data) {
+		var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+		if(null == items || 0 == items.length) return [];
+		var result = [];
+		var _g = 0;
+		while(_g < data.length) {
+			var arr = data[_g];
+			++_g;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[this.periodicity != "minute" && this.periodicity != "hour"?Dates.snap(arr[0].timestamp,this.periodicity):arr[0].timestamp,arr[1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+		return result;
+	}
+	,__class__: rg.data.source.rgquery.transform.TransformStatisticTime
+}
 if(!thx.text) thx.text = {}
 thx.text.ERegs = $hxClasses["thx.text.ERegs"] = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
@@ -8940,7 +9057,7 @@ rg.layout.SugiyamaMethod.prototype = {
 	}
 	,__class__: rg.layout.SugiyamaMethod
 }
-rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,groupby,timezone,start,end) {
+rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,operation,tag,location,groupby,timezone,start,end) {
 	this.query = query;
 	this.executor = executor;
 	this.groupBy = groupby;
@@ -8958,7 +9075,7 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 80, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 81, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -8981,20 +9098,14 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 94, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 95, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
 			return $r;
 		}(this));
 	});
-	this.operation = query.operation;
-	switch( (this.operation)[1] ) {
-	case 0:
-		break;
-	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 100, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
-	}
+	this.operation = operation;
 	this.path = path;
 	this.timeStart = start;
 	this.timeEnd = end;
@@ -9050,7 +9161,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 432, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 447, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -9107,7 +9218,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		case 2:
 			return { event : this.event, property : null, limit : null, order : null};
 		default:
-			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 68, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 69, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 		}
 	}
 	,basicOptions: function(appendPeriodicity) {
@@ -9149,19 +9260,19 @@ rg.data.source.DataSourceReportGrid.prototype = {
 			case 0:
 				$r = "count";
 				break;
-			default:
-				$r = (function($this) {
-					var $r;
-					throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 150, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
-					return $r;
-				}($this));
+			case 1:
+				$r = "mean";
+				break;
+			case 2:
+				$r = "standardDeviation";
+				break;
 			}
 			return $r;
 		}(this));
 	}
 	,load: function() {
 		var me = this;
-		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 208, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 204, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 			if(this.periodicity == "eternity") {
 				var opt = this.basicOptions(false);
 				if(this.where.length > 1) {
@@ -9331,18 +9442,42 @@ rg.data.source.DataSourceReportGrid.prototype = {
 				return d.property;
 			}),this.event,this.exp[0].order != "ascending"); else if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformIntersectUtc({ },this.exp.map(function(d,_) {
 				return d.property;
-			}),this.event,this.periodicity,this.unit()); else this.transform = new rg.data.source.rgquery.transform.TransformIntersectTime({ },this.exp.map(function(d,_) {
-				return d.property;
-			}),this.event,this.periodicity,this.unit());
+			}),this.event,this.periodicity,this.unit()); else {
+				switch( (this.operation)[1] ) {
+				case 2:
+				case 1:
+					this.transform = new rg.data.source.rgquery.transform.TransformStatisticTime({ },this.exp.map(function(d,_) {
+						return d.property;
+					}),this.event,this.periodicity,this.unit());
+					break;
+				case 0:
+					this.transform = new rg.data.source.rgquery.transform.TransformIntersectTime({ },this.exp.map(function(d,_) {
+						return d.property;
+					}),this.event,this.periodicity,this.unit());
+					break;
+				}
+			}
 			var opt = this.basicOptions(true);
-			opt.properties = this.exp.map(function(p,i) {
-				return { property : rg.data.source.DataSourceReportGrid.propertyName(p), limit : p.limit, order : p.order};
-			});
-			this.executor.intersect(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+			switch( (this.operation)[1] ) {
+			case 0:
+				opt.properties = this.exp.map(function(p,i) {
+					return { property : rg.data.source.DataSourceReportGrid.propertyName(p), limit : p.limit, order : p.order};
+				});
+				this.executor.intersect(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+				break;
+			case 1:
+				opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
+				this.executor.propertyMeans(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+				break;
+			case 2:
+				opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
+				this.executor.propertyStandardDeviations(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+				break;
+			}
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 413, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 428, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -9782,7 +9917,6 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 		if(null == this.labelDataPointOver) return;
 		var text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,true);
 		}
@@ -10028,28 +10162,28 @@ rg.data.source.rgquery.TestQueryParser = $hxClasses["rg.data.source.rgquery.Test
 rg.data.source.rgquery.TestQueryParser.__name__ = ["rg","data","source","rgquery","TestQueryParser"];
 rg.data.source.rgquery.TestQueryParser.prototype = {
 	test: function() {
-		this.assertParse([rg.data.source.rgquery.QExp.Event],rg.data.source.rgquery.QOperation.Count,[],"",{ fileName : "TestQueryParser.hx", lineNumber : 16, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click")],rg.data.source.rgquery.QOperation.Count,[],".click",{ fileName : "TestQueryParser.hx", lineNumber : 22, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click.gender")],rg.data.source.rgquery.QOperation.Count,[rg.data.source.rgquery.QCondition.Equality(".click.gender","female")],".click.gender = 'female'",{ fileName : "TestQueryParser.hx", lineNumber : 29, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click"),rg.data.source.rgquery.QExp.Time("hour")],rg.data.source.rgquery.QOperation.Count,[],".click * .#time:hour",{ fileName : "TestQueryParser.hx", lineNumber : 36, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10)],rg.data.source.rgquery.QOperation.Count,[],".click(10)",{ fileName : "TestQueryParser.hx", lineNumber : 43, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,false)],rg.data.source.rgquery.QOperation.Count,[],".click(10, asc)",{ fileName : "TestQueryParser.hx", lineNumber : 50, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,true)],rg.data.source.rgquery.QOperation.Count,[],".click(10,desc)",{ fileName : "TestQueryParser.hx", lineNumber : 57, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Event],[],"",{ fileName : "TestQueryParser.hx", lineNumber : 16, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click")],[],".click",{ fileName : "TestQueryParser.hx", lineNumber : 21, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click.gender")],[rg.data.source.rgquery.QCondition.Equality(".click.gender","female")],".click.gender = 'female'",{ fileName : "TestQueryParser.hx", lineNumber : 27, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click"),rg.data.source.rgquery.QExp.Time("hour")],[],".click * .#time:hour",{ fileName : "TestQueryParser.hx", lineNumber : 33, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10)],[],".click(10)",{ fileName : "TestQueryParser.hx", lineNumber : 39, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,false)],[],".click(10, asc)",{ fileName : "TestQueryParser.hx", lineNumber : 45, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,true)],[],".click(10,desc)",{ fileName : "TestQueryParser.hx", lineNumber : 51, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
 	}
 	,testCleanName: function() {
-		utest.Assert.equals(".Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 70, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
-		utest.Assert.equals(".Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 71, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
-		utest.Assert.equals(".Spaced Name.Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 72, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
+		utest.Assert.equals(".Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 63, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
+		utest.Assert.equals(".Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 64, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
+		utest.Assert.equals(".Spaced Name.Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 65, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
 	}
 	,testQuotedProperty: function() {
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],".\"Spaced Event\".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 77, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],".'Spaced Event'.'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 84, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 91, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property("Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],"'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 98, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],[],".\"Spaced Event\".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 70, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],[],".'Spaced Event'.'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 76, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Property")],[],".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 82, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property("Spaced Property")],[],"'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 88, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
 	}
-	,assertParse: function(exp,operation,where,s,pos) {
+	,assertParse: function(exp,where,s,pos) {
 		var parser = new rg.data.source.rgquery.QueryParser();
-		var expected = { exp : exp, operation : operation, where : where}, test = parser.parse(s);
+		var expected = { exp : exp, where : where}, test = parser.parse(s);
 		utest.Assert.same(expected,test,null,"expected: " + Dynamics.string(expected) + " but was " + Dynamics.string(test),pos);
 	}
 	,__class__: rg.data.source.rgquery.TestQueryParser
@@ -11874,7 +12008,6 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		if(null == text) this.tooltip.hide(); else {
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(this.x(dp,i) + this.w / 2,this.y(dp,i) + this.h / 2);
-			this.tooltip.show();
 		}
 	}
 	,onclick: function(dp,i) {
@@ -14978,6 +15111,12 @@ rg.layout.TestNode.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
 		this.graph.nodes.clear();
 		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 35, className : "rg.layout.TestNode", methodName : "testClear"});
 	}
+	,testIsSource: function() {
+	}
+	,testIsSink: function() {
+	}
+	,testIsIsolated: function() {
+	}
 	,__class__: rg.layout.TestNode
 });
 rg.controller.info.TestInfoVariable = $hxClasses["rg.controller.info.TestInfoVariable"] = function() {
@@ -15855,19 +15994,19 @@ rg.controller.factory.FactoryDataSource.prototype = {
 	,create: function(info) {
 		if(null != info.namedData) {
 			var data = this.cache.get(info.namedData);
-			if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 40, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+			if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 41, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 			return data;
 		}
 		if(null != info.data) return this.createFromData(info.data);
-		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.groupBy,info.timeZone,info.start,info.end);
-		throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 51, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.statistic,info.tag,info.location,info.groupBy,info.timeZone,info.start,info.end);
+		throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 52, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 	}
 	,createFromData: function(data) {
 		return new rg.data.source.DataSourceArray(data);
 	}
-	,createFromQuery: function(path,event,query,groupby,timeZone,start,end) {
+	,createFromQuery: function(path,event,query,statistic,tag,location,groupby,timeZone,start,end) {
 		if(null == query) query = "";
-		return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),groupby,timeZone,start,end);
+		return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),statistic,tag,location,groupby,timeZone,start,end);
 	}
 	,__class__: rg.controller.factory.FactoryDataSource
 }
@@ -15938,7 +16077,7 @@ rg.data.source.rgquery.QueryParser.cleanName = function(name) {
 		if(!StringTools.startsWith(name,$char)) continue;
 		var pos = name.indexOf($char,1);
 		while(pos < name.length && pos >= 0) if(name.substr(pos - 1,1) == "\\") pos = name.indexOf($char,pos + 1); else break;
-		if(pos < 0) throw new thx.error.Error("quoted property is not properly formatted",null,null,{ fileName : "QueryParser.hx", lineNumber : 99, className : "rg.data.source.rgquery.QueryParser", methodName : "cleanName"});
+		if(pos < 0) throw new thx.error.Error("quoted property is not properly formatted",null,null,{ fileName : "QueryParser.hx", lineNumber : 96, className : "rg.data.source.rgquery.QueryParser", methodName : "cleanName"});
 		var rest = name.substr(pos + 1);
 		name = name.substr(1,pos - 1);
 		if(rest.length > 0) name += rg.data.source.rgquery.QueryParser.cleanName(rest);
@@ -15946,28 +16085,37 @@ rg.data.source.rgquery.QueryParser.cleanName = function(name) {
 	}
 	return (dot?".":"") + name;
 }
-rg.data.source.rgquery.QueryParser.parseValue = function(s) {
-	var fc = s.substr(0,1), lc = s.substr(-1);
-	if(fc == lc && (fc == "'" || fc == "\"")) return s.substr(1,s.length - 2);
-	if(Bools.canParse(s)) return Bools.parse(s);
-	if(Ints.canParse(s)) return Ints.parse(s);
-	if(Floats.canParse(s)) return Floats.parse(s);
-	return (function($this) {
-		var $r;
-		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 195, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
-		return $r;
-	}(this));
+rg.data.source.rgquery.QueryParser.parseQuoted = function(s,q,results) {
+	var pos = s.indexOf(q,1);
+	if(pos < 0) throw new thx.error.Error("value is not correctly quoted",null,null,{ fileName : "QueryParser.hx", lineNumber : 185, className : "rg.data.source.rgquery.QueryParser", methodName : "parseQuoted"});
+	results.push(s.substr(1,pos - 1));
+	pos = s.indexOf(",");
+	if(pos < 0) return "";
+	return s.substr(pos + 1);
+}
+rg.data.source.rgquery.QueryParser.parseValues = function(s) {
+	var results = [], pos, v;
+	while((s = StringTools.trim(s)).length > 0) if(s.substr(0,1) == "\"") s = rg.data.source.rgquery.QueryParser.parseQuoted(s,"\"",results); else if(s.substr(0,1) == "'") s = rg.data.source.rgquery.QueryParser.parseQuoted(s,"'",results); else {
+		pos = s.indexOf(",");
+		if(pos >= 0) {
+			v = s.substr(0,pos);
+			s = s.substr(pos + 1);
+		} else {
+			v = s;
+			s = "";
+		}
+		if(Bools.canParse(v)) results.push(Bools.parse(v)); else if(Ints.canParse(v)) results.push(Ints.parse(v)); else if(Floats.canParse(v)) results.push(Floats.parse(v)); else throw new thx.error.Error("invalid value '{0}'",null,v,{ fileName : "QueryParser.hx", lineNumber : 221, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValues"});
+	}
+	return results;
 }
 rg.data.source.rgquery.QueryParser.prototype = {
 	exp: null
-	,operation: null
 	,where: null
 	,parse: function(s) {
 		this.exp = [];
-		this.operation = rg.data.source.rgquery.QOperation.Count;
 		this.where = [];
 		this.parseExp(s);
-		return { exp : this.exp, operation : this.operation, where : this.where};
+		return { exp : this.exp, where : this.where};
 	}
 	,parseExp: function(e) {
 		var tokens = e.split("*").map(function(d,_) {
@@ -15993,13 +16141,13 @@ rg.data.source.rgquery.QueryParser.prototype = {
 		if("(" == token.substr(0,1)) token = token.substr(1,token.length - 2);
 		var parts = [token], name = null, limit = null, descending = null;
 		if(parts.length == 1) {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 124, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 121, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3).toLowerCase() == "desc";
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4)) this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(5));
 		} else {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 141, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 138, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3).toLowerCase() == "desc";
@@ -16007,7 +16155,7 @@ rg.data.source.rgquery.QueryParser.prototype = {
 			var _g1 = 1, _g = parts.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 157, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 154, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 				this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(2),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(3));
 			}
 		}
@@ -16016,11 +16164,11 @@ rg.data.source.rgquery.QueryParser.prototype = {
 	,addWhereCondition: function(name,operator,value) {
 		switch(operator) {
 		case "=":
-			var v = rg.data.source.rgquery.QueryParser.SPLIT_CONDITIONS.split(rg.data.source.rgquery.QueryParser.parseValue(value));
+			var v = rg.data.source.rgquery.QueryParser.parseValues(value);
 			if(v.length > 1) this.where.push(rg.data.source.rgquery.QCondition.In(name,v)); else this.where.push(rg.data.source.rgquery.QCondition.Equality(name,v[0]));
 			break;
 		default:
-			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 180, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
+			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 177, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
 		}
 	}
 	,__class__: rg.data.source.rgquery.QueryParser
@@ -16130,6 +16278,12 @@ rg.layout.Graph = $hxClasses["rg.layout.Graph"] = function() {
 	this.edges = rg.layout.GraphEdges.newInstance(this);
 }
 rg.layout.Graph.__name__ = ["rg","layout","Graph"];
+rg.layout.Graph.friendNodes = function(friend) {
+	return friend;
+}
+rg.layout.Graph.friendEdges = function(friend) {
+	return friend;
+}
 rg.layout.Graph.prototype = {
 	nodes: null
 	,edges: null
@@ -16137,8 +16291,14 @@ rg.layout.Graph.prototype = {
 		this.edges.clear();
 		this.nodes.clear();
 	}
+	,clone: function() {
+		var g = new rg.layout.Graph();
+		g.nodes = this.nodes.copyTo(g);
+		g.edges = this.edges.copyTo(g);
+		return g;
+	}
 	,toString: function() {
-		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + "), edges: " + IntHashes.count(this.edges.collection) + ")";
+		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
 	}
 	,__class__: rg.layout.Graph
 }
@@ -17128,7 +17288,6 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
 		}
@@ -17548,7 +17707,6 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		if(null == this.labelDataPointOver) return;
 		var dp = this.getDataAtNode(n,i);
 		this.tooltip.setText(this.labelDataPointOver(dp.dp,this.stats).split("\n"));
-		this.tooltip.show();
 		this.moveTooltip(dp.coord.x * this.width,this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy);
 	}
 	,onclick: function(n,i) {
@@ -19360,7 +19518,7 @@ rg.data.source.TestRGDataSource.__name__ = ["rg","data","source","TestRGDataSour
 rg.data.source.TestRGDataSource.prototype = {
 	profile: function(query,groupby) {
 		var executor = new rg.data.source.rgquery.MockRGExecutor();
-		var ds = new rg.data.source.DataSourceReportGrid(executor,"/","click",query);
+		var ds = new rg.data.source.DataSourceReportGrid(executor,"/","click",query,rg.data.source.rgquery.QOperation.Count,null,null,null,null,null,null);
 		ds.groupBy = groupby;
 		ds.load();
 		return executor.callStack;
@@ -19369,47 +19527,47 @@ rg.data.source.TestRGDataSource.prototype = {
 		utest.Assert.same(a,b,null,"expected " + Dynamics.string(a) + " but was " + Dynamics.string(b),pos);
 	}
 	,testEventCount: function() {
-		this.assert([{ method : "propertyCount", args : ["/",{ property : ".click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 32, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
+		this.assert([{ method : "propertyCount", args : ["/",{ property : ".click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 32, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
 	}
 	,testPropertyValuesCount: function() {
-		this.assert([{ method : "intersect", args : ["/",{ periodicity : "eternity", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 43, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesCount"});
+		this.assert([{ method : "intersect", args : ["/",{ periodicity : "eternity", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 42, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesCount"});
 	}
 	,testEventSeries: function() {
-		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 61, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
+		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 59, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
 	}
 	,testGroupByOption: function() {
-		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day", groupBy : "week"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []},"week"),{ fileName : "TestRGDataSource.hx", lineNumber : 72, className : "rg.data.source.TestRGDataSource", methodName : "testGroupByOption"});
+		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day", groupBy : "week"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], where : []},"week"),{ fileName : "TestRGDataSource.hx", lineNumber : 69, className : "rg.data.source.TestRGDataSource", methodName : "testGroupByOption"});
 	}
 	,testPropertyValuesSeries: function() {
-		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 83, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesSeries"});
+		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 79, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesSeries"});
 	}
 	,testPropertyValueCount: function() {
-		this.assert([{ method : "propertyValueCount", args : ["/",{ property : ".click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 101, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
+		this.assert([{ method : "propertyValueCount", args : ["/",{ property : ".click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 96, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
 	}
 	,testPropertyValueSeries: function() {
-		this.assert([{ method : "propertyValueSeries", args : ["/",{ property : ".click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 112, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
+		this.assert([{ method : "propertyValueSeries", args : ["/",{ property : ".click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 106, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
 	}
 	,testSearchValueCount: function() {
 		var cond1 = { }, cond2 = { };
 		cond1[".click.gender"] = "female";
 		cond2[".click.ageRange"] = "21-30";
-		this.assert([{ method : "searchCount", args : ["/",{ where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 127, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
+		this.assert([{ method : "searchCount", args : ["/",{ where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 120, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
 	}
 	,testSearchSeries: function() {
 		var cond1 = { }, cond2 = { };
 		cond1[".click.gender"] = "female";
 		cond2[".click.ageRange"] = "21-30";
-		this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 148, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
+		this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 140, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
 	}
 	,testIntersectOverTime: function() {
-		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.gender", limit : 5, order : "descending"},{ property : ".click.platform", limit : 7, order : "ascending"},{ property : ".click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 168, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
+		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.gender", limit : 5, order : "descending"},{ property : ".click.platform", limit : 7, order : "ascending"},{ property : ".click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 159, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
 	}
 	,testNormalization: function() {
-		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 199, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 204, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 209, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 214, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 226, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 189, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 194, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 199, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 204, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 216, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
 	}
 	,__class__: rg.data.source.TestRGDataSource
 }
@@ -20661,15 +20819,28 @@ rg.layout.GraphNodes.newInstance = function(graph) {
 }
 rg.layout.GraphNodes.__super__ = rg.layout.GraphCollection;
 rg.layout.GraphNodes.prototype = $extend(rg.layout.GraphCollection.prototype,{
-	create: function(data) {
-		var n = rg.layout.GNode.create(this.graph,++this.nextid,data);
+	copyTo: function(graph) {
+		var nodes = new rg.layout.GraphNodes(graph);
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			nodes._create(node.id,node.data);
+		}
+		nodes.nextid = this.nextid;
+		return nodes;
+	}
+	,create: function(data) {
+		return this._create(++this.nextid,data);
+	}
+	,_create: function(id,data) {
+		var n = rg.layout.GNode.create(this.graph,id,data);
 		this.collectionAdd(n);
 		return n;
 	}
 	,remove: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 25, className : "rg.layout.GraphNodes", methodName : "remove"});
-		this.collectionRemove(node);
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "rg.layout.GraphNodes", methodName : "remove"});
 		this.graph.edges.unlink(node);
+		this.collectionRemove(node);
 		node.destroy();
 	}
 	,clear: function() {
@@ -21532,7 +21703,6 @@ rg.view.svg.chart.Geo.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	,handlerDataPointOver: function(dp,f) {
 		var text = f(dp,this.variableDependent.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			var centroid = Reflect.field(dp,"#centroid");
 			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,true);
@@ -22457,9 +22627,13 @@ rg.controller.MVPOptions.buildQuery = function(type,property,values,periodicity)
 	return q;
 }
 rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
-	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null;
+	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null, statistic = null, tag = null, location = null;
 	if(null == parameters.options) parameters.options = { };
 	var options = parameters.options;
+	if(null != parameters.statistic) {
+		statistic = parameters.statistic;
+		Reflect.deleteField(parameters,"statistic");
+	}
 	if(null != parameters.groupby) {
 		groupby = parameters.groupby;
 		Reflect.deleteField(parameters,"groupby");
@@ -22527,7 +22701,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 177, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 186, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	chain.addAction(function(params,handler1) {
 		var opt = params.options;
@@ -22569,6 +22743,9 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 					params1["groupby"] = groupby;
 					if(null != groupfilter) params1["groupfilter"] = groupfilter;
 				}
+				if(null != statistic) params1["statistic"] = statistic;
+				if(null != tag) params1["tag"] = tag;
+				if(null != location) params1["location"] = location;
 				src.push(params1);
 			}
 			if(null == params.options.segmenton) params.options.segmenton = null != values?"value":null == property?"event":property;
@@ -22581,17 +22758,34 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 		if(null != groupby) return o["groupby"] = groupby;
 		return o;
 	};
+	var defaultStatistic = function() {
+		if(null == statistic) return "count";
+		return (function($this) {
+			var $r;
+			switch(("" + statistic).toLowerCase()) {
+			case "standarddeviation":case "stddeviation":case "deviation":
+				$r = "standardDeviation";
+				break;
+			case "mean":
+				$r = "mean";
+				break;
+			default:
+				$r = "count";
+			}
+			return $r;
+		}(this));
+	};
 	chain.addAction(function(params,handler1) {
 		if(null == params.axes) switch(params.options.visualization) {
 		case "funnelchart":
-			params.axes = [{ type : "event", variable : "independent"},{ type : "count"}];
+			params.axes = [{ type : "event", variable : "independent"},{ type : defaultStatistic()}];
 			break;
 		case "barchart":
 			var axis = { scalemode : "fit"};
 			params.axes = [];
 			if(periodicity == "eternity") {
 				Objects.copyTo({ type : null == params.options.segmenton?"event":params.options.segmenton, variable : "independent"},axis);
-				params.axes.push({ type : "count"});
+				params.axes.push({ type : defaultStatistic()});
 			} else axis = timeAxis(axis);
 			params.axes.insert(0,axis);
 			break;
@@ -22608,15 +22802,15 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 			++_g;
 			if(query.indexOf(axis.type) < 0) hasdependent = true;
 		}
-		if(!hasdependent) params.axes.push({ type : "count"});
+		if(!hasdependent) params.axes.push({ type : defaultStatistic()});
 		handler1(params);
 	});
 	chain.addAction(function(params,handler1) {
 		if(null == params.options.label) switch(params.options.visualization) {
-		case "linechart":case "barchart":
+		case "linechart":case "barchart":case "streamgraph":
 			var axes = params.axes, type = axes[axes.length - 1].type;
 			params.options.label = { datapointover : function(dp,stats) {
-				return rg.util.Properties.humanize(null != values?Reflect.field(dp,"value"):null != property?Reflect.field(dp,property):null != params.options.segmenton?Reflect.field(dp,params.options.segmenton):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+				return rg.util.Properties.humanize(null != values?Reflect.field(dp,"value"):null != property && type == "count"?Reflect.field(dp,property):null != params.options.segmenton && type == "count"?Reflect.field(dp,params.options.segmenton):type != "count" && null != property?type + " over " + rg.util.Properties.humanize(property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
 			}};
 			break;
 		case "piechart":
@@ -22833,7 +23027,6 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		var d = Reflect.field(dom,"__data__"), text = this.labelDataPointOver(d.dp,this.stats);
 		if(null == text) this.tooltip.hide(); else {
 			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2, r = this.radius * this.tooltipRadius;
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r);
 		}
@@ -23200,6 +23393,12 @@ rg.layout.TestEdge.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
 		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 63, className : "rg.layout.TestEdge", methodName : "testClear"});
 		this.graph.edges.clear();
 		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 65, className : "rg.layout.TestEdge", methodName : "testClear"});
+	}
+	,testSplit: function() {
+	}
+	,testReverse: function() {
+	}
+	,testReversePath: function() {
 	}
 	,__class__: rg.layout.TestEdge
 });

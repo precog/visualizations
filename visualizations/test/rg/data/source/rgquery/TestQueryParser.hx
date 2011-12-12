@@ -15,48 +15,41 @@ class TestQueryParser
 	{
 		assertParse(
 			[Event],
-			QOperation.Count,
 			[],
 			""
 		);
 		assertParse(
 			[Property(".click")],
-			QOperation.Count,
 			[],
 			".click"
 		);
 
 		assertParse(
 			[Property(".click.gender")],
-			QOperation.Count,
 			[Equality(".click.gender", "female")],
 			".click.gender = 'female'"
 		);
 
 		assertParse(
 			[Property(".click"), Time("hour")],
-			QOperation.Count,
 			[],
 			".click * .#time:hour"
 		);
 
 		assertParse(
 			[Property(".click", 10)],
-			QOperation.Count,
 			[],
 			".click(10)"
 		);
 
 		assertParse(
 			[Property(".click", 10, false)],
-			QOperation.Count,
 			[],
 			".click(10, asc)"
 		);
 
 		assertParse(
 			[Property(".click", 10, true)],
-			QOperation.Count,
 			[],
 			".click(10,desc)"
 		);
@@ -76,37 +69,33 @@ class TestQueryParser
 	{
 		assertParse(
 			[Property(".Spaced Event.Spaced Property")],
-			QOperation.Count,
 			[],
 			'."Spaced Event"."Spaced Property"'
 		);
 
 		assertParse(
 			[Property(".Spaced Event.Spaced Property")],
-			QOperation.Count,
 			[],
 			".'Spaced Event'.'Spaced Property'"
 		);
 
 		assertParse(
 			[Property(".Spaced Property")],
-			QOperation.Count,
 			[],
 			'."Spaced Property"'
 		);
 
 		assertParse(
 			[Property("Spaced Property")],
-			QOperation.Count,
 			[],
 			"'Spaced Property'"
 		);
 	}
 
-	function assertParse(exp : Array<QExp>, operation : QOperation, where : Array<QCondition>, s : String, ?pos : PosInfos)
+	function assertParse(exp : Array<QExp>, where : Array<QCondition>, s : String, ?pos : PosInfos)
 	{
 		var parser = new QueryParser();
-		var expected = { exp : exp, operation : operation, where : where },
+		var expected = { exp : exp, where : where },
 			test = parser.parse(s);
 		Assert.same(expected, test, "expected: " + Dynamics.string(expected) + " but was " + Dynamics.string(test), pos);
 	}

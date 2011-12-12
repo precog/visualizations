@@ -16,14 +16,35 @@ class GraphEdges<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 		edgesn = new IntHash();
 	}
 
+	function copyTo(graph : Graph<TNodeData, TEdgeData>) : GraphEdges<TNodeData, TEdgeData> 
+	{
+		var edges = new GraphEdges(graph),
+			nodes = graph.nodes,
+			head,
+			tail;
+		for(edge in this)
+		{
+			head = nodes.get(edge.head.id);
+			tail = nodes.get(edge.tail.id);
+			edges._create(edge.id, head, tail, edge.data);
+		}
+		edges.nextid = this.nextid;
+		return edges;
+	}
+
 	public function create(head : GNode<TNodeData, TEdgeData>, tail : GNode<TNodeData, TEdgeData>, ?data : TEdgeData)
 	{
 		if(head.graph != tail.graph || head.graph != graph)
 			throw new Error("can't create an edge between nodes on different graphs");
-		var e = GEdge.create(graph, ++nextid, head, tail, data);
+		return _create(++nextid, head, tail, data);
+	}
+
+	function _create(id : Int, head : GNode<TNodeData, TEdgeData>, tail : GNode<TNodeData, TEdgeData>, ?data : TEdgeData)
+	{
+		var e = GEdge.create(graph, id, head, tail, data);
 		collectionAdd(e);
-		connections(head.id, edgesp).push(e.id);
-		connections(tail.id, edgesn).push(e.id);
+		connections(head.id, edgesp).push(id);
+		connections(tail.id, edgesn).push(id);
 		return e;
 	}
 
@@ -63,7 +84,12 @@ class GraphEdges<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 		if(null == ids)
 			return;
 		for(id in ids)
-			remove(get(id));
+		{
+			var edge = get(id);
+			if(null == edge) // not sure why the edge should not exist
+				continue;
+			remove(edge);
+		}
 		connections.remove(node.id);
 	}
 

@@ -11,6 +11,7 @@ class GraphCollection<TNodeData, TEdgeData, TData, TListItem : GraphElement<TDat
 	public var length(get_length, null) : Int;
 	function new(graph : Graph<TNodeData, TEdgeData>)
 	{
+		nextid = 0;
 		this.graph = graph;
 		collection = new IntHash();
 	}

@@ -68,7 +68,11 @@ class VisualizationGeo extends VisualizationSvg
 
 			map.handlerClick = chart.handlerClick;
 			map.handlerDataPointOver = chart.handlerDataPointOver;
-			map.load(imap.url, imap.type, imap.usejson);
+			map.mapping = imap.mapping;
+			var mappingurl = imap.mappingurl;
+			if(null != mappingurl && (!StringTools.startsWith(mappingurl, "http://") || !StringTools.startsWith(mappingurl, "https://")))
+				mappingurl = RGConst.BASE_URL_GEOJSON + mappingurl + ".json" + (imap.usejsonp ? ".js" : "" );
+			map.load(imap.url, imap.type, mappingurl, imap.usejsonp);
 			chart.addMap(map, imap.property);
 		}
 	}

@@ -18,57 +18,24 @@ class Graph<TNodeData, TEdgeData>
 		nodes.clear();
 	}
 
-	public function toString() return Std.format("Graph (nodes: ${nodes.length}), edges: ${edges.length})")
-/*
-	public static function create()
+	public function clone()
 	{
 		var g = new Graph();
-		g.setCollections(GraphNodes.newInstance(g));//, GraphEdges.newInstance(g));
+		g.nodes = friendNodes(nodes).copyTo(g);
+		g.edges = friendEdges(edges).copyTo(g);
 		return g;
 	}
-*/
-/*
-	function setCollections(nodes : GraphNodes<TNodeData, TEdgeData>, edges : GraphEdges<TNodeData, TEdgeData>) 
-	{
-		this.nodes = nodes;
-//		this.edges = edges;
-	}
-*/
 
-//	static inline function getGlobal() return GlobalGraph.instance
-}
-/*
+	public function toString() return Std.format("Graph (nodes: ${nodes.length}, edges: ${edges.length})")
 
-class GlobalGraph extends Graph<Dynamic, Dynamic>
-{
-	public static var instance(default, null) : GlobalGraph;
-
-	function new()
-	{
-		super();
-		setCollections(GlobalGraphNodes.newInstance(this), GlobalGraphEdges.newInstance(this));
-	}
-
-	static function __init__()
-	{
-		instance = new GlobalGraph();
-	}
+	static inline function friendNodes<TNodeData, TEdgeData>(friend : GraphNodes<TNodeData, TEdgeData>) : FriendNodesCopy<TNodeData, TEdgeData> return friend
+	static inline function friendEdges<TNodeData, TEdgeData>(friend : GraphEdges<TNodeData, TEdgeData>) : FriendEdgesCopy<TNodeData, TEdgeData> return friend
 }
 
-class GlobalGraphNodes extends GraphNodes<Dynamic, Dynamic>
-{
-	static public function newInstance(graph : GlobalGraph) return new GlobalGraphNodes(graph)
+typedef FriendNodesCopy<TNodeData, TEdgeData> = {
+	private function copyTo(g : Graph<TNodeData, TEdgeData>) : GraphNodes<TNodeData, TEdgeData>;
 }
 
-class GlobalGraphEdges extends GraphEdges<Dynamic, Dynamic>
-{
-	static public function newInstance(graph : GlobalGraph) return new GlobalGraphEdges(graph)
+typedef FriendEdgesCopy<TNodeData, TEdgeData> = {
+	private function copyTo(g : Graph<TNodeData, TEdgeData>) : GraphEdges<TNodeData, TEdgeData>;
 }
-*/
-
-
-
-
-
-
-

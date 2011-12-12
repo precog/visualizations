@@ -20,7 +20,7 @@ import rg.data.source.rgquery.QueryAst;
 	public var namedData : Null<String>;
 	public var data : Null<Array<Dynamic>>;
 */
-class FactoryDataSource 
+class FactoryDataSource
 {
 	var cache : Hash<IDataSource>;
 	var parser : QueryParser;
@@ -31,7 +31,7 @@ class FactoryDataSource
 		this.parser = new QueryParser();
 		this.executor = executor;
 	}
-	
+
 	public function create(info : InfoDataSource) : IDataSource
 	{
 		if (null != info.namedData)
@@ -44,23 +44,23 @@ class FactoryDataSource
 		if (null != info.data)
 		{
 			return createFromData(info.data);
-		} 
+		}
 		if (null != info.path && null != info.event)
 		{
-			return createFromQuery(info.path, info.event, info.query, info.statistic, info.groupBy, info.timeZone, info.start, info.end);
+			return createFromQuery(info.path, info.event, info.query, info.statistic, info.tag, info.location, info.groupBy, info.timeZone, info.start, info.end);
 		}
 		throw new Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters");
 	}
-	
+
 	function createFromData(data : Array<DataPoint>)
 	{
 		return new DataSourceArray(data);
 	}
-	
-	function createFromQuery(path : String, event : String, query : Null<String>, statistic : QOperation, groupby : Null<String>, timeZone : Null<String>, start : Null<Float>, end : Null<Float>)
+
+	function createFromQuery(path : String, event : String, query : Null<String>, statistic : QOperation, tag : Null<String>, location : Null<String>, groupby : Null<String>, timeZone : Null<String>, start : Null<Float>, end : Null<Float>)
 	{
 		if (null == query)
 			query = "";
-		return new DataSourceReportGrid(executor, path, event, parser.parse(query), statistic, groupby, timeZone, start, end);
+		return new DataSourceReportGrid(executor, path, event, parser.parse(query), statistic, tag, location, groupby, timeZone, start, end);
 	}
 }

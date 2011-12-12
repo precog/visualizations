@@ -12,9 +12,23 @@ class GraphNodes<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 		super(graph);
 	}
 
+	function copyTo(graph : Graph<TNodeData, TEdgeData>) : GraphNodes<TNodeData, TEdgeData> 
+	{
+		var nodes = new GraphNodes(graph);
+		for(node in this)
+			nodes._create(node.id, node.data);
+		nodes.nextid = this.nextid;
+		return nodes;
+	}
+
 	public function create(?data : TNodeData)
 	{
-		var n = GNode.create(graph, ++nextid, data);
+		return _create(++nextid, data);
+	}
+
+	function _create(id, ?data : TNodeData)
+	{
+		var n = GNode.create(graph, id, data);
 		collectionAdd(n);
 		return n;
 	}
@@ -23,8 +37,8 @@ class GraphNodes<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 	{
 		if(node.graph != graph)
 			throw new Error("the node is not part of this graph");
-		collectionRemove(node);
 		graph.edges.unlink(node);
+		collectionRemove(node);
 		GraphElement.friendDestroy(node).destroy();
 	}
 

@@ -16,7 +16,7 @@ import rg.RGConst;
 using rg.controller.info.Info;
 using Arrays;
 
-class InfoMap 
+class InfoMap
 {
 	public var url : String;
 	public var type : String;
@@ -32,17 +32,19 @@ class InfoMap
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var radius : Null<DataPoint -> Stats<Dynamic> -> Float>;
 	public var colorScaleMode : ColorScaleMode;
-	public var usejson : Bool;
-	
-	public function new() 
+	public var usejsonp : Bool;
+	public var mapping : Dynamic;
+	public var mappingurl : String;
+
+	public function new()
 	{
-		property = "#location";
+		property = "location";
 		type = "geojson";
 		colorScaleMode = ColorScaleMode.FromCss();
-		usejson = true;
+		usejsonp = true;
 		radius = function(_, _) return 10;
 	}
-	
+
 	public static function filters()
 	{
 		return [{
@@ -70,7 +72,7 @@ class InfoMap
 			validator : function(v) return Std.is(v, Array),
 			filter : null
 		}, {
-			field : "original",
+			field : "origin",
 			validator : function(v) return Std.is(v, Array),
 			filter : null
 		}, {
@@ -127,14 +129,31 @@ class InfoMap
 					value : Std.is(v, Float) ? cast function(_, _) return v : v
 				}];
 			}
+		}, {
+			field : "mapping",
+			validator : function(v) return Std.is(v, String) || Types.isAnonymous(v),
+			filter : function(v) {
+				if(Std.is(v, String))
+				{
+					return [{
+						field : "mappingurl",
+						value : v
+					}];
+				} else {
+					return [{
+						field : "mapping",
+						value : v
+					}];
+				}
+			}
 		}];
 	}
-	
+
 	static function isValidTemplate(t : String)
 	{
 		return ["world", "world-countries", "usa-states", "usa-state-centroids", "usa-counties"].exists(t.toLowerCase());
 	}
-	
+
 	static function fromTemplate(t : String)
 	{
 		switch(t.toLowerCase())

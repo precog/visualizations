@@ -4,36 +4,36 @@ import utest.Assert;
 
 class TestGraph extends TestBaseGraph<Dynamic, Dynamic>
 {
-/*
-	public function testCounts()
+	public function testClone()
 	{
-		var graph = Graph.create(),
-			n1 = new GNode(),
-			n2 = new GNode();
+		var n1 = graph.nodes.create(10),
+			n2 = graph.nodes.create(20),
+			e  = graph.edges.create(n1, n2, 30),
+			clone = graph.clone();
 
-		Assert.equals(0, graph.nodes.length);
-		graph.nodes.add(n1);
-		Assert.equals(1, graph.nodes.length);
-		graph.nodes.add(n2);
-		Assert.equals(2, graph.nodes.length);
-		// try to add an existing node again
-		graph.nodes.add(n1);
-		Assert.equals(2, graph.nodes.length);
+		Assert.isTrue(n1 != clone.nodes.get(n1.id));
+		Assert.notNull(clone.nodes.get(n1.id));
 
-		// edges
-		Assert.equals(0, graph.edges.length);
-		var edge = new GEdge(n1, n2);
+		Assert.equals(n1.data, clone.nodes.get(n1.id).data);
+		Assert.equals(n2.data, clone.nodes.get(n2.id).data);
+		Assert.equals(e.data,  clone.edges.get(e.id).data);
 
-		graph.edges.add(edge);
-		Assert.equals(1, graph.edges.length);
-		graph.edges.remove(edge);
-		Assert.equals(0, graph.edges.length);
+		Assert.equals(graph.nodes.create().id, clone.nodes.create().id);
+		Assert.equals(
+			graph.edges.create(n2, n1).id,
+			clone.edges.create(clone.nodes.get(n1.id), clone.nodes.get(n2.id)).id);
 
-
-		graph.nodes.remove(n1);
-		Assert.equals(1, graph.nodes.length);
 		graph.clear();
+
 		Assert.equals(0, graph.nodes.length);
+		Assert.equals(3, clone.nodes.length);
+
+		Assert.equals(0, graph.edges.length);
+		Assert.equals(2, clone.edges.length);
 	}
-*/
+
+	public function testPath()
+	{
+		
+	}
 }

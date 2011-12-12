@@ -36,6 +36,7 @@ class Geo extends Chart
 		queue = [];
 
 		colorMode = FromCss();
+		resize();
 	}
 
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
@@ -85,7 +86,9 @@ class Geo extends Chart
 			}
 		}
 		if (queue.length == 0)
+		{
 			ready.dispatch();
+		}
 	}
 
 	public function handlerDataPointOver(dp : DataPoint, f)

@@ -23,6 +23,8 @@ class InfoDataSource
 	public var groups : Null<Array<String>>;
 	public var start : Null<Float>;
 	public var end : Null<Float>;
+	public var tag : Null<String>;
+	public var location : Null<String>;
 
 	public function new()
 	{
@@ -96,6 +98,14 @@ class InfoDataSource
 					}
 				}];
 			}
+		}, {
+			field : "tag",
+			validator : function(v : Dynamic) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "location",
+			validator : function(v : Dynamic) return Std.is(v, String),
+			filter : null
 		}];
 	}
 

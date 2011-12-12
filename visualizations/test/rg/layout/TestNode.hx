@@ -34,4 +34,19 @@ class TestNode extends TestBaseGraph<Dynamic, Dynamic>
 		graph.nodes.clear();
 		Assert.equals(0, graph.nodes.length);
 	}
+
+	public function testIsSource()
+	{
+		
+	}
+
+	public function testIsSink()
+	{
+		
+	}
+
+	public function testIsIsolated()
+	{
+		
+	}
 }

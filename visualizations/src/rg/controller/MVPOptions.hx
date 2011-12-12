@@ -59,18 +59,20 @@ class MVPOptions
 
 	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void)
 	{
-		var start = null,
-			end = null,
-			path = "/",
+		var start       = null,
+			end         = null,
+			path        = "/",
 			events : Array<String> = [],
-			property = null,
+			property    = null,
 			values : Array<String> = null,
-			chain = new ChainedExecutor(handler),
+			chain       = new ChainedExecutor(handler),
 			query,
 			periodicity,
-			groupby = null,
+			groupby     = null,
 			groupfilter = null,
-			statistic = null;
+			statistic   = null,
+			tag         = null,
+			location    = null;
 
 		if (null == parameters.options)
 			parameters.options = { };
@@ -81,6 +83,17 @@ class MVPOptions
 		{
 			statistic = parameters.statistic;
 			Reflect.deleteField(parameters, "statistic");
+		}
+		// tag and location
+		if (null != parameters.tag)
+		{
+			tag = parameters.tag;
+			Reflect.deleteField(parameters, "tag");
+		}
+		if (null != parameters.location)
+		{
+			location = parameters.location;
+			Reflect.deleteField(parameters, "location");
 		}
 		// grouping
 		if (null != parameters.groupby)
@@ -254,10 +267,14 @@ class MVPOptions
 					if (null != statistic)
 					{
 						Reflect.setField(params, "statistic", statistic);
-						if (null != statistic)
-						{
-							Reflect.setField(params, "statistic", statistic);
-						}
+					}
+					if (null != tag)
+					{
+						Reflect.setField(params, "tag", tag);
+					}
+					if (null != location)
+					{
+						Reflect.setField(params, "location", location);
 					}
 					src.push( params );
 				}

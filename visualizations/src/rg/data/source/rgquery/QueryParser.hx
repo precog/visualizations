@@ -183,7 +183,7 @@ class QueryParser
 		var pos = s.indexOf(q, 1);
 		if(pos < 0)
 			throw new Error("value is not correctly quoted");
-		results.push(s.substr(1, pos));
+		results.push(s.substr(1, pos-1));
 		pos = s.indexOf(",");
 		if(pos < 0)
 			return "";

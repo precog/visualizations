@@ -26,62 +26,107 @@ class Map
 	public var className(null, setClassName) : String;
 	public var map(default, null) : Hash<{ svg : Selection, dp : DataPoint }>;
 	public var onReady(default, null) : Notifier;
-	
+
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var labelDataPoint : DataPoint -> Stats<Dynamic> -> String;
 	public var labelDataPointOver : DataPoint -> Stats<Dynamic> -> String;
 	public var radius : DataPoint -> Stats<Dynamic> -> Float;
 	public var colorMode : ColorScaleMode;
-	
+	public var ready(default, null) : Bool;
+	public var mapping : Dynamic;
+
 	var projection : IProjection;
 	var g : Selection;
-	public function new(container : Selection, projection : IProjection) 
+	public function new(container : Selection, projection : IProjection)
 	{
 		g = container.append("svg:g").attr("class").string("map");
 		this.projection = projection;
 		map = new Hash();
+		ready = false;
 		onReady = new Notifier();
+		onReady.addOnce(function() ready = true);
 	}
-	
-	public function load(path : String, type : String, usejsonp : Bool)
+
+	public function load(path : String, type : String, mappingurl : String, usejsonp : Bool)
 	{
 		switch(type)
 		{
 			case "geojson":
-				loadGeoJson(path, usejsonp);
+				loadGeoJson(path, mappingurl, usejsonp);
 			default:
 				new Error("unsupported geographic format '{0}'", type);
 		}
 	}
-	
-	function loadGeoJson(path, usejsonp)
+
+	function loadGeoJson(geourl : String, mappingurl : String, usejsonp : Bool)
 	{
-		if (usejsonp)
-			loadGeoJsonJsonp(path);
+		var load = usejsonp ? loadJsonp : loadJsonAjax;
+		if(null == mappingurl)
+			load(geourl, draw);
 		else
-			loadGeoJsonAjax(path);
+		{
+			load(mappingurl, function(m) {
+				mapping = m;
+				load(geourl, draw);
+			});
+		}
+		/*
+		if (usejsonp)
+			loadGeoJsonJsonp(path, mappingurl);
+		else
+			loadGeoJsonAjax(path, mappingurl);
+		*/
 	}
-	
-	function loadGeoJsonJsonp(path)
+
+	static function loadJsonp<T>(url : String, handler : T -> Void)
 	{
 		var api : String -> { success : Dynamic } -> Void = untyped __js__("ReportGrid.$.Http.Jsonp.get");
-		api(path, { success : draw } );
+		api(url, { success : handler } );
 	}
-	
-	function loadGeoJsonAjax(path)
+
+	static function loadJsonAjax<T>(url : String, handler : T -> Void)
 	{
-		var http = new Http(path);
+		var http = new Http(url);
 		http.onData = function(data)
 		{
 			var json = Json.decode(data);
-			draw(json);
+			handler(json);
 		}
-		http.onError = function(err) throw new Error("unable to load GeoJSON file '{0}': {1}", [path, err]);
+		http.onError = function(err) throw new Error("unable to load JSON file '{0}': {1}", [url, err]);
 		http.request(false);
 	}
-	
+/*
+	function loadGeoJsonJsonp(path : String, mappingurl : String)
+	{
+
+
+		if(null == mappingurl)
+			loadJsonp(path, draw);
+	}
+
+	function loadGeoJsonAjax(path : String, mappingurl : String)
+	{
+		function loadmap()
+		{
+			var http = new Http(path);
+			http.onData = function(data)
+			{
+				var json = Json.decode(data);
+				draw(json);
+			}
+			http.onError = function(err) throw new Error("unable to load GeoJSON file '{0}': {1}", [path, err]);
+			http.request(false);
+		}
+		if(null == mappingurl)
+			loadmap();
+	}
+*/
 	function draw(json : GeoJson)
 	{
+		var id = null != mapping
+				? function(s) return Reflect.hasField(mapping, s) ? Reflect.field(mapping, s) : s
+				: function(s) return s;
+
 		var path = new PathGeoJson();
 		path.projection = projection;
 		switch(json.type)
@@ -91,7 +136,7 @@ class Map
 				{
 					var feature = json.features[i],
 						centroid = path.centroid(feature.geometry),
-						p = feature.geometry.type == "Point" 
+						p = feature.geometry.type == "Point"
 							? g.append("svg:circle")
 								.attr("cx").float(centroid[0])
 								.attr("cy").float(centroid[1])
@@ -104,14 +149,14 @@ class Map
 					Reflect.setField(dp, "#data", feature.properties);
 					if (null != feature.id)
 					{
-						map.set(feature.id, { 
+						map.set(id(feature.id), {
 							svg : p,
 							dp : dp
 						} );
 					}
 					if (null != labelDataPointOver)
 						p.onNode("mouseover", callback(onMouseOver, dp));
-					
+
 					if (null != click)
 						p.onNode("click", callback(onClick, dp));
 				}
@@ -122,13 +167,13 @@ class Map
 		}
 		onReady.dispatch();
 	}
-	
+
 	function onMouseOver(dp : DataPoint, ?_, ?_) handlerDataPointOver(dp, labelDataPointOver)
 	function onClick(dp : DataPoint, ?_, ?_) handlerClick(dp, click)
-	
+
 	public var handlerDataPointOver : DataPoint -> (DataPoint -> Stats<Dynamic> -> String) -> Void;
 	public var handlerClick : DataPoint -> (DataPoint -> Stats<Dynamic> -> Void) -> Void;
-	
+
 	function setClassName(cls : String)
 	{
 		g.attr("class").string("map" + (null == cls ? "" : " "  + cls));
