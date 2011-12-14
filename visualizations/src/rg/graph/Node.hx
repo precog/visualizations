@@ -1,4 +1,4 @@
-package rg.layout;
+package rg.graph;
 
 typedef Node = {
 	vertex : String,

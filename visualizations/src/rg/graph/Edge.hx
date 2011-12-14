@@ -1,4 +1,4 @@
-package rg.layout;
+package rg.graph;
 
 typedef Edge = {
 	a : String,

@@ -22,34 +22,34 @@ using Strings;
 using Arrays;
 
 // TODO add sorting (probably in VisualizationPivotTable)
-class PivotTable 
+class PivotTable
 {
 	static var defaultColorStart = new Hsl(210, 1, 1);
 	static var defaultColorEnd   = new Hsl(210, 1, 0.5);
-	
+
 	public var displayColumnTotal : Bool;
 	public var displayRowTotal : Bool;
 	public var displayHeatMap : Bool;
 	public var colorStart : Hsl;
 	public var colorEnd : Hsl;
 	public var ready(default, null) : Notifier;
-	
+
 	var columnVariables : Array<VariableIndependent<Dynamic>>;
 	var rowVariables : Array<VariableIndependent<Dynamic>>;
 	var cellVariable : VariableDependent<Dynamic>;
-	
+
 	public var incolumns : Int;
-	
+
 	public var click : DataPoint -> Void;
-	
+
 	var container : Selection;
 	var stats : StatsNumeric;
-	
-	public function new(container : Selection) 
+
+	public function new(container : Selection)
 	{
 		this.ready = new Notifier();
 		this.container = container;
-		
+
 		displayColumnTotal = true;
 		displayRowTotal = true;
 		displayHeatMap = true;
@@ -57,24 +57,28 @@ class PivotTable
 		colorEnd = defaultColorEnd;
 		incolumns = 1;
 	}
-	
+
 	public dynamic function labelDataPoint(dp : DataPoint, stats : StatsNumeric)
 	{
 		var v = DataPoints.value(dp, cellVariable.type);
+		if(Math.isNaN(v))
+			return "0";
 		return FormatNumber.int(v);
 	}
-	
+
 	public dynamic function labelDataPointOver(dp : DataPoint, stats : StatsNumeric)
 	{
 		var v = DataPoints.value(dp, cellVariable.type);
+		if(Math.isNaN(v))
+			return "0";
 		return FormatNumber.percent(100 * v / stats.tot, 1);
 	}
-	
+
 	public dynamic function labelAxis(v : String)
 	{
 		return Properties.humanize(v);
 	}
-	
+
 	public dynamic function labelAxisValue(v : Dynamic, axis : String)
 	{
 		if (Properties.isTime(axis))
@@ -84,18 +88,18 @@ class PivotTable
 		} else
 			return RGStrings.humanize(v);
 	}
-	
-	
+
+
 	public dynamic function labelTotal(v : Float, stats : StatsNumeric)
 	{
 		return FormatNumber.int(v);
 	}
-	
+
 	public dynamic function labelTotalOver(v : Float, stats : StatsNumeric)
 	{
 		return FormatNumber.percent(100 * v / stats.tot, 1);
 	}
-	
+
 	public function data(dps : Array<DataPoint>)
 	{
 		var d = transformData(dps),
@@ -112,18 +116,18 @@ class PivotTable
 			{
 				var tr = thead.append("tr");
 				prependSpacer(leftspan, tr);
-					
+
 				var header = tr
 						.append("th")
 						.attr("class").string("col-header")
 						.text().string(labelAxis(d.column_headers[i]));
 				if(d.columns.length > 1)
 					header.attr("colspan").float(d.columns.length);
-					
+
 				var counter = 1, last = d.columns[0].values[i];
-				
+
 				tr = thead.append("tr");
-				
+
 				if (i == d.column_headers.length - 1)
 				{
 					for (h in d.row_headers)
@@ -154,7 +158,7 @@ class PivotTable
 				}
 			}
 		}
-		
+
 		if(d.column_headers.length == 0)
 		{
 			var tr = thead.append("tr");
@@ -166,7 +170,7 @@ class PivotTable
 					.text().string(labelAxis(h));
 			}
 		}
-		
+
 		// BODY
 		var tbody = table.append("tbody"),
 			last = [];
@@ -188,7 +192,7 @@ class PivotTable
 					.attr("class").string(rep ? "row value empty" : "row value")
 					.text().string(rep ? "" : labelAxisValue(v, d.row_headers[i]));
 			}
-			
+
 			for (cell in row.cells)
 			{
 				var td = tr.append("td")
@@ -204,17 +208,17 @@ class PivotTable
 						.style("color").color(Rgb.contrastBW(c));
 				}
 			}
-			
+
 			if (displayRowTotal && d.columns.length > 1)
 				tr.append("th")
 					.attr("class").string("row total")
 					.text().string(formatTotal(row.stats.tot))
 					.attr("title").string(formatTotalOver(row.stats.tot));
 		}
-		
+
 		// FOOT
 		var tfoot = table.append("tfoot");
-		
+
 		if (displayColumnTotal && d.rows.length > 1)
 		{
 			var tr = tfoot.append("tr");
@@ -226,7 +230,7 @@ class PivotTable
 					.text().string(formatTotal(col.stats.tot))
 					.attr("title").string(formatTotalOver(col.stats.tot));
 			}
-			
+
 			if(displayRowTotal && d.columns.length > 1)
 				tr.append("th")
 					.attr("class").string("table total")
@@ -235,12 +239,12 @@ class PivotTable
 		}
 		ready.dispatch();
 	}
-	
+
 	function onClick(dp, ?_, ?_)
 	{
 		click(dp);
 	}
-	
+
 	function formatTotal(v : Float, ?_) return labelTotal(v, stats)
 	function formatTotalOver(v : Float, ?_) return labelTotalOver(v, stats)
 	function formatDataPoint(dp : DataPoint, ?_) return labelDataPoint(dp, stats)
@@ -255,7 +259,7 @@ class PivotTable
 		if (counter > 1)
 			th.attr("colspan").float(counter);
 	}
-	
+
 	function prependSpacer(counter : Int, tr : Selection)
 	{
 		if (counter == 0)
@@ -268,9 +272,9 @@ class PivotTable
 
 	public function init()
 	{
-		
+
 	}
-	
+
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
 	{
 		cellVariable = variableDependents[0];
@@ -282,12 +286,12 @@ class PivotTable
 		for (i in incolumns...variableIndependents.length)
 			rowVariables.push(variableIndependents[i]);
 	}
-	
+
 	public function destroy()
 	{
 		container.html().string("");
 	}
-	
+
 	function transformData(dps : Array<DataPoint>): {
 		column_headers : Array<String>,
 		row_headers : Array<String>,
@@ -301,7 +305,7 @@ class PivotTable
 			columns = [],
 			rows = [],
 			tcalc = new StatsNumeric();
-			
+
 		var variable;
 		// columns : build first level
 		for (i in 0...Ints.min(1, columnVariables.length))
@@ -333,7 +337,7 @@ class PivotTable
 				}
 			}
 		}
-		
+
 		var name,
 			headers = column_headers;
 		for (i in 0...columns.length)
@@ -341,14 +345,14 @@ class PivotTable
 			var column = columns[i],
 				ccalc = new StatsNumeric(); // { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
 			column.stats = ccalc;
-			for (dp in dps.filter(function(dp) { 
+			for (dp in dps.filter(function(dp) {
 				for (j in 0...headers.length)
 				{
 					name = headers[j];
 					if (Reflect.field(dp, name) != column.values[j])
 						return false;
 				}
-				return true; 
+				return true;
 			} ))
 			{
 				var v = Reflect.field(dp, cellVariable.type);
@@ -358,7 +362,7 @@ class PivotTable
 				tcalc.add(v);
 			}
 		}
-		
+
 		// rows : build first level
 		for (i in 0...Ints.min(1, rowVariables.length))
 		{
@@ -390,14 +394,14 @@ class PivotTable
 				}
 			}
 		}
-		
+
 		var name,
 			headers = row_headers;
 		for (row in rows)
 		{
 			row.stats = new StatsNumeric();
 			row.cells = [];
-			
+
 			var rdps = dps.filter(function(d) {
 				for (j in 0...headers.length)
 				{
@@ -405,9 +409,9 @@ class PivotTable
 					if (Reflect.field(d, name) != row.values[j])
 						return false;
 				}
-				return true; 
+				return true;
 			});
-			
+
 			for (column in columns)
 			{
 				var dp = rdps.firstf(function(dp) {
@@ -428,7 +432,7 @@ class PivotTable
 				row.stats.add(v);
 			}
 		}
-			
+
 		return {
 			column_headers : column_headers,
 			row_headers : row_headers,
@@ -437,7 +441,7 @@ class PivotTable
 			stats : tcalc
 		};
 	}
-	
+
 	function range(variable : VariableIndependent<Dynamic>)
 	{
 		return variable.axis.range(variable.min(), variable.max());

@@ -46,9 +46,7 @@ class TransformIntersectTime implements ITransform<Dynamic>
 				Objects.addFields(p,
 					[Properties.timeProperty(periodicity), unit],
 					[
-						(periodicity != "minute" && periodicity != "hour")
-						? Dates.snap(arr[i][0].timestamp, periodicity)
-						: arr[i][0].timestamp
+						TransformTimeSeries.snapTimestamp(periodicity, arr[i][0].timestamp)
 						, arr[i][1]]
 				);
 				p.event = event;

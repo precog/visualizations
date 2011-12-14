@@ -1,15 +1,15 @@
 package rg.controller.visualization;
 import rg.controller.info.InfoSankey;
-import rg.view.layout.Layout;
+//import rg.view.graph.Layout;
 import rg.view.svg.layer.Title;
 import rg.view.svg.chart.Sankey;
 import rg.data.DataPoint;
-import rg.layout.SugiyamaMethod;
+import rg.graph.SugiyamaMethod;
 using Arrays;
 using Iterators;
-import rg.layout.Graphs;
+import rg.graph.Graphs;
 
-typedef N = rg.layout.Node;
+typedef N = rg.graph.Node;
 
 class VisualizationSankey extends VisualizationSvg
 {
@@ -55,7 +55,7 @@ class VisualizationSankey extends VisualizationSvg
 
 	function layoutMap(map : Hash<Node>) : Array<Array<Node>>
 	{
-		var sugiyama = new SugiyamaMethod(),
+		var sugiyama = null, //new SugiyamaMethod(),
 			vertices = [],
 			edges = [];
 		Iterables.each(map, function(node : Node, _) {
@@ -63,7 +63,7 @@ class VisualizationSankey extends VisualizationSvg
 			for(child in node.children)
 				edges.push({ a : node.id, b : child.id });
 		});
-		var glayout = sugiyama.resolve(vertices, edges),
+		var glayout = null,//sugiyama.resolve(vertices, edges),
 			gmap = Graphs.toMap(glayout);
 		var layout = [], tmap;
 		for(i in 0...glayout.length)

@@ -46,9 +46,12 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 
 	override function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
 	{
+		trace(dps);
 		var results = [],
 			variable = independentVariables[0],
 			values = variable.axis.range(variable.min(), variable.max());
+		trace(variable);
+		trace(values);
 		for (value in values)
 		{
 			var axisresults = [];
@@ -59,6 +62,7 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 			}
 			results.push(axisresults);
 		}
+		trace(results);
 		return results;
 	}
 }

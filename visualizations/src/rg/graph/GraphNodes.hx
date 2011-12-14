@@ -1,15 +1,15 @@
-package rg.layout;
+package rg.graph;
 
 import thx.error.Error;
-import rg.layout.GraphElement;
+import rg.graph.GraphElement;
 
 class GraphNodes<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeData, TNodeData, GNode<TNodeData, TEdgeData>>
 {
-	static public function newInstance<TNodeData, TEdgeData>(graph : Graph<TNodeData, TEdgeData>) return new GraphNodes(graph)
+	static public function newInstance<TNodeData, TEdgeData>(graph : Graph<TNodeData, TEdgeData>, ?nodeidf : TNodeData -> String) return new GraphNodes(graph, nodeidf)
 
-	function new(graph : Graph<TNodeData, TEdgeData>)
+	function new(graph : Graph<TNodeData, TEdgeData>,?nodeidf : TNodeData -> String)
 	{
-		super(graph);
+		super(graph, nodeidf);
 	}
 
 	function copyTo(graph : Graph<TNodeData, TEdgeData>) : GraphNodes<TNodeData, TEdgeData> 
@@ -37,6 +37,11 @@ class GraphNodes<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 	{
 		if(node.graph != graph)
 			throw new Error("the node is not part of this graph");
+		_remove(node);
+	}
+
+	function _remove(node : GNode<TNodeData, TEdgeData>)
+	{
 		graph.edges.unlink(node);
 		collectionRemove(node);
 		GraphElement.friendDestroy(node).destroy();
@@ -44,9 +49,9 @@ class GraphNodes<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 
 	public function clear()
 	{
-		for(item in this)
+		var items = Iterables.array(collection).copy();
+		for(item in items)
 			remove(item);
 	}
-
-	public function toString() return Std.format("GraphNodes ($length)")
+	override public function toString() return Std.format("GraphNodes ($length): ") + super.toString()
 }

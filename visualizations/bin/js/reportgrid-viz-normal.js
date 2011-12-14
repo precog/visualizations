@@ -279,6 +279,236 @@ thx.js.AccessDataClassed.prototype = $extend(thx.js.AccessClassed.prototype,{
 	}
 	,__class__: thx.js.AccessDataClassed
 });
+if(!rg.graph) rg.graph = {}
+rg.graph.Graphs = $hxClasses["rg.graph.Graphs"] = function() { }
+rg.graph.Graphs.__name__ = ["rg","graph","Graphs"];
+rg.graph.Graphs.crossings = function(a,b) {
+	var map = new Hash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i].vertex,i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = a[i];
+		var _g2 = 0, _g3 = n1.edgesp;
+		while(_g2 < _g3.length) {
+			var dst1 = _g3[_g2];
+			++_g2;
+			var p1 = map.get(dst1);
+			if(null == p1) continue;
+			var _g5 = i + 1, _g4 = a.length;
+			while(_g5 < _g4) {
+				var j = _g5++;
+				var n2 = a[j];
+				var _g6 = 0, _g7 = n2.edgesp;
+				while(_g6 < _g7.length) {
+					var dst2 = _g7[_g6];
+					++_g6;
+					var p2 = map.get(dst2);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.graph.Graphs.layoutCrossings = function(a) {
+	var tot = 0;
+	var _g1 = 0, _g = a.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		tot += rg.graph.Graphs.crossings(a[i],a[i + 1]);
+	}
+	return tot;
+}
+rg.graph.Graphs.toMap = function(layout) {
+	var map = new Hash();
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			map.set(layout[i][j].vertex,layout[i][j]);
+		}
+	}
+	return map;
+}
+rg.graph.Graphs.toVertices = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			result.push(layout[i][j].vertex);
+		}
+	}
+	return result;
+}
+rg.graph.Graphs.toEdges = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			var v = layout[i][j].vertex;
+			var _g4 = 0, _g5 = layout[i][j].edgesp;
+			while(_g4 < _g5.length) {
+				var c = _g5[_g4];
+				++_g4;
+				result.push({ a : v, b : c});
+			}
+		}
+	}
+	return result;
+}
+rg.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
+	var n = null, l = 0;
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		var diff = node.edgesp.length - node.edgesn.length;
+		if(null == n || l < diff) {
+			n = node;
+			l = diff;
+		}
+	}
+	return n;
+}
+rg.graph.Graphs.isSink = function(node) {
+	return node.edgesp.length == 0 && node.edgesn.length > 0;
+}
+rg.graph.Graphs.isSource = function(node) {
+	return node.edgesn.length == 0 && node.edgesp.length == 0;
+}
+rg.graph.Graphs.findSink = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findSource = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findAllIsolated = function(graph) {
+	var isolated = [];
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
+	}
+	return isolated;
+}
+rg.graph.Graphs.addConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,b,a);
+	if(null != path && path.every(function(v,i) {
+		return i == 0 || i == path.length - 1 || rg.graph.Graphs.isDummy(v);
+	})) {
+		path.reverse();
+		rg.graph.Graphs.addConnections(graph,path);
+	} else rg.graph.Graphs.addConnections(graph,[a,b]);
+}
+rg.graph.Graphs.addConnections = function(graph,arr) {
+	var _g1 = 0, _g = arr.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a = arr[i], b = arr[i + 1];
+		graph.get(a).edgesp.push(b);
+		graph.get(b).edgesp.push(a);
+	}
+}
+rg.graph.Graphs.reverseConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,a,b);
+	if(null == path) return false;
+	var _g1 = 0, _g = path.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
+		na.edgesp.remove(b1);
+		na.edgesn.push(b1);
+		nb.edgesn.remove(a1);
+		nb.edgesp.push(a1);
+	}
+	return true;
+}
+rg.graph.Graphs.findPath = function(graph,a,b) {
+	var traveled = new thx.collection.Set(), paths = [], t, r;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(path,n) {
+			var totraverse = [];
+			var _g = 0, _g1 = n.edgesn;
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				if(parent == a) return path.concat([a]); else if(rg.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,a2) {
+					return function() {
+						return f(a1,a2);
+					};
+				})(traverse,path.concat([parent]),t));
+			}
+			var _g = 0;
+			while(_g < totraverse.length) {
+				var t1 = totraverse[_g];
+				++_g;
+				if(null != (r = t1())) return r;
+			}
+			return null;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	var p = traverse([b],graph.get(b));
+	if(null == p) return null;
+	p.reverse();
+	return p;
+}
+rg.graph.Graphs.isDummy = function(v) {
+	return v.substr(0,1) == "#";
+}
+rg.graph.Graphs.createDummy = function(a,b,lvl) {
+	return "#" + ++rg.graph.Graphs.id;
+}
+rg.graph.Graphs.removeNode = function(graph,node) {
+	graph.remove(node.vertex);
+}
+rg.graph.Graphs.addNode = function(graph,node) {
+	graph.set(node.vertex,node);
+}
+rg.graph.Graphs.clone = function(graph) {
+	var o = new Hash();
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		rg.graph.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.copy(), edgesp : node.edgesp.copy()});
+	}
+	return o;
+}
+rg.graph.Graphs.empty = function(graph) {
+	return Hashes.count(graph) == 0;
+}
+rg.graph.Graphs.count = function(graph) {
+	return Hashes.count(graph);
+}
+rg.graph.Graphs.prototype = {
+	__class__: rg.graph.Graphs
+}
 if(!rg.controller) rg.controller = {}
 if(!rg.controller.visualization) rg.controller.visualization = {}
 rg.controller.visualization.Visualization = $hxClasses["rg.controller.visualization.Visualization"] = function(container) {
@@ -671,6 +901,9 @@ rg.data.source.rgquery.transform.TransformTimeSeries = $hxClasses["rg.data.sourc
 }
 rg.data.source.rgquery.transform.TransformTimeSeries.__name__ = ["rg","data","source","rgquery","transform","TransformTimeSeries"];
 rg.data.source.rgquery.transform.TransformTimeSeries.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp = function(periodicity,value) {
+	return periodicity != "minute" && periodicity != "hour"?Dates.snap(value,periodicity):value;
+}
 rg.data.source.rgquery.transform.TransformTimeSeries.prototype = {
 	properties: null
 	,unit: null
@@ -679,7 +912,7 @@ rg.data.source.rgquery.transform.TransformTimeSeries.prototype = {
 	,transform: function(data) {
 		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
 		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0].timestamp,d[1],event]);
+			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(periodicity,d[0].timestamp),d[1],event]);
 			return p;
 		});
 		return result;
@@ -1444,6 +1677,24 @@ rg.controller.info.InfoFunnelChart.prototype = {
 	,effect: null
 	,arrowSize: null
 	,__class__: rg.controller.info.InfoFunnelChart
+}
+rg.graph.OneCycleRemover = $hxClasses["rg.graph.OneCycleRemover"] = function() {
+}
+rg.graph.OneCycleRemover.__name__ = ["rg","graph","OneCycleRemover"];
+rg.graph.OneCycleRemover.prototype = {
+	remove: function(graph) {
+		var edge, result = [];
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			edge = node.predecessorBy(node);
+			if(null == edge) continue;
+			result.push({ node : node, weight : edge.weight, data : edge.data});
+			edge.graph.edges._remove(edge);
+		}
+		return result;
+	}
+	,__class__: rg.graph.OneCycleRemover
 }
 rg.data.Stats = $hxClasses["rg.data.Stats"] = function(sortf) {
 	this.sortf = sortf;
@@ -4549,6 +4800,65 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
 }
+rg.graph.GreedySwitchDecrosser = $hxClasses["rg.graph.GreedySwitchDecrosser"] = function() {
+}
+rg.graph.GreedySwitchDecrosser.__name__ = ["rg","graph","GreedySwitchDecrosser"];
+rg.graph.GreedySwitchDecrosser.combined = function() {
+	return { decross : function(layout) {
+		layout = new rg.graph.GreedySwitchDecrosser().decross(layout);
+		return new rg.graph.GreedySwitch2Decrosser().decross(layout);
+	}};
+}
+rg.graph.GreedySwitchDecrosser.best = function() {
+	return { decross : function(layout) {
+		var attempts = [new rg.graph.GreedySwitchDecrosser().decross(layout),new rg.graph.GreedySwitch2Decrosser().decross(layout),rg.graph.GreedySwitchDecrosser.combined().decross(layout)];
+		return Arrays.min(attempts,function(layout1) {
+			return layout1.crossings();
+		});
+	}};
+}
+rg.graph.GreedySwitchDecrosser.prototype = {
+	decross: function(layout) {
+		var layers = layout.layers(), graph = layout.graph, newlayers, newlayout = layout;
+		if(layers.length <= 1) return new rg.graph.GraphLayout(layout.graph,layers);
+		var totbefore, crossings, len = layers.length - 1, a, b;
+		do {
+			newlayers = layers.map(function(arr,_) {
+				return arr.copy();
+			});
+			newlayout = new rg.graph.GraphLayout(graph,layers);
+			totbefore = newlayout.crossings();
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				a = newlayers[i];
+				b = newlayers[i + 1];
+				this.decrossPair(graph,a,b);
+			}
+			crossings = new rg.graph.GraphLayout(graph,newlayers).crossings();
+			layers = newlayers;
+		} while(totbefore > crossings);
+		return newlayout;
+	}
+	,decrossPair: function(graph,a,b) {
+		var tot = rg.graph.GraphLayout.arrayCrossings(graph,a,b), ntot = tot, t;
+		do {
+			tot = ntot;
+			var _g1 = 0, _g = b.length - 1;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.swap(b,i);
+				if((t = rg.graph.GraphLayout.arrayCrossings(graph,a,b)) >= ntot) this.swap(b,i); else ntot = t;
+			}
+		} while(ntot < tot);
+	}
+	,swap: function(a,pos) {
+		var v = a[pos];
+		a[pos] = a[pos + 1];
+		a[pos + 1] = v;
+	}
+	,__class__: rg.graph.GreedySwitchDecrosser
+}
 rg.view.html.widget.PivotTable = $hxClasses["rg.view.html.widget.PivotTable"] = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
@@ -4576,10 +4886,12 @@ rg.view.html.widget.PivotTable.prototype = {
 	,stats: null
 	,labelDataPoint: function(dp,stats) {
 		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
 		return thx.culture.FormatNumber["int"](v);
 	}
 	,labelDataPointOver: function(dp,stats) {
 		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
 		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
 	}
 	,labelAxis: function(v) {
@@ -5077,7 +5389,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.3080"};
+	r.info.viz = { version : "1.1.5.3678"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5236,6 +5548,71 @@ rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
 rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
 rg.view.frame.Orientation.Horizontal.toString = $estr;
 rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
+rg.graph.GreedyCyclePartitioner = $hxClasses["rg.graph.GreedyCyclePartitioner"] = function() {
+}
+rg.graph.GreedyCyclePartitioner.__name__ = ["rg","graph","GreedyCyclePartitioner"];
+rg.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative = function(graph) {
+	var n = null, l = 0;
+	var $it0 = graph.nodes.collection.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		var diff = node.graph.edges.positiveCount(node) - node.graph.edges.negativeCount(node);
+		if(null == n || l < diff) {
+			n = node;
+			l = diff;
+		}
+	}
+	return n;
+}
+rg.graph.GreedyCyclePartitioner.prototype = {
+	partition: function(graph) {
+		var left = [], right = [], clone = graph.clone(), n;
+		while(!(Iterators.count(clone.nodes.iterator()) == 0)) {
+			while(null != (n = clone.findSink())) {
+				var $it0 = n.graph.edges.negatives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					right.unshift(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+			var _g = 0, _g1 = clone.findIsolateds();
+			while(_g < _g1.length) {
+				var isolated = _g1[_g];
+				++_g;
+				isolated.graph.nodes._remove(isolated);
+			}
+			while(null != (n = clone.findSource())) {
+				var $it1 = n.graph.edges.positives(n);
+				while( $it1.hasNext() ) {
+					var edge = $it1.next();
+					left.push(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+			if(!(Iterators.count(clone.nodes.iterator()) == 0)) {
+				n = rg.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative(clone);
+				var $it2 = n.graph.edges.negatives(n);
+				while( $it2.hasNext() ) {
+					var edge = $it2.next();
+					right.unshift(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				var $it3 = n.graph.edges.positives(n);
+				while( $it3.hasNext() ) {
+					var edge = $it3.next();
+					left.push(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+		}
+		return { left : left, right : right};
+	}
+	,__class__: rg.graph.GreedyCyclePartitioner
+}
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	this.months = months;
@@ -5640,7 +6017,7 @@ rg.data.source.rgquery.transform.TransformStatisticTime.prototype = {
 			var arr = data[_g];
 			++_g;
 			var p = Dynamics.clone(properties);
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[this.periodicity != "minute" && this.periodicity != "hour"?Dates.snap(arr[0].timestamp,this.periodicity):arr[0].timestamp,arr[1]]);
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[0].timestamp),arr[1]]);
 			p.event = this.event;
 			result.push(p);
 		}
@@ -6477,6 +6854,129 @@ thx.translation.ITranslation.prototype = {
 	,__class__: thx.translation.ITranslation
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
+rg.graph.GraphLayout = $hxClasses["rg.graph.GraphLayout"] = function(graph,layers) {
+	var me = this;
+	this.graph = graph;
+	this._layers = layers.map(function(arr,_) {
+		return arr.copy();
+	});
+	this.friendCell = this._cell = new rg.graph.LayoutCell();
+	this._map = new IntHash();
+	this.each(function(cell,node) {
+		me._map.set(node.id,[cell.layer,cell.position]);
+	});
+}
+rg.graph.GraphLayout.__name__ = ["rg","graph","GraphLayout"];
+rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
+	var map = new IntHash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i],i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = graph.nodes.get(a[i]);
+		var $it0 = n1.graph.edges.positives(n1);
+		while( $it0.hasNext() ) {
+			var edge1 = $it0.next();
+			var p1 = map.get(edge1.head.id);
+			if(null == p1) continue;
+			var _g3 = i + 1, _g2 = a.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var n2 = graph.nodes.get(a[j]);
+				var $it1 = n2.graph.edges.positives(n2);
+				while( $it1.hasNext() ) {
+					var edge2 = $it1.next();
+					var p2 = map.get(edge2.head.id);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.graph.GraphLayout.prototype = {
+	graph: null
+	,_layers: null
+	,_cell: null
+	,_map: null
+	,friendCell: null
+	,each: function(f) {
+		var layers = this._layers.length, positions;
+		var _g = 0;
+		while(_g < layers) {
+			var layer = _g++;
+			positions = this._layers[layer].length;
+			var _g1 = 0;
+			while(_g1 < positions) {
+				var position = _g1++;
+				this.friendCell.update(layer,position,layers,positions);
+				f(this._cell,this.graph.nodes.get(this._layers[layer][position]));
+			}
+		}
+	}
+	,cell: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 43, className : "rg.graph.GraphLayout", methodName : "cell"});
+		var pos = this._map.get(node.id);
+		if(null == pos) return null;
+		return new rg.graph.LayoutCell(pos[0],pos[1],this._layers.length,this._layers[pos[0]].length);
+	}
+	,nodeAt: function(layer,position) {
+		var arr = this._layers[layer];
+		if(null == arr) return null;
+		var id = arr[position];
+		if(null == id) return null;
+		return this.graph.nodes.get(id);
+	}
+	,layers: function() {
+		var result = [];
+		var _g = 0, _g1 = this._layers;
+		while(_g < _g1.length) {
+			var arr = _g1[_g];
+			++_g;
+			result.push(arr.copy());
+		}
+		return result;
+	}
+	,crossings: function() {
+		var tot = 0;
+		var _g1 = 0, _g = this._layers.length - 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			tot += rg.graph.GraphLayout.arrayCrossings(this.graph,this._layers[i],this._layers[i + 1]);
+		}
+		return tot;
+	}
+	,__class__: rg.graph.GraphLayout
+}
+rg.graph.LayoutCell = $hxClasses["rg.graph.LayoutCell"] = function(layer,position,layers,positions) {
+	if(positions == null) positions = 0;
+	if(layers == null) layers = 0;
+	if(position == null) position = 0;
+	if(layer == null) layer = 0;
+	this.layer = layer;
+	this.layers = layers;
+	this.position = position;
+	this.positions = positions;
+}
+rg.graph.LayoutCell.__name__ = ["rg","graph","LayoutCell"];
+rg.graph.LayoutCell.prototype = {
+	layer: null
+	,position: null
+	,layers: null
+	,positions: null
+	,update: function(layer,position,layers,positions) {
+		this.layer = layer;
+		this.layers = layers;
+		this.position = position;
+		this.positions = positions;
+	}
+	,__class__: rg.graph.LayoutCell
+}
 if(!thx.svg) thx.svg = {}
 thx.svg.Diagonal = $hxClasses["thx.svg.Diagonal"] = function() {
 	this._projection = thx.svg.Diagonal.diagonalProjection;
@@ -6561,6 +7061,191 @@ rg.data.IDataSource.prototype = {
 	,load: null
 	,__class__: rg.data.IDataSource
 }
+rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(graph,idf) {
+	var me = this;
+	this.nextid = 0;
+	this.graph = graph;
+	this.idf = idf;
+	this.collection = new IntHash();
+	this.map = new Hash();
+	if(null != idf) {
+		var add = this.collectionAdd.$bind(this);
+		this.collectionAdd = function(item) {
+			me.map.set(idf(item.data),item);
+			add(item);
+		};
+		var rem = this.collectionRemove.$bind(this);
+		this.collectionRemove = function(item) {
+			me.map.remove(idf(item.data));
+			rem(item);
+		};
+	}
+}
+rg.graph.GraphCollection.__name__ = ["rg","graph","GraphCollection"];
+rg.graph.GraphCollection.prototype = {
+	graph: null
+	,collection: null
+	,nextid: null
+	,idf: null
+	,map: null
+	,length: null
+	,getById: function(id) {
+		return this.map.get(id);
+	}
+	,get: function(id) {
+		return this.collection.get(id);
+	}
+	,has: function(item) {
+		return item.graph == this.graph && this.collection.exists(item.id);
+	}
+	,get_length: function() {
+		return IntHashes.count(this.collection);
+	}
+	,collectionAdd: function(item) {
+		this.collection.set(item.id,item);
+	}
+	,collectionRemove: function(item) {
+		this.collection.remove(item.id);
+	}
+	,iterator: function() {
+		return this.collection.iterator();
+	}
+	,toString: function() {
+		return Iterators.map(this.collection.iterator(),function(item,_) {
+			return Std.string(item);
+		}).join(", ");
+	}
+	,__class__: rg.graph.GraphCollection
+	,__properties__: {get_length:"get_length"}
+}
+rg.graph.GraphEdges = $hxClasses["rg.graph.GraphEdges"] = function(graph,edgeidf) {
+	rg.graph.GraphCollection.call(this,graph,edgeidf);
+	this.edgesp = new IntHash();
+	this.edgesn = new IntHash();
+}
+rg.graph.GraphEdges.__name__ = ["rg","graph","GraphEdges"];
+rg.graph.GraphEdges.newInstance = function(graph,edgeidf) {
+	return new rg.graph.GraphEdges(graph,edgeidf);
+}
+rg.graph.GraphEdges.__super__ = rg.graph.GraphCollection;
+rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
+	edgesp: null
+	,edgesn: null
+	,copyTo: function(graph) {
+		var edges = new rg.graph.GraphEdges(graph), nodes = graph.nodes, tail, head;
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			tail = nodes.get(edge.tail.id);
+			head = nodes.get(edge.head.id);
+			edges._create(edge.id,tail,head,edge.weight,edge.data);
+		}
+		edges.nextid = this.nextid;
+		return edges;
+	}
+	,create: function(tail,head,data,weight) {
+		if(weight == null) weight = 1.0;
+		if(tail.graph != head.graph || tail.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 39, className : "rg.graph.GraphEdges", methodName : "create"});
+		return this._create(++this.nextid,tail,head,weight,data);
+	}
+	,_create: function(id,tail,head,weight,data) {
+		var e = rg.graph.GEdge.create(this.graph,id,tail,head,weight,data);
+		this.collectionAdd(e);
+		this.connections(tail.id,this.edgesp).push(id);
+		this.connections(head.id,this.edgesn).push(id);
+		return e;
+	}
+	,remove: function(edge) {
+		if(edge.graph != this.graph) throw new thx.error.Error("remove: the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 55, className : "rg.graph.GraphEdges", methodName : "remove"});
+		this._remove(edge);
+	}
+	,_remove: function(edge) {
+		this.collectionRemove(edge);
+		this.removeConnection(edge.id,edge.tail.id,this.edgesp);
+		this.removeConnection(edge.id,edge.head.id,this.edgesn);
+		edge.destroy();
+	}
+	,unlink: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlink: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 70, className : "rg.graph.GraphEdges", methodName : "unlink"});
+		this._unlink(node,this.edgesp);
+		this._unlink(node,this.edgesn);
+	}
+	,positives: function(node) {
+		return this._edges(node.id,this.edgesp).iterator();
+	}
+	,negatives: function(node) {
+		return this._edges(node.id,this.edgesn).iterator();
+	}
+	,edges: function(node) {
+		return this._edges(node.id,this.edgesp).concat(this._edges(node.id,this.edgesn)).iterator();
+	}
+	,positiveCount: function(node) {
+		return this._edgeids(node.id,this.edgesp).length;
+	}
+	,negativeCount: function(node) {
+		return this._edgeids(node.id,this.edgesn).length;
+	}
+	,edgeCount: function(node) {
+		return this._edgeids(node.id,this.edgesp).length + this._edgeids(node.id,this.edgesn).length;
+	}
+	,_edgeids: function(id,collection) {
+		var r = collection.get(id);
+		if(null == r) r = [];
+		return r;
+	}
+	,_edges: function(id,collection) {
+		var me = this;
+		return this._edgeids(id,collection).map(function(eid,_) {
+			return me.get(eid);
+		});
+	}
+	,unlinkPositives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 121, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
+		this._unlink(node,this.edgesp);
+	}
+	,unlinkNegatives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 128, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
+		this._unlink(node,this.edgesn);
+	}
+	,_unlink: function(node,connections) {
+		var ids = connections.get(node.id);
+		if(null == ids) return;
+		ids = ids.copy();
+		var _g = 0;
+		while(_g < ids.length) {
+			var id = ids[_g];
+			++_g;
+			var edge = this.get(id);
+			if(null == edge || null == edge.graph) continue;
+			this._remove(edge);
+		}
+		connections.remove(node.id);
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
+	,connections: function(id,connections) {
+		var c = connections.get(id);
+		if(null == c) connections.set(id,c = []);
+		return c;
+	}
+	,removeConnection: function(edgeid,nodeid,connections) {
+		var c = connections.get(nodeid);
+		if(null == c) return;
+		c.remove(edgeid);
+		if(c.length == 0) connections.remove(nodeid);
+	}
+	,toString: function() {
+		return "GraphEdges (" + IntHashes.count(this.collection) + "): " + rg.graph.GraphCollection.prototype.toString.call(this);
+	}
+	,__class__: rg.graph.GraphEdges
+});
 rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
 	this.label = new rg.controller.info.InfoLabel();
 	this.idproperty = "id";
@@ -7148,67 +7833,11 @@ rg.track.ReportGridExecutor.prototype = {
 	}
 	,__class__: rg.track.ReportGridExecutor
 }
-if(!rg.layout) rg.layout = {}
-rg.layout.GreedyCyclePartitioner = $hxClasses["rg.layout.GreedyCyclePartitioner"] = function() {
-}
-rg.layout.GreedyCyclePartitioner.__name__ = ["rg","layout","GreedyCyclePartitioner"];
-rg.layout.GreedyCyclePartitioner.prototype = {
-	partition: function(graph) {
-		var left = [], right = [], id;
-		var n;
-		graph = rg.layout.Graphs.clone(graph);
-		while(!(Hashes.count(graph) == 0)) {
-			while(null != (n = rg.layout.Graphs.findSink(graph))) {
-				var _g = 0, _g1 = n.edgesn;
-				while(_g < _g1.length) {
-					var negative = _g1[_g];
-					++_g;
-					right.unshift({ a : negative, b : n.vertex});
-					graph.get(negative).edgesp.remove(n.vertex);
-				}
-				graph.remove(n.vertex);
-			}
-			var _g = 0, _g1 = rg.layout.Graphs.findAllIsolated(graph);
-			while(_g < _g1.length) {
-				var isolated = _g1[_g];
-				++_g;
-				graph.remove(isolated.vertex);
-			}
-			while(null != (n = rg.layout.Graphs.findSource(graph))) {
-				var _g = 0, _g1 = n.edgesp;
-				while(_g < _g1.length) {
-					var positive = _g1[_g];
-					++_g;
-					left.push({ a : n.vertex, b : positive});
-					graph.get(positive).edgesn.remove(n.vertex);
-				}
-				graph.remove(n.vertex);
-			}
-			if(!(Hashes.count(graph) == 0)) {
-				n = rg.layout.Graphs.findMaxPositiveOverNegative(graph);
-				var _g = 0, _g1 = n.edgesn;
-				while(_g < _g1.length) {
-					var negative = _g1[_g];
-					++_g;
-					right.unshift({ a : negative, b : n.vertex});
-					graph.get(negative).edgesp.remove(n.vertex);
-				}
-				var _g = 0, _g1 = n.edgesp;
-				while(_g < _g1.length) {
-					var positive = _g1[_g];
-					++_g;
-					left.push({ a : n.vertex, b : positive});
-					graph.get(positive).edgesn.remove(n.vertex);
-				}
-				graph.remove(n.vertex);
-			}
-		}
-		return { left : left, right : right};
-	}
-	,__class__: rg.layout.GreedyCyclePartitioner
-}
 var Iterables = $hxClasses["Iterables"] = function() { }
 Iterables.__name__ = ["Iterables"];
+Iterables.count = function(it) {
+	return Iterators.count(it.iterator());
+}
 Iterables.indexOf = function(it,v,f) {
 	return Iterators.indexOf(it.iterator(),v,f);
 }
@@ -7223,6 +7852,9 @@ Iterables.map = function(it,f) {
 }
 Iterables.each = function(it,f) {
 	return Iterators.each(it.iterator(),f);
+}
+Iterables.filter = function(it,f) {
+	return Iterators.filter(it.iterator(),f);
 }
 Iterables.reduce = function(it,f,initialValue) {
 	return Iterators.reduce(it.iterator(),f,initialValue);
@@ -7907,161 +8539,6 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
-rg.layout.SugiyamaMethod = $hxClasses["rg.layout.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
-	var id = 0;
-	this.partitioner = null == partitioner?new rg.layout.GreedyCyclePartitioner():partitioner;
-	this.layer = null == layer?new rg.layout.LongestPathLayer():layer;
-	this.splitter = null == splitter?new rg.layout.EdgeSpliter():splitter;
-	this.decrosser = null == decrosser?rg.layout.GreedySwitchDecrosser.composed():decrosser;
-}
-rg.layout.SugiyamaMethod.__name__ = ["rg","layout","SugiyamaMethod"];
-rg.layout.SugiyamaMethod.createMap = function(vertices,edges) {
-	var map = new Hash();
-	var _g = 0;
-	while(_g < vertices.length) {
-		var v = vertices[_g];
-		++_g;
-		map.set(v,{ vertex : v, edgesn : [], edgesp : []});
-	}
-	var _g = 0;
-	while(_g < edges.length) {
-		var edge = edges[_g];
-		++_g;
-		map.get(edge.a).edgesp.push(edge.b);
-		map.get(edge.b).edgesn.push(edge.a);
-	}
-	return map;
-}
-rg.layout.SugiyamaMethod.drawGraph = function(graph,layout) {
-	var vertices = Iterators.array(graph.keys()), edges = Arrays.flatten(Iterators.map(graph.iterator(),function(n,_) {
-		return n.edgesp.map(function(dst,_1) {
-			return { a : n.vertex, b : dst};
-		});
-	}));
-	rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-}
-rg.layout.SugiyamaMethod.draw = function(vertices,edges,layout) {
-	var map = new Hash(), grid = 16, padding = 25, r = 5, size = 400, rand = new thx.math.Random(6724095);
-	var el = thx.js.Dom.select("body").append("svg:svg").attr("width")["float"](size).attr("height")["float"](size).style("margin").string("4px");
-	el.append("svg:defs").append("svg:marker").attr("id").string("Triangle").attr("viewBox").string("0 0 10 10").attr("refX").string("" + (r + 8)).attr("refY").string("5").attr("markerUnits").string("strokeWidth").attr("markerWidth").string("4").attr("markerHeight").string("6").attr("orient").string("auto").append("svg:path").attr("d").string("M 0 0 L 10 5 L 0 10 z");
-	el.append("svg:rect").attr("x")["float"](0).attr("y")["float"](0).attr("width")["float"](size).attr("height")["float"](size).attr("fill").string("#eeeeee").attr("stroke").string("blue").attr("stroke-width")["float"](4);
-	var pos = function(v) {
-		return Math.floor(v * grid);
-	};
-	var loc = function(v) {
-		return padding + (size - padding * 2) / (grid - 1) * v;
-	};
-	var x = function(id) {
-		return loc(map.get(id).x);
-	};
-	var y = function(id) {
-		return loc(map.get(id).y);
-	};
-	if(null != layout) {
-		grid = layout.length;
-		var _g1 = 0, _g = layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(layout[i].length > grid) grid = layout[i].length;
-			var _g3 = 0, _g2 = layout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				map.set(layout[i][j].vertex,{ x : i, y : j});
-			}
-		}
-	} else {
-		var slots = Ints.range(grid).map(function(_,_1) {
-			return Ints.range(grid).map(function(_2,_3) {
-				return null;
-			});
-		});
-		map = new Hash();
-		vertices.forEach(function(v,_) {
-			var x1 = 0, y1 = 0;
-			while(true) {
-				x1 = pos(((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0);
-				y1 = pos(((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0);
-				if(slots[x1][y1] == null) {
-					slots[x1][y1] = true;
-					break;
-				}
-			}
-			map.set(v,{ x : x1, y : y1});
-		});
-	}
-	el.selectAll("circle").data(vertices).enter().append("svg:circle").attr("cx").floatf(function(v,_) {
-		return x(v);
-	}).attr("cy").floatf(function(v,_) {
-		return y(v);
-	}).attr("r").floatf(function(v,_) {
-		return v.substr(0,1) == "#"?0:r;
-	});
-	el.selectAll("path.edge").data(edges).enter().append("svg:path").attr("class").string("edge").attr("class").stringf(function(e,_) {
-		return e.a + "-" + e.b;
-	}).attr("stroke").stringf(function(e,_) {
-		return thx.color.Rgb.interpolateRainbow(new thx.math.Random(Std.parseInt(e.a) * 1631486 + Std.parseInt(e.b) * 936)["float"]()).hex("#");
-	}).attr("opacity")["float"](0.75).attr("stroke-width")["float"](2).attr("d").stringf(function(e,_) {
-		return "M" + x(e.a) + "," + y(e.a) + "L" + x(e.b) + "," + y(e.b);
-	}).attr("marker-end").stringf(function(e,_) {
-		return e.b.substr(0,1) == "#"?"":"url(#Triangle)";
-	});
-	el.selectAll("text").data(vertices).enter().append("svg:text").text().stringf(function(v,_) {
-		return v;
-	}).attr("text-anchor").string("middle").attr("transform").stringf(function(v,_) {
-		return "translate(" + x(v) + "," + (y(v) - 7) + ")";
-	}).attr("fill").string("#666").style("font-weight").stringf(function(v,_) {
-		return v.substr(0,1) == "#"?"normal":"bold";
-	}).style("font-size-adjust").floatf(function(v,_) {
-		return v.substr(0,1) == "#"?.4:.5;
-	});
-}
-rg.layout.SugiyamaMethod.prototype = {
-	partitioner: null
-	,layer: null
-	,splitter: null
-	,decrosser: null
-	,resolve: function(vertices,edges) {
-		edges = edges.copy();
-		vertices = vertices.copy();
-		rg.layout.SugiyamaMethod.draw(vertices,edges);
-		var remover = new rg.layout.TwoCycleRemover(), removed = remover.remove(edges), reversed = [];
-		var partitions = this.partitioner.partition(rg.layout.SugiyamaMethod.createMap(vertices,edges));
-		edges = partitions.right;
-		var _g = 0, _g1 = partitions.left;
-		while(_g < _g1.length) {
-			var pair = _g1[_g];
-			++_g;
-			edges.push({ a : pair.b, b : pair.a});
-			reversed.push(pair);
-		}
-		rg.layout.SugiyamaMethod.draw(vertices,edges);
-		var layout = this.layer.lay(rg.layout.SugiyamaMethod.createMap(vertices,edges));
-		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-		this.splitter.split(layout);
-		vertices = rg.layout.Graphs.toVertices(layout);
-		edges = rg.layout.Graphs.toEdges(layout);
-		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-		this.decrosser.decross(layout);
-		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-		var map = rg.layout.SugiyamaMethod.createMap(vertices,edges);
-		var _g = 0;
-		while(_g < reversed.length) {
-			var edge = reversed[_g];
-			++_g;
-			rg.layout.Graphs.reverseConnection(map,edge.b,edge.a);
-		}
-		rg.layout.SugiyamaMethod.drawGraph(map,layout);
-		var _g = 0;
-		while(_g < removed.length) {
-			var edge = removed[_g];
-			++_g;
-			rg.layout.Graphs.addConnection(map,edge.a,edge.b);
-		}
-		rg.layout.SugiyamaMethod.drawGraph(map,layout);
-		return layout;
-	}
-	,__class__: rg.layout.SugiyamaMethod
-}
 rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,operation,tag,location,groupby,timezone,start,end) {
 	this.query = query;
 	this.executor = executor;
@@ -8168,7 +8645,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 469, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 468, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -8488,7 +8965,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 450, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 449, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -10519,6 +10996,148 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,__class__: rg.view.svg.chart.HeatGrid
 	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
+rg.graph.Graph = $hxClasses["rg.graph.Graph"] = function(nodeidf,edgeidf) {
+	this.nodes = rg.graph.GraphNodes.newInstance(this,nodeidf);
+	this.edges = rg.graph.GraphEdges.newInstance(this,edgeidf);
+}
+rg.graph.Graph.__name__ = ["rg","graph","Graph"];
+rg.graph.Graph.friendNodes = function(friend) {
+	return friend;
+}
+rg.graph.Graph.friendEdges = function(friend) {
+	return friend;
+}
+rg.graph.Graph.prototype = {
+	nodes: null
+	,edges: null
+	,empty: function() {
+		return Iterators.count(this.nodes.iterator()) == 0;
+	}
+	,clear: function() {
+		this.edges.clear();
+		this.nodes.clear();
+	}
+	,clone: function() {
+		var g = new rg.graph.Graph();
+		g.nodes = this.nodes.copyTo(g);
+		g.edges = this.edges.copyTo(g);
+		return g;
+	}
+	,findSinks: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isSink();
+		});
+	}
+	,findSink: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isSink();
+		});
+	}
+	,findSources: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
+	,findSource: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
+	,findIsolateds: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,findIsolated: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,paths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.edges(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.other(n);
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,path: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.paths(a,b),weighted);
+	}
+	,directedPaths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.positives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.head;
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,directedPath: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.directedPaths(a,b),weighted);
+	}
+	,pickPath: function(paths,weighted) {
+		if(paths.length == 0) return null;
+		if(weighted) return Arrays.min(paths,function(arr) {
+			return Iterators.reduce(arr.iterator(),function(acc,edge,_) {
+				return acc + edge.weight;
+			},0);
+		}); else return Arrays.min(paths,function(arr) {
+			return arr.length;
+		});
+	}
+	,toString: function() {
+		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
+	}
+	,__class__: rg.graph.Graph
+}
 rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
 rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
 rg.view.svg.util.RGColors.parse = function(s,alt) {
@@ -11605,6 +12224,28 @@ thx.js.AccessDataAttribute.prototype = $extend(thx.js.AccessAttribute.prototype,
 	}
 	,__class__: thx.js.AccessDataAttribute
 });
+rg.graph.TwoCycleRemover = $hxClasses["rg.graph.TwoCycleRemover"] = function() {
+}
+rg.graph.TwoCycleRemover.__name__ = ["rg","graph","TwoCycleRemover"];
+rg.graph.TwoCycleRemover.prototype = {
+	remove: function(graph) {
+		var result = [];
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				var reverse = edge.head.predecessorBy(node);
+				if(null == reverse) continue;
+				result.push({ tail : reverse.tail, head : reverse.head, weight : reverse.weight, data : reverse.data});
+				reverse.graph.edges._remove(reverse);
+			}
+		}
+		return result;
+	}
+	,__class__: rg.graph.TwoCycleRemover
+}
 rg.RGConst = $hxClasses["rg.RGConst"] = function() { }
 rg.RGConst.__name__ = ["rg","RGConst"];
 rg.RGConst.prototype = {
@@ -11784,235 +12425,6 @@ thx.math.scale.LinearT.prototype = {
 		return Floats.formatf("D:" + n);
 	}
 	,__class__: thx.math.scale.LinearT
-}
-rg.layout.Graphs = $hxClasses["rg.layout.Graphs"] = function() { }
-rg.layout.Graphs.__name__ = ["rg","layout","Graphs"];
-rg.layout.Graphs.crossings = function(a,b) {
-	var map = new Hash(), c = 0;
-	var _g1 = 0, _g = b.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		map.set(b[i].vertex,i);
-	}
-	if(a.length <= 1 || b.length <= 1) return c;
-	var _g1 = 0, _g = a.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var n1 = a[i];
-		var _g2 = 0, _g3 = n1.edgesp;
-		while(_g2 < _g3.length) {
-			var dst1 = _g3[_g2];
-			++_g2;
-			var p1 = map.get(dst1);
-			if(null == p1) continue;
-			var _g5 = i + 1, _g4 = a.length;
-			while(_g5 < _g4) {
-				var j = _g5++;
-				var n2 = a[j];
-				var _g6 = 0, _g7 = n2.edgesp;
-				while(_g6 < _g7.length) {
-					var dst2 = _g7[_g6];
-					++_g6;
-					var p2 = map.get(dst2);
-					if(p2 < p1) c++;
-				}
-			}
-		}
-	}
-	return c;
-}
-rg.layout.Graphs.layoutCrossings = function(a) {
-	var tot = 0;
-	var _g1 = 0, _g = a.length - 1;
-	while(_g1 < _g) {
-		var i = _g1++;
-		tot += rg.layout.Graphs.crossings(a[i],a[i + 1]);
-	}
-	return tot;
-}
-rg.layout.Graphs.toMap = function(layout) {
-	var map = new Hash();
-	var _g1 = 0, _g = layout.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var _g3 = 0, _g2 = layout[i].length;
-		while(_g3 < _g2) {
-			var j = _g3++;
-			map.set(layout[i][j].vertex,layout[i][j]);
-		}
-	}
-	return map;
-}
-rg.layout.Graphs.toVertices = function(layout) {
-	var result = [];
-	var _g1 = 0, _g = layout.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var _g3 = 0, _g2 = layout[i].length;
-		while(_g3 < _g2) {
-			var j = _g3++;
-			result.push(layout[i][j].vertex);
-		}
-	}
-	return result;
-}
-rg.layout.Graphs.toEdges = function(layout) {
-	var result = [];
-	var _g1 = 0, _g = layout.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var _g3 = 0, _g2 = layout[i].length;
-		while(_g3 < _g2) {
-			var j = _g3++;
-			var v = layout[i][j].vertex;
-			var _g4 = 0, _g5 = layout[i][j].edgesp;
-			while(_g4 < _g5.length) {
-				var c = _g5[_g4];
-				++_g4;
-				result.push({ a : v, b : c});
-			}
-		}
-	}
-	return result;
-}
-rg.layout.Graphs.findMaxPositiveOverNegative = function(graph) {
-	var n = null, l = 0;
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		var diff = node.edgesp.length - node.edgesn.length;
-		if(null == n || l < diff) {
-			n = node;
-			l = diff;
-		}
-	}
-	return n;
-}
-rg.layout.Graphs.isSink = function(node) {
-	return node.edgesp.length == 0 && node.edgesn.length > 0;
-}
-rg.layout.Graphs.isSource = function(node) {
-	return node.edgesn.length == 0 && node.edgesp.length == 0;
-}
-rg.layout.Graphs.findSink = function(graph) {
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
-	}
-	return null;
-}
-rg.layout.Graphs.findSource = function(graph) {
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
-	}
-	return null;
-}
-rg.layout.Graphs.findAllIsolated = function(graph) {
-	var isolated = [];
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
-	}
-	return isolated;
-}
-rg.layout.Graphs.addConnection = function(graph,a,b) {
-	var path = rg.layout.Graphs.findPath(graph,b,a);
-	if(null != path && path.every(function(v,i) {
-		return i == 0 || i == path.length - 1 || rg.layout.Graphs.isDummy(v);
-	})) {
-		path.reverse();
-		rg.layout.Graphs.addConnections(graph,path);
-	} else rg.layout.Graphs.addConnections(graph,[a,b]);
-}
-rg.layout.Graphs.addConnections = function(graph,arr) {
-	var _g1 = 0, _g = arr.length - 1;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var a = arr[i], b = arr[i + 1];
-		graph.get(a).edgesp.push(b);
-		graph.get(b).edgesp.push(a);
-	}
-}
-rg.layout.Graphs.reverseConnection = function(graph,a,b) {
-	var path = rg.layout.Graphs.findPath(graph,a,b);
-	if(null == path) return false;
-	var _g1 = 0, _g = path.length - 1;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
-		na.edgesp.remove(b1);
-		na.edgesn.push(b1);
-		nb.edgesn.remove(a1);
-		nb.edgesp.push(a1);
-	}
-	return true;
-}
-rg.layout.Graphs.findPath = function(graph,a,b) {
-	var traveled = new thx.collection.Set(), paths = [], t, r;
-	var traverse = (function($this) {
-		var $r;
-		var traverse = null;
-		traverse = function(path,n) {
-			var totraverse = [];
-			var _g = 0, _g1 = n.edgesn;
-			while(_g < _g1.length) {
-				var parent = _g1[_g];
-				++_g;
-				if(parent == a) return path.concat([a]); else if(rg.layout.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,a2) {
-					return function() {
-						return f(a1,a2);
-					};
-				})(traverse,path.concat([parent]),t));
-			}
-			var _g = 0;
-			while(_g < totraverse.length) {
-				var t1 = totraverse[_g];
-				++_g;
-				if(null != (r = t1())) return r;
-			}
-			return null;
-		};
-		$r = traverse;
-		return $r;
-	}(this));
-	var p = traverse([b],graph.get(b));
-	if(null == p) return null;
-	p.reverse();
-	return p;
-}
-rg.layout.Graphs.isDummy = function(v) {
-	return v.substr(0,1) == "#";
-}
-rg.layout.Graphs.createDummy = function(a,b,lvl) {
-	return "#" + ++rg.layout.Graphs.id;
-}
-rg.layout.Graphs.removeNode = function(graph,node) {
-	graph.remove(node.vertex);
-}
-rg.layout.Graphs.addNode = function(graph,node) {
-	graph.set(node.vertex,node);
-}
-rg.layout.Graphs.clone = function(graph) {
-	var o = new Hash();
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		rg.layout.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.copy(), edgesp : node.edgesp.copy()});
-	}
-	return o;
-}
-rg.layout.Graphs.empty = function(graph) {
-	return Hashes.count(graph) == 0;
-}
-rg.layout.Graphs.count = function(graph) {
-	return Hashes.count(graph);
-}
-rg.layout.Graphs.prototype = {
-	__class__: rg.layout.Graphs
 }
 thx.culture.FormatDate = $hxClasses["thx.culture.FormatDate"] = function() { }
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
@@ -12540,6 +12952,49 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 	}
 	,__class__: rg.view.svg.layer.TickmarksOrtho
 });
+rg.graph.LongestPathLayer = $hxClasses["rg.graph.LongestPathLayer"] = function() {
+}
+rg.graph.LongestPathLayer.__name__ = ["rg","graph","LongestPathLayer"];
+rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
+	var child;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(it,lvl) {
+			var max = lvl;
+			while( it.hasNext() ) {
+				var edge = it.next();
+				if(edge.head.isSink()) continue; else max = Ints.max(max,traverse(edge.head.positives(),lvl + 1));
+			}
+			return max;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	return traverse(node.graph.edges.positives(node),1);
+}
+rg.graph.LongestPathLayer.prototype = {
+	lay: function(graph) {
+		var clone = graph.clone(), layers = [[]];
+		var _g = 0, _g1 = clone.findSinks();
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			layers[0].push(node.id);
+			node.graph.nodes._remove(node);
+		}
+		var $it0 = clone.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var pos = rg.graph.LongestPathLayer.distanceToASink(clone,node), layer = layers[pos];
+			if(null == layer) layer = layers[pos] = [];
+			layer.push(node.id);
+		}
+		layers.reverse();
+		return layers;
+	}
+	,__class__: rg.graph.LongestPathLayer
+}
 rg.view.svg.util.RGCss = $hxClasses["rg.view.svg.util.RGCss"] = function() { }
 rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
 rg.view.svg.util.RGCss.cssSources = function() {
@@ -13169,6 +13624,76 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
+var IntHashes = $hxClasses["IntHashes"] = function() { }
+IntHashes.__name__ = ["IntHashes"];
+IntHashes.empty = function(hash) {
+	return IntHashes.count(hash) == 0;
+}
+IntHashes.count = function(hash) {
+	var i = 0;
+	var $it0 = hash.iterator();
+	while( $it0.hasNext() ) {
+		var _ = $it0.next();
+		i++;
+	}
+	return i;
+}
+IntHashes.clear = function(hash) {
+	var _hash = hash;
+	_hash.h = {}
+	if(_hash.h.__proto__ != null) {
+		_hash.h.__proto__ = null;
+		delete(_hash.h.__proto__);
+	}
+}
+IntHashes.prototype = {
+	__class__: IntHashes
+}
+rg.graph.GreedySwitch2Decrosser = $hxClasses["rg.graph.GreedySwitch2Decrosser"] = function() {
+	rg.graph.GreedySwitchDecrosser.call(this);
+}
+rg.graph.GreedySwitch2Decrosser.__name__ = ["rg","graph","GreedySwitch2Decrosser"];
+rg.graph.GreedySwitch2Decrosser.__super__ = rg.graph.GreedySwitchDecrosser;
+rg.graph.GreedySwitch2Decrosser.prototype = $extend(rg.graph.GreedySwitchDecrosser.prototype,{
+	decross: function(layout) {
+		var layers = layout.layers(), graph = layout.graph, newlayers, newlayout = layout;
+		if(layers.length <= 1) return new rg.graph.GraphLayout(layout.graph,layers);
+		var totbefore, crossings, len = layers.length - 1, a, b, c;
+		do {
+			newlayers = layers.map(function(arr,_) {
+				return arr.copy();
+			});
+			newlayout = new rg.graph.GraphLayout(graph,layers);
+			totbefore = newlayout.crossings();
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				a = newlayers[i - 1];
+				b = newlayers[i];
+				c = newlayers[i + 1];
+				this.decrossTriplet(graph,a,b,c);
+			}
+			crossings = new rg.graph.GraphLayout(graph,newlayers).crossings();
+			layers = newlayers;
+		} while(totbefore > crossings);
+		return newlayout;
+	}
+	,decrossTriplet: function(graph,a,b,c) {
+		if(null == a) this.decrossPair(graph,b,c); else if(null == c) this.decrossPair(graph,a,b); else {
+			var tot = rg.graph.GraphLayout.arrayCrossings(graph,a,b) + rg.graph.GraphLayout.arrayCrossings(graph,b,c), ntot = tot, t;
+			do {
+				tot = ntot;
+				var _g1 = 0, _g = b.length - 1;
+				while(_g1 < _g) {
+					var i = _g1++;
+					this.swap(b,i);
+					if((t = rg.graph.GraphLayout.arrayCrossings(graph,a,b) + rg.graph.GraphLayout.arrayCrossings(graph,b,c)) >= ntot) this.swap(b,i); else ntot = t;
+				}
+			} while(ntot < tot);
+		}
+	}
+	,__class__: rg.graph.GreedySwitch2Decrosser
+});
 thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
@@ -13764,6 +14289,25 @@ rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
 }
 rg.data.ScaleDistributions.prototype = {
 	__class__: rg.data.ScaleDistributions
+}
+rg.graph.GraphElement = $hxClasses["rg.graph.GraphElement"] = function(graph,id,data) {
+	this.id = id;
+	this.data = data;
+	this.graph = graph;
+}
+rg.graph.GraphElement.__name__ = ["rg","graph","GraphElement"];
+rg.graph.GraphElement.friendDestroy = function(item) {
+	return item;
+}
+rg.graph.GraphElement.prototype = {
+	graph: null
+	,id: null
+	,data: null
+	,destroy: function() {
+		this.graph = null;
+		this.id = -1;
+	}
+	,__class__: rg.graph.GraphElement
 }
 rg.view.svg.widget.Label = $hxClasses["rg.view.svg.widget.Label"] = function(container,dontflip,shadow,outline) {
 	if(dontflip == null) dontflip = true;
@@ -15833,48 +16377,156 @@ rg.controller.visualization.VisualizationHeatGrid.prototype = $extend(rg.control
 	}
 	,__class__: rg.controller.visualization.VisualizationHeatGrid
 });
-rg.layout.EdgeSpliter = $hxClasses["rg.layout.EdgeSpliter"] = function(idf) {
-	this.idf = null == idf?rg.layout.Graphs.createDummy:idf;
+rg.graph.GNode = $hxClasses["rg.graph.GNode"] = function(graph,id,data) {
+	rg.graph.GraphElement.call(this,graph,id,data);
 }
-rg.layout.EdgeSpliter.__name__ = ["rg","layout","EdgeSpliter"];
-rg.layout.EdgeSpliter.prototype = {
-	idf: null
-	,split: function(layout) {
-		var map = new Hash();
-		var _g1 = 0, _g = layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var _g3 = 0, _g2 = layout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				map.set(layout[i][j].vertex,{ layer : i, node : layout[i][j]});
-			}
-		}
-		var _g1 = 0, _g = layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var _g3 = 0, _g2 = layout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				var node = layout[i][j];
-				var _g5 = 0, _g4 = node.edgesp.length;
-				while(_g5 < _g4) {
-					var z = _g5++;
-					var v = node.edgesp[z], child = map.get(v);
-					if(child.layer > i + 1) {
-						var n = { vertex : this.idf(node.vertex,v,i + 1), edgesn : [node.vertex], edgesp : [v]};
-						layout[i + 1].push(n);
-						map.set(n.vertex,{ layer : i + 1, node : n});
-						node.edgesp[z] = n.vertex;
-						child.node.edgesn.remove(node.vertex);
-						child.node.edgesn.push(n.vertex);
-					}
-				}
-			}
-		}
+rg.graph.GNode.__name__ = ["rg","graph","GNode"];
+rg.graph.GNode.create = function(graph,id,data) {
+	return new rg.graph.GNode(graph,id,data);
+}
+rg.graph.GNode.__super__ = rg.graph.GraphElement;
+rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
+	destroy: function() {
+		rg.graph.GraphElement.prototype.destroy.call(this);
 	}
-	,__class__: rg.layout.EdgeSpliter
+	,isConnectedTo: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 30, className : "rg.graph.GNode", methodName : "isConnectedTo"});
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == other.id;
+		}) || Iterators.contains(this.graph.edges.negatives(this),null,function(edge) {
+			return edge.tail.id == other.id;
+		});
+	}
+	,connectedBy: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 41, className : "rg.graph.GNode", methodName : "connectedBy"});
+		var edge = Iterators.firstf(this.graph.edges.positives(this),function(edge) {
+			return edge.head.id == other.id;
+		});
+		if(null != edge) return edge;
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge1) {
+			return edge1.tail.id == other.id;
+		});
+	}
+	,isSource: function() {
+		return this.graph.edges.positives(this).hasNext() && !this.graph.edges.negatives(this).hasNext();
+	}
+	,isSink: function() {
+		return this.graph.edges.negatives(this).hasNext() && !this.graph.edges.positives(this).hasNext();
+	}
+	,isIsolated: function() {
+		return !this.graph.edges.edges(this).hasNext();
+	}
+	,isSuccessorOf: function(predecessor) {
+		return predecessor.isPredecessorOf(this);
+	}
+	,isPredecessorOf: function(successor) {
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,successorBy: function(predecessor) {
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge) {
+			return edge.tail.id == predecessor.id;
+		});
+	}
+	,predecessorBy: function(successor) {
+		return Iterators.firstf(this.graph.edges.positives(this),function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,edges: function() {
+		return this.graph.edges.edges(this);
+	}
+	,positives: function() {
+		return this.graph.edges.positives(this);
+	}
+	,negatives: function() {
+		return this.graph.edges.negatives(this);
+	}
+	,edgeCount: function() {
+		return this.graph.edges.edgeCount(this);
+	}
+	,positiveCount: function() {
+		return this.graph.edges.positiveCount(this);
+	}
+	,negativeCount: function() {
+		return this.graph.edges.negativeCount(this);
+	}
+	,remove: function() {
+		this.graph.nodes._remove(this);
+	}
+	,friendRemove: function() {
+		return this.graph.nodes;
+	}
+	,friendEdges: function() {
+		return this.graph.edges;
+	}
+	,toString: function() {
+		return "Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
+	}
+	,__class__: rg.graph.GNode
+});
+rg.graph.GEdge = $hxClasses["rg.graph.GEdge"] = function(graph,id,tail,head,weight,data) {
+	rg.graph.GraphElement.call(this,graph,id,data);
+	this.tail = tail;
+	this.head = head;
+	this.weight = weight;
 }
+rg.graph.GEdge.__name__ = ["rg","graph","GEdge"];
+rg.graph.GEdge.create = function(graph,id,tail,head,weight,data) {
+	return new rg.graph.GEdge(graph,id,tail,head,weight,data);
+}
+rg.graph.GEdge.__super__ = rg.graph.GraphElement;
+rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
+	tail: null
+	,head: null
+	,weight: null
+	,destroy: function() {
+		rg.graph.GraphElement.prototype.destroy.call(this);
+		this.tail = null;
+		this.head = null;
+	}
+	,split: function(times,f) {
+		if(times == null) times = 1;
+		if(times < 1) throw new thx.error.Error("the split times parameter must be an integer value greater than zero",null,null,{ fileName : "GEdge.hx", lineNumber : 37, className : "rg.graph.GEdge", methodName : "split"});
+		if(null == f) f = function(_,_1,_2) {
+		};
+		var last = this, result = [], node, e1, e2, g = last.graph;
+		var _g = 0;
+		while(_g < times) {
+			var i = _g++;
+			node = g.nodes.create();
+			e1 = g.edges.create(last.tail,node,last.data,last.weight);
+			e2 = g.edges.create(node,last.head,last.data,last.weight);
+			g.edges.remove(last);
+			f(e1,e2,i);
+			last = e2;
+			g = last.graph;
+			result.push(e1);
+		}
+		result.push(last);
+		return result;
+	}
+	,other: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 62, className : "rg.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 68, className : "rg.graph.GEdge", methodName : "other"});
+	}
+	,invert: function() {
+		var inverted = this.graph.edges.create(this.head,this.tail,this.data,this.weight);
+		this.graph.edges._remove(this);
+		return inverted;
+	}
+	,remove: function() {
+		this.graph.edges._remove(this);
+	}
+	,friendRemove: function() {
+		return this.graph.edges;
+	}
+	,toString: function() {
+		return "Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
+	}
+	,__class__: rg.graph.GEdge
+});
 rg.controller.info.InfoHeatGrid = $hxClasses["rg.controller.info.InfoHeatGrid"] = function() {
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
@@ -16341,52 +16993,6 @@ thx.js.ExitSelection.prototype = $extend(thx.js.UnboundSelection.prototype,{
 	}
 	,__class__: thx.js.ExitSelection
 });
-rg.layout.LongestPathLayer = $hxClasses["rg.layout.LongestPathLayer"] = function() {
-}
-rg.layout.LongestPathLayer.__name__ = ["rg","layout","LongestPathLayer"];
-rg.layout.LongestPathLayer.prototype = {
-	lay: function(graph) {
-		var map = rg.layout.Graphs.clone(graph), layers = [[]], u = [], z = [];
-		var node;
-		while(null != (node = rg.layout.Graphs.findSink(map))) {
-			map.remove(node.vertex);
-			layers[0].push(node);
-		}
-		var $it0 = map.keys();
-		while( $it0.hasNext() ) {
-			var v = $it0.next();
-			node = graph.get(v);
-			var pos = this.distanceToASink(node,graph), layer = layers[pos];
-			if(null == layer) layer = layers[pos] = [];
-			layer.push(node);
-		}
-		layers.reverse();
-		return layers;
-	}
-	,distanceToASink: function(node,graph) {
-		var child;
-		var traverse = (function($this) {
-			var $r;
-			var traverse = null;
-			traverse = function(arr,lvl) {
-				var max = lvl;
-				if(lvl > Hashes.count(graph)) return lvl;
-				var _g = 0;
-				while(_g < arr.length) {
-					var v = arr[_g];
-					++_g;
-					child = graph.get(v);
-					if(child.edgesp.length == 0 && child.edgesn.length > 0) continue; else max = Ints.max(max,traverse(child.edgesp,lvl + 1));
-				}
-				return max;
-			};
-			$r = traverse;
-			return $r;
-		}(this));
-		return traverse(node.edgesp,1);
-	}
-	,__class__: rg.layout.LongestPathLayer
-}
 rg.data.VariableDependent = $hxClasses["rg.data.VariableDependent"] = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 }
@@ -16472,39 +17078,6 @@ rg.view.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 rg.view.svg.chart.ColorScaleModes.prototype = {
 	__class__: rg.view.svg.chart.ColorScaleModes
 }
-rg.layout.TwoCycleRemover = $hxClasses["rg.layout.TwoCycleRemover"] = function() {
-}
-rg.layout.TwoCycleRemover.__name__ = ["rg","layout","TwoCycleRemover"];
-rg.layout.TwoCycleRemover.prototype = {
-	edges: null
-	,remove: function(edges) {
-		this.edges = edges;
-		var i = 0, edge, removed = [];
-		while(i < edges.length) {
-			edge = edges[i];
-			if(this.removeEdge(edge.b,edge.a)) removed.push({ a : edge.b, b : edge.a});
-			i++;
-		}
-		return removed;
-	}
-	,removeEdge: function(a,b) {
-		var pos = -1;
-		var _g1 = 0, _g = this.edges.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(a != this.edges[i].a || b != this.edges[i].b) continue;
-			pos = i;
-			break;
-		}
-		return this.removeEdgeAt(pos);
-	}
-	,removeEdgeAt: function(pos) {
-		if(pos < 0) return false;
-		this.edges.splice(pos,1);
-		return true;
-	}
-	,__class__: rg.layout.TwoCycleRemover
-}
 rg.view.frame.Frame = $hxClasses["rg.view.frame.Frame"] = function() {
 	this.x = this.y = this.width = this.height = 0;
 }
@@ -16585,7 +17158,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 		this.chart.data(layout);
 	}
 	,layoutMap: function(map) {
-		var sugiyama = new rg.layout.SugiyamaMethod(), vertices = [], edges = [];
+		var sugiyama = null, vertices = [], edges = [];
 		Iterators.each(map.iterator(),function(node,_) {
 			vertices.push(node.id);
 			var _g = 0, _g1 = node.children;
@@ -16595,7 +17168,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				edges.push({ a : node.id, b : child.id});
 			}
 		});
-		var glayout = sugiyama.resolve(vertices,edges), gmap = rg.layout.Graphs.toMap(glayout);
+		var glayout = null, gmap = rg.graph.Graphs.toMap(glayout);
 		var layout = [], tmap;
 		var _g1 = 0, _g = glayout.length;
 		while(_g1 < _g) {
@@ -16622,7 +17195,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 						var dst = _g5[_g4];
 						++_g4;
 						var id = dst;
-						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesp[0];
+						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesp[0];
 						nnode.children.push({ id : dst, weight : tmap.get(id)});
 					}
 					tmap = new Hash();
@@ -16637,18 +17210,18 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 						var dst = _g5[_g4];
 						++_g4;
 						var id = dst;
-						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
+						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
 						nnode.parents.push({ id : dst, weight : tmap.get(id)});
 					}
 				} else {
 					var dstid = gnode.edgesp[0];
-					while(rg.layout.Graphs.isDummy(dstid)) dstid = gmap.get(dstid).edgesp[0];
+					while(rg.graph.Graphs.isDummy(dstid)) dstid = gmap.get(dstid).edgesp[0];
 					var _g4 = 0, _g5 = gnode.edgesn;
 					while(_g4 < _g5.length) {
 						var src = _g5[_g4];
 						++_g4;
 						var id = src;
-						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
+						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
 						var parent = map.get(id);
 						var _g6 = 0, _g7 = parent.children;
 						while(_g6 < _g7.length) {
@@ -17612,7 +18185,7 @@ rg.data.source.rgquery.transform.TransformIntersectTime.prototype = {
 				var i = _g2++;
 				var p = Dynamics.clone(properties);
 				Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-				Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[this.periodicity != "minute" && this.periodicity != "hour"?Dates.snap(arr[i][0].timestamp,this.periodicity):arr[i][0].timestamp,arr[i][1]]);
+				Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[i][0].timestamp),arr[i][1]]);
 				p.event = this.event;
 				result.push(p);
 			}
@@ -18200,6 +18773,55 @@ thx.json.JsonEncoder.prototype = {
 	}
 	,__class__: thx.json.JsonEncoder
 }
+rg.graph.SugiyamaMethod = $hxClasses["rg.graph.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
+	var id = 0;
+	this.partitioner = null == partitioner?new rg.graph.GreedyCyclePartitioner():partitioner;
+	this.layer = null == layer?new rg.graph.LongestPathLayer():layer;
+	this.splitter = null == splitter?new rg.graph.EdgeSplitter():splitter;
+	this.decrosser = null == decrosser?rg.graph.GreedySwitchDecrosser.best():decrosser;
+}
+rg.graph.SugiyamaMethod.__name__ = ["rg","graph","SugiyamaMethod"];
+rg.graph.SugiyamaMethod.prototype = {
+	partitioner: null
+	,layer: null
+	,splitter: null
+	,decrosser: null
+	,resolve: function(graph,splitf) {
+		var onecycles = new rg.graph.OneCycleRemover().remove(graph), twocycles = new rg.graph.TwoCycleRemover().remove(graph);
+		var partitions = this.partitioner.partition(graph), reversed = (partitions.left.length > partitions.right.length?partitions.right:partitions.left).map(function(edge,_) {
+			var ob = { tail : edge.tail, head : edge.head};
+			edge.invert();
+			return ob;
+		});
+		var layers = this.layer.lay(graph);
+		var layout = new rg.graph.GraphLayout(graph,layers);
+		layout = this.splitter.split(layout,splitf);
+		layout = this.decrosser.decross(layout);
+		var _g = 0;
+		while(_g < reversed.length) {
+			var item = reversed[_g];
+			++_g;
+			var path = layout.graph.directedPath(item.head,item.tail);
+			path.forEach(function(edge,_) {
+				edge.invert();
+			});
+		}
+		var _g = 0;
+		while(_g < twocycles.length) {
+			var item = twocycles[_g];
+			++_g;
+			layout.graph.edges.create(item.tail,item.head,item.data,item.weight);
+		}
+		var _g = 0;
+		while(_g < onecycles.length) {
+			var item = onecycles[_g];
+			++_g;
+			layout.graph.edges.create(item.node,item.node,item.data,item.weight);
+		}
+		return layout;
+	}
+	,__class__: rg.graph.SugiyamaMethod
+}
 thx.svg.Area = $hxClasses["thx.svg.Area"] = function(x,y0,y1,interpolator) {
 	this._x = x;
 	this._y0 = y0;
@@ -18470,6 +19092,38 @@ Reflect.makeVarArgs = function(f) {
 Reflect.prototype = {
 	__class__: Reflect
 }
+rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
+}
+rg.graph.EdgeSplitter.__name__ = ["rg","graph","EdgeSplitter"];
+rg.graph.EdgeSplitter.prototype = {
+	split: function(layout,splitf) {
+		var layers = layout.layers(), cell, ocell;
+		if(null == splitf) splitf = function(_,_1,_2) {
+		};
+		var $it0 = layout.graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			cell = layout.cell(node);
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				ocell = layout.cell(edge.head);
+				if(cell.layer == ocell.layer) continue;
+				if(cell.layer == ocell.layer - 1) continue;
+				if(cell.layer == ocell.layer + 1) continue;
+				var sign = [cell.layer < ocell.layer?1:-1], diff = Ints.abs(ocell.layer - cell.layer) - 1;
+				edge.split(diff,(function(sign) {
+					return function(ea,eb,i) {
+						layers[cell.layer + (1 + i) * sign[0]].push(ea.head.id);
+						splitf(ea,eb,i);
+					};
+				})(sign));
+			}
+		}
+		return new rg.graph.GraphLayout(layout.graph,layers);
+	}
+	,__class__: rg.graph.EdgeSplitter
+}
 var Hashes = $hxClasses["Hashes"] = function() { }
 Hashes.__name__ = ["Hashes"];
 Hashes.toDynamic = function(hash) {
@@ -18699,7 +19353,7 @@ rg.data.source.rgquery.transform.TransformTimeSeriesValues.prototype = {
 		var me = this;
 		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
 		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event",me.unitvalue],[d.count[0].timestamp,d.count[1],event,d.value]);
+			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event",me.unitvalue],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(periodicity,d.count[0].timestamp),d.count[1],event,d.value]);
 			return p;
 		});
 		return result;
@@ -19097,50 +19751,56 @@ thx.svg.LineInterpolators.argument = function(s) {
 thx.svg.LineInterpolators.prototype = {
 	__class__: thx.svg.LineInterpolators
 }
-rg.layout.GreedySwitchDecrosser = $hxClasses["rg.layout.GreedySwitchDecrosser"] = function() {
+rg.graph.GraphNodes = $hxClasses["rg.graph.GraphNodes"] = function(graph,nodeidf) {
+	rg.graph.GraphCollection.call(this,graph,nodeidf);
 }
-rg.layout.GreedySwitchDecrosser.__name__ = ["rg","layout","GreedySwitchDecrosser"];
-rg.layout.GreedySwitchDecrosser.composed = function() {
-	return { decross : function(layout) {
-		new rg.layout.GreedySwitchDecrosser().decross(layout);
-		new rg.layout.GreedySwitch2Decrosser().decross(layout);
-	}};
+rg.graph.GraphNodes.__name__ = ["rg","graph","GraphNodes"];
+rg.graph.GraphNodes.newInstance = function(graph,nodeidf) {
+	return new rg.graph.GraphNodes(graph,nodeidf);
 }
-rg.layout.GreedySwitchDecrosser.prototype = {
-	decross: function(layout) {
-		if(layout.length <= 1) return;
-		var len = layout.length - 1;
-		var totbefore, crossings;
-		do {
-			totbefore = rg.layout.Graphs.layoutCrossings(layout);
-			var _g = 0;
-			while(_g < len) {
-				var i = _g++;
-				var a = layout[i], b = layout[i + 1];
-				this.decrossPair(a,b);
-			}
-			crossings = rg.layout.Graphs.layoutCrossings(layout);
-		} while(totbefore > crossings);
+rg.graph.GraphNodes.__super__ = rg.graph.GraphCollection;
+rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
+	copyTo: function(graph) {
+		var nodes = new rg.graph.GraphNodes(graph);
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			nodes._create(node.id,node.data);
+		}
+		nodes.nextid = this.nextid;
+		return nodes;
 	}
-	,decrossPair: function(a,b) {
-		var tot = rg.layout.Graphs.crossings(a,b), ntot = tot, t;
-		do {
-			tot = ntot;
-			var _g1 = 0, _g = b.length - 1;
-			while(_g1 < _g) {
-				var i = _g1++;
-				this.swap(b,i);
-				if((t = rg.layout.Graphs.crossings(a,b)) >= ntot) this.swap(b,i); else ntot = t;
-			}
-		} while(ntot < tot);
+	,create: function(data) {
+		return this._create(++this.nextid,data);
 	}
-	,swap: function(a,pos) {
-		var v = a[pos];
-		a[pos] = a[pos + 1];
-		a[pos + 1] = v;
+	,_create: function(id,data) {
+		var n = rg.graph.GNode.create(this.graph,id,data);
+		this.collectionAdd(n);
+		return n;
 	}
-	,__class__: rg.layout.GreedySwitchDecrosser
-}
+	,remove: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "rg.graph.GraphNodes", methodName : "remove"});
+		this._remove(node);
+	}
+	,_remove: function(node) {
+		this.graph.edges.unlink(node);
+		this.collectionRemove(node);
+		node.destroy();
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
+	,toString: function() {
+		return "GraphNodes (" + IntHashes.count(this.collection) + "): " + rg.graph.GraphCollection.prototype.toString.call(this);
+	}
+	,__class__: rg.graph.GraphNodes
+});
 thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
 	this.length = 0;
 	this.__keys = [];
@@ -19725,6 +20385,14 @@ thx.js.AccessDataHtml.prototype = $extend(thx.js.AccessHtml.prototype,{
 });
 var Iterators = $hxClasses["Iterators"] = function() { }
 Iterators.__name__ = ["Iterators"];
+Iterators.count = function(it) {
+	var i = 0;
+	while( it.hasNext() ) {
+		var _ = it.next();
+		i++;
+	}
+	return i;
+}
 Iterators.indexOf = function(it,v,f) {
 	if(null == f) f = function(v2) {
 		return v == v2;
@@ -19769,6 +20437,14 @@ Iterators.each = function(it,f) {
 		var o = it.next();
 		f(o,i++);
 	}
+}
+Iterators.filter = function(it,f) {
+	var result = [];
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) result.push(i);
+	}
+	return result;
 }
 Iterators.reduce = function(it,f,initialValue) {
 	var accumulator = initialValue, i = 0;
@@ -20582,43 +21258,6 @@ rg.view.svg.chart.StreamEffects.parse = function(s) {
 rg.view.svg.chart.StreamEffects.prototype = {
 	__class__: rg.view.svg.chart.StreamEffects
 }
-rg.layout.GreedySwitch2Decrosser = $hxClasses["rg.layout.GreedySwitch2Decrosser"] = function() {
-	rg.layout.GreedySwitchDecrosser.call(this);
-}
-rg.layout.GreedySwitch2Decrosser.__name__ = ["rg","layout","GreedySwitch2Decrosser"];
-rg.layout.GreedySwitch2Decrosser.__super__ = rg.layout.GreedySwitchDecrosser;
-rg.layout.GreedySwitch2Decrosser.prototype = $extend(rg.layout.GreedySwitchDecrosser.prototype,{
-	decross: function(layout) {
-		if(layout.length <= 1) return;
-		var len = layout.length - 1;
-		var totbefore, crossings;
-		do {
-			totbefore = rg.layout.Graphs.layoutCrossings(layout);
-			var _g = 0;
-			while(_g < len) {
-				var i = _g++;
-				var a = layout[i - 1], b = layout[i], c = layout[i + 1];
-				this.decrossTriplet(a,b,c);
-			}
-			crossings = rg.layout.Graphs.layoutCrossings(layout);
-		} while(totbefore > crossings);
-	}
-	,decrossTriplet: function(a,b,c) {
-		if(null == a) this.decrossPair(b,c); else if(null == c) this.decrossPair(a,b); else {
-			var tot = rg.layout.Graphs.crossings(a,b) + rg.layout.Graphs.crossings(b,c), ntot = tot, t;
-			do {
-				tot = ntot;
-				var _g1 = 0, _g = b.length - 1;
-				while(_g1 < _g) {
-					var i = _g1++;
-					this.swap(b,i);
-					if((t = rg.layout.Graphs.crossings(a,b) + rg.layout.Graphs.crossings(b,c)) >= tot) this.swap(b,i); else ntot = t;
-				}
-			} while(ntot < tot);
-		}
-	}
-	,__class__: rg.layout.GreedySwitch2Decrosser
-});
 var Lambda = $hxClasses["Lambda"] = function() { }
 Lambda.__name__ = ["Lambda"];
 Lambda.array = function(it) {
@@ -22967,6 +23606,7 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+rg.graph.Graphs.id = 0;
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
 rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 rg.track.Tracker.PREFIX = "rgv_";
@@ -23062,7 +23702,6 @@ rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPa
 rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/renderer/v1/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
-rg.layout.Graphs.id = 0;
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");

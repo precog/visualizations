@@ -79,6 +79,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 	override function data(dps : Array<Array<Array<DataPoint>>>)
 	{
+		trace(dps);
 		var values = dps.length,
 			axisgs = new Hash(),
 			discrete, scaledist = ScaleDistribution.ScaleFill,

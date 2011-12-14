@@ -1,4 +1,4 @@
-package rg.layout;
+package rg.graph;
 
 class GraphElement<TData, TNodeData, TEdgeData>
 {

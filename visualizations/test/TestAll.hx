@@ -18,10 +18,19 @@ class TestAll
 		runner.addCase(new rg.controller.info.TestInfoVariable());
 		runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
 
-		runner.addCase(new rg.layout.TestGraph());
-		runner.addCase(new rg.layout.TestNode());
-		runner.addCase(new rg.layout.TestEdge());
-		runner.addCase(new rg.layout.TestSugiyamaMethod());
+		runner.addCase(new rg.graph.TestGraph());
+		runner.addCase(new rg.graph.TestGraphCollection());
+		runner.addCase(new rg.graph.TestNode());
+		runner.addCase(new rg.graph.TestEdge());
+		runner.addCase(new rg.graph.TestOneCycleRemover());
+		runner.addCase(new rg.graph.TestTwoCycleRemover());
+		runner.addCase(new rg.graph.TestEdgeSplitter());
+		runner.addCase(new rg.graph.TestGreedySwitchDecrosser());
+
+		runner.addCase(new rg.graph.TestGreedyCyclePartitioner());
+		runner.addCase(new rg.graph.TestLongestPathLayer());
+
+		runner.addCase(new rg.graph.TestSugiyamaMethod());
 //		runner.addCase(new rg.data.TestAxisOrdinal());
 //		runner.addCase(new rg.data.TestDataProcessor());
 //		runner.addCase(new rg.data.TestAxisGroupByTime());

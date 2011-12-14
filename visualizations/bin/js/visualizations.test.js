@@ -351,6 +351,238 @@ utest.ui.Report.create = function(runner,displaySuccessResults,headerDisplayMode
 utest.ui.Report.prototype = {
 	__class__: utest.ui.Report
 }
+if(!rg.graph) rg.graph = {}
+rg.graph.Graphs = $hxClasses["rg.graph.Graphs"] = function() { }
+rg.graph.Graphs.__name__ = ["rg","graph","Graphs"];
+rg.graph.Graphs.crossings = function(a,b) {
+	var map = new Hash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i].vertex,i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = a[i];
+		var _g2 = 0, _g3 = n1.edgesp;
+		while(_g2 < _g3.length) {
+			var dst1 = _g3[_g2];
+			++_g2;
+			var p1 = map.get(dst1);
+			if(null == p1) continue;
+			var _g5 = i + 1, _g4 = a.length;
+			while(_g5 < _g4) {
+				var j = _g5++;
+				var n2 = a[j];
+				var _g6 = 0, _g7 = n2.edgesp;
+				while(_g6 < _g7.length) {
+					var dst2 = _g7[_g6];
+					++_g6;
+					var p2 = map.get(dst2);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.graph.Graphs.layoutCrossings = function(a) {
+	var tot = 0;
+	var _g1 = 0, _g = a.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		tot += rg.graph.Graphs.crossings(a[i],a[i + 1]);
+	}
+	return tot;
+}
+rg.graph.Graphs.toMap = function(layout) {
+	var map = new Hash();
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			map.set(layout[i][j].vertex,layout[i][j]);
+		}
+	}
+	return map;
+}
+rg.graph.Graphs.toVertices = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			result.push(layout[i][j].vertex);
+		}
+	}
+	return result;
+}
+rg.graph.Graphs.toEdges = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			var v = layout[i][j].vertex;
+			var _g4 = 0, _g5 = layout[i][j].edgesp;
+			while(_g4 < _g5.length) {
+				var c = _g5[_g4];
+				++_g4;
+				result.push({ a : v, b : c});
+			}
+		}
+	}
+	return result;
+}
+rg.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
+	var n = null, l = 0;
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		var diff = node.edgesp.length - node.edgesn.length;
+		if(null == n || l < diff) {
+			n = node;
+			l = diff;
+		}
+	}
+	return n;
+}
+rg.graph.Graphs.isSink = function(node) {
+	return node.edgesp.length == 0 && node.edgesn.length > 0;
+}
+rg.graph.Graphs.isSource = function(node) {
+	return node.edgesn.length == 0 && node.edgesp.length == 0;
+}
+rg.graph.Graphs.findSink = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findSource = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findAllIsolated = function(graph) {
+	var isolated = [];
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
+	}
+	return isolated;
+}
+rg.graph.Graphs.addConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,b,a);
+	if(null != path && path.every(function(v,i) {
+		return i == 0 || i == path.length - 1 || rg.graph.Graphs.isDummy(v);
+	})) {
+		path.reverse();
+		rg.graph.Graphs.addConnections(graph,path);
+	} else rg.graph.Graphs.addConnections(graph,[a,b]);
+}
+rg.graph.Graphs.addConnections = function(graph,arr) {
+	var _g1 = 0, _g = arr.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a = arr[i], b = arr[i + 1];
+		graph.get(a).edgesp.push(b);
+		graph.get(b).edgesp.push(a);
+	}
+}
+rg.graph.Graphs.reverseConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,a,b);
+	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 168, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 169, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	if(null == path) return false;
+	var _g1 = 0, _g = path.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
+		na.edgesp.remove(b1);
+		na.edgesn.push(b1);
+		nb.edgesn.remove(a1);
+		nb.edgesp.push(a1);
+	}
+	return true;
+}
+rg.graph.Graphs.findPath = function(graph,a,b) {
+	var traveled = new thx.collection.Set(), paths = [], t, r;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(path,n) {
+			var totraverse = [];
+			var _g = 0, _g1 = n.edgesn;
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				if(parent == a) return path.concat([a]); else if(rg.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,a2) {
+					return function() {
+						return f(a1,a2);
+					};
+				})(traverse,path.concat([parent]),t));
+			}
+			var _g = 0;
+			while(_g < totraverse.length) {
+				var t1 = totraverse[_g];
+				++_g;
+				if(null != (r = t1())) return r;
+			}
+			return null;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	var p = traverse([b],graph.get(b));
+	if(null == p) return null;
+	p.reverse();
+	return p;
+}
+rg.graph.Graphs.isDummy = function(v) {
+	return v.substr(0,1) == "#";
+}
+rg.graph.Graphs.createDummy = function(a,b,lvl) {
+	return "#" + ++rg.graph.Graphs.id;
+}
+rg.graph.Graphs.removeNode = function(graph,node) {
+	graph.remove(node.vertex);
+}
+rg.graph.Graphs.addNode = function(graph,node) {
+	graph.set(node.vertex,node);
+}
+rg.graph.Graphs.clone = function(graph) {
+	var o = new Hash();
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		rg.graph.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.copy(), edgesp : node.edgesp.copy()});
+	}
+	return o;
+}
+rg.graph.Graphs.empty = function(graph) {
+	return Hashes.count(graph) == 0;
+}
+rg.graph.Graphs.count = function(graph) {
+	return Hashes.count(graph);
+}
+rg.graph.Graphs.prototype = {
+	__class__: rg.graph.Graphs
+}
 if(!rg.controller) rg.controller = {}
 if(!rg.controller.visualization) rg.controller.visualization = {}
 rg.controller.visualization.Visualization = $hxClasses["rg.controller.visualization.Visualization"] = function(container) {
@@ -743,6 +975,9 @@ rg.data.source.rgquery.transform.TransformTimeSeries = $hxClasses["rg.data.sourc
 }
 rg.data.source.rgquery.transform.TransformTimeSeries.__name__ = ["rg","data","source","rgquery","transform","TransformTimeSeries"];
 rg.data.source.rgquery.transform.TransformTimeSeries.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp = function(periodicity,value) {
+	return periodicity != "minute" && periodicity != "hour"?Dates.snap(value,periodicity):value;
+}
 rg.data.source.rgquery.transform.TransformTimeSeries.prototype = {
 	properties: null
 	,unit: null
@@ -751,7 +986,7 @@ rg.data.source.rgquery.transform.TransformTimeSeries.prototype = {
 	,transform: function(data) {
 		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
 		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0].timestamp,d[1],event]);
+			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(periodicity,d[0].timestamp),d[1],event]);
 			return p;
 		});
 		return result;
@@ -1067,7 +1302,10 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 		this.chart = chart;
 	}
 	,transformData: function(dps) {
+		haxe.Log.trace(dps,{ fileName : "VisualizationBarChart.hx", lineNumber : 49, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
 		var results = [], variable = this.independentVariables[0], values = variable.axis.range(variable.min(),variable.max());
+		haxe.Log.trace(variable,{ fileName : "VisualizationBarChart.hx", lineNumber : 53, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
+		haxe.Log.trace(values,{ fileName : "VisualizationBarChart.hx", lineNumber : 54, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
 		var _g = 0;
 		while(_g < values.length) {
 			var value = [values[_g]];
@@ -1085,6 +1323,7 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 			}
 			results.push(axisresults);
 		}
+		haxe.Log.trace(results,{ fileName : "VisualizationBarChart.hx", lineNumber : 65, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
 		return results;
 	}
 	,__class__: rg.controller.visualization.VisualizationBarChart
@@ -1102,6 +1341,104 @@ rg.util.TestProperties.prototype = {
 	}
 	,__class__: rg.util.TestProperties
 }
+rg.graph.TestBaseGraph = $hxClasses["rg.graph.TestBaseGraph"] = function() {
+}
+rg.graph.TestBaseGraph.__name__ = ["rg","graph","TestBaseGraph"];
+rg.graph.TestBaseGraph.prototype = {
+	graph: null
+	,setup: function() {
+		this.graph = new rg.graph.Graph();
+	}
+	,__class__: rg.graph.TestBaseGraph
+}
+rg.graph.TestNode = $hxClasses["rg.graph.TestNode"] = function() {
+	rg.graph.TestBaseGraph.call(this);
+}
+rg.graph.TestNode.__name__ = ["rg","graph","TestNode"];
+rg.graph.TestNode.__super__ = rg.graph.TestBaseGraph;
+rg.graph.TestNode.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
+	testId: function() {
+		var node = this.graph.nodes.create();
+		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestNode.hx", lineNumber : 10, className : "rg.graph.TestNode", methodName : "testId"});
+	}
+	,testCount: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 15, className : "rg.graph.TestNode", methodName : "testCount"});
+		var node = this.graph.nodes.create();
+		utest.Assert.equals(1,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 17, className : "rg.graph.TestNode", methodName : "testCount"});
+		this.graph.nodes.remove(node);
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 19, className : "rg.graph.TestNode", methodName : "testCount"});
+	}
+	,testDestroy: function() {
+		var node = this.graph.nodes.create();
+		this.graph.nodes.remove(node);
+		utest.Assert.isNull(node.graph,null,{ fileName : "TestNode.hx", lineNumber : 26, className : "rg.graph.TestNode", methodName : "testDestroy"});
+		utest.Assert.isTrue(node.id < 0,null,{ fileName : "TestNode.hx", lineNumber : 27, className : "rg.graph.TestNode", methodName : "testDestroy"});
+	}
+	,testClear: function() {
+		var node = this.graph.nodes.create();
+		this.graph.nodes.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 34, className : "rg.graph.TestNode", methodName : "testClear"});
+	}
+	,testIsConnectedTo: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.isConnectedTo(n2),null,{ fileName : "TestNode.hx", lineNumber : 41, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		utest.Assert.isFalse(n2.isConnectedTo(n1),null,{ fileName : "TestNode.hx", lineNumber : 42, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isTrue(n1.isConnectedTo(n2),null,{ fileName : "TestNode.hx", lineNumber : 44, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		utest.Assert.isTrue(n2.isConnectedTo(n1),null,{ fileName : "TestNode.hx", lineNumber : 45, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		this.graph.edges.remove(e);
+		utest.Assert.isFalse(n1.isConnectedTo(n2),null,{ fileName : "TestNode.hx", lineNumber : 47, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		utest.Assert.isFalse(n2.isConnectedTo(n1),null,{ fileName : "TestNode.hx", lineNumber : 48, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+	}
+	,testIsDirectSuccessorPredecessor: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.isPredecessorOf(n2),null,{ fileName : "TestNode.hx", lineNumber : 55, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		utest.Assert.isFalse(n2.isSuccessorOf(n1),null,{ fileName : "TestNode.hx", lineNumber : 56, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isTrue(n1.isPredecessorOf(n2),null,{ fileName : "TestNode.hx", lineNumber : 58, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		utest.Assert.isTrue(n2.isSuccessorOf(n1),null,{ fileName : "TestNode.hx", lineNumber : 59, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		this.graph.edges.remove(e);
+		utest.Assert.isFalse(n1.isPredecessorOf(n2),null,{ fileName : "TestNode.hx", lineNumber : 61, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		utest.Assert.isFalse(n2.isSuccessorOf(n1),null,{ fileName : "TestNode.hx", lineNumber : 62, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+	}
+	,testIsSinkOrSource: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.isSink(),null,{ fileName : "TestNode.hx", lineNumber : 69, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+		utest.Assert.isFalse(n1.isSource(),null,{ fileName : "TestNode.hx", lineNumber : 70, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isTrue(n1.isSource(),null,{ fileName : "TestNode.hx", lineNumber : 72, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+		utest.Assert.isTrue(n2.isSink(),null,{ fileName : "TestNode.hx", lineNumber : 73, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+	}
+	,testIsIsolated: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isTrue(n1.isIsolated(),null,{ fileName : "TestNode.hx", lineNumber : 80, className : "rg.graph.TestNode", methodName : "testIsIsolated"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isFalse(n1.isIsolated(),null,{ fileName : "TestNode.hx", lineNumber : 82, className : "rg.graph.TestNode", methodName : "testIsIsolated"});
+	}
+	,testEdges: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.graph.edges.edges(n1).hasNext(),null,{ fileName : "TestNode.hx", lineNumber : 89, className : "rg.graph.TestNode", methodName : "testEdges"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,n1.graph.edges.edgeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 91, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(1,n1.graph.edges.positiveCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 92, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(0,n1.graph.edges.negativeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 93, className : "rg.graph.TestNode", methodName : "testEdges"});
+		var e1 = this.graph.edges.create(n2,n1);
+		utest.Assert.equals(2,n1.graph.edges.edgeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 95, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(1,n1.graph.edges.positiveCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 96, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(1,n1.graph.edges.negativeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 97, className : "rg.graph.TestNode", methodName : "testEdges"});
+	}
+	,testEdgeRemoval: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), n3 = this.graph.nodes.create(), n4 = this.graph.nodes.create(), n5 = this.graph.nodes.create();
+		this.graph.edges.create(n2,n1);
+		this.graph.edges.create(n3,n1);
+		this.graph.edges.create(n4,n1);
+		this.graph.edges.create(n5,n1);
+		utest.Assert.equals(4,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestNode.hx", lineNumber : 112, className : "rg.graph.TestNode", methodName : "testEdgeRemoval"});
+		n1.graph.nodes._remove(n1);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestNode.hx", lineNumber : 116, className : "rg.graph.TestNode", methodName : "testEdgeRemoval"});
+	}
+	,__class__: rg.graph.TestNode
+});
 if(!rg.view.svg.panel) rg.view.svg.panel = {}
 rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
 	this.frame = (this.panel = panel).frame;
@@ -1530,6 +1867,24 @@ rg.controller.info.InfoFunnelChart.prototype = {
 	,arrowSize: null
 	,__class__: rg.controller.info.InfoFunnelChart
 }
+rg.graph.OneCycleRemover = $hxClasses["rg.graph.OneCycleRemover"] = function() {
+}
+rg.graph.OneCycleRemover.__name__ = ["rg","graph","OneCycleRemover"];
+rg.graph.OneCycleRemover.prototype = {
+	remove: function(graph) {
+		var edge, result = [];
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			edge = node.predecessorBy(node);
+			if(null == edge) continue;
+			result.push({ node : node, weight : edge.weight, data : edge.data});
+			edge.graph.edges._remove(edge);
+		}
+		return result;
+	}
+	,__class__: rg.graph.OneCycleRemover
+}
 rg.data.Stats = $hxClasses["rg.data.Stats"] = function(sortf) {
 	this.sortf = sortf;
 	this.reset();
@@ -1621,120 +1976,6 @@ rg.controller.info.TestInfoVisualizationOption.prototype = {
 	}
 	,__class__: rg.controller.info.TestInfoVisualizationOption
 }
-if(!rg.layout) rg.layout = {}
-rg.layout.GraphCollection = $hxClasses["rg.layout.GraphCollection"] = function(graph) {
-	this.nextid = 0;
-	this.graph = graph;
-	this.collection = new IntHash();
-}
-rg.layout.GraphCollection.__name__ = ["rg","layout","GraphCollection"];
-rg.layout.GraphCollection.prototype = {
-	graph: null
-	,collection: null
-	,nextid: null
-	,length: null
-	,get: function(id) {
-		return this.collection.get(id);
-	}
-	,get_length: function() {
-		return IntHashes.count(this.collection);
-	}
-	,collectionAdd: function(item) {
-		this.collection.set(item.id,item);
-	}
-	,collectionRemove: function(item) {
-		this.collection.remove(item.id);
-	}
-	,iterator: function() {
-		return this.collection.iterator();
-	}
-	,__class__: rg.layout.GraphCollection
-	,__properties__: {get_length:"get_length"}
-}
-rg.layout.GraphEdges = $hxClasses["rg.layout.GraphEdges"] = function(graph) {
-	rg.layout.GraphCollection.call(this,graph);
-	this.edgesp = new IntHash();
-	this.edgesn = new IntHash();
-}
-rg.layout.GraphEdges.__name__ = ["rg","layout","GraphEdges"];
-rg.layout.GraphEdges.newInstance = function(graph) {
-	return new rg.layout.GraphEdges(graph);
-}
-rg.layout.GraphEdges.__super__ = rg.layout.GraphCollection;
-rg.layout.GraphEdges.prototype = $extend(rg.layout.GraphCollection.prototype,{
-	edgesp: null
-	,edgesn: null
-	,copyTo: function(graph) {
-		var edges = new rg.layout.GraphEdges(graph), nodes = graph.nodes, head, tail;
-		var $it0 = this.collection.iterator();
-		while( $it0.hasNext() ) {
-			var edge = $it0.next();
-			head = nodes.get(edge.head.id);
-			tail = nodes.get(edge.tail.id);
-			edges._create(edge.id,head,tail,edge.data);
-		}
-		edges.nextid = this.nextid;
-		return edges;
-	}
-	,create: function(head,tail,data) {
-		if(head.graph != tail.graph || head.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 38, className : "rg.layout.GraphEdges", methodName : "create"});
-		return this._create(++this.nextid,head,tail,data);
-	}
-	,_create: function(id,head,tail,data) {
-		var e = rg.layout.GEdge.create(this.graph,id,head,tail,data);
-		this.collectionAdd(e);
-		this.connections(head.id,this.edgesp).push(id);
-		this.connections(tail.id,this.edgesn).push(id);
-		return e;
-	}
-	,remove: function(edge) {
-		if(edge.graph != this.graph) throw new thx.error.Error("the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 54, className : "rg.layout.GraphEdges", methodName : "remove"});
-		this.collectionRemove(edge);
-		edge.destroy();
-	}
-	,unlink: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 62, className : "rg.layout.GraphEdges", methodName : "unlink"});
-		this._unlink(node,this.edgesp);
-		this._unlink(node,this.edgesn);
-	}
-	,unlinkPositives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 70, className : "rg.layout.GraphEdges", methodName : "unlinkPositives"});
-		this._unlink(node,this.edgesp);
-	}
-	,unlinkNegatives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 77, className : "rg.layout.GraphEdges", methodName : "unlinkNegatives"});
-		this._unlink(node,this.edgesn);
-	}
-	,_unlink: function(node,connections) {
-		var ids = connections.get(node.id);
-		if(null == ids) return;
-		var _g = 0;
-		while(_g < ids.length) {
-			var id = ids[_g];
-			++_g;
-			var edge = this.get(id);
-			if(null == edge) continue;
-			this.remove(edge);
-		}
-		connections.remove(node.id);
-	}
-	,clear: function() {
-		var $it0 = this.collection.iterator();
-		while( $it0.hasNext() ) {
-			var item = $it0.next();
-			this.remove(item);
-		}
-	}
-	,connections: function(id,connections) {
-		var c = connections.get(id);
-		if(null == c) connections.set(id,c = []);
-		return c;
-	}
-	,toString: function() {
-		return "GraphEdges (" + IntHashes.count(this.collection) + ")";
-	}
-	,__class__: rg.layout.GraphEdges
-});
 if(!thx.culture) thx.culture = {}
 thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
@@ -3301,12 +3542,32 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 	,__class__: rg.view.svg.chart.ScatterGraph
 });
 rg.view.svg.widget.Map = $hxClasses["rg.view.svg.widget.Map"] = function(container,projection) {
+	var me = this;
 	this.g = container.append("svg:g").attr("class").string("map");
 	this.projection = projection;
 	this.map = new Hash();
+	this.ready = false;
 	this.onReady = new hxevents.Notifier();
+	this.onReady.addOnce(function() {
+		me.ready = true;
+	});
 }
 rg.view.svg.widget.Map.__name__ = ["rg","view","svg","widget","Map"];
+rg.view.svg.widget.Map.loadJsonp = function(url,handler) {
+	var api = ReportGrid.$.Http.Jsonp.get;
+	api(url,{ success : handler});
+}
+rg.view.svg.widget.Map.loadJsonAjax = function(url,handler) {
+	var http = new haxe.Http(url);
+	http.onData = function(data) {
+		var json = thx.json.Json.decode(data);
+		handler(json);
+	};
+	http.onError = function(err) {
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.view.svg.widget.Map", methodName : "loadJsonAjax"});
+	};
+	http.request(false);
+}
 rg.view.svg.widget.Map.prototype = {
 	className: null
 	,map: null
@@ -3316,37 +3577,34 @@ rg.view.svg.widget.Map.prototype = {
 	,labelDataPointOver: null
 	,radius: null
 	,colorMode: null
+	,ready: null
+	,mapping: null
 	,projection: null
 	,g: null
-	,load: function(path,type,usejsonp) {
+	,load: function(path,type,mappingurl,usejsonp) {
 		switch(type) {
 		case "geojson":
-			this.loadGeoJson(path,usejsonp);
+			this.loadGeoJson(path,mappingurl,usejsonp);
 			break;
 		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 53, className : "rg.view.svg.widget.Map", methodName : "load"});
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 57, className : "rg.view.svg.widget.Map", methodName : "load"});
 		}
 	}
-	,loadGeoJson: function(path,usejsonp) {
-		if(usejsonp) this.loadGeoJsonJsonp(path); else this.loadGeoJsonAjax(path);
-	}
-	,loadGeoJsonJsonp: function(path) {
-		var api = ReportGrid.$.Http.Jsonp.get;
-		api(path,{ success : this.draw.$bind(this)});
-	}
-	,loadGeoJsonAjax: function(path) {
+	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
 		var me = this;
-		var http = new haxe.Http(path);
-		http.onData = function(data) {
-			var json = thx.json.Json.decode(data);
-			me.draw(json);
-		};
-		http.onError = function(err) {
-			throw new thx.error.Error("unable to load GeoJSON file '{0}': {1}",[path,err],null,{ fileName : "Map.hx", lineNumber : 79, className : "rg.view.svg.widget.Map", methodName : "loadGeoJsonAjax"});
-		};
-		http.request(false);
+		var load = usejsonp?rg.view.svg.widget.Map.loadJsonp:rg.view.svg.widget.Map.loadJsonAjax;
+		if(null == mappingurl) load(geourl,this.draw.$bind(this)); else load(mappingurl,function(m) {
+			me.mapping = m;
+			load(geourl,me.draw.$bind(me));
+		});
 	}
 	,draw: function(json) {
+		var me = this;
+		var id = null != this.mapping?function(s) {
+			return Reflect.hasField(me.mapping,s)?Reflect.field(me.mapping,s):s;
+		}:function(s) {
+			return s;
+		};
 		var path = new thx.svg.PathGeoJson();
 		path.setProjection(this.projection);
 		switch(json.type) {
@@ -3358,7 +3616,7 @@ rg.view.svg.widget.Map.prototype = {
 				var dp = { };
 				dp["#centroid"] = centroid;
 				dp["#data"] = feature.properties;
-				if(null != feature.id) this.map.set(feature.id,{ svg : p, dp : dp});
+				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
 				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,a1) {
 					return function(a2,a3) {
 						return f(a1,a2,a3);
@@ -3372,7 +3630,7 @@ rg.view.svg.widget.Map.prototype = {
 			}
 			break;
 		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 119, className : "rg.view.svg.widget.Map", methodName : "draw"});
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.view.svg.widget.Map", methodName : "draw"});
 			break;
 		default:
 			this.g.append("svg:path").attr("d").string(path.path(json));
@@ -3897,10 +4155,10 @@ thx.js.AccessDataProperty.prototype = $extend(thx.js.AccessProperty.prototype,{
 	,__class__: thx.js.AccessDataProperty
 });
 rg.controller.info.InfoMap = $hxClasses["rg.controller.info.InfoMap"] = function() {
-	this.property = "#location";
+	this.property = "location";
 	this.type = "geojson";
 	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
-	this.usejson = true;
+	this.usejsonp = true;
 	this.radius = function(_,_1) {
 		return 10;
 	};
@@ -3919,7 +4177,7 @@ rg.controller.info.InfoMap.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "translate", validator : function(v) {
 		return Std["is"](v,Array);
-	}, filter : null},{ field : "original", validator : function(v) {
+	}, filter : null},{ field : "origin", validator : function(v) {
 		return Std["is"](v,Array);
 	}, filter : null},{ field : "parallels", validator : function(v) {
 		return Std["is"](v,Array);
@@ -3949,6 +4207,10 @@ rg.controller.info.InfoMap.filters = function() {
 		return [{ field : "radius", value : Std["is"](v,Float)?function(_,_1) {
 			return v;
 		}:v}];
+	}},{ field : "mapping", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		if(Std["is"](v,String)) return [{ field : "mappingurl", value : v}]; else return [{ field : "mapping", value : v}];
 	}}];
 }
 rg.controller.info.InfoMap.isValidTemplate = function(t) {
@@ -3967,7 +4229,7 @@ rg.controller.info.InfoMap.fromTemplate = function(t) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 175, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
+			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 194, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
 			return $r;
 		}(this));
 	}
@@ -3987,7 +4249,9 @@ rg.controller.info.InfoMap.prototype = {
 	,click: null
 	,radius: null
 	,colorScaleMode: null
-	,usejson: null
+	,usejsonp: null
+	,mapping: null
+	,mappingurl: null
 	,__class__: rg.controller.info.InfoMap
 }
 thx.culture.FormatNumber = $hxClasses["thx.culture.FormatNumber"] = function() { }
@@ -4385,6 +4649,41 @@ Std.random = function(x) {
 }
 Std.prototype = {
 	__class__: Std
+}
+rg.graph.TestGreedySwitchDecrosser = $hxClasses["rg.graph.TestGreedySwitchDecrosser"] = function() {
+}
+rg.graph.TestGreedySwitchDecrosser.__name__ = ["rg","graph","TestGreedySwitchDecrosser"];
+rg.graph.TestGreedySwitchDecrosser.generate = function() {
+	var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), n4 = graph.nodes.create(), n5 = graph.nodes.create(), n6 = graph.nodes.create(), n7 = graph.nodes.create(), n8 = graph.nodes.create(), n9 = graph.nodes.create(), n10 = graph.nodes.create(), n11 = graph.nodes.create(), n12 = graph.nodes.create();
+	graph.edges.create(n1,n6);
+	graph.edges.create(n2,n5);
+	graph.edges.create(n3,n4);
+	graph.edges.create(n4,n8);
+	graph.edges.create(n5,n7);
+	graph.edges.create(n6,n7);
+	graph.edges.create(n7,n11);
+	graph.edges.create(n8,n10);
+	graph.edges.create(n8,n12);
+	return new rg.graph.GraphLayout(graph,[[n1.id,n2.id,n3.id],[n4.id,n5.id,n6.id],[n7.id,n8.id,n9.id],[n10.id,n11.id,n12.id]]);
+}
+rg.graph.TestGreedySwitchDecrosser.prototype = {
+	testDecrosser1: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = new rg.graph.GreedySwitchDecrosser().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 13, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosser1"});
+	}
+	,testDecrosser2: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = new rg.graph.GreedySwitch2Decrosser().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 20, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosser2"});
+	}
+	,testDecrosserCombined: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = rg.graph.GreedySwitchDecrosser.combined().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 27, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosserCombined"});
+	}
+	,testDecrosserBest: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = rg.graph.GreedySwitchDecrosser.best().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 34, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosserBest"});
+	}
+	,__class__: rg.graph.TestGreedySwitchDecrosser
 }
 js.Lib = $hxClasses["js.Lib"] = function() { }
 js.Lib.__name__ = ["js","Lib"];
@@ -4887,6 +5186,19 @@ rg.view.html.widget.DownloaderPosition.Before.__enum__ = rg.view.html.widget.Dow
 rg.view.html.widget.DownloaderPosition.After = ["After",6];
 rg.view.html.widget.DownloaderPosition.After.toString = $estr;
 rg.view.html.widget.DownloaderPosition.After.__enum__ = rg.view.html.widget.DownloaderPosition;
+rg.graph.TestLongestPathLayer = $hxClasses["rg.graph.TestLongestPathLayer"] = function() {
+}
+rg.graph.TestLongestPathLayer.__name__ = ["rg","graph","TestLongestPathLayer"];
+rg.graph.TestLongestPathLayer.prototype = {
+	testLayer: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), n4 = graph.nodes.create(), n5 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n2,n3), e3 = graph.edges.create(n1,n4), e4 = graph.edges.create(n3,n5), layout = new rg.graph.LongestPathLayer().lay(graph);
+		utest.Assert.equals(3,layout.length,null,{ fileName : "TestLongestPathLayer.hx", lineNumber : 22, className : "rg.graph.TestLongestPathLayer", methodName : "testLayer"});
+		utest.Assert.equals(2,Arrays.floatMax(layout,function(arr) {
+			return arr.length;
+		}),null,{ fileName : "TestLongestPathLayer.hx", lineNumber : 23, className : "rg.graph.TestLongestPathLayer", methodName : "testLayer"});
+	}
+	,__class__: rg.graph.TestLongestPathLayer
+}
 rg.controller.info.InfoTrack = $hxClasses["rg.controller.info.InfoTrack"] = function() {
 	this.enabled = false;
 	this.token = rg.RGConst.TRACKING_TOKEN;
@@ -4946,6 +5258,22 @@ rg.data.AxisOrdinalStats.prototype = $extend(rg.data.AxisOrdinal.prototype,{
 	}
 	,__class__: rg.data.AxisOrdinalStats
 });
+rg.graph.TestEdgeSplitter = $hxClasses["rg.graph.TestEdgeSplitter"] = function() {
+}
+rg.graph.TestEdgeSplitter.__name__ = ["rg","graph","TestEdgeSplitter"];
+rg.graph.TestEdgeSplitter.prototype = {
+	testSplit: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n1,n3), layout = new rg.graph.GraphLayout(graph,[[n1.id],[],[n2.id],[n3.id]]);
+		var newlayout = new rg.graph.EdgeSplitter().split(layout).layers();
+		utest.Assert.equals(5,IntHashes.count(graph.edges.collection),null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 20, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(4,newlayout.length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 21, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(1,newlayout[0].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 22, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(2,newlayout[1].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 23, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(2,newlayout[2].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 24, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(1,newlayout[3].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 25, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+	}
+	,__class__: rg.graph.TestEdgeSplitter
+}
 rg.data.Tickmarks = $hxClasses["rg.data.Tickmarks"] = function() { }
 rg.data.Tickmarks.__name__ = ["rg","data","Tickmarks"];
 rg.data.Tickmarks.bound = function(tickmarks,max) {
@@ -4998,6 +5326,17 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 }
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
+}
+rg.graph.TestTwoCycleRemover = $hxClasses["rg.graph.TestTwoCycleRemover"] = function() {
+}
+rg.graph.TestTwoCycleRemover.__name__ = ["rg","graph","TestTwoCycleRemover"];
+rg.graph.TestTwoCycleRemover.prototype = {
+	testRemover: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n2,n1), e3 = graph.edges.create(n1,n3), e4 = graph.edges.create(n3,n1), e5 = graph.edges.create(n2,n3), remover = new rg.graph.TwoCycleRemover(), removed = remover.remove(graph);
+		utest.Assert.equals(2,removed.length,null,{ fileName : "TestTwoCycleRemover.hx", lineNumber : 25, className : "rg.graph.TestTwoCycleRemover", methodName : "testRemover"});
+		utest.Assert.equals(3,IntHashes.count(graph.edges.collection),null,{ fileName : "TestTwoCycleRemover.hx", lineNumber : 26, className : "rg.graph.TestTwoCycleRemover", methodName : "testRemover"});
+	}
+	,__class__: rg.graph.TestTwoCycleRemover
 }
 utest.ui.common.IReport = $hxClasses["utest.ui.common.IReport"] = function() { }
 utest.ui.common.IReport.__name__ = ["utest","ui","common","IReport"];
@@ -5288,6 +5627,65 @@ utest.ui.text.HtmlReport.prototype = {
 	}
 	,__class__: utest.ui.text.HtmlReport
 }
+rg.graph.GreedySwitchDecrosser = $hxClasses["rg.graph.GreedySwitchDecrosser"] = function() {
+}
+rg.graph.GreedySwitchDecrosser.__name__ = ["rg","graph","GreedySwitchDecrosser"];
+rg.graph.GreedySwitchDecrosser.combined = function() {
+	return { decross : function(layout) {
+		layout = new rg.graph.GreedySwitchDecrosser().decross(layout);
+		return new rg.graph.GreedySwitch2Decrosser().decross(layout);
+	}};
+}
+rg.graph.GreedySwitchDecrosser.best = function() {
+	return { decross : function(layout) {
+		var attempts = [new rg.graph.GreedySwitchDecrosser().decross(layout),new rg.graph.GreedySwitch2Decrosser().decross(layout),rg.graph.GreedySwitchDecrosser.combined().decross(layout)];
+		return Arrays.min(attempts,function(layout1) {
+			return layout1.crossings();
+		});
+	}};
+}
+rg.graph.GreedySwitchDecrosser.prototype = {
+	decross: function(layout) {
+		var layers = layout.layers(), graph = layout.graph, newlayers, newlayout = layout;
+		if(layers.length <= 1) return new rg.graph.GraphLayout(layout.graph,layers);
+		var totbefore, crossings, len = layers.length - 1, a, b;
+		do {
+			newlayers = layers.map(function(arr,_) {
+				return arr.copy();
+			});
+			newlayout = new rg.graph.GraphLayout(graph,layers);
+			totbefore = newlayout.crossings();
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				a = newlayers[i];
+				b = newlayers[i + 1];
+				this.decrossPair(graph,a,b);
+			}
+			crossings = new rg.graph.GraphLayout(graph,newlayers).crossings();
+			layers = newlayers;
+		} while(totbefore > crossings);
+		return newlayout;
+	}
+	,decrossPair: function(graph,a,b) {
+		var tot = rg.graph.GraphLayout.arrayCrossings(graph,a,b), ntot = tot, t;
+		do {
+			tot = ntot;
+			var _g1 = 0, _g = b.length - 1;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.swap(b,i);
+				if((t = rg.graph.GraphLayout.arrayCrossings(graph,a,b)) >= ntot) this.swap(b,i); else ntot = t;
+			}
+		} while(ntot < tot);
+	}
+	,swap: function(a,pos) {
+		var v = a[pos];
+		a[pos] = a[pos + 1];
+		a[pos + 1] = v;
+	}
+	,__class__: rg.graph.GreedySwitchDecrosser
+}
 rg.view.html.widget.PivotTable = $hxClasses["rg.view.html.widget.PivotTable"] = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
@@ -5315,10 +5713,12 @@ rg.view.html.widget.PivotTable.prototype = {
 	,stats: null
 	,labelDataPoint: function(dp,stats) {
 		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
 		return thx.culture.FormatNumber["int"](v);
 	}
 	,labelDataPointOver: function(dp,stats) {
 		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
 		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
 	}
 	,labelAxis: function(v) {
@@ -5667,6 +6067,7 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		}
 	}
 	,data: function(dps) {
+		haxe.Log.trace(dps,{ fileName : "BarChart.hx", lineNumber : 82, className : "rg.view.svg.chart.BarChart", methodName : "data"});
 		var values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
 		if(null != (discrete = Types["as"](this.xVariable.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - this.padding * (values - 1)) / values; else span = (this.width - this.padding * (values - 1)) / values;
 		var getGroup = function(name,container) {
@@ -5817,7 +6218,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.3026"};
+	r.info.viz = { version : "1.1.5.3677"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5976,6 +6377,71 @@ rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
 rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
 rg.view.frame.Orientation.Horizontal.toString = $estr;
 rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
+rg.graph.GreedyCyclePartitioner = $hxClasses["rg.graph.GreedyCyclePartitioner"] = function() {
+}
+rg.graph.GreedyCyclePartitioner.__name__ = ["rg","graph","GreedyCyclePartitioner"];
+rg.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative = function(graph) {
+	var n = null, l = 0;
+	var $it0 = graph.nodes.collection.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		var diff = node.graph.edges.positiveCount(node) - node.graph.edges.negativeCount(node);
+		if(null == n || l < diff) {
+			n = node;
+			l = diff;
+		}
+	}
+	return n;
+}
+rg.graph.GreedyCyclePartitioner.prototype = {
+	partition: function(graph) {
+		var left = [], right = [], clone = graph.clone(), n;
+		while(!(Iterators.count(clone.nodes.iterator()) == 0)) {
+			while(null != (n = clone.findSink())) {
+				var $it0 = n.graph.edges.negatives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					right.unshift(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+			var _g = 0, _g1 = clone.findIsolateds();
+			while(_g < _g1.length) {
+				var isolated = _g1[_g];
+				++_g;
+				isolated.graph.nodes._remove(isolated);
+			}
+			while(null != (n = clone.findSource())) {
+				var $it1 = n.graph.edges.positives(n);
+				while( $it1.hasNext() ) {
+					var edge = $it1.next();
+					left.push(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+			if(!(Iterators.count(clone.nodes.iterator()) == 0)) {
+				n = rg.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative(clone);
+				var $it2 = n.graph.edges.negatives(n);
+				while( $it2.hasNext() ) {
+					var edge = $it2.next();
+					right.unshift(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				var $it3 = n.graph.edges.positives(n);
+				while( $it3.hasNext() ) {
+					var edge = $it3.next();
+					left.push(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+		}
+		return { left : left, right : right};
+	}
+	,__class__: rg.graph.GreedyCyclePartitioner
+}
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	this.months = months;
@@ -6356,41 +6822,6 @@ hxevents.Dispatcher.prototype = {
 	}
 	,__class__: hxevents.Dispatcher
 }
-rg.layout.TestBaseGraph = $hxClasses["rg.layout.TestBaseGraph"] = function() {
-}
-rg.layout.TestBaseGraph.__name__ = ["rg","layout","TestBaseGraph"];
-rg.layout.TestBaseGraph.prototype = {
-	graph: null
-	,setup: function() {
-		this.graph = new rg.layout.Graph();
-	}
-	,__class__: rg.layout.TestBaseGraph
-}
-rg.layout.TestGraph = $hxClasses["rg.layout.TestGraph"] = function() {
-	rg.layout.TestBaseGraph.call(this);
-}
-rg.layout.TestGraph.__name__ = ["rg","layout","TestGraph"];
-rg.layout.TestGraph.__super__ = rg.layout.TestBaseGraph;
-rg.layout.TestGraph.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
-	testClone: function() {
-		var n1 = this.graph.nodes.create(10), n2 = this.graph.nodes.create(20), e = this.graph.edges.create(n1,n2,30), clone = this.graph.clone();
-		utest.Assert.isTrue(n1 != clone.nodes.get(n1.id),null,{ fileName : "TestGraph.hx", lineNumber : 14, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.notNull(clone.nodes.get(n1.id),null,{ fileName : "TestGraph.hx", lineNumber : 15, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(n1.data,clone.nodes.get(n1.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 17, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(n2.data,clone.nodes.get(n2.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 18, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(e.data,clone.edges.get(e.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 19, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(this.graph.nodes.create().id,clone.nodes.create().id,null,{ fileName : "TestGraph.hx", lineNumber : 21, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(this.graph.edges.create(n2,n1).id,clone.edges.create(clone.nodes.get(n1.id),clone.nodes.get(n2.id)).id,null,{ fileName : "TestGraph.hx", lineNumber : 22, className : "rg.layout.TestGraph", methodName : "testClone"});
-		this.graph.clear();
-		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 28, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(3,IntHashes.count(clone.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 29, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 31, className : "rg.layout.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(2,IntHashes.count(clone.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 32, className : "rg.layout.TestGraph", methodName : "testClone"});
-	}
-	,testPath: function() {
-	}
-	,__class__: rg.layout.TestGraph
-});
 rg.data.source.rgquery.transform.TransformStatisticTime = $hxClasses["rg.data.source.rgquery.transform.TransformStatisticTime"] = function(properties,fields,event,periodicity,unit) {
 	this.properties = properties;
 	this.unit = unit;
@@ -6415,7 +6846,7 @@ rg.data.source.rgquery.transform.TransformStatisticTime.prototype = {
 			var arr = data[_g];
 			++_g;
 			var p = Dynamics.clone(properties);
-			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[this.periodicity != "minute" && this.periodicity != "hour"?Dates.snap(arr[0].timestamp,this.periodicity):arr[0].timestamp,arr[1]]);
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[0].timestamp),arr[1]]);
 			p.event = this.event;
 			result.push(p);
 		}
@@ -7257,48 +7688,6 @@ rg.view.svg.util.SymbolCache.prototype = {
 	}
 	,__class__: rg.view.svg.util.SymbolCache
 }
-rg.layout.GraphElement = $hxClasses["rg.layout.GraphElement"] = function(graph,id,data) {
-	this.id = id;
-	this.data = data;
-	this.graph = graph;
-}
-rg.layout.GraphElement.__name__ = ["rg","layout","GraphElement"];
-rg.layout.GraphElement.friendDestroy = function(item) {
-	return item;
-}
-rg.layout.GraphElement.prototype = {
-	graph: null
-	,id: null
-	,data: null
-	,destroy: function() {
-		this.graph = null;
-		this.id = -1;
-	}
-	,__class__: rg.layout.GraphElement
-}
-rg.layout.GEdge = $hxClasses["rg.layout.GEdge"] = function(graph,id,head,tail,data) {
-	rg.layout.GraphElement.call(this,graph,id,data);
-	this.edges = graph.edges;
-	this.head = head;
-	this.tail = tail;
-}
-rg.layout.GEdge.__name__ = ["rg","layout","GEdge"];
-rg.layout.GEdge.create = function(graph,id,head,tail,data) {
-	return new rg.layout.GEdge(graph,id,head,tail,data);
-}
-rg.layout.GEdge.__super__ = rg.layout.GraphElement;
-rg.layout.GEdge.prototype = $extend(rg.layout.GraphElement.prototype,{
-	edges: null
-	,head: null
-	,tail: null
-	,destroy: function() {
-		rg.layout.GraphElement.prototype.destroy.call(this);
-		this.edges = null;
-		this.head = null;
-		this.tail = null;
-	}
-	,__class__: rg.layout.GEdge
-});
 if(!thx.translation) thx.translation = {}
 thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
@@ -7308,6 +7697,129 @@ thx.translation.ITranslation.prototype = {
 	,__: null
 	,__class__: thx.translation.ITranslation
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
+}
+rg.graph.GraphLayout = $hxClasses["rg.graph.GraphLayout"] = function(graph,layers) {
+	var me = this;
+	this.graph = graph;
+	this._layers = layers.map(function(arr,_) {
+		return arr.copy();
+	});
+	this.friendCell = this._cell = new rg.graph.LayoutCell();
+	this._map = new IntHash();
+	this.each(function(cell,node) {
+		me._map.set(node.id,[cell.layer,cell.position]);
+	});
+}
+rg.graph.GraphLayout.__name__ = ["rg","graph","GraphLayout"];
+rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
+	var map = new IntHash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i],i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = graph.nodes.get(a[i]);
+		var $it0 = n1.graph.edges.positives(n1);
+		while( $it0.hasNext() ) {
+			var edge1 = $it0.next();
+			var p1 = map.get(edge1.head.id);
+			if(null == p1) continue;
+			var _g3 = i + 1, _g2 = a.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var n2 = graph.nodes.get(a[j]);
+				var $it1 = n2.graph.edges.positives(n2);
+				while( $it1.hasNext() ) {
+					var edge2 = $it1.next();
+					var p2 = map.get(edge2.head.id);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.graph.GraphLayout.prototype = {
+	graph: null
+	,_layers: null
+	,_cell: null
+	,_map: null
+	,friendCell: null
+	,each: function(f) {
+		var layers = this._layers.length, positions;
+		var _g = 0;
+		while(_g < layers) {
+			var layer = _g++;
+			positions = this._layers[layer].length;
+			var _g1 = 0;
+			while(_g1 < positions) {
+				var position = _g1++;
+				this.friendCell.update(layer,position,layers,positions);
+				f(this._cell,this.graph.nodes.get(this._layers[layer][position]));
+			}
+		}
+	}
+	,cell: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 43, className : "rg.graph.GraphLayout", methodName : "cell"});
+		var pos = this._map.get(node.id);
+		if(null == pos) return null;
+		return new rg.graph.LayoutCell(pos[0],pos[1],this._layers.length,this._layers[pos[0]].length);
+	}
+	,nodeAt: function(layer,position) {
+		var arr = this._layers[layer];
+		if(null == arr) return null;
+		var id = arr[position];
+		if(null == id) return null;
+		return this.graph.nodes.get(id);
+	}
+	,layers: function() {
+		var result = [];
+		var _g = 0, _g1 = this._layers;
+		while(_g < _g1.length) {
+			var arr = _g1[_g];
+			++_g;
+			result.push(arr.copy());
+		}
+		return result;
+	}
+	,crossings: function() {
+		var tot = 0;
+		var _g1 = 0, _g = this._layers.length - 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			tot += rg.graph.GraphLayout.arrayCrossings(this.graph,this._layers[i],this._layers[i + 1]);
+		}
+		return tot;
+	}
+	,__class__: rg.graph.GraphLayout
+}
+rg.graph.LayoutCell = $hxClasses["rg.graph.LayoutCell"] = function(layer,position,layers,positions) {
+	if(positions == null) positions = 0;
+	if(layers == null) layers = 0;
+	if(position == null) position = 0;
+	if(layer == null) layer = 0;
+	this.layer = layer;
+	this.layers = layers;
+	this.position = position;
+	this.positions = positions;
+}
+rg.graph.LayoutCell.__name__ = ["rg","graph","LayoutCell"];
+rg.graph.LayoutCell.prototype = {
+	layer: null
+	,position: null
+	,layers: null
+	,positions: null
+	,update: function(layer,position,layers,positions) {
+		this.layer = layer;
+		this.layers = layers;
+		this.position = position;
+		this.positions = positions;
+	}
+	,__class__: rg.graph.LayoutCell
 }
 if(!thx.svg) thx.svg = {}
 thx.svg.Diagonal = $hxClasses["thx.svg.Diagonal"] = function() {
@@ -7393,6 +7905,191 @@ rg.data.IDataSource.prototype = {
 	,load: null
 	,__class__: rg.data.IDataSource
 }
+rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(graph,idf) {
+	var me = this;
+	this.nextid = 0;
+	this.graph = graph;
+	this.idf = idf;
+	this.collection = new IntHash();
+	this.map = new Hash();
+	if(null != idf) {
+		var add = this.collectionAdd.$bind(this);
+		this.collectionAdd = function(item) {
+			me.map.set(idf(item.data),item);
+			add(item);
+		};
+		var rem = this.collectionRemove.$bind(this);
+		this.collectionRemove = function(item) {
+			me.map.remove(idf(item.data));
+			rem(item);
+		};
+	}
+}
+rg.graph.GraphCollection.__name__ = ["rg","graph","GraphCollection"];
+rg.graph.GraphCollection.prototype = {
+	graph: null
+	,collection: null
+	,nextid: null
+	,idf: null
+	,map: null
+	,length: null
+	,getById: function(id) {
+		return this.map.get(id);
+	}
+	,get: function(id) {
+		return this.collection.get(id);
+	}
+	,has: function(item) {
+		return item.graph == this.graph && this.collection.exists(item.id);
+	}
+	,get_length: function() {
+		return IntHashes.count(this.collection);
+	}
+	,collectionAdd: function(item) {
+		this.collection.set(item.id,item);
+	}
+	,collectionRemove: function(item) {
+		this.collection.remove(item.id);
+	}
+	,iterator: function() {
+		return this.collection.iterator();
+	}
+	,toString: function() {
+		return Iterators.map(this.collection.iterator(),function(item,_) {
+			return Std.string(item);
+		}).join(", ");
+	}
+	,__class__: rg.graph.GraphCollection
+	,__properties__: {get_length:"get_length"}
+}
+rg.graph.GraphEdges = $hxClasses["rg.graph.GraphEdges"] = function(graph,edgeidf) {
+	rg.graph.GraphCollection.call(this,graph,edgeidf);
+	this.edgesp = new IntHash();
+	this.edgesn = new IntHash();
+}
+rg.graph.GraphEdges.__name__ = ["rg","graph","GraphEdges"];
+rg.graph.GraphEdges.newInstance = function(graph,edgeidf) {
+	return new rg.graph.GraphEdges(graph,edgeidf);
+}
+rg.graph.GraphEdges.__super__ = rg.graph.GraphCollection;
+rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
+	edgesp: null
+	,edgesn: null
+	,copyTo: function(graph) {
+		var edges = new rg.graph.GraphEdges(graph), nodes = graph.nodes, tail, head;
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			tail = nodes.get(edge.tail.id);
+			head = nodes.get(edge.head.id);
+			edges._create(edge.id,tail,head,edge.weight,edge.data);
+		}
+		edges.nextid = this.nextid;
+		return edges;
+	}
+	,create: function(tail,head,data,weight) {
+		if(weight == null) weight = 1.0;
+		if(tail.graph != head.graph || tail.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 39, className : "rg.graph.GraphEdges", methodName : "create"});
+		return this._create(++this.nextid,tail,head,weight,data);
+	}
+	,_create: function(id,tail,head,weight,data) {
+		var e = rg.graph.GEdge.create(this.graph,id,tail,head,weight,data);
+		this.collectionAdd(e);
+		this.connections(tail.id,this.edgesp).push(id);
+		this.connections(head.id,this.edgesn).push(id);
+		return e;
+	}
+	,remove: function(edge) {
+		if(edge.graph != this.graph) throw new thx.error.Error("remove: the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 55, className : "rg.graph.GraphEdges", methodName : "remove"});
+		this._remove(edge);
+	}
+	,_remove: function(edge) {
+		this.collectionRemove(edge);
+		this.removeConnection(edge.id,edge.tail.id,this.edgesp);
+		this.removeConnection(edge.id,edge.head.id,this.edgesn);
+		edge.destroy();
+	}
+	,unlink: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlink: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 70, className : "rg.graph.GraphEdges", methodName : "unlink"});
+		this._unlink(node,this.edgesp);
+		this._unlink(node,this.edgesn);
+	}
+	,positives: function(node) {
+		return this._edges(node.id,this.edgesp).iterator();
+	}
+	,negatives: function(node) {
+		return this._edges(node.id,this.edgesn).iterator();
+	}
+	,edges: function(node) {
+		return this._edges(node.id,this.edgesp).concat(this._edges(node.id,this.edgesn)).iterator();
+	}
+	,positiveCount: function(node) {
+		return this._edgeids(node.id,this.edgesp).length;
+	}
+	,negativeCount: function(node) {
+		return this._edgeids(node.id,this.edgesn).length;
+	}
+	,edgeCount: function(node) {
+		return this._edgeids(node.id,this.edgesp).length + this._edgeids(node.id,this.edgesn).length;
+	}
+	,_edgeids: function(id,collection) {
+		var r = collection.get(id);
+		if(null == r) r = [];
+		return r;
+	}
+	,_edges: function(id,collection) {
+		var me = this;
+		return this._edgeids(id,collection).map(function(eid,_) {
+			return me.get(eid);
+		});
+	}
+	,unlinkPositives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 121, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
+		this._unlink(node,this.edgesp);
+	}
+	,unlinkNegatives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 128, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
+		this._unlink(node,this.edgesn);
+	}
+	,_unlink: function(node,connections) {
+		var ids = connections.get(node.id);
+		if(null == ids) return;
+		ids = ids.copy();
+		var _g = 0;
+		while(_g < ids.length) {
+			var id = ids[_g];
+			++_g;
+			var edge = this.get(id);
+			if(null == edge || null == edge.graph) continue;
+			this._remove(edge);
+		}
+		connections.remove(node.id);
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
+	,connections: function(id,connections) {
+		var c = connections.get(id);
+		if(null == c) connections.set(id,c = []);
+		return c;
+	}
+	,removeConnection: function(edgeid,nodeid,connections) {
+		var c = connections.get(nodeid);
+		if(null == c) return;
+		c.remove(edgeid);
+		if(c.length == 0) connections.remove(nodeid);
+	}
+	,toString: function() {
+		return "GraphEdges (" + IntHashes.count(this.collection) + "): " + rg.graph.GraphCollection.prototype.toString.call(this);
+	}
+	,__class__: rg.graph.GraphEdges
+});
 rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
 	this.label = new rg.controller.info.InfoLabel();
 	this.idproperty = "id";
@@ -7413,12 +8110,6 @@ rg.controller.info.InfoSankey.prototype = {
 	,weightproperty: null
 	,parentsproperty: null
 	,__class__: rg.controller.info.InfoSankey
-}
-rg.layout.TestSugiyamaMethod = $hxClasses["rg.layout.TestSugiyamaMethod"] = function() {
-}
-rg.layout.TestSugiyamaMethod.__name__ = ["rg","layout","TestSugiyamaMethod"];
-rg.layout.TestSugiyamaMethod.prototype = {
-	__class__: rg.layout.TestSugiyamaMethod
 }
 var haxe = haxe || {}
 if(!haxe.io) haxe.io = {}
@@ -8142,66 +8833,11 @@ utest.TestResult.prototype = {
 	}
 	,__class__: utest.TestResult
 }
-rg.layout.GreedyCyclePartitioner = $hxClasses["rg.layout.GreedyCyclePartitioner"] = function() {
-}
-rg.layout.GreedyCyclePartitioner.__name__ = ["rg","layout","GreedyCyclePartitioner"];
-rg.layout.GreedyCyclePartitioner.prototype = {
-	partition: function(graph) {
-		var left = [], right = [], id;
-		var n;
-		graph = rg.layout.Graphs.clone(graph);
-		while(!(Hashes.count(graph) == 0)) {
-			while(null != (n = rg.layout.Graphs.findSink(graph))) {
-				var _g = 0, _g1 = n.edgesn;
-				while(_g < _g1.length) {
-					var negative = _g1[_g];
-					++_g;
-					right.unshift({ a : negative, b : n.vertex});
-					graph.get(negative).edgesp.remove(n.vertex);
-				}
-				graph.remove(n.vertex);
-			}
-			var _g = 0, _g1 = rg.layout.Graphs.findAllIsolated(graph);
-			while(_g < _g1.length) {
-				var isolated = _g1[_g];
-				++_g;
-				graph.remove(isolated.vertex);
-			}
-			while(null != (n = rg.layout.Graphs.findSource(graph))) {
-				var _g = 0, _g1 = n.edgesp;
-				while(_g < _g1.length) {
-					var positive = _g1[_g];
-					++_g;
-					left.push({ a : n.vertex, b : positive});
-					graph.get(positive).edgesn.remove(n.vertex);
-				}
-				graph.remove(n.vertex);
-			}
-			if(!(Hashes.count(graph) == 0)) {
-				n = rg.layout.Graphs.findMaxPositiveOverNegative(graph);
-				var _g = 0, _g1 = n.edgesn;
-				while(_g < _g1.length) {
-					var negative = _g1[_g];
-					++_g;
-					right.unshift({ a : negative, b : n.vertex});
-					graph.get(negative).edgesp.remove(n.vertex);
-				}
-				var _g = 0, _g1 = n.edgesp;
-				while(_g < _g1.length) {
-					var positive = _g1[_g];
-					++_g;
-					left.push({ a : n.vertex, b : positive});
-					graph.get(positive).edgesn.remove(n.vertex);
-				}
-				graph.remove(n.vertex);
-			}
-		}
-		return { left : left, right : right};
-	}
-	,__class__: rg.layout.GreedyCyclePartitioner
-}
 var Iterables = $hxClasses["Iterables"] = function() { }
 Iterables.__name__ = ["Iterables"];
+Iterables.count = function(it) {
+	return Iterators.count(it.iterator());
+}
 Iterables.indexOf = function(it,v,f) {
 	return Iterators.indexOf(it.iterator(),v,f);
 }
@@ -8216,6 +8852,9 @@ Iterables.map = function(it,f) {
 }
 Iterables.each = function(it,f) {
 	return Iterators.each(it.iterator(),f);
+}
+Iterables.filter = function(it,f) {
+	return Iterators.filter(it.iterator(),f);
 }
 Iterables.reduce = function(it,f,initialValue) {
 	return Iterators.reduce(it.iterator(),f,initialValue);
@@ -8900,163 +9539,6 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
-rg.layout.SugiyamaMethod = $hxClasses["rg.layout.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
-	var id = 0;
-	this.partitioner = null == partitioner?new rg.layout.GreedyCyclePartitioner():partitioner;
-	this.layer = null == layer?new rg.layout.LongestPathLayer():layer;
-	this.splitter = null == splitter?new rg.layout.EdgeSpliter():splitter;
-	this.decrosser = null == decrosser?rg.layout.GreedySwitchDecrosser.composed():decrosser;
-}
-rg.layout.SugiyamaMethod.__name__ = ["rg","layout","SugiyamaMethod"];
-rg.layout.SugiyamaMethod.createMap = function(vertices,edges) {
-	var map = new Hash();
-	var _g = 0;
-	while(_g < vertices.length) {
-		var v = vertices[_g];
-		++_g;
-		map.set(v,{ vertex : v, edgesn : [], edgesp : []});
-	}
-	var _g = 0;
-	while(_g < edges.length) {
-		var edge = edges[_g];
-		++_g;
-		map.get(edge.a).edgesp.push(edge.b);
-		map.get(edge.b).edgesn.push(edge.a);
-	}
-	return map;
-}
-rg.layout.SugiyamaMethod.drawGraph = function(graph,layout) {
-	var vertices = Iterators.array(graph.keys()), edges = Arrays.flatten(Iterators.map(graph.iterator(),function(n,_) {
-		return n.edgesp.map(function(dst,_1) {
-			return { a : n.vertex, b : dst};
-		});
-	}));
-	rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-}
-rg.layout.SugiyamaMethod.draw = function(vertices,edges,layout) {
-	var map = new Hash(), grid = 16, padding = 25, r = 5, size = 400, rand = new thx.math.Random(6724095);
-	var el = thx.js.Dom.select("body").append("svg:svg").attr("width")["float"](size).attr("height")["float"](size).style("margin").string("4px");
-	el.append("svg:defs").append("svg:marker").attr("id").string("Triangle").attr("viewBox").string("0 0 10 10").attr("refX").string("" + (r + 8)).attr("refY").string("5").attr("markerUnits").string("strokeWidth").attr("markerWidth").string("4").attr("markerHeight").string("6").attr("orient").string("auto").append("svg:path").attr("d").string("M 0 0 L 10 5 L 0 10 z");
-	el.append("svg:rect").attr("x")["float"](0).attr("y")["float"](0).attr("width")["float"](size).attr("height")["float"](size).attr("fill").string("#eeeeee").attr("stroke").string("blue").attr("stroke-width")["float"](4);
-	var pos = function(v) {
-		return Math.floor(v * grid);
-	};
-	var loc = function(v) {
-		return padding + (size - padding * 2) / (grid - 1) * v;
-	};
-	var x = function(id) {
-		return loc(map.get(id).x);
-	};
-	var y = function(id) {
-		return loc(map.get(id).y);
-	};
-	if(null != layout) {
-		grid = layout.length;
-		var _g1 = 0, _g = layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(layout[i].length > grid) grid = layout[i].length;
-			var _g3 = 0, _g2 = layout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				map.set(layout[i][j].vertex,{ x : i, y : j});
-			}
-		}
-	} else {
-		var slots = Ints.range(grid).map(function(_,_1) {
-			return Ints.range(grid).map(function(_2,_3) {
-				return null;
-			});
-		});
-		map = new Hash();
-		vertices.forEach(function(v,_) {
-			var x1 = 0, y1 = 0;
-			while(true) {
-				x1 = pos(((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0);
-				y1 = pos(((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0);
-				if(slots[x1][y1] == null) {
-					slots[x1][y1] = true;
-					break;
-				}
-			}
-			map.set(v,{ x : x1, y : y1});
-		});
-	}
-	el.selectAll("circle").data(vertices).enter().append("svg:circle").attr("cx").floatf(function(v,_) {
-		return x(v);
-	}).attr("cy").floatf(function(v,_) {
-		return y(v);
-	}).attr("r").floatf(function(v,_) {
-		return v.substr(0,1) == "#"?0:r;
-	});
-	el.selectAll("path.edge").data(edges).enter().append("svg:path").attr("class").string("edge").attr("class").stringf(function(e,_) {
-		return e.a + "-" + e.b;
-	}).attr("stroke").stringf(function(e,_) {
-		return thx.color.Rgb.interpolateRainbow(new thx.math.Random(Std.parseInt(e.a) * 1631486 + Std.parseInt(e.b) * 936)["float"]()).hex("#");
-	}).attr("opacity")["float"](0.75).attr("stroke-width")["float"](2).attr("d").stringf(function(e,_) {
-		return "M" + x(e.a) + "," + y(e.a) + "L" + x(e.b) + "," + y(e.b);
-	}).attr("marker-end").stringf(function(e,_) {
-		return e.b.substr(0,1) == "#"?"":"url(#Triangle)";
-	});
-	el.selectAll("text").data(vertices).enter().append("svg:text").text().stringf(function(v,_) {
-		return v;
-	}).attr("text-anchor").string("middle").attr("transform").stringf(function(v,_) {
-		return "translate(" + x(v) + "," + (y(v) - 7) + ")";
-	}).attr("fill").string("#666").style("font-weight").stringf(function(v,_) {
-		return v.substr(0,1) == "#"?"normal":"bold";
-	}).style("font-size-adjust").floatf(function(v,_) {
-		return v.substr(0,1) == "#"?.4:.5;
-	});
-}
-rg.layout.SugiyamaMethod.prototype = {
-	partitioner: null
-	,layer: null
-	,splitter: null
-	,decrosser: null
-	,resolve: function(vertices,edges) {
-		edges = edges.copy();
-		vertices = vertices.copy();
-		rg.layout.SugiyamaMethod.draw(vertices,edges);
-		var remover = new rg.layout.TwoCycleRemover(), removed = remover.remove(edges), reversed = [];
-		var partitions = this.partitioner.partition(rg.layout.SugiyamaMethod.createMap(vertices,edges));
-		edges = partitions.right;
-		var _g = 0, _g1 = partitions.left;
-		while(_g < _g1.length) {
-			var pair = _g1[_g];
-			++_g;
-			edges.push({ a : pair.b, b : pair.a});
-			reversed.push(pair);
-		}
-		rg.layout.SugiyamaMethod.draw(vertices,edges);
-		var layout = this.layer.lay(rg.layout.SugiyamaMethod.createMap(vertices,edges));
-		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-		this.splitter.split(layout);
-		vertices = rg.layout.Graphs.toVertices(layout);
-		edges = rg.layout.Graphs.toEdges(layout);
-		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-		this.decrosser.decross(layout);
-		rg.layout.SugiyamaMethod.draw(vertices,edges,layout);
-		var map = rg.layout.SugiyamaMethod.createMap(vertices,edges);
-		haxe.Log.trace(reversed,{ fileName : "SugiyamaMethod.hx", lineNumber : 60, className : "rg.layout.SugiyamaMethod", methodName : "resolve"});
-		var _g = 0;
-		while(_g < reversed.length) {
-			var edge = reversed[_g];
-			++_g;
-			rg.layout.Graphs.reverseConnection(map,edge.b,edge.a);
-		}
-		rg.layout.SugiyamaMethod.drawGraph(map,layout);
-		haxe.Log.trace(removed,{ fileName : "SugiyamaMethod.hx", lineNumber : 69, className : "rg.layout.SugiyamaMethod", methodName : "resolve"});
-		var _g = 0;
-		while(_g < removed.length) {
-			var edge = removed[_g];
-			++_g;
-			rg.layout.Graphs.addConnection(map,edge.a,edge.b);
-		}
-		rg.layout.SugiyamaMethod.drawGraph(map,layout);
-		return layout;
-	}
-	,__class__: rg.layout.SugiyamaMethod
-}
 rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,operation,tag,location,groupby,timezone,start,end) {
 	this.query = query;
 	this.executor = executor;
@@ -9075,7 +9557,7 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 81, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 84, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -9098,7 +9580,7 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 95, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 98, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
@@ -9106,6 +9588,8 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 		}(this));
 	});
 	this.operation = operation;
+	this.tag = tag;
+	this.location = location;
 	this.path = path;
 	this.timeStart = start;
 	this.timeEnd = end;
@@ -9161,7 +9645,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 447, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 468, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -9206,6 +9690,8 @@ rg.data.source.DataSourceReportGrid.prototype = {
 	,timeEnd: null
 	,groupBy: null
 	,timeZone: null
+	,tag: null
+	,location: null
 	,transform: null
 	,query: null
 	,onLoad: null
@@ -9218,7 +9704,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		case 2:
 			return { event : this.event, property : null, limit : null, order : null};
 		default:
-			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 69, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 72, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 		}
 	}
 	,basicOptions: function(appendPeriodicity) {
@@ -9234,6 +9720,8 @@ rg.data.source.DataSourceReportGrid.prototype = {
 			if(null != this.groupBy) opt["groupBy"] = this.groupBy;
 			if(null != this.timeZone) opt["timeZone"] = this.timeZone;
 		}
+		if(null != this.location) opt["location"] = this.location;
+		if(null != this.tag) opt["tag"] = this.tag;
 		if(this.where.length > 1) {
 			var arr = [];
 			var _g = 0, _g1 = this.where;
@@ -9272,11 +9760,11 @@ rg.data.source.DataSourceReportGrid.prototype = {
 	}
 	,load: function() {
 		var me = this;
-		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 204, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 217, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 			if(this.periodicity == "eternity") {
 				var opt = this.basicOptions(false);
 				if(this.where.length > 1) {
-					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+					if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 					this.executor.searchCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				} else if(this.where.length == 1) {
 					if(this.exp.length > 1) {
@@ -9342,13 +9830,13 @@ rg.data.source.DataSourceReportGrid.prototype = {
 							});
 							rg.data.source.DataSourceReportGrid.parallelExecution(actions,this.success.$bind(this),this.error.$bind(this));
 						} else {
-							this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+							if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 							opt.value = this.where[0].values[0];
 							this.executor.propertyValueCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 						}
 					}
 				} else {
-					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+					if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 					opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
 					this.executor.propertyCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				}
@@ -9477,7 +9965,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 428, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 449, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -12076,6 +12564,148 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,__class__: rg.view.svg.chart.HeatGrid
 	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
+rg.graph.Graph = $hxClasses["rg.graph.Graph"] = function(nodeidf,edgeidf) {
+	this.nodes = rg.graph.GraphNodes.newInstance(this,nodeidf);
+	this.edges = rg.graph.GraphEdges.newInstance(this,edgeidf);
+}
+rg.graph.Graph.__name__ = ["rg","graph","Graph"];
+rg.graph.Graph.friendNodes = function(friend) {
+	return friend;
+}
+rg.graph.Graph.friendEdges = function(friend) {
+	return friend;
+}
+rg.graph.Graph.prototype = {
+	nodes: null
+	,edges: null
+	,empty: function() {
+		return Iterators.count(this.nodes.iterator()) == 0;
+	}
+	,clear: function() {
+		this.edges.clear();
+		this.nodes.clear();
+	}
+	,clone: function() {
+		var g = new rg.graph.Graph();
+		g.nodes = this.nodes.copyTo(g);
+		g.edges = this.edges.copyTo(g);
+		return g;
+	}
+	,findSinks: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isSink();
+		});
+	}
+	,findSink: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isSink();
+		});
+	}
+	,findSources: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
+	,findSource: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
+	,findIsolateds: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,findIsolated: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,paths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.edges(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.other(n);
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,path: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.paths(a,b),weighted);
+	}
+	,directedPaths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.positives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.head;
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,directedPath: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.directedPaths(a,b),weighted);
+	}
+	,pickPath: function(paths,weighted) {
+		if(paths.length == 0) return null;
+		if(weighted) return Arrays.min(paths,function(arr) {
+			return Iterators.reduce(arr.iterator(),function(acc,edge,_) {
+				return acc + edge.weight;
+			},0);
+		}); else return Arrays.min(paths,function(arr) {
+			return arr.length;
+		});
+	}
+	,toString: function() {
+		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
+	}
+	,__class__: rg.graph.Graph
+}
 rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
 rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
 rg.view.svg.util.RGColors.parse = function(s,alt) {
@@ -12712,6 +13342,28 @@ rg.controller.factory.FactoryHtmlVisualization.prototype = {
 	}
 	,__class__: rg.controller.factory.FactoryHtmlVisualization
 }
+rg.graph.TestGreedyCyclePartitioner = $hxClasses["rg.graph.TestGreedyCyclePartitioner"] = function() {
+}
+rg.graph.TestGreedyCyclePartitioner.__name__ = ["rg","graph","TestGreedyCyclePartitioner"];
+rg.graph.TestGreedyCyclePartitioner.prototype = {
+	testPartition: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), n4 = graph.nodes.create(), n5 = graph.nodes.create(), n6 = graph.nodes.create(), e1 = graph.edges.create(n6,n5), e2 = graph.edges.create(n5,n4), e3 = graph.edges.create(n4,n2), e4 = graph.edges.create(n2,n5), e5 = graph.edges.create(n5,n3), e6 = graph.edges.create(n3,n1), e7 = graph.edges.create(n1,n2), e8 = graph.edges.create(n2,n3), partitions = new rg.graph.GreedyCyclePartitioner().partition(graph);
+		utest.Assert.equals(IntHashes.count(graph.edges.collection),partitions.left.length + partitions.right.length,null,{ fileName : "TestGreedyCyclePartitioner.hx", lineNumber : 27, className : "rg.graph.TestGreedyCyclePartitioner", methodName : "testPartition"});
+		var _g = 0, _g1 = partitions.left;
+		while(_g < _g1.length) {
+			var edge = _g1[_g];
+			++_g;
+			utest.Assert.notContains(edge,partitions.right,null,{ fileName : "TestGreedyCyclePartitioner.hx", lineNumber : 29, className : "rg.graph.TestGreedyCyclePartitioner", methodName : "testPartition"});
+		}
+		var _g = 0, _g1 = partitions.right;
+		while(_g < _g1.length) {
+			var edge = _g1[_g];
+			++_g;
+			utest.Assert.notContains(edge,partitions.left,null,{ fileName : "TestGreedyCyclePartitioner.hx", lineNumber : 31, className : "rg.graph.TestGreedyCyclePartitioner", methodName : "testPartition"});
+		}
+	}
+	,__class__: rg.graph.TestGreedyCyclePartitioner
+}
 rg.data.TickmarkTime = $hxClasses["rg.data.TickmarkTime"] = function(value,values,major,periodicity,scaleDistribution) {
 	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
 	this.periodicity = periodicity;
@@ -13089,6 +13741,36 @@ js.Storage.prototype = {
 	,clear: null
 	,__class__: js.Storage
 }
+rg.data.source.rgquery.transform.TransformTagCount = $hxClasses["rg.data.source.rgquery.transform.TransformTagCount"] = function(properties,event,unit,tag) {
+	this.properties = properties;
+	this.unit = unit;
+	this.event = event;
+	this.tag = tag;
+}
+rg.data.source.rgquery.transform.TransformTagCount.__name__ = ["rg","data","source","rgquery","transform","TransformTagCount"];
+rg.data.source.rgquery.transform.TransformTagCount.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformTagCount.prototype = {
+	properties: null
+	,unit: null
+	,event: null
+	,tag: null
+	,transform: function(data) {
+		var result = [], dp, value;
+		var _g = 0, _g1 = Reflect.fields(data);
+		while(_g < _g1.length) {
+			var field = _g1[_g];
+			++_g;
+			value = Reflect.field(data,field);
+			dp = { event : this.event};
+			Objects.copyTo(this.properties,dp);
+			Objects.addField(dp,this.unit,value);
+			Objects.addField(dp,this.tag,Strings.rtrim(Strings.ltrim(field,"/"),"/"));
+			result.push(dp);
+		}
+		return result;
+	}
+	,__class__: rg.data.source.rgquery.transform.TransformTagCount
+}
 var IntIter = $hxClasses["IntIter"] = function(min,max) {
 	this.min = min;
 	this.max = max;
@@ -13225,6 +13907,28 @@ thx.js.AccessDataAttribute.prototype = $extend(thx.js.AccessAttribute.prototype,
 	}
 	,__class__: thx.js.AccessDataAttribute
 });
+rg.graph.TwoCycleRemover = $hxClasses["rg.graph.TwoCycleRemover"] = function() {
+}
+rg.graph.TwoCycleRemover.__name__ = ["rg","graph","TwoCycleRemover"];
+rg.graph.TwoCycleRemover.prototype = {
+	remove: function(graph) {
+		var result = [];
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				var reverse = edge.head.predecessorBy(node);
+				if(null == reverse) continue;
+				result.push({ tail : reverse.tail, head : reverse.head, weight : reverse.weight, data : reverse.data});
+				reverse.graph.edges._remove(reverse);
+			}
+		}
+		return result;
+	}
+	,__class__: rg.graph.TwoCycleRemover
+}
 rg.RGConst = $hxClasses["rg.RGConst"] = function() { }
 rg.RGConst.__name__ = ["rg","RGConst"];
 rg.RGConst.prototype = {
@@ -13404,237 +14108,6 @@ thx.math.scale.LinearT.prototype = {
 		return Floats.formatf("D:" + n);
 	}
 	,__class__: thx.math.scale.LinearT
-}
-rg.layout.Graphs = $hxClasses["rg.layout.Graphs"] = function() { }
-rg.layout.Graphs.__name__ = ["rg","layout","Graphs"];
-rg.layout.Graphs.crossings = function(a,b) {
-	var map = new Hash(), c = 0;
-	var _g1 = 0, _g = b.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		map.set(b[i].vertex,i);
-	}
-	if(a.length <= 1 || b.length <= 1) return c;
-	var _g1 = 0, _g = a.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var n1 = a[i];
-		var _g2 = 0, _g3 = n1.edgesp;
-		while(_g2 < _g3.length) {
-			var dst1 = _g3[_g2];
-			++_g2;
-			var p1 = map.get(dst1);
-			if(null == p1) continue;
-			var _g5 = i + 1, _g4 = a.length;
-			while(_g5 < _g4) {
-				var j = _g5++;
-				var n2 = a[j];
-				var _g6 = 0, _g7 = n2.edgesp;
-				while(_g6 < _g7.length) {
-					var dst2 = _g7[_g6];
-					++_g6;
-					var p2 = map.get(dst2);
-					if(p2 < p1) c++;
-				}
-			}
-		}
-	}
-	return c;
-}
-rg.layout.Graphs.layoutCrossings = function(a) {
-	var tot = 0;
-	var _g1 = 0, _g = a.length - 1;
-	while(_g1 < _g) {
-		var i = _g1++;
-		tot += rg.layout.Graphs.crossings(a[i],a[i + 1]);
-	}
-	return tot;
-}
-rg.layout.Graphs.toMap = function(layout) {
-	var map = new Hash();
-	var _g1 = 0, _g = layout.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var _g3 = 0, _g2 = layout[i].length;
-		while(_g3 < _g2) {
-			var j = _g3++;
-			map.set(layout[i][j].vertex,layout[i][j]);
-		}
-	}
-	return map;
-}
-rg.layout.Graphs.toVertices = function(layout) {
-	var result = [];
-	var _g1 = 0, _g = layout.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var _g3 = 0, _g2 = layout[i].length;
-		while(_g3 < _g2) {
-			var j = _g3++;
-			result.push(layout[i][j].vertex);
-		}
-	}
-	return result;
-}
-rg.layout.Graphs.toEdges = function(layout) {
-	var result = [];
-	var _g1 = 0, _g = layout.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var _g3 = 0, _g2 = layout[i].length;
-		while(_g3 < _g2) {
-			var j = _g3++;
-			var v = layout[i][j].vertex;
-			var _g4 = 0, _g5 = layout[i][j].edgesp;
-			while(_g4 < _g5.length) {
-				var c = _g5[_g4];
-				++_g4;
-				result.push({ a : v, b : c});
-			}
-		}
-	}
-	return result;
-}
-rg.layout.Graphs.findMaxPositiveOverNegative = function(graph) {
-	var n = null, l = 0;
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		var diff = node.edgesp.length - node.edgesn.length;
-		if(null == n || l < diff) {
-			n = node;
-			l = diff;
-		}
-	}
-	return n;
-}
-rg.layout.Graphs.isSink = function(node) {
-	return node.edgesp.length == 0 && node.edgesn.length > 0;
-}
-rg.layout.Graphs.isSource = function(node) {
-	return node.edgesn.length == 0 && node.edgesp.length == 0;
-}
-rg.layout.Graphs.findSink = function(graph) {
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
-	}
-	return null;
-}
-rg.layout.Graphs.findSource = function(graph) {
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
-	}
-	return null;
-}
-rg.layout.Graphs.findAllIsolated = function(graph) {
-	var isolated = [];
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
-	}
-	return isolated;
-}
-rg.layout.Graphs.addConnection = function(graph,a,b) {
-	var path = rg.layout.Graphs.findPath(graph,b,a);
-	if(null != path && path.every(function(v,i) {
-		return i == 0 || i == path.length - 1 || rg.layout.Graphs.isDummy(v);
-	})) {
-		path.reverse();
-		rg.layout.Graphs.addConnections(graph,path);
-	} else rg.layout.Graphs.addConnections(graph,[a,b]);
-}
-rg.layout.Graphs.addConnections = function(graph,arr) {
-	var _g1 = 0, _g = arr.length - 1;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var a = arr[i], b = arr[i + 1];
-		graph.get(a).edgesp.push(b);
-		graph.get(b).edgesp.push(a);
-	}
-}
-rg.layout.Graphs.reverseConnection = function(graph,a,b) {
-	var path = rg.layout.Graphs.findPath(graph,a,b);
-	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 168, className : "rg.layout.Graphs", methodName : "reverseConnection"});
-	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 169, className : "rg.layout.Graphs", methodName : "reverseConnection"});
-	if(null == path) return false;
-	var _g1 = 0, _g = path.length - 1;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
-		na.edgesp.remove(b1);
-		na.edgesn.push(b1);
-		nb.edgesn.remove(a1);
-		nb.edgesp.push(a1);
-	}
-	return true;
-}
-rg.layout.Graphs.findPath = function(graph,a,b) {
-	var traveled = new thx.collection.Set(), paths = [], t, r;
-	var traverse = (function($this) {
-		var $r;
-		var traverse = null;
-		traverse = function(path,n) {
-			var totraverse = [];
-			var _g = 0, _g1 = n.edgesn;
-			while(_g < _g1.length) {
-				var parent = _g1[_g];
-				++_g;
-				if(parent == a) return path.concat([a]); else if(rg.layout.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,a2) {
-					return function() {
-						return f(a1,a2);
-					};
-				})(traverse,path.concat([parent]),t));
-			}
-			var _g = 0;
-			while(_g < totraverse.length) {
-				var t1 = totraverse[_g];
-				++_g;
-				if(null != (r = t1())) return r;
-			}
-			return null;
-		};
-		$r = traverse;
-		return $r;
-	}(this));
-	var p = traverse([b],graph.get(b));
-	if(null == p) return null;
-	p.reverse();
-	return p;
-}
-rg.layout.Graphs.isDummy = function(v) {
-	return v.substr(0,1) == "#";
-}
-rg.layout.Graphs.createDummy = function(a,b,lvl) {
-	return "#" + ++rg.layout.Graphs.id;
-}
-rg.layout.Graphs.removeNode = function(graph,node) {
-	graph.remove(node.vertex);
-}
-rg.layout.Graphs.addNode = function(graph,node) {
-	graph.set(node.vertex,node);
-}
-rg.layout.Graphs.clone = function(graph) {
-	var o = new Hash();
-	var $it0 = graph.iterator();
-	while( $it0.hasNext() ) {
-		var node = $it0.next();
-		rg.layout.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.copy(), edgesp : node.edgesp.copy()});
-	}
-	return o;
-}
-rg.layout.Graphs.empty = function(graph) {
-	return Hashes.count(graph) == 0;
-}
-rg.layout.Graphs.count = function(graph) {
-	return Hashes.count(graph);
-}
-rg.layout.Graphs.prototype = {
-	__class__: rg.layout.Graphs
 }
 thx.culture.FormatDate = $hxClasses["thx.culture.FormatDate"] = function() { }
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
@@ -14237,6 +14710,49 @@ utest.Runner.prototype = {
 		this.runNext();
 	}
 	,__class__: utest.Runner
+}
+rg.graph.LongestPathLayer = $hxClasses["rg.graph.LongestPathLayer"] = function() {
+}
+rg.graph.LongestPathLayer.__name__ = ["rg","graph","LongestPathLayer"];
+rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
+	var child;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(it,lvl) {
+			var max = lvl;
+			while( it.hasNext() ) {
+				var edge = it.next();
+				if(edge.head.isSink()) continue; else max = Ints.max(max,traverse(edge.head.positives(),lvl + 1));
+			}
+			return max;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	return traverse(node.graph.edges.positives(node),1);
+}
+rg.graph.LongestPathLayer.prototype = {
+	lay: function(graph) {
+		var clone = graph.clone(), layers = [[]];
+		var _g = 0, _g1 = clone.findSinks();
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			layers[0].push(node.id);
+			node.graph.nodes._remove(node);
+		}
+		var $it0 = clone.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var pos = rg.graph.LongestPathLayer.distanceToASink(clone,node), layer = layers[pos];
+			if(null == layer) layer = layers[pos] = [];
+			layer.push(node.id);
+		}
+		layers.reverse();
+		return layers;
+	}
+	,__class__: rg.graph.LongestPathLayer
 }
 rg.view.svg.util.RGCss = $hxClasses["rg.view.svg.util.RGCss"] = function() { }
 rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
@@ -15082,43 +15598,6 @@ haxe.Stack.makeStack = function(s) {
 haxe.Stack.prototype = {
 	__class__: haxe.Stack
 }
-rg.layout.TestNode = $hxClasses["rg.layout.TestNode"] = function() {
-	rg.layout.TestBaseGraph.call(this);
-}
-rg.layout.TestNode.__name__ = ["rg","layout","TestNode"];
-rg.layout.TestNode.__super__ = rg.layout.TestBaseGraph;
-rg.layout.TestNode.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
-	testId: function() {
-		var node = this.graph.nodes.create();
-		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestNode.hx", lineNumber : 10, className : "rg.layout.TestNode", methodName : "testId"});
-	}
-	,testCount: function() {
-		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 15, className : "rg.layout.TestNode", methodName : "testCount"});
-		var node = this.graph.nodes.create();
-		utest.Assert.equals(1,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 17, className : "rg.layout.TestNode", methodName : "testCount"});
-		this.graph.nodes.remove(node);
-		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 19, className : "rg.layout.TestNode", methodName : "testCount"});
-	}
-	,testDestroy: function() {
-		var node = this.graph.nodes.create();
-		this.graph.nodes.remove(node);
-		utest.Assert.isNull(node.graph,null,{ fileName : "TestNode.hx", lineNumber : 26, className : "rg.layout.TestNode", methodName : "testDestroy"});
-		utest.Assert.isNull(node.nodes,null,{ fileName : "TestNode.hx", lineNumber : 27, className : "rg.layout.TestNode", methodName : "testDestroy"});
-		utest.Assert.isTrue(node.id < 0,null,{ fileName : "TestNode.hx", lineNumber : 28, className : "rg.layout.TestNode", methodName : "testDestroy"});
-	}
-	,testClear: function() {
-		var node = this.graph.nodes.create();
-		this.graph.nodes.clear();
-		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 35, className : "rg.layout.TestNode", methodName : "testClear"});
-	}
-	,testIsSource: function() {
-	}
-	,testIsSink: function() {
-	}
-	,testIsIsolated: function() {
-	}
-	,__class__: rg.layout.TestNode
-});
 rg.controller.info.TestInfoVariable = $hxClasses["rg.controller.info.TestInfoVariable"] = function() {
 }
 rg.controller.info.TestInfoVariable.__name__ = ["rg","controller","info","TestInfoVariable"];
@@ -15151,6 +15630,51 @@ rg.controller.info.TestInfoVariable.prototype = {
 	}
 	,__class__: rg.controller.info.TestInfoVariable
 }
+rg.graph.GreedySwitch2Decrosser = $hxClasses["rg.graph.GreedySwitch2Decrosser"] = function() {
+	rg.graph.GreedySwitchDecrosser.call(this);
+}
+rg.graph.GreedySwitch2Decrosser.__name__ = ["rg","graph","GreedySwitch2Decrosser"];
+rg.graph.GreedySwitch2Decrosser.__super__ = rg.graph.GreedySwitchDecrosser;
+rg.graph.GreedySwitch2Decrosser.prototype = $extend(rg.graph.GreedySwitchDecrosser.prototype,{
+	decross: function(layout) {
+		var layers = layout.layers(), graph = layout.graph, newlayers, newlayout = layout;
+		if(layers.length <= 1) return new rg.graph.GraphLayout(layout.graph,layers);
+		var totbefore, crossings, len = layers.length - 1, a, b, c;
+		do {
+			newlayers = layers.map(function(arr,_) {
+				return arr.copy();
+			});
+			newlayout = new rg.graph.GraphLayout(graph,layers);
+			totbefore = newlayout.crossings();
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				a = newlayers[i - 1];
+				b = newlayers[i];
+				c = newlayers[i + 1];
+				this.decrossTriplet(graph,a,b,c);
+			}
+			crossings = new rg.graph.GraphLayout(graph,newlayers).crossings();
+			layers = newlayers;
+		} while(totbefore > crossings);
+		return newlayout;
+	}
+	,decrossTriplet: function(graph,a,b,c) {
+		if(null == a) this.decrossPair(graph,b,c); else if(null == c) this.decrossPair(graph,a,b); else {
+			var tot = rg.graph.GraphLayout.arrayCrossings(graph,a,b) + rg.graph.GraphLayout.arrayCrossings(graph,b,c), ntot = tot, t;
+			do {
+				tot = ntot;
+				var _g1 = 0, _g = b.length - 1;
+				while(_g1 < _g) {
+					var i = _g1++;
+					this.swap(b,i);
+					if((t = rg.graph.GraphLayout.arrayCrossings(graph,a,b) + rg.graph.GraphLayout.arrayCrossings(graph,b,c)) >= ntot) this.swap(b,i); else ntot = t;
+				}
+			} while(ntot < tot);
+		}
+	}
+	,__class__: rg.graph.GreedySwitch2Decrosser
+});
 thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
@@ -15338,39 +15862,6 @@ thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
 thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
 thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
 thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
-thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
-	this.setScale(500);
-	this.setTranslate([480.0,250]);
-}
-thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
-thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
-thx.geo.Mercator.prototype = {
-	scale: null
-	,translate: null
-	,project: function(coords) {
-		var x = coords[0] / 360, y = -(Math.log(Math.tan(Math.PI / 4 + coords[1] * 0.01745329251994329577 / 2)) / 0.01745329251994329577) / 360;
-		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * Math.max(-.5,Math.min(.5,y)) + this.getTranslate()[1]];
-	}
-	,invert: function(coords) {
-		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale();
-		return [360 * x,2 * Math.atan(Math.exp(-360 * y * 0.01745329251994329577)) / 0.01745329251994329577 - 90];
-	}
-	,setScale: function(scale) {
-		return this.scale = scale;
-	}
-	,getScale: function() {
-		return this.scale;
-	}
-	,getTranslate: function() {
-		return this.translate.copy();
-	}
-	,setTranslate: function(translate) {
-		this.translate = [translate[0],translate[1]];
-		return translate;
-	}
-	,__class__: thx.geo.Mercator
-	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
-}
 thx.svg.PathGeoJson = $hxClasses["thx.svg.PathGeoJson"] = function() {
 	this.setPointRadius(4.5);
 	this.setProjection(new thx.geo.AlbersUsa());
@@ -15730,6 +16221,39 @@ thx.svg.CentroidTypes.prototype = {
 	}
 	,__class__: thx.svg.CentroidTypes
 }
+thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
+	this.setScale(500);
+	this.setTranslate([480.0,250]);
+}
+thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
+thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
+thx.geo.Mercator.prototype = {
+	scale: null
+	,translate: null
+	,project: function(coords) {
+		var x = coords[0] / 360, y = -(Math.log(Math.tan(Math.PI / 4 + coords[1] * 0.01745329251994329577 / 2)) / 0.01745329251994329577) / 360;
+		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * Math.max(-.5,Math.min(.5,y)) + this.getTranslate()[1]];
+	}
+	,invert: function(coords) {
+		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale();
+		return [360 * x,2 * Math.atan(Math.exp(-360 * y * 0.01745329251994329577)) / 0.01745329251994329577 - 90];
+	}
+	,setScale: function(scale) {
+		return this.scale = scale;
+	}
+	,getScale: function() {
+		return this.scale;
+	}
+	,getTranslate: function() {
+		return this.translate.copy();
+	}
+	,setTranslate: function(translate) {
+		this.translate = [translate[0],translate[1]];
+		return translate;
+	}
+	,__class__: thx.geo.Mercator
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
+}
 rg.data.ScaleDistributions = $hxClasses["rg.data.ScaleDistributions"] = function() { }
 rg.data.ScaleDistributions.__name__ = ["rg","data","ScaleDistributions"];
 rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
@@ -15746,6 +16270,25 @@ rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
 }
 rg.data.ScaleDistributions.prototype = {
 	__class__: rg.data.ScaleDistributions
+}
+rg.graph.GraphElement = $hxClasses["rg.graph.GraphElement"] = function(graph,id,data) {
+	this.id = id;
+	this.data = data;
+	this.graph = graph;
+}
+rg.graph.GraphElement.__name__ = ["rg","graph","GraphElement"];
+rg.graph.GraphElement.friendDestroy = function(item) {
+	return item;
+}
+rg.graph.GraphElement.prototype = {
+	graph: null
+	,id: null
+	,data: null
+	,destroy: function() {
+		this.graph = null;
+		this.id = -1;
+	}
+	,__class__: rg.graph.GraphElement
 }
 rg.view.svg.widget.Label = $hxClasses["rg.view.svg.widget.Label"] = function(container,dontflip,shadow,outline) {
 	if(dontflip == null) dontflip = true;
@@ -16272,35 +16815,6 @@ utest.ui.common.ResultStats.prototype = {
 		this.subtract(dependant);
 	}
 	,__class__: utest.ui.common.ResultStats
-}
-rg.layout.Graph = $hxClasses["rg.layout.Graph"] = function() {
-	this.nodes = rg.layout.GraphNodes.newInstance(this);
-	this.edges = rg.layout.GraphEdges.newInstance(this);
-}
-rg.layout.Graph.__name__ = ["rg","layout","Graph"];
-rg.layout.Graph.friendNodes = function(friend) {
-	return friend;
-}
-rg.layout.Graph.friendEdges = function(friend) {
-	return friend;
-}
-rg.layout.Graph.prototype = {
-	nodes: null
-	,edges: null
-	,clear: function() {
-		this.edges.clear();
-		this.nodes.clear();
-	}
-	,clone: function() {
-		var g = new rg.layout.Graph();
-		g.nodes = this.nodes.copyTo(g);
-		g.edges = this.edges.copyTo(g);
-		return g;
-	}
-	,toString: function() {
-		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
-	}
-	,__class__: rg.layout.Graph
 }
 rg.controller.factory.FactoryVariableDependent = $hxClasses["rg.controller.factory.FactoryVariableDependent"] = function() {
 }
@@ -17065,7 +17579,10 @@ rg.controller.visualization.VisualizationGeo.prototype = $extend(rg.controller.v
 			map.colorMode = imap.colorScaleMode;
 			map.handlerClick = ($_=this.chart,$_.handlerClick.$bind($_));
 			map.handlerDataPointOver = ($_=this.chart,$_.handlerDataPointOver.$bind($_));
-			map.load(imap.url,imap.type,imap.usejson);
+			map.mapping = imap.mapping;
+			var mappingurl = imap.mappingurl;
+			if(null != mappingurl && (!StringTools.startsWith(mappingurl,"http://") || !StringTools.startsWith(mappingurl,"https://"))) mappingurl = rg.RGConst.BASE_URL_GEOJSON + mappingurl + ".json" + (imap.usejsonp?".js":"");
+			map.load(imap.url,imap.type,mappingurl,imap.usejsonp);
 			this.chart.addMap(map,imap.property);
 		}
 	}
@@ -18085,48 +18602,156 @@ rg.controller.visualization.VisualizationHeatGrid.prototype = $extend(rg.control
 	}
 	,__class__: rg.controller.visualization.VisualizationHeatGrid
 });
-rg.layout.EdgeSpliter = $hxClasses["rg.layout.EdgeSpliter"] = function(idf) {
-	this.idf = null == idf?rg.layout.Graphs.createDummy:idf;
+rg.graph.GNode = $hxClasses["rg.graph.GNode"] = function(graph,id,data) {
+	rg.graph.GraphElement.call(this,graph,id,data);
 }
-rg.layout.EdgeSpliter.__name__ = ["rg","layout","EdgeSpliter"];
-rg.layout.EdgeSpliter.prototype = {
-	idf: null
-	,split: function(layout) {
-		var map = new Hash();
-		var _g1 = 0, _g = layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var _g3 = 0, _g2 = layout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				map.set(layout[i][j].vertex,{ layer : i, node : layout[i][j]});
-			}
-		}
-		var _g1 = 0, _g = layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var _g3 = 0, _g2 = layout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				var node = layout[i][j];
-				var _g5 = 0, _g4 = node.edgesp.length;
-				while(_g5 < _g4) {
-					var z = _g5++;
-					var v = node.edgesp[z], child = map.get(v);
-					if(child.layer > i + 1) {
-						var n = { vertex : this.idf(node.vertex,v,i + 1), edgesn : [node.vertex], edgesp : [v]};
-						layout[i + 1].push(n);
-						map.set(n.vertex,{ layer : i + 1, node : n});
-						node.edgesp[z] = n.vertex;
-						child.node.edgesn.remove(node.vertex);
-						child.node.edgesn.push(n.vertex);
-					}
-				}
-			}
-		}
+rg.graph.GNode.__name__ = ["rg","graph","GNode"];
+rg.graph.GNode.create = function(graph,id,data) {
+	return new rg.graph.GNode(graph,id,data);
+}
+rg.graph.GNode.__super__ = rg.graph.GraphElement;
+rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
+	destroy: function() {
+		rg.graph.GraphElement.prototype.destroy.call(this);
 	}
-	,__class__: rg.layout.EdgeSpliter
+	,isConnectedTo: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 30, className : "rg.graph.GNode", methodName : "isConnectedTo"});
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == other.id;
+		}) || Iterators.contains(this.graph.edges.negatives(this),null,function(edge) {
+			return edge.tail.id == other.id;
+		});
+	}
+	,connectedBy: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 41, className : "rg.graph.GNode", methodName : "connectedBy"});
+		var edge = Iterators.firstf(this.graph.edges.positives(this),function(edge) {
+			return edge.head.id == other.id;
+		});
+		if(null != edge) return edge;
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge1) {
+			return edge1.tail.id == other.id;
+		});
+	}
+	,isSource: function() {
+		return this.graph.edges.positives(this).hasNext() && !this.graph.edges.negatives(this).hasNext();
+	}
+	,isSink: function() {
+		return this.graph.edges.negatives(this).hasNext() && !this.graph.edges.positives(this).hasNext();
+	}
+	,isIsolated: function() {
+		return !this.graph.edges.edges(this).hasNext();
+	}
+	,isSuccessorOf: function(predecessor) {
+		return predecessor.isPredecessorOf(this);
+	}
+	,isPredecessorOf: function(successor) {
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,successorBy: function(predecessor) {
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge) {
+			return edge.tail.id == predecessor.id;
+		});
+	}
+	,predecessorBy: function(successor) {
+		return Iterators.firstf(this.graph.edges.positives(this),function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,edges: function() {
+		return this.graph.edges.edges(this);
+	}
+	,positives: function() {
+		return this.graph.edges.positives(this);
+	}
+	,negatives: function() {
+		return this.graph.edges.negatives(this);
+	}
+	,edgeCount: function() {
+		return this.graph.edges.edgeCount(this);
+	}
+	,positiveCount: function() {
+		return this.graph.edges.positiveCount(this);
+	}
+	,negativeCount: function() {
+		return this.graph.edges.negativeCount(this);
+	}
+	,remove: function() {
+		this.graph.nodes._remove(this);
+	}
+	,friendRemove: function() {
+		return this.graph.nodes;
+	}
+	,friendEdges: function() {
+		return this.graph.edges;
+	}
+	,toString: function() {
+		return "Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
+	}
+	,__class__: rg.graph.GNode
+});
+rg.graph.GEdge = $hxClasses["rg.graph.GEdge"] = function(graph,id,tail,head,weight,data) {
+	rg.graph.GraphElement.call(this,graph,id,data);
+	this.tail = tail;
+	this.head = head;
+	this.weight = weight;
 }
+rg.graph.GEdge.__name__ = ["rg","graph","GEdge"];
+rg.graph.GEdge.create = function(graph,id,tail,head,weight,data) {
+	return new rg.graph.GEdge(graph,id,tail,head,weight,data);
+}
+rg.graph.GEdge.__super__ = rg.graph.GraphElement;
+rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
+	tail: null
+	,head: null
+	,weight: null
+	,destroy: function() {
+		rg.graph.GraphElement.prototype.destroy.call(this);
+		this.tail = null;
+		this.head = null;
+	}
+	,split: function(times,f) {
+		if(times == null) times = 1;
+		if(times < 1) throw new thx.error.Error("the split times parameter must be an integer value greater than zero",null,null,{ fileName : "GEdge.hx", lineNumber : 37, className : "rg.graph.GEdge", methodName : "split"});
+		if(null == f) f = function(_,_1,_2) {
+		};
+		var last = this, result = [], node, e1, e2, g = last.graph;
+		var _g = 0;
+		while(_g < times) {
+			var i = _g++;
+			node = g.nodes.create();
+			e1 = g.edges.create(last.tail,node,last.data,last.weight);
+			e2 = g.edges.create(node,last.head,last.data,last.weight);
+			g.edges.remove(last);
+			f(e1,e2,i);
+			last = e2;
+			g = last.graph;
+			result.push(e1);
+		}
+		result.push(last);
+		return result;
+	}
+	,other: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 62, className : "rg.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 68, className : "rg.graph.GEdge", methodName : "other"});
+	}
+	,invert: function() {
+		var inverted = this.graph.edges.create(this.head,this.tail,this.data,this.weight);
+		this.graph.edges._remove(this);
+		return inverted;
+	}
+	,remove: function() {
+		this.graph.edges._remove(this);
+	}
+	,friendRemove: function() {
+		return this.graph.edges;
+	}
+	,toString: function() {
+		return "Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
+	}
+	,__class__: rg.graph.GEdge
+});
 rg.controller.info.InfoHeatGrid = $hxClasses["rg.controller.info.InfoHeatGrid"] = function() {
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
@@ -18593,52 +19218,6 @@ thx.js.ExitSelection.prototype = $extend(thx.js.UnboundSelection.prototype,{
 	}
 	,__class__: thx.js.ExitSelection
 });
-rg.layout.LongestPathLayer = $hxClasses["rg.layout.LongestPathLayer"] = function() {
-}
-rg.layout.LongestPathLayer.__name__ = ["rg","layout","LongestPathLayer"];
-rg.layout.LongestPathLayer.prototype = {
-	lay: function(graph) {
-		var map = rg.layout.Graphs.clone(graph), layers = [[]], u = [], z = [];
-		var node;
-		while(null != (node = rg.layout.Graphs.findSink(map))) {
-			map.remove(node.vertex);
-			layers[0].push(node);
-		}
-		var $it0 = map.keys();
-		while( $it0.hasNext() ) {
-			var v = $it0.next();
-			node = graph.get(v);
-			var pos = this.distanceToASink(node,graph), layer = layers[pos];
-			if(null == layer) layer = layers[pos] = [];
-			layer.push(node);
-		}
-		layers.reverse();
-		return layers;
-	}
-	,distanceToASink: function(node,graph) {
-		var child;
-		var traverse = (function($this) {
-			var $r;
-			var traverse = null;
-			traverse = function(arr,lvl) {
-				var max = lvl;
-				if(lvl > Hashes.count(graph)) return lvl;
-				var _g = 0;
-				while(_g < arr.length) {
-					var v = arr[_g];
-					++_g;
-					child = graph.get(v);
-					if(child.edgesp.length == 0 && child.edgesn.length > 0) continue; else max = Ints.max(max,traverse(child.edgesp,lvl + 1));
-				}
-				return max;
-			};
-			$r = traverse;
-			return $r;
-		}(this));
-		return traverse(node.edgesp,1);
-	}
-	,__class__: rg.layout.LongestPathLayer
-}
 rg.data.VariableDependent = $hxClasses["rg.data.VariableDependent"] = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 }
@@ -18724,39 +19303,6 @@ rg.view.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 rg.view.svg.chart.ColorScaleModes.prototype = {
 	__class__: rg.view.svg.chart.ColorScaleModes
 }
-rg.layout.TwoCycleRemover = $hxClasses["rg.layout.TwoCycleRemover"] = function() {
-}
-rg.layout.TwoCycleRemover.__name__ = ["rg","layout","TwoCycleRemover"];
-rg.layout.TwoCycleRemover.prototype = {
-	edges: null
-	,remove: function(edges) {
-		this.edges = edges;
-		var i = 0, edge, removed = [];
-		while(i < edges.length) {
-			edge = edges[i];
-			if(this.removeEdge(edge.b,edge.a)) removed.push({ a : edge.b, b : edge.a});
-			i++;
-		}
-		return removed;
-	}
-	,removeEdge: function(a,b) {
-		var pos = -1;
-		var _g1 = 0, _g = this.edges.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(a != this.edges[i].a || b != this.edges[i].b) continue;
-			pos = i;
-			break;
-		}
-		return this.removeEdgeAt(pos);
-	}
-	,removeEdgeAt: function(pos) {
-		if(pos < 0) return false;
-		this.edges.splice(pos,1);
-		return true;
-	}
-	,__class__: rg.layout.TwoCycleRemover
-}
 rg.view.frame.Frame = $hxClasses["rg.view.frame.Frame"] = function() {
 	this.x = this.y = this.width = this.height = 0;
 }
@@ -18837,7 +19383,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 		this.chart.data(layout);
 	}
 	,layoutMap: function(map) {
-		var sugiyama = new rg.layout.SugiyamaMethod(), vertices = [], edges = [];
+		var sugiyama = null, vertices = [], edges = [];
 		Iterators.each(map.iterator(),function(node,_) {
 			vertices.push(node.id);
 			var _g = 0, _g1 = node.children;
@@ -18847,7 +19393,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				edges.push({ a : node.id, b : child.id});
 			}
 		});
-		var glayout = sugiyama.resolve(vertices,edges), gmap = rg.layout.Graphs.toMap(glayout);
+		var glayout = null, gmap = rg.graph.Graphs.toMap(glayout);
 		var layout = [], tmap;
 		var _g1 = 0, _g = glayout.length;
 		while(_g1 < _g) {
@@ -18874,7 +19420,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 						var dst = _g5[_g4];
 						++_g4;
 						var id = dst;
-						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesp[0];
+						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesp[0];
 						nnode.children.push({ id : dst, weight : tmap.get(id)});
 					}
 					tmap = new Hash();
@@ -18889,20 +19435,20 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 						var dst = _g5[_g4];
 						++_g4;
 						var id = dst;
-						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
+						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
 						nnode.parents.push({ id : dst, weight : tmap.get(id)});
 					}
 				} else {
 					haxe.Log.trace(gnode,{ fileName : "VisualizationSankey.hx", lineNumber : 125, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
 					var dstid = gnode.edgesp[0];
-					while(rg.layout.Graphs.isDummy(dstid)) dstid = gmap.get(dstid).edgesp[0];
+					while(rg.graph.Graphs.isDummy(dstid)) dstid = gmap.get(dstid).edgesp[0];
 					haxe.Log.trace(dstid,{ fileName : "VisualizationSankey.hx", lineNumber : 129, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
 					var _g4 = 0, _g5 = gnode.edgesn;
 					while(_g4 < _g5.length) {
 						var src = _g5[_g4];
 						++_g4;
 						var id = src;
-						while(rg.layout.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
+						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
 						haxe.Log.trace(src + " TO " + id,{ fileName : "VisualizationSankey.hx", lineNumber : 135, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
 						var parent = map.get(id);
 						haxe.Log.trace(parent,{ fileName : "VisualizationSankey.hx", lineNumber : 137, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
@@ -19670,6 +20216,89 @@ rg.view.svg.widget.LabelOrientation.Aligned.__enum__ = rg.view.svg.widget.LabelO
 rg.view.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
 rg.view.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
 rg.view.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.view.svg.widget.LabelOrientation;
+rg.graph.TestEdge = $hxClasses["rg.graph.TestEdge"] = function() {
+	rg.graph.TestBaseGraph.call(this);
+}
+rg.graph.TestEdge.__name__ = ["rg","graph","TestEdge"];
+rg.graph.TestEdge.__super__ = rg.graph.TestBaseGraph;
+rg.graph.TestEdge.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
+	testId: function() {
+		var node = this.graph.nodes.create();
+		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestEdge.hx", lineNumber : 10, className : "rg.graph.TestEdge", methodName : "testId"});
+	}
+	,testCount: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 15, className : "rg.graph.TestEdge", methodName : "testCount"});
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 19, className : "rg.graph.TestEdge", methodName : "testCount"});
+		this.graph.edges.remove(e);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 21, className : "rg.graph.TestEdge", methodName : "testCount"});
+	}
+	,testCreate: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(n1,e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 29, className : "rg.graph.TestEdge", methodName : "testCreate"});
+		utest.Assert.equals(n2,e.head,null,{ fileName : "TestEdge.hx", lineNumber : 30, className : "rg.graph.TestEdge", methodName : "testCreate"});
+	}
+	,testChainDeletion: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 38, className : "rg.graph.TestEdge", methodName : "testChainDeletion"});
+		this.graph.nodes.remove(n1);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 40, className : "rg.graph.TestEdge", methodName : "testChainDeletion"});
+		utest.Assert.isNull(e.graph,null,{ fileName : "TestEdge.hx", lineNumber : 41, className : "rg.graph.TestEdge", methodName : "testChainDeletion"});
+	}
+	,testDestroy: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		this.graph.edges.remove(e);
+		utest.Assert.isNull(e.graph,null,{ fileName : "TestEdge.hx", lineNumber : 50, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isNull(e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 51, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isNull(e.head,null,{ fileName : "TestEdge.hx", lineNumber : 52, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isTrue(e.id < 0,null,{ fileName : "TestEdge.hx", lineNumber : 53, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+	}
+	,testClear: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 58, className : "rg.graph.TestEdge", methodName : "testClear"});
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 62, className : "rg.graph.TestEdge", methodName : "testClear"});
+		this.graph.edges.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 64, className : "rg.graph.TestEdge", methodName : "testClear"});
+	}
+	,testDefaultWeight: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1.0,e.weight,null,{ fileName : "TestEdge.hx", lineNumber : 72, className : "rg.graph.TestEdge", methodName : "testDefaultWeight"});
+	}
+	,testSplit2: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2), de = se.split();
+		utest.Assert.isNull(se.tail,null,{ fileName : "TestEdge.hx", lineNumber : 81, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(n1,de[0].tail,null,{ fileName : "TestEdge.hx", lineNumber : 82, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.isTrue(n1.isPredecessorOf(de[0].head),null,{ fileName : "TestEdge.hx", lineNumber : 83, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.isTrue(n2.isSuccessorOf(de[1].tail),null,{ fileName : "TestEdge.hx", lineNumber : 84, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(n2,de[1].head,null,{ fileName : "TestEdge.hx", lineNumber : 85, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(1.0,de[0].weight,null,{ fileName : "TestEdge.hx", lineNumber : 86, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(1.0,de[1].weight,null,{ fileName : "TestEdge.hx", lineNumber : 87, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+	}
+	,testSplitMore: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2), de = se.split(5);
+		utest.Assert.equals(6,de.length,null,{ fileName : "TestEdge.hx", lineNumber : 96, className : "rg.graph.TestEdge", methodName : "testSplitMore"});
+		utest.Assert.equals(6,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 97, className : "rg.graph.TestEdge", methodName : "testSplitMore"});
+	}
+	,testSplitF: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2,null,16), de = se.split(3,function(e1,e2,_) {
+			e2.weight = e1.weight / 2;
+		});
+		utest.Assert.equals(4,de.length,null,{ fileName : "TestEdge.hx", lineNumber : 108, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(16,de[0].weight,null,{ fileName : "TestEdge.hx", lineNumber : 109, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(8,de[1].weight,null,{ fileName : "TestEdge.hx", lineNumber : 110, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(4,de[2].weight,null,{ fileName : "TestEdge.hx", lineNumber : 111, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(2,de[3].weight,null,{ fileName : "TestEdge.hx", lineNumber : 112, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(4,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 114, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+	}
+	,testInvert: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2).invert();
+		utest.Assert.equals(n1,e.head,null,{ fileName : "TestEdge.hx", lineNumber : 122, className : "rg.graph.TestEdge", methodName : "testInvert"});
+		utest.Assert.equals(n2,e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 123, className : "rg.graph.TestEdge", methodName : "testInvert"});
+		utest.Assert.isTrue(n2.isPredecessorOf(n1),null,{ fileName : "TestEdge.hx", lineNumber : 124, className : "rg.graph.TestEdge", methodName : "testInvert"});
+		utest.Assert.isTrue(n1.isSuccessorOf(n2),null,{ fileName : "TestEdge.hx", lineNumber : 125, className : "rg.graph.TestEdge", methodName : "testInvert"});
+	}
+	,__class__: rg.graph.TestEdge
+});
 rg.data.source.rgquery.transform.TransformCount = $hxClasses["rg.data.source.rgquery.transform.TransformCount"] = function(properties,event,unit) {
 	this.properties = properties;
 	this.unit = unit;
@@ -20261,7 +20890,7 @@ rg.data.source.rgquery.transform.TransformIntersectTime.prototype = {
 				var i = _g2++;
 				var p = Dynamics.clone(properties);
 				Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-				Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[this.periodicity != "minute" && this.periodicity != "hour"?Dates.snap(arr[i][0].timestamp,this.periodicity):arr[i][0].timestamp,arr[i][1]]);
+				Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[i][0].timestamp),arr[i][1]]);
 				p.event = this.event;
 				result.push(p);
 			}
@@ -20810,51 +21439,6 @@ rg.data.DataContext.prototype = {
 	,data: null
 	,__class__: rg.data.DataContext
 }
-rg.layout.GraphNodes = $hxClasses["rg.layout.GraphNodes"] = function(graph) {
-	rg.layout.GraphCollection.call(this,graph);
-}
-rg.layout.GraphNodes.__name__ = ["rg","layout","GraphNodes"];
-rg.layout.GraphNodes.newInstance = function(graph) {
-	return new rg.layout.GraphNodes(graph);
-}
-rg.layout.GraphNodes.__super__ = rg.layout.GraphCollection;
-rg.layout.GraphNodes.prototype = $extend(rg.layout.GraphCollection.prototype,{
-	copyTo: function(graph) {
-		var nodes = new rg.layout.GraphNodes(graph);
-		var $it0 = this.collection.iterator();
-		while( $it0.hasNext() ) {
-			var node = $it0.next();
-			nodes._create(node.id,node.data);
-		}
-		nodes.nextid = this.nextid;
-		return nodes;
-	}
-	,create: function(data) {
-		return this._create(++this.nextid,data);
-	}
-	,_create: function(id,data) {
-		var n = rg.layout.GNode.create(this.graph,id,data);
-		this.collectionAdd(n);
-		return n;
-	}
-	,remove: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "rg.layout.GraphNodes", methodName : "remove"});
-		this.graph.edges.unlink(node);
-		this.collectionRemove(node);
-		node.destroy();
-	}
-	,clear: function() {
-		var $it0 = this.collection.iterator();
-		while( $it0.hasNext() ) {
-			var item = $it0.next();
-			this.remove(item);
-		}
-	}
-	,toString: function() {
-		return "GraphNodes (" + IntHashes.count(this.collection) + ")";
-	}
-	,__class__: rg.layout.GraphNodes
-});
 thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
 }
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
@@ -20928,6 +21512,55 @@ thx.json.JsonEncoder.prototype = {
 		}) + "\"";
 	}
 	,__class__: thx.json.JsonEncoder
+}
+rg.graph.SugiyamaMethod = $hxClasses["rg.graph.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
+	var id = 0;
+	this.partitioner = null == partitioner?new rg.graph.GreedyCyclePartitioner():partitioner;
+	this.layer = null == layer?new rg.graph.LongestPathLayer():layer;
+	this.splitter = null == splitter?new rg.graph.EdgeSplitter():splitter;
+	this.decrosser = null == decrosser?rg.graph.GreedySwitchDecrosser.best():decrosser;
+}
+rg.graph.SugiyamaMethod.__name__ = ["rg","graph","SugiyamaMethod"];
+rg.graph.SugiyamaMethod.prototype = {
+	partitioner: null
+	,layer: null
+	,splitter: null
+	,decrosser: null
+	,resolve: function(graph,splitf) {
+		var onecycles = new rg.graph.OneCycleRemover().remove(graph), twocycles = new rg.graph.TwoCycleRemover().remove(graph);
+		var partitions = this.partitioner.partition(graph), reversed = (partitions.left.length > partitions.right.length?partitions.right:partitions.left).map(function(edge,_) {
+			var ob = { tail : edge.tail, head : edge.head};
+			edge.invert();
+			return ob;
+		});
+		var layers = this.layer.lay(graph);
+		var layout = new rg.graph.GraphLayout(graph,layers);
+		layout = this.splitter.split(layout,splitf);
+		layout = this.decrosser.decross(layout);
+		var _g = 0;
+		while(_g < reversed.length) {
+			var item = reversed[_g];
+			++_g;
+			var path = layout.graph.directedPath(item.head,item.tail);
+			path.forEach(function(edge,_) {
+				edge.invert();
+			});
+		}
+		var _g = 0;
+		while(_g < twocycles.length) {
+			var item = twocycles[_g];
+			++_g;
+			layout.graph.edges.create(item.tail,item.head,item.data,item.weight);
+		}
+		var _g = 0;
+		while(_g < onecycles.length) {
+			var item = onecycles[_g];
+			++_g;
+			layout.graph.edges.create(item.node,item.node,item.data,item.weight);
+		}
+		return layout;
+	}
+	,__class__: rg.graph.SugiyamaMethod
 }
 thx.svg.Area = $hxClasses["thx.svg.Area"] = function(x,y0,y1,interpolator) {
 	this._x = x;
@@ -21199,23 +21832,38 @@ Reflect.makeVarArgs = function(f) {
 Reflect.prototype = {
 	__class__: Reflect
 }
-rg.layout.GNode = $hxClasses["rg.layout.GNode"] = function(graph,id,data) {
-	rg.layout.GraphElement.call(this,graph,id,data);
-	this.nodes = graph.nodes;
+rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
 }
-rg.layout.GNode.__name__ = ["rg","layout","GNode"];
-rg.layout.GNode.create = function(graph,id,data) {
-	return new rg.layout.GNode(graph,id,data);
-}
-rg.layout.GNode.__super__ = rg.layout.GraphElement;
-rg.layout.GNode.prototype = $extend(rg.layout.GraphElement.prototype,{
-	nodes: null
-	,destroy: function() {
-		rg.layout.GraphElement.prototype.destroy.call(this);
-		this.nodes = null;
+rg.graph.EdgeSplitter.__name__ = ["rg","graph","EdgeSplitter"];
+rg.graph.EdgeSplitter.prototype = {
+	split: function(layout,splitf) {
+		var layers = layout.layers(), cell, ocell;
+		if(null == splitf) splitf = function(_,_1,_2) {
+		};
+		var $it0 = layout.graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			cell = layout.cell(node);
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				ocell = layout.cell(edge.head);
+				if(cell.layer == ocell.layer) continue;
+				if(cell.layer == ocell.layer - 1) continue;
+				if(cell.layer == ocell.layer + 1) continue;
+				var sign = [cell.layer < ocell.layer?1:-1], diff = Ints.abs(ocell.layer - cell.layer) - 1;
+				edge.split(diff,(function(sign) {
+					return function(ea,eb,i) {
+						layers[cell.layer + (1 + i) * sign[0]].push(ea.head.id);
+						splitf(ea,eb,i);
+					};
+				})(sign));
+			}
+		}
+		return new rg.graph.GraphLayout(layout.graph,layers);
 	}
-	,__class__: rg.layout.GNode
-});
+	,__class__: rg.graph.EdgeSplitter
+}
 var Hashes = $hxClasses["Hashes"] = function() { }
 Hashes.__name__ = ["Hashes"];
 Hashes.toDynamic = function(hash) {
@@ -21349,10 +21997,17 @@ TestAll.addTest = function(runner) {
 	runner.addCase(new rg.controller.info.TestInfoLayout());
 	runner.addCase(new rg.controller.info.TestInfoVariable());
 	runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
-	runner.addCase(new rg.layout.TestGraph());
-	runner.addCase(new rg.layout.TestNode());
-	runner.addCase(new rg.layout.TestEdge());
-	runner.addCase(new rg.layout.TestSugiyamaMethod());
+	runner.addCase(new rg.graph.TestGraph());
+	runner.addCase(new rg.graph.TestGraphCollection());
+	runner.addCase(new rg.graph.TestNode());
+	runner.addCase(new rg.graph.TestEdge());
+	runner.addCase(new rg.graph.TestOneCycleRemover());
+	runner.addCase(new rg.graph.TestTwoCycleRemover());
+	runner.addCase(new rg.graph.TestEdgeSplitter());
+	runner.addCase(new rg.graph.TestGreedySwitchDecrosser());
+	runner.addCase(new rg.graph.TestGreedyCyclePartitioner());
+	runner.addCase(new rg.graph.TestLongestPathLayer());
+	runner.addCase(new rg.graph.TestSugiyamaMethod());
 	runner.addCase(new rg.data.source.TestRGDataSource());
 	runner.addCase(new rg.data.source.rgquery.TestQueryParser());
 	runner.addCase(new rg.data.source.rgquery.transform.TestTransformCount());
@@ -21475,7 +22130,7 @@ rg.data.source.rgquery.transform.TransformTimeSeriesValues.prototype = {
 		var me = this;
 		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
 		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event",me.unitvalue],[d.count[0].timestamp,d.count[1],event,d.value]);
+			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event",me.unitvalue],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(periodicity,d.count[0].timestamp),d.count[1],event,d.value]);
 			return p;
 		});
 		return result;
@@ -21649,6 +22304,7 @@ rg.view.svg.chart.Geo = $hxClasses["rg.view.svg.chart.Geo"] = function(panel) {
 	this.mapcontainer = this.g.append("svg:g").attr("class").string("mapcontainer");
 	this.queue = [];
 	this.setColorMode(rg.view.svg.chart.ColorScaleMode.FromCss());
+	this.resize();
 }
 rg.view.svg.chart.Geo.__name__ = ["rg","view","svg","chart","Geo"];
 rg.view.svg.chart.Geo.__super__ = rg.view.svg.chart.Chart;
@@ -21872,50 +22528,56 @@ thx.svg.LineInterpolators.argument = function(s) {
 thx.svg.LineInterpolators.prototype = {
 	__class__: thx.svg.LineInterpolators
 }
-rg.layout.GreedySwitchDecrosser = $hxClasses["rg.layout.GreedySwitchDecrosser"] = function() {
+rg.graph.GraphNodes = $hxClasses["rg.graph.GraphNodes"] = function(graph,nodeidf) {
+	rg.graph.GraphCollection.call(this,graph,nodeidf);
 }
-rg.layout.GreedySwitchDecrosser.__name__ = ["rg","layout","GreedySwitchDecrosser"];
-rg.layout.GreedySwitchDecrosser.composed = function() {
-	return { decross : function(layout) {
-		new rg.layout.GreedySwitchDecrosser().decross(layout);
-		new rg.layout.GreedySwitch2Decrosser().decross(layout);
-	}};
+rg.graph.GraphNodes.__name__ = ["rg","graph","GraphNodes"];
+rg.graph.GraphNodes.newInstance = function(graph,nodeidf) {
+	return new rg.graph.GraphNodes(graph,nodeidf);
 }
-rg.layout.GreedySwitchDecrosser.prototype = {
-	decross: function(layout) {
-		if(layout.length <= 1) return;
-		var len = layout.length - 1;
-		var totbefore, crossings;
-		do {
-			totbefore = rg.layout.Graphs.layoutCrossings(layout);
-			var _g = 0;
-			while(_g < len) {
-				var i = _g++;
-				var a = layout[i], b = layout[i + 1];
-				this.decrossPair(a,b);
-			}
-			crossings = rg.layout.Graphs.layoutCrossings(layout);
-		} while(totbefore > crossings);
+rg.graph.GraphNodes.__super__ = rg.graph.GraphCollection;
+rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
+	copyTo: function(graph) {
+		var nodes = new rg.graph.GraphNodes(graph);
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			nodes._create(node.id,node.data);
+		}
+		nodes.nextid = this.nextid;
+		return nodes;
 	}
-	,decrossPair: function(a,b) {
-		var tot = rg.layout.Graphs.crossings(a,b), ntot = tot, t;
-		do {
-			tot = ntot;
-			var _g1 = 0, _g = b.length - 1;
-			while(_g1 < _g) {
-				var i = _g1++;
-				this.swap(b,i);
-				if((t = rg.layout.Graphs.crossings(a,b)) >= ntot) this.swap(b,i); else ntot = t;
-			}
-		} while(ntot < tot);
+	,create: function(data) {
+		return this._create(++this.nextid,data);
 	}
-	,swap: function(a,pos) {
-		var v = a[pos];
-		a[pos] = a[pos + 1];
-		a[pos + 1] = v;
+	,_create: function(id,data) {
+		var n = rg.graph.GNode.create(this.graph,id,data);
+		this.collectionAdd(n);
+		return n;
 	}
-	,__class__: rg.layout.GreedySwitchDecrosser
-}
+	,remove: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "rg.graph.GraphNodes", methodName : "remove"});
+		this._remove(node);
+	}
+	,_remove: function(node) {
+		this.graph.edges.unlink(node);
+		this.collectionRemove(node);
+		node.destroy();
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
+	,toString: function() {
+		return "GraphNodes (" + IntHashes.count(this.collection) + "): " + rg.graph.GraphCollection.prototype.toString.call(this);
+	}
+	,__class__: rg.graph.GraphNodes
+});
 thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
 	this.length = 0;
 	this.__keys = [];
@@ -22251,6 +22913,35 @@ thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
 thx.svg.LineInternals.prototype = {
 	__class__: thx.svg.LineInternals
 }
+rg.graph.TestSugiyamaMethod = $hxClasses["rg.graph.TestSugiyamaMethod"] = function() {
+}
+rg.graph.TestSugiyamaMethod.__name__ = ["rg","graph","TestSugiyamaMethod"];
+rg.graph.TestSugiyamaMethod.prototype = {
+	testSugiyama: function() {
+		var method = new rg.graph.SugiyamaMethod(), edges = [{ a : 1, b : 6},{ a : 1, b : 14},{ a : 2, b : 6},{ a : 2, b : 13},{ a : 3, b : 13},{ a : 3, b : 9},{ a : 3, b : 6},{ a : 6, b : 3},{ a : 3, b : 8},{ b : 3, a : 14},{ a : 3, b : 7},{ a : 4, b : 4},{ a : 4, b : 9},{ a : 4, b : 11},{ b : 4, a : 13},{ a : 4, b : 10},{ a : 5, b : 11},{ b : 5, a : 13},{ a : 5, b : 15},{ a : 6, b : 15},{ a : 7, b : 14},{ a : 7, b : 12},{ b : 8, a : 14},{ a : 9, b : 15},{ a : 10, b : 13},{ a : 10, b : 14},{ a : 11, b : 15},{ a : 12, b : 14},{ a : 14, b : 15}], graph = new rg.graph.Graph();
+		var _g = 0;
+		while(_g < 15) {
+			var i = _g++;
+			graph.nodes.create();
+		}
+		var _g = 0;
+		while(_g < edges.length) {
+			var edge = edges[_g];
+			++_g;
+			graph.edges.create(graph.nodes.get(edge.a),graph.nodes.get(edge.b));
+		}
+		var layout = method.resolve(graph);
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var cell = layout.cell(node);
+			utest.Assert.notNull(cell,null,{ fileName : "TestSugiyamaMethod.hx", lineNumber : 58, className : "rg.graph.TestSugiyamaMethod", methodName : "testSugiyama"});
+			utest.Assert.isTrue(cell.layer >= 0,null,{ fileName : "TestSugiyamaMethod.hx", lineNumber : 59, className : "rg.graph.TestSugiyamaMethod", methodName : "testSugiyama"});
+			utest.Assert.isTrue(cell.position >= 0,null,{ fileName : "TestSugiyamaMethod.hx", lineNumber : 60, className : "rg.graph.TestSugiyamaMethod", methodName : "testSugiyama"});
+		}
+	}
+	,__class__: rg.graph.TestSugiyamaMethod
+}
 thx.js.AccessTweenAttribute = $hxClasses["thx.js.AccessTweenAttribute"] = function(name,transition,tweens) {
 	thx.js.AccessTween.call(this,transition,tweens);
 	this.name = name;
@@ -22498,8 +23189,35 @@ thx.js.AccessDataHtml.prototype = $extend(thx.js.AccessHtml.prototype,{
 	}
 	,__class__: thx.js.AccessDataHtml
 });
+rg.graph.TestGraphCollection = $hxClasses["rg.graph.TestGraphCollection"] = function() {
+}
+rg.graph.TestGraphCollection.__name__ = ["rg","graph","TestGraphCollection"];
+rg.graph.TestGraphCollection.prototype = {
+	testMap: function() {
+		var graph = new rg.graph.Graph(function(s) {
+			return s;
+		},function(i) {
+			return "#" + i;
+		}), na = graph.nodes.create("a"), nb = graph.nodes.create("b"), e = graph.edges.create(na,nb,7);
+		utest.Assert.equals(na,graph.nodes.getById("a"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 15, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		utest.Assert.equals(nb,graph.nodes.getById("b"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 16, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		utest.Assert.equals(e,graph.edges.getById("#7"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 17, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		graph.nodes.remove(na);
+		utest.Assert.isNull(graph.nodes.getById("a"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 19, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		utest.Assert.isNull(graph.edges.getById("#7"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 20, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+	}
+	,__class__: rg.graph.TestGraphCollection
+}
 var Iterators = $hxClasses["Iterators"] = function() { }
 Iterators.__name__ = ["Iterators"];
+Iterators.count = function(it) {
+	var i = 0;
+	while( it.hasNext() ) {
+		var _ = it.next();
+		i++;
+	}
+	return i;
+}
 Iterators.indexOf = function(it,v,f) {
 	if(null == f) f = function(v2) {
 		return v == v2;
@@ -22544,6 +23262,14 @@ Iterators.each = function(it,f) {
 		var o = it.next();
 		f(o,i++);
 	}
+}
+Iterators.filter = function(it,f) {
+	var result = [];
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) result.push(i);
+	}
+	return result;
 }
 Iterators.reduce = function(it,f,initialValue) {
 	var accumulator = initialValue, i = 0;
@@ -22634,6 +23360,14 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 		statistic = parameters.statistic;
 		Reflect.deleteField(parameters,"statistic");
 	}
+	if(null != parameters.tag) {
+		tag = parameters.tag;
+		Reflect.deleteField(parameters,"tag");
+	}
+	if(null != parameters.location) {
+		location = parameters.location;
+		Reflect.deleteField(parameters,"location");
+	}
 	if(null != parameters.groupby) {
 		groupby = parameters.groupby;
 		Reflect.deleteField(parameters,"groupby");
@@ -22701,7 +23435,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 186, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 197, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	chain.addAction(function(params,handler1) {
 		var opt = params.options;
@@ -23349,96 +24083,6 @@ rg.view.svg.chart.StreamEffects.parse = function(s) {
 rg.view.svg.chart.StreamEffects.prototype = {
 	__class__: rg.view.svg.chart.StreamEffects
 }
-rg.layout.TestEdge = $hxClasses["rg.layout.TestEdge"] = function() {
-	rg.layout.TestBaseGraph.call(this);
-}
-rg.layout.TestEdge.__name__ = ["rg","layout","TestEdge"];
-rg.layout.TestEdge.__super__ = rg.layout.TestBaseGraph;
-rg.layout.TestEdge.prototype = $extend(rg.layout.TestBaseGraph.prototype,{
-	testId: function() {
-		var node = this.graph.nodes.create();
-		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestEdge.hx", lineNumber : 10, className : "rg.layout.TestEdge", methodName : "testId"});
-	}
-	,testCount: function() {
-		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 15, className : "rg.layout.TestEdge", methodName : "testCount"});
-		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
-		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 19, className : "rg.layout.TestEdge", methodName : "testCount"});
-		this.graph.edges.remove(e);
-		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 21, className : "rg.layout.TestEdge", methodName : "testCount"});
-	}
-	,testCreate: function() {
-		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
-		utest.Assert.equals(n1,e.head,null,{ fileName : "TestEdge.hx", lineNumber : 29, className : "rg.layout.TestEdge", methodName : "testCreate"});
-		utest.Assert.equals(n2,e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 30, className : "rg.layout.TestEdge", methodName : "testCreate"});
-	}
-	,testChainDeletion: function() {
-		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
-		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 38, className : "rg.layout.TestEdge", methodName : "testChainDeletion"});
-		this.graph.nodes.remove(n1);
-		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 40, className : "rg.layout.TestEdge", methodName : "testChainDeletion"});
-		utest.Assert.isNull(e.edges,null,{ fileName : "TestEdge.hx", lineNumber : 41, className : "rg.layout.TestEdge", methodName : "testChainDeletion"});
-	}
-	,testDestroy: function() {
-		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
-		this.graph.edges.remove(e);
-		utest.Assert.isNull(e.graph,null,{ fileName : "TestEdge.hx", lineNumber : 50, className : "rg.layout.TestEdge", methodName : "testDestroy"});
-		utest.Assert.isNull(e.edges,null,{ fileName : "TestEdge.hx", lineNumber : 51, className : "rg.layout.TestEdge", methodName : "testDestroy"});
-		utest.Assert.isNull(e.head,null,{ fileName : "TestEdge.hx", lineNumber : 52, className : "rg.layout.TestEdge", methodName : "testDestroy"});
-		utest.Assert.isNull(e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 53, className : "rg.layout.TestEdge", methodName : "testDestroy"});
-		utest.Assert.isTrue(e.id < 0,null,{ fileName : "TestEdge.hx", lineNumber : 54, className : "rg.layout.TestEdge", methodName : "testDestroy"});
-	}
-	,testClear: function() {
-		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 59, className : "rg.layout.TestEdge", methodName : "testClear"});
-		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
-		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 63, className : "rg.layout.TestEdge", methodName : "testClear"});
-		this.graph.edges.clear();
-		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 65, className : "rg.layout.TestEdge", methodName : "testClear"});
-	}
-	,testSplit: function() {
-	}
-	,testReverse: function() {
-	}
-	,testReversePath: function() {
-	}
-	,__class__: rg.layout.TestEdge
-});
-rg.layout.GreedySwitch2Decrosser = $hxClasses["rg.layout.GreedySwitch2Decrosser"] = function() {
-	rg.layout.GreedySwitchDecrosser.call(this);
-}
-rg.layout.GreedySwitch2Decrosser.__name__ = ["rg","layout","GreedySwitch2Decrosser"];
-rg.layout.GreedySwitch2Decrosser.__super__ = rg.layout.GreedySwitchDecrosser;
-rg.layout.GreedySwitch2Decrosser.prototype = $extend(rg.layout.GreedySwitchDecrosser.prototype,{
-	decross: function(layout) {
-		if(layout.length <= 1) return;
-		var len = layout.length - 1;
-		var totbefore, crossings;
-		do {
-			totbefore = rg.layout.Graphs.layoutCrossings(layout);
-			var _g = 0;
-			while(_g < len) {
-				var i = _g++;
-				var a = layout[i - 1], b = layout[i], c = layout[i + 1];
-				this.decrossTriplet(a,b,c);
-			}
-			crossings = rg.layout.Graphs.layoutCrossings(layout);
-		} while(totbefore > crossings);
-	}
-	,decrossTriplet: function(a,b,c) {
-		if(null == a) this.decrossPair(b,c); else if(null == c) this.decrossPair(a,b); else {
-			var tot = rg.layout.Graphs.crossings(a,b) + rg.layout.Graphs.crossings(b,c), ntot = tot, t;
-			do {
-				tot = ntot;
-				var _g1 = 0, _g = b.length - 1;
-				while(_g1 < _g) {
-					var i = _g1++;
-					this.swap(b,i);
-					if((t = rg.layout.Graphs.crossings(a,b) + rg.layout.Graphs.crossings(b,c)) >= tot) this.swap(b,i); else ntot = t;
-				}
-			} while(ntot < tot);
-		}
-	}
-	,__class__: rg.layout.GreedySwitch2Decrosser
-});
 if(!utest._Dispatcher) utest._Dispatcher = {}
 utest._Dispatcher.EventException = $hxClasses["utest._Dispatcher.EventException"] = { __ename__ : ["utest","_Dispatcher","EventException"], __constructs__ : ["StopPropagation"] }
 utest._Dispatcher.EventException.StopPropagation = ["StopPropagation",0];
@@ -23833,6 +24477,25 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
+rg.graph.TestOneCycleRemover = $hxClasses["rg.graph.TestOneCycleRemover"] = function() {
+}
+rg.graph.TestOneCycleRemover.__name__ = ["rg","graph","TestOneCycleRemover"];
+rg.graph.TestOneCycleRemover.prototype = {
+	testRemover: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n1), e2 = graph.edges.create(n2,n2), e3 = graph.edges.create(n1,n3), remover = new rg.graph.OneCycleRemover(), removed = remover.remove(graph);
+		utest.Assert.equals(2,removed.length,null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 24, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isNull(e1.tail,null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 25, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isNull(e2.tail,null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 26, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.equals(1,IntHashes.count(graph.edges.collection),null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 28, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isTrue(Arrays.exists(removed,null,function(i) {
+			return i.node == n1;
+		}),null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 30, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isTrue(Arrays.exists(removed,null,function(i) {
+			return i.node == n2;
+		}),null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 31, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+	}
+	,__class__: rg.graph.TestOneCycleRemover
+}
 rg.view.svg.widget.GridAnchor = $hxClasses["rg.view.svg.widget.GridAnchor"] = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;
@@ -24003,6 +24666,152 @@ rg.controller.info.InfoLabelPivotTable.prototype = $extend(rg.controller.info.In
 	,totalover: null
 	,axisvalue: null
 	,__class__: rg.controller.info.InfoLabelPivotTable
+});
+rg.graph.TestGraph = $hxClasses["rg.graph.TestGraph"] = function() {
+	rg.graph.TestBaseGraph.call(this);
+}
+rg.graph.TestGraph.__name__ = ["rg","graph","TestGraph"];
+rg.graph.TestGraph.__super__ = rg.graph.TestBaseGraph;
+rg.graph.TestGraph.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
+	testClone: function() {
+		var clone = this.graph.clone();
+		utest.Assert.isTrue(this.n5 != clone.nodes.get(this.n5.id),null,{ fileName : "TestGraph.hx", lineNumber : 11, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.notNull(clone.nodes.get(this.n5.id),null,{ fileName : "TestGraph.hx", lineNumber : 12, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.n5.data,clone.nodes.get(this.n5.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 14, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.e.data,clone.edges.get(this.e.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 15, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.graph.nodes.create().id,clone.nodes.create().id,null,{ fileName : "TestGraph.hx", lineNumber : 17, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.graph.edges.create(this.n6,this.n5).id,clone.edges.create(clone.nodes.get(this.n5.id),clone.nodes.get(this.n6.id)).id,null,{ fileName : "TestGraph.hx", lineNumber : 18, className : "rg.graph.TestGraph", methodName : "testClone"});
+		this.graph.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 24, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(12,IntHashes.count(clone.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 25, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 27, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(14,IntHashes.count(clone.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 28, className : "rg.graph.TestGraph", methodName : "testClone"});
+	}
+	,testPath: function() {
+		var path = this.graph.path(this.n6,this.n2);
+		utest.Assert.equals(2,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 34, className : "rg.graph.TestGraph", methodName : "testPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 35, className : "rg.graph.TestGraph", methodName : "testPath"});
+		this.assertEdge(path[1],this.n2,this.n5,{ fileName : "TestGraph.hx", lineNumber : 36, className : "rg.graph.TestGraph", methodName : "testPath"});
+	}
+	,testDirectedPath: function() {
+		var path = this.graph.directedPath(this.n6,this.n2);
+		utest.Assert.equals(3,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 42, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 43, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+		this.assertEdge(path[1],this.n5,this.n4,{ fileName : "TestGraph.hx", lineNumber : 44, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+		this.assertEdge(path[2],this.n4,this.n2,{ fileName : "TestGraph.hx", lineNumber : 45, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+	}
+	,testWeightedPath: function() {
+		var path = this.graph.path(this.n6,this.n2,true);
+		utest.Assert.equals(3,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 51, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 52, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+		this.assertEdge(path[1],this.n5,this.n3,{ fileName : "TestGraph.hx", lineNumber : 53, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+		this.assertEdge(path[2],this.n2,this.n3,{ fileName : "TestGraph.hx", lineNumber : 54, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+	}
+	,testWeightedDirectedPath: function() {
+		var path = this.graph.directedPath(this.n6,this.n2,true);
+		utest.Assert.equals(4,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 60, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 61, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[1],this.n5,this.n3,{ fileName : "TestGraph.hx", lineNumber : 62, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[2],this.n3,this.n1,{ fileName : "TestGraph.hx", lineNumber : 63, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[3],this.n1,this.n2,{ fileName : "TestGraph.hx", lineNumber : 64, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+	}
+	,testSelfPath: function() {
+		var path = this.graph.path(this.n3,this.n3);
+		utest.Assert.equals(1,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 70, className : "rg.graph.TestGraph", methodName : "testSelfPath"});
+		utest.Assert.equals(this.n3,path[0].tail,null,{ fileName : "TestGraph.hx", lineNumber : 71, className : "rg.graph.TestGraph", methodName : "testSelfPath"});
+		utest.Assert.equals(this.n3,path[0].head,null,{ fileName : "TestGraph.hx", lineNumber : 72, className : "rg.graph.TestGraph", methodName : "testSelfPath"});
+	}
+	,testSelfDirectedPath: function() {
+		var path = this.graph.directedPath(this.n3,this.n3);
+		utest.Assert.equals(1,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 78, className : "rg.graph.TestGraph", methodName : "testSelfDirectedPath"});
+		utest.Assert.equals(this.n3,path[0].tail,null,{ fileName : "TestGraph.hx", lineNumber : 79, className : "rg.graph.TestGraph", methodName : "testSelfDirectedPath"});
+		utest.Assert.equals(this.n3,path[0].head,null,{ fileName : "TestGraph.hx", lineNumber : 80, className : "rg.graph.TestGraph", methodName : "testSelfDirectedPath"});
+	}
+	,testDisconnectedDirectedNodes: function() {
+		var path = this.graph.directedPath(this.n8,this.n6);
+		utest.Assert.isNull(path,null,{ fileName : "TestGraph.hx", lineNumber : 86, className : "rg.graph.TestGraph", methodName : "testDisconnectedDirectedNodes"});
+	}
+	,testDisconnectedNodes: function() {
+		var path = this.graph.path(this.n9,this.n10);
+		utest.Assert.isNull(path,null,{ fileName : "TestGraph.hx", lineNumber : 92, className : "rg.graph.TestGraph", methodName : "testDisconnectedNodes"});
+	}
+	,testFindSinks: function() {
+		var items = this.graph.findSinks();
+		utest.Assert.equals(2,items.length,null,{ fileName : "TestGraph.hx", lineNumber : 98, className : "rg.graph.TestGraph", methodName : "testFindSinks"});
+		Arrays.exists(items,this.n7);
+		Arrays.exists(items,this.n8);
+	}
+	,testFindSink: function() {
+		var item = this.graph.findSink();
+		utest.Assert.notNull(item,null,{ fileName : "TestGraph.hx", lineNumber : 106, className : "rg.graph.TestGraph", methodName : "testFindSink"});
+		Arrays.exists([this.n7,this.n8],item);
+	}
+	,testFindSources: function() {
+		var items = this.graph.findSources();
+		utest.Assert.equals(2,items.length,null,{ fileName : "TestGraph.hx", lineNumber : 113, className : "rg.graph.TestGraph", methodName : "testFindSources"});
+		Arrays.exists(items,this.n6);
+		Arrays.exists(items,this.n4);
+	}
+	,testFindSource: function() {
+		var item = this.graph.findSource();
+		utest.Assert.notNull(item,null,{ fileName : "TestGraph.hx", lineNumber : 121, className : "rg.graph.TestGraph", methodName : "testFindSource"});
+		Arrays.exists([this.n6,this.n4],item);
+	}
+	,testFindIsolateds: function() {
+		var items = this.graph.findIsolateds();
+		utest.Assert.equals(2,items.length,null,{ fileName : "TestGraph.hx", lineNumber : 128, className : "rg.graph.TestGraph", methodName : "testFindIsolateds"});
+		Arrays.exists(items,this.n10);
+		Arrays.exists(items,this.n11);
+	}
+	,testFindIsolated: function() {
+		var item = this.graph.findIsolated();
+		utest.Assert.notNull(item,null,{ fileName : "TestGraph.hx", lineNumber : 136, className : "rg.graph.TestGraph", methodName : "testFindIsolated"});
+		Arrays.exists([this.n10,this.n11],item);
+	}
+	,assertEdge: function(edge,tail,head,pos) {
+		utest.Assert.equals(edge.tail,tail,null,pos);
+		utest.Assert.equals(edge.head,head,null,pos);
+	}
+	,n1: null
+	,n2: null
+	,n3: null
+	,n4: null
+	,n5: null
+	,n6: null
+	,n7: null
+	,n8: null
+	,n9: null
+	,n10: null
+	,n11: null
+	,e: null
+	,setup: function() {
+		rg.graph.TestBaseGraph.prototype.setup.call(this);
+		this.n1 = this.graph.nodes.create();
+		this.n2 = this.graph.nodes.create();
+		this.n3 = this.graph.nodes.create();
+		this.n4 = this.graph.nodes.create();
+		this.n5 = this.graph.nodes.create("NE");
+		this.n6 = this.graph.nodes.create();
+		this.n7 = this.graph.nodes.create();
+		this.n8 = this.graph.nodes.create();
+		this.n9 = this.graph.nodes.create();
+		this.n10 = this.graph.nodes.create();
+		this.n11 = this.graph.nodes.create();
+		this.graph.edges.create(this.n6,this.n5);
+		this.e = this.graph.edges.create(this.n5,this.n4,"ED",10);
+		this.graph.edges.create(this.n4,this.n2);
+		this.graph.edges.create(this.n5,this.n3);
+		this.graph.edges.create(this.n3,this.n1);
+		this.graph.edges.create(this.n1,this.n3);
+		this.graph.edges.create(this.n3,this.n3);
+		this.graph.edges.create(this.n2,this.n3);
+		this.graph.edges.create(this.n1,this.n2);
+		this.graph.edges.create(this.n2,this.n5,null,20);
+		this.graph.edges.create(this.n4,this.n7);
+		this.graph.edges.create(this.n5,this.n8);
+		this.graph.edges.create(this.n9,this.n8);
+	}
+	,__class__: rg.graph.TestGraph
 });
 js.Boot.__res = {}
 js.Boot.__init();
@@ -25888,6 +26697,7 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+rg.graph.Graphs.id = 0;
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
 rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 rg.track.Tracker.PREFIX = "rgv_";
@@ -25981,10 +26791,9 @@ thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
-rg.RGConst.BASE_URL_GEOJSON = "geo/json/";
+rg.RGConst.BASE_URL_GEOJSON = "http://localhost/rg/vis/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapi.reportgrid.com/services/renderer/v1/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
-rg.layout.Graphs.id = 0;
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");

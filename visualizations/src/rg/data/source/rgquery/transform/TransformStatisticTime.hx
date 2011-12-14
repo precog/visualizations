@@ -45,9 +45,7 @@ class TransformStatisticTime implements ITransform<Array<Array<Dynamic>>>
 			Objects.addFields(p,
 				[Properties.timeProperty(periodicity), unit],
 				[
-					(periodicity != "minute" && periodicity != "hour")
-					? Dates.snap(arr[0].timestamp, periodicity)
-					: arr[0].timestamp
+					TransformTimeSeries.snapTimestamp(periodicity, arr[0].timestamp)
 					, arr[1]]
 			);
 			p.event = event;

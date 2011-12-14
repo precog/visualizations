@@ -1,4 +1,4 @@
-package rg.layout;
+package rg.graph;
 
 import thx.collection.Set;
 using Arrays;

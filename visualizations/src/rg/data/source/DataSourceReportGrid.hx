@@ -421,7 +421,6 @@ class DataSourceReportGrid implements IDataSource
 				}
 			}
 			var opt : Dynamic = basicOptions(true);
-trace(opt);
 //trace("9");
 
 			switch(operation)

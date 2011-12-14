@@ -1,60 +1,68 @@
-package rg.layout;
+package rg.graph;
 
 using Arrays;
-using rg.layout.Graphs;
+using rg.graph.Graphs;
 
 //  TODO add one cycled remover
 
-class SugiyamaMethod
+class SugiyamaMethod<TNodeData, TEdgeData>
 {
-	var partitioner : Partitioning;
-	var layer : Layering;
-	var splitter : Splitting;
-	var decrosser : Decrossing;
+	var partitioner : Partitioning<TNodeData, TEdgeData>;
+	var layer       : Layering<TNodeData, TEdgeData>;
+	var splitter    : Splitting<TNodeData, TEdgeData>;
+	var decrosser   : Decrossing<TNodeData, TEdgeData>;
 
-	public function new(?partitioner : Partitioning, ?layer : Layering, ?splitter : Splitting, ?decrosser : Decrossing)
+	public function new(?partitioner : Partitioning<TNodeData, TEdgeData>, ?layer : Layering<TNodeData, TEdgeData>, ?splitter : Splitting<TNodeData, TEdgeData>, ?decrosser : Decrossing<TNodeData, TEdgeData>)
 	{
 		var id = 0;
 		this.partitioner = null == partitioner ? new GreedyCyclePartitioner() : partitioner;
 		this.layer       = null == layer       ? new LongestPathLayer()       : layer;
-		this.splitter    = null == splitter    ? new EdgeSpliter()            : splitter;
-		this.decrosser   = null == decrosser   ? GreedySwitchDecrosser.composed()     : decrosser;
+		this.splitter    = null == splitter    ? new EdgeSplitter()            : splitter;
+		this.decrosser   = null == decrosser   ? GreedySwitchDecrosser.best()     : decrosser;
 	}
 
-	public function resolve(vertices : Array<String>, edges : Array<Edge>)
+	public function resolve(graph : Graph<TNodeData, TEdgeData>, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>
 	{
-		edges = edges.copy();
-		vertices = vertices.copy();
+		var onecycles = new OneCycleRemover().remove(graph),
+			twocycles = new TwoCycleRemover().remove(graph);
 
-draw(vertices, edges);
-		var remover = new TwoCycleRemover(),
-			removed = remover.remove(edges),
-			reversed = [];
+		var partitions = partitioner.partition(graph),
+			reversed = (partitions.left.length > partitions.right.length ? partitions.right : partitions.left).map(function(edge, _) {
+				var ob = {
+					tail   : edge.tail,
+					head   : edge.head
+				};
+				edge.invert();
+				return ob;
+			});
 
-		var partitions = partitioner.partition(createMap(vertices, edges));
+		var layers = layer.lay(graph);
 
-		edges = partitions.right;
-		for(pair in partitions.left)
+		var layout = new GraphLayout(graph, layers);
+
+		layout = splitter.split(layout, splitf);
+
+		layout = decrosser.decross(layout);
+
+		// restore reversed
+		for(item in reversed)
 		{
-			edges.push({ a : pair.b, b : pair.a });
-			reversed.push(pair);
+			var path = layout.graph.directedPath(item.head, item.tail);
+			path.each(function(edge, _) edge.invert());
 		}
-draw(vertices, edges);
+		// restore two cycles
+		for(item in twocycles)
+			layout.graph.edges.create(item.tail, item.head, item.data, item.weight);
 
-		var layout = layer.lay(createMap(vertices, edges));
-
-draw(vertices, edges, layout);
-
-		splitter.split(layout);
-
-		vertices = layout.toVertices();
-		edges = layout.toEdges();
-
-draw(vertices, edges, layout);
-		decrosser.decross(layout);
-draw(vertices, edges, layout);
+		// restore one cycle
+		for(item in onecycles)
+			layout.graph.edges.create(item.node, item.node, item.data, item.weight);
 
 
+		return layout;
+	}
+
+/*
 		var map = createMap(vertices, edges);
 
 		trace(reversed);
@@ -208,20 +216,21 @@ drawGraph(map, layout);
 					.style("font-size-adjust").floatf(function(v, _) return v.substr(0, 1) == "#" ? .4 : .5)
 		;
 	}
+*/
 }
 
-typedef Partitioning = {
-	public function partition(graph : Hash<Node>) : { left : Array<Edge>, right : Array<Edge>};
+typedef Partitioning<TNodeData, TEdgeData> = {
+	public function partition(graph : Graph<TNodeData, TEdgeData>) : { left : Array<GEdge<TNodeData, TEdgeData>>, right : Array<GEdge<TNodeData, TEdgeData>>};
 }
 
-typedef Layering = {
-	public function lay(graph : Hash<Node>) : Array<Array<Node>>;
+typedef Layering<TNodeData, TEdgeData> = {
+	public function lay(graph : Graph<TNodeData, TEdgeData>) : Array<Array<Int>>;
 }
 
-typedef Splitting = {
-	public function split(layout : Array<Array<Node>>) : Void;
+typedef Splitting<TNodeData, TEdgeData> = {
+	public function split(layout : GraphLayout<TNodeData, TEdgeData>, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>;
 }
 
-typedef Decrossing = {
-	public function decross(layout : Array<Array<Node>>) : Void;
+typedef Decrossing<TNodeData, TEdgeData> = {
+	public function decross(layout : GraphLayout<TNodeData, TEdgeData>) : GraphLayout<TNodeData, TEdgeData>;
 }

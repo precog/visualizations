@@ -1,8 +1,9 @@
 -cp src
+-cp test
 -lib thx
 -lib hxevents
--js bin/js/reportgrid-viz.js
--main rg.JSBridge
---cache cache/haxecompiler-cache
-#--times
-#-debug
+-lib utest
+-js bin/js/visualizations.test.js
+-main TestAll
+rg.JSBridge
+rg.controller.App
