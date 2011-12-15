@@ -11,7 +11,7 @@ class TestGraphCollection
 		var graph = new Graph(function(s : String) return s, function(i : Int) return "#"+i),
 			na = graph.nodes.create("a"),
 			nb = graph.nodes.create("b"),
-			e  = graph.edges.create(na, nb, 7);
+			e  = graph.edges.create(na, nb, null, 7);
 		Assert.equals(na, graph.nodes.getById("a"));
 		Assert.equals(nb, graph.nodes.getById("b"));
 		Assert.equals(e,  graph.edges.getById("#7"));

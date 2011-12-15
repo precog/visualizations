@@ -101,7 +101,7 @@ class TestEdge extends TestBaseGraph<Dynamic, Dynamic>
 	{
 		var n1 = graph.nodes.create(),
 			n2 = graph.nodes.create(),
-			se  = graph.edges.create(n1, n2, null, 16),
+			se  = graph.edges.create(n1, n2, 16),
 			de = se.split(3, function(e1 : GEdge<Dynamic, Dynamic>, e2 : GEdge<Dynamic, Dynamic>, _) {
 				e2.weight = e1.weight / 2;
 			});

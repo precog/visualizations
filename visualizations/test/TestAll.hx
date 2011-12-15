@@ -20,6 +20,7 @@ class TestAll
 
 		runner.addCase(new rg.graph.TestGraph());
 		runner.addCase(new rg.graph.TestGraphCollection());
+		runner.addCase(new rg.graph.TestGraphLayout());
 		runner.addCase(new rg.graph.TestNode());
 		runner.addCase(new rg.graph.TestEdge());
 		runner.addCase(new rg.graph.TestOneCycleRemover());

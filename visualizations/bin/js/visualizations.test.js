@@ -1530,8 +1530,9 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 	this.addClass("sankey");
-	this.levelWidth = 60;
-	this.padding = 60;
+	this.layerWidth = 60;
+	this.padding = 30;
+	this.minpadding = 10;
 	this.maxFalloffWidth = 30;
 	this.padLines = 4.0;
 	this.padFlow = 5;
@@ -1541,198 +1542,196 @@ rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
 rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
 rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	layout: null
-	,levelWidth: null
+	,layerWidth: null
 	,padding: null
+	,minpadding: null
 	,maxFalloffWidth: null
 	,padLines: null
 	,padFlow: null
 	,minCurve: null
-	,levels: null
-	,max: null
+	,maxweight: null
 	,availableheight: null
-	,map: null
-	,edges: null
 	,padBefore: null
 	,padAfter: null
-	,levelstarts: null
+	,layerstarty: null
 	,setVariables: function(variableIndependents,variableDependents,data) {
 	}
-	,data: function(layout) {
-		this.layout = layout;
+	,data: function(graphlayout) {
+		var me = this;
+		this.layout = graphlayout.clone();
+		var nodes = Arrays.filter(Iterators.filter(this.layout.graph.nodes.iterator(),function(node) {
+			return me.isdummy(node);
+		}),function(node) {
+			var edge = node.graph.edges.positives(node).next(), cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			return celltail.layer > cellhead.layer;
+		});
+		var layers = this.layout.layers();
+		haxe.Log.trace(nodes,{ fileName : "Sankey.hx", lineNumber : 68, className : "rg.view.svg.chart.Sankey", methodName : "data"});
+		var _g = 0;
+		while(_g < nodes.length) {
+			var node = nodes[_g];
+			++_g;
+			var cell = this.layout.cell(node), ehead = node.graph.edges.positives(node).next(), etail = node.graph.edges.negatives(node).next();
+			layers[cell.layer].splice(cell.position,1);
+			this.layout.graph.edges.create(etail.tail,ehead.head,ehead.weight,ehead.data);
+			node.graph.nodes._remove(node);
+		}
+		haxe.Log.trace(graphlayout.layers(),{ fileName : "Sankey.hx", lineNumber : 83, className : "rg.view.svg.chart.Sankey", methodName : "data"});
+		haxe.Log.trace(this.layout.layers(),{ fileName : "Sankey.hx", lineNumber : 84, className : "rg.view.svg.chart.Sankey", methodName : "data"});
 		this.redraw();
 	}
 	,redraw: function() {
 		var me = this;
-		this.levels = this.layout.length;
-		this.max = Arrays.floatMax(this.layout,function(arr) {
-			return Iterators.reduce(arr.iterator(),function(v,c,_) {
-				return c.weight + v;
-			},0);
-		});
-		this.map = new Hash();
-		this.edges = [];
-		this.availableheight = this.height - Arrays.floatMax(this.layout,function(arr) {
-			return arr.length;
-		}) * this.padding;
-		this.layout.forEach(function(level,lvl) {
-			level.forEach(function(n,pos) {
-				me.map.set(n.id,n);
-			});
-		});
-		this.layout.forEach(function(level,lvl) {
-			level.forEach(function(n,pos) {
-				var _g = 0, _g1 = n.children;
-				while(_g < _g1.length) {
-					var child = _g1[_g];
-					++_g;
-					me.edges.push({ src : n, dst : me.map.get(child.id), weight : child.weight});
-				}
-			});
-		});
-		this.edges.sort(function(a,b) {
-			return Floats.compare(a.weight,b.weight);
-		});
-		var _g = 0, _g1 = this.edges;
-		while(_g < _g1.length) {
-			var edge = _g1[_g];
-			++_g;
-			if(edge.src.level < edge.dst.level) continue;
-			this.availableheight -= this.padLines;
-			this.max += edge.weight;
-		}
-		this.availableheight -= this.minCurve + this.padFlow;
-		var yref = 0.0;
-		this.levelstarts = [];
+		this.maxweight = 0;
+		this.layerstarty = [];
 		var _g1 = 0, _g = this.layout.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var level = this.layout[i], t = 0.0;
-			var _g2 = 0;
-			while(_g2 < level.length) {
-				var node = level[_g2];
-				++_g2;
-				t += this.padding + this.nheight(node.weight);
-			}
-			this.levelstarts[i] = t;
-			if(t > yref) yref = t;
+			var v = Iterators.reduce(this.layout.layer(i).iterator(),function(cum,cur,_) {
+				return cum + cur.data.weight;
+			},0);
+			if(v > this.maxweight) this.maxweight = v;
 		}
-		var _g1 = 0, _g = this.levelstarts.length;
+		var occupiedspace = 0.0;
+		var _g1 = 0, _g = this.layout.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			this.levelstarts[i] = yref - this.levelstarts[i];
+			var v = Iterators.reduce(this.layout.layer(i).iterator(),function(cum,cur,_) {
+				if(me.isdummy(cur)) return cum + me.minpadding; else return cum + me.padding;
+			},0.0);
+			if(v > occupiedspace) occupiedspace = v;
 		}
-		yref += this.padLines + this.minCurve + this.padFlow;
+		this.availableheight = this.height - occupiedspace;
+		var $it0 = this.layout.graph.edges.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			if(this.layout.cell(edge.tail).layer < this.layout.cell(edge.head).layer) continue;
+			this.availableheight -= this.padLines;
+			this.maxweight += edge.weight;
+		}
+		this.availableheight -= this.minCurve + this.padFlow;
+		var backedgesy = 0.0;
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var layer = this.layout.layer(i), t = 0.0;
+			var _g2 = 0;
+			while(_g2 < layer.length) {
+				var node = layer[_g2];
+				++_g2;
+				t += this.padding + this.nheight(node.data.weight);
+			}
+			this.layerstarty[i] = t;
+			if(t > backedgesy) backedgesy = t;
+		}
+		var _g1 = 0, _g = this.layerstarty.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.layerstarty[i] = backedgesy - this.layerstarty[i];
+		}
+		backedgesy += this.padLines + this.minCurve + this.padFlow;
 		this.padBefore = 0.0;
-		var _g = 0, _g1 = this.layout[0];
+		var _g = 0, _g1 = this.layout.layer(0);
 		while(_g < _g1.length) {
 			var node = _g1[_g];
 			++_g;
-			var extrain = Math.min(this.nheight(node.extraweight),this.maxFalloffWidth);
-			if(node.parents.length > 0) {
-				var parentWeight = this.hafter(node.parents[0].id,node.parents) + this.nheight(node.parents[0].weight);
-				if(parentWeight > extrain) extrain = parentWeight;
+			var extrain = Math.min(this.nheight(node.data.extraout),this.maxFalloffWidth);
+			if(node.graph.edges.negativeCount(node) > 0) {
+				var tail = node.graph.edges.negatives(node).next().tail, parentweight = this.hafter(tail.id,node.graph.edges.negatives(node)) + this.nheight(tail.data.weight);
+				if(parentweight > extrain) extrain = parentweight;
 			}
 			if(extrain > this.padBefore) this.padBefore = extrain;
 		}
 		this.padBefore += 2;
 		this.padAfter = 0.0;
-		var _g = 0, _g1 = this.layout[this.layout.length - 1];
+		var _g = 0, _g1 = this.layout.layer(this.layout.length - 1);
 		while(_g < _g1.length) {
 			var node = _g1[_g];
 			++_g;
-			var extrain = Math.min(this.nheight(node.falloffweight),this.maxFalloffWidth);
-			if(node.children.length > 0) {
-				var childWeight = this.hafter(node.children[0].id,node.children) + this.nheight(node.children[0].weight) + this.nheight(node.falloffweight) + this.padLines;
-				if(childWeight > extrain) extrain = childWeight;
+			var extrain = Math.min(this.nheight(node.data.extraout),this.maxFalloffWidth);
+			if(node.graph.edges.positiveCount(node) > 0) {
+				var head = node.graph.edges.positives(node).next().head, childweight = this.hafter(head.id,node.graph.edges.positives(node)) + this.nheight(head.data.weight) + this.nheight(head.data.extraout) + this.padLines;
+				if(childweight > extrain) extrain = childweight;
 			}
 			if(extrain > this.padAfter) this.padAfter = extrain;
 		}
 		this.padAfter += 2;
 		var edgescontainer = this.g.select("g.edges");
 		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
-		this.edges.forEach(function(edge,_) {
-			if(edge.dst.level > edge.src.level) return;
-			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer), before = me.hafter(edge.dst.id,edge.src.children) + Math.min(me.maxFalloffWidth,me.nheight(edge.src.falloffweight)), after = me.hafter(edge.src.id,edge.dst.parents);
-			hook.update(me.levelWidth / 2 + me.xlevel(edge.src.level),me.ynode(edge.src) + me.ydiagonal(edge.dst.id,edge.src.children),-me.levelWidth / 2 + me.xlevel(edge.dst.level),me.nheight(edge.dst.extraweight) + me.ynode(edge.dst) + me.ydiagonal(edge.src.id,edge.dst.parents),weight,yref,before,after);
-			yref += weight + me.padLines;
+		var edges = Arrays.order(Iterators.array(this.layout.graph.edges.iterator()),function(ea,eb) {
+			return Floats.compare(ea.weight,eb.weight);
 		});
-		this.edges.forEach(function(edge,_) {
-			if(edge.dst.level <= edge.src.level) return;
-			var weight = edge.weight / me.max * me.availableheight, diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer);
-			diagonal.update(me.levelWidth / 2 + me.xlevel(edge.src.level),me.ynode(edge.src) + me.ydiagonal(edge.dst.id,edge.src.children),-me.levelWidth / 2 + me.xlevel(edge.dst.level),me.nheight(edge.dst.extraweight) + me.ynode(edge.dst) + me.ydiagonal(edge.src.id,edge.dst.parents),weight,weight);
+		edges.forEach(function(edge,_) {
+			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			if(cellhead.layer > celltail.layer) return;
+			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer), before = me.hafter(edge.head.id,edge.tail.positives()) + Math.min(me.maxFalloffWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.tail.id,edge.head.negatives());
+			hook.update(me.layerWidth / 2 + me.xlayer(celltail.layer),me.ynode(edge.tail) + me.ydiagonal(edge.head.id,edge.tail.positives()),-me.layerWidth / 2 + me.xlayer(cellhead.layer),me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.tail.id,edge.head.negatives()),weight,backedgesy,before,after);
+			backedgesy += weight + me.padLines;
+		});
+		edges.forEach(function(edge,_) {
+			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			if(cellhead.layer <= celltail.layer) return;
+			var weight = edge.weight / me.maxweight * me.availableheight, diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer);
+			diagonal.update(me.layerWidth / 2 + me.xlayer(celltail.layer),me.ynode(edge.tail) + me.ydiagonal(edge.head.id,edge.tail.positives()),-me.layerWidth / 2 + me.xlayer(cellhead.layer),me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.tail.id,edge.head.negatives()),weight,weight);
 		});
 		var normMin = function(v) {
 			return Math.max(0,Math.min(v - 3,me.minCurve));
 		};
-		var _g = 0, _g1 = this.layout;
-		while(_g < _g1.length) {
-			var level = _g1[_g];
-			++_g;
-			var _g2 = 0;
-			while(_g2 < level.length) {
-				var node = level[_g2];
-				++_g2;
-				if(node.falloffweight <= 0) continue;
-				var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), falloff = this.nheight(node.falloffweight);
-				elbow.update(rg.view.svg.widget.Orientation.RightBottom,falloff,this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node) + this.ydiagonal(null,node.children) + falloff,normMin(falloff),this.maxFalloffWidth,0,this.padFlow);
-			}
-		}
-		var _g = 0, _g1 = this.layout;
-		while(_g < _g1.length) {
-			var level = _g1[_g];
-			++_g;
-			var _g2 = 0;
-			while(_g2 < level.length) {
-				var node = level[_g2];
-				++_g2;
-				if(node.extraweight <= 0) continue;
-				var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), extra = this.nheight(node.extraweight);
-				elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,-this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node),normMin(extra),this.maxFalloffWidth,0,this.padFlow);
-			}
-		}
-		var rules = this.g.selectAll("g.level").data(this.layout).enter().append("svg:g").attr("class").string("level").update().attr("transform").stringf(function(_,i) {
-			return "translate(" + me.xlevel(i) + ",0)";
+		this.layout.each(function(cell,node) {
+			if(node.data.extraout <= 0) return;
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), falloff = me.nheight(node.data.extraout);
+			elbow.update(rg.view.svg.widget.Orientation.RightBottom,falloff,me.layerWidth / 2 + me.xlayer(cell.layer),me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)) + falloff,normMin(falloff),me.maxFalloffWidth,0,me.padFlow);
+		});
+		this.layout.each(function(cell,node) {
+			if(node.data.extrain <= 0) return;
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), extra = me.nheight(node.data.extrain);
+			elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,-me.layerWidth / 2 + me.xlayer(cell.layer),me.ynode(node),normMin(extra),me.maxFalloffWidth,0,me.padFlow);
+		});
+		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
+			return "layer layer-" + i;
+		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
+			return "translate(" + me.xlayer(i) + ",0)";
 		}).exit().remove();
-		var choice = rules.update().selectAll("g.node").dataf(function(d,_) {
-			return d;
+		var choice = rules.update().selectAll("g.node").dataf(function(d,i) {
+			return me.layout.layer(i);
 		});
 		var cont = choice.enter().append("svg:g").attr("class").string("node");
-		if(this.levelWidth > 0) {
-			cont.append("svg:rect").attr("class").string("node").attr("x")["float"](-this.levelWidth / 2).attr("y")["float"](0).attr("width")["float"](this.levelWidth).attr("height").floatf(this.hnode.$bind(this));
-			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.levelWidth / 2).attr("y2")["float"](0);
-			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.levelWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+		if(this.layerWidth > 0) {
+			cont.append("svg:rect").attr("class").string("node").attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](this.layerWidth).attr("height").floatf(this.hnode.$bind(this));
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
 		}
-		cont.each(function(dp,i) {
+		cont.each(function(n,i) {
 			var node = thx.js.Dom.selectNode(thx.js.Group.current);
 			var label = new rg.view.svg.widget.Label(node,true,true,false);
 			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
-			label.setText(dp.id);
+			label.setText(n.data.id);
 		});
 		choice.update().attr("transform").stringf(function(n,i) {
 			return "translate(0," + me.ynode(n,i) + ")";
 		});
-		var lines = this.g.selectAll("g.reference").data(this.edges).enter().append("svg:g").attr("class").string("reference");
+		var lines = this.g.selectAll("g.reference").data(edges).enter().append("svg:g").attr("class").string("reference").append("svg:line").style("stroke-opacity")["float"](0.1).style("stroke").colorf(function(d,_) {
+			return me.layout.cell(d.tail).layer == me.layout.cell(d.head).layer?thx.color.NamedColors.blue:me.layout.cell(d.tail).layer < me.layout.cell(d.head).layer?thx.color.NamedColors.green:thx.color.NamedColors.red;
+		});
 		lines.attr("x1").floatf(function(o,_) {
-			return me.xlevel(o.src.level);
+			return me.xlayer(me.layout.cell(o.tail).layer);
 		}).attr("x2").floatf(function(o,_) {
-			return me.xlevel(o.dst.level);
+			return me.xlayer(me.layout.cell(o.head).layer);
 		}).attr("y1").floatf(function(o,_) {
-			return me.ynode(o.src) + me.hnode(o.src) / 2;
+			return me.ynode(o.tail) + me.hnode(o.tail) / 2;
 		}).attr("y2").floatf(function(o,_) {
-			return me.ynode(o.dst) + me.hnode(o.dst) / 2;
+			return me.ynode(o.head) + me.hnode(o.head) / 2;
 		}).style("stroke-width").floatf(function(o,_) {
 			return me.nheight(o.weight);
 		});
 	}
 	,nheight: function(v) {
-		return v / this.max * this.availableheight;
+		return v / this.maxweight * this.availableheight;
 	}
 	,ydiagonal: function(id,edges) {
 		var weight = 0.0;
-		var _g = 0;
-		while(_g < edges.length) {
-			var edge = edges[_g];
-			++_g;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
 			if(edge.id == id) break;
 			weight += edge.weight;
 		}
@@ -1740,10 +1739,8 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	}
 	,hafter: function(id,edges) {
 		var found = false, pad = this.padLines / this.nheight(1), weight = pad;
-		var _g = 0;
-		while(_g < edges.length) {
-			var edge = edges[_g];
-			++_g;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
 			if(!found) {
 				if(edge.id == id) found = true;
 				continue;
@@ -1752,20 +1749,27 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		}
 		return this.nheight(weight);
 	}
-	,xlevel: function(pos,_) {
-		return (this.width - this.padBefore - this.padAfter - this.levelWidth) / (this.levels - 1) * pos + this.levelWidth / 2 + this.padBefore;
+	,xlayer: function(pos,_) {
+		return (this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore;
 	}
 	,ynode: function(node,_) {
-		var before = this.padding + this.levelstarts[node.level];
-		var _g1 = 0, _g = node.pos;
+		var cell = this.layout.cell(node), before = this.nodepadding(node) + this.layerstarty[cell.layer];
+		var _g1 = 0, _g = cell.position;
 		while(_g1 < _g) {
 			var i = _g1++;
-			before += this.hnode(this.layout[node.level][i]) + this.padding;
+			before += this.hnode(node) + this.nodepadding(this.layout.nodeAt(cell.layer,i));
 		}
 		return before;
 	}
+	,nodepadding: function(node) {
+		return this.isdummy(node)?this.minpadding:this.padding;
+	}
+	,isdummy: function(node) {
+		return node.data.id.substr(0,1) == "#";
+	}
 	,hnode: function(node,_) {
-		return this.nheight(node.weight);
+		haxe.Log.trace(node.data.weight,{ fileName : "Sankey.hx", lineNumber : 431, className : "rg.view.svg.chart.Sankey", methodName : "hnode"});
+		return this.nheight(node.data.weight);
 	}
 	,__class__: rg.view.svg.chart.Sankey
 });
@@ -5166,6 +5170,17 @@ thx.js.Dom.event = null;
 thx.js.Dom.prototype = {
 	__class__: thx.js.Dom
 }
+rg.graph.TestGraphLayout = $hxClasses["rg.graph.TestGraphLayout"] = function() {
+}
+rg.graph.TestGraphLayout.__name__ = ["rg","graph","TestGraphLayout"];
+rg.graph.TestGraphLayout.prototype = {
+	testRemoveNode: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n2,n3), layers = [[n1.id],[n2.id],[n3.id]], layout = new rg.graph.GraphLayout(graph,layers);
+		n2.graph.nodes._remove(n2);
+		utest.Assert.same([[n1.id],[n3.id]],layout.layers(),null,null,{ fileName : "TestGraphLayout.hx", lineNumber : 20, className : "rg.graph.TestGraphLayout", methodName : "testRemoveNode"});
+	}
+	,__class__: rg.graph.TestGraphLayout
+}
 rg.view.html.widget.DownloaderPosition = $hxClasses["rg.view.html.widget.DownloaderPosition"] = { __ename__ : ["rg","view","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
 rg.view.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.view.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
 rg.view.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
@@ -6218,7 +6233,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.3677"};
+	r.info.viz = { version : "1.1.5.3903"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -7699,16 +7714,14 @@ thx.translation.ITranslation.prototype = {
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
 rg.graph.GraphLayout = $hxClasses["rg.graph.GraphLayout"] = function(graph,layers) {
-	var me = this;
 	this.graph = graph;
 	this._layers = layers.map(function(arr,_) {
 		return arr.copy();
 	});
 	this.friendCell = this._cell = new rg.graph.LayoutCell();
-	this._map = new IntHash();
-	this.each(function(cell,node) {
-		me._map.set(node.id,[cell.layer,cell.position]);
-	});
+	this._updateMap();
+	this.length = this._layers.length;
+	graph.nodes.onRemove.add(this._nodeRemove.$bind(this));
 }
 rg.graph.GraphLayout.__name__ = ["rg","graph","GraphLayout"];
 rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
@@ -7745,10 +7758,21 @@ rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
 }
 rg.graph.GraphLayout.prototype = {
 	graph: null
+	,length: null
 	,_layers: null
 	,_cell: null
 	,_map: null
 	,friendCell: null
+	,_updateMap: function() {
+		var me = this;
+		this._map = new IntHash();
+		this.each(function(cell,node) {
+			me._map.set(node.id,[cell.layer,cell.position]);
+		});
+	}
+	,clone: function() {
+		return new rg.graph.GraphLayout(this.graph.clone(),this.layers());
+	}
 	,each: function(f) {
 		var layers = this._layers.length, positions;
 		var _g = 0;
@@ -7764,7 +7788,7 @@ rg.graph.GraphLayout.prototype = {
 		}
 	}
 	,cell: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 43, className : "rg.graph.GraphLayout", methodName : "cell"});
+		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 57, className : "rg.graph.GraphLayout", methodName : "cell"});
 		var pos = this._map.get(node.id);
 		if(null == pos) return null;
 		return new rg.graph.LayoutCell(pos[0],pos[1],this._layers.length,this._layers[pos[0]].length);
@@ -7775,6 +7799,12 @@ rg.graph.GraphLayout.prototype = {
 		var id = arr[position];
 		if(null == id) return null;
 		return this.graph.nodes.get(id);
+	}
+	,layer: function(i) {
+		var me = this;
+		return this._layers[i].map(function(id,_) {
+			return me.graph.nodes.get(id);
+		});
 	}
 	,layers: function() {
 		var result = [];
@@ -7794,6 +7824,20 @@ rg.graph.GraphLayout.prototype = {
 			tot += rg.graph.GraphLayout.arrayCrossings(this.graph,this._layers[i],this._layers[i + 1]);
 		}
 		return tot;
+	}
+	,maxCells: function() {
+		return Std["int"](Arrays.floatMax(this._layers,function(arr) {
+			return arr.length;
+		}));
+	}
+	,_nodeRemove: function(node) {
+		var c = this.cell(node);
+		this._layers[c.layer].splice(c.position,1);
+		if(this._layers[c.layer].length == 0) this._layers.splice(c.layer,1);
+		this._updateMap();
+	}
+	,toString: function() {
+		return "GraphLayout (" + this.graph + ", layers: " + this._layers.length + ", crossings : " + this.crossings() + ")";
 	}
 	,__class__: rg.graph.GraphLayout
 }
@@ -7913,8 +7957,8 @@ rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(gra
 	this.collection = new IntHash();
 	this.map = new Hash();
 	if(null != idf) {
-		var add = this.collectionAdd.$bind(this);
-		this.collectionAdd = function(item) {
+		var add = this.collectionCreate.$bind(this);
+		this.collectionCreate = function(item) {
 			me.map.set(idf(item.data),item);
 			add(item);
 		};
@@ -7924,10 +7968,14 @@ rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(gra
 			rem(item);
 		};
 	}
+	this.onRemove = new hxevents.Dispatcher();
+	this.onCreate = new hxevents.Dispatcher();
 }
 rg.graph.GraphCollection.__name__ = ["rg","graph","GraphCollection"];
 rg.graph.GraphCollection.prototype = {
-	graph: null
+	onRemove: null
+	,onCreate: null
+	,graph: null
 	,collection: null
 	,nextid: null
 	,idf: null
@@ -7945,11 +7993,13 @@ rg.graph.GraphCollection.prototype = {
 	,get_length: function() {
 		return IntHashes.count(this.collection);
 	}
-	,collectionAdd: function(item) {
+	,collectionCreate: function(item) {
+		this.onCreate.dispatch(item);
 		this.collection.set(item.id,item);
 	}
 	,collectionRemove: function(item) {
 		this.collection.remove(item.id);
+		this.onRemove.dispatch(item);
 	}
 	,iterator: function() {
 		return this.collection.iterator();
@@ -7987,14 +8037,14 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		edges.nextid = this.nextid;
 		return edges;
 	}
-	,create: function(tail,head,data,weight) {
+	,create: function(tail,head,weight,data) {
 		if(weight == null) weight = 1.0;
 		if(tail.graph != head.graph || tail.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 39, className : "rg.graph.GraphEdges", methodName : "create"});
 		return this._create(++this.nextid,tail,head,weight,data);
 	}
 	,_create: function(id,tail,head,weight,data) {
 		var e = rg.graph.GEdge.create(this.graph,id,tail,head,weight,data);
-		this.collectionAdd(e);
+		this.collectionCreate(e);
 		this.connections(tail.id,this.edgesp).push(id);
 		this.connections(head.id,this.edgesn).push(id);
 		return e;
@@ -14730,7 +14780,7 @@ rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
 		$r = traverse;
 		return $r;
 	}(this));
-	return traverse(node.graph.edges.positives(node),1);
+	return node.isIsolated()?0:traverse(node.graph.edges.positives(node),1);
 }
 rg.graph.LongestPathLayer.prototype = {
 	lay: function(graph) {
@@ -18632,6 +18682,20 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 			return edge1.tail.id == other.id;
 		});
 	}
+	,positiveWeight: function() {
+		return this._weight(this.graph.edges.positives(this));
+	}
+	,negativeWeight: function() {
+		return this._weight(this.graph.edges.negatives(this));
+	}
+	,_weight: function(it) {
+		var weight = 0.0;
+		while( it.hasNext() ) {
+			var edge = it.next();
+			weight += edge.weight;
+		}
+		return weight;
+	}
 	,isSource: function() {
 		return this.graph.edges.positives(this).hasNext() && !this.graph.edges.negatives(this).hasNext();
 	}
@@ -18687,7 +18751,7 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return this.graph.edges;
 	}
 	,toString: function() {
-		return "Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
+		return null == this.graph?"Node Destroyed":"Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
 	}
 	,__class__: rg.graph.GNode
 });
@@ -18711,20 +18775,23 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		this.tail = null;
 		this.head = null;
 	}
-	,split: function(times,f) {
+	,split: function(times,dataf,edgef) {
 		if(times == null) times = 1;
 		if(times < 1) throw new thx.error.Error("the split times parameter must be an integer value greater than zero",null,null,{ fileName : "GEdge.hx", lineNumber : 37, className : "rg.graph.GEdge", methodName : "split"});
-		if(null == f) f = function(_,_1,_2) {
+		if(null == edgef) edgef = function(_,_1,_2) {
+		};
+		if(null == dataf) dataf = function(_) {
+			return null;
 		};
 		var last = this, result = [], node, e1, e2, g = last.graph;
 		var _g = 0;
 		while(_g < times) {
 			var i = _g++;
-			node = g.nodes.create();
-			e1 = g.edges.create(last.tail,node,last.data,last.weight);
-			e2 = g.edges.create(node,last.head,last.data,last.weight);
+			node = g.nodes.create(dataf(last));
+			e1 = g.edges.create(last.tail,node,last.weight,last.data);
+			e2 = g.edges.create(node,last.head,last.weight,last.data);
 			g.edges.remove(last);
-			f(e1,e2,i);
+			edgef(e1,e2,i);
 			last = e2;
 			g = last.graph;
 			result.push(e1);
@@ -18733,11 +18800,11 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return result;
 	}
 	,other: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 62, className : "rg.graph.GEdge", methodName : "other"});
-		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 68, className : "rg.graph.GEdge", methodName : "other"});
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 64, className : "rg.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 70, className : "rg.graph.GEdge", methodName : "other"});
 	}
 	,invert: function() {
-		var inverted = this.graph.edges.create(this.head,this.tail,this.data,this.weight);
+		var inverted = this.graph.edges.create(this.head,this.tail,this.weight,this.data);
 		this.graph.edges._remove(this);
 		return inverted;
 	}
@@ -18748,7 +18815,7 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return this.graph.edges;
 	}
 	,toString: function() {
-		return "Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
+		return null == this.graph?"Edge Destroyed":"Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
 	}
 	,__class__: rg.graph.GEdge
 });
@@ -19378,183 +19445,68 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
-		var map = this.mapData(data), layout = this.layoutMap(map);
+		var layout = this.layoutData(data);
 		this.chart.init();
 		this.chart.data(layout);
 	}
-	,layoutMap: function(map) {
-		var sugiyama = null, vertices = [], edges = [];
-		Iterators.each(map.iterator(),function(node,_) {
-			vertices.push(node.id);
-			var _g = 0, _g1 = node.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				edges.push({ a : node.id, b : child.id});
-			}
-		});
-		var glayout = null, gmap = rg.graph.Graphs.toMap(glayout);
-		var layout = [], tmap;
-		var _g1 = 0, _g = glayout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			layout[i] = [];
-			var _g3 = 0, _g2 = glayout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				var gnode = glayout[i][j], onode = map.get(gnode.vertex), nnode = { dp : null, id : gnode.vertex, weight : 0.0, extraweight : 0.0, falloffweight : 0.0, parents : [], children : [], level : i, pos : j};
-				if(null != onode) {
-					nnode.dp = onode.dp;
-					nnode.weight = onode.weight;
-					nnode.extraweight = onode.extraweight;
-					nnode.falloffweight = onode.falloffweight;
-					tmap = new Hash();
-					var _g4 = 0, _g5 = onode.children;
-					while(_g4 < _g5.length) {
-						var c = _g5[_g4];
-						++_g4;
-						tmap.set(c.id,c.weight);
-					}
-					var _g4 = 0, _g5 = gnode.edgesp;
-					while(_g4 < _g5.length) {
-						var dst = _g5[_g4];
-						++_g4;
-						var id = dst;
-						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesp[0];
-						nnode.children.push({ id : dst, weight : tmap.get(id)});
-					}
-					tmap = new Hash();
-					var _g4 = 0, _g5 = onode.parents;
-					while(_g4 < _g5.length) {
-						var c = _g5[_g4];
-						++_g4;
-						tmap.set(c.id,c.weight);
-					}
-					var _g4 = 0, _g5 = gnode.edgesn;
-					while(_g4 < _g5.length) {
-						var dst = _g5[_g4];
-						++_g4;
-						var id = dst;
-						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
-						nnode.parents.push({ id : dst, weight : tmap.get(id)});
-					}
-				} else {
-					haxe.Log.trace(gnode,{ fileName : "VisualizationSankey.hx", lineNumber : 125, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
-					var dstid = gnode.edgesp[0];
-					while(rg.graph.Graphs.isDummy(dstid)) dstid = gmap.get(dstid).edgesp[0];
-					haxe.Log.trace(dstid,{ fileName : "VisualizationSankey.hx", lineNumber : 129, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
-					var _g4 = 0, _g5 = gnode.edgesn;
-					while(_g4 < _g5.length) {
-						var src = _g5[_g4];
-						++_g4;
-						var id = src;
-						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
-						haxe.Log.trace(src + " TO " + id,{ fileName : "VisualizationSankey.hx", lineNumber : 135, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
-						var parent = map.get(id);
-						haxe.Log.trace(parent,{ fileName : "VisualizationSankey.hx", lineNumber : 137, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
-						var _g6 = 0, _g7 = parent.children;
-						while(_g6 < _g7.length) {
-							var edge = _g7[_g6];
-							++_g6;
-							haxe.Log.trace(edge,{ fileName : "VisualizationSankey.hx", lineNumber : 140, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
-							if(edge.id == dstid) {
-								nnode.parents.push({ id : src, weight : edge.weight});
-								break;
-							}
-						}
-					}
-					haxe.Log.trace(nnode,{ fileName : "VisualizationSankey.hx", lineNumber : 166, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutMap"});
-				}
-				layout[i][j] = nnode;
-			}
-		}
-		return layout;
-	}
-	,layoutMap2: function(map) {
-		var result = [], i = -1, keys = Arrays.order(Iterators.array(map.keys()),function(a,b) {
-			return Floats.compare(map.get(b).weight,map.get(a).weight);
-		});
-		var addAt = (function($this) {
-			var $r;
-			var addAt = null;
-			addAt = function(id,lvl) {
-				var node = map.get(id);
-				if(!keys.remove(id)) return;
-				var level = result[lvl];
-				if(null == level) level = result[lvl] = [];
-				level.push(node);
-				node.pos = level.length - 1;
-				node.level = lvl;
-				var _g = 0, _g1 = node.children;
-				while(_g < _g1.length) {
-					var child = _g1[_g];
-					++_g;
-					addAt(child.id,lvl + 1);
-				}
+	,layoutData: function(data,idf,nodef,weightf,edgesf) {
+		if(idf == null) idf = function(data1) {
+			return data1.id;
+		};
+		if(nodef == null) {
+			var dummynodeid = 0;
+			nodef = function(edge) {
+				return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
 			};
-			$r = addAt;
-			return $r;
-		}(this));
-		while(keys.length > 0) addAt(keys[0],0);
-		var $it0 = map.keys();
-		while( $it0.hasNext() ) {
-			var key = $it0.next();
-			var n = map.get(key);
-			n.parents.sort(function(a,b) {
-				var c = map.get(a.id).level - map.get(b.id).level;
-				if(c > 0) return c;
-				return Floats.compare(b.weight,a.weight);
-			});
 		}
-		return result;
-	}
-	,mapData: function(data) {
-		var map = new Hash(), idfield = this.info.idproperty, weightfield = this.info.weightproperty, parentsfield = this.info.parentsproperty, id, weight, o, Dynamic, parents;
+		if(edgesf == null) edgesf = function(dp) {
+			var r = [], id = idf(dp);
+			var _g = 0, _g1 = Reflect.fields(dp.parents);
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				haxe.Log.trace("EDGE " + parent + " to " + id + ": " + Reflect.field(dp.parents,parent),{ fileName : "VisualizationSankey.hx", lineNumber : 76, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+				r.push({ head : id, tail : parent, weight : Reflect.field(dp.parents,parent)});
+			}
+			haxe.Log.trace(r,{ fileName : "VisualizationSankey.hx", lineNumber : 83, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			return r;
+		};
+		if(null == weightf) weightf = function(dp) {
+			return null != dp.count?dp.count:0.0;
+		};
+		var graph = new rg.graph.Graph(idf);
 		var _g = 0;
 		while(_g < data.length) {
 			var dp = data[_g];
 			++_g;
-			id = Reflect.field(dp,idfield);
-			if(null == id) continue;
-			o = Reflect.field(dp,parentsfield);
-			parents = Reflect.fields(o).map(function(field,_) {
-				return { id : field, weight : Reflect.field(o,field)};
-			});
-			var derivedweight = Iterators.reduce(parents.iterator(),function(tot,cur,_) {
-				return tot + cur.weight;
-			},0.0);
-			weight = Reflect.field(dp,weightfield);
-			if(null == weight) weight = derivedweight;
-			map.set(id,{ dp : dp, id : id, weight : weight, extraweight : weight - derivedweight, falloffweight : 0.0, parents : parents, children : [], level : 0, pos : 0});
+			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), extrain : 0.0, extraout : 0.0});
 		}
-		var $it0 = map.keys();
+		var _g = 0;
+		while(_g < data.length) {
+			var dp = data[_g];
+			++_g;
+			var edges = edgesf(dp);
+			var _g1 = 0;
+			while(_g1 < edges.length) {
+				var edge = edges[_g1];
+				++_g1;
+				var head = graph.nodes.getById(edge.tail);
+				var tail = graph.nodes.getById(edge.head);
+				graph.edges.create(tail,head,edge.weight);
+			}
+		}
+		var $it0 = graph.nodes.collection.iterator();
 		while( $it0.hasNext() ) {
-			var key = $it0.next();
-			var n = map.get(key);
-			var _g = 0, _g1 = n.parents;
-			while(_g < _g1.length) {
-				var p = _g1[_g];
-				++_g;
-				var pn = map.get(p.id);
-				Arrays.add(pn.children,{ id : n.id, weight : p.weight});
-				pn.children.sort(function(a,b) {
-					return Floats.compare(b.weight,a.weight);
-				});
-			}
+			var node = $it0.next();
+			var win = node.negativeWeight(), wout = node.positiveWeight();
+			haxe.Log.trace("NODE",{ fileName : "VisualizationSankey.hx", lineNumber : 119, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			haxe.Log.trace(node.data,{ fileName : "VisualizationSankey.hx", lineNumber : 120, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			haxe.Log.trace(win,{ fileName : "VisualizationSankey.hx", lineNumber : 121, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			if(node.data.weight == 0) node.data.weight = win;
+			node.data.extrain = Math.max(0,node.data.weight - win);
+			node.data.extraout = Math.max(0,node.data.weight - wout);
 		}
-		var $it1 = map.keys();
-		while( $it1.hasNext() ) {
-			var key = $it1.next();
-			var n = map.get(key), falloff = n.weight;
-			var _g = 0, _g1 = n.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				falloff -= child.weight;
-			}
-			n.falloffweight = falloff;
-		}
-		return map;
+		return new rg.graph.SugiyamaMethod().resolve(graph,nodef);
 	}
 	,destroy: function() {
 		this.chart.destroy();
@@ -20280,7 +20232,7 @@ rg.graph.TestEdge.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
 		utest.Assert.equals(6,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 97, className : "rg.graph.TestEdge", methodName : "testSplitMore"});
 	}
 	,testSplitF: function() {
-		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2,null,16), de = se.split(3,function(e1,e2,_) {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2,16), de = se.split(3,null,function(e1,e2,_) {
 			e2.weight = e1.weight / 2;
 		});
 		utest.Assert.equals(4,de.length,null,{ fileName : "TestEdge.hx", lineNumber : 108, className : "rg.graph.TestEdge", methodName : "testSplitF"});
@@ -21526,7 +21478,7 @@ rg.graph.SugiyamaMethod.prototype = {
 	,layer: null
 	,splitter: null
 	,decrosser: null
-	,resolve: function(graph,splitf) {
+	,resolve: function(graph,nodef,edgef) {
 		var onecycles = new rg.graph.OneCycleRemover().remove(graph), twocycles = new rg.graph.TwoCycleRemover().remove(graph);
 		var partitions = this.partitioner.partition(graph), reversed = (partitions.left.length > partitions.right.length?partitions.right:partitions.left).map(function(edge,_) {
 			var ob = { tail : edge.tail, head : edge.head};
@@ -21535,7 +21487,7 @@ rg.graph.SugiyamaMethod.prototype = {
 		});
 		var layers = this.layer.lay(graph);
 		var layout = new rg.graph.GraphLayout(graph,layers);
-		layout = this.splitter.split(layout,splitf);
+		layout = this.splitter.split(layout,nodef,edgef);
 		layout = this.decrosser.decross(layout);
 		var _g = 0;
 		while(_g < reversed.length) {
@@ -21550,13 +21502,13 @@ rg.graph.SugiyamaMethod.prototype = {
 		while(_g < twocycles.length) {
 			var item = twocycles[_g];
 			++_g;
-			layout.graph.edges.create(item.tail,item.head,item.data,item.weight);
+			layout.graph.edges.create(item.tail,item.head,item.weight,item.data);
 		}
 		var _g = 0;
 		while(_g < onecycles.length) {
 			var item = onecycles[_g];
 			++_g;
-			layout.graph.edges.create(item.node,item.node,item.data,item.weight);
+			layout.graph.edges.create(item.node,item.node,item.weight,item.data);
 		}
 		return layout;
 	}
@@ -21836,9 +21788,9 @@ rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
 }
 rg.graph.EdgeSplitter.__name__ = ["rg","graph","EdgeSplitter"];
 rg.graph.EdgeSplitter.prototype = {
-	split: function(layout,splitf) {
+	split: function(layout,dataf,edgef) {
 		var layers = layout.layers(), cell, ocell;
-		if(null == splitf) splitf = function(_,_1,_2) {
+		if(null == edgef) edgef = function(_,_1,_2) {
 		};
 		var $it0 = layout.graph.nodes.collection.iterator();
 		while( $it0.hasNext() ) {
@@ -21852,10 +21804,10 @@ rg.graph.EdgeSplitter.prototype = {
 				if(cell.layer == ocell.layer - 1) continue;
 				if(cell.layer == ocell.layer + 1) continue;
 				var sign = [cell.layer < ocell.layer?1:-1], diff = Ints.abs(ocell.layer - cell.layer) - 1;
-				edge.split(diff,(function(sign) {
+				edge.split(diff,dataf,(function(sign) {
 					return function(ea,eb,i) {
 						layers[cell.layer + (1 + i) * sign[0]].push(ea.head.id);
-						splitf(ea,eb,i);
+						edgef(ea,eb,i);
 					};
 				})(sign));
 			}
@@ -21999,6 +21951,7 @@ TestAll.addTest = function(runner) {
 	runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
 	runner.addCase(new rg.graph.TestGraph());
 	runner.addCase(new rg.graph.TestGraphCollection());
+	runner.addCase(new rg.graph.TestGraphLayout());
 	runner.addCase(new rg.graph.TestNode());
 	runner.addCase(new rg.graph.TestEdge());
 	runner.addCase(new rg.graph.TestOneCycleRemover());
@@ -22552,7 +22505,7 @@ rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
 	}
 	,_create: function(id,data) {
 		var n = rg.graph.GNode.create(this.graph,id,data);
-		this.collectionAdd(n);
+		this.collectionCreate(n);
 		return n;
 	}
 	,remove: function(node) {
@@ -23198,7 +23151,7 @@ rg.graph.TestGraphCollection.prototype = {
 			return s;
 		},function(i) {
 			return "#" + i;
-		}), na = graph.nodes.create("a"), nb = graph.nodes.create("b"), e = graph.edges.create(na,nb,7);
+		}), na = graph.nodes.create("a"), nb = graph.nodes.create("b"), e = graph.edges.create(na,nb,null,7);
 		utest.Assert.equals(na,graph.nodes.getById("a"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 15, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
 		utest.Assert.equals(nb,graph.nodes.getById("b"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 16, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
 		utest.Assert.equals(e,graph.edges.getById("#7"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 17, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
@@ -24678,7 +24631,7 @@ rg.graph.TestGraph.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
 		utest.Assert.isTrue(this.n5 != clone.nodes.get(this.n5.id),null,{ fileName : "TestGraph.hx", lineNumber : 11, className : "rg.graph.TestGraph", methodName : "testClone"});
 		utest.Assert.notNull(clone.nodes.get(this.n5.id),null,{ fileName : "TestGraph.hx", lineNumber : 12, className : "rg.graph.TestGraph", methodName : "testClone"});
 		utest.Assert.equals(this.n5.data,clone.nodes.get(this.n5.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 14, className : "rg.graph.TestGraph", methodName : "testClone"});
-		utest.Assert.equals(this.e.data,clone.edges.get(this.e.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 15, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.e2.data,clone.edges.get(this.e2.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 15, className : "rg.graph.TestGraph", methodName : "testClone"});
 		utest.Assert.equals(this.graph.nodes.create().id,clone.nodes.create().id,null,{ fileName : "TestGraph.hx", lineNumber : 17, className : "rg.graph.TestGraph", methodName : "testClone"});
 		utest.Assert.equals(this.graph.edges.create(this.n6,this.n5).id,clone.edges.create(clone.nodes.get(this.n5.id),clone.nodes.get(this.n6.id)).id,null,{ fileName : "TestGraph.hx", lineNumber : 18, className : "rg.graph.TestGraph", methodName : "testClone"});
 		this.graph.clear();
@@ -24768,6 +24721,41 @@ rg.graph.TestGraph.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
 		utest.Assert.notNull(item,null,{ fileName : "TestGraph.hx", lineNumber : 136, className : "rg.graph.TestGraph", methodName : "testFindIsolated"});
 		Arrays.exists([this.n10,this.n11],item);
 	}
+	,testEventsCreate: function() {
+		var me = this;
+		var nodeadd = 0, edgeadd = 0;
+		this.graph.nodes.onCreate.add(function(n) {
+			utest.Assert.isFalse(me.graph.nodes.has(n),null,{ fileName : "TestGraph.hx", lineNumber : 145, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+			nodeadd++;
+		});
+		this.graph.edges.onCreate.add(function(ee) {
+			utest.Assert.isFalse(me.graph.edges.has(ee),null,{ fileName : "TestGraph.hx", lineNumber : 149, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+			edgeadd++;
+		});
+		this.n1.remove();
+		this.e2.remove();
+		this.graph.nodes.create();
+		this.graph.edges.create(this.n3,this.n6);
+		utest.Assert.equals(1,nodeadd,null,{ fileName : "TestGraph.hx", lineNumber : 158, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+		utest.Assert.equals(1,edgeadd,null,{ fileName : "TestGraph.hx", lineNumber : 159, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+	}
+	,testEventsRemove: function() {
+		var me = this;
+		var noderem = 0, edgerem = 0;
+		this.graph.nodes.onRemove.add(function(n) {
+			utest.Assert.equals(me.n1,n,null,{ fileName : "TestGraph.hx", lineNumber : 167, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+			noderem++;
+		});
+		this.graph.edges.onRemove.add(function(ee) {
+			utest.Assert.contains(ee,[me.e5,me.e6,me.e9],null,{ fileName : "TestGraph.hx", lineNumber : 171, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+			edgerem++;
+		});
+		this.n1.remove();
+		this.graph.nodes.create();
+		this.graph.edges.create(this.n3,this.n6);
+		utest.Assert.equals(1,noderem,null,{ fileName : "TestGraph.hx", lineNumber : 180, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+		utest.Assert.equals(3,edgerem,null,{ fileName : "TestGraph.hx", lineNumber : 181, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+	}
 	,assertEdge: function(edge,tail,head,pos) {
 		utest.Assert.equals(edge.tail,tail,null,pos);
 		utest.Assert.equals(edge.head,head,null,pos);
@@ -24783,7 +24771,19 @@ rg.graph.TestGraph.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
 	,n9: null
 	,n10: null
 	,n11: null
-	,e: null
+	,e1: null
+	,e2: null
+	,e3: null
+	,e4: null
+	,e5: null
+	,e6: null
+	,e7: null
+	,e8: null
+	,e9: null
+	,e10: null
+	,e11: null
+	,e12: null
+	,e13: null
 	,setup: function() {
 		rg.graph.TestBaseGraph.prototype.setup.call(this);
 		this.n1 = this.graph.nodes.create();
@@ -24797,19 +24797,19 @@ rg.graph.TestGraph.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
 		this.n9 = this.graph.nodes.create();
 		this.n10 = this.graph.nodes.create();
 		this.n11 = this.graph.nodes.create();
-		this.graph.edges.create(this.n6,this.n5);
-		this.e = this.graph.edges.create(this.n5,this.n4,"ED",10);
-		this.graph.edges.create(this.n4,this.n2);
-		this.graph.edges.create(this.n5,this.n3);
-		this.graph.edges.create(this.n3,this.n1);
-		this.graph.edges.create(this.n1,this.n3);
-		this.graph.edges.create(this.n3,this.n3);
-		this.graph.edges.create(this.n2,this.n3);
-		this.graph.edges.create(this.n1,this.n2);
-		this.graph.edges.create(this.n2,this.n5,null,20);
-		this.graph.edges.create(this.n4,this.n7);
-		this.graph.edges.create(this.n5,this.n8);
-		this.graph.edges.create(this.n9,this.n8);
+		this.e1 = this.graph.edges.create(this.n6,this.n5);
+		this.e2 = this.graph.edges.create(this.n5,this.n4,10,"ED");
+		this.e3 = this.graph.edges.create(this.n4,this.n2);
+		this.e4 = this.graph.edges.create(this.n5,this.n3);
+		this.e5 = this.graph.edges.create(this.n3,this.n1);
+		this.e6 = this.graph.edges.create(this.n1,this.n3);
+		this.e7 = this.graph.edges.create(this.n3,this.n3);
+		this.e8 = this.graph.edges.create(this.n2,this.n3);
+		this.e9 = this.graph.edges.create(this.n1,this.n2);
+		this.e10 = this.graph.edges.create(this.n2,this.n5,20.0);
+		this.e11 = this.graph.edges.create(this.n4,this.n7);
+		this.e12 = this.graph.edges.create(this.n5,this.n8);
+		this.e13 = this.graph.edges.create(this.n9,this.n8);
 	}
 	,__class__: rg.graph.TestGraph
 });

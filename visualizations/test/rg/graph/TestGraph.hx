@@ -12,7 +12,7 @@ class TestGraph extends TestBaseGraph<Dynamic, Dynamic>
 		Assert.notNull(clone.nodes.get(n5.id));
 
 		Assert.equals(n5.data, clone.nodes.get(n5.id).data);
-		Assert.equals(e.data,  clone.edges.get(e.id).data);
+		Assert.equals(e2.data, clone.edges.get(e2.id).data);
 
 		Assert.equals(graph.nodes.create().id, clone.nodes.create().id);
 		Assert.equals(
@@ -137,25 +137,81 @@ class TestGraph extends TestBaseGraph<Dynamic, Dynamic>
 		Arrays.exists([n10, n11], item);
 	}
 
+	public function testEventsCreate()
+	{
+		var nodeadd = 0,
+			edgeadd = 0;
+		graph.nodes.onCreate.add(function(n) {
+			Assert.isFalse(graph.nodes.has(n));
+			nodeadd++;
+		});
+		graph.edges.onCreate.add(function(ee) {
+			Assert.isFalse(graph.edges.has(ee));
+			edgeadd++;
+		});
+
+		n1.remove();
+		e2.remove();
+		graph.nodes.create();
+		graph.edges.create(n3, n6);
+
+		Assert.equals(1, nodeadd);
+		Assert.equals(1, edgeadd);
+	}
+
+	public function testEventsRemove()
+	{
+		var noderem = 0,
+			edgerem = 0;
+		graph.nodes.onRemove.add(function(n) {
+			Assert.equals(n1, n);
+			noderem++;
+		});
+		graph.edges.onRemove.add(function(ee) {
+			Assert.contains(ee, [e5, e6, e9]);
+			edgerem++;
+		});
+
+		// this removes also e5, e6, e9
+		n1.remove();
+		graph.nodes.create();
+		graph.edges.create(n3, n6);
+
+		Assert.equals(1, noderem);
+		Assert.equals(3, edgerem);
+	}
+
 	function assertEdge(edge : GEdge<Dynamic, Dynamic>, tail : GNode<Dynamic, Dynamic>, head : GNode<Dynamic, Dynamic>, ?pos : haxe.PosInfos)
 	{
 		Assert.equals(edge.tail, tail, pos);
 		Assert.equals(edge.head, head, pos);
 	}
 
-	var n1 : GNode<Dynamic, Dynamic>;
-	var n2 : GNode<Dynamic, Dynamic>;
-	var n3 : GNode<Dynamic, Dynamic>;
-	var n4 : GNode<Dynamic, Dynamic>;
-	var n5 : GNode<Dynamic, Dynamic>;
-	var n6 : GNode<Dynamic, Dynamic>;
-	var n7 : GNode<Dynamic, Dynamic>;
-	var n8 : GNode<Dynamic, Dynamic>;
-	var n9 : GNode<Dynamic, Dynamic>;
+	var n1  : GNode<Dynamic, Dynamic>;
+	var n2  : GNode<Dynamic, Dynamic>;
+	var n3  : GNode<Dynamic, Dynamic>;
+	var n4  : GNode<Dynamic, Dynamic>;
+	var n5  : GNode<Dynamic, Dynamic>;
+	var n6  : GNode<Dynamic, Dynamic>;
+	var n7  : GNode<Dynamic, Dynamic>;
+	var n8  : GNode<Dynamic, Dynamic>;
+	var n9  : GNode<Dynamic, Dynamic>;
 	var n10 : GNode<Dynamic, Dynamic>;
 	var n11 : GNode<Dynamic, Dynamic>;
 
-	var e : GEdge<Dynamic, Dynamic>;
+	var e1  : GEdge<Dynamic, Dynamic>;
+	var e2  : GEdge<Dynamic, Dynamic>;
+	var e3  : GEdge<Dynamic, Dynamic>;
+	var e4  : GEdge<Dynamic, Dynamic>;
+	var e5  : GEdge<Dynamic, Dynamic>;
+	var e6  : GEdge<Dynamic, Dynamic>;
+	var e7  : GEdge<Dynamic, Dynamic>;
+	var e8  : GEdge<Dynamic, Dynamic>;
+	var e9  : GEdge<Dynamic, Dynamic>;
+	var e10 : GEdge<Dynamic, Dynamic>;
+	var e11 : GEdge<Dynamic, Dynamic>;
+	var e12 : GEdge<Dynamic, Dynamic>;
+	var e13 : GEdge<Dynamic, Dynamic>;
 
 	override function setup()
 	{
@@ -172,19 +228,19 @@ class TestGraph extends TestBaseGraph<Dynamic, Dynamic>
 		n10 = graph.nodes.create();
 		n11 = graph.nodes.create();
 
-		graph.edges.create(n6, n5);
-		e = graph.edges.create(n5, n4, "ED", 10);
-		graph.edges.create(n4, n2);
-		graph.edges.create(n5, n3);
-		graph.edges.create(n3, n1);
-		graph.edges.create(n1, n3);
-		graph.edges.create(n3, n3);
-		graph.edges.create(n2, n3);
-		graph.edges.create(n1, n2);
-		graph.edges.create(n2, n5, null, 20);
+		e1  = graph.edges.create(n6, n5);
+		e2  = graph.edges.create(n5, n4, 10, "ED");
+		e3  = graph.edges.create(n4, n2);
+		e4  = graph.edges.create(n5, n3);
+		e5  = graph.edges.create(n3, n1);
+		e6  = graph.edges.create(n1, n3);
+		e7  = graph.edges.create(n3, n3);
+		e8  = graph.edges.create(n2, n3);
+		e9  = graph.edges.create(n1, n2);
+		e10 = graph.edges.create(n2, n5, 20.0);
 
-		graph.edges.create(n4, n7);
-		graph.edges.create(n5, n8);
-		graph.edges.create(n9, n8);
+		e11 = graph.edges.create(n4, n7);
+		e12 = graph.edges.create(n5, n8);
+		e13 = graph.edges.create(n9, n8);
 	}
 }

@@ -21,7 +21,7 @@ class SugiyamaMethod<TNodeData, TEdgeData>
 		this.decrosser   = null == decrosser   ? GreedySwitchDecrosser.best()     : decrosser;
 	}
 
-	public function resolve(graph : Graph<TNodeData, TEdgeData>, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>
+	public function resolve(graph : Graph<TNodeData, TEdgeData>, ?nodef : GEdge<TNodeData, TEdgeData> -> TNodeData, ?edgef : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>
 	{
 		var onecycles = new OneCycleRemover().remove(graph),
 			twocycles = new TwoCycleRemover().remove(graph);
@@ -40,7 +40,7 @@ class SugiyamaMethod<TNodeData, TEdgeData>
 
 		var layout = new GraphLayout(graph, layers);
 
-		layout = splitter.split(layout, splitf);
+		layout = splitter.split(layout, nodef, edgef);
 
 		layout = decrosser.decross(layout);
 
@@ -50,14 +50,14 @@ class SugiyamaMethod<TNodeData, TEdgeData>
 			var path = layout.graph.directedPath(item.head, item.tail);
 			path.each(function(edge, _) edge.invert());
 		}
+
 		// restore two cycles
 		for(item in twocycles)
-			layout.graph.edges.create(item.tail, item.head, item.data, item.weight);
+			layout.graph.edges.create(item.tail, item.head, item.weight, item.data);
 
 		// restore one cycle
 		for(item in onecycles)
-			layout.graph.edges.create(item.node, item.node, item.data, item.weight);
-
+			layout.graph.edges.create(item.node, item.node, item.weight, item.data);
 
 		return layout;
 	}
@@ -228,7 +228,7 @@ typedef Layering<TNodeData, TEdgeData> = {
 }
 
 typedef Splitting<TNodeData, TEdgeData> = {
-	public function split(layout : GraphLayout<TNodeData, TEdgeData>, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>;
+	public function split(layout : GraphLayout<TNodeData, TEdgeData>, ?nodef : GEdge<TNodeData, TEdgeData> -> TNodeData, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>;
 }
 
 typedef Decrossing<TNodeData, TEdgeData> = {

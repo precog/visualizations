@@ -49,6 +49,24 @@ class GNode<TNodeData, TEdgeData> extends GraphElement<TNodeData, TNodeData, TEd
 		});
 	}
 
+	public function positiveWeight()
+	{
+		return _weight(positives());
+	}
+
+	public function negativeWeight()
+	{
+		return _weight(negatives());
+	}
+
+	function _weight(it : Iterator<GEdge<TNodeData, TEdgeData>>)
+	{
+		var weight = 0.0;
+		for(edge in it)
+			weight += edge.weight;
+		return weight;
+	}
+
 	public function isSource()
 	{
 		return friendEdges().positives(this).hasNext() && !friendEdges().negatives(this).hasNext();
@@ -125,5 +143,5 @@ class GNode<TNodeData, TEdgeData> extends GraphElement<TNodeData, TNodeData, TEd
 
 	inline function friendEdges() : FriendGraphEdges<TNodeData, TEdgeData> return graph.edges
 
-	public function toString() return Std.format("Node (#$id, positives ${positiveCount()}, negatives: ${negativeCount()}${null == data ? '' : ', data: '+data})")
+	public function toString() return null == graph ? "Node Destroyed" : Std.format("Node (#$id, positives ${positiveCount()}, negatives: ${negativeCount()}${null == data ? '' : ', data: '+data})")
 }

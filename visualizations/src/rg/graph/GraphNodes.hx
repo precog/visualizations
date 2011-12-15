@@ -29,7 +29,7 @@ class GraphNodes<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 	function _create(id, ?data : TNodeData)
 	{
 		var n = GNode.create(graph, id, data);
-		collectionAdd(n);
+		collectionCreate(n);
 		return n;
 	}
 

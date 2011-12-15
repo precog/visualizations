@@ -44,7 +44,7 @@ class LongestPathLayer
 			}
 			return max;
 		}
-		return traverse(node.positives(), 1);
+		return node.isIsolated() ? 0 : traverse(node.positives(), 1);
 	}
 /*
 	public function lay(graph : Hash<Node>) : Array<Array<Node>>

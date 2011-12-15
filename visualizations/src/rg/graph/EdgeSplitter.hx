@@ -4,11 +4,11 @@ class EdgeSplitter
 {
 	public function new(){}
 
-	public function split<TNodeData, TEdgeData>(layout : GraphLayout<TNodeData, TEdgeData>, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>
+	public function split<TNodeData, TEdgeData>(layout : GraphLayout<TNodeData, TEdgeData>, ?dataf : GEdge<TNodeData, TEdgeData> -> TNodeData, ?edgef : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>
 	{
 		var layers = layout.layers(), cell, ocell;
-		if(null == splitf)
-			splitf = function(_,_,_) {};
+		if(null == edgef)
+			edgef = function(_,_,_) {};
 		for(node in layout.graph.nodes)
 		{
 			cell = layout.cell(node);
@@ -23,9 +23,9 @@ class EdgeSplitter
 					continue; // next layer
 				var sign = (cell.layer < ocell.layer ? 1 : -1),
 					diff =  Ints.abs(ocell.layer - cell.layer) -1;
-				edge.split(diff, function(ea, eb, i) {
+				edge.split(diff, dataf, function(ea, eb, i) {
 					layers[cell.layer + (1+i)*sign].push(ea.head.id);
-					splitf(ea, eb, i);
+					edgef(ea, eb, i);
 				});
 			}
 		}

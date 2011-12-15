@@ -33,7 +33,7 @@ class GraphEdges<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 		return edges;
 	}
 
-	public function create(tail : GNode<TNodeData, TEdgeData>, head : GNode<TNodeData, TEdgeData>, ?data : TEdgeData, ?weight : Float = 1.0)
+	public function create(tail : GNode<TNodeData, TEdgeData>, head : GNode<TNodeData, TEdgeData>, ?weight : Float = 1.0, ?data : TEdgeData)
 	{
 		if(tail.graph != head.graph || tail.graph != graph)
 			throw new Error("can't create an edge between nodes on different graphs");
@@ -43,7 +43,7 @@ class GraphEdges<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 	function _create(id : Int, tail : GNode<TNodeData, TEdgeData>, head : GNode<TNodeData, TEdgeData>, weight : Float, ?data : TEdgeData)
 	{
 		var e = GEdge.create(graph, id, tail, head, weight, data);
-		collectionAdd(e);
+		collectionCreate(e);
 		connections(tail.id, edgesp).push(id);
 		connections(head.id, edgesn).push(id);
 		return e;

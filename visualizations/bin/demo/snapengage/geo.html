@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function(){
     ReportGrid.geo("#chart1", {
 		path : path+agentPath,
 		event : "case",
-//		property : "sourceType=1",
 		periodicity : "eternity",
 		start : start,
 		end : end,
@@ -33,16 +32,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		location : "/United States",
 		options : {
 			map : {
-				template : "usa-states"
-				,
-				click : function(d,s) {
-					console.log(ReportGrid.dump(d) + " " + ReportGrid.dump(s));
-				},
-				label : {
-					datapointover : function(dp, stats) {
-						return dp["#data"].name + ": " + ReportGrid.format(dp.count);
-					}
-				},
+				template : "usa-states",
 				color : "i-white,blue",
 				mapping : "rn-usa-states-path"
 			},
@@ -55,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function(){
     ReportGrid.geo("#chart2", {
 		path : path+agentPath,
 		event : "case",
-//		property : "sourceType=1",
 		periodicity : "eternity",
 		start : start,
 		end : end,
@@ -63,16 +52,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		location : "/",
 		options : {
 			map : {
-				template : "world"
-				,
-				click : function(d,s) {
-					console.log(ReportGrid.dump(d) + " " + ReportGrid.dump(s));
-				},
-				label : {
-					datapointover : function(dp, stats) {
-						return dp["#data"].name + ": " + ReportGrid.format(dp.count);
-					}
-				},
+				template : "world",
 				color : "i-white,#f90",
 				mapping : "rn-world-name"
 			},

@@ -1,15 +1,17 @@
 package rg.controller.visualization;
 import rg.controller.info.InfoSankey;
 //import rg.view.graph.Layout;
+import rg.graph.EdgeSplitter;
 import rg.view.svg.layer.Title;
 import rg.view.svg.chart.Sankey;
 import rg.data.DataPoint;
+import rg.graph.LongestPathLayer;
+import rg.graph.Graph;
+import rg.graph.GraphLayout;
+import rg.graph.GEdge;
 import rg.graph.SugiyamaMethod;
-using Arrays;
-using Iterators;
-import rg.graph.Graphs;
-
-typedef N = rg.graph.Node;
+import rg.graph.HeaviestNodeLayer;
+import rg.graph.GreedySwitchDecrosser;
 
 class VisualizationSankey extends VisualizationSvg
 {
@@ -46,13 +48,108 @@ class VisualizationSankey extends VisualizationSvg
 			} else
 				layout.suggestSize("title", 0);
 		}
-		var map = mapData(data),
-			layout = layoutMap(map);
+		var layout = layoutData(data);
 
 		chart.init();
 		chart.data(layout);
 	}
 
+	function layoutData(data : Array<DataPoint>, ?idf : NodeData -> String, ?nodef : GEdge<NodeData, Dynamic> -> DataPoint, ?weightf : DataPoint -> Float, ?edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>) : GraphLayout<NodeData, Dynamic>
+	{
+		if(idf == null)
+			idf = function(data) return data.id;
+		if(nodef == null)
+		{
+			var dummynodeid = 0;
+			nodef = function(edge) {
+				return { 
+					id : "#" + (++dummynodeid),
+					weight : edge.weight,
+					extrain : 0.0,
+					extraout : 0.0
+				};
+			};
+		}
+		if(edgesf == null)
+			edgesf = function(dp) {
+				var r = [],
+					id = idf(dp);
+				for(parent in Reflect.fields(dp.parents))
+				{
+					r.push(cast {
+						head : id,
+						tail : parent,
+						weight : Reflect.field(dp.parents, parent)
+					});
+				}
+				return r;
+			};
+		if(null == weightf)
+			weightf = function(dp) {
+				return null != dp.count ? dp.count : 0.0;
+			};
+
+		var graph = new Graph(idf);
+
+		for(dp in data)
+		{
+			graph.nodes.create({
+				dp       : dp,
+				id       : idf(dp),
+				weight   : weightf(dp),
+				extrain  : 0.0,
+				extraout : 0.0
+			});
+		}
+
+		for(dp in data)
+		{
+			var edges = edgesf(dp);
+			for(edge in edges)
+			{
+				var head = graph.nodes.getById(edge.head);
+				var tail = graph.nodes.getById(edge.tail);
+				graph.edges.create(tail, head, edge.weight);
+			}
+		}
+
+		for(node in graph.nodes)
+		{
+			var win  = node.negativeWeight(),
+				wout = node.positiveWeight();
+			if(node.data.weight == 0)
+			{
+				node.data.weight = win;
+			}
+			node.data.extrain  = Math.max(0, node.data.weight - win);
+			node.data.extraout = Math.max(0, node.data.weight - wout);
+		}
+
+		if(REMOVEME)
+		{
+			REMOVEME = false;
+			return weightBalance(graph, nodef);
+		}
+
+		return sugiyama(graph, nodef);
+	}
+
+	static var REMOVEME = true;
+
+	function weightBalance(graph : Graph<NodeData, Dynamic>, nodef)
+	{
+		var layout = new GraphLayout(graph, new HeaviestNodeLayer().lay(graph));
+		layout = new EdgeSplitter().split(layout, nodef);
+		layout = GreedySwitchDecrosser.best().decross(layout);
+
+		return layout;
+	}
+
+	function sugiyama(graph : Graph<NodeData, Dynamic>, nodef)
+	{
+		return new SugiyamaMethod().resolve(graph, nodef); 
+	}
+/*
 	function layoutMap(map : Hash<Node>) : Array<Array<Node>>
 	{
 		var sugiyama = null, //new SugiyamaMethod(),
@@ -145,24 +242,6 @@ class VisualizationSankey extends VisualizationSvg
 							}
 						}
 					}
-					/*
-					for(dst in gnode.edgesp)
-					{
-						var id = dst;
-						while(Graphs.isDummy(id))
-							id = gmap.get(id).edgesp[0];
-						trace(dst + " TO " + id);
-						var child = map.get(id);
-						for(edge in child.parents)
-						{
-							if(edge.id == gnode.vertex)
-							{
-								nnode.children.push({ id : dst, weight : edge.weight });
-								break;
-							}
-						}
-					}
-					*/
 					trace(nnode);
 				}
 				layout[i][j] = nnode;
@@ -179,7 +258,7 @@ class VisualizationSankey extends VisualizationSvg
 				return Floats.compare(map.get(b).weight, map.get(a).weight);
 			});
 
-		function addAt(id : String, lvl) 
+		function addAt(id : String, lvl)
 		{
 			var node = map.get(id);
 			if(!keys.remove(id))
@@ -212,14 +291,6 @@ class VisualizationSankey extends VisualizationSvg
 			});
 		}
 
-/*
-
-		for(node in map.iterator())
-		{
-			node.level = i++;
-			result.push([node]);
-		}
-		*/
 		return result;
 	}
 
@@ -280,7 +351,7 @@ class VisualizationSankey extends VisualizationSvg
 		}
 		return map;
 	}
-
+*/
 	override public function destroy()
 	{
 		chart.destroy();

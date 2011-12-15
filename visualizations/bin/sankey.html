@@ -55,7 +55,17 @@ document.addEventListener("DOMContentLoaded", function(){
 		parents : { "clip_08" : 1, "clip_09" : 5, "clip_07" : 3 }
 	}];
 
-	ReportGrid.sankey("#chart", {
+	ReportGrid.sankey("#chart1", {
+		data : { src : { data : data } },
+		options : {
+//			segmenton : "event",
+//			label : { datapointover : function(dp) { return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
+//			click : function(dp) { alert(dp[".browser"]); },
+//			height: 200
+		}
+	});
+
+	ReportGrid.sankey("#chart2", {
 		data : { src : { data : data } },
 		options : {
 //			segmenton : "event",
@@ -68,9 +78,19 @@ document.addEventListener("DOMContentLoaded", function(){
 
 }, false)
 </script>
+<style>
+.sankey
+{
+	width: 1000px;
+	height: 500px;
+	border: 1px solid #ccc;
+	margin-bottom: 5px;
+}
+</style>
 </head>
 <body>
-	<div id="chart" style="width:800px;height:400px"></div>
+	<div class="sankey" id="chart1"></div>
+	<div class="sankey" id="chart2"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>

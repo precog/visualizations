@@ -6,6 +6,7 @@ using Arrays;
 class GraphLayout<TNodeData, TEdgeData>
 {
 	public var graph(default, null) : Graph<TNodeData, TEdgeData>;
+	public var length(default, null) : Int;
 
 	var _layers : Array<Array<Int>>;
 	var _cell : LayoutCell;
@@ -16,10 +17,23 @@ class GraphLayout<TNodeData, TEdgeData>
 		this.graph = graph;
 		this._layers = layers.map(function(arr, _) return arr.copy());
 		this.friendCell = this._cell = new LayoutCell();
+		_updateMap();
+		length = _layers.length;
+		graph.nodes.onRemove.add(_nodeRemove);
+	}
+
+	// not very efficient when just one node is removed
+	function _updateMap()
+	{
 		_map = new IntHash();
 		each(function(cell, node) {
 			_map.set(node.id, [cell.layer, cell.position]);
 		});
+	}
+
+	public function clone()
+	{
+		return new GraphLayout(graph.clone(), layers());
 	}
 
 	public function each(f : LayoutCell -> GNode<TNodeData, TEdgeData> -> Void)
@@ -56,6 +70,11 @@ class GraphLayout<TNodeData, TEdgeData>
 		if(null == id)
 			return null;
 		return graph.nodes.get(id);
+	}
+
+	public function layer(i : Int)
+	{
+		return _layers[i].map(function(id, _) return graph.nodes.get(id));
 	}
 
 	public function layers()
@@ -105,6 +124,22 @@ class GraphLayout<TNodeData, TEdgeData>
 
 		return c;
 	}
+
+	public function maxCells()
+	{
+		return Std.int(_layers.floatMax(function(arr) return arr.length));
+	}
+
+	function _nodeRemove(node : GNode<TNodeData, TEdgeData>)
+	{
+		var c = cell(node);
+		_layers[c.layer].splice(c.position, 1);
+		if(_layers[c.layer].length == 0)
+			_layers.splice(c.layer, 1);
+		_updateMap();
+	}
+
+	public function toString() return Std.format("GraphLayout (${graph}, layers: ${_layers.length}, crossings : ${crossings()})")
 }
 
 class LayoutCell
