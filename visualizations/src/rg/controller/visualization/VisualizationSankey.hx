@@ -50,6 +50,9 @@ class VisualizationSankey extends VisualizationSvg
 		}
 		var layout = layoutData(data);
 
+		chart.labelDataPoint = info.label.datapoint;
+		chart.labelDataPointOver = info.label.datapointover;
+
 		chart.init();
 		chart.data(layout);
 	}

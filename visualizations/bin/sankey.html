@@ -8,6 +8,10 @@
 	<meta name="keywords" content="" />
 	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
 	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
+<!--
+	<link rel="stylesheet" type="text/css" href="css/colors/rg-colors-brbg-4-div.css"/>
+	<link rel="stylesheet" type="text/css" href="css/colors/rg-colors-rdylbu-4-divr.css"/>
+-->
 	<script src="js/reportgrid-core.js?tokenId=CC761200-3125-4283-A2C1-490F657D5C73"></script>
 	<script src="js/reportgrid-viz.js"></script>
 <script type="text/javascript">
@@ -56,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	}];
 
 	ReportGrid.sankey("#chart1", {
+		axes : [{ type : "count", variable : "dependent" }],
 		data : { src : { data : data } },
 		options : {
 //			segmenton : "event",

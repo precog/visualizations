@@ -631,21 +631,77 @@
 */
 
 
-.rg .sankey .diagonal-fill, .rg .sankey .elbow-fill, .rg .sankey .hook-fill, .rg .sankey rect.node
+.rg .sankey .rule
 {
-	fill: #eee;
-	fill-opacity: 0.9;
+	stroke: none; 
+}
+
+.rg .sankey .fill
+{
+	stroke: none;
+	fill-opacity: 0.4;
+}
+
+.rg .sankey .over .fill, .rg .sankey .over .fill.node
+{
+	fill-opacity: 0.8;
+}
+
+.rg .sankey .fill.nonode
+{
 	stroke: none;
 }
 
-.rg .sankey .diagonal-fill, .rg .sankey .elbow-fill
+.rg .sankey .fill.node
 {
-	fill-opacity: 0.9;
+/*	stroke: #fff;
+	stroke-width: 1;
+	stroke-opacity: 1;*/
+	fill-opacity: 0.6;
 }
 
-.rg .sankey .diagonal-stroke, .rg .sankey .elbow-stroke, .rg .sankey .hook-stroke, .rg .sankey line.node
+.rg .sankey .stroke
 {
-	fill: none;
-	stroke: #666;
-	stroke-width: 1.25;
+/*	stroke: #fff; */
+	stroke-opacity: 0.7;
+}
+
+.rg .sankey g.label.node text
+{
+	font-size: 9px;
+	fill: #fff;
+	stroke: none;
+}
+
+.rg .sankey g.label.node.first text
+{
+	font-size: 16px;
+	fill: #fff;
+	stroke: none;
+}
+
+.rg .sankey g.label.edge text
+{
+	font-size: 11px;
+	fill: #fff;
+}
+
+.rg .sankey g.label.edge text.shadow, .rg .sankey g.label.node text.shadow
+{
+	opacity: 0.15;
+	stroke: #000;
+}
+
+.rg .sankey .image
+{
+	stroke: #000;
+	stroke-width: 1;
+/*	shape-rendering: crispEdges; */
+}
+
+.rg .sankey image
+{
+	shape-rendering: crispEdges;
+	image-rendering: optimizeQuality;
+	overflow: hidden;
 }

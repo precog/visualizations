@@ -1347,13 +1347,34 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 	this.addClass("sankey");
-	this.layerWidth = 40;
-	this.padding = 30;
+	this.layerWidth = 60;
+	this.padding = 63;
 	this.minpadding = 18;
 	this.maxFalloffWidth = 24;
 	this.padLines = 4.0;
 	this.padFlow = 5;
 	this.minCurve = 5;
+	this.imageWidth = 60;
+	this.imageHeight = 48;
+	this.imagePadding = 2;
+	this.labelTopPadding = 6;
+	this.styleNode = "0";
+	this.styleExtraIn = "2";
+	this.styleExtraOut = "3";
+	this.styleEdgeBackward = "1";
+	this.styleEdgeForward = "0";
+	this.labelEdge = function(dp,stats) {
+		return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
+	};
+	this.labelEdgeOver = function(dp,stats) {
+		return Floats.format(dp.edgeweight,"D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
+	};
+	this.thumbnailPath = function(dp) {
+		if(dp.id.substr(0,1) == "#") return null; else return "images/" + dp.id + ".png";
+	};
+	this.labelDataPointTop = function(dp,stats) {
+		return dp.id;
+	};
 }
 rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
 rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
@@ -1366,12 +1387,29 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	,padLines: null
 	,padFlow: null
 	,minCurve: null
+	,labelEdge: null
+	,labelEdgeOver: null
+	,labelTopPadding: null
+	,labelDataPointTop: null
+	,thumbnailPath: null
+	,imageWidth: null
+	,imageHeight: null
+	,imagePadding: null
 	,maxweight: null
 	,availableheight: null
 	,padBefore: null
 	,padAfter: null
 	,layerstarty: null
+	,styleNode: null
+	,styleExtraIn: null
+	,styleExtraOut: null
+	,styleEdgeBackward: null
+	,styleEdgeForward: null
+	,dependentVariable: null
+	,mapelements: null
+	,maphi: null
 	,setVariables: function(variableIndependents,variableDependents,data) {
+		this.dependentVariable = variableDependents[0];
 	}
 	,data: function(graphlayout) {
 		var me = this;
@@ -1396,6 +1434,8 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	}
 	,redraw: function() {
 		var me = this;
+		this.mapelements = new Hash();
+		this.maphi = new Hash();
 		this.maxweight = 0;
 		this.layerstarty = [];
 		var _g1 = 0, _g = this.layout.length;
@@ -1416,7 +1456,6 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			if(v > occupiedspace) occupiedspace = v;
 		}
 		this.availableheight = this.height - occupiedspace;
-		haxe.Log.trace(this.maxweight,{ fileName : "Sankey.hx", lineNumber : 1, className : "rg.view.svg.chart.Sankey", methodName : "redraw"});
 		var $it0 = this.layout.graph.edges.collection.iterator();
 		while( $it0.hasNext() ) {
 			var edge = $it0.next();
@@ -1425,7 +1464,6 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			this.maxweight += edge.weight;
 		}
 		this.availableheight -= this.minCurve + this.padFlow;
-		haxe.Log.trace(this.maxweight,{ fileName : "Sankey.hx", lineNumber : 1, className : "rg.view.svg.chart.Sankey", methodName : "redraw"});
 		var backedgesy = 0.0;
 		var _g1 = 0, _g = this.layout.length;
 		while(_g1 < _g) {
@@ -1479,36 +1517,86 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		var edgescontainer = this.g.select("g.edges");
 		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
 		var edges = Arrays.order(Iterators.array(this.layout.graph.edges.iterator()),function(ea,eb) {
-			return Floats.compare(ea.weight,eb.weight);
+			var lena = me.layout.cell(ea.tail).layer - me.layout.cell(ea.head).layer, lenb = me.layout.cell(eb.tail).layer - me.layout.cell(eb.head).layer, comp = lenb - lena;
+			if(comp != 0) return comp; else return Floats.compare(eb.weight,ea.weight);
 		});
 		edges.forEach(function(edge,_) {
 			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
 			if(cellhead.layer > celltail.layer) return;
-			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.maxFalloffWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.id,edge.head.negatives());
-			hook.update(me.layerWidth / 2 + me.xlayer(celltail.layer),me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()),-me.layerWidth / 2 + me.xlayer(cellhead.layer),me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives()),weight,backedgesy,before,after);
+			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.maxFalloffWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
+			me.addToMap(edge.id,"edge",hook.g);
+			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
+			hook.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy + weight / 2,edge));
 			backedgesy += weight + me.padLines;
 		});
 		edges.forEach(function(edge,_) {
-			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail);
+			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head));
 			if(cellhead.layer <= celltail.layer) return;
-			var weight = me.nheight(edge.weight), diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer);
-			diagonal.update(me.layerWidth / 2 + me.xlayer(celltail.layer),me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)),-me.layerWidth / 2 + me.xlayer(cellhead.layer),me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head)),weight,weight);
+			var weight = me.nheight(edge.weight), diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
+			diagonal.update(x1,y1,x2,y2,weight,weight);
+			me.addToMap(edge.id,"edge",diagonal.g);
+			diagonal.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
 		});
 		var normMin = function(v) {
 			return Math.max(0,Math.min(v - 3,me.minCurve));
 		};
 		this.layout.each(function(cell,node) {
 			if(node.data.extraout <= 0) return;
-			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), falloff = me.nheight(node.data.extraout);
-			elbow.update(rg.view.svg.widget.Orientation.RightBottom,falloff,me.layerWidth / 2 + me.xlayer(cell.layer),me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)) + falloff,normMin(falloff),me.maxFalloffWidth,0,me.padFlow);
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraOut,"stroke stroke-" + me.styleExtraOut), extra = me.nheight(node.data.extraout), x = me.layerWidth / 2 + me.xlayer(cell.layer), y = me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
+			elbow.update(rg.view.svg.widget.Orientation.RightBottom,extra,x,y + extra,minr,me.maxFalloffWidth,0,me.padFlow);
+			var label, text = me.labelEdge({ nodeweight : node.data.weight, edgeweight : node.data.extraout},me.dependentVariable.stats), padding = 0;
+			label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
+			label.addClass("edge");
+			label.place(x,y + extra / 2,0);
+			label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
+			label.setText(text);
+			if(label.getSize().height > extra * .75) label.destroy();
+			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoverextraout.$bind(me),x + minr + (-minr + Math.min(me.maxFalloffWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.padFlow,node));
+			me.addToMap(node.id,"extraout",elbow.g);
 		});
 		this.layout.each(function(cell,node) {
 			if(node.data.extrain <= 0) return;
-			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), extra = me.nheight(node.data.extrain);
-			elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,-me.layerWidth / 2 + me.xlayer(cell.layer),me.ynode(node),normMin(extra),me.maxFalloffWidth,0,me.padFlow);
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraIn,"stroke stroke-" + me.styleExtraIn), extra = me.nheight(node.data.extrain), minr = normMin(extra), x = -me.layerWidth / 2 + me.xlayer(cell.layer);
+			elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,x,me.ynode(node),minr,me.maxFalloffWidth,0,me.padFlow);
+			var label, text = me.labelEdge({ nodeweight : node.data.weight, edgeweight : node.data.extrain},me.dependentVariable.stats), padding = 0;
+			label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
+			label.addClass("edge");
+			label.place(x,me.ynode(node) + extra / 2,0);
+			label.setAnchor(rg.view.svg.widget.GridAnchor.Right);
+			label.setText(text);
+			if(label.getSize().height > extra * .75) label.destroy();
+			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoverextrain.$bind(me),x - minr + (minr - Math.min(me.maxFalloffWidth,extra)) / 2,me.ynode(node) - minr - me.padFlow,node));
+			me.addToMap(node.id,"extrain",elbow.g);
+		});
+		if(null != this.labelEdge) edges.forEach(function(edge,_) {
+			var tail = edge.tail;
+			if(me.isdummy(tail)) return;
+			var head = edge.head, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail), weight = me.nheight(edge.weight), label, text = me.labelEdge({ nodeweight : tail.data.weight, edgeweight : edge.weight},me.dependentVariable.stats), padding = 2;
+			label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
+			label.addClass("edge");
+			label.place(me.layerWidth / 2 + me.xlayer(celltail.layer) + padding,me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)) + weight / 2,0);
+			label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
+			label.setText(text);
+			if(label.getSize().height > weight * .75) label.destroy();
 		});
 		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
-			return "layer layer-" + i;
+			return "rule rule-" + i;
 		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
 			return "translate(" + me.xlayer(i) + ",0)";
 		}).exit().remove();
@@ -1517,20 +1605,196 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		});
 		var cont = choice.enter().append("svg:g").attr("class").string("node");
 		if(this.layerWidth > 0) {
-			cont.append("svg:rect").attr("class").string("node").attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](this.layerWidth).attr("height").floatf(this.hnode.$bind(this));
-			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
-			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+			($_=cont.append("svg:rect").attr("class").stringf(function(n,_) {
+				return "fill fill-" + (me.isdummy(n)?me.styleEdgeForward + " nonode":me.styleNode + " node");
+			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this)),$_.filter.$bind($_));
+			cont.each(function(node,_) {
+				me.addToMap(node.id,"node",thx.js.Dom.selectNode(thx.js.Group.current));
+			});
+			cont.append("svg:line").attr("class").stringf(function(n,_) {
+				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
+			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
+			cont.append("svg:line").attr("class").stringf(function(n,_) {
+				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
+			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
 		}
-		cont.each(function(n,i) {
-			var node = thx.js.Dom.selectNode(thx.js.Group.current);
-			if(me.isdummy(n)) return;
-			var label = new rg.view.svg.widget.Label(node,true,true,false);
-			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
-			label.setText(n.data.id);
-		});
 		choice.update().attr("transform").stringf(function(n,i) {
 			return "translate(0," + me.ynode(n) + ")";
 		});
+		cont.each(function(n,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			if(me.isdummy(n)) return;
+			var nodeheight = me.hnode(n), label;
+			if(null != me.labelDataPoint) {
+				var lines = me.labelDataPoint(n.data.dp,me.dependentVariable.stats).split("\n"), padding = 3, prev = null, text, pos = 0.0;
+				var _g1 = 0, _g = lines.length;
+				while(_g1 < _g) {
+					var i1 = _g1++;
+					text = lines[i1];
+					label = new rg.view.svg.widget.Label(node,true,true,false);
+					label.addClass("node");
+					if(i1 == 0) label.addClass("first");
+					pos = padding;
+					if(null != prev) pos += prev.y + prev.getSize().height;
+					label.place(-me.layerWidth / 2 + padding * 2,pos,0);
+					label.setAnchor(rg.view.svg.widget.GridAnchor.TopLeft);
+					label.setText(text);
+					if(label.y + label.getSize().height > nodeheight) {
+						label.destroy();
+						break;
+					}
+					prev = label;
+				}
+			}
+			if(null != me.thumbnailPath) {
+				var path = me.thumbnailPath(n.data.dp);
+				if(path != null) {
+					var container = node.append("svg:g").attr("transform").string("translate(" + (Math.round(-me.imageWidth / 2) + .5) + "," + (Math.round(-me.imageHeight - me.imagePadding) + .5) + ")");
+					container.append("svg:image").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
+				}
+			}
+			if(null != me.labelDataPointTop) {
+				label = new rg.view.svg.widget.Label(node,true,true,true);
+				label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+				label.place(0,-me.labelTopPadding,0);
+				label.setText(me.labelDataPointTop(n.data.dp,me.dependentVariable.stats));
+			}
+		});
+		cont.each(function(n,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			node.onNode("mouseover",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.onmouseovernode.$bind(me),n));
+		});
+	}
+	,addToMap: function(id,type,el) {
+		this.mapelements.set(type + ":" + id,el);
+	}
+	,isbackward: function(edge) {
+		return this.layout.cell(edge.head).layer <= this.layout.cell(edge.tail).layer;
+	}
+	,highlight: function(id,type) {
+		var me = this;
+		var $it0 = this.maphi.iterator();
+		while( $it0.hasNext() ) {
+			var el = $it0.next();
+			el.classed().remove("over");
+		}
+		this.maphi = new Hash();
+		var hiedgep = null, hinodep = null, hiedgen = null, hinoden = null;
+		var hielement = function(id1,type1) {
+			var key = type1 + ":" + id1;
+			me.maphi.set(key,me.mapelements.get(key).classed().add("over"));
+		};
+		var hiextrain = function(id1) {
+			var key = "extrain:" + id1, extra = me.mapelements.get(key);
+			if(null == extra) return;
+			me.maphi.set(key,extra.classed().add("over"));
+		};
+		var hiextraout = function(id1) {
+			var key = "extraout:" + id1, extra = me.mapelements.get(key);
+			if(null == extra) return;
+			me.maphi.set(key,extra.classed().add("over"));
+		};
+		var ishi = function(id1,type1) {
+			return me.maphi.exists(type1 + ":" + id1);
+		};
+		hiedgep = function(edge) {
+			if(ishi(edge.id,"edge")) return;
+			hielement(edge.id,"edge");
+			if(!me.isbackward(edge)) hinodep(edge.head);
+		};
+		hinodep = function(node) {
+			if(ishi(node.id,"node")) return;
+			hielement(node.id,"node");
+			hiextraout(node.id);
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				hiedgep(edge);
+			}
+		};
+		hiedgen = function(edge) {
+			if(!me.isbackward(edge)) hinoden(edge.tail);
+			if(ishi(edge.id,"edge")) return;
+			hielement(edge.id,"edge");
+		};
+		hinoden = function(node) {
+			var $it2 = node.graph.edges.negatives(node);
+			while( $it2.hasNext() ) {
+				var edge = $it2.next();
+				hiedgen(edge);
+			}
+			if(ishi(node.id,"node")) return;
+			hielement(node.id,"node");
+			hiextrain(node.id);
+		};
+		if(type == "edge") {
+			hiedgep(this.layout.graph.edges.get(id));
+			hiedgen(this.layout.graph.edges.get(id));
+		} else if(type == "node") {
+			hinodep(this.layout.graph.nodes.get(id));
+			hinoden(this.layout.graph.nodes.get(id));
+			hiextrain(id);
+		}
+	}
+	,onmouseovernode: function(node,el,i) {
+		this.highlight(node.id,"node");
+		if(this.isdummy(node)) {
+			if(null == this.labelEdgeOver) return;
+			var tail = node;
+			while(this.isdummy(tail)) tail = tail.graph.edges.negatives(tail).next().tail;
+			var text = this.labelEdgeOver({ edgeweight : node.data.weight, nodeweight : tail.data.weight},this.dependentVariable.stats);
+			if(null == text) this.tooltip.hide(); else {
+				var cell = this.layout.cell(node);
+				this.tooltip.setPreferredSide(2);
+				this.tooltip.setText(text.split("\n"));
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+			}
+		} else {
+			if(null == this.labelDataPointOver) return;
+			var text = this.labelDataPointOver(node.data.dp,this.dependentVariable.stats);
+			if(null == text) this.tooltip.hide(); else {
+				var cell = this.layout.cell(node);
+				this.tooltip.setPreferredSide(0);
+				this.tooltip.setText(text.split("\n"));
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+			}
+		}
+	}
+	,onmouseoveredge: function(x,y,edge,el,i) {
+		this.highlight(edge.id,"edge");
+		if(null == this.labelEdgeOver) return;
+		var tail = edge.tail;
+		while(this.isdummy(tail)) tail = tail.graph.edges.negatives(tail).next().tail;
+		var text = this.labelEdgeOver({ edgeweight : edge.weight, nodeweight : tail.data.weight},this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(2);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
+	}
+	,onmouseoverextrain: function(x,y,node,el,i) {
+		this.highlight(node.id,"node");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver({ edgeweight : node.data.extrain, nodeweight : node.data.weight},this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(2);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
+	}
+	,onmouseoverextraout: function(x,y,node,el,i) {
+		this.highlight(node.id,"node");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver({ edgeweight : node.data.extraout, nodeweight : node.data.weight},this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(0);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
 	}
 	,nheight: function(v) {
 		return v / this.maxweight * this.availableheight;
@@ -1557,7 +1821,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		return this.nheight(weight);
 	}
 	,xlayer: function(pos,_) {
-		return Math.round((this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore);
+		return Math.round((this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore) + 0.5;
 	}
 	,ynode: function(node,_) {
 		var cell = this.layout.cell(node), before = this.layerstarty[cell.layer];
@@ -1568,7 +1832,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			before += this.hnode(prev) + this.nodepadding(prev);
 		}
 		before += this.nodepadding(node);
-		return before;
+		return Math.round(before) + 0.5;
 	}
 	,nodepadding: function(node) {
 		return this.isdummy(node)?this.minpadding:this.padding;
@@ -2981,11 +3245,11 @@ Dates.compare = function(a,b) {
 Dates.prototype = {
 	__class__: Dates
 }
-rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container) {
+rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("elbow");
-	this.area = this.g.append("svg:path").attr("class").string("elbow-fill");
-	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer");
-	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner");
+	this.area = this.g.append("svg:path").attr("class").string("elbow-fill" + (null == classarea?"":" " + classarea));
+	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder?"":" " + classborder));
+	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder?"":" " + classborder));
 }
 rg.view.svg.widget.ElbowArea.__name__ = ["rg","view","svg","widget","ElbowArea"];
 rg.view.svg.widget.ElbowArea.prototype = {
@@ -4123,11 +4387,11 @@ rg.data.AxisOrdinal.prototype = {
 	,__class__: rg.data.AxisOrdinal
 	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
-rg.view.svg.widget.HookConnectorArea = $hxClasses["rg.view.svg.widget.HookConnectorArea"] = function(container) {
+rg.view.svg.widget.HookConnectorArea = $hxClasses["rg.view.svg.widget.HookConnectorArea"] = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("hook");
-	this.area = this.g.append("svg:path").attr("class").string("hook-fill");
-	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper");
-	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower");
+	this.area = this.g.append("svg:path").attr("class").string("hook-fill" + (null == classarea?"":" " + classarea));
+	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper" + (null == classborder?"":" " + classborder));
+	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower" + (null == classborder?"":" " + classborder));
 }
 rg.view.svg.widget.HookConnectorArea.__name__ = ["rg","view","svg","widget","HookConnectorArea"];
 rg.view.svg.widget.HookConnectorArea.lineTo = function(x,y) {
@@ -5434,7 +5698,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.4017"};
+	r.info.viz = { version : "1.1.5.4320"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -11575,14 +11839,14 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	}
 	,__class__: thx.math.scale.Linear
 });
-rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container) {
+rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("diagonal");
 	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
 		return [a[1],a[0]];
 	});
-	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill");
-	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before");
-	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after");
+	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill" + (null == classarea?"":" " + classarea));
+	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before" + (null == classborder?"":" " + classborder));
+	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder?"":" " + classborder));
 }
 rg.view.svg.widget.DiagonalArea.__name__ = ["rg","view","svg","widget","DiagonalArea"];
 rg.view.svg.widget.DiagonalArea.prototype = {
@@ -17240,6 +17504,8 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 			} else this.layout.suggestSize("title",0);
 		}
 		var layout = this.layoutData(data);
+		this.chart.labelDataPoint = this.info.label.datapoint;
+		this.chart.labelDataPointOver = this.info.label.datapointover;
 		this.chart.init();
 		this.chart.data(layout);
 	}
@@ -20726,6 +20992,15 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapoint : function(dp,stats) {
 				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+			}};
+			break;
+		case "sankey":
+			var axes = params.axes, type = axes[axes.length - 1].type;
+			params.options.label = { datapointover : function(dp,stats) {
+				var v = Reflect.field(dp,type);
+				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
+			}, datapoint : function(dp,stats) {
+				return rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type);
 			}};
 			break;
 		}

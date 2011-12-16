@@ -4,16 +4,16 @@ import thx.js.Selection;
 
 class ElbowArea
 {
-	var g     : Selection;
+	public var g(default, null) : Selection;
 	var area  : Selection;
 	var outer : Selection;
 	var inner : Selection;
-	public function new(container : Selection)
+	public function new(container : Selection, classarea : String, classborder : String)
 	{
 		g     = container.append("svg:g").attr("class").string("elbow");
-		area  = g.append("svg:path").attr("class").string("elbow-fill");
-		outer = g.append("svg:path").attr("class").string("elbow-stroke outer");
-		inner = g.append("svg:path").attr("class").string("elbow-stroke inner");
+		area  = g.append("svg:path").attr("class").string("elbow-fill" + (null == classarea ? "" : " " + classarea));
+		outer = g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder ? "" : " " + classborder));
+		inner = g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder ? "" : " " + classborder));
 	}
 
 	public function update(orientation : Orientation, weight : Float, x : Float, y : Float, minradius = 3.0, maxradius = 16.0, before = 0.0, after = 10.0)

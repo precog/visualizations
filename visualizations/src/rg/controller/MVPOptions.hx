@@ -426,6 +426,40 @@ class MVPOptions
 								;
 							}
 						};
+					case "sankey":
+						var axes : Array<Dynamic> = params.axes,
+							type = axes[axes.length - 1].type;
+						params.options.label = {
+							datapointover : function(dp, stats) {
+								var v = DataPoints.value(dp, type);
+								return
+									Properties.humanize(
+											null != property
+											? DataPoints.value(dp, property)
+											: type
+									)
+									+ ": " +
+									RGStrings.humanize(DataPoints.value(dp, type))
+									+ "\n" + (
+										stats.tot != 0.0
+										? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
+										: RGStrings.humanize(v)
+									)
+								;
+							},
+
+							datapoint : function(dp, stats) {
+								return
+									RGStrings.humanize(DataPoints.value(dp, type))
+									+ "\n"
+									+ Properties.humanize(
+										null != property
+										? DataPoints.value(dp, property)
+										: type
+									) 
+								;
+							}
+						};
 				}
 			}
 //trace(Dynamics.string(params));

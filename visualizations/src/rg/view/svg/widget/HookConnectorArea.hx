@@ -9,16 +9,16 @@ import thx.js.Selection;
 
 class HookConnectorArea
 {
-	var g     : Selection;
+	public var g(default, null) : Selection;
 	var area  : Selection;
 	var upper : Selection;
 	var lower : Selection;
-	public function new(container : Selection)
+	public function new(container : Selection, classarea : String, classborder : String)
 	{
 		g     = container.append("svg:g").attr("class").string("hook");
-		area  = g.append("svg:path").attr("class").string("hook-fill");
-		upper = g.append("svg:path").attr("class").string("hook-stroke upper");
-		lower = g.append("svg:path").attr("class").string("hook-stroke lower");
+		area  = g.append("svg:path").attr("class").string("hook-fill" + (null == classarea ? "" : " " + classarea));
+		upper = g.append("svg:path").attr("class").string("hook-stroke upper" + (null == classborder ? "" : " " + classborder));
+		lower = g.append("svg:path").attr("class").string("hook-stroke lower" + (null == classborder ? "" : " " + classborder));
 	}
 
 	public function update(x1 : Float, y1 : Float, x2 : Float, y2 : Float, weight : Float, yreference : Float, before : Float, after : Float)

@@ -9,14 +9,14 @@ import rg.data.DataPoint;
 import rg.data.Stats;
 import rg.data.IAxis;
 
-class InfoLabel 
+class InfoLabel
 {
 	public var title : Array<Variable<Dynamic, IAxis<Dynamic>>> -> Array<DataPoint> -> String;
 	public var datapoint : DataPoint -> Stats<Dynamic> -> String;
 	public var datapointover : DataPoint -> Stats<Dynamic> -> String;
-	
+
 	public function new() { }
-	
+
 	public static function filters()
 	{
 		return [{
