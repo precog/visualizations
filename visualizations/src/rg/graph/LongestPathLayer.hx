@@ -24,7 +24,6 @@ class LongestPathLayer
 				layer = layers[pos] = [];
 			layer.push(node.id);
 		}
-		layers.reverse();
 		return layers;
 	}
 
@@ -37,14 +36,14 @@ class LongestPathLayer
 //			if(lvl > graph.nodes.length) return lvl;
 			for(edge in it)
 			{
-				if(edge.head.isSink())
+				if(edge.tail.isSink())
 					continue;
 				else
-					max = Ints.max(max, traverse(edge.head.positives(), lvl + 1));
+					max = Ints.max(max, traverse(edge.tail.negatives(), lvl + 1));
 			}
 			return max;
 		}
-		return node.isIsolated() ? 0 : traverse(node.positives(), 1);
+		return node.isIsolated() ? 0 : traverse(node.negatives(), 1);
 	}
 /*
 	public function lay(graph : Hash<Node>) : Array<Array<Node>>

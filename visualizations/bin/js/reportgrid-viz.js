@@ -1347,7 +1347,7 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 	this.addClass("sankey");
-	this.layerWidth = 60;
+	this.layerWidth = 61;
 	this.padding = 63;
 	this.minpadding = 18;
 	this.maxFalloffWidth = 24;
@@ -1356,7 +1356,7 @@ rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(pan
 	this.minCurve = 5;
 	this.imageWidth = 60;
 	this.imageHeight = 48;
-	this.imagePadding = 2;
+	this.imagePadding = 0;
 	this.labelTopPadding = 6;
 	this.styleNode = "0";
 	this.styleExtraIn = "2";
@@ -1534,7 +1534,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			backedgesy += weight + me.padLines;
 		});
 		edges.forEach(function(edge,_) {
-			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head));
+			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail), x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head));
 			if(cellhead.layer <= celltail.layer) return;
 			var weight = me.nheight(edge.weight), diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
 			diagonal.update(x1,y1,x2,y2,weight,weight);
@@ -1649,7 +1649,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			if(null != me.thumbnailPath) {
 				var path = me.thumbnailPath(n.data.dp);
 				if(path != null) {
-					var container = node.append("svg:g").attr("transform").string("translate(" + (Math.round(-me.imageWidth / 2) + .5) + "," + (Math.round(-me.imageHeight - me.imagePadding) + .5) + ")");
+					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-me.imageWidth / 2) + "," + Math.round(-me.imageHeight - me.imagePadding) + ")");
 					container.append("svg:image").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
 				}
 			}
@@ -1668,6 +1668,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 				};
 			})(me.onmouseovernode.$bind(me),n));
 		});
+		this.ready.dispatch();
 	}
 	,addToMap: function(id,type,el) {
 		this.mapelements.set(type + ":" + id,el);
@@ -1719,7 +1720,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		hiedgen = function(edge) {
 			if(!me.isbackward(edge)) hinoden(edge.tail);
 			if(ishi(edge.id,"edge")) return;
-			hielement(edge.id,"edge");
+			if(!me.isbackward(edge)) hielement(edge.id,"edge");
 		};
 		hinoden = function(node) {
 			var $it2 = node.graph.edges.negatives(node);
@@ -1797,7 +1798,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		}
 	}
 	,nheight: function(v) {
-		return v / this.maxweight * this.availableheight;
+		return Math.round(v / this.maxweight * this.availableheight);
 	}
 	,ydiagonal: function(id,edges) {
 		var weight = 0.0;
@@ -1821,7 +1822,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		return this.nheight(weight);
 	}
 	,xlayer: function(pos,_) {
-		return Math.round((this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore) + 0.5;
+		return Math.round((this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore);
 	}
 	,ynode: function(node,_) {
 		var cell = this.layout.cell(node), before = this.layerstarty[cell.layer];
@@ -5698,7 +5699,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.4320"};
+	r.info.viz = { version : "1.1.5.4416"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -13297,14 +13298,14 @@ rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
 			var max = lvl;
 			while( it.hasNext() ) {
 				var edge = it.next();
-				if(edge.head.isSink()) continue; else max = Ints.max(max,traverse(edge.head.positives(),lvl + 1));
+				if(edge.tail.isSink()) continue; else max = Ints.max(max,traverse(edge.tail.negatives(),lvl + 1));
 			}
 			return max;
 		};
 		$r = traverse;
 		return $r;
 	}(this));
-	return node.isIsolated()?0:traverse(node.graph.edges.positives(node),1);
+	return node.isIsolated()?0:traverse(node.graph.edges.negatives(node),1);
 }
 rg.graph.LongestPathLayer.prototype = {
 	lay: function(graph) {
@@ -13323,7 +13324,6 @@ rg.graph.LongestPathLayer.prototype = {
 			if(null == layer) layer = layers[pos] = [];
 			layer.push(node.id);
 		}
-		layers.reverse();
 		return layers;
 	}
 	,__class__: rg.graph.LongestPathLayer
@@ -14639,6 +14639,9 @@ rg.graph.GraphElement.prototype = {
 	,destroy: function() {
 		this.graph = null;
 		this.id = -1;
+	}
+	,destroyed: function() {
+		return null == this.graph;
 	}
 	,__class__: rg.graph.GraphElement
 }
@@ -17569,7 +17572,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 	}
 	,weightBalance: function(graph,nodef) {
 		var layout = new rg.graph.GraphLayout(graph,new rg.graph.HeaviestNodeLayer().lay(graph));
-		layout = new rg.graph.EdgeSplitter().split(layout,nodef);
+		layout = new rg.graph.EdgeSplitter().split(layout,[],nodef);
 		layout = rg.graph.GreedySwitchDecrosser.best().decross(layout);
 		return layout;
 	}
@@ -19038,22 +19041,24 @@ rg.graph.SugiyamaMethod.prototype = {
 	,decrosser: null
 	,resolve: function(graph,nodef,edgef) {
 		var onecycles = new rg.graph.OneCycleRemover().remove(graph), twocycles = new rg.graph.TwoCycleRemover().remove(graph);
-		var partitions = this.partitioner.partition(graph), reversed = (partitions.left.length > partitions.right.length?partitions.right:partitions.left).map(function(edge,_) {
-			var ob = { tail : edge.tail, head : edge.head};
-			edge.invert();
-			return ob;
+		var partitions = this.partitioner.partition(graph), reversed = new Hash();
+		(partitions.left.length > partitions.right.length?partitions.right:partitions.left).forEach(function(edge,_) {
+			reversed.set(edge.tail.id + "-" + edge.head.id,[edge.invert()]);
 		});
 		var layers = this.layer.lay(graph);
 		var layout = new rg.graph.GraphLayout(graph,layers);
-		layout = this.splitter.split(layout,nodef,edgef);
+		var splits = [];
+		layout = this.splitter.split(layout,splits,nodef,edgef);
+		splits.forEach(function(split,_) {
+			var key = split[split.length - 1].head.id + "-" + split[0].tail.id;
+			if(reversed.exists(key)) reversed.set(key,split);
+		});
 		layout = this.decrosser.decross(layout);
-		var _g = 0;
-		while(_g < reversed.length) {
-			var item = reversed[_g];
-			++_g;
-			var path = layout.graph.directedPath(item.head,item.tail);
+		var $it0 = reversed.iterator();
+		while( $it0.hasNext() ) {
+			var path = $it0.next();
 			path.forEach(function(edge,_) {
-				edge.invert();
+				var e = edge.invert();
 			});
 		}
 		var _g = 0;
@@ -19424,8 +19429,8 @@ rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
 }
 rg.graph.EdgeSplitter.__name__ = ["rg","graph","EdgeSplitter"];
 rg.graph.EdgeSplitter.prototype = {
-	split: function(layout,dataf,edgef) {
-		var layers = layout.layers(), cell, ocell;
+	split: function(layout,splitted,dataf,edgef) {
+		var layers = layout.layers(), cell, ocell, cur;
 		if(null == edgef) edgef = function(_,_1,_2) {
 		};
 		var $it0 = layout.graph.nodes.collection.iterator();
@@ -19440,12 +19445,12 @@ rg.graph.EdgeSplitter.prototype = {
 				if(cell.layer == ocell.layer - 1) continue;
 				if(cell.layer == ocell.layer + 1) continue;
 				var sign = [cell.layer < ocell.layer?1:-1], diff = Ints.abs(ocell.layer - cell.layer) - 1;
-				edge.split(diff,dataf,(function(sign) {
+				splitted.push(edge.split(diff,dataf,(function(sign) {
 					return function(ea,eb,i) {
 						layers[cell.layer + (1 + i) * sign[0]].push(ea.head.id);
 						edgef(ea,eb,i);
 					};
-				})(sign));
+				})(sign)));
 			}
 		}
 		return new rg.graph.GraphLayout(layout.graph,layers);

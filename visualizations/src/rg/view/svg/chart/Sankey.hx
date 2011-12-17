@@ -56,7 +56,7 @@ class Sankey extends Chart
 	{
 		super(panel);
 		addClass("sankey");
-		layerWidth = 60;
+		layerWidth = 61;
 		padding = 63;
 		minpadding = 18;
 		maxFalloffWidth = 24;
@@ -66,7 +66,7 @@ class Sankey extends Chart
 
 		imageWidth = 60;
 		imageHeight = 48;
-		imagePadding = 2;
+		imagePadding = 0;
 
 		labelTopPadding = 6;
 
@@ -277,8 +277,8 @@ class Sankey extends Chart
 				tail = edge.tail,
 				cellhead = layout.cell(head),
 				celltail = layout.cell(tail),
-				x1 = layerWidth / 2 + xlayer(celltail.layer),
-				x2 = - layerWidth / 2 + xlayer(cellhead.layer),
+				x1 = Math.round(layerWidth / 2 + xlayer(celltail.layer))-.5,
+				x2 = Math.round(- layerWidth / 2 + xlayer(cellhead.layer))-.5,
 				y1 = ynode(tail) + ydiagonal(edge.id, tail.positives()),
 				y2 = ynode(head) + nheight(head.data.extrain) + ydiagonal(edge.id, head.negatives());
 			if(cellhead.layer <= celltail.layer)
@@ -514,16 +514,11 @@ class Sankey extends Chart
 				if(path != null)
 				{
 					var container = node.append("svg:g")
-						.attr("transform").string("translate("+(Math.round(-imageWidth/2)+.5)+","+(Math.round(-imageHeight-imagePadding)+.5)+")");
+						.attr("transform").string("translate("+(Math.round(-imageWidth/2))+","+(Math.round(-imageHeight-imagePadding))+")");
 					container.append("svg:image")
 						.attr("width").float(imageWidth)
 						.attr("height").float(imageHeight)
 						.attr("xlink:href").string(path);
-/*					container.append("svg:rect")
-						.attr("class").string("image")
-						.attr("width").float(imageWidth-1)
-						.attr("height").float(imageHeight-1);
-*/
 				}
 			}
 
@@ -542,41 +537,7 @@ class Sankey extends Chart
 			node.onNode("mouseover", callback(onmouseovernode, n));
 		});
 
-// reference lines to remove
-/*
-		var lines = g.selectAll("g.reference").data(edges)
-			.enter()
-				.append("svg:g").attr("class").string("reference")
-
-				.append("svg:line")
-					.style("stroke-opacity").float(0.1)
-					.style("stroke").colorf(function(d, _)
-						return
-							layout.cell(d.tail).layer == layout.cell(d.head).layer
-							? NamedColors.blue
-							: (layout.cell(d.tail).layer < layout.cell(d.head).layer
-								? NamedColors.green
-								: NamedColors.red ))
-
-		;
-		lines
-			.attr("x1").floatf(function(o, _) {
-				return xlayer(layout.cell(o.tail).layer);
-			})
-			.attr("x2").floatf(function(o, _) {
-				return xlayer(layout.cell(o.head).layer);
-			})
-			.attr("y1").floatf(function(o, _) {
-				return ynode(o.tail) + hnode(o.tail) / 2;
-			})
-			.attr("y2").floatf(function(o, _) {
-				return ynode(o.head) + hnode(o.head) / 2;
-			})
-			.style("stroke-width").floatf(function(o, _) {
-				return nheight(o.weight);
-			})
-		;
-*/
+		ready.dispatch();
 	}
 
 	function addToMap(id : Int, type : String, el : Selection)
@@ -656,7 +617,8 @@ class Sankey extends Chart
 				hinoden(edge.tail);
 			if(ishi(edge.id, "edge"))
 				return;
-			hielement(edge.id, "edge");
+			if(!isbackward(edge))
+				hielement(edge.id, "edge");
 		}
 
 		hinoden = function(node : GNode<NodeData, Dynamic>)
@@ -779,7 +741,7 @@ class Sankey extends Chart
 
 	function nheight(v : Float)
 	{
-		return v / maxweight * availableheight;
+		return Math.round(v / maxweight * availableheight);
 	}
 
 	function ydiagonal(id : Int, edges : Iterator<GEdge<NodeData, Dynamic>>)
@@ -815,7 +777,7 @@ class Sankey extends Chart
 
 	function xlayer(pos : Int, ?_)
 	{
-		return Math.round((width - padBefore - padAfter - layerWidth) / (layout.length - 1) * pos + (layerWidth / 2) + padBefore) + 0.5;
+		return Math.round((width - padBefore - padAfter - layerWidth) / (layout.length - 1) * pos + (layerWidth / 2) + padBefore); // + 0.5;
 	}
 
 	function ynode(node : GNode<NodeData, Dynamic>, ?_)

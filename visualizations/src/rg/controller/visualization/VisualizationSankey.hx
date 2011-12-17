@@ -135,6 +135,8 @@ class VisualizationSankey extends VisualizationSvg
 		}
 
 		return sugiyama(graph, nodef);
+
+
 	}
 
 	static var REMOVEME = true;
@@ -142,7 +144,7 @@ class VisualizationSankey extends VisualizationSvg
 	function weightBalance(graph : Graph<NodeData, Dynamic>, nodef)
 	{
 		var layout = new GraphLayout(graph, new HeaviestNodeLayer().lay(graph));
-		layout = new EdgeSplitter().split(layout, nodef);
+		layout = new EdgeSplitter().split(layout, [], nodef);
 		layout = GreedySwitchDecrosser.best().decross(layout);
 
 		return layout;
