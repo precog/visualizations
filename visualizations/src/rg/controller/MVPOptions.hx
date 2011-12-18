@@ -89,11 +89,15 @@ class MVPOptions
 		{
 			tag = parameters.tag;
 			Reflect.deleteField(parameters, "tag");
+		} else {
+			tag = switch(options.visualization) { case "geo": "location"; default: null; }
 		}
 		if (null != parameters.location)
 		{
 			location = parameters.location;
 			Reflect.deleteField(parameters, "location");
+		} else {
+			location = switch(options.visualization) { case "geo": "/"; default: null; }
 		}
 		// grouping
 		if (null != parameters.groupby)
@@ -132,7 +136,7 @@ class MVPOptions
 		} else if (null != start) {
 			periodicity = Periodicity.defaultPeriodicity(end - start);
 		} else {
-			periodicity = switch(options.visualization) { case "piechart", "funnelchart": "eternity"; default: "day"; };
+			periodicity = switch(options.visualization) { case "piechart", "funnelchart", "sankey": "eternity"; default: "day"; };
 		}
 
 		if (null == start && "eternity" != periodicity && null != periodicity)
@@ -458,6 +462,16 @@ class MVPOptions
 										: type
 									) 
 								;
+							},
+
+							edge : function(dp : Dynamic, stats)
+							{
+								return Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
+							},
+
+							edgeover : function(dp : Dynamic, stats)
+							{
+								return Floats.format(dp.edgeweight, "D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
 							}
 						};
 				}

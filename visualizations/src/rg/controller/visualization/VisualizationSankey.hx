@@ -50,8 +50,38 @@ class VisualizationSankey extends VisualizationSvg
 		}
 		var layout = layoutData(data);
 
+		if(null != info.layerWidth)
+			chart.layerWidth = info.layerWidth;
+		if(null != info.nodeSpacing)
+			chart.nodeSpacing = info.nodeSpacing;
+		if(null != info.dummySpacing)
+			chart.dummySpacing = info.dummySpacing;
+		if(null != info.extraWidth)
+			chart.extraWidth = info.extraWidth;
+		if(null != info.backEdgeSpacing)
+			chart.backEdgeSpacing = info.backEdgeSpacing;
+		if(null != info.extraHeight)
+			chart.extraHeight = info.extraHeight;
+		if(null != info.extraRadius)
+			chart.extraRadius = info.extraRadius;
+		if(null != info.imageWidth)
+			chart.imageWidth = info.imageWidth;
+		if(null != info.imageHeight)
+			chart.imageHeight = info.imageHeight;
+		if(null != info.imageSpacing)
+			chart.imageSpacing = info.imageSpacing;
+		if(null != info.labelNodeSpacing)
+			chart.labelNodeSpacing = info.labelNodeSpacing;
+
+
 		chart.labelDataPoint = info.label.datapoint;
 		chart.labelDataPointOver = info.label.datapointover;
+		chart.labelNode = info.label.node;
+		chart.labelEdge = info.label.edge;
+		chart.labelEdgeOver = info.label.edgeover;
+		chart.thumbnailPath = info.thumbnailPath;
+		chart.click = info.click;
+		chart.clickEdge = info.clickEdge;
 
 		chart.init();
 		chart.data(layout);
@@ -127,19 +157,19 @@ class VisualizationSankey extends VisualizationSvg
 			node.data.extrain  = Math.max(0, node.data.weight - win);
 			node.data.extraout = Math.max(0, node.data.weight - wout);
 		}
-
+/*
 		if(REMOVEME)
 		{
 			REMOVEME = false;
-			return weightBalance(graph, nodef);
+			return sugiyama(graph, nodef);
 		}
-
-		return sugiyama(graph, nodef);
+*/
+		return weightBalance(graph, nodef);
 
 
 	}
 
-	static var REMOVEME = true;
+//	static var REMOVEME = true;
 
 	function weightBalance(graph : Graph<NodeData, Dynamic>, nodef)
 	{

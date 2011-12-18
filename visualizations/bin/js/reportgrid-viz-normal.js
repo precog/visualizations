@@ -1250,55 +1250,6 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 	}
 	,__class__: rg.controller.visualization.VisualizationBarChart
 });
-if(!rg.controller.interactive) rg.controller.interactive = {}
-rg.controller.interactive.Downloader = $hxClasses["rg.controller.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
-	this.container = container;
-	this.serviceUrl = serviceurl;
-	this.defaultBackgroundColor = backgroundcolor;
-}
-rg.controller.interactive.Downloader.__name__ = ["rg","controller","interactive","Downloader"];
-rg.controller.interactive.Downloader.getClassName = function(container) {
-	var name = container.attr("class").get();
-	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
-	return "" == name?null:name;
-}
-rg.controller.interactive.Downloader.prototype = {
-	serviceUrl: null
-	,defaultBackgroundColor: null
-	,container: null
-	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
-		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
-		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
-		if(null != bg) ob.backgroundcolor = bg;
-		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
-		if(null != cls) ob.className = cls;
-		var http = new haxe.Http(this.serviceUrl);
-		if(null != error) http.onError = error;
-		http.onData = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
-			};
-		})(this.complete.$bind(this),success,error);
-		var buf = [];
-		var _g = 0, _g1 = Reflect.fields(ob);
-		while(_g < _g1.length) {
-			var field = _g1[_g];
-			++_g;
-			http.setParameter(field,Reflect.field(ob,field));
-		}
-		http.request(true);
-	}
-	,complete: function(success,error,content) {
-		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
-			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
-		} else {
-			if(null != success) success();
-			js.Lib.window.location.href = content;
-		}
-	}
-	,__class__: rg.controller.interactive.Downloader
-}
 if(!rg.view.svg.panel) rg.view.svg.panel = {}
 rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
 	this.frame = (this.panel = panel).frame;
@@ -1390,220 +1341,507 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 	this.addClass("sankey");
-	this.levelWidth = 60;
-	this.padding = 60;
-	this.maxFalloffWidth = 30;
-	this.padLines = 4.0;
-	this.padFlow = 5;
-	this.minCurve = 5;
+	this.layerWidth = 61;
+	this.nodeSpacing = 63;
+	this.dummySpacing = 18;
+	this.extraWidth = 24;
+	this.backEdgeSpacing = 4.0;
+	this.extraHeight = 5;
+	this.extraRadius = 5;
+	this.imageWidth = 60;
+	this.imageHeight = 48;
+	this.imageSpacing = 0;
+	this.labelNodeSpacing = 4;
+	this.styleNode = "0";
+	this.styleExtraIn = "2";
+	this.styleExtraOut = "3";
+	this.styleEdgeBackward = "1";
+	this.styleEdgeForward = "0";
 }
 rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
 rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
 rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	layout: null
-	,levelWidth: null
-	,padding: null
-	,maxFalloffWidth: null
-	,padLines: null
-	,padFlow: null
-	,minCurve: null
-	,levels: null
-	,max: null
+	layerWidth: null
+	,nodeSpacing: null
+	,dummySpacing: null
+	,extraWidth: null
+	,backEdgeSpacing: null
+	,extraHeight: null
+	,extraRadius: null
+	,imageWidth: null
+	,imageHeight: null
+	,imageSpacing: null
+	,labelNodeSpacing: null
+	,labelEdge: null
+	,labelEdgeOver: null
+	,labelNode: null
+	,thumbnailPath: null
+	,clickEdge: null
+	,layout: null
+	,maxweight: null
 	,availableheight: null
-	,map: null
-	,edges: null
 	,padBefore: null
 	,padAfter: null
-	,levelstarts: null
+	,layerstarty: null
+	,styleNode: null
+	,styleExtraIn: null
+	,styleExtraOut: null
+	,styleEdgeBackward: null
+	,styleEdgeForward: null
+	,dependentVariable: null
+	,mapelements: null
+	,maphi: null
 	,setVariables: function(variableIndependents,variableDependents,data) {
+		this.dependentVariable = variableDependents[0];
 	}
-	,data: function(layout) {
-		this.layout = layout;
+	,data: function(graphlayout) {
+		var me = this;
+		this.layout = graphlayout.clone();
+		var nodes = Arrays.filter(Iterators.filter(this.layout.graph.nodes.iterator(),function(node) {
+			return me.isdummy(node);
+		}),function(node) {
+			var edge = node.graph.edges.positives(node).next(), cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			return celltail.layer > cellhead.layer;
+		});
+		var layers = this.layout.layers();
+		var _g = 0;
+		while(_g < nodes.length) {
+			var node = nodes[_g];
+			++_g;
+			var cell = this.layout.cell(node), ehead = node.graph.edges.positives(node).next(), etail = node.graph.edges.negatives(node).next();
+			layers[cell.layer].splice(cell.position,1);
+			this.layout.graph.edges.create(etail.tail,ehead.head,ehead.weight,ehead.data);
+			node.graph.nodes._remove(node);
+		}
 		this.redraw();
 	}
 	,redraw: function() {
 		var me = this;
-		this.levels = this.layout.length;
-		this.max = Arrays.floatMax(this.layout,function(arr) {
-			return Iterators.reduce(arr.iterator(),function(v,c,_) {
-				return c.weight + v;
-			},0);
-		});
-		this.map = new Hash();
-		this.edges = [];
-		this.availableheight = this.height - Arrays.floatMax(this.layout,function(arr) {
-			return arr.length;
-		}) * this.padding;
-		this.layout.forEach(function(level,lvl) {
-			level.forEach(function(n,pos) {
-				me.map.set(n.id,n);
-			});
-		});
-		this.layout.forEach(function(level,lvl) {
-			level.forEach(function(n,pos) {
-				var _g = 0, _g1 = n.children;
-				while(_g < _g1.length) {
-					var child = _g1[_g];
-					++_g;
-					me.edges.push({ src : n, dst : me.map.get(child.id), weight : child.weight});
-				}
-			});
-		});
-		this.edges.sort(function(a,b) {
-			return Floats.compare(a.weight,b.weight);
-		});
-		var _g = 0, _g1 = this.edges;
-		while(_g < _g1.length) {
-			var edge = _g1[_g];
-			++_g;
-			if(edge.src.level < edge.dst.level) continue;
-			this.availableheight -= this.padLines;
-			this.max += edge.weight;
-		}
-		this.availableheight -= this.minCurve + this.padFlow;
-		var yref = 0.0;
-		this.levelstarts = [];
+		this.mapelements = new Hash();
+		this.maphi = new Hash();
+		this.maxweight = 0;
+		this.layerstarty = [];
 		var _g1 = 0, _g = this.layout.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var level = this.layout[i], t = 0.0;
-			var _g2 = 0;
-			while(_g2 < level.length) {
-				var node = level[_g2];
-				++_g2;
-				t += this.padding + this.nheight(node.weight);
-			}
-			this.levelstarts[i] = t;
-			if(t > yref) yref = t;
+			var v = Iterators.reduce(this.layout.layer(i).iterator(),function(cum,cur,_) {
+				return cum + cur.data.weight;
+			},0);
+			if(v > this.maxweight) this.maxweight = v;
 		}
-		var _g1 = 0, _g = this.levelstarts.length;
+		var occupiedspace = 0.0;
+		var _g1 = 0, _g = this.layout.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			this.levelstarts[i] = yref - this.levelstarts[i];
+			var v = Iterators.reduce(this.layout.layer(i).iterator(),function(cum,cur,_) {
+				return cum + me.nodepadding(cur);
+			},0.0);
+			if(v > occupiedspace) occupiedspace = v;
 		}
-		yref += this.padLines + this.minCurve + this.padFlow;
+		this.availableheight = this.height - occupiedspace;
+		var $it0 = this.layout.graph.edges.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			if(this.layout.cell(edge.tail).layer < this.layout.cell(edge.head).layer) continue;
+			this.availableheight -= this.backEdgeSpacing;
+			this.maxweight += edge.weight;
+		}
+		this.availableheight -= this.extraRadius + this.extraHeight;
+		var backedgesy = 0.0;
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var layer = this.layout.layer(i), t = 0.0;
+			var _g2 = 0;
+			while(_g2 < layer.length) {
+				var node = layer[_g2];
+				++_g2;
+				t += this.nodepadding(node) + this.nheight(node.data.weight);
+			}
+			this.layerstarty[i] = t;
+			if(t > backedgesy) backedgesy = t;
+		}
+		var _g1 = 0, _g = this.layerstarty.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.layerstarty[i] = (backedgesy - this.layerstarty[i]) / 2;
+		}
+		backedgesy += this.extraRadius + this.extraHeight;
 		this.padBefore = 0.0;
-		var _g = 0, _g1 = this.layout[0];
+		var _g = 0, _g1 = this.layout.layer(0);
 		while(_g < _g1.length) {
 			var node = _g1[_g];
 			++_g;
-			var extrain = Math.min(this.nheight(node.extraweight),this.maxFalloffWidth);
-			if(node.parents.length > 0) {
-				var parentWeight = this.hafter(node.parents[0].id,node.parents) + this.nheight(node.parents[0].weight);
-				if(parentWeight > extrain) extrain = parentWeight;
+			var extra = Math.min(this.nheight(node.data.extrain),this.extraWidth);
+			var $it1 = node.graph.edges.negatives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				var tail = edge.tail, parentweight = this.hafter(edge.id,node.graph.edges.negatives(node)) + this.nheight(edge.weight);
+				if(parentweight > extra) extra = parentweight;
 			}
-			if(extrain > this.padBefore) this.padBefore = extrain;
+			if(extra > this.padBefore) this.padBefore = extra;
 		}
 		this.padBefore += 2;
 		this.padAfter = 0.0;
-		var _g = 0, _g1 = this.layout[this.layout.length - 1];
+		var _g = 0, _g1 = this.layout.layer(this.layout.length - 1);
 		while(_g < _g1.length) {
 			var node = _g1[_g];
 			++_g;
-			var extrain = Math.min(this.nheight(node.falloffweight),this.maxFalloffWidth);
-			if(node.children.length > 0) {
-				var childWeight = this.hafter(node.children[0].id,node.children) + this.nheight(node.children[0].weight) + this.nheight(node.falloffweight) + this.padLines;
-				if(childWeight > extrain) extrain = childWeight;
+			var extra = Math.min(this.nheight(node.data.extraout),this.extraWidth);
+			var $it2 = node.graph.edges.positives(node);
+			while( $it2.hasNext() ) {
+				var edge = $it2.next();
+				var head = edge.head, childweight = this.hafter(edge.id,node.graph.edges.positives(node)) + this.nheight(edge.weight) + Math.min(this.nheight(node.data.extraout),this.extraWidth);
+				if(childweight > extra) extra = childweight;
 			}
-			if(extrain > this.padAfter) this.padAfter = extrain;
+			if(extra > this.padAfter) this.padAfter = extra;
 		}
 		this.padAfter += 2;
 		var edgescontainer = this.g.select("g.edges");
 		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
-		this.edges.forEach(function(edge,_) {
-			if(edge.dst.level > edge.src.level) return;
-			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer), before = me.hafter(edge.dst.id,edge.src.children) + Math.min(me.maxFalloffWidth,me.nheight(edge.src.falloffweight)), after = me.hafter(edge.src.id,edge.dst.parents);
-			hook.update(me.levelWidth / 2 + me.xlevel(edge.src.level),me.ynode(edge.src) + me.ydiagonal(edge.dst.id,edge.src.children),-me.levelWidth / 2 + me.xlevel(edge.dst.level),me.nheight(edge.dst.extraweight) + me.ynode(edge.dst) + me.ydiagonal(edge.src.id,edge.dst.parents),weight,yref,before,after);
-			yref += weight + me.padLines;
+		var edges = Arrays.order(Iterators.array(this.layout.graph.edges.iterator()),function(ea,eb) {
+			var lena = me.layout.cell(ea.tail).layer - me.layout.cell(ea.head).layer, lenb = me.layout.cell(eb.tail).layer - me.layout.cell(eb.head).layer, comp = lenb - lena;
+			if(comp != 0) return comp; else return Floats.compare(eb.weight,ea.weight);
 		});
-		this.edges.forEach(function(edge,_) {
-			if(edge.dst.level <= edge.src.level) return;
-			var weight = edge.weight / me.max * me.availableheight, diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer);
-			diagonal.update(me.levelWidth / 2 + me.xlevel(edge.src.level),me.ynode(edge.src) + me.ydiagonal(edge.dst.id,edge.src.children),-me.levelWidth / 2 + me.xlevel(edge.dst.level),me.nheight(edge.dst.extraweight) + me.ynode(edge.dst) + me.ydiagonal(edge.src.id,edge.dst.parents),weight,weight);
+		edges.forEach(function(edge,_) {
+			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			if(cellhead.layer > celltail.layer) return;
+			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.extraWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
+			me.addToMap(edge.id,"edge",hook.g);
+			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
+			hook.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy + weight / 2,edge));
+			if(null != me.clickEdge) hook.g.onNode("click",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.edgeClickWithEdge.$bind(me),edge));
+			backedgesy += weight + me.backEdgeSpacing;
+		});
+		edges.forEach(function(edge,_) {
+			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail), x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head));
+			if(cellhead.layer <= celltail.layer) return;
+			var weight = me.nheight(edge.weight), diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
+			diagonal.update(x1,y1,x2,y2,weight,weight);
+			me.addToMap(edge.id,"edge",diagonal.g);
+			diagonal.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
+			if(null != me.clickEdge) diagonal.g.onNode("click",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.edgeClickWithEdge.$bind(me),edge));
 		});
 		var normMin = function(v) {
-			return Math.max(0,Math.min(v - 3,me.minCurve));
+			return Math.max(0,Math.min(v - 3,me.extraRadius));
 		};
-		var _g = 0, _g1 = this.layout;
-		while(_g < _g1.length) {
-			var level = _g1[_g];
-			++_g;
-			var _g2 = 0;
-			while(_g2 < level.length) {
-				var node = level[_g2];
-				++_g2;
-				if(node.falloffweight <= 0) continue;
-				var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), falloff = this.nheight(node.falloffweight);
-				elbow.update(rg.view.svg.widget.Orientation.RightBottom,falloff,this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node) + this.ydiagonal(null,node.children) + falloff,normMin(falloff),this.maxFalloffWidth,0,this.padFlow);
+		this.layout.each(function(cell,node) {
+			if(node.data.extraout <= 0 || me.extraWidth <= 0) return;
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraOut,"stroke stroke-" + me.styleExtraOut), extra = me.nheight(node.data.extraout), x = me.layerWidth / 2 + me.xlayer(cell.layer), y = me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
+			elbow.update(rg.view.svg.widget.Orientation.RightBottom,extra,x,y + extra,minr,me.extraWidth,0,me.extraHeight);
+			if(null != me.labelEdge) {
+				var label, text = me.labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.extraout},me.dependentVariable.stats), nodeSpacing = 0;
+				label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
+				label.addClass("edge");
+				label.place(x,y + extra / 2,0);
+				label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
+				label.setText(text);
+				if(label.getSize().height > extra * .75) label.destroy();
 			}
-		}
-		var _g = 0, _g1 = this.layout;
-		while(_g < _g1.length) {
-			var level = _g1[_g];
-			++_g;
-			var _g2 = 0;
-			while(_g2 < level.length) {
-				var node = level[_g2];
-				++_g2;
-				if(node.extraweight <= 0) continue;
-				var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), extra = this.nheight(node.extraweight);
-				elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,-this.levelWidth / 2 + this.xlevel(node.level),this.ynode(node),normMin(extra),this.maxFalloffWidth,0,this.padFlow);
+			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoverextraout.$bind(me),x + minr + (-minr + Math.min(me.extraWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.extraHeight,node));
+			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+				return function(a3,a4) {
+					return f(a1,a2,a3,a4);
+				};
+			})(me.edgeClickWithNode.$bind(me),node,true));
+			me.addToMap(node.id,"extraout",elbow.g);
+		});
+		this.layout.each(function(cell,node) {
+			if(node.data.extrain <= 0 || me.extraWidth <= 0) return;
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraIn,"stroke stroke-" + me.styleExtraIn), extra = me.nheight(node.data.extrain), minr = normMin(extra), x = -me.layerWidth / 2 + me.xlayer(cell.layer);
+			elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,x,me.ynode(node),minr,me.extraWidth,0,me.extraHeight);
+			if(null != me.labelEdge) {
+				var label, text = me.labelEdge({ head : null, tail : node, nodeweight : node.data.weight, edgeweight : node.data.extrain},me.dependentVariable.stats), nodeSpacing = 0;
+				label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
+				label.addClass("edge");
+				label.place(x,me.ynode(node) + extra / 2,0);
+				label.setAnchor(rg.view.svg.widget.GridAnchor.Right);
+				label.setText(text);
+				if(label.getSize().height > extra * .75) label.destroy();
 			}
-		}
-		var rules = this.g.selectAll("g.level").data(this.layout).enter().append("svg:g").attr("class").string("level").update().attr("transform").stringf(function(_,i) {
-			return "translate(" + me.xlevel(i) + ",0)";
+			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoverextrain.$bind(me),x - minr + (minr - Math.min(me.extraWidth,extra)) / 2,me.ynode(node) - minr - me.extraHeight,node));
+			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+				return function(a3,a4) {
+					return f(a1,a2,a3,a4);
+				};
+			})(me.edgeClickWithNode.$bind(me),node,false));
+			me.addToMap(node.id,"extrain",elbow.g);
+		});
+		if(null != this.labelEdge) edges.forEach(function(edge,_) {
+			var tail = edge.tail;
+			if(me.isdummy(tail)) return;
+			var celltail = me.layout.cell(tail), weight = me.nheight(edge.weight), label, text = me.labelEdge(me.edgeData(edge),me.dependentVariable.stats), nodeSpacing = 2;
+			label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
+			label.addClass("edge");
+			label.place(me.layerWidth / 2 + me.xlayer(celltail.layer) + nodeSpacing,me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)) + weight / 2,0);
+			label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
+			label.setText(text);
+			if(label.getSize().height > weight * .75) label.destroy();
+		});
+		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
+			return "rule rule-" + i;
+		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
+			return "translate(" + me.xlayer(i) + ",0)";
 		}).exit().remove();
-		var choice = rules.update().selectAll("g.node").dataf(function(d,_) {
-			return d;
+		var choice = rules.update().selectAll("g.node").dataf(function(d,i) {
+			return me.layout.layer(i);
 		});
 		var cont = choice.enter().append("svg:g").attr("class").string("node");
-		if(this.levelWidth > 0) {
-			cont.append("svg:rect").attr("class").string("node").attr("x")["float"](-this.levelWidth / 2).attr("y")["float"](0).attr("width")["float"](this.levelWidth).attr("height").floatf(this.hnode.$bind(this));
-			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.levelWidth / 2).attr("y2")["float"](0);
-			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.levelWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.levelWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+		if(this.layerWidth > 0) {
+			($_=cont.append("svg:rect").attr("class").stringf(function(n,_) {
+				return "fill fill-" + (me.isdummy(n)?me.styleEdgeForward + " nonode":me.styleNode + " node");
+			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this)),$_.filter.$bind($_));
+			cont.each(function(node,_) {
+				me.addToMap(node.id,"node",thx.js.Dom.selectNode(thx.js.Group.current));
+			});
+			cont.append("svg:line").attr("class").stringf(function(n,_) {
+				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
+			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
+			cont.append("svg:line").attr("class").stringf(function(n,_) {
+				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
+			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
 		}
-		cont.each(function(dp,i) {
-			var node = thx.js.Dom.selectNode(thx.js.Group.current);
-			var label = new rg.view.svg.widget.Label(node,true,true,false);
-			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
-			label.setText(dp.id);
-		});
 		choice.update().attr("transform").stringf(function(n,i) {
-			return "translate(0," + me.ynode(n,i) + ")";
+			return "translate(0," + me.ynode(n) + ")";
 		});
-		var lines = this.g.selectAll("g.reference").data(this.edges).enter().append("svg:g").attr("class").string("reference");
-		lines.attr("x1").floatf(function(o,_) {
-			return me.xlevel(o.src.level);
-		}).attr("x2").floatf(function(o,_) {
-			return me.xlevel(o.dst.level);
-		}).attr("y1").floatf(function(o,_) {
-			return me.ynode(o.src) + me.hnode(o.src) / 2;
-		}).attr("y2").floatf(function(o,_) {
-			return me.ynode(o.dst) + me.hnode(o.dst) / 2;
-		}).style("stroke-width").floatf(function(o,_) {
-			return me.nheight(o.weight);
+		cont.each(function(n,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			if(me.isdummy(n)) return;
+			var nodeheight = me.hnode(n), label;
+			if(null != me.labelDataPoint) {
+				var lines = me.labelDataPoint(n.data.dp,me.dependentVariable.stats).split("\n"), nodeSpacing = 3, prev = null, text, pos = 0.0;
+				var _g1 = 0, _g = lines.length;
+				while(_g1 < _g) {
+					var i1 = _g1++;
+					text = lines[i1];
+					label = new rg.view.svg.widget.Label(node,true,true,false);
+					label.addClass("node");
+					if(i1 == 0) label.addClass("first");
+					pos = nodeSpacing;
+					if(null != prev) pos += prev.y + prev.getSize().height;
+					label.place(-me.layerWidth / 2 + nodeSpacing * 2,pos,0);
+					label.setAnchor(rg.view.svg.widget.GridAnchor.TopLeft);
+					label.setText(text);
+					if(label.y + label.getSize().height > nodeheight) {
+						label.destroy();
+						break;
+					}
+					prev = label;
+				}
+			}
+			if(null != me.thumbnailPath && !me.isdummy(n)) {
+				var path = me.thumbnailPath(n.data.dp);
+				if(path != null) {
+					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-me.imageWidth / 2) + "," + Math.round(-me.imageHeight - me.imageSpacing) + ")");
+					container.append("svg:image").attr("preserveAspectRatio").string("xMidYMid slice").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
+				}
+			}
+			if(null != me.labelNode) {
+				label = new rg.view.svg.widget.Label(node,true,true,true);
+				label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+				label.place(0,-me.labelNodeSpacing,0);
+				label.setText(me.labelNode(n.data.dp,me.dependentVariable.stats));
+			}
 		});
+		cont.each(function(n,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			node.onNode("mouseover",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.onmouseovernode.$bind(me),n));
+			if(null != me.click) node.onNode("click",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.nodeclick.$bind(me),n));
+		});
+		this.ready.dispatch();
+	}
+	,addToMap: function(id,type,el) {
+		this.mapelements.set(type + ":" + id,el);
+	}
+	,isbackward: function(edge) {
+		return this.layout.cell(edge.head).layer <= this.layout.cell(edge.tail).layer;
+	}
+	,highlight: function(id,type) {
+		var me = this;
+		var $it0 = this.maphi.iterator();
+		while( $it0.hasNext() ) {
+			var el = $it0.next();
+			el.classed().remove("over");
+		}
+		this.maphi = new Hash();
+		var hiedgep = null, hinodep = null, hiedgen = null, hinoden = null;
+		var hielement = function(id1,type1) {
+			var key = type1 + ":" + id1;
+			me.maphi.set(key,me.mapelements.get(key).classed().add("over"));
+		};
+		var hiextrain = function(id1) {
+			var key = "extrain:" + id1, extra = me.mapelements.get(key);
+			if(null == extra) return;
+			me.maphi.set(key,extra.classed().add("over"));
+		};
+		var hiextraout = function(id1) {
+			var key = "extraout:" + id1, extra = me.mapelements.get(key);
+			if(null == extra) return;
+			me.maphi.set(key,extra.classed().add("over"));
+		};
+		var ishi = function(id1,type1) {
+			return me.maphi.exists(type1 + ":" + id1);
+		};
+		hiedgep = function(edge) {
+			if(ishi(edge.id,"edge")) return;
+			hielement(edge.id,"edge");
+			if(!me.isbackward(edge)) hinodep(edge.head);
+		};
+		hinodep = function(node) {
+			if(ishi(node.id,"node")) return;
+			hielement(node.id,"node");
+			hiextraout(node.id);
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				hiedgep(edge);
+			}
+		};
+		hiedgen = function(edge) {
+			if(!me.isbackward(edge)) hinoden(edge.tail);
+			if(ishi(edge.id,"edge")) return;
+			if(!me.isbackward(edge)) hielement(edge.id,"edge");
+		};
+		hinoden = function(node) {
+			var $it2 = node.graph.edges.negatives(node);
+			while( $it2.hasNext() ) {
+				var edge = $it2.next();
+				hiedgen(edge);
+			}
+			if(ishi(node.id,"node")) return;
+			hielement(node.id,"node");
+			hiextrain(node.id);
+		};
+		if(type == "edge") {
+			hiedgep(this.layout.graph.edges.get(id));
+			hiedgen(this.layout.graph.edges.get(id));
+		} else if(type == "node") {
+			hinodep(this.layout.graph.nodes.get(id));
+			hinoden(this.layout.graph.nodes.get(id));
+			hiextrain(id);
+		}
+	}
+	,edgeData: function(edge) {
+		var head = edge.head, tail = edge.tail;
+		while(this.isdummy(head)) head = head.graph.edges.positives(head).next().head;
+		while(this.isdummy(tail)) tail = tail.graph.edges.negatives(tail).next().tail;
+		return { head : head.data.dp, tail : tail.data.dp, edgeweight : edge.weight, nodeweight : tail.data.weight};
+	}
+	,edgeDataWithNode: function(node,out) {
+		return { tail : out?node.data.dp:null, head : out?null:node.data.dp, edgeweight : out?node.data.extraout:node.data.extrain, nodeweight : node.data.weight};
+	}
+	,nodeclick: function(node,el,i) {
+		this.click(node.data.dp,this.dependentVariable.stats);
+	}
+	,edgeclick: function(data,el,i) {
+		this.clickEdge(data,this.dependentVariable.stats);
+	}
+	,edgeClickWithEdge: function(edge,el,i) {
+		this.edgeclick(this.edgeData(edge),el,i);
+	}
+	,edgeClickWithNode: function(node,out,el,i) {
+		this.edgeclick(this.edgeDataWithNode(node,out),el,i);
+	}
+	,onmouseovernode: function(node,el,i) {
+		this.highlight(node.id,"node");
+		if(this.isdummy(node)) {
+			if(null == this.labelEdgeOver) return;
+			var text = this.labelEdgeOver(this.edgeData(node.graph.edges.positives(node).next()),this.dependentVariable.stats);
+			if(null == text) this.tooltip.hide(); else {
+				var cell = this.layout.cell(node);
+				this.tooltip.setPreferredSide(2);
+				this.tooltip.setText(text.split("\n"));
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+			}
+		} else {
+			if(null == this.labelDataPointOver) return;
+			var text = this.labelDataPointOver(node.data.dp,this.dependentVariable.stats);
+			if(null == text) this.tooltip.hide(); else {
+				var cell = this.layout.cell(node);
+				this.tooltip.setPreferredSide(0);
+				this.tooltip.setText(text.split("\n"));
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+			}
+		}
+	}
+	,onmouseoveredge: function(x,y,edge,el,i) {
+		this.highlight(edge.id,"edge");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver(this.edgeData(edge),this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(2);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
+	}
+	,onmouseoverextrain: function(x,y,node,el,i) {
+		this.highlight(node.id,"node");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(2);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
+	}
+	,onmouseoverextraout: function(x,y,node,el,i) {
+		this.highlight(node.id,"node");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(0);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
 	}
 	,nheight: function(v) {
-		return v / this.max * this.availableheight;
+		return Math.round(v / this.maxweight * this.availableheight);
 	}
 	,ydiagonal: function(id,edges) {
 		var weight = 0.0;
-		var _g = 0;
-		while(_g < edges.length) {
-			var edge = edges[_g];
-			++_g;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
 			if(edge.id == id) break;
 			weight += edge.weight;
 		}
 		return this.nheight(weight);
 	}
 	,hafter: function(id,edges) {
-		var found = false, pad = this.padLines / this.nheight(1), weight = pad;
-		var _g = 0;
-		while(_g < edges.length) {
-			var edge = edges[_g];
-			++_g;
+		var found = false, pad = this.backEdgeSpacing / this.nheight(1), weight = pad;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
 			if(!found) {
 				if(edge.id == id) found = true;
 				continue;
@@ -1612,23 +1850,81 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		}
 		return this.nheight(weight);
 	}
-	,xlevel: function(pos,_) {
-		return (this.width - this.padBefore - this.padAfter - this.levelWidth) / (this.levels - 1) * pos + this.levelWidth / 2 + this.padBefore;
+	,xlayer: function(pos,_) {
+		if(this.layout.length <= 1) return this.width / 2;
+		return Math.round((this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore);
 	}
 	,ynode: function(node,_) {
-		var before = this.padding + this.levelstarts[node.level];
-		var _g1 = 0, _g = node.pos;
+		var cell = this.layout.cell(node), before = this.layerstarty[cell.layer];
+		var _g1 = 0, _g = cell.position;
 		while(_g1 < _g) {
 			var i = _g1++;
-			before += this.hnode(this.layout[node.level][i]) + this.padding;
+			var prev = this.layout.nodeAt(cell.layer,i);
+			before += this.hnode(prev) + this.nodepadding(prev);
 		}
-		return before;
+		before += this.nodepadding(node);
+		return Math.round(before) + 0.5;
+	}
+	,nodepadding: function(node) {
+		return this.isdummy(node)?this.dummySpacing:this.nodeSpacing;
+	}
+	,isdummy: function(node) {
+		return node.data.id.substr(0,1) == "#";
 	}
 	,hnode: function(node,_) {
-		return this.nheight(node.weight);
+		return this.nheight(node.data.weight);
 	}
 	,__class__: rg.view.svg.chart.Sankey
 });
+if(!rg.controller.interactive) rg.controller.interactive = {}
+rg.controller.interactive.Downloader = $hxClasses["rg.controller.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
+	this.container = container;
+	this.serviceUrl = serviceurl;
+	this.defaultBackgroundColor = backgroundcolor;
+}
+rg.controller.interactive.Downloader.__name__ = ["rg","controller","interactive","Downloader"];
+rg.controller.interactive.Downloader.getClassName = function(container) {
+	var name = container.attr("class").get();
+	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
+	return "" == name?null:name;
+}
+rg.controller.interactive.Downloader.prototype = {
+	serviceUrl: null
+	,defaultBackgroundColor: null
+	,container: null
+	,download: function(format,backgroundcolor,success,error) {
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
+		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
+		if(null != bg) ob.backgroundcolor = bg;
+		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
+		if(null != cls) ob.className = cls;
+		var http = new haxe.Http(this.serviceUrl);
+		if(null != error) http.onError = error;
+		http.onData = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(this.complete.$bind(this),success,error);
+		var buf = [];
+		var _g = 0, _g1 = Reflect.fields(ob);
+		while(_g < _g1.length) {
+			var field = _g1[_g];
+			++_g;
+			http.setParameter(field,Reflect.field(ob,field));
+		}
+		http.request(true);
+	}
+	,complete: function(success,error,content) {
+		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
+			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
+		} else {
+			if(null != success) success();
+			js.Lib.window.location.href = content;
+		}
+	}
+	,__class__: rg.controller.interactive.Downloader
+}
 rg.controller.info.InfoFunnelChart = $hxClasses["rg.controller.info.InfoFunnelChart"] = function() {
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabelFunnel();
@@ -2980,6 +3276,80 @@ Dates.compare = function(a,b) {
 Dates.prototype = {
 	__class__: Dates
 }
+rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container,classarea,classborder) {
+	this.g = container.append("svg:g").attr("class").string("elbow");
+	this.area = this.g.append("svg:path").attr("class").string("elbow-fill" + (null == classarea?"":" " + classarea));
+	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder?"":" " + classborder));
+	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder?"":" " + classborder));
+}
+rg.view.svg.widget.ElbowArea.__name__ = ["rg","view","svg","widget","ElbowArea"];
+rg.view.svg.widget.ElbowArea.prototype = {
+	g: null
+	,area: null
+	,outer: null
+	,inner: null
+	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
+		if(after == null) after = 10.0;
+		if(before == null) before = 0.0;
+		if(maxradius == null) maxradius = 16.0;
+		if(minradius == null) minradius = 3.0;
+		var dinner = "", douter = "", rad = weight < 0?Math.max(maxradius,weight):Math.min(maxradius,weight);
+		switch( (orientation)[1] ) {
+		case 0:
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + Math.abs(minradius) + "," + Math.abs(minradius) + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y - weight) + "L" + (before + x) + "," + (y - weight) + "A" + Math.abs(rad) + "," + Math.abs(rad) + " 0 0,1 " + (before + x + rad) + "," + (y - weight + rad) + "L" + (before + x + rad) + "," + (y + after + minradius);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			this.update(rg.view.svg.widget.Orientation.RightBottom,-weight,x,y,-minradius,-maxradius,-before,-after);
+			return;
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + minradius + "," + minradius + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y + weight) + "L" + (-before + x) + "," + (y + weight) + "A" + rad + "," + rad + " 0 0,1 " + (-before + x - rad) + "," + (y + weight - rad) + "L" + (-before + x - rad) + "," + (y - after - minradius);
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		}
+		var darea = douter + "L" + dinner.substr(1) + "z";
+		this.inner.attr("d").string(dinner);
+		this.outer.attr("d").string(douter);
+		this.area.attr("d").string(darea);
+	}
+	,__class__: rg.view.svg.widget.ElbowArea
+}
+rg.view.svg.widget.Orientation = $hxClasses["rg.view.svg.widget.Orientation"] = { __ename__ : ["rg","view","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.view.svg.widget.Orientation.RightBottom = ["RightBottom",0];
+rg.view.svg.widget.Orientation.RightBottom.toString = $estr;
+rg.view.svg.widget.Orientation.RightBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftBottom = ["LeftBottom",1];
+rg.view.svg.widget.Orientation.LeftBottom.toString = $estr;
+rg.view.svg.widget.Orientation.LeftBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.RightTop = ["RightTop",2];
+rg.view.svg.widget.Orientation.RightTop.toString = $estr;
+rg.view.svg.widget.Orientation.RightTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftTop = ["LeftTop",3];
+rg.view.svg.widget.Orientation.LeftTop.toString = $estr;
+rg.view.svg.widget.Orientation.LeftTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomRight = ["BottomRight",4];
+rg.view.svg.widget.Orientation.BottomRight.toString = $estr;
+rg.view.svg.widget.Orientation.BottomRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomLeft = ["BottomLeft",5];
+rg.view.svg.widget.Orientation.BottomLeft.toString = $estr;
+rg.view.svg.widget.Orientation.BottomLeft.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopRight = ["TopRight",6];
+rg.view.svg.widget.Orientation.TopRight.toString = $estr;
+rg.view.svg.widget.Orientation.TopRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopLeft = ["TopLeft",7];
+rg.view.svg.widget.Orientation.TopLeft.toString = $estr;
+rg.view.svg.widget.Orientation.TopLeft.__enum__ = rg.view.svg.widget.Orientation;
 if(!thx.geo) thx.geo = {}
 thx.geo.IProjection = $hxClasses["thx.geo.IProjection"] = function() { }
 thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
@@ -3058,80 +3428,6 @@ thx.geo.Albers.prototype = {
 	,__class__: thx.geo.Albers
 	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate",set_parallels:"setParallels",get_parallels:"getParallels",set_origin:"setOrigin",get_origin:"getOrigin"}
 }
-rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container) {
-	this.g = container.append("svg:g").attr("class").string("elbow");
-	this.area = this.g.append("svg:path").attr("class").string("elbow-fill");
-	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer");
-	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner");
-}
-rg.view.svg.widget.ElbowArea.__name__ = ["rg","view","svg","widget","ElbowArea"];
-rg.view.svg.widget.ElbowArea.prototype = {
-	g: null
-	,area: null
-	,outer: null
-	,inner: null
-	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
-		if(after == null) after = 10.0;
-		if(before == null) before = 0.0;
-		if(maxradius == null) maxradius = 16.0;
-		if(minradius == null) minradius = 3.0;
-		var dinner = "", douter = "", rad = weight < 0?Math.max(maxradius,weight):Math.min(maxradius,weight);
-		switch( (orientation)[1] ) {
-		case 0:
-			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + Math.abs(minradius) + "," + Math.abs(minradius) + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
-			douter = "M" + x + "," + (y - weight) + "L" + (before + x) + "," + (y - weight) + "A" + Math.abs(rad) + "," + Math.abs(rad) + " 0 0,1 " + (before + x + rad) + "," + (y - weight + rad) + "L" + (before + x + rad) + "," + (y + after + minradius);
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			this.update(rg.view.svg.widget.Orientation.RightBottom,-weight,x,y,-minradius,-maxradius,-before,-after);
-			return;
-			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + minradius + "," + minradius + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
-			douter = "M" + x + "," + (y + weight) + "L" + (-before + x) + "," + (y + weight) + "A" + rad + "," + rad + " 0 0,1 " + (-before + x - rad) + "," + (y + weight - rad) + "L" + (-before + x - rad) + "," + (y - after - minradius);
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
-			break;
-		}
-		var darea = douter + "L" + dinner.substr(1) + "z";
-		this.inner.attr("d").string(dinner);
-		this.outer.attr("d").string(douter);
-		this.area.attr("d").string(darea);
-	}
-	,__class__: rg.view.svg.widget.ElbowArea
-}
-rg.view.svg.widget.Orientation = $hxClasses["rg.view.svg.widget.Orientation"] = { __ename__ : ["rg","view","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
-rg.view.svg.widget.Orientation.RightBottom = ["RightBottom",0];
-rg.view.svg.widget.Orientation.RightBottom.toString = $estr;
-rg.view.svg.widget.Orientation.RightBottom.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.LeftBottom = ["LeftBottom",1];
-rg.view.svg.widget.Orientation.LeftBottom.toString = $estr;
-rg.view.svg.widget.Orientation.LeftBottom.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.RightTop = ["RightTop",2];
-rg.view.svg.widget.Orientation.RightTop.toString = $estr;
-rg.view.svg.widget.Orientation.RightTop.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.LeftTop = ["LeftTop",3];
-rg.view.svg.widget.Orientation.LeftTop.toString = $estr;
-rg.view.svg.widget.Orientation.LeftTop.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.BottomRight = ["BottomRight",4];
-rg.view.svg.widget.Orientation.BottomRight.toString = $estr;
-rg.view.svg.widget.Orientation.BottomRight.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.BottomLeft = ["BottomLeft",5];
-rg.view.svg.widget.Orientation.BottomLeft.toString = $estr;
-rg.view.svg.widget.Orientation.BottomLeft.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.TopRight = ["TopRight",6];
-rg.view.svg.widget.Orientation.TopRight.toString = $estr;
-rg.view.svg.widget.Orientation.TopRight.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.TopLeft = ["TopLeft",7];
-rg.view.svg.widget.Orientation.TopLeft.toString = $estr;
-rg.view.svg.widget.Orientation.TopLeft.__enum__ = rg.view.svg.widget.Orientation;
 rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 }
@@ -4006,6 +4302,48 @@ rg.view.svg.widget.LabelOrientations.parse = function(s) {
 rg.view.svg.widget.LabelOrientations.prototype = {
 	__class__: rg.view.svg.widget.LabelOrientations
 }
+rg.graph.HeaviestNodeLayer = $hxClasses["rg.graph.HeaviestNodeLayer"] = function() {
+}
+rg.graph.HeaviestNodeLayer.__name__ = ["rg","graph","HeaviestNodeLayer"];
+rg.graph.HeaviestNodeLayer.prototype = {
+	lay: function(graph) {
+		var layers = [], nodes = Arrays.order(Iterators.array(Iterators.array(graph.nodes.iterator()).iterator()),function(a,b) {
+			return Floats.compare(b.positiveWeight(),a.positiveWeight());
+		});
+		var getLayer = function(index) {
+			var layer = layers[index];
+			if(null == layer) layer = layers[index] = [];
+			return layer;
+		};
+		var addAt = (function($this) {
+			var $r;
+			var addAt = null;
+			addAt = function(node,lvl) {
+				if(!nodes.remove(node)) return;
+				var layer = getLayer(lvl);
+				layer.push(node.id);
+				var $it0 = node.graph.edges.positives(node);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					addAt(edge.head,lvl + 1);
+				}
+			};
+			$r = addAt;
+			return $r;
+		}(this));
+		while(nodes.length > 0) addAt(nodes[0],0);
+		var _g = 0;
+		while(_g < layers.length) {
+			var layer = layers[_g];
+			++_g;
+			Arrays.order(Iterators.array(layer.iterator()),function(ida,idb) {
+				return Floats.compare(graph.nodes.get(idb).positiveWeight(),graph.nodes.get(ida).positiveWeight());
+			});
+		}
+		return layers;
+	}
+	,__class__: rg.graph.HeaviestNodeLayer
+}
 rg.data.IAxisOrdinal = $hxClasses["rg.data.IAxisOrdinal"] = function() { }
 rg.data.IAxisOrdinal.__name__ = ["rg","data","IAxisOrdinal"];
 rg.data.IAxisOrdinal.__interfaces__ = [rg.data.IAxisDiscrete];
@@ -4080,11 +4418,11 @@ rg.data.AxisOrdinal.prototype = {
 	,__class__: rg.data.AxisOrdinal
 	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
-rg.view.svg.widget.HookConnectorArea = $hxClasses["rg.view.svg.widget.HookConnectorArea"] = function(container) {
+rg.view.svg.widget.HookConnectorArea = $hxClasses["rg.view.svg.widget.HookConnectorArea"] = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("hook");
-	this.area = this.g.append("svg:path").attr("class").string("hook-fill");
-	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper");
-	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower");
+	this.area = this.g.append("svg:path").attr("class").string("hook-fill" + (null == classarea?"":" " + classarea));
+	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper" + (null == classborder?"":" " + classborder));
+	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower" + (null == classborder?"":" " + classborder));
 }
 rg.view.svg.widget.HookConnectorArea.__name__ = ["rg","view","svg","widget","HookConnectorArea"];
 rg.view.svg.widget.HookConnectorArea.lineTo = function(x,y) {
@@ -5389,7 +5727,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.3678"};
+	r.info.viz = { version : "1.1.5.4506"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -6855,16 +7193,14 @@ thx.translation.ITranslation.prototype = {
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
 rg.graph.GraphLayout = $hxClasses["rg.graph.GraphLayout"] = function(graph,layers) {
-	var me = this;
 	this.graph = graph;
 	this._layers = layers.map(function(arr,_) {
 		return arr.copy();
 	});
 	this.friendCell = this._cell = new rg.graph.LayoutCell();
-	this._map = new IntHash();
-	this.each(function(cell,node) {
-		me._map.set(node.id,[cell.layer,cell.position]);
-	});
+	this._updateMap();
+	this.length = this._layers.length;
+	graph.nodes.onRemove.add(this._nodeRemove.$bind(this));
 }
 rg.graph.GraphLayout.__name__ = ["rg","graph","GraphLayout"];
 rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
@@ -6901,10 +7237,21 @@ rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
 }
 rg.graph.GraphLayout.prototype = {
 	graph: null
+	,length: null
 	,_layers: null
 	,_cell: null
 	,_map: null
 	,friendCell: null
+	,_updateMap: function() {
+		var me = this;
+		this._map = new IntHash();
+		this.each(function(cell,node) {
+			me._map.set(node.id,[cell.layer,cell.position]);
+		});
+	}
+	,clone: function() {
+		return new rg.graph.GraphLayout(this.graph.clone(),this.layers());
+	}
 	,each: function(f) {
 		var layers = this._layers.length, positions;
 		var _g = 0;
@@ -6920,7 +7267,7 @@ rg.graph.GraphLayout.prototype = {
 		}
 	}
 	,cell: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 43, className : "rg.graph.GraphLayout", methodName : "cell"});
+		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 57, className : "rg.graph.GraphLayout", methodName : "cell"});
 		var pos = this._map.get(node.id);
 		if(null == pos) return null;
 		return new rg.graph.LayoutCell(pos[0],pos[1],this._layers.length,this._layers[pos[0]].length);
@@ -6931,6 +7278,12 @@ rg.graph.GraphLayout.prototype = {
 		var id = arr[position];
 		if(null == id) return null;
 		return this.graph.nodes.get(id);
+	}
+	,layer: function(i) {
+		var me = this;
+		return this._layers[i].map(function(id,_) {
+			return me.graph.nodes.get(id);
+		});
 	}
 	,layers: function() {
 		var result = [];
@@ -6950,6 +7303,20 @@ rg.graph.GraphLayout.prototype = {
 			tot += rg.graph.GraphLayout.arrayCrossings(this.graph,this._layers[i],this._layers[i + 1]);
 		}
 		return tot;
+	}
+	,maxCells: function() {
+		return Std["int"](Arrays.floatMax(this._layers,function(arr) {
+			return arr.length;
+		}));
+	}
+	,_nodeRemove: function(node) {
+		var c = this.cell(node);
+		this._layers[c.layer].splice(c.position,1);
+		if(this._layers[c.layer].length == 0) this._layers.splice(c.layer,1);
+		this._updateMap();
+	}
+	,toString: function() {
+		return "GraphLayout (" + this.graph + ", layers: " + this._layers.length + ", crossings : " + this.crossings() + ")";
 	}
 	,__class__: rg.graph.GraphLayout
 }
@@ -7067,30 +7434,34 @@ rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(gra
 	this.graph = graph;
 	this.idf = idf;
 	this.collection = new IntHash();
-	this.map = new Hash();
+	this._map = new Hash();
 	if(null != idf) {
-		var add = this.collectionAdd.$bind(this);
-		this.collectionAdd = function(item) {
-			me.map.set(idf(item.data),item);
+		var add = this.collectionCreate.$bind(this);
+		this.collectionCreate = function(item) {
+			me._map.set(idf(item.data),item);
 			add(item);
 		};
 		var rem = this.collectionRemove.$bind(this);
 		this.collectionRemove = function(item) {
-			me.map.remove(idf(item.data));
+			me._map.remove(idf(item.data));
 			rem(item);
 		};
 	}
+	this.onRemove = new hxevents.Dispatcher();
+	this.onCreate = new hxevents.Dispatcher();
 }
 rg.graph.GraphCollection.__name__ = ["rg","graph","GraphCollection"];
 rg.graph.GraphCollection.prototype = {
-	graph: null
+	onRemove: null
+	,onCreate: null
+	,graph: null
 	,collection: null
 	,nextid: null
 	,idf: null
-	,map: null
+	,_map: null
 	,length: null
 	,getById: function(id) {
-		return this.map.get(id);
+		return this._map.get(id);
 	}
 	,get: function(id) {
 		return this.collection.get(id);
@@ -7101,11 +7472,13 @@ rg.graph.GraphCollection.prototype = {
 	,get_length: function() {
 		return IntHashes.count(this.collection);
 	}
-	,collectionAdd: function(item) {
+	,collectionCreate: function(item) {
+		this.onCreate.dispatch(item);
 		this.collection.set(item.id,item);
 	}
 	,collectionRemove: function(item) {
 		this.collection.remove(item.id);
+		this.onRemove.dispatch(item);
 	}
 	,iterator: function() {
 		return this.collection.iterator();
@@ -7143,14 +7516,14 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		edges.nextid = this.nextid;
 		return edges;
 	}
-	,create: function(tail,head,data,weight) {
+	,create: function(tail,head,weight,data) {
 		if(weight == null) weight = 1.0;
 		if(tail.graph != head.graph || tail.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 39, className : "rg.graph.GraphEdges", methodName : "create"});
 		return this._create(++this.nextid,tail,head,weight,data);
 	}
 	,_create: function(id,tail,head,weight,data) {
 		var e = rg.graph.GEdge.create(this.graph,id,tail,head,weight,data);
-		this.collectionAdd(e);
+		this.collectionCreate(e);
 		this.connections(tail.id,this.edgesp).push(id);
 		this.connections(head.id,this.edgesn).push(id);
 		return e;
@@ -7247,7 +7620,7 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 	,__class__: rg.graph.GraphEdges
 });
 rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
-	this.label = new rg.controller.info.InfoLabel();
+	this.label = new rg.controller.info.InfoLabelSankey();
 	this.idproperty = "id";
 	this.weightproperty = "count";
 	this.parentsproperty = "parents";
@@ -7257,7 +7630,63 @@ rg.controller.info.InfoSankey.filters = function() {
 	return [{ field : "label", validator : function(v) {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelSankey(),v)}];
+	}},{ field : "layerwidth", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "layerWidth", value : v}];
+	}},{ field : "nodespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "nodeSpacing", value : v}];
+	}},{ field : "dummyspacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "dummySpacing", value : v}];
+	}},{ field : "extrawidth", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "extraWidth", value : v}];
+	}},{ field : "backedgespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "backEdgeSpacing", value : v}];
+	}},{ field : "extraheight", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "extraHeight", value : v}];
+	}},{ field : "extraradius", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "extraRadius", value : v}];
+	}},{ field : "imagewidth", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "imageWidth", value : v}];
+	}},{ field : "imageheight", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "imageHeight", value : v}];
+	}},{ field : "imagespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "imageSpacing", value : v}];
+	}},{ field : "labelnodespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "labelNodeSpacing", value : v}];
+	}},{ field : "thumbnailpath", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "thumbnailPath", value : v}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "click", value : v}];
+	}},{ field : "clickedge", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "clickEdge", value : v}];
 	}}];
 }
 rg.controller.info.InfoSankey.prototype = {
@@ -7265,6 +7694,20 @@ rg.controller.info.InfoSankey.prototype = {
 	,idproperty: null
 	,weightproperty: null
 	,parentsproperty: null
+	,layerWidth: null
+	,nodeSpacing: null
+	,dummySpacing: null
+	,extraWidth: null
+	,backEdgeSpacing: null
+	,extraHeight: null
+	,extraRadius: null
+	,imageWidth: null
+	,imageHeight: null
+	,imageSpacing: null
+	,labelNodeSpacing: null
+	,thumbnailPath: null
+	,click: null
+	,clickEdge: null
 	,__class__: rg.controller.info.InfoSankey
 }
 thx.math.Const = $hxClasses["thx.math.Const"] = function() { }
@@ -7846,6 +8289,10 @@ Iterables.contains = function(it,v,f) {
 }
 Iterables.array = function(it) {
 	return Iterators.array(it.iterator());
+}
+Iterables.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it.iterator()).join(glue);
 }
 Iterables.map = function(it,f) {
 	return Iterators.map(it.iterator(),f);
@@ -10996,6 +11443,19 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,__class__: rg.view.svg.chart.HeatGrid
 	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
+rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
+rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
+rg.view.svg.util.RGColors.parse = function(s,alt) {
+	try {
+		var c = thx.color.Colors.parse(s);
+		if(null != c) return c;
+	} catch( _ ) {
+	}
+	return thx.color.Colors.parse(alt);
+}
+rg.view.svg.util.RGColors.prototype = {
+	__class__: rg.view.svg.util.RGColors
+}
 rg.graph.Graph = $hxClasses["rg.graph.Graph"] = function(nodeidf,edgeidf) {
 	this.nodes = rg.graph.GraphNodes.newInstance(this,nodeidf);
 	this.edges = rg.graph.GraphEdges.newInstance(this,edgeidf);
@@ -11137,19 +11597,6 @@ rg.graph.Graph.prototype = {
 		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
 	}
 	,__class__: rg.graph.Graph
-}
-rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
-rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
-rg.view.svg.util.RGColors.parse = function(s,alt) {
-	try {
-		var c = thx.color.Colors.parse(s);
-		if(null != c) return c;
-	} catch( _ ) {
-	}
-	return thx.color.Colors.parse(alt);
-}
-rg.view.svg.util.RGColors.prototype = {
-	__class__: rg.view.svg.util.RGColors
 }
 rg.view.frame.Stack = $hxClasses["rg.view.frame.Stack"] = function(width,height,orientation) {
 	this.orientation = null == orientation?rg.view.frame.Orientation.Vertical:orientation;
@@ -11508,14 +11955,14 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	}
 	,__class__: thx.math.scale.Linear
 });
-rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container) {
+rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("diagonal");
 	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
 		return [a[1],a[0]];
 	});
-	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill");
-	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before");
-	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after");
+	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill" + (null == classarea?"":" " + classarea));
+	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before" + (null == classborder?"":" " + classborder));
+	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder?"":" " + classborder));
 }
 rg.view.svg.widget.DiagonalArea.__name__ = ["rg","view","svg","widget","DiagonalArea"];
 rg.view.svg.widget.DiagonalArea.prototype = {
@@ -12251,6 +12698,26 @@ rg.RGConst.__name__ = ["rg","RGConst"];
 rg.RGConst.prototype = {
 	__class__: rg.RGConst
 }
+rg.controller.info.InfoLabelSankey = $hxClasses["rg.controller.info.InfoLabelSankey"] = function() {
+	rg.controller.info.InfoLabel.call(this);
+}
+rg.controller.info.InfoLabelSankey.__name__ = ["rg","controller","info","InfoLabelSankey"];
+rg.controller.info.InfoLabelSankey.filters = function() {
+	return [{ field : "edge", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "edgeover", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "node", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
+}
+rg.controller.info.InfoLabelSankey.__super__ = rg.controller.info.InfoLabel;
+rg.controller.info.InfoLabelSankey.prototype = $extend(rg.controller.info.InfoLabel.prototype,{
+	edge: null
+	,edgeover: null
+	,node: null
+	,__class__: rg.controller.info.InfoLabelSankey
+});
 rg.util.RG = $hxClasses["rg.util.RG"] = function() { }
 rg.util.RG.__name__ = ["rg","util","RG"];
 rg.util.RG.getTokenId = function() {
@@ -12964,14 +13431,14 @@ rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
 			var max = lvl;
 			while( it.hasNext() ) {
 				var edge = it.next();
-				if(edge.head.isSink()) continue; else max = Ints.max(max,traverse(edge.head.positives(),lvl + 1));
+				if(edge.tail.isSink()) continue; else max = Ints.max(max,traverse(edge.tail.negatives(),lvl + 1));
 			}
 			return max;
 		};
 		$r = traverse;
 		return $r;
 	}(this));
-	return traverse(node.graph.edges.positives(node),1);
+	return node.isIsolated()?0:traverse(node.graph.edges.negatives(node),1);
 }
 rg.graph.LongestPathLayer.prototype = {
 	lay: function(graph) {
@@ -12990,7 +13457,6 @@ rg.graph.LongestPathLayer.prototype = {
 			if(null == layer) layer = layers[pos] = [];
 			layer.push(node.id);
 		}
-		layers.reverse();
 		return layers;
 	}
 	,__class__: rg.graph.LongestPathLayer
@@ -14306,6 +14772,9 @@ rg.graph.GraphElement.prototype = {
 	,destroy: function() {
 		this.graph = null;
 		this.id = -1;
+	}
+	,destroyed: function() {
+		return null == this.graph;
 	}
 	,__class__: rg.graph.GraphElement
 }
@@ -16407,6 +16876,20 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 			return edge1.tail.id == other.id;
 		});
 	}
+	,positiveWeight: function() {
+		return this._weight(this.graph.edges.positives(this));
+	}
+	,negativeWeight: function() {
+		return this._weight(this.graph.edges.negatives(this));
+	}
+	,_weight: function(it) {
+		var weight = 0.0;
+		while( it.hasNext() ) {
+			var edge = it.next();
+			weight += edge.weight;
+		}
+		return weight;
+	}
 	,isSource: function() {
 		return this.graph.edges.positives(this).hasNext() && !this.graph.edges.negatives(this).hasNext();
 	}
@@ -16462,7 +16945,7 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return this.graph.edges;
 	}
 	,toString: function() {
-		return "Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
+		return null == this.graph?"Node Destroyed":"Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
 	}
 	,__class__: rg.graph.GNode
 });
@@ -16486,20 +16969,23 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		this.tail = null;
 		this.head = null;
 	}
-	,split: function(times,f) {
+	,split: function(times,dataf,edgef) {
 		if(times == null) times = 1;
 		if(times < 1) throw new thx.error.Error("the split times parameter must be an integer value greater than zero",null,null,{ fileName : "GEdge.hx", lineNumber : 37, className : "rg.graph.GEdge", methodName : "split"});
-		if(null == f) f = function(_,_1,_2) {
+		if(null == edgef) edgef = function(_,_1,_2) {
+		};
+		if(null == dataf) dataf = function(_) {
+			return null;
 		};
 		var last = this, result = [], node, e1, e2, g = last.graph;
 		var _g = 0;
 		while(_g < times) {
 			var i = _g++;
-			node = g.nodes.create();
-			e1 = g.edges.create(last.tail,node,last.data,last.weight);
-			e2 = g.edges.create(node,last.head,last.data,last.weight);
+			node = g.nodes.create(dataf(last));
+			e1 = g.edges.create(last.tail,node,last.weight,last.data);
+			e2 = g.edges.create(node,last.head,last.weight,last.data);
 			g.edges.remove(last);
-			f(e1,e2,i);
+			edgef(e1,e2,i);
 			last = e2;
 			g = last.graph;
 			result.push(e1);
@@ -16508,11 +16994,11 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return result;
 	}
 	,other: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 62, className : "rg.graph.GEdge", methodName : "other"});
-		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 68, className : "rg.graph.GEdge", methodName : "other"});
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 64, className : "rg.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 70, className : "rg.graph.GEdge", methodName : "other"});
 	}
 	,invert: function() {
-		var inverted = this.graph.edges.create(this.head,this.tail,this.data,this.weight);
+		var inverted = this.graph.edges.create(this.head,this.tail,this.weight,this.data);
 		this.graph.edges._remove(this);
 		return inverted;
 	}
@@ -16523,7 +17009,7 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return this.graph.edges;
 	}
 	,toString: function() {
-		return "Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
+		return null == this.graph?"Edge Destroyed":"Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
 	}
 	,__class__: rg.graph.GEdge
 });
@@ -17153,178 +17639,91 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
-		var map = this.mapData(data), layout = this.layoutMap(map);
+		var layout = this.layoutData(data);
+		if(null != this.info.layerWidth) this.chart.layerWidth = this.info.layerWidth;
+		if(null != this.info.nodeSpacing) this.chart.nodeSpacing = this.info.nodeSpacing;
+		if(null != this.info.dummySpacing) this.chart.dummySpacing = this.info.dummySpacing;
+		if(null != this.info.extraWidth) this.chart.extraWidth = this.info.extraWidth;
+		if(null != this.info.backEdgeSpacing) this.chart.backEdgeSpacing = this.info.backEdgeSpacing;
+		if(null != this.info.extraHeight) this.chart.extraHeight = this.info.extraHeight;
+		if(null != this.info.extraRadius) this.chart.extraRadius = this.info.extraRadius;
+		if(null != this.info.imageWidth) this.chart.imageWidth = this.info.imageWidth;
+		if(null != this.info.imageHeight) this.chart.imageHeight = this.info.imageHeight;
+		if(null != this.info.imageSpacing) this.chart.imageSpacing = this.info.imageSpacing;
+		if(null != this.info.labelNodeSpacing) this.chart.labelNodeSpacing = this.info.labelNodeSpacing;
+		this.chart.labelDataPoint = this.info.label.datapoint;
+		this.chart.labelDataPointOver = this.info.label.datapointover;
+		this.chart.labelNode = this.info.label.node;
+		this.chart.labelEdge = this.info.label.edge;
+		this.chart.labelEdgeOver = this.info.label.edgeover;
+		this.chart.thumbnailPath = this.info.thumbnailPath;
+		this.chart.click = this.info.click;
+		this.chart.clickEdge = this.info.clickEdge;
 		this.chart.init();
 		this.chart.data(layout);
 	}
-	,layoutMap: function(map) {
-		var sugiyama = null, vertices = [], edges = [];
-		Iterators.each(map.iterator(),function(node,_) {
-			vertices.push(node.id);
-			var _g = 0, _g1 = node.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				edges.push({ a : node.id, b : child.id});
-			}
-		});
-		var glayout = null, gmap = rg.graph.Graphs.toMap(glayout);
-		var layout = [], tmap;
-		var _g1 = 0, _g = glayout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			layout[i] = [];
-			var _g3 = 0, _g2 = glayout[i].length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				var gnode = glayout[i][j], onode = map.get(gnode.vertex), nnode = { dp : null, id : gnode.vertex, weight : 0.0, extraweight : 0.0, falloffweight : 0.0, parents : [], children : [], level : i, pos : j};
-				if(null != onode) {
-					nnode.dp = onode.dp;
-					nnode.weight = onode.weight;
-					nnode.extraweight = onode.extraweight;
-					nnode.falloffweight = onode.falloffweight;
-					tmap = new Hash();
-					var _g4 = 0, _g5 = onode.children;
-					while(_g4 < _g5.length) {
-						var c = _g5[_g4];
-						++_g4;
-						tmap.set(c.id,c.weight);
-					}
-					var _g4 = 0, _g5 = gnode.edgesp;
-					while(_g4 < _g5.length) {
-						var dst = _g5[_g4];
-						++_g4;
-						var id = dst;
-						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesp[0];
-						nnode.children.push({ id : dst, weight : tmap.get(id)});
-					}
-					tmap = new Hash();
-					var _g4 = 0, _g5 = onode.parents;
-					while(_g4 < _g5.length) {
-						var c = _g5[_g4];
-						++_g4;
-						tmap.set(c.id,c.weight);
-					}
-					var _g4 = 0, _g5 = gnode.edgesn;
-					while(_g4 < _g5.length) {
-						var dst = _g5[_g4];
-						++_g4;
-						var id = dst;
-						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
-						nnode.parents.push({ id : dst, weight : tmap.get(id)});
-					}
-				} else {
-					var dstid = gnode.edgesp[0];
-					while(rg.graph.Graphs.isDummy(dstid)) dstid = gmap.get(dstid).edgesp[0];
-					var _g4 = 0, _g5 = gnode.edgesn;
-					while(_g4 < _g5.length) {
-						var src = _g5[_g4];
-						++_g4;
-						var id = src;
-						while(rg.graph.Graphs.isDummy(id)) id = gmap.get(id).edgesn[0];
-						var parent = map.get(id);
-						var _g6 = 0, _g7 = parent.children;
-						while(_g6 < _g7.length) {
-							var edge = _g7[_g6];
-							++_g6;
-							if(edge.id == dstid) {
-								nnode.parents.push({ id : src, weight : edge.weight});
-								break;
-							}
-						}
-					}
-					null;
-				}
-				layout[i][j] = nnode;
-			}
-		}
-		return layout;
-	}
-	,layoutMap2: function(map) {
-		var result = [], i = -1, keys = Arrays.order(Iterators.array(map.keys()),function(a,b) {
-			return Floats.compare(map.get(b).weight,map.get(a).weight);
-		});
-		var addAt = (function($this) {
-			var $r;
-			var addAt = null;
-			addAt = function(id,lvl) {
-				var node = map.get(id);
-				if(!keys.remove(id)) return;
-				var level = result[lvl];
-				if(null == level) level = result[lvl] = [];
-				level.push(node);
-				node.pos = level.length - 1;
-				node.level = lvl;
-				var _g = 0, _g1 = node.children;
-				while(_g < _g1.length) {
-					var child = _g1[_g];
-					++_g;
-					addAt(child.id,lvl + 1);
-				}
+	,layoutData: function(data,idf,nodef,weightf,edgesf) {
+		if(idf == null) idf = function(data1) {
+			return data1.id;
+		};
+		if(nodef == null) {
+			var dummynodeid = 0;
+			nodef = function(edge) {
+				return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
 			};
-			$r = addAt;
-			return $r;
-		}(this));
-		while(keys.length > 0) addAt(keys[0],0);
-		var $it0 = map.keys();
-		while( $it0.hasNext() ) {
-			var key = $it0.next();
-			var n = map.get(key);
-			n.parents.sort(function(a,b) {
-				var c = map.get(a.id).level - map.get(b.id).level;
-				if(c > 0) return c;
-				return Floats.compare(b.weight,a.weight);
-			});
 		}
-		return result;
-	}
-	,mapData: function(data) {
-		var map = new Hash(), idfield = this.info.idproperty, weightfield = this.info.weightproperty, parentsfield = this.info.parentsproperty, id, weight, o, Dynamic, parents;
+		if(edgesf == null) edgesf = function(dp) {
+			var r = [], id = idf(dp);
+			var _g = 0, _g1 = Reflect.fields(dp.parents);
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				r.push({ head : id, tail : parent, weight : Reflect.field(dp.parents,parent)});
+			}
+			return r;
+		};
+		if(null == weightf) weightf = function(dp) {
+			return null != dp.count?dp.count:0.0;
+		};
+		var graph = new rg.graph.Graph(idf);
 		var _g = 0;
 		while(_g < data.length) {
 			var dp = data[_g];
 			++_g;
-			id = Reflect.field(dp,idfield);
-			if(null == id) continue;
-			o = Reflect.field(dp,parentsfield);
-			parents = Reflect.fields(o).map(function(field,_) {
-				return { id : field, weight : Reflect.field(o,field)};
-			});
-			var derivedweight = Iterators.reduce(parents.iterator(),function(tot,cur,_) {
-				return tot + cur.weight;
-			},0.0);
-			weight = Reflect.field(dp,weightfield);
-			if(null == weight) weight = derivedweight;
-			map.set(id,{ dp : dp, id : id, weight : weight, extraweight : weight - derivedweight, falloffweight : 0.0, parents : parents, children : [], level : 0, pos : 0});
+			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), extrain : 0.0, extraout : 0.0});
 		}
-		var $it0 = map.keys();
+		var _g = 0;
+		while(_g < data.length) {
+			var dp = data[_g];
+			++_g;
+			var edges = edgesf(dp);
+			var _g1 = 0;
+			while(_g1 < edges.length) {
+				var edge = edges[_g1];
+				++_g1;
+				var head = graph.nodes.getById(edge.head);
+				var tail = graph.nodes.getById(edge.tail);
+				graph.edges.create(tail,head,edge.weight);
+			}
+		}
+		var $it0 = graph.nodes.collection.iterator();
 		while( $it0.hasNext() ) {
-			var key = $it0.next();
-			var n = map.get(key);
-			var _g = 0, _g1 = n.parents;
-			while(_g < _g1.length) {
-				var p = _g1[_g];
-				++_g;
-				var pn = map.get(p.id);
-				Arrays.add(pn.children,{ id : n.id, weight : p.weight});
-				pn.children.sort(function(a,b) {
-					return Floats.compare(b.weight,a.weight);
-				});
-			}
+			var node = $it0.next();
+			var win = node.negativeWeight(), wout = node.positiveWeight();
+			if(node.data.weight == 0) node.data.weight = win;
+			node.data.extrain = Math.max(0,node.data.weight - win);
+			node.data.extraout = Math.max(0,node.data.weight - wout);
 		}
-		var $it1 = map.keys();
-		while( $it1.hasNext() ) {
-			var key = $it1.next();
-			var n = map.get(key), falloff = n.weight;
-			var _g = 0, _g1 = n.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				falloff -= child.weight;
-			}
-			n.falloffweight = falloff;
-		}
-		return map;
+		return this.weightBalance(graph,nodef);
+	}
+	,weightBalance: function(graph,nodef) {
+		var layout = new rg.graph.GraphLayout(graph,new rg.graph.HeaviestNodeLayer().lay(graph));
+		layout = new rg.graph.EdgeSplitter().split(layout,[],nodef);
+		layout = rg.graph.GreedySwitchDecrosser.best().decross(layout);
+		return layout;
+	}
+	,sugiyama: function(graph,nodef) {
+		return new rg.graph.SugiyamaMethod().resolve(graph,nodef);
 	}
 	,destroy: function() {
 		this.chart.destroy();
@@ -18786,37 +19185,39 @@ rg.graph.SugiyamaMethod.prototype = {
 	,layer: null
 	,splitter: null
 	,decrosser: null
-	,resolve: function(graph,splitf) {
+	,resolve: function(graph,nodef,edgef) {
 		var onecycles = new rg.graph.OneCycleRemover().remove(graph), twocycles = new rg.graph.TwoCycleRemover().remove(graph);
-		var partitions = this.partitioner.partition(graph), reversed = (partitions.left.length > partitions.right.length?partitions.right:partitions.left).map(function(edge,_) {
-			var ob = { tail : edge.tail, head : edge.head};
-			edge.invert();
-			return ob;
+		var partitions = this.partitioner.partition(graph), reversed = new Hash();
+		(partitions.left.length > partitions.right.length?partitions.right:partitions.left).forEach(function(edge,_) {
+			reversed.set(edge.tail.id + "-" + edge.head.id,[edge.invert()]);
 		});
 		var layers = this.layer.lay(graph);
 		var layout = new rg.graph.GraphLayout(graph,layers);
-		layout = this.splitter.split(layout,splitf);
+		var splits = [];
+		layout = this.splitter.split(layout,splits,nodef,edgef);
+		splits.forEach(function(split,_) {
+			var key = split[split.length - 1].head.id + "-" + split[0].tail.id;
+			if(reversed.exists(key)) reversed.set(key,split);
+		});
 		layout = this.decrosser.decross(layout);
-		var _g = 0;
-		while(_g < reversed.length) {
-			var item = reversed[_g];
-			++_g;
-			var path = layout.graph.directedPath(item.head,item.tail);
+		var $it0 = reversed.iterator();
+		while( $it0.hasNext() ) {
+			var path = $it0.next();
 			path.forEach(function(edge,_) {
-				edge.invert();
+				var e = edge.invert();
 			});
 		}
 		var _g = 0;
 		while(_g < twocycles.length) {
 			var item = twocycles[_g];
 			++_g;
-			layout.graph.edges.create(item.tail,item.head,item.data,item.weight);
+			layout.graph.edges.create(item.tail,item.head,item.weight,item.data);
 		}
 		var _g = 0;
 		while(_g < onecycles.length) {
 			var item = onecycles[_g];
 			++_g;
-			layout.graph.edges.create(item.node,item.node,item.data,item.weight);
+			layout.graph.edges.create(item.node,item.node,item.weight,item.data);
 		}
 		return layout;
 	}
@@ -19092,38 +19493,6 @@ Reflect.makeVarArgs = function(f) {
 Reflect.prototype = {
 	__class__: Reflect
 }
-rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
-}
-rg.graph.EdgeSplitter.__name__ = ["rg","graph","EdgeSplitter"];
-rg.graph.EdgeSplitter.prototype = {
-	split: function(layout,splitf) {
-		var layers = layout.layers(), cell, ocell;
-		if(null == splitf) splitf = function(_,_1,_2) {
-		};
-		var $it0 = layout.graph.nodes.collection.iterator();
-		while( $it0.hasNext() ) {
-			var node = $it0.next();
-			cell = layout.cell(node);
-			var $it1 = node.graph.edges.positives(node);
-			while( $it1.hasNext() ) {
-				var edge = $it1.next();
-				ocell = layout.cell(edge.head);
-				if(cell.layer == ocell.layer) continue;
-				if(cell.layer == ocell.layer - 1) continue;
-				if(cell.layer == ocell.layer + 1) continue;
-				var sign = [cell.layer < ocell.layer?1:-1], diff = Ints.abs(ocell.layer - cell.layer) - 1;
-				edge.split(diff,(function(sign) {
-					return function(ea,eb,i) {
-						layers[cell.layer + (1 + i) * sign[0]].push(ea.head.id);
-						splitf(ea,eb,i);
-					};
-				})(sign));
-			}
-		}
-		return new rg.graph.GraphLayout(layout.graph,layers);
-	}
-	,__class__: rg.graph.EdgeSplitter
-}
 var Hashes = $hxClasses["Hashes"] = function() { }
 Hashes.__name__ = ["Hashes"];
 Hashes.toDynamic = function(hash) {
@@ -19201,6 +19570,38 @@ Hashes.clear = function(hash) {
 }
 Hashes.prototype = {
 	__class__: Hashes
+}
+rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
+}
+rg.graph.EdgeSplitter.__name__ = ["rg","graph","EdgeSplitter"];
+rg.graph.EdgeSplitter.prototype = {
+	split: function(layout,splitted,dataf,edgef) {
+		var layers = layout.layers(), cell, ocell, cur;
+		if(null == edgef) edgef = function(_,_1,_2) {
+		};
+		var $it0 = layout.graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			cell = layout.cell(node);
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				ocell = layout.cell(edge.head);
+				if(cell.layer == ocell.layer) continue;
+				if(cell.layer == ocell.layer - 1) continue;
+				if(cell.layer == ocell.layer + 1) continue;
+				var sign = [cell.layer < ocell.layer?1:-1], diff = Ints.abs(ocell.layer - cell.layer) - 1;
+				splitted.push(edge.split(diff,dataf,(function(sign) {
+					return function(ea,eb,i) {
+						layers[cell.layer + (1 + i) * sign[0]].push(ea.head.id);
+						edgef(ea,eb,i);
+					};
+				})(sign)));
+			}
+		}
+		return new rg.graph.GraphLayout(layout.graph,layers);
+	}
+	,__class__: rg.graph.EdgeSplitter
 }
 rg.controller.info.InfoLeaderboard = $hxClasses["rg.controller.info.InfoLeaderboard"] = function() {
 	this.animation = new rg.controller.info.InfoAnimation();
@@ -19775,7 +20176,7 @@ rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
 	}
 	,_create: function(id,data) {
 		var n = rg.graph.GNode.create(this.graph,id,data);
-		this.collectionAdd(n);
+		this.collectionCreate(n);
 		return n;
 	}
 	,remove: function(node) {
@@ -20423,6 +20824,10 @@ Iterators.array = function(it) {
 	}
 	return result;
 }
+Iterators.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it).join(glue);
+}
 Iterators.map = function(it,f) {
 	var result = [], i = 0;
 	while( it.hasNext() ) {
@@ -20538,11 +20943,31 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	if(null != parameters.tag) {
 		tag = parameters.tag;
 		Reflect.deleteField(parameters,"tag");
-	}
+	} else tag = (function($this) {
+		var $r;
+		switch(options.visualization) {
+		case "geo":
+			$r = "location";
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
 	if(null != parameters.location) {
 		location = parameters.location;
 		Reflect.deleteField(parameters,"location");
-	}
+	} else location = (function($this) {
+		var $r;
+		switch(options.visualization) {
+		case "geo":
+			$r = "/";
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
 	if(null != parameters.groupby) {
 		groupby = parameters.groupby;
 		Reflect.deleteField(parameters,"groupby");
@@ -20569,7 +20994,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	} else if(null != start) periodicity = rg.util.Periodicity.defaultPeriodicity(end - start); else periodicity = (function($this) {
 		var $r;
 		switch(options.visualization) {
-		case "piechart":case "funnelchart":
+		case "piechart":case "funnelchart":case "sankey":
 			$r = "eternity";
 			break;
 		default:
@@ -20610,7 +21035,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 197, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 201, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	chain.addAction(function(params,handler1) {
 		var opt = params.options;
@@ -20738,6 +21163,19 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapoint : function(dp,stats) {
 				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+			}};
+			break;
+		case "sankey":
+			var axes = params.axes, type = axes[axes.length - 1].type;
+			params.options.label = { datapointover : function(dp,stats) {
+				var v = Reflect.field(dp,type);
+				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
+			}, datapoint : function(dp,stats) {
+				return rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type);
+			}, edge : function(dp,stats) {
+				return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
+			}, edgeover : function(dp,stats) {
+				return Floats.format(dp.edgeweight,"D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
 			}};
 			break;
 		}

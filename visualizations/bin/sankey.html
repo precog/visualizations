@@ -58,46 +58,115 @@ document.addEventListener("DOMContentLoaded", function(){
 		count : 9,
 		parents : { "clip_08" : 1, "clip_09" : 5, "clip_07" : 3 }
 	}];
+/*
+	var data = [{
+		id : "clip_01",
+		count : 3,
+		parents : { "clip_10" : 1, "clip_06" : 1 }
+	}, {
+		id : "clip_02",
+		count : 1,
+		parents : { "clip_01" : 1 }
+	},{
+		id : "clip_03",
+		count : 2,
+		parents : { "clip_01" : 1}
+	},{
+		id : "clip_04",
+		count : 1,
+		parents : { "clip_01" : 1}
+	},{
+		id : "clip_05",
+		count : 2,
+		parents : { "clip_02" : 1}
+	},{
+		id : "clip_06",
+		count : 2,
+		parents : { "clip_03" : 1, "clip_04" : 1 }
+	},{
+		id : "clip_07",
+		count : 1,
+		parents : { "clip_05" : 1 }
+	},{
+		id : "clip_08",
+		count : 3,
+		parents : { "clip_05" : 1, "clip_03" : 1, "clip_10" : 1 }
+	},{
+		id : "clip_09",
+		count : 1,
+		parents : { "clip_08" : 1 }
+	},{
+		id : "clip_10",
+		count : 3,
+		parents : { "clip_08" : 1, "clip_09" : 1, "clip_07" : 1 }
+	}];
 
-	ReportGrid.sankey("#chart1", {
+	var data = [{
+		id : "clip_01",
+		count : 10,
+		parents : {  }
+	}, {
+		id : "clip_02",
+		count : 6,
+		parents : { "clip_01" : 6 }
+	}, {
+		id : "clip_03",
+		count : 7,
+		parents : { "clip_02" : 4, "clip_01" : 3 }
+	}];
+*/
+	ReportGrid.sankey("#chart", {
 		axes : [{ type : "count", variable : "dependent" }],
 		data : { src : { data : data } },
 		options : {
-			download : true
-//			segmenton : "event",
-//			label : { datapointover : function(dp) { return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
-//			click : function(dp) { alert(dp[".browser"]); },
-//			height: 200
+/*
+			layerwidth : 80,
+			nodespacing : 60,
+			dummyspacing : 1,
+			extrawidth : 25,
+			backedgespacing : 15,
+			extraheight : 10,
+			extraradius : 10,
+*/
+			imagewidth : 60,
+			imageheight : 40,
+			imagespacing : 1,
+
+			thumbnailpath : function(dp)
+			{
+				return "images/" + dp.id + ".png";
+			},
+
+			click : function(dp, stats)
+			{
+				console.log("NODE");
+				console.log(dp);
+				console.log(stats);
+			},
+
+			clickedge : function(dp, stats)
+			{
+				console.log("EDGE");
+				console.log(dp);
+				console.log(stats);
+			}
 		}
 	});
-
-	ReportGrid.sankey("#chart2", {
-		data : { src : { data : data } },
-		options : {
-			download : true
-//			segmenton : "event",
-//			label : { datapointover : function(dp) { return dp.event + ": " + ReportGrid.format(dp["count"]);  } },
-//			click : function(dp) { alert(dp[".browser"]); },
-//			height: 200
-		}
-	});
-
-
 }, false)
 </script>
 <style>
 .sankey
 {
-	width: 1000px;
+	width: 900px;
 	height: 500px;
 	border: 1px solid #ccc;
 	margin-bottom: 5px;
+	background-color: #ddd;
 }
 </style>
 </head>
 <body>
-	<div class="sankey" id="chart1"></div>
-	<div class="sankey" id="chart2"></div>
+	<div class="sankey" id="chart"></div>
 	<div id="haxe:trace"></div>
 </body>
 </html>
