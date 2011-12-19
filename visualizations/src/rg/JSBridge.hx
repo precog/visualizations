@@ -7,6 +7,7 @@ package rg;
 import rg.controller.App;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.ITrackReportGrid;
+import rg.data.source.rgquery.ReportGridExecutorMemoryCache;
 import rg.util.Periodicity;
 import rg.util.Properties;
 import rg.util.RGStrings;
@@ -41,7 +42,8 @@ class JSBridge
 			log(new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script").toString());
 
 		// init app
-		var app = new App(r, t);
+		var executor = new ReportGridExecutorMemoryCache(r),
+			app = new App(executor, t);
 
 		// define bridge function
 		r.viz = function(el : Dynamic, options : Dynamic, type : String)
@@ -120,6 +122,9 @@ class JSBridge
 		r.info.viz = {
 			version : thx.util.MacroVersion.fullVersion()
 		};
+//		r.cache.setTime = function(t) {
+//			executor.timeout = t;
+//		};
 	}
 
 	// make sure a thx.js.Selection is passed

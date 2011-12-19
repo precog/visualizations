@@ -10,7 +10,7 @@ class ChainedExecutor<T>
 	var handler : Dynamic -> Void;
 	var actions : Array < T -> (T -> Void) -> Void > ;
 	var pos : Int;
-	
+
 	public function new(handler : T -> Void)
 	{
 		this.handler = handler;
@@ -18,12 +18,12 @@ class ChainedExecutor<T>
 		pos = 0;
 		executor = Reflect.field(this, 'execute');
 	}
-	
+
 	public function addAction(handler : T -> (T -> Void) -> Void )
 	{
 		actions.push(handler);
 	}
-	
+
 	public function execute(ob : T)
 	{
 		if (pos == actions.length)

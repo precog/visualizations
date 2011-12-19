@@ -25,6 +25,9 @@ class InfoDataSource
 	public var end : Null<Float>;
 	public var tag : Null<String>;
 	public var location : Null<String>;
+	public var identifier : Null<String>;
+	public var parent : Null<String>;
+	public var where : Null<Array<{ property : String, value : Dynamic }>>;
 
 	public function new()
 	{
@@ -105,6 +108,18 @@ class InfoDataSource
 		}, {
 			field : "location",
 			validator : function(v : Dynamic) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "identifier",
+			validator : function(v : Dynamic) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "parent",
+			validator : function(v : Dynamic) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "where",
+			validator : function(v : Dynamic) return Std.is(v, Array),
 			filter : null
 		}];
 	}

@@ -1,0 +1,155 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+	<script src="js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D" type="text/javascript"></script>
+	<script src="js/reportgrid-viz.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var path = "/test/clipmaster/t4/",
+		demographic = {
+			gender : "female", // "male", "female"
+			age    : "41-60", // "13-21", "22-29", "30-40", "41-60", "60+"
+		},
+		referrer = null;
+
+	var graph = [{
+		clip : "clip_01",
+		duration : 1,
+		actions : ["clip_02", "clip_03", "clip_04"]
+	}, {
+		clip : "clip_02",
+		duration : 1,
+		actions : ["clip_05", "clip_06"]
+	}, {
+		clip : "clip_03",
+		duration : 1,
+		actions : ["clip_06"]
+	}, {
+		clip : "clip_04",
+		duration : 1,
+		actions : ["clip_07", "clip_01"]
+	}, {
+		clip : "clip_05",
+		duration : 1,
+		actions : ["clip_06", "clip_07"]
+	}, {
+		clip : "clip_06",
+		duration : 1,
+		actions : ["clip_07"]
+	}, {
+		clip : "clip_07",
+		duration : 1,
+		actions : []
+	}];
+
+	function error(e)
+	{
+		console.log("ERROR: " + e);
+		throw e;
+	}
+
+	function getClip(id)
+	{
+		var clip;
+		for(var i = 0; i < graph.length; i++){
+			if(graph[i].clip == id)
+			{
+				clip = graph[i];
+				break;
+			}
+		}
+		if(!clip)
+			error("not a valid clip id: " + id);
+		return clip;
+	}
+
+	function goToClip(id){
+		var clip = getClip(id);
+		$("#clip").html('<b>'+id+'</b><br><img src="images/'+id+'.png"/>');
+		setTimeout(function() {
+			for(var i = 0; i < clip.actions.length; i++)
+			{
+				var action = getClip(clip.actions[i]);
+				$('#actions').append('<button id="'+action.clip+'">'+action.clip+'</button>');
+			}
+			$('#actions button').click(function(){
+				$('#actions').html("");
+				referrer = id;
+				goToClip($(this).attr("id"));
+				return false;
+			})
+		}, clip.duration * 1000);
+
+		// TRACK
+		var event = { clip : id, gender : demographic.gender, age : demographic.age, parent : referrer },
+			impression = {};
+		impression["imp_"+id] = event;
+//		ReportGrid.track(path, impression);
+		ReportGrid.track(path, { impression : event });
+//		console.log(path + id);
+//		console.log({ gender : demographic.gender, age : demographic.age, parent : referrer });
+	}
+
+	$("#info").html("gender: " + demographic.gender + "<br>age: " + demographic.age);
+
+	$("#actions button").click(function(){
+		$('#actions').html("");
+		goToClip("clip_01");
+	})
+
+	var events = graph.map(function(clip) { return "imp_" + clip.clip; });
+
+	var layoutmap = {
+		layers : [["clip_01"], ["clip_03", "clip_02", "clip_04"], ["#1", "#2", "clip_05", "#3"], ["clip_06", "#4", "#5"], ["clip_07"]],
+		dummies : [
+			["clip_03", "#1", "clip_06"],
+			["clip_02", "#2", "clip_06"],
+			["clip_05", "#4", "clip_07"],
+			["clip_04", "#3", "#5", "clip_07"]
+		]
+	};
+
+
+	ReportGrid.sankey("#chart1", {
+		path       : path,
+		event      : "impression",
+		identifier : "clip",
+		parent     : "parent",
+		where      : [{ property : "gender", value : "male" }],
+		options    : {
+			imagepath : function(dp) { return "images/" + dp.id + ".png" },
+			layoutmap : layoutmap
+		}
+	});
+
+	ReportGrid.sankey("#chart2", {
+		path       : path,
+		event      : "impression",
+		identifier : "clip",
+		parent     : "parent",
+		where      : [{ property : "gender", value : "female" }],
+		options    : {
+			imagepath : function(dp) { return "images/" + dp.id + ".png" },
+			layoutmap : layoutmap
+		}
+	});
+})
+</script>
+<style>
+.chart {
+	width: 960px;
+	height: 480px;
+}
+</style>
+</head>
+<body>
+<div id="info"></div>
+<div id="clip"></div>
+<form id="actions"><button>start</button></form>
+
+<div id="count"></div>
+<div id="chart1" class="chart"></div>
+<div id="chart2" class="chart"></div>
+</body>
+</html>

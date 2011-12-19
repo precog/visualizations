@@ -13,7 +13,7 @@ import rg.data.VariableDependent;
 import thx.collection.HashList;
 using Arrays;
 
-class DataPoints 
+class DataPoints
 {
 	public static function partition(dps : Array<DataPoint>, property : String, def = "default")
 	{
@@ -40,7 +40,7 @@ class DataPoints
 		}
 		return map.array();
 	}
-	
+
 	public static function filterByIndependents(dps : Array<DataPoint>, variables : Array<VariableIndependent<Dynamic>>)
 	{
 		for (variable in variables)
@@ -55,7 +55,7 @@ class DataPoints
 		}
 		return dps;
 	}
-	
+
 	public static function filterByDependents(dps : Array<DataPoint>, variables : Array<VariableDependent<Dynamic>>)
 	{
 		for (variable in variables)
@@ -69,20 +69,20 @@ class DataPoints
 		}
 		return dps;
 	}
-	
+
 	public inline static function value(dp : DataPoint, property : String) : Dynamic return Reflect.field(dp, property)
-	
+
 	public inline static function valueAlt<T>(dp : DataPoint, property : String, alt : T) : T
 	{
 		var v;
 		return (null == (v = Reflect.field(dp, property))) ? alt : v;
 	}
-	
+
 	public static function values(dps : Array<DataPoint>, property : String)
 	{
 		return dps.map(function(dp, _) return value(dp, property)).filter(function(d) return d != null);
 	}
-		
+
 	public static function id(dp : DataPoint, dependentProperties : Array<String>)
 	{
 		var cdp = Objects.clone(dp);

@@ -72,7 +72,11 @@ class MVPOptions
 			groupfilter = null,
 			statistic   = null,
 			tag         = null,
-			location    = null;
+			location    = null,
+			datapoints  = null,
+			identifier  = null,
+			parent      = null,
+			where       = null;
 
 		if (null == parameters.options)
 			parameters.options = { };
@@ -127,6 +131,31 @@ class MVPOptions
 		{
 			end = timestamp(parameters.end);
 			Reflect.deleteField(parameters, "end");
+		}
+
+		// graph options
+		if(null != parameters.identifier)
+		{
+			identifier = parameters.identifier;
+			Reflect.deleteField(parameters, "identifier");
+			if(null != parameters.parent)
+			{
+				parent = parameters.parent;
+				Reflect.deleteField(parameters, "parent");
+			}
+
+			if(null != parameters.where)
+			{
+				where = parameters.where;
+				Reflect.deleteField(parameters, "where");
+			}
+		}
+
+		// datapoints option
+		if(null != parameters.datapoints)
+		{
+			datapoints = parameters.datapoints;
+			Reflect.deleteField(parameters, "datapoints");
 		}
 
 		if (null != parameters.periodicity)
@@ -250,37 +279,47 @@ class MVPOptions
 		{
 			if (null == params.data)
 			{
-				var src = [];
+				var src : Array<Dynamic> = [];
 				params.data = [{ src : src }];
-				for (event in events)
+				if(null != datapoints)
 				{
-					var params = { path : path, event : event, query : query };
-					if (null != start)
+					src.push({ data : datapoints });
+				} else if(null != identifier) {
+					var params : Dynamic = { path : path, event : events[0], identifier : identifier, parent : parent };
+					if(null != where)
+						params.where = where;
+					src.push(params);
+				} else {
+					for (event in events)
 					{
-						Reflect.setField(params, "start", start);
-						Reflect.setField(params, "end", end);
-					}
-					if (null != groupby)
-					{
-						Reflect.setField(params, "groupby", groupby);
-						if (null != groupfilter)
+						var params = { path : path, event : event, query : query };
+						if (null != start)
 						{
-							Reflect.setField(params, "groupfilter", groupfilter);
+							Reflect.setField(params, "start", start);
+							Reflect.setField(params, "end", end);
 						}
+						if (null != groupby)
+						{
+							Reflect.setField(params, "groupby", groupby);
+							if (null != groupfilter)
+							{
+								Reflect.setField(params, "groupfilter", groupfilter);
+							}
+						}
+						if (null != statistic)
+						{
+							Reflect.setField(params, "statistic", statistic);
+						}
+						if (null != tag)
+						{
+							Reflect.setField(params, "tag", tag);
+						}
+						if (null != location)
+						{
+							Reflect.setField(params, "location", location);
+						}
+						src.push( params );
 					}
-					if (null != statistic)
-					{
-						Reflect.setField(params, "statistic", statistic);
-					}
-					if (null != tag)
-					{
-						Reflect.setField(params, "tag", tag);
-					}
-					if (null != location)
-					{
-						Reflect.setField(params, "location", location);
-					}
-					src.push( params );
 				}
 				if (null == params.options.segmenton)
 					params.options.segmenton = null != values ? "value" : null == property ? "event" : property;
@@ -450,6 +489,10 @@ class MVPOptions
 										: RGStrings.humanize(v)
 									)
 								;
+							},
+
+							node : function(dp, stats) {
+								return dp.id;
 							},
 
 							datapoint : function(dp, stats) {

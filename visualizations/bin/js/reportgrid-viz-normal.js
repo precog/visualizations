@@ -1375,7 +1375,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	,labelEdge: null
 	,labelEdgeOver: null
 	,labelNode: null
-	,thumbnailPath: null
+	,imagePath: null
 	,clickEdge: null
 	,layout: null
 	,maxweight: null
@@ -1504,6 +1504,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			if(comp != 0) return comp; else return Floats.compare(eb.weight,ea.weight);
 		});
 		edges.forEach(function(edge,_) {
+			if(edge.weight <= 0) return;
 			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
 			if(cellhead.layer > celltail.layer) return;
 			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.extraWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
@@ -1522,9 +1523,10 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			backedgesy += weight + me.backEdgeSpacing;
 		});
 		edges.forEach(function(edge,_) {
-			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail), x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head));
+			if(edge.weight <= 0) return;
+			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail);
 			if(cellhead.layer <= celltail.layer) return;
-			var weight = me.nheight(edge.weight), diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
+			var x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head)), weight = me.nheight(edge.weight), diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
 			diagonal.update(x1,y1,x2,y2,weight,weight);
 			me.addToMap(edge.id,"edge",diagonal.g);
 			diagonal.g.onNode("mouseover",(function(f,a1,a2,a3) {
@@ -1592,6 +1594,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 			me.addToMap(node.id,"extrain",elbow.g);
 		});
 		if(null != this.labelEdge) edges.forEach(function(edge,_) {
+			if(edge.weight <= 0) return;
 			var tail = edge.tail;
 			if(me.isdummy(tail)) return;
 			var celltail = me.layout.cell(tail), weight = me.nheight(edge.weight), label, text = me.labelEdge(me.edgeData(edge),me.dependentVariable.stats), nodeSpacing = 2;
@@ -1653,8 +1656,8 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 					prev = label;
 				}
 			}
-			if(null != me.thumbnailPath && !me.isdummy(n)) {
-				var path = me.thumbnailPath(n.data.dp);
+			if(null != me.imagePath && !me.isdummy(n)) {
+				var path = me.imagePath(n.data.dp);
 				if(path != null) {
 					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-me.imageWidth / 2) + "," + Math.round(-me.imageHeight - me.imageSpacing) + ")");
 					container.append("svg:image").attr("preserveAspectRatio").string("xMidYMid slice").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
@@ -3775,6 +3778,12 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "location", validator : function(v) {
 		return Std["is"](v,String);
+	}, filter : null},{ field : "identifier", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "parent", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "where", validator : function(v) {
+		return Std["is"](v,Array);
 	}, filter : null}];
 }
 rg.controller.info.InfoDataSource.validateDate = function(v) {
@@ -3793,7 +3802,7 @@ rg.controller.info.InfoDataSource.filterDate = function(v) {
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 124, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
+		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 139, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
 		return $r;
 	}(this));
 }
@@ -3811,6 +3820,9 @@ rg.controller.info.InfoDataSource.prototype = {
 	,end: null
 	,tag: null
 	,location: null
+	,identifier: null
+	,parent: null
+	,where: null
 	,__class__: rg.controller.info.InfoDataSource
 }
 if(!rg.controller.factory) rg.controller.factory = {}
@@ -5654,8 +5666,8 @@ rg.JSBridge.log = function(msg) {
 }
 rg.JSBridge.main = function() {
 	var r = window.ReportGrid, t = new rg.track.ReportGridExecutor();
-	if(null == r) rg.JSBridge.log(new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 41, className : "rg.JSBridge", methodName : "main"}).toString());
-	var app = new rg.controller.App(r,t);
+	if(null == r) rg.JSBridge.log(new thx.error.Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script",null,null,{ fileName : "JSBridge.hx", lineNumber : 42, className : "rg.JSBridge", methodName : "main"}).toString());
+	var executor = new rg.data.source.rgquery.ReportGridExecutorMemoryCache(r), app = new rg.controller.App(executor,t);
 	r.viz = function(el,options,type) {
 		var copt = rg.JSBridge.chartopt(options,type);
 		rg.controller.MVPOptions.complete(r,copt,function(opt) {
@@ -5727,11 +5739,11 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.5.4506"};
+	r.info.viz = { version : "1.2.0.4685"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 130, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 135, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(ob) {
@@ -7675,10 +7687,10 @@ rg.controller.info.InfoSankey.filters = function() {
 		return Std["is"](v,Float);
 	}, filter : function(v) {
 		return [{ field : "labelNodeSpacing", value : v}];
-	}},{ field : "thumbnailpath", validator : function(v) {
+	}},{ field : "imagepath", validator : function(v) {
 		return Reflect.isFunction(v);
 	}, filter : function(v) {
-		return [{ field : "thumbnailPath", value : v}];
+		return [{ field : "imagePath", value : v}];
 	}},{ field : "click", validator : function(v) {
 		return Reflect.isFunction(v);
 	}, filter : function(v) {
@@ -7687,6 +7699,10 @@ rg.controller.info.InfoSankey.filters = function() {
 		return Reflect.isFunction(v);
 	}, filter : function(v) {
 		return [{ field : "clickEdge", value : v}];
+	}},{ field : "layoutmap", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "layoutmap", value : v}];
 	}}];
 }
 rg.controller.info.InfoSankey.prototype = {
@@ -7705,7 +7721,8 @@ rg.controller.info.InfoSankey.prototype = {
 	,imageHeight: null
 	,imageSpacing: null
 	,labelNodeSpacing: null
-	,thumbnailPath: null
+	,imagePath: null
+	,layoutmap: null
 	,click: null
 	,clickEdge: null
 	,__class__: rg.controller.info.InfoSankey
@@ -11443,19 +11460,6 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,__class__: rg.view.svg.chart.HeatGrid
 	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
-rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
-rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
-rg.view.svg.util.RGColors.parse = function(s,alt) {
-	try {
-		var c = thx.color.Colors.parse(s);
-		if(null != c) return c;
-	} catch( _ ) {
-	}
-	return thx.color.Colors.parse(alt);
-}
-rg.view.svg.util.RGColors.prototype = {
-	__class__: rg.view.svg.util.RGColors
-}
 rg.graph.Graph = $hxClasses["rg.graph.Graph"] = function(nodeidf,edgeidf) {
 	this.nodes = rg.graph.GraphNodes.newInstance(this,nodeidf);
 	this.edges = rg.graph.GraphEdges.newInstance(this,edgeidf);
@@ -11597,6 +11601,19 @@ rg.graph.Graph.prototype = {
 		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
 	}
 	,__class__: rg.graph.Graph
+}
+rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
+rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
+rg.view.svg.util.RGColors.parse = function(s,alt) {
+	try {
+		var c = thx.color.Colors.parse(s);
+		if(null != c) return c;
+	} catch( _ ) {
+	}
+	return thx.color.Colors.parse(alt);
+}
+rg.view.svg.util.RGColors.prototype = {
+	__class__: rg.view.svg.util.RGColors
 }
 rg.view.frame.Stack = $hxClasses["rg.view.frame.Stack"] = function(width,height,orientation) {
 	this.orientation = null == orientation?rg.view.frame.Orientation.Vertical:orientation;
@@ -13457,6 +13474,7 @@ rg.graph.LongestPathLayer.prototype = {
 			if(null == layer) layer = layers[pos] = [];
 			layer.push(node.id);
 		}
+		layers.reverse();
 		return layers;
 	}
 	,__class__: rg.graph.LongestPathLayer
@@ -13602,6 +13620,112 @@ thx.geom.Polygon.prototype = {
 		return subject;
 	}
 	,__class__: thx.geom.Polygon
+}
+rg.data.source.DataSourceReportGridGraph = $hxClasses["rg.data.source.DataSourceReportGridGraph"] = function(executor,path,event,idproperty,parentproperty,whereConditions,start,end) {
+	this.path = path;
+	this.executor = executor;
+	this.event = rg.data.source.DataSourceReportGridGraph.np(event);
+	this.idproperty = rg.data.source.DataSourceReportGridGraph.np(idproperty);
+	this.parentproperty = rg.data.source.DataSourceReportGridGraph.np(parentproperty);
+	this.whereConditions = null == whereConditions?[]:whereConditions;
+	this.timeStart = start;
+	this.timeEnd = end;
+	this.onLoad = new hxevents.Dispatcher();
+}
+rg.data.source.DataSourceReportGridGraph.__name__ = ["rg","data","source","DataSourceReportGridGraph"];
+rg.data.source.DataSourceReportGridGraph.__interfaces__ = [rg.data.IDataSource];
+rg.data.source.DataSourceReportGridGraph.np = function(v) {
+	return StringTools.startsWith(v,".")?v:"." + v;
+}
+rg.data.source.DataSourceReportGridGraph.val = function(v) {
+	if(v == "null") return null;
+	if(v.substr(0,1) == "\"") return v.substr(1,v.length - 2);
+	return Std.parseFloat(v);
+}
+rg.data.source.DataSourceReportGridGraph.prototype = {
+	executor: null
+	,path: null
+	,event: null
+	,idproperty: null
+	,parentproperty: null
+	,timeStart: null
+	,timeEnd: null
+	,whereConditions: null
+	,onLoad: null
+	,basicOptions: function() {
+		var opt = { };
+		if(null != this.timeStart) opt["start"] = this.timeStart;
+		if(null != this.timeEnd) opt["end"] = this.timeEnd;
+		opt.periodicity = "eternity";
+		return opt;
+	}
+	,load: function() {
+		var me = this;
+		var properties = [{ property : this.event + this.idproperty},{ property : this.event + this.parentproperty}];
+		var _g = 0, _g1 = this.whereConditions;
+		while(_g < _g1.length) {
+			var item = _g1[_g];
+			++_g;
+			properties.push({ property : this.event + rg.data.source.DataSourceReportGridGraph.np(item.property)});
+		}
+		this.executor.intersect(this.path,{ properties : properties},function(r) {
+			var map = new Hash(), queue = 0;
+			var dequeue = function() {
+				if(--queue > 0) return;
+				var result = [];
+				var $it0 = map.keys();
+				while( $it0.hasNext() ) {
+					var id = $it0.next();
+					result.push(map.get(id));
+				}
+				me.onLoad.dispatch(result);
+			};
+			var enqueue = function() {
+				queue++;
+			};
+			var _g = 0, _g1 = Reflect.fields(r);
+			while(_g < _g1.length) {
+				var key = _g1[_g];
+				++_g;
+				var id = rg.data.source.DataSourceReportGridGraph.val(key);
+				if(null == id) continue;
+				var item = { id : id, count : 0, parents : { }};
+				map.set("" + id,item);
+				var relations = Reflect.field(r,key), where = { };
+				where[me.event + me.idproperty] = id;
+				var _g2 = 0, _g3 = me.whereConditions;
+				while(_g2 < _g3.length) {
+					var condition = _g3[_g2];
+					++_g2;
+					where[me.event + rg.data.source.DataSourceReportGridGraph.np(condition.property)] = condition.value;
+				}
+				enqueue();
+				me.executor.searchCount(me.path,{ where : where},(function(f,a1) {
+					return function(a2) {
+						return f(a1,a2);
+					};
+				})(function(id1,count) {
+					map.get(id1).count = count;
+					dequeue();
+				},id));
+				var _g2 = 0, _g3 = Reflect.fields(relations);
+				while(_g2 < _g3.length) {
+					var kparent = _g3[_g2];
+					++_g2;
+					if(kparent == "null") continue;
+					var parent = rg.data.source.DataSourceReportGridGraph.val(kparent), cur = Reflect.field(relations,kparent);
+					var _g4 = 0, _g5 = me.whereConditions;
+					while(_g4 < _g5.length) {
+						var item1 = _g5[_g4];
+						++_g4;
+						if(Std["is"](item1.value,String)) cur = Reflect.field(cur,"\"" + item1.value + "\""); else cur = Reflect.field(cur,item1.value);
+					}
+					if(null != cur) map.get("" + id).parents[parent] = cur;
+				}
+			}
+		});
+	}
+	,__class__: rg.data.source.DataSourceReportGridGraph
 }
 var DateTools = $hxClasses["DateTools"] = function() { }
 DateTools.__name__ = ["DateTools"];
@@ -15025,12 +15149,13 @@ rg.controller.factory.FactoryDataSource.prototype = {
 	,create: function(info) {
 		if(null != info.namedData) {
 			var data = this.cache.get(info.namedData);
-			if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 41, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+			if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 42, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 			return data;
 		}
 		if(null != info.data) return this.createFromData(info.data);
+		if(null != info.path && null != info.event && null != info.identifier && null != info.parent) return this.createFromGraph(info.path,info.event,info.identifier,info.parent,info.where,info.start,info.end);
 		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.statistic,info.tag,info.location,info.groupBy,info.timeZone,info.start,info.end);
-		throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 52, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+		throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 57, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 	}
 	,createFromData: function(data) {
 		return new rg.data.source.DataSourceArray(data);
@@ -15038,6 +15163,9 @@ rg.controller.factory.FactoryDataSource.prototype = {
 	,createFromQuery: function(path,event,query,statistic,tag,location,groupby,timeZone,start,end) {
 		if(null == query) query = "";
 		return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),statistic,tag,location,groupby,timeZone,start,end);
+	}
+	,createFromGraph: function(path,event,idproperty,parentproperty,whereConditions,start,end) {
+		return new rg.data.source.DataSourceReportGridGraph(this.executor,path,event,idproperty,parentproperty,whereConditions,start,end);
 	}
 	,__class__: rg.controller.factory.FactoryDataSource
 }
@@ -16945,7 +17073,7 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return this.graph.edges;
 	}
 	,toString: function() {
-		return null == this.graph?"Node Destroyed":"Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
+		return null == this.graph?"Node Destroyed":"Node (n." + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
 	}
 	,__class__: rg.graph.GNode
 });
@@ -17009,7 +17137,7 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return this.graph.edges;
 	}
 	,toString: function() {
-		return null == this.graph?"Edge Destroyed":"Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
+		return null == this.graph?"Edge Destroyed":"Edge (n." + this.id + ", tail: n." + this.tail.id + ", head: n." + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
 	}
 	,__class__: rg.graph.GEdge
 });
@@ -17613,6 +17741,36 @@ rg.controller.visualization.VisualizationSankey = $hxClasses["rg.controller.visu
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
 }
 rg.controller.visualization.VisualizationSankey.__name__ = ["rg","controller","visualization","VisualizationSankey"];
+rg.controller.visualization.VisualizationSankey.defaultIdf = function(idf) {
+	if(idf == null) return function(data) {
+		return data.id;
+	}; else return idf;
+}
+rg.controller.visualization.VisualizationSankey.defaultNodef = function(nodef) {
+	if(nodef == null) {
+		var dummynodeid = 0;
+		return function(edge) {
+			return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
+		};
+	} else return nodef;
+}
+rg.controller.visualization.VisualizationSankey.defaultEdgesf = function(idf,edgesf) {
+	if(edgesf == null) return function(dp) {
+		var r = [], id = idf(dp);
+		var _g = 0, _g1 = Reflect.fields(dp.parents);
+		while(_g < _g1.length) {
+			var parent = _g1[_g];
+			++_g;
+			r.push({ head : id, tail : parent, weight : Reflect.field(dp.parents,parent)});
+		}
+		return r;
+	}; else return edgesf;
+}
+rg.controller.visualization.VisualizationSankey.defaultWeightf = function(weightf) {
+	if(null == weightf) return function(dp) {
+		return null != dp.count?dp.count:0.0;
+	}; else return weightf;
+}
 rg.controller.visualization.VisualizationSankey.__super__ = rg.controller.visualization.VisualizationSvg;
 rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
 	info: null
@@ -17639,7 +17797,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
-		var layout = this.layoutData(data);
+		var layout = null != this.info.layoutmap?this.layoutDataWithMap(data,this.info.layoutmap):this.layoutData(data);
 		if(null != this.info.layerWidth) this.chart.layerWidth = this.info.layerWidth;
 		if(null != this.info.nodeSpacing) this.chart.nodeSpacing = this.info.nodeSpacing;
 		if(null != this.info.dummySpacing) this.chart.dummySpacing = this.info.dummySpacing;
@@ -17656,35 +17814,44 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 		this.chart.labelNode = this.info.label.node;
 		this.chart.labelEdge = this.info.label.edge;
 		this.chart.labelEdgeOver = this.info.label.edgeover;
-		this.chart.thumbnailPath = this.info.thumbnailPath;
+		this.chart.imagePath = this.info.imagePath;
 		this.chart.click = this.info.click;
 		this.chart.clickEdge = this.info.clickEdge;
 		this.chart.init();
 		this.chart.data(layout);
 	}
-	,layoutData: function(data,idf,nodef,weightf,edgesf) {
-		if(idf == null) idf = function(data1) {
-			return data1.id;
-		};
-		if(nodef == null) {
-			var dummynodeid = 0;
-			nodef = function(edge) {
-				return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
-			};
-		}
-		if(edgesf == null) edgesf = function(dp) {
-			var r = [], id = idf(dp);
-			var _g = 0, _g1 = Reflect.fields(dp.parents);
-			while(_g < _g1.length) {
-				var parent = _g1[_g];
-				++_g;
-				r.push({ head : id, tail : parent, weight : Reflect.field(dp.parents,parent)});
+	,layoutDataWithMap: function(data,map,idf,weightf,edgesf) {
+		var graph = this.createGraph(data,idf,weightf,edgesf);
+		var _g = 0, _g1 = map.dummies;
+		while(_g < _g1.length) {
+			var path = _g1[_g];
+			++_g;
+			var tail = graph.nodes.getById(path[0]), head = graph.nodes.getById(path[path.length - 1]), npath = [tail], edge = tail.connectedBy(head), weight = null == edge?0.0:edge.weight;
+			var _g3 = 1, _g2 = path.length - 1;
+			while(_g3 < _g2) {
+				var i = _g3++;
+				var id = path[i], data1 = { id : id, weight : weight, extrain : 0.0, extraout : 0.0, dp : null};
+				npath.push(graph.nodes.create(data1));
 			}
-			return r;
-		};
-		if(null == weightf) weightf = function(dp) {
-			return null != dp.count?dp.count:0.0;
-		};
+			npath.push(head);
+			var _g3 = 0, _g2 = npath.length - 1;
+			while(_g3 < _g2) {
+				var i = _g3++;
+				graph.edges.create(npath[i],npath[i + 1],weight);
+			}
+			if(null != edge) edge.graph.edges._remove(edge);
+		}
+		var layers = map.layers.map(function(layer,_) {
+			return layer.map(function(id,_1) {
+				return graph.nodes.getById(id).id;
+			});
+		});
+		return new rg.graph.GraphLayout(graph,layers);
+	}
+	,createGraph: function(data,idf,weightf,edgesf) {
+		idf = rg.controller.visualization.VisualizationSankey.defaultIdf(idf);
+		edgesf = rg.controller.visualization.VisualizationSankey.defaultEdgesf(idf,edgesf);
+		weightf = rg.controller.visualization.VisualizationSankey.defaultWeightf(weightf);
 		var graph = new rg.graph.Graph(idf);
 		var _g = 0;
 		while(_g < data.length) {
@@ -17703,7 +17870,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				++_g1;
 				var head = graph.nodes.getById(edge.head);
 				var tail = graph.nodes.getById(edge.tail);
-				graph.edges.create(tail,head,edge.weight);
+				graph.edges.create(tail,head,edge.weight == null?0:edge.weight);
 			}
 		}
 		var $it0 = graph.nodes.collection.iterator();
@@ -17714,6 +17881,11 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 			node.data.extrain = Math.max(0,node.data.weight - win);
 			node.data.extraout = Math.max(0,node.data.weight - wout);
 		}
+		return graph;
+	}
+	,layoutData: function(data,idf,nodef,weightf,edgesf) {
+		var graph = this.createGraph(data,idf,weightf,edgesf);
+		nodef = rg.controller.visualization.VisualizationSankey.defaultNodef(nodef);
 		return this.weightBalance(graph,nodef);
 	}
 	,weightBalance: function(graph,nodef) {
@@ -20342,6 +20514,112 @@ rg.controller.visualization.VisualizationPivotTable.prototype = $extend(rg.contr
 	}
 	,__class__: rg.controller.visualization.VisualizationPivotTable
 });
+rg.data.source.rgquery.ReportGridExecutorMemoryCache = $hxClasses["rg.data.source.rgquery.ReportGridExecutorMemoryCache"] = function(executor) {
+	this.executor = executor;
+	this.cache = new Hash();
+	this.queue = new Hash();
+}
+rg.data.source.rgquery.ReportGridExecutorMemoryCache.__name__ = ["rg","data","source","rgquery","ReportGridExecutorMemoryCache"];
+rg.data.source.rgquery.ReportGridExecutorMemoryCache.__interfaces__ = [rg.data.source.rgquery.IExecutorReportGrid];
+rg.data.source.rgquery.ReportGridExecutorMemoryCache.prototype = {
+	executor: null
+	,cache: null
+	,queue: null
+	,children: function(path,options,success,error) {
+		var id = this.id("children",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.children(path,options,this.cacheSuccess(id,success),error);
+	}
+	,propertyCount: function(path,options,success,error) {
+		var id = this.id("propertyCount",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.propertyCount(path,options,this.cacheSuccess(id,success),error);
+	}
+	,propertySeries: function(path,options,success,error) {
+		var id = this.id("propertySeries",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.propertySeries(path,options,this.cacheSuccess(id,success),error);
+	}
+	,propertyMeans: function(path,options,success,error) {
+		var id = this.id("propertyMeans",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.propertyMeans(path,options,this.cacheSuccess(id,success),error);
+	}
+	,propertyStandardDeviations: function(path,options,success,error) {
+		var id = this.id("propertyStandardDeviations",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.propertyStandardDeviations(path,options,this.cacheSuccess(id,success),error);
+	}
+	,propertyValues: function(path,options,success,error) {
+		var id = this.id("propertyValues",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.propertyValues(path,options,this.cacheSuccess(id,success),error);
+	}
+	,propertyValueCount: function(path,options,success,error) {
+		var id = this.id("propertyValueCount",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.propertyValueCount(path,options,this.cacheSuccess(id,success),error);
+	}
+	,propertyValueSeries: function(path,options,success,error) {
+		var id = this.id("propertyValueSeries",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.propertyValueSeries(path,options,this.cacheSuccess(id,success),error);
+	}
+	,searchCount: function(path,options,success,error) {
+		var id = this.id("searchCount",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.searchCount(path,options,this.cacheSuccess(id,success),error);
+	}
+	,searchSeries: function(path,options,success,error) {
+		var id = this.id("searchSeries",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.searchSeries(path,options,this.cacheSuccess(id,success),error);
+	}
+	,intersect: function(path,options,success,error) {
+		var id = this.id("intersect",path,options), val = this.getCache(id);
+		if(null != val) success(val);
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else this.executor.intersect(path,options,this.cacheSuccess(id,success),error);
+	}
+	,cacheSuccess: function(id,success) {
+		var me = this;
+		this.queue.set(id,[]);
+		return function(r) {
+			me.cache.set(id,r);
+			success(r);
+			var q = me.queue.get(id);
+			if(null != q) {
+				var _g = 0;
+				while(_g < q.length) {
+					var item = q[_g];
+					++_g;
+					item(r);
+				}
+			}
+		};
+	}
+	,getCache: function(id) {
+		return this.cache.get(id);
+	}
+	,getQueue: function(id) {
+		return this.queue.get(id);
+	}
+	,id: function(method,path,options) {
+		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
+		return haxe.Md5.encode(s);
+	}
+	,__class__: rg.data.source.rgquery.ReportGridExecutorMemoryCache
+}
 thx.svg.LineInternals = $hxClasses["thx.svg.LineInternals"] = function() { }
 thx.svg.LineInternals.__name__ = ["thx","svg","LineInternals"];
 thx.svg.LineInternals.linePoints = function(data,x,y) {
@@ -20933,7 +21211,7 @@ rg.controller.MVPOptions.buildQuery = function(type,property,values,periodicity)
 	return q;
 }
 rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
-	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null, statistic = null, tag = null, location = null;
+	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null, statistic = null, tag = null, location = null, datapoints = null, identifier = null, parent = null, where = null;
 	if(null == parameters.options) parameters.options = { };
 	var options = parameters.options;
 	if(null != parameters.statistic) {
@@ -20988,6 +21266,22 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 		end = rg.controller.MVPOptions.timestamp(parameters.end);
 		Reflect.deleteField(parameters,"end");
 	}
+	if(null != parameters.identifier) {
+		identifier = parameters.identifier;
+		Reflect.deleteField(parameters,"identifier");
+		if(null != parameters.parent) {
+			parent = parameters.parent;
+			Reflect.deleteField(parameters,"parent");
+		}
+		if(null != parameters.where) {
+			where = parameters.where;
+			Reflect.deleteField(parameters,"where");
+		}
+	}
+	if(null != parameters.datapoints) {
+		datapoints = parameters.datapoints;
+		Reflect.deleteField(parameters,"datapoints");
+	}
 	if(null != parameters.periodicity) {
 		periodicity = parameters.periodicity;
 		Reflect.deleteField(parameters,"periodicity");
@@ -21035,7 +21329,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 201, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 230, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	chain.addAction(function(params,handler1) {
 		var opt = params.options;
@@ -21064,23 +21358,29 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 		if(null == params.data) {
 			var src = [];
 			params.data = [{ src : src}];
-			var _g = 0;
-			while(_g < events.length) {
-				var event = events[_g];
-				++_g;
-				var params1 = { path : path, event : event, query : query};
-				if(null != start) {
-					params1["start"] = start;
-					params1["end"] = end;
-				}
-				if(null != groupby) {
-					params1["groupby"] = groupby;
-					if(null != groupfilter) params1["groupfilter"] = groupfilter;
-				}
-				if(null != statistic) params1["statistic"] = statistic;
-				if(null != tag) params1["tag"] = tag;
-				if(null != location) params1["location"] = location;
+			if(null != datapoints) src.push({ data : datapoints}); else if(null != identifier) {
+				var params1 = { path : path, event : events[0], identifier : identifier, parent : parent};
+				if(null != where) params1.where = where;
 				src.push(params1);
+			} else {
+				var _g = 0;
+				while(_g < events.length) {
+					var event = events[_g];
+					++_g;
+					var params1 = { path : path, event : event, query : query};
+					if(null != start) {
+						params1["start"] = start;
+						params1["end"] = end;
+					}
+					if(null != groupby) {
+						params1["groupby"] = groupby;
+						if(null != groupfilter) params1["groupfilter"] = groupfilter;
+					}
+					if(null != statistic) params1["statistic"] = statistic;
+					if(null != tag) params1["tag"] = tag;
+					if(null != location) params1["location"] = location;
+					src.push(params1);
+				}
 			}
 			if(null == params.options.segmenton) params.options.segmenton = null != values?"value":null == property?"event":property;
 		}
@@ -21170,6 +21470,8 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 			params.options.label = { datapointover : function(dp,stats) {
 				var v = Reflect.field(dp,type);
 				return rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
+			}, node : function(dp,stats) {
+				return dp.id;
 			}, datapoint : function(dp,stats) {
 				return rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + rg.util.Properties.humanize(null != property?Reflect.field(dp,property):type);
 			}, edge : function(dp,stats) {

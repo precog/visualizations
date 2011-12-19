@@ -13,6 +13,8 @@ import rg.graph.SugiyamaMethod;
 import rg.graph.HeaviestNodeLayer;
 import rg.graph.GreedySwitchDecrosser;
 
+using Arrays;
+
 class VisualizationSankey extends VisualizationSvg
 {
 	public var info : InfoSankey;
@@ -38,6 +40,7 @@ class VisualizationSankey extends VisualizationSvg
 
 	override function feedData(data : Array<DataPoint>)
 	{
+//		trace(data);
 		chart.setVariables(independentVariables, dependentVariables, data);
 		if (null != title)
 		{
@@ -48,7 +51,7 @@ class VisualizationSankey extends VisualizationSvg
 			} else
 				layout.suggestSize("title", 0);
 		}
-		var layout = layoutData(data);
+		var layout = (null != info.layoutmap) ? layoutDataWithMap(data, info.layoutmap) : layoutData(data);
 
 		if(null != info.layerWidth)
 			chart.layerWidth = info.layerWidth;
@@ -79,7 +82,7 @@ class VisualizationSankey extends VisualizationSvg
 		chart.labelNode = info.label.node;
 		chart.labelEdge = info.label.edge;
 		chart.labelEdgeOver = info.label.edgeover;
-		chart.thumbnailPath = info.thumbnailPath;
+		chart.imagePath = info.imagePath;
 		chart.click = info.click;
 		chart.clickEdge = info.clickEdge;
 
@@ -87,41 +90,52 @@ class VisualizationSankey extends VisualizationSvg
 		chart.data(layout);
 	}
 
-	function layoutData(data : Array<DataPoint>, ?idf : NodeData -> String, ?nodef : GEdge<NodeData, Dynamic> -> DataPoint, ?weightf : DataPoint -> Float, ?edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>) : GraphLayout<NodeData, Dynamic>
+	function layoutDataWithMap(data : Array<DataPoint>, map : { layers : Array<Array<String>>, dummies : Array<Array<String>> }, ?idf : NodeData -> String, ?weightf : DataPoint -> Float, ?edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>)
 	{
-		if(idf == null)
-			idf = function(data) return data.id;
-		if(nodef == null)
-		{
-			var dummynodeid = 0;
-			nodef = function(edge) {
-				return { 
-					id : "#" + (++dummynodeid),
-					weight : edge.weight,
-					extrain : 0.0,
-					extraout : 0.0
-				};
-			};
-		}
-		if(edgesf == null)
-			edgesf = function(dp) {
-				var r = [],
-					id = idf(dp);
-				for(parent in Reflect.fields(dp.parents))
-				{
-					r.push(cast {
-						head : id,
-						tail : parent,
-						weight : Reflect.field(dp.parents, parent)
-					});
-				}
-				return r;
-			};
-		if(null == weightf)
-			weightf = function(dp) {
-				return null != dp.count ? dp.count : 0.0;
-			};
+		var graph = createGraph(data, idf, weightf, edgesf);
 
+		for(path in map.dummies)
+		{
+			var tail   = graph.nodes.getById(path.first()),
+				head   = graph.nodes.getById(path.last()),
+				npath  = [tail],
+				edge   = tail.connectedBy(head),
+				weight = null == edge ? 0.0 : edge.weight;
+
+			// add dummy nodes
+			for(i in 1...path.length-1)
+			{
+				var id = path[i],
+					data = {
+						id : id,
+						weight : weight,
+						extrain : 0.0,
+						extraout : 0.0,
+						dp : null
+					};
+				npath.push(graph.nodes.create(data));
+			}
+			npath.push(head);
+			// add dummy edges
+			for(i in 0...npath.length-1)
+			{
+				graph.edges.create(npath[i], npath[i+1], weight);
+			}
+			if(null != edge)
+				edge.remove();
+		}
+
+
+		// convert layers
+		var layers = map.layers.map(function(layer : Array<String>, _) return layer.map(function(id, _) return graph.nodes.getById(id).id));
+		return new GraphLayout(graph, layers);
+	}
+
+	function createGraph(data : Array<DataPoint>, idf : NodeData -> String, weightf : DataPoint -> Float, edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>) : Graph<NodeData, Dynamic>
+	{
+		idf = defaultIdf(idf);
+		edgesf = defaultEdgesf(idf, edgesf);
+		weightf = defaultWeightf(weightf);
 		var graph = new Graph(idf);
 
 		for(dp in data)
@@ -142,7 +156,7 @@ class VisualizationSankey extends VisualizationSvg
 			{
 				var head = graph.nodes.getById(edge.head);
 				var tail = graph.nodes.getById(edge.tail);
-				graph.edges.create(tail, head, edge.weight);
+				graph.edges.create(tail, head, edge.weight == null ? 0 : edge.weight);
 			}
 		}
 
@@ -157,6 +171,15 @@ class VisualizationSankey extends VisualizationSvg
 			node.data.extrain  = Math.max(0, node.data.weight - win);
 			node.data.extraout = Math.max(0, node.data.weight - wout);
 		}
+
+		return graph;
+	}
+
+	function layoutData(data : Array<DataPoint>, ?idf : NodeData -> String, ?nodef : GEdge<NodeData, Dynamic> -> DataPoint, ?weightf : DataPoint -> Float, ?edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>) : GraphLayout<NodeData, Dynamic>
+	{
+		var graph = createGraph(data, idf, weightf, edgesf);
+
+		nodef = defaultNodef(nodef);
 /*
 		if(REMOVEME)
 		{
@@ -165,13 +188,68 @@ class VisualizationSankey extends VisualizationSvg
 		}
 */
 		return weightBalance(graph, nodef);
+	}
 
+	static function defaultIdf(?idf : NodeData -> String)
+	{
+		if(idf == null)
+			return function(data : NodeData) return data.id;
+		else
+			return idf;
+	}
 
+	static function defaultNodef(?nodef : GEdge<NodeData, Dynamic> -> DataPoint)
+	{
+		if(nodef == null)
+		{
+			var dummynodeid = 0;
+			return function(edge : GEdge<NodeData, Dynamic>) {
+				return {
+					id : "#" + (++dummynodeid),
+					weight : edge.weight,
+					extrain : 0.0,
+					extraout : 0.0
+				};
+			};
+		} else
+			return nodef;
+	}
+
+	static function defaultEdgesf(idf : NodeData -> String, ?edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>)
+	{
+		if(edgesf == null)
+		{
+			return function(dp : Dynamic) {
+				var r = [],
+					id = idf(dp);
+				for(parent in Reflect.fields(dp.parents))
+				{
+					r.push(cast {
+						head : id,
+						tail : parent,
+						weight : Reflect.field(dp.parents, parent)
+					});
+				}
+				return r;
+			};
+		} else
+			return edgesf;
+	}
+
+	static function defaultWeightf(?weightf : DataPoint -> Float)
+	{
+		if(null == weightf)
+		{
+			return function(dp) {
+				return null != dp.count ? dp.count : 0.0;
+			};
+		} else
+			return weightf;
 	}
 
 //	static var REMOVEME = true;
 
-	function weightBalance(graph : Graph<NodeData, Dynamic>, nodef)
+	function weightBalance(graph : Graph<NodeData, Dynamic>, nodef : GEdge<NodeData, Dynamic> -> DataPoint)
 	{
 		var layout = new GraphLayout(graph, new HeaviestNodeLayer().lay(graph));
 		layout = new EdgeSplitter().split(layout, [], nodef);
@@ -182,7 +260,7 @@ class VisualizationSankey extends VisualizationSvg
 
 	function sugiyama(graph : Graph<NodeData, Dynamic>, nodef)
 	{
-		return new SugiyamaMethod().resolve(graph, nodef); 
+		return new SugiyamaMethod().resolve(graph, nodef);
 	}
 /*
 	function layoutMap(map : Hash<Node>) : Array<Array<Node>>

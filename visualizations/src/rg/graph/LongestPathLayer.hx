@@ -24,6 +24,8 @@ class LongestPathLayer
 				layer = layers[pos] = [];
 			layer.push(node.id);
 		}
+		layers.reverse();
+		trace(layers);
 		return layers;
 	}
 

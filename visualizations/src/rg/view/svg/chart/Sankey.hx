@@ -36,7 +36,7 @@ class Sankey extends Chart
 	public var labelEdgeOver : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
 	public var labelNode : DataPoint -> Stats<Dynamic> -> String;
 
-	public var thumbnailPath : DataPoint -> String;
+	public var imagePath : DataPoint -> String;
 	public var clickEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> Void;
 
 	var layout : GraphLayout<NodeData, Dynamic>;
@@ -224,6 +224,8 @@ class Sankey extends Chart
 		});
 		// back edges
 		edges.each(function(edge, _) {
+			if(edge.weight <= 0)
+				return;
 			var cellhead = layout.cell(edge.head),
 				celltail = layout.cell(edge.tail);
 			if(cellhead.layer > celltail.layer)
@@ -255,19 +257,25 @@ class Sankey extends Chart
 			backedgesy += weight + backEdgeSpacing;
 		});
 
+// TODO edges must be ordered at the node level
 		// forward edges
 		edges.each(function(edge, _) {
+			if(edge.weight <= 0)
+				return;
 			var head = edge.head,
 				tail = edge.tail,
 				cellhead = layout.cell(head),
-				celltail = layout.cell(tail),
-				x1 = Math.round(layerWidth / 2 + xlayer(celltail.layer))-.5,
-				x2 = Math.round(- layerWidth / 2 + xlayer(cellhead.layer))-.5,
-				y1 = ynode(tail) + ydiagonal(edge.id, tail.positives()),
-				y2 = ynode(head) + nheight(head.data.extrain) + ydiagonal(edge.id, head.negatives());
+				celltail = layout.cell(tail);
 			if(cellhead.layer <= celltail.layer)
 				return;
-			var weight = nheight(edge.weight),
+			var x1 = Math.round(layerWidth / 2 + xlayer(celltail.layer))-.5,
+				x2 = Math.round(- layerWidth / 2 + xlayer(cellhead.layer))-.5,
+				y1 = ynode(tail) + ydiagonal(edge.id, tail.positives()),
+//				Iterators.array(tail.positives()).order(function(a, b){
+//					return Floats.compare(b.weight, a.weight);
+//				}).iterator()),
+				y2 = ynode(head) + nheight(head.data.extrain) + ydiagonal(edge.id, head.negatives()),
+				weight = nheight(edge.weight),
 				diagonal = new DiagonalArea(edgescontainer, "fill fill-"+styleEdgeForward, "stroke stroke-"+styleEdgeForward);
 			diagonal.update(
 				x1,
@@ -388,6 +396,8 @@ class Sankey extends Chart
 		if(null != labelEdge)
 		{
 			edges.each(function(edge, _) {
+				if(edge.weight <= 0)
+					return;
 				// label inside
 				var tail = edge.tail;
 				if(isdummy(tail))
@@ -507,9 +517,9 @@ class Sankey extends Chart
 				}
 			}
 			// thumbnail
-			if(null != thumbnailPath && !isdummy(n))
+			if(null != imagePath && !isdummy(n))
 			{
-				var path = thumbnailPath(n.data.dp);
+				var path = imagePath(n.data.dp);
 				if(path != null)
 				{
 					var container = node.append("svg:g")

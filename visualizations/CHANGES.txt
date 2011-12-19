@@ -1,3 +1,5 @@
+v. 1.2.0
+* added sankey visualization
 v. 1.1.5
 * added support for standardDeviation and mean to visualizations
 * added simplified query for geo and mapping

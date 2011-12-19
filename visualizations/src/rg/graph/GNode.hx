@@ -69,17 +69,17 @@ class GNode<TNodeData, TEdgeData> extends GraphElement<TNodeData, TNodeData, TEd
 
 	public function isSource()
 	{
-		return friendEdges().positives(this).hasNext() && !friendEdges().negatives(this).hasNext();
+		return positives().hasNext() && !negatives().hasNext();
 	}
 
 	public function isSink()
 	{
-		return friendEdges().negatives(this).hasNext() && !friendEdges().positives(this).hasNext();
+		return negatives().hasNext() && !positives().hasNext();
 	}
 
 	public function isIsolated()
 	{
-		return !friendEdges().edges(this).hasNext();
+		return !edges().hasNext();
 	}
 
 	public function isSuccessorOf(predecessor : GNode<TNodeData, TEdgeData>)
@@ -143,5 +143,5 @@ class GNode<TNodeData, TEdgeData> extends GraphElement<TNodeData, TNodeData, TEd
 
 	inline function friendEdges() : FriendGraphEdges<TNodeData, TEdgeData> return graph.edges
 
-	public function toString() return null == graph ? "Node Destroyed" : Std.format("Node (#$id, positives ${positiveCount()}, negatives: ${negativeCount()}${null == data ? '' : ', data: '+data})")
+	public function toString() return null == graph ? "Node Destroyed" : Std.format("Node (n.$id, positives ${positiveCount()}, negatives: ${negativeCount()}${null == data ? '' : ', data: '+data})")
 }

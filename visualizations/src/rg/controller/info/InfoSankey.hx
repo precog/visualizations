@@ -26,7 +26,8 @@ class InfoSankey
 	public var imageHeight : Null<Float>;
 	public var imageSpacing : Null<Float>;
 	public var labelNodeSpacing : Null<Float>;
-	public var thumbnailPath : DataPoint -> String;
+	public var imagePath : DataPoint -> String;
+	public var layoutmap : { layers : Array<Array<String>>, dummies : Array<Array<String>> };
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var clickEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> Void;
 
@@ -125,10 +126,10 @@ class InfoSankey
 					value : v
 				}]
 			}, {
-				field : "thumbnailpath",
+				field : "imagepath",
 				validator : function(v) return Reflect.isFunction(v),
 				filter : function(v) return [{
-					field : "thumbnailPath",
+					field : "imagePath",
 					value : v
 				}]
 			}, {
@@ -143,6 +144,13 @@ class InfoSankey
 				validator : function(v) return Reflect.isFunction(v),
 				filter : function(v) return [{
 					field : "clickEdge",
+					value : v
+				}]
+			}, {
+				field : "layoutmap",
+				validator : function(v) return Types.isAnonymous(v),
+				filter : function(v) return [{
+					field : "layoutmap",
 					value : v
 				}]
 			}];
