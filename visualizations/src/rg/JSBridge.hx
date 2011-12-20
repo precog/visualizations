@@ -122,8 +122,10 @@ class JSBridge
 		r.info.viz = {
 			version : thx.util.MacroVersion.fullVersion()
 		};
-		r.cache.setTime = function(t) {
-			executor.timeout = t;
+		r.cache = {
+			setTime : function(t) {
+				executor.timeout = t;
+			}
 		};
 	}
 
