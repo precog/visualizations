@@ -4,6 +4,7 @@ import rg.data.source.rgquery.IExecutorReportGrid;
 
 class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 {
+	public var timeout : Int;
 	var executor : IExecutorReportGrid;
 	var cache : Hash<Dynamic>;
 	var queue : Hash<Array<Dynamic -> Void>>;
@@ -12,6 +13,7 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 		this.executor = executor;
 		cache = new Hash();
 		queue = new Hash();
+		timeout = 60;
 	}
 
 	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void) : Void
@@ -162,12 +164,20 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 		queue.set(id, []);
 		return function(r : Dynamic)
 		{
-			cache.set(id, r);
+			if(timeout >= 0)
+				cache.set(id, r);
+			if(timeout > 0)
+			{
+				haxe.Timer.delay(function() {
+					cache.remove(id);
+				}, timeout * 1000);
+			}
 			success(r);
 			var q = queue.get(id);
 			if(null != q)
 				for(item in q)
 					item(r);
+			queue.remove(id);
 		}
 	}
 
@@ -178,6 +188,8 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 
 	function getQueue(id : String)
 	{
+		if(timeout < 0)
+			return null;
 		return queue.get(id);
 	}
 

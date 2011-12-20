@@ -5739,7 +5739,10 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.4685"};
+	r.info.viz = { version : "1.2.0.4689"};
+	r.cache.setTime = function(t1) {
+		executor.timeout = t1;
+	};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -20518,11 +20521,13 @@ rg.data.source.rgquery.ReportGridExecutorMemoryCache = $hxClasses["rg.data.sourc
 	this.executor = executor;
 	this.cache = new Hash();
 	this.queue = new Hash();
+	this.timeout = 60;
 }
 rg.data.source.rgquery.ReportGridExecutorMemoryCache.__name__ = ["rg","data","source","rgquery","ReportGridExecutorMemoryCache"];
 rg.data.source.rgquery.ReportGridExecutorMemoryCache.__interfaces__ = [rg.data.source.rgquery.IExecutorReportGrid];
 rg.data.source.rgquery.ReportGridExecutorMemoryCache.prototype = {
-	executor: null
+	timeout: null
+	,executor: null
 	,cache: null
 	,queue: null
 	,children: function(path,options,success,error) {
@@ -20595,7 +20600,10 @@ rg.data.source.rgquery.ReportGridExecutorMemoryCache.prototype = {
 		var me = this;
 		this.queue.set(id,[]);
 		return function(r) {
-			me.cache.set(id,r);
+			if(me.timeout >= 0) me.cache.set(id,r);
+			if(me.timeout > 0) haxe.Timer.delay(function() {
+				me.cache.remove(id);
+			},me.timeout * 1000);
 			success(r);
 			var q = me.queue.get(id);
 			if(null != q) {
@@ -20606,12 +20614,14 @@ rg.data.source.rgquery.ReportGridExecutorMemoryCache.prototype = {
 					item(r);
 				}
 			}
+			me.queue.remove(id);
 		};
 	}
 	,getCache: function(id) {
 		return this.cache.get(id);
 	}
 	,getQueue: function(id) {
+		if(this.timeout < 0) return null;
 		return this.queue.get(id);
 	}
 	,id: function(method,path,options) {
