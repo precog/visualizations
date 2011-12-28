@@ -229,7 +229,7 @@ class MVPOptions
 			else
 				throw new Error("invalid value for download '{0}'", [v]);
 		}
-
+/*
 		// ensure hash for tracking
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -260,7 +260,7 @@ class MVPOptions
 				handler(params);
 			}
 		});
-
+*/
 		// ensure events
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{

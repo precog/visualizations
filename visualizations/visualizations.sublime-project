@@ -6,6 +6,12 @@
 		},
 		{
 			"path": "/Users/francoponticelli/Projects/thx"
+		},
+		{
+			"path": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib"
+		},
+		{
+			"path": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std"
 		}
 	]
 }

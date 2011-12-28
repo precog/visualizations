@@ -72,24 +72,26 @@ class JSBridge
 		}
 
 		// define public visualization constrcutors
-		r.barChart     = function(el, options) return r.viz(el, options, "barchart");
-		r.funnelChart  = function(el, options) return r.viz(el, options, "funnelchart");
-		r.geo          = function(el, options) return r.viz(el, options, "geo");
-		r.heatGrid     = function(el, options) return r.viz(el, options, "heatgrid");
-		r.leaderBoard  = function(el, options) return r.viz(el, options, "leaderboard");
-		r.lineChart    = function(el, options) return r.viz(el, options, "linechart");
-		r.pieChart     = function(el, options) return r.viz(el, options, "piechart");
-		r.pivotTable   = function(el, options) return r.viz(el, options, "pivottable");
-		r.sankey       = function(el, options) return r.viz(el, options, "sankey");
-		r.scatterGraph = function(el, options) return r.viz(el, options, "scattergraph");
-		r.streamGraph  = function(el, options) return r.viz(el, options, "streamgraph");
+		r.parseQueryParameters = rg.util.Urls.parseQueryParameters;
+		r.findScript           = rg.util.Js.findScript;
+		r.barChart             = function(el, options) return r.viz(el, options, "barchart");
+		r.funnelChart          = function(el, options) return r.viz(el, options, "funnelchart");
+		r.geo                  = function(el, options) return r.viz(el, options, "geo");
+		r.heatGrid             = function(el, options) return r.viz(el, options, "heatgrid");
+		r.leaderBoard          = function(el, options) return r.viz(el, options, "leaderboard");
+		r.lineChart            = function(el, options) return r.viz(el, options, "linechart");
+		r.pieChart             = function(el, options) return r.viz(el, options, "piechart");
+		r.pivotTable           = function(el, options) return r.viz(el, options, "pivottable");
+		r.sankey               = function(el, options) return r.viz(el, options, "sankey");
+		r.scatterGraph         = function(el, options) return r.viz(el, options, "scattergraph");
+		r.streamGraph          = function(el, options) return r.viz(el, options, "streamgraph");
 
 		// utility functions
 		r.format  = Dynamics.format;
 		r.compare = Dynamics.compare;
 		r.dump    = Dynamics.string;
 		r.symbol  = SymbolCache.cache.get;
-		r.date = {
+		r.date    = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
 					a = DateParser.parse(a);

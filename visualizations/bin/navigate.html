@@ -2,20 +2,76 @@
 <head>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
+		<style>
+* {
+	font-family: sans-serif;
+}
+
+h1, h2 {
+	color: #ccc;
+
+	clear: left;
+	margin: 0;
+	text-align: center;
+
+	text-shadow: 1px 1px 2px #333;
+	filter: dropshadow(color=#ccc, offx=1, offy=1);
+}
+
+h2 {
+	color: #999;
+}
+
+p {
+	margin: 0 4px 0 0;
+	color: #666;
+}
+
+.box {
+	min-width: 580px;
+	padding: 10px;
+	float: left;
+	margin: 0 10px 10px 0;
+
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	-moz-box-shadow: 1px 1px 8px #ddd;
+	-webkit-box-shadow: 1px 1px 8px #ddd;
+	box-shadow: inset 1px 1px 8px #ccc;
+	background-color: #f0f0f0;
+}
+
+.clear {
+	clear: left;
+}
+
+.chart {
+	width: 900px;
+	height: 450px;
+}
+.female.rg .fill-0 {
+	fill: #ff0000;
+}
+
+.actions, #clip, #interact {
+	text-align: center;
+}
+
+.notes {
+	font-size: 85%;
+	color: #666666;
+}
+
+b {
+	font-size: 65%;
+}
+	</style>
 	<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D" type="text/javascript"></script>
 	<script src="http://api.reportgrid.com/js/reportgrid-viz.js" type="text/javascript"></script>
-<!--
-	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
-	<script src="js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D" type="text/javascript"></script>
-	<script src="js/reportgrid-viz.js" type="text/javascript"></script>
--->
 <script type="text/javascript">
 $(document).ready(function(){
 	var path = "/test/clipmaster/t4/",
-		demographic = {
-			gender : "female", // "male", "female"
-			age    : "41-60", // "13-21", "22-29", "30-40", "41-60", "60+"
-		},
+		gender = "male",
 		referrer = null;
 
 	var graph = [{
@@ -71,35 +127,39 @@ $(document).ready(function(){
 
 	function goToClip(id){
 		var clip = getClip(id);
-		$("#clip").html('<b>'+id+'</b><br><img src="images/'+id+'.png"/>');
+		$("#clip").html('<h2>'+id+'</h2><br><img src="images/'+id+'.png"/>');
 		setTimeout(function() {
-			for(var i = 0; i < clip.actions.length; i++)
+			if(clip.actions.length == 0)
 			{
-				var action = getClip(clip.actions[i]);
-				$('#actions').append('<button id="'+action.clip+'">'+action.clip+'</button>');
+				$('#actions').append("<b>Your Journey is Over</b>");
+			} else {
+				$('#actions').append("<b>go to:</b><br>");
+				for(var i = 0; i < clip.actions.length; i++)
+				{
+					var action = getClip(clip.actions[i]);
+					$('#actions').append('<button id="'+action.clip+'">'+action.clip+'</button>');
+				}
+				$('#actions button').click(function(){
+					$('#actions').html("");
+					referrer = id;
+					goToClip($(this).attr("id"));
+					return false;
+				})
 			}
-			$('#actions button').click(function(){
-				$('#actions').html("");
-				referrer = id;
-				goToClip($(this).attr("id"));
-				return false;
-			})
 		}, clip.duration * 1000);
 
 		// TRACK
-		var event = { clip : id, gender : demographic.gender, age : demographic.age, parent : referrer },
+		var event = { clip : id, gender : gender, parent : referrer },
 			impression = {};
 		impression["imp_"+id] = event;
-//		ReportGrid.track(path, impression);
 		ReportGrid.track(path, { impression : event });
-//		console.log(path + id);
-//		console.log({ gender : demographic.gender, age : demographic.age, parent : referrer });
 	}
 
-	$("#info").html("gender: " + demographic.gender + "<br>age: " + demographic.age);
-
-	$("#actions button").click(function(){
-		$('#actions').html("");
+	$("#gender").change(function() {
+		var v = $(this).val();
+		if(!v) return;
+		gender = v;
+		$(this).remove();
 		goToClip("clip_01");
 	})
 
@@ -141,20 +201,27 @@ $(document).ready(function(){
 	});
 })
 </script>
-<style>
-.chart {
-	width: 960px;
-	height: 480px;
-}
-</style>
 </head>
 <body>
-<div id="info"></div>
-<div id="clip"></div>
-<form id="actions"><button>start</button></form>
-
+<div class="box clear" id="interact">
+	<h1>Interact</h1>
+	<div id="info"><select id="gender"><option value="">- pick your gender -</option><option value="male">male</option><option value="female">female</option></select></div>
+	<div id="clip"></div>
+	<form id="actions"></form>
+	<div class="notes">please reload the page to update the visualizations</div>
+</div>
 <div id="count"></div>
-<div id="chart1" class="chart"></div>
-<div id="chart2" class="chart"></div>
+<div class="box clear">
+	<h1>Males</h1>
+</div>
+<div class="box">
+	<div id="chart1" class="chart"></div>
+</div>
+<div class="box clear">
+	<h1>Females</h1>
+</div>
+<div class="box">
+	<div id="chart2" class="chart female"></div>
+</div>
 </body>
 </html>

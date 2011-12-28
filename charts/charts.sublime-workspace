@@ -1,0 +1,1384 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"rem",
+				"remove( key : String ) : Bool"
+			],
+			[
+				"dela",
+				"delay"
+			],
+			[
+				"Tim",
+				"Timer"
+			],
+			[
+				"Int",
+				"Int"
+			],
+			[
+				"re",
+				"remove( key : String ) : Bool"
+			],
+			[
+				"get",
+				"get(...) : Void>>"
+			],
+			[
+				"se",
+				"set(...) : Void"
+			],
+			[
+				"haxe",
+				"haxe [package]"
+			],
+			[
+				"String",
+				"Strings"
+			],
+			[
+				"Dynamic",
+				"Dynamic"
+			],
+			[
+				"set",
+				"set(...) : Void"
+			],
+			[
+				"Hash",
+				"Hash"
+			],
+			[
+				"m",
+				"Md5"
+			],
+			[
+				"Json",
+				"Json"
+			],
+			[
+				"J",
+				"Json"
+			],
+			[
+				"js",
+				"json [package]"
+			],
+			[
+				"cache",
+				"cache"
+			],
+			[
+				"so",
+				"source [package]"
+			],
+			[
+				"data",
+				"data [package]"
+			],
+			[
+				"Float",
+				"Float"
+			],
+			[
+				"ch",
+				"children"
+			],
+			[
+				"ex",
+				"executor"
+			],
+			[
+				"we",
+				"weight : Float"
+			],
+			[
+				"w",
+				"weight : Float"
+			],
+			[
+				"pare",
+				"parents"
+			],
+			[
+				"val",
+				"value : Dynamic"
+			],
+			[
+				"fie",
+				"field(...) : Dynamic"
+			],
+			[
+				"cur",
+				"cur"
+			],
+			[
+				"Fie",
+				"field(...) : Dynamic"
+			],
+			[
+				"va",
+				"value : Dynamic"
+			],
+			[
+				"is",
+				"is( v : Dynamic , t : Dynamic ) : Bool"
+			],
+			[
+				"fiel",
+				"fields"
+			],
+			[
+				"co",
+				"count"
+			],
+			[
+				"0",
+				"X509Certificate [flash9.security]"
+			],
+			[
+				"id",
+				"idproperty(default, [var]"
+			],
+			[
+				"v",
+				"value : Dynamic"
+			],
+			[
+				"p",
+				"property : String"
+			],
+			[
+				"fields",
+				"fields( o : Dynamic ) : Array<String>"
+			],
+			[
+				"keys",
+				"keys() : Iterator<String>"
+			],
+			[
+				"where",
+				"whereConditions [var]"
+			],
+			[
+				"path",
+				"Paths [thx.text]"
+			],
+			[
+				"eve",
+				"event"
+			],
+			[
+				"Array",
+				"Arrays"
+			],
+			[
+				"push",
+				"push( x : Array<Unknown<0>> ) : Int"
+			],
+			[
+				"de",
+				"deleteField(...) : Bool"
+			],
+			[
+				"Null",
+				"Null"
+			],
+			[
+				"end",
+				"end"
+			],
+			[
+				"info",
+				"info"
+			],
+			[
+				"paren",
+				"parent"
+			],
+			[
+				"ident",
+				"identifier"
+			],
+			[
+				"item",
+				"item"
+			],
+			[
+				"exe",
+				"executor"
+			],
+			[
+				"IE",
+				"IExecutorReportGrid"
+			],
+			[
+				"prop",
+				"property"
+			],
+			[
+				"per",
+				"periodicity"
+			],
+			[
+				"opt",
+				"opt"
+			],
+			[
+				"timeEn",
+				"timeEnd"
+			],
+			[
+				"timeSta",
+				"timeStart"
+			],
+			[
+				"idp",
+				"idporperty"
+			],
+			[
+				"itera",
+				"iterator() : Iterator<Null<{ weight : Float }>>"
+			],
+			[
+				"ar",
+				"array(...) : Array<array.T>"
+			],
+			[
+				"com",
+				"compare( a : Float , b : Float ) : Int"
+			],
+			[
+				"or",
+				"orderMultiple(...) : Void"
+			],
+			[
+				"nodes",
+				"nodes : NodeData, Dynamic>"
+			],
+			[
+				"edge",
+				"edges [var]"
+			],
+			[
+				"last",
+				"last() : Null<String>"
+			],
+			[
+				"first",
+				"first() : Null<String>"
+			],
+			[
+				"wei",
+				"weight : Float"
+			],
+			[
+				"cre",
+				"create(...) : NodeData, Dynamic>"
+			],
+			[
+				"ede",
+				"edges : NodeData, Dynamic>"
+			],
+			[
+				"crea",
+				"create"
+			],
+			[
+				"remove",
+				"remove"
+			],
+			[
+				"tail",
+				"setVariables"
+			],
+			[
+				"ge",
+				"getById(...) : NodeData, Dynamic>"
+			],
+			[
+				"fir",
+				"first() : Null<String>"
+			],
+			[
+				"le",
+				"length : Int"
+			],
+			[
+				"dummi",
+				"dummies : Array<Array<String>>"
+			],
+			[
+				"ma",
+				"map"
+			],
+			[
+				"getB",
+				"getById"
+			],
+			[
+				"la",
+				"layers : Array<Array<String>>"
+			],
+			[
+				"daa",
+				"data : Null<rg.view.svg.chart.NodeData>"
+			],
+			[
+				"node",
+				"nodes : NodeData, Dynamic>"
+			],
+			[
+				"nodef",
+				"nodef"
+			],
+			[
+				"Arra",
+				"Array"
+			],
+			[
+				"layou",
+				"layoutFunction(...) : Array<Float>"
+			],
+			[
+				"vis",
+				"visualization"
+			],
+			[
+				"GNo",
+				"GNode [class]"
+			],
+			[
+				"sta",
+				"stats : rg.data.Stats<Dynamic>"
+			],
+			[
+				"on",
+				"onNode(...) : thx.js.Selection"
+			],
+			[
+				"cli",
+				"clickEdge(...) : Void"
+			],
+			[
+				"click",
+				"clickEdge(...) : Void"
+			],
+			[
+				"thum",
+				"thumbnailPath(...) : String"
+			],
+			[
+				"Data",
+				"DataPoint [class]"
+			],
+			[
+				"ne",
+				"next() : NodeData, Dynamic>"
+			],
+			[
+				"pos",
+				"positives() : NodeData, Dynamic>>"
+			],
+			[
+				"ta",
+				"tail : NodeData, Dynamic>"
+			],
+			[
+				"he",
+				"head : NodeData, Dynamic>"
+			],
+			[
+				"d",
+				"dp"
+			],
+			[
+				"da",
+				"data"
+			],
+			[
+				"hea",
+				"head"
+			],
+			[
+				"GE",
+				"GEdge [class]"
+			],
+			[
+				"layer",
+				"layerWidth : Null<Float>"
+			],
+			[
+				"l",
+				"layerWidth : Int"
+			],
+			[
+				"layout",
+				"GraphLayout [class]"
+			],
+			[
+				"ro",
+				"round( v : Float ) : Int"
+			],
+			[
+				"round",
+				"round( v : Float ) : Int"
+			],
+			[
+				"eac",
+				"each(...) : Void"
+			],
+			[
+				"destroyed",
+				"destroyed() : Bool"
+			],
+			[
+				"des",
+				"destroyed() : Bool"
+			],
+			[
+				"lengt",
+				"length : Int"
+			],
+			[
+				"pus",
+				"push(...) : Int"
+			],
+			[
+				"ad",
+				"add"
+			],
+			[
+				"grap",
+				"graph"
+			],
+			[
+				"a",
+				"array(...) : Array<array.T>"
+			],
+			[
+				"int",
+				"Int [class]"
+			],
+			[
+				"g",
+				"g : thx.js.Selection"
+			],
+			[
+				"ce",
+				"cell(...) : rg.graph.LayoutCell"
+			],
+			[
+				"head",
+				"head : NodeData, Dynamic>"
+			],
+			[
+				"GEdge",
+				"GEdge [class]"
+			],
+			[
+				"ed",
+				"edges : NodeData, Dynamic>"
+			],
+			[
+				"GNode",
+				"GNode [class]"
+			],
+			[
+				"Selec",
+				"Selection [class]"
+			],
+			[
+				"cl",
+				"class"
+			],
+			[
+				"type",
+				"Type [class]"
+			],
+			[
+				"s",
+				"set(...) : Void"
+			],
+			[
+				"f",
+				"formatf(...)"
+			],
+			[
+				"min",
+				"min( a : Float , b : Float ) : Float"
+			],
+			[
+				"DataPo",
+				"DataPoint [class]"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/HaXe/Hxml.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"tr",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"pac",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"ter",
+				"Preferences: Terminal Settings – Default"
+			],
+			[
+				"clas",
+				"Snippet: Class"
+			],
+			[
+				"tre",
+				"Set Syntax: Regular Expression"
+			],
+			[
+				"re",
+				"Set Syntax: Regular Expression"
+			],
+			[
+				"tri",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"tra",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"tria",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"trai",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"insl",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Set Syntax: HaXe2"
+			]
+		],
+		"width": 593.0
+	},
+	"console":
+	{
+		"height": 310.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/build.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/RGStacks.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/RG.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/Properties.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/Periodicity.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/factory/FactoryDataContext.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/Jsonp.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/Leadeboard.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/DataPoints.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/FieldFilter.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/apply/ApplySvgOption.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.test.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.viz.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/release.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.doc.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.lib.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/js/CookieStorageFallback.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationBarChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/BarChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/JSBridge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/ReportGridExecutorMemoryCache.hx",
+		"/Users/francoponticelli/Projects/reportgrid/website/demo/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/navigate.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoDataSource.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GraphLayout.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GEdge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/SugiyamaMethod.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/Graph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/css/rg.css",
+		"/Users/francoponticelli/Projects/reportgrid/client-libraries/php/test/basetest.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/sankey.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoLabelSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/Sankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/website/demo/sankey.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/App.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/DataSourceReportGridGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/version",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/CHANGES.txt",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/IExecutorReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/ChainedExecutor.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GraphEdges.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/factory/FactoryDataSource.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/MVPOptions.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/DataSourceReportGridGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GNode.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/LongestPathLayer.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/HeaviestNodeLayer.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/heatgrid-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoLabelFunnel.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/EdgeSplitter.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GraphElement.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/DataSourceReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GraphCollection.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/ElbowArea.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/DiagonalArea.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoLabel.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/Balloon.hx",
+		"/Users/francoponticelli/Projects/thx/src/thx/js/Svgs.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/HookConnectorArea.hx",
+		"/Users/francoponticelli/Projects/thx/src/thx/js/Svg.hx",
+		"/Users/francoponticelli/Projects/thx/src/thx/js/Dom.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/css/colors/rg-colors-brbg-4-div.css",
+		"/Users/francoponticelli/Projects/thx/src/Floats.hx",
+		"/Users/francoponticelli/Projects/thx/src/thx/culture/FormatNumber.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/Chart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/Label.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/CartesianChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/css/colors/rg-colors-accent-3-qual.css",
+		"/Users/francoponticelli/Desktop/queries.txt",
+		"/Users/francoponticelli/Projects/thx/src/Iterables.hx",
+		"/Users/francoponticelli/Projects/thx/src/Iterators.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestEdge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGraphCollection.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestLongestPathLayer.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGraphLayout.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/TestAll.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GraphNodes.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GreedySwitch2Decrosser.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GreedySwitchDecrosser.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGreedySwitchDecrosser.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestNode.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestSugiyamaMethod.hx",
+		"/Users/francoponticelli/Projects/reportgrid/website/demo/live/bizodo/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/demo/live/lokalite/customer.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/demo/live/lokalite/general.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/snapengage/simple2.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/transform/TransformStatisticTime.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/transform/TransformTimeSeries.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/transform/TransformIntersectTime.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/transform/TransformTimeSeriesValues.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestEdgeSplitter.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/snapengage/geo.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/EdgeSpliter.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/html/widget/PivotTable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/website/demo/geo-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestOneCycleRemover.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/js/visualizations.test.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GreedyCyclePartitioner.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGreedyCyclePartitioner.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/TwoCycleRemover.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/OneCycleRemover.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestTwoCycleRemover.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/layout/TestNode.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/layout/TestGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/layout/TestEdge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/layout/GNode.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/layout/GraphEdges.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/layout/GEdge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/layout/GraphNodes.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/layout/Graph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/layout/Graphs.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/Edge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/Graphs.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/Node.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestBaseGraph.hx",
+		"/Users/francoponticelli/Projects/thx/src/Arrays.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/geo/json/rn-usa-states-path.json.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/layout/GraphElement.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/Geo.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/widget/Map.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/js/reportgrid-core.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/geo/json/map-world-to-name-code.json.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationGeo.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/geo/json/rn-world-names.js"
+	],
+	"find":
+	{
+		"height": 33.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations/src/main/haxe/vis"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"trace",
+			"images",
+			"cache",
+			"a.cache",
+			": Void;",
+			"trace",
+			"edges.create",
+			"trace",
+			"value",
+			"trace",
+			"thumbnailPath",
+			"trace",
+			"onmouseoverextrain",
+			"mouseover",
+			"onmouseover",
+			"onmouseoveredge",
+			"mouseover",
+			"thumbnailPath",
+			"labelEdge",
+			"labelDataPointTop",
+			"labelTopPadding",
+			"labelEdge",
+			"imagePadding",
+			"minRadius",
+			"backEdgeMidSpacing",
+			"minRadius",
+			"minCurve",
+			"padFlow",
+			"padLines",
+			"extraWidth",
+			"maxFalloffWidth",
+			"minpadding",
+			"padding",
+			"trace",
+			"label",
+			".5",
+			"Decrossing",
+			"Splitting",
+			"Layering",
+			"Layering<TNodeData, TEdgeData> = {\n	public function lay(graph : Graph<TNodeData, TEdgeData>) : Array<Array<Int>>;\n}\n\ntypedef Splitting<TNodeData, TEdgeData> = {\n	public function split(layout : GraphLayout<TNodeData, TEdgeData>, ?nodef : GEdge<TNodeData, TEdgeData> -> TNodeData, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>;\n}\n\ntypedef Decrossing<TNodeData, TEdgeData> = {\n	public function decross(layout : GraphLayout<TNodeData, TEdgeData>) : GraphLayout<TNodeData, TEdgeData>;\n}",
+			"Partitioning",
+			"hiextrain",
+			"onmouse",
+			"onmouseoveredge",
+			"preferredSide",
+			"rect",
+			"labelEdge",
+			"stats",
+			"fill-",
+			"/ 2",
+			"map",
+			"timeZone",
+			"trace",
+			"create",
+			"substr",
+			"extraweight",
+			"falloffweight",
+			"ynode",
+			"layerstarty",
+			"level",
+			"levelstarts",
+			"yref",
+			"parents",
+			"children",
+			"src",
+			"dst",
+			"Dynamic",
+			"max",
+			"splitte",
+			"trace",
+			"#location",
+			"labelDataPoint",
+			"formatDataPoint",
+			"_positions",
+			"newhead",
+			"head",
+			"newhead",
+			"head",
+			"tail",
+			"edges",
+			"toString",
+			"nk",
+			"nj",
+			"ni",
+			"nh",
+			"ng",
+			"nf",
+			"ne",
+			"nd",
+			"nc",
+			"nb",
+			"na",
+			"get",
+			"graph.edges",
+			"source",
+			"sources",
+			"sink",
+			"sinks",
+			"copyTo",
+			"trace",
+			".connectedTo",
+			"getProtocol",
+			"http",
+			"https",
+			"http:",
+			"ready",
+			"trace",
+			"\\n",
+			"map",
+			"TransformCount",
+			"intersect",
+			"groupQuery",
+			"oper",
+			"visible",
+			"show",
+			"hide",
+			"display",
+			"trace",
+			"count",
+			"propertySeries",
+			"switch(operation)",
+			"operation",
+			"QOperation",
+			"replace",
+			"addWhereCondition",
+			"nodes",
+			"FriendHash",
+			"Gnode"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"head",
+			"tail",
+			"head",
+			"tail",
+			"newhead",
+			"parallelExecution"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 32.0
+	},
+	"input":
+	{
+		"height": 27.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"fact",
+				"visualizations/src/rg/controller/factory/FactoryDataSource.hx"
+			],
+			[
+				"infodataso",
+				"visualizations/src/rg/controller/info/InfoDataSource.hx"
+			],
+			[
+				"graphed",
+				"visualizations/src/rg/graph/GraphEdges.hx"
+			],
+			[
+				"graphedge",
+				"visualizations/src/rg/graph/GraphEdges.hx"
+			],
+			[
+				"graphla",
+				"visualizations/src/rg/graph/GraphLayout.hx"
+			],
+			[
+				"gedge",
+				"visualizations/src/rg/graph/GEdge.hx"
+			],
+			[
+				"gnode",
+				"visualizations/src/rg/graph/GNode.hx"
+			],
+			[
+				"hea",
+				"visualizations/src/rg/graph/HeaviestNodeLayer.hx"
+			],
+			[
+				"layer",
+				"visualizations/src/rg/graph/LongestPathLayer.hx"
+			],
+			[
+				"visualizationsa",
+				"visualizations/src/rg/controller/visualization/VisualizationSankey.hx"
+			],
+			[
+				"sugi",
+				"visualizations/src/rg/graph/SugiyamaMethod.hx"
+			],
+			[
+				"sanke",
+				"visualizations/src/rg/view/svg/chart/Sankey.hx"
+			],
+			[
+				"graph",
+				"visualizations/src/rg/graph/Graph.hx"
+			],
+			[
+				"infosan",
+				"visualizations/src/rg/controller/info/InfoSankey.hx"
+			],
+			[
+				"sank",
+				"visualizations/src/rg/view/svg/chart/Sankey.hx"
+			],
+			[
+				"rg.css",
+				"visualizations/bin/css/rg.css"
+			],
+			[
+				"sankey",
+				"visualizations/src/rg/controller/visualization/VisualizationSankey.hx"
+			],
+			[
+				"san",
+				"visualizations/bin/sankey.html"
+			],
+			[
+				"diago",
+				"visualizations/src/rg/view/svg/widget/DiagonalArea.hx"
+			],
+			[
+				"elbo",
+				"visualizations/src/rg/view/svg/widget/ElbowArea.hx"
+			],
+			[
+				"hook",
+				"visualizations/src/rg/view/svg/widget/HookConnectorArea.hx"
+			],
+			[
+				"ballo",
+				"visualizations/src/rg/view/svg/widget/Balloon.hx"
+			],
+			[
+				"mvp",
+				"visualizations/src/rg/controller/MVPOptions.hx"
+			],
+			[
+				"barch",
+				"visualizations/src/rg/view/svg/chart/BarChart.hx"
+			],
+			[
+				"format",
+				"thx/src/thx/culture/FormatNumber.hx"
+			],
+			[
+				"label",
+				"visualizations/src/rg/view/svg/widget/Label.hx"
+			],
+			[
+				"bar",
+				"visualizations/src/rg/view/svg/chart/BarChart.hx"
+			],
+			[
+				"carte",
+				"visualizations/src/rg/view/svg/chart/CartesianChart.hx"
+			],
+			[
+				"barc",
+				"visualizations/src/rg/view/svg/chart/BarChart.hx"
+			],
+			[
+				"chart",
+				"visualizations/src/rg/view/svg/chart/Chart.hx"
+			],
+			[
+				"hoo",
+				"visualizations/src/rg/view/svg/widget/HookConnectorArea.hx"
+			],
+			[
+				"dia",
+				"visualizations/src/rg/view/svg/widget/DiagonalArea.hx"
+			],
+			[
+				"elbowa",
+				"visualizations/src/rg/view/svg/widget/ElbowArea.hx"
+			],
+			[
+				"graphcol",
+				"visualizations/src/rg/graph/GraphCollection.hx"
+			],
+			[
+				"datasource",
+				"visualizations/src/rg/data/source/DataSourceReportGrid.hx"
+			],
+			[
+				"testlon",
+				"visualizations/test/rg/graph/TestLongestPathLayer.hx"
+			],
+			[
+				"testnode",
+				"visualizations/test/rg/graph/TestNode.hx"
+			],
+			[
+				"tested",
+				"visualizations/test/rg/graph/TestEdge.hx"
+			],
+			[
+				"testsu",
+				"visualizations/test/rg/graph/TestSugiyamaMethod.hx"
+			],
+			[
+				"greedyswi",
+				"visualizations/src/rg/graph/GreedySwitchDecrosser.hx"
+			],
+			[
+				"testgre",
+				"visualizations/test/rg/graph/TestGreedySwitchDecrosser.hx"
+			],
+			[
+				"dataso",
+				"visualizations/src/rg/data/source/DataSourceReportGrid.hx"
+			],
+			[
+				"sim",
+				"visualizations/bin/demo/snapengage/simple.html"
+			],
+			[
+				"simp",
+				"visualizations/bin/demo/snapengage/simple.html"
+			],
+			[
+				"simple.",
+				"visualizations/bin/demo/snapengage/simple.html"
+			],
+			[
+				"testedge",
+				"visualizations/test/rg/graph/TestEdgeSplitter.hx"
+			],
+			[
+				"testgree",
+				"visualizations/test/rg/graph/TestGreedySwitchDecrosser.hx"
+			],
+			[
+				"teste",
+				"visualizations/test/rg/graph/TestEdge.hx"
+			],
+			[
+				"graphs",
+				"visualizations/src/rg/layout/Graphs.hx"
+			],
+			[
+				"gra",
+				"visualizations/src/rg/layout/Graph.hx"
+			],
+			[
+				"ged",
+				"visualizations/src/rg/layout/GEdge.hx"
+			],
+			[
+				"testedg",
+				"visualizations/test/rg/layout/TestEdge.hx"
+			],
+			[
+				"gno",
+				"visualizations/src/rg/layout/GNode.hx"
+			],
+			[
+				"projectionmode",
+				"visualizations/doc/types/thx/geo/ProjectionMode.html"
+			],
+			[
+				"c",
+				"visualizations/CHANGES.txt"
+			],
+			[
+				"map",
+				"visualizations/src/rg/view/svg/widget/Map.hx"
+			],
+			[
+				"visualizationg",
+				"visualizations/src/rg/controller/visualization/VisualizationGeo.hx"
+			],
+			[
+				"geo",
+				"visualizations/src/rg/view/svg/chart/Geo.hx"
+			],
+			[
+				"",
+				"visualizations/src/rg/layout/GraphCollection.hx"
+			],
+			[
+				"testqy",
+				"visualizations/test/rg/data/source/rgquery/TestQueryParser.hx"
+			],
+			[
+				"testfac",
+				"visualizations/test/rg/controller/factory/TestFactoryDataSource.hx"
+			],
+			[
+				"graphe",
+				"visualizations/src/rg/layout/GraphEdges.hx"
+			],
+			[
+				"mo",
+				"visualizations/test/rg/data/source/rgquery/MockRGExecutor.hx"
+			],
+			[
+				"grap",
+				"visualizations/src/rg/layout/Graph.hx"
+			],
+			[
+				"bal",
+				"visualizations/src/rg/view/svg/widget/Balloon.hx"
+			],
+			[
+				"parse",
+				"visualizations/src/rg/data/source/rgquery/QueryParser.hx"
+			],
+			[
+				"graphno",
+				"visualizations/src/rg/layout/GraphNodes.hx"
+			],
+			[
+				"testgr",
+				"visualizations/test/rg/layout/TestGraph.hx"
+			],
+			[
+				"testno",
+				"visualizations/test/rg/layout/TestNode.hx"
+			],
+			[
+				"testnde",
+				"visualizations/test/rg/layout/TestNode.hx"
+			],
+			[
+				"testgra",
+				"visualizations/test/rg/layout/TestGraph.hx"
+			],
+			[
+				"graphn",
+				"visualizations/src/rg/layout/GraphNodes.hx"
+			],
+			[
+				"graphnode",
+				"visualizations/src/rg/layout/GraphNodes.hx"
+			],
+			[
+				"gr",
+				"visualizations/src/rg/layout/Graph.hx"
+			],
+			[
+				"downloa",
+				"visualizations/src/rg/controller/interactive/Downloader.hx"
+			],
+			[
+				"labe",
+				"visualizations/src/rg/view/svg/widget/Label.hx"
+			],
+			[
+				"deb",
+				"visualizations/src/rg/track/DebugExecutor.hx"
+			],
+			[
+				"iterato",
+				"thx/src/Iterators.hx"
+			],
+			[
+				"arrays",
+				"thx/src/Arrays.hx"
+			],
+			[
+				"repor",
+				"visualizations/src/rg/track/ReportGridExecutor.hx"
+			],
+			[
+				"down",
+				"visualizations/src/rg/controller/interactive/Downloader.hx"
+			],
+			[
+				"itra",
+				"src/rg/data/source/rgquery/ITrackReportGrid.hx"
+			],
+			[
+				"track",
+				"src/rg/track/Tracker.hx"
+			],
+			[
+				"reportgri",
+				"visualizations/src/rg/data/source/DataSourceReportGrid.hx"
+			],
+			[
+				"downl",
+				"visualizations/src/rg/controller/interactive/Downloader.hx"
+			],
+			[
+				"downlo",
+				"visualizations/src/rg/view/html/widget/DownloaderMenu.hx"
+			],
+			[
+				"parser",
+				"vis/test/rg/data/source/rgquery/TestQueryParser.hx"
+			],
+			[
+				"testrg",
+				"vis/test/rg/data/source/TestRGDataSource.hx"
+			],
+			[
+				"testaxis",
+				"vis/test/rg/data/TestAxisGroupByTime.hx"
+			],
+			[
+				"axis",
+				"vis/src/rg/data/AxisOrdinal.hx"
+			],
+			[
+				"trstda",
+				"vis/test/rg/data/TestDataProcessor.hx"
+			],
+			[
+				"tra",
+				"std/flash/geom/Transform.hx"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"tr",
+				"/Users/francoponticelli/Projects/reportgrid/test/account/account.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 368.0,
+	"status_bar_visible": true
+}

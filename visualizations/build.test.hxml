@@ -1,9 +1,11 @@
 -cp src
+-cp ../lib/src
 -cp test
 -lib thx
 -lib hxevents
 -lib utest
 -js bin/js/visualizations.test.js
 -main TestAll
+-D reportgridapi
 rg.JSBridge
 rg.controller.App

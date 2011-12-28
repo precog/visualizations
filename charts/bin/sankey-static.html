@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Sankey Demo - ReportGrid.Visualizations</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="css/rg.css"/>
+	<link rel="stylesheet" type="text/css" href="css/rg-debug.css"/>
+<!--
+	<link rel="stylesheet" type="text/css" href="css/colors/rg-colors-paired-4-qualr.css"/>
+	<link rel="stylesheet" type="text/css" href="css/colors/rg-colors-brbg-4-div.css"/>
+-->
+	<script src="js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+
+	var data = [{
+		id : "clip_01",
+		count : 100,
+		parents : { "clip_10" : 1, "clip_06" : 10 }
+	}, {
+		id : "clip_02",
+		count : 30,
+		parents : { "clip_01" : 30 }
+	},{
+		id : "clip_03",
+		count : 60,
+		parents : { "clip_01" : 55}
+	},{
+		id : "clip_04",
+		count : 5,
+		parents : { "clip_01" : 5}
+	},{
+		id : "clip_05",
+		count : 25,
+		parents : { "clip_02" : 20}
+	},{
+		id : "clip_06",
+		count : 40,
+		parents : { "clip_03" : 35, "clip_04" : 5 }
+	},{
+		id : "clip_07",
+		count : 10,
+		parents : { "clip_05" : 8 }
+	},{
+		id : "clip_08",
+		count : 30,
+		parents : { "clip_05" : 5, "clip_03" : 5, "clip_10" : 4 }
+	},{
+		id : "clip_09",
+		count : 12,
+		parents : { "clip_08" : 10 }
+	},{
+		id : "clip_10",
+		count : 9,
+		parents : { "clip_08" : 1, "clip_09" : 5, "clip_07" : 3 }
+	}];
+/*
+	var data = [{
+		id : "clip_01",
+		count : 3,
+		parents : { "clip_10" : 1, "clip_06" : 1 }
+	}, {
+		id : "clip_02",
+		count : 1,
+		parents : { "clip_01" : 1 }
+	},{
+		id : "clip_03",
+		count : 2,
+		parents : { "clip_01" : 1}
+	},{
+		id : "clip_04",
+		count : 1,
+		parents : { "clip_01" : 1}
+	},{
+		id : "clip_05",
+		count : 2,
+		parents : { "clip_02" : 1}
+	},{
+		id : "clip_06",
+		count : 2,
+		parents : { "clip_03" : 1, "clip_04" : 1 }
+	},{
+		id : "clip_07",
+		count : 1,
+		parents : { "clip_05" : 1 }
+	},{
+		id : "clip_08",
+		count : 3,
+		parents : { "clip_05" : 1, "clip_03" : 1, "clip_10" : 1 }
+	},{
+		id : "clip_09",
+		count : 1,
+		parents : { "clip_08" : 1 }
+	},{
+		id : "clip_10",
+		count : 3,
+		parents : { "clip_08" : 1, "clip_09" : 1, "clip_07" : 1 }
+	}];
+
+	var data = [{
+		id : "clip_01",
+		count : 10,
+		parents : {  }
+	}, {
+		id : "clip_02",
+		count : 6,
+		parents : { "clip_01" : 6 }
+	}, {
+		id : "clip_03",
+		count : 7,
+		parents : { "clip_02" : 4, "clip_01" : 3 }
+	}];
+*/
+	ReportGrid.sankey("#chart", {
+		axes : [{ type : "count", variable : "dependent" }],
+		data : { src : { data : data } },
+		options : {
+/*
+			layerwidth : 80,
+			nodespacing : 60,
+			dummyspacing : 1,
+			extrawidth : 25,
+			backedgespacing : 15,
+			extraheight : 10,
+			extraradius : 10,
+*/
+			imagewidth : 60,
+			imageheight : 40,
+			imagespacing : 1,
+			imagepath : function(dp)
+			{
+				return "images/" + dp.id + ".png";
+			},
+
+			click : function(dp, stats)
+			{
+				console.log("NODE");
+				console.log(dp);
+				console.log(stats);
+			},
+
+			clickedge : function(dp, stats)
+			{
+				console.log("EDGE");
+				console.log(dp);
+				console.log(stats);
+			}
+		}
+	});
+}, false)
+</script>
+<style>
+.sankey
+{
+	width: 900px;
+	height: 500px;
+/*	border: 1px solid #ccc;
+	margin-bottom: 5px;
+	background-color: #ddd; */
+}
+</style>
+</head>
+<body>
+	<div class="sankey" id="chart"></div>
+	<div id="haxe:trace"></div>
+</body>
+</html>

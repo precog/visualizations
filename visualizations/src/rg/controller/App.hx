@@ -5,7 +5,7 @@
 
 package rg.controller;
 import rg.controller.factory.FactoryLayout;
-import rg.controller.factory.FactoryVariable;
+import rg.controller.factory.FactoryVariableReportGrid;
 import rg.controller.info.InfoDataContext;
 import rg.controller.info.InfoDomType;
 import rg.controller.info.InfoDownload;
@@ -22,9 +22,9 @@ import rg.track.Tracker;
 import thx.error.Error;
 import thx.error.NotImplemented;
 import thx.js.Selection;
-import rg.controller.info.InfoVisualizationOption;
+import rg.controller.info.InfoVisualizationOptionReportGrid;
 import rg.controller.factory.FactoryDataContext;
-import rg.controller.factory.FactoryDataSource;
+import rg.controller.factory.FactoryDataSourceReportGrid;
 import rg.data.DataPoint;
 import rg.view.layout.Layout;
 import rg.controller.factory.FactoryHtmlVisualization;
@@ -60,11 +60,13 @@ class App
 			node.id = id = nextid();
 		}
 		var cache = new Hash();
-		var params = new InfoVisualizationOption().feed(jsoptions);
-		var factoryDataSource = new FactoryDataSource(cache, executor);
+		var params = new InfoVisualizationOptionReportGrid().feed(jsoptions);
+
+		var factoryDataSource = new FactoryDataSourceReportGrid(cache, executor);
 		var factoryDataContext = new FactoryDataContext(factoryDataSource);
+
 		var datacontexts = params.data.map(function(d : InfoDataContext, _) return factoryDataContext.create(d));
-		var factoryVariableContexts = FactoryVariable.createFromDataContexts(datacontexts);
+		var factoryVariableContexts = FactoryVariableReportGrid.createFromDataContexts(datacontexts);
 		var independentVariables = factoryVariableContexts.createIndependents(params.variables);
 		var dependentVariables = factoryVariableContexts.createDependents(params.variables);
 		for (context in datacontexts)
