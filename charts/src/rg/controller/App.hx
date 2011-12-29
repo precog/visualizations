@@ -102,21 +102,14 @@ class App
 		var download = new InfoDownload().feed(jsoptions.options.download);
 		if(!supportsSvg())
 		{
-			trace("NO SUPPORT FOR SVG");
 			var downloader = new Downloader(visualization.container, download.service, download.background);
 			visualization.addReadyOnce(function() {
-				trace("BEFORE DOWNLOADER");
 				downloader.download("png", "#ffffff", function(url : String) {
-					trace(url);
 					visualization.container.selectAll("*").remove();
 					visualization.container.append("img")
 						.attr("src").string(url);
-					trace(url);
 					return false;
-				}, function(err : String) {
-					trace(err);
-				});
-				trace("READY TO RENDER");
+				}, null);
 			});
 		} else if (null != download.position || null != download.handler)
 		{
@@ -157,6 +150,6 @@ class App
 
 	public static function supportsSvg() : Bool
 	{
-		return false; //untyped __js__("!!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect");
+		return untyped __js__("!!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect");
 	}
 }

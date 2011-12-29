@@ -2,9 +2,9 @@
 -cp ../lib/src
 -lib thx
 -lib hxevents
--js bin/js/reportgrid-viz.js
+-js bin/js/reportgrid-charts.js
 -main rg.JSBridge
 --cache cache/haxecompiler-cache
--D js_shims
+#-D js_shims
 #--times
 #-debug

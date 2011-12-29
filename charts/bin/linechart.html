@@ -53,7 +53,7 @@
 	fill: #9CF !important;
 }
 </style>
-	<script src="js/reportgrid-viz.js"></script>
+	<script src="js/reportgrid-charts.js"></script>
 </head>
 <body>
 	<div id="chart1" class="chart"></div>
@@ -81,12 +81,10 @@ ReportGrid.lineChart("#chart1", {
 	axes : ["time:hour", "count"],
 	datapoints : data,
 	options : {
-		symbol : function(dp) { return ReportGrid.symbol("circle", 1/dp.count*1600); },
-		layout : "simple",
-		effect : "none"
+		symbol : function(dp) { return ReportGrid.symbol("circle", 1/dp.count*1600); }
 	}
 })
-/*
+
 // time axis on Y
 ReportGrid.lineChart("#chart2", {
 	axes : [{ type : "count", variable : "dependent" }, { type : "time:hour", variable : "independent" }],
@@ -560,7 +558,6 @@ ReportGrid.lineChart("#chart8", {
 		}
 	}
 });
-*/
 </script>
 </body>
 </html>

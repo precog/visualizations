@@ -48,9 +48,7 @@ class Downloader
 		var cls = getClassName(container);
 		if (null != cls)
 			ob.className = cls;
-trace(serviceUrl);
 		var http = new Http(serviceUrl);
-		trace(error);
 		if(null != error)
 			http.onError = error;
 		else
@@ -61,7 +59,6 @@ trace(serviceUrl);
 		var buf = [];
 		for (field in Reflect.fields(ob))
 			http.setParameter(field, Reflect.field(ob, field));
-		trace("BEFORE REQUEST");
 		http.request(true);
 	}
 
@@ -74,7 +71,6 @@ trace(serviceUrl);
 
 	function complete(success : String -> Bool, error : String -> Void, content : String)
 	{
-		trace("COMPLETE");
 		if(content.substr(0, ERROR_PREFIX.length) == ERROR_PREFIX)
 		{
 			if (null != error)
