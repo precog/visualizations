@@ -10,6 +10,9 @@ import thx.collection.Set;
 import rg.data.DataContext;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
+import rg.data.Variable;
+import rg.data.IAxis;
+using Arrays;
 
 class FactoryVariable
 {
@@ -21,6 +24,24 @@ class FactoryVariable
 		knownProperties = knownproperties;
 		independentFactory = new FactoryVariableIndependent();
 		dependentFactory = new FactoryVariableDependent();
+	}
+
+	public function createVariables(arr : Array<InfoVariable>) : Array<Variable<Dynamic, IAxis<Dynamic>>>
+	{
+		return arr.map(function(info : InfoVariable, _) : Variable<Dynamic, IAxis<Dynamic>> {
+			switch(info.variableType)
+			{
+				case Independent:
+					return cast independentFactory.create(info);
+				case Dependent:
+					return dependentFactory.create(info, null);
+				case Unknown:
+					if(knownProperties.exists(info.type))
+						return cast independentFactory.create(info);
+					else
+						return dependentFactory.create(info, null);
+			}
+		});
 	}
 
 	public function createIndependents(info : Array<InfoVariable>) : Array<VariableIndependent<Dynamic>>

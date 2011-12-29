@@ -20,6 +20,8 @@ import rg.view.svg.util.RGColors;
 import rg.data.Stats;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
+import rg.data.Variable;
+import rg.data.IAxis;
 using Arrays;
 
 class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
@@ -49,9 +51,9 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		paddingDataPoint = 2;
 	}
 
-	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
 	{
-		super.setVariables(variableIndependents, yVariables, data);
+		super.setVariables(variables, variableIndependents, yVariables, data);
 		if (stacked)
 		{
 			for (v in this.yVariables)

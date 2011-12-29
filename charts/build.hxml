@@ -5,5 +5,6 @@
 -js bin/js/reportgrid-viz.js
 -main rg.JSBridge
 --cache cache/haxecompiler-cache
+-D js_shims
 #--times
 #-debug

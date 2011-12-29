@@ -18,7 +18,7 @@ class Visualization
 {
 	public var independentVariables(default, null) : Array<VariableIndependent<Dynamic>>;
 	public var dependentVariables(default, null) : Array<VariableDependent<Dynamic>>;
-	public var variables(getVariables, null) : Array < Variable < Dynamic, IAxis<Dynamic> >> ;
+	public var variables(default, null) : Array < Variable < Dynamic, IAxis<Dynamic> >> ;
 	public var container(default, null) : Selection;
 	var ready : Notifier;
 	var hasRendered : Bool;
@@ -28,8 +28,9 @@ class Visualization
 		this.container = container;
 	}
 
-	public function setVariables(independentVariables : Array<VariableIndependent<Dynamic>>, dependentVariables : Array<VariableDependent<Dynamic>>)
+	public function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, independentVariables : Array<VariableIndependent<Dynamic>>, dependentVariables : Array<VariableDependent<Dynamic>>)
 	{
+		this.variables = variables;
 		this.independentVariables = independentVariables;
 		this.dependentVariables = dependentVariables;
 		hasRendered = false;
@@ -46,14 +47,14 @@ class Visualization
 	{
 		trace("DATA FEED " + Dynamics.string(data));
 	}
-
+/*
 	function getVariables() : Array<Variable<Dynamic, IAxis<Dynamic>>>
 	{
 		return
 			independentVariables.map(function(d, i) : Variable<Dynamic, IAxis<Dynamic>> return cast d)
 				.concat(dependentVariables.map(function(d, i) : Variable<Dynamic, IAxis<Dynamic>> return cast d));
 	}
-
+*/
 	public function destroy()
 	{
 

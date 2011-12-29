@@ -12,12 +12,12 @@ class DownloaderMenu
 {
 	static var DEFAULT_FORMATS = ["png", "jpg", "pdf"];
 	static var DEFAULT_TITLE = "Download";
-	var handler : String -> Null<String> -> (Void -> Void) -> (String -> Void) -> Void;
+	var handler : String -> Null<String> -> (String -> Bool) -> (String -> Void) -> Void;
 	var formats : Array<String>;
 	var title : String;
 	var backgroundColor : String;
 	var menu : Selection;
-	public function new(handler : String -> Null<String> -> (Void -> Void) -> (String -> Void) -> Void, position : DownloaderPosition, formats : Array<String>, container : Selection)
+	public function new(handler : String -> Null<String> -> (String -> Bool) -> (String -> Void) -> Void, position : DownloaderPosition, formats : Array<String>, container : Selection)
 	{
 		this.handler = handler;
 		this.formats = null == formats ? DEFAULT_FORMATS : formats;
@@ -74,9 +74,17 @@ class DownloaderMenu
 	{
 		menu.classed().add("downloading");
 //		haxe.Timer.delay(function() menu.classed().remove("downloading"), 3000);
-		handler(format, backgroundColor, function() menu.classed().remove("downloading"), function(e) {
-			menu.classed().remove("downloading");
-			js.Lib.alert("ERROR: " + e);
-		});
+		handler(
+			format,
+			backgroundColor,
+			function(_) {
+				menu.classed().remove("downloading");
+				return true;
+			},
+			function(e) {
+				menu.classed().remove("downloading");
+				js.Lib.alert("ERROR: " + e);
+			}
+		);
 	}
 }

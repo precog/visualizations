@@ -503,8 +503,9 @@ rg.controller.visualization.Visualization.prototype = {
 	,container: null
 	,ready: null
 	,hasRendered: null
-	,setVariables: function(independentVariables,dependentVariables) {
+	,setVariables: function(variables,independentVariables,dependentVariables) {
 		var me = this;
+		this.variables = variables;
 		this.independentVariables = independentVariables;
 		this.dependentVariables = dependentVariables;
 		this.hasRendered = false;
@@ -518,13 +519,6 @@ rg.controller.visualization.Visualization.prototype = {
 	}
 	,feedData: function(data) {
 		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 1, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
-	}
-	,getVariables: function() {
-		return this.independentVariables.map(function(d,i) {
-			return d;
-		}).concat(this.dependentVariables.map(function(d,i) {
-			return d;
-		}));
 	}
 	,destroy: function() {
 	}
@@ -540,7 +534,6 @@ rg.controller.visualization.Visualization.prototype = {
 		this.ready.remove(handler);
 	}
 	,__class__: rg.controller.visualization.Visualization
-	,__properties__: {get_variables:"getVariables"}
 }
 rg.controller.visualization.VisualizationSvg = $hxClasses["rg.controller.visualization.VisualizationSvg"] = function(layout) {
 	rg.controller.visualization.Visualization.call(this,layout.container);
@@ -882,13 +875,15 @@ rg.data.AxisNumeric.prototype = {
 		return (Floats.uninterpolatef(start,end))(v);
 	}
 	,ticks: function(start,end,maxTicks) {
-		var span, step = 1.0, minors, majors;
-		if(start % step == 0 && end % step == 0 && (span = end - start) < 10 && span >= step) {
+		var span = end - start, step = 1.0, minors, majors;
+		if(start % step == 0 && end % step == 0 && span < 10 && span >= step) {
 			majors = Floats.range(start,end + step,step);
 			minors = null;
 		} else {
-			minors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,10)),step);
-			majors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,5)),step);
+			var e = end + (step = rg.data.AxisNumeric._step(span,10));
+			minors = Floats.range(start,e,step);
+			e = end + (step = rg.data.AxisNumeric._step(span,5));
+			majors = Floats.range(start,e,step);
 		}
 		return rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.data.Tickmark(d,true,(d - start) / (end - start));
@@ -1047,11 +1042,11 @@ rg.controller.visualization.VisualizationCartesian.prototype = $extend(rg.contro
 	,feedData: function(data) {
 		if(0 == data.length) return;
 		if(null != this.title && null != this.info.label.title) {
-			this.title.setText(this.info.label.title(this.getVariables(),data));
+			this.title.setText(this.info.label.title(this.variables,data));
 			this.layout.suggestSize("title",this.title.idealHeight());
 		}
 		var transformed = this.transformData(data);
-		this.chart.setVariables(this.independentVariables,this.dependentVariables,transformed);
+		this.chart.setVariables(this.variables,this.independentVariables,this.dependentVariables,transformed);
 		var _g1 = 0, _g = this.ylabels.length;
 		while(_g1 < _g) {
 			var i = _g1++;
@@ -1215,14 +1210,18 @@ rg.controller.interactive.Downloader.prototype = {
 	,defaultBackgroundColor: null
 	,container: null
 	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 1, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
 		if(null != bg) ob.backgroundcolor = bg;
 		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
 		if(null != cls) ob.className = cls;
+		haxe.Log.trace(this.serviceUrl,{ fileName : "Downloader.hx", lineNumber : 51, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var http = new haxe.Http(this.serviceUrl);
-		if(null != error) http.onError = error;
+		haxe.Log.trace(error,{ fileName : "Downloader.hx", lineNumber : 53, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		http.onError = function(e) {
+			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 58, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		};
 		http.onData = (function(f,a1,a2) {
 			return function(a3) {
 				return f(a1,a2,a3);
@@ -1235,15 +1234,14 @@ rg.controller.interactive.Downloader.prototype = {
 			++_g;
 			http.setParameter(field,Reflect.field(ob,field));
 		}
+		haxe.Log.trace("BEFORE REQUEST",{ fileName : "Downloader.hx", lineNumber : 64, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		http.request(true);
 	}
 	,complete: function(success,error,content) {
+		haxe.Log.trace("COMPLETE",{ fileName : "Downloader.hx", lineNumber : 77, className : "rg.controller.interactive.Downloader", methodName : "complete"});
 		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
 			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
-		} else {
-			if(null != success) success();
-			js.Lib.window.location.href = content;
-		}
+		} else if(null == success || success(content)) js.Lib.window.location.href = content;
 	}
 	,__class__: rg.controller.interactive.Downloader
 }
@@ -3168,9 +3166,9 @@ rg.view.svg.chart.CartesianChart.__super__ = rg.view.svg.chart.Chart;
 rg.view.svg.chart.CartesianChart.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	yVariables: null
 	,xVariable: null
-	,setVariables: function(variableIndependents,variableDependents,data) {
-		this.xVariable = variableIndependents[0];
-		this.yVariables = variableDependents;
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		this.xVariable = variables[0];
+		this.yVariables = variables.slice(1);
 	}
 	,data: function(dps) {
 		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 1, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
@@ -4266,6 +4264,22 @@ thx.js.BaseSelection.isChild = function(parent,child) {
 	}
 	return false;
 }
+thx.js.BaseSelection.addEvent = function(target,typo,handler,capture) {
+	if(target.addEventListener != null) thx.js.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
+		target1.addEventListener(typo1,handler1,capture1);
+	}; else if(target.attachEvent != null) thx.js.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
+		target1.attachEvent(typo1,handler1);
+	};
+	thx.js.BaseSelection.addEvent(target,typo,handler,capture);
+}
+thx.js.BaseSelection.removeEvent = function(target,typo,type,capture) {
+	if(target.removeEventListener != null) thx.js.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
+		target1.removeEventListener(typo1,Reflect.field(target1,"__on" + type1),false);
+	}; else if(target.attachEvent != null) thx.js.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
+		target1.detachEvent(typo1,Reflect.field(target1,"__on" + type1));
+	};
+	thx.js.BaseSelection.removeEvent(target,typo,type,capture);
+}
 thx.js.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
 	var n = group.nodes.length, m = groupData.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
 	var nodeByKey = new Hash(), keys = [], key, j = groupData.length;
@@ -4489,12 +4503,12 @@ thx.js.BaseSelection.prototype = {
 				thx.js.Dom.event = o;
 			};
 			if(null != Reflect.field(n,"__on" + type)) {
-				n.removeEventListener(typo,Reflect.field(n,"__on" + type),capture);
+				thx.js.BaseSelection.removeEvent(n,typo,type,capture);
 				Reflect.deleteField(n,"__on" + type);
 			}
 			if(null != listener) {
 				n["__on" + type] = l;
-				n.addEventListener(typo,l,capture);
+				thx.js.BaseSelection.addEvent(n,typo,l,capture);
 			}
 		});
 	}
@@ -5208,8 +5222,8 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,padding: null
 	,paddingAxis: null
 	,paddingDataPoint: null
-	,setVariables: function(variableIndependents,yVariables,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables,data);
+	,setVariables: function(variables,variableIndependents,yVariables,data) {
+		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,yVariables,data);
 		if(this.stacked) {
 			var _g = 0, _g1 = this.yVariables;
 			while(_g < _g1.length) {
@@ -5386,7 +5400,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.4788"};
+	r.info.viz = { version : "1.2.0.4984"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -7990,6 +8004,20 @@ rg.controller.factory.FactoryVariable.prototype = {
 	knownProperties: null
 	,independentFactory: null
 	,dependentFactory: null
+	,createVariables: function(arr) {
+		var me = this;
+		return arr.map(function(info,_) {
+			switch( (info.variableType)[1] ) {
+			case 1:
+				return me.independentFactory.create(info);
+			case 2:
+				return me.dependentFactory.create(info,null);
+			case 0:
+				if(me.knownProperties.exists(info.type)) return me.independentFactory.create(info); else return me.dependentFactory.create(info,null);
+				break;
+			}
+		});
+	}
 	,createIndependents: function(info) {
 		var result = [], ordinal, discrete, ctx;
 		var _g = 0;
@@ -9216,10 +9244,8 @@ rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.vis
 rg.controller.visualization.VisualizationLineChart.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
 	infoLine: null
 	,initAxes: function() {
-		this.xvariable = this.independentVariables[0];
-		this.yvariables = this.dependentVariables.map(function(d,_) {
-			return d;
-		});
+		this.xvariable = this.variables[0];
+		this.yvariables = this.variables.slice(1);
 	}
 	,initChart: function() {
 		var me = this;
@@ -9316,12 +9342,11 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		return this.floatTweenNodef(this.transitionFloatTween(value),priority);
 	}
 	,floatTweenNodef: function(tween,priority) {
-		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(d,i,Std.parseFloat(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,"" + f(t),priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9337,9 +9362,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
+			var f = tween(d,i,thx.js.AccessStyle.getComputedStyleValue(d,name));
 			return function(t) {
-				d.style.setProperty(name,f(t),priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9355,9 +9380,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(d,i,thx.color.Colors.parse(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,f(t).toRgbString(),priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9380,9 +9405,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,"" + f(t),priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9397,9 +9422,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
+			var f = tween(Reflect.field(d,"__data__"),i,thx.js.AccessStyle.getComputedStyleValue(d,name));
 			return function(t) {
-				d.style.setProperty(name,f(t),priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9414,9 +9439,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,f(t).toRgbString(),priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9759,6 +9784,9 @@ Strings.interpolateChar = function(v,a,b,equation) {
 	return (Strings.interpolateCharf(a,b,equation))(v);
 }
 Strings.interpolateCharf = function(a,b,equation) {
+	if(new EReg("^\\d","").match(b) && a == " ") a = "0";
+	var r = new EReg("^[^a-zA-Z0-9]","");
+	if(r.match(b) && a == " ") a = r.matched(0);
 	var ca = a.charCodeAt(0), cb = b.charCodeAt(0), i = Ints.interpolatef(ca,cb,equation);
 	return function(v) {
 		return String.fromCharCode(i(v));
@@ -10365,6 +10393,9 @@ rg.controller.App.__name__ = ["rg","controller","App"];
 rg.controller.App.nextid = function() {
 	return ":RGVIZ-" + ++rg.controller.App.lastid;
 }
+rg.controller.App.supportsSvg = function() {
+	return false;
+}
 rg.controller.App.prototype = {
 	layouts: null
 	,visualization: function(el,jsoptions) {
@@ -10379,8 +10410,13 @@ rg.controller.App.prototype = {
 			return factoryDataContext.create(d);
 		});
 		var factoryVariableContexts = rg.controller.factory.FactoryVariable.createFromDataContexts(datacontexts);
-		var independentVariables = factoryVariableContexts.createIndependents(params.variables);
-		var dependentVariables = factoryVariableContexts.createDependents(params.variables);
+		var variables = factoryVariableContexts.createVariables(params.variables);
+		var independentVariables = Arrays.filter(variables,function(v) {
+			return Std["is"](v,rg.data.VariableIndependent);
+		});
+		var dependentVariables = Arrays.filter(variables,function(v) {
+			return Std["is"](v,rg.data.VariableDependent);
+		});
 		var _g = 0;
 		while(_g < datacontexts.length) {
 			var context = datacontexts[_g];
@@ -10401,7 +10437,7 @@ rg.controller.App.prototype = {
 			visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
 			break;
 		}
-		visualization.setVariables(independentVariables,dependentVariables);
+		visualization.setVariables(variables,independentVariables,dependentVariables);
 		visualization.init();
 		if(null != general.ready) visualization.addReady(general.ready);
 		var request = new rg.data.DataRequest(cache,datacontexts);
@@ -10410,7 +10446,23 @@ rg.controller.App.prototype = {
 		};
 		request.request();
 		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
-		if(null != download.position || null != download.handler) {
+		if(!rg.controller.App.supportsSvg()) {
+			haxe.Log.trace("NO SUPPORT FOR SVG",{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
+			visualization.addReadyOnce(function() {
+				haxe.Log.trace("BEFORE DOWNLOADER",{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+				downloader.download("png","#ffffff",function(url) {
+					haxe.Log.trace(url,{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+					visualization.container.selectAll("*").remove();
+					visualization.container.append("img").attr("src").string(url);
+					haxe.Log.trace(url,{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+					return false;
+				},function(err) {
+					haxe.Log.trace(err,{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+				});
+				haxe.Log.trace("READY TO RENDER",{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+			});
+		} else if(null != download.position || null != download.handler) {
 			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
 			if(null != download.handler) visualization.addReadyOnce(function() {
 				download.handler(downloader.download.$bind(downloader));
@@ -10443,7 +10495,7 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,colorMode: null
 	,dps: null
 	,variableDependent: null
-	,setVariables: function(variableIndependents,variableDependents,data) {
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
 		this.xVariable = variableIndependents[0];
 		this.yVariables = [variableIndependents[1]];
 		this.variableDependent = variableDependents[0];
@@ -12264,6 +12316,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 		this.redraw();
 	}
 	,update: function(axis,min,max) {
+		if(this.axis == axis && this.min == min && this.max == max) return;
 		this.axis = axis;
 		this.min = min;
 		this.max = max;
@@ -12587,13 +12640,13 @@ rg.graph.LongestPathLayer.prototype = {
 rg.util.Properties = $hxClasses["rg.util.Properties"] = function() { }
 rg.util.Properties.__name__ = ["rg","util","Properties"];
 rg.util.Properties.isTime = function(s) {
-	return s.indexOf("#time:") >= 0;
+	return s.indexOf("time:") >= 0;
 }
 rg.util.Properties.periodicity = function(s) {
-	return s.substr(s.indexOf("#time:") + "#time:".length);
+	return s.substr(s.indexOf("time:") + "time:".length);
 }
 rg.util.Properties.timeProperty = function(periodicity) {
-	return "." + "#time:" + periodicity;
+	return "." + "time:" + periodicity;
 }
 rg.util.Properties.humanize = function(s) {
 	return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(s,"."),"."));
@@ -13802,7 +13855,7 @@ rg.view.svg.widget.Label = $hxClasses["rg.view.svg.widget.Label"] = function(con
 	}
 	this.gtext = this.g.append("svg:g");
 	if(outline) this.toutline = this.gtext.append("svg:text").attr("class").string("outline" + (shadow?"":" noshadow"));
-	var cls = Arrays.addIf(Arrays.addIf([],!outline,"nooutline"),!shadow,"noshadow");
+	var cls = Arrays.addIf(Arrays.addIf(["text"],!outline,"nooutline"),!shadow,"noshadow");
 	this.ttext = this.gtext.append("svg:text").attr("class").string(cls.join(" "));
 	this.dontFlip = dontflip;
 	if(outline) this.setShadowOffset(1,1.25); else this.setShadowOffset(0.5,0.5);
@@ -13893,9 +13946,19 @@ rg.view.svg.widget.Label.prototype = {
 		return v;
 	}
 	,getBB: function() {
-		var h = this.ttext.style("font-size").getFloat();
-		if(null == h || 0 >= h) h = this.ttext.node().getExtentOfChar("A").height;
-		return { width : this.ttext.node().getComputedTextLength(), height : h};
+		var n = this.ttext.node(), h = this.ttext.style("font-size").getFloat();
+		if(null == h || 0 >= h) try {
+			h = n.getExtentOfChar("A").height;
+		} catch( e ) {
+			h = thx.js.Dom.selectNode(n).style("height").getFloat();
+		}
+		var w;
+		try {
+			w = n.getComputedTextLength();
+		} catch( e ) {
+			w = thx.js.Dom.selectNode(n).style("width").getFloat();
+		}
+		return { width : w, height : h};
 	}
 	,reanchor: function() {
 		if(null == this.anchor) return;
@@ -14827,8 +14890,9 @@ rg.view.html.widget.DownloaderMenu.prototype = {
 	,click: function(format,_) {
 		var me = this;
 		this.menu.classed().add("downloading");
-		this.handler(format,this.backgroundColor,function() {
+		this.handler(format,this.backgroundColor,function(_1) {
 			me.menu.classed().remove("downloading");
+			return true;
 		},function(e) {
 			me.menu.classed().remove("downloading");
 			js.Lib.alert("ERROR: " + e);
@@ -14882,7 +14946,7 @@ rg.controller.visualization.VisualizationGeo.prototype = $extend(rg.controller.v
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.title.setText(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -14913,28 +14977,39 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 	,chart: null
 	,dps: null
 	,segment: null
-	,setVariables: function(variableIndependents,yVariables,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables,data);
+	,setVariables: function(variables,variableIndependents,yVariables,data) {
+		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,yVariables,data);
 	}
 	,x: function(d,i) {
 		var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
 		return scaledw;
 	}
 	,getY1: function(pos) {
-		var h = this.height, v = this.yVariables[pos], y0 = this.y0property;
-		if(null != y0) return function(d,i) {
-			var v1 = Reflect.field(d,v.type), value = Std["is"](v1,Float)?v1 + rg.util.DataPoints.valueAlt(d,y0,v.min()):v1, scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
-			return h - scaledh;
-		}; else return function(d,i) {
-			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
-			return h - scaledh;
+		var me = this;
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
+		if(null != this.y0property) {
+			var min = scale(v.min()) * this.height;
+			return function(d,i) {
+				return (me.getY0(pos))(d,i) - scale(Reflect.field(d,v.type)) * me.height + min;
+			};
+		} else return function(d,i) {
+			var value = Reflect.field(d,v.type), scaled = scale(value), scaledh = scaled * me.height;
+			return me.height - scaledh;
 		};
 	}
 	,getY0: function(pos) {
-		var h = this.height, y0 = this.y0property, v = this.yVariables[pos];
+		var me = this;
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
 		return function(d,i) {
-			var value = rg.util.DataPoints.valueAlt(d,y0,v.min()), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
-			return h - scaledh;
+			return me.height - scale(rg.util.DataPoints.valueAlt(d,me.y0property,v.min())) * me.height;
 		};
 	}
 	,segments: null
@@ -14974,12 +15049,12 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 			this.segments = dps[i];
 			var gi = this.chart.select("g.group-" + i), stats = [new rg.data.Stats()];
 			stats[0].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i].type));
-			var segmentgroup = gi.selectAll("path.line").data(this.segments);
 			if(null != this.y0property) {
 				var area = new thx.svg.Area(this.x.$bind(this),this.getY0(i),this.getY1(i));
 				if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classff(i,"line area")).attr("d").stringf(area.shape.$bind(area));
+				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i,"area area-" + i)).attr("d").stringf(area.shape.$bind(area));
 			}
+			var segmentgroup = gi.selectAll("path.main").data(this.segments);
 			var $e = (this.lineEffect);
 			switch( $e[1] ) {
 			case 1:
@@ -15486,8 +15561,8 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		this.defs = this.g.append("svg:defs");
 		this.g.classed().add("stream-chart");
 	}
-	,setVariables: function(variableIndependents,variableDependents,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents,data);
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
 	}
 	,data: function(dps) {
 		this.dps = dps;
@@ -15685,7 +15760,7 @@ rg.controller.visualization.VisualizationPieChart.prototype = $extend(rg.control
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.title.setText(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -16550,7 +16625,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.title.setText(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -17146,13 +17221,46 @@ thx.js.AccessStyle = $hxClasses["thx.js.AccessStyle"] = function(name,selection)
 	this.name = name;
 }
 thx.js.AccessStyle.__name__ = ["thx","js","AccessStyle"];
+thx.js.AccessStyle._getPropertyName = function(key) {
+	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Lib.document.body.cssFloat == null?"styleFloat":"cssFloat";
+	if(key.indexOf("-") >= 0) key = Strings.ucwords(key);
+	return key;
+}
+thx.js.AccessStyle.getComputedStyleValue = function(node,key) {
+	if(Reflect.hasField(js.Lib.window,"getComputedStyle")) thx.js.AccessStyle.getComputedStyleValue = function(node1,key1) {
+		return js.Lib.window.getComputedStyle(node1,null).getPropertyValue(key1);
+	}; else thx.js.AccessStyle.getComputedStyleValue = function(node1,key1) {
+		var style = node1.currentStyle;
+		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
+		if(null == Reflect.field(style,key1)) return ""; else return Reflect.field(style,key1);
+	};
+	return thx.js.AccessStyle.getComputedStyleValue(node,key);
+}
+thx.js.AccessStyle.setStyleProperty = function(node,key,value,priority) {
+	if(Reflect.hasField(node.style,"setProperty")) thx.js.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
+		node1.style.setProperty(key1,value1,priority1 == null?"":priority1);
+	}; else thx.js.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
+		var style = node1.style;
+		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
+		if(null != priority1 && "" != priority1) style.cssText += ";" + Strings.dasherize(key1) + ":" + value1 + "!important;"; else style[key1] = value1;
+	};
+}
+thx.js.AccessStyle.removeStyleProperty = function(node,key) {
+	if(Reflect.hasField(node.style,"setProperty")) thx.js.AccessStyle.removeStyleProperty = function(node1,key1) {
+		node1.style.removeProperty(key1,value);
+	}; else thx.js.AccessStyle.removeStyleProperty = function(node1,key1) {
+		var style = node1.style;
+		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
+		Reflect.deleteField(style,key1);
+	};
+}
 thx.js.AccessStyle.__super__ = thx.js.Access;
 thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 	name: null
 	,get: function() {
-		var n = this.name;
+		var me = this;
 		return this.selection.firstNode(function(node) {
-			return js.Lib.window.getComputedStyle(node,null).getPropertyValue(n);
+			return thx.js.AccessStyle.getComputedStyleValue(node,me.name);
 		});
 	}
 	,getFloat: function() {
@@ -17160,33 +17268,31 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 		if(thx.js.AccessStyle.refloat.match(v)) return Std.parseFloat(thx.js.AccessStyle.refloat.matched(1)); else return Math.NaN;
 	}
 	,remove: function() {
-		var n = this.name;
+		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.removeProperty(n);
+			thx.js.AccessStyle.removeStyleProperty(node,me.name);
 		});
 		return this.selection;
 	}
 	,string: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(n,v,priority);
+			thx.js.AccessStyle.setStyleProperty(node,me.name,v,priority);
 		});
 		return this.selection;
 	}
 	,'float': function(v,priority) {
-		var s = "" + v, n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(n,s,priority);
+			thx.js.AccessStyle.setStyleProperty(node,me.name,v,priority);
 		});
 		return this.selection;
 	}
 	,color: function(v,priority) {
-		var s = v.toRgbString(), n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
+		var s = v.toRgbString();
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(n,s,priority);
+			thx.js.AccessStyle.setStyleProperty(node,me.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -17199,29 +17305,26 @@ thx.js.AccessDataStyle.__name__ = ["thx","js","AccessDataStyle"];
 thx.js.AccessDataStyle.__super__ = thx.js.AccessStyle;
 thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 	stringf: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,s,priority);
+			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,s,priority);
 		});
 		return this.selection;
 	}
 	,floatf: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s,priority);
+			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,"" + s,priority);
 		});
 		return this.selection;
 	}
 	,colorf: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s.toRgbString(),priority);
+			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,"" + s.toRgbString(),priority);
 		});
 		return this.selection;
 	}
@@ -18245,7 +18348,7 @@ rg.controller.visualization.VisualizationFunnelChart.prototype = $extend(rg.cont
 		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data1));
+				this.title.setText(this.info.label.title(this.variables,data1));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -20988,6 +21091,15 @@ js.Boot.__init();
 		return f(msg,[url+":"+line]);
 	}
 }
+if(!('createElementNS' in document))
+	document.createElementNS = function(_, name) { return document.createElement(name); }
+var N = window.DOMElement || window.Element;
+if (!('setAttributeNS' in N.prototype))
+	N.prototype.setAttributeNS = function(_, attr, v){ return this.setAttribute(attr, v); }
+if (!('getAttributeNS' in N.prototype))
+	N.prototype.getAttributeNS = function(_, attr){ return this.getAttribute(attr); }
+//delete N;
+;
 window.requestAnimationFrame = window.requestAnimationFrame
     || window.webkitRequestAnimationFrame
     || window.mozRequestAnimationFrame
@@ -21091,6 +21203,61 @@ rg.view.svg.util.SymbolCache.cache = new rg.view.svg.util.SymbolCache();
 		}
 		return $r;
 	}(this));
+}
+if (!('indexOf' in Array.prototype)) {
+    Array.prototype.indexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= 0;
+        if (i<0) i+= this.length;
+        if (i<0) i= 0;
+        for (var n= this.length; i<n; i++)
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('lastIndexOf' in Array.prototype)) {
+    Array.prototype.lastIndexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= this.length-1;
+        if (i<0) i+= this.length;
+        if (i>this.length-1) i= this.length-1;
+        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('forEach' in Array.prototype)) {
+    Array.prototype.forEach= function(action, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                action.call(that, this[i], i, this);
+    };
+}
+if (!('map' in Array.prototype)) {
+    Array.prototype.map= function(mapper, that /*opt*/) {
+        var other= new Array(this.length);
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                other[i]= mapper.call(that, this[i], i, this);
+        return other;
+    };
+}
+if (!('filter' in Array.prototype)) {
+    Array.prototype.filter= function(filter, that /*opt*/) {
+        var other= [], v;
+        for (var i=0, n= this.length; i<n; i++)
+            if (i in this && filter.call(that, v= this[i], i, this))
+                other.push(v);
+        return other;
+    };
+}
+if (!('every' in Array.prototype)) {
+    Array.prototype.every= function(tester, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this && !tester.call(that, this[i], i, this))
+                return false;
+        return true;
+    };
 }
 js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
 	try {
@@ -22673,7 +22840,7 @@ rg.RGConst.BASE_URL_GEOJSON = "http://localhost/rg/vis/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapi.reportgrid.com/services/renderer/v1/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
-rg.util.Properties.TIME_TOKEN = "#time:";
+rg.util.Properties.TIME_TOKEN = "time:";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
 rg.view.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";

@@ -30,7 +30,7 @@ class InfoLineChart extends InfoCartesianChart
 		interpolation = LineInterpolator.Linear;
 		displayarea = false;
 	}
-	
+
 	public static function filters()
 	{
 		return [{

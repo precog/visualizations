@@ -26,6 +26,8 @@ import rg.controller.info.InfoVisualizationOptionReportGrid;
 import rg.controller.factory.FactoryDataContext;
 import rg.controller.factory.FactoryDataSourceReportGrid;
 import rg.data.DataPoint;
+import rg.data.VariableDependent;
+import rg.data.VariableIndependent;
 import rg.view.layout.Layout;
 import rg.controller.factory.FactoryHtmlVisualization;
 import rg.controller.factory.FactorySvgVisualization;
@@ -67,8 +69,9 @@ class App
 
 		var datacontexts = params.data.map(function(d : InfoDataContext, _) return factoryDataContext.create(d));
 		var factoryVariableContexts = FactoryVariableReportGrid.createFromDataContexts(datacontexts);
-		var independentVariables = factoryVariableContexts.createIndependents(params.variables);
-		var dependentVariables = factoryVariableContexts.createDependents(params.variables);
+		var variables = factoryVariableContexts.createVariables(params.variables);
+		var independentVariables : Array<rg.data.VariableIndependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableIndependent));
+		var dependentVariables : Array<rg.data.VariableDependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableDependent));
 		for (context in datacontexts)
 		{
 			context.data.independentVariables = independentVariables;
@@ -92,7 +95,7 @@ class App
 				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
 		}
 
-		visualization.setVariables(independentVariables, dependentVariables);
+		visualization.setVariables(variables, independentVariables, dependentVariables);
 		visualization.init();
 		if (null != general.ready)
 			visualization.addReady(general.ready);

@@ -524,8 +524,9 @@ rg.controller.visualization.Visualization.prototype = {
 	,container: null
 	,ready: null
 	,hasRendered: null
-	,setVariables: function(independentVariables,dependentVariables) {
+	,setVariables: function(variables,independentVariables,dependentVariables) {
 		var me = this;
+		this.variables = variables;
 		this.independentVariables = independentVariables;
 		this.dependentVariables = dependentVariables;
 		this.hasRendered = false;
@@ -539,13 +540,6 @@ rg.controller.visualization.Visualization.prototype = {
 	}
 	,feedData: function(data) {
 		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 1, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
-	}
-	,getVariables: function() {
-		return this.independentVariables.map(function(d,i) {
-			return d;
-		}).concat(this.dependentVariables.map(function(d,i) {
-			return d;
-		}));
 	}
 	,destroy: function() {
 	}
@@ -561,7 +555,6 @@ rg.controller.visualization.Visualization.prototype = {
 		this.ready.remove(handler);
 	}
 	,__class__: rg.controller.visualization.Visualization
-	,__properties__: {get_variables:"getVariables"}
 }
 rg.controller.visualization.VisualizationSvg = $hxClasses["rg.controller.visualization.VisualizationSvg"] = function(layout) {
 	rg.controller.visualization.Visualization.call(this,layout.container);
@@ -989,13 +982,15 @@ rg.data.AxisNumeric.prototype = {
 		return (Floats.uninterpolatef(start,end))(v);
 	}
 	,ticks: function(start,end,maxTicks) {
-		var span, step = 1.0, minors, majors;
-		if(start % step == 0 && end % step == 0 && (span = end - start) < 10 && span >= step) {
+		var span = end - start, step = 1.0, minors, majors;
+		if(start % step == 0 && end % step == 0 && span < 10 && span >= step) {
 			majors = Floats.range(start,end + step,step);
 			minors = null;
 		} else {
-			minors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,10)),step);
-			majors = Floats.range(start,end + (step = rg.data.AxisNumeric._step(span,5)),step);
+			var e = end + (step = rg.data.AxisNumeric._step(span,10));
+			minors = Floats.range(start,e,step);
+			e = end + (step = rg.data.AxisNumeric._step(span,5));
+			majors = Floats.range(start,e,step);
 		}
 		return rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.data.Tickmark(d,true,(d - start) / (end - start));
@@ -1101,11 +1096,11 @@ rg.controller.visualization.VisualizationCartesian.prototype = $extend(rg.contro
 	,feedData: function(data) {
 		if(0 == data.length) return;
 		if(null != this.title && null != this.info.label.title) {
-			this.title.setText(this.info.label.title(this.getVariables(),data));
+			this.title.setText(this.info.label.title(this.variables,data));
 			this.layout.suggestSize("title",this.title.idealHeight());
 		}
 		var transformed = this.transformData(data);
-		this.chart.setVariables(this.independentVariables,this.dependentVariables,transformed);
+		this.chart.setVariables(this.variables,this.independentVariables,this.dependentVariables,transformed);
 		var _g1 = 0, _g = this.ylabels.length;
 		while(_g1 < _g) {
 			var i = _g1++;
@@ -1898,7 +1893,7 @@ rg.controller.interactive.Downloader.prototype = {
 	,defaultBackgroundColor: null
 	,container: null
 	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 1, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
 		if(null != bg) ob.backgroundcolor = bg;
@@ -1923,10 +1918,7 @@ rg.controller.interactive.Downloader.prototype = {
 	,complete: function(success,error,content) {
 		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
 			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
-		} else {
-			if(null != success) success();
-			js.Lib.window.location.href = content;
-		}
+		} else if(null == success || success(content)) js.Lib.window.location.href = content;
 	}
 	,__class__: rg.controller.interactive.Downloader
 }
@@ -3493,9 +3485,9 @@ rg.view.svg.chart.CartesianChart.__super__ = rg.view.svg.chart.Chart;
 rg.view.svg.chart.CartesianChart.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	yVariables: null
 	,xVariable: null
-	,setVariables: function(variableIndependents,variableDependents,data) {
-		this.xVariable = variableIndependents[0];
-		this.yVariables = variableDependents;
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		this.xVariable = variables[0];
+		this.yVariables = variables.slice(1);
 	}
 	,data: function(dps) {
 		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 1, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
@@ -4825,7 +4817,7 @@ thx.js.BaseSelection.prototype = {
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 1, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 594, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -5532,8 +5524,8 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,padding: null
 	,paddingAxis: null
 	,paddingDataPoint: null
-	,setVariables: function(variableIndependents,yVariables,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables,data);
+	,setVariables: function(variables,variableIndependents,yVariables,data) {
+		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,yVariables,data);
 		if(this.stacked) {
 			var _g = 0, _g1 = this.yVariables;
 			while(_g < _g1.length) {
@@ -5711,7 +5703,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.4793"};
+	r.info.viz = { version : "1.2.0.4799"};
 	r.cache = { setTime : function(t1) {
 		executor.timeout = t1;
 	}};
@@ -8298,6 +8290,20 @@ rg.controller.factory.FactoryVariable.prototype = {
 	knownProperties: null
 	,independentFactory: null
 	,dependentFactory: null
+	,createVariables: function(arr) {
+		var me = this;
+		return arr.map(function(info,_) {
+			switch( (info.variableType)[1] ) {
+			case 1:
+				return me.independentFactory.create(info);
+			case 2:
+				return me.dependentFactory.create(info,null);
+			case 0:
+				if(me.knownProperties.exists(info.type)) return me.independentFactory.create(info); else return me.dependentFactory.create(info,null);
+				break;
+			}
+		});
+	}
 	,createIndependents: function(info) {
 		var result = [], ordinal, discrete, ctx;
 		var _g = 0;
@@ -10020,10 +10026,8 @@ rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.vis
 rg.controller.visualization.VisualizationLineChart.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
 	infoLine: null
 	,initAxes: function() {
-		this.xvariable = this.independentVariables[0];
-		this.yvariables = this.dependentVariables.map(function(d,_) {
-			return d;
-		});
+		this.xvariable = this.variables[0];
+		this.yvariables = this.variables.slice(1);
 	}
 	,initChart: function() {
 		var me = this;
@@ -10563,6 +10567,9 @@ Strings.interpolateChar = function(v,a,b,equation) {
 	return (Strings.interpolateCharf(a,b,equation))(v);
 }
 Strings.interpolateCharf = function(a,b,equation) {
+	if(new EReg("^\\d","").match(b) && a == " ") a = "0";
+	var r = new EReg("^[^a-zA-Z0-9]","");
+	if(r.match(b) && a == " ") a = r.matched(0);
 	var ca = a.charCodeAt(0), cb = b.charCodeAt(0), i = Ints.interpolatef(ca,cb,equation);
 	return function(v) {
 		return String.fromCharCode(i(v));
@@ -11187,8 +11194,13 @@ rg.controller.App.prototype = {
 			return factoryDataContext.create(d);
 		});
 		var factoryVariableContexts = rg.controller.factory.FactoryVariableReportGrid.createFromDataContexts(datacontexts);
-		var independentVariables = factoryVariableContexts.createIndependents(params.variables);
-		var dependentVariables = factoryVariableContexts.createDependents(params.variables);
+		var variables = factoryVariableContexts.createVariables(params.variables);
+		var independentVariables = Arrays.filter(variables,function(v) {
+			return Std["is"](v,rg.data.VariableIndependent);
+		});
+		var dependentVariables = Arrays.filter(variables,function(v) {
+			return Std["is"](v,rg.data.VariableDependent);
+		});
 		var _g = 0;
 		while(_g < datacontexts.length) {
 			var context = datacontexts[_g];
@@ -11209,7 +11221,7 @@ rg.controller.App.prototype = {
 			visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
 			break;
 		}
-		visualization.setVariables(independentVariables,dependentVariables);
+		visualization.setVariables(variables,independentVariables,dependentVariables);
 		visualization.init();
 		if(null != general.ready) visualization.addReady(general.ready);
 		var request = new rg.data.DataRequest(cache,datacontexts);
@@ -11258,7 +11270,7 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,colorMode: null
 	,dps: null
 	,variableDependent: null
-	,setVariables: function(variableIndependents,variableDependents,data) {
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
 		this.xVariable = variableIndependents[0];
 		this.yVariables = [variableIndependents[1]];
 		this.variableDependent = variableDependents[0];
@@ -13240,6 +13252,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 		this.redraw();
 	}
 	,update: function(axis,min,max) {
+		if(this.axis == axis && this.min == min && this.max == max) return;
 		this.axis = axis;
 		this.min = min;
 		this.max = max;
@@ -13596,13 +13609,13 @@ js.CookieStorageFallback.prototype = {
 rg.util.Properties = $hxClasses["rg.util.Properties"] = function() { }
 rg.util.Properties.__name__ = ["rg","util","Properties"];
 rg.util.Properties.isTime = function(s) {
-	return s.indexOf("#time:") >= 0;
+	return s.indexOf("time:") >= 0;
 }
 rg.util.Properties.periodicity = function(s) {
-	return s.substr(s.indexOf("#time:") + "#time:".length);
+	return s.substr(s.indexOf("time:") + "time:".length);
 }
 rg.util.Properties.timeProperty = function(periodicity) {
-	return "." + "#time:" + periodicity;
+	return "." + "time:" + periodicity;
 }
 rg.util.Properties.humanize = function(s) {
 	return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(s,"."),"."));
@@ -14965,7 +14978,7 @@ rg.view.svg.widget.Label = $hxClasses["rg.view.svg.widget.Label"] = function(con
 	}
 	this.gtext = this.g.append("svg:g");
 	if(outline) this.toutline = this.gtext.append("svg:text").attr("class").string("outline" + (shadow?"":" noshadow"));
-	var cls = Arrays.addIf(Arrays.addIf([],!outline,"nooutline"),!shadow,"noshadow");
+	var cls = Arrays.addIf(Arrays.addIf(["text"],!outline,"nooutline"),!shadow,"noshadow");
 	this.ttext = this.gtext.append("svg:text").attr("class").string(cls.join(" "));
 	this.dontFlip = dontflip;
 	if(outline) this.setShadowOffset(1,1.25); else this.setShadowOffset(0.5,0.5);
@@ -16090,8 +16103,9 @@ rg.view.html.widget.DownloaderMenu.prototype = {
 	,click: function(format,_) {
 		var me = this;
 		this.menu.classed().add("downloading");
-		this.handler(format,this.backgroundColor,function() {
+		this.handler(format,this.backgroundColor,function(_1) {
 			me.menu.classed().remove("downloading");
+			return true;
 		},function(e) {
 			me.menu.classed().remove("downloading");
 			js.Lib.alert("ERROR: " + e);
@@ -16145,7 +16159,7 @@ rg.controller.visualization.VisualizationGeo.prototype = $extend(rg.controller.v
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.title.setText(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -16192,28 +16206,39 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 	,chart: null
 	,dps: null
 	,segment: null
-	,setVariables: function(variableIndependents,yVariables,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,yVariables,data);
+	,setVariables: function(variables,variableIndependents,yVariables,data) {
+		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,yVariables,data);
 	}
 	,x: function(d,i) {
 		var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
 		return scaledw;
 	}
 	,getY1: function(pos) {
-		var h = this.height, v = this.yVariables[pos], y0 = this.y0property;
-		if(null != y0) return function(d,i) {
-			var v1 = Reflect.field(d,v.type), value = Std["is"](v1,Float)?v1 + rg.util.DataPoints.valueAlt(d,y0,v.min()):v1, scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
-			return h - scaledh;
-		}; else return function(d,i) {
-			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
-			return h - scaledh;
+		var me = this;
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
+		if(null != this.y0property) {
+			var min = scale(v.min()) * this.height;
+			return function(d,i) {
+				return (me.getY0(pos))(d,i) - scale(Reflect.field(d,v.type)) * me.height + min;
+			};
+		} else return function(d,i) {
+			var value = Reflect.field(d,v.type), scaled = scale(value), scaledh = scaled * me.height;
+			return me.height - scaledh;
 		};
 	}
 	,getY0: function(pos) {
-		var h = this.height, y0 = this.y0property, v = this.yVariables[pos];
+		var me = this;
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
 		return function(d,i) {
-			var value = rg.util.DataPoints.valueAlt(d,y0,v.min()), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
-			return h - scaledh;
+			return me.height - scale(rg.util.DataPoints.valueAlt(d,me.y0property,v.min())) * me.height;
 		};
 	}
 	,segments: null
@@ -16253,12 +16278,12 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 			this.segments = dps[i];
 			var gi = this.chart.select("g.group-" + i), stats = [new rg.data.Stats()];
 			stats[0].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i].type));
-			var segmentgroup = gi.selectAll("path.line").data(this.segments);
 			if(null != this.y0property) {
 				var area = new thx.svg.Area(this.x.$bind(this),this.getY0(i),this.getY1(i));
 				if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classff(i,"line area")).attr("d").stringf(area.shape.$bind(area));
+				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i,"area area-" + i)).attr("d").stringf(area.shape.$bind(area));
 			}
+			var segmentgroup = gi.selectAll("path.main").data(this.segments);
 			var $e = (this.lineEffect);
 			switch( $e[1] ) {
 			case 1:
@@ -16765,8 +16790,8 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		this.defs = this.g.append("svg:defs");
 		this.g.classed().add("stream-chart");
 	}
-	,setVariables: function(variableIndependents,variableDependents,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variableIndependents,variableDependents,data);
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
 	}
 	,data: function(dps) {
 		this.dps = dps;
@@ -16964,7 +16989,7 @@ rg.controller.visualization.VisualizationPieChart.prototype = $extend(rg.control
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.title.setText(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -17850,7 +17875,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data));
+				this.title.setText(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -19602,7 +19627,7 @@ rg.controller.visualization.VisualizationFunnelChart.prototype = $extend(rg.cont
 		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.getVariables(),data1));
+				this.title.setText(this.info.label.title(this.variables,data1));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -24547,7 +24572,7 @@ rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;
 rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
-rg.util.Properties.TIME_TOKEN = "#time:";
+rg.util.Properties.TIME_TOKEN = "time:";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.data.source.rgquery.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
 rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];

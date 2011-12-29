@@ -123,7 +123,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 
 		var transformed = transformData(data);
 
-		chart.setVariables(independentVariables, dependentVariables, transformed);
+		chart.setVariables(variables, independentVariables, dependentVariables, transformed);
 
 		for (i in 0...ylabels.length)
 		{

@@ -65,9 +65,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	var alt = 0,
 		mathData = [
-			{ src : { data : data1 } }, 
+			{ src : { data : data1 } },
 			{ src : { data : data2 } },
-			{ src : { data : data3 } }, 
+			{ src : { data : data3 } },
 			{ src : { data : data4 } },
 			{ src : { data : data5 } }
 		];
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				variable : "independent",
 				scalemode : "fit"
 			},
-			{ type : "impression" }, 
+			{ type : "impression" },
 			{ type : "click" },
 			{ type : "conversion" },
 			{
@@ -93,14 +93,14 @@ document.addEventListener("DOMContentLoaded", function(){
 			height: 200
 		}
 	});
-	
+
 	ReportGrid.barChart("#chart2", {
 		axes : [{
 				type : ".#time:day",
 				variable : "independent",
 				scalemode : "fit"
-			}, 
-			{ type : "impression" }, 
+			},
+			{ type : "impression" },
 			{ type : "click" },
 			{ type : "conversion" },
 			{ type : "other" }
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			displayanchorlinetick : function(v) { return v == 'age' }
 		}
 	});
-	
+
 	ReportGrid.barChart("#chart4", {
 		axes : [{
 			type : "age",

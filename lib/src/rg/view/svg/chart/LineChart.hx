@@ -7,6 +7,8 @@ package rg.view.svg.chart;
 import thx.js.Dom;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
+import rg.data.Variable;
+import rg.data.IAxis;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
 import rg.view.svg.util.RGColors;
@@ -48,9 +50,9 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		chart = g.append("svg:g");
 	}
 
-	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
 	{
-		super.setVariables(variableIndependents, yVariables, data);
+		super.setVariables(variables, variableIndependents, yVariables, data);
 
 		// TODO: add v.meta.max for area charts (copy barchart)
 	}
@@ -65,41 +67,33 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 	function getY1(pos : Int)
 	{
-		var h = height,
-			v = yVariables[pos],
-			y0 = y0property;
-		if (null != y0)
+		var v = yVariables[pos],
+			scale = callback(v.axis.scale, v.min(), v.max());
+		if (null != y0property)
 		{
+			var min = scale(v.min()) * height;
 			return function(d : DataPoint, i : Int)
 			{
-				var v1 = DataPoints.value(d, v.type),
-					value   = Std.is(v1, Float) ? (v1 + DataPoints.valueAlt(d, y0, v.min())) : v1,
-					scaled  = v.axis.scale(v.min(), v.max(), value),
-					scaledh = scaled * h;
-				return h - scaledh;
+				return getY0(pos)(d, i) - (scale(DataPoints.value(d, v.type)) * height) + min;
 			}
 		} else {
 			return function(d : DataPoint, i : Int)
 			{
 				var value   = DataPoints.value(d, v.type),
-					scaled  = v.axis.scale(v.min(), v.max(), value),
-					scaledh = scaled * h;
-				return h - scaledh;
+					scaled  = scale(value),
+					scaledh = scaled * height;
+				return height - scaledh;
 			}
 		}
 	}
 
 	function getY0(pos : Int)
 	{
-		var h = height,
-			y0 = y0property,
-			v = yVariables[pos];
+		var v = yVariables[pos],
+			scale = callback(v.axis.scale, v.min(), v.max());
 		return function(d : DataPoint, i : Int)
 		{
-			var value   = DataPoints.valueAlt(d, y0, v.min()),
-				scaled  = v.axis.scale(v.min(), v.max(), value),
-				scaledh = scaled * h;
-			return h - scaledh;
+			return height - (scale(DataPoints.valueAlt(d, y0property, v.min())) * height);
 		}
 	}
 
@@ -151,20 +145,25 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			var gi = chart.select("g.group-" + i),
 				stats = new Stats();
 			stats.addMany(DataPoints.values(segments.flatten(), yVariables[i].type));
-			// TODO add id function
-			var segmentgroup = gi.selectAll("path.line").data(segments);
+
 
 			if (null != y0property)
 			{
 				var area = new Area(x, getY0(i), getY1(i));
 				if (null != lineInterpolator)
 					area.interpolator(lineInterpolator);
-				segmentgroup.enter()
-					.append("svg:path")
-					.attr("class").stringf(classff(i, "line area"))
-					.attr("d").stringf(area.shape);
+//			var reverse = segments.copy();
+//				reverse.reverse();
+				gi.selectAll("path.area")
+					.data(segments)
+					.enter()
+						.append("svg:path")
+						.attr("class").stringf(classff(i, "area area-"+i))
+						.attr("d").stringf(area.shape);
 			}
 
+			// TODO add id function
+			var segmentgroup = gi.selectAll("path.main").data(segments);
 			switch(lineEffect)
 			{
 				case LineEffect.Gradient(lightness, levels):

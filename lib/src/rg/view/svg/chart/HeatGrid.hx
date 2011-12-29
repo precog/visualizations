@@ -6,6 +6,8 @@
 package rg.view.svg.chart;
 import rg.data.Stats;
 import rg.data.VariableDependent;
+import rg.data.Variable;
+import rg.data.IAxis;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
 import thx.color.Rgb;
@@ -38,7 +40,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		colorMode = FromCss();
 	}
 
-	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
 	{
 		xVariable = cast variableIndependents[0];
 		yVariables = cast [variableIndependents[1]];

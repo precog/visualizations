@@ -9,7 +9,7 @@ import thx.error.Error;
 class Properties
 {
 	public static var EVENT_PATTERN = ~/^(\.?[^.]+)/;
-	public inline static var TIME_TOKEN = "#time:";
+	public inline static var TIME_TOKEN = "time:";
 	/*
 	public static function event(s : String)
 	{

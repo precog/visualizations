@@ -20,8 +20,8 @@ class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Da
 
 	override function initAxes()
 	{
-		xvariable = cast independentVariables[0];
-		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+		xvariable = cast variables[0];
+		yvariables = cast variables.slice(1);
 	}
 
 	override function initChart()

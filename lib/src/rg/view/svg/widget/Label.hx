@@ -51,7 +51,7 @@ class Label
 		gtext = g.append("svg:g");
 		if(outline)
 			toutline = gtext.append("svg:text").attr("class").string("outline" + (shadow ? "" : " noshadow"));
-		var cls = [].addIf(!outline, "nooutline").addIf(!shadow, "noshadow");
+		var cls = ["text"].addIf(!outline, "nooutline").addIf(!shadow, "noshadow");
 		ttext = gtext.append("svg:text").attr("class").string(cls.join(" "));
 
 		this.dontFlip = dontflip;
@@ -149,11 +149,26 @@ class Label
 
 	function getBB() : { width : Float, height : Float }
 	{
-		var h = ttext.style("font-size").getFloat();
+		var n = ttext.node(),
+			h = ttext.style("font-size").getFloat();
 		if (null == h || 0 >= h)
-			h = untyped ttext.node().getExtentOfChar("A").height;
+		{
+			try {
+				h = untyped n.getExtentOfChar("A").height;
+			} catch(e : Dynamic)
+			{
+				h = thx.js.Dom.selectNode(n).style("height").getFloat();
+			}
+		}
+		var w;
+		try {
+			w = untyped n.getComputedTextLength();
+		} catch(e : Dynamic)
+		{
+			w = thx.js.Dom.selectNode(n).style("width").getFloat();
+		}
 		return {
-			width : untyped ttext.node().getComputedTextLength(),
+			width : w,
 			height : h
 		}
 	}

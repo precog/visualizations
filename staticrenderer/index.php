@@ -49,10 +49,10 @@ try
 		$out = renderVisualization($output, $imagepath, $config->width(), $config->height(), $config->format());
 	}
 
-	echo serviceUrl() . "?file=$hash.{$config->format()}";
+	output(serviceUrl() . "?file=$hash.{$config->format()}");
 	exit;
 } catch(Exception $e) {
-	echo "ERROR:" . $e->getMessage();
+	output("ERROR:" . $e->getMessage());
 	exit;
 }
 
@@ -124,4 +124,12 @@ function dump($v)
 	echo "<pre>";
 	var_dump($v);
 	echo "</pre>";
+}
+
+function output($v)
+{
+	if(isset($_GET['callback']))
+		echo $_GET['callback'].'("'.str_replace('"', '\\"', $v).'");';
+	else
+		echo $v;
 }

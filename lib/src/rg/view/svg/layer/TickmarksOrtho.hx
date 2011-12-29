@@ -75,9 +75,11 @@ class TickmarksOrtho extends Layer
 
 	public function update(axis : IAxis<Dynamic>, min : Dynamic, max : Dynamic)
 	{
+		if(this.axis == axis && this.min == min && this.max == max)
+			return;
 		this.axis = axis;
-		this.min = min;
-		this.max = max;
+		this.min  = min;
+		this.max  = max;
 		redraw();
 	}
 

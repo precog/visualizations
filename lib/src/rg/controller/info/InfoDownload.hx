@@ -12,7 +12,7 @@ import rg.RGConst;
 
 class InfoDownload
 {
-	public var handler : (String -> String -> (Void -> Void) -> (String -> Void) -> Void) -> Void;
+	public var handler : (String -> String -> (String -> Bool) -> (String -> Void) -> Void) -> Void;
 	public var service : String;
 	public var background : Null<String>;
 	public var position : Null<DownloaderPosition>;

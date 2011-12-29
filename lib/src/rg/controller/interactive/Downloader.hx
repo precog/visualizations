@@ -30,7 +30,7 @@ class Downloader
 		this.defaultBackgroundColor = backgroundcolor;
 	}
 
-	public function download(format : String, backgroundcolor : Null<String>, success : Void -> Void, error : String -> Void)
+	public function download(format : String, backgroundcolor : Null<String>, success : String -> Bool, error : String -> Void)
 	{
 		if (!Arrays.exists(ALLOWED_FORMATS, format))
 			throw new Error("The download format '{0}' is not correct", [format]);
@@ -48,14 +48,20 @@ class Downloader
 		var cls = getClassName(container);
 		if (null != cls)
 			ob.className = cls;
-
+trace(serviceUrl);
 		var http = new Http(serviceUrl);
+		trace(error);
 		if(null != error)
 			http.onError = error;
+		else
+			http.onError = function(e) {
+				trace(e);
+			};
 		http.onData = callback(complete, success, error);
 		var buf = [];
 		for (field in Reflect.fields(ob))
 			http.setParameter(field, Reflect.field(ob, field));
+		trace("BEFORE REQUEST");
 		http.request(true);
 	}
 
@@ -66,16 +72,14 @@ class Downloader
 		return ("" == name) ? null : name;
 	}
 
-	function complete(success : Void -> Void, error : String -> Void, content : String)
+	function complete(success : String -> Bool, error : String -> Void, content : String)
 	{
+		trace("COMPLETE");
 		if(content.substr(0, ERROR_PREFIX.length) == ERROR_PREFIX)
 		{
 			if (null != error)
 				error(content.substr(ERROR_PREFIX.length));
-		} else {
-			if (null != success)
-				success();
+		} else if (null == success || success(content))
 			Lib.window.location.href = content;
-		}
 	}
 }

@@ -23,6 +23,8 @@ import rg.controller.info.InfoVisualizationOption;
 import rg.controller.factory.FactoryDataContext;
 import rg.controller.factory.FactoryDataSource;
 import rg.data.DataPoint;
+import rg.data.VariableDependent;
+import rg.data.VariableIndependent;
 import rg.view.layout.Layout;
 import rg.controller.factory.FactoryHtmlVisualization;
 import rg.controller.factory.FactorySvgVisualization;
@@ -58,8 +60,9 @@ class App
 		var factoryDataContext = new FactoryDataContext(factoryDataSource);
 		var datacontexts = params.data.map(function(d : InfoDataContext, _) return factoryDataContext.create(d));
 		var factoryVariableContexts = FactoryVariable.createFromDataContexts(datacontexts);
-		var independentVariables = factoryVariableContexts.createIndependents(params.variables);
-		var dependentVariables = factoryVariableContexts.createDependents(params.variables);
+		var variables = factoryVariableContexts.createVariables(params.variables);
+		var independentVariables : Array<rg.data.VariableIndependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableIndependent));
+		var dependentVariables : Array<rg.data.VariableDependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableDependent));
 		for (context in datacontexts)
 		{
 			context.data.independentVariables = independentVariables;
@@ -83,7 +86,7 @@ class App
 				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
 		}
 
-		visualization.setVariables(independentVariables, dependentVariables);
+		visualization.setVariables(variables, independentVariables, dependentVariables);
 		visualization.init();
 		if (null != general.ready)
 			visualization.addReady(general.ready);
@@ -97,8 +100,25 @@ class App
 
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
-
-		if (null != download.position || null != download.handler)
+		if(!supportsSvg())
+		{
+			trace("NO SUPPORT FOR SVG");
+			var downloader = new Downloader(visualization.container, download.service, download.background);
+			visualization.addReadyOnce(function() {
+				trace("BEFORE DOWNLOADER");
+				downloader.download("png", "#ffffff", function(url : String) {
+					trace(url);
+					visualization.container.selectAll("*").remove();
+					visualization.container.append("img")
+						.attr("src").string(url);
+					trace(url);
+					return false;
+				}, function(err : String) {
+					trace(err);
+				});
+				trace("READY TO RENDER");
+			});
+		} else if (null != download.position || null != download.handler)
 		{
 			var downloader = new Downloader(visualization.container, download.service, download.background);
 
@@ -133,5 +153,10 @@ class App
 			layout = new FactoryLayout().create(info, container);
 		layouts.set(id, layout);
 		return layout;
+	}
+
+	public static function supportsSvg() : Bool
+	{
+		return false; //untyped __js__("!!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect");
 	}
 }

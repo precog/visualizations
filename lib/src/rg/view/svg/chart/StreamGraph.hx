@@ -13,6 +13,8 @@ import thx.svg.LineInterpolator;
 import thx.geom.layout.Stack;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
+import rg.data.Variable;
+import rg.data.IAxis;
 import thx.svg.Area;
 import thx.js.Dom;
 import thx.js.Selection;
@@ -51,9 +53,9 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		g.classed().add("stream-chart");
 	}
 
-	override function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<DataPoint>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<DataPoint>>)
 	{
-		super.setVariables(variableIndependents, variableDependents, data);
+		super.setVariables(variables, variableIndependents, variableDependents, data);
 	}
 
 	override public function data(dps : Array<Array<DataPoint>>)
