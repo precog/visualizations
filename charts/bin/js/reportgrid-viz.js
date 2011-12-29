@@ -1216,11 +1216,10 @@ rg.controller.interactive.Downloader.prototype = {
 		if(null != bg) ob.backgroundcolor = bg;
 		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
 		if(null != cls) ob.className = cls;
-		haxe.Log.trace(this.serviceUrl,{ fileName : "Downloader.hx", lineNumber : 51, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var http = new haxe.Http(this.serviceUrl);
-		haxe.Log.trace(error,{ fileName : "Downloader.hx", lineNumber : 53, className : "rg.controller.interactive.Downloader", methodName : "download"});
-		http.onError = function(e) {
-			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 58, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		haxe.Log.trace(error,{ fileName : "Downloader.hx", lineNumber : 52, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		if(null != error) http.onError = error; else http.onError = function(e) {
+			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 57, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		};
 		http.onData = (function(f,a1,a2) {
 			return function(a3) {
@@ -1234,11 +1233,11 @@ rg.controller.interactive.Downloader.prototype = {
 			++_g;
 			http.setParameter(field,Reflect.field(ob,field));
 		}
-		haxe.Log.trace("BEFORE REQUEST",{ fileName : "Downloader.hx", lineNumber : 64, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		haxe.Log.trace("BEFORE REQUEST",{ fileName : "Downloader.hx", lineNumber : 63, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		http.request(true);
 	}
 	,complete: function(success,error,content) {
-		haxe.Log.trace("COMPLETE",{ fileName : "Downloader.hx", lineNumber : 77, className : "rg.controller.interactive.Downloader", methodName : "complete"});
+		haxe.Log.trace("COMPLETE",{ fileName : "Downloader.hx", lineNumber : 76, className : "rg.controller.interactive.Downloader", methodName : "complete"});
 		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
 			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
 		} else if(null == success || success(content)) js.Lib.window.location.href = content;
@@ -4264,21 +4263,11 @@ thx.js.BaseSelection.isChild = function(parent,child) {
 	}
 	return false;
 }
-thx.js.BaseSelection.addEvent = function(target,typo,handler,capture) {
-	if(target.addEventListener != null) thx.js.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
-		target1.addEventListener(typo1,handler1,capture1);
-	}; else if(target.attachEvent != null) thx.js.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
-		target1.attachEvent(typo1,handler1);
-	};
-	thx.js.BaseSelection.addEvent(target,typo,handler,capture);
+thx.js.BaseSelection.addEvent = function(node,typo,handler,capture) {
+	node.addEventListener(typo,handler,capture);
 }
-thx.js.BaseSelection.removeEvent = function(target,typo,type,capture) {
-	if(target.removeEventListener != null) thx.js.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
-		target1.removeEventListener(typo1,Reflect.field(target1,"__on" + type1),false);
-	}; else if(target.attachEvent != null) thx.js.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
-		target1.detachEvent(typo1,Reflect.field(target1,"__on" + type1));
-	};
-	thx.js.BaseSelection.removeEvent(target,typo,type,capture);
+thx.js.BaseSelection.removeEvent = function(node,typo,type,capture) {
+	node.removeEventListener(typo,Reflect.field(node,"__on" + type),capture);
 }
 thx.js.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
 	var n = group.nodes.length, m = groupData.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
@@ -4503,19 +4492,19 @@ thx.js.BaseSelection.prototype = {
 				thx.js.Dom.event = o;
 			};
 			if(null != Reflect.field(n,"__on" + type)) {
-				thx.js.BaseSelection.removeEvent(n,typo,type,capture);
+				n.removeEventListener(typo,Reflect.field(n,"__on" + type),capture);
 				Reflect.deleteField(n,"__on" + type);
 			}
 			if(null != listener) {
 				n["__on" + type] = l;
-				thx.js.BaseSelection.addEvent(n,typo,l,capture);
+				n.addEventListener(typo,l,capture);
 			}
 		});
 	}
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 1, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 633, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -5400,11 +5389,11 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.4984"};
+	r.info.viz = { version : "1.2.0.4990"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 1, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 118, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(ob) {
@@ -9344,9 +9333,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 	,floatTweenNodef: function(tween,priority) {
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,Std.parseFloat(thx.js.AccessStyle.getComputedStyleValue(d,name)));
+			var f = tween(d,i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
-				thx.js.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
+				d.style.setProperty(name,"" + f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9362,9 +9351,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,thx.js.AccessStyle.getComputedStyleValue(d,name));
+			var f = tween(d,i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
 			return function(t) {
-				thx.js.AccessStyle.setStyleProperty(d,name,f(t),priority);
+				d.style.setProperty(name,f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9380,9 +9369,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,thx.color.Colors.parse(thx.js.AccessStyle.getComputedStyleValue(d,name)));
+			var f = tween(d,i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
-				thx.js.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
+				d.style.setProperty(name,f(t).toRgbString(),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9405,9 +9394,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(thx.js.AccessStyle.getComputedStyleValue(d,name)));
+			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
-				thx.js.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
+				d.style.setProperty(name,"" + f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9422,9 +9411,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,thx.js.AccessStyle.getComputedStyleValue(d,name));
+			var f = tween(Reflect.field(d,"__data__"),i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
 			return function(t) {
-				thx.js.AccessStyle.setStyleProperty(d,name,f(t),priority);
+				d.style.setProperty(name,f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -9439,9 +9428,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(thx.js.AccessStyle.getComputedStyleValue(d,name)));
+			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
-				thx.js.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
+				d.style.setProperty(name,f(t).toRgbString(),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -10447,20 +10436,20 @@ rg.controller.App.prototype = {
 		request.request();
 		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
 		if(!rg.controller.App.supportsSvg()) {
-			haxe.Log.trace("NO SUPPORT FOR SVG",{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+			haxe.Log.trace("NO SUPPORT FOR SVG",{ fileName : "App.hx", lineNumber : 105, className : "rg.controller.App", methodName : "visualization"});
 			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
 			visualization.addReadyOnce(function() {
-				haxe.Log.trace("BEFORE DOWNLOADER",{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+				haxe.Log.trace("BEFORE DOWNLOADER",{ fileName : "App.hx", lineNumber : 108, className : "rg.controller.App", methodName : "visualization"});
 				downloader.download("png","#ffffff",function(url) {
-					haxe.Log.trace(url,{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+					haxe.Log.trace(url,{ fileName : "App.hx", lineNumber : 110, className : "rg.controller.App", methodName : "visualization"});
 					visualization.container.selectAll("*").remove();
 					visualization.container.append("img").attr("src").string(url);
-					haxe.Log.trace(url,{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+					haxe.Log.trace(url,{ fileName : "App.hx", lineNumber : 114, className : "rg.controller.App", methodName : "visualization"});
 					return false;
 				},function(err) {
-					haxe.Log.trace(err,{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+					haxe.Log.trace(err,{ fileName : "App.hx", lineNumber : 117, className : "rg.controller.App", methodName : "visualization"});
 				});
-				haxe.Log.trace("READY TO RENDER",{ fileName : "App.hx", lineNumber : 1, className : "rg.controller.App", methodName : "visualization"});
+				haxe.Log.trace("READY TO RENDER",{ fileName : "App.hx", lineNumber : 119, className : "rg.controller.App", methodName : "visualization"});
 			});
 		} else if(null != download.position || null != download.handler) {
 			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
@@ -17221,38 +17210,14 @@ thx.js.AccessStyle = $hxClasses["thx.js.AccessStyle"] = function(name,selection)
 	this.name = name;
 }
 thx.js.AccessStyle.__name__ = ["thx","js","AccessStyle"];
-thx.js.AccessStyle._getPropertyName = function(key) {
-	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Lib.document.body.cssFloat == null?"styleFloat":"cssFloat";
-	if(key.indexOf("-") >= 0) key = Strings.ucwords(key);
-	return key;
-}
 thx.js.AccessStyle.getComputedStyleValue = function(node,key) {
-	if(Reflect.hasField(js.Lib.window,"getComputedStyle")) thx.js.AccessStyle.getComputedStyleValue = function(node1,key1) {
-		return js.Lib.window.getComputedStyle(node1,null).getPropertyValue(key1);
-	}; else thx.js.AccessStyle.getComputedStyleValue = function(node1,key1) {
-		var style = node1.currentStyle;
-		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
-		if(null == Reflect.field(style,key1)) return ""; else return Reflect.field(style,key1);
-	};
-	return thx.js.AccessStyle.getComputedStyleValue(node,key);
+	return js.Lib.window.getComputedStyle(node,null).getPropertyValue(key);
 }
 thx.js.AccessStyle.setStyleProperty = function(node,key,value,priority) {
-	if(Reflect.hasField(node.style,"setProperty")) thx.js.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
-		node1.style.setProperty(key1,value1,priority1 == null?"":priority1);
-	}; else thx.js.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
-		var style = node1.style;
-		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
-		if(null != priority1 && "" != priority1) style.cssText += ";" + Strings.dasherize(key1) + ":" + value1 + "!important;"; else style[key1] = value1;
-	};
+	node.style.setProperty(key,value,priority);
 }
 thx.js.AccessStyle.removeStyleProperty = function(node,key) {
-	if(Reflect.hasField(node.style,"setProperty")) thx.js.AccessStyle.removeStyleProperty = function(node1,key1) {
-		node1.style.removeProperty(key1,value);
-	}; else thx.js.AccessStyle.removeStyleProperty = function(node1,key1) {
-		var style = node1.style;
-		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
-		Reflect.deleteField(style,key1);
-	};
+	node.style.removeProperty(key);
 }
 thx.js.AccessStyle.__super__ = thx.js.Access;
 thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
@@ -17260,7 +17225,7 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 	,get: function() {
 		var me = this;
 		return this.selection.firstNode(function(node) {
-			return thx.js.AccessStyle.getComputedStyleValue(node,me.name);
+			return js.Lib.window.getComputedStyle(node,null).getPropertyValue(me.name);
 		});
 	}
 	,getFloat: function() {
@@ -17270,21 +17235,21 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 	,remove: function() {
 		var me = this;
 		this.selection.eachNode(function(node,i) {
-			thx.js.AccessStyle.removeStyleProperty(node,me.name);
+			node.style.removeProperty(me.name);
 		});
 		return this.selection;
 	}
 	,string: function(v,priority) {
 		var me = this;
 		this.selection.eachNode(function(node,i) {
-			thx.js.AccessStyle.setStyleProperty(node,me.name,v,priority);
+			node.style.setProperty(me.name,v,priority);
 		});
 		return this.selection;
 	}
 	,'float': function(v,priority) {
 		var me = this;
 		this.selection.eachNode(function(node,i) {
-			thx.js.AccessStyle.setStyleProperty(node,me.name,v,priority);
+			node.style.setProperty(me.name,v,priority);
 		});
 		return this.selection;
 	}
@@ -17292,7 +17257,7 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 		var me = this;
 		var s = v.toRgbString();
 		this.selection.eachNode(function(node,i) {
-			thx.js.AccessStyle.setStyleProperty(node,me.name,s,priority);
+			node.style.setProperty(me.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -17308,7 +17273,7 @@ thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,s,priority);
+			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -17316,7 +17281,7 @@ thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,"" + s,priority);
+			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,"" + s,priority);
 		});
 		return this.selection;
 	}
@@ -17324,7 +17289,7 @@ thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,"" + s.toRgbString(),priority);
+			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,"" + s.toRgbString(),priority);
 		});
 		return this.selection;
 	}
@@ -21091,15 +21056,6 @@ js.Boot.__init();
 		return f(msg,[url+":"+line]);
 	}
 }
-if(!('createElementNS' in document))
-	document.createElementNS = function(_, name) { return document.createElement(name); }
-var N = window.DOMElement || window.Element;
-if (!('setAttributeNS' in N.prototype))
-	N.prototype.setAttributeNS = function(_, attr, v){ return this.setAttribute(attr, v); }
-if (!('getAttributeNS' in N.prototype))
-	N.prototype.getAttributeNS = function(_, attr){ return this.getAttribute(attr); }
-//delete N;
-;
 window.requestAnimationFrame = window.requestAnimationFrame
     || window.webkitRequestAnimationFrame
     || window.mozRequestAnimationFrame
@@ -21203,61 +21159,6 @@ rg.view.svg.util.SymbolCache.cache = new rg.view.svg.util.SymbolCache();
 		}
 		return $r;
 	}(this));
-}
-if (!('indexOf' in Array.prototype)) {
-    Array.prototype.indexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= 0;
-        if (i<0) i+= this.length;
-        if (i<0) i= 0;
-        for (var n= this.length; i<n; i++)
-            if (i in this && this[i]===find)
-                return i;
-        return -1;
-    };
-}
-if (!('lastIndexOf' in Array.prototype)) {
-    Array.prototype.lastIndexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= this.length-1;
-        if (i<0) i+= this.length;
-        if (i>this.length-1) i= this.length-1;
-        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
-            if (i in this && this[i]===find)
-                return i;
-        return -1;
-    };
-}
-if (!('forEach' in Array.prototype)) {
-    Array.prototype.forEach= function(action, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
-                action.call(that, this[i], i, this);
-    };
-}
-if (!('map' in Array.prototype)) {
-    Array.prototype.map= function(mapper, that /*opt*/) {
-        var other= new Array(this.length);
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
-                other[i]= mapper.call(that, this[i], i, this);
-        return other;
-    };
-}
-if (!('filter' in Array.prototype)) {
-    Array.prototype.filter= function(filter, that /*opt*/) {
-        var other= [], v;
-        for (var i=0, n= this.length; i<n; i++)
-            if (i in this && filter.call(that, v= this[i], i, this))
-                other.push(v);
-        return other;
-    };
-}
-if (!('every' in Array.prototype)) {
-    Array.prototype.every= function(tester, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && !tester.call(that, this[i], i, this))
-                return false;
-        return true;
-    };
 }
 js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
 	try {
