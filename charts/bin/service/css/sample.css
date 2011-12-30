@@ -1,0 +1,18 @@
+#chart
+{
+	width : 480px;
+	height : 320px;
+	margin: 0 auto;
+}
+
+#chart.wide
+{
+	width : 640px;
+	height : 320px;
+}
+
+#chart.square
+{
+	width : 320px;
+	height : 320px;
+}

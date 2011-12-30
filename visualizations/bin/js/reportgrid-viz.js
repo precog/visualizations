@@ -1893,14 +1893,16 @@ rg.controller.interactive.Downloader.prototype = {
 	,defaultBackgroundColor: null
 	,container: null
 	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 1, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
 		if(null != bg) ob.backgroundcolor = bg;
 		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
 		if(null != cls) ob.className = cls;
 		var http = new haxe.Http(this.serviceUrl);
-		if(null != error) http.onError = error;
+		if(null != error) http.onError = error; else http.onError = function(e) {
+			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 1, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		};
 		http.onData = (function(f,a1,a2) {
 			return function(a3) {
 				return f(a1,a2,a3);
@@ -4582,6 +4584,12 @@ thx.js.BaseSelection.isChild = function(parent,child) {
 	}
 	return false;
 }
+thx.js.BaseSelection.addEvent = function(node,typo,handler,capture) {
+	node.addEventListener(typo,handler,capture);
+}
+thx.js.BaseSelection.removeEvent = function(node,typo,type,capture) {
+	node.removeEventListener(typo,Reflect.field(node,"__on" + type),capture);
+}
 thx.js.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
 	var n = group.nodes.length, m = groupData.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
 	var nodeByKey = new Hash(), keys = [], key, j = groupData.length;
@@ -4817,7 +4825,7 @@ thx.js.BaseSelection.prototype = {
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 594, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 1, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -5703,7 +5711,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.4799"};
+	r.info.viz = { version : "1.2.0.4803"};
 	r.cache = { setTime : function(t1) {
 		executor.timeout = t1;
 	}};
@@ -10124,7 +10132,6 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		return this.floatTweenNodef(this.transitionFloatTween(value),priority);
 	}
 	,floatTweenNodef: function(tween,priority) {
-		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
 			var f = tween(d,i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
@@ -15069,9 +15076,19 @@ rg.view.svg.widget.Label.prototype = {
 		return v;
 	}
 	,getBB: function() {
-		var h = this.ttext.style("font-size").getFloat();
-		if(null == h || 0 >= h) h = this.ttext.node().getExtentOfChar("A").height;
-		return { width : this.ttext.node().getComputedTextLength(), height : h};
+		var n = this.ttext.node(), h = this.ttext.style("font-size").getFloat();
+		if(null == h || 0 >= h) try {
+			h = n.getExtentOfChar("A").height;
+		} catch( e ) {
+			h = thx.js.Dom.selectNode(n).style("height").getFloat();
+		}
+		var w;
+		try {
+			w = n.getComputedTextLength();
+		} catch( e ) {
+			w = thx.js.Dom.selectNode(n).style("width").getFloat();
+		}
+		return { width : w, height : h};
 	}
 	,reanchor: function() {
 		if(null == this.anchor) return;
@@ -18490,13 +18507,22 @@ thx.js.AccessStyle = $hxClasses["thx.js.AccessStyle"] = function(name,selection)
 	this.name = name;
 }
 thx.js.AccessStyle.__name__ = ["thx","js","AccessStyle"];
+thx.js.AccessStyle.getComputedStyleValue = function(node,key) {
+	return js.Lib.window.getComputedStyle(node,null).getPropertyValue(key);
+}
+thx.js.AccessStyle.setStyleProperty = function(node,key,value,priority) {
+	node.style.setProperty(key,value,priority);
+}
+thx.js.AccessStyle.removeStyleProperty = function(node,key) {
+	node.style.removeProperty(key);
+}
 thx.js.AccessStyle.__super__ = thx.js.Access;
 thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 	name: null
 	,get: function() {
-		var n = this.name;
+		var me = this;
 		return this.selection.firstNode(function(node) {
-			return js.Lib.window.getComputedStyle(node,null).getPropertyValue(n);
+			return js.Lib.window.getComputedStyle(node,null).getPropertyValue(me.name);
 		});
 	}
 	,getFloat: function() {
@@ -18504,33 +18530,31 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 		if(thx.js.AccessStyle.refloat.match(v)) return Std.parseFloat(thx.js.AccessStyle.refloat.matched(1)); else return Math.NaN;
 	}
 	,remove: function() {
-		var n = this.name;
+		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.removeProperty(n);
+			node.style.removeProperty(me.name);
 		});
 		return this.selection;
 	}
 	,string: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(n,v,priority);
+			node.style.setProperty(me.name,v,priority);
 		});
 		return this.selection;
 	}
 	,'float': function(v,priority) {
-		var s = "" + v, n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(n,s,priority);
+			node.style.setProperty(me.name,v,priority);
 		});
 		return this.selection;
 	}
 	,color: function(v,priority) {
-		var s = v.toRgbString(), n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
+		var s = v.toRgbString();
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(n,s,priority);
+			node.style.setProperty(me.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -18543,29 +18567,26 @@ thx.js.AccessDataStyle.__name__ = ["thx","js","AccessDataStyle"];
 thx.js.AccessDataStyle.__super__ = thx.js.AccessStyle;
 thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 	stringf: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,s,priority);
+			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,s,priority);
 		});
 		return this.selection;
 	}
 	,floatf: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s,priority);
+			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,"" + s,priority);
 		});
 		return this.selection;
 	}
 	,colorf: function(v,priority) {
-		var n = this.name;
-		if(null == priority) priority = "";
+		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(n); else node.style.setProperty(n,"" + s.toRgbString(),priority);
+			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,"" + s.toRgbString(),priority);
 		});
 		return this.selection;
 	}
