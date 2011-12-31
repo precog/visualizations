@@ -15,3 +15,6 @@ ReportGrid.streamGraph("#chart", {
 		effect : "none"
 	}
 })
+
+//** CLASS
+wide

@@ -4,16 +4,44 @@
 		"selected_items":
 		[
 			[
+				"fo",
+				"formatValue(...) : String"
+			],
+			[
+				"form",
+				"formatValue(...) : String"
+			],
+			[
+				"format",
+				"formatf(...)"
+			],
+			[
+				"is",
+				"isTime( s : String ) : Bool"
+			],
+			[
+				"Dynamic",
+				"Dynamic [class]"
+			],
+			[
+				"String",
+				"String [class]"
+			],
+			[
+				"Fu",
+				"Fun"
+			],
+			[
+				"labe",
+				"labelOrientation"
+			],
+			[
 				"util",
 				"util"
 			],
 			[
 				"onE",
 				"onError"
-			],
-			[
-				"String",
-				"String [class]"
 			],
 			[
 				"field",
@@ -26,10 +54,6 @@
 			[
 				"s",
 				"style"
-			],
-			[
-				"Dynamic",
-				"Dynamic [class]"
 			],
 			[
 				"currentStyle",
@@ -118,10 +142,6 @@
 			[
 				"Arra",
 				"Array [class]"
-			],
-			[
-				"is",
-				"is( v : Dynamic , t : Dynamic ) : Bool"
 			],
 			[
 				"I",
@@ -494,52 +514,16 @@
 			[
 				"wei",
 				"weight : Float"
-			],
-			[
-				"cre",
-				"create(...) : NodeData, Dynamic>"
-			],
-			[
-				"ede",
-				"edges : NodeData, Dynamic>"
-			],
-			[
-				"crea",
-				"create"
-			],
-			[
-				"remove",
-				"remove"
-			],
-			[
-				"tail",
-				"setVariables"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "bin/js/charts.js",
+			"file": "src/rg/controller/MVPOptions.hx",
 			"settings":
 			{
-				"buffer_size": 883,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/reportgrid/website/js/control-panel.js",
-			"settings":
-			{
-				"buffer_size": 26121,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/service/index.php",
-			"settings":
-			{
-				"buffer_size": 1671,
+				"buffer_size": 5045,
 				"line_ending": "Unix"
 			}
 		},
@@ -547,111 +531,12 @@
 			"file": "bin/service/template.php",
 			"settings":
 			{
-				"buffer_size": 619,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/service/css/sample.css",
-			"settings":
-			{
-				"buffer_size": 162,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "//** DATA\nvar data = [\n  { country : \"USA\",       count : 226710 },\n  { country : \"UK\",        count : 56990 },\n  { country : \"Canada\",    count : 19700 },\n  { country : \"Australia\", count : 15316 },\n  { country : \"Other\",     count : 18581 }];\n\n//** VIZ\nReportGrid.pieChart(\"#chart\", {\n  axes : [\"count\"],\n  datapoints : data,\n  options : {\n    label : {\n      datapointover : function(dp) { return dp.country+\": \"+ReportGrid.format(dp.count); },\n      datapoint : function(dp) { return dp.country; }\n    }\n  }\n});\n\n//** DOC\nPeople speaking english by country.",
-			"file": "bin/samples/001-Pie Chart.js",
-			"file_size": 561,
-			"file_write_time": 1325201803000000,
-			"settings":
-			{
-				"buffer_size": 561,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/index.php",
-			"settings":
-			{
-				"buffer_size": 858,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/001-Pie Chart.js",
-			"settings":
-			{
-				"buffer_size": 343,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/002-Bar Chart.js",
-			"settings":
-			{
-				"buffer_size": 168,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.2.js",
-			"settings":
-			{
-				"buffer_size": 311,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.3.js",
-			"settings":
-			{
-				"buffer_size": 287,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/data/usa-agestructure.json",
-			"settings":
-			{
-				"buffer_size": 367,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.1.js",
-			"settings":
-			{
-				"buffer_size": 332,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/004-Funnel Chart, Impressions.js",
-			"settings":
-			{
-				"buffer_size": 254,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/005-Pot Chart, Airports Paved Runaways.js",
-			"settings":
-			{
-				"buffer_size": 520,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/004-Funnel Chart, Impressions 2.js",
-			"settings":
-			{
-				"buffer_size": 273,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/samples/charts/006-Line Chart.js",
+			"file": "bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
 			"settings":
 			{
 				"buffer_size": 0,
@@ -659,29 +544,37 @@
 			}
 		},
 		{
-			"file": "bin/linechart.html",
+			"file": "bin/service/samples/charts/PC003-Donut Chart.js",
 			"settings":
 			{
-				"buffer_size": 37030,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/samples/charts/007-Pie Chart, Top 20 Emoticons on Twitter.js",
+			"file": "bin/index.html",
 			"settings":
 			{
-				"buffer_size": 352,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "13458831	:)                 \n 3990560	:d                 \n 3182129	:(                 \n 2935301	;)                 \n 2082486	:-)                \n 1461383	=)                 \n 1439234	:p                 \n 1013758	;-)                \n  979947	(:                 \n  669086	xd                 \n  656784	:/                 \n  595140	=d                 \n  527391	=]                 \n  490897	:]                 \n  398246	:-(                \n  367208	:o                 \n  350291	d:                 \n  332427	;d                 \n  321328	=(                 \n  310343	=/     ",
-			"file": "bin/samples/data/top20-emoticons-twitter.json",
-			"file_size": 0,
-			"file_write_time": 1325254729000000,
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
 			"settings":
 			{
-				"buffer_size": 567,
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "",
+			"file": "bin/service/samples/charts/LC014-Line Chart - Complex.js",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -697,6 +590,14 @@
 				"Trailing Spaces: Delete Trailing Spaces"
 			],
 			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
 				"pack",
 				"Package Control: Remove Package"
 			],
@@ -710,10 +611,6 @@
 			],
 			[
 				"insta",
-				"Package Control: Install Package"
-			],
-			[
-				"ins",
 				"Package Control: Install Package"
 			],
 			[
@@ -753,10 +650,6 @@
 				"Package Control: Install Package"
 			],
 			[
-				"instal",
-				"Package Control: Install Package"
-			],
-			[
 				"insl",
 				"Package Control: Install Package"
 			],
@@ -782,12 +675,114 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Periodicity.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC006-Line Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/index.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/template.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/css/sample.css",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/.htaccess",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/LineChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/boulder-weather-2011-1Q.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/boulder-weather-2011.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/css/rg.css",
+		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessStyle.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/StreamGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/deploy.sh",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC001-Bar Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC003-Stacked Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC004-Stacked Chart - Inverted Axis.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC016-Area Chart, Inverted Axis.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC008-Line Chart, Inverted Axis.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/charts.js",
+		"/Users/francoponticelli/Projects/reportgrid/website/charts/css/homepage.css",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/deploy.sh",
+		"/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/release.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/website/charts/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/reportgrid-charts.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-deathrate-by-race.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/015-Leaderboard.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoStreamGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/StreamEffects.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/020-Sankey - with Images.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/021-Sankey.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/026-Heat Map - Heat Colors.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/ColorScaleModes.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/ColorScaleMode.hx",
+		"/Users/francoponticelli/Projects/thx/src/thx/color/Rgb.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/028-Geo, USA Counties.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoGeo.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/olympic-medals-2011.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/029-Geo, USA Counties.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/world-countries.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoHeatGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/024-Heat Map.js",
+		"/Users/francoponticelli/Downloads/BallToGoal/BallToGoal.hxml",
+		"/Users/francoponticelli/Downloads/BallToGoal/BallToGoal.nmml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/pivottable-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/022-Pivot Table - 2D.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/022-Pivot Table - No Heat Map.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/fic-sales.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoPivotTable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-states-migration-2010.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/020-Sankey.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/sankey-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/scatterplot-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-deathrate-by-gender-and-race-full.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-deathrate-by-gender-and-race.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/019-Scatter Plot.js",
+		"/Users/francoponticelli/Projects/thx/src/thx/svg/Symbol.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/JSBridge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/streamgraph-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/cache/haxecompiler-cache",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/016-Stream Graph - Flat.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/016-Stream Graph - Horizontal Gradient.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLeaderboard.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/leaderboard.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisNumeric.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Stats.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/PivotTable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisOrdinal.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/IAxis.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Variable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/001-Pie Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/002-Bar Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure n.1.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure n.2.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure n.3.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/004-Funnel Chart, Impressions 2.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/005-Pot Chart, Airports Paved Runaways.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/007-Pie Chart, Top Emoticons on Twitter.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisTime.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/014-Line Chart - Complex.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/english-speakers.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/top10-emoticons-twitter.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/top20-emoticons-twitter.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-agestructure.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-deathrate-by-gender.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-population-and-area-1790-2000.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/013-Line Chart - Time Series.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/015 ",
+		"/Users/francoponticelli/Projects/reportgrid/website/js/control-panel.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/css/sample.css",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/001-Pie Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/004-Funnel Chart, Impressions.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/006-Line Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/linechart.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/007-Pie Chart, Top 20 Emoticons on Twitter.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/VisualizationPieChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/008-Line Chart, Inverted Axis.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/009-Line Chart - Symbols",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/LabelOrientations.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoCartesianChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/barchart.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoBarChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure #1.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/english-speakers.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoCartesianChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLabel.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenStyle.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
@@ -795,121 +790,19 @@
 		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/core/BaseMouseDispatcher.hx",
 		"/Users/francoponticelli/Projects/thx/src/Strings.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/reportgrid-viz.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/index.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/App.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/linechart.html",
 		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Dispatcher.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/JSBridge.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/funnelchart.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/heatgrid.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/leaderboard.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/piechart-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/pivottable-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/sankey-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/lib/service.php",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/scatterplot-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/streamgraph-static.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/001-piechart.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/staticrenderer/index.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/interactive/Downloader.hx",
 		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/haxe/Http.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/build.hxml",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessStyle.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Jsonp.hx",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/core/DomEventDispatcher.hx",
-		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/genjs.ml",
-		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/js/Dom.hx",
-		"/Users/francoponticelli/Desktop/boulder-weather.txt",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/LineChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/HeatGrid.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/Area.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLineChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/CartesianChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/StreamGraph.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/Visualization.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryVariable.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/VisualizationLineChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/VisualizationCartesian.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/layer/TickmarksOrtho.hx",
-		"/Users/francoponticelli/Projects/thx/src/Arrays.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoDownload.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessClassed.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessHtml.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessProperty.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessText.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTween.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenAttribute.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessAttribute.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/DownloaderMenu.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Dom.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Access.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisNumeric.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLabelAxis.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataContext.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/BarChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoPieChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoVariable.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Map.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/MVPOptions.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/linechart-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/leaderboard-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/heatgrid-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/RG.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/RG.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/RGConst.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/Const.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoDataSourceReportGrid.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataProcessor.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/funnelchart-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/usa-states.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryAxis.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoDataContext.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoVisualizationOption.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/MVPOptions.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/barchart-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Urls.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Js.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/world-countries.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/world-countries-name.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/usa-states.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/usa-states-name.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/usa-state-centroids.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/usa-counties.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/rn-world-name.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/rn-usa-states-path.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/map-world-to-name-code.json.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Urls",
-		"/Users/francoponticelli/Projects/thx/src/thx/math/Random.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/factory/FactoryVariableReportGrid.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/interactive/Downloader.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoDataSource.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/snapengage/index.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/pivottable.html",
-		"/Users/francoponticelli/Projects/reportgrid/website/sign-up.html",
-		"/Users/francoponticelli/Projects/reportgrid/website/js/default.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/Visualizations.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/RGStacks.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/Properties.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/Periodicity.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/factory/FactoryDataContext.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/Jsonp.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/Leadeboard.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/DataPoints.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/FieldFilter.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/apply/ApplySvgOption.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.test.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.viz.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/release.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.doc.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.lib.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/js/CookieStorageFallback.hx"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Jsonp.hx"
 	],
 	"find":
 	{
@@ -932,9 +825,53 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"RGStrings.humanize(DataPoints.value(dp, stats.type))",
+			"RGStrings.humanize(DataPoints.value(dp, type))",
+			"chartsif",
+			"getTranslatePointf",
+			"L",
+			"\\.[^L,]+",
+			"viz",
+			"hover",
+			"pie-chart",
+			"class=\"visualization-panel\"",
+			"copy a",
+			"POR",
+			"([a-z])\\s+\"",
+			"(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)",
+			"(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s(\\d+)\\s",
+			"\"([^(]+)\\(([A-Z]{3})\\)\\s+(?:[[]\\d+[]]\\s+)?",
+			"	 ",
+			"Model\\t([^\\t]+)\\tRegion\\t([^\\t]+)\\tMarket\\t([^\\t]+)\\t([^\\t]+)\\t(\\d+)",
+			"[\\t]:[\\t]",
+			"\\{[\\t]",
+			"[ ]",
+			"	\",",
+			"Model\\s+([A-z]+)\\s+Region\\s+([A-z]+)\\sMarket\\s([^Q]+)(Q\\d)\\s\\d+",
+			"count",
+			"Clip",
+			" 0",
+			"clip_",
+			"precip",
+			"temperature_c",
+			"tmax",
+			"tmin",
+			"snowcover",
+			"precip",
+			"tavg",
+			"tmax",
+			"tmin",
+			"\\trace : \"([^\"]+)\",\\tdeathRate : (\\d+(?:\\.\\d+)?)",
+			"(\\d{4}),(\\d+(?:\\.\\d+)?)[^\\n]+",
+			"(\\d{4}),(\\d+\\.d+)",
+			"(\\d{4})\\,(\\d+\\.d+)",
+			"  ",
+			" ",
+			"  ",
+			"stats",
 			"	",
 			"SAMPLES_DIR",
 			"\\n",
@@ -1018,58 +955,33 @@
 			"labelEdge",
 			"labelDataPointTop",
 			"labelTopPadding",
-			"labelEdge",
-			"imagePadding",
-			"minRadius",
-			"backEdgeMidSpacing",
-			"minRadius",
-			"minCurve",
-			"padFlow",
-			"padLines",
-			"extraWidth",
-			"maxFalloffWidth",
-			"minpadding",
-			"padding",
-			"trace",
-			"label",
-			".5",
-			"Decrossing",
-			"Splitting",
-			"Layering",
-			"Layering<TNodeData, TEdgeData> = {\n	public function lay(graph : Graph<TNodeData, TEdgeData>) : Array<Array<Int>>;\n}\n\ntypedef Splitting<TNodeData, TEdgeData> = {\n	public function split(layout : GraphLayout<TNodeData, TEdgeData>, ?nodef : GEdge<TNodeData, TEdgeData> -> TNodeData, ?splitf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int -> Void) : GraphLayout<TNodeData, TEdgeData>;\n}\n\ntypedef Decrossing<TNodeData, TEdgeData> = {\n	public function decross(layout : GraphLayout<TNodeData, TEdgeData>) : GraphLayout<TNodeData, TEdgeData>;\n}",
-			"Partitioning",
-			"hiextrain",
-			"onmouse",
-			"onmouseoveredge",
-			"preferredSide",
-			"rect",
-			"labelEdge",
-			"stats",
-			"fill-",
-			"/ 2",
-			"map",
-			"timeZone",
-			"trace",
-			"create",
-			"substr",
-			"extraweight",
-			"falloffweight",
-			"ynode",
-			"layerstarty",
-			"level",
-			"levelstarts",
-			"yref",
-			"parents",
-			"children",
-			"src",
-			"dst"
+			"labelEdge"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": false,
+		"regex": true,
 		"replace_history":
 		[
+			"\nL",
+			"\\1\"",
+			"\\1, summerGold : \\2, summerSilver : \\3, summerBronze : \\4, summerTotal : \\5, winters : \\6, winterGold : \\7, winterSilver : \\8, winterBronze : \\9, winterTotal : \\10, games : \\11, golds : \\12, silvers : \\13, bronzes : \\14, total : \\15 },",
+			"\"\\1\", code : \"\\2\", summers : ",
+			"	",
+			"	{ model : \"\\1\",	region : \"\\2\",	market : \"\\3\",	 quarter : \"\\4\",	value : \\5.0 },",
+			"{ model : \"\\1\",	region : \"\\2\",	market : \"\\3\",	 quarter : \"\\4\",	value : \"\\5\" },",
+			" : ",
+			"{ ",
+			"	",
+			"\",",
+			"{ model : \"\\1\", region : \"\\2\", market : \"\\3\", quarter : \"\\4\", value : \\5 },",
+			"snowCover",
+			"precipitation",
+			"tAverage",
+			"tMax",
+			"tMin",
+			"	deathRate : \\2,	race : \"\\1\"",
+			"{ year : \\1,	deathRate : \\2 },",
 			"snowcover : 0",
 			"snow : 0.0",
 			"precip : 0.00",
@@ -1100,254 +1012,15 @@
 	"groups":
 	[
 		{
-			"selected": 19,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "bin/js/charts.js",
+					"file": "src/rg/controller/MVPOptions.hx",
 					"settings":
 					{
-						"buffer_size": 883,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								556,
-								556
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/Users/francoponticelli/Projects/reportgrid/website/js/control-panel.js",
-					"settings":
-					{
-						"buffer_size": 26121,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								933,
-								939
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 87.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "bin/service/index.php",
-					"settings":
-					{
-						"buffer_size": 1671,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1014,
-								1014
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "bin/service/template.php",
-					"settings":
-					{
-						"buffer_size": 619,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								422,
-								422
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "bin/service/css/sample.css",
-					"settings":
-					{
-						"buffer_size": 162,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								156,
-								156
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "bin/samples/001-Pie Chart.js",
-					"settings":
-					{
-						"buffer_size": 561,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								515,
-								515
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "bin/index.php",
-					"settings":
-					{
-						"buffer_size": 858,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								771,
-								779
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "bin/samples/charts/001-Pie Chart.js",
-					"settings":
-					{
-						"buffer_size": 343,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								343,
-								343
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "bin/samples/charts/002-Bar Chart.js",
-					"settings":
-					{
-						"buffer_size": 168,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								168,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.2.js",
-					"settings":
-					{
-						"buffer_size": 311,
+						"buffer_size": 5045,
 						"regions":
 						{
 						},
@@ -1360,7 +1033,9 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1369,24 +1044,24 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.3.js",
+					"buffer": 1,
+					"file": "bin/service/template.php",
 					"settings":
 					{
-						"buffer_size": 287,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								259,
-								259
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1395,158 +1070,8 @@
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "bin/samples/data/usa-agestructure.json",
-					"settings":
-					{
-						"buffer_size": 367,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								53,
-								59
-							],
-							[
-								114,
-								120
-							],
-							[
-								175,
-								181
-							],
-							[
-								236,
-								242
-							],
-							[
-								297,
-								303
-							],
-							[
-								358,
-								364
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.1.js",
-					"settings":
-					{
-						"buffer_size": 332,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								313,
-								313
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "bin/samples/charts/004-Funnel Chart, Impressions.js",
-					"settings":
-					{
-						"buffer_size": 254,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								250,
-								250
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "bin/samples/charts/005-Pot Chart, Airports Paved Runaways.js",
-					"settings":
-					{
-						"buffer_size": 520,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								497,
-								497
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "bin/samples/charts/004-Funnel Chart, Impressions 2.js",
-					"settings":
-					{
-						"buffer_size": 273,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								273,
-								255
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "bin/samples/charts/006-Line Chart.js",
+					"buffer": 2,
+					"file": "bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
 					"settings":
 					{
 						"buffer_size": 0,
@@ -1571,19 +1096,46 @@
 					"type": "text"
 				},
 				{
-					"buffer": 17,
-					"file": "bin/linechart.html",
+					"buffer": 3,
+					"file": "bin/service/samples/charts/PC003-Donut Chart.js",
 					"settings":
 					{
-						"buffer_size": 37030,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1243,
-								1243
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "bin/index.html",
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1592,30 +1144,32 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 438.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 18,
-					"file": "bin/samples/charts/007-Pie Chart, Top 20 Emoticons on Twitter.js",
+					"buffer": 5,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
 					"settings":
 					{
-						"buffer_size": 352,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								200,
-								200
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1624,29 +1178,28 @@
 					"type": "text"
 				},
 				{
-					"buffer": 19,
-					"file": "bin/samples/data/top20-emoticons-twitter.json",
+					"buffer": 6,
+					"file": "bin/service/samples/charts/LC014-Line Chart - Complex.js",
 					"settings":
 					{
-						"buffer_size": 567,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								567,
-								567
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 278.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1695,6 +1248,22 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"rgb",
+				"src/thx/color/Rgb.hx"
+			],
+			[
+				"colors",
+				"lib/src/rg/view/svg/chart/ColorScaleMode.hx"
+			],
+			[
+				"stre",
+				"lib/src/rg/view/svg/chart/StreamEffects.hx"
+			],
+			[
+				"labelor",
+				"lib/src/rg/view/svg/widget/LabelOrientations.hx"
+			],
 			[
 				"downl",
 				"lib/src/rg/controller/interactive/Downloader.hx"
@@ -2114,6 +1683,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 288.0,
+	"side_bar_width": 295.0,
 	"status_bar_visible": true
 }

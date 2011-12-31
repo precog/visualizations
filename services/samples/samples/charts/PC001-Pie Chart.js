@@ -12,6 +12,3 @@ ReportGrid.pieChart("#chart", {
 		}
 	}
 });
-
-//** DOC
-People speaking english by country.

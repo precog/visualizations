@@ -52,3 +52,9 @@ ReportGrid.lineChart("#chart", {
 
 //** CLASS
 wide
+
+//** STYLE
+.rg .layer.line-chart g.group path.line.noeffect
+{
+	stroke-width: 1px;
+}

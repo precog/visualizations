@@ -128,7 +128,7 @@ class TickmarksOrtho extends Layer
 		desiredSize = Math.max(paddingMinor + lengthMinor, paddingMajor + lengthMajor);
 		var ticks = maxTicks(),
 			data = axis.ticks(min, max, ticks);
-
+trace(data);
 		// ticks
 		var tick = g.selectAll("g.tick").data(data, id);
 		var enter = tick.enter()

@@ -13,6 +13,3 @@ ReportGrid.pieChart("#chart", {
 		labelorientation : "fixed-90"
 	}
 });
-
-//** DOC
-People speaking english by country.

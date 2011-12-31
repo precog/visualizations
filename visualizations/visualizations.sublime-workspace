@@ -523,7 +523,7 @@
 			"file": "bin/pivottable.html",
 			"settings":
 			{
-				"buffer_size": 986,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -928,15 +928,15 @@
 					"file": "bin/pivottable.html",
 					"settings":
 					{
-						"buffer_size": 986,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								665,
-								675
+								0,
+								0
 							]
 						],
 						"settings":

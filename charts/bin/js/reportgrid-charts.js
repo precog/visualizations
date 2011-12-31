@@ -5388,7 +5388,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.5057"};
+	r.info.viz = { version : "1.2.0.5060"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -12343,6 +12343,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 	,redraw: function() {
 		this.desiredSize = Math.max(this.paddingMinor + this.lengthMinor,this.paddingMajor + this.lengthMajor);
 		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
+		haxe.Log.trace(data,{ fileName : "TickmarksOrtho.hx", lineNumber : 131, className : "rg.view.svg.layer.TickmarksOrtho", methodName : "redraw"});
 		var tick = this.g.selectAll("g.tick").data(data,this.id.$bind(this));
 		var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
 		if(this.displayMinor) enter.filter(function(d,i) {
@@ -13881,6 +13882,7 @@ rg.view.svg.widget.Label.prototype = {
 		try {
 			return this.g.node().getBBox();
 		} catch( e ) {
+			return null;
 			return { width : 0.0, height : 0.0};
 		}
 	}
@@ -19776,7 +19778,7 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 46, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 1, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	chain.addAction(function(params,handler1) {
 		if(null == params.data) {

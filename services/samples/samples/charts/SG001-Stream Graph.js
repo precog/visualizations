@@ -14,3 +14,6 @@ ReportGrid.streamGraph("#chart", {
 		segmenton : "race"
 	}
 })
+
+//** CLASS
+wide

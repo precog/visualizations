@@ -15,6 +15,3 @@ ReportGrid.pieChart("#chart", {
 		labelradius : 0.7
 	}
 });
-
-//** DOC
-People speaking english by country.
