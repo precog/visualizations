@@ -9,7 +9,7 @@ import thx.error.Error;
 import thx.color.Colors;
 using Arrays;
 
-class ColorScaleModes 
+class ColorScaleModes
 {
 	public static function createFromDynamic(v : Dynamic) : ColorScaleMode
 	{
@@ -22,7 +22,6 @@ class ColorScaleModes
 		{
 			case "css":
 				return ColorScaleMode.FromCss(null == s[1] ? null : Std.parseInt(s[1]));
-			
 			case "i", "interpolated":
 				return ColorScaleMode.Interpolation(s[1].split(",").map(function(d, i) {
 					return Colors.parse(d);

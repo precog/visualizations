@@ -87,25 +87,31 @@ class MVPOptions
 			{
 				switch(params.options.visualization)
 				{
-//					case "funnelchart":
-
-					case "linechart", "barchart", "streamgraph":
-						var axes : Array<Dynamic> = params.axes,
-							type = axes[axes.length - 1].type;
+//		"funnelchart"
+//		"geo"
+//		"heatgrid"
+//		"piechart"
+//		"pivottable"
+//		"sankey"
+					case "linechart", "barchart", "streamgraph", "scattergraph":
+						var type = params.axes[0].type;
 						params.options.label = {
 							datapointover : function(dp, stats) {
 								return
-									Properties.humanize(type) + ": " +
-									RGStrings.humanize(DataPoints.value(dp, type))
+									(null != params.options.segmenton
+										? Properties.formatValue(params.options.segmenton, dp) + ", "
+										: "")
+									+
+									Properties.formatValue(type, dp)
+									+ ": " +
+									Properties.formatValue(stats.type, dp)
 								;
 							}
 						};
 					case "piechart":
-						var axes : Array<Dynamic> = params.axes,
-							type = axes[axes.length - 1].type;
 						params.options.label = {
 							datapoint : function(dp, stats) {
-								var v = DataPoints.value(dp, type);
+								var v = DataPoints.value(dp, stats.type);
 								return
 									stats.tot != 0.0
 									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
@@ -115,17 +121,16 @@ class MVPOptions
 
 							datapointover : function(dp, stats) {
 								return
-									Properties.humanize(type) + ": " +
-									RGStrings.humanize(DataPoints.value(dp, type))
+									Properties.humanize(stats.type) + ": " +
+									Properties.formatValue(stats.type, dp)
 								;
 							}
 						};
 					case "leaderboard":
-						var axes : Array<Dynamic> = params.axes,
-							type = axes[axes.length - 1].type;
+						var type = params.axes[0].type;
 						params.options.label = {
 							datapointover : function(dp, stats) {
-								var v = DataPoints.value(dp, type);
+								var v = DataPoints.value(dp, stats.type);
 								return
 									stats.tot != 0.0
 									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
@@ -135,8 +140,9 @@ class MVPOptions
 
 							datapoint : function(dp, stats) {
 								return
-									Properties.humanize(type) + ": " +
-									RGStrings.humanize(DataPoints.value(dp, type))
+									Properties.formatValue(type, dp)
+									 + ": " +
+									Properties.formatValue(stats.type, dp)
 								;
 							}
 						};
@@ -148,7 +154,7 @@ class MVPOptions
 								var v = DataPoints.value(dp, type);
 								return
 									Properties.humanize(type) + ": " +
-									RGStrings.humanize(DataPoints.value(dp, type))
+									Properties.formatValue(type, dp)
 									+ "\n" + (
 										stats.tot != 0.0
 										? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
@@ -163,7 +169,7 @@ class MVPOptions
 
 							datapoint : function(dp, stats) {
 								return
-									RGStrings.humanize(DataPoints.value(dp, type))
+									Properties.formatValue(type, dp)
 									+ "\n"
 									+ Properties.humanize(type)
 								;

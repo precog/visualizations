@@ -17,7 +17,7 @@ class InfoStreamGraph extends InfoCartesianChart
 	public var interpolation : LineInterpolator;
 	public var effect : StreamEffect;
 	public var segment : InfoSegment;
-	
+
 	public function new()
 	{
 		super();
@@ -25,7 +25,7 @@ class InfoStreamGraph extends InfoCartesianChart
 		interpolation = LineInterpolator.Cardinal();
 		effect = GradientVertical(0.75);
 	}
-	
+
 	public static function filters()
 	{
 		return [{

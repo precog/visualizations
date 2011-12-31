@@ -921,7 +921,6 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
 				{
@@ -985,10 +984,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 92.0
-	},
 	"replace":
 	{
 		"height": 62.0

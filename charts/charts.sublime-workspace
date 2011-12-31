@@ -520,74 +520,141 @@
 	"buffers":
 	[
 		{
-			"file": "/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenStyle.hx",
+			"file": "bin/js/charts.js",
 			"settings":
 			{
-				"buffer_size": 5068,
+				"buffer_size": 883,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
+			"file": "/Users/francoponticelli/Projects/reportgrid/website/js/control-panel.js",
 			"settings":
 			{
-				"buffer_size": 19452,
+				"buffer_size": 26121,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/Click.hx",
+			"file": "bin/service/index.php",
 			"settings":
 			{
-				"buffer_size": 335,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/core/BaseMouseDispatcher.hx",
-			"settings":
-			{
-				"buffer_size": 661,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/thx/src/Strings.hx",
-			"settings":
-			{
-				"buffer_size": 14767,
+				"buffer_size": 1671,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/js/reportgrid-viz.js",
+			"file": "bin/service/template.php",
 			"settings":
 			{
-				"buffer_size": 784778,
+				"buffer_size": 619,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
+			"file": "bin/service/css/sample.css",
 			"settings":
 			{
-				"buffer_size": 5966,
+				"buffer_size": 162,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "getBBox\ngetComputedStyle\n\n\nsetProperty\nremoveProperty",
+			"contents": "//** DATA\nvar data = [\n  { country : \"USA\",       count : 226710 },\n  { country : \"UK\",        count : 56990 },\n  { country : \"Canada\",    count : 19700 },\n  { country : \"Australia\", count : 15316 },\n  { country : \"Other\",     count : 18581 }];\n\n//** VIZ\nReportGrid.pieChart(\"#chart\", {\n  axes : [\"count\"],\n  datapoints : data,\n  options : {\n    label : {\n      datapointover : function(dp) { return dp.country+\": \"+ReportGrid.format(dp.count); },\n      datapoint : function(dp) { return dp.country; }\n    }\n  }\n});\n\n//** DOC\nPeople speaking english by country.",
+			"file": "bin/samples/001-Pie Chart.js",
+			"file_size": 561,
+			"file_write_time": 1325201803000000,
 			"settings":
 			{
-				"buffer_size": 53,
+				"buffer_size": 561,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/rg/controller/App.hx",
+			"file": "bin/index.php",
 			"settings":
 			{
-				"buffer_size": 4947,
+				"buffer_size": 858,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/001-Pie Chart.js",
+			"settings":
+			{
+				"buffer_size": 343,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/002-Bar Chart.js",
+			"settings":
+			{
+				"buffer_size": 168,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.2.js",
+			"settings":
+			{
+				"buffer_size": 311,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.3.js",
+			"settings":
+			{
+				"buffer_size": 287,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/data/usa-agestructure.json",
+			"settings":
+			{
+				"buffer_size": 367,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.1.js",
+			"settings":
+			{
+				"buffer_size": 332,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/004-Funnel Chart, Impressions.js",
+			"settings":
+			{
+				"buffer_size": 254,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/005-Pot Chart, Airports Paved Runaways.js",
+			"settings":
+			{
+				"buffer_size": 520,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/004-Funnel Chart, Impressions 2.js",
+			"settings":
+			{
+				"buffer_size": 273,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/samples/charts/006-Line Chart.js",
+			"settings":
+			{
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
@@ -600,106 +667,21 @@
 			}
 		},
 		{
-			"file": "/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Dispatcher.hx",
+			"file": "bin/samples/charts/007-Pie Chart, Top 20 Emoticons on Twitter.js",
 			"settings":
 			{
-				"buffer_size": 1136,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "src/rg/JSBridge.hx",
-			"settings":
-			{
-				"buffer_size": 3993,
+				"buffer_size": 352,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/barchart.html",
+			"contents": "13458831	:)                 \n 3990560	:d                 \n 3182129	:(                 \n 2935301	;)                 \n 2082486	:-)                \n 1461383	=)                 \n 1439234	:p                 \n 1013758	;-)                \n  979947	(:                 \n  669086	xd                 \n  656784	:/                 \n  595140	=d                 \n  527391	=]                 \n  490897	:]                 \n  398246	:-(                \n  367208	:o                 \n  350291	d:                 \n  332427	;d                 \n  321328	=(                 \n  310343	=/     ",
+			"file": "bin/samples/data/top20-emoticons-twitter.json",
+			"file_size": 0,
+			"file_write_time": 1325254729000000,
 			"settings":
 			{
-				"buffer_size": 1679,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/funnelchart.html",
-			"settings":
-			{
-				"buffer_size": 1812,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/heatgrid.html",
-			"settings":
-			{
-				"buffer_size": 2354,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/geo.html",
-			"settings":
-			{
-				"buffer_size": 30156,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/index.html",
-			"settings":
-			{
-				"buffer_size": 941,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/leaderboard.html",
-			"settings":
-			{
-				"buffer_size": 1120,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/piechart-static.html",
-			"settings":
-			{
-				"buffer_size": 1612,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/pivottable-static.html",
-			"settings":
-			{
-				"buffer_size": 1113,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/sankey-static.html",
-			"settings":
-			{
-				"buffer_size": 3517,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/scatterplot-static.html",
-			"settings":
-			{
-				"buffer_size": 2722,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/streamgraph-static.html",
-			"settings":
-			{
-				"buffer_size": 3466,
+				"buffer_size": 567,
 				"line_ending": "Unix"
 			}
 		}
@@ -800,6 +782,38 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/004-Funnel Chart, Impressions 2.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/barchart.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoBarChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure #1.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/english-speakers.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoCartesianChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLabel.hx",
+		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenStyle.hx",
+		"/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
+		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/Click.hx",
+		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/core/BaseMouseDispatcher.hx",
+		"/Users/francoponticelli/Projects/thx/src/Strings.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/reportgrid-viz.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/index.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/App.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/linechart.html",
+		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Dispatcher.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/JSBridge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/funnelchart.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/heatgrid.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/leaderboard.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/piechart-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/pivottable-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/sankey-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/lib/service.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/scatterplot-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/streamgraph-static.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/001-piechart.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/staticrenderer/index.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/interactive/Downloader.hx",
 		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/haxe/Http.hx",
@@ -808,11 +822,8 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Jsonp.hx",
 		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/core/DomEventDispatcher.hx",
 		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/genjs.ml",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
 		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/js/Dom.hx",
 		"/Users/francoponticelli/Desktop/boulder-weather.txt",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/linechart.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/heatgrid.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/LineChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/HeatGrid.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/svg/Area.hx",
@@ -820,12 +831,10 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/CartesianChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/StreamGraph.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/Visualization.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/App.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryVariable.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/VisualizationLineChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/VisualizationCartesian.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/layer/TickmarksOrtho.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
 		"/Users/francoponticelli/Projects/thx/src/Arrays.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoDownload.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessClassed.hx",
@@ -834,7 +843,6 @@
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessText.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTween.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenAttribute.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenStyle.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessAttribute.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/DownloaderMenu.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/Dom.hx",
@@ -843,16 +851,10 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLabelAxis.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataContext.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/BarChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/JSBridge.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoPieChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoVariable.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/leaderboard.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Map.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/sankey-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/streamgraph-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/pivottable-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/piechart-static.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/MVPOptions.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/linechart-static.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/leaderboard-static.html",
@@ -863,9 +865,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/Const.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoDataSourceReportGrid.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataProcessor.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/scatterplot-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/barchart.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/funnelchart.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/funnelchart-static.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/geo/json/usa-states.json",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryAxis.hx",
@@ -910,24 +909,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/release.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.doc.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/visualizations.lib.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/js/CookieStorageFallback.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationBarChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/BarChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/JSBridge.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/rgquery/ReportGridExecutorMemoryCache.hx",
-		"/Users/francoponticelli/Projects/reportgrid/website/demo/index.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/navigate.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoDataSource.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GraphLayout.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GEdge.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/SugiyamaMethod.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/Graph.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/css/rg.css",
-		"/Users/francoponticelli/Projects/reportgrid/client-libraries/php/test/basetest.php",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/sankey.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoLabelSankey.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/Sankey.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoSankey.hx"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/js/CookieStorageFallback.hx"
 	],
 	"find":
 	{
@@ -935,7 +917,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 91.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"/Users/francoponticelli/Projects/thx/src/thx/js",
@@ -953,6 +935,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"	",
+			"SAMPLES_DIR",
+			"\\n",
 			"trace",
 			"echo",
 			"onNode",
@@ -1077,10 +1062,7 @@
 			"parents",
 			"children",
 			"src",
-			"dst",
-			"Dynamic",
-			"max",
-			"splitte"
+			"dst"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1118,30 +1100,28 @@
 	"groups":
 	[
 		{
-			"selected": 20,
+			"selected": 19,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenStyle.hx",
+					"file": "bin/js/charts.js",
 					"settings":
 					{
-						"buffer_size": 5068,
+						"buffer_size": 883,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1065,
-								1065
+								556,
+								556
 							]
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1151,52 +1131,51 @@
 				},
 				{
 					"buffer": 1,
-					"file": "/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
+					"file": "/Users/francoponticelli/Projects/reportgrid/website/js/control-panel.js",
 					"settings":
 					{
-						"buffer_size": 19452,
+						"buffer_size": 26121,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								13775,
-								13775
+								933,
+								939
 							]
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 7826.0,
+						"translation.y": 87.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/Click.hx",
+					"file": "bin/service/index.php",
 					"settings":
 					{
-						"buffer_size": 335,
+						"buffer_size": 1671,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1014,
+								1014
 							]
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage"
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1206,25 +1185,23 @@
 				},
 				{
 					"buffer": 3,
-					"file": "/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/core/BaseMouseDispatcher.hx",
+					"file": "bin/service/template.php",
 					"settings":
 					{
-						"buffer_size": 661,
+						"buffer_size": 619,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								422,
+								422
 							]
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/HTML/HTML.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1234,38 +1211,143 @@
 				},
 				{
 					"buffer": 4,
-					"file": "/Users/francoponticelli/Projects/thx/src/Strings.hx",
+					"file": "bin/service/css/sample.css",
 					"settings":
 					{
-						"buffer_size": 14767,
+						"buffer_size": 162,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8333,
-								8340
+								156,
+								156
 							]
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/CSS/CSS.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 7030.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "bin/js/reportgrid-viz.js",
+					"file": "bin/samples/001-Pie Chart.js",
 					"settings":
 					{
-						"buffer_size": 784778,
+						"buffer_size": 561,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								515,
+								515
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "bin/index.php",
+					"settings":
+					{
+						"buffer_size": 858,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								771,
+								779
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "bin/samples/charts/001-Pie Chart.js",
+					"settings":
+					{
+						"buffer_size": 343,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								343,
+								343
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "bin/samples/charts/002-Bar Chart.js",
+					"settings":
+					{
+						"buffer_size": 168,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								168,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.2.js",
+					"settings":
+					{
+						"buffer_size": 311,
 						"regions":
 						{
 						},
@@ -1278,8 +1360,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1288,38 +1369,37 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
+					"buffer": 10,
+					"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.3.js",
 					"settings":
 					{
-						"buffer_size": 5966,
+						"buffer_size": 287,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3709,
-								3709
+								259,
+								259
 							]
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1832.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 11,
+					"file": "bin/samples/data/usa-agestructure.json",
 					"settings":
 					{
-						"buffer_size": 53,
+						"buffer_size": 367,
 						"regions":
 						{
 						},
@@ -1327,12 +1407,32 @@
 						[
 							[
 								53,
-								53
+								59
+							],
+							[
+								114,
+								120
+							],
+							[
+								175,
+								181
+							],
+							[
+								236,
+								242
+							],
+							[
+								297,
+								303
+							],
+							[
+								358,
+								364
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1341,35 +1441,137 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "src/rg/controller/App.hx",
+					"buffer": 12,
+					"file": "bin/samples/charts/003-Bar Chart, USA Age Structure n.1.js",
 					"settings":
 					{
-						"buffer_size": 4947,
+						"buffer_size": 332,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4816,
-								4816
+								313,
+								313
 							]
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 288.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 13,
+					"file": "bin/samples/charts/004-Funnel Chart, Impressions.js",
+					"settings":
+					{
+						"buffer_size": 254,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								250,
+								250
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "bin/samples/charts/005-Pot Chart, Airports Paved Runaways.js",
+					"settings":
+					{
+						"buffer_size": 520,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								497,
+								497
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "bin/samples/charts/004-Funnel Chart, Impressions 2.js",
+					"settings":
+					{
+						"buffer_size": 273,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								273,
+								255
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "bin/samples/charts/006-Line Chart.js",
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 17,
 					"file": "bin/linechart.html",
 					"settings":
 					{
@@ -1380,8 +1582,8 @@
 						"selection":
 						[
 							[
-								1003,
-								1003
+								1243,
+								1243
 							]
 						],
 						"settings":
@@ -1390,249 +1592,30 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 160.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Dispatcher.hx",
-					"settings":
-					{
-						"buffer_size": 1136,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 43.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "src/rg/JSBridge.hx",
-					"settings":
-					{
-						"buffer_size": 3993,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								954,
-								954
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 972.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "bin/barchart.html",
-					"settings":
-					{
-						"buffer_size": 1679,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								242,
-								236
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "bin/funnelchart.html",
-					"settings":
-					{
-						"buffer_size": 1812,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								459,
-								459
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "bin/heatgrid.html",
-					"settings":
-					{
-						"buffer_size": 2354,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								544,
-								544
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "bin/geo.html",
-					"settings":
-					{
-						"buffer_size": 30156,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								510,
-								510
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "bin/index.html",
-					"settings":
-					{
-						"buffer_size": 941,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								908,
-								908
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "bin/leaderboard.html",
-					"settings":
-					{
-						"buffer_size": 1120,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								459,
-								459
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 438.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 18,
-					"file": "bin/piechart-static.html",
+					"file": "bin/samples/charts/007-Pie Chart, Top 20 Emoticons on Twitter.js",
 					"settings":
 					{
-						"buffer_size": 1612,
+						"buffer_size": 352,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								551,
-								551
+								200,
+								200
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1642,105 +1625,25 @@
 				},
 				{
 					"buffer": 19,
-					"file": "bin/pivottable-static.html",
+					"file": "bin/samples/data/top20-emoticons-twitter.json",
 					"settings":
 					{
-						"buffer_size": 1113,
+						"buffer_size": 567,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								551,
-								551
+								567,
+								567
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 20,
-					"file": "bin/sankey-static.html",
-					"settings":
-					{
-						"buffer_size": 3517,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								827,
-								827
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 21,
-					"file": "bin/scatterplot-static.html",
-					"settings":
-					{
-						"buffer_size": 2722,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								424,
-								424
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 22,
-					"file": "bin/streamgraph-static.html",
-					"settings":
-					{
-						"buffer_size": 3466,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								424,
-								424
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1782,10 +1685,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 218.0
-	},
 	"replace":
 	{
 		"height": 62.0

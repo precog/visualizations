@@ -2,10 +2,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>'+$info['title']+'</title>
-<link rel="stylesheet" type="text/css" href="../css/rg.css"/>
-<link rel="stylesheet" type="text/css" href="css/sample.css"/>
-<script src="../js/reportgrid-charts.js"></script>
+<title><?php echo $info['title'] ?></title>
+<link rel="stylesheet" type="text/css" href="<?php echo $CSS_API; ?>"/>
+<link rel="stylesheet" type="text/css" href="samples/css/sample.css"/>
+<script src="<?php echo $VIZ_API; ?>"></script>
 <?php
 if($info['style'])
 {
@@ -18,7 +18,7 @@ if($info['style'])
 <body>
 <div id="chart"<?php echo ($info['class']?' class="'.$info['class'].'"':'')?>></div>
 <script>
-<?php 
+<?php
 	echo $info['data'];
 	echo "\n\n";
 	echo $info['viz'];

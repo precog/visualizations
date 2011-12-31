@@ -102,5 +102,5 @@ class AxisTime implements IAxisDiscrete<Float>
 		return stats.max;
 	}
 
-	public function createStats() : Stats<Float> return new StatsNumeric()
+	public function createStats(type : String) : Stats<Float> return new StatsNumeric(type)
 }

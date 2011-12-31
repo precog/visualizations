@@ -304,7 +304,7 @@ class PivotTable
 			row_headers = [],
 			columns = [],
 			rows = [],
-			tcalc = new StatsNumeric();
+			tcalc = new StatsNumeric(null);
 
 		var variable;
 		// columns : build first level
@@ -343,7 +343,7 @@ class PivotTable
 		for (i in 0...columns.length)
 		{
 			var column = columns[i],
-				ccalc = new StatsNumeric(); // { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
+				ccalc = new StatsNumeric(null); // { min : Math.POSITIVE_INFINITY, max : Math.NEGATIVE_INFINITY, tot : 0.0 };
 			column.stats = ccalc;
 			for (dp in dps.filter(function(dp) {
 				for (j in 0...headers.length)
@@ -399,7 +399,7 @@ class PivotTable
 			headers = row_headers;
 		for (row in rows)
 		{
-			row.stats = new StatsNumeric();
+			row.stats = new StatsNumeric(null);
 			row.cells = [];
 
 			var rdps = dps.filter(function(d) {

@@ -8,7 +8,7 @@ import rg.data.DataPoint;
 import thx.math.Equations;
 using rg.controller.info.Info;
 
-class InfoLeaderboard 
+class InfoLeaderboard
 {
 	public var animation : InfoAnimation;
 	public var label : InfoLabel;
@@ -16,15 +16,15 @@ class InfoLeaderboard
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var displayGradient : Bool;
 	public var gradientOnMax : Bool;
-	
-	public function new() 
+
+	public function new()
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabel();
 		displayGradient = true;
 		gradientOnMax = false;
 	}
-	
+
 	public static function filters()
 	{
 		return [{
@@ -59,7 +59,7 @@ class InfoLeaderboard
 		}, {
 			field : "effect",
 			validator : function(v) return Std.is(v, String),
-			filter : function(v) 
+			filter : function(v)
 			{
 				switch(v.toLowerCase())
 				{

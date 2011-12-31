@@ -14,13 +14,13 @@ class InfoGeo
 {
 	public var map : Array<InfoMap>;
 	public var label : InfoLabel;
-	
-	public function new() 
+
+	public function new()
 	{
 		label = new InfoLabel();
 		map = [new InfoMap().feed({ template : "world" })];
 	}
-	
+
 	public static function filters()
 	{
 		return [{

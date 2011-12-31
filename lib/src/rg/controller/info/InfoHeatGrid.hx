@@ -20,7 +20,7 @@ class InfoHeatGrid extends InfoCartesianChart
 		super();
 		colorScaleMode = ColorScaleMode.FromCss();
 	}
-	
+
 	public static function filters()
 	{
 		return [{

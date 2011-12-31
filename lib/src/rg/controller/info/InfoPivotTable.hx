@@ -10,37 +10,37 @@ import thx.color.NamedColors;
 import rg.view.svg.util.RGColors;
 using rg.controller.info.Info;
 
-class InfoPivotTable 
+class InfoPivotTable
 {
 	static var defaultStartColor = new Hsl(210, 1, 1);
 	static var defaultEndColor = new Hsl(210, 1, 0.5);
 	public var label : InfoLabelPivotTable;
-	
+
 	public var heatmapColorStart : Hsl;
 	public var heatmapColorEnd : Hsl;
-	
+
 	public var displayHeatmap : Bool;
 	public var displayColumnTotal : Bool;
 	public var displayRowTotal : Bool;
-	
+
 	public var columnAxes : Int;
-	
+
 	public var click : DataPoint -> Void;
-	
-	public function new() 
+
+	public function new()
 	{
 		label = new InfoLabelPivotTable();
-		
+
 		heatmapColorStart = defaultStartColor;
 		heatmapColorEnd = defaultEndColor;
-		
+
 		displayHeatmap = true;
 		displayColumnTotal = true;
 		displayRowTotal = true;
-		
+
 		columnAxes = 1;
 	}
-	
+
 	public static function filters()
 	{
 		return [{

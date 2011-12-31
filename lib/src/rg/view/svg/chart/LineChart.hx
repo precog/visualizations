@@ -62,6 +62,8 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		var value   = DataPoints.value(d, xVariable.type),
 			scaled  = xVariable.axis.scale(xVariable.min(), xVariable.max(), value),
 			scaledw = scaled * width;
+		if(Math.isNaN(value))
+			trace(scaledw + " " + scaled + " " + value + " " + Dynamics.string(d) + " " + xVariable.type);
 		return scaledw;
 	}
 
@@ -143,7 +145,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		{
 			segments = dps[i];
 			var gi = chart.select("g.group-" + i),
-				stats = new Stats();
+				stats = new Stats(yVariables[i].type);
 			stats.addMany(DataPoints.values(segments.flatten(), yVariables[i].type));
 
 
@@ -182,7 +184,9 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 						segmentgroup.enter()
 							.append("svg:path")
 							.attr("class").string("line grad-" + (levels-j-1))
-							.style("stroke").stringf(function(_,i) return fs[i](j/levels).toCss())
+							.style("stroke").stringf(function(_,i) {
+								return fs[i](j/levels).toCss();
+							})
 							.attr("d").stringf(linePathShape[i]);
 					}
 				case LineEffect.DropShadow(ox, oy, levels):

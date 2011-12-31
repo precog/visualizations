@@ -29,7 +29,7 @@ class Variable<T, TAxis : IAxis<T>>
 	{
 		this.axis = axis;
 		if (null != axis)
-			this.stats = axis.createStats();
+			this.stats = axis.createStats(type);
 		else
 			this.stats = null;
 	}

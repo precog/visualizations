@@ -76,5 +76,5 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	public function min(stats : Stats<T>, meta : Dynamic) : T return values().first()
 	public function max(stats : Stats<T>, meta : Dynamic) : T return values().last()
 
-	public function createStats() : Stats<T> return new Stats<T>()
+	public function createStats(type : String) : Stats<T> return new Stats<T>(type)
 }

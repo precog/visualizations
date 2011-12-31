@@ -71,5 +71,5 @@ class AxisNumeric implements IAxis<Float>
 			return max;
 	}
 
-	public function createStats() : Stats<Float> return new StatsNumeric()
+	public function createStats(type : String) : Stats<Float> return new StatsNumeric(type)
 }

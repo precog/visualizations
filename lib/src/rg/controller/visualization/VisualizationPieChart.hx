@@ -26,7 +26,7 @@ class VisualizationPieChart extends VisualizationSvg
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new PieChart(panelChart);
 		chart.ready.add(function() ready.dispatch());
-		
+
 		// aesthetic
 		chart.innerRadius = info.innerradius;
 		chart.outerRadius = info.outerradius;
@@ -40,7 +40,7 @@ class VisualizationPieChart extends VisualizationSvg
 			case NoEffect:
 				chart.displayGradient = false;
 		}
-		
+
 		// labels
 		chart.labelDataPoint = info.label.datapoint;
 		chart.labelDataPointOver = info.label.datapointover;
@@ -54,11 +54,11 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.animationDuration = info.animation.duration;
 		chart.animationEase = info.animation.ease;
 		chart.animationDelay = info.animation.delay;
-		
+
 		// events
 		if(null != info.click)
 			chart.mouseClick = info.click;
-		
+
 		// TITLE
 		if (null != info.label.title)
 		{
@@ -68,7 +68,7 @@ class VisualizationPieChart extends VisualizationSvg
 			title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
 		}
 	}
-	
+
 	// TODO move sort to axis
 	override function feedData(data : Array<DataPoint>)
 	{
@@ -89,7 +89,7 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.init();
 		chart.data(data);
 	}
-	
+
 	override public function destroy()
 	{
 		chart.destroy();
