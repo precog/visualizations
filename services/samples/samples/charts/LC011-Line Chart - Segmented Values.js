@@ -11,6 +11,7 @@ ReportGrid.lineChart("#chart", {
 			tickmark : function(v, a) { return a == 'year' ? v: ReportGrid.format(v); },
 			datapointover : function(dp, stats) { return ReportGrid.humanize(stats.type) + " for " + ReportGrid.humanize(dp['gender']) + "s in " + dp.year + ": " + ReportGrid.format(dp[stats.type]); }
 		},
+		displayrules : true,
 		segmenton : "gender"
 	}
 })

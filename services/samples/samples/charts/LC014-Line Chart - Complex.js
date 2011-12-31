@@ -46,7 +46,8 @@ ReportGrid.lineChart("#chart", {
 	datapoints : data,
 	options : {
 		effect : "none",
-		segmenton : "type"
+		segmenton : "type",
+		displayrules : true
 	}
 });
 

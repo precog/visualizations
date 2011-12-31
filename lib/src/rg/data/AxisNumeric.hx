@@ -5,6 +5,7 @@
 
 package rg.data;
 import rg.data.Stats;
+import thx.math.Const;
 using Arrays;
 
 class AxisNumeric implements IAxis<Float>
@@ -27,10 +28,12 @@ class AxisNumeric implements IAxis<Float>
 			majors = Floats.range(start, end + step, step);
 			minors = null;
 		} else {
-			var e = end + (step = _step(span, 10));
-			minors = Floats.range(start, e, step);
-			e = end + (step = _step(span, 5));
-			majors = Floats.range(start, e, step);
+			var mM = 5,
+				mm = 20,
+				stepM = _step(span, mM),
+				stepm = _step(span, mm);
+			minors = Floats.range(start, end + stepM, stepm);
+			majors = Floats.range(start, end, stepM);
 		}
 		return Tickmarks.bound(null == minors
 			? majors.map(function(d : Float, i : Int) return Tickmarks.forFloat(start, end, d, true))
@@ -40,22 +43,39 @@ class AxisNumeric implements IAxis<Float>
 
 	static function _step(span : Float, m : Int)
 	{
-		var step = Math.pow(m, Math.floor(Math.log(span / m) / Math.log(m))),
-			err = m / (span / step);
-		if (err <= .05)
+		var step = Math.pow(10, Math.floor(Math.log(span / m) / Const.LN10)),
+			err = m / span * step;
+		if (err <= .15)
 			step *= 10;
-		else if (err <= .2)
+		else if (err <= .35)
 			step *= 5;
-		else if (err <= .4)
-			step *= 4;
-		else if (err <= .6)
+		else if (err <= .75)
 			step *= 2;
 		return step;
 	}
 
+	inline static function nice(v : Float)
+	{
+		return Math.pow(10, Math.round(Math.log(v) / Const.LN10) - 1);
+	}
+
+	inline static function niceMin(d : Float, v : Float)
+	{
+		var dv = nice(d);
+		return Math.floor(v/dv)*dv;
+	}
+
+	inline static function niceMax(d : Float, v : Float)
+	{
+		var dv = nice(d);
+		return Math.ceil(v/dv)*dv;
+	}
+
 	public function min(stats : Stats<Float>, meta : Dynamic) : Float
 	{
-		var min = null == meta.min ? stats.min : meta.min;
+		if(null != meta.min)
+			return meta.min;
+		var min = niceMin(stats.max - stats.min, stats.min);
 		if (min < 0)
 			return min;
 		else
@@ -64,11 +84,13 @@ class AxisNumeric implements IAxis<Float>
 
 	public function max(stats : Stats<Float>, meta : Dynamic) : Float
 	{
-		var max = null == meta.max ? stats.max : meta.max;
-		if (max < 0)
-			return 0.0;
-		else
+		if(null != meta.max)
+			return meta.max;
+		var max = niceMax(stats.max - stats.min, stats.max);
+		if (max > 0)
 			return max;
+		else
+			return 0.0;
 	}
 
 	public function createStats(type : String) : Stats<Float> return new StatsNumeric(type)

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	var service = "service/index.php";
+	var service = API.samplesService;
 	var callService = function(action, handler, data)
 	{
 		data = data || {};

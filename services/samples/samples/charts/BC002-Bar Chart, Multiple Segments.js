@@ -7,6 +7,7 @@ ReportGrid.barChart("#chart", {
 	datapoints : data,
 	options : {
 		segmenton : "age",
-		stacked : false
+		stacked : false,
+		displayrules : true
 	}
 });

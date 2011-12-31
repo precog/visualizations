@@ -83,7 +83,6 @@ class Label
 		try {
 			return untyped g.node().getBBox();
 		} catch (e : Dynamic) {
-			return null;
 			return { width : 0.0, height : 0.0 };
 		}
 	}

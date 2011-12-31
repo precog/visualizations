@@ -75,8 +75,8 @@ class TickmarksOrtho extends Layer
 
 	public function update(axis : IAxis<Dynamic>, min : Dynamic, max : Dynamic)
 	{
-		if(this.axis == axis && this.min == min && this.max == max)
-			return;
+//		if(this.axis == axis && this.min == min && this.max == max)
+//			return;
 		this.axis = axis;
 		this.min  = min;
 		this.max  = max;
@@ -128,7 +128,6 @@ class TickmarksOrtho extends Layer
 		desiredSize = Math.max(paddingMinor + lengthMinor, paddingMajor + lengthMajor);
 		var ticks = maxTicks(),
 			data = axis.ticks(min, max, ticks);
-trace(data);
 		// ticks
 		var tick = g.selectAll("g.tick").data(data, id);
 		var enter = tick.enter()

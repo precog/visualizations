@@ -865,9 +865,20 @@ rg.data.AxisNumeric = $hxClasses["rg.data.AxisNumeric"] = function() {
 rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
 rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
 rg.data.AxisNumeric._step = function(span,m) {
-	var step = Math.pow(m,Math.floor(Math.log(span / m) / Math.log(m))), err = m / (span / step);
-	if(err <= .05) step *= 10; else if(err <= .2) step *= 5; else if(err <= .4) step *= 4; else if(err <= .6) step *= 2;
+	var step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / span * step;
+	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
 	return step;
+}
+rg.data.AxisNumeric.nice = function(v) {
+	return Math.pow(10,Math.round(Math.log(v) / 2.302585092994046) - 1);
+}
+rg.data.AxisNumeric.niceMin = function(d,v) {
+	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
+	return Math.floor(v / dv) * dv;
+}
+rg.data.AxisNumeric.niceMax = function(d,v) {
+	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
+	return Math.ceil(v / dv) * dv;
 }
 rg.data.AxisNumeric.prototype = {
 	scale: function(start,end,v) {
@@ -880,10 +891,9 @@ rg.data.AxisNumeric.prototype = {
 			majors = Floats.range(start,end + step,step);
 			minors = null;
 		} else {
-			var e = end + (step = rg.data.AxisNumeric._step(span,10));
-			minors = Floats.range(start,e,step);
-			e = end + (step = rg.data.AxisNumeric._step(span,5));
-			majors = Floats.range(start,e,step);
+			var mM = 5, mm = 20, stepM = rg.data.AxisNumeric._step(span,mM), stepm = rg.data.AxisNumeric._step(span,mm);
+			minors = Floats.range(start,end + stepM,stepm);
+			majors = Floats.range(start,end,stepM);
 		}
 		return rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.data.Tickmark(d,true,(d - start) / (end - start));
@@ -892,12 +902,14 @@ rg.data.AxisNumeric.prototype = {
 		}),maxTicks);
 	}
 	,min: function(stats,meta) {
-		var min = null == meta.min?stats.min:meta.min;
+		if(null != meta.min) return meta.min;
+		var min = rg.data.AxisNumeric.niceMin(stats.max - stats.min,stats.min);
 		if(min < 0) return min; else return 0.0;
 	}
 	,max: function(stats,meta) {
-		var max = null == meta.max?stats.max:meta.max;
-		if(max < 0) return 0.0; else return max;
+		if(null != meta.max) return meta.max;
+		var max = rg.data.AxisNumeric.niceMax(stats.max - stats.min,stats.max);
+		if(max > 0) return max; else return 0.0;
 	}
 	,createStats: function(type) {
 		return new rg.data.StatsNumeric(type);
@@ -5388,7 +5400,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.5060"};
+	r.info.viz = { version : "1.2.0.5119"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -12297,7 +12309,6 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 		this.redraw();
 	}
 	,update: function(axis,min,max) {
-		if(this.axis == axis && this.min == min && this.max == max) return;
 		this.axis = axis;
 		this.min = min;
 		this.max = max;
@@ -12343,7 +12354,6 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 	,redraw: function() {
 		this.desiredSize = Math.max(this.paddingMinor + this.lengthMinor,this.paddingMajor + this.lengthMajor);
 		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
-		haxe.Log.trace(data,{ fileName : "TickmarksOrtho.hx", lineNumber : 131, className : "rg.view.svg.layer.TickmarksOrtho", methodName : "redraw"});
 		var tick = this.g.selectAll("g.tick").data(data,this.id.$bind(this));
 		var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
 		if(this.displayMinor) enter.filter(function(d,i) {
@@ -13882,7 +13892,6 @@ rg.view.svg.widget.Label.prototype = {
 		try {
 			return this.g.node().getBBox();
 		} catch( e ) {
-			return null;
 			return { width : 0.0, height : 0.0};
 		}
 	}

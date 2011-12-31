@@ -24,6 +24,7 @@ ReportGrid.scatterGraph("#chart", {
 				return "gender: " + dp.gender + ", race: " + dp.race + ", death rate: " + ReportGrid.format(dp.deathRate);
 			}
 		},
+		displayrules : true,
 		symbol : function(dp) {
 			return ReportGrid.symbol(symbolmap[dp.race], 40);
 		},

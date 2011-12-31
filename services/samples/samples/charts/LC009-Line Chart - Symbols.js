@@ -11,8 +11,8 @@ ReportGrid.lineChart("#chart", {
 			tickmark : function(v, a) { return a == 'year' ? v: ReportGrid.format(v); },
 			datapointover : function(dp) { return dp.year + ": " + ReportGrid.format(dp.population) + " individuals" }
 		},
-		labelangle : function(a) { return a != "year" ? 180 : 0; },
-		labelanchor : function(a) { return a == "year" ? "right" : "left"; },
+		labelangle : 0,
+		labelanchor : "right",
 		symbol : function(dp) {
 			return ReportGrid.symbol("square", (dp.area / 3794083) * 200) // max area
 		}
