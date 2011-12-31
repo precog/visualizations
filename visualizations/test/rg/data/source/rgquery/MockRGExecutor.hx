@@ -21,6 +21,14 @@ class MockRGExecutor implements IExecutorReportGrid
 	{
 		callStack.push({ method : "propertySeries", args : [path, options] });
 	}
+	public function propertyMeans(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void)
+	{
+		callStack.push({ method : "propertyMeans", args : [path, options] });
+	}
+	public function propertyStandardDeviations(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void)
+	{
+		callStack.push({ method : "propertyStandardDeviations", args : [path, options] });
+	}
 	public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void)
 	{
 		callStack.push({ method : "propertyValues", args : [path, options] });

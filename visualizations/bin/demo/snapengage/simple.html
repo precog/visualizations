@@ -15,9 +15,17 @@
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){
 
-	var path = "/snapengage11155847/bf7337a6-6c7f-4ff9-8e50-a7bb771c036a/";
+	var path = "/se11155847/bf7337a6-6c7f-4ff9-8e50-a7bb771c036a/";
 
-	ReportGrid.lineChart("#chart", { path : path, event : "case", property : "browser", options : { download : true } });
+	ReportGrid.barChart("#chart", {
+		start : "3 months ago",
+		end  : "2012-01-15",
+		periodicity : "month",
+		path : path,
+		event : "case",
+		property : "browser",
+//		value : "Chrome",
+		options : { download : true } });
 
 /*
 	ReportGrid.barChart("#chart", { path : path, event : "case", property : "browser",
@@ -26,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function(){
 */
 /*
 	ReportGrid.pieChart("#chart", { path : path, event : "case", property : "browser",
-		options : { 
+		options : {
 			  effect : "noeffect"
 //			, click : function(dp) { alert(ReportGrid.dump(dp)); }
 		}

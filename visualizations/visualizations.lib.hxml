@@ -1,6 +1,10 @@
 -cp src
+-cp ../lib/src
 -lib thx
 -lib hxevents
 -js bin/js/reportgrid-viz.js
 -main rg.JSBridge
+-D reportgridapi
+--cache cache/haxecompiler-cache
+#--times
 #-debug

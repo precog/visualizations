@@ -1,0 +1,227 @@
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
+		<style>
+* {
+	font-family: sans-serif;
+}
+
+h1, h2 {
+	color: #ccc;
+
+	clear: left;
+	margin: 0;
+	text-align: center;
+
+	text-shadow: 1px 1px 2px #333;
+	filter: dropshadow(color=#ccc, offx=1, offy=1);
+}
+
+h2 {
+	color: #999;
+}
+
+p {
+	margin: 0 4px 0 0;
+	color: #666;
+}
+
+.box {
+	min-width: 580px;
+	padding: 10px;
+	float: left;
+	margin: 0 10px 10px 0;
+
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	-moz-box-shadow: 1px 1px 8px #ddd;
+	-webkit-box-shadow: 1px 1px 8px #ddd;
+	box-shadow: inset 1px 1px 8px #ccc;
+	background-color: #f0f0f0;
+}
+
+.clear {
+	clear: left;
+}
+
+.chart {
+	width: 900px;
+	height: 450px;
+}
+.female.rg .fill-0 {
+	fill: #ff0000;
+}
+
+.actions, #clip, #interact {
+	text-align: center;
+}
+
+.notes {
+	font-size: 85%;
+	color: #666666;
+}
+
+b {
+	font-size: 65%;
+}
+	</style>
+	<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D" type="text/javascript"></script>
+	<script src="http://api.reportgrid.com/js/reportgrid-viz.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var path = "/test/clipmaster/t4/",
+		gender = "male",
+		referrer = null;
+
+	var graph = [{
+		clip : "clip_01",
+		duration : 1,
+		actions : ["clip_02", "clip_03", "clip_04"]
+	}, {
+		clip : "clip_02",
+		duration : 1,
+		actions : ["clip_05", "clip_06"]
+	}, {
+		clip : "clip_03",
+		duration : 1,
+		actions : ["clip_06"]
+	}, {
+		clip : "clip_04",
+		duration : 1,
+		actions : ["clip_07", "clip_01"]
+	}, {
+		clip : "clip_05",
+		duration : 1,
+		actions : ["clip_06", "clip_07"]
+	}, {
+		clip : "clip_06",
+		duration : 1,
+		actions : ["clip_07"]
+	}, {
+		clip : "clip_07",
+		duration : 1,
+		actions : []
+	}];
+
+	function error(e)
+	{
+		console.log("ERROR: " + e);
+		throw e;
+	}
+
+	function getClip(id)
+	{
+		var clip;
+		for(var i = 0; i < graph.length; i++){
+			if(graph[i].clip == id)
+			{
+				clip = graph[i];
+				break;
+			}
+		}
+		if(!clip)
+			error("not a valid clip id: " + id);
+		return clip;
+	}
+
+	function goToClip(id){
+		var clip = getClip(id);
+		$("#clip").html('<h2>'+id+'</h2><br><img src="images/'+id+'.png"/>');
+		setTimeout(function() {
+			if(clip.actions.length == 0)
+			{
+				$('#actions').append("<b>Your Journey is Over</b>");
+			} else {
+				$('#actions').append("<b>go to:</b><br>");
+				for(var i = 0; i < clip.actions.length; i++)
+				{
+					var action = getClip(clip.actions[i]);
+					$('#actions').append('<button id="'+action.clip+'">'+action.clip+'</button>');
+				}
+				$('#actions button').click(function(){
+					$('#actions').html("");
+					referrer = id;
+					goToClip($(this).attr("id"));
+					return false;
+				})
+			}
+		}, clip.duration * 1000);
+
+		// TRACK
+		var event = { clip : id, gender : gender, parent : referrer },
+			impression = {};
+		impression["imp_"+id] = event;
+		ReportGrid.track(path, { impression : event });
+	}
+
+	$("#gender").change(function() {
+		var v = $(this).val();
+		if(!v) return;
+		gender = v;
+		$(this).remove();
+		goToClip("clip_01");
+	})
+
+	var events = graph.map(function(clip) { return "imp_" + clip.clip; });
+
+	var layoutmap = {
+		layers : [["clip_01"], ["clip_03", "clip_02", "clip_04"], ["#1", "#2", "clip_05", "#3"], ["clip_06", "#4", "#5"], ["clip_07"]],
+		dummies : [
+			["clip_03", "#1", "clip_06"],
+			["clip_02", "#2", "clip_06"],
+			["clip_05", "#4", "clip_07"],
+			["clip_04", "#3", "#5", "clip_07"]
+		]
+	};
+
+
+	ReportGrid.sankey("#chart1", {
+		path       : path,
+		event      : "impression",
+		identifier : "clip",
+		parent     : "parent",
+		where      : [{ property : "gender", value : "male" }],
+		options    : {
+			imagepath : function(dp) { return "images/" + dp.id + ".png" },
+			layoutmap : layoutmap
+		}
+	});
+
+	ReportGrid.sankey("#chart2", {
+		path       : path,
+		event      : "impression",
+		identifier : "clip",
+		parent     : "parent",
+		where      : [{ property : "gender", value : "female" }],
+		options    : {
+			imagepath : function(dp) { return "images/" + dp.id + ".png" },
+			layoutmap : layoutmap
+		}
+	});
+})
+</script>
+</head>
+<body>
+<div class="box clear" id="interact">
+	<h1>Interact</h1>
+	<div id="info"><select id="gender"><option value="">- pick your gender -</option><option value="male">male</option><option value="female">female</option></select></div>
+	<div id="clip"></div>
+	<form id="actions"></form>
+	<div class="notes">please reload the page to update the visualizations</div>
+</div>
+<div id="count"></div>
+<div class="box clear">
+	<h1>Males</h1>
+</div>
+<div class="box">
+	<div id="chart1" class="chart"></div>
+</div>
+<div class="box clear">
+	<h1>Females</h1>
+</div>
+<div class="box">
+	<div id="chart2" class="chart female"></div>
+</div>
+</body>
+</html>

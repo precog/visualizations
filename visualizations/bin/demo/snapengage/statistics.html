@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>SnapEngage</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
+	<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=87984064-827D-4C42-8BAF-42A748BA6DCA"></script>
+	<script src="http://api.reportgrid.com/js/reportgrid-viz.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+
+	var path = "/se12014/timzon-snapabug-widget/",
+		start = 1322179200000,
+		end = "now",
+		respondedLabels = {},
+		agentPath = "";
+
+    ReportGrid.barChart("#chart1", {
+		path : path+agentPath,
+		event : "case",
+		property : "chatResponseTime",
+		start : start,
+		end : end,
+		statistic : "mean"
+    });
+     ReportGrid.barChart("#chart2", {
+		path : path+agentPath,
+		event : "case",
+		property : "chatResponseTime",
+		start : start,
+		end : end,
+		statistic : "standardDeviation"
+    });
+});
+</script>
+</head>
+<body>
+	<div id="chart1"></div>
+	<div id="chart2"></div>
+</body>
+</html>

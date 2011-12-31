@@ -7,6 +7,7 @@ package rg;
 import rg.controller.App;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.ITrackReportGrid;
+import rg.data.source.rgquery.ReportGridExecutorMemoryCache;
 import rg.util.Periodicity;
 import rg.util.Properties;
 import rg.util.RGStrings;
@@ -41,7 +42,8 @@ class JSBridge
 			log(new Error("unable to initialize the ReportGrid visualization system, be sure to have loaded already the 'reportgrid-core.js' script").toString());
 
 		// init app
-		var app = new App(r, t);
+		var executor = new ReportGridExecutorMemoryCache(r),
+			app = new App(executor, t);
 
 		// define bridge function
 		r.viz = function(el : Dynamic, options : Dynamic, type : String)
@@ -70,24 +72,26 @@ class JSBridge
 		}
 
 		// define public visualization constrcutors
-		r.barChart     = function(el, options) return r.viz(el, options, "barchart");
-		r.funnelChart  = function(el, options) return r.viz(el, options, "funnelchart");
-		r.geo          = function(el, options) return r.viz(el, options, "geo");
-		r.heatGrid     = function(el, options) return r.viz(el, options, "heatgrid");
-		r.leaderBoard  = function(el, options) return r.viz(el, options, "leaderboard");
-		r.lineChart    = function(el, options) return r.viz(el, options, "linechart");
-		r.pieChart     = function(el, options) return r.viz(el, options, "piechart");
-		r.pivotTable   = function(el, options) return r.viz(el, options, "pivottable");
-		r.sankey       = function(el, options) return r.viz(el, options, "sankey");
-		r.scatterGraph = function(el, options) return r.viz(el, options, "scattergraph");
-		r.streamGraph  = function(el, options) return r.viz(el, options, "streamgraph");
+		r.parseQueryParameters = rg.util.Urls.parseQueryParameters;
+		r.findScript           = rg.util.Js.findScript;
+		r.barChart             = function(el, options) return r.viz(el, options, "barchart");
+		r.funnelChart          = function(el, options) return r.viz(el, options, "funnelchart");
+		r.geo                  = function(el, options) return r.viz(el, options, "geo");
+		r.heatGrid             = function(el, options) return r.viz(el, options, "heatgrid");
+		r.leaderBoard          = function(el, options) return r.viz(el, options, "leaderboard");
+		r.lineChart            = function(el, options) return r.viz(el, options, "linechart");
+		r.pieChart             = function(el, options) return r.viz(el, options, "piechart");
+		r.pivotTable           = function(el, options) return r.viz(el, options, "pivottable");
+		r.sankey               = function(el, options) return r.viz(el, options, "sankey");
+		r.scatterGraph         = function(el, options) return r.viz(el, options, "scattergraph");
+		r.streamGraph          = function(el, options) return r.viz(el, options, "streamgraph");
 
 		// utility functions
 		r.format  = Dynamics.format;
 		r.compare = Dynamics.compare;
 		r.dump    = Dynamics.string;
 		r.symbol  = SymbolCache.cache.get;
-		r.date = {
+		r.date    = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
 					a = DateParser.parse(a);
@@ -119,6 +123,11 @@ class JSBridge
 		r.info = null != r.info ? r.info : { };
 		r.info.viz = {
 			version : thx.util.MacroVersion.fullVersion()
+		};
+		r.cache = {
+			setTime : function(t) {
+				executor.timeout = t;
+			}
 		};
 	}
 

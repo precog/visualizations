@@ -12,13 +12,13 @@ class TransformCount implements ITransform<Int>
 	var properties : Dynamic;
 	var unit : String;
 	var event : String;
-	public function new(properties : Dynamic, event : String, unit : String) 
+	public function new(properties : Dynamic, event : String, unit : String)
 	{
 		this.properties = properties;
 		this.unit = unit;
 		this.event = event;
 	}
-	
+
 	public function transform(data : Int) : Array<DataPoint>
 	{
 		var dp = { event : event };

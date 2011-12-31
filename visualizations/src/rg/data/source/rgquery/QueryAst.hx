@@ -7,7 +7,6 @@ package rg.data.source.rgquery;
 
 typedef Query = {
 	exp : Array<QExp>,
-	operation : QOperation,
 	where : Array<QCondition>
 }
 
@@ -27,8 +26,6 @@ enum QCondition
 enum QOperation
 {
 	Count;
-//	Sum;
-//	Average;
-//	Min;
-//	Max;
+	Mean;
+	StandardDeviation;
 }

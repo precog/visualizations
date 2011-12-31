@@ -14,6 +14,8 @@ rg.data.source.rgquery.IExecutorReportGrid.prototype = {
 	children: null
 	,propertyCount: null
 	,propertySeries: null
+	,propertyMeans: null
+	,propertyStandardDeviations: null
 	,propertyValues: null
 	,propertyValueCount: null
 	,propertyValueSeries: null
@@ -37,6 +39,12 @@ rg.data.source.rgquery.MockRGExecutor.prototype = {
 	}
 	,propertySeries: function(path,options,success,error) {
 		this.callStack.push({ method : "propertySeries", args : [path,options]});
+	}
+	,propertyMeans: function(path,options,success,error) {
+		this.callStack.push({ method : "propertyMeans", args : [path,options]});
+	}
+	,propertyStandardDeviations: function(path,options,success,error) {
+		this.callStack.push({ method : "propertyStandardDeviations", args : [path,options]});
 	}
 	,propertyValues: function(path,options,success,error) {
 		this.callStack.push({ method : "propertyValues", args : [path,options]});
@@ -108,10 +116,16 @@ rg.data.source.rgquery.QExp.Event.__enum__ = rg.data.source.rgquery.QExp;
 rg.data.source.rgquery.QCondition = $hxClasses["rg.data.source.rgquery.QCondition"] = { __ename__ : ["rg","data","source","rgquery","QCondition"], __constructs__ : ["Equality","In"] }
 rg.data.source.rgquery.QCondition.Equality = function(property,v) { var $x = ["Equality",0,property,v]; $x.__enum__ = rg.data.source.rgquery.QCondition; $x.toString = $estr; return $x; }
 rg.data.source.rgquery.QCondition.In = function(property,v) { var $x = ["In",1,property,v]; $x.__enum__ = rg.data.source.rgquery.QCondition; $x.toString = $estr; return $x; }
-rg.data.source.rgquery.QOperation = $hxClasses["rg.data.source.rgquery.QOperation"] = { __ename__ : ["rg","data","source","rgquery","QOperation"], __constructs__ : ["Count"] }
+rg.data.source.rgquery.QOperation = $hxClasses["rg.data.source.rgquery.QOperation"] = { __ename__ : ["rg","data","source","rgquery","QOperation"], __constructs__ : ["Count","Mean","StandardDeviation"] }
 rg.data.source.rgquery.QOperation.Count = ["Count",0];
 rg.data.source.rgquery.QOperation.Count.toString = $estr;
 rg.data.source.rgquery.QOperation.Count.__enum__ = rg.data.source.rgquery.QOperation;
+rg.data.source.rgquery.QOperation.Mean = ["Mean",1];
+rg.data.source.rgquery.QOperation.Mean.toString = $estr;
+rg.data.source.rgquery.QOperation.Mean.__enum__ = rg.data.source.rgquery.QOperation;
+rg.data.source.rgquery.QOperation.StandardDeviation = ["StandardDeviation",2];
+rg.data.source.rgquery.QOperation.StandardDeviation.toString = $estr;
+rg.data.source.rgquery.QOperation.StandardDeviation.__enum__ = rg.data.source.rgquery.QOperation;
 var thx = thx || {}
 if(!thx.collection) thx.collection = {}
 thx.collection.Set = $hxClasses["thx.collection.Set"] = function() {
@@ -179,6 +193,7 @@ rg.data.IAxisDiscrete.prototype = {
 	scaleDistribution: null
 	,range: null
 	,__class__: rg.data.IAxisDiscrete
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 if(!thx.js) thx.js = {}
 thx.js.Access = $hxClasses["thx.js.Access"] = function(selection) {
@@ -336,6 +351,238 @@ utest.ui.Report.create = function(runner,displaySuccessResults,headerDisplayMode
 utest.ui.Report.prototype = {
 	__class__: utest.ui.Report
 }
+if(!rg.graph) rg.graph = {}
+rg.graph.Graphs = $hxClasses["rg.graph.Graphs"] = function() { }
+rg.graph.Graphs.__name__ = ["rg","graph","Graphs"];
+rg.graph.Graphs.crossings = function(a,b) {
+	var map = new Hash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i].vertex,i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = a[i];
+		var _g2 = 0, _g3 = n1.edgesp;
+		while(_g2 < _g3.length) {
+			var dst1 = _g3[_g2];
+			++_g2;
+			var p1 = map.get(dst1);
+			if(null == p1) continue;
+			var _g5 = i + 1, _g4 = a.length;
+			while(_g5 < _g4) {
+				var j = _g5++;
+				var n2 = a[j];
+				var _g6 = 0, _g7 = n2.edgesp;
+				while(_g6 < _g7.length) {
+					var dst2 = _g7[_g6];
+					++_g6;
+					var p2 = map.get(dst2);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.graph.Graphs.layoutCrossings = function(a) {
+	var tot = 0;
+	var _g1 = 0, _g = a.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		tot += rg.graph.Graphs.crossings(a[i],a[i + 1]);
+	}
+	return tot;
+}
+rg.graph.Graphs.toMap = function(layout) {
+	var map = new Hash();
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			map.set(layout[i][j].vertex,layout[i][j]);
+		}
+	}
+	return map;
+}
+rg.graph.Graphs.toVertices = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			result.push(layout[i][j].vertex);
+		}
+	}
+	return result;
+}
+rg.graph.Graphs.toEdges = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			var v = layout[i][j].vertex;
+			var _g4 = 0, _g5 = layout[i][j].edgesp;
+			while(_g4 < _g5.length) {
+				var c = _g5[_g4];
+				++_g4;
+				result.push({ a : v, b : c});
+			}
+		}
+	}
+	return result;
+}
+rg.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
+	var n = null, l = 0;
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		var diff = node.edgesp.length - node.edgesn.length;
+		if(null == n || l < diff) {
+			n = node;
+			l = diff;
+		}
+	}
+	return n;
+}
+rg.graph.Graphs.isSink = function(node) {
+	return node.edgesp.length == 0 && node.edgesn.length > 0;
+}
+rg.graph.Graphs.isSource = function(node) {
+	return node.edgesn.length == 0 && node.edgesp.length == 0;
+}
+rg.graph.Graphs.findSink = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findSource = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findAllIsolated = function(graph) {
+	var isolated = [];
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
+	}
+	return isolated;
+}
+rg.graph.Graphs.addConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,b,a);
+	if(null != path && path.every(function(v,i) {
+		return i == 0 || i == path.length - 1 || rg.graph.Graphs.isDummy(v);
+	})) {
+		path.reverse();
+		rg.graph.Graphs.addConnections(graph,path);
+	} else rg.graph.Graphs.addConnections(graph,[a,b]);
+}
+rg.graph.Graphs.addConnections = function(graph,arr) {
+	var _g1 = 0, _g = arr.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a = arr[i], b = arr[i + 1];
+		graph.get(a).edgesp.push(b);
+		graph.get(b).edgesp.push(a);
+	}
+}
+rg.graph.Graphs.reverseConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,a,b);
+	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 168, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 169, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	if(null == path) return false;
+	var _g1 = 0, _g = path.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
+		na.edgesp.remove(b1);
+		na.edgesn.push(b1);
+		nb.edgesn.remove(a1);
+		nb.edgesp.push(a1);
+	}
+	return true;
+}
+rg.graph.Graphs.findPath = function(graph,a,b) {
+	var traveled = new thx.collection.Set(), paths = [], t, r;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(path,n) {
+			var totraverse = [];
+			var _g = 0, _g1 = n.edgesn;
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				if(parent == a) return path.concat([a]); else if(rg.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,a2) {
+					return function() {
+						return f(a1,a2);
+					};
+				})(traverse,path.concat([parent]),t));
+			}
+			var _g = 0;
+			while(_g < totraverse.length) {
+				var t1 = totraverse[_g];
+				++_g;
+				if(null != (r = t1())) return r;
+			}
+			return null;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	var p = traverse([b],graph.get(b));
+	if(null == p) return null;
+	p.reverse();
+	return p;
+}
+rg.graph.Graphs.isDummy = function(v) {
+	return v.substr(0,1) == "#";
+}
+rg.graph.Graphs.createDummy = function(a,b,lvl) {
+	return "#" + ++rg.graph.Graphs.id;
+}
+rg.graph.Graphs.removeNode = function(graph,node) {
+	graph.remove(node.vertex);
+}
+rg.graph.Graphs.addNode = function(graph,node) {
+	graph.set(node.vertex,node);
+}
+rg.graph.Graphs.clone = function(graph) {
+	var o = new Hash();
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		rg.graph.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.copy(), edgesp : node.edgesp.copy()});
+	}
+	return o;
+}
+rg.graph.Graphs.empty = function(graph) {
+	return Hashes.count(graph) == 0;
+}
+rg.graph.Graphs.count = function(graph) {
+	return Hashes.count(graph);
+}
+rg.graph.Graphs.prototype = {
+	__class__: rg.graph.Graphs
+}
 if(!rg.controller) rg.controller = {}
 if(!rg.controller.visualization) rg.controller.visualization = {}
 rg.controller.visualization.Visualization = $hxClasses["rg.controller.visualization.Visualization"] = function(container) {
@@ -386,6 +633,7 @@ rg.controller.visualization.Visualization.prototype = {
 		this.ready.remove(handler);
 	}
 	,__class__: rg.controller.visualization.Visualization
+	,__properties__: {get_variables:"getVariables"}
 }
 rg.controller.visualization.VisualizationSvg = $hxClasses["rg.controller.visualization.VisualizationSvg"] = function(layout) {
 	rg.controller.visualization.Visualization.call(this,layout.container);
@@ -727,6 +975,9 @@ rg.data.source.rgquery.transform.TransformTimeSeries = $hxClasses["rg.data.sourc
 }
 rg.data.source.rgquery.transform.TransformTimeSeries.__name__ = ["rg","data","source","rgquery","transform","TransformTimeSeries"];
 rg.data.source.rgquery.transform.TransformTimeSeries.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp = function(periodicity,value) {
+	return periodicity != "minute" && periodicity != "hour"?Dates.snap(value,periodicity):value;
+}
 rg.data.source.rgquery.transform.TransformTimeSeries.prototype = {
 	properties: null
 	,unit: null
@@ -735,7 +986,7 @@ rg.data.source.rgquery.transform.TransformTimeSeries.prototype = {
 	,transform: function(data) {
 		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
 		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[d[0].timestamp,d[1],event]);
+			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event"],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(periodicity,d[0].timestamp),d[1],event]);
 			return p;
 		});
 		return result;
@@ -1051,7 +1302,10 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 		this.chart = chart;
 	}
 	,transformData: function(dps) {
+		haxe.Log.trace(dps,{ fileName : "VisualizationBarChart.hx", lineNumber : 49, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
 		var results = [], variable = this.independentVariables[0], values = variable.axis.range(variable.min(),variable.max());
+		haxe.Log.trace(variable,{ fileName : "VisualizationBarChart.hx", lineNumber : 53, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
+		haxe.Log.trace(values,{ fileName : "VisualizationBarChart.hx", lineNumber : 54, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
 		var _g = 0;
 		while(_g < values.length) {
 			var value = [values[_g]];
@@ -1069,6 +1323,7 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 			}
 			results.push(axisresults);
 		}
+		haxe.Log.trace(results,{ fileName : "VisualizationBarChart.hx", lineNumber : 65, className : "rg.controller.visualization.VisualizationBarChart", methodName : "transformData"});
 		return results;
 	}
 	,__class__: rg.controller.visualization.VisualizationBarChart
@@ -1086,6 +1341,104 @@ rg.util.TestProperties.prototype = {
 	}
 	,__class__: rg.util.TestProperties
 }
+rg.graph.TestBaseGraph = $hxClasses["rg.graph.TestBaseGraph"] = function() {
+}
+rg.graph.TestBaseGraph.__name__ = ["rg","graph","TestBaseGraph"];
+rg.graph.TestBaseGraph.prototype = {
+	graph: null
+	,setup: function() {
+		this.graph = new rg.graph.Graph();
+	}
+	,__class__: rg.graph.TestBaseGraph
+}
+rg.graph.TestNode = $hxClasses["rg.graph.TestNode"] = function() {
+	rg.graph.TestBaseGraph.call(this);
+}
+rg.graph.TestNode.__name__ = ["rg","graph","TestNode"];
+rg.graph.TestNode.__super__ = rg.graph.TestBaseGraph;
+rg.graph.TestNode.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
+	testId: function() {
+		var node = this.graph.nodes.create();
+		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestNode.hx", lineNumber : 10, className : "rg.graph.TestNode", methodName : "testId"});
+	}
+	,testCount: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 15, className : "rg.graph.TestNode", methodName : "testCount"});
+		var node = this.graph.nodes.create();
+		utest.Assert.equals(1,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 17, className : "rg.graph.TestNode", methodName : "testCount"});
+		this.graph.nodes.remove(node);
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 19, className : "rg.graph.TestNode", methodName : "testCount"});
+	}
+	,testDestroy: function() {
+		var node = this.graph.nodes.create();
+		this.graph.nodes.remove(node);
+		utest.Assert.isNull(node.graph,null,{ fileName : "TestNode.hx", lineNumber : 26, className : "rg.graph.TestNode", methodName : "testDestroy"});
+		utest.Assert.isTrue(node.id < 0,null,{ fileName : "TestNode.hx", lineNumber : 27, className : "rg.graph.TestNode", methodName : "testDestroy"});
+	}
+	,testClear: function() {
+		var node = this.graph.nodes.create();
+		this.graph.nodes.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestNode.hx", lineNumber : 34, className : "rg.graph.TestNode", methodName : "testClear"});
+	}
+	,testIsConnectedTo: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.isConnectedTo(n2),null,{ fileName : "TestNode.hx", lineNumber : 41, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		utest.Assert.isFalse(n2.isConnectedTo(n1),null,{ fileName : "TestNode.hx", lineNumber : 42, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isTrue(n1.isConnectedTo(n2),null,{ fileName : "TestNode.hx", lineNumber : 44, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		utest.Assert.isTrue(n2.isConnectedTo(n1),null,{ fileName : "TestNode.hx", lineNumber : 45, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		this.graph.edges.remove(e);
+		utest.Assert.isFalse(n1.isConnectedTo(n2),null,{ fileName : "TestNode.hx", lineNumber : 47, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+		utest.Assert.isFalse(n2.isConnectedTo(n1),null,{ fileName : "TestNode.hx", lineNumber : 48, className : "rg.graph.TestNode", methodName : "testIsConnectedTo"});
+	}
+	,testIsDirectSuccessorPredecessor: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.isPredecessorOf(n2),null,{ fileName : "TestNode.hx", lineNumber : 55, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		utest.Assert.isFalse(n2.isSuccessorOf(n1),null,{ fileName : "TestNode.hx", lineNumber : 56, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isTrue(n1.isPredecessorOf(n2),null,{ fileName : "TestNode.hx", lineNumber : 58, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		utest.Assert.isTrue(n2.isSuccessorOf(n1),null,{ fileName : "TestNode.hx", lineNumber : 59, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		this.graph.edges.remove(e);
+		utest.Assert.isFalse(n1.isPredecessorOf(n2),null,{ fileName : "TestNode.hx", lineNumber : 61, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+		utest.Assert.isFalse(n2.isSuccessorOf(n1),null,{ fileName : "TestNode.hx", lineNumber : 62, className : "rg.graph.TestNode", methodName : "testIsDirectSuccessorPredecessor"});
+	}
+	,testIsSinkOrSource: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.isSink(),null,{ fileName : "TestNode.hx", lineNumber : 69, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+		utest.Assert.isFalse(n1.isSource(),null,{ fileName : "TestNode.hx", lineNumber : 70, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isTrue(n1.isSource(),null,{ fileName : "TestNode.hx", lineNumber : 72, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+		utest.Assert.isTrue(n2.isSink(),null,{ fileName : "TestNode.hx", lineNumber : 73, className : "rg.graph.TestNode", methodName : "testIsSinkOrSource"});
+	}
+	,testIsIsolated: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isTrue(n1.isIsolated(),null,{ fileName : "TestNode.hx", lineNumber : 80, className : "rg.graph.TestNode", methodName : "testIsIsolated"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.isFalse(n1.isIsolated(),null,{ fileName : "TestNode.hx", lineNumber : 82, className : "rg.graph.TestNode", methodName : "testIsIsolated"});
+	}
+	,testEdges: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create();
+		utest.Assert.isFalse(n1.graph.edges.edges(n1).hasNext(),null,{ fileName : "TestNode.hx", lineNumber : 89, className : "rg.graph.TestNode", methodName : "testEdges"});
+		var e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,n1.graph.edges.edgeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 91, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(1,n1.graph.edges.positiveCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 92, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(0,n1.graph.edges.negativeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 93, className : "rg.graph.TestNode", methodName : "testEdges"});
+		var e1 = this.graph.edges.create(n2,n1);
+		utest.Assert.equals(2,n1.graph.edges.edgeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 95, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(1,n1.graph.edges.positiveCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 96, className : "rg.graph.TestNode", methodName : "testEdges"});
+		utest.Assert.equals(1,n1.graph.edges.negativeCount(n1),null,{ fileName : "TestNode.hx", lineNumber : 97, className : "rg.graph.TestNode", methodName : "testEdges"});
+	}
+	,testEdgeRemoval: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), n3 = this.graph.nodes.create(), n4 = this.graph.nodes.create(), n5 = this.graph.nodes.create();
+		this.graph.edges.create(n2,n1);
+		this.graph.edges.create(n3,n1);
+		this.graph.edges.create(n4,n1);
+		this.graph.edges.create(n5,n1);
+		utest.Assert.equals(4,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestNode.hx", lineNumber : 112, className : "rg.graph.TestNode", methodName : "testEdgeRemoval"});
+		n1.graph.nodes._remove(n1);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestNode.hx", lineNumber : 116, className : "rg.graph.TestNode", methodName : "testEdgeRemoval"});
+	}
+	,__class__: rg.graph.TestNode
+});
 if(!rg.view.svg.panel) rg.view.svg.panel = {}
 rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
 	this.frame = (this.panel = panel).frame;
@@ -1133,6 +1486,7 @@ rg.view.svg.panel.Layer.prototype = {
 		return this.customClass = v;
 	}
 	,__class__: rg.view.svg.panel.Layer
+	,__properties__: {set_customClass:"setCustomClass"}
 }
 if(!rg.view.svg.chart) rg.view.svg.chart = {}
 rg.view.svg.chart.Chart = $hxClasses["rg.view.svg.chart.Chart"] = function(panel) {
@@ -1165,25 +1519,257 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 		this.resize();
 	}
 	,moveTooltip: function(x,y,animated) {
-		this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
+		if(0 == this.tooltip.x && 0 == this.tooltip.y || !this.tooltip.visible) {
+			this.tooltip.hide();
+			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
+			this.tooltip.show(true);
+		} else this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
 	}
 	,__class__: rg.view.svg.chart.Chart
 });
 rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
+	this.addClass("sankey");
+	this.layerWidth = 60;
+	this.padding = 30;
+	this.minpadding = 10;
+	this.maxFalloffWidth = 30;
+	this.padLines = 4.0;
+	this.padFlow = 5;
+	this.minCurve = 5;
 }
 rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
 rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
 rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	dps: null
+	layout: null
+	,layerWidth: null
+	,padding: null
+	,minpadding: null
+	,maxFalloffWidth: null
+	,padLines: null
+	,padFlow: null
+	,minCurve: null
+	,maxweight: null
+	,availableheight: null
+	,padBefore: null
+	,padAfter: null
+	,layerstarty: null
 	,setVariables: function(variableIndependents,variableDependents,data) {
 	}
-	,data: function(dps) {
-		this.dps = dps;
+	,data: function(graphlayout) {
+		var me = this;
+		this.layout = graphlayout.clone();
+		var nodes = Arrays.filter(Iterators.filter(this.layout.graph.nodes.iterator(),function(node) {
+			return me.isdummy(node);
+		}),function(node) {
+			var edge = node.graph.edges.positives(node).next(), cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			return celltail.layer > cellhead.layer;
+		});
+		var layers = this.layout.layers();
+		haxe.Log.trace(nodes,{ fileName : "Sankey.hx", lineNumber : 68, className : "rg.view.svg.chart.Sankey", methodName : "data"});
+		var _g = 0;
+		while(_g < nodes.length) {
+			var node = nodes[_g];
+			++_g;
+			var cell = this.layout.cell(node), ehead = node.graph.edges.positives(node).next(), etail = node.graph.edges.negatives(node).next();
+			layers[cell.layer].splice(cell.position,1);
+			this.layout.graph.edges.create(etail.tail,ehead.head,ehead.weight,ehead.data);
+			node.graph.nodes._remove(node);
+		}
+		haxe.Log.trace(graphlayout.layers(),{ fileName : "Sankey.hx", lineNumber : 83, className : "rg.view.svg.chart.Sankey", methodName : "data"});
+		haxe.Log.trace(this.layout.layers(),{ fileName : "Sankey.hx", lineNumber : 84, className : "rg.view.svg.chart.Sankey", methodName : "data"});
 		this.redraw();
 	}
 	,redraw: function() {
-		haxe.Log.trace(this.dps,{ fileName : "Sankey.hx", lineNumber : 28, className : "rg.view.svg.chart.Sankey", methodName : "redraw"});
+		var me = this;
+		this.maxweight = 0;
+		this.layerstarty = [];
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var v = Iterators.reduce(this.layout.layer(i).iterator(),function(cum,cur,_) {
+				return cum + cur.data.weight;
+			},0);
+			if(v > this.maxweight) this.maxweight = v;
+		}
+		var occupiedspace = 0.0;
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var v = Iterators.reduce(this.layout.layer(i).iterator(),function(cum,cur,_) {
+				if(me.isdummy(cur)) return cum + me.minpadding; else return cum + me.padding;
+			},0.0);
+			if(v > occupiedspace) occupiedspace = v;
+		}
+		this.availableheight = this.height - occupiedspace;
+		var $it0 = this.layout.graph.edges.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			if(this.layout.cell(edge.tail).layer < this.layout.cell(edge.head).layer) continue;
+			this.availableheight -= this.padLines;
+			this.maxweight += edge.weight;
+		}
+		this.availableheight -= this.minCurve + this.padFlow;
+		var backedgesy = 0.0;
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var layer = this.layout.layer(i), t = 0.0;
+			var _g2 = 0;
+			while(_g2 < layer.length) {
+				var node = layer[_g2];
+				++_g2;
+				t += this.padding + this.nheight(node.data.weight);
+			}
+			this.layerstarty[i] = t;
+			if(t > backedgesy) backedgesy = t;
+		}
+		var _g1 = 0, _g = this.layerstarty.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.layerstarty[i] = backedgesy - this.layerstarty[i];
+		}
+		backedgesy += this.padLines + this.minCurve + this.padFlow;
+		this.padBefore = 0.0;
+		var _g = 0, _g1 = this.layout.layer(0);
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			var extrain = Math.min(this.nheight(node.data.extraout),this.maxFalloffWidth);
+			if(node.graph.edges.negativeCount(node) > 0) {
+				var tail = node.graph.edges.negatives(node).next().tail, parentweight = this.hafter(tail.id,node.graph.edges.negatives(node)) + this.nheight(tail.data.weight);
+				if(parentweight > extrain) extrain = parentweight;
+			}
+			if(extrain > this.padBefore) this.padBefore = extrain;
+		}
+		this.padBefore += 2;
+		this.padAfter = 0.0;
+		var _g = 0, _g1 = this.layout.layer(this.layout.length - 1);
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			var extrain = Math.min(this.nheight(node.data.extraout),this.maxFalloffWidth);
+			if(node.graph.edges.positiveCount(node) > 0) {
+				var head = node.graph.edges.positives(node).next().head, childweight = this.hafter(head.id,node.graph.edges.positives(node)) + this.nheight(head.data.weight) + this.nheight(head.data.extraout) + this.padLines;
+				if(childweight > extrain) extrain = childweight;
+			}
+			if(extrain > this.padAfter) this.padAfter = extrain;
+		}
+		this.padAfter += 2;
+		var edgescontainer = this.g.select("g.edges");
+		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
+		var edges = Arrays.order(Iterators.array(this.layout.graph.edges.iterator()),function(ea,eb) {
+			return Floats.compare(ea.weight,eb.weight);
+		});
+		edges.forEach(function(edge,_) {
+			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			if(cellhead.layer > celltail.layer) return;
+			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer), before = me.hafter(edge.head.id,edge.tail.positives()) + Math.min(me.maxFalloffWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.tail.id,edge.head.negatives());
+			hook.update(me.layerWidth / 2 + me.xlayer(celltail.layer),me.ynode(edge.tail) + me.ydiagonal(edge.head.id,edge.tail.positives()),-me.layerWidth / 2 + me.xlayer(cellhead.layer),me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.tail.id,edge.head.negatives()),weight,backedgesy,before,after);
+			backedgesy += weight + me.padLines;
+		});
+		edges.forEach(function(edge,_) {
+			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			if(cellhead.layer <= celltail.layer) return;
+			var weight = edge.weight / me.maxweight * me.availableheight, diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer);
+			diagonal.update(me.layerWidth / 2 + me.xlayer(celltail.layer),me.ynode(edge.tail) + me.ydiagonal(edge.head.id,edge.tail.positives()),-me.layerWidth / 2 + me.xlayer(cellhead.layer),me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.tail.id,edge.head.negatives()),weight,weight);
+		});
+		var normMin = function(v) {
+			return Math.max(0,Math.min(v - 3,me.minCurve));
+		};
+		this.layout.each(function(cell,node) {
+			if(node.data.extraout <= 0) return;
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), falloff = me.nheight(node.data.extraout);
+			elbow.update(rg.view.svg.widget.Orientation.RightBottom,falloff,me.layerWidth / 2 + me.xlayer(cell.layer),me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)) + falloff,normMin(falloff),me.maxFalloffWidth,0,me.padFlow);
+		});
+		this.layout.each(function(cell,node) {
+			if(node.data.extrain <= 0) return;
+			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer), extra = me.nheight(node.data.extrain);
+			elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,-me.layerWidth / 2 + me.xlayer(cell.layer),me.ynode(node),normMin(extra),me.maxFalloffWidth,0,me.padFlow);
+		});
+		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
+			return "layer layer-" + i;
+		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
+			return "translate(" + me.xlayer(i) + ",0)";
+		}).exit().remove();
+		var choice = rules.update().selectAll("g.node").dataf(function(d,i) {
+			return me.layout.layer(i);
+		});
+		var cont = choice.enter().append("svg:g").attr("class").string("node");
+		if(this.layerWidth > 0) {
+			cont.append("svg:rect").attr("class").string("node").attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](this.layerWidth).attr("height").floatf(this.hnode.$bind(this));
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
+			cont.append("svg:line").attr("class").string("node").attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+		}
+		cont.each(function(n,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			var label = new rg.view.svg.widget.Label(node,true,true,false);
+			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+			label.setText(n.data.id);
+		});
+		choice.update().attr("transform").stringf(function(n,i) {
+			return "translate(0," + me.ynode(n,i) + ")";
+		});
+		var lines = this.g.selectAll("g.reference").data(edges).enter().append("svg:g").attr("class").string("reference").append("svg:line").style("stroke-opacity")["float"](0.1).style("stroke").colorf(function(d,_) {
+			return me.layout.cell(d.tail).layer == me.layout.cell(d.head).layer?thx.color.NamedColors.blue:me.layout.cell(d.tail).layer < me.layout.cell(d.head).layer?thx.color.NamedColors.green:thx.color.NamedColors.red;
+		});
+		lines.attr("x1").floatf(function(o,_) {
+			return me.xlayer(me.layout.cell(o.tail).layer);
+		}).attr("x2").floatf(function(o,_) {
+			return me.xlayer(me.layout.cell(o.head).layer);
+		}).attr("y1").floatf(function(o,_) {
+			return me.ynode(o.tail) + me.hnode(o.tail) / 2;
+		}).attr("y2").floatf(function(o,_) {
+			return me.ynode(o.head) + me.hnode(o.head) / 2;
+		}).style("stroke-width").floatf(function(o,_) {
+			return me.nheight(o.weight);
+		});
+	}
+	,nheight: function(v) {
+		return v / this.maxweight * this.availableheight;
+	}
+	,ydiagonal: function(id,edges) {
+		var weight = 0.0;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
+			if(edge.id == id) break;
+			weight += edge.weight;
+		}
+		return this.nheight(weight);
+	}
+	,hafter: function(id,edges) {
+		var found = false, pad = this.padLines / this.nheight(1), weight = pad;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
+			if(!found) {
+				if(edge.id == id) found = true;
+				continue;
+			}
+			weight += edge.weight + pad;
+		}
+		return this.nheight(weight);
+	}
+	,xlayer: function(pos,_) {
+		return (this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore;
+	}
+	,ynode: function(node,_) {
+		var cell = this.layout.cell(node), before = this.nodepadding(node) + this.layerstarty[cell.layer];
+		var _g1 = 0, _g = cell.position;
+		while(_g1 < _g) {
+			var i = _g1++;
+			before += this.hnode(node) + this.nodepadding(this.layout.nodeAt(cell.layer,i));
+		}
+		return before;
+	}
+	,nodepadding: function(node) {
+		return this.isdummy(node)?this.minpadding:this.padding;
+	}
+	,isdummy: function(node) {
+		return node.data.id.substr(0,1) == "#";
+	}
+	,hnode: function(node,_) {
+		haxe.Log.trace(node.data.weight,{ fileName : "Sankey.hx", lineNumber : 431, className : "rg.view.svg.chart.Sankey", methodName : "hnode"});
+		return this.nheight(node.data.weight);
 	}
 	,__class__: rg.view.svg.chart.Sankey
 });
@@ -1227,12 +1813,11 @@ rg.controller.interactive.Downloader.prototype = {
 		http.request(true);
 	}
 	,complete: function(success,error,content) {
-		haxe.Log.trace(content,{ fileName : "Downloader.hx", lineNumber : 79, className : "rg.controller.interactive.Downloader", methodName : "complete"});
 		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
 			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
 		} else {
-			js.Lib.window.location.href = this.serviceUrl + "?file=" + content;
 			if(null != success) success();
+			js.Lib.window.location.href = content;
 		}
 	}
 	,__class__: rg.controller.interactive.Downloader
@@ -1285,6 +1870,24 @@ rg.controller.info.InfoFunnelChart.prototype = {
 	,effect: null
 	,arrowSize: null
 	,__class__: rg.controller.info.InfoFunnelChart
+}
+rg.graph.OneCycleRemover = $hxClasses["rg.graph.OneCycleRemover"] = function() {
+}
+rg.graph.OneCycleRemover.__name__ = ["rg","graph","OneCycleRemover"];
+rg.graph.OneCycleRemover.prototype = {
+	remove: function(graph) {
+		var edge, result = [];
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			edge = node.predecessorBy(node);
+			if(null == edge) continue;
+			result.push({ node : node, weight : edge.weight, data : edge.data});
+			edge.graph.edges._remove(edge);
+		}
+		return result;
+	}
+	,__class__: rg.graph.OneCycleRemover
 }
 rg.data.Stats = $hxClasses["rg.data.Stats"] = function(sortf) {
 	this.sortf = sortf;
@@ -1394,6 +1997,7 @@ thx.culture.Info.prototype = {
 }
 thx.culture.Culture = $hxClasses["thx.culture.Culture"] = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
+thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
 thx.culture.Culture.cultures = null;
 thx.culture.Culture.getCultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
@@ -1811,25 +2415,34 @@ rg.view.svg.widget.Balloon.prototype = {
 		this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.view.svg.widget.BalloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
 		if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(coords):this.connectorShapeH.diagonal(coords));
 	}
-	,show: function() {
-		if(!this.visible) return;
+	,show: function(animate) {
+		if(this.visible) return;
 		this.visible = true;
 		this.balloon.style("display").string("block");
+		if(animate) this.balloon.transition().style("opacity")["float"](1); else this.balloon.style("opacity")["float"](1);
 	}
-	,hide: function() {
-		if(this.visible) return;
+	,hide: function(animate) {
+		if(animate == null) animate = false;
+		var me = this;
+		if(!this.visible) return;
 		this.visible = false;
-		this.balloon.style("display").string("none");
+		if(animate) this.balloon.transition().style("opacity")["float"](0).endNode(function(_,_1) {
+			me.balloon.style("display").string("none");
+		}); else {
+			this.balloon.style("opacity")["float"](0);
+			this.balloon.style("display").string("none");
+		}
 	}
 	,redraw: function() {
 		if(null == this.text || this.text.length == 0) return;
+		var last = this.boxWidth;
 		this.boxWidth = 0.0;
 		var w;
 		var _g = 0, _g1 = this.labels;
 		while(_g < _g1.length) {
 			var label = _g1[_g];
 			++_g;
-			if((w = label.getSize().width) > this.boxWidth) this.boxWidth = w;
+			if((w = label.getSize().width) > this.boxWidth) this.boxWidth = w; else if(w == 0) this.boxWidth = last;
 		}
 		this.boxWidth += this.paddingHorizontal * 2;
 		this.boxHeight = this.lineHeight * this.labels.length + this.paddingVertical * 2;
@@ -1839,6 +2452,7 @@ rg.view.svg.widget.Balloon.prototype = {
 		bg.transition().ease(this.ease).delay(null,this.duration);
 	}
 	,__class__: rg.view.svg.widget.Balloon
+	,__properties__: {set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox",set_preferredSide:"setPreferredSide",set_roundedCorner:"setRoundedCorner",set_lineHeight:"setLineHeight",set_text:"setText"}
 }
 rg.view.svg.panel.Panel = $hxClasses["rg.view.svg.panel.Panel"] = function(frame) {
 	this.frame = frame;
@@ -2647,6 +3261,80 @@ Dates.compare = function(a,b) {
 Dates.prototype = {
 	__class__: Dates
 }
+rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("elbow");
+	this.area = this.g.append("svg:path").attr("class").string("elbow-fill");
+	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer");
+	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner");
+}
+rg.view.svg.widget.ElbowArea.__name__ = ["rg","view","svg","widget","ElbowArea"];
+rg.view.svg.widget.ElbowArea.prototype = {
+	g: null
+	,area: null
+	,outer: null
+	,inner: null
+	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
+		if(after == null) after = 10.0;
+		if(before == null) before = 0.0;
+		if(maxradius == null) maxradius = 16.0;
+		if(minradius == null) minradius = 3.0;
+		var dinner = "", douter = "", rad = weight < 0?Math.max(maxradius,weight):Math.min(maxradius,weight);
+		switch( (orientation)[1] ) {
+		case 0:
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + Math.abs(minradius) + "," + Math.abs(minradius) + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y - weight) + "L" + (before + x) + "," + (y - weight) + "A" + Math.abs(rad) + "," + Math.abs(rad) + " 0 0,1 " + (before + x + rad) + "," + (y - weight + rad) + "L" + (before + x + rad) + "," + (y + after + minradius);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			this.update(rg.view.svg.widget.Orientation.RightBottom,-weight,x,y,-minradius,-maxradius,-before,-after);
+			return;
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + minradius + "," + minradius + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y + weight) + "L" + (-before + x) + "," + (y + weight) + "A" + rad + "," + rad + " 0 0,1 " + (-before + x - rad) + "," + (y + weight - rad) + "L" + (-before + x - rad) + "," + (y - after - minradius);
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		}
+		var darea = douter + "L" + dinner.substr(1) + "z";
+		this.inner.attr("d").string(dinner);
+		this.outer.attr("d").string(douter);
+		this.area.attr("d").string(darea);
+	}
+	,__class__: rg.view.svg.widget.ElbowArea
+}
+rg.view.svg.widget.Orientation = $hxClasses["rg.view.svg.widget.Orientation"] = { __ename__ : ["rg","view","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.view.svg.widget.Orientation.RightBottom = ["RightBottom",0];
+rg.view.svg.widget.Orientation.RightBottom.toString = $estr;
+rg.view.svg.widget.Orientation.RightBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftBottom = ["LeftBottom",1];
+rg.view.svg.widget.Orientation.LeftBottom.toString = $estr;
+rg.view.svg.widget.Orientation.LeftBottom.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.RightTop = ["RightTop",2];
+rg.view.svg.widget.Orientation.RightTop.toString = $estr;
+rg.view.svg.widget.Orientation.RightTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.LeftTop = ["LeftTop",3];
+rg.view.svg.widget.Orientation.LeftTop.toString = $estr;
+rg.view.svg.widget.Orientation.LeftTop.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomRight = ["BottomRight",4];
+rg.view.svg.widget.Orientation.BottomRight.toString = $estr;
+rg.view.svg.widget.Orientation.BottomRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.BottomLeft = ["BottomLeft",5];
+rg.view.svg.widget.Orientation.BottomLeft.toString = $estr;
+rg.view.svg.widget.Orientation.BottomLeft.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopRight = ["TopRight",6];
+rg.view.svg.widget.Orientation.TopRight.toString = $estr;
+rg.view.svg.widget.Orientation.TopRight.__enum__ = rg.view.svg.widget.Orientation;
+rg.view.svg.widget.Orientation.TopLeft = ["TopLeft",7];
+rg.view.svg.widget.Orientation.TopLeft.toString = $estr;
+rg.view.svg.widget.Orientation.TopLeft.__enum__ = rg.view.svg.widget.Orientation;
 if(!thx.geo) thx.geo = {}
 thx.geo.IProjection = $hxClasses["thx.geo.IProjection"] = function() { }
 thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
@@ -2723,6 +3411,7 @@ thx.geo.Albers.prototype = {
 		return this._scale;
 	}
 	,__class__: thx.geo.Albers
+	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate",set_parallels:"setParallels",get_parallels:"getParallels",set_origin:"setOrigin",get_origin:"getOrigin"}
 }
 rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
@@ -2847,7 +3536,6 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
 		}
@@ -2858,12 +3546,32 @@ rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianCh
 	,__class__: rg.view.svg.chart.ScatterGraph
 });
 rg.view.svg.widget.Map = $hxClasses["rg.view.svg.widget.Map"] = function(container,projection) {
+	var me = this;
 	this.g = container.append("svg:g").attr("class").string("map");
 	this.projection = projection;
 	this.map = new Hash();
+	this.ready = false;
 	this.onReady = new hxevents.Notifier();
+	this.onReady.addOnce(function() {
+		me.ready = true;
+	});
 }
 rg.view.svg.widget.Map.__name__ = ["rg","view","svg","widget","Map"];
+rg.view.svg.widget.Map.loadJsonp = function(url,handler) {
+	var api = ReportGrid.$.Http.Jsonp.get;
+	api(url,{ success : handler});
+}
+rg.view.svg.widget.Map.loadJsonAjax = function(url,handler) {
+	var http = new haxe.Http(url);
+	http.onData = function(data) {
+		var json = thx.json.Json.decode(data);
+		handler(json);
+	};
+	http.onError = function(err) {
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.view.svg.widget.Map", methodName : "loadJsonAjax"});
+	};
+	http.request(false);
+}
 rg.view.svg.widget.Map.prototype = {
 	className: null
 	,map: null
@@ -2873,37 +3581,34 @@ rg.view.svg.widget.Map.prototype = {
 	,labelDataPointOver: null
 	,radius: null
 	,colorMode: null
+	,ready: null
+	,mapping: null
 	,projection: null
 	,g: null
-	,load: function(path,type,usejsonp) {
+	,load: function(path,type,mappingurl,usejsonp) {
 		switch(type) {
 		case "geojson":
-			this.loadGeoJson(path,usejsonp);
+			this.loadGeoJson(path,mappingurl,usejsonp);
 			break;
 		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 53, className : "rg.view.svg.widget.Map", methodName : "load"});
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 57, className : "rg.view.svg.widget.Map", methodName : "load"});
 		}
 	}
-	,loadGeoJson: function(path,usejsonp) {
-		if(usejsonp) this.loadGeoJsonJsonp(path); else this.loadGeoJsonAjax(path);
-	}
-	,loadGeoJsonJsonp: function(path) {
-		var api = ReportGrid.$.Http.Jsonp.get;
-		api(path,{ success : this.draw.$bind(this)});
-	}
-	,loadGeoJsonAjax: function(path) {
+	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
 		var me = this;
-		var http = new haxe.Http(path);
-		http.onData = function(data) {
-			var json = thx.json.Json.decode(data);
-			me.draw(json);
-		};
-		http.onError = function(err) {
-			throw new thx.error.Error("unable to load GeoJSON file '{0}': {1}",[path,err],null,{ fileName : "Map.hx", lineNumber : 79, className : "rg.view.svg.widget.Map", methodName : "loadGeoJsonAjax"});
-		};
-		http.request(false);
+		var load = usejsonp?rg.view.svg.widget.Map.loadJsonp:rg.view.svg.widget.Map.loadJsonAjax;
+		if(null == mappingurl) load(geourl,this.draw.$bind(this)); else load(mappingurl,function(m) {
+			me.mapping = m;
+			load(geourl,me.draw.$bind(me));
+		});
 	}
 	,draw: function(json) {
+		var me = this;
+		var id = null != this.mapping?function(s) {
+			return Reflect.hasField(me.mapping,s)?Reflect.field(me.mapping,s):s;
+		}:function(s) {
+			return s;
+		};
 		var path = new thx.svg.PathGeoJson();
 		path.setProjection(this.projection);
 		switch(json.type) {
@@ -2915,7 +3620,7 @@ rg.view.svg.widget.Map.prototype = {
 				var dp = { };
 				dp["#centroid"] = centroid;
 				dp["#data"] = feature.properties;
-				if(null != feature.id) this.map.set(feature.id,{ svg : p, dp : dp});
+				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
 				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,a1) {
 					return function(a2,a3) {
 						return f(a1,a2,a3);
@@ -2929,7 +3634,7 @@ rg.view.svg.widget.Map.prototype = {
 			}
 			break;
 		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 119, className : "rg.view.svg.widget.Map", methodName : "draw"});
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.view.svg.widget.Map", methodName : "draw"});
 			break;
 		default:
 			this.g.append("svg:path").attr("d").string(path.path(json));
@@ -2949,6 +3654,7 @@ rg.view.svg.widget.Map.prototype = {
 		return cls;
 	}
 	,__class__: rg.view.svg.widget.Map
+	,__properties__: {set_className:"setClassName"}
 }
 rg.controller.info.InfoAnimation = $hxClasses["rg.controller.info.InfoAnimation"] = function() {
 	this.animated = false;
@@ -3001,6 +3707,7 @@ rg.view.html.widget.DownloaderPositions.prototype = {
 	__class__: rg.view.html.widget.DownloaderPositions
 }
 rg.controller.info.InfoDataSource = $hxClasses["rg.controller.info.InfoDataSource"] = function() {
+	this.statistic = rg.data.source.rgquery.QOperation.Count;
 }
 rg.controller.info.InfoDataSource.__name__ = ["rg","controller","info","InfoDataSource"];
 rg.controller.info.InfoDataSource.filters = function() {
@@ -3032,7 +3739,28 @@ rg.controller.info.InfoDataSource.filters = function() {
 		return Std["is"](v,String) || Std["is"](v,Array);
 	}, filter : function(v) {
 		return [{ field : "groups", value : Std["is"](v,String)?v.split(","):v}];
-	}}];
+	}},{ field : "statistic", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "statistic", value : (function($this) {
+			var $r;
+			switch(("" + v).toLowerCase()) {
+			case "deviation":case "stddeviation":case "standarddeviation":
+				$r = rg.data.source.rgquery.QOperation.StandardDeviation;
+				break;
+			case "mean":
+				$r = rg.data.source.rgquery.QOperation.Mean;
+				break;
+			default:
+				$r = rg.data.source.rgquery.QOperation.Count;
+			}
+			return $r;
+		}(this))}];
+	}},{ field : "tag", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "location", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null}];
 }
 rg.controller.info.InfoDataSource.validateDate = function(v) {
 	return Std["is"](v,Float) || Std["is"](v,Date) || Std["is"](v,String);
@@ -3050,7 +3778,7 @@ rg.controller.info.InfoDataSource.filterDate = function(v) {
 	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 94, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
+		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSource.hx", lineNumber : 124, className : "rg.controller.info.InfoDataSource", methodName : "filterDate"});
 		return $r;
 	}(this));
 }
@@ -3059,12 +3787,15 @@ rg.controller.info.InfoDataSource.prototype = {
 	,path: null
 	,event: null
 	,namedData: null
+	,statistic: null
 	,data: null
 	,groupBy: null
 	,timeZone: null
 	,groups: null
 	,start: null
 	,end: null
+	,tag: null
+	,location: null
 	,__class__: rg.controller.info.InfoDataSource
 }
 if(!rg.controller.factory) rg.controller.factory = {}
@@ -3220,35 +3951,35 @@ rg.controller.factory.TestFactoryDataSource.prototype = {
 		var r = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
 		utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 46, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
 		utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 47, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
-		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 48, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
+		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Event], where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 48, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQueryWithEmptyQuery"});
 	}
 	,testRGQuery: function() {
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ path : "/", event : "click", query : ".#time:hour"}), ds = this.factory.create(info);
-		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 59, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
-		utest.Assert["is"](ds,rg.data.source.DataSourceReportGrid,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 60, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 58, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert["is"](ds,rg.data.source.DataSourceReportGrid,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 59, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
 		var r = Std["is"](ds,rg.data.source.DataSourceReportGrid)?ds:null;
-		utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 62, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
-		utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 63, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
-		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Time("hour")], operation : rg.data.source.rgquery.QOperation.Count, where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 64, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.equals("click",r.event,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 61, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.equals("/",r.path,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 62, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
+		utest.Assert.same({ exp : [rg.data.source.rgquery.QExp.Time("hour")], where : []},r.query,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 63, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testRGQuery"});
 	}
 	,testArraySource: function() {
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : [{ event : "click", count : 10}], name : "sample"}), ds = this.factory.create(info);
 		ds.onLoad.add(function(data) {
-			utest.Assert.same([{ event : "click", count : 10}],data,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 79, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testArraySource"});
+			utest.Assert.same([{ event : "click", count : 10}],data,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 77, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testArraySource"});
 		});
 		ds.load();
 	}
 	,testNamedSource: function() {
 		this.cache.set("sample",new rg.data.source.DataSourceArray([]));
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : "sample"}), ds = this.factory.create(info);
-		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 92, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
-		utest.Assert["is"](ds,rg.data.source.DataSourceArray,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 93, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
+		utest.Assert.notNull(ds,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 90, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
+		utest.Assert["is"](ds,rg.data.source.DataSourceArray,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 91, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSource"});
 	}
 	,testNamedSourceForNotExistingSource: function() {
 		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),{ data : "sample"}), b = this.factory;
 		utest.Assert.raises(function() {
 			b.create(info);
-		},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 100, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSourceForNotExistingSource"});
+		},thx.error.Error,null,null,{ fileName : "TestFactoryDataSource.hx", lineNumber : 98, className : "rg.controller.factory.TestFactoryDataSource", methodName : "testNamedSourceForNotExistingSource"});
 	}
 	,setup: function() {
 		this.cache = new Hash();
@@ -3428,10 +4159,10 @@ thx.js.AccessDataProperty.prototype = $extend(thx.js.AccessProperty.prototype,{
 	,__class__: thx.js.AccessDataProperty
 });
 rg.controller.info.InfoMap = $hxClasses["rg.controller.info.InfoMap"] = function() {
-	this.property = "#location";
+	this.property = "location";
 	this.type = "geojson";
 	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
-	this.usejson = true;
+	this.usejsonp = true;
 	this.radius = function(_,_1) {
 		return 10;
 	};
@@ -3450,7 +4181,7 @@ rg.controller.info.InfoMap.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "translate", validator : function(v) {
 		return Std["is"](v,Array);
-	}, filter : null},{ field : "original", validator : function(v) {
+	}, filter : null},{ field : "origin", validator : function(v) {
 		return Std["is"](v,Array);
 	}, filter : null},{ field : "parallels", validator : function(v) {
 		return Std["is"](v,Array);
@@ -3480,6 +4211,10 @@ rg.controller.info.InfoMap.filters = function() {
 		return [{ field : "radius", value : Std["is"](v,Float)?function(_,_1) {
 			return v;
 		}:v}];
+	}},{ field : "mapping", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		if(Std["is"](v,String)) return [{ field : "mappingurl", value : v}]; else return [{ field : "mapping", value : v}];
 	}}];
 }
 rg.controller.info.InfoMap.isValidTemplate = function(t) {
@@ -3498,7 +4233,7 @@ rg.controller.info.InfoMap.fromTemplate = function(t) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 175, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
+			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 194, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
 			return $r;
 		}(this));
 	}
@@ -3518,7 +4253,9 @@ rg.controller.info.InfoMap.prototype = {
 	,click: null
 	,radius: null
 	,colorScaleMode: null
-	,usejson: null
+	,usejsonp: null
+	,mapping: null
+	,mappingurl: null
 	,__class__: rg.controller.info.InfoMap
 }
 thx.culture.FormatNumber = $hxClasses["thx.culture.FormatNumber"] = function() { }
@@ -3734,6 +4471,7 @@ rg.data.AxisOrdinal.prototype = {
 		return new rg.data.Stats();
 	}
 	,__class__: rg.data.AxisOrdinal
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.view.svg.panel.TestSpace = $hxClasses["rg.view.svg.panel.TestSpace"] = function() {
 }
@@ -3809,6 +4547,68 @@ rg.view.svg.panel.TestSpace.prototype = {
 	}
 	,__class__: rg.view.svg.panel.TestSpace
 }
+rg.view.svg.widget.HookConnectorArea = $hxClasses["rg.view.svg.widget.HookConnectorArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("hook");
+	this.area = this.g.append("svg:path").attr("class").string("hook-fill");
+	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper");
+	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower");
+}
+rg.view.svg.widget.HookConnectorArea.__name__ = ["rg","view","svg","widget","HookConnectorArea"];
+rg.view.svg.widget.HookConnectorArea.lineTo = function(x,y) {
+	return "L" + x + "," + y;
+}
+rg.view.svg.widget.HookConnectorArea.quarterTo = function(x,y,r) {
+	return "A" + Math.abs(r) + "," + Math.abs(r) + " 0 0," + (r < 0?0:1) + " " + x + "," + y;
+}
+rg.view.svg.widget.HookConnectorArea.prototype = {
+	g: null
+	,area: null
+	,upper: null
+	,lower: null
+	,update: function(x1,y1,x2,y2,weight,yreference,before,after) {
+		var min = Math.min(5,weight), upperp = this.createPath(x1,y1,x2,y2,y1 > yreference?yreference:yreference + weight,before + weight,after + weight,weight,weight), lowerp = this.createPath(x2,y2 + weight,x1,y1 + weight,y1 > yreference?yreference - weight:yreference,-after,-before,-min,min);
+		this.upper.attr("d").string(upperp);
+		this.lower.attr("d").string(lowerp);
+		this.area.attr("d").string(upperp + "L" + lowerp.substr(1) + "z");
+	}
+	,createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
+		var path = "M" + x1 + "," + y1;
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x1 + before - r1,y1);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x1 + before,y1 + r2,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x1 + before,yref - r2);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x1 + before - r1,yref,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2 - after + r1,yref);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x2 - after,yref - r2,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2 - after,y2 + r2);
+		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x2 - after + r1,y2,r1);
+		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2,y2);
+		return path;
+	}
+	,createPath2: function(x1,y1,sr,x2,y2,yreference) {
+		var path = "M" + x1 + "," + y1;
+		if(yreference > y1) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x1 + sr) + "," + (y1 + sr);
+			path += "L" + (sr + x1) + "," + (yreference - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x1 + "," + yreference;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x1 + sr) + "," + (y1 - sr);
+			path += "L" + (sr + x1) + "," + (yreference + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x1 + "," + yreference;
+		}
+		path += "L" + x2 + "," + yreference;
+		if(yreference > y2) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x2 - sr) + "," + (yreference - sr);
+			path += "L" + (x2 - sr) + "," + (y2 + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x2 + "," + y2;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x2 - sr) + "," + (yreference + sr);
+			path += "L" + (x2 - sr) + "," + (y2 - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x2 + "," + y2;
+		}
+		return path;
+	}
+	,__class__: rg.view.svg.widget.HookConnectorArea
+}
 rg.controller.info.InfoVisualizationType = $hxClasses["rg.controller.info.InfoVisualizationType"] = function() {
 	this.replace = true;
 }
@@ -3853,6 +4653,41 @@ Std.random = function(x) {
 }
 Std.prototype = {
 	__class__: Std
+}
+rg.graph.TestGreedySwitchDecrosser = $hxClasses["rg.graph.TestGreedySwitchDecrosser"] = function() {
+}
+rg.graph.TestGreedySwitchDecrosser.__name__ = ["rg","graph","TestGreedySwitchDecrosser"];
+rg.graph.TestGreedySwitchDecrosser.generate = function() {
+	var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), n4 = graph.nodes.create(), n5 = graph.nodes.create(), n6 = graph.nodes.create(), n7 = graph.nodes.create(), n8 = graph.nodes.create(), n9 = graph.nodes.create(), n10 = graph.nodes.create(), n11 = graph.nodes.create(), n12 = graph.nodes.create();
+	graph.edges.create(n1,n6);
+	graph.edges.create(n2,n5);
+	graph.edges.create(n3,n4);
+	graph.edges.create(n4,n8);
+	graph.edges.create(n5,n7);
+	graph.edges.create(n6,n7);
+	graph.edges.create(n7,n11);
+	graph.edges.create(n8,n10);
+	graph.edges.create(n8,n12);
+	return new rg.graph.GraphLayout(graph,[[n1.id,n2.id,n3.id],[n4.id,n5.id,n6.id],[n7.id,n8.id,n9.id],[n10.id,n11.id,n12.id]]);
+}
+rg.graph.TestGreedySwitchDecrosser.prototype = {
+	testDecrosser1: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = new rg.graph.GreedySwitchDecrosser().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 13, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosser1"});
+	}
+	,testDecrosser2: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = new rg.graph.GreedySwitch2Decrosser().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 20, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosser2"});
+	}
+	,testDecrosserCombined: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = rg.graph.GreedySwitchDecrosser.combined().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 27, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosserCombined"});
+	}
+	,testDecrosserBest: function() {
+		var layout = rg.graph.TestGreedySwitchDecrosser.generate(), decrossed = rg.graph.GreedySwitchDecrosser.best().decross(layout);
+		utest.Assert.isTrue(layout.crossings() > decrossed.crossings(),null,{ fileName : "TestGreedySwitchDecrosser.hx", lineNumber : 34, className : "rg.graph.TestGreedySwitchDecrosser", methodName : "testDecrosserBest"});
+	}
+	,__class__: rg.graph.TestGreedySwitchDecrosser
 }
 js.Lib = $hxClasses["js.Lib"] = function() { }
 js.Lib.__name__ = ["js","Lib"];
@@ -4272,6 +5107,7 @@ thx.js.Selection = $hxClasses["thx.js.Selection"] = function(groups) {
 	thx.js.UnboundSelection.call(this,groups);
 }
 thx.js.Selection.__name__ = ["thx","js","Selection"];
+thx.js.Selection.__properties__ = {get_currentNode:"getCurrentNode",get_current:"getCurrent"}
 thx.js.Selection.current = null;
 thx.js.Selection.currentNode = null;
 thx.js.Selection.create = function(groups) {
@@ -4334,6 +5170,17 @@ thx.js.Dom.event = null;
 thx.js.Dom.prototype = {
 	__class__: thx.js.Dom
 }
+rg.graph.TestGraphLayout = $hxClasses["rg.graph.TestGraphLayout"] = function() {
+}
+rg.graph.TestGraphLayout.__name__ = ["rg","graph","TestGraphLayout"];
+rg.graph.TestGraphLayout.prototype = {
+	testRemoveNode: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n2,n3), layers = [[n1.id],[n2.id],[n3.id]], layout = new rg.graph.GraphLayout(graph,layers);
+		n2.graph.nodes._remove(n2);
+		utest.Assert.same([[n1.id],[n3.id]],layout.layers(),null,null,{ fileName : "TestGraphLayout.hx", lineNumber : 20, className : "rg.graph.TestGraphLayout", methodName : "testRemoveNode"});
+	}
+	,__class__: rg.graph.TestGraphLayout
+}
 rg.view.html.widget.DownloaderPosition = $hxClasses["rg.view.html.widget.DownloaderPosition"] = { __ename__ : ["rg","view","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
 rg.view.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.view.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
 rg.view.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
@@ -4354,6 +5201,19 @@ rg.view.html.widget.DownloaderPosition.Before.__enum__ = rg.view.html.widget.Dow
 rg.view.html.widget.DownloaderPosition.After = ["After",6];
 rg.view.html.widget.DownloaderPosition.After.toString = $estr;
 rg.view.html.widget.DownloaderPosition.After.__enum__ = rg.view.html.widget.DownloaderPosition;
+rg.graph.TestLongestPathLayer = $hxClasses["rg.graph.TestLongestPathLayer"] = function() {
+}
+rg.graph.TestLongestPathLayer.__name__ = ["rg","graph","TestLongestPathLayer"];
+rg.graph.TestLongestPathLayer.prototype = {
+	testLayer: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), n4 = graph.nodes.create(), n5 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n2,n3), e3 = graph.edges.create(n1,n4), e4 = graph.edges.create(n3,n5), layout = new rg.graph.LongestPathLayer().lay(graph);
+		utest.Assert.equals(3,layout.length,null,{ fileName : "TestLongestPathLayer.hx", lineNumber : 22, className : "rg.graph.TestLongestPathLayer", methodName : "testLayer"});
+		utest.Assert.equals(2,Arrays.floatMax(layout,function(arr) {
+			return arr.length;
+		}),null,{ fileName : "TestLongestPathLayer.hx", lineNumber : 23, className : "rg.graph.TestLongestPathLayer", methodName : "testLayer"});
+	}
+	,__class__: rg.graph.TestLongestPathLayer
+}
 rg.controller.info.InfoTrack = $hxClasses["rg.controller.info.InfoTrack"] = function() {
 	this.enabled = false;
 	this.token = rg.RGConst.TRACKING_TOKEN;
@@ -4381,6 +5241,7 @@ rg.controller.info.InfoTrack.prototype = {
 }
 thx.culture.Language = $hxClasses["thx.culture.Language"] = function() { }
 thx.culture.Language.__name__ = ["thx","culture","Language"];
+thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
 thx.culture.Language.languages = null;
 thx.culture.Language.getLanguages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
@@ -4412,6 +5273,22 @@ rg.data.AxisOrdinalStats.prototype = $extend(rg.data.AxisOrdinal.prototype,{
 	}
 	,__class__: rg.data.AxisOrdinalStats
 });
+rg.graph.TestEdgeSplitter = $hxClasses["rg.graph.TestEdgeSplitter"] = function() {
+}
+rg.graph.TestEdgeSplitter.__name__ = ["rg","graph","TestEdgeSplitter"];
+rg.graph.TestEdgeSplitter.prototype = {
+	testSplit: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n1,n3), layout = new rg.graph.GraphLayout(graph,[[n1.id],[],[n2.id],[n3.id]]);
+		var newlayout = new rg.graph.EdgeSplitter().split(layout).layers();
+		utest.Assert.equals(5,IntHashes.count(graph.edges.collection),null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 20, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(4,newlayout.length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 21, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(1,newlayout[0].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 22, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(2,newlayout[1].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 23, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(2,newlayout[2].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 24, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+		utest.Assert.equals(1,newlayout[3].length,null,{ fileName : "TestEdgeSplitter.hx", lineNumber : 25, className : "rg.graph.TestEdgeSplitter", methodName : "testSplit"});
+	}
+	,__class__: rg.graph.TestEdgeSplitter
+}
 rg.data.Tickmarks = $hxClasses["rg.data.Tickmarks"] = function() { }
 rg.data.Tickmarks.__name__ = ["rg","data","Tickmarks"];
 rg.data.Tickmarks.bound = function(tickmarks,max) {
@@ -4464,6 +5341,17 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 }
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
+}
+rg.graph.TestTwoCycleRemover = $hxClasses["rg.graph.TestTwoCycleRemover"] = function() {
+}
+rg.graph.TestTwoCycleRemover.__name__ = ["rg","graph","TestTwoCycleRemover"];
+rg.graph.TestTwoCycleRemover.prototype = {
+	testRemover: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n2), e2 = graph.edges.create(n2,n1), e3 = graph.edges.create(n1,n3), e4 = graph.edges.create(n3,n1), e5 = graph.edges.create(n2,n3), remover = new rg.graph.TwoCycleRemover(), removed = remover.remove(graph);
+		utest.Assert.equals(2,removed.length,null,{ fileName : "TestTwoCycleRemover.hx", lineNumber : 25, className : "rg.graph.TestTwoCycleRemover", methodName : "testRemover"});
+		utest.Assert.equals(3,IntHashes.count(graph.edges.collection),null,{ fileName : "TestTwoCycleRemover.hx", lineNumber : 26, className : "rg.graph.TestTwoCycleRemover", methodName : "testRemover"});
+	}
+	,__class__: rg.graph.TestTwoCycleRemover
 }
 utest.ui.common.IReport = $hxClasses["utest.ui.common.IReport"] = function() { }
 utest.ui.common.IReport.__name__ = ["utest","ui","common","IReport"];
@@ -4754,6 +5642,65 @@ utest.ui.text.HtmlReport.prototype = {
 	}
 	,__class__: utest.ui.text.HtmlReport
 }
+rg.graph.GreedySwitchDecrosser = $hxClasses["rg.graph.GreedySwitchDecrosser"] = function() {
+}
+rg.graph.GreedySwitchDecrosser.__name__ = ["rg","graph","GreedySwitchDecrosser"];
+rg.graph.GreedySwitchDecrosser.combined = function() {
+	return { decross : function(layout) {
+		layout = new rg.graph.GreedySwitchDecrosser().decross(layout);
+		return new rg.graph.GreedySwitch2Decrosser().decross(layout);
+	}};
+}
+rg.graph.GreedySwitchDecrosser.best = function() {
+	return { decross : function(layout) {
+		var attempts = [new rg.graph.GreedySwitchDecrosser().decross(layout),new rg.graph.GreedySwitch2Decrosser().decross(layout),rg.graph.GreedySwitchDecrosser.combined().decross(layout)];
+		return Arrays.min(attempts,function(layout1) {
+			return layout1.crossings();
+		});
+	}};
+}
+rg.graph.GreedySwitchDecrosser.prototype = {
+	decross: function(layout) {
+		var layers = layout.layers(), graph = layout.graph, newlayers, newlayout = layout;
+		if(layers.length <= 1) return new rg.graph.GraphLayout(layout.graph,layers);
+		var totbefore, crossings, len = layers.length - 1, a, b;
+		do {
+			newlayers = layers.map(function(arr,_) {
+				return arr.copy();
+			});
+			newlayout = new rg.graph.GraphLayout(graph,layers);
+			totbefore = newlayout.crossings();
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				a = newlayers[i];
+				b = newlayers[i + 1];
+				this.decrossPair(graph,a,b);
+			}
+			crossings = new rg.graph.GraphLayout(graph,newlayers).crossings();
+			layers = newlayers;
+		} while(totbefore > crossings);
+		return newlayout;
+	}
+	,decrossPair: function(graph,a,b) {
+		var tot = rg.graph.GraphLayout.arrayCrossings(graph,a,b), ntot = tot, t;
+		do {
+			tot = ntot;
+			var _g1 = 0, _g = b.length - 1;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.swap(b,i);
+				if((t = rg.graph.GraphLayout.arrayCrossings(graph,a,b)) >= ntot) this.swap(b,i); else ntot = t;
+			}
+		} while(ntot < tot);
+	}
+	,swap: function(a,pos) {
+		var v = a[pos];
+		a[pos] = a[pos + 1];
+		a[pos + 1] = v;
+	}
+	,__class__: rg.graph.GreedySwitchDecrosser
+}
 rg.view.html.widget.PivotTable = $hxClasses["rg.view.html.widget.PivotTable"] = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
@@ -4781,10 +5728,12 @@ rg.view.html.widget.PivotTable.prototype = {
 	,stats: null
 	,labelDataPoint: function(dp,stats) {
 		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
 		return thx.culture.FormatNumber["int"](v);
 	}
 	,labelDataPointOver: function(dp,stats) {
 		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
 		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
 	}
 	,labelAxis: function(v) {
@@ -5133,6 +6082,7 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		}
 	}
 	,data: function(dps) {
+		haxe.Log.trace(dps,{ fileName : "BarChart.hx", lineNumber : 82, className : "rg.view.svg.chart.BarChart", methodName : "data"});
 		var values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
 		if(null != (discrete = Types["as"](this.xVariable.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - this.padding * (values - 1)) / values; else span = (this.width - this.padding * (values - 1)) / values;
 		var getGroup = function(name,container) {
@@ -5185,7 +6135,6 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,ystats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(x + w / 2,y);
 		}
@@ -5284,7 +6233,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.1.3.1476"};
+	r.info.viz = { version : "1.1.5.3903"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5443,6 +6392,71 @@ rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
 rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
 rg.view.frame.Orientation.Horizontal.toString = $estr;
 rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
+rg.graph.GreedyCyclePartitioner = $hxClasses["rg.graph.GreedyCyclePartitioner"] = function() {
+}
+rg.graph.GreedyCyclePartitioner.__name__ = ["rg","graph","GreedyCyclePartitioner"];
+rg.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative = function(graph) {
+	var n = null, l = 0;
+	var $it0 = graph.nodes.collection.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		var diff = node.graph.edges.positiveCount(node) - node.graph.edges.negativeCount(node);
+		if(null == n || l < diff) {
+			n = node;
+			l = diff;
+		}
+	}
+	return n;
+}
+rg.graph.GreedyCyclePartitioner.prototype = {
+	partition: function(graph) {
+		var left = [], right = [], clone = graph.clone(), n;
+		while(!(Iterators.count(clone.nodes.iterator()) == 0)) {
+			while(null != (n = clone.findSink())) {
+				var $it0 = n.graph.edges.negatives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					right.unshift(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+			var _g = 0, _g1 = clone.findIsolateds();
+			while(_g < _g1.length) {
+				var isolated = _g1[_g];
+				++_g;
+				isolated.graph.nodes._remove(isolated);
+			}
+			while(null != (n = clone.findSource())) {
+				var $it1 = n.graph.edges.positives(n);
+				while( $it1.hasNext() ) {
+					var edge = $it1.next();
+					left.push(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+			if(!(Iterators.count(clone.nodes.iterator()) == 0)) {
+				n = rg.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative(clone);
+				var $it2 = n.graph.edges.negatives(n);
+				while( $it2.hasNext() ) {
+					var edge = $it2.next();
+					right.unshift(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				var $it3 = n.graph.edges.positives(n);
+				while( $it3.hasNext() ) {
+					var edge = $it3.next();
+					left.push(graph.edges.get(edge.id));
+					edge.graph.edges._remove(edge);
+				}
+				n.graph.nodes._remove(n);
+			}
+		}
+		return { left : left, right : right};
+	}
+	,__class__: rg.graph.GreedyCyclePartitioner
+}
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	this.months = months;
@@ -5553,6 +6567,7 @@ rg.data.AxisTime.prototype = {
 		return new rg.data.StatsNumeric();
 	}
 	,__class__: rg.data.AxisTime
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 thx.js.Timer = $hxClasses["thx.js.Timer"] = function() { }
 thx.js.Timer.__name__ = ["thx","js","Timer"];
@@ -5822,6 +6837,38 @@ hxevents.Dispatcher.prototype = {
 	}
 	,__class__: hxevents.Dispatcher
 }
+rg.data.source.rgquery.transform.TransformStatisticTime = $hxClasses["rg.data.source.rgquery.transform.TransformStatisticTime"] = function(properties,fields,event,periodicity,unit) {
+	this.properties = properties;
+	this.unit = unit;
+	this.periodicity = periodicity;
+	this.fields = fields;
+	this.event = event;
+}
+rg.data.source.rgquery.transform.TransformStatisticTime.__name__ = ["rg","data","source","rgquery","transform","TransformStatisticTime"];
+rg.data.source.rgquery.transform.TransformStatisticTime.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformStatisticTime.prototype = {
+	properties: null
+	,unit: null
+	,periodicity: null
+	,fields: null
+	,event: null
+	,transform: function(data) {
+		var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
+		if(null == items || 0 == items.length) return [];
+		var result = [];
+		var _g = 0;
+		while(_g < data.length) {
+			var arr = data[_g];
+			++_g;
+			var p = Dynamics.clone(properties);
+			Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[0].timestamp),arr[1]]);
+			p.event = this.event;
+			result.push(p);
+		}
+		return result;
+	}
+	,__class__: rg.data.source.rgquery.transform.TransformStatisticTime
+}
 if(!thx.text) thx.text = {}
 thx.text.ERegs = $hxClasses["thx.text.ERegs"] = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
@@ -5957,7 +7004,7 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 	case "month":
 		var s = rg.util.Periodicity.dateUtc(start), e = rg.util.Periodicity.dateUtc(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
 		var result = [];
-		while(sy < ey || sm <= em) {
+		while(sy < ey || sy == ey && sm <= em) {
 			result.push(new Date(sy,sm,1,0,0,0).getTime());
 			sm++;
 			if(sm > 11) {
@@ -6282,6 +7329,7 @@ thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
 	thx.culture.Culture.add(this);
 }
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
+thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
 thx.cultures.EnUS.culture = null;
 thx.cultures.EnUS.getCulture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
@@ -6576,6 +7624,7 @@ thx.languages.En = $hxClasses["thx.languages.En"] = function() {
 	thx.culture.Language.add(this);
 }
 thx.languages.En.__name__ = ["thx","languages","En"];
+thx.languages.En.__properties__ = {get_language:"getLanguage"}
 thx.languages.En.language = null;
 thx.languages.En.getLanguage = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
@@ -6662,6 +7711,159 @@ thx.translation.ITranslation.prototype = {
 	,_: null
 	,__: null
 	,__class__: thx.translation.ITranslation
+	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
+}
+rg.graph.GraphLayout = $hxClasses["rg.graph.GraphLayout"] = function(graph,layers) {
+	this.graph = graph;
+	this._layers = layers.map(function(arr,_) {
+		return arr.copy();
+	});
+	this.friendCell = this._cell = new rg.graph.LayoutCell();
+	this._updateMap();
+	this.length = this._layers.length;
+	graph.nodes.onRemove.add(this._nodeRemove.$bind(this));
+}
+rg.graph.GraphLayout.__name__ = ["rg","graph","GraphLayout"];
+rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
+	var map = new IntHash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i],i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = graph.nodes.get(a[i]);
+		var $it0 = n1.graph.edges.positives(n1);
+		while( $it0.hasNext() ) {
+			var edge1 = $it0.next();
+			var p1 = map.get(edge1.head.id);
+			if(null == p1) continue;
+			var _g3 = i + 1, _g2 = a.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var n2 = graph.nodes.get(a[j]);
+				var $it1 = n2.graph.edges.positives(n2);
+				while( $it1.hasNext() ) {
+					var edge2 = $it1.next();
+					var p2 = map.get(edge2.head.id);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.graph.GraphLayout.prototype = {
+	graph: null
+	,length: null
+	,_layers: null
+	,_cell: null
+	,_map: null
+	,friendCell: null
+	,_updateMap: function() {
+		var me = this;
+		this._map = new IntHash();
+		this.each(function(cell,node) {
+			me._map.set(node.id,[cell.layer,cell.position]);
+		});
+	}
+	,clone: function() {
+		return new rg.graph.GraphLayout(this.graph.clone(),this.layers());
+	}
+	,each: function(f) {
+		var layers = this._layers.length, positions;
+		var _g = 0;
+		while(_g < layers) {
+			var layer = _g++;
+			positions = this._layers[layer].length;
+			var _g1 = 0;
+			while(_g1 < positions) {
+				var position = _g1++;
+				this.friendCell.update(layer,position,layers,positions);
+				f(this._cell,this.graph.nodes.get(this._layers[layer][position]));
+			}
+		}
+	}
+	,cell: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 57, className : "rg.graph.GraphLayout", methodName : "cell"});
+		var pos = this._map.get(node.id);
+		if(null == pos) return null;
+		return new rg.graph.LayoutCell(pos[0],pos[1],this._layers.length,this._layers[pos[0]].length);
+	}
+	,nodeAt: function(layer,position) {
+		var arr = this._layers[layer];
+		if(null == arr) return null;
+		var id = arr[position];
+		if(null == id) return null;
+		return this.graph.nodes.get(id);
+	}
+	,layer: function(i) {
+		var me = this;
+		return this._layers[i].map(function(id,_) {
+			return me.graph.nodes.get(id);
+		});
+	}
+	,layers: function() {
+		var result = [];
+		var _g = 0, _g1 = this._layers;
+		while(_g < _g1.length) {
+			var arr = _g1[_g];
+			++_g;
+			result.push(arr.copy());
+		}
+		return result;
+	}
+	,crossings: function() {
+		var tot = 0;
+		var _g1 = 0, _g = this._layers.length - 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			tot += rg.graph.GraphLayout.arrayCrossings(this.graph,this._layers[i],this._layers[i + 1]);
+		}
+		return tot;
+	}
+	,maxCells: function() {
+		return Std["int"](Arrays.floatMax(this._layers,function(arr) {
+			return arr.length;
+		}));
+	}
+	,_nodeRemove: function(node) {
+		var c = this.cell(node);
+		this._layers[c.layer].splice(c.position,1);
+		if(this._layers[c.layer].length == 0) this._layers.splice(c.layer,1);
+		this._updateMap();
+	}
+	,toString: function() {
+		return "GraphLayout (" + this.graph + ", layers: " + this._layers.length + ", crossings : " + this.crossings() + ")";
+	}
+	,__class__: rg.graph.GraphLayout
+}
+rg.graph.LayoutCell = $hxClasses["rg.graph.LayoutCell"] = function(layer,position,layers,positions) {
+	if(positions == null) positions = 0;
+	if(layers == null) layers = 0;
+	if(position == null) position = 0;
+	if(layer == null) layer = 0;
+	this.layer = layer;
+	this.layers = layers;
+	this.position = position;
+	this.positions = positions;
+}
+rg.graph.LayoutCell.__name__ = ["rg","graph","LayoutCell"];
+rg.graph.LayoutCell.prototype = {
+	layer: null
+	,position: null
+	,layers: null
+	,positions: null
+	,update: function(layer,position,layers,positions) {
+		this.layer = layer;
+		this.layers = layers;
+		this.position = position;
+		this.positions = positions;
+	}
+	,__class__: rg.graph.LayoutCell
 }
 if(!thx.svg) thx.svg = {}
 thx.svg.Diagonal = $hxClasses["thx.svg.Diagonal"] = function() {
@@ -6676,6 +7878,13 @@ thx.svg.Diagonal.forObject = function() {
 		return [d.x0,d.y0];
 	}).targetf(function(d,_i) {
 		return [d.x1,d.y1];
+	});
+}
+thx.svg.Diagonal.forArray = function() {
+	return new thx.svg.Diagonal().sourcef(function(d,_i) {
+		return [d[0],d[1]];
+	}).targetf(function(d,_i) {
+		return [d[2],d[3]];
 	});
 }
 thx.svg.Diagonal.prototype = {
@@ -6740,8 +7949,202 @@ rg.data.IDataSource.prototype = {
 	,load: null
 	,__class__: rg.data.IDataSource
 }
+rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(graph,idf) {
+	var me = this;
+	this.nextid = 0;
+	this.graph = graph;
+	this.idf = idf;
+	this.collection = new IntHash();
+	this.map = new Hash();
+	if(null != idf) {
+		var add = this.collectionCreate.$bind(this);
+		this.collectionCreate = function(item) {
+			me.map.set(idf(item.data),item);
+			add(item);
+		};
+		var rem = this.collectionRemove.$bind(this);
+		this.collectionRemove = function(item) {
+			me.map.remove(idf(item.data));
+			rem(item);
+		};
+	}
+	this.onRemove = new hxevents.Dispatcher();
+	this.onCreate = new hxevents.Dispatcher();
+}
+rg.graph.GraphCollection.__name__ = ["rg","graph","GraphCollection"];
+rg.graph.GraphCollection.prototype = {
+	onRemove: null
+	,onCreate: null
+	,graph: null
+	,collection: null
+	,nextid: null
+	,idf: null
+	,map: null
+	,length: null
+	,getById: function(id) {
+		return this.map.get(id);
+	}
+	,get: function(id) {
+		return this.collection.get(id);
+	}
+	,has: function(item) {
+		return item.graph == this.graph && this.collection.exists(item.id);
+	}
+	,get_length: function() {
+		return IntHashes.count(this.collection);
+	}
+	,collectionCreate: function(item) {
+		this.onCreate.dispatch(item);
+		this.collection.set(item.id,item);
+	}
+	,collectionRemove: function(item) {
+		this.collection.remove(item.id);
+		this.onRemove.dispatch(item);
+	}
+	,iterator: function() {
+		return this.collection.iterator();
+	}
+	,toString: function() {
+		return Iterators.map(this.collection.iterator(),function(item,_) {
+			return Std.string(item);
+		}).join(", ");
+	}
+	,__class__: rg.graph.GraphCollection
+	,__properties__: {get_length:"get_length"}
+}
+rg.graph.GraphEdges = $hxClasses["rg.graph.GraphEdges"] = function(graph,edgeidf) {
+	rg.graph.GraphCollection.call(this,graph,edgeidf);
+	this.edgesp = new IntHash();
+	this.edgesn = new IntHash();
+}
+rg.graph.GraphEdges.__name__ = ["rg","graph","GraphEdges"];
+rg.graph.GraphEdges.newInstance = function(graph,edgeidf) {
+	return new rg.graph.GraphEdges(graph,edgeidf);
+}
+rg.graph.GraphEdges.__super__ = rg.graph.GraphCollection;
+rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
+	edgesp: null
+	,edgesn: null
+	,copyTo: function(graph) {
+		var edges = new rg.graph.GraphEdges(graph), nodes = graph.nodes, tail, head;
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			tail = nodes.get(edge.tail.id);
+			head = nodes.get(edge.head.id);
+			edges._create(edge.id,tail,head,edge.weight,edge.data);
+		}
+		edges.nextid = this.nextid;
+		return edges;
+	}
+	,create: function(tail,head,weight,data) {
+		if(weight == null) weight = 1.0;
+		if(tail.graph != head.graph || tail.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 39, className : "rg.graph.GraphEdges", methodName : "create"});
+		return this._create(++this.nextid,tail,head,weight,data);
+	}
+	,_create: function(id,tail,head,weight,data) {
+		var e = rg.graph.GEdge.create(this.graph,id,tail,head,weight,data);
+		this.collectionCreate(e);
+		this.connections(tail.id,this.edgesp).push(id);
+		this.connections(head.id,this.edgesn).push(id);
+		return e;
+	}
+	,remove: function(edge) {
+		if(edge.graph != this.graph) throw new thx.error.Error("remove: the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 55, className : "rg.graph.GraphEdges", methodName : "remove"});
+		this._remove(edge);
+	}
+	,_remove: function(edge) {
+		this.collectionRemove(edge);
+		this.removeConnection(edge.id,edge.tail.id,this.edgesp);
+		this.removeConnection(edge.id,edge.head.id,this.edgesn);
+		edge.destroy();
+	}
+	,unlink: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlink: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 70, className : "rg.graph.GraphEdges", methodName : "unlink"});
+		this._unlink(node,this.edgesp);
+		this._unlink(node,this.edgesn);
+	}
+	,positives: function(node) {
+		return this._edges(node.id,this.edgesp).iterator();
+	}
+	,negatives: function(node) {
+		return this._edges(node.id,this.edgesn).iterator();
+	}
+	,edges: function(node) {
+		return this._edges(node.id,this.edgesp).concat(this._edges(node.id,this.edgesn)).iterator();
+	}
+	,positiveCount: function(node) {
+		return this._edgeids(node.id,this.edgesp).length;
+	}
+	,negativeCount: function(node) {
+		return this._edgeids(node.id,this.edgesn).length;
+	}
+	,edgeCount: function(node) {
+		return this._edgeids(node.id,this.edgesp).length + this._edgeids(node.id,this.edgesn).length;
+	}
+	,_edgeids: function(id,collection) {
+		var r = collection.get(id);
+		if(null == r) r = [];
+		return r;
+	}
+	,_edges: function(id,collection) {
+		var me = this;
+		return this._edgeids(id,collection).map(function(eid,_) {
+			return me.get(eid);
+		});
+	}
+	,unlinkPositives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 121, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
+		this._unlink(node,this.edgesp);
+	}
+	,unlinkNegatives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 128, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
+		this._unlink(node,this.edgesn);
+	}
+	,_unlink: function(node,connections) {
+		var ids = connections.get(node.id);
+		if(null == ids) return;
+		ids = ids.copy();
+		var _g = 0;
+		while(_g < ids.length) {
+			var id = ids[_g];
+			++_g;
+			var edge = this.get(id);
+			if(null == edge || null == edge.graph) continue;
+			this._remove(edge);
+		}
+		connections.remove(node.id);
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
+	,connections: function(id,connections) {
+		var c = connections.get(id);
+		if(null == c) connections.set(id,c = []);
+		return c;
+	}
+	,removeConnection: function(edgeid,nodeid,connections) {
+		var c = connections.get(nodeid);
+		if(null == c) return;
+		c.remove(edgeid);
+		if(c.length == 0) connections.remove(nodeid);
+	}
+	,toString: function() {
+		return "GraphEdges (" + IntHashes.count(this.collection) + "): " + rg.graph.GraphCollection.prototype.toString.call(this);
+	}
+	,__class__: rg.graph.GraphEdges
+});
 rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
 	this.label = new rg.controller.info.InfoLabel();
+	this.idproperty = "id";
+	this.weightproperty = "count";
+	this.parentsproperty = "parents";
 }
 rg.controller.info.InfoSankey.__name__ = ["rg","controller","info","InfoSankey"];
 rg.controller.info.InfoSankey.filters = function() {
@@ -6753,6 +8156,9 @@ rg.controller.info.InfoSankey.filters = function() {
 }
 rg.controller.info.InfoSankey.prototype = {
 	label: null
+	,idproperty: null
+	,weightproperty: null
+	,parentsproperty: null
 	,__class__: rg.controller.info.InfoSankey
 }
 var haxe = haxe || {}
@@ -7239,6 +8645,7 @@ rg.view.svg.layer.Title.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 		return v;
 	}
 	,__class__: rg.view.svg.layer.Title
+	,__properties__: $extend(rg.view.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
 });
 if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.Layout = $hxClasses["rg.view.layout.Layout"] = function(width,height,container) {
@@ -7478,6 +8885,9 @@ utest.TestResult.prototype = {
 }
 var Iterables = $hxClasses["Iterables"] = function() { }
 Iterables.__name__ = ["Iterables"];
+Iterables.count = function(it) {
+	return Iterators.count(it.iterator());
+}
 Iterables.indexOf = function(it,v,f) {
 	return Iterators.indexOf(it.iterator(),v,f);
 }
@@ -7492,6 +8902,9 @@ Iterables.map = function(it,f) {
 }
 Iterables.each = function(it,f) {
 	return Iterators.each(it.iterator(),f);
+}
+Iterables.filter = function(it,f) {
+	return Iterators.filter(it.iterator(),f);
 }
 Iterables.reduce = function(it,f,initialValue) {
 	return Iterators.reduce(it.iterator(),f,initialValue);
@@ -7706,7 +9119,7 @@ js.Boot.__string_rec = function(o,s) {
 		if(hasp && !o.hasOwnProperty(k)) {
 			continue;
 		}
-		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__") {
+		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
 			continue;
 		}
 		if(str.length != 2) str += ", \n";
@@ -8176,7 +9589,7 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
-rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,groupby,timezone,start,end) {
+rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceReportGrid"] = function(executor,path,event,query,operation,tag,location,groupby,timezone,start,end) {
 	this.query = query;
 	this.executor = executor;
 	this.groupBy = groupby;
@@ -8194,7 +9607,7 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 		default:
 			$r = (function($this) {
 				var $r;
-				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 80, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+				throw new thx.error.Error("normalization failed, the last value should always be a Time expression",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 84, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 				return $r;
 			}($this));
 		}
@@ -8217,20 +9630,16 @@ rg.data.source.DataSourceReportGrid = $hxClasses["rg.data.source.DataSourceRepor
 			default:
 				$r = (function($this) {
 					var $r;
-					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 94, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
+					throw new thx.error.Error("invalid data for 'where' condition",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 98, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
 					return $r;
 				}($this));
 			}
 			return $r;
 		}(this));
 	});
-	this.operation = query.operation;
-	switch( (this.operation)[1] ) {
-	case 0:
-		break;
-	default:
-		throw new thx.error.Error("RGDataSource doesn't support operation '{0}'",null,this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 100, className : "rg.data.source.DataSourceReportGrid", methodName : "new"});
-	}
+	this.operation = operation;
+	this.tag = tag;
+	this.location = location;
 	this.path = path;
 	this.timeStart = start;
 	this.timeEnd = end;
@@ -8286,7 +9695,7 @@ rg.data.source.DataSourceReportGrid.normalize = function(exp) {
 		while(_g1 < _g) {
 			var i = _g1++;
 			if(rg.data.source.DataSourceReportGrid.isTimeProperty(exp[i])) {
-				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 401, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
+				if(pos >= 0) throw new thx.error.Error("cannot perform intersections on two or more time properties",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 468, className : "rg.data.source.DataSourceReportGrid", methodName : "normalize"});
 				pos = i;
 			}
 		}
@@ -8331,6 +9740,8 @@ rg.data.source.DataSourceReportGrid.prototype = {
 	,timeEnd: null
 	,groupBy: null
 	,timeZone: null
+	,tag: null
+	,location: null
 	,transform: null
 	,query: null
 	,onLoad: null
@@ -8343,7 +9754,7 @@ rg.data.source.DataSourceReportGrid.prototype = {
 		case 2:
 			return { event : this.event, property : null, limit : null, order : null};
 		default:
-			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 68, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
+			throw new thx.error.Error("normalization failed, only Property values should be allowed",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 72, className : "rg.data.source.DataSourceReportGrid", methodName : "mapProperties"});
 		}
 	}
 	,basicOptions: function(appendPeriodicity) {
@@ -8359,6 +9770,8 @@ rg.data.source.DataSourceReportGrid.prototype = {
 			if(null != this.groupBy) opt["groupBy"] = this.groupBy;
 			if(null != this.timeZone) opt["timeZone"] = this.timeZone;
 		}
+		if(null != this.location) opt["location"] = this.location;
+		if(null != this.tag) opt["tag"] = this.tag;
 		if(this.where.length > 1) {
 			var arr = [];
 			var _g = 0, _g1 = this.where;
@@ -8385,23 +9798,23 @@ rg.data.source.DataSourceReportGrid.prototype = {
 			case 0:
 				$r = "count";
 				break;
-			default:
-				$r = (function($this) {
-					var $r;
-					throw new thx.error.Error("unsupported operation '{0}'",null,$this.operation,{ fileName : "DataSourceReportGrid.hx", lineNumber : 150, className : "rg.data.source.DataSourceReportGrid", methodName : "unit"});
-					return $r;
-				}($this));
+			case 1:
+				$r = "mean";
+				break;
+			case 2:
+				$r = "standardDeviation";
+				break;
 			}
 			return $r;
 		}(this));
 	}
 	,load: function() {
 		var me = this;
-		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 208, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
+		if(0 == this.exp.length) throw new thx.error.Error("invalid empty query",null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 217, className : "rg.data.source.DataSourceReportGrid", methodName : "load"}); else if(this.exp.length == 1 && null == this.exp[0].property || this.where.length > 0) {
 			if(this.periodicity == "eternity") {
 				var opt = this.basicOptions(false);
 				if(this.where.length > 1) {
-					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+					if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 					this.executor.searchCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				} else if(this.where.length == 1) {
 					if(this.exp.length > 1) {
@@ -8429,6 +9842,20 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								var cond = { };
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
+								var _g1 = 0, _g2 = me.where;
+								while(_g1 < _g2.length) {
+									var w = _g2[_g1];
+									++_g1;
+									var p = rg.data.source.DataSourceReportGrid.propertyName(w);
+									var _g3 = 0, _g4 = w.values;
+									while(_g3 < _g4.length) {
+										var v1 = _g4[_g3];
+										++_g3;
+										cond = { };
+										cond[p] = v1;
+										o.where.push(cond);
+									}
+								}
 								subs.push({ method : (function(f,a1,a2) {
 									return function(a3,a4) {
 										return f(a1,a2,a3,a4);
@@ -8453,13 +9880,13 @@ rg.data.source.DataSourceReportGrid.prototype = {
 							});
 							rg.data.source.DataSourceReportGrid.parallelExecution(actions,this.success.$bind(this),this.error.$bind(this));
 						} else {
-							this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+							if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 							opt.value = this.where[0].values[0];
 							this.executor.propertyValueCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 						}
 					}
 				} else {
-					this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
+					if(null != this.tag) this.transform = new rg.data.source.rgquery.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.source.rgquery.transform.TransformCount({ },this.event,this.unit());
 					opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
 					this.executor.propertyCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
 				}
@@ -8493,6 +9920,20 @@ rg.data.source.DataSourceReportGrid.prototype = {
 								if(null == o.where) o.where = [];
 								cond[rg.data.source.DataSourceReportGrid.propertyName(valueproperty)] = v;
 								o.where.push(cond);
+								var _g1 = 0, _g2 = me.where;
+								while(_g1 < _g2.length) {
+									var w = _g2[_g1];
+									++_g1;
+									var p = rg.data.source.DataSourceReportGrid.propertyName(w);
+									var _g3 = 0, _g4 = w.values;
+									while(_g3 < _g4.length) {
+										var v1 = _g4[_g3];
+										++_g3;
+										cond = { };
+										cond[p] = v1;
+										o.where.push(cond);
+									}
+								}
 								subs.push({ method : (function(f,a1,a2) {
 									return function(a3,a4) {
 										return f(a1,a2,a3,a4);
@@ -8539,18 +9980,42 @@ rg.data.source.DataSourceReportGrid.prototype = {
 				return d.property;
 			}),this.event,this.exp[0].order != "ascending"); else if(this.timeZone != null) this.transform = new rg.data.source.rgquery.transform.TransformIntersectUtc({ },this.exp.map(function(d,_) {
 				return d.property;
-			}),this.event,this.periodicity,this.unit()); else this.transform = new rg.data.source.rgquery.transform.TransformIntersectTime({ },this.exp.map(function(d,_) {
-				return d.property;
-			}),this.event,this.periodicity,this.unit());
+			}),this.event,this.periodicity,this.unit()); else {
+				switch( (this.operation)[1] ) {
+				case 2:
+				case 1:
+					this.transform = new rg.data.source.rgquery.transform.TransformStatisticTime({ },this.exp.map(function(d,_) {
+						return d.property;
+					}),this.event,this.periodicity,this.unit());
+					break;
+				case 0:
+					this.transform = new rg.data.source.rgquery.transform.TransformIntersectTime({ },this.exp.map(function(d,_) {
+						return d.property;
+					}),this.event,this.periodicity,this.unit());
+					break;
+				}
+			}
 			var opt = this.basicOptions(true);
-			opt.properties = this.exp.map(function(p,i) {
-				return { property : rg.data.source.DataSourceReportGrid.propertyName(p), limit : p.limit, order : p.order};
-			});
-			this.executor.intersect(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+			switch( (this.operation)[1] ) {
+			case 0:
+				opt.properties = this.exp.map(function(p,i) {
+					return { property : rg.data.source.DataSourceReportGrid.propertyName(p), limit : p.limit, order : p.order};
+				});
+				this.executor.intersect(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+				break;
+			case 1:
+				opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
+				this.executor.propertyMeans(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+				break;
+			case 2:
+				opt.property = rg.data.source.DataSourceReportGrid.propertyName(this.exp[0]);
+				this.executor.propertyStandardDeviations(this.path,opt,this.success.$bind(this),this.error.$bind(this));
+				break;
+			}
 		}
 	}
 	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 382, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
+		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 449, className : "rg.data.source.DataSourceReportGrid", methodName : "error"});
 	}
 	,success: function(src) {
 		var data = this.transform.transform(src);
@@ -8756,6 +10221,7 @@ rg.data.ITickmark.prototype = {
 	,value: null
 	,label: null
 	,__class__: rg.data.ITickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.data.TickmarkOrdinal = $hxClasses["rg.data.TickmarkOrdinal"] = function(pos,values,major,scaleDistribution) {
 	if(major == null) major = true;
@@ -8795,6 +10261,7 @@ rg.data.TickmarkOrdinal.prototype = {
 		return rg.data.Tickmarks.string(this);
 	}
 	,__class__: rg.data.TickmarkOrdinal
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.controller.visualization.VisualizationLineChart = $hxClasses["rg.controller.visualization.VisualizationLineChart"] = function(layout) {
 	rg.controller.visualization.VisualizationCartesian.call(this,layout);
@@ -8988,7 +10455,6 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 		if(null == this.labelDataPointOver) return;
 		var text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,true);
 		}
@@ -9234,28 +10700,28 @@ rg.data.source.rgquery.TestQueryParser = $hxClasses["rg.data.source.rgquery.Test
 rg.data.source.rgquery.TestQueryParser.__name__ = ["rg","data","source","rgquery","TestQueryParser"];
 rg.data.source.rgquery.TestQueryParser.prototype = {
 	test: function() {
-		this.assertParse([rg.data.source.rgquery.QExp.Event],rg.data.source.rgquery.QOperation.Count,[],"",{ fileName : "TestQueryParser.hx", lineNumber : 16, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click")],rg.data.source.rgquery.QOperation.Count,[],".click",{ fileName : "TestQueryParser.hx", lineNumber : 22, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click.gender")],rg.data.source.rgquery.QOperation.Count,[rg.data.source.rgquery.QCondition.Equality(".click.gender","female")],".click.gender = 'female'",{ fileName : "TestQueryParser.hx", lineNumber : 29, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click"),rg.data.source.rgquery.QExp.Time("hour")],rg.data.source.rgquery.QOperation.Count,[],".click * .#time:hour",{ fileName : "TestQueryParser.hx", lineNumber : 36, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10)],rg.data.source.rgquery.QOperation.Count,[],".click(10)",{ fileName : "TestQueryParser.hx", lineNumber : 43, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,false)],rg.data.source.rgquery.QOperation.Count,[],".click(10, asc)",{ fileName : "TestQueryParser.hx", lineNumber : 50, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,true)],rg.data.source.rgquery.QOperation.Count,[],".click(10,desc)",{ fileName : "TestQueryParser.hx", lineNumber : 57, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Event],[],"",{ fileName : "TestQueryParser.hx", lineNumber : 16, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click")],[],".click",{ fileName : "TestQueryParser.hx", lineNumber : 21, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click.gender")],[rg.data.source.rgquery.QCondition.Equality(".click.gender","female")],".click.gender = 'female'",{ fileName : "TestQueryParser.hx", lineNumber : 27, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click"),rg.data.source.rgquery.QExp.Time("hour")],[],".click * .#time:hour",{ fileName : "TestQueryParser.hx", lineNumber : 33, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10)],[],".click(10)",{ fileName : "TestQueryParser.hx", lineNumber : 39, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,false)],[],".click(10, asc)",{ fileName : "TestQueryParser.hx", lineNumber : 45, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".click",10,true)],[],".click(10,desc)",{ fileName : "TestQueryParser.hx", lineNumber : 51, className : "rg.data.source.rgquery.TestQueryParser", methodName : "test"});
 	}
 	,testCleanName: function() {
-		utest.Assert.equals(".Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 70, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
-		utest.Assert.equals(".Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 71, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
-		utest.Assert.equals(".Spaced Name.Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 72, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
+		utest.Assert.equals(".Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 63, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
+		utest.Assert.equals(".Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 64, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
+		utest.Assert.equals(".Spaced Name.Spaced Name.Spaced Name",rg.data.source.rgquery.QueryParser.cleanName(".'Spaced Name'.'Spaced Name'.'Spaced Name'"),null,{ fileName : "TestQueryParser.hx", lineNumber : 65, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testCleanName"});
 	}
 	,testQuotedProperty: function() {
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],".\"Spaced Event\".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 77, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],".'Spaced Event'.'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 84, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 91, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
-		this.assertParse([rg.data.source.rgquery.QExp.Property("Spaced Property")],rg.data.source.rgquery.QOperation.Count,[],"'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 98, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],[],".\"Spaced Event\".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 70, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Event.Spaced Property")],[],".'Spaced Event'.'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 76, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property(".Spaced Property")],[],".\"Spaced Property\"",{ fileName : "TestQueryParser.hx", lineNumber : 82, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
+		this.assertParse([rg.data.source.rgquery.QExp.Property("Spaced Property")],[],"'Spaced Property'",{ fileName : "TestQueryParser.hx", lineNumber : 88, className : "rg.data.source.rgquery.TestQueryParser", methodName : "testQuotedProperty"});
 	}
-	,assertParse: function(exp,operation,where,s,pos) {
+	,assertParse: function(exp,where,s,pos) {
 		var parser = new rg.data.source.rgquery.QueryParser();
-		var expected = { exp : exp, operation : operation, where : where}, test = parser.parse(s);
+		var expected = { exp : exp, where : where}, test = parser.parse(s);
 		utest.Assert.same(expected,test,null,"expected: " + Dynamics.string(expected) + " but was " + Dynamics.string(test),pos);
 	}
 	,__class__: rg.data.source.rgquery.TestQueryParser
@@ -11080,7 +12546,6 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		if(null == text) this.tooltip.hide(); else {
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(this.x(dp,i) + this.w / 2,this.y(dp,i) + this.h / 2);
-			this.tooltip.show();
 		}
 	}
 	,onclick: function(dp,i) {
@@ -11147,7 +12612,150 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		return v;
 	}
 	,__class__: rg.view.svg.chart.HeatGrid
+	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
+rg.graph.Graph = $hxClasses["rg.graph.Graph"] = function(nodeidf,edgeidf) {
+	this.nodes = rg.graph.GraphNodes.newInstance(this,nodeidf);
+	this.edges = rg.graph.GraphEdges.newInstance(this,edgeidf);
+}
+rg.graph.Graph.__name__ = ["rg","graph","Graph"];
+rg.graph.Graph.friendNodes = function(friend) {
+	return friend;
+}
+rg.graph.Graph.friendEdges = function(friend) {
+	return friend;
+}
+rg.graph.Graph.prototype = {
+	nodes: null
+	,edges: null
+	,empty: function() {
+		return Iterators.count(this.nodes.iterator()) == 0;
+	}
+	,clear: function() {
+		this.edges.clear();
+		this.nodes.clear();
+	}
+	,clone: function() {
+		var g = new rg.graph.Graph();
+		g.nodes = this.nodes.copyTo(g);
+		g.edges = this.edges.copyTo(g);
+		return g;
+	}
+	,findSinks: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isSink();
+		});
+	}
+	,findSink: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isSink();
+		});
+	}
+	,findSources: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
+	,findSource: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
+	,findIsolateds: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,findIsolated: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,paths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.edges(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.other(n);
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,path: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.paths(a,b),weighted);
+	}
+	,directedPaths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.positives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.head;
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,directedPath: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.directedPaths(a,b),weighted);
+	}
+	,pickPath: function(paths,weighted) {
+		if(paths.length == 0) return null;
+		if(weighted) return Arrays.min(paths,function(arr) {
+			return Iterators.reduce(arr.iterator(),function(acc,edge,_) {
+				return acc + edge.weight;
+			},0);
+		}); else return Arrays.min(paths,function(arr) {
+			return arr.length;
+		});
+	}
+	,toString: function() {
+		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
+	}
+	,__class__: rg.graph.Graph
+}
 rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
 rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
 rg.view.svg.util.RGColors.parse = function(s,alt) {
@@ -11368,6 +12976,7 @@ rg.view.frame.Stack.prototype = {
 		return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
 	}
 	,__class__: rg.view.frame.Stack
+	,__properties__: {get_length:"getLength"}
 }
 rg.view.layout.ScalePattern = $hxClasses["rg.view.layout.ScalePattern"] = { __ename__ : ["rg","view","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
 rg.view.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
@@ -11517,6 +13126,31 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	}
 	,__class__: thx.math.scale.Linear
 });
+rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container) {
+	this.g = container.append("svg:g").attr("class").string("diagonal");
+	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
+		return [a[1],a[0]];
+	});
+	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill");
+	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before");
+	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after");
+}
+rg.view.svg.widget.DiagonalArea.__name__ = ["rg","view","svg","widget","DiagonalArea"];
+rg.view.svg.widget.DiagonalArea.prototype = {
+	g: null
+	,diagonal: null
+	,area: null
+	,before: null
+	,after: null
+	,update: function(x1,y1,x2,y2,sw,ew) {
+		var top = this.diagonal.diagonal([y1,x1,y2,x2]), bottom = this.diagonal.diagonal([y2 + ew,x2,y1 + sw,x1]);
+		var path = top + "L" + bottom.substr(1) + "z";
+		this.before.attr("d").string(top);
+		this.after.attr("d").string(bottom);
+		this.area.attr("d").string(path);
+	}
+	,__class__: rg.view.svg.widget.DiagonalArea
+}
 rg.util.DataPoints = $hxClasses["rg.util.DataPoints"] = function() { }
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
 rg.util.DataPoints.partition = function(dps,property,def) {
@@ -11757,6 +13391,28 @@ rg.controller.factory.FactoryHtmlVisualization.prototype = {
 		return null;
 	}
 	,__class__: rg.controller.factory.FactoryHtmlVisualization
+}
+rg.graph.TestGreedyCyclePartitioner = $hxClasses["rg.graph.TestGreedyCyclePartitioner"] = function() {
+}
+rg.graph.TestGreedyCyclePartitioner.__name__ = ["rg","graph","TestGreedyCyclePartitioner"];
+rg.graph.TestGreedyCyclePartitioner.prototype = {
+	testPartition: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), n4 = graph.nodes.create(), n5 = graph.nodes.create(), n6 = graph.nodes.create(), e1 = graph.edges.create(n6,n5), e2 = graph.edges.create(n5,n4), e3 = graph.edges.create(n4,n2), e4 = graph.edges.create(n2,n5), e5 = graph.edges.create(n5,n3), e6 = graph.edges.create(n3,n1), e7 = graph.edges.create(n1,n2), e8 = graph.edges.create(n2,n3), partitions = new rg.graph.GreedyCyclePartitioner().partition(graph);
+		utest.Assert.equals(IntHashes.count(graph.edges.collection),partitions.left.length + partitions.right.length,null,{ fileName : "TestGreedyCyclePartitioner.hx", lineNumber : 27, className : "rg.graph.TestGreedyCyclePartitioner", methodName : "testPartition"});
+		var _g = 0, _g1 = partitions.left;
+		while(_g < _g1.length) {
+			var edge = _g1[_g];
+			++_g;
+			utest.Assert.notContains(edge,partitions.right,null,{ fileName : "TestGreedyCyclePartitioner.hx", lineNumber : 29, className : "rg.graph.TestGreedyCyclePartitioner", methodName : "testPartition"});
+		}
+		var _g = 0, _g1 = partitions.right;
+		while(_g < _g1.length) {
+			var edge = _g1[_g];
+			++_g;
+			utest.Assert.notContains(edge,partitions.left,null,{ fileName : "TestGreedyCyclePartitioner.hx", lineNumber : 31, className : "rg.graph.TestGreedyCyclePartitioner", methodName : "testPartition"});
+		}
+	}
+	,__class__: rg.graph.TestGreedyCyclePartitioner
 }
 rg.data.TickmarkTime = $hxClasses["rg.data.TickmarkTime"] = function(value,values,major,periodicity,scaleDistribution) {
 	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
@@ -12135,6 +13791,36 @@ js.Storage.prototype = {
 	,clear: null
 	,__class__: js.Storage
 }
+rg.data.source.rgquery.transform.TransformTagCount = $hxClasses["rg.data.source.rgquery.transform.TransformTagCount"] = function(properties,event,unit,tag) {
+	this.properties = properties;
+	this.unit = unit;
+	this.event = event;
+	this.tag = tag;
+}
+rg.data.source.rgquery.transform.TransformTagCount.__name__ = ["rg","data","source","rgquery","transform","TransformTagCount"];
+rg.data.source.rgquery.transform.TransformTagCount.__interfaces__ = [rg.data.source.ITransform];
+rg.data.source.rgquery.transform.TransformTagCount.prototype = {
+	properties: null
+	,unit: null
+	,event: null
+	,tag: null
+	,transform: function(data) {
+		var result = [], dp, value;
+		var _g = 0, _g1 = Reflect.fields(data);
+		while(_g < _g1.length) {
+			var field = _g1[_g];
+			++_g;
+			value = Reflect.field(data,field);
+			dp = { event : this.event};
+			Objects.copyTo(this.properties,dp);
+			Objects.addField(dp,this.unit,value);
+			Objects.addField(dp,this.tag,Strings.rtrim(Strings.ltrim(field,"/"),"/"));
+			result.push(dp);
+		}
+		return result;
+	}
+	,__class__: rg.data.source.rgquery.transform.TransformTagCount
+}
 var IntIter = $hxClasses["IntIter"] = function(min,max) {
 	this.min = min;
 	this.max = max;
@@ -12271,6 +13957,28 @@ thx.js.AccessDataAttribute.prototype = $extend(thx.js.AccessAttribute.prototype,
 	}
 	,__class__: thx.js.AccessDataAttribute
 });
+rg.graph.TwoCycleRemover = $hxClasses["rg.graph.TwoCycleRemover"] = function() {
+}
+rg.graph.TwoCycleRemover.__name__ = ["rg","graph","TwoCycleRemover"];
+rg.graph.TwoCycleRemover.prototype = {
+	remove: function(graph) {
+		var result = [];
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				var reverse = edge.head.predecessorBy(node);
+				if(null == reverse) continue;
+				result.push({ tail : reverse.tail, head : reverse.head, weight : reverse.weight, data : reverse.data});
+				reverse.graph.edges._remove(reverse);
+			}
+		}
+		return result;
+	}
+	,__class__: rg.graph.TwoCycleRemover
+}
 rg.RGConst = $hxClasses["rg.RGConst"] = function() { }
 rg.RGConst.__name__ = ["rg","RGConst"];
 rg.RGConst.prototype = {
@@ -12350,6 +14058,7 @@ rg.data.Variable.prototype = {
 		return this.maxf;
 	}
 	,__class__: rg.data.Variable
+	,__properties__: {set_maxf:"setMaxF",get_maxf:"getMaxF",set_minf:"setMinF",get_minf:"getMinF"}
 }
 rg.data.VariableIndependent = $hxClasses["rg.data.VariableIndependent"] = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
@@ -13051,6 +14760,49 @@ utest.Runner.prototype = {
 		this.runNext();
 	}
 	,__class__: utest.Runner
+}
+rg.graph.LongestPathLayer = $hxClasses["rg.graph.LongestPathLayer"] = function() {
+}
+rg.graph.LongestPathLayer.__name__ = ["rg","graph","LongestPathLayer"];
+rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
+	var child;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(it,lvl) {
+			var max = lvl;
+			while( it.hasNext() ) {
+				var edge = it.next();
+				if(edge.head.isSink()) continue; else max = Ints.max(max,traverse(edge.head.positives(),lvl + 1));
+			}
+			return max;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	return node.isIsolated()?0:traverse(node.graph.edges.positives(node),1);
+}
+rg.graph.LongestPathLayer.prototype = {
+	lay: function(graph) {
+		var clone = graph.clone(), layers = [[]];
+		var _g = 0, _g1 = clone.findSinks();
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			layers[0].push(node.id);
+			node.graph.nodes._remove(node);
+		}
+		var $it0 = clone.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var pos = rg.graph.LongestPathLayer.distanceToASink(clone,node), layer = layers[pos];
+			if(null == layer) layer = layers[pos] = [];
+			layer.push(node.id);
+		}
+		layers.reverse();
+		return layers;
+	}
+	,__class__: rg.graph.LongestPathLayer
 }
 rg.view.svg.util.RGCss = $hxClasses["rg.view.svg.util.RGCss"] = function() { }
 rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
@@ -13787,6 +15539,31 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
+var IntHashes = $hxClasses["IntHashes"] = function() { }
+IntHashes.__name__ = ["IntHashes"];
+IntHashes.empty = function(hash) {
+	return IntHashes.count(hash) == 0;
+}
+IntHashes.count = function(hash) {
+	var i = 0;
+	var $it0 = hash.iterator();
+	while( $it0.hasNext() ) {
+		var _ = $it0.next();
+		i++;
+	}
+	return i;
+}
+IntHashes.clear = function(hash) {
+	var _hash = hash;
+	_hash.h = {}
+	if(_hash.h.__proto__ != null) {
+		_hash.h.__proto__ = null;
+		delete(_hash.h.__proto__);
+	}
+}
+IntHashes.prototype = {
+	__class__: IntHashes
+}
 haxe.StackItem = $hxClasses["haxe.StackItem"] = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
 haxe.StackItem.CFunction = ["CFunction",0];
 haxe.StackItem.CFunction.toString = $estr;
@@ -13903,6 +15680,51 @@ rg.controller.info.TestInfoVariable.prototype = {
 	}
 	,__class__: rg.controller.info.TestInfoVariable
 }
+rg.graph.GreedySwitch2Decrosser = $hxClasses["rg.graph.GreedySwitch2Decrosser"] = function() {
+	rg.graph.GreedySwitchDecrosser.call(this);
+}
+rg.graph.GreedySwitch2Decrosser.__name__ = ["rg","graph","GreedySwitch2Decrosser"];
+rg.graph.GreedySwitch2Decrosser.__super__ = rg.graph.GreedySwitchDecrosser;
+rg.graph.GreedySwitch2Decrosser.prototype = $extend(rg.graph.GreedySwitchDecrosser.prototype,{
+	decross: function(layout) {
+		var layers = layout.layers(), graph = layout.graph, newlayers, newlayout = layout;
+		if(layers.length <= 1) return new rg.graph.GraphLayout(layout.graph,layers);
+		var totbefore, crossings, len = layers.length - 1, a, b, c;
+		do {
+			newlayers = layers.map(function(arr,_) {
+				return arr.copy();
+			});
+			newlayout = new rg.graph.GraphLayout(graph,layers);
+			totbefore = newlayout.crossings();
+			var _g = 0;
+			while(_g < len) {
+				var i = _g++;
+				a = newlayers[i - 1];
+				b = newlayers[i];
+				c = newlayers[i + 1];
+				this.decrossTriplet(graph,a,b,c);
+			}
+			crossings = new rg.graph.GraphLayout(graph,newlayers).crossings();
+			layers = newlayers;
+		} while(totbefore > crossings);
+		return newlayout;
+	}
+	,decrossTriplet: function(graph,a,b,c) {
+		if(null == a) this.decrossPair(graph,b,c); else if(null == c) this.decrossPair(graph,a,b); else {
+			var tot = rg.graph.GraphLayout.arrayCrossings(graph,a,b) + rg.graph.GraphLayout.arrayCrossings(graph,b,c), ntot = tot, t;
+			do {
+				tot = ntot;
+				var _g1 = 0, _g = b.length - 1;
+				while(_g1 < _g) {
+					var i = _g1++;
+					this.swap(b,i);
+					if((t = rg.graph.GraphLayout.arrayCrossings(graph,a,b) + rg.graph.GraphLayout.arrayCrossings(graph,b,c)) >= ntot) this.swap(b,i); else ntot = t;
+				}
+			} while(ntot < tot);
+		}
+	}
+	,__class__: rg.graph.GreedySwitch2Decrosser
+});
 thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
@@ -14090,38 +15912,6 @@ thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
 thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
 thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
 thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
-thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
-	this.setScale(500);
-	this.setTranslate([480.0,250]);
-}
-thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
-thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
-thx.geo.Mercator.prototype = {
-	scale: null
-	,translate: null
-	,project: function(coords) {
-		var x = coords[0] / 360, y = -(Math.log(Math.tan(Math.PI / 4 + coords[1] * 0.01745329251994329577 / 2)) / 0.01745329251994329577) / 360;
-		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * Math.max(-.5,Math.min(.5,y)) + this.getTranslate()[1]];
-	}
-	,invert: function(coords) {
-		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale();
-		return [360 * x,2 * Math.atan(Math.exp(-360 * y * 0.01745329251994329577)) / 0.01745329251994329577 - 90];
-	}
-	,setScale: function(scale) {
-		return this.scale = scale;
-	}
-	,getScale: function() {
-		return this.scale;
-	}
-	,getTranslate: function() {
-		return this.translate.copy();
-	}
-	,setTranslate: function(translate) {
-		this.translate = [translate[0],translate[1]];
-		return translate;
-	}
-	,__class__: thx.geo.Mercator
-}
 thx.svg.PathGeoJson = $hxClasses["thx.svg.PathGeoJson"] = function() {
 	this.setPointRadius(4.5);
 	this.setProjection(new thx.geo.AlbersUsa());
@@ -14235,6 +16025,7 @@ thx.svg.PathGeoJson.prototype = {
 		return this.projection = projection;
 	}
 	,__class__: thx.svg.PathGeoJson
+	,__properties__: {set_projection:"setProjection",set_pointRadius:"setPointRadius"}
 }
 thx.svg.PathTypes = $hxClasses["thx.svg.PathTypes"] = function(geo) {
 	this.geo = geo;
@@ -14480,6 +16271,39 @@ thx.svg.CentroidTypes.prototype = {
 	}
 	,__class__: thx.svg.CentroidTypes
 }
+thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
+	this.setScale(500);
+	this.setTranslate([480.0,250]);
+}
+thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
+thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
+thx.geo.Mercator.prototype = {
+	scale: null
+	,translate: null
+	,project: function(coords) {
+		var x = coords[0] / 360, y = -(Math.log(Math.tan(Math.PI / 4 + coords[1] * 0.01745329251994329577 / 2)) / 0.01745329251994329577) / 360;
+		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * Math.max(-.5,Math.min(.5,y)) + this.getTranslate()[1]];
+	}
+	,invert: function(coords) {
+		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale();
+		return [360 * x,2 * Math.atan(Math.exp(-360 * y * 0.01745329251994329577)) / 0.01745329251994329577 - 90];
+	}
+	,setScale: function(scale) {
+		return this.scale = scale;
+	}
+	,getScale: function() {
+		return this.scale;
+	}
+	,getTranslate: function() {
+		return this.translate.copy();
+	}
+	,setTranslate: function(translate) {
+		this.translate = [translate[0],translate[1]];
+		return translate;
+	}
+	,__class__: thx.geo.Mercator
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
+}
 rg.data.ScaleDistributions = $hxClasses["rg.data.ScaleDistributions"] = function() { }
 rg.data.ScaleDistributions.__name__ = ["rg","data","ScaleDistributions"];
 rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
@@ -14496,6 +16320,25 @@ rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
 }
 rg.data.ScaleDistributions.prototype = {
 	__class__: rg.data.ScaleDistributions
+}
+rg.graph.GraphElement = $hxClasses["rg.graph.GraphElement"] = function(graph,id,data) {
+	this.id = id;
+	this.data = data;
+	this.graph = graph;
+}
+rg.graph.GraphElement.__name__ = ["rg","graph","GraphElement"];
+rg.graph.GraphElement.friendDestroy = function(item) {
+	return item;
+}
+rg.graph.GraphElement.prototype = {
+	graph: null
+	,id: null
+	,data: null
+	,destroy: function() {
+		this.graph = null;
+		this.id = -1;
+	}
+	,__class__: rg.graph.GraphElement
 }
 rg.view.svg.widget.Label = $hxClasses["rg.view.svg.widget.Label"] = function(container,dontflip,shadow,outline) {
 	if(dontflip == null) dontflip = true;
@@ -14729,6 +16572,7 @@ rg.view.svg.widget.Label.prototype = {
 		this.g.remove();
 	}
 	,__class__: rg.view.svg.widget.Label
+	,__properties__: {set_anchor:"setAnchor",set_orientation:"setOrientation",set_text:"setText"}
 }
 rg.controller.factory.FactoryDataSource = $hxClasses["rg.controller.factory.FactoryDataSource"] = function(cache,executor) {
 	this.cache = cache;
@@ -14743,19 +16587,19 @@ rg.controller.factory.FactoryDataSource.prototype = {
 	,create: function(info) {
 		if(null != info.namedData) {
 			var data = this.cache.get(info.namedData);
-			if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 40, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+			if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 41, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 			return data;
 		}
 		if(null != info.data) return this.createFromData(info.data);
-		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.groupBy,info.timeZone,info.start,info.end);
-		throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 51, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
+		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.statistic,info.tag,info.location,info.groupBy,info.timeZone,info.start,info.end);
+		throw new thx.error.Error("to create a query you need to reference by name an existing data source or provide  at least the data and the name or the event and the path parameters",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 52, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
 	}
 	,createFromData: function(data) {
 		return new rg.data.source.DataSourceArray(data);
 	}
-	,createFromQuery: function(path,event,query,groupby,timeZone,start,end) {
+	,createFromQuery: function(path,event,query,statistic,tag,location,groupby,timeZone,start,end) {
 		if(null == query) query = "";
-		return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),groupby,timeZone,start,end);
+		return new rg.data.source.DataSourceReportGrid(this.executor,path,event,this.parser.parse(query),statistic,tag,location,groupby,timeZone,start,end);
 	}
 	,__class__: rg.controller.factory.FactoryDataSource
 }
@@ -14826,7 +16670,7 @@ rg.data.source.rgquery.QueryParser.cleanName = function(name) {
 		if(!StringTools.startsWith(name,$char)) continue;
 		var pos = name.indexOf($char,1);
 		while(pos < name.length && pos >= 0) if(name.substr(pos - 1,1) == "\\") pos = name.indexOf($char,pos + 1); else break;
-		if(pos < 0) throw new thx.error.Error("quoted property is not properly formatted",null,null,{ fileName : "QueryParser.hx", lineNumber : 99, className : "rg.data.source.rgquery.QueryParser", methodName : "cleanName"});
+		if(pos < 0) throw new thx.error.Error("quoted property is not properly formatted",null,null,{ fileName : "QueryParser.hx", lineNumber : 96, className : "rg.data.source.rgquery.QueryParser", methodName : "cleanName"});
 		var rest = name.substr(pos + 1);
 		name = name.substr(1,pos - 1);
 		if(rest.length > 0) name += rg.data.source.rgquery.QueryParser.cleanName(rest);
@@ -14834,28 +16678,37 @@ rg.data.source.rgquery.QueryParser.cleanName = function(name) {
 	}
 	return (dot?".":"") + name;
 }
-rg.data.source.rgquery.QueryParser.parseValue = function(s) {
-	var fc = s.substr(0,1), lc = s.substr(-1);
-	if(fc == lc && (fc == "'" || fc == "\"")) return s.substr(1,s.length - 2);
-	if(Bools.canParse(s)) return Bools.parse(s);
-	if(Ints.canParse(s)) return Ints.parse(s);
-	if(Floats.canParse(s)) return Floats.parse(s);
-	return (function($this) {
-		var $r;
-		throw new thx.error.Error("invalid value '{0}'",null,s,{ fileName : "QueryParser.hx", lineNumber : 195, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValue"});
-		return $r;
-	}(this));
+rg.data.source.rgquery.QueryParser.parseQuoted = function(s,q,results) {
+	var pos = s.indexOf(q,1);
+	if(pos < 0) throw new thx.error.Error("value is not correctly quoted",null,null,{ fileName : "QueryParser.hx", lineNumber : 185, className : "rg.data.source.rgquery.QueryParser", methodName : "parseQuoted"});
+	results.push(s.substr(1,pos - 1));
+	pos = s.indexOf(",");
+	if(pos < 0) return "";
+	return s.substr(pos + 1);
+}
+rg.data.source.rgquery.QueryParser.parseValues = function(s) {
+	var results = [], pos, v;
+	while((s = StringTools.trim(s)).length > 0) if(s.substr(0,1) == "\"") s = rg.data.source.rgquery.QueryParser.parseQuoted(s,"\"",results); else if(s.substr(0,1) == "'") s = rg.data.source.rgquery.QueryParser.parseQuoted(s,"'",results); else {
+		pos = s.indexOf(",");
+		if(pos >= 0) {
+			v = s.substr(0,pos);
+			s = s.substr(pos + 1);
+		} else {
+			v = s;
+			s = "";
+		}
+		if(Bools.canParse(v)) results.push(Bools.parse(v)); else if(Ints.canParse(v)) results.push(Ints.parse(v)); else if(Floats.canParse(v)) results.push(Floats.parse(v)); else throw new thx.error.Error("invalid value '{0}'",null,v,{ fileName : "QueryParser.hx", lineNumber : 221, className : "rg.data.source.rgquery.QueryParser", methodName : "parseValues"});
+	}
+	return results;
 }
 rg.data.source.rgquery.QueryParser.prototype = {
 	exp: null
-	,operation: null
 	,where: null
 	,parse: function(s) {
 		this.exp = [];
-		this.operation = rg.data.source.rgquery.QOperation.Count;
 		this.where = [];
 		this.parseExp(s);
-		return { exp : this.exp, operation : this.operation, where : this.where};
+		return { exp : this.exp, where : this.where};
 	}
 	,parseExp: function(e) {
 		var tokens = e.split("*").map(function(d,_) {
@@ -14881,13 +16734,13 @@ rg.data.source.rgquery.QueryParser.prototype = {
 		if("(" == token.substr(0,1)) token = token.substr(1,token.length - 2);
 		var parts = [token], name = null, limit = null, descending = null;
 		if(parts.length == 1) {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 124, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 121, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3).toLowerCase() == "desc";
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4)) this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4),rg.data.source.rgquery.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(5));
 		} else {
-			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 141, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+			if(!rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 138, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 			name = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(1);
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2)) limit = Std.parseInt(rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(2));
 			if(null != rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3)) descending = rg.data.source.rgquery.QueryParser.TOKEN_FIRST_PARSE.matched(3).toLowerCase() == "desc";
@@ -14895,7 +16748,7 @@ rg.data.source.rgquery.QueryParser.prototype = {
 			var _g1 = 1, _g = parts.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 157, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
+				if(!rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 154, className : "rg.data.source.rgquery.QueryParser", methodName : "processProperty"});
 				this.addWhereCondition(rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(1),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(2),rg.data.source.rgquery.QueryParser.TOKEN_CONDITION_PARSE.matched(3));
 			}
 		}
@@ -14904,11 +16757,11 @@ rg.data.source.rgquery.QueryParser.prototype = {
 	,addWhereCondition: function(name,operator,value) {
 		switch(operator) {
 		case "=":
-			var v = rg.data.source.rgquery.QueryParser.SPLIT_CONDITIONS.split(rg.data.source.rgquery.QueryParser.parseValue(value));
+			var v = rg.data.source.rgquery.QueryParser.parseValues(value);
 			if(v.length > 1) this.where.push(rg.data.source.rgquery.QCondition.In(name,v)); else this.where.push(rg.data.source.rgquery.QCondition.Equality(name,v[0]));
 			break;
 		default:
-			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 180, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
+			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 177, className : "rg.data.source.rgquery.QueryParser", methodName : "addWhereCondition"});
 		}
 	}
 	,__class__: rg.data.source.rgquery.QueryParser
@@ -15776,7 +17629,10 @@ rg.controller.visualization.VisualizationGeo.prototype = $extend(rg.controller.v
 			map.colorMode = imap.colorScaleMode;
 			map.handlerClick = ($_=this.chart,$_.handlerClick.$bind($_));
 			map.handlerDataPointOver = ($_=this.chart,$_.handlerDataPointOver.$bind($_));
-			map.load(imap.url,imap.type,imap.usejson);
+			map.mapping = imap.mapping;
+			var mappingurl = imap.mappingurl;
+			if(null != mappingurl && (!StringTools.startsWith(mappingurl,"http://") || !StringTools.startsWith(mappingurl,"https://"))) mappingurl = rg.RGConst.BASE_URL_GEOJSON + mappingurl + ".json" + (imap.usejsonp?".js":"");
+			map.load(imap.url,imap.type,mappingurl,imap.usejsonp);
 			this.chart.addMap(map,imap.property);
 		}
 	}
@@ -15999,7 +17855,6 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
 		}
@@ -16419,7 +18274,6 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		if(null == this.labelDataPointOver) return;
 		var dp = this.getDataAtNode(n,i);
 		this.tooltip.setText(this.labelDataPointOver(dp.dp,this.stats).split("\n"));
-		this.tooltip.show();
 		this.moveTooltip(dp.coord.x * this.width,this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy);
 	}
 	,onclick: function(n,i) {
@@ -16797,6 +18651,173 @@ rg.controller.visualization.VisualizationHeatGrid.prototype = $extend(rg.control
 		tickmarks.labelAngle = 180;
 	}
 	,__class__: rg.controller.visualization.VisualizationHeatGrid
+});
+rg.graph.GNode = $hxClasses["rg.graph.GNode"] = function(graph,id,data) {
+	rg.graph.GraphElement.call(this,graph,id,data);
+}
+rg.graph.GNode.__name__ = ["rg","graph","GNode"];
+rg.graph.GNode.create = function(graph,id,data) {
+	return new rg.graph.GNode(graph,id,data);
+}
+rg.graph.GNode.__super__ = rg.graph.GraphElement;
+rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
+	destroy: function() {
+		rg.graph.GraphElement.prototype.destroy.call(this);
+	}
+	,isConnectedTo: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 30, className : "rg.graph.GNode", methodName : "isConnectedTo"});
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == other.id;
+		}) || Iterators.contains(this.graph.edges.negatives(this),null,function(edge) {
+			return edge.tail.id == other.id;
+		});
+	}
+	,connectedBy: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 41, className : "rg.graph.GNode", methodName : "connectedBy"});
+		var edge = Iterators.firstf(this.graph.edges.positives(this),function(edge) {
+			return edge.head.id == other.id;
+		});
+		if(null != edge) return edge;
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge1) {
+			return edge1.tail.id == other.id;
+		});
+	}
+	,positiveWeight: function() {
+		return this._weight(this.graph.edges.positives(this));
+	}
+	,negativeWeight: function() {
+		return this._weight(this.graph.edges.negatives(this));
+	}
+	,_weight: function(it) {
+		var weight = 0.0;
+		while( it.hasNext() ) {
+			var edge = it.next();
+			weight += edge.weight;
+		}
+		return weight;
+	}
+	,isSource: function() {
+		return this.graph.edges.positives(this).hasNext() && !this.graph.edges.negatives(this).hasNext();
+	}
+	,isSink: function() {
+		return this.graph.edges.negatives(this).hasNext() && !this.graph.edges.positives(this).hasNext();
+	}
+	,isIsolated: function() {
+		return !this.graph.edges.edges(this).hasNext();
+	}
+	,isSuccessorOf: function(predecessor) {
+		return predecessor.isPredecessorOf(this);
+	}
+	,isPredecessorOf: function(successor) {
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,successorBy: function(predecessor) {
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge) {
+			return edge.tail.id == predecessor.id;
+		});
+	}
+	,predecessorBy: function(successor) {
+		return Iterators.firstf(this.graph.edges.positives(this),function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,edges: function() {
+		return this.graph.edges.edges(this);
+	}
+	,positives: function() {
+		return this.graph.edges.positives(this);
+	}
+	,negatives: function() {
+		return this.graph.edges.negatives(this);
+	}
+	,edgeCount: function() {
+		return this.graph.edges.edgeCount(this);
+	}
+	,positiveCount: function() {
+		return this.graph.edges.positiveCount(this);
+	}
+	,negativeCount: function() {
+		return this.graph.edges.negativeCount(this);
+	}
+	,remove: function() {
+		this.graph.nodes._remove(this);
+	}
+	,friendRemove: function() {
+		return this.graph.nodes;
+	}
+	,friendEdges: function() {
+		return this.graph.edges;
+	}
+	,toString: function() {
+		return null == this.graph?"Node Destroyed":"Node (#" + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
+	}
+	,__class__: rg.graph.GNode
+});
+rg.graph.GEdge = $hxClasses["rg.graph.GEdge"] = function(graph,id,tail,head,weight,data) {
+	rg.graph.GraphElement.call(this,graph,id,data);
+	this.tail = tail;
+	this.head = head;
+	this.weight = weight;
+}
+rg.graph.GEdge.__name__ = ["rg","graph","GEdge"];
+rg.graph.GEdge.create = function(graph,id,tail,head,weight,data) {
+	return new rg.graph.GEdge(graph,id,tail,head,weight,data);
+}
+rg.graph.GEdge.__super__ = rg.graph.GraphElement;
+rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
+	tail: null
+	,head: null
+	,weight: null
+	,destroy: function() {
+		rg.graph.GraphElement.prototype.destroy.call(this);
+		this.tail = null;
+		this.head = null;
+	}
+	,split: function(times,dataf,edgef) {
+		if(times == null) times = 1;
+		if(times < 1) throw new thx.error.Error("the split times parameter must be an integer value greater than zero",null,null,{ fileName : "GEdge.hx", lineNumber : 37, className : "rg.graph.GEdge", methodName : "split"});
+		if(null == edgef) edgef = function(_,_1,_2) {
+		};
+		if(null == dataf) dataf = function(_) {
+			return null;
+		};
+		var last = this, result = [], node, e1, e2, g = last.graph;
+		var _g = 0;
+		while(_g < times) {
+			var i = _g++;
+			node = g.nodes.create(dataf(last));
+			e1 = g.edges.create(last.tail,node,last.weight,last.data);
+			e2 = g.edges.create(node,last.head,last.weight,last.data);
+			g.edges.remove(last);
+			edgef(e1,e2,i);
+			last = e2;
+			g = last.graph;
+			result.push(e1);
+		}
+		result.push(last);
+		return result;
+	}
+	,other: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 64, className : "rg.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 70, className : "rg.graph.GEdge", methodName : "other"});
+	}
+	,invert: function() {
+		var inverted = this.graph.edges.create(this.head,this.tail,this.weight,this.data);
+		this.graph.edges._remove(this);
+		return inverted;
+	}
+	,remove: function() {
+		this.graph.edges._remove(this);
+	}
+	,friendRemove: function() {
+		return this.graph.edges;
+	}
+	,toString: function() {
+		return null == this.graph?"Edge Destroyed":"Edge (#" + this.id + ", tail: " + this.tail.id + ", head: " + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
+	}
+	,__class__: rg.graph.GEdge
 });
 rg.controller.info.InfoHeatGrid = $hxClasses["rg.controller.info.InfoHeatGrid"] = function() {
 	rg.controller.info.InfoCartesianChart.call(this);
@@ -17392,6 +19413,7 @@ rg.view.frame.StackItem.prototype = $extend(rg.view.frame.Frame.prototype,{
 		return v;
 	}
 	,__class__: rg.view.frame.StackItem
+	,__properties__: {set_disposition:"setDisposition"}
 });
 rg.controller.visualization.VisualizationSankey = $hxClasses["rg.controller.visualization.VisualizationSankey"] = function(layout) {
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
@@ -17423,8 +19445,68 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
+		var layout = this.layoutData(data);
 		this.chart.init();
-		this.chart.data(data);
+		this.chart.data(layout);
+	}
+	,layoutData: function(data,idf,nodef,weightf,edgesf) {
+		if(idf == null) idf = function(data1) {
+			return data1.id;
+		};
+		if(nodef == null) {
+			var dummynodeid = 0;
+			nodef = function(edge) {
+				return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
+			};
+		}
+		if(edgesf == null) edgesf = function(dp) {
+			var r = [], id = idf(dp);
+			var _g = 0, _g1 = Reflect.fields(dp.parents);
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				haxe.Log.trace("EDGE " + parent + " to " + id + ": " + Reflect.field(dp.parents,parent),{ fileName : "VisualizationSankey.hx", lineNumber : 76, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+				r.push({ head : id, tail : parent, weight : Reflect.field(dp.parents,parent)});
+			}
+			haxe.Log.trace(r,{ fileName : "VisualizationSankey.hx", lineNumber : 83, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			return r;
+		};
+		if(null == weightf) weightf = function(dp) {
+			return null != dp.count?dp.count:0.0;
+		};
+		var graph = new rg.graph.Graph(idf);
+		var _g = 0;
+		while(_g < data.length) {
+			var dp = data[_g];
+			++_g;
+			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), extrain : 0.0, extraout : 0.0});
+		}
+		var _g = 0;
+		while(_g < data.length) {
+			var dp = data[_g];
+			++_g;
+			var edges = edgesf(dp);
+			var _g1 = 0;
+			while(_g1 < edges.length) {
+				var edge = edges[_g1];
+				++_g1;
+				var head = graph.nodes.getById(edge.tail);
+				var tail = graph.nodes.getById(edge.head);
+				graph.edges.create(tail,head,edge.weight);
+			}
+		}
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var win = node.negativeWeight(), wout = node.positiveWeight();
+			haxe.Log.trace("NODE",{ fileName : "VisualizationSankey.hx", lineNumber : 119, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			haxe.Log.trace(node.data,{ fileName : "VisualizationSankey.hx", lineNumber : 120, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			haxe.Log.trace(win,{ fileName : "VisualizationSankey.hx", lineNumber : 121, className : "rg.controller.visualization.VisualizationSankey", methodName : "layoutData"});
+			if(node.data.weight == 0) node.data.weight = win;
+			node.data.extrain = Math.max(0,node.data.weight - win);
+			node.data.extraout = Math.max(0,node.data.weight - wout);
+		}
+		return new rg.graph.SugiyamaMethod().resolve(graph,nodef);
 	}
 	,destroy: function() {
 		this.chart.destroy();
@@ -17934,7 +20016,7 @@ rg.data.source.TestRGDataSource.__name__ = ["rg","data","source","TestRGDataSour
 rg.data.source.TestRGDataSource.prototype = {
 	profile: function(query,groupby) {
 		var executor = new rg.data.source.rgquery.MockRGExecutor();
-		var ds = new rg.data.source.DataSourceReportGrid(executor,"/","click",query);
+		var ds = new rg.data.source.DataSourceReportGrid(executor,"/","click",query,rg.data.source.rgquery.QOperation.Count,null,null,null,null,null,null);
 		ds.groupBy = groupby;
 		ds.load();
 		return executor.callStack;
@@ -17943,47 +20025,47 @@ rg.data.source.TestRGDataSource.prototype = {
 		utest.Assert.same(a,b,null,"expected " + Dynamics.string(a) + " but was " + Dynamics.string(b),pos);
 	}
 	,testEventCount: function() {
-		this.assert([{ method : "propertyCount", args : ["/",{ property : ".click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 32, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
+		this.assert([{ method : "propertyCount", args : ["/",{ property : ".click"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 32, className : "rg.data.source.TestRGDataSource", methodName : "testEventCount"});
 	}
 	,testPropertyValuesCount: function() {
-		this.assert([{ method : "intersect", args : ["/",{ periodicity : "eternity", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 43, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesCount"});
+		this.assert([{ method : "intersect", args : ["/",{ periodicity : "eternity", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 42, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesCount"});
 	}
 	,testEventSeries: function() {
-		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 61, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
+		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 59, className : "rg.data.source.TestRGDataSource", methodName : "testEventSeries"});
 	}
 	,testGroupByOption: function() {
-		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day", groupBy : "week"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []},"week"),{ fileName : "TestRGDataSource.hx", lineNumber : 72, className : "rg.data.source.TestRGDataSource", methodName : "testGroupByOption"});
+		this.assert([{ method : "propertySeries", args : ["/",{ property : ".click", periodicity : "day", groupBy : "week"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Time("day")], where : []},"week"),{ fileName : "TestRGDataSource.hx", lineNumber : 69, className : "rg.data.source.TestRGDataSource", methodName : "testGroupByOption"});
 	}
 	,testPropertyValuesSeries: function() {
-		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 83, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesSeries"});
+		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.unique", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".unique"),rg.data.source.rgquery.QExp.Time("day")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 79, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValuesSeries"});
 	}
 	,testPropertyValueCount: function() {
-		this.assert([{ method : "propertyValueCount", args : ["/",{ property : ".click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 101, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
+		this.assert([{ method : "propertyValueCount", args : ["/",{ property : ".click.gender", value : "female"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender")], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 96, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueCount"});
 	}
 	,testPropertyValueSeries: function() {
-		this.assert([{ method : "propertyValueSeries", args : ["/",{ property : ".click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 112, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
+		this.assert([{ method : "propertyValueSeries", args : ["/",{ property : ".click.gender", value : "female", periodicity : "day"}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender"),rg.data.source.rgquery.QExp.Time("day")], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 106, className : "rg.data.source.TestRGDataSource", methodName : "testPropertyValueSeries"});
 	}
 	,testSearchValueCount: function() {
 		var cond1 = { }, cond2 = { };
 		cond1[".click.gender"] = "female";
 		cond2[".click.ageRange"] = "21-30";
-		this.assert([{ method : "searchCount", args : ["/",{ where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 127, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
+		this.assert([{ method : "searchCount", args : ["/",{ where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 120, className : "rg.data.source.TestRGDataSource", methodName : "testSearchValueCount"});
 	}
 	,testSearchSeries: function() {
 		var cond1 = { }, cond2 = { };
 		cond1[".click.gender"] = "female";
 		cond2[".click.ageRange"] = "21-30";
-		this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 148, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
+		this.assert([{ method : "searchSeries", args : ["/",{ periodicity : "day", where : [cond1,cond2]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")], where : [rg.data.source.rgquery.QCondition.Equality(".gender","female"),rg.data.source.rgquery.QCondition.Equality(".ageRange","21-30")]}),{ fileName : "TestRGDataSource.hx", lineNumber : 140, className : "rg.data.source.TestRGDataSource", methodName : "testSearchSeries"});
 	}
 	,testIntersectOverTime: function() {
-		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.gender", limit : 5, order : "descending"},{ property : ".click.platform", limit : 7, order : "ascending"},{ property : ".click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], operation : rg.data.source.rgquery.QOperation.Count, where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 168, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
+		this.assert([{ method : "intersect", args : ["/",{ periodicity : "day", properties : [{ property : ".click.gender", limit : 5, order : "descending"},{ property : ".click.platform", limit : 7, order : "ascending"},{ property : ".click.ageRange", limit : 10, order : "descending"}]}]}],this.profile({ exp : [rg.data.source.rgquery.QExp.Property(".gender",5,true),rg.data.source.rgquery.QExp.Property(".platform",7,false),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("day")], where : []}),{ fileName : "TestRGDataSource.hx", lineNumber : 159, className : "rg.data.source.TestRGDataSource", methodName : "testIntersectOverTime"});
 	}
 	,testNormalization: function() {
-		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 199, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 204, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 209, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 214, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
-		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 226, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Event]),{ fileName : "TestRGDataSource.hx", lineNumber : 189, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("day")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("day")]),{ fileName : "TestRGDataSource.hx", lineNumber : 194, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Event,rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([]),{ fileName : "TestRGDataSource.hx", lineNumber : 199, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 204, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
+		this.assert([rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange"),rg.data.source.rgquery.QExp.Time("eternity")],rg.data.source.DataSourceReportGrid.normalize([rg.data.source.rgquery.QExp.Time("eternity"),rg.data.source.rgquery.QExp.Property(".platform"),rg.data.source.rgquery.QExp.Property(".ageRange")]),{ fileName : "TestRGDataSource.hx", lineNumber : 216, className : "rg.data.source.TestRGDataSource", methodName : "testNormalization"});
 	}
 	,__class__: rg.data.source.TestRGDataSource
 }
@@ -18086,6 +20168,89 @@ rg.view.svg.widget.LabelOrientation.Aligned.__enum__ = rg.view.svg.widget.LabelO
 rg.view.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
 rg.view.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
 rg.view.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.view.svg.widget.LabelOrientation;
+rg.graph.TestEdge = $hxClasses["rg.graph.TestEdge"] = function() {
+	rg.graph.TestBaseGraph.call(this);
+}
+rg.graph.TestEdge.__name__ = ["rg","graph","TestEdge"];
+rg.graph.TestEdge.__super__ = rg.graph.TestBaseGraph;
+rg.graph.TestEdge.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
+	testId: function() {
+		var node = this.graph.nodes.create();
+		utest.Assert.isTrue(node.id > 0,null,{ fileName : "TestEdge.hx", lineNumber : 10, className : "rg.graph.TestEdge", methodName : "testId"});
+	}
+	,testCount: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 15, className : "rg.graph.TestEdge", methodName : "testCount"});
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 19, className : "rg.graph.TestEdge", methodName : "testCount"});
+		this.graph.edges.remove(e);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 21, className : "rg.graph.TestEdge", methodName : "testCount"});
+	}
+	,testCreate: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(n1,e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 29, className : "rg.graph.TestEdge", methodName : "testCreate"});
+		utest.Assert.equals(n2,e.head,null,{ fileName : "TestEdge.hx", lineNumber : 30, className : "rg.graph.TestEdge", methodName : "testCreate"});
+	}
+	,testChainDeletion: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 38, className : "rg.graph.TestEdge", methodName : "testChainDeletion"});
+		this.graph.nodes.remove(n1);
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 40, className : "rg.graph.TestEdge", methodName : "testChainDeletion"});
+		utest.Assert.isNull(e.graph,null,{ fileName : "TestEdge.hx", lineNumber : 41, className : "rg.graph.TestEdge", methodName : "testChainDeletion"});
+	}
+	,testDestroy: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		this.graph.edges.remove(e);
+		utest.Assert.isNull(e.graph,null,{ fileName : "TestEdge.hx", lineNumber : 50, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isNull(e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 51, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isNull(e.head,null,{ fileName : "TestEdge.hx", lineNumber : 52, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+		utest.Assert.isTrue(e.id < 0,null,{ fileName : "TestEdge.hx", lineNumber : 53, className : "rg.graph.TestEdge", methodName : "testDestroy"});
+	}
+	,testClear: function() {
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 58, className : "rg.graph.TestEdge", methodName : "testClear"});
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 62, className : "rg.graph.TestEdge", methodName : "testClear"});
+		this.graph.edges.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 64, className : "rg.graph.TestEdge", methodName : "testClear"});
+	}
+	,testDefaultWeight: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2);
+		utest.Assert.equals(1.0,e.weight,null,{ fileName : "TestEdge.hx", lineNumber : 72, className : "rg.graph.TestEdge", methodName : "testDefaultWeight"});
+	}
+	,testSplit2: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2), de = se.split();
+		utest.Assert.isNull(se.tail,null,{ fileName : "TestEdge.hx", lineNumber : 81, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(n1,de[0].tail,null,{ fileName : "TestEdge.hx", lineNumber : 82, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.isTrue(n1.isPredecessorOf(de[0].head),null,{ fileName : "TestEdge.hx", lineNumber : 83, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.isTrue(n2.isSuccessorOf(de[1].tail),null,{ fileName : "TestEdge.hx", lineNumber : 84, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(n2,de[1].head,null,{ fileName : "TestEdge.hx", lineNumber : 85, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(1.0,de[0].weight,null,{ fileName : "TestEdge.hx", lineNumber : 86, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+		utest.Assert.equals(1.0,de[1].weight,null,{ fileName : "TestEdge.hx", lineNumber : 87, className : "rg.graph.TestEdge", methodName : "testSplit2"});
+	}
+	,testSplitMore: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2), de = se.split(5);
+		utest.Assert.equals(6,de.length,null,{ fileName : "TestEdge.hx", lineNumber : 96, className : "rg.graph.TestEdge", methodName : "testSplitMore"});
+		utest.Assert.equals(6,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 97, className : "rg.graph.TestEdge", methodName : "testSplitMore"});
+	}
+	,testSplitF: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), se = this.graph.edges.create(n1,n2,16), de = se.split(3,null,function(e1,e2,_) {
+			e2.weight = e1.weight / 2;
+		});
+		utest.Assert.equals(4,de.length,null,{ fileName : "TestEdge.hx", lineNumber : 108, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(16,de[0].weight,null,{ fileName : "TestEdge.hx", lineNumber : 109, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(8,de[1].weight,null,{ fileName : "TestEdge.hx", lineNumber : 110, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(4,de[2].weight,null,{ fileName : "TestEdge.hx", lineNumber : 111, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(2,de[3].weight,null,{ fileName : "TestEdge.hx", lineNumber : 112, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+		utest.Assert.equals(4,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestEdge.hx", lineNumber : 114, className : "rg.graph.TestEdge", methodName : "testSplitF"});
+	}
+	,testInvert: function() {
+		var n1 = this.graph.nodes.create(), n2 = this.graph.nodes.create(), e = this.graph.edges.create(n1,n2).invert();
+		utest.Assert.equals(n1,e.head,null,{ fileName : "TestEdge.hx", lineNumber : 122, className : "rg.graph.TestEdge", methodName : "testInvert"});
+		utest.Assert.equals(n2,e.tail,null,{ fileName : "TestEdge.hx", lineNumber : 123, className : "rg.graph.TestEdge", methodName : "testInvert"});
+		utest.Assert.isTrue(n2.isPredecessorOf(n1),null,{ fileName : "TestEdge.hx", lineNumber : 124, className : "rg.graph.TestEdge", methodName : "testInvert"});
+		utest.Assert.isTrue(n1.isSuccessorOf(n2),null,{ fileName : "TestEdge.hx", lineNumber : 125, className : "rg.graph.TestEdge", methodName : "testInvert"});
+	}
+	,__class__: rg.graph.TestEdge
+});
 rg.data.source.rgquery.transform.TransformCount = $hxClasses["rg.data.source.rgquery.transform.TransformCount"] = function(properties,event,unit) {
 	this.properties = properties;
 	this.unit = unit;
@@ -18162,6 +20327,7 @@ thx.geo.AlbersUsa.prototype = {
 		return this.lower48.getTranslate();
 	}
 	,__class__: thx.geo.AlbersUsa
+	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
 rg.view.svg.panel.TestPanel = $hxClasses["rg.view.svg.panel.TestPanel"] = function() {
 }
@@ -18676,7 +20842,7 @@ rg.data.source.rgquery.transform.TransformIntersectTime.prototype = {
 				var i = _g2++;
 				var p = Dynamics.clone(properties);
 				Objects.addFields(p,this.fields,item.fields.map(rg.data.source.rgquery.transform.Transforms.typedValue));
-				Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[this.periodicity != "minute" && this.periodicity != "hour"?Dates.snap(arr[i][0].timestamp,this.periodicity):arr[i][0].timestamp,arr[i][1]]);
+				Objects.addFields(p,[rg.util.Properties.timeProperty(this.periodicity),unit],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[i][0].timestamp),arr[i][1]]);
 				p.event = this.event;
 				result.push(p);
 			}
@@ -19123,12 +21289,14 @@ Type.getInstanceFields = function(c) {
 	var a = [];
 	for(var i in c.prototype) a.push(i);
 	a.remove("__class__");
+	a.remove("__properties__");
 	return a;
 }
 Type.getClassFields = function(c) {
 	var a = Reflect.fields(c);
 	a.remove("__name__");
 	a.remove("__interfaces__");
+	a.remove("__properties__");
 	a.remove("__super__");
 	a.remove("prototype");
 	return a;
@@ -19296,6 +21464,55 @@ thx.json.JsonEncoder.prototype = {
 		}) + "\"";
 	}
 	,__class__: thx.json.JsonEncoder
+}
+rg.graph.SugiyamaMethod = $hxClasses["rg.graph.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
+	var id = 0;
+	this.partitioner = null == partitioner?new rg.graph.GreedyCyclePartitioner():partitioner;
+	this.layer = null == layer?new rg.graph.LongestPathLayer():layer;
+	this.splitter = null == splitter?new rg.graph.EdgeSplitter():splitter;
+	this.decrosser = null == decrosser?rg.graph.GreedySwitchDecrosser.best():decrosser;
+}
+rg.graph.SugiyamaMethod.__name__ = ["rg","graph","SugiyamaMethod"];
+rg.graph.SugiyamaMethod.prototype = {
+	partitioner: null
+	,layer: null
+	,splitter: null
+	,decrosser: null
+	,resolve: function(graph,nodef,edgef) {
+		var onecycles = new rg.graph.OneCycleRemover().remove(graph), twocycles = new rg.graph.TwoCycleRemover().remove(graph);
+		var partitions = this.partitioner.partition(graph), reversed = (partitions.left.length > partitions.right.length?partitions.right:partitions.left).map(function(edge,_) {
+			var ob = { tail : edge.tail, head : edge.head};
+			edge.invert();
+			return ob;
+		});
+		var layers = this.layer.lay(graph);
+		var layout = new rg.graph.GraphLayout(graph,layers);
+		layout = this.splitter.split(layout,nodef,edgef);
+		layout = this.decrosser.decross(layout);
+		var _g = 0;
+		while(_g < reversed.length) {
+			var item = reversed[_g];
+			++_g;
+			var path = layout.graph.directedPath(item.head,item.tail);
+			path.forEach(function(edge,_) {
+				edge.invert();
+			});
+		}
+		var _g = 0;
+		while(_g < twocycles.length) {
+			var item = twocycles[_g];
+			++_g;
+			layout.graph.edges.create(item.tail,item.head,item.weight,item.data);
+		}
+		var _g = 0;
+		while(_g < onecycles.length) {
+			var item = onecycles[_g];
+			++_g;
+			layout.graph.edges.create(item.node,item.node,item.weight,item.data);
+		}
+		return layout;
+	}
+	,__class__: rg.graph.SugiyamaMethod
 }
 thx.svg.Area = $hxClasses["thx.svg.Area"] = function(x,y0,y1,interpolator) {
 	this._x = x;
@@ -19493,6 +21710,14 @@ Reflect.field = function(o,field) {
 Reflect.setField = function(o,field,value) {
 	o[field] = value;
 }
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
+}
+Reflect.setProperty = function(o,field,value) {
+	var tmp;
+	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
+}
 Reflect.callMethod = function(o,func,args) {
 	return func.apply(o,args);
 }
@@ -19559,6 +21784,38 @@ Reflect.makeVarArgs = function(f) {
 Reflect.prototype = {
 	__class__: Reflect
 }
+rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
+}
+rg.graph.EdgeSplitter.__name__ = ["rg","graph","EdgeSplitter"];
+rg.graph.EdgeSplitter.prototype = {
+	split: function(layout,dataf,edgef) {
+		var layers = layout.layers(), cell, ocell;
+		if(null == edgef) edgef = function(_,_1,_2) {
+		};
+		var $it0 = layout.graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			cell = layout.cell(node);
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				ocell = layout.cell(edge.head);
+				if(cell.layer == ocell.layer) continue;
+				if(cell.layer == ocell.layer - 1) continue;
+				if(cell.layer == ocell.layer + 1) continue;
+				var sign = [cell.layer < ocell.layer?1:-1], diff = Ints.abs(ocell.layer - cell.layer) - 1;
+				edge.split(diff,dataf,(function(sign) {
+					return function(ea,eb,i) {
+						layers[cell.layer + (1 + i) * sign[0]].push(ea.head.id);
+						edgef(ea,eb,i);
+					};
+				})(sign));
+			}
+		}
+		return new rg.graph.GraphLayout(layout.graph,layers);
+	}
+	,__class__: rg.graph.EdgeSplitter
+}
 var Hashes = $hxClasses["Hashes"] = function() { }
 Hashes.__name__ = ["Hashes"];
 Hashes.toDynamic = function(hash) {
@@ -19597,6 +21854,9 @@ Hashes.setOfKeys = function(hash) {
 		set.add(k);
 	}
 	return set;
+}
+Hashes.empty = function(hash) {
+	return Hashes.count(hash) == 0;
 }
 Hashes.count = function(hash) {
 	var i = 0;
@@ -19689,6 +21949,18 @@ TestAll.addTest = function(runner) {
 	runner.addCase(new rg.controller.info.TestInfoLayout());
 	runner.addCase(new rg.controller.info.TestInfoVariable());
 	runner.addCase(new rg.controller.info.TestInfoVisualizationOption());
+	runner.addCase(new rg.graph.TestGraph());
+	runner.addCase(new rg.graph.TestGraphCollection());
+	runner.addCase(new rg.graph.TestGraphLayout());
+	runner.addCase(new rg.graph.TestNode());
+	runner.addCase(new rg.graph.TestEdge());
+	runner.addCase(new rg.graph.TestOneCycleRemover());
+	runner.addCase(new rg.graph.TestTwoCycleRemover());
+	runner.addCase(new rg.graph.TestEdgeSplitter());
+	runner.addCase(new rg.graph.TestGreedySwitchDecrosser());
+	runner.addCase(new rg.graph.TestGreedyCyclePartitioner());
+	runner.addCase(new rg.graph.TestLongestPathLayer());
+	runner.addCase(new rg.graph.TestSugiyamaMethod());
 	runner.addCase(new rg.data.source.TestRGDataSource());
 	runner.addCase(new rg.data.source.rgquery.TestQueryParser());
 	runner.addCase(new rg.data.source.rgquery.transform.TestTransformCount());
@@ -19811,7 +22083,7 @@ rg.data.source.rgquery.transform.TransformTimeSeriesValues.prototype = {
 		var me = this;
 		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
 		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event",me.unitvalue],[d.count[0].timestamp,d.count[1],event,d.value]);
+			var p = Objects.addFields(Dynamics.clone(properties),[rg.util.Properties.timeProperty(periodicity),unit,"event",me.unitvalue],[rg.data.source.rgquery.transform.TransformTimeSeries.snapTimestamp(periodicity,d.count[0].timestamp),d.count[1],event,d.value]);
 			return p;
 		});
 		return result;
@@ -19985,6 +22257,7 @@ rg.view.svg.chart.Geo = $hxClasses["rg.view.svg.chart.Geo"] = function(panel) {
 	this.mapcontainer = this.g.append("svg:g").attr("class").string("mapcontainer");
 	this.queue = [];
 	this.setColorMode(rg.view.svg.chart.ColorScaleMode.FromCss());
+	this.resize();
 }
 rg.view.svg.chart.Geo.__name__ = ["rg","view","svg","chart","Geo"];
 rg.view.svg.chart.Geo.__super__ = rg.view.svg.chart.Chart;
@@ -20039,7 +22312,6 @@ rg.view.svg.chart.Geo.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 	,handlerDataPointOver: function(dp,f) {
 		var text = f(dp,this.variableDependent.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			var centroid = Reflect.field(dp,"#centroid");
 			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,true);
@@ -20115,6 +22387,7 @@ rg.view.svg.chart.Geo.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		})(this.drawmap.$bind(this),map,field));
 	}
 	,__class__: rg.view.svg.chart.Geo
+	,__properties__: $extend(rg.view.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 rg.view.svg.chart.LineEffects = $hxClasses["rg.view.svg.chart.LineEffects"] = function() { }
 rg.view.svg.chart.LineEffects.__name__ = ["rg","view","svg","chart","LineEffects"];
@@ -20208,6 +22481,56 @@ thx.svg.LineInterpolators.argument = function(s) {
 thx.svg.LineInterpolators.prototype = {
 	__class__: thx.svg.LineInterpolators
 }
+rg.graph.GraphNodes = $hxClasses["rg.graph.GraphNodes"] = function(graph,nodeidf) {
+	rg.graph.GraphCollection.call(this,graph,nodeidf);
+}
+rg.graph.GraphNodes.__name__ = ["rg","graph","GraphNodes"];
+rg.graph.GraphNodes.newInstance = function(graph,nodeidf) {
+	return new rg.graph.GraphNodes(graph,nodeidf);
+}
+rg.graph.GraphNodes.__super__ = rg.graph.GraphCollection;
+rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
+	copyTo: function(graph) {
+		var nodes = new rg.graph.GraphNodes(graph);
+		var $it0 = this.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			nodes._create(node.id,node.data);
+		}
+		nodes.nextid = this.nextid;
+		return nodes;
+	}
+	,create: function(data) {
+		return this._create(++this.nextid,data);
+	}
+	,_create: function(id,data) {
+		var n = rg.graph.GNode.create(this.graph,id,data);
+		this.collectionCreate(n);
+		return n;
+	}
+	,remove: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "rg.graph.GraphNodes", methodName : "remove"});
+		this._remove(node);
+	}
+	,_remove: function(node) {
+		this.graph.edges.unlink(node);
+		this.collectionRemove(node);
+		node.destroy();
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
+	,toString: function() {
+		return "GraphNodes (" + IntHashes.count(this.collection) + "): " + rg.graph.GraphCollection.prototype.toString.call(this);
+	}
+	,__class__: rg.graph.GraphNodes
+});
 thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
 	this.length = 0;
 	this.__keys = [];
@@ -20543,6 +22866,35 @@ thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
 thx.svg.LineInternals.prototype = {
 	__class__: thx.svg.LineInternals
 }
+rg.graph.TestSugiyamaMethod = $hxClasses["rg.graph.TestSugiyamaMethod"] = function() {
+}
+rg.graph.TestSugiyamaMethod.__name__ = ["rg","graph","TestSugiyamaMethod"];
+rg.graph.TestSugiyamaMethod.prototype = {
+	testSugiyama: function() {
+		var method = new rg.graph.SugiyamaMethod(), edges = [{ a : 1, b : 6},{ a : 1, b : 14},{ a : 2, b : 6},{ a : 2, b : 13},{ a : 3, b : 13},{ a : 3, b : 9},{ a : 3, b : 6},{ a : 6, b : 3},{ a : 3, b : 8},{ b : 3, a : 14},{ a : 3, b : 7},{ a : 4, b : 4},{ a : 4, b : 9},{ a : 4, b : 11},{ b : 4, a : 13},{ a : 4, b : 10},{ a : 5, b : 11},{ b : 5, a : 13},{ a : 5, b : 15},{ a : 6, b : 15},{ a : 7, b : 14},{ a : 7, b : 12},{ b : 8, a : 14},{ a : 9, b : 15},{ a : 10, b : 13},{ a : 10, b : 14},{ a : 11, b : 15},{ a : 12, b : 14},{ a : 14, b : 15}], graph = new rg.graph.Graph();
+		var _g = 0;
+		while(_g < 15) {
+			var i = _g++;
+			graph.nodes.create();
+		}
+		var _g = 0;
+		while(_g < edges.length) {
+			var edge = edges[_g];
+			++_g;
+			graph.edges.create(graph.nodes.get(edge.a),graph.nodes.get(edge.b));
+		}
+		var layout = method.resolve(graph);
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var cell = layout.cell(node);
+			utest.Assert.notNull(cell,null,{ fileName : "TestSugiyamaMethod.hx", lineNumber : 58, className : "rg.graph.TestSugiyamaMethod", methodName : "testSugiyama"});
+			utest.Assert.isTrue(cell.layer >= 0,null,{ fileName : "TestSugiyamaMethod.hx", lineNumber : 59, className : "rg.graph.TestSugiyamaMethod", methodName : "testSugiyama"});
+			utest.Assert.isTrue(cell.position >= 0,null,{ fileName : "TestSugiyamaMethod.hx", lineNumber : 60, className : "rg.graph.TestSugiyamaMethod", methodName : "testSugiyama"});
+		}
+	}
+	,__class__: rg.graph.TestSugiyamaMethod
+}
 thx.js.AccessTweenAttribute = $hxClasses["thx.js.AccessTweenAttribute"] = function(name,transition,tweens) {
 	thx.js.AccessTween.call(this,transition,tweens);
 	this.name = name;
@@ -20790,8 +23142,35 @@ thx.js.AccessDataHtml.prototype = $extend(thx.js.AccessHtml.prototype,{
 	}
 	,__class__: thx.js.AccessDataHtml
 });
+rg.graph.TestGraphCollection = $hxClasses["rg.graph.TestGraphCollection"] = function() {
+}
+rg.graph.TestGraphCollection.__name__ = ["rg","graph","TestGraphCollection"];
+rg.graph.TestGraphCollection.prototype = {
+	testMap: function() {
+		var graph = new rg.graph.Graph(function(s) {
+			return s;
+		},function(i) {
+			return "#" + i;
+		}), na = graph.nodes.create("a"), nb = graph.nodes.create("b"), e = graph.edges.create(na,nb,null,7);
+		utest.Assert.equals(na,graph.nodes.getById("a"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 15, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		utest.Assert.equals(nb,graph.nodes.getById("b"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 16, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		utest.Assert.equals(e,graph.edges.getById("#7"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 17, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		graph.nodes.remove(na);
+		utest.Assert.isNull(graph.nodes.getById("a"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 19, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+		utest.Assert.isNull(graph.edges.getById("#7"),null,{ fileName : "TestGraphCollection.hx", lineNumber : 20, className : "rg.graph.TestGraphCollection", methodName : "testMap"});
+	}
+	,__class__: rg.graph.TestGraphCollection
+}
 var Iterators = $hxClasses["Iterators"] = function() { }
 Iterators.__name__ = ["Iterators"];
+Iterators.count = function(it) {
+	var i = 0;
+	while( it.hasNext() ) {
+		var _ = it.next();
+		i++;
+	}
+	return i;
+}
 Iterators.indexOf = function(it,v,f) {
 	if(null == f) f = function(v2) {
 		return v == v2;
@@ -20836,6 +23215,14 @@ Iterators.each = function(it,f) {
 		var o = it.next();
 		f(o,i++);
 	}
+}
+Iterators.filter = function(it,f) {
+	var result = [];
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) result.push(i);
+	}
+	return result;
 }
 Iterators.reduce = function(it,f,initialValue) {
 	var accumulator = initialValue, i = 0;
@@ -20919,9 +23306,21 @@ rg.controller.MVPOptions.buildQuery = function(type,property,values,periodicity)
 	return q;
 }
 rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
-	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null;
+	var start = null, end = null, path = "/", events = [], property = null, values = null, chain = new rg.util.ChainedExecutor(handler), query, periodicity, groupby = null, groupfilter = null, statistic = null, tag = null, location = null;
 	if(null == parameters.options) parameters.options = { };
 	var options = parameters.options;
+	if(null != parameters.statistic) {
+		statistic = parameters.statistic;
+		Reflect.deleteField(parameters,"statistic");
+	}
+	if(null != parameters.tag) {
+		tag = parameters.tag;
+		Reflect.deleteField(parameters,"tag");
+	}
+	if(null != parameters.location) {
+		location = parameters.location;
+		Reflect.deleteField(parameters,"location");
+	}
 	if(null != parameters.groupby) {
 		groupby = parameters.groupby;
 		Reflect.deleteField(parameters,"groupby");
@@ -20989,7 +23388,7 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 177, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 197, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	chain.addAction(function(params,handler1) {
 		var opt = params.options;
@@ -21031,6 +23430,9 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 					params1["groupby"] = groupby;
 					if(null != groupfilter) params1["groupfilter"] = groupfilter;
 				}
+				if(null != statistic) params1["statistic"] = statistic;
+				if(null != tag) params1["tag"] = tag;
+				if(null != location) params1["location"] = location;
 				src.push(params1);
 			}
 			if(null == params.options.segmenton) params.options.segmenton = null != values?"value":null == property?"event":property;
@@ -21043,17 +23445,34 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 		if(null != groupby) return o["groupby"] = groupby;
 		return o;
 	};
+	var defaultStatistic = function() {
+		if(null == statistic) return "count";
+		return (function($this) {
+			var $r;
+			switch(("" + statistic).toLowerCase()) {
+			case "standarddeviation":case "stddeviation":case "deviation":
+				$r = "standardDeviation";
+				break;
+			case "mean":
+				$r = "mean";
+				break;
+			default:
+				$r = "count";
+			}
+			return $r;
+		}(this));
+	};
 	chain.addAction(function(params,handler1) {
 		if(null == params.axes) switch(params.options.visualization) {
 		case "funnelchart":
-			params.axes = [{ type : "event", variable : "independent"},{ type : "count"}];
+			params.axes = [{ type : "event", variable : "independent"},{ type : defaultStatistic()}];
 			break;
 		case "barchart":
 			var axis = { scalemode : "fit"};
 			params.axes = [];
 			if(periodicity == "eternity") {
 				Objects.copyTo({ type : null == params.options.segmenton?"event":params.options.segmenton, variable : "independent"},axis);
-				params.axes.push({ type : "count"});
+				params.axes.push({ type : defaultStatistic()});
 			} else axis = timeAxis(axis);
 			params.axes.insert(0,axis);
 			break;
@@ -21070,15 +23489,15 @@ rg.controller.MVPOptions.complete = function(executor,parameters,handler) {
 			++_g;
 			if(query.indexOf(axis.type) < 0) hasdependent = true;
 		}
-		if(!hasdependent) params.axes.push({ type : "count"});
+		if(!hasdependent) params.axes.push({ type : defaultStatistic()});
 		handler1(params);
 	});
 	chain.addAction(function(params,handler1) {
 		if(null == params.options.label) switch(params.options.visualization) {
-		case "linechart":case "barchart":
+		case "linechart":case "barchart":case "streamgraph":
 			var axes = params.axes, type = axes[axes.length - 1].type;
 			params.options.label = { datapointover : function(dp,stats) {
-				return rg.util.Properties.humanize(null != values?Reflect.field(dp,"value"):null != property?Reflect.field(dp,property):null != params.options.segmenton?Reflect.field(dp,params.options.segmenton):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+				return rg.util.Properties.humanize(null != values?Reflect.field(dp,"value"):null != property && type == "count"?Reflect.field(dp,property):null != params.options.segmenton && type == "count"?Reflect.field(dp,params.options.segmenton):type != "count" && null != property?type + " over " + rg.util.Properties.humanize(property):type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
 			}};
 			break;
 		case "piechart":
@@ -21185,6 +23604,7 @@ thx.geo.Azimuthal.prototype = {
 		return this.mode;
 	}
 	,__class__: thx.geo.Azimuthal
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale",set_origin:"setOrigin",get_origin:"getOrigin",set_mode:"setMode",get_mode:"getMode"}
 }
 thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
 thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
@@ -21294,7 +23714,6 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 		var d = Reflect.field(dom,"__data__"), text = this.labelDataPointOver(d.dp,this.stats);
 		if(null == text) this.tooltip.hide(); else {
 			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2, r = this.radius * this.tooltipRadius;
-			this.tooltip.show();
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r);
 		}
@@ -21882,6 +24301,7 @@ rg.data.Tickmark.prototype = {
 		return rg.data.Tickmarks.string(this);
 	}
 	,__class__: rg.data.Tickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 thx.color.Colors = $hxClasses["thx.color.Colors"] = function() { }
 thx.color.Colors.__name__ = ["thx","color","Colors"];
@@ -22010,6 +24430,25 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
+rg.graph.TestOneCycleRemover = $hxClasses["rg.graph.TestOneCycleRemover"] = function() {
+}
+rg.graph.TestOneCycleRemover.__name__ = ["rg","graph","TestOneCycleRemover"];
+rg.graph.TestOneCycleRemover.prototype = {
+	testRemover: function() {
+		var graph = new rg.graph.Graph(), n1 = graph.nodes.create(), n2 = graph.nodes.create(), n3 = graph.nodes.create(), e1 = graph.edges.create(n1,n1), e2 = graph.edges.create(n2,n2), e3 = graph.edges.create(n1,n3), remover = new rg.graph.OneCycleRemover(), removed = remover.remove(graph);
+		utest.Assert.equals(2,removed.length,null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 24, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isNull(e1.tail,null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 25, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isNull(e2.tail,null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 26, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.equals(1,IntHashes.count(graph.edges.collection),null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 28, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isTrue(Arrays.exists(removed,null,function(i) {
+			return i.node == n1;
+		}),null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 30, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+		utest.Assert.isTrue(Arrays.exists(removed,null,function(i) {
+			return i.node == n2;
+		}),null,{ fileName : "TestOneCycleRemover.hx", lineNumber : 31, className : "rg.graph.TestOneCycleRemover", methodName : "testRemover"});
+	}
+	,__class__: rg.graph.TestOneCycleRemover
+}
 rg.view.svg.widget.GridAnchor = $hxClasses["rg.view.svg.widget.GridAnchor"] = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;
@@ -22180,6 +24619,199 @@ rg.controller.info.InfoLabelPivotTable.prototype = $extend(rg.controller.info.In
 	,totalover: null
 	,axisvalue: null
 	,__class__: rg.controller.info.InfoLabelPivotTable
+});
+rg.graph.TestGraph = $hxClasses["rg.graph.TestGraph"] = function() {
+	rg.graph.TestBaseGraph.call(this);
+}
+rg.graph.TestGraph.__name__ = ["rg","graph","TestGraph"];
+rg.graph.TestGraph.__super__ = rg.graph.TestBaseGraph;
+rg.graph.TestGraph.prototype = $extend(rg.graph.TestBaseGraph.prototype,{
+	testClone: function() {
+		var clone = this.graph.clone();
+		utest.Assert.isTrue(this.n5 != clone.nodes.get(this.n5.id),null,{ fileName : "TestGraph.hx", lineNumber : 11, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.notNull(clone.nodes.get(this.n5.id),null,{ fileName : "TestGraph.hx", lineNumber : 12, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.n5.data,clone.nodes.get(this.n5.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 14, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.e2.data,clone.edges.get(this.e2.id).data,null,{ fileName : "TestGraph.hx", lineNumber : 15, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.graph.nodes.create().id,clone.nodes.create().id,null,{ fileName : "TestGraph.hx", lineNumber : 17, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(this.graph.edges.create(this.n6,this.n5).id,clone.edges.create(clone.nodes.get(this.n5.id),clone.nodes.get(this.n6.id)).id,null,{ fileName : "TestGraph.hx", lineNumber : 18, className : "rg.graph.TestGraph", methodName : "testClone"});
+		this.graph.clear();
+		utest.Assert.equals(0,IntHashes.count(this.graph.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 24, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(12,IntHashes.count(clone.nodes.collection),null,{ fileName : "TestGraph.hx", lineNumber : 25, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(0,IntHashes.count(this.graph.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 27, className : "rg.graph.TestGraph", methodName : "testClone"});
+		utest.Assert.equals(14,IntHashes.count(clone.edges.collection),null,{ fileName : "TestGraph.hx", lineNumber : 28, className : "rg.graph.TestGraph", methodName : "testClone"});
+	}
+	,testPath: function() {
+		var path = this.graph.path(this.n6,this.n2);
+		utest.Assert.equals(2,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 34, className : "rg.graph.TestGraph", methodName : "testPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 35, className : "rg.graph.TestGraph", methodName : "testPath"});
+		this.assertEdge(path[1],this.n2,this.n5,{ fileName : "TestGraph.hx", lineNumber : 36, className : "rg.graph.TestGraph", methodName : "testPath"});
+	}
+	,testDirectedPath: function() {
+		var path = this.graph.directedPath(this.n6,this.n2);
+		utest.Assert.equals(3,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 42, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 43, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+		this.assertEdge(path[1],this.n5,this.n4,{ fileName : "TestGraph.hx", lineNumber : 44, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+		this.assertEdge(path[2],this.n4,this.n2,{ fileName : "TestGraph.hx", lineNumber : 45, className : "rg.graph.TestGraph", methodName : "testDirectedPath"});
+	}
+	,testWeightedPath: function() {
+		var path = this.graph.path(this.n6,this.n2,true);
+		utest.Assert.equals(3,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 51, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 52, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+		this.assertEdge(path[1],this.n5,this.n3,{ fileName : "TestGraph.hx", lineNumber : 53, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+		this.assertEdge(path[2],this.n2,this.n3,{ fileName : "TestGraph.hx", lineNumber : 54, className : "rg.graph.TestGraph", methodName : "testWeightedPath"});
+	}
+	,testWeightedDirectedPath: function() {
+		var path = this.graph.directedPath(this.n6,this.n2,true);
+		utest.Assert.equals(4,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 60, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[0],this.n6,this.n5,{ fileName : "TestGraph.hx", lineNumber : 61, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[1],this.n5,this.n3,{ fileName : "TestGraph.hx", lineNumber : 62, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[2],this.n3,this.n1,{ fileName : "TestGraph.hx", lineNumber : 63, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+		this.assertEdge(path[3],this.n1,this.n2,{ fileName : "TestGraph.hx", lineNumber : 64, className : "rg.graph.TestGraph", methodName : "testWeightedDirectedPath"});
+	}
+	,testSelfPath: function() {
+		var path = this.graph.path(this.n3,this.n3);
+		utest.Assert.equals(1,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 70, className : "rg.graph.TestGraph", methodName : "testSelfPath"});
+		utest.Assert.equals(this.n3,path[0].tail,null,{ fileName : "TestGraph.hx", lineNumber : 71, className : "rg.graph.TestGraph", methodName : "testSelfPath"});
+		utest.Assert.equals(this.n3,path[0].head,null,{ fileName : "TestGraph.hx", lineNumber : 72, className : "rg.graph.TestGraph", methodName : "testSelfPath"});
+	}
+	,testSelfDirectedPath: function() {
+		var path = this.graph.directedPath(this.n3,this.n3);
+		utest.Assert.equals(1,path.length,null,{ fileName : "TestGraph.hx", lineNumber : 78, className : "rg.graph.TestGraph", methodName : "testSelfDirectedPath"});
+		utest.Assert.equals(this.n3,path[0].tail,null,{ fileName : "TestGraph.hx", lineNumber : 79, className : "rg.graph.TestGraph", methodName : "testSelfDirectedPath"});
+		utest.Assert.equals(this.n3,path[0].head,null,{ fileName : "TestGraph.hx", lineNumber : 80, className : "rg.graph.TestGraph", methodName : "testSelfDirectedPath"});
+	}
+	,testDisconnectedDirectedNodes: function() {
+		var path = this.graph.directedPath(this.n8,this.n6);
+		utest.Assert.isNull(path,null,{ fileName : "TestGraph.hx", lineNumber : 86, className : "rg.graph.TestGraph", methodName : "testDisconnectedDirectedNodes"});
+	}
+	,testDisconnectedNodes: function() {
+		var path = this.graph.path(this.n9,this.n10);
+		utest.Assert.isNull(path,null,{ fileName : "TestGraph.hx", lineNumber : 92, className : "rg.graph.TestGraph", methodName : "testDisconnectedNodes"});
+	}
+	,testFindSinks: function() {
+		var items = this.graph.findSinks();
+		utest.Assert.equals(2,items.length,null,{ fileName : "TestGraph.hx", lineNumber : 98, className : "rg.graph.TestGraph", methodName : "testFindSinks"});
+		Arrays.exists(items,this.n7);
+		Arrays.exists(items,this.n8);
+	}
+	,testFindSink: function() {
+		var item = this.graph.findSink();
+		utest.Assert.notNull(item,null,{ fileName : "TestGraph.hx", lineNumber : 106, className : "rg.graph.TestGraph", methodName : "testFindSink"});
+		Arrays.exists([this.n7,this.n8],item);
+	}
+	,testFindSources: function() {
+		var items = this.graph.findSources();
+		utest.Assert.equals(2,items.length,null,{ fileName : "TestGraph.hx", lineNumber : 113, className : "rg.graph.TestGraph", methodName : "testFindSources"});
+		Arrays.exists(items,this.n6);
+		Arrays.exists(items,this.n4);
+	}
+	,testFindSource: function() {
+		var item = this.graph.findSource();
+		utest.Assert.notNull(item,null,{ fileName : "TestGraph.hx", lineNumber : 121, className : "rg.graph.TestGraph", methodName : "testFindSource"});
+		Arrays.exists([this.n6,this.n4],item);
+	}
+	,testFindIsolateds: function() {
+		var items = this.graph.findIsolateds();
+		utest.Assert.equals(2,items.length,null,{ fileName : "TestGraph.hx", lineNumber : 128, className : "rg.graph.TestGraph", methodName : "testFindIsolateds"});
+		Arrays.exists(items,this.n10);
+		Arrays.exists(items,this.n11);
+	}
+	,testFindIsolated: function() {
+		var item = this.graph.findIsolated();
+		utest.Assert.notNull(item,null,{ fileName : "TestGraph.hx", lineNumber : 136, className : "rg.graph.TestGraph", methodName : "testFindIsolated"});
+		Arrays.exists([this.n10,this.n11],item);
+	}
+	,testEventsCreate: function() {
+		var me = this;
+		var nodeadd = 0, edgeadd = 0;
+		this.graph.nodes.onCreate.add(function(n) {
+			utest.Assert.isFalse(me.graph.nodes.has(n),null,{ fileName : "TestGraph.hx", lineNumber : 145, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+			nodeadd++;
+		});
+		this.graph.edges.onCreate.add(function(ee) {
+			utest.Assert.isFalse(me.graph.edges.has(ee),null,{ fileName : "TestGraph.hx", lineNumber : 149, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+			edgeadd++;
+		});
+		this.n1.remove();
+		this.e2.remove();
+		this.graph.nodes.create();
+		this.graph.edges.create(this.n3,this.n6);
+		utest.Assert.equals(1,nodeadd,null,{ fileName : "TestGraph.hx", lineNumber : 158, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+		utest.Assert.equals(1,edgeadd,null,{ fileName : "TestGraph.hx", lineNumber : 159, className : "rg.graph.TestGraph", methodName : "testEventsCreate"});
+	}
+	,testEventsRemove: function() {
+		var me = this;
+		var noderem = 0, edgerem = 0;
+		this.graph.nodes.onRemove.add(function(n) {
+			utest.Assert.equals(me.n1,n,null,{ fileName : "TestGraph.hx", lineNumber : 167, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+			noderem++;
+		});
+		this.graph.edges.onRemove.add(function(ee) {
+			utest.Assert.contains(ee,[me.e5,me.e6,me.e9],null,{ fileName : "TestGraph.hx", lineNumber : 171, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+			edgerem++;
+		});
+		this.n1.remove();
+		this.graph.nodes.create();
+		this.graph.edges.create(this.n3,this.n6);
+		utest.Assert.equals(1,noderem,null,{ fileName : "TestGraph.hx", lineNumber : 180, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+		utest.Assert.equals(3,edgerem,null,{ fileName : "TestGraph.hx", lineNumber : 181, className : "rg.graph.TestGraph", methodName : "testEventsRemove"});
+	}
+	,assertEdge: function(edge,tail,head,pos) {
+		utest.Assert.equals(edge.tail,tail,null,pos);
+		utest.Assert.equals(edge.head,head,null,pos);
+	}
+	,n1: null
+	,n2: null
+	,n3: null
+	,n4: null
+	,n5: null
+	,n6: null
+	,n7: null
+	,n8: null
+	,n9: null
+	,n10: null
+	,n11: null
+	,e1: null
+	,e2: null
+	,e3: null
+	,e4: null
+	,e5: null
+	,e6: null
+	,e7: null
+	,e8: null
+	,e9: null
+	,e10: null
+	,e11: null
+	,e12: null
+	,e13: null
+	,setup: function() {
+		rg.graph.TestBaseGraph.prototype.setup.call(this);
+		this.n1 = this.graph.nodes.create();
+		this.n2 = this.graph.nodes.create();
+		this.n3 = this.graph.nodes.create();
+		this.n4 = this.graph.nodes.create();
+		this.n5 = this.graph.nodes.create("NE");
+		this.n6 = this.graph.nodes.create();
+		this.n7 = this.graph.nodes.create();
+		this.n8 = this.graph.nodes.create();
+		this.n9 = this.graph.nodes.create();
+		this.n10 = this.graph.nodes.create();
+		this.n11 = this.graph.nodes.create();
+		this.e1 = this.graph.edges.create(this.n6,this.n5);
+		this.e2 = this.graph.edges.create(this.n5,this.n4,10,"ED");
+		this.e3 = this.graph.edges.create(this.n4,this.n2);
+		this.e4 = this.graph.edges.create(this.n5,this.n3);
+		this.e5 = this.graph.edges.create(this.n3,this.n1);
+		this.e6 = this.graph.edges.create(this.n1,this.n3);
+		this.e7 = this.graph.edges.create(this.n3,this.n3);
+		this.e8 = this.graph.edges.create(this.n2,this.n3);
+		this.e9 = this.graph.edges.create(this.n1,this.n2);
+		this.e10 = this.graph.edges.create(this.n2,this.n5,20.0);
+		this.e11 = this.graph.edges.create(this.n4,this.n7);
+		this.e12 = this.graph.edges.create(this.n5,this.n8);
+		this.e13 = this.graph.edges.create(this.n9,this.n8);
+	}
+	,__class__: rg.graph.TestGraph
 });
 js.Boot.__res = {}
 js.Boot.__init();
@@ -24065,6 +26697,7 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+rg.graph.Graphs.id = 0;
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
 rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 rg.track.Tracker.PREFIX = "rgv_";
@@ -24158,8 +26791,8 @@ thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.RGConst.SERVICE_VISTRACK_HASH = "http://devapp01.reportgrid.com:30050/auditPath?tokenId={$token}";
-rg.RGConst.BASE_URL_GEOJSON = "geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapp02.reportgrid.com:20000/";
+rg.RGConst.BASE_URL_GEOJSON = "http://localhost/rg/vis/geo/json/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapi.reportgrid.com/services/renderer/v1/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 js.CookieStorageFallback.DEFAULT_PATH = "/";
 js.CookieStorageFallback.DEFAULT_EXPIRATION = 315360000;

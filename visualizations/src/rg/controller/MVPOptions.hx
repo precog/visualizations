@@ -59,22 +59,50 @@ class MVPOptions
 
 	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void)
 	{
-		var start = null,
-			end = null,
-			path = "/",
+		var start       = null,
+			end         = null,
+			path        = "/",
 			events : Array<String> = [],
-			property = null,
+			property    = null,
 			values : Array<String> = null,
-			chain = new ChainedExecutor(handler),
+			chain       = new ChainedExecutor(handler),
 			query,
 			periodicity,
-			groupby = null,
-			groupfilter = null;
+			groupby     = null,
+			groupfilter = null,
+			statistic   = null,
+			tag         = null,
+			location    = null,
+			datapoints  = null,
+			identifier  = null,
+			parent      = null,
+			where       = null;
 
 		if (null == parameters.options)
 			parameters.options = { };
 		var options : Dynamic = parameters.options;
 		// capture defaults
+		// statistic
+		if (null != parameters.statistic)
+		{
+			statistic = parameters.statistic;
+			Reflect.deleteField(parameters, "statistic");
+		}
+		// tag and location
+		if (null != parameters.tag)
+		{
+			tag = parameters.tag;
+			Reflect.deleteField(parameters, "tag");
+		} else {
+			tag = switch(options.visualization) { case "geo": "location"; default: null; }
+		}
+		if (null != parameters.location)
+		{
+			location = parameters.location;
+			Reflect.deleteField(parameters, "location");
+		} else {
+			location = switch(options.visualization) { case "geo": "/"; default: null; }
+		}
 		// grouping
 		if (null != parameters.groupby)
 		{
@@ -105,6 +133,31 @@ class MVPOptions
 			Reflect.deleteField(parameters, "end");
 		}
 
+		// graph options
+		if(null != parameters.identifier)
+		{
+			identifier = parameters.identifier;
+			Reflect.deleteField(parameters, "identifier");
+			if(null != parameters.parent)
+			{
+				parent = parameters.parent;
+				Reflect.deleteField(parameters, "parent");
+			}
+
+			if(null != parameters.where)
+			{
+				where = parameters.where;
+				Reflect.deleteField(parameters, "where");
+			}
+		}
+
+		// datapoints option
+		if(null != parameters.datapoints)
+		{
+			datapoints = parameters.datapoints;
+			Reflect.deleteField(parameters, "datapoints");
+		}
+
 		if (null != parameters.periodicity)
 		{
 			periodicity = parameters.periodicity;
@@ -112,7 +165,7 @@ class MVPOptions
 		} else if (null != start) {
 			periodicity = Periodicity.defaultPeriodicity(end - start);
 		} else {
-			periodicity = switch(options.visualization) { case "piechart", "funnelchart": "eternity"; default: "day"; };
+			periodicity = switch(options.visualization) { case "piechart", "funnelchart", "sankey": "eternity"; default: "day"; };
 		}
 
 		if (null == start && "eternity" != periodicity && null != periodicity)
@@ -176,7 +229,7 @@ class MVPOptions
 			else
 				throw new Error("invalid value for download '{0}'", [v]);
 		}
-
+/*
 		// ensure hash for tracking
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -207,7 +260,7 @@ class MVPOptions
 				handler(params);
 			}
 		});
-
+*/
 		// ensure events
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -226,25 +279,47 @@ class MVPOptions
 		{
 			if (null == params.data)
 			{
-				var src = [];
+				var src : Array<Dynamic> = [];
 				params.data = [{ src : src }];
-				for (event in events)
+				if(null != datapoints)
 				{
-					var params = { path : path, event : event, query : query };
-					if (null != start)
+					src.push({ data : datapoints });
+				} else if(null != identifier) {
+					var params : Dynamic = { path : path, event : events[0], identifier : identifier, parent : parent };
+					if(null != where)
+						params.where = where;
+					src.push(params);
+				} else {
+					for (event in events)
 					{
-						Reflect.setField(params, "start", start);
-						Reflect.setField(params, "end", end);
-					}
-					if (null != groupby)
-					{
-						Reflect.setField(params, "groupby", groupby);
-						if (null != groupfilter)
+						var params = { path : path, event : event, query : query };
+						if (null != start)
 						{
-							Reflect.setField(params, "groupfilter", groupfilter);
+							Reflect.setField(params, "start", start);
+							Reflect.setField(params, "end", end);
 						}
+						if (null != groupby)
+						{
+							Reflect.setField(params, "groupby", groupby);
+							if (null != groupfilter)
+							{
+								Reflect.setField(params, "groupfilter", groupfilter);
+							}
+						}
+						if (null != statistic)
+						{
+							Reflect.setField(params, "statistic", statistic);
+						}
+						if (null != tag)
+						{
+							Reflect.setField(params, "tag", tag);
+						}
+						if (null != location)
+						{
+							Reflect.setField(params, "location", location);
+						}
+						src.push( params );
 					}
-					src.push( params );
 				}
 				if (null == params.options.segmenton)
 					params.options.segmenton = null != values ? "value" : null == property ? "event" : property;
@@ -261,6 +336,19 @@ class MVPOptions
 			return o;
 		}
 
+		function defaultStatistic() {
+			if(null == statistic) return "count";
+			return switch((""+statistic).toLowerCase())
+			{
+				case "standarddeviation", "stddeviation", "deviation":
+					"standardDeviation";
+				case "mean":
+					"mean";
+				default:
+					"count";
+			}
+		}
+
 		// ensure axes
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -269,13 +357,13 @@ class MVPOptions
 				switch(params.options.visualization)
 				{
 					case "funnelchart":
-						params.axes = [{ type : "event", variable : "independent" }, { type : "count"}];
+						params.axes = [{ type : "event", variable : "independent" }, { type : defaultStatistic()}];
 					case "barchart":
 						var axis : Dynamic = { scalemode : "fit" };
 						params.axes = [];
 						if(periodicity == "eternity") {
 							Objects.copyTo({ type : null == params.options.segmenton ? "event" : params.options.segmenton, variable : "independent" }, axis);
-							params.axes.push({ type : "count" });
+							params.axes.push({ type : defaultStatistic() });
 						} else
 							axis = timeAxis(axis);
 						params.axes.insert(0, axis);
@@ -297,7 +385,7 @@ class MVPOptions
 					hasdependent = true;
 			}
 			if (!hasdependent)
-				params.axes.push({ type : "count" });
+				params.axes.push({ type : defaultStatistic() });
 			handler(params);
 		});
 
@@ -310,7 +398,7 @@ class MVPOptions
 				{
 //					case "funnelchart":
 
-					case "linechart", "barchart":
+					case "linechart", "barchart", "streamgraph":
 						var axes : Array<Dynamic> = params.axes,
 							type = axes[axes.length - 1].type;
 						params.options.label = {
@@ -319,10 +407,12 @@ class MVPOptions
 									Properties.humanize(
 										null != values
 										? DataPoints.value(dp, "value")
-										: null != property
+										: (null != property && type == 'count')
 										? DataPoints.value(dp, property)
-										: null != params.options.segmenton
+										: (null != params.options.segmenton && type == 'count')
 										? DataPoints.value(dp, params.options.segmenton)
+										: type != 'count' && null != property
+										? type + " over " + Properties.humanize(property)
 										: type
 									) + ": " +
 									RGStrings.humanize(DataPoints.value(dp, type))
@@ -377,6 +467,54 @@ class MVPOptions
 									) + ": " +
 									RGStrings.humanize(DataPoints.value(dp, type))
 								;
+							}
+						};
+					case "sankey":
+						var axes : Array<Dynamic> = params.axes,
+							type = axes[axes.length - 1].type;
+						params.options.label = {
+							datapointover : function(dp, stats) {
+								var v = DataPoints.value(dp, type);
+								return
+									Properties.humanize(
+											null != property
+											? DataPoints.value(dp, property)
+											: type
+									)
+									+ ": " +
+									RGStrings.humanize(DataPoints.value(dp, type))
+									+ "\n" + (
+										stats.tot != 0.0
+										? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
+										: RGStrings.humanize(v)
+									)
+								;
+							},
+
+							node : function(dp, stats) {
+								return dp.id;
+							},
+
+							datapoint : function(dp, stats) {
+								return
+									RGStrings.humanize(DataPoints.value(dp, type))
+									+ "\n"
+									+ Properties.humanize(
+										null != property
+										? DataPoints.value(dp, property)
+										: type
+									) 
+								;
+							},
+
+							edge : function(dp : Dynamic, stats)
+							{
+								return Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
+							},
+
+							edgeover : function(dp : Dynamic, stats)
+							{
+								return Floats.format(dp.edgeweight, "D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
 							}
 						};
 				}

@@ -1,5 +1,11 @@
+v. 1.2.0
+* added sankey visualization
+v. 1.1.5
+* added support for standardDeviation and mean to visualizations
+* added simplified query for geo and mapping
 v. 1.1.4
  * added official support for download
+ * fixed bug in query values
 v. 1.1.3
  * added support for histogram when the bar chart is generated with eternity
  * added support for simplified query to generate funnel charts from the event names

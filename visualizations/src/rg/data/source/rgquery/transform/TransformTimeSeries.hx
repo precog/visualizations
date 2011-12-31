@@ -15,14 +15,14 @@ class TransformTimeSeries implements ITransform<TimeSeriesType>
 	var unit : String;
 	var periodicity : String;
 	var event : String;
-	public function new(properties : Dynamic, event : String, periodicity : String, unit : String) 
+	public function new(properties : Dynamic, event : String, periodicity : String, unit : String)
 	{
 		this.properties = properties;
 		this.unit = unit;
 		this.periodicity = periodicity;
 		this.event = event;
 	}
-	
+
 	public function transform(data : TimeSeriesType) : Array<DataPoint>
 	{
 		var properties = this.properties,
@@ -32,11 +32,18 @@ class TransformTimeSeries implements ITransform<TimeSeriesType>
 		var result = data.map(function(d, _) {
 //			var dp = Objects.clone(properties);
 			var p : DataPoint = cast Objects.addFields(
-				Dynamics.clone(properties), 
-				[Properties.timeProperty(periodicity), unit, "event"], 
-				[d[0].timestamp, d[1], event]);
+				Dynamics.clone(properties),
+				[Properties.timeProperty(periodicity), unit, "event"],
+				[TransformTimeSeries.snapTimestamp(periodicity, d[0].timestamp), d[1], event]);
 			return p;
 		});
 		return result;
+	}
+
+	public static function snapTimestamp(periodicity : String, value : Float)
+	{
+		return (periodicity != "minute" && periodicity != "hour")
+			? Dates.snap(value, periodicity)
+			: value;
 	}
 }

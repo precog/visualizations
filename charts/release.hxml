@@ -1,0 +1,10 @@
+-cp src
+-cp ../lib/src
+-lib thx
+-lib hxevents
+-js bin/js/reportgrid-charts.js
+-main rg.JSBridge
+-D release
+#-D reportgridapi
+--no-traces
+-cmd ./deploy.sh

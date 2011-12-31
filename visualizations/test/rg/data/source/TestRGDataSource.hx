@@ -16,7 +16,7 @@ class TestRGDataSource
 	function profile(query : Query, ?groupby : String)
 	{
 		var executor = new MockRGExecutor();
-		var ds = new DataSourceReportGrid(executor, "/", "click", query);
+		var ds = new DataSourceReportGrid(executor, "/", "click", query, Count, null, null, null, null, null, null);
 		ds.groupBy = groupby;
 		ds.load();
 		return executor.callStack;
@@ -33,7 +33,6 @@ class TestRGDataSource
 			{ method : "propertyCount", args : ["/", { property : ".click"}] }
 		}], profile( {
 			exp : [Event],
-			operation : Count,
 			where : []
 		}));
 	}
@@ -51,7 +50,6 @@ class TestRGDataSource
 			}]
 		}], profile( {
 			exp : [Property(".unique")],
-			operation : Count,
 			where : []
 		}));
 	}
@@ -62,7 +60,6 @@ class TestRGDataSource
 			{ method : "propertySeries", args : ["/", { property : ".click", periodicity : "day"}] }
 		}], profile( {
 			exp : [Time("day")],
-			operation : Count,
 			where : []
 		}));
 	}
@@ -73,7 +70,6 @@ class TestRGDataSource
 			{ method : "propertySeries", args : ["/", { property : ".click", periodicity : "day", groupBy : "week" }] }
 		}], profile( {
 			exp : [Time("day")],
-			operation : Count,
 			where : []
 		}, "week"));
 	}
@@ -91,7 +87,6 @@ class TestRGDataSource
 			}]
 		}], profile( {
 			exp : [Property(".unique"), Time("day")],
-			operation : Count,
 			where : []
 		}));
 	}
@@ -102,7 +97,6 @@ class TestRGDataSource
 			{ method : "propertyValueCount", args : ["/", { property : ".click.gender", value : "female"}] }
 		}], profile( {
 			exp : [Property(".gender")],
-			operation : Count,
 			where : [Equality(".gender", "female")]
 		}));
 	}
@@ -113,7 +107,6 @@ class TestRGDataSource
 			{ method : "propertyValueSeries", args : ["/", { property : ".click.gender", value : "female", periodicity : "day"}] }
 		}], profile( {
 			exp : [Property(".gender"), Time("day")],
-			operation : Count,
 			where : [Equality(".gender", "female")]
 		}));
 	}
@@ -131,7 +124,6 @@ class TestRGDataSource
 			] }
 		}], profile( {
 			exp : [Event],
-			operation : Count,
 			where : [
 				Equality(".gender", "female"),
 				Equality(".ageRange", "21-30")
@@ -155,7 +147,6 @@ class TestRGDataSource
 			]
 		}], profile( {
 			exp : [Event, Time("day")],
-			operation : Count,
 			where : [
 				Equality(".gender", "female"),
 				Equality(".ageRange", "21-30")
@@ -189,7 +180,6 @@ class TestRGDataSource
 				Property(".platform", 7, false),
 				Property(".ageRange"),
 				Time("day")],
-			operation : Count,
 			where : []
 		}));
 	}

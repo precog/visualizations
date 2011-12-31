@@ -14,7 +14,6 @@ using StringTools;
 class QueryParser
 {
 	var exp : Array<QExp>;
-	var operation : QOperation;
 	var where : Array<QCondition>;
 
 	public function new() { }
@@ -22,13 +21,11 @@ class QueryParser
 	public function parse(s : String) : Query
 	{
 		exp = [];
-		operation = Count;
 		where = [];
 
 		parseExp(s);
 		return {
 			exp : exp,
-			operation : operation,
 			where : where
 		};
 	}
@@ -171,7 +168,7 @@ class QueryParser
 		switch(operator)
 		{
 			case '=':
-				var v = SPLIT_CONDITIONS.split(parseValue(value));
+				var v = parseValues(value);
 				if (v.length > 1)
 					where.push(In(name, v))
 				else
@@ -181,8 +178,51 @@ class QueryParser
 		}
 	}
 
-	static function parseValue(s : String) : Dynamic
+	static function parseQuoted(s : String, q : String, results : Array<Dynamic>) : String
 	{
+		var pos = s.indexOf(q, 1);
+		if(pos < 0)
+			throw new Error("value is not correctly quoted");
+		results.push(s.substr(1, pos-1));
+		pos = s.indexOf(",");
+		if(pos < 0)
+			return "";
+		return s.substr(pos+1);
+	}
+
+	static function parseValues(s : String) : Array<Dynamic>
+	{
+		var results : Array<Dynamic> = [],
+			pos, v;
+		while((s = StringTools.trim(s)).length > 0)
+		{
+			if(s.substr(0, 1) == '"')
+				s = parseQuoted(s, '"', results);
+			else if(s.substr(0, 1) == "'")
+				s = parseQuoted(s, "'", results);
+			else
+			{
+				pos = s.indexOf(",");
+				if(pos >= 0)
+				{
+					v = s.substr(0, pos);
+					s = s.substr(pos+1);
+				} else {
+					v = s;
+					s = "";
+				}
+				if (Bools.canParse(v))
+					results.push(Bools.parse(v));
+				else if (Ints.canParse(v))
+					results.push(Ints.parse(v));
+				else if (Floats.canParse(v))
+					results.push(Floats.parse(v));
+				else 
+					throw new Error("invalid value '{0}'", v);
+			}
+		}
+		return results;
+		/*
 		var fc = s.substr(0, 1), lc = s.substr( -1);
 		if (fc == lc && (fc == "'" || fc == '"'))
 			return s.substr(1, s.length - 2);
@@ -193,5 +233,6 @@ class QueryParser
 		if (Floats.canParse(s))
 			return Floats.parse(s);
 		return throw new Error("invalid value '{0}'", s);
+		*/
 	}
 }
