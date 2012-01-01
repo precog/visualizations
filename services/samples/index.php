@@ -28,7 +28,7 @@ function listSamples()
 	$d = dir(SAMPLES_CHARTS_DIR);
 	$results = array();
 	while(false !== ($entry = $d->read())) {
-		if(($c = substr($entry, 0, 1)) == '.' || $c == '-')
+		if(($c = substr($entry, 0, 1)) == '.' || $c == '_' || $c == '-')
 			continue;
 		$results[] = array('sample' => $entry, 'title' => extractTitle($entry));
 	}

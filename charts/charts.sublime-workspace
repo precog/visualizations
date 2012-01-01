@@ -4,6 +4,190 @@
 		"selected_items":
 		[
 			[
+				"min",
+				"min( a : Float , b : Float ) : Float"
+			],
+			[
+				"get",
+				"get"
+			],
+			[
+				"style",
+				"style"
+			],
+			[
+				"string",
+				"string( s : Dynamic ) : String"
+			],
+			[
+				"h",
+				"html [package]"
+			],
+			[
+				"view",
+				"view [package]"
+			],
+			[
+				"po",
+				"position : LogoPosition"
+			],
+			[
+				"lo",
+				"logoposition"
+			],
+			[
+				"vi",
+				"view [package]"
+			],
+			[
+				"op",
+				"options"
+			],
+			[
+				"fl",
+				"float(...) : thx.js.Selection"
+			],
+			[
+				"fi",
+				"firstChild : js.HtmlDom"
+			],
+			[
+				"node",
+				"node() : js.HtmlDom"
+			],
+			[
+				"in",
+				"insertBefore(...) : Void"
+			],
+			[
+				"is",
+				"insert(...) : thx.js.Selection"
+			],
+			[
+				"hre",
+				"href : String"
+			],
+			[
+				"float",
+				"float(...) : thx.js.Selection"
+			],
+			[
+				"w",
+				"window : js.Window"
+			],
+			[
+				"l",
+				"Lib [class]"
+			],
+			[
+				"onNo",
+				"onNode(...) : thx.js.Selection"
+			],
+			[
+				"da",
+				"darkbackground : Bool"
+			],
+			[
+				"contai",
+				"container : thx.js.Selection"
+			],
+			[
+				"Bool",
+				"Bool [class]"
+			],
+			[
+				"co",
+				"controller [package]"
+			],
+			[
+				"dar",
+				"darkbackground"
+			],
+			[
+				"str",
+				"string(...) : thx.js.Selection"
+			],
+			[
+				"st",
+				"style(...) : Selection>"
+			],
+			[
+				"app",
+				"append(...) : thx.js.Selection"
+			],
+			[
+				"Lo",
+				"Logo [class]"
+			],
+			[
+				"Sele",
+				"Selection [class]"
+			],
+			[
+				"Selec",
+				"Selection [class]"
+			],
+			[
+				"Sl",
+				"Selection [class]"
+			],
+			[
+				"js",
+				"js [package]"
+			],
+			[
+				"positi",
+				"position"
+			],
+			[
+				"fee",
+				"feed"
+			],
+			[
+				"Array",
+				"Array [class]"
+			],
+			[
+				"i",
+				"isAnonymous( v : Dynamic ) : Bool"
+			],
+			[
+				"le",
+				"length"
+			],
+			[
+				"Float",
+				"Float [class]"
+			],
+			[
+				"floo",
+				"floor"
+			],
+			[
+				"Con",
+				"Const"
+			],
+			[
+				"mat",
+				"math"
+			],
+			[
+				"math",
+				"Math"
+			],
+			[
+				"Int",
+				"Int [class]"
+			],
+			[
+				"step",
+				"step [var]"
+			],
+			[
+				"text",
+				"text"
+			],
+			[
 				"fo",
 				"formatValue(...) : String"
 			],
@@ -14,10 +198,6 @@
 			[
 				"format",
 				"formatf(...)"
-			],
-			[
-				"is",
-				"isTime( s : String ) : Bool"
 			],
 			[
 				"Dynamic",
@@ -60,10 +240,6 @@
 				"CSSCurrentStyleDeclaration"
 			],
 			[
-				"js",
-				"js"
-			],
-			[
 				"getFlo",
 				"getFloat"
 			],
@@ -72,20 +248,12 @@
 				"style"
 			],
 			[
-				"node",
-				"node"
-			],
-			[
 				"ttext",
 				"ttext"
 			],
 			[
 				"Dyna",
 				"Dynamic [class]"
-			],
-			[
-				"string",
-				"string( v : String ) : thx.js.Selection"
 			],
 			[
 				"att",
@@ -164,16 +332,8 @@
 				"Variable [class]"
 			],
 			[
-				"Array",
-				"Array [class]"
-			],
-			[
 				"max",
 				"max"
-			],
-			[
-				"min",
-				"min"
 			],
 			[
 				"axis",
@@ -212,10 +372,6 @@
 				"variable"
 			],
 			[
-				"str",
-				"string"
-			],
-			[
 				"decode",
 				"decodeURIComponent"
 			],
@@ -244,20 +400,12 @@
 				"setField"
 			],
 			[
-				"le",
-				"length"
-			],
-			[
 				"fie",
 				"fields"
 			],
 			[
 				"Json",
 				"Jsonp"
-			],
-			[
-				"w",
-				"window : js.Window"
 			],
 			[
 				"Reflect",
@@ -288,10 +436,6 @@
 				"random"
 			],
 			[
-				"get",
-				"get"
-			],
-			[
 				"function",
 				"WeakFunctionClosure [flash9.events]"
 			],
@@ -300,20 +444,12 @@
 				"Md5 [class]"
 			],
 			[
-				"fi",
-				"filters"
-			],
-			[
 				"dela",
 				"delay"
 			],
 			[
 				"Tim",
 				"Timer"
-			],
-			[
-				"Int",
-				"Int"
 			],
 			[
 				"se",
@@ -338,10 +474,6 @@
 			[
 				"so",
 				"source [package]"
-			],
-			[
-				"Float",
-				"Float"
 			],
 			[
 				"ch",
@@ -380,140 +512,8 @@
 				"fields"
 			],
 			[
-				"co",
-				"count"
-			],
-			[
 				"0",
 				"X509Certificate [flash9.security]"
-			],
-			[
-				"id",
-				"idproperty(default, [var]"
-			],
-			[
-				"p",
-				"property : String"
-			],
-			[
-				"fields",
-				"fields( o : Dynamic ) : Array<String>"
-			],
-			[
-				"keys",
-				"keys() : Iterator<String>"
-			],
-			[
-				"where",
-				"whereConditions [var]"
-			],
-			[
-				"path",
-				"Paths [thx.text]"
-			],
-			[
-				"eve",
-				"event"
-			],
-			[
-				"push",
-				"push( x : Array<Unknown<0>> ) : Int"
-			],
-			[
-				"de",
-				"deleteField(...) : Bool"
-			],
-			[
-				"Null",
-				"Null"
-			],
-			[
-				"end",
-				"end"
-			],
-			[
-				"info",
-				"info"
-			],
-			[
-				"paren",
-				"parent"
-			],
-			[
-				"ident",
-				"identifier"
-			],
-			[
-				"item",
-				"item"
-			],
-			[
-				"exe",
-				"executor"
-			],
-			[
-				"IE",
-				"IExecutorReportGrid"
-			],
-			[
-				"prop",
-				"property"
-			],
-			[
-				"per",
-				"periodicity"
-			],
-			[
-				"opt",
-				"opt"
-			],
-			[
-				"timeEn",
-				"timeEnd"
-			],
-			[
-				"timeSta",
-				"timeStart"
-			],
-			[
-				"idp",
-				"idporperty"
-			],
-			[
-				"itera",
-				"iterator() : Iterator<Null<{ weight : Float }>>"
-			],
-			[
-				"ar",
-				"array(...) : Array<array.T>"
-			],
-			[
-				"com",
-				"compare( a : Float , b : Float ) : Int"
-			],
-			[
-				"or",
-				"orderMultiple(...) : Void"
-			],
-			[
-				"nodes",
-				"nodes : NodeData, Dynamic>"
-			],
-			[
-				"edge",
-				"edges [var]"
-			],
-			[
-				"last",
-				"last() : Null<String>"
-			],
-			[
-				"first",
-				"first() : Null<String>"
-			],
-			[
-				"wei",
-				"weight : Float"
 			]
 		]
 	},
@@ -523,58 +523,31 @@
 			"file": "src/rg/controller/MVPOptions.hx",
 			"settings":
 			{
-				"buffer_size": 5045,
+				"buffer_size": 6207,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/service/template.php",
+			"file": "src/rg/controller/App.hx",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 5219,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
+			"file": "src/rg/view/html/widget/Logo.hx",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 1850,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/service/samples/charts/PC003-Donut Chart.js",
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/charts/SK001-Sankey.js",
 			"settings":
 			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/index.html",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "",
-			"file": "bin/service/samples/charts/LC014-Line Chart - Complex.js",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 0,
+				"buffer_size": 861,
 				"line_ending": "Unix"
 			}
 		}
@@ -675,30 +648,74 @@
 	},
 	"file_history":
 	[
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Periodicity.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC006-Line Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/view/html/widget/LogoPosition.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/view/html/LogoPosition.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/DownloaderPosition.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/LayoutX.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/LayoutSimple.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/LayoutCartesian.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/Layout.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/Anchor.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoAnimation.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SK002-Sankey - with Images.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/index.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/PC001-Pie Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/HM025-Heat Map.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/GE003-Geo, Multiple Layers.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/GE001-Geo, Countries.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/view/html/widget/LogoPositions.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/info/InfoLogo.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/GE002-Geo, USA States.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/frame/Frame.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/frame/Stack.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SK001-Sankey.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC006-Line Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/FC004-Funnel Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Tickmarks.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/layer/TickmarksOrtho.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/PC002-Pie Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC013-Line Chart - Time Series.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SG003-Stream Graph - Horizontal Gradient.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SG002-Stream Graph - Flat.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SG001-Stream Graph.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/PC003-Donut Chart.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/template.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/MVPOptions.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC008-Line Chart, Inverted Axis.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC009-Line Chart - Symbols.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisNumeric.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC014-Line Chart - Complex.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC010-Line Chart - Multiple Axis.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC011-Line Chart - Segmented Values.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC001-Bar Chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SP019-Scatter Graph.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/css/rg.css",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/RGConst.hx",
+		"/Users/francoponticelli/Projects/reportgrid/client-libraries/js/src/v1/reportgrid-viz.js",
+		"/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/charts.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/TickmarkOrdinal.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoCartesianChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataPoint.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Sources.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Periodicity.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/css/sample.css",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/.htaccess",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/LineChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/boulder-weather-2011-1Q.json",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/boulder-weather-2011.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/css/rg.css",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessStyle.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/StreamGraph.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/deploy.sh",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC001-Bar Chart.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC003-Stacked Chart.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC004-Stacked Chart - Inverted Axis.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC016-Area Chart, Inverted Axis.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC008-Line Chart, Inverted Axis.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/charts.js",
 		"/Users/francoponticelli/Projects/reportgrid/website/charts/css/homepage.css",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/deploy.sh",
-		"/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/release.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/website/charts/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/reportgrid-charts.js",
@@ -743,7 +760,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/016-Stream Graph - Horizontal Gradient.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLeaderboard.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/leaderboard.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisNumeric.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Stats.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/PivotTable.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisOrdinal.hx",
@@ -759,50 +775,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/007-Pie Chart, Top Emoticons on Twitter.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisTime.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/014-Line Chart - Complex.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/english-speakers.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/top10-emoticons-twitter.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/top20-emoticons-twitter.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-agestructure.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-deathrate-by-gender.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/usa-population-and-area-1790-2000.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/013-Line Chart - Time Series.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/015 ",
-		"/Users/francoponticelli/Projects/reportgrid/website/js/control-panel.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/css/sample.css",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/001-Pie Chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/004-Funnel Chart, Impressions.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/006-Line Chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/linechart.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/007-Pie Chart, Top 20 Emoticons on Twitter.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/VisualizationPieChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/008-Line Chart, Inverted Axis.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/009-Line Chart - Symbols",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/LabelOrientations.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoCartesianChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/barchart.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoBarChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure #1.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/english-speakers.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLabel.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessTweenStyle.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/Click.hx",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/js/core/BaseMouseDispatcher.hx",
-		"/Users/francoponticelli/Projects/thx/src/Strings.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/reportgrid-viz.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/App.hx",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Dispatcher.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/funnelchart.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/heatgrid.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/piechart-static.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/lib/service.php",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/001-piechart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/staticrenderer/index.php",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/interactive/Downloader.hx",
-		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/haxe/Http.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/build.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Jsonp.hx"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/english-speakers.json"
 	],
 	"find":
 	{
@@ -1012,7 +985,6 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
 				{
@@ -1020,15 +992,15 @@
 					"file": "src/rg/controller/MVPOptions.hx",
 					"settings":
 					{
-						"buffer_size": 5045,
+						"buffer_size": 6207,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1666,
+								1666
 							]
 						],
 						"settings":
@@ -1038,30 +1010,32 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 629.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "bin/service/template.php",
+					"file": "src/rg/controller/App.hx",
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 5219,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								4433,
+								4433
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage"
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1071,98 +1045,18 @@
 				},
 				{
 					"buffer": 2,
-					"file": "bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
+					"file": "src/rg/view/html/widget/Logo.hx",
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 1850,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "bin/service/samples/charts/PC003-Donut Chart.js",
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "bin/index.html",
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
+								1652,
+								1652
 							]
 						],
 						"settings":
@@ -1172,25 +1066,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 309.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "bin/service/samples/charts/LC014-Line Chart - Complex.js",
+					"buffer": 3,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/charts/SK001-Sankey.js",
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 861,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								701,
+								701
 							]
 						],
 						"settings":
@@ -1199,7 +1093,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 278.0,
+						"translation.y": 85.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1248,6 +1142,18 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"",
+				"charts/bin/service/samples/charts/GE002-Geo, USA States.js"
+			],
+			[
+				"dow",
+				"lib/src/rg/view/html/widget/DownloaderPosition.hx"
+			],
+			[
+				"prope",
+				"lib/src/rg/util/Properties.hx"
+			],
 			[
 				"rgb",
 				"src/thx/color/Rgb.hx"
@@ -1531,10 +1437,6 @@
 			[
 				"geo",
 				"visualizations/src/rg/view/svg/chart/Geo.hx"
-			],
-			[
-				"",
-				"visualizations/src/rg/layout/GraphCollection.hx"
 			],
 			[
 				"testqy",
