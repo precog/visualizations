@@ -7,6 +7,7 @@ package rg.view.html.widget;
 
 enum LogoPosition
 {
+	Top;
 	TopLeft;
 	TopRight;
 	BottomLeft;

@@ -130,13 +130,13 @@ class App
 
 			}
 		}
-/*
+
 		var infologo = new InfoLogo().feed(jsoptions.options);
 		visualization.addReadyOnce(function()
 		{
 			var widget = new Logo(visualization.container, infologo.darkbackground, infologo.position);
 		});
-*/
+
 		return visualization;
 	}
 

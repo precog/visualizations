@@ -4187,6 +4187,25 @@ Std.random = function(x) {
 Std.prototype = {
 	__class__: Std
 }
+rg.controller.info.InfoLogo = $hxClasses["rg.controller.info.InfoLogo"] = function() {
+	this.position = rg.view.html.widget.LogoPosition.BottomRight;
+	this.darkbackground = false;
+}
+rg.controller.info.InfoLogo.__name__ = ["rg","controller","info","InfoLogo"];
+rg.controller.info.InfoLogo.filters = function() {
+	return [{ field : "logoposition", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "position", value : rg.view.html.widget.LogoPositions.parse(v)}];
+	}},{ field : "darkbackground", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null}];
+}
+rg.controller.info.InfoLogo.prototype = {
+	position: null
+	,darkbackground: null
+	,__class__: rg.controller.info.InfoLogo
+}
 var js = js || {}
 js.Lib = $hxClasses["js.Lib"] = function() { }
 js.Lib.__name__ = ["js","Lib"];
@@ -5397,7 +5416,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.5135"};
+	r.info.viz = { version : "1.2.0.5207"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -10460,6 +10479,10 @@ rg.controller.App.prototype = {
 				var widget = new rg.view.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
 			});
 		}
+		var infologo = rg.controller.info.Info.feed(new rg.controller.info.InfoLogo(),jsoptions.options);
+		visualization.addReadyOnce(function() {
+			var widget = new rg.view.html.widget.Logo(visualization.container,infologo.darkbackground,infologo.position);
+		});
 		return visualization;
 	}
 	,getLayout: function(id,options,container,replace) {
@@ -13796,6 +13819,29 @@ thx.svg.CentroidTypes.prototype = {
 		return this.geo.projection.project(d);
 	}
 	,__class__: thx.svg.CentroidTypes
+}
+rg.view.html.widget.LogoPositions = $hxClasses["rg.view.html.widget.LogoPositions"] = function() { }
+rg.view.html.widget.LogoPositions.__name__ = ["rg","view","html","widget","LogoPositions"];
+rg.view.html.widget.LogoPositions.parse = function(v) {
+	switch(v.toLowerCase()) {
+	case "top":
+		return rg.view.html.widget.LogoPosition.Top;
+	case "topleft":
+		return rg.view.html.widget.LogoPosition.TopLeft;
+	case "topright":
+		return rg.view.html.widget.LogoPosition.TopRight;
+	case "bottomleft":
+		return rg.view.html.widget.LogoPosition.BottomLeft;
+	case "before":
+		return rg.view.html.widget.LogoPosition.Before;
+	case "after":
+		return rg.view.html.widget.LogoPosition.After;
+	default:
+		return rg.view.html.widget.LogoPosition.BottomRight;
+	}
+}
+rg.view.html.widget.LogoPositions.prototype = {
+	__class__: rg.view.html.widget.LogoPositions
 }
 rg.data.ScaleDistributions = $hxClasses["rg.data.ScaleDistributions"] = function() { }
 rg.data.ScaleDistributions.__name__ = ["rg","data","ScaleDistributions"];
@@ -19775,6 +19821,29 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 46, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
+	if(null == options.logoposition) options.logoposition = (function($this) {
+		var $r;
+		switch(options.visualization) {
+		case "barchart":case "linechart":case "streamgraph":case "scattergraph":
+			$r = "top";
+			break;
+		case "heatgrid":case "funnelchart":
+			$r = "bottomleft";
+			break;
+		case "geo":case "sankey":
+			$r = "topright";
+			break;
+		case "piechart":
+			$r = "bottomright";
+			break;
+		case "leaderboard":case "pivottable":
+			$r = "after";
+			break;
+		default:
+			$r = "top";
+		}
+		return $r;
+	}(this));
 	chain.addAction(function(params,handler1) {
 		if(null == params.data) {
 			var src = [];
@@ -20600,6 +20669,28 @@ rg.view.svg.chart.StreamEffect.NoEffect.toString = $estr;
 rg.view.svg.chart.StreamEffect.NoEffect.__enum__ = rg.view.svg.chart.StreamEffect;
 rg.view.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.view.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
+rg.view.html.widget.LogoPosition = $hxClasses["rg.view.html.widget.LogoPosition"] = { __ename__ : ["rg","view","html","widget","LogoPosition"], __constructs__ : ["Top","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
+rg.view.html.widget.LogoPosition.Top = ["Top",0];
+rg.view.html.widget.LogoPosition.Top.toString = $estr;
+rg.view.html.widget.LogoPosition.Top.__enum__ = rg.view.html.widget.LogoPosition;
+rg.view.html.widget.LogoPosition.TopLeft = ["TopLeft",1];
+rg.view.html.widget.LogoPosition.TopLeft.toString = $estr;
+rg.view.html.widget.LogoPosition.TopLeft.__enum__ = rg.view.html.widget.LogoPosition;
+rg.view.html.widget.LogoPosition.TopRight = ["TopRight",2];
+rg.view.html.widget.LogoPosition.TopRight.toString = $estr;
+rg.view.html.widget.LogoPosition.TopRight.__enum__ = rg.view.html.widget.LogoPosition;
+rg.view.html.widget.LogoPosition.BottomLeft = ["BottomLeft",3];
+rg.view.html.widget.LogoPosition.BottomLeft.toString = $estr;
+rg.view.html.widget.LogoPosition.BottomLeft.__enum__ = rg.view.html.widget.LogoPosition;
+rg.view.html.widget.LogoPosition.BottomRight = ["BottomRight",4];
+rg.view.html.widget.LogoPosition.BottomRight.toString = $estr;
+rg.view.html.widget.LogoPosition.BottomRight.__enum__ = rg.view.html.widget.LogoPosition;
+rg.view.html.widget.LogoPosition.Before = ["Before",5];
+rg.view.html.widget.LogoPosition.Before.toString = $estr;
+rg.view.html.widget.LogoPosition.Before.__enum__ = rg.view.html.widget.LogoPosition;
+rg.view.html.widget.LogoPosition.After = ["After",6];
+rg.view.html.widget.LogoPosition.After.toString = $estr;
+rg.view.html.widget.LogoPosition.After.__enum__ = rg.view.html.widget.LogoPosition;
 thx.svg.LineInterpolator = $hxClasses["thx.svg.LineInterpolator"] = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
@@ -20625,6 +20716,55 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
+rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(container,darkbackground,p) {
+	this.darkbackground = darkbackground;
+	this.container = container;
+	container.style("position").string("relative");
+	this.position = p;
+	var img = container.append("img").attr("src").string(this.getLogo()).onNode("click",function(_,_1) {
+		js.Lib.window.location.href = "http://www.reportgrid.com/charts/";
+	}).attr("title").string("Powered by ReportGrid").style("display").string("block").style("z-index")["float"](1000000).style("position").string("absolute").style("cursor").string("pointer");
+	switch( (this.position)[1] ) {
+	case 0:
+		img.style("top").string("0px").style("left").string((container.style("width").getFloat() - this.getWidth()) / 2 + "px");
+		break;
+	case 1:
+		img.style("left").string("0px").style("top").string("0px");
+		break;
+	case 2:
+		img.style("right").string("0px").style("top").string("0px");
+		break;
+	case 3:
+		img.style("left").string("0px").style("bottom").string("0px");
+		break;
+	case 4:
+		img.style("right").string("0px").style("bottom").string("0px");
+		break;
+	case 5:
+		container.node().insertBefore(img.node(),container.node().firstChild);
+		break;
+	case 6:
+		break;
+	}
+}
+rg.view.html.widget.Logo.__name__ = ["rg","view","html","widget","Logo"];
+rg.view.html.widget.Logo.prototype = {
+	darkbackground: null
+	,position: null
+	,container: null
+	,getWidth: function() {
+		return this.useSmall()?100:200;
+	}
+	,useSmall: function() {
+		return Math.min(this.container.style("width").getFloat(),this.container.style("height").getFloat()) < 300;
+	}
+	,getLogo: function() {
+		var type = this.darkbackground?"dark":"clear";
+		var size = this.useSmall()?"-s":"";
+		return "http://api.reportgrid.com/css/images/reportgrid-" + type + size + ".png";
+	}
+	,__class__: rg.view.html.widget.Logo
+}
 rg.view.svg.widget.GridAnchor = $hxClasses["rg.view.svg.widget.GridAnchor"] = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;

@@ -11,18 +11,20 @@ class LogoPositions
 	{
 		switch(v.toLowerCase())
 		{
+			case "top":
+				return LogoPosition.Top;
 			case "topleft":
-				return DownloaderPosition.TopLeft;
-			case "topright", "auto":
-				return DownloaderPosition.TopRight;
+				return LogoPosition.TopLeft;
+			case "topright":
+				return LogoPosition.TopRight;
 			case "bottomleft":
-				return DownloaderPosition.BottomLeft;
+				return LogoPosition.BottomLeft;
 			case "before":
-				return DownloaderPosition.Before;
+				return LogoPosition.Before;
 			case "after":
-				return DownloaderPosition.After;
+				return LogoPosition.After;
 			default: // "bottomright"
-				return DownloaderPosition.BottomRight;
+				return LogoPosition.BottomRight;
 		}
 	}
 }
