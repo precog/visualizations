@@ -14,7 +14,7 @@ class Stack
 	public var height(default, null) : Int;
 	public var orientation(default, null) : Orientation;
 	public var length(getLength, null) : Int;
-	
+
 	public dynamic function moreSpaceRequired(size : Int) {}
 	public function new(width : Int, height : Int, ?orientation : Orientation)
 	{
@@ -23,7 +23,7 @@ class Stack
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	public function insertItem(pos : Int, child : StackItem)
 	{
 		if (null == child)
@@ -38,7 +38,7 @@ class Stack
 		reflow();
 		return this;
 	}
-	
+
 	public function addItem(child : StackItem)
 	{
 		if (null == child)
@@ -49,7 +49,7 @@ class Stack
 		reflow();
 		return this;
 	}
-	
+
 	public function addItems(it : Iterable<StackItem>)
 	{
 		var added = false;
@@ -65,23 +65,23 @@ class Stack
 			reflow();
 		return this;
 	}
-	
+
 	public function removeChild(child : StackItem)
 	{
 		if (!children.remove(child))
 			return false;
-		
+
 		var f : FriendPanel = child;
 		f.setParent(null);
 		reflow();
 		return true;
 	}
-	
+
 	public function iterator()
 	{
 		return children.iterator();
 	}
-	
+
 	public function reflow()
 	{
 		var available = switch(orientation) { case Vertical: height; case Horizontal: width; },
@@ -139,7 +139,7 @@ class Stack
 				i++;
 			}
 		}
-		
+
 		i = 0;
 		var sizeable : SizeableFriend;
 		var pos = 0;
@@ -153,7 +153,7 @@ class Stack
 					{
 						case Floating(x, y, w, h):
 							sizeable.setLayout(x, y, w, h);
-						case 
+						case
 							Fixed(before, after, _),
 							Fill(before, after, _, _),
 							FillPercent(before, after, _, _, _),
@@ -170,7 +170,7 @@ class Stack
 					{
 						case Floating(x, y, w, h):
 							sizeable.setLayout(x, y, w, h);
-						case 
+						case
 							Fixed(before, after, _),
 							Fill(before, after, _, _),
 							FillPercent(before, after, _, _, _),
@@ -180,13 +180,13 @@ class Stack
 					pos += values[i++];
 				}
 		}
-		
+
 		if (available < 0)
 			moreSpaceRequired(required);
 	}
-	
+
 	function getLength() return children.length
-	
+
 	public function setSize(width : Int, height : Int)
 	{
 		if (this.width == width && this.height == height)
@@ -196,7 +196,7 @@ class Stack
 		reflow();
 		return this;
 	}
-	
+
 	public function toString() return "Stack [width: " + width + ", height: " + height + ", children: " + children.length + "]"
 }
 

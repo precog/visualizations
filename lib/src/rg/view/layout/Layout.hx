@@ -12,31 +12,31 @@ import thx.js.Selection;
 import rg.view.frame.StackItem;
 import rg.view.frame.FrameLayout;
 
-class Layout 
+class Layout
 {
 	public var mainPanelName : String;
 	public var width(default, null) : Int;
 	public var height(default, null) : Int;
-	
+
 	var space : Space;
 	public var container(default, null) : Selection;
-	public function new(width : Int, height : Int, container : Selection) 
+	public function new(width : Int, height : Int, container : Selection)
 	{
 		this.container = container;
 		container.classed().add("rg");
 		space = new Space(this.width = width, this.height = height, container);
 	}
-	
+
 	public function getContext(name : String) : PanelContext
 	{
 		return null;
 	}
-	
+
 	public function getPanel(name : String) : Panel
 	{
 		return null;
 	}
-	
+
 	public function suggestSize(name : String, size : Int)
 	{
 		var panel = getPanel(name);
@@ -44,12 +44,12 @@ class Layout
 			return;
 		suggestPanelSize(panel, size);
 	}
-	
+
 	public function destroy()
 	{
 		container.selectAll("*").remove();
 	}
-	
+
 	function suggestPanelSize(panel : Panel, size : Int)
 	{
 		var stackitem = Types.as(panel.frame, StackItem);
@@ -85,17 +85,17 @@ class Layout
 				// do nothing
 		}
 	}
-	
+
 	var paddings : InfoPadding;
-	
+
 	public function feedOptions(info : InfoLayout)
 	{
 		this.mainPanelName = info.main;
 		this.paddings = info.padding;
 	}
-	
+
 	public function adjustPadding()
 	{
-		
+
 	}
 }

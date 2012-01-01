@@ -15,7 +15,7 @@ import rg.view.frame.Orientation;
 
 class LayoutX extends Layout
 {
-	
+
 	static inline var ALT_RIGHT  = 20;
 	static inline var ALT_LEFT   = 20;
 	static inline var ALT_TOP    = 8;
@@ -23,23 +23,23 @@ class LayoutX extends Layout
 
 	var main : Panel;
 	var titleOnTop : Bool;
-	
+
 	var bottomcontainer : Container;
 	var bottommiddlecontainer : Container;
 	var maincontainer : Container;
 	var middlecontainer : Container;
-	
+
 	var xtickmarks : PanelContext;
 	var title : PanelContext;
-	
+
 	var xtitle : PanelContext;
 
-	public function new(width : Int, height : Int, container : Selection) 
+	public function new(width : Int, height : Int, container : Selection)
 	{
 		super(width, height, container);
 		titleOnTop = true;
 	}
-	
+
 	override public function getContext(name : String) : PanelContext
 	{
 		switch(name)
@@ -56,7 +56,7 @@ class LayoutX extends Layout
 				return null;
 		}
 	}
-	
+
 	override public function getPanel(name : String) : Panel
 	{
 		switch(name)
@@ -72,7 +72,7 @@ class LayoutX extends Layout
 				return ctx.panel;
 		}
 	}
-	
+
 	override public function suggestSize(name : String, size : Int)
 	{
 		super.suggestSize(name, size);
@@ -103,21 +103,21 @@ class LayoutX extends Layout
 			maincontainer = space.createContainerAt(titleOnTop ? 1 : 0, FrameLayout.Fill(0, 0), Vertical);
 		return maincontainer;
 	}
-	
+
 	function getMiddleContainer()
 	{
 		if (null == middlecontainer)
 			middlecontainer = getMainContainer().createContainerAt(0, FrameLayout.Fill(0, 0), Horizontal);
 		return middlecontainer;
 	}
-	
+
 	function getBottomContainer()
 	{
 		if (null == bottomcontainer)
 			bottomcontainer = getMainContainer().createContainerAt(1, FrameLayout.Fixed(0, 0, 0), Horizontal);
 		return bottomcontainer;
 	}
-	
+
 	function getBottomMiddleContainer()
 	{
 		if (null == bottommiddlecontainer)
@@ -128,7 +128,7 @@ class LayoutX extends Layout
 		}
 		return bottommiddlecontainer;
 	}
-	
+
 	function getXTickmarks()
 	{
 		if (null == xtickmarks)
@@ -138,20 +138,20 @@ class LayoutX extends Layout
 		}
 		return xtickmarks;
 	}
-	
+
 	function getMain()
 	{
 		if (null == main)
 			main = getMiddleContainer().createPanelAt(1, FrameLayout.Fill(0, 0));
 		return main;
 	}
-	
+
 	override function feedOptions(info : InfoLayout)
 	{
 		super.feedOptions(info);
 		titleOnTop = info.titleOnTop;
 	}
-	
+
 	override function adjustPadding()
 	{
 		var top    = (null == title && null == paddings.top) ? ALT_TOP : paddings.top,
@@ -165,7 +165,7 @@ class LayoutX extends Layout
 			suggestPanelPadding(getMain(), left, right);
 			suggestPanelPadding(bottommiddlecontainer, left, right);
 		}
-		
+
 		if (null != top || null != bottom)
 		{
 			suggestPanelPadding(middlecontainer, top, bottom);

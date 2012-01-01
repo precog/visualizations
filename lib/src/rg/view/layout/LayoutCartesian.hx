@@ -16,7 +16,7 @@ import rg.view.frame.Orientation;
 
 class LayoutCartesian extends Layout
 {
-	
+
 	static inline var ALT_RIGHT  = 20;
 	static inline var ALT_LEFT   = 20;
 	static inline var ALT_TOP    = 8;
@@ -24,19 +24,19 @@ class LayoutCartesian extends Layout
 
 	var main : Panel;
 	var titleOnTop : Bool;
-	
+
 	var leftcontainer : Container;
 	var rightcontainer : Container;
 	var bottomcontainer : Container;
 	var bottommiddlecontainer : Container;
 	var maincontainer : Container;
 	var middlecontainer : Container;
-	
+
 	var bottomleft : Panel;
 	var bottomright : Panel;
 	var xtickmarks : PanelContext;
 	var title : PanelContext;
-	
+
 	var left : Bool;
 	var alternating : Bool;
 	var yitems : Array<{
@@ -47,7 +47,7 @@ class LayoutCartesian extends Layout
 	}>;
 	var xtitle : PanelContext;
 
-	public function new(width : Int, height : Int, container : Selection) 
+	public function new(width : Int, height : Int, container : Selection)
 	{
 		super(width, height, container);
 		titleOnTop = true;
@@ -55,7 +55,7 @@ class LayoutCartesian extends Layout
 		alternating = true;
 		yitems = [];
 	}
-	
+
 	override public function getContext(name : String) : PanelContext
 	{
 		if (isY(name))
@@ -78,7 +78,7 @@ class LayoutCartesian extends Layout
 				return null;
 		}
 	}
-	
+
 	override public function getPanel(name : String) : Panel
 	{
 		switch(name)
@@ -102,12 +102,12 @@ class LayoutCartesian extends Layout
 				return ctx.panel;
 		}
 	}
-	
+
 	function getYItem(index : Int)
 	{
 		if (null == yitems[index])
 		{
-			yitems[index] = { 
+			yitems[index] = {
 				container : null,
 				context : null,
 				title : null,
@@ -116,7 +116,7 @@ class LayoutCartesian extends Layout
 		}
 		return yitems[index];
 	}
-	
+
 	function getYContainer(index : Int)
 	{
 		var item = getYItem(index);
@@ -132,7 +132,7 @@ class LayoutCartesian extends Layout
 		}
 		return item.container;
 	}
-	
+
 	function getYContext(index : Int)
 	{
 		var item = getYItem(index);
@@ -148,7 +148,7 @@ class LayoutCartesian extends Layout
 		}
 		return item.context;
 	}
-	
+
 	function getYTitle(index : Int)
 	{
 		var item = getYItem(index);
@@ -188,17 +188,17 @@ class LayoutCartesian extends Layout
 		else
 			return Std.parseInt(REYINDEX.matched(1));
 	}
-	
+
 	function isY(s : String)
 	{
 		return REYAXIS.match(s);
 	}
-	
+
 	function isYTitle(s : String)
 	{
 		return REYTITLE.match(s);
 	}
-	
+
 	static var REYAXIS = ~/^y(\d+)$/;
 	static var REYINDEX = ~/^y(\d+)/;
 	static var REYTITLE = ~/^y(\d+)title$/;
@@ -242,7 +242,7 @@ class LayoutCartesian extends Layout
 				super.suggestSize("xtickmarks", size);
 		}
 	}
-	
+
 	function suggestLateralSize(anchor : Anchor)
 	{
 		var size = 0;
@@ -279,35 +279,35 @@ class LayoutCartesian extends Layout
 			maincontainer = space.createContainerAt(titleOnTop ? 1 : 0, FrameLayout.Fill(0, 0), Vertical);
 		return maincontainer;
 	}
-	
+
 	function getMiddleContainer()
 	{
 		if (null == middlecontainer)
 			middlecontainer = getMainContainer().createContainerAt(0, FrameLayout.Fill(0, 0), Horizontal);
 		return middlecontainer;
 	}
-	
+
 	function getLeftContainer()
 	{
 		if (null == leftcontainer)
 			leftcontainer = getMiddleContainer().createContainerAt(0, FrameLayout.Fixed(0, 0, 0), Horizontal);
 		return leftcontainer;
 	}
-	
+
 	function getRightContainer()
 	{
 		if (null == rightcontainer)
 			rightcontainer = getMiddleContainer().createContainerAt(2, FrameLayout.Fixed(0, 0, 0), Horizontal);
 		return rightcontainer;
 	}
-	
+
 	function getBottomContainer()
 	{
 		if (null == bottomcontainer)
 			bottomcontainer = getMainContainer().createContainerAt(1, FrameLayout.Fixed(0, 0, 0), Horizontal);
 		return bottomcontainer;
 	}
-	
+
 	function getBottomMiddleContainer()
 	{
 		if (null == bottommiddlecontainer)
@@ -320,7 +320,7 @@ class LayoutCartesian extends Layout
 		}
 		return bottommiddlecontainer;
 	}
-	
+
 	function getXTickmarks()
 	{
 		if (null == xtickmarks)
@@ -330,14 +330,14 @@ class LayoutCartesian extends Layout
 		}
 		return xtickmarks;
 	}
-	
+
 	function getMain()
 	{
 		if (null == main)
 			main = getMiddleContainer().createPanelAt(1, FrameLayout.Fill(0, 0));
 		return main;
 	}
-	
+
 	override function feedOptions(info : InfoLayout)
 	{
 		super.feedOptions(info);
@@ -355,7 +355,7 @@ class LayoutCartesian extends Layout
 				alternating = true;
 		}
 	}
-	
+
 	override function adjustPadding()
 	{
 		var top    = (null == title && null == paddings.top) ? ALT_TOP : paddings.top,
@@ -368,7 +368,7 @@ class LayoutCartesian extends Layout
 			suggestPanelPadding(getMain(), left, right);
 			suggestPanelPadding(bottommiddlecontainer, left, right);
 		}
-		
+
 		if (null != top || null != bottom)
 		{
 			suggestPanelPadding(middlecontainer, top, bottom);

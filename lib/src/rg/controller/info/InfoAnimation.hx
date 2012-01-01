@@ -7,13 +7,13 @@ package rg.controller.info;
 
 import thx.math.Equations;
 
-class InfoAnimation 
+class InfoAnimation
 {
 	public var animated : Bool;
 	public var duration : Int;
 	public var ease : Float -> Float;
 	public var delay : Int;
-	
+
 	public function new()
 	{
 		animated = false;
@@ -21,8 +21,8 @@ class InfoAnimation
 		delay = 150;
 		ease = Equations.elasticf();
 	}
-	
-	public static function filters() 
+
+	public static function filters()
 	{
 		return [{
 			field : "animated",
