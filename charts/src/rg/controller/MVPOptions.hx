@@ -86,6 +86,33 @@ class MVPOptions
 			handler(params);
 		});
 
+		// best default logo position
+		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
+		{
+			if(null == params.options.logoposition)
+			{/*
+				params.options.logoposition = switch(params.options.visualization)
+				{
+					case "linechart", "barchart", "streamgraph":
+						"bottomright";
+					case "scattergraph", "heatgrid":
+						"bottomright";
+					case "geo":
+						"bottomright";
+					case "piechart":
+						"bottomright";
+					case "leaderboard":
+						"bottomright";
+					case "sankey":
+						"bottomright";
+					case "pivottable":
+						"bottomright";
+					default:
+						"bottomright";
+				}*/
+			}
+		});
+
 		// ensure labels
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
