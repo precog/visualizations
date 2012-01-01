@@ -14,7 +14,7 @@ class TickmarkOrdinal<T> implements ITickmark<T>
 	{
 		return values.map(function(_, i) return new TickmarkOrdinal<T>(i, values, scaleDistribution));
 	}
-	
+
 	var pos : Int;
 	var values : Array<T>;
 	var scaleDistribution : ScaleDistribution;
@@ -30,21 +30,21 @@ class TickmarkOrdinal<T> implements ITickmark<T>
 	{
 		return ScaleDistributions.distribute(scaleDistribution, pos, values.length);
 	}
-	
+
 	public var major(getMajor, null) : Bool;
 	function getMajor() return major
-	
+
 	public var value(getValue, null) : T;
 	function getValue()
 	{
 		return values[pos];
 	}
-	
+
 	public var label(getLabel, null) : String;
 	function getLabel()
 	{
 		return RGStrings.humanize(values[pos]);
 	}
-	
+
 	function toString() return Tickmarks.string(this)
 }

@@ -32,7 +32,9 @@ class Properties
 
 	public static function formatValue(type : String, dp : Dynamic)
 	{
-		var value = DataPoints.value(dp, type);
+		var value : Dynamic = DataPoints.value(dp, type);
+		if(null == value)
+			return value;
 		if(Properties.isTime(type))
 			return Periodicity.format(Properties.periodicity(type), value);
 		return RGStrings.humanize(value);

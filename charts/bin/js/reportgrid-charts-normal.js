@@ -863,9 +863,20 @@ rg.data.AxisNumeric = $hxClasses["rg.data.AxisNumeric"] = function() {
 rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
 rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
 rg.data.AxisNumeric._step = function(span,m) {
-	var step = Math.pow(m,Math.floor(Math.log(span / m) / Math.log(m))), err = m / (span / step);
-	if(err <= .05) step *= 10; else if(err <= .2) step *= 5; else if(err <= .4) step *= 4; else if(err <= .6) step *= 2;
+	var step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / span * step;
+	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
 	return step;
+}
+rg.data.AxisNumeric.nice = function(v) {
+	return Math.pow(10,Math.round(Math.log(v) / 2.302585092994046) - 1);
+}
+rg.data.AxisNumeric.niceMin = function(d,v) {
+	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
+	return Math.floor(v / dv) * dv;
+}
+rg.data.AxisNumeric.niceMax = function(d,v) {
+	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
+	return Math.ceil(v / dv) * dv;
 }
 rg.data.AxisNumeric.prototype = {
 	scale: function(start,end,v) {
@@ -878,10 +889,9 @@ rg.data.AxisNumeric.prototype = {
 			majors = Floats.range(start,end + step,step);
 			minors = null;
 		} else {
-			var e = end + (step = rg.data.AxisNumeric._step(span,10));
-			minors = Floats.range(start,e,step);
-			e = end + (step = rg.data.AxisNumeric._step(span,5));
-			majors = Floats.range(start,e,step);
+			var mM = 5, mm = 20, stepM = rg.data.AxisNumeric._step(span,mM), stepm = rg.data.AxisNumeric._step(span,mm);
+			minors = Floats.range(start,end + stepM,stepm);
+			majors = Floats.range(start,end,stepM);
 		}
 		return rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.data.Tickmark(d,true,(d - start) / (end - start));
@@ -890,12 +900,14 @@ rg.data.AxisNumeric.prototype = {
 		}),maxTicks);
 	}
 	,min: function(stats,meta) {
-		var min = null == meta.min?stats.min:meta.min;
+		if(null != meta.min) return meta.min;
+		var min = rg.data.AxisNumeric.niceMin(stats.max - stats.min,stats.min);
 		if(min < 0) return min; else return 0.0;
 	}
 	,max: function(stats,meta) {
-		var max = null == meta.max?stats.max:meta.max;
-		if(max < 0) return 0.0; else return max;
+		if(null != meta.max) return meta.max;
+		var max = rg.data.AxisNumeric.niceMax(stats.max - stats.min,stats.max);
+		if(max > 0) return max; else return 0.0;
 	}
 	,createStats: function(type) {
 		return new rg.data.StatsNumeric(type);
@@ -3579,8 +3591,8 @@ rg.controller.factory.FactoryAxis.prototype = {
 		if(null != samples && samples.length > 0) return new rg.data.AxisOrdinalFixedValues(samples); else if(true == isnumeric) return new rg.data.AxisNumeric(); else if(false == isnumeric) return new rg.data.AxisOrdinalStats(variable); else return null;
 	}
 	,createDiscrete: function(type,variable,samples,groupBy) {
-		if(rg.util.Properties.isTime(type)) {
-			if(null != groupBy) return new rg.data.AxisGroupByTime(rg.util.Properties.periodicity(type)); else return new rg.data.AxisTime(rg.util.Properties.periodicity(type));
+		if(type.indexOf("time:") >= 0) {
+			if(null != groupBy) return new rg.data.AxisGroupByTime(type.substr(type.indexOf("time:") + "time:".length)); else return new rg.data.AxisTime(type.substr(type.indexOf("time:") + "time:".length));
 		} else if(null != samples && samples.length > 0) return new rg.data.AxisOrdinalFixedValues(samples);
 		return new rg.data.AxisOrdinalStats(variable);
 	}
@@ -4831,11 +4843,11 @@ rg.view.html.widget.PivotTable.prototype = {
 		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
 	}
 	,labelAxis: function(v) {
-		return rg.util.Properties.humanize(v);
+		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(v,"."),"."));
 	}
 	,labelAxisValue: function(v,axis) {
-		if(rg.util.Properties.isTime(axis)) {
-			var p = rg.util.Properties.periodicity(axis);
+		if(axis.indexOf("time:") >= 0) {
+			var p = axis.substr(axis.indexOf("time:") + "time:".length);
 			return rg.util.Periodicity.format(p,v);
 		} else return rg.util.RGStrings.humanize(v);
 	}
@@ -5377,7 +5389,7 @@ rg.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.humanize = function(v) {
-		if(Std["is"](v,String) && rg.util.Properties.isTime(v)) return rg.util.Properties.periodicity(v);
+		if(Std["is"](v,String) && v.indexOf("time:") >= 0) return v.substr(v.indexOf("time:") + "time:".length);
 		return rg.util.RGStrings.humanize(v);
 	};
 	var rand = new thx.math.Random(666);
@@ -5385,7 +5397,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.5045"};
+	r.info.viz = { version : "1.2.0.5135"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5448,12 +5460,12 @@ rg.view.html.widget.Leadeboard.prototype = {
 	,labelDataPoint: function(dp,stats) {
 		var p = Reflect.field(dp,this.variableIndependent.type);
 		var v = Reflect.field(dp,this.variableDependent.type);
-		return rg.util.Properties.humanize(p) + ": " + thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
+		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(p,"."),".")) + ": " + thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
 	}
 	,labelDataPointOver: function(dp,stats) {
 		var p = this.variableDependent.type;
 		var v = Reflect.field(dp,this.variableDependent.type);
-		return rg.util.Properties.humanize(p) + ": " + thx.culture.FormatNumber["int"](v);
+		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(p,"."),".")) + ": " + thx.culture.FormatNumber["int"](v);
 	}
 	,init: function() {
 		this.list = this.container.append("ul").attr("class").string("leaderboard");
@@ -12293,7 +12305,6 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 		this.redraw();
 	}
 	,update: function(axis,min,max) {
-		if(this.axis == axis && this.min == min && this.max == max) return;
 		this.axis = axis;
 		this.min = min;
 		this.max = max;
@@ -12626,6 +12637,12 @@ rg.util.Properties.timeProperty = function(periodicity) {
 }
 rg.util.Properties.humanize = function(s) {
 	return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(s,"."),"."));
+}
+rg.util.Properties.formatValue = function(type,dp) {
+	var value = Reflect.field(dp,type);
+	if(null == value) return value;
+	if(type.indexOf("time:") >= 0) return rg.util.Periodicity.format(type.substr(type.indexOf("time:") + "time:".length),value);
+	return rg.util.RGStrings.humanize(value);
 }
 rg.util.Properties.prototype = {
 	__class__: rg.util.Properties
@@ -19757,6 +19774,7 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 		Reflect.deleteField(options,"download");
 		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 46, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
+	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
 	chain.addAction(function(params,handler1) {
 		if(null == params.data) {
 			var src = [];
@@ -19782,38 +19800,51 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 	chain.addAction(function(params,handler1) {
 		if(null == params.options.label) switch(params.options.visualization) {
 		case "linechart":case "barchart":case "streamgraph":
-			var axes = params.axes, type = axes[axes.length - 1].type;
+			var type = params.axes[0].type;
 			params.options.label = { datapointover : function(dp,stats) {
-				return rg.util.Properties.humanize(type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+				return (null != params.options.segmenton?rg.util.Properties.formatValue(params.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			}};
+			break;
+		case "scattergraph":case "heatgrid":
+			var type = params.axes[0].type;
+			params.options.label = { datapointover : function(dp,stats) {
+				return rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			}};
+			break;
+		case "geo":
+			var type = params.axes[0].type, maps = params.options.map;
+			maps[maps.length - 1].label = { datapointover : function(dp,stats) {
+				var v = rg.util.Properties.formatValue(type,dp);
+				if(null == v) return null;
+				return v + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			}};
 			break;
 		case "piechart":
-			var axes = params.axes, type = axes[axes.length - 1].type;
 			params.options.label = { datapoint : function(dp,stats) {
-				var v = Reflect.field(dp,type);
+				var v = Reflect.field(dp,stats.type);
 				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapointover : function(dp,stats) {
-				return rg.util.Properties.humanize(type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(stats.type,"."),".")) + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			}};
 			break;
 		case "leaderboard":
-			var axes = params.axes, type = axes[axes.length - 1].type;
+			var type = params.axes[0].type;
 			params.options.label = { datapointover : function(dp,stats) {
-				var v = Reflect.field(dp,type);
+				var v = Reflect.field(dp,stats.type);
 				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapoint : function(dp,stats) {
-				return rg.util.Properties.humanize(type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type));
+				return rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			}};
 			break;
 		case "sankey":
 			var axes = params.axes, type = axes[axes.length - 1].type;
 			params.options.label = { datapointover : function(dp,stats) {
 				var v = Reflect.field(dp,type);
-				return rg.util.Properties.humanize(type) + ": " + rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
+				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),".")) + ": " + rg.util.Properties.formatValue(type,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
 			}, node : function(dp,stats) {
 				return dp.id;
 			}, datapoint : function(dp,stats) {
-				return rg.util.RGStrings.humanize(Reflect.field(dp,type)) + "\n" + rg.util.Properties.humanize(type);
+				return rg.util.Properties.formatValue(type,dp) + "\n" + rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),"."));
 			}, edge : function(dp,stats) {
 				return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
 			}, edgeover : function(dp,stats) {
@@ -22715,9 +22746,8 @@ thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/renderer/v1/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/renderer/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
-rg.util.Properties.EVENT_PATTERN = new EReg("^(\\.?[^.]+)","");
 rg.util.Properties.TIME_TOKEN = "time:";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];

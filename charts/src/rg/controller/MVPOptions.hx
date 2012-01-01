@@ -46,6 +46,12 @@ class MVPOptions
 				throw new Error("invalid value for download '{0}'", [v]);
 		}
 
+		// ensure map is array
+		if(null != options.map && Types.isAnonymous(options.map))
+		{
+			options.map = [options.map];
+		}
+
 		// ensure data
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -87,13 +93,7 @@ class MVPOptions
 			{
 				switch(params.options.visualization)
 				{
-//		"funnelchart"
-//		"geo"
-//		"heatgrid"
-//		"piechart"
-//		"pivottable"
-//		"sankey"
-					case "linechart", "barchart", "streamgraph", "scattergraph":
+					case "linechart", "barchart", "streamgraph":
 						var type = params.axes[0].type;
 						params.options.label = {
 							datapointover : function(dp, stats) {
@@ -103,6 +103,32 @@ class MVPOptions
 										: "")
 									+
 									Properties.formatValue(type, dp)
+									+ ": " +
+									Properties.formatValue(stats.type, dp)
+								;
+							}
+						};
+					case "scattergraph", "heatgrid":
+						var type = params.axes[0].type;
+						params.options.label = {
+							datapointover : function(dp, stats) {
+								return
+									Properties.formatValue(type, dp)
+									+ ": " +
+									Properties.formatValue(stats.type, dp)
+								;
+							}
+						};
+					case "geo":
+						var type = params.axes[0].type,
+							maps : Array<Dynamic> = params.options.map;
+						maps[maps.length-1].label = {
+							datapointover : function(dp, stats) {
+								var v = Properties.formatValue(type, dp);
+								if(null == v)
+									return null;
+								return
+									v
 									+ ": " +
 									Properties.formatValue(stats.type, dp)
 								;

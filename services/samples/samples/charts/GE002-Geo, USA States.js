@@ -7,9 +7,6 @@ var data = ["01","02","04","05","06","08","09","10","11","12","13","15","16","17
 });
 
 //** VIZ
-
-console.log(data);
-
 ReportGrid.geo("#chart", {
 	axes : ["location", "count"],
 	datapoints : data,

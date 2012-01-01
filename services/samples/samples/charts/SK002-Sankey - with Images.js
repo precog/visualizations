@@ -51,7 +51,7 @@ ReportGrid.sankey("#chart", {
 		imagespacing : 1,
 		imagepath : function(dp)
 		{
-			return "../samples/images/" + dp.id.replace(" ", "_").toLowerCase() + ".png";
+			return "http://www.reportgrid.com/charts/samples/images/" + dp.id.replace(" ", "_").toLowerCase() + ".png";
 		}
 	}
 });

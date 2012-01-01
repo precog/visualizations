@@ -13,7 +13,6 @@ data = ["02185","02290","02188","02180","02240","02090","02068","02180","02170",
 }).concat(data);
 
 //** VIZ
-
 ReportGrid.geo("#chart", {
 	axes : ["location", "count"],
 	datapoints : data,

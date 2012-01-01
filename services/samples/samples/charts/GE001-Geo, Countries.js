@@ -2,9 +2,6 @@
 olympic-medals-2011
 
 //** VIZ
-
-console.log(data);
-
 ReportGrid.geo("#chart", {
 	axes : ["code", "summerGold"],
 	datapoints : data,
