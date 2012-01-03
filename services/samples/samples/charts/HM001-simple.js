@@ -9,7 +9,11 @@ ReportGrid.heatGrid("#chart", {
 		color : "i-#00f,#0ff,#0f0,#ff0,#f00",
 		label : {
 			tickmark : function(v, t) { return v; },
-			datapointover : function(dp) { return "death rate for " + dp.race + " in " + dp.year + ": " + ReportGrid.format(dp.deathRate); }
+			datapointover : function(dp) {
+				return 
+					"death rate for " + dp.race + " in " 
+					+ dp.year + ": " + ReportGrid.format(dp.deathRate); 
+			}
 		}
 	}
 });

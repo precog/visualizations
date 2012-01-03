@@ -12,7 +12,11 @@ ReportGrid.geo("#chart", {
 			color : "i-#FFF,#09F,#F63",
 			label : {
 				datapointover : function(dp, stats) {
-					return dp.country + ": " + ReportGrid.format(dp.summerGold) + " gold medals";
+					return 
+						dp.country
+						+ ": "
+						+ ReportGrid.format(dp.summerGold)
+						+ " gold medals";
 				}
 			}
 		}

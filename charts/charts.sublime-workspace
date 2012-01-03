@@ -539,7 +539,7 @@
 			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/charts/SK001-Sankey.js",
 			"settings":
 			{
-				"buffer_size": 861,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
@@ -547,31 +547,55 @@
 			"file": "bin/service/index.php",
 			"settings":
 			{
-				"buffer_size": 4360,
+				"buffer_size": 4912,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/template-manage.php",
+			"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/index.html",
 			"settings":
 			{
-				"buffer_size": 427,
+				"buffer_size": 16383,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/index.html",
+			"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/js/charts.js",
 			"settings":
 			{
-				"buffer_size": 1989,
+				"buffer_size": 2021,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "bin/js/charts.js",
+			"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/css/homepage.css",
 			"settings":
 			{
-				"buffer_size": 1661,
+				"buffer_size": 14324,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
+			"settings":
+			{
+				"buffer_size": 6683,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/service/template-manage.php",
+			"settings":
+			{
+				"buffer_size": 488,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/service/samples/charts/SK002-with images.js",
+			"settings":
+			{
+				"buffer_size": 1092,
 				"line_ending": "Unix"
 			}
 		}
@@ -672,6 +696,11 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/GE001-simple.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/data/olympic-medals-2011.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/template-manage.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/charts.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/App.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/_SK001-Sankey.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/view/html/widget/LogoPosition.hx",
@@ -719,11 +748,9 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SP019-Scatter Graph.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/css/rg.css",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/RGConst.hx",
 		"/Users/francoponticelli/Projects/reportgrid/client-libraries/js/src/v1/reportgrid-viz.js",
 		"/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/charts.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/TickmarkOrdinal.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoCartesianChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataPoint.hx",
@@ -796,10 +823,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure n.1.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure n.2.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/003-Bar Chart, USA Age Structure n.3.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/004-Funnel Chart, Impressions 2.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/005-Pot Chart, Airports Paved Runaways.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/007-Pie Chart, Top Emoticons on Twitter.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisTime.hx"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/004-Funnel Chart, Impressions 2.js"
 	],
 	"find":
 	{
@@ -822,9 +846,27 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"games",
+			"winterBronze",
+			"winters",
+			"summerBronze",
+			"summers",
+			"total",
+			"winterBronze",
+			"summerBronze",
+			"body-sub",
+			"$(\"#\"+idlink)",
+			"class\"pane\"",
+			"-link",
+			"text",
+			"function (",
+			"changeCategory",
+			"last",
+			"ul",
+			"sample",
 			"categorys",
 			"type",
 			"priority_scheme",
@@ -934,30 +976,12 @@
 			"ReportGrid.$",
 			"jsonp",
 			"nextid",
-			"RG",
-			"trace",
-			"images",
-			"cache",
-			"a.cache",
-			": Void;",
-			"trace",
-			"edges.create",
-			"trace",
-			"value",
-			"trace",
-			"thumbnailPath",
-			"trace",
-			"onmouseoverextrain",
-			"mouseover",
-			"onmouseover",
-			"onmouseoveredge",
-			"mouseover",
-			"thumbnailPath"
+			"RG"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
 			"\nL",
@@ -1003,13 +1027,13 @@
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": false,
+		"whole_word": true,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
-			"selected": 6,
+			"selected": 9,
 			"sheets":
 			[
 				{
@@ -1073,15 +1097,15 @@
 					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/charts/SK001-Sankey.js",
 					"settings":
 					{
-						"buffer_size": 861,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								701,
-								701
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1100,15 +1124,15 @@
 					"file": "bin/service/index.php",
 					"settings":
 					{
-						"buffer_size": 4360,
+						"buffer_size": 4912,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1184,
-								1184
+								359,
+								359
 							]
 						],
 						"settings":
@@ -1124,23 +1148,52 @@
 				},
 				{
 					"buffer": 4,
-					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/template-manage.php",
+					"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/index.html",
 					"settings":
 					{
-						"buffer_size": 427,
+						"buffer_size": 16383,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								37,
+								37
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.tmLanguage"
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/js/charts.js",
+					"settings":
+					{
+						"buffer_size": 2021,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								520,
+								520
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1149,38 +1202,67 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "bin/index.html",
+					"buffer": 6,
+					"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/css/homepage.css",
 					"settings":
 					{
-						"buffer_size": 1989,
+						"buffer_size": 14324,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1663,
-								1663
+								3767,
+								3773
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 503.0,
+						"translation.y": 1801.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "bin/js/charts.js",
+					"buffer": 7,
+					"file": "/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
 					"settings":
 					{
-						"buffer_size": 1661,
+						"buffer_size": 6683,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3373,
+								3373
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "bin/service/template-manage.php",
+					"settings":
+					{
+						"buffer_size": 488,
 						"regions":
 						{
 						},
@@ -1189,6 +1271,32 @@
 							[
 								0,
 								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "bin/service/samples/charts/SK002-with images.js",
+					"settings":
+					{
+						"buffer_size": 1092,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1016,
+								1016
 							]
 						],
 						"settings":
@@ -1236,10 +1344,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 92.0
-	},
 	"replace":
 	{
 		"height": 62.0

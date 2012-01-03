@@ -2,15 +2,6 @@
 boulder-weather-2011
 
 //** VIZ
-/*
-ReportGrid.lineChart("#chart", {
-	axes : ["time:day", "tAverage"],
-	datapoints : data,
-	options : {
-		effect: "none"
-	}
-})
-*/
 function toC(v) {
 	return (v - 32) / 9 * 5;
 }
@@ -42,7 +33,9 @@ function transform(dp) {
 data = Arrays.flatten(data.map(transform));
 
 ReportGrid.lineChart("#chart", {
-	axes : ["time:day", { type : "celsius", variable : "dependent" }, { type : "precipitationCM", variable : "dependent" }],
+	axes : ["time:day",
+			{ type : "celsius", variable : "dependent" },
+			{ type : "precipitationCM", variable : "dependent" }],
 	datapoints : data,
 	options : {
 		effect : "none",

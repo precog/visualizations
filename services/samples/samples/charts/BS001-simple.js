@@ -8,7 +8,9 @@ ReportGrid.barChart("#chart", {
 	options : {
 		segmenton : "age",
 		label : {
-			datapointover : function(dp) { return ReportGrid.format(dp.count)+" individuals in the years range "+dp.age; }
+			datapointover : function(dp) {
+				return ReportGrid.format(dp.count) + " individuals in the years range "+dp.age;
+			}
 		}
 	}
 });

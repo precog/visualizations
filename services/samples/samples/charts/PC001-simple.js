@@ -7,7 +7,9 @@ ReportGrid.pieChart("#chart", {
 	datapoints : data,
 	options : {
 		label : {
-			datapointover : function(dp) { return dp.country+": "+ReportGrid.format(dp.count); },
+			datapointover : function(dp) {
+				return dp.country + ": " + ReportGrid.format(dp.count);
+			},
 			datapoint : function(dp) { return dp.country; }
 		}
 	}

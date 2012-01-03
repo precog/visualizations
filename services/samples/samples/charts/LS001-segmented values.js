@@ -17,7 +17,11 @@ ReportGrid.lineChart("#chart", {
 		label : {
 			axis : function(a) { return ReportGrid.humanize(a); },
 			tickmark : function(v, a) { return a == 'year' ? v: ReportGrid.format(v); },
-			datapointover : function(dp, stats) { return ReportGrid.humanize(stats.type) + " for " + ReportGrid.humanize(dp['race']) + " people in " + dp.year + ": " + ReportGrid.format(dp[stats.type], "I"); }
+			datapointover : function(dp, stats) {
+				return 
+					ReportGrid.humanize(stats.type) + " for "
+					+ ReportGrid.humanize(dp['race']) + " people in "
+					+ dp.year + ": " + ReportGrid.format(dp[stats.type], "I"); }
 		},
 		segmenton : "race",
 		displayarea : true,
