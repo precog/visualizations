@@ -24,14 +24,20 @@ $(document).ready(function(){
 		}
 	}
 
-	function changeVisualization(item)
+	function changeCategory(item)
 	{
-		$("#samplecurrent").html(item.title);
-		callService('info', displaySample, { sample : item.sample });
+		$("#samplecurrent").html(item.category);
+		callService('options', displayOptions, { category : item.code });
 	}
 
-	callService('list', function(values){
-		var ul = $('#samplesmenu');
+	function changeVisualization(sample)
+	{
+		callService('info', displaySample, { sample : sample });
+	}
+
+	function displayOptions(values)
+	{
+		var ul = $('#sampleoptions').html("");
 		for(var i = 0; i < values.length; i++)
 		{
 			var value = values[i],
@@ -39,11 +45,28 @@ $(document).ready(function(){
 			ul.append(li);
 			li.click(value, function(e){
 				e.preventDefault();
-				changeVisualization(e.data);
+				changeVisualization(e.data.sample);
 				return false;
 			});
 		}
 
-		changeVisualization(values[0]);
+		changeVisualization(values[0].sample);
+	}
+
+	callService('categories', function(values){
+		var ul = $('#samplecategories').html("");
+		for(var i = 0; i < values.length; i++)
+		{
+			var value = values[i],
+				li = $('<li><a href="#details">'+value.category+'</a></li>');
+			ul.append(li);
+			li.click(value, function(e){
+				e.preventDefault();
+				changeCategory(e.data);
+				return false;
+			});
+		}
+
+		changeCategory(values[0]);
 	});
 })

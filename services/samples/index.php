@@ -5,18 +5,18 @@ define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
 
-$priority_scheme = array(
-	'SK' => 0,		// sankey
-	'GE' => 10,		// geo charts
-	'FC' => 20,		// funnelchart
-	'HM' => 30,		// heat grids
-	'BC' => 40,		// bar charts
-	'SG' => 50,		// stream grah
-	'SP' => 60,		// scatter plot
-	'LC' => 70,		// line chart
-	'PC' => 80,		// pie chart
-	'PT' => 90,		// pivot table
-	'LE' => 100		// leaderboard
+$viz_categories = array(
+	'SK' => array(name => 'Sankey',			sequence => 0),
+	'GE' => array(name => 'Geo Chart',		sequence => 10),
+	'FC' => array(name => 'Funnel Chart',	sequence => 20),
+	'HM' => array(name => 'Heatmap',		sequence => 30),
+	'BC' => array(name => 'Bar Chart',		sequence => 40),
+	'SG' => array(name => 'Stream Graph',	sequence => 50),
+	'SP' => array(name => 'Scatter Plot',	sequence => 60),
+	'LC' => array(name => 'Line Chart',		sequence => 70),
+	'PC' => array(name => 'Pie Chart',		sequence => 80),
+	'PT' => array(name => 'Pivot Table',	sequence => 90),
+	'LE' => array(name => 'Leaderboard',	sequence => 100)
 );
 
 if(in_array($_SERVER['SERVER_NAME'], array('localhost')))
@@ -28,6 +28,30 @@ if(in_array($_SERVER['SERVER_NAME'], array('localhost')))
 	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg.css');
 }
 
+function categories()
+{
+	global $viz_categories;
+	$result = array();
+	foreach($viz_categories as $key => $value)
+	{
+		$result[] = array(category => $value['name'], code => $key);
+	}
+	return $result;
+}
+
+function categoryOptions($cat)
+{
+	$d = dir(SAMPLES_CHARTS_DIR);
+	$results = array();
+	while(false !== ($entry = $d->read())) {
+		if($cat != ($p = substr($entry, 0, 2)))
+			continue;
+		$results[] = array('sample' => $entry, 'title' => extractTitle($entry));
+	}
+	usort($results, optionComparison);
+	return $results;
+}
+
 function extractTitle($sample)
 {
 	return array_pop(explode('-', basename($sample, SAMPLE_EXT), 2));
@@ -35,8 +59,8 @@ function extractTitle($sample)
 
 function compareCategory($v)
 {
-	global $priority_scheme;
-	$c = $priority_scheme[substr($v, 0, 2)];
+	global $viz_categories;
+	$c = @$viz_categories[substr($v, 0, 2)]['sequence'];
 	if($c === null)
 		return 1000;
 	else
@@ -50,6 +74,11 @@ function sampleComparison($a, $b)
 		return $v;
 	else
 		return $a['sample']>$b['sample'];
+}
+
+function optionComparison($a, $b)
+{
+	return substr($a['sample'], 2) > substr($b['sample'], 2);
 }
 
 function listSamples($filtered = true)
@@ -150,6 +179,10 @@ switch($_GET['action'])
 {
 	case 'list':
 		json(listSamples());
+	case 'categories':
+		json(categories());
+	case 'options':
+		json(categoryOptions($_GET['category']));
 	case 'info':
 		json(infoSample($_GET['sample']));
 	case 'display':

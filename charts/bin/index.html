@@ -35,7 +35,7 @@ h2 {
 	padding: 0;
 	margin: 0;
 	list-style-type: none;
-	max-height: 513px;
+	max-height: 460px;
 	overflow: auto;
 }
 
@@ -91,9 +91,16 @@ $(document).ready(function(){
 	<div class="container sidebar">
 		<h1>Current:</h1>
 		<div><a href="#details" id="samplecurrent">LINE CHART</a></div>
-		<h2><a href="service/?action=manage&code=67ww78bhFGY!543fv">Manage</a></h2>
-		<h1>Samples:</h1>
-		<ul id="samplesmenu"></ul>
+		<h2>Manage</h2>
+		<div>
+			<a href="service/?action=manage&code=67ww78bhFGY!543fv">local</a>
+			<br>
+			<a href="http://api.reportgrid.com/service/viz/?action=manage&code=67ww78bhFGY!543fv">remote</a>
+		</div>
+		<h1>Categories:</h1>
+		<ul id="samplecategories"></ul>
+		<h1>Options:</h1>
+		<ul id="sampleoptions"></ul>
 	</div>
 	<div class="container">
 		<h1>Visualization:</h1>
