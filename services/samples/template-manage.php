@@ -16,6 +16,7 @@
 ?>
 	</ul>
 	<button name="action" value="delete">delete selected</button>
+	<button name="action" value="deleteall">delete all</button>
 	</form>
 </div>
 </body>

@@ -137,12 +137,25 @@ function display($sample)
 
 function delete($list)
 {
+	if(in_array($_SERVER['SERVER_NAME'], array('localhost')))
+	{
+		echo "CAN'T DELETE ON LOCALHOST<br>";
+		var_dump($list);
+		return;
+	}
 	foreach($list as $item)
 	{
 		$file = SAMPLES_CHARTS_DIR.$item;
 		unlink($file);
 	}
-	var_dump($list);
+}
+
+function deleteAll()
+{
+	$result = array();
+	foreach(listSamples(false) as $item)
+		$result[] = $item['sample'];
+	delete($result);
 }
 
 function manage()
@@ -153,6 +166,9 @@ function manage()
 		{
 			case "delete":
 				delete($_POST['selected']);
+				break;
+			case "deleteall":
+				deleteAll();
 				break;
 		}
 	}
