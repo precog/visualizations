@@ -7,10 +7,17 @@ $(document).ready(function(){
 		$.getJSON(service, data, handler);
 	};
 
+	var lastsampleclass;
 	var displaySample = function(info)
 	{
 		var source = info['data'] + "\n\n" + info['viz'];
 		source = source.replace(/\t/g, "  ");
+		if(lastsampleclass)
+			$("#samplevisualization").removeClass(lastsampleclass);
+		if(info['class'])
+		{
+			$("#samplevisualization").addClass(lastsampleclass = info['class']);
+		}
 		$('#samplevisualization iframe').attr('src', service + "?action=display&sample=" + encodeURI(info.sample));
 		$('#samplecode').html(source);
 

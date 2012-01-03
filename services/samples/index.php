@@ -7,17 +7,21 @@ define('MANAGE_CODE', '67ww78bhFGY!543fv');
 
 
 $viz_categories = array(
-	'SK' => array(name => 'Sankey',			sequence => 0),
-	'GE' => array(name => 'Geo Chart',		sequence => 10),
-	'FC' => array(name => 'Funnel Chart',	sequence => 20),
-	'HM' => array(name => 'Heatmap',		sequence => 30),
-	'BC' => array(name => 'Bar Chart',		sequence => 40),
-	'SG' => array(name => 'Stream Graph',	sequence => 50),
-	'SP' => array(name => 'Scatter Plot',	sequence => 60),
-	'LC' => array(name => 'Line Chart',		sequence => 70),
-	'PC' => array(name => 'Pie Chart',		sequence => 80),
-	'PT' => array(name => 'Pivot Table',	sequence => 90),
-	'LE' => array(name => 'Leaderboard',	sequence => 100)
+	'SK' => array(name => 'Sankey',				sequence => 0),
+	'GE' => array(name => 'Geo Chart',			sequence => 10),
+	'FC' => array(name => 'Funnel Chart',		sequence => 20),
+	'HM' => array(name => 'Heatmap',			sequence => 30),
+	'BS' => array(name => 'Stacked Bar Chart',	sequence => 35),
+	'BC' => array(name => 'Bar Chart',			sequence => 40),
+	'SG' => array(name => 'Stream Graph',		sequence => 50),
+	'SP' => array(name => 'Scatter Plot',		sequence => 60),
+	'LS' => array(name => 'Stacked Area Chart',	sequence => 70),
+	'LA' => array(name => 'Area Chart',			sequence => 73),
+	'LC' => array(name => 'Line Chart',			sequence => 76),
+	'PC' => array(name => 'Pie Chart',			sequence => 80),
+	'PD' => array(name => 'Donut Chart',		sequence => 85	),
+	'PT' => array(name => 'Pivot Table',		sequence => 90),
+	'BB' => array(name => 'Leaderboard',		sequence => 100)
 );
 
 if(in_array($_SERVER['SERVER_NAME'], array('localhost')))
@@ -204,9 +208,9 @@ switch($_GET['action'])
 		json(infoSample($_GET['sample']));
 	case 'display':
 		display($_GET['sample']);
-	case 'manage':
-		if($_GET['code'] == MANAGE_CODE)
-			manage();
+//	case 'manage':
+//		if($_GET['code'] == MANAGE_CODE)
+//			manage();
 	default:
 		echo "INVALID ACTION";
 }
