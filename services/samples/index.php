@@ -3,6 +3,21 @@
 define('SAMPLES_CHARTS_DIR', 'samples/charts/');
 define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
+define('MANAGE_CODE', '67ww78bhFGY!543fv');
+
+$priority_scheme = array(
+	'SK' => 0,		// sankey
+	'GE' => 10,		// geo charts
+	'FC' => 20,		// funnelchart
+	'HM' => 30,		// heat grids
+	'BC' => 40,		// bar charts
+	'SG' => 50,		// stream grah
+	'SP' => 60,		// scatter plot
+	'LC' => 70,		// line chart
+	'PC' => 80,		// pie chart
+	'PT' => 90,		// pivot table
+	'LE' => 100		// leaderboard
+);
 
 if(in_array($_SERVER['SERVER_NAME'], array('localhost')))
 {
@@ -18,17 +33,31 @@ function extractTitle($sample)
 	return array_pop(explode('-', basename($sample, SAMPLE_EXT), 2));
 }
 
-function sampleComparison($a, $b)
+function compareCategory($v)
 {
-	return $a['sample']>$b['sample'];
+	global $priority_scheme;
+	$c = $priority_scheme[substr($v, 0, 2)];
+	if($c === null)
+		return 1000;
+	else
+		return $c;
 }
 
-function listSamples()
+function sampleComparison($a, $b)
+{
+	$v = compareCategory($a['sample']) - compareCategory($b['sample']);
+	if($v !== 0)
+		return $v;
+	else
+		return $a['sample']>$b['sample'];
+}
+
+function listSamples($filtered = true)
 {
 	$d = dir(SAMPLES_CHARTS_DIR);
 	$results = array();
 	while(false !== ($entry = $d->read())) {
-		if(($c = substr($entry, 0, 1)) == '.' || $c == '_' || $c == '-')
+		if(('.' == ($c = substr($entry, 0, 1))) || ($filtered && ($c == '_' || $c == '-')))
 			continue;
 		$results[] = array('sample' => $entry, 'title' => extractTitle($entry));
 	}
@@ -76,6 +105,32 @@ function display($sample)
 	exit;
 }
 
+function delete($list)
+{
+	foreach($list as $item)
+	{
+		$file = SAMPLES_CHARTS_DIR.$item;
+		unlink($file);
+	}
+	var_dump($list);
+}
+
+function manage()
+{
+	if(isset($_POST))
+	{
+		switch($_POST['action'])
+		{
+			case "delete":
+				delete($_POST['selected']);
+				break;
+		}
+	}
+	$list = listSamples(false);
+	require('template-manage.php');
+	exit();
+}
+
 function json($v)
 {
 	echo json_encode($v);
@@ -84,9 +139,9 @@ function json($v)
 
 if(!isset($_GET['action']))
 {
-	echo "<ul>";
+	echo "<ul>\n";
 	foreach(listSamples() as $item)
-		echo "<li>{$item['title']}</li>";
+		echo "\t<li>{$item['title']}</li>\n";
 	echo "</ul>";
 	exit;
 }
@@ -99,6 +154,9 @@ switch($_GET['action'])
 		json(infoSample($_GET['sample']));
 	case 'display':
 		display($_GET['sample']);
+	case 'manage':
+		if($_GET['code'] == MANAGE_CODE)
+			manage();
 	default:
 		echo "INVALID ACTION";
 }
