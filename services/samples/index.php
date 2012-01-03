@@ -5,6 +5,7 @@ define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
 
+
 $viz_categories = array(
 	'SK' => array(name => 'Sankey',			sequence => 0),
 	'GE' => array(name => 'Geo Chart',		sequence => 10),

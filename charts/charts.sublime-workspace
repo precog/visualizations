@@ -528,14 +528,6 @@
 			}
 		},
 		{
-			"file": "src/rg/controller/App.hx",
-			"settings":
-			{
-				"buffer_size": 5219,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "src/rg/view/html/widget/Logo.hx",
 			"settings":
 			{
@@ -548,6 +540,38 @@
 			"settings":
 			{
 				"buffer_size": 861,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/service/index.php",
+			"settings":
+			{
+				"buffer_size": 4360,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/template-manage.php",
+			"settings":
+			{
+				"buffer_size": 427,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/index.html",
+			"settings":
+			{
+				"buffer_size": 1989,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/js/charts.js",
+			"settings":
+			{
+				"buffer_size": 1661,
 				"line_ending": "Unix"
 			}
 		}
@@ -648,6 +672,8 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/App.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/_SK001-Sankey.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/view/html/widget/LogoPosition.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/view/html/LogoPosition.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/DownloaderPosition.hx",
@@ -773,9 +799,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/004-Funnel Chart, Impressions 2.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/005-Pot Chart, Airports Paved Runaways.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/007-Pie Chart, Top Emoticons on Twitter.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisTime.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/charts/014-Line Chart - Complex.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/samples/data/english-speakers.json"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisTime.hx"
 	],
 	"find":
 	{
@@ -801,6 +825,10 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"categorys",
+			"type",
+			"priority_scheme",
+			"var_d",
 			"RGStrings.humanize(DataPoints.value(dp, stats.type))",
 			"RGStrings.humanize(DataPoints.value(dp, type))",
 			"chartsif",
@@ -924,11 +952,7 @@
 			"onmouseover",
 			"onmouseoveredge",
 			"mouseover",
-			"thumbnailPath",
-			"labelEdge",
-			"labelDataPointTop",
-			"labelTopPadding",
-			"labelEdge"
+			"thumbnailPath"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -985,6 +1009,7 @@
 	"groups":
 	[
 		{
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -1010,41 +1035,13 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 629.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/rg/controller/App.hx",
-					"settings":
-					{
-						"buffer_size": 5219,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4433,
-								4433
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 1,
 					"file": "src/rg/view/html/widget/Logo.hx",
 					"settings":
 					{
@@ -1072,7 +1069,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 2,
 					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/charts/SK001-Sankey.js",
 					"settings":
 					{
@@ -1093,7 +1090,114 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 85.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "bin/service/index.php",
+					"settings":
+					{
+						"buffer_size": 4360,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1184,
+								1184
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/template-manage.php",
+					"settings":
+					{
+						"buffer_size": 427,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "bin/index.html",
+					"settings":
+					{
+						"buffer_size": 1989,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1663,
+								1663
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 503.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "bin/js/charts.js",
+					"settings":
+					{
+						"buffer_size": 1661,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1132,6 +1236,10 @@
 		]
 	},
 	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 92.0
+	},
 	"replace":
 	{
 		"height": 62.0

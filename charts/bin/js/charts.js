@@ -5,9 +5,9 @@ $(document).ready(function(){
 		data = data || {};
 		data.action = action;
 		$.getJSON(service, data, handler);
-	}
+	};
 
-	function displaySample(info)
+	var displaySample = function(info)
 	{
 		var source = info['data'] + "\n\n" + info['viz'];
 		source = source.replace(/\t/g, "  ");
@@ -22,51 +22,57 @@ $(document).ready(function(){
 		} else {
 			$('#docpanel').hide();
 		}
-	}
+	};
 
-	function changeCategory(item)
+	var lastcategory;
+	var changeCategory = function(el, item)
 	{
-		$("#samplecurrent").html(item.category);
+		if(lastcategory)
+			lastcategory.toggleClass('active');
+		el.toggleClass('active');
+		lastcategory = el;
 		callService('options', displayOptions, { category : item.code });
-	}
+	};
 
-	function changeVisualization(sample)
+	var lastoption;
+	var changeVisualization = function(el, sample)
 	{
+		if(lastoption)
+			lastoption.toggleClass('active');
+		el.toggleClass('active');
+		lastoption = el;
 		callService('info', displaySample, { sample : sample });
-	}
+	};
 
-	function displayOptions(values)
+	var displayOptions = function(values)
 	{
 		var ul = $('#sampleoptions').html("");
 		for(var i = 0; i < values.length; i++)
 		{
 			var value = values[i],
-				li = $('<li><a href="#details">'+value.title+'</a></li>');
+				li = $('<li>'+value.title+'</li>');
 			ul.append(li);
 			li.click(value, function(e){
-				e.preventDefault();
-				changeVisualization(e.data.sample);
-				return false;
+				changeVisualization($(this), e.data.sample);
 			});
+			if(i == 0)
+				changeVisualization(li, value.sample);
 		}
-
-		changeVisualization(values[0].sample);
-	}
+	};
 
 	callService('categories', function(values){
 		var ul = $('#samplecategories').html("");
 		for(var i = 0; i < values.length; i++)
 		{
 			var value = values[i],
-				li = $('<li><a href="#details">'+value.category+'</a></li>');
+				li = $('<li>'+value.category+'</li>');
 			ul.append(li);
 			li.click(value, function(e){
-				e.preventDefault();
-				changeCategory(e.data);
-				return false;
+				changeCategory($(this), e.data);
 			});
+			if(i == 0)
+				changeCategory(li, value);
 		}
 
-		changeCategory(values[0]);
 	});
 })
