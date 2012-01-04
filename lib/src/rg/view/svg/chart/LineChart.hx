@@ -62,8 +62,6 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		var value   = DataPoints.value(d, xVariable.type),
 			scaled  = xVariable.axis.scale(xVariable.min(), xVariable.max(), value),
 			scaledw = scaled * width;
-		if(Math.isNaN(value))
-			trace(scaledw + " " + scaled + " " + value + " " + Dynamics.string(d) + " " + xVariable.type);
 		return scaledw;
 	}
 

@@ -15,12 +15,26 @@ ReportGrid.geo("#chart", {
 	axes : ["location", "count"],
 	datapoints : data,
 	options : {
-		map : {
+		map : [{
 			template : "usa-states",
-			color : "i-#FFF,#09F,#F63"
-		}
+			property : null,
+			label : {}
+		}, {
+			template : "usa-state-centroids",
+			radius : function(dp, stats) { return 30 * dp.count / stats.max; },
+			color : "#fff",
+			classname : "bubble"
+		}]
 	}
 });
+
+//** STYLE
+.bubble
+{
+	stroke: #06f;
+	stroke-width : 2;
+	fill-opacity: 0.1;
+}
 
 //** CLASS
 big
