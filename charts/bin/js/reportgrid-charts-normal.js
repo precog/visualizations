@@ -1345,7 +1345,7 @@ rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(pan
 	this.layerWidth = 61;
 	this.nodeSpacing = 28;
 	this.dummySpacing = 18;
-	this.extraWidth = 24;
+	this.extraWidth = 28;
 	this.backEdgeSpacing = 4.0;
 	this.extraHeight = 5;
 	this.extraRadius = 5;
@@ -2099,7 +2099,7 @@ rg.view.svg.widget.Balloon = $hxClasses["rg.view.svg.widget.Balloon"] = function
 		this.container = null == parent?container:thx.js.Dom.selectNode(parent);
 	} else this.container = container;
 	this.visible = true;
-	this.duration = 500;
+	this.duration = 350;
 	this.minwidth = 30;
 	this.setPreferredSide(2);
 	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseOut,thx.math.Equations.cubic);
@@ -5397,7 +5397,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.5238"};
+	r.info.viz = { version : "1.2.0.5307"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -7334,7 +7334,9 @@ rg.controller.info.InfoSankey.filters = function() {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
 		return [{ field : "layoutmap", value : v}];
-	}}];
+	}},{ field : "layoutmethod", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null}];
 }
 rg.controller.info.InfoSankey.prototype = {
 	label: null
@@ -7356,6 +7358,7 @@ rg.controller.info.InfoSankey.prototype = {
 	,layoutmap: null
 	,click: null
 	,clickEdge: null
+	,layoutmethod: null
 	,__class__: rg.controller.info.InfoSankey
 }
 thx.math.Const = $hxClasses["thx.math.Const"] = function() { }
@@ -12589,7 +12592,6 @@ rg.graph.LongestPathLayer = $hxClasses["rg.graph.LongestPathLayer"] = function()
 }
 rg.graph.LongestPathLayer.__name__ = ["rg","graph","LongestPathLayer"];
 rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
-	var child;
 	var traverse = (function($this) {
 		var $r;
 		var traverse = null;
@@ -12597,14 +12599,14 @@ rg.graph.LongestPathLayer.distanceToASink = function(graph,node) {
 			var max = lvl;
 			while( it.hasNext() ) {
 				var edge = it.next();
-				if(edge.tail.isSink()) continue; else max = Ints.max(max,traverse(edge.tail.negatives(),lvl + 1));
+				if(edge.head.isSink()) continue; else max = Ints.max(max,traverse(edge.head.positives(),lvl + 1));
 			}
 			return max;
 		};
 		$r = traverse;
 		return $r;
 	}(this));
-	return node.isIsolated()?0:traverse(node.graph.edges.negatives(node),1);
+	return node.isIsolated()?0:traverse(node.graph.edges.positives(node),1);
 }
 rg.graph.LongestPathLayer.prototype = {
 	lay: function(graph) {
@@ -12614,11 +12616,13 @@ rg.graph.LongestPathLayer.prototype = {
 			var node = _g1[_g];
 			++_g;
 			layers[0].push(node.id);
-			node.graph.nodes._remove(node);
 		}
-		var $it0 = clone.nodes.collection.iterator();
-		while( $it0.hasNext() ) {
-			var node = $it0.next();
+		var _g = 0, _g1 = Iterators.filter(clone.nodes.iterator(),function(n) {
+			return !n.isSink();
+		});
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
 			var pos = rg.graph.LongestPathLayer.distanceToASink(clone,node), layer = layers[pos];
 			if(null == layer) layer = layers[pos] = [];
 			layer.push(node.id);
@@ -16595,11 +16599,6 @@ rg.controller.visualization.VisualizationSankey.defaultEdgesf = function(idf,edg
 		return r;
 	}; else return edgesf;
 }
-rg.controller.visualization.VisualizationSankey.defaultWeightf = function(weightf) {
-	if(null == weightf) return function(dp) {
-		return null != dp.count?dp.count:0.0;
-	}; else return weightf;
-}
 rg.controller.visualization.VisualizationSankey.__super__ = rg.controller.visualization.VisualizationSvg;
 rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
 	info: null
@@ -16626,7 +16625,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
-		var layout = null != this.info.layoutmap?this.layoutDataWithMap(data,this.info.layoutmap):this.layoutData(data);
+		var layout = null != this.info.layoutmap?this.layoutDataWithMap(data,this.info.layoutmap):this.layoutData(data,this.info.layoutmethod);
 		if(null != this.info.layerWidth) this.chart.layerWidth = this.info.layerWidth;
 		if(null != this.info.nodeSpacing) this.chart.nodeSpacing = this.info.nodeSpacing;
 		if(null != this.info.dummySpacing) this.chart.dummySpacing = this.info.dummySpacing;
@@ -16680,7 +16679,7 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 	,createGraph: function(data,idf,weightf,edgesf) {
 		idf = rg.controller.visualization.VisualizationSankey.defaultIdf(idf);
 		edgesf = rg.controller.visualization.VisualizationSankey.defaultEdgesf(idf,edgesf);
-		weightf = rg.controller.visualization.VisualizationSankey.defaultWeightf(weightf);
+		weightf = this.defaultWeightf(weightf);
 		var graph = new rg.graph.Graph(idf);
 		var _g = 0;
 		while(_g < data.length) {
@@ -16712,10 +16711,15 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 		}
 		return graph;
 	}
-	,layoutData: function(data,idf,nodef,weightf,edgesf) {
+	,layoutData: function(data,method,idf,nodef,weightf,edgesf) {
 		var graph = this.createGraph(data,idf,weightf,edgesf);
 		nodef = rg.controller.visualization.VisualizationSankey.defaultNodef(nodef);
-		return this.weightBalance(graph,nodef);
+		switch(method) {
+		case "weightbalance":
+			return this.weightBalance(graph,nodef);
+		default:
+			return this.sugiyama(graph,nodef);
+		}
 	}
 	,weightBalance: function(graph,nodef) {
 		var layout = new rg.graph.GraphLayout(graph,new rg.graph.HeaviestNodeLayer().lay(graph));
@@ -16725,6 +16729,15 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 	}
 	,sugiyama: function(graph,nodef) {
 		return new rg.graph.SugiyamaMethod().resolve(graph,nodef);
+	}
+	,defaultWeightf: function(weightf) {
+		if(null == weightf) {
+			var type = this.dependentVariables[0].type;
+			return function(dp) {
+				var v = Reflect.field(dp,type);
+				return null != v?v:0.0;
+			};
+		} else return weightf;
 	}
 	,destroy: function() {
 		this.chart.destroy();

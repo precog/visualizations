@@ -49,7 +49,7 @@ class Balloon
 		} else
 			this.container = container;
 		visible = true;
-		duration = 500;
+		duration = 350;
 		minwidth = 30;
 		preferredSide = 2;
 		ease = Ease.mode(EaseMode.EaseOut, Equations.cubic);

@@ -17,27 +17,27 @@ import rg.data.ScaleDistribution;
 class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<DataPoint>>>
 {
 	public var infoScatter : InfoScatterGraph;
-		
+
 	override function initAxes()
 	{
 		xvariable = cast independentVariables[0];
 		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
 	}
-	
+
 	override function initChart()
 	{
 		var chart = new ScatterGraph(layout.getPanel(layout.mainPanelName));
 		chart.ready.add(function() ready.dispatch());
-		
+
 		chart.symbol = infoScatter.symbol;
 		chart.symbolStyle = infoScatter.symbolStyle;
-		
+
 		if(null == independentVariables[0].scaleDistribution)
 			independentVariables[0].scaleDistribution = ScaleFill;
-		
+
 		this.chart = chart;
 	}
-	
+
 	override function transformData(dps : Array<DataPoint>) : Array<Array<DataPoint>>
 	{
 		var results = [],

@@ -30,6 +30,7 @@ class InfoSankey
 	public var layoutmap : { layers : Array<Array<String>>, dummies : Array<Array<String>> };
 	public var click : DataPoint -> Stats<Dynamic> -> Void;
 	public var clickEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> Void;
+	public var layoutmethod : String;
 
 	public function new()
 	{
@@ -153,6 +154,10 @@ class InfoSankey
 					field : "layoutmap",
 					value : v
 				}]
+			}, {
+				field : "layoutmethod",
+				validator : function(v) return Std.is(v, String),
+				filter : null
 			}];
 	}
 }

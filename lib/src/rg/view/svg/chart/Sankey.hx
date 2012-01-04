@@ -62,7 +62,7 @@ class Sankey extends Chart
 		layerWidth = 61;
 		nodeSpacing = 28;
 		dummySpacing = 18;
-		extraWidth = 24;
+		extraWidth = 28;
 		backEdgeSpacing = 4.0;
 		extraHeight = 5;
 		extraRadius = 5;
@@ -520,7 +520,6 @@ class Sankey extends Chart
 			if(null != imagePath && !isdummy(n))
 			{
 				var path = imagePath(n.data.dp);
-				trace(path);
 				if(path != null)
 				{
 					var container = node.append("svg:g")
