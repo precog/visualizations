@@ -1,30 +1,34 @@
 package rg.view.html.widget;
 
 import thx.js.Selection;
-import rg.view.html.widget.LogoPosition;
 
 class Logo
 {
-	var darkbackground : Bool;
-	var position : LogoPosition;
 	var container : Selection;
-	public function new(container : Selection, darkbackground : Bool, p : LogoPosition)
+	public function new(container : Selection)
 	{
-		this.darkbackground = darkbackground;
 		this.container = container;
-		container.style("position").string("relative");
-		this.position = p;
-		var img = container.append('img')
-			.attr('src').string(getLogo())
-			.onNode('click', function(_,_) {
-				js.Lib.window.location.href = 'http://www.reportgrid.com/charts/';
-			})
+		create();
+	}
+
+	function create()
+	{
+		var chart = container.select("*").node();
+		container.insert("a", chart)
+			.attr("href").string('http://www.reportgrid.com/charts/')
 			.attr('title').string('Powered by ReportGrid')
+			.attr('target').string('_blank')
 			.style('display').string('block')
 			.style('z-index').float(1000000)
-			.style('position').string('absolute')
-			.style('cursor').string('pointer')
+			.style('text-align').string("right")
+//			.style('position').string('absolute')
+//			.style('right').string('0px')
+				.append('img')
+				.attr('src').string(getLogo())
+				.attr('title').string('Powered by ReportGrid')
 		;
+	}
+/*
 		// haxe quirks
 		switch(position)
 		{
@@ -44,22 +48,11 @@ class Logo
 				container.node().insertBefore(img.node(), container.node().firstChild);
 			case After:  // do nothing
 		}
-	}
+*/
 
-	function getWidth()
-	{
-		return useSmall() ? 100 : 200;
-	}
-
-	function useSmall()
-	{
-		return Math.min(container.style("width").getFloat(), container.style("height").getFloat()) < 300;
-	}
 
 	function getLogo()
 	{
-		var type = darkbackground ? 'dark' : 'clear';
-		var size = useSmall() ? "-s" : "";
-		return 'http://api.reportgrid.com/css/images/reportgrid-'+type+size+'.png';
+		return 'http://api.reportgrid.com/css/images/reportgrid-clear.png';
 	}
 }

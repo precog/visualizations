@@ -21,8 +21,7 @@ ReportGrid.scatterGraph("#chart", {
 			tickmark : function(v, t) { return t == "year" ? v : ReportGrid.format(v); },
 			axis : function(t) { return ReportGrid.humanize(t); },
 			datapointover : function(dp, stats) {
-				return
-					"gender: " + dp.gender +
+				return "gender: " + dp.gender +
 					", race: " + dp.race +
 					", death rate: " + ReportGrid.format(dp.deathRate);
 			}

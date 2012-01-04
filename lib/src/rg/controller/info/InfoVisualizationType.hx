@@ -5,16 +5,16 @@
 
 package rg.controller.info;
 
-class InfoVisualizationType 
+class InfoVisualizationType
 {
 	public var replace : Bool;
 	public var type : Null<String>;
-	public function new() 
+	public function new()
 	{
 		replace = true;
 	}
-	
-	public static function filters() 
+
+	public static function filters()
 	{
 		return [{
 			field : "visualization",

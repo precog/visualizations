@@ -7,11 +7,11 @@ package rg.controller.info;
 
 using rg.controller.info.Info;
 
-class InfoGeneral 
+class InfoGeneral
 {
 	public var ready : Void -> Void;
 	public function new() { }
-	
+
 	public static function filter()
 	{
 		return [{

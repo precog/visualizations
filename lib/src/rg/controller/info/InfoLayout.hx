@@ -17,7 +17,7 @@ class InfoLayout
 	public var titleOnTop : Bool;
 	public var scalePattern : ScalePattern;
 	public var padding : InfoPadding;
-	
+
 	public function new()
 	{
 		main = "main";
@@ -25,8 +25,8 @@ class InfoLayout
 		scalePattern = ScalesAlternating;
 		padding = new InfoPadding();
 	}
-	
-	public static function filters() 
+
+	public static function filters()
 	{
 		return [{
 			field : "layout",

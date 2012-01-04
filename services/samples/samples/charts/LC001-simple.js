@@ -9,7 +9,9 @@ ReportGrid.lineChart("#chart", {
 		label : {
 			axis : function(a) { return a },
 			tickmark : function(v, a) { return a == 'year' ? v: ReportGrid.format(v); },
-			datapointover : function(dp) { return ReportGrid.format(dp.population) + " individuals" }
+			datapointover : function(dp) {
+				return ReportGrid.format(dp.population) + " individuals";
+			}
 		},
 		displayrules : true,
 		labelangle : function(a) { return a == "year" ? 140 : 0; },

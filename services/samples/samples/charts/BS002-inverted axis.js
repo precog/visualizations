@@ -8,7 +8,9 @@ ReportGrid.barChart("#chart", {
 	options : {
 		segmenton : "gender",
 		label : {
-			datapointover : function(dp) { return ReportGrid.format(dp.count)+" "+dp.gender+"s"; }
+			datapointover : function(dp) {
+				return ReportGrid.format(dp.count)+" "+dp.gender+"s";
+			}
 		}
 	}
 });

@@ -10,8 +10,7 @@ ReportGrid.heatGrid("#chart", {
 		label : {
 			tickmark : function(v, t) { return v; },
 			datapointover : function(dp) {
-				return 
-					"death rate for " + dp.race + " in " 
+				return "death rate for " + dp.race + " in " 
 					+ dp.year + ": " + ReportGrid.format(dp.deathRate); 
 			}
 		}

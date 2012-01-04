@@ -11,7 +11,6 @@ import rg.controller.info.InfoDomType;
 import rg.controller.info.InfoDownload;
 import rg.controller.info.InfoGeneral;
 import rg.controller.info.InfoLayout;
-import rg.controller.info.InfoLogo;
 import rg.controller.info.InfoTrack;
 import rg.controller.info.InfoVisualizationType;
 import rg.controller.interactive.Downloader;
@@ -77,6 +76,8 @@ class App
 
 		var infoviz = new InfoVisualizationType().feed(params.options);
 
+		params.options.marginheight = 29;
+
 		switch(new InfoDomType().feed(params.options).kind)
 		{
 			case Svg:
@@ -131,10 +132,9 @@ class App
 			}
 		}
 
-		var infologo = new InfoLogo().feed(jsoptions.options);
 		visualization.addReadyOnce(function()
 		{
-			var widget = new Logo(visualization.container, infologo.darkbackground, infologo.position);
+			var widget = new Logo(visualization.container);
 		});
 
 		return visualization;
@@ -151,7 +151,7 @@ class App
 				return old;
 		}
 		var info = new InfoLayout().feed(options),
-			layout = new FactoryLayout().create(info, container);
+			layout = new FactoryLayout().create(info, options.marginheight, container);
 		layouts.set(id, layout);
 		return layout;
 	}
