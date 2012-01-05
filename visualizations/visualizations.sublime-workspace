@@ -519,14 +519,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "bin/pivottable.html",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -620,6 +612,10 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/pivottable.html",
+		"/Users/francoponticelli/Desktop/snapengage annotations",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/MVPOptions.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Segmenter.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/linechart-static.html",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessStyle.hx",
@@ -632,7 +628,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.viz.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.test.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/build.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/MVPOptions.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/RGConst.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryDataSource.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryDataContext.hx",
@@ -744,10 +739,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestOneCycleRemover.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/js/visualizations.test.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GreedyCyclePartitioner.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGreedyCyclePartitioner.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/TwoCycleRemover.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/OneCycleRemover.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestTwoCycleRemover.hx"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGreedyCyclePartitioner.hx"
 	],
 	"find":
 	{
@@ -770,6 +762,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"axes",
+			"segment",
+			"depen",
 			"#location",
 			"addQuery",
 			"addQuer",
@@ -894,10 +889,7 @@
 			"display",
 			"trace",
 			"count",
-			"propertySeries",
-			"switch(operation)",
-			"operation",
-			"QOperation"
+			"propertySeries"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -923,33 +915,6 @@
 		{
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "bin/pivottable.html",
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],

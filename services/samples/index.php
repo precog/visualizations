@@ -187,7 +187,13 @@ function manage()
 
 function json($v)
 {
-	echo json_encode($v);
+	$json = json_encode($v);
+	if($_GET['callback'])
+	{
+		echo $_GET['callback']."($json);";
+	} else {
+		echo $json;
+	}
 	exit;
 }
 
