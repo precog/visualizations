@@ -7,25 +7,25 @@ define('MANAGE_CODE', '67ww78bhFGY!543fv');
 
 
 $viz_categories = array(
-	'SK' => array(name => 'Sankey',				sequence => 0),
-	'GE' => array(name => 'Geo Chart',			sequence => 10),
-	'GB' => array(name => 'Geo Bubble Chart',	sequence => 15),
-	'FC' => array(name => 'Funnel Chart',		sequence => 20),
-	'HM' => array(name => 'Heatmap',			sequence => 30),
-	'BS' => array(name => 'Stacked Bar Chart',	sequence => 35),
-	'BC' => array(name => 'Bar Chart',			sequence => 40),
-	'BP' => array(name => 'Bar Percent Chart',	sequence => 45),
-	'SG' => array(name => 'Stream Graph',		sequence => 50),
-	'SP' => array(name => 'Scatter Plot',		sequence => 60),
-	'SB' => array(name => 'Bubble Chart',		sequence => 65),
-	'LS' => array(name => 'Stacked Area Chart',	sequence => 70),
-	'LA' => array(name => 'Area Chart',			sequence => 73),
-	'LP' => array(name => 'Area Percent Chart',	sequence => 75),
-	'LC' => array(name => 'Line Chart',			sequence => 76),
-	'PC' => array(name => 'Pie Chart',			sequence => 80),
-	'PD' => array(name => 'Donut Chart',		sequence => 85),
-	'PT' => array(name => 'Pivot Table',		sequence => 90),
-	'BB' => array(name => 'Leaderboard',		sequence => 100)
+	'SK' => array("name" => 'Sankey',				"sequence" => 0),
+	'GE' => array("name" => 'Geo Chart',			"sequence" => 10),
+	'GB' => array("name" => 'Geo Bubble Chart',		"sequence" => 15),
+	'FC' => array("name" => 'Funnel Chart',			"sequence" => 20),
+	'HM' => array("name" => 'Heatmap',				"sequence" => 30),
+	'BS' => array("name" => 'Stacked Bar Chart',	"sequence" => 35),
+	'BC' => array("name" => 'Bar Chart',			"sequence" => 40),
+	'BP' => array("name" => 'Bar Percent Chart',	"sequence" => 45),
+	'SG' => array("name" => 'Stream Graph',			"sequence" => 50),
+	'SP' => array("name" => 'Scatter Plot',			"sequence" => 60),
+	'SB' => array("name" => 'Bubble Chart',			"sequence" => 65),
+	'LS' => array("name" => 'Stacked Area Chart',	"sequence" => 70),
+	'LA' => array("name" => 'Area Chart',			"sequence" => 73),
+	'LP' => array("name" => 'Area Percent Chart',	"sequence" => 75),
+	'LC' => array("name" => 'Line Chart',			"sequence" => 76),
+	'PC' => array("name" => 'Pie Chart',			"sequence" => 80),
+	'PD' => array("name" => 'Donut Chart',			"sequence" => 85),
+	'PT' => array("name" => 'Pivot Table',			"sequence" => 90),
+	'BB' => array("name" => 'Leaderboard',			"sequence" => 100)
 );
 
 if(in_array($_SERVER['SERVER_NAME'], array('localhost')))
