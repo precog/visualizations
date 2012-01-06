@@ -86,7 +86,7 @@ ReportGrid.sankey("#chart", {
 	axes : ["billions"],
 	datapoints : data,
 	options : {
-		layerwidth : 100
+		layerwidth : 130
 	}
 });
 

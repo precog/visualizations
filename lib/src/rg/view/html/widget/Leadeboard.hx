@@ -108,10 +108,10 @@ class Leadeboard
 			enter.on("click.user", onClick);
 		if (animated)
 		{
-			enter.style("opacity").float(0)
+			enter.attr("opacity").float(0)
 				.eachNode(fadeIn);
 		} else {
-			enter.style("opacity").float(1);
+			enter.attr("opacity").float(1);
 		}
 
 		// update
@@ -127,7 +127,7 @@ class Leadeboard
 		{
 			choice.exit()
 				.transition().ease(animationEase).duration(animationDuration)
-				.style("opacity").float(0)
+				.attr("opacity").float(0)
 				.remove();
 		} else {
 			choice.exit().remove();
@@ -146,7 +146,7 @@ class Leadeboard
 		Dom.selectNodeData(n)
 			.transition().ease(animationEase).duration(animationDuration)
 				.delay(animationDelay * (i - _created))
-				.style("opacity").float(1)
+				.attr("opacity").float(1)
 				.endNode(function(_, _) {
 					me._created++;
 				});

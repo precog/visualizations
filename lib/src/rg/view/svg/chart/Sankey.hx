@@ -516,12 +516,15 @@ class Sankey extends Chart
 					prev = label;
 				}
 			}
+
+			var hasimage = false;
 			// thumbnail
 			if(null != imagePath && !isdummy(n))
 			{
 				var path = imagePath(n.data.dp);
 				if(path != null)
 				{
+					hasimage = true;
 					var container = node.append("svg:g")
 						.attr("transform").string("translate("+(Math.round(-imageWidth/2))+","+(Math.round(-imageHeight-imageSpacing))+")");
 					container.append("svg:image")
@@ -535,7 +538,10 @@ class Sankey extends Chart
 			// label top
 			if(null != labelNode)
 			{
-				label = new Label(node, true, true, true);
+				if(hasimage)
+					label = new Label(node, true, true, true);
+				else
+					label = new Label(node, true, true, false);
 				label.anchor = GridAnchor.Bottom;
 				label.place(0, -labelNodeSpacing, 0);
 				label.text = labelNode(n.data.dp, this.dependentVariable.stats);

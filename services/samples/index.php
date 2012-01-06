@@ -28,10 +28,11 @@ $viz_categories = array(
 	'BB' => array("name" => 'Leaderboard',			"sequence" => 100)
 );
 
-if(in_array($_SERVER['SERVER_NAME'], array('localhost')))
+if(in_array($_SERVER['SERVER_NAME'], array('localhost')) || intval($_SERVER['SERVER_NAME']) > 0)
 {
-	define('REPORTGRID_VIZ_API', 'http://localhost/rg/charts/js/reportgrid-charts.js');
-	define('REPORTGRID_CSS_API', 'http://localhost/rg/charts/css/rg.css');
+	define('REPORTGRID_VIZ_API', '/rg/charts/js/reportgrid-charts.js');
+	define('REPORTGRID_CSS_API', '/rg/charts/css/rg.css');
+	$viz_categories['XX'] = array('name' => 'Test', 'sequence' => 1000);
 } else {
 	define('REPORTGRID_VIZ_API', 'http://api.reportgrid.com/js/reportgrid-charts.js');
 	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg.css');

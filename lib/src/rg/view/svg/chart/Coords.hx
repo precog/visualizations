@@ -7,7 +7,7 @@ package rg.view.svg.chart;
 
 class Coords 
 {
-	static var retransform = ~/translate\(\s*(\d+(?:\.\d+)?)\s*(?:,\s*(\d+(?:\.\d+)?)\s*)?\)/;
+	static var retransform = ~/translate\(\s*(\d+(?:\.\d+)?)\s*(?:[, ]\s*(\d+(?:\.\d+)?)\s*)?\)/;
 	public static function fromTransform(s : String)
 	{
 		if (!retransform.match(s))

@@ -243,9 +243,9 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 			gsymbol.append("svg:circle")
 				.attr("r").float(6)
+				.attr("opacity").float(0.0)
 				.style("fill").string("#000000")
-				.style("fill-opacity").float(0.0)
-				.style("stroke").string("none")
+//				.style("stroke").string("none")
 			;
 
 			if (null != symbol)

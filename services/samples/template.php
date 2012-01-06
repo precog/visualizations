@@ -16,7 +16,16 @@ if($info['style'])
 ?>
 </head>
 <body>
+<?php
+if(@$info['html'])
+{
+echo $info['html'];
+} else {
+?>
 <div id="chart"<?php echo ($info['class']?' class="'.$info['class'].'"':'')?>></div>
+<?php
+}
+?>
 <script>
 <?php
 	echo $info['data'];

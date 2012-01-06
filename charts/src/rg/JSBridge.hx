@@ -105,7 +105,7 @@ class JSBridge
 		r.math = { random : function() return rand.float() }
 
 		r.info = null != r.info ? r.info : { };
-		r.info.viz = {
+		r.info.charts = {
 			version : thx.util.MacroVersion.fullVersion()
 		};
 	}

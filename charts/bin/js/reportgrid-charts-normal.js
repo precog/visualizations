@@ -1657,15 +1657,17 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 					prev = label;
 				}
 			}
+			var hasimage = false;
 			if(null != me.imagePath && !me.isdummy(n)) {
 				var path = me.imagePath(n.data.dp);
 				if(path != null) {
+					hasimage = true;
 					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-me.imageWidth / 2) + "," + Math.round(-me.imageHeight - me.imageSpacing) + ")");
 					container.append("svg:image").attr("preserveAspectRatio").string("xMidYMid slice").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
 				}
 			}
 			if(null != me.labelNode) {
-				label = new rg.view.svg.widget.Label(node,true,true,true);
+				if(hasimage) label = new rg.view.svg.widget.Label(node,true,true,true); else label = new rg.view.svg.widget.Label(node,true,true,false);
 				label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
 				label.place(0,-me.labelNodeSpacing,0);
 				label.setText(me.labelNode(n.data.dp,me.dependentVariable.stats));
@@ -2459,17 +2461,17 @@ rg.view.svg.widget.Balloon.prototype = {
 		if(this.visible) return;
 		this.visible = true;
 		this.balloon.style("display").string("block");
-		if(animate) this.balloon.transition().style("opacity")["float"](1); else this.balloon.style("opacity")["float"](1);
+		if(animate) this.balloon.transition().attr("opacity")["float"](1); else this.balloon.attr("opacity")["float"](1);
 	}
 	,hide: function(animate) {
 		if(animate == null) animate = false;
 		var me = this;
 		if(!this.visible) return;
 		this.visible = false;
-		if(animate) this.balloon.transition().style("opacity")["float"](0).endNode(function(_,_1) {
+		if(animate) this.balloon.transition().attr("opacity")["float"](0).endNode(function(_,_1) {
 			me.balloon.style("display").string("none");
 		}); else {
-			this.balloon.style("opacity")["float"](0);
+			this.balloon.attr("opacity")["float"](0);
 			this.balloon.style("display").string("none");
 		}
 	}
@@ -5397,7 +5399,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.viz = { version : "1.2.0.5307"};
+	r.info.charts = { version : "1.2.0.5391"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5496,10 +5498,10 @@ rg.view.html.widget.Leadeboard.prototype = {
 		}).text().stringf(this.description.$bind(this)).attr("title").stringf(this.title.$bind(this));
 		if(this.displayGradient) enter.style("background-size").stringf(this.backgroundSize.$bind(this));
 		if(null != this.click) enter.on("click.user",this.onClick.$bind(this));
-		if(this.animated) enter.style("opacity")["float"](0).eachNode(this.fadeIn.$bind(this)); else enter.style("opacity")["float"](1);
+		if(this.animated) enter.attr("opacity")["float"](0).eachNode(this.fadeIn.$bind(this)); else enter.attr("opacity")["float"](1);
 		var update = choice.update().select("li").text().stringf(this.description.$bind(this)).attr("title").stringf(this.title.$bind(this));
 		if(this.displayGradient) update.style("background-size").stringf(this.backgroundSize.$bind(this));
-		if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
+		if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).attr("opacity")["float"](0).remove(); else choice.exit().remove();
 		this.ready.dispatch();
 	}
 	,onClick: function(dp,_) {
@@ -5507,7 +5509,7 @@ rg.view.html.widget.Leadeboard.prototype = {
 	}
 	,fadeIn: function(n,i) {
 		var me = this;
-		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).style("opacity")["float"](1).endNode(function(_,_1) {
+		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).attr("opacity")["float"](1).endNode(function(_,_1) {
 			me._created++;
 		});
 	}
@@ -15128,7 +15130,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
 			if(null != this.click) gsymbol.on("click",onclick);
 			if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
-			gsymbol.append("svg:circle").attr("r")["float"](6).style("fill").string("#000000").style("fill-opacity")["float"](0.0).style("stroke").string("none");
+			gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
 			if(null != this.symbol) {
 				var sp = [this.symbol];
 				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
@@ -17111,6 +17113,17 @@ rg.data.Sources.prototype = {
 		this.onLoad.dispatch(this.data);
 	}
 	,__class__: rg.data.Sources
+}
+haxe.Log = $hxClasses["haxe.Log"] = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
+haxe.Log.clear = function() {
+	js.Boot.__clear_trace();
+}
+haxe.Log.prototype = {
+	__class__: haxe.Log
 }
 rg.controller.info.InfoScatterGraph = $hxClasses["rg.controller.info.InfoScatterGraph"] = function() {
 	rg.controller.info.InfoCartesianChart.call(this);
@@ -20633,6 +20646,49 @@ thx.color.Colors._p = function(s) {
 thx.color.Colors.prototype = {
 	__class__: thx.color.Colors
 }
+haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
+	var arr = haxe_timers;
+	this.id = arr.length;
+	arr[this.id] = this;
+	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
+}
+haxe.Timer.__name__ = ["haxe","Timer"];
+haxe.Timer.delay = function(f,time_ms) {
+	var t = new haxe.Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+}
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
+}
+haxe.Timer.prototype = {
+	id: null
+	,timerId: null
+	,stop: function() {
+		if(this.id == null) return;
+		window.clearInterval(this.timerId);
+		var arr = haxe_timers;
+		arr[this.id] = null;
+		if(this.id > 100 && this.id == arr.length - 1) {
+			var p = this.id - 1;
+			while(p >= 0 && arr[p] == null) p--;
+			arr = arr.slice(0,p + 1);
+		}
+		this.id = null;
+	}
+	,run: function() {
+	}
+	,__class__: haxe.Timer
+}
 rg.view.svg.chart.StreamEffect = $hxClasses["rg.view.svg.chart.StreamEffect"] = { __ename__ : ["rg","view","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
 rg.view.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
 rg.view.svg.chart.StreamEffect.NoEffect.toString = $estr;
@@ -20665,15 +20721,60 @@ thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
 rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(container) {
+	this.id = ++rg.view.html.widget.Logo._id;
 	this.container = container;
 	this.create();
+	var timer = new haxe.Timer(1000);
+	timer.run = this.live.$bind(this);
 }
 rg.view.html.widget.Logo.__name__ = ["rg","view","html","widget","Logo"];
+rg.view.html.widget.Logo.position = function(el) {
+	var p = { x : el.offsetLeft || 0, y : el.offsetTop || 0};
+	while(null != (el = el.offsetParent)) {
+		p.x += el.offsetLeft;
+		p.y += el.offsetTop;
+	}
+	return p;
+}
 rg.view.html.widget.Logo.prototype = {
 	container: null
+	,frame: null
+	,anchor: null
+	,image: null
+	,id: null
+	,live: function() {
+		if(this.container.select("div.reportgridbrandcontainer").empty()) this.createFrame(); else this.updateFrame();
+		if(thx.js.Dom.select("body").select("a.reportgridbrandanchor" + this.id).empty()) this.createAnchor(); else this.updateAnchor();
+		if(this.anchor.select("img").empty()) this.createImage(); else this.updateImage();
+	}
 	,create: function() {
+		this.createFrame();
+		this.createAnchor();
+		this.createImage();
+	}
+	,createFrame: function() {
 		var chart = this.container.select("*").node();
-		this.container.insert("a",chart).attr("href").string("http://www.reportgrid.com/charts/").attr("title").string("Powered by ReportGrid").attr("target").string("_blank").style("display").string("block").style("z-index")["float"](1000000).style("text-align").string("right").append("img").attr("src").string(this.getLogo()).attr("title").string("Powered by ReportGrid");
+		this.frame = this.container.insert("div",chart).attr("class").string("reportgridbrandcontainer");
+		this.updateFrame();
+	}
+	,createAnchor: function() {
+		this.anchor = thx.js.Dom.select("body").append("a").attr("class").string("reportgridbrandanchor" + this.id).attr("target").string("_blank");
+		this.updateAnchor();
+	}
+	,createImage: function() {
+		this.image = this.anchor.append("img");
+		this.updateImage();
+	}
+	,updateFrame: function() {
+		this.frame.style("display").string("block","important").style("opacity").string("1","important").style("width").string("100%","important").style("height").string(29 + "px","important").style("position").string("relative","important");
+	}
+	,updateAnchor: function() {
+		js.Lib.document.body.appendChild(this.anchor.node());
+		var pos = rg.view.html.widget.Logo.position(this.frame.node()), width = this.frame.style("width").getFloat();
+		this.anchor.attr("title").string("Powered by ReportGrid").attr("href").string("http://www.reportgrid.com/charts/").style("z-index").string("2147483647","important").style("display").string("block","important").style("opacity").string("1","important").style("position").string("absolute","important").style("height").string(29 + "px","important").style("width").string(194 + "px","important").style("top").string(pos.y + "px","important").style("left").string(pos.x - 194 + width + "px","important");
+	}
+	,updateImage: function() {
+		this.image.attr("src").string(this.getLogo()).attr("title").string("Powered by ReportGrid").attr("height").string("" + 29).attr("width").string("" + 194).style("opacity").string("1","important").style("border").string("none","important").style("height").string(29 + "px","important").style("width").string(194 + "px","important");
 	}
 	,getLogo: function() {
 		return "http://api.reportgrid.com/css/images/reportgrid-clear.png";
@@ -22717,6 +22818,7 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
+if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 rg.graph.Graphs.id = 0;
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
 rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
@@ -22828,7 +22930,7 @@ thx.xml.Namespace.prefix = (function() {
 	h.set("xmlns","http://www.w3.org/2000/xmlns/");
 	return h;
 })();
-rg.view.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:,\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
+rg.view.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:[, ]\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
 rg.controller.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
@@ -22846,6 +22948,9 @@ rg.controller.factory.FactoryLayout.DEFAULT_WIDTH = 400;
 rg.controller.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
 thx.color.Colors._reParse = new EReg("^(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))$","i");
+rg.view.html.widget.Logo._id = 0;
+rg.view.html.widget.Logo.LOGO_WIDTH = 194;
+rg.view.html.widget.Logo.LOGO_HEIGHT = 29;
 thx.svg.Symbol.sqrt3 = Math.sqrt(3);
 thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
 rg.JSBridge.main()

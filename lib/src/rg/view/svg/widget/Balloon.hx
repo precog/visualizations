@@ -494,9 +494,9 @@ class Balloon
 		balloon.style("display").string("block");
 		if(animate)
 		{
-			balloon.transition().style("opacity").float(1);
+			balloon.transition().attr("opacity").float(1);
 		} else {
-			balloon.style("opacity").float(1);
+			balloon.attr("opacity").float(1);
 		}
 	}
 
@@ -507,11 +507,11 @@ class Balloon
 		visible = false;
 		if(animate)
 		{
-			balloon.transition().style("opacity").float(0).endNode(function(_,_) {
+			balloon.transition().attr("opacity").float(0).endNode(function(_,_) {
 				balloon.style("display").string("none");
 			});
 		} else {
-			balloon.style("opacity").float(0);
+			balloon.attr("opacity").float(0);
 			balloon.style("display").string("none");
 		}
 	}
