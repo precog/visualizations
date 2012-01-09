@@ -132,11 +132,13 @@ class App
 			}
 		}
 
-		visualization.addReadyOnce(function()
+		if(!jsoptions.options.a)
 		{
-			var widget = new Logo(visualization.container);
-		});
-
+			visualization.addReadyOnce(function()
+			{
+				var widget = new Logo(visualization.container);
+			});
+		}
 		return visualization;
 	}
 

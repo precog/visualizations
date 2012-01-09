@@ -4,6 +4,7 @@ define('SAMPLES_CHARTS_DIR', 'samples/charts/');
 define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
+define('AUTHCODE_LOCALHOST', 'IGLBxMA3vSoTDWz+Fu3cjPZNmdpS+fYSlwyN7LvpssTRTRpE4Lt+hqO9nX6LaLf2SZZBVf7vFDTyUID1uWUdoPC73kAA9HVzsOZwxO5jY+NdazmeBwK64oD5vRkxth5vO3ejfjx0nkh7mgaoSwde0zri1V+b+SVHR92RidT5Isk=');
 
 
 $viz_categories = array(
@@ -30,7 +31,7 @@ $viz_categories = array(
 
 if(in_array($_SERVER['SERVER_NAME'], array('localhost')) || intval($_SERVER['SERVER_NAME']) > 0)
 {
-	define('REPORTGRID_VIZ_API', '/rg/charts/js/reportgrid-charts.js');
+	define('REPORTGRID_VIZ_API', '/rg/charts/js/reportgrid-charts.js?authCode='.urlencode(AUTHCODE_LOCALHOST));
 	define('REPORTGRID_CSS_API', '/rg/charts/css/rg.css');
 	$viz_categories['XX'] = array('name' => 'Test', 'sequence' => 1000);
 } else {

@@ -4,11 +4,13 @@
  */
 
 package rg.controller;
+import rg.util.Auth;
 import rg.util.ChainedExecutor;
 import rg.util.Jsonp;
 import rg.util.Properties;
 import rg.util.DataPoints;
 import rg.util.RGStrings;
+import rg.util.Urls;
 import thx.date.DateParser;
 import rg.util.Periodicity;
 import thx.error.Error;
@@ -71,6 +73,62 @@ class MVPOptions
 					"top";
 			}
 		}
+
+		// check authorization
+		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
+		{
+			var authcode = untyped __js__("ReportGrid.authCode");
+			if(null == authcode)
+			{
+				var script = rg.util.Js.findScript("reportgrid-charts.js");
+				var args = Urls.parseQueryParameters(untyped script.src);
+				authcode = Reflect.field(args, "authCode");
+			}
+			if(null != authcode)
+			{
+				var auth  = new Auth(authcode),
+					hosts = [],
+					host = js.Lib.window.location.hostname;
+				if((~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/).match(host))
+				{
+					hosts.push(host);
+				} else {
+					var parts = host.split('.');
+					if(parts.length == 3 && parts[0] == 'www')
+					{
+						parts.shift();
+					}
+					hosts.push(parts.join('.'));
+					while(parts.length > 2)
+					{
+						parts.shift();
+					}
+					hosts.push("*."+parts.join('.'));
+				}
+				params.options.a = auth.authorizeMany(hosts);
+			} else {
+				params.options.a = false;
+			}
+			handler(params);
+		});
+
+		// TODO: this should probably be moved to reportgrid-query.js
+		// check RG token
+		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
+		{
+			var api : (Dynamic -> Void) -> (String -> Void) -> Void = untyped __js__("ReportGrid.token");
+			if(params.options.a || null == api)
+				handler(params);
+			else
+			{
+				api(function(result) {
+					params.options.a = (result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read;
+					handler(params);
+				}, function(err) {
+					handler(params);
+				});
+			}
+		});
 
 		// ensure data
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)

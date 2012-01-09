@@ -1,5 +1,6 @@
 -cp src
 -cp ../lib/src
+-cp ../../../extern/caffeine-hx/ext3/
 -lib thx
 -lib hxevents
 -js bin/js/reportgrid-charts.js

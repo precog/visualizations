@@ -34,7 +34,7 @@ class JSBridge
 		{
 			var copt = chartopt(options, type);
 //			trace(Dynamics.string(copt));
-
+			copt.options.a = false; // authorized
 			MVPOptions.complete(copt, function(opt : Dynamic) {
 //				trace(Dynamics.string(opt));
 				try {

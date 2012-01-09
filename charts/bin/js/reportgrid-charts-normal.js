@@ -116,6 +116,269 @@ rg.data.IAxisDiscrete.prototype = {
 	,__class__: rg.data.IAxisDiscrete
 	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
+var chx = chx || {}
+if(!chx.crypt) chx.crypt = {}
+chx.crypt.IBlockCipher = $hxClasses["chx.crypt.IBlockCipher"] = function() { }
+chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
+chx.crypt.IBlockCipher.prototype = {
+	blockSize: null
+	,encryptBlock: null
+	,decryptBlock: null
+	,__class__: chx.crypt.IBlockCipher
+	,__properties__: {get_blockSize:"__getBlockSize"}
+}
+chx.crypt.RSAEncrypt = $hxClasses["chx.crypt.RSAEncrypt"] = function(nHex,eHex) {
+	this.init();
+	if(nHex != null) this.setPublic(nHex,eHex);
+}
+chx.crypt.RSAEncrypt.__name__ = ["chx","crypt","RSAEncrypt"];
+chx.crypt.RSAEncrypt.__interfaces__ = [chx.crypt.IBlockCipher];
+chx.crypt.RSAEncrypt.prototype = {
+	n: null
+	,e: null
+	,blockSize: null
+	,init: function() {
+		this.n = null;
+		this.e = 0;
+	}
+	,decryptBlock: function(enc) {
+		throw "Not a private key";
+		return null;
+	}
+	,encrypt: function(buf) {
+		return this.doBufferEncrypt(buf,this.doPublic.$bind(this),new chx.crypt.PadPkcs1Type2(this.__getBlockSize()));
+	}
+	,encryptBlock: function(block) {
+		var bsize = this.__getBlockSize();
+		if(block.length != bsize) throw "bad block size";
+		var biv = math.BigInteger.ofBytes(block,true);
+		var biRes = this.doPublic(biv).toBytesUnsigned();
+		var l = biRes.length;
+		var i = 0;
+		while(l > bsize) {
+			if(biRes.b[i] != 0) throw new chx.lang.FatalException("encoded length was " + biRes.length);
+			i++;
+			l--;
+		}
+		if(i != 0) biRes = biRes.sub(i,l);
+		if(biRes.length < bsize) {
+			var bb = new BytesBuffer();
+			l = bsize - biRes.length;
+			var _g = 0;
+			while(_g < l) {
+				var i1 = _g++;
+				bb.b.push(0);
+			}
+			bb.addBytes(biRes,0,biRes.length);
+			biRes = bb.getBytes();
+		}
+		return biRes;
+	}
+	,encyptText: function(text,separator) {
+		if(separator == null) separator = ":";
+		return BytesUtil.toHex(this.encrypt(Bytes.ofString(text)),":");
+	}
+	,setPublic: function(nHex,eHex) {
+		this.init();
+		if(nHex == null || nHex.length == 0) throw new chx.lang.NullPointerException("nHex not set: " + nHex);
+		if(eHex == null || eHex.length == 0) throw new chx.lang.NullPointerException("eHex not set: " + eHex);
+		var s = BytesUtil.cleanHexFormat(nHex);
+		this.n = math.BigInteger.ofString(s,16);
+		if(this.n == null) throw 2;
+		var ie = Std.parseInt("0x" + BytesUtil.cleanHexFormat(eHex));
+		if(ie == null || ie == 0) throw 3;
+		this.e = ie;
+	}
+	,verify: function(data) {
+		return this.doBufferDecrypt(data,this.doPublic.$bind(this),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
+	}
+	,doBufferEncrypt: function(src,f,pf) {
+		var bs = this.__getBlockSize();
+		var ts = bs - 11;
+		var idx = 0;
+		var msg = new BytesBuffer();
+		while(idx < src.length) {
+			if(idx + ts > src.length) ts = src.length - idx;
+			var m = math.BigInteger.ofBytes(pf.pad(src.sub(idx,ts)),true);
+			var c = f(m);
+			var h = c.toBytesUnsigned();
+			if((h.length & 1) != 0) msg.b.push(0);
+			msg.add(h);
+			idx += ts;
+		}
+		return msg.getBytes();
+	}
+	,doBufferDecrypt: function(src,f,pf) {
+		var bs = this.__getBlockSize();
+		var ts = bs - 11;
+		var idx = 0;
+		var msg = new BytesBuffer();
+		while(idx < src.length) {
+			if(idx + bs > src.length) bs = src.length - idx;
+			var c = math.BigInteger.ofBytes(src.sub(idx,bs),true);
+			var m = f(c);
+			if(m == null) return null;
+			var up = pf.unpad(m.toBytesUnsigned());
+			if(up.length > ts) throw "block text length error";
+			msg.add(up);
+			idx += bs;
+		}
+		return msg.getBytes();
+	}
+	,doPublic: function(x) {
+		return x.modPowInt(this.e,this.n);
+	}
+	,__getBlockSize: function() {
+		if(this.n == null) return 0;
+		return this.n.bitLength() + 7 >> 3;
+	}
+	,toString: function() {
+		var sb = new StringBuf();
+		sb.b[sb.b.length] = "Public:\n";
+		sb.add("N:\t" + this.n.toHex() + "\n");
+		sb.add("E:\t" + math.BigInteger.ofInt(this.e).toHex() + "\n");
+		return sb.b.join("");
+	}
+	,__class__: chx.crypt.RSAEncrypt
+	,__properties__: {get_blockSize:"__getBlockSize"}
+}
+chx.crypt.RSA = $hxClasses["chx.crypt.RSA"] = function(nHex,eHex,dHex) {
+	chx.crypt.RSAEncrypt.call(this,null,null);
+	this.init();
+	if(nHex != null) this.setPrivate(nHex,eHex,dHex);
+}
+chx.crypt.RSA.__name__ = ["chx","crypt","RSA"];
+chx.crypt.RSA.__interfaces__ = [chx.crypt.IBlockCipher];
+chx.crypt.RSA.generate = function(B,E) {
+	var rng = new math.prng.Random();
+	var key = new chx.crypt.RSA();
+	var qs = B >> 1;
+	key.e = Std.parseInt(StringTools.startsWith(E,"0x")?E:"0x" + E);
+	var ee = math.BigInteger.ofInt(key.e);
+	while(true) {
+		key.p = math.BigInteger.randomPrime(B - qs,ee,10,true,rng);
+		key.q = math.BigInteger.randomPrime(qs,ee,10,true,rng);
+		if(key.p.compare(key.q) <= 0) {
+			var t = key.p;
+			key.p = key.q;
+			key.q = t;
+		}
+		var p1 = key.p.sub(math.BigInteger.getONE());
+		var q1 = key.q.sub(math.BigInteger.getONE());
+		var phi = p1.mul(q1);
+		if(phi.gcd(ee).compare(math.BigInteger.getONE()) == 0) {
+			key.n = key.p.mul(key.q);
+			key.d = ee.modInverse(phi);
+			key.dmp1 = key.d.mod(p1);
+			key.dmq1 = key.d.mod(q1);
+			key.coeff = key.q.modInverse(key.p);
+			break;
+		}
+	}
+	return key;
+}
+chx.crypt.RSA.__super__ = chx.crypt.RSAEncrypt;
+chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
+	d: null
+	,p: null
+	,q: null
+	,dmp1: null
+	,dmq1: null
+	,coeff: null
+	,init: function() {
+		chx.crypt.RSAEncrypt.prototype.init.call(this);
+		this.d = null;
+		this.p = null;
+		this.q = null;
+		this.dmp1 = null;
+		this.dmq1 = null;
+		this.coeff = null;
+	}
+	,decrypt: function(buf) {
+		return this.doBufferDecrypt(buf,this.doPrivate.$bind(this),new chx.crypt.PadPkcs1Type2(this.__getBlockSize()));
+	}
+	,decryptBlock: function(enc) {
+		var c = math.BigInteger.ofBytes(enc,true);
+		var m = this.doPrivate(c);
+		if(m == null) throw "doPrivate error";
+		var ba = m.toBytesUnsigned();
+		if(ba.length < this.__getBlockSize()) {
+			var b2 = Bytes.alloc(this.__getBlockSize());
+			var _g1 = 0, _g = this.__getBlockSize() - ba.length + 1;
+			while(_g1 < _g) {
+				var i = _g1++;
+				b2.b[i] = 0;
+			}
+			b2.blit(this.__getBlockSize() - ba.length,ba,0,ba.length);
+			ba = b2;
+		} else while(ba.length > this.__getBlockSize()) {
+			var cnt = ba.length - this.__getBlockSize();
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				if(ba.b[i] != 0) throw "decryptBlock length error";
+			}
+			ba = ba.sub(cnt,this.__getBlockSize());
+		}
+		return ba;
+	}
+	,decryptText: function(hexString) {
+		return this.decrypt(BytesUtil.ofHex(BytesUtil.cleanHexFormat(hexString)));
+	}
+	,sign: function(content) {
+		return this.doBufferEncrypt(content,this.doPrivate.$bind(this),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
+	}
+	,setPrivate: function(N,E,D) {
+		this.init();
+		chx.crypt.RSAEncrypt.prototype.setPublic.call(this,N,E);
+		if(D != null && D.length > 0) {
+			var s = BytesUtil.cleanHexFormat(D);
+			this.d = math.BigInteger.ofString(s,16);
+		} else throw "Invalid RSA private key";
+	}
+	,setPrivateEx: function(N,E,D,P,Q,DP,DQ,C) {
+		this.init();
+		this.setPrivate(N,E,D);
+		if(P != null && Q != null) {
+			this.p = math.BigInteger.ofString(BytesUtil.cleanHexFormat(P),16);
+			this.q = math.BigInteger.ofString(BytesUtil.cleanHexFormat(Q),16);
+			this.dmp1 = null;
+			this.dmq1 = null;
+			this.coeff = null;
+			if(DP != null) this.dmp1 = math.BigInteger.ofString(BytesUtil.cleanHexFormat(DP),16);
+			if(DQ != null) this.dmq1 = math.BigInteger.ofString(BytesUtil.cleanHexFormat(DQ),16);
+			if(C != null) this.coeff = math.BigInteger.ofString(BytesUtil.cleanHexFormat(C),16);
+			this.recalcCRT();
+		} else throw "Invalid RSA private key ex";
+	}
+	,recalcCRT: function() {
+		if(this.p != null && this.q != null) {
+			if(this.dmp1 == null) this.dmp1 = this.d.mod(this.p.sub(math.BigInteger.getONE()));
+			if(this.dmq1 == null) this.dmq1 = this.d.mod(this.q.sub(math.BigInteger.getONE()));
+			if(this.coeff == null) this.coeff = this.q.modInverse(this.p);
+		}
+	}
+	,doPrivate: function(x) {
+		if(this.p == null || this.q == null) return x.modPow(this.d,this.n);
+		var xp = x.mod(this.p).modPow(this.dmp1,this.p);
+		var xq = x.mod(this.q).modPow(this.dmq1,this.q);
+		while(xp.compare(xq) < 0) xp = xp.add(this.p);
+		return xp.sub(xq).mul(this.coeff).mod(this.p).mul(this.q).add(xq);
+	}
+	,toString: function() {
+		var sb = new StringBuf();
+		sb.add(chx.crypt.RSAEncrypt.prototype.toString.call(this));
+		sb.b[sb.b.length] = "Private:\n";
+		sb.add("D:\t" + this.d.toHex() + "\n");
+		if(this.p != null) sb.add("P:\t" + this.p.toHex() + "\n");
+		if(this.q != null) sb.add("Q:\t" + this.q.toHex() + "\n");
+		if(this.dmp1 != null) sb.add("DMP1:\t" + this.dmp1.toHex() + "\n");
+		if(this.dmq1 != null) sb.add("DMQ1:\t" + this.dmq1.toHex() + "\n");
+		if(this.coeff != null) sb.add("COEFF:\t" + this.coeff.toHex() + "\n");
+		return sb.b.join("");
+	}
+	,__class__: chx.crypt.RSA
+});
 if(!thx.js) thx.js = {}
 thx.js.Access = $hxClasses["thx.js.Access"] = function(selection) {
 	this.selection = selection;
@@ -858,6 +1121,76 @@ thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype = {
 	__class__: thx.color.NamedColors
 }
+var math = math || {}
+if(!math.prng) math.prng = {}
+math.prng.Random = $hxClasses["math.prng.Random"] = function(backend) {
+	this.createState(backend);
+	this.initialized = false;
+}
+math.prng.Random.__name__ = ["math","prng","Random"];
+math.prng.Random.prototype = {
+	state: null
+	,pool: null
+	,pptr: null
+	,initialized: null
+	,next: function() {
+		if(this.initialized == false) {
+			this.createState();
+			this.state.init(this.pool);
+			var _g1 = 0, _g = this.pool.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.pool[i] = 0;
+			}
+			this.pptr = 0;
+			this.pool = new Array();
+			this.initialized = true;
+		}
+		return this.state.next();
+	}
+	,nextBytes: function(bytes,pos,len) {
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			bytes.b[pos + i] = this.next() & 255;
+		}
+	}
+	,nextBytesStream: function(out,count) {
+		var _g = 0;
+		while(_g < count) {
+			var i = _g++;
+			out.writeUInt8(this.next());
+		}
+	}
+	,seedInt: function(x) {
+		this.pool[this.pptr++] ^= x & 255;
+		this.pool[this.pptr++] ^= x >> 8 & 255;
+		this.pool[this.pptr++] ^= x >> 16 & 255;
+		this.pool[this.pptr++] ^= x >> 24 & 255;
+		if(this.pptr >= this.state.size) this.pptr -= this.state.size;
+	}
+	,seedTime: function() {
+		var dt = Date.now().getTime();
+		var m = Std["int"](dt * 1000);
+		this.seedInt(m);
+	}
+	,createState: function(backend) {
+		if(backend == null) this.state = new math.prng.ArcFour(); else this.state = backend;
+		if(this.pool == null) {
+			this.pool = new Array();
+			this.pptr = 0;
+			var t;
+			while(this.pptr < this.state.size) {
+				t = Math.floor(65536 * Math.random());
+				this.pool[this.pptr++] = t >>> 8;
+				this.pool[this.pptr++] = t & 255;
+			}
+			this.pptr = 0;
+			this.seedTime();
+		}
+	}
+	,__class__: math.prng.Random
+}
 rg.data.AxisNumeric = $hxClasses["rg.data.AxisNumeric"] = function() {
 }
 rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
@@ -1203,6 +1536,20 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 	}
 	,__class__: rg.controller.visualization.VisualizationBarChart
 });
+if(!chx.lang) chx.lang = {}
+chx.lang.FatalException = $hxClasses["chx.lang.FatalException"] = function(msg,cause) {
+	this.message = msg;
+	this.cause = cause;
+}
+chx.lang.FatalException.__name__ = ["chx","lang","FatalException"];
+chx.lang.FatalException.prototype = {
+	message: null
+	,cause: null
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)) + "(" + (this.message == null?"":this.message + ")");
+	}
+	,__class__: chx.lang.FatalException
+}
 if(!rg.controller.interactive) rg.controller.interactive = {}
 rg.controller.interactive.Downloader = $hxClasses["rg.controller.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
 	this.container = container;
@@ -2740,6 +3087,8 @@ EReg.prototype = {
 	,match: function(s) {
 		this.r.m = this.r.exec(s);
 		this.r.s = s;
+		this.r.l = RegExp.leftContext;
+		this.r.r = RegExp.rightContext;
 		return this.r.m != null;
 	}
 	,matched: function(n) {
@@ -2751,12 +3100,16 @@ EReg.prototype = {
 	}
 	,matchedLeft: function() {
 		if(this.r.m == null) throw "No string matched";
-		return this.r.s.substr(0,this.r.m.index);
+		if(this.r.l == null) return this.r.s.substr(0,this.r.m.index);
+		return this.r.l;
 	}
 	,matchedRight: function() {
 		if(this.r.m == null) throw "No string matched";
-		var sz = this.r.m.index + this.r.m[0].length;
-		return this.r.s.substr(sz,this.r.s.length - sz);
+		if(this.r.r == null) {
+			var sz = this.r.m.index + this.r.m[0].length;
+			return this.r.s.substr(sz,this.r.s.length - sz);
+		}
+		return this.r.r;
 	}
 	,matchedPos: function() {
 		if(this.r.m == null) throw "No string matched";
@@ -3168,6 +3521,248 @@ rg.view.svg.widget.Orientation.TopRight.__enum__ = rg.view.svg.widget.Orientatio
 rg.view.svg.widget.Orientation.TopLeft = ["TopLeft",7];
 rg.view.svg.widget.Orientation.TopLeft.toString = $estr;
 rg.view.svg.widget.Orientation.TopLeft.__enum__ = rg.view.svg.widget.Orientation;
+chx.lang.Exception = $hxClasses["chx.lang.Exception"] = function(msg,cause) {
+	this.message = msg;
+	this.cause = cause;
+}
+chx.lang.Exception.__name__ = ["chx","lang","Exception"];
+chx.lang.Exception.prototype = {
+	message: null
+	,cause: null
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)) + "(" + (this.message == null?"":this.message + ")");
+	}
+	,__class__: chx.lang.Exception
+}
+chx.lang.IOException = $hxClasses["chx.lang.IOException"] = function(msg,cause) {
+	chx.lang.Exception.call(this,msg,cause);
+}
+chx.lang.IOException.__name__ = ["chx","lang","IOException"];
+chx.lang.IOException.__super__ = chx.lang.Exception;
+chx.lang.IOException.prototype = $extend(chx.lang.Exception.prototype,{
+	__class__: chx.lang.IOException
+});
+chx.lang.BlockedException = $hxClasses["chx.lang.BlockedException"] = function(msg,cause) {
+	chx.lang.IOException.call(this,msg,cause);
+}
+chx.lang.BlockedException.__name__ = ["chx","lang","BlockedException"];
+chx.lang.BlockedException.__super__ = chx.lang.IOException;
+chx.lang.BlockedException.prototype = $extend(chx.lang.IOException.prototype,{
+	__class__: chx.lang.BlockedException
+});
+if(!chx.io) chx.io = {}
+chx.io.Output = $hxClasses["chx.io.Output"] = function() { }
+chx.io.Output.__name__ = ["chx","io","Output"];
+chx.io.Output.prototype = {
+	bigEndian: null
+	,lock: null
+	,writeByte: function(c) {
+		return (function($this) {
+			var $r;
+			throw new chx.lang.FatalException("Not implemented");
+			return $r;
+		}(this));
+	}
+	,writeBytes: function(s,pos,len) {
+		var k = len;
+		var b = s.b;
+		if(pos < 0 || len < 0 || pos + len > s.length) throw new chx.lang.OutsideBoundsException();
+		while(k > 0) {
+			this.writeByte(b[pos]);
+			pos++;
+			k--;
+		}
+		return len;
+	}
+	,flush: function() {
+		return this;
+	}
+	,close: function() {
+	}
+	,setBigEndian: function(b) {
+		this.bigEndian = b;
+		return b;
+	}
+	,write: function(b) {
+		var l = b.length;
+		var p = 0;
+		while(l > 0) {
+			var k = this.writeBytes(b,p,l);
+			if(k == 0) throw new chx.lang.BlockedException();
+			p += k;
+			l -= k;
+		}
+		return this;
+	}
+	,writeFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.writeBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+		return this;
+	}
+	,writeFloat: function(x) {
+		this.write(math.IEEE754.floatToBytes(x,this.bigEndian));
+		return this;
+	}
+	,writeDouble: function(x) {
+		this.write(math.IEEE754.doubleToBytes(x,this.bigEndian));
+		return this;
+	}
+	,writeInt8: function(x) {
+		if(x < -128 || x >= 128) throw new chx.lang.OverflowException();
+		this.writeByte(x & 255);
+		return this;
+	}
+	,writeUInt8: function(x) {
+		return this.writeByte(x);
+	}
+	,writeInt16: function(x) {
+		if(x < -32768 || x >= 32768) throw new chx.lang.OverflowException();
+		this.writeUInt16(x & 65535);
+		return this;
+	}
+	,writeUInt16: function(x) {
+		if(x < 0 || x >= 65536) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >> 8);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8);
+		}
+		return this;
+	}
+	,writeInt24: function(x) {
+		if(x < -8388608 || x >= 8388608) throw new chx.lang.OverflowException();
+		this.writeUInt24(x & 16777215);
+		return this;
+	}
+	,writeUInt24: function(x) {
+		if(x < 0 || x >= 16777216) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >> 16);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16);
+		}
+		return this;
+	}
+	,writeInt31: function(x) {
+		if(x < -1073741824 || x >= 1073741824) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >>> 24);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >>> 24);
+		}
+		return this;
+	}
+	,writeUInt30: function(x) {
+		if(x < 0 || x >= 1073741824) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >>> 24);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >>> 24);
+		}
+		return this;
+	}
+	,writeInt32: function(x) {
+		if(this.bigEndian) {
+			this.writeByte(haxe.Int32.toInt(x >>> 24));
+			this.writeByte(haxe.Int32.toInt(x >>> 16) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 8) & 255);
+			this.writeByte(haxe.Int32.toInt(x & (255 | 0)));
+		} else {
+			this.writeByte(haxe.Int32.toInt(x & (255 | 0)));
+			this.writeByte(haxe.Int32.toInt(x >>> 8) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 16) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 24));
+		}
+		return this;
+	}
+	,prepare: function(nbytes) {
+		return this;
+	}
+	,writeInput: function(i,bufsize) {
+		if(bufsize == null) bufsize = 4096;
+		var buf = Bytes.alloc(bufsize);
+		try {
+			while(true) {
+				var len = i.readBytes(buf,0,bufsize);
+				if(len == 0) throw new chx.lang.BlockedException();
+				var p = 0;
+				while(len > 0) {
+					var k = this.writeBytes(buf,p,len);
+					if(k == 0) throw new chx.lang.BlockedException();
+					p += k;
+					len -= k;
+				}
+			}
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+			} else throw(e);
+		}
+		return this;
+	}
+	,writeString: function(s) {
+		var b = Bytes.ofString(s);
+		this.writeFullBytes(b,0,b.length);
+		return this;
+	}
+	,writeUTF: function(s) {
+		if(s.length > 65535) throw new chx.lang.OverflowException();
+		this.writeUInt16(s.length);
+		this.writeString(s);
+		return this;
+	}
+	,printf: function(format,args,prependLength) {
+		if(prependLength == null) prependLength = false;
+		var s = chx.text.Sprintf.format(format,args);
+		if(prependLength) this.writeUTF(s); else this.writeString(s);
+		return this;
+	}
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this));
+	}
+	,__class__: chx.io.Output
+	,__properties__: {set_bigEndian:"setBigEndian"}
+}
+chx.io.BytesOutput = $hxClasses["chx.io.BytesOutput"] = function() {
+	this.b = new BytesBuffer();
+}
+chx.io.BytesOutput.__name__ = ["chx","io","BytesOutput"];
+chx.io.BytesOutput.__super__ = chx.io.Output;
+chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
+	b: null
+	,writeByte: function(c) {
+		this.b.b.push(c);
+		return this;
+	}
+	,writeBytes: function(buf,pos,len) {
+		this.b.addBytes(buf,pos,len);
+		return len;
+	}
+	,getBytes: function() {
+		return this.b.getBytes();
+	}
+	,__class__: chx.io.BytesOutput
+});
 rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
 	rg.view.svg.chart.Chart.call(this,panel);
 }
@@ -4788,6 +5383,229 @@ rg.data.Tickmarks.forFloat = function(start,end,value,major) {
 rg.data.Tickmarks.prototype = {
 	__class__: rg.data.Tickmarks
 }
+if(!chx.text) chx.text = {}
+chx.text.Sprintf = $hxClasses["chx.text.Sprintf"] = function() { }
+chx.text.Sprintf.__name__ = ["chx","text","Sprintf"];
+chx.text.Sprintf.format = function(format,args) {
+	if(format == null) return "";
+	if(args == null) args = [];
+	var destString = "";
+	var argIndex = 0;
+	var formatIndex = 0;
+	var percentIndex = 0;
+	var ch = 0;
+	var value = null;
+	var length = 0;
+	var precision = 0;
+	var properties = 0;
+	var fieldCount = 0;
+	var fieldOutcome;
+	while(formatIndex < format.length) {
+		percentIndex = format.indexOf("%",formatIndex);
+		if(percentIndex == -1) {
+			destString += format.substr(formatIndex);
+			formatIndex = format.length;
+		} else {
+			destString += format.substr(formatIndex,percentIndex - formatIndex);
+			fieldOutcome = "** sprintf: invalid format at " + argIndex + " **";
+			length = properties = fieldCount = 0;
+			precision = -1;
+			formatIndex = percentIndex + 1;
+			value = args[argIndex++];
+			while(Std["is"](fieldOutcome,String) && formatIndex < format.length) {
+				ch = format.charCodeAt(formatIndex++);
+				switch(ch) {
+				case 35:
+					if(fieldCount == 0) properties |= 16; else fieldOutcome = "** sprintf: \"#\" came too late **";
+					break;
+				case 45:
+					if(fieldCount == 0) properties |= 2; else fieldOutcome = "** sprintf: \"-\" came too late **";
+					break;
+				case 43:
+					if(fieldCount == 0) properties |= 4; else fieldOutcome = "** sprintf: \"+\" came too late **";
+					break;
+				case 32:
+					if(fieldCount == 0) properties |= 8; else fieldOutcome = "** sprintf: \" \" came too late **";
+					break;
+				case 46:
+					if(fieldCount < 2) {
+						fieldCount = 2;
+						precision = 0;
+					} else fieldOutcome = "** sprintf: \".\" came too late **";
+					break;
+				case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 100:case 105:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatD(value,properties,length,precision);
+					break;
+				case 111:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatO(value,properties,length,precision);
+					break;
+				case 120:case 88:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatX(value,properties,length,precision,ch == 88);
+					break;
+				case 101:case 69:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatE(value,properties,length,precision,ch == 69);
+					break;
+				case 102:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatF(value,properties,length,precision);
+					break;
+				case 103:case 71:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatG(value,properties,length,precision,ch == 71);
+					break;
+				case 99:case 67:case 115:case 83:
+					if(ch == 99 || ch == 67) precision = 1;
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatS(value,properties,length,precision);
+					break;
+				case 37:
+					fieldOutcome = true;
+					destString += "%";
+					argIndex--;
+					break;
+				default:
+					fieldOutcome = "** sprintf: " + Std.string(ch - 48) + " not supported **";
+				}
+			}
+			if(fieldOutcome != true) {
+				if(chx.text.Sprintf.DEBUG) destString += fieldOutcome;
+				if(chx.text.Sprintf.TRACE) null;
+			}
+		}
+	}
+	return destString;
+}
+chx.text.Sprintf.finish = function(output,value,properties,length,precision,prefix) {
+	if(prefix == null) prefix = "";
+	if(prefix == null) prefix = "";
+	if(value < 0) prefix = "-" + prefix; else if((properties & 4) != 0) prefix = "+" + prefix; else if((properties & 8) != 0) prefix = " " + prefix;
+	if(length == 0 && precision > -1) {
+		length = precision;
+		properties |= 1;
+	}
+	while(output.length + prefix.length < length) if((properties & 2) != 0) output = output + " "; else if((properties & 1) != 0) output = "0" + output; else prefix = " " + prefix;
+	return prefix + output;
+}
+chx.text.Sprintf.number = function(v) {
+	if(v == null) return 0.;
+	if(Std["is"](v,String)) {
+		if(v == "") return 0.0;
+		return Std.parseFloat(v);
+	}
+	if(Std["is"](v,Float)) {
+		if(Math.isNaN(v)) return v;
+		return v;
+	}
+	if(Std["is"](v,Int)) return v * 1.0;
+	if(Std["is"](v,Bool)) return v?1.0:0.0;
+	return Math.NaN;
+}
+chx.text.Sprintf.formatD = function(value,properties,length,precision) {
+	var output = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 || value != 0) output = Std.string(Math.floor(Math.abs(value)));
+	while(output.length < precision) output = "0" + output;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision);
+}
+chx.text.Sprintf.formatO = function(value,properties,length,precision) {
+	var output = "";
+	var prefix = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 && value != 0) output = value.toString(8);
+	if((properties & 16) != 0) prefix = "0";
+	while(output.length < precision) output = "0" + output;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,prefix);
+}
+chx.text.Sprintf.formatX = function(value,properties,length,precision,upper) {
+	var output = "";
+	var prefix = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 && value != 0) output = value.toString(16);
+	if((properties & 16) != 0) prefix = "0x";
+	while(output.length < precision) output = "0" + output;
+	if(upper) {
+		prefix = prefix.toUpperCase();
+		output = output.toUpperCase();
+	} else output = output.toLowerCase();
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,prefix);
+}
+chx.text.Sprintf.formatE = function(value,properties,length,precision,upper) {
+	var output = "";
+	var expCount = 0;
+	value = chx.text.Sprintf.number(value);
+	if(Math.abs(value) > 1) while(Math.abs(value) > 10) {
+		value /= 10;
+		expCount++;
+	} else while(Math.abs(value) < 1) {
+		value *= 10;
+		expCount--;
+	}
+	var expCountStr = chx.text.Sprintf.format("%c%+.2d",[upper?"E":"e",expCount]);
+	if((properties & 2) != 0) {
+		output = chx.text.Sprintf.formatF(value,properties,1,precision) + expCountStr;
+		while(output.length < length) output += " ";
+	} else output = chx.text.Sprintf.formatF(value,properties,Std["int"](Math.max(length - expCountStr.length,0)),precision) + expCount;
+	return output;
+}
+chx.text.Sprintf.formatF = function(value,properties,length,precision) {
+	var output = "";
+	var intPortion = "";
+	var decPortion = "";
+	if(precision == -1) precision = 6;
+	var valStr = Std.string(value);
+	if(valStr.indexOf(".") == -1) {
+		intPortion = Std.string(Math.abs(chx.text.Sprintf.number(valStr)));
+		decPortion = "0";
+	} else {
+		intPortion = Std.string(Math.abs(chx.text.Sprintf.number(valStr.substr(0,valStr.indexOf(".")))));
+		decPortion = valStr.substr(valStr.indexOf(".") + 1);
+	}
+	if(chx.text.Sprintf.number(decPortion) == 0) {
+		decPortion = "";
+		while(decPortion.length < precision) decPortion += "0";
+	} else {
+		if(decPortion.length > precision) {
+			var dec = Math.round(Math.pow(10,precision) * chx.text.Sprintf.number("0." + decPortion));
+			if(Std.string(dec).length > precision && dec != 0) {
+				decPortion = "0";
+				intPortion = Std.string((Math.abs(chx.text.Sprintf.number(intPortion)) + 1) * (chx.text.Sprintf.number(intPortion) >= 0?1:-1));
+			} else decPortion = Std.string(dec);
+		}
+		if(decPortion.length < precision) {
+			decPortion = new String(decPortion);
+			while(decPortion.length < precision) decPortion += "0";
+		}
+	}
+	if(precision == 0) {
+		output = intPortion;
+		if((properties & 16) != 0) output += ".";
+	} else output = intPortion + "." + decPortion;
+	return chx.text.Sprintf.finish(output,Std.parseFloat(valStr),properties,length,precision,"");
+}
+chx.text.Sprintf.formatG = function(value,properties,length,precision,upper) {
+	var out1 = chx.text.Sprintf.formatE(value,properties,1,precision,upper);
+	var out2 = chx.text.Sprintf.formatF(value,properties,1,precision);
+	if(out1.length < out2.length) return chx.text.Sprintf.formatE(value,properties,length,precision,upper); else return chx.text.Sprintf.formatF(value,properties,length,precision);
+}
+chx.text.Sprintf.formatS = function(value,properties,length,precision) {
+	var output = Std.string(value);
+	if(precision > 0 && precision < output.length) output = output.substr(0,precision);
+	properties &= -30;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,"");
+}
+chx.text.Sprintf.prototype = {
+	__class__: chx.text.Sprintf
+}
 thx.culture.FormatParams = $hxClasses["thx.culture.FormatParams"] = function() { }
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
@@ -5328,6 +6146,7 @@ rg.JSBridge.main = function() {
 	var app = new rg.controller.App();
 	r.viz = function(el,options,type) {
 		var copt = rg.JSBridge.chartopt(options,type);
+		copt.options.a = false;
 		rg.controller.MVPOptions.complete(copt,function(opt) {
 			try {
 				app.visualization(rg.JSBridge.select(el),opt);
@@ -5399,7 +6218,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.0.5391"};
+	r.info.charts = { version : "1.2.0.5449"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5431,6 +6250,14 @@ rg.data.ScaleDistribution.ScaleBefore.__enum__ = rg.data.ScaleDistribution;
 rg.data.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
 rg.data.ScaleDistribution.ScaleAfter.toString = $estr;
 rg.data.ScaleDistribution.ScaleAfter.__enum__ = rg.data.ScaleDistribution;
+chx.lang.NullPointerException = $hxClasses["chx.lang.NullPointerException"] = function(msg,cause) {
+	chx.lang.Exception.call(this,msg,cause);
+}
+chx.lang.NullPointerException.__name__ = ["chx","lang","NullPointerException"];
+chx.lang.NullPointerException.__super__ = chx.lang.Exception;
+chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
+	__class__: chx.lang.NullPointerException
+});
 rg.view.html.widget.Leadeboard = $hxClasses["rg.view.html.widget.Leadeboard"] = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
@@ -6726,6 +7553,80 @@ thx.languages.En.__super__ = thx.culture.Language;
 thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
 	__class__: thx.languages.En
 });
+var haxe = haxe || {}
+haxe.Int32 = $hxClasses["haxe.Int32"] = function() { }
+haxe.Int32.__name__ = ["haxe","Int32"];
+haxe.Int32.make = function(a,b) {
+	return a << 16 | b;
+}
+haxe.Int32.ofInt = function(x) {
+	return x | 0;
+}
+haxe.Int32.clamp = function(x) {
+	return x | 0;
+}
+haxe.Int32.toInt = function(x) {
+	if((x >> 30 & 1) != x >>> 31) throw "Overflow " + x;
+	return x;
+}
+haxe.Int32.toNativeInt = function(x) {
+	return x;
+}
+haxe.Int32.add = function(a,b) {
+	return a + b | 0;
+}
+haxe.Int32.sub = function(a,b) {
+	return a - b | 0;
+}
+haxe.Int32.mul = function(a,b) {
+	return a * b | 0;
+}
+haxe.Int32.div = function(a,b) {
+	return Std["int"](a / b);
+}
+haxe.Int32.mod = function(a,b) {
+	return a % b;
+}
+haxe.Int32.shl = function(a,b) {
+	return a << b;
+}
+haxe.Int32.shr = function(a,b) {
+	return a >> b;
+}
+haxe.Int32.ushr = function(a,b) {
+	return a >>> b;
+}
+haxe.Int32.and = function(a,b) {
+	return a & b;
+}
+haxe.Int32.or = function(a,b) {
+	return a | b;
+}
+haxe.Int32.xor = function(a,b) {
+	return a ^ b;
+}
+haxe.Int32.neg = function(a) {
+	return -a;
+}
+haxe.Int32.isNeg = function(a) {
+	return a < 0;
+}
+haxe.Int32.isZero = function(a) {
+	return a == 0;
+}
+haxe.Int32.complement = function(a) {
+	return ~a;
+}
+haxe.Int32.compare = function(a,b) {
+	return a - b;
+}
+haxe.Int32.ucompare = function(a,b) {
+	if(a < 0) return b < 0?~b - ~a:1;
+	return b < 0?-1:a - b;
+}
+haxe.Int32.prototype = {
+	__class__: haxe.Int32
+}
 rg.data.Segmenter = $hxClasses["rg.data.Segmenter"] = function(on,transform,scale) {
 	this.on = on;
 	this.transform = transform;
@@ -6836,6 +7737,67 @@ thx.translation.ITranslation.prototype = {
 	,__: null
 	,__class__: thx.translation.ITranslation
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
+}
+math.prng.IPrng = $hxClasses["math.prng.IPrng"] = function() { }
+math.prng.IPrng.__name__ = ["math","prng","IPrng"];
+math.prng.IPrng.prototype = {
+	size: null
+	,init: null
+	,next: null
+	,toString: null
+	,__class__: math.prng.IPrng
+}
+math.prng.ArcFour = $hxClasses["math.prng.ArcFour"] = function() {
+	this.i = 0;
+	this.j = 0;
+	this.S = new Array();
+	this.setSize(256);
+}
+math.prng.ArcFour.__name__ = ["math","prng","ArcFour"];
+math.prng.ArcFour.__interfaces__ = [math.prng.IPrng];
+math.prng.ArcFour.prototype = {
+	i: null
+	,j: null
+	,S: null
+	,size: null
+	,init: function(key) {
+		var t;
+		var _g = 0;
+		while(_g < 256) {
+			var x = _g++;
+			this.S[x] = x;
+		}
+		this.j = 0;
+		var _g = 0;
+		while(_g < 256) {
+			var i = _g++;
+			this.j = this.j + this.S[i] + key[i % key.length] & 255;
+			t = this.S[i];
+			this.S[i] = this.j;
+			this.S[this.j] = t;
+		}
+		this.i = 0;
+		this.j = 0;
+	}
+	,next: function() {
+		if(this.S.length == 0) throw "not initialized";
+		var t;
+		this.i = this.i + 1 & 255;
+		this.j = this.j + this.S[this.i] & 255;
+		t = this.S[this.i];
+		this.S[this.i] = this.S[this.j];
+		this.S[this.j] = t;
+		return this.S[t + this.S[this.i] & 255];
+	}
+	,setSize: function(v) {
+		if(v % 4 != 0 || v < 32) throw "invalid size";
+		this.size = v;
+		return v;
+	}
+	,toString: function() {
+		return "ArcFour";
+	}
+	,__class__: math.prng.ArcFour
 }
 rg.graph.GraphLayout = $hxClasses["rg.graph.GraphLayout"] = function(graph,layers) {
 	this.graph = graph;
@@ -7072,6 +8034,44 @@ rg.data.IDataSource.prototype = {
 	onLoad: null
 	,load: null
 	,__class__: rg.data.IDataSource
+}
+if(!math.reduction) math.reduction = {}
+math.reduction.ModularReduction = $hxClasses["math.reduction.ModularReduction"] = function() { }
+math.reduction.ModularReduction.__name__ = ["math","reduction","ModularReduction"];
+math.reduction.ModularReduction.prototype = {
+	convert: null
+	,revert: null
+	,reduce: null
+	,mulTo: null
+	,sqrTo: null
+	,__class__: math.reduction.ModularReduction
+}
+math.reduction.Classic = $hxClasses["math.reduction.Classic"] = function(m) {
+	this.m = m;
+}
+math.reduction.Classic.__name__ = ["math","reduction","Classic"];
+math.reduction.Classic.__interfaces__ = [math.reduction.ModularReduction];
+math.reduction.Classic.prototype = {
+	m: null
+	,convert: function(x) {
+		if(x.sign < 0 || x.compare(this.m) >= 0) return x.mod(this.m);
+		return x;
+	}
+	,revert: function(x) {
+		return x;
+	}
+	,reduce: function(x) {
+		x.divRemTo(this.m,null,x);
+	}
+	,mulTo: function(x,y,r) {
+		x.multiplyTo(y,r);
+		this.reduce(r);
+	}
+	,sqrTo: function(x,r) {
+		x.squareTo(r);
+		this.reduce(r);
+	}
+	,__class__: math.reduction.Classic
 }
 rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(graph,idf) {
 	var me = this;
@@ -7374,6 +8374,17 @@ thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
 thx.util.MacroVersion.prototype = {
 	__class__: thx.util.MacroVersion
 }
+chx.lang.EofException = $hxClasses["chx.lang.EofException"] = function(msg,cause) {
+	chx.lang.IOException.call(this,msg,cause);
+}
+chx.lang.EofException.__name__ = ["chx","lang","EofException"];
+chx.lang.EofException.__super__ = chx.lang.IOException;
+chx.lang.EofException.prototype = $extend(chx.lang.IOException.prototype,{
+	toString: function() {
+		return "EOF";
+	}
+	,__class__: chx.lang.EofException
+});
 rg.controller.factory.FactoryDataContext = $hxClasses["rg.controller.factory.FactoryDataContext"] = function(factoryDataSource) {
 	this.factoryDataSource = factoryDataSource;
 }
@@ -7406,6 +8417,47 @@ rg.controller.factory.FactoryDataContext.prototype = {
 		return new rg.data.DataContext(info.name,processor);
 	}
 	,__class__: rg.controller.factory.FactoryDataContext
+}
+var BytesBuffer = $hxClasses["BytesBuffer"] = function() {
+	this.b = new Array();
+}
+BytesBuffer.__name__ = ["BytesBuffer"];
+BytesBuffer.prototype = {
+	b: null
+	,addByte: function($byte) {
+		this.b.push($byte);
+	}
+	,add: function(src) {
+		var b1 = this.b;
+		var b2 = src.b;
+		var _g1 = 0, _g = src.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.b.push(b2[i]);
+		}
+	}
+	,addBytes: function(src,pos,len) {
+		if(pos < 0 || len < 0 || pos + len > src.length) throw new chx.lang.OutsideBoundsException();
+		var b1 = this.b;
+		var b2 = src.b;
+		var _g1 = pos, _g = pos + len;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.b.push(b2[i]);
+		}
+	}
+	,getBytes: function() {
+		var bytes = new Bytes(this.b.length,this.b);
+		this.b = null;
+		return bytes;
+	}
+	,writeByte: function(b) {
+		this.b.push(b);
+	}
+	,writeBytes: function(src,pos,len) {
+		this.addBytes(src,pos,len);
+	}
+	,__class__: BytesBuffer
 }
 thx.math.scale.IScale = $hxClasses["thx.math.scale.IScale"] = function() { }
 thx.math.scale.IScale.__name__ = ["thx","math","scale","IScale"];
@@ -7718,6 +8770,265 @@ rg.view.svg.layer.Title.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 	,__class__: rg.view.svg.layer.Title
 	,__properties__: $extend(rg.view.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
 });
+chx.io.Input = $hxClasses["chx.io.Input"] = function() { }
+chx.io.Input.__name__ = ["chx","io","Input"];
+chx.io.Input.prototype = {
+	bytesAvailable: null
+	,bigEndian: null
+	,readByte: function() {
+		return (function($this) {
+			var $r;
+			throw new chx.lang.FatalException("Not implemented");
+			return $r;
+		}(this));
+	}
+	,readBytes: function(s,pos,len) {
+		var k = len;
+		var b = s.b;
+		if(pos < 0 || len < 0 || pos + len > s.length) throw new chx.lang.OutsideBoundsException();
+		while(k > 0) {
+			b[pos] = this.readByte();
+			pos++;
+			k--;
+		}
+		return len;
+	}
+	,isEof: function() {
+		return (function($this) {
+			var $r;
+			throw new chx.lang.UnsupportedException("Not implemented for this input type");
+			return $r;
+		}(this));
+	}
+	,close: function() {
+	}
+	,readAll: function(bufsize) {
+		if(bufsize == null) bufsize = 16384;
+		var buf = Bytes.alloc(bufsize);
+		var total = new BytesBuffer();
+		try {
+			while(true) {
+				var len = this.readBytes(buf,0,bufsize);
+				if(len == 0) throw new chx.lang.BlockedException();
+				total.addBytes(buf,0,len);
+			}
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+			} else throw(e);
+		}
+		return total.getBytes();
+	}
+	,readFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.readBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+	}
+	,read: function(nbytes) {
+		var s = Bytes.alloc(nbytes);
+		var p = 0;
+		while(nbytes > 0) {
+			var k = this.readBytes(s,p,nbytes);
+			if(k == 0) throw new chx.lang.BlockedException();
+			p += k;
+			nbytes -= k;
+		}
+		return s;
+	}
+	,readUntil: function(end) {
+		var buf = new StringBuf();
+		var last;
+		while((last = this.readByte()) != end) buf.b[buf.b.length] = String.fromCharCode(last);
+		return buf.b.join("");
+	}
+	,readLine: function() {
+		var buf = new StringBuf();
+		var last;
+		var s;
+		try {
+			while((last = this.readByte()) != 10) buf.b[buf.b.length] = String.fromCharCode(last);
+			s = buf.b.join("");
+			if(s.charCodeAt(s.length - 1) == 13) s = s.substr(0,-1);
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+				s = buf.b.join("");
+				if(s.length == 0) throw e;
+			} else throw(e);
+		}
+		return s;
+	}
+	,readFloat: function() {
+		return math.IEEE754.bytesToFloat(this.read(4),this.bigEndian);
+	}
+	,readDouble: function() {
+		return math.IEEE754.bytesToFloat(this.read(8),this.bigEndian);
+	}
+	,readInt8: function() {
+		var n = this.readByte();
+		if(n >= 128) return n - 256;
+		return n;
+	}
+	,readUInt8: function() {
+		return this.readByte();
+	}
+	,readInt16: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var n = this.bigEndian?ch2 | ch1 << 8:ch1 | ch2 << 8;
+		if((n & 32768) != 0) return n - 65536;
+		return n;
+	}
+	,readUInt16: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		return this.bigEndian?ch2 | ch1 << 8:ch1 | ch2 << 8;
+	}
+	,readInt24: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var n = this.bigEndian?ch3 | ch2 << 8 | ch1 << 16:ch1 | ch2 << 8 | ch3 << 16;
+		if((n & 8388608) != 0) return n - 16777216;
+		return n;
+	}
+	,readUInt24: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		return this.bigEndian?ch3 | ch2 << 8 | ch1 << 16:ch1 | ch2 << 8 | ch3 << 16;
+	}
+	,readInt31: function() {
+		var ch1, ch2, ch3, ch4;
+		if(this.bigEndian) {
+			ch4 = this.readByte();
+			ch3 = this.readByte();
+			ch2 = this.readByte();
+			ch1 = this.readByte();
+		} else {
+			ch1 = this.readByte();
+			ch2 = this.readByte();
+			ch3 = this.readByte();
+			ch4 = this.readByte();
+		}
+		if((ch4 & 128) == 0 != ((ch4 & 64) == 0)) throw new chx.lang.OverflowException();
+		return ch1 | ch2 << 8 | ch3 << 16 | ch4 << 24;
+	}
+	,readUInt30: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var ch4 = this.readByte();
+		if((this.bigEndian?ch1:ch4) >= 64) throw new chx.lang.OverflowException();
+		return this.bigEndian?ch4 | ch3 << 8 | ch2 << 16 | ch1 << 24:ch1 | ch2 << 8 | ch3 << 16 | ch4 << 24;
+	}
+	,readInt32: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var ch4 = this.readByte();
+		return this.bigEndian?(ch1 << 8 | ch2) << 16 | (ch3 << 8 | ch4):(ch4 << 8 | ch3) << 16 | (ch2 << 8 | ch1);
+	}
+	,readString: function(len) {
+		var b = Bytes.alloc(len);
+		this.readFullBytes(b,0,len);
+		return b.toString();
+	}
+	,readUTF: function() {
+		var len = this.readUInt16();
+		return this.readString(len);
+	}
+	,readMultiByteString: function(len,charset) {
+		var cset = charset.toLowerCase();
+		switch(cset) {
+		case "latin1":
+			break;
+		case "us-ascii":
+			break;
+		default:
+			throw new chx.lang.UnsupportedException(cset + " not supported");
+		}
+		return this.readString(len);
+	}
+	,__getBytesAvailable: function() {
+		return (function($this) {
+			var $r;
+			throw new chx.lang.FatalException("Not implemented");
+			return $r;
+		}(this));
+	}
+	,__setEndian: function(b) {
+		this.bigEndian = b;
+		return b;
+	}
+	,__class__: chx.io.Input
+	,__properties__: {set_bigEndian:"__setEndian",get_bytesAvailable:"__getBytesAvailable"}
+}
+chx.io.BytesInput = $hxClasses["chx.io.BytesInput"] = function(b,pos,len) {
+	if(pos == null) pos = 0;
+	if(len == null) len = b.length - pos;
+	if(pos < 0 || len < 0 || pos + len > b.length) throw new chx.lang.OutsideBoundsException();
+	this.b = b.b;
+	this.pos = pos;
+	this.len = len;
+	this.__setEndian(false);
+}
+chx.io.BytesInput.__name__ = ["chx","io","BytesInput"];
+chx.io.BytesInput.__super__ = chx.io.Input;
+chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
+	position: null
+	,b: null
+	,pos: null
+	,len: null
+	,getBytesCopy: function() {
+		var orig = this.getPosition();
+		var rv = null;
+		rv = Bytes.ofData(this.b.slice(0,this.b.length));
+		this.setPosition(orig);
+		return rv;
+	}
+	,readByte: function() {
+		if(this.len == 0) throw new chx.lang.EofException();
+		this.len--;
+		return this.b[this.pos++];
+	}
+	,readBytes: function(buf,pos,len) {
+		if(pos < 0 || len < 0 || pos + len > buf.length) throw new chx.lang.OutsideBoundsException();
+		if(this.len == 0 && len > 0) throw new chx.lang.EofException();
+		if(this.len < len) len = this.len;
+		var b1 = this.b;
+		var b2 = buf.b;
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			b2[pos + i] = b1[this.pos + i];
+		}
+		this.pos += len;
+		this.len -= len;
+		return len;
+	}
+	,__getBytesAvailable: function() {
+		return this.len >= 0?this.len:0;
+	}
+	,peek: function(pos) {
+		if(pos == null) pos = this.getPosition();
+		var orig = this.getPosition();
+		this.setPosition(pos);
+		var d = this.readByte();
+		this.setPosition(orig);
+		return d;
+	}
+	,setPosition: function(p) {
+		this.len = this.len + (this.getPosition() - p);
+		this.pos = p;
+		return p;
+	}
+	,getPosition: function() {
+		return this.pos;
+	}
+	,__class__: chx.io.BytesInput
+	,__properties__: $extend(chx.io.Input.prototype.__properties__,{set_position:"setPosition",get_position:"getPosition"})
+});
 if(!rg.view.layout) rg.view.layout = {}
 rg.view.layout.Layout = $hxClasses["rg.view.layout.Layout"] = function(width,height,container) {
 	this.container = container;
@@ -7904,6 +9215,56 @@ StringTools.fastCodeAt = function(s,index) {
 }
 StringTools.isEOF = function(c) {
 	return c != c;
+}
+StringTools.replaceRecurse = function(s,sub,by) {
+	if(sub.length == 0) return StringTools.replace(s,sub,by);
+	if(by.indexOf(sub) >= 0) throw "Infinite recursion";
+	var ns = s.toString();
+	var olen = 0;
+	var nlen = ns.length;
+	while(olen != nlen) {
+		olen = ns.length;
+		StringTools.replace(ns,sub,by);
+		nlen = ns.length;
+	}
+	return ns;
+}
+StringTools.stripWhite = function(s) {
+	var l = s.length;
+	var i = 0;
+	var sb = new StringBuf();
+	while(i < l) {
+		if(!StringTools.isSpace(s,i)) sb.add(s.charAt(i));
+		i++;
+	}
+	return sb.b.join("");
+}
+StringTools.isNum = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	return c >= 48 && c <= 57;
+}
+StringTools.isAlpha = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	return c >= 65 && c <= 90 || c >= 97 && c <= 122;
+}
+StringTools.num = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	if(c > 0) {
+		c -= 48;
+		if(c < 0 || c > 9) return null;
+		return c;
+	}
+	return null;
+}
+StringTools.splitLines = function(str) {
+	var ret = str.split("\n");
+	var _g1 = 0, _g = ret.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var l = ret[i];
+		if(l.substr(-1,1) == "\r") ret[i] = l.substr(0,-1);
+	}
+	return ret;
 }
 StringTools.prototype = {
 	__class__: StringTools
@@ -9471,6 +10832,26 @@ thx.json.Json.decode = function(value) {
 thx.json.Json.prototype = {
 	__class__: thx.json.Json
 }
+rg.util.Auth = $hxClasses["rg.util.Auth"] = function(authCode) {
+	this.test = rg.util.Decrypt.decrypt(authCode);
+}
+rg.util.Auth.__name__ = ["rg","util","Auth"];
+rg.util.Auth.prototype = {
+	test: null
+	,authorize: function(host) {
+		return this.test == host;
+	}
+	,authorizeMany: function(hosts) {
+		var _g = 0;
+		while(_g < hosts.length) {
+			var host = hosts[_g];
+			++_g;
+			if(this.authorize(host)) return true;
+		}
+		return false;
+	}
+	,__class__: rg.util.Auth
+}
 var Strings = $hxClasses["Strings"] = function() { }
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
@@ -10466,7 +11847,7 @@ rg.controller.App.prototype = {
 				var widget = new rg.view.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
 			});
 		}
-		visualization.addReadyOnce(function() {
+		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
 			var widget = new rg.view.html.widget.Logo(visualization.container);
 		});
 		return visualization;
@@ -11003,6 +12384,73 @@ rg.view.frame.Stack.prototype = {
 	,__class__: rg.view.frame.Stack
 	,__properties__: {get_length:"getLength"}
 }
+chx.lang.UnsupportedException = $hxClasses["chx.lang.UnsupportedException"] = function(msg,cause) {
+	chx.lang.Exception.call(this,msg,cause);
+}
+chx.lang.UnsupportedException.__name__ = ["chx","lang","UnsupportedException"];
+chx.lang.UnsupportedException.__super__ = chx.lang.Exception;
+chx.lang.UnsupportedException.prototype = $extend(chx.lang.Exception.prototype,{
+	__class__: chx.lang.UnsupportedException
+});
+math.reduction.Montgomery = $hxClasses["math.reduction.Montgomery"] = function(x) {
+	this.m = x;
+	this.mp = this.m.invDigit();
+	this.mpl = this.mp & 32767;
+	this.mph = this.mp >> 15;
+	this.um = (1 << math.BigInteger.DB - 15) - 1;
+	this.mt2 = 2 * this.m.t;
+}
+math.reduction.Montgomery.__name__ = ["math","reduction","Montgomery"];
+math.reduction.Montgomery.__interfaces__ = [math.reduction.ModularReduction];
+math.reduction.Montgomery.prototype = {
+	m: null
+	,mt2: null
+	,mp: null
+	,mpl: null
+	,mph: null
+	,um: null
+	,convert: function(x) {
+		var r = math.BigInteger.nbi();
+		x.abs().dlShiftTo(this.m.t,r);
+		r.divRemTo(this.m,null,r);
+		if(x.sign < 0 && r.compare(math.BigInteger.getZERO()) > 0) this.m.subTo(r,r);
+		return r;
+	}
+	,revert: function(x) {
+		var r = math.BigInteger.nbi();
+		x.copyTo(r);
+		this.reduce(r);
+		return r;
+	}
+	,reduce: function(x) {
+		x.padTo(this.mt2);
+		var i = 0;
+		while(i < this.m.t) {
+			var j = x.chunks[i] & 32767;
+			var u0 = j * this.mpl + ((j * this.mph + (x.chunks[i] >> 15) * this.mpl & this.um) << 15) & math.BigInteger.DM;
+			j = i + this.m.t;
+			x.chunks[j] += this.m.am(0,u0,x,i,0,this.m.t);
+			while(x.chunks[j] >= math.BigInteger.DV) {
+				x.chunks[j] -= math.BigInteger.DV;
+				if(x.chunks.length < j + 2) x.chunks[j + 1] = 0;
+				x.chunks[++j]++;
+			}
+			i++;
+		}
+		x.clamp();
+		x.drShiftTo(this.m.t,x);
+		if(x.compare(this.m) >= 0) x.subTo(this.m,x);
+	}
+	,mulTo: function(x,y,r) {
+		x.multiplyTo(y,r);
+		this.reduce(r);
+	}
+	,sqrTo: function(x,r) {
+		x.squareTo(r);
+		this.reduce(r);
+	}
+	,__class__: math.reduction.Montgomery
+}
 rg.view.layout.ScalePattern = $hxClasses["rg.view.layout.ScalePattern"] = { __ename__ : ["rg","view","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
 rg.view.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
 rg.view.layout.ScalePattern.ScalesBefore.toString = $estr;
@@ -11256,6 +12704,14 @@ rg.util.DataPoints.id = function(dp,dependentProperties) {
 rg.util.DataPoints.prototype = {
 	__class__: rg.util.DataPoints
 }
+chx.lang.OutsideBoundsException = $hxClasses["chx.lang.OutsideBoundsException"] = function(msg,cause) {
+	chx.lang.Exception.call(this,msg,cause);
+}
+chx.lang.OutsideBoundsException.__name__ = ["chx","lang","OutsideBoundsException"];
+chx.lang.OutsideBoundsException.__super__ = chx.lang.Exception;
+chx.lang.OutsideBoundsException.prototype = $extend(chx.lang.Exception.prototype,{
+	__class__: chx.lang.OutsideBoundsException
+});
 thx.svg.Arc = $hxClasses["thx.svg.Arc"] = function() {
 	this._r0 = function(_,_1) {
 		return 0;
@@ -11701,6 +13157,46 @@ rg.view.layout.PanelContext.prototype = {
 	panel: null
 	,anchor: null
 	,__class__: rg.view.layout.PanelContext
+}
+if(!chx.formats) chx.formats = {}
+chx.formats.Base64 = $hxClasses["chx.formats.Base64"] = function() { }
+chx.formats.Base64.__name__ = ["chx","formats","Base64"];
+chx.formats.Base64.enc = null;
+chx.formats.Base64.encode = function(bytes) {
+	var ext = (function($this) {
+		var $r;
+		switch(bytes.length % 3) {
+		case 1:
+			$r = "==";
+			break;
+		case 2:
+			$r = "=";
+			break;
+		case 0:
+			$r = "";
+			break;
+		}
+		return $r;
+	}(this));
+	if(chx.formats.Base64.enc == null) chx.formats.Base64.enc = new haxe.BaseCode(Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"));
+	return chx.formats.Base64.enc.encodeBytes(bytes).toString() + ext;
+}
+chx.formats.Base64.decode = function(s) {
+	s = StringTools.stripWhite(s);
+	s = StringTools.replace(s,"=","");
+	if(chx.formats.Base64.enc == null) chx.formats.Base64.enc = new haxe.BaseCode(Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"));
+	return (function($this) {
+		var $r;
+		try {
+			$r = chx.formats.Base64.enc.decodeBytes(Bytes.ofString(s));
+		} catch( e ) {
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+chx.formats.Base64.prototype = {
+	__class__: chx.formats.Base64
 }
 thx.js.AccessAttribute = $hxClasses["thx.js.AccessAttribute"] = function(name,selection) {
 	thx.js.Access.call(this,selection);
@@ -12634,6 +14130,111 @@ rg.graph.LongestPathLayer.prototype = {
 	}
 	,__class__: rg.graph.LongestPathLayer
 }
+chx.crypt.IPad = $hxClasses["chx.crypt.IPad"] = function() { }
+chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
+chx.crypt.IPad.prototype = {
+	blockSize: null
+	,pad: null
+	,unpad: null
+	,isBlockPad: null
+	,calcNumBlocks: null
+	,blockOverhead: null
+	,getBytesReadPerBlock: null
+	,__class__: chx.crypt.IPad
+	,__properties__: {set_blockSize:"setBlockSize"}
+}
+chx.crypt.PadPkcs1Type1 = $hxClasses["chx.crypt.PadPkcs1Type1"] = function(size) {
+	this["blockSize"] = size;
+	this.setPadCount(8);
+	this.typeByte = 1;
+	this.setPadByte(255);
+}
+chx.crypt.PadPkcs1Type1.__name__ = ["chx","crypt","PadPkcs1Type1"];
+chx.crypt.PadPkcs1Type1.__interfaces__ = [chx.crypt.IPad];
+chx.crypt.PadPkcs1Type1.prototype = {
+	blockSize: null
+	,textSize: null
+	,padByte: null
+	,padCount: null
+	,typeByte: null
+	,getBytesReadPerBlock: function() {
+		return this.textSize;
+	}
+	,pad: function(s) {
+		if(s.length > this.textSize) throw "Unable to pad block: provided buffer is " + s.length + " max is " + this.textSize;
+		var sb = new BytesBuffer();
+		sb.b.push(0);
+		sb.b.push(this.typeByte);
+		var n = this.blockSize - s.length - 3;
+		while(n-- > 0) sb.b.push(this.getPadByte());
+		sb.b.push(0);
+		sb.add(s);
+		var rv = sb.getBytes();
+		return rv;
+	}
+	,unpad: function(s) {
+		var i = 0;
+		var sb = new BytesBuffer();
+		while(i < s.length) {
+			while(i < s.length && s.b[i] == 0) ++i;
+			if(s.length - i - 3 - this.padCount < 0) throw "Unexpected short message";
+			if(s.b[i] != this.typeByte) throw "Expected marker " + this.typeByte + " at position " + i + " [" + BytesUtil.hexDump(s) + "]";
+			if(++i >= s.length) return sb.getBytes();
+			while(i < s.length && s.b[i] != 0) ++i;
+			i++;
+			var n = 0;
+			while(i < s.length && n++ < this.textSize) sb.b.push(s.b[i++]);
+		}
+		return sb.getBytes();
+	}
+	,calcNumBlocks: function(len) {
+		return Math.ceil(len / this.textSize);
+	}
+	,isBlockPad: function() {
+		return true;
+	}
+	,blockOverhead: function() {
+		return 3 + this.padCount;
+	}
+	,setPadCount: function(x) {
+		if(x + 3 >= this.blockSize) throw "Internal padding size exceeds crypt block size";
+		this.padCount = x;
+		this.textSize = this.blockSize - 3 - this.padCount;
+		return x;
+	}
+	,setBlockSize: function(x) {
+		this.blockSize = x;
+		this.textSize = x - 3 - this.padCount;
+		if(this.textSize <= 0) throw "Block size " + x + " to small for Pkcs1 with padCount " + this.padCount;
+		return x;
+	}
+	,getPadByte: function() {
+		return this.padByte;
+	}
+	,setPadByte: function(x) {
+		this.padByte = x & 255;
+		return x;
+	}
+	,__class__: chx.crypt.PadPkcs1Type1
+	,__properties__: {set_padByte:"setPadByte",get_padByte:"getPadByte",set_blockSize:"setBlockSize"}
+}
+chx.crypt.PadPkcs1Type2 = $hxClasses["chx.crypt.PadPkcs1Type2"] = function(size) {
+	chx.crypt.PadPkcs1Type1.call(this,size);
+	this.typeByte = 2;
+	this.rng = new math.prng.Random();
+}
+chx.crypt.PadPkcs1Type2.__name__ = ["chx","crypt","PadPkcs1Type2"];
+chx.crypt.PadPkcs1Type2.__interfaces__ = [chx.crypt.IPad];
+chx.crypt.PadPkcs1Type2.__super__ = chx.crypt.PadPkcs1Type1;
+chx.crypt.PadPkcs1Type2.prototype = $extend(chx.crypt.PadPkcs1Type1.prototype,{
+	rng: null
+	,getPadByte: function() {
+		var x = 0;
+		while(x == 0) x = this.rng.next();
+		return x;
+	}
+	,__class__: chx.crypt.PadPkcs1Type2
+});
 rg.util.Properties = $hxClasses["rg.util.Properties"] = function() { }
 rg.util.Properties.__name__ = ["rg","util","Properties"];
 rg.util.Properties.isTime = function(s) {
@@ -12728,6 +14329,12 @@ DateTools.__format_get = function(d,e) {
 		case "%":
 			$r = "%";
 			break;
+		case "a":
+			$r = DateTools.WEEKDAYS_ABBREV[d.getDay()];
+			break;
+		case "b":
+			$r = DateTools.MONTHS_ABBREV[d.getMonth()];
+			break;
 		case "C":
 			$r = StringTools.lpad(Std.string(Std["int"](d.getFullYear() / 100)),"0",2);
 			break;
@@ -12797,6 +14404,17 @@ DateTools.__format_get = function(d,e) {
 			break;
 		case "Y":
 			$r = Std.string(d.getFullYear());
+			break;
+		case "z":
+			$r = (function($this) {
+				var $r;
+				var o = d.getTimezoneOffset();
+				var i = Std.string(Std["int"](Math.abs(Math.floor(o / 60 * 100))));
+				var neg = o < 0?true:false;
+				var s = StringTools.lpad(i,"0",4);
+				$r = neg?"-" + s:"+" + s;
+				return $r;
+			}($this));
 			break;
 		default:
 			$r = (function($this) {
@@ -12992,7 +14610,6 @@ Bools.compare = function(a,b) {
 Bools.prototype = {
 	__class__: Bools
 }
-var haxe = haxe || {}
 haxe.Md5 = $hxClasses["haxe.Md5"] = function() {
 }
 haxe.Md5.__name__ = ["haxe","Md5"];
@@ -14123,6 +15740,219 @@ rg.view.layout.Anchor.Left.__enum__ = rg.view.layout.Anchor;
 rg.view.layout.Anchor.Right = ["Right",3];
 rg.view.layout.Anchor.Right.toString = $estr;
 rg.view.layout.Anchor.Right.__enum__ = rg.view.layout.Anchor;
+var I32 = $hxClasses["I32"] = function() { }
+I32.__name__ = ["I32"];
+I32.B4 = function(v) {
+	return v >>> 24 & -1;
+}
+I32.B3 = function(v) {
+	return v >>> 16 & 255 & -1;
+}
+I32.B2 = function(v) {
+	return v >>> 8 & 255 & -1;
+}
+I32.B1 = function(v) {
+	return v & 255 & -1;
+}
+I32.abs = function(v) {
+	return Std["int"](Math.abs(v));
+}
+I32.add = function(a,b) {
+	return a + b;
+}
+I32.alphaFromArgb = function(v) {
+	return v >>> 24 & -1;
+}
+I32.and = function(a,b) {
+	return a & b;
+}
+I32.baseEncode = function(v,radix) {
+	if(radix < 2 || radix > 36) throw "radix out of range";
+	var sb = "";
+	var av = Std["int"](Math.abs(v));
+	var radix32 = radix;
+	while(true) {
+		var r32 = av % radix32;
+		sb = "0123456789abcdefghijklmnopqrstuvwxyz".charAt(r32 & -1) + sb;
+		av = Std["int"]((av - r32) / radix32);
+		if(av == 0) break;
+	}
+	if(v < 0) return "-" + sb;
+	return sb;
+}
+I32.complement = function(v) {
+	return ~v;
+}
+I32.compare = function(a,b) {
+	return a - b;
+}
+I32.div = function(a,b) {
+	return Std["int"](a / b);
+}
+I32.encodeBE = function(i) {
+	var sb = new BytesBuffer();
+	sb.b.push(i >>> 24 & -1);
+	sb.b.push(i >>> 16 & 255 & -1);
+	sb.b.push(i >>> 8 & 255 & -1);
+	sb.b.push(i & 255 & -1);
+	return sb.getBytes();
+}
+I32.encodeLE = function(i) {
+	var sb = new BytesBuffer();
+	sb.b.push(i & 255 & -1);
+	sb.b.push(i >>> 8 & 255 & -1);
+	sb.b.push(i >>> 16 & 255 & -1);
+	sb.b.push(i >>> 24 & -1);
+	return sb.getBytes();
+}
+I32.decodeBE = function(s,pos) {
+	if(pos == null) pos = 0;
+	var b0 = s.b[pos + 3];
+	var b1 = s.b[pos + 2];
+	var b2 = s.b[pos + 1];
+	var b3 = s.b[pos];
+	b1 = b1 << 8;
+	b2 = b2 << 16;
+	b3 = b3 << 24;
+	var a = b0 + b1;
+	a = a + b2;
+	a = a + b3;
+	return a;
+}
+I32.decodeLE = function(s,pos) {
+	if(pos == null) pos = 0;
+	var b0 = s.b[pos];
+	var b1 = s.b[pos + 1];
+	var b2 = s.b[pos + 2];
+	var b3 = s.b[pos + 3];
+	b1 = b1 << 8;
+	b2 = b2 << 16;
+	b3 = b3 << 24;
+	var a = b0 + b1;
+	a = a + b2;
+	a = a + b3;
+	return a;
+}
+I32.eq = function(a,b) {
+	return a == b;
+}
+I32.gt = function(a,b) {
+	return a > b;
+}
+I32.gteq = function(a,b) {
+	return a >= b;
+}
+I32.lt = function(a,b) {
+	return a < b;
+}
+I32.lteq = function(a,b) {
+	return a <= b;
+}
+I32.make = function(high,low) {
+	return (high << 16) + low;
+}
+I32.makeColor = function(alpha,rgb) {
+	return alpha << 24 | rgb & 16777215;
+}
+I32.mod = function(a,b) {
+	return a % b;
+}
+I32.mul = function(a,b) {
+	return a * b;
+}
+I32.neg = function(v) {
+	return -v;
+}
+I32.ofInt = function(v) {
+	return v;
+}
+I32.or = function(a,b) {
+	return a | b;
+}
+I32.packBE = function(l) {
+	var sb = new BytesBuffer();
+	var _g1 = 0, _g = l.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		sb.b.push(l[i] >>> 24 & -1);
+		sb.b.push(l[i] >>> 16 & 255 & -1);
+		sb.b.push(l[i] >>> 8 & 255 & -1);
+		sb.b.push(l[i] & 255 & -1);
+	}
+	return sb.getBytes();
+}
+I32.packLE = function(l) {
+	var sb = new BytesBuffer();
+	var _g1 = 0, _g = l.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		sb.b.push(l[i] & 255 & -1);
+		sb.b.push(l[i] >>> 8 & 255 & -1);
+		sb.b.push(l[i] >>> 16 & 255 & -1);
+		sb.b.push(l[i] >>> 24 & -1);
+	}
+	return sb.getBytes();
+}
+I32.rgbFromArgb = function(v) {
+	return v & 16777215;
+}
+I32.sub = function(a,b) {
+	return a - b;
+}
+I32.shl = function(v,bits) {
+	return v << bits;
+}
+I32.shr = function(v,bits) {
+	return v >> bits;
+}
+I32.toColor = function(v) {
+	return { alpha : v >>> 24 & -1, color : v & 16777215};
+}
+I32.toFloat = function(v) {
+	return v * 1.0;
+}
+I32.toInt = function(v) {
+	return v & -1;
+}
+I32.toNativeArray = function(v) {
+	return v;
+}
+I32.unpackLE = function(s) {
+	if(s == null || s.length == 0) return new Array();
+	if(s.length % 4 != 0) throw "Buffer not multiple of 4 bytes";
+	var a = new Array();
+	var pos = 0;
+	var i = 0;
+	var len = s.length;
+	while(pos < len) {
+		a[i] = I32.decodeLE(s,pos);
+		pos += 4;
+		i++;
+	}
+	return a;
+}
+I32.unpackBE = function(s) {
+	if(s == null || s.length == 0) return new Array();
+	if(s.length % 4 != 0) throw "Buffer not multiple of 4 bytes";
+	var a = new Array();
+	var pos = 0;
+	var i = 0;
+	while(pos < s.length) {
+		a[i] = I32.decodeBE(s,pos);
+		pos += 4;
+		i++;
+	}
+	return a;
+}
+I32.ushr = function(v,bits) {
+	return v >>> bits;
+}
+I32.xor = function(a,b) {
+	return a ^ b;
+}
+I32.prototype = {
+	__class__: I32
+}
 hxevents.EventException = $hxClasses["hxevents.EventException"] = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
 hxevents.EventException.StopPropagation = ["StopPropagation",0];
 hxevents.EventException.StopPropagation.toString = $estr;
@@ -14164,6 +15994,27 @@ rg.controller.info.InfoGeneral.filter = function() {
 rg.controller.info.InfoGeneral.prototype = {
 	ready: null
 	,__class__: rg.controller.info.InfoGeneral
+}
+if(!chx.vm) chx.vm = {}
+chx.vm.Lock = $hxClasses["chx.vm.Lock"] = function() {
+	this.lock = 1;
+}
+chx.vm.Lock.__name__ = ["chx","vm","Lock"];
+chx.vm.Lock.prototype = {
+	lock: null
+	,wait: function(waitMs) {
+		var checktime = true;
+		var limit = 0.0;
+		if(waitMs == null) checktime = false;
+		if(checktime) limit = Date.now().getTime() + waitMs;
+		while(this.lock > 0) if(checktime && Date.now().getTime() >= limit) return false;
+		this.lock++;
+		return true;
+	}
+	,release: function() {
+		this.lock--;
+	}
+	,__class__: chx.vm.Lock
 }
 rg.controller.factory.FactoryVariableDependent = $hxClasses["rg.controller.factory.FactoryVariableDependent"] = function() {
 }
@@ -16527,6 +18378,53 @@ rg.view.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 rg.view.svg.chart.ColorScaleModes.prototype = {
 	__class__: rg.view.svg.chart.ColorScaleModes
 }
+math.reduction.Barrett = $hxClasses["math.reduction.Barrett"] = function(m) {
+	this.r2 = math.BigInteger.nbi();
+	this.q3 = math.BigInteger.nbi();
+	math.BigInteger.getONE().dlShiftTo(2 * m.t,this.r2);
+	this.mu = this.r2.div(m);
+	this.m = m;
+}
+math.reduction.Barrett.__name__ = ["math","reduction","Barrett"];
+math.reduction.Barrett.__interfaces__ = [math.reduction.ModularReduction];
+math.reduction.Barrett.prototype = {
+	m: null
+	,mu: null
+	,r2: null
+	,q3: null
+	,convert: function(x) {
+		if(x.sign < 0 || x.t > 2 * this.m.t) return x.mod(this.m); else if(x.compare(this.m) < 0) return x; else {
+			var r = math.BigInteger.nbi();
+			x.copyTo(r);
+			this.reduce(r);
+			return r;
+		}
+	}
+	,revert: function(x) {
+		return x;
+	}
+	,reduce: function(x) {
+		x.drShiftTo(this.m.t - 1,this.r2);
+		if(x.t > this.m.t + 1) {
+			x.t = this.m.t + 1;
+			x.clamp();
+		}
+		this.mu.multiplyUpperTo(this.r2,this.m.t + 1,this.q3);
+		this.m.multiplyLowerTo(this.q3,this.m.t + 1,this.r2);
+		while(x.compare(this.r2) < 0) x.dAddOffset(1,this.m.t + 1);
+		x.subTo(this.r2,x);
+		while(x.compare(this.m) >= 0) x.subTo(this.m,x);
+	}
+	,sqrTo: function(x,r) {
+		x.squareTo(r);
+		this.reduce(r);
+	}
+	,mulTo: function(x,y,r) {
+		x.multiplyTo(y,r);
+		this.reduce(r);
+	}
+	,__class__: math.reduction.Barrett
+}
 rg.view.frame.Frame = $hxClasses["rg.view.frame.Frame"] = function() {
 	this.x = this.y = this.width = this.height = 0;
 }
@@ -16572,6 +18470,11 @@ rg.view.frame.StackItem.prototype = $extend(rg.view.frame.Frame.prototype,{
 	,__class__: rg.view.frame.StackItem
 	,__properties__: {set_disposition:"setDisposition"}
 });
+var Constants = $hxClasses["Constants"] = function() { }
+Constants.__name__ = ["Constants"];
+Constants.prototype = {
+	__class__: Constants
+}
 rg.controller.visualization.VisualizationSankey = $hxClasses["rg.controller.visualization.VisualizationSankey"] = function(layout) {
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
 }
@@ -16883,6 +18786,95 @@ thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
 	}
 	,__class__: thx.color.Cmyk
 });
+haxe.BaseCode = $hxClasses["haxe.BaseCode"] = function(base) {
+	var len = base.length;
+	var nbits = 1;
+	while(len > 1 << nbits) nbits++;
+	if(nbits > 8 || len != 1 << nbits) throw "BaseCode : base length must be a power of two.";
+	this.base = base;
+	this.nbits = nbits;
+}
+haxe.BaseCode.__name__ = ["haxe","BaseCode"];
+haxe.BaseCode.encode = function(s,base) {
+	var b = new haxe.BaseCode(Bytes.ofString(base));
+	return b.encodeString(s);
+}
+haxe.BaseCode.decode = function(s,base) {
+	var b = new haxe.BaseCode(Bytes.ofString(base));
+	return b.decodeString(s);
+}
+haxe.BaseCode.prototype = {
+	base: null
+	,nbits: null
+	,tbl: null
+	,encodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		var size = Std["int"](b.length * 8 / nbits);
+		var out = Bytes.alloc(size + (b.length * 8 % nbits == 0?0:1));
+		var buf = 0;
+		var curbits = 0;
+		var mask = (1 << nbits) - 1;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < nbits) {
+				curbits += 8;
+				buf <<= 8;
+				buf |= b.b[pin++];
+			}
+			curbits -= nbits;
+			out.b[pout++] = base.b[buf >> curbits & mask] & 255;
+		}
+		if(curbits > 0) out.b[pout++] = base.b[buf << nbits - curbits & mask] & 255;
+		return out;
+	}
+	,initTable: function() {
+		var tbl = new Array();
+		var _g = 0;
+		while(_g < 256) {
+			var i = _g++;
+			tbl[i] = -1;
+		}
+		var _g1 = 0, _g = this.base.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			tbl[this.base.b[i]] = i;
+		}
+		this.tbl = tbl;
+	}
+	,decodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		if(this.tbl == null) this.initTable();
+		var tbl = this.tbl;
+		var size = b.length * nbits >> 3;
+		var out = Bytes.alloc(size);
+		var buf = 0;
+		var curbits = 0;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < 8) {
+				curbits += nbits;
+				buf <<= nbits;
+				var i = tbl[b.b[pin++]];
+				if(i == -1) throw "BaseCode : invalid encoded char";
+				buf |= i;
+			}
+			curbits -= 8;
+			out.b[pout++] = buf >> curbits & 255 & 255;
+		}
+		return out;
+	}
+	,encodeString: function(s) {
+		return this.encodeBytes(Bytes.ofString(s)).toString();
+	}
+	,decodeString: function(s) {
+		return this.decodeBytes(Bytes.ofString(s)).toString();
+	}
+	,__class__: haxe.BaseCode
+}
 rg.util.ChainedExecutor = $hxClasses["rg.util.ChainedExecutor"] = function(handler) {
 	this.handler = handler;
 	this.actions = [];
@@ -17070,6 +19062,1228 @@ thx.color.PerceivedLuminance.Perceived.__enum__ = thx.color.PerceivedLuminance;
 thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
 thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
+math.BigInteger = $hxClasses["math.BigInteger"] = function() {
+	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
+	if(math.BigInteger.BI_RM.length == 0) throw "BI_RM not initialized";
+	this.chunks = new Array();
+	switch(math.BigInteger.defaultAm) {
+	case 1:
+		this.am = this.am1.$bind(this);
+		break;
+	case 2:
+		this.am = this.am2.$bind(this);
+		break;
+	case 3:
+		this.am = this.am3.$bind(this);
+		break;
+	default:
+		throw "am error";
+		null;
+	}
+}
+math.BigInteger.__name__ = ["math","BigInteger"];
+math.BigInteger.__properties__ = {get_ONE:"getONE",get_ZERO:"getZERO"}
+math.BigInteger.DB = null;
+math.BigInteger.DM = null;
+math.BigInteger.DV = null;
+math.BigInteger.BI_FP = null;
+math.BigInteger.FV = null;
+math.BigInteger.F1 = null;
+math.BigInteger.F2 = null;
+math.BigInteger.ZERO = null;
+math.BigInteger.ONE = null;
+math.BigInteger.BI_RM = null;
+math.BigInteger.BI_RC = null;
+math.BigInteger.lowprimes = null;
+math.BigInteger.lplim = null;
+math.BigInteger.defaultAm = null;
+math.BigInteger.initBiRc = function() {
+	math.BigInteger.BI_RC = new Array();
+	var rr = "0".charCodeAt(0);
+	var _g = 0;
+	while(_g < 10) {
+		var vv = _g++;
+		math.BigInteger.BI_RC[rr] = vv;
+		rr++;
+	}
+	rr = "a".charCodeAt(0);
+	var _g = 10;
+	while(_g < 37) {
+		var vv = _g++;
+		math.BigInteger.BI_RC[rr] = vv;
+		rr++;
+	}
+	rr = "A".charCodeAt(0);
+	var _g = 10;
+	while(_g < 37) {
+		var vv = _g++;
+		math.BigInteger.BI_RC[rr] = vv;
+		rr++;
+	}
+}
+math.BigInteger.getZERO = function() {
+	return math.BigInteger.nbv(0);
+}
+math.BigInteger.getONE = function() {
+	return math.BigInteger.nbv(1);
+}
+math.BigInteger.nbv = function(i) {
+	var r = math.BigInteger.nbi();
+	r.fromInt(i);
+	return r;
+}
+math.BigInteger.nbi = function() {
+	return new math.BigInteger();
+}
+math.BigInteger.ofString = function(s,base) {
+	var me = math.BigInteger.nbi();
+	var fromStringExt = function(s1,b) {
+		me.fromInt(0);
+		var cs = Math.floor(0.6931471805599453 * math.BigInteger.DB / Math.log(b));
+		var d = Std["int"](Math.pow(b,cs));
+		var mi = false;
+		var j = 0;
+		var w = 0;
+		var _g1 = 0, _g = s1.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var x = math.BigInteger.intAt(s1,i);
+			if(x < 0) {
+				if(s1.charAt(i) == "-" && me.sign == 0) mi = true;
+				continue;
+			}
+			w = b * w + x;
+			if(++j >= cs) {
+				me.dMultiply(d);
+				me.dAddOffset(w,0);
+				j = 0;
+				w = 0;
+			}
+		}
+		if(j > 0) {
+			me.dMultiply(Std["int"](Math.pow(b,j)));
+			me.dAddOffset(w,0);
+		}
+		if(mi) math.BigInteger.getZERO().subTo(me,me);
+		return me;
+	};
+	var k;
+	if(base == 16) k = 4; else if(base == 10) return fromStringExt(s,base); else if(base == 256) k = 8; else if(base == 8) k = 3; else if(base == 2) k = 1; else if(base == 32) k = 5; else if(base == 4) k = 2; else return fromStringExt(s,base);
+	me.t = 0;
+	me.sign = 0;
+	var i = s.length, mi = false, sh = 0;
+	while(--i >= 0) {
+		var x = k == 8?s.charCodeAt(i) & 255:math.BigInteger.intAt(s,i);
+		if(x < 0) {
+			if(s.charAt(i) == "-") mi = true;
+			continue;
+		}
+		mi = false;
+		if(sh == 0) {
+			me.chunks[me.t] = x;
+			me.t++;
+		} else if(sh + k > math.BigInteger.DB) {
+			me.chunks[me.t - 1] |= (x & (1 << math.BigInteger.DB - sh) - 1) << sh;
+			me.chunks[me.t] = x >> math.BigInteger.DB - sh;
+			me.t++;
+		} else me.chunks[me.t - 1] |= x << sh;
+		sh += k;
+		if(sh >= math.BigInteger.DB) sh -= math.BigInteger.DB;
+	}
+	if(k == 8 && (s.charCodeAt(0) & 128) != 0) {
+		me.sign = -1;
+		if(sh > 0) me.chunks[me.t - 1] |= (1 << math.BigInteger.DB - sh) - 1 << sh;
+	}
+	me.clamp();
+	if(mi) math.BigInteger.getZERO().subTo(me,me);
+	return me;
+}
+math.BigInteger.ofInt = function(x) {
+	var i = math.BigInteger.nbi();
+	i.fromInt(x);
+	return i;
+}
+math.BigInteger.ofInt32 = function(x) {
+	var i = math.BigInteger.nbi();
+	i.fromInt32(x);
+	return i;
+}
+math.BigInteger.ofBytes = function(r,unsigned,pos,len) {
+	if(pos == null) pos = 0;
+	if(len == null) len = r.length - pos;
+	if(len == 0) return math.BigInteger.getZERO();
+	var bi = math.BigInteger.nbi();
+	bi.sign = 0;
+	bi.t = 0;
+	var i = pos + len;
+	var sh = 0;
+	while(--i >= pos) {
+		var x = i < len?r.b[i] & 255:0;
+		if(sh == 0) {
+			bi.chunks[bi.t] = x;
+			bi.t++;
+		} else if(sh + 8 > math.BigInteger.DB) {
+			bi.chunks[bi.t - 1] |= (x & (1 << math.BigInteger.DB - sh) - 1) << sh;
+			bi.chunks[bi.t] = x >> math.BigInteger.DB - sh;
+			bi.t++;
+		} else bi.chunks[bi.t - 1] |= x << sh;
+		sh += 8;
+		if(sh >= math.BigInteger.DB) sh -= math.BigInteger.DB;
+	}
+	if(!unsigned && (r.b[0] & 128) != 0) {
+		bi.sign = -1;
+		if(sh > 0) bi.chunks[bi.t - 1] |= (1 << math.BigInteger.DB - sh) - 1 << sh;
+	}
+	bi.clamp();
+	return bi;
+}
+math.BigInteger.random = function(bits,rng) {
+	if(rng == null) rng = new math.prng.Random();
+	if(bits < 2) return math.BigInteger.ofInt(1);
+	var len = (bits >> 3) + 1;
+	var x = Bytes.alloc(len);
+	var t = bits & 7;
+	rng.nextBytes(x,0,len);
+	if(t > 0) {
+		var v = x.b[0];
+		v &= (1 << t) - 1;
+		x.b[0] = v & 255;
+	} else x.b[0] = 0;
+	return math.BigInteger.ofString(BytesUtil.hexDump(x,""),16);
+}
+math.BigInteger.randomPrime = function(bits,gcdExp,iterations,forceLength,rng) {
+	if(rng == null) rng = new math.prng.Random();
+	if(iterations < 1) iterations = 1;
+	while(true) {
+		var i = math.BigInteger.random(bits,rng);
+		if(forceLength) {
+			if(!i.testBit(bits - 1)) i.bitwiseTo(math.BigInteger.getONE().shl(bits - 1),math.BigInteger.op_or,i);
+		}
+		if(i.isEven()) i.dAddOffset(1,0);
+		i.primify(bits,1);
+		if(i.sub(math.BigInteger.getONE()).gcd(gcdExp).compare(math.BigInteger.getONE()) == 0 && i.isProbablePrime(iterations)) return i;
+	}
+	return null;
+}
+math.BigInteger.op_and = function(x,y) {
+	return x & y;
+}
+math.BigInteger.op_or = function(x,y) {
+	return x | y;
+}
+math.BigInteger.op_xor = function(x,y) {
+	return x ^ y;
+}
+math.BigInteger.op_andnot = function(x,y) {
+	return x & ~y;
+}
+math.BigInteger.nbits = function(x) {
+	var r = 1;
+	var t;
+	if((t = x >>> 16) != 0) {
+		x = t;
+		r += 16;
+	}
+	if((t = x >> 8) != 0) {
+		x = t;
+		r += 8;
+	}
+	if((t = x >> 4) != 0) {
+		x = t;
+		r += 4;
+	}
+	if((t = x >> 2) != 0) {
+		x = t;
+		r += 2;
+	}
+	if((t = x >> 1) != 0) {
+		x = t;
+		r += 1;
+	}
+	return r;
+}
+math.BigInteger.cbit = function(x) {
+	var r = 0;
+	while(x != 0) {
+		x &= x - 1;
+		++r;
+	}
+	return r;
+}
+math.BigInteger.intAt = function(s,i) {
+	var c = math.BigInteger.BI_RC[s.charCodeAt(i)];
+	if(c == null) return -1;
+	return c;
+}
+math.BigInteger.int2charCode = function(n) {
+	return math.BigInteger.BI_RM.charCodeAt(n);
+}
+math.BigInteger.lbit = function(x) {
+	if(x == 0) return -1;
+	var r = 0;
+	if((x & 65535) == 0) {
+		x >>= 16;
+		r += 16;
+	}
+	if((x & 255) == 0) {
+		x >>= 8;
+		r += 8;
+	}
+	if((x & 15) == 0) {
+		x >>= 4;
+		r += 4;
+	}
+	if((x & 3) == 0) {
+		x >>= 2;
+		r += 2;
+	}
+	if((x & 1) == 0) ++r;
+	return r;
+}
+math.BigInteger.dumpBi = function(r) {
+	var s = "sign: " + Std.string(r.sign);
+	s += " t: " + r.t;
+	s += Std.string(r.chunks);
+	return s;
+}
+math.BigInteger.prototype = {
+	t: null
+	,sign: null
+	,chunks: null
+	,am: null
+	,fromInt: function(x) {
+		this.t = 1;
+		this.chunks[0] = 0;
+		this.sign = x < 0?-1:0;
+		if(x > 0) this.chunks[0] = x; else if(x < -1) this.chunks[0] = x + math.BigInteger.DV; else this.t = 0;
+	}
+	,fromInt32: function(x) {
+		this.fromInt(x);
+	}
+	,toInt: function() {
+		if(this.sign < 0) {
+			if(this.t == 1) return this.chunks[0] - math.BigInteger.DV; else if(this.t == 0) return -1;
+		} else if(this.t == 1) return this.chunks[0]; else if(this.t == 0) return 0;
+		return (this.chunks[1] & (1 << 32 - math.BigInteger.DB) - 1) << math.BigInteger.DB | this.chunks[0];
+	}
+	,toInt32: function() {
+		return this.toInt();
+	}
+	,toString: function() {
+		return this.toRadix(10).toString();
+	}
+	,toHex: function() {
+		return this.toRadix(16).toString();
+	}
+	,toBytes: function() {
+		var i = this.t;
+		var r = new Array();
+		r[0] = this.sign;
+		var p = math.BigInteger.DB - i * math.BigInteger.DB % 8;
+		var d;
+		var k = 0;
+		if(i-- > 0) {
+			if(p < math.BigInteger.DB && (d = this.chunks[i] >> p) != (this.sign & math.BigInteger.DM) >> p) {
+				r[k] = d | this.sign << math.BigInteger.DB - p;
+				k++;
+			}
+			while(i >= 0) {
+				if(p < 8) {
+					d = (this.chunks[i] & (1 << p) - 1) << 8 - p;
+					--i;
+					d |= this.chunks[i] >> (p += math.BigInteger.DB - 8);
+				} else {
+					d = this.chunks[i] >> (p -= 8) & 255;
+					if(p <= 0) {
+						p += math.BigInteger.DB;
+						--i;
+					}
+				}
+				if((d & 128) != 0) d |= -256;
+				if(k == 0 && (this.sign & 128) != (d & 128)) ++k;
+				if(k > 0 || d != this.sign) {
+					r[k] = d;
+					k++;
+				}
+			}
+		}
+		var bb = new BytesBuffer();
+		var _g1 = 0, _g = r.length;
+		while(_g1 < _g) {
+			var i1 = _g1++;
+			bb.b.push(r[i1]);
+		}
+		return bb.getBytes();
+	}
+	,toBytesUnsigned: function() {
+		var bb = new BytesBuffer();
+		var k = 8;
+		var km = 255;
+		var d = 0;
+		var i = this.t;
+		var p = math.BigInteger.DB - i * math.BigInteger.DB % k;
+		var m = false;
+		var c = 0;
+		if(i-- > 0) {
+			if(p < math.BigInteger.DB && (d = this.chunks[i] >> p) > 0) {
+				m = true;
+				bb.b.push(d);
+				c++;
+			}
+			while(i >= 0) {
+				if(p < k) {
+					d = (this.chunks[i] & (1 << p) - 1) << k - p;
+					d |= this.chunks[--i] >> (p += math.BigInteger.DB - k);
+				} else {
+					d = this.chunks[i] >> (p -= k) & km;
+					if(p <= 0) {
+						p += math.BigInteger.DB;
+						--i;
+					}
+				}
+				if(d > 0) m = true;
+				if(m) {
+					bb.b.push(d);
+					c++;
+				}
+			}
+		}
+		return bb.getBytes();
+	}
+	,toRadix: function(b) {
+		if(b == null) b = 10;
+		if(b < 2 || b > 36) throw new chx.lang.UnsupportedException("invalid base for conversion");
+		if(this.sigNum() == 0) return "0";
+		var cs = Math.floor(0.6931471805599453 * math.BigInteger.DB / Math.log(b));
+		var a = Std["int"](Math.pow(b,cs));
+		var d = math.BigInteger.nbv(a);
+		var y = math.BigInteger.nbi();
+		var z = math.BigInteger.nbi();
+		var r = "";
+		this.divRemTo(d,y,z);
+		while(y.sigNum() > 0) {
+			r = I32.baseEncode(a + z.toInt32(),b).substr(1) + r;
+			y.divRemTo(d,y,z);
+		}
+		return I32.baseEncode(z.toInt32(),b) + r;
+	}
+	,abs: function() {
+		return this.sign < 0?this.neg():this;
+	}
+	,add: function(a) {
+		var r = math.BigInteger.nbi();
+		this.addTo(a,r);
+		return r;
+	}
+	,compare: function(a) {
+		var r = this.sign - a.sign;
+		if(r != 0) return r;
+		var i = this.t;
+		r = i - a.t;
+		if(r != 0) return r;
+		while(--i >= 0) {
+			r = this.chunks[i] - a.chunks[i];
+			if(r != 0) return r;
+		}
+		return 0;
+	}
+	,div: function(a) {
+		var r = math.BigInteger.nbi();
+		this.divRemTo(a,r,null);
+		return r;
+	}
+	,divideAndRemainder: function(a) {
+		var q = math.BigInteger.nbi();
+		var r = math.BigInteger.nbi();
+		this.divRemTo(a,q,r);
+		return [q,r];
+	}
+	,eq: function(a) {
+		return this.compare(a) == 0;
+	}
+	,isEven: function() {
+		return (this.t > 0?this.chunks[0] & 1:this.sign) == 0;
+	}
+	,max: function(a) {
+		return this.compare(a) > 0?this:a;
+	}
+	,min: function(a) {
+		return this.compare(a) < 0?this:a;
+	}
+	,mod: function(a) {
+		var r = math.BigInteger.nbi();
+		this.abs().divRemTo(a,null,r);
+		if(this.sign < 0 && r.compare(math.BigInteger.getZERO()) > 0) a.subTo(r,r);
+		return r;
+	}
+	,modInt: function(n) {
+		if(n <= 0) return 0;
+		var d = math.BigInteger.DV % n;
+		var r = this.sign < 0?n - 1:0;
+		if(this.t > 0) {
+			if(d == 0) r = this.chunks[0] % n; else {
+				var i = this.t - 1;
+				while(i >= 0) {
+					r = (d * r + this.chunks[i]) % n;
+					--i;
+				}
+			}
+		}
+		return r;
+	}
+	,modInverse: function(m) {
+		var ac = m.isEven();
+		if(this.isEven() && ac || m.sigNum() == 0) return math.BigInteger.getZERO();
+		var u = m.clone();
+		var v = this.clone();
+		var a = math.BigInteger.nbv(1);
+		var b = math.BigInteger.nbv(0);
+		var c = math.BigInteger.nbv(0);
+		var d = math.BigInteger.nbv(1);
+		while(u.sigNum() != 0) {
+			while(u.isEven()) {
+				u.rShiftTo(1,u);
+				if(ac) {
+					if(!a.isEven() || !b.isEven()) {
+						a.addTo(this,a);
+						b.subTo(m,b);
+					}
+					a.rShiftTo(1,a);
+				} else if(!b.isEven()) b.subTo(m,b);
+				b.rShiftTo(1,b);
+			}
+			while(v.isEven()) {
+				v.rShiftTo(1,v);
+				if(ac) {
+					if(!c.isEven() || !d.isEven()) {
+						c.addTo(this,c);
+						d.subTo(m,d);
+					}
+					c.rShiftTo(1,c);
+				} else if(!d.isEven()) d.subTo(m,d);
+				d.rShiftTo(1,d);
+			}
+			if(u.compare(v) >= 0) {
+				u.subTo(v,u);
+				if(ac) a.subTo(c,a);
+				b.subTo(d,b);
+			} else {
+				v.subTo(u,v);
+				if(ac) c.subTo(a,c);
+				d.subTo(b,d);
+			}
+		}
+		if(v.compare(math.BigInteger.getONE()) != 0) return math.BigInteger.getZERO();
+		if(d.compare(m) >= 0) return d.sub(m);
+		if(d.sigNum() < 0) d.addTo(m,d); else return d;
+		return d;
+	}
+	,modPow: function(e,m) {
+		var i = e.bitLength();
+		var k;
+		var r = math.BigInteger.nbv(1);
+		var z;
+		if(i <= 0) return r; else if(i < 18) k = 1; else if(i < 48) k = 3; else if(i < 144) k = 4; else if(i < 768) k = 5; else k = 6;
+		if(i < 8) z = new math.reduction.Classic(m); else if(m.isEven()) z = new math.reduction.Barrett(m); else z = new math.reduction.Montgomery(m);
+		var g = new Array();
+		var n = 3;
+		var k1 = k - 1;
+		var km = (1 << k) - 1;
+		g[1] = z.convert(this);
+		if(k > 1) {
+			var g2 = math.BigInteger.nbi();
+			z.sqrTo(g[1],g2);
+			while(n <= km) {
+				g[n] = math.BigInteger.nbi();
+				z.mulTo(g2,g[n - 2],g[n]);
+				n += 2;
+			}
+		}
+		var j = e.t - 1;
+		var w;
+		var is1 = true;
+		var r2 = math.BigInteger.nbi();
+		var t;
+		i = math.BigInteger.nbits(e.chunks[j]) - 1;
+		while(j >= 0) {
+			if(i >= k1) w = e.chunks[j] >> i - k1 & km; else {
+				w = (e.chunks[j] & (1 << i + 1) - 1) << k1 - i;
+				if(j > 0) w |= e.chunks[j - 1] >> math.BigInteger.DB + i - k1;
+			}
+			n = k;
+			while((w & 1) == 0) {
+				w >>= 1;
+				--n;
+			}
+			if((i -= n) < 0) {
+				i += math.BigInteger.DB;
+				--j;
+			}
+			if(is1) {
+				g[w].copyTo(r);
+				is1 = false;
+			} else {
+				while(n > 1) {
+					z.sqrTo(r,r2);
+					z.sqrTo(r2,r);
+					n -= 2;
+				}
+				if(n > 0) z.sqrTo(r,r2); else {
+					t = r;
+					r = r2;
+					r2 = t;
+				}
+				z.mulTo(r2,g[w],r);
+			}
+			var chnk = e.chunks[j];
+			while(j >= 0 && (chnk & 1 << i) == 0) {
+				z.sqrTo(r,r2);
+				t = r;
+				r = r2;
+				r2 = t;
+				if(--i < 0) {
+					i = math.BigInteger.DB - 1;
+					--j;
+				}
+				chnk = e.chunks[j];
+			}
+		}
+		return z.revert(r);
+	}
+	,modPowInt: function(e,m) {
+		if(m == null) throw "m is null";
+		var z;
+		if(e < 256 || m.isEven()) z = new math.reduction.Classic(m); else z = new math.reduction.Montgomery(m);
+		return this.exp(e,z);
+	}
+	,mul: function(a) {
+		var r = math.BigInteger.nbi();
+		this.multiplyTo(a,r);
+		return r;
+	}
+	,neg: function() {
+		var r = math.BigInteger.nbi();
+		math.BigInteger.getZERO().subTo(this,r);
+		return r;
+	}
+	,pow: function(e) {
+		return this.exp(e,new math.reduction.Null());
+	}
+	,remainder: function(a) {
+		var r = math.BigInteger.nbi();
+		this.divRemTo(a,null,r);
+		return r;
+	}
+	,sub: function(a) {
+		var r = math.BigInteger.nbi();
+		this.subTo(a,r);
+		return r;
+	}
+	,and: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_and,r);
+		return r;
+	}
+	,andNot: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_andnot,r);
+		return r;
+	}
+	,bitCount: function() {
+		var r = 0, x = this.sign & math.BigInteger.DM;
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r += math.BigInteger.cbit(this.chunks[i] ^ x);
+		}
+		return r;
+	}
+	,bitLength: function() {
+		if(this.t <= 0) return 0;
+		return math.BigInteger.DB * (this.t - 1) + math.BigInteger.nbits(this.chunks[this.t - 1] ^ this.sign & math.BigInteger.DM);
+	}
+	,complement: function() {
+		return this.not();
+	}
+	,clearBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_andnot);
+	}
+	,flipBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_xor);
+	}
+	,getLowestSetBit: function() {
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.chunks[i] != 0) return i * math.BigInteger.DB + math.BigInteger.lbit(this.chunks[i]);
+		}
+		if(this.sign < 0) return this.t * math.BigInteger.DB;
+		return -1;
+	}
+	,not: function() {
+		var r = math.BigInteger.nbi();
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r.chunks[i] = math.BigInteger.DM & ~this.chunks[i];
+		}
+		r.t = this.t;
+		r.sign = ~this.sign;
+		return r;
+	}
+	,or: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_or,r);
+		return r;
+	}
+	,setBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_or);
+	}
+	,shl: function(n) {
+		var r = math.BigInteger.nbi();
+		if(n < 0) this.rShiftTo(-n,r); else this.lShiftTo(n,r);
+		return r;
+	}
+	,shr: function(n) {
+		var r = math.BigInteger.nbi();
+		if(n < 0) this.lShiftTo(-n,r); else this.rShiftTo(n,r);
+		return r;
+	}
+	,testBit: function(n) {
+		var j = Math.floor(n / math.BigInteger.DB);
+		if(j >= this.t) return this.sign != 0;
+		return (this.chunks[j] & 1 << n % math.BigInteger.DB) != 0;
+	}
+	,xor: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_xor,r);
+		return r;
+	}
+	,addTo: function(a,r) {
+		var i = 0;
+		var c = 0;
+		var m = Std["int"](Math.min(a.t,this.t));
+		while(i < m) {
+			c += this.chunks[i] + a.chunks[i];
+			r.chunks[i] = c & math.BigInteger.DM;
+			i++;
+			c >>= math.BigInteger.DB;
+		}
+		if(a.t < this.t) {
+			c += a.sign;
+			while(i < this.t) {
+				c += this.chunks[i];
+				r.chunks[i] = c & math.BigInteger.DM;
+				i++;
+				c >>= math.BigInteger.DB;
+			}
+			c += this.sign;
+		} else {
+			c += this.sign;
+			while(i < a.t) {
+				c += a.chunks[i];
+				r.chunks[i] = c & math.BigInteger.DM;
+				i++;
+				c >>= math.BigInteger.DB;
+			}
+			c += a.sign;
+		}
+		r.sign = c < 0?-1:0;
+		if(c > 0) {
+			r.chunks[i] = c;
+			i++;
+		} else if(c < -1) {
+			r.chunks[i] = math.BigInteger.DV + c;
+			i++;
+		}
+		r.t = i;
+		r.clamp();
+	}
+	,copyTo: function(r) {
+		var _g1 = 0, _g = this.chunks.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r.chunks[i] = this.chunks[i];
+		}
+		r.t = this.t;
+		r.sign = this.sign;
+	}
+	,divRemTo: function(m,q,r) {
+		var pm = m.abs();
+		if(pm.t <= 0) return;
+		var pt = this.abs();
+		if(pt.t < pm.t) {
+			if(q != null) q.fromInt(0);
+			if(r != null) this.copyTo(r);
+			return;
+		}
+		if(r == null) r = math.BigInteger.nbi();
+		var y = math.BigInteger.nbi();
+		var ts = this.sign;
+		var ms = m.sign;
+		var nsh = math.BigInteger.DB - math.BigInteger.nbits(pm.chunks[pm.t - 1]);
+		if(nsh > 0) {
+			pt.lShiftTo(nsh,r);
+			pm.lShiftTo(nsh,y);
+		} else {
+			pt.copyTo(r);
+			pm.copyTo(y);
+		}
+		var ys = y.t;
+		var y0 = y.chunks[ys - 1];
+		if(y0 == 0) return;
+		var yt = y0 * 1.0 * ((1 << math.BigInteger.F1) * 1.0) + (ys > 1?(y.chunks[ys - 2] >> math.BigInteger.F2) * 1.0:0.0);
+		var d1 = math.BigInteger.FV / yt;
+		var d2 = (1 << math.BigInteger.F1) * 1.0 / yt;
+		var e = (1 << math.BigInteger.F2) * 1.0;
+		var i = r.t;
+		var j = i - ys;
+		var t = q == null?math.BigInteger.nbi():q;
+		y.dlShiftTo(j,t);
+		if(r.compare(t) >= 0) {
+			r.chunks[r.t] = 1;
+			r.t++;
+			r.subTo(t,r);
+		}
+		math.BigInteger.getONE().dlShiftTo(ys,t);
+		t.subTo(y,y);
+		while(y.t < ys) {
+			y.chunks[y.t] = 0;
+			y.t++;
+		}
+		while(--j >= 0) {
+			var qd;
+			if(r.chunks[--i] == y0) qd = math.BigInteger.DM; else qd = Math.floor(r.chunks[i] * 1.0 * d1 + (r.chunks[i - 1] * 1.0 + e) * d2);
+			r.chunks[i] += y.am(0,qd,r,j,0,ys);
+			if(r.chunks[i] < qd) {
+				y.dlShiftTo(j,t);
+				r.subTo(t,r);
+				while(r.chunks[i] < --qd) r.subTo(t,r);
+			}
+		}
+		if(q != null) {
+			r.drShiftTo(ys,q);
+			if(ts != ms) math.BigInteger.getZERO().subTo(q,q);
+		}
+		r.t = ys;
+		r.clamp();
+		if(nsh > 0) r.rShiftTo(nsh,r);
+		if(ts < 0) math.BigInteger.getZERO().subTo(r,r);
+	}
+	,multiplyLowerTo: function(a,n,r) {
+		var i = Std["int"](Math.min(this.t + a.t,n));
+		r.sign = 0;
+		r.t = i;
+		while(i > 0) {
+			--i;
+			r.chunks[i] = 0;
+		}
+		var j = r.t - this.t;
+		while(i < j) {
+			r.chunks[i + this.t] = this.am(0,a.chunks[i],r,i,0,this.t);
+			++i;
+		}
+		j = Std["int"](Math.min(a.t,n));
+		while(i < j) {
+			this.am(0,a.chunks[i],r,i,0,n - i);
+			++i;
+		}
+		r.clamp();
+	}
+	,multiplyTo: function(a,r) {
+		var x = this.abs(), y = a.abs();
+		var i = x.t;
+		r.t = i + y.t;
+		while(--i >= 0) r.chunks[i] = 0;
+		var _g1 = 0, _g = y.t;
+		while(_g1 < _g) {
+			var i1 = _g1++;
+			r.chunks[i1 + x.t] = x.am(0,y.chunks[i1],r,i1,0,x.t);
+		}
+		r.sign = 0;
+		r.clamp();
+		if(this.sign != a.sign) math.BigInteger.getZERO().subTo(r,r);
+	}
+	,multiplyUpperTo: function(a,n,r) {
+		--n;
+		var i = r.t = this.t + a.t - n;
+		r.sign = 0;
+		while(--i >= 0) r.chunks[i] = 0;
+		i = Std["int"](Math.max(n - this.t,0));
+		var _g1 = i, _g = a.t;
+		while(_g1 < _g) {
+			var x = _g1++;
+			r.chunks[this.t + x - n] = this.am(n - x,a.chunks[x],r,0,0,this.t + x - n);
+		}
+		r.clamp();
+		r.drShiftTo(1,r);
+	}
+	,squareTo: function(r) {
+		if(r == this) throw "can not squareTo self";
+		var x = this.abs();
+		var i = r.t = 2 * x.t;
+		while(--i >= 0) r.chunks[i] = 0;
+		i = 0;
+		while(i < x.t - 1) {
+			var c = x.am(i,x.chunks[i],r,2 * i,0,1);
+			if((r.chunks[i + x.t] += x.am(i + 1,2 * x.chunks[i],r,2 * i + 1,c,x.t - i - 1)) >= math.BigInteger.DV) {
+				r.chunks[i + x.t] -= math.BigInteger.DV;
+				r.chunks[i + x.t + 1] = 1;
+			}
+			i++;
+		}
+		if(r.t > 0) {
+			var rv = x.am(i,x.chunks[i],r,2 * i,0,1);
+			r.chunks[r.t - 1] += rv;
+		}
+		r.sign = 0;
+		r.clamp();
+	}
+	,subTo: function(a,r) {
+		var i = 0;
+		var c = 0;
+		var m = Std["int"](Math.min(a.t,this.t));
+		while(i < m) {
+			c += this.chunks[i] - a.chunks[i];
+			r.chunks[i] = c & math.BigInteger.DM;
+			i++;
+			c >>= math.BigInteger.DB;
+		}
+		if(a.t < this.t) {
+			c -= a.sign;
+			while(i < this.t) {
+				c += this.chunks[i];
+				r.chunks[i] = c & math.BigInteger.DM;
+				i++;
+				c >>= math.BigInteger.DB;
+			}
+			c += this.sign;
+		} else {
+			c += this.sign;
+			while(i < a.t) {
+				c -= a.chunks[i];
+				r.chunks[i] = c & math.BigInteger.DM;
+				i++;
+				c >>= math.BigInteger.DB;
+			}
+			c -= a.sign;
+		}
+		r.sign = c < 0?-1:0;
+		if(c < -1) {
+			r.chunks[i] = math.BigInteger.DV + c;
+			i++;
+		} else if(c > 0) {
+			r.chunks[i] = c;
+			i++;
+		}
+		r.t = i;
+		r.clamp();
+	}
+	,clamp: function() {
+		var c = this.sign & math.BigInteger.DM;
+		while(this.t > 0 && this.chunks[this.t - 1] == c) --this.t;
+	}
+	,clone: function() {
+		var r = math.BigInteger.nbi();
+		this.copyTo(r);
+		return r;
+	}
+	,gcd: function(a) {
+		var x = this.sign < 0?this.neg():this.clone();
+		var y = a.sign < 0?a.neg():a.clone();
+		if(x.compare(y) < 0) {
+			var t = x;
+			x = y;
+			y = t;
+		}
+		var i = x.getLowestSetBit(), g = y.getLowestSetBit();
+		if(g < 0) return x;
+		if(i < g) g = i;
+		if(g > 0) {
+			x.rShiftTo(g,x);
+			y.rShiftTo(g,y);
+		}
+		while(x.sigNum() > 0) {
+			if((i = x.getLowestSetBit()) > 0) x.rShiftTo(i,x);
+			if((i = y.getLowestSetBit()) > 0) y.rShiftTo(i,y);
+			if(x.compare(y) >= 0) {
+				x.subTo(y,x);
+				x.rShiftTo(1,x);
+			} else {
+				y.subTo(x,y);
+				y.rShiftTo(1,y);
+			}
+		}
+		if(g > 0) y.lShiftTo(g,y);
+		return y;
+	}
+	,padTo: function(n) {
+		while(this.t < n) {
+			this.chunks[this.t] = 0;
+			this.t++;
+		}
+	}
+	,shortValue: function() {
+		return this.t == 0?this.sign:this.chunks[0] << 16 >> 16;
+	}
+	,byteValue: function() {
+		return this.t == 0?this.sign:this.chunks[0] << 24 >> 24;
+	}
+	,sigNum: function() {
+		if(this.sign < 0) return -1; else if(this.t <= 0 || this.t == 1 && this.chunks[0] <= 0) return 0; else return 1;
+	}
+	,dAddOffset: function(n,w) {
+		while(this.t <= w) {
+			this.chunks[this.t] = 0;
+			this.t++;
+		}
+		this.chunks[w] += n;
+		while(this.chunks[w] >= math.BigInteger.DV) {
+			this.chunks[w] -= math.BigInteger.DV;
+			if(++w >= this.t) {
+				this.chunks[this.t] = 0;
+				this.t++;
+			}
+			++this.chunks[w];
+		}
+	}
+	,dlShiftTo: function(n,r) {
+		if(r == null) return;
+		var i = this.t - 1;
+		while(i >= 0) {
+			r.chunks[i + n] = this.chunks[i];
+			i--;
+		}
+		i = n - 1;
+		while(i >= 0) {
+			r.chunks[i] = 0;
+			i--;
+		}
+		r.t = this.t + n;
+		r.sign = this.sign;
+	}
+	,drShiftTo: function(n,r) {
+		if(r == null) return;
+		var i = n;
+		while(i < this.t) {
+			r.chunks[i - n] = this.chunks[i];
+			i++;
+		}
+		r.t = Std["int"](Math.max(this.t - n,0));
+		r.sign = this.sign;
+	}
+	,invDigit: function() {
+		if(this.t < 1) return 0;
+		var x = this.chunks[0];
+		if((x & 1) == 0) return 0;
+		var y = x & 3;
+		y = y * (2 - (x & 15) * y) & 15;
+		y = y * (2 - (x & 255) * y) & 255;
+		y = y * (2 - ((x & 65535) * y & 65535)) & 65535;
+		y = y * (2 - x * y % math.BigInteger.DV) % math.BigInteger.DV;
+		return y > 0?math.BigInteger.DV - y:-y;
+	}
+	,isProbablePrime: function(v) {
+		var i;
+		var x = this.abs();
+		if(x.t == 1 && x.chunks[0] <= math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1]) {
+			var _g1 = 0, _g = math.BigInteger.lowprimes.length;
+			while(_g1 < _g) {
+				var i1 = _g1++;
+				if(x.chunks[0] == math.BigInteger.lowprimes[i1]) return true;
+			}
+			return false;
+		}
+		if(x.isEven()) return false;
+		i = 1;
+		while(i < math.BigInteger.lowprimes.length) {
+			var m = math.BigInteger.lowprimes[i];
+			var j = i + 1;
+			while(j < math.BigInteger.lowprimes.length && m < math.BigInteger.lplim) {
+				m *= math.BigInteger.lowprimes[j];
+				j++;
+			}
+			m = x.modInt(m);
+			while(i < j) {
+				if(m % math.BigInteger.lowprimes[i] == 0) return false;
+				i++;
+			}
+		}
+		return x.millerRabin(v);
+	}
+	,primify: function(bits,ta) {
+		while(this.bitLength() > bits) this.subTo(math.BigInteger.getONE().shl(bits - 1),this);
+		while(!this.isProbablePrime(ta)) {
+			this.dAddOffset(2,0);
+			while(this.bitLength() > bits) this.subTo(math.BigInteger.getONE().shl(bits - 1),this);
+		}
+	}
+	,bitwiseTo: function(a,op,r) {
+		var f;
+		var m = Std["int"](Math.min(a.t,this.t));
+		var _g = 0;
+		while(_g < m) {
+			var i = _g++;
+			r.chunks[i] = op(this.chunks[i],a.chunks[i]);
+		}
+		if(a.t < this.t) {
+			f = a.sign & math.BigInteger.DM;
+			var _g1 = m, _g = this.t;
+			while(_g1 < _g) {
+				var i = _g1++;
+				r.chunks[i] = op(this.chunks[i],f);
+			}
+			r.t = this.t;
+		} else {
+			f = this.sign & math.BigInteger.DM;
+			var _g1 = m, _g = a.t;
+			while(_g1 < _g) {
+				var i = _g1++;
+				r.chunks[i] = op(f,a.chunks[i]);
+			}
+			r.t = a.t;
+		}
+		r.sign = op(this.sign,a.sign);
+		r.clamp();
+	}
+	,changeBit: function(n,op) {
+		var r = math.BigInteger.getONE().shl(n);
+		this.bitwiseTo(r,op,r);
+		return r;
+	}
+	,chunkSize: function(r) {
+		return Math.floor(0.6931471805599453 * math.BigInteger.DB / Math.log(r));
+	}
+	,dMultiply: function(n) {
+		this.chunks[this.t] = this.am(0,n - 1,this,0,0,this.t);
+		this.t++;
+		this.clamp();
+	}
+	,exp: function(e,z) {
+		if(e > 2147483647 || e < 1) return math.BigInteger.getONE();
+		var r = math.BigInteger.nbi();
+		var r2 = math.BigInteger.nbi();
+		var g = z.convert(this);
+		var i = math.BigInteger.nbits(e) - 1;
+		g.copyTo(r);
+		while(--i >= 0) {
+			z.sqrTo(r,r2);
+			if((e & 1 << i) > 0) z.mulTo(r2,g,r); else {
+				var t = r;
+				r = r2;
+				r2 = t;
+			}
+		}
+		return z.revert(r);
+	}
+	,millerRabin: function(v) {
+		var n1 = this.sub(math.BigInteger.getONE());
+		var k = n1.getLowestSetBit();
+		if(k <= 0) return false;
+		var r = n1.shr(k);
+		v = v + 1 >> 1;
+		if(v > math.BigInteger.lowprimes.length) v = math.BigInteger.lowprimes.length;
+		var a = math.BigInteger.nbi();
+		var _g = 0;
+		while(_g < v) {
+			var i = _g++;
+			a.fromInt(math.BigInteger.lowprimes[i]);
+			var y = a.modPow(r,this);
+			if(y.compare(math.BigInteger.getONE()) != 0 && y.compare(n1) != 0) {
+				var j = 1;
+				while(j++ < k && y.compare(n1) != 0) {
+					y = y.modPowInt(2,this);
+					if(y.compare(math.BigInteger.getONE()) == 0) return false;
+				}
+				if(y.compare(n1) != 0) return false;
+			}
+		}
+		return true;
+	}
+	,lShiftTo: function(n,r) {
+		var bs = n % math.BigInteger.DB;
+		var cbs = math.BigInteger.DB - bs;
+		var bm = (1 << cbs) - 1;
+		var ds = Math.floor(n / math.BigInteger.DB), c = this.sign << bs & math.BigInteger.DM, i;
+		var i1 = this.t - 1;
+		while(i1 >= 0) {
+			r.chunks[i1 + ds + 1] = this.chunks[i1] >> cbs | c;
+			c = (this.chunks[i1] & bm) << bs;
+			i1--;
+		}
+		i1 = ds - 1;
+		while(i1 >= 0) {
+			r.chunks[i1] = 0;
+			i1--;
+		}
+		r.chunks[ds] = c;
+		r.t = this.t + ds + 1;
+		r.sign = this.sign;
+		r.clamp();
+	}
+	,rShiftTo: function(n,r) {
+		r.sign = this.sign;
+		var ds = Math.floor(n / math.BigInteger.DB);
+		if(ds >= this.t) {
+			r.t = 0;
+			return;
+		}
+		var bs = n % math.BigInteger.DB;
+		var cbs = math.BigInteger.DB - bs;
+		var bm = (1 << bs) - 1;
+		r.chunks[0] = this.chunks[ds] >> bs;
+		var _g1 = ds + 1, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r.chunks[i - ds - 1] |= (this.chunks[i] & bm) << cbs;
+			r.chunks[i - ds] = this.chunks[i] >> bs;
+		}
+		if(bs > 0) r.chunks[this.t - ds - 1] |= (this.sign & bm) << cbs;
+		r.t = this.t - ds;
+		r.clamp();
+	}
+	,am1: function(i,x,w,j,c,n) {
+		while(--n >= 0) {
+			var v = x * this.chunks[i] + w.chunks[j] + c;
+			i++;
+			c = Math.floor(v / 67108864);
+			w.chunks[j] = v & 67108863;
+			j++;
+		}
+		return c;
+	}
+	,am2: function(i,x,w,j,c,n) {
+		var xl = x & 32767;
+		var xh = x >> 15;
+		while(--n >= 0) {
+			var l = this.chunks[i] & 32767;
+			var h = this.chunks[i] >> 15;
+			i++;
+			var m = xh * l + h * xl;
+			l = xl * l + ((m & 32767) << 15) + w.chunks[j] + (c & 1073741823);
+			c = (l >>> 30) + (m >>> 15) + xh * h + (c >>> 30);
+			w.chunks[j] = l & 1073741823;
+			j++;
+		}
+		return c;
+	}
+	,am3: function(i,x,w,j,c,n) {
+		var xl = x & 16383;
+		var xh = x >> 14;
+		while(--n >= 0) {
+			var l = this.chunks[i] & 16383;
+			var h = this.chunks[i] >> 14;
+			i++;
+			var m = xh * l + h * xl;
+			l = xl * l + ((m & 16383) << 14) + w.chunks[j] + c;
+			c = (l >> 28) + (m >> 14) + xh * h;
+			w.chunks[j] = l & 268435455;
+			j++;
+		}
+		return c;
+	}
+	,__class__: math.BigInteger
+}
 rg.data.Sources = $hxClasses["rg.data.Sources"] = function(sources) {
 	this.sources = sources;
 	this.length = sources.length;
@@ -17556,6 +20770,14 @@ thx.js.BoundTransition.prototype = $extend(thx.js.BaseTransition.prototype,{
 	}
 	,__class__: thx.js.BoundTransition
 });
+chx.lang.OverflowException = $hxClasses["chx.lang.OverflowException"] = function(msg,cause) {
+	chx.lang.Exception.call(this,msg,cause);
+}
+chx.lang.OverflowException.__name__ = ["chx","lang","OverflowException"];
+chx.lang.OverflowException.__super__ = chx.lang.Exception;
+chx.lang.OverflowException.prototype = $extend(chx.lang.Exception.prototype,{
+	__class__: chx.lang.OverflowException
+});
 var Ints = $hxClasses["Ints"] = function() { }
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
@@ -17874,6 +21096,27 @@ thx.xml.NSQualifier.prototype = {
 	space: null
 	,local: null
 	,__class__: thx.xml.NSQualifier
+}
+math.reduction.Null = $hxClasses["math.reduction.Null"] = function() {
+}
+math.reduction.Null.__name__ = ["math","reduction","Null"];
+math.reduction.Null.__interfaces__ = [math.reduction.ModularReduction];
+math.reduction.Null.prototype = {
+	convert: function(x) {
+		return x;
+	}
+	,revert: function(x) {
+		return x;
+	}
+	,mulTo: function(x,y,r) {
+		x.multiplyTo(y,r);
+	}
+	,sqrTo: function(x,r) {
+		x.squareTo(r);
+	}
+	,reduce: function(x) {
+	}
+	,__class__: math.reduction.Null
 }
 var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
@@ -18718,6 +21961,19 @@ rg.data.DataProcessor.prototype = {
 	}
 	,__class__: rg.data.DataProcessor
 }
+rg.util.Decrypt = $hxClasses["rg.util.Decrypt"] = function() { }
+rg.util.Decrypt.__name__ = ["rg","util","Decrypt"];
+rg.util.Decrypt.decrypt = function(s) {
+	var r = new chx.crypt.RSAEncrypt(rg.util.Decrypt.modulus,rg.util.Decrypt.publicExponent), d = chx.formats.Base64.decode(s);
+	try {
+		return r.verify(d).toString();
+	} catch( e ) {
+		return null;
+	}
+}
+rg.util.Decrypt.prototype = {
+	__class__: rg.util.Decrypt
+}
 rg.controller.Visualizations = $hxClasses["rg.controller.Visualizations"] = function() { }
 rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
 rg.controller.Visualizations.layoutDefault = null;
@@ -18787,6 +22043,533 @@ thx.js.AccessDataTweenText.prototype = $extend(thx.js.AccessTweenText.prototype,
 	}
 	,__class__: thx.js.AccessDataTweenText
 });
+if(!math._IEEE754) math._IEEE754 = {}
+math._IEEE754.Status = $hxClasses["math._IEEE754.Status"] = { __ename__ : ["math","_IEEE754","Status"], __constructs__ : ["Normal","Overflow","Underflow","Denormalized","Quiet","Signalling"] }
+math._IEEE754.Status.Normal = ["Normal",0];
+math._IEEE754.Status.Normal.toString = $estr;
+math._IEEE754.Status.Normal.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Overflow = ["Overflow",1];
+math._IEEE754.Status.Overflow.toString = $estr;
+math._IEEE754.Status.Overflow.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Underflow = ["Underflow",2];
+math._IEEE754.Status.Underflow.toString = $estr;
+math._IEEE754.Status.Underflow.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Denormalized = ["Denormalized",3];
+math._IEEE754.Status.Denormalized.toString = $estr;
+math._IEEE754.Status.Denormalized.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Quiet = ["Quiet",4];
+math._IEEE754.Status.Quiet.toString = $estr;
+math._IEEE754.Status.Quiet.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Signalling = ["Signalling",5];
+math._IEEE754.Status.Signalling.toString = $estr;
+math._IEEE754.Status.Signalling.__enum__ = math._IEEE754.Status;
+math.IEEE754 = $hxClasses["math.IEEE754"] = function(size) {
+	this.Size = size;
+	this.BinaryPower = 0;
+	this.StatCond = math._IEEE754.Status.Normal;
+	this.StatCond64 = math._IEEE754.Status.Normal;
+	if(this.Size == 32) {
+		this.ExpBias = 127;
+		this.MaxExp = 127;
+		this.MinExp = -126;
+		this.MinUnnormExp = -149;
+	} else {
+		this.Size = 64;
+		this.ExpBias = 1023;
+		this.MaxExp = 1023;
+		this.MinExp = -1022;
+		this.MinUnnormExp = -1074;
+	}
+}
+math.IEEE754.__name__ = ["math","IEEE754"];
+math.IEEE754.floatToBytes = function(v,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	var ieee = new math.IEEE754(32);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	return ieee.convert(v);
+}
+math.IEEE754.doubleToBytes = function(v,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	var ieee = new math.IEEE754(64);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	return ieee.convert(v);
+}
+math.IEEE754.bytesToFloat = function(b,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	if(b.length != 4 && b.length != 8) throw "Bytes must be 4 or 8 bytes long";
+	var size = b.length == 4?32:64;
+	var ieee = new math.IEEE754(size);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	if(!bigEndian) return ieee.bytesToBin(ieee.littleToBigEndian(b)); else return ieee.bytesToBin(b);
+}
+math.IEEE754.splitFloat = function(v) {
+	var rv = { integral : 0.0, decimal : 0.0};
+	var val = Std.string(v).toLowerCase();
+	var p = val.indexOf("e");
+	var exp = 0;
+	if(p >= 0) exp = Std.parseInt(val.substr(p + 1)); else {
+		p = val.indexOf(".");
+		if(p >= 0) {
+			rv.integral = Std.parseFloat(val.substr(0,p));
+			rv.decimal = Std.parseFloat("0." + val.substr(p + 1));
+		} else rv.integral = Std.parseFloat(val);
+		return rv;
+	}
+	var fp = val.substr(0,p);
+	p = fp.indexOf(".");
+	fp = StringTools.replace(fp,".","");
+	var dp = "0.";
+	if(exp > 0) {
+		p += exp;
+		if(p == fp.length) rv.integral = Std.parseFloat(fp); else if(p > fp.length) rv.integral = v; else {
+			rv.integral = Std.parseFloat(fp.substr(0,p));
+			rv.decimal = Std.parseFloat("0." + fp.substr(p + 1));
+		}
+	} else {
+		exp += p;
+		if(exp == 0) rv.decimal = Std.parseFloat("0." + fp); else if(exp < 0) rv.decimal = Std.parseFloat("0." + fp + "e" + Std.string(exp)); else {
+			rv.integral = Std.parseFloat(fp.substr(0,exp));
+			rv.decimal = Std.parseFloat("0." + fp.substr(exp));
+		}
+	}
+	return rv;
+}
+math.IEEE754.prototype = {
+	bigEndian: null
+	,input: null
+	,rounding: null
+	,Size: null
+	,BinaryPower: null
+	,BinVal: null
+	,ExpBias: null
+	,MaxExp: null
+	,MinExp: null
+	,MinUnnormExp: null
+	,Result: null
+	,StatCond: null
+	,StatCond64: null
+	,setEndian: function(b) {
+		this.bigEndian = b;
+		return b;
+	}
+	,initBuffers: function() {
+		this.BinVal = new Array();
+		var _g = 0;
+		while(_g < 2102) {
+			var i = _g++;
+			this.BinVal[i] = 0;
+		}
+		this.Result = new Array();
+		var _g1 = 0, _g = this.Size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.Result[i] = 0;
+		}
+	}
+	,littleToBigEndian: function(inbuf) {
+		var c = this.Size == 32?4:8;
+		var nb = Bytes.alloc(c);
+		var idx = c - 1;
+		var _g = 0;
+		while(_g < c) {
+			var i = _g++;
+			nb.b[idx] = inbuf.b[i] & 255;
+			idx--;
+		}
+		return nb;
+	}
+	,bufToEndian: function(inbuf) {
+		var rv = inbuf;
+		if(!this.bigEndian) rv = this.littleToBigEndian(rv);
+		return rv;
+	}
+	,infinity: function(negative) {
+		if(negative) {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(255);
+				bb.b.push(128);
+			} else {
+				bb.b.push(255);
+				bb.b.push(240);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		} else {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(127);
+				bb.b.push(128);
+			} else {
+				bb.b.push(127);
+				bb.b.push(240);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		}
+	}
+	,convert: function(v) {
+		this.input = v;
+		this.StatCond = math._IEEE754.Status.Normal;
+		this.StatCond64 = math._IEEE754.Status.Normal;
+		if(this.input == Math.POSITIVE_INFINITY) return this.infinity(false); else if(this.input == Math.NEGATIVE_INFINITY) return this.infinity(true); else if(Math.isNaN(this.input)) {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(255);
+				bb.b.push(192);
+			} else {
+				bb.b.push(255);
+				bb.b.push(248);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		}
+		this.BinaryPower = 0;
+		var binexpnt = 0;
+		this.initBuffers();
+		this.Result[0] = 0;
+		if(this.input < 0) this.Result[0] = 1;
+		var value = Math.abs(this.input);
+		var vp = math.IEEE754.splitFloat(value);
+		var intpart = vp.integral;
+		var decpart = vp.decimal;
+		var index1 = 1024;
+		while(intpart / 2.0 != 0.0 && index1 >= 0) {
+			var fip = intpart;
+			while(fip > 2147483647.0) fip /= 10.0;
+			var mod = Std["int"](fip) % 2;
+			this.BinVal[index1] = mod;
+			if(mod == 0) intpart = intpart / 2.0; else intpart = intpart / 2.0 - 0.5;
+			intpart = math.IEEE754.splitFloat(intpart * 10.0).integral / 10.0;
+			index1--;
+		}
+		index1 = 1025;
+		while(decpart > 0.0 && index1 < 2102) {
+			decpart *= 2;
+			if(decpart >= 1.0) {
+				this.BinVal[index1] = 1;
+				decpart--;
+				index1++;
+			} else {
+				this.BinVal[index1] = 0;
+				index1++;
+			}
+		}
+		index1 = 0;
+		while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+		this.BinaryPower = 1024 - index1;
+		if(this.BinaryPower < this.MinExp) this.BinaryPower = this.MinExp - 1;
+		return this.Convert2Bin();
+	}
+	,Convert2Bin: function() {
+		var power = this.BinaryPower;
+		var lastbit = 0;
+		var rounded = 0;
+		var binexpnt = 0;
+		var binexpnt2 = 0;
+		var index1 = 0;
+		var index2 = this.Size == 32?9:12;
+		var index3 = 0;
+		if(this.rounding && this.StatCond64 == math._IEEE754.Status.Normal) {
+			while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+			binexpnt = 1024 - index1;
+			if(binexpnt >= this.MinExp) index1++; else {
+				binexpnt = this.MinExp - 1;
+				index1 = 1024 - binexpnt;
+			}
+			lastbit = this.Size - 1 - index2 + index1;
+			if(this.BinVal[lastbit + 1] == 1) {
+				rounded = 0;
+				if(this.BinVal[lastbit] == 1) rounded = 1; else {
+					index3 = lastbit + 2;
+					while(rounded == 0 && index3 < 2102) {
+						rounded = this.BinVal[index3];
+						index3++;
+					}
+				}
+				index3 = lastbit;
+				while(rounded == 1 && index3 >= 0) {
+					if(this.BinVal[index3] == 0) {
+						this.BinVal[index3] = 1;
+						rounded = 0;
+					} else this.BinVal[index3] = 0;
+					index3--;
+				}
+			}
+			index1 = index1 - 2;
+			if(index1 < 0) index1 = 0;
+		}
+		while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+		binexpnt2 = 1024 - index1;
+		if(this.StatCond64 == math._IEEE754.Status.Normal) {
+			binexpnt = binexpnt2;
+			if(binexpnt >= this.MinExp && binexpnt <= this.MaxExp) index1++; else if(binexpnt < this.MinExp) {
+				if(binexpnt2 == -1078) this.StatCond = math._IEEE754.Status.Normal; else if(binexpnt2 < this.MinUnnormExp) this.StatCond = math._IEEE754.Status.Underflow; else this.StatCond = math._IEEE754.Status.Denormalized;
+				binexpnt = this.MinExp - 1;
+				index1 = 1024 - binexpnt;
+			}
+		} else {
+			binexpnt = power;
+			index1 = 1024 - binexpnt;
+			if(binexpnt > this.MaxExp) binexpnt = this.MaxExp + 1; else if(binexpnt < this.MinExp) binexpnt = this.MinExp - 1;
+		}
+		while(index2 < this.Size && index1 < 2102) {
+			this.Result[index2] = this.BinVal[index1];
+			index2++;
+			index1++;
+		}
+		if(binexpnt > this.MaxExp || this.StatCond64 != math._IEEE754.Status.Normal) {
+			if(this.StatCond64 == math._IEEE754.Status.Normal) return this.infinity(this.Result[0] == 1); else this.StatCond = this.StatCond64;
+		}
+		if(this.Size == 32) index1 = 8; else index1 = 11;
+		this.BinaryPower = binexpnt;
+		binexpnt += this.ExpBias;
+		var fbxp = binexpnt * 1.0;
+		while(fbxp / 2.0 != 0.0) {
+			var mod = Std["int"](fbxp) % 2;
+			this.Result[index1] = mod;
+			if(mod == 0) fbxp = fbxp / 2.0; else fbxp = fbxp / 2.0 - 0.5;
+			index1--;
+			fbxp = math.IEEE754.splitFloat(fbxp * 10.0).integral / 10.0;
+		}
+		binexpnt = Std["int"](fbxp);
+		return this.toBytes();
+	}
+	,toBytes: function() {
+		var c = this.Size == 32?4:8;
+		var out = Bytes.alloc(c);
+		var index = 0;
+		var pos = 0;
+		while(index < this.Size) {
+			var temp = 0;
+			var v = 0;
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp += Std["int"](Math.pow(2,3 - i)) * this.Result[index + i];
+			}
+			v = temp << 4;
+			temp = 0;
+			index += 4;
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp += Std["int"](Math.pow(2,3 - i)) * this.Result[index + i];
+			}
+			v = v | temp;
+			out.b[pos++] = v & 255;
+			index += 4;
+		}
+		if(!this.bigEndian) {
+			var out2 = Bytes.alloc(c);
+			var idx = c - 1;
+			var _g = 0;
+			while(_g < c) {
+				var i = _g++;
+				out2.b[idx] = out.b[i] & 255;
+				idx--;
+			}
+			out = out2;
+		}
+		return out;
+	}
+	,bytesToBin: function(b) {
+		this.initBuffers();
+		var index1 = 0;
+		var p = 0;
+		var me = this;
+		var store = function(temp,idx) {
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp *= 2.0;
+				if(temp >= 1.0) {
+					me.Result[idx + i] = 1;
+					temp -= 1;
+				} else me.Result[idx + i] = 0;
+			}
+		};
+		while(index1 < this.Size) {
+			var nibble = (b.b[p] & 240) >> 4;
+			store(nibble / 16,index1);
+			index1 += 4;
+			var nibble1 = b.b[p] & 15;
+			store(nibble1 / 16,index1);
+			index1 += 4;
+			p++;
+		}
+		var binexpnt = 0;
+		var index2 = this.Size == 32?9:12;
+		var _g = 1;
+		while(_g < index2) {
+			var i = _g++;
+			binexpnt += Std["int"](this.Result[i] * Math.pow(2,index2 - i - 1));
+		}
+		binexpnt -= this.ExpBias;
+		this.BinaryPower = binexpnt;
+		index1 = 1024 - binexpnt;
+		if(binexpnt >= this.MinExp && binexpnt <= this.MaxExp) {
+			this.BinVal[index1] = 1;
+			index1++;
+		}
+		var index3 = index1;
+		var zeroFirst = false;
+		if(this.Result[index2] == 0) zeroFirst = true;
+		this.BinVal[index1] = this.Result[index2];
+		index2++;
+		index1++;
+		var zeroRest = true;
+		while(index2 < this.Size && index1 < 2102) {
+			if(this.Result[index2] == 1) zeroRest = false;
+			this.BinVal[index1] = this.Result[index2];
+			index2++;
+			index1++;
+		}
+		while(index3 < 2102 && this.BinVal[index3] != 1) index3++;
+		var binexpnt2 = 1024 - index3;
+		if(binexpnt < this.MinExp) {
+			if(binexpnt2 == -1078) this.StatCond = math._IEEE754.Status.Normal; else if(binexpnt2 < this.MinUnnormExp) this.StatCond = math._IEEE754.Status.Underflow; else this.StatCond = math._IEEE754.Status.Denormalized;
+		} else if(binexpnt > this.MaxExp) {
+			if(zeroFirst && zeroRest) {
+				this.StatCond = math._IEEE754.Status.Overflow;
+				if(this.Result[0] == 1) return Math.NEGATIVE_INFINITY; else return Math.POSITIVE_INFINITY;
+			} else if(!zeroFirst && zeroRest && this.Result[0] == 1) this.StatCond = math._IEEE754.Status.Quiet; else if(!zeroFirst) this.StatCond = math._IEEE754.Status.Quiet; else this.StatCond = math._IEEE754.Status.Signalling;
+			return Math.NaN;
+		}
+		return this.Convert2Dec();
+	}
+	,Convert2Dec: function() {
+		var LN10 = Math.log(10);
+		var s = this.Size == 32?9:12;
+		var dp = 0;
+		var val = 0.0;
+		if(this.BinaryPower < this.MinExp || this.BinaryPower > this.MaxExp) {
+			dp = 0;
+			val = 0;
+		} else {
+			dp = -1;
+			val = 1;
+		}
+		var _g1 = s, _g = this.Size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			val += Std["int"](this.Result[i]) * Math.pow(2,dp + s - i);
+		}
+		var decValue = val * Math.pow(2,this.BinaryPower);
+		if(this.Size == 32) {
+			s = 8;
+			if(val > 0) {
+				var power = Math.floor(Math.log(decValue) / LN10);
+				decValue += 0.5 * Math.pow(10,power - s + 1);
+				val += 5E-8;
+			}
+		} else s = 17;
+		if(this.Result[0] == 1) decValue = -decValue;
+		decValue = Std.parseFloat(this.numStrClipOff(Std.string(decValue),s));
+		return decValue;
+	}
+	,numStrClipOff: function(input,precision) {
+		var result = "";
+		var numerals = "0123456789";
+		var tempstr = input.toUpperCase();
+		var expstr = "";
+		var signstr = "";
+		var stop = 0;
+		var expnum = 0;
+		var locE = tempstr.indexOf("E");
+		if(locE != -1) {
+			stop = locE;
+			expstr = input.substr(locE + 1,input.length);
+			expnum = Std.parseInt(expstr);
+		} else {
+			stop = input.length;
+			expnum = 0;
+		}
+		if(input.indexOf(".") == -1) {
+			tempstr = input.substr(0,stop);
+			tempstr += ".";
+			if(input.length != stop) tempstr += input.substr(locE,input.length);
+			input = tempstr;
+			locE = locE + 1;
+			stop = stop + 1;
+		}
+		var locDP = input.indexOf(".");
+		var start = 0;
+		if(input.charAt(start) == "-") {
+			start++;
+			signstr = "-";
+		} else signstr = "";
+		var MSD = start;
+		var MSDfound = false;
+		while(MSD < stop && !MSDfound) {
+			var index = 1;
+			while(index < numerals.length) {
+				if(input.charAt(MSD) == numerals.charAt(index)) {
+					MSDfound = true;
+					break;
+				}
+				index++;
+			}
+			MSD++;
+		}
+		MSD--;
+		var expdelta = 0;
+		if(MSDfound) {
+			expdelta = locDP - MSD;
+			if(expdelta > 0) expdelta = expdelta - 1;
+			expnum = expnum + expdelta;
+			expstr = "e" + expnum;
+		} else MSD = start;
+		var digits = stop - MSD;
+		tempstr = input.substr(MSD,stop);
+		if(tempstr.indexOf(".") != -1) digits = digits - 1;
+		var number = digits;
+		if(precision < digits) number = precision;
+		tempstr = input.substr(MSD,MSD + number + 1);
+		if(MSD != start || tempstr.indexOf(".") == -1) {
+			result = signstr;
+			result += input.substr(MSD,MSD + 1);
+			result += ".";
+			result += input.substr(MSD + 1,MSD + number);
+			while(digits < precision) {
+				result += "0";
+				digits += 1;
+			}
+			result += expstr;
+		} else {
+			result = input.substr(0,start + number + 1);
+			while(digits < precision) {
+				result += "0";
+				digits += 1;
+			}
+			if(input.length != stop) result += input.substr(locE,input.length);
+		}
+		return result;
+	}
+	,__class__: math.IEEE754
+	,__properties__: {set_bigEndian:"setEndian"}
+}
 rg.controller.info.InfoPivotTable = $hxClasses["rg.controller.info.InfoPivotTable"] = function() {
 	this.label = new rg.controller.info.InfoLabelPivotTable();
 	this.heatmapColorStart = rg.controller.info.InfoPivotTable.defaultStartColor;
@@ -19665,6 +23448,326 @@ thx.js.AccessDataHtml.prototype = $extend(thx.js.AccessHtml.prototype,{
 	}
 	,__class__: thx.js.AccessDataHtml
 });
+var BytesUtil = $hxClasses["BytesUtil"] = function() { }
+BytesUtil.__name__ = ["BytesUtil"];
+BytesUtil.EMPTY = null;
+BytesUtil.byteArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var i = a[_g];
+		++_g;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.byteToHex = function(b) {
+	b = b & 255;
+	return StringTools.hex(b,2).toLowerCase();
+}
+BytesUtil.byte32ToHex = function(b) {
+	var bs = b & 255 & -1;
+	return StringTools.hex(bs,2).toLowerCase();
+}
+BytesUtil.bytesToInt32LE = function(s) {
+	return I32.unpackLE(BytesUtil.nullPad(s,4));
+}
+BytesUtil.cleanHexFormat = function(hex) {
+	var e = StringTools.replace(hex,":","");
+	e = e.split("|").join("");
+	var ereg = new EReg("([\\s]*)","g");
+	e = ereg.replace(e,"");
+	if(StringTools.startsWith(e,"0x")) e = e.substr(2);
+	if((e.length & 1) == 1) e = "0" + e;
+	return e.toLowerCase();
+}
+BytesUtil.encodeToBase = function(buf,base) {
+	var bc = new haxe.BaseCode(Bytes.ofString(base));
+	return bc.encodeBytes(buf);
+}
+BytesUtil.eq = function(a,b) {
+	if(a.length != b.length) return false;
+	var l = a.length;
+	var _g = 0;
+	while(_g < l) {
+		var i = _g++;
+		if(a.b[i] != b.b[i]) return false;
+	}
+	return true;
+}
+BytesUtil.hexDump = function(b,separator) {
+	return BytesUtil.toHex(b,separator);
+}
+BytesUtil.int32ToBytesLE = function(l) {
+	return I32.packLE(l);
+}
+BytesUtil.int32ArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var v = a[_g];
+		++_g;
+		var i = v & -1;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.intArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var i = a[_g];
+		++_g;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.nullBytes = function(len) {
+	var sb = Bytes.alloc(len);
+	var _g = 0;
+	while(_g < len) {
+		var i = _g++;
+		sb.b[i] = 0;
+	}
+	return sb;
+}
+BytesUtil.nullPad = function(s,chunkLen) {
+	var r = chunkLen - s.length % chunkLen;
+	if(r == chunkLen) return s;
+	var sb = new BytesBuffer();
+	sb.add(s);
+	var _g = 0;
+	while(_g < r) {
+		var x = _g++;
+		sb.b.push(0);
+	}
+	return sb.getBytes();
+}
+BytesUtil.ofIntArray = function(a) {
+	var b = new BytesBuffer();
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		b.b.push(BytesUtil.cleanValue(a[i]));
+	}
+	return b.getBytes();
+}
+BytesUtil.ofHex = function(hs) {
+	var s = BytesUtil.cleanHexFormat(hs);
+	var b = new BytesBuffer();
+	var l = Std["int"](s.length / 2);
+	var _g = 0;
+	while(_g < l) {
+		var x = _g++;
+		var ch = s.substr(x * 2,2);
+		var v = Std.parseInt("0x" + ch);
+		if(v > 255) throw "error";
+		b.b.push(v);
+	}
+	return b.getBytes();
+}
+BytesUtil.toHex = function(b,separator) {
+	if(separator == null) separator = " ";
+	var sb = new StringBuf();
+	var l = b.length;
+	var first = true;
+	var _g = 0;
+	while(_g < l) {
+		var i = _g++;
+		if(first) first = false; else sb.b[sb.b.length] = separator == null?"null":separator;
+		sb.add(StringTools.hex(b.b[i],2).toLowerCase());
+	}
+	return StringTools.rtrim(sb.b.join(""));
+}
+BytesUtil.unNullPad = function(s) {
+	var p = s.length - 1;
+	while(p-- > 0) if(s.b[p] != 0) break;
+	if(p == 0 && s.b[0] == 0) {
+		var bb = new BytesBuffer();
+		return bb.getBytes();
+	}
+	p++;
+	var b = Bytes.alloc(p);
+	b.blit(0,s,0,p);
+	return b;
+}
+BytesUtil.cleanValue = function(v) {
+	var neg = false;
+	if(v < 0) {
+		if(v < -128) throw "not a byte";
+		neg = true;
+		v = v & 255 | 128;
+	}
+	if(v > 255) throw "not a byte";
+	return v;
+}
+BytesUtil.prototype = {
+	__class__: BytesUtil
+}
+var Bytes = $hxClasses["Bytes"] = function(length,b) {
+	this.length = length;
+	this.b = b;
+}
+Bytes.__name__ = ["Bytes"];
+Bytes.alloc = function(length) {
+	var a = new Array();
+	var _g = 0;
+	while(_g < length) {
+		var i = _g++;
+		a.push(0);
+	}
+	return new Bytes(length,a);
+}
+Bytes.ofString = function(s) {
+	var a = new Array();
+	var _g1 = 0, _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var c = s.cca(i);
+		if(c <= 127) a.push(c); else if(c <= 2047) {
+			a.push(192 | c >> 6);
+			a.push(128 | c & 63);
+		} else if(c <= 65535) {
+			a.push(224 | c >> 12);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		} else {
+			a.push(240 | c >> 18);
+			a.push(128 | c >> 12 & 63);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		}
+	}
+	return new Bytes(a.length,a);
+}
+Bytes.ofStringData = function(s) {
+	var a = new Array();
+	var _g1 = 0, _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		a.push(s.charCodeAt(i));
+	}
+	return new Bytes(a.length,a);
+}
+Bytes.ofData = function(b) {
+	return new Bytes(b.length,b);
+}
+Bytes.ofHex = function(hs) {
+	var s = StringTools.stripWhite(hs);
+	s = StringTools.replaceRecurse(s,":","").toLowerCase();
+	if(StringTools.startsWith(s,"0x")) s = s.substr(2);
+	if((s.length & 1) == 1) s = "0" + s;
+	var b = new BytesBuffer();
+	var l = Std["int"](s.length / 2);
+	var _g = 0;
+	while(_g < l) {
+		var x = _g++;
+		var ch = s.substr(x * 2,2);
+		b.b.push(Std.parseInt("0x" + ch));
+	}
+	return b.getBytes();
+}
+Bytes.prototype = {
+	length: null
+	,b: null
+	,get: function(pos) {
+		return this.b[pos];
+	}
+	,set: function(pos,v) {
+		this.b[pos] = v & 255;
+	}
+	,blit: function(pos,src,srcpos,len) {
+		if(len == null) len = src.length - srcpos;
+		if(srcpos + len > src.length) len = src.length - srcpos;
+		if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw new chx.lang.OutsideBoundsException();
+		var b1 = this.b;
+		var b2 = src.b;
+		if(b1 == b2 && pos > srcpos) {
+			var i = len;
+			while(i > 0) {
+				i--;
+				b1[i + pos] = b2[i + srcpos];
+			}
+			return;
+		}
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			b1[i + pos] = b2[i + srcpos];
+		}
+	}
+	,sub: function(pos,len) {
+		if(len == null) len = this.length - pos;
+		if(pos + len > this.length) len = this.length - pos;
+		if(pos < 0 || len < 0) throw new chx.lang.OutsideBoundsException();
+		return new Bytes(len,this.b.slice(pos,pos + len));
+	}
+	,compare: function(other) {
+		var b1 = this.b;
+		var b2 = other.b;
+		var len = this.length < other.length?this.length:other.length;
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			if(b1[i] != b2[i]) return b1[i] - b2[i];
+		}
+		return this.length - other.length;
+	}
+	,readString: function(pos,len) {
+		if(pos < 0 || len < 0 || pos + len > this.length) throw new chx.lang.OutsideBoundsException();
+		var s = "";
+		var b = this.b;
+		var fcc = String.fromCharCode;
+		var i = pos;
+		var max = pos + len;
+		while(i < max) {
+			var c = b[i++];
+			if(c < 128) {
+				if(c == 0) break;
+				s += fcc(c);
+			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
+				var c2 = b[i++];
+				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
+			} else {
+				var c2 = b[i++];
+				var c3 = b[i++];
+				s += fcc((c & 15) << 18 | (c2 & 127) << 12 | c3 << 6 & 127 | b[i++] & 127);
+			}
+		}
+		return s;
+	}
+	,toString: function() {
+		return this.readString(0,this.length);
+	}
+	,getData: function() {
+		return this.b;
+	}
+	,toHex: function(sep,pos,len) {
+		if(pos == null) pos = 0;
+		if(sep == null) sep = "";
+		if(len == null) len = this.length - pos;
+		var data = this.sub(pos,len);
+		var sb = new StringBuf();
+		var l = data.length;
+		var first = true;
+		var _g = 0;
+		while(_g < l) {
+			var i = _g++;
+			if(first) first = false; else sb.b[sb.b.length] = sep == null?"null":sep;
+			sb.add(StringTools.hex(this.b[i],2).toLowerCase());
+		}
+		var s = StringTools.rtrim(sb.b.join(""));
+		if(sep == "" && s.length % 2 != 0) s = "0" + s;
+		return s;
+	}
+	,__class__: Bytes
+}
 var Iterators = $hxClasses["Iterators"] = function() { }
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
@@ -19801,7 +23904,7 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 46, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 48, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
 	if(null == options.logoposition) options.logoposition = (function($this) {
@@ -19827,6 +23930,35 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 		}
 		return $r;
 	}(this));
+	chain.addAction(function(params,handler1) {
+		var authcode = ReportGrid.authCode;
+		if(null == authcode) {
+			var script = rg.util.Js.findScript("reportgrid-charts.js");
+			var args = rg.util.Urls.parseQueryParameters(script.src);
+			authcode = Reflect.field(args,"authCode");
+		}
+		if(null != authcode) {
+			var auth = new rg.util.Auth(authcode), hosts = [], host = js.Lib.window.location.hostname;
+			if(new EReg("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$","").match(host)) hosts.push(host); else {
+				var parts = host.split(".");
+				if(parts.length == 3 && parts[0] == "www") parts.shift();
+				hosts.push(parts.join("."));
+				while(parts.length > 2) parts.shift();
+				hosts.push("*." + parts.join("."));
+			}
+			params.options.a = auth.authorizeMany(hosts);
+		} else params.options.a = false;
+		handler1(params);
+	});
+	chain.addAction(function(params,handler1) {
+		var api = ReportGrid.token;
+		if(params.options.a || null == api) handler1(params); else api(function(result) {
+			params.options.a = (result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read;
+			handler1(params);
+		},function(err) {
+			handler1(params);
+		});
+	});
 	chain.addAction(function(params,handler1) {
 		if(null == params.data) {
 			var src = [];
@@ -20724,7 +24856,7 @@ rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(con
 	this.id = ++rg.view.html.widget.Logo._id;
 	this.container = container;
 	this.create();
-	var timer = new haxe.Timer(1000);
+	var timer = new haxe.Timer(5000);
 	timer.run = this.live.$bind(this);
 }
 rg.view.html.widget.Logo.__name__ = ["rg","view","html","widget","Logo"];
@@ -21340,6 +25472,51 @@ js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject
 	return $r;
 }(this));
 {
+	Math.__name__ = ["Math"];
+	Math.NaN = Number["NaN"];
+	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
+	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
+	$hxClasses["Math"] = Math;
+	Math.isFinite = function(i) {
+		return isFinite(i);
+	};
+	Math.isNaN = function(i) {
+		return isNaN(i);
+	};
+}
+{
+	var dbits;
+	var j_lm;
+	var canary = 0xdeadbeefcafe;
+	j_lm = (canary & 16777215) == 15715070;
+	var browser = window.navigator.appName;
+	if(j_lm && browser == "Microsoft Internet Explorer") dbits = 30; else if(j_lm && browser != "Netscape") dbits = 26; else dbits = 28;
+	switch(dbits) {
+	case 30:
+		math.BigInteger.defaultAm = 2;
+		break;
+	case 28:
+		math.BigInteger.defaultAm = 3;
+		break;
+	case 26:
+		math.BigInteger.defaultAm = 1;
+		break;
+	default:
+		throw "bad dbits value";
+	}
+	math.BigInteger.DB = dbits;
+	math.BigInteger.DM = (1 << math.BigInteger.DB) - 1;
+	math.BigInteger.DV = 1 << math.BigInteger.DB;
+	math.BigInteger.BI_FP = 52;
+	math.BigInteger.FV = Math.pow(2,math.BigInteger.BI_FP);
+	math.BigInteger.F1 = math.BigInteger.BI_FP - math.BigInteger.DB;
+	math.BigInteger.F2 = 2 * math.BigInteger.DB - math.BigInteger.BI_FP;
+	math.BigInteger.initBiRc();
+	math.BigInteger.BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
+	math.BigInteger.lowprimes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509];
+	math.BigInteger.lplim = Std["int"](67108864 / math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1]);
+}
+{
 	var d = Date;
 	d.now = function() {
 		return new Date();
@@ -21382,19 +25559,6 @@ js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject
 	};
 	d.prototype.__class__ = $hxClasses["Date"] = d;
 	d.__name__ = ["Date"];
-}
-{
-	Math.__name__ = ["Math"];
-	Math.NaN = Number["NaN"];
-	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
-	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
-	$hxClasses["Math"] = Math;
-	Math.isFinite = function(i) {
-		return isFinite(i);
-	};
-	Math.isNaN = function(i) {
-		return isNaN(i);
-	};
 }
 {
 	/*!
@@ -22818,6 +26982,10 @@ window.Sizzle = Sizzle;
 	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
 	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
 }
+{
+	var bb = new BytesBuffer();
+	BytesUtil.EMPTY = bb.getBytes();
+}
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 rg.graph.Graphs.id = 0;
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
@@ -22831,6 +26999,15 @@ thx.js.Dom.doc = (function() {
 	return gs;
 })();
 thx.js.Dom.selectionEngine = new thx.js.SizzleEngine();
+chx.text.Sprintf.kPAD_ZEROES = 1;
+chx.text.Sprintf.kLEFT_ALIGN = 2;
+chx.text.Sprintf.kSHOW_SIGN = 4;
+chx.text.Sprintf.kPAD_POS = 8;
+chx.text.Sprintf.kALT_FORM = 16;
+chx.text.Sprintf.kLONG_VALUE = 32;
+chx.text.Sprintf.kUSE_SEPARATOR = 64;
+chx.text.Sprintf.DEBUG = false;
+chx.text.Sprintf.TRACE = false;
 rg.view.html.widget.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.view.html.widget.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.data.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
@@ -22906,7 +27083,14 @@ rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/renderer/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 rg.util.Properties.TIME_TOKEN = "time:";
+DateTools.WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+DateTools.WEEKDAYS_ABBREV = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+DateTools.MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+DateTools.MONTHS_ABBREV = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+I32.ZERO = 0;
+I32.ONE = 1;
+I32.BYTE_MASK = 255;
 rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
 rg.view.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
 rg.view.layout.LayoutCartesian.ALT_RIGHT = 20;
@@ -22917,6 +27101,19 @@ rg.view.layout.LayoutCartesian.REYAXIS = new EReg("^y(\\d+)$","");
 rg.view.layout.LayoutCartesian.REYINDEX = new EReg("^y(\\d+)","");
 rg.view.layout.LayoutCartesian.REYTITLE = new EReg("^y(\\d+)title$","");
 rg.view.svg.chart.StreamGraph.vid = 0;
+Constants.DIGITS_BASE10 = "0123456789";
+Constants.DIGITS_HEXU = "0123456789ABCDEF";
+Constants.DIGITS_HEXL = "0123456789abcdef";
+Constants.DIGITS_OCTAL = "01234567";
+Constants.DIGITS_BN = "0123456789abcdefghijklmnopqrstuvwxyz";
+Constants.DIGITS_BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+Constants.PROTO_HTTP = "http://";
+Constants.PROTO_HTTPS = "http://";
+Constants.PROTO_FILE = "file://";
+Constants.PROTO_FTP = "ftp://";
+Constants.PROTO_RTMP = "rtmp://";
+math.BigInteger.MAX_RADIX = 36;
+math.BigInteger.MIN_RADIX = 2;
 thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
@@ -22931,10 +27128,14 @@ thx.xml.Namespace.prefix = (function() {
 	return h;
 })();
 rg.view.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:[, ]\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
+rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
+rg.util.Decrypt.publicExponent = "3";
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
 rg.controller.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
 rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
 rg.controller.Visualizations.layouts = ["simple","cartesian","x"];
+math.IEEE754.bias = 1024;
+math.IEEE754.cnst = 2102;
 rg.controller.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
 rg.controller.info.InfoPivotTable.defaultEndColor = new thx.color.Hsl(210,1,0.5);
 thx.svg.LineInternals.arcOffset = -Math.PI / 2;

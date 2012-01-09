@@ -20,7 +20,7 @@ class Logo
 		id = ++_id;
 		this.container = container;
 		create();
-		var timer = new Timer(1000);
+		var timer = new Timer(5000);
 		timer.run = live;
 	}
 
@@ -87,7 +87,6 @@ class Logo
 		js.Lib.document.body.appendChild(anchor.node());
 		var pos = position(frame.node()),
 			width = frame.style('width').getFloat();
-		trace(width);
 		anchor
 			.attr('title').string('Powered by ReportGrid')
 			.attr('href').string('http://www.reportgrid.com/charts/')
