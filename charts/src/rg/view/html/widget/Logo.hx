@@ -15,8 +15,10 @@ class Logo
 	var anchor : Selection;
 	var image : Selection;
 	var id : Int;
+	var mapvalues : Hash<Dynamic>;
 	public function new(container : Selection)
 	{
+		mapvalues = new Hash();
 		id = ++_id;
 		this.container = container;
 		create();
@@ -73,46 +75,71 @@ class Logo
 
 	function updateFrame()
 	{
-		frame
-			.style('display').string('block', 'important')
-			.style('opacity').string('1', 'important')
-			.style('width').string('100%', 'important')
-			.style('height').string(LOGO_HEIGHT+'px', 'important')
-			.style('position').string('relative', 'important')
-		;
+		setStyle(frame, 'display', 'block');
+		setStyle(frame, 'opacity', '1');
+		setStyle(frame, 'width', '100%');
+		setStyle(frame, 'height', LOGO_HEIGHT+'px');
+		setStyle(frame, 'position', 'relative');
+	}
+
+	function setStyle(s : Selection, name : String, value : String)
+	{
+		var key = "style:"+name+":"+value,
+			v : Dynamic;
+		if(null != (v = mapvalues.get(key)) && v != s.style(name).get())
+		{
+			s.style(name).string(v, 'important');
+		} else if(null == v) {
+			s.style(name).string(value, 'important');
+			mapvalues.set(key, s.style(name).get());
+		}
+	}
+
+	function setAttr(s : Selection, name : String, value : String)
+	{
+		var key = "attr:"+name+":"+value,
+			v : Dynamic;
+		if(null != (v = mapvalues.get(key)) && v != s.attr(name).get())
+		{
+			s.attr(name).string(v);
+		} else if(null == v) {
+			s.attr(name).string(value);
+			mapvalues.set(key, s.attr(name).get());
+		}
 	}
 
 	function updateAnchor()
 	{
-		js.Lib.document.body.appendChild(anchor.node());
+		var body = js.Lib.document.body,
+			len = body.childNodes.length;
+		if(Dom.select("body > :last").node() != anchor.node())
+		{
+			body.appendChild(anchor.node());
+		}
 		var pos = position(frame.node()),
 			width = frame.style('width').getFloat();
-		anchor
-			.attr('title').string('Powered by ReportGrid')
-			.attr('href').string('http://www.reportgrid.com/charts/')
-			.style('z-index').string('2147483647', 'important')
-			.style('display').string('block', 'important')
-			.style('opacity').string('1', 'important')
-			.style('position').string('absolute', 'important')
-			.style('height').string(LOGO_HEIGHT+'px', 'important')
-			.style('width').string(LOGO_WIDTH+'px', 'important')
-			.style('top').string(pos.y + 'px', 'important')
-			.style('left').string((pos.x - LOGO_WIDTH + width) + 'px', 'important')
-		;
+		setAttr(anchor, 'title', 'Powered by ReportGrid');
+		setAttr(anchor, 'href', 'http://www.reportgrid.com/charts/');
+		setStyle(anchor, 'z-index', '2147483647');
+		setStyle(anchor, 'display', 'block');
+		setStyle(anchor, 'opacity', '1');
+		setStyle(anchor, 'position', 'absolute');
+		setStyle(anchor, 'height', LOGO_HEIGHT+'px');
+		setStyle(anchor, 'width', LOGO_WIDTH+'px');
+		setStyle(anchor, 'top', pos.y + 'px');
+		setStyle(anchor, 'left', (pos.x - LOGO_WIDTH + width) + 'px');
 	}
 
 	function updateImage()
 	{
-		image
-			.attr('src').string(getLogo())
-			.attr('title').string('Powered by ReportGrid')
-			.attr('height').string(''+LOGO_HEIGHT)
-			.attr('width').string(''+LOGO_WIDTH)
-			.style('opacity').string('1', 'important')
-			.style('border').string('none', 'important')
-			.style('height').string(LOGO_HEIGHT+'px', 'important')
-			.style('width').string(LOGO_WIDTH+'px', 'important')
-		;
+		setAttr(image, 'src', getLogo());
+		setAttr(image, 'title', 'Powered by ReportGrid');
+		setAttr(image, 'height', ''+LOGO_HEIGHT);
+		setAttr(image, 'width', ''+LOGO_WIDTH);
+		setStyle(image, 'opacity', '1');
+		setStyle(image, 'border', 'none');
+		setStyle(image, 'height', LOGO_HEIGHT+'px');
+		setStyle(image, 'width', LOGO_WIDTH+'px');
 	}
 
 	function getLogo()

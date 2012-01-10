@@ -6218,7 +6218,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.0.5449"};
+	r.info.charts = { version : "1.2.0.5473"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -23931,7 +23931,7 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 		return $r;
 	}(this));
 	chain.addAction(function(params,handler1) {
-		var authcode = ReportGrid.authCode;
+		var authcode = ReportGrid.authCode, authorized = false;
 		if(null == authcode) {
 			var script = rg.util.Js.findScript("reportgrid-charts.js");
 			var args = rg.util.Urls.parseQueryParameters(script.src);
@@ -23946,8 +23946,8 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 				while(parts.length > 2) parts.shift();
 				hosts.push("*." + parts.join("."));
 			}
-			params.options.a = auth.authorizeMany(hosts);
-		} else params.options.a = false;
+			params.options.a = authorized = auth.authorizeMany(hosts);
+		} else params.options.a = authorized = false;
 		handler1(params);
 	});
 	chain.addAction(function(params,handler1) {
@@ -24853,6 +24853,7 @@ thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
 rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(container) {
+	this.mapvalues = new Hash();
 	this.id = ++rg.view.html.widget.Logo._id;
 	this.container = container;
 	this.create();
@@ -24874,6 +24875,7 @@ rg.view.html.widget.Logo.prototype = {
 	,anchor: null
 	,image: null
 	,id: null
+	,mapvalues: null
 	,live: function() {
 		if(this.container.select("div.reportgridbrandcontainer").empty()) this.createFrame(); else this.updateFrame();
 		if(thx.js.Dom.select("body").select("a.reportgridbrandanchor" + this.id).empty()) this.createAnchor(); else this.updateAnchor();
@@ -24898,15 +24900,50 @@ rg.view.html.widget.Logo.prototype = {
 		this.updateImage();
 	}
 	,updateFrame: function() {
-		this.frame.style("display").string("block","important").style("opacity").string("1","important").style("width").string("100%","important").style("height").string(29 + "px","important").style("position").string("relative","important");
+		this.setStyle(this.frame,"display","block");
+		this.setStyle(this.frame,"opacity","1");
+		this.setStyle(this.frame,"width","100%");
+		this.setStyle(this.frame,"height",29 + "px");
+		this.setStyle(this.frame,"position","relative");
+	}
+	,setStyle: function(s,name,value) {
+		var key = "style:" + name + ":" + value, v;
+		if(null != (v = this.mapvalues.get(key)) && v != s.style(name).get()) s.style(name).string(v,"important"); else if(null == v) {
+			s.style(name).string(value,"important");
+			this.mapvalues.set(key,s.style(name).get());
+		}
+	}
+	,setAttr: function(s,name,value) {
+		var key = "attr:" + name + ":" + value, v;
+		if(null != (v = this.mapvalues.get(key)) && v != s.attr(name).get()) s.attr(name).string(v); else if(null == v) {
+			s.attr(name).string(value);
+			this.mapvalues.set(key,s.attr(name).get());
+		}
 	}
 	,updateAnchor: function() {
-		js.Lib.document.body.appendChild(this.anchor.node());
+		var body = js.Lib.document.body, len = body.childNodes.length;
+		if(thx.js.Dom.select("body > :last").node() != this.anchor.node()) body.appendChild(this.anchor.node());
 		var pos = rg.view.html.widget.Logo.position(this.frame.node()), width = this.frame.style("width").getFloat();
-		this.anchor.attr("title").string("Powered by ReportGrid").attr("href").string("http://www.reportgrid.com/charts/").style("z-index").string("2147483647","important").style("display").string("block","important").style("opacity").string("1","important").style("position").string("absolute","important").style("height").string(29 + "px","important").style("width").string(194 + "px","important").style("top").string(pos.y + "px","important").style("left").string(pos.x - 194 + width + "px","important");
+		this.setAttr(this.anchor,"title","Powered by ReportGrid");
+		this.setAttr(this.anchor,"href","http://www.reportgrid.com/charts/");
+		this.setStyle(this.anchor,"z-index","2147483647");
+		this.setStyle(this.anchor,"display","block");
+		this.setStyle(this.anchor,"opacity","1");
+		this.setStyle(this.anchor,"position","absolute");
+		this.setStyle(this.anchor,"height",29 + "px");
+		this.setStyle(this.anchor,"width",194 + "px");
+		this.setStyle(this.anchor,"top",pos.y + "px");
+		this.setStyle(this.anchor,"left",pos.x - 194 + width + "px");
 	}
 	,updateImage: function() {
-		this.image.attr("src").string(this.getLogo()).attr("title").string("Powered by ReportGrid").attr("height").string("" + 29).attr("width").string("" + 194).style("opacity").string("1","important").style("border").string("none","important").style("height").string(29 + "px","important").style("width").string(194 + "px","important");
+		this.setAttr(this.image,"src",this.getLogo());
+		this.setAttr(this.image,"title","Powered by ReportGrid");
+		this.setAttr(this.image,"height","" + 29);
+		this.setAttr(this.image,"width","" + 194);
+		this.setStyle(this.image,"opacity","1");
+		this.setStyle(this.image,"border","none");
+		this.setStyle(this.image,"height",29 + "px");
+		this.setStyle(this.image,"width",194 + "px");
 	}
 	,getLogo: function() {
 		return "http://api.reportgrid.com/css/images/reportgrid-clear.png";

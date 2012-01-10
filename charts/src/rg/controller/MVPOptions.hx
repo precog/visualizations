@@ -74,10 +74,13 @@ class MVPOptions
 			}
 		}
 
+		// TODO test with multiple charts in one page
+		// TODO move to a function that is called only once for many viz
 		// check authorization
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
-			var authcode = untyped __js__("ReportGrid.authCode");
+			var authcode = untyped __js__("ReportGrid.authCode"),
+				authorized = false;
 			if(null == authcode)
 			{
 				var script = rg.util.Js.findScript("reportgrid-charts.js");
@@ -105,9 +108,9 @@ class MVPOptions
 					}
 					hosts.push("*."+parts.join('.'));
 				}
-				params.options.a = auth.authorizeMany(hosts);
+				params.options.a = authorized = auth.authorizeMany(hosts);
 			} else {
-				params.options.a = false;
+				params.options.a = authorized = false;
 			}
 			handler(params);
 		});
