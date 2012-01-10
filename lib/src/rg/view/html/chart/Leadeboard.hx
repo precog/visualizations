@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.html.widget;
+package rg.view.html.chart;
 import rg.data.Stats;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
@@ -33,6 +33,8 @@ class Leadeboard
 	public var useMax : Bool;
 	public var ready(default, null) : Notifier;
 
+	public var displayBar : Bool;
+
 	var container : Selection;
 	var list : Selection;
 
@@ -53,23 +55,31 @@ class Leadeboard
 
 	public dynamic function labelDataPoint(dp : DataPoint, stats : StatsNumeric)
 	{
-		var p = DataPoints.value(dp, variableIndependent.type);
-		var v = DataPoints.value(dp, variableDependent.type);
-		return Properties.humanize(p) + ": " + FormatNumber.percent(100 * v / stats.tot, 1);
+		return Properties.humanize(DataPoints.value(dp, variableIndependent.type));
 	}
 
 	public dynamic function labelDataPointOver(dp : DataPoint, stats : StatsNumeric)
 	{
-		var p = variableDependent.type;
-		var v = DataPoints.value(dp, variableDependent.type);
-		return Properties.humanize(p) + ": " + FormatNumber.int(v);
+		return Floats.format(100*DataPoints.value(dp, stats.type)/(useMax ? stats.max : stats.tot), "P:1");
+	}
+
+	public dynamic function labelRank(dp : DataPoint, i : Int, stats : StatsNumeric)
+	{
+		return "" + (i+1);
+	}
+
+	public dynamic function labelValue(dp : DataPoint, stats : StatsNumeric)
+	{
+		return Properties.formatValue(stats.type, dp);
 	}
 
 	public function init()
 	{
-		list = container.append("ul")
+		var div = container
+			.append("div")
 			.attr("class").string("leaderboard");
-		container.append("div").attr("class").string("clear");
+		list = div.append("ul");
+		div.append("div").attr("class").string("clear");
 	}
 
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>)
@@ -96,38 +106,90 @@ class Leadeboard
 		var choice = list.selectAll("li").data(dps, id);
 
 		// enter
-		var enter = choice.enter()
-			.append("li")
-				.attr("class").stringf(function(_, i) return (displayGradient ? "" : "nogradient ") + "stroke-" + i)
+		var enterli = choice.enter().append("li")
+			//	.attr("class").stringf(function(_, i) return i % 2 == 0 ? "fill-0" : "")
+			;
+		// title
+		enterli.attr("title").stringf(lTitle);
 
-				.text().stringf(description)
-				.attr("title").stringf(title);
-		if (displayGradient)
-			enter.style("background-size").stringf(backgroundSize);
+		//background
+		enterli.append("div").attr("class").stringf(function(_, i) {
+			 return i % 2 == 0 ? "background fill-0" : "background";
+		});
+
+		var enterlabels = enterli.append("div").attr("class").string("labels");
+
+		// rank
+		if(null != labelRank)
+		{
+			enterlabels.append("div")
+				.attr("class").string("rank")
+				.text().stringf(lRank);
+		}
+
+		// datapoint
+		if(null != labelDataPoint)
+		{
+			enterlabels.append("span")
+				.attr("class").string("description text-0")
+				.text().stringf(lDataPoint);
+		}
+
+		// value
+		if(null != labelValue)
+		{
+			enterlabels.append("span")
+				.attr("class").string("value text-1")
+				.text().stringf(lValue);
+		}
+
+//		enterlabels.append("div").attr("class").string("clear");
+
+		enterli.append("div").attr("class").string("clear");
+
+		// bar
+		if(displayBar)
+		{
+			var barpadding = enterli.append("div").attr("class").string("barpadding"),
+				enterbar = barpadding.append("div")
+				.attr("class").string("barcontainer");
+			enterbar.append("div")
+				.attr("class").string("barback fill-0");
+			enterbar.append("div")
+				.attr("class").string("bar fill-0")
+				.style("width").stringf(backgroundSize);
+			enterli.append("div").attr("class").string("clear");
+		}
+
+//				.attr("class").stringf(function(_, i) return (displayGradient ? "" : "nogradient ") + "stroke-" + i)
+
+//		if (displayGradient)
+//			enterli.style("background-size").stringf(backgroundSize);
 		if (null != click)
-			enter.on("click.user", onClick);
+			enterli.on("click.user", onClick);
 		if (animated)
 		{
-			enter.attr("opacity").float(0)
-				.eachNode(fadeIn);
+			enterli.style("opacity").float(0).eachNode(fadeIn);
 		} else {
-			enter.attr("opacity").float(1);
+			enterli.style("opacity").float(1);
 		}
 
 		// update
+/*
 		var update = choice.update()
 			.select("li")
-				.text().stringf(description)
-				.attr("title").stringf(title)
+				.text().stringf(lDataPoint)
+				.attr("title").stringf(lTitle)
 		;
-		if (displayGradient)
-			update.style("background-size").stringf(backgroundSize);
+*/
+//		if (displayGradient)
+//			update.style("background-size").stringf(backgroundSize);
 		// exit
 		if (animated)
 		{
 			choice.exit()
 				.transition().ease(animationEase).duration(animationDuration)
-				.attr("opacity").float(0)
+				.style("opacity").float(0)
 				.remove();
 		} else {
 			choice.exit().remove();
@@ -152,12 +214,23 @@ class Leadeboard
 				});
 	}
 
-	function description(dp, i)
+
+	function lRank(dp, i)
+	{
+		return labelRank(dp, i, stats);
+	}
+
+	function lValue(dp, i)
+	{
+		return labelValue(dp, stats);
+	}
+
+	function lDataPoint(dp, i)
 	{
 		return labelDataPoint(dp, stats);
 	}
 
-	function title(dp, i)
+	function lTitle(dp, i)
 	{
 		return labelDataPointOver(dp, stats);
 	}

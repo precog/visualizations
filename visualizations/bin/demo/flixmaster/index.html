@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>SnapEngage</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
+	<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=37352190-D9CD-4AE9-85B9-103108B91C80"></script>
+	<script src="http://api.reportgrid.com/js/reportgrid-viz.js"></script>
+<!--
+	<script src="../../js/reportgrid-viz.js"></script>
+-->
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){
+
+var path = "/jtt/1/46/";
+
+ReportGrid.pieChart("#chart", {
+	path : path
+//	, event : "viewed"
+//	, property : "embedded"
+	, options : {
+//		download : true
+	}
+});
+
+});
+</script>
+</head>
+<body>
+	<div id="chart" style="width:400px;height:200px"></div>
+</body>
+</html>

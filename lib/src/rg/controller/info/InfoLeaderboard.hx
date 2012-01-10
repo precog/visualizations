@@ -11,18 +11,20 @@ using rg.controller.info.Info;
 class InfoLeaderboard
 {
 	public var animation : InfoAnimation;
-	public var label : InfoLabel;
+	public var label : InfoLabelLeaderboard;
 	public var click : DataPoint -> Void;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
-	public var displayGradient : Bool;
-	public var gradientOnMax : Bool;
+//	public var displayGradient : Bool;
+	public var usemax : Bool;
+	public var displaybar : Bool;
 
 	public function new()
 	{
 		animation = new InfoAnimation();
-		label = new InfoLabel();
-		displayGradient = true;
-		gradientOnMax = false;
+		label = new InfoLabelLeaderboard();
+//		displayGradient = true;
+		usemax = false;
+		displaybar = true;
 	}
 
 	public static function filters()
@@ -43,7 +45,7 @@ class InfoLeaderboard
 			validator : function(v) return Types.isAnonymous(v),
 			filter : function(v) return [{
 				field : "label",
-				value : new InfoLabel().feed(v)
+				value : new InfoLabelLeaderboard().feed(v)
 			}]
 		}, {
 			field : "click",
@@ -57,6 +59,15 @@ class InfoLeaderboard
 				value : v
 			}]
 		}, {
+			field : "displaybar",
+			validator : function(v) return Std.is(v, Bool),
+			filter : null
+		}, {
+			field : "usemax",
+			validator : function(v) return Std.is(v, Bool),
+			filter : null
+
+/*
 			field : "effect",
 			validator : function(v) return Std.is(v, String),
 			filter : function(v)
@@ -89,6 +100,7 @@ class InfoLeaderboard
 						}];
 				};
 			}
+*/
 		}];
 	}
 }

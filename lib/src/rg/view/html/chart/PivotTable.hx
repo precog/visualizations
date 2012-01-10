@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.html.widget;
+package rg.view.html.chart;
 import rg.data.Stats;
 import thx.color.Hsl;
 import rg.data.DataPoint;

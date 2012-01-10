@@ -5627,337 +5627,6 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
 }
-rg.view.html.widget.PivotTable = $hxClasses["rg.view.html.widget.PivotTable"] = function(container) {
-	this.ready = new hxevents.Notifier();
-	this.container = container;
-	this.displayColumnTotal = true;
-	this.displayRowTotal = true;
-	this.displayHeatMap = true;
-	this.colorStart = rg.view.html.widget.PivotTable.defaultColorStart;
-	this.colorEnd = rg.view.html.widget.PivotTable.defaultColorEnd;
-	this.incolumns = 1;
-}
-rg.view.html.widget.PivotTable.__name__ = ["rg","view","html","widget","PivotTable"];
-rg.view.html.widget.PivotTable.prototype = {
-	displayColumnTotal: null
-	,displayRowTotal: null
-	,displayHeatMap: null
-	,colorStart: null
-	,colorEnd: null
-	,ready: null
-	,columnVariables: null
-	,rowVariables: null
-	,cellVariable: null
-	,incolumns: null
-	,click: null
-	,container: null
-	,stats: null
-	,labelDataPoint: function(dp,stats) {
-		var v = Reflect.field(dp,this.cellVariable.type);
-		if(Math.isNaN(v)) return "0";
-		return thx.culture.FormatNumber["int"](v);
-	}
-	,labelDataPointOver: function(dp,stats) {
-		var v = Reflect.field(dp,this.cellVariable.type);
-		if(Math.isNaN(v)) return "0";
-		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
-	}
-	,labelAxis: function(v) {
-		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(v,"."),"."));
-	}
-	,labelAxisValue: function(v,axis) {
-		if(axis.indexOf("time:") >= 0) {
-			var p = axis.substr(axis.indexOf("time:") + "time:".length);
-			return rg.util.Periodicity.format(p,v);
-		} else return rg.util.RGStrings.humanize(v);
-	}
-	,labelTotal: function(v,stats) {
-		return thx.culture.FormatNumber["int"](v);
-	}
-	,labelTotalOver: function(v,stats) {
-		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
-	}
-	,data: function(dps) {
-		var d = this.transformData(dps), table = this.container.append("table").classed().add("pivot-table"), thead = table.append("thead"), leftspan = d.rows.length > 0?d.rows[0].values.length:0, color = thx.color.Rgb.interpolatef(this.colorStart,this.colorEnd);
-		this.stats = d.stats;
-		if(d.columns.length > 0) {
-			var _g1 = 0, _g = d.column_headers.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				var tr = thead.append("tr");
-				this.prependSpacer(leftspan,tr);
-				var header = tr.append("th").attr("class").string("col-header").text().string(this.labelAxis(d.column_headers[i]));
-				if(d.columns.length > 1) header.attr("colspan")["float"](d.columns.length);
-				var counter = 1, last = d.columns[0].values[i];
-				tr = thead.append("tr");
-				if(i == d.column_headers.length - 1) {
-					var _g2 = 0, _g3 = d.row_headers;
-					while(_g2 < _g3.length) {
-						var h = _g3[_g2];
-						++_g2;
-						tr.append("th").attr("class").string("row-header").text().string(this.labelAxis(h));
-					}
-				} else this.prependSpacer(leftspan,tr);
-				var _g3 = 1, _g2 = d.columns.length;
-				while(_g3 < _g2) {
-					var j = _g3++;
-					var value = d.columns[j].values[i];
-					if(last == value) counter++; else {
-						this.buildValue(last,d.column_headers[i],counter,tr);
-						counter = 1;
-						last = value;
-					}
-				}
-				if(null != last) this.buildValue(last,d.column_headers[i],counter,tr);
-			}
-		}
-		if(d.column_headers.length == 0) {
-			var tr = thead.append("tr");
-			var _g = 0, _g1 = d.row_headers;
-			while(_g < _g1.length) {
-				var h = _g1[_g];
-				++_g;
-				tr.append("th").attr("class").string("row header").text().string(this.labelAxis(h));
-			}
-		}
-		var tbody = table.append("tbody"), last = [];
-		var _g = 0, _g1 = d.rows;
-		while(_g < _g1.length) {
-			var row = _g1[_g];
-			++_g;
-			var tr = tbody.append("tr"), len = row.values.length;
-			var _g2 = 0;
-			while(_g2 < len) {
-				var i = _g2++;
-				var v = row.values[i], rep = v == last[i];
-				if(!rep) {
-					last[i] = v;
-					var _g3 = i + 1;
-					while(_g3 < len) {
-						var j = _g3++;
-						last[j] = null;
-					}
-				}
-				tr.append("th").attr("class").string(rep?"row value empty":"row value").text().string(rep?"":this.labelAxisValue(v,d.row_headers[i]));
-			}
-			var _g2 = 0, _g3 = row.cells;
-			while(_g2 < _g3.length) {
-				var cell = _g3[_g2];
-				++_g2;
-				var td = tr.append("td").text().string(this.formatDataPoint(cell)).attr("title").string(this.formatDataPointOver(cell));
-				if(null != this.click) td.onNode("click",(function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
-					};
-				})(this.onClick.$bind(this),cell));
-				if(this.displayHeatMap) {
-					var c = color(Reflect.field(cell,this.cellVariable.type) / d.stats.max);
-					td.style("background-color").color(c).style("color").color(thx.color.Rgb.contrastBW(c));
-				}
-			}
-			if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("row total").text().string(this.formatTotal(row.stats.tot)).attr("title").string(this.formatTotalOver(row.stats.tot));
-		}
-		var tfoot = table.append("tfoot");
-		if(this.displayColumnTotal && d.rows.length > 1) {
-			var tr = tfoot.append("tr");
-			this.prependSpacer(leftspan,tr);
-			var _g = 0, _g1 = d.columns;
-			while(_g < _g1.length) {
-				var col = _g1[_g];
-				++_g;
-				tr.append("th").attr("class").string("column total").text().string(this.formatTotal(col.stats.tot)).attr("title").string(this.formatTotalOver(col.stats.tot));
-			}
-			if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("table total").text().string(this.formatTotal(d.stats.tot)).attr("title").string(this.formatTotalOver(d.stats.tot));
-		}
-		this.ready.dispatch();
-	}
-	,onClick: function(dp,_,_1) {
-		this.click(dp);
-	}
-	,formatTotal: function(v,_) {
-		return this.labelTotal(v,this.stats);
-	}
-	,formatTotalOver: function(v,_) {
-		return this.labelTotalOver(v,this.stats);
-	}
-	,formatDataPoint: function(dp,_) {
-		return this.labelDataPoint(dp,this.stats);
-	}
-	,formatDataPointOver: function(dp,_) {
-		return this.labelDataPointOver(dp,this.stats);
-	}
-	,buildValue: function(value,header,counter,tr) {
-		var th = tr.append("th").attr("class").string("column value").text().string(this.labelAxisValue(value,header));
-		if(counter > 1) th.attr("colspan")["float"](counter);
-	}
-	,prependSpacer: function(counter,tr) {
-		if(counter == 0) return;
-		var th = tr.append("th").attr("class").string("spacer");
-		if(counter > 1) th.attr("colspan")["float"](counter);
-	}
-	,init: function() {
-	}
-	,setVariables: function(variableIndependents,variableDependents) {
-		this.cellVariable = variableDependents[0];
-		this.columnVariables = [];
-		var _g1 = 0, _g = this.incolumns;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this.columnVariables.push(variableIndependents[i]);
-		}
-		this.rowVariables = [];
-		var _g1 = this.incolumns, _g = variableIndependents.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this.rowVariables.push(variableIndependents[i]);
-		}
-	}
-	,destroy: function() {
-		this.container.html().string("");
-	}
-	,transformData: function(dps) {
-		var column_headers = [], row_headers = [], columns = [], rows = [], tcalc = new rg.data.StatsNumeric(null);
-		var variable;
-		var _g1 = 0, _g = Ints.min(1,this.columnVariables.length);
-		while(_g1 < _g) {
-			var i = _g1++;
-			variable = this.columnVariables[i];
-			column_headers.push(variable.type);
-			var _g2 = 0, _g3 = this.range(variable);
-			while(_g2 < _g3.length) {
-				var value = _g3[_g2];
-				++_g2;
-				columns.push({ values : [value], stats : null});
-			}
-		}
-		var _g1 = 1, _g = this.columnVariables.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			variable = this.columnVariables[i];
-			column_headers.push(variable.type);
-			var tmp = columns.copy();
-			columns = [];
-			var _g2 = 0;
-			while(_g2 < tmp.length) {
-				var src = tmp[_g2];
-				++_g2;
-				var _g3 = 0, _g4 = this.range(variable);
-				while(_g3 < _g4.length) {
-					var value = _g4[_g3];
-					++_g3;
-					var column = Objects.clone(src);
-					column.values.push(value);
-					columns.push(column);
-				}
-			}
-		}
-		var name, headers = column_headers;
-		var _g1 = 0, _g = columns.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var column = [columns[i]], ccalc = new rg.data.StatsNumeric(null);
-			column[0].stats = ccalc;
-			var _g2 = 0, _g3 = Arrays.filter(dps,(function(column) {
-				return function(dp) {
-					var _g3 = 0, _g21 = headers.length;
-					while(_g3 < _g21) {
-						var j = _g3++;
-						name = headers[j];
-						if(Reflect.field(dp,name) != column[0].values[j]) return false;
-					}
-					return true;
-				};
-			})(column));
-			while(_g2 < _g3.length) {
-				var dp = _g3[_g2];
-				++_g2;
-				var v = Reflect.field(dp,this.cellVariable.type);
-				if(null == v) continue;
-				ccalc.add(v);
-				tcalc.add(v);
-			}
-		}
-		var _g1 = 0, _g = Ints.min(1,this.rowVariables.length);
-		while(_g1 < _g) {
-			var i = _g1++;
-			variable = this.rowVariables[i];
-			row_headers.push(variable.type);
-			var _g2 = 0, _g3 = this.range(variable);
-			while(_g2 < _g3.length) {
-				var value = _g3[_g2];
-				++_g2;
-				rows.push({ values : [value], stats : null, cells : null});
-			}
-		}
-		var _g1 = 1, _g = this.rowVariables.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			variable = this.rowVariables[i];
-			row_headers.push(variable.type);
-			var tmp = rows.copy();
-			rows = [];
-			var _g2 = 0;
-			while(_g2 < tmp.length) {
-				var src = tmp[_g2];
-				++_g2;
-				var _g3 = 0, _g4 = this.range(variable);
-				while(_g3 < _g4.length) {
-					var value = _g4[_g3];
-					++_g3;
-					var row = Objects.clone(src);
-					row.values.push(value);
-					rows.push(row);
-				}
-			}
-		}
-		var name1, headers1 = row_headers;
-		var _g = 0;
-		while(_g < rows.length) {
-			var row = [rows[_g]];
-			++_g;
-			row[0].stats = new rg.data.StatsNumeric(null);
-			row[0].cells = [];
-			var rdps = Arrays.filter(dps,(function(row) {
-				return function(d) {
-					var _g2 = 0, _g1 = headers1.length;
-					while(_g2 < _g1) {
-						var j = _g2++;
-						name1 = headers1[j];
-						if(Reflect.field(d,name1) != row[0].values[j]) return false;
-					}
-					return true;
-				};
-			})(row));
-			var _g1 = 0;
-			while(_g1 < columns.length) {
-				var column = [columns[_g1]];
-				++_g1;
-				var dp = Arrays.firstf(rdps,(function(column) {
-					return function(dp) {
-						var _g3 = 0, _g2 = column[0].values.length;
-						while(_g3 < _g2) {
-							var i = _g3++;
-							if(Reflect.field(dp,column_headers[i]) != column[0].values[i]) return false;
-						}
-						return true;
-					};
-				})(column));
-				var v = Reflect.field(dp,this.cellVariable.type);
-				if(null == v) {
-					row[0].cells.push({ });
-					continue;
-				}
-				row[0].cells.push(dp);
-				row[0].stats.add(v);
-			}
-		}
-		return { column_headers : column_headers, row_headers : row_headers, columns : columns, rows : rows, stats : tcalc};
-	}
-	,range: function(variable) {
-		return variable.axis.range(variable.min(),variable.max());
-	}
-	,__class__: rg.view.html.widget.PivotTable
-}
 rg.graph.GreedySwitchDecrosser = $hxClasses["rg.graph.GreedySwitchDecrosser"] = function() {
 }
 rg.graph.GreedySwitchDecrosser.__name__ = ["rg","graph","GreedySwitchDecrosser"];
@@ -6218,7 +5887,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.0.5489"};
+	r.info.charts = { version : "1.2.1.5548"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -6258,99 +5927,6 @@ chx.lang.NullPointerException.__super__ = chx.lang.Exception;
 chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.NullPointerException
 });
-rg.view.html.widget.Leadeboard = $hxClasses["rg.view.html.widget.Leadeboard"] = function(container) {
-	this.ready = new hxevents.Notifier();
-	this.container = container;
-	this.animated = true;
-	this.animationDuration = 1500;
-	this.animationEase = thx.math.Equations.elasticf();
-	this.animationDelay = 150;
-	this._created = 0;
-	this.displayGradient = true;
-	this.useMax = false;
-}
-rg.view.html.widget.Leadeboard.__name__ = ["rg","view","html","widget","Leadeboard"];
-rg.view.html.widget.Leadeboard.prototype = {
-	variableIndependent: null
-	,variableDependent: null
-	,animated: null
-	,animationDuration: null
-	,animationDelay: null
-	,animationEase: null
-	,click: null
-	,sortDataPoint: null
-	,displayGradient: null
-	,useMax: null
-	,ready: null
-	,container: null
-	,list: null
-	,_created: null
-	,stats: null
-	,labelDataPoint: function(dp,stats) {
-		var p = Reflect.field(dp,this.variableIndependent.type);
-		var v = Reflect.field(dp,this.variableDependent.type);
-		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(p,"."),".")) + ": " + thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
-	}
-	,labelDataPointOver: function(dp,stats) {
-		var p = this.variableDependent.type;
-		var v = Reflect.field(dp,this.variableDependent.type);
-		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(p,"."),".")) + ": " + thx.culture.FormatNumber["int"](v);
-	}
-	,init: function() {
-		this.list = this.container.append("ul").attr("class").string("leaderboard");
-		this.container.append("div").attr("class").string("clear");
-	}
-	,setVariables: function(variableIndependents,variableDependents) {
-		this.variableDependent = variableDependents[0];
-		this.variableIndependent = variableIndependents[0];
-	}
-	,backgroundSize: function(dp,i) {
-		return 100 * Reflect.field(dp,this.variableDependent.type) / (this.useMax?this.stats.max:this.stats.tot) + "%";
-	}
-	,data: function(dps) {
-		var me = this;
-		var name = this.variableDependent.type;
-		if(null != this.sortDataPoint) dps.sort(this.sortDataPoint);
-		if(null == this.variableDependent.stats) return;
-		var stats = this.stats = (function($this) {
-			var $r;
-			var $t = $this.variableDependent.stats;
-			if(Std["is"]($t,rg.data.StatsNumeric)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this));
-		var choice = this.list.selectAll("li").data(dps,this.id.$bind(this));
-		var enter = choice.enter().append("li").attr("class").stringf(function(_,i) {
-			return (me.displayGradient?"":"nogradient ") + "stroke-" + i;
-		}).text().stringf(this.description.$bind(this)).attr("title").stringf(this.title.$bind(this));
-		if(this.displayGradient) enter.style("background-size").stringf(this.backgroundSize.$bind(this));
-		if(null != this.click) enter.on("click.user",this.onClick.$bind(this));
-		if(this.animated) enter.attr("opacity")["float"](0).eachNode(this.fadeIn.$bind(this)); else enter.attr("opacity")["float"](1);
-		var update = choice.update().select("li").text().stringf(this.description.$bind(this)).attr("title").stringf(this.title.$bind(this));
-		if(this.displayGradient) update.style("background-size").stringf(this.backgroundSize.$bind(this));
-		if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).attr("opacity")["float"](0).remove(); else choice.exit().remove();
-		this.ready.dispatch();
-	}
-	,onClick: function(dp,_) {
-		this.click(dp);
-	}
-	,fadeIn: function(n,i) {
-		var me = this;
-		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).attr("opacity")["float"](1).endNode(function(_,_1) {
-			me._created++;
-		});
-	}
-	,description: function(dp,i) {
-		return this.labelDataPoint(dp,this.stats);
-	}
-	,title: function(dp,i) {
-		return this.labelDataPointOver(dp,this.stats);
-	}
-	,id: function(dp,_) {
-		return rg.util.DataPoints.id(dp,[this.variableDependent.type]);
-	}
-	,__class__: rg.view.html.widget.Leadeboard
-}
 rg.view.frame.Orientation = $hxClasses["rg.view.frame.Orientation"] = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
 rg.view.frame.Orientation.Vertical = ["Vertical",0];
 rg.view.frame.Orientation.Vertical.toString = $estr;
@@ -10636,6 +10212,23 @@ rg.controller.visualization.VisualizationLineChart.prototype = $extend(rg.contro
 		return results;
 	}
 	,__class__: rg.controller.visualization.VisualizationLineChart
+});
+rg.controller.info.InfoLabelLeaderboard = $hxClasses["rg.controller.info.InfoLabelLeaderboard"] = function() {
+	rg.controller.info.InfoLabel.call(this);
+}
+rg.controller.info.InfoLabelLeaderboard.__name__ = ["rg","controller","info","InfoLabelLeaderboard"];
+rg.controller.info.InfoLabelLeaderboard.filters = function() {
+	return [{ field : "rank", validator : function(v) {
+		return v == null || Reflect.isFunction(v);
+	}, filter : null},{ field : "value", validator : function(v) {
+		return v == null || Reflect.isFunction(v);
+	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
+}
+rg.controller.info.InfoLabelLeaderboard.__super__ = rg.controller.info.InfoLabel;
+rg.controller.info.InfoLabelLeaderboard.prototype = $extend(rg.controller.info.InfoLabel.prototype,{
+	rank: null
+	,value: null
+	,__class__: rg.controller.info.InfoLabelLeaderboard
 });
 thx.js.AccessTween = $hxClasses["thx.js.AccessTween"] = function(transition,tweens) {
 	this.transition = transition;
@@ -18726,18 +18319,20 @@ rg.controller.visualization.VisualizationLeaderboard.prototype = $extend(rg.cont
 	,chart: null
 	,init: function() {
 		var me = this;
-		this.chart = new rg.view.html.widget.Leadeboard(this.container);
+		this.chart = new rg.view.html.chart.Leadeboard(this.container);
 		this.chart.ready.add(function() {
 			me.ready.dispatch();
 		});
 		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
 		if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
+		if(null != this.info.label.rank) this.chart.labelRank = this.info.label.rank;
+		if(null != this.info.label.value) this.chart.labelValue = this.info.label.value;
 		this.chart.animated = this.info.animation.animated;
 		this.chart.animationDuration = this.info.animation.duration;
 		this.chart.animationDelay = this.info.animation.delay;
 		this.chart.animationEase = this.info.animation.ease;
-		this.chart.displayGradient = this.info.displayGradient;
-		this.chart.useMax = this.info.gradientOnMax;
+		this.chart.useMax = this.info.usemax;
+		this.chart.displayBar = this.info.displaybar;
 		if(null != this.info.click) this.chart.click = this.info.click;
 		if(null != this.info.sortDataPoint) this.chart.sortDataPoint = this.info.sortDataPoint;
 		this.chart.init();
@@ -20288,6 +19883,338 @@ math.BigInteger.prototype = {
 	}
 	,__class__: math.BigInteger
 }
+if(!rg.view.html.chart) rg.view.html.chart = {}
+rg.view.html.chart.PivotTable = $hxClasses["rg.view.html.chart.PivotTable"] = function(container) {
+	this.ready = new hxevents.Notifier();
+	this.container = container;
+	this.displayColumnTotal = true;
+	this.displayRowTotal = true;
+	this.displayHeatMap = true;
+	this.colorStart = rg.view.html.chart.PivotTable.defaultColorStart;
+	this.colorEnd = rg.view.html.chart.PivotTable.defaultColorEnd;
+	this.incolumns = 1;
+}
+rg.view.html.chart.PivotTable.__name__ = ["rg","view","html","chart","PivotTable"];
+rg.view.html.chart.PivotTable.prototype = {
+	displayColumnTotal: null
+	,displayRowTotal: null
+	,displayHeatMap: null
+	,colorStart: null
+	,colorEnd: null
+	,ready: null
+	,columnVariables: null
+	,rowVariables: null
+	,cellVariable: null
+	,incolumns: null
+	,click: null
+	,container: null
+	,stats: null
+	,labelDataPoint: function(dp,stats) {
+		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
+		return thx.culture.FormatNumber["int"](v);
+	}
+	,labelDataPointOver: function(dp,stats) {
+		var v = Reflect.field(dp,this.cellVariable.type);
+		if(Math.isNaN(v)) return "0";
+		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
+	}
+	,labelAxis: function(v) {
+		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(v,"."),"."));
+	}
+	,labelAxisValue: function(v,axis) {
+		if(axis.indexOf("time:") >= 0) {
+			var p = axis.substr(axis.indexOf("time:") + "time:".length);
+			return rg.util.Periodicity.format(p,v);
+		} else return rg.util.RGStrings.humanize(v);
+	}
+	,labelTotal: function(v,stats) {
+		return thx.culture.FormatNumber["int"](v);
+	}
+	,labelTotalOver: function(v,stats) {
+		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
+	}
+	,data: function(dps) {
+		var d = this.transformData(dps), table = this.container.append("table").classed().add("pivot-table"), thead = table.append("thead"), leftspan = d.rows.length > 0?d.rows[0].values.length:0, color = thx.color.Rgb.interpolatef(this.colorStart,this.colorEnd);
+		this.stats = d.stats;
+		if(d.columns.length > 0) {
+			var _g1 = 0, _g = d.column_headers.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var tr = thead.append("tr");
+				this.prependSpacer(leftspan,tr);
+				var header = tr.append("th").attr("class").string("col-header").text().string(this.labelAxis(d.column_headers[i]));
+				if(d.columns.length > 1) header.attr("colspan")["float"](d.columns.length);
+				var counter = 1, last = d.columns[0].values[i];
+				tr = thead.append("tr");
+				if(i == d.column_headers.length - 1) {
+					var _g2 = 0, _g3 = d.row_headers;
+					while(_g2 < _g3.length) {
+						var h = _g3[_g2];
+						++_g2;
+						tr.append("th").attr("class").string("row-header").text().string(this.labelAxis(h));
+					}
+				} else this.prependSpacer(leftspan,tr);
+				var _g3 = 1, _g2 = d.columns.length;
+				while(_g3 < _g2) {
+					var j = _g3++;
+					var value = d.columns[j].values[i];
+					if(last == value) counter++; else {
+						this.buildValue(last,d.column_headers[i],counter,tr);
+						counter = 1;
+						last = value;
+					}
+				}
+				if(null != last) this.buildValue(last,d.column_headers[i],counter,tr);
+			}
+		}
+		if(d.column_headers.length == 0) {
+			var tr = thead.append("tr");
+			var _g = 0, _g1 = d.row_headers;
+			while(_g < _g1.length) {
+				var h = _g1[_g];
+				++_g;
+				tr.append("th").attr("class").string("row header").text().string(this.labelAxis(h));
+			}
+		}
+		var tbody = table.append("tbody"), last = [];
+		var _g = 0, _g1 = d.rows;
+		while(_g < _g1.length) {
+			var row = _g1[_g];
+			++_g;
+			var tr = tbody.append("tr"), len = row.values.length;
+			var _g2 = 0;
+			while(_g2 < len) {
+				var i = _g2++;
+				var v = row.values[i], rep = v == last[i];
+				if(!rep) {
+					last[i] = v;
+					var _g3 = i + 1;
+					while(_g3 < len) {
+						var j = _g3++;
+						last[j] = null;
+					}
+				}
+				tr.append("th").attr("class").string(rep?"row value empty":"row value").text().string(rep?"":this.labelAxisValue(v,d.row_headers[i]));
+			}
+			var _g2 = 0, _g3 = row.cells;
+			while(_g2 < _g3.length) {
+				var cell = _g3[_g2];
+				++_g2;
+				var td = tr.append("td").text().string(this.formatDataPoint(cell)).attr("title").string(this.formatDataPointOver(cell));
+				if(null != this.click) td.onNode("click",(function(f,a1) {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})(this.onClick.$bind(this),cell));
+				if(this.displayHeatMap) {
+					var c = color(Reflect.field(cell,this.cellVariable.type) / d.stats.max);
+					td.style("background-color").color(c).style("color").color(thx.color.Rgb.contrastBW(c));
+				}
+			}
+			if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("row total").text().string(this.formatTotal(row.stats.tot)).attr("title").string(this.formatTotalOver(row.stats.tot));
+		}
+		var tfoot = table.append("tfoot");
+		if(this.displayColumnTotal && d.rows.length > 1) {
+			var tr = tfoot.append("tr");
+			this.prependSpacer(leftspan,tr);
+			var _g = 0, _g1 = d.columns;
+			while(_g < _g1.length) {
+				var col = _g1[_g];
+				++_g;
+				tr.append("th").attr("class").string("column total").text().string(this.formatTotal(col.stats.tot)).attr("title").string(this.formatTotalOver(col.stats.tot));
+			}
+			if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("table total").text().string(this.formatTotal(d.stats.tot)).attr("title").string(this.formatTotalOver(d.stats.tot));
+		}
+		this.ready.dispatch();
+	}
+	,onClick: function(dp,_,_1) {
+		this.click(dp);
+	}
+	,formatTotal: function(v,_) {
+		return this.labelTotal(v,this.stats);
+	}
+	,formatTotalOver: function(v,_) {
+		return this.labelTotalOver(v,this.stats);
+	}
+	,formatDataPoint: function(dp,_) {
+		return this.labelDataPoint(dp,this.stats);
+	}
+	,formatDataPointOver: function(dp,_) {
+		return this.labelDataPointOver(dp,this.stats);
+	}
+	,buildValue: function(value,header,counter,tr) {
+		var th = tr.append("th").attr("class").string("column value").text().string(this.labelAxisValue(value,header));
+		if(counter > 1) th.attr("colspan")["float"](counter);
+	}
+	,prependSpacer: function(counter,tr) {
+		if(counter == 0) return;
+		var th = tr.append("th").attr("class").string("spacer");
+		if(counter > 1) th.attr("colspan")["float"](counter);
+	}
+	,init: function() {
+	}
+	,setVariables: function(variableIndependents,variableDependents) {
+		this.cellVariable = variableDependents[0];
+		this.columnVariables = [];
+		var _g1 = 0, _g = this.incolumns;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.columnVariables.push(variableIndependents[i]);
+		}
+		this.rowVariables = [];
+		var _g1 = this.incolumns, _g = variableIndependents.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.rowVariables.push(variableIndependents[i]);
+		}
+	}
+	,destroy: function() {
+		this.container.html().string("");
+	}
+	,transformData: function(dps) {
+		var column_headers = [], row_headers = [], columns = [], rows = [], tcalc = new rg.data.StatsNumeric(null);
+		var variable;
+		var _g1 = 0, _g = Ints.min(1,this.columnVariables.length);
+		while(_g1 < _g) {
+			var i = _g1++;
+			variable = this.columnVariables[i];
+			column_headers.push(variable.type);
+			var _g2 = 0, _g3 = this.range(variable);
+			while(_g2 < _g3.length) {
+				var value = _g3[_g2];
+				++_g2;
+				columns.push({ values : [value], stats : null});
+			}
+		}
+		var _g1 = 1, _g = this.columnVariables.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			variable = this.columnVariables[i];
+			column_headers.push(variable.type);
+			var tmp = columns.copy();
+			columns = [];
+			var _g2 = 0;
+			while(_g2 < tmp.length) {
+				var src = tmp[_g2];
+				++_g2;
+				var _g3 = 0, _g4 = this.range(variable);
+				while(_g3 < _g4.length) {
+					var value = _g4[_g3];
+					++_g3;
+					var column = Objects.clone(src);
+					column.values.push(value);
+					columns.push(column);
+				}
+			}
+		}
+		var name, headers = column_headers;
+		var _g1 = 0, _g = columns.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var column = [columns[i]], ccalc = new rg.data.StatsNumeric(null);
+			column[0].stats = ccalc;
+			var _g2 = 0, _g3 = Arrays.filter(dps,(function(column) {
+				return function(dp) {
+					var _g3 = 0, _g21 = headers.length;
+					while(_g3 < _g21) {
+						var j = _g3++;
+						name = headers[j];
+						if(Reflect.field(dp,name) != column[0].values[j]) return false;
+					}
+					return true;
+				};
+			})(column));
+			while(_g2 < _g3.length) {
+				var dp = _g3[_g2];
+				++_g2;
+				var v = Reflect.field(dp,this.cellVariable.type);
+				if(null == v) continue;
+				ccalc.add(v);
+				tcalc.add(v);
+			}
+		}
+		var _g1 = 0, _g = Ints.min(1,this.rowVariables.length);
+		while(_g1 < _g) {
+			var i = _g1++;
+			variable = this.rowVariables[i];
+			row_headers.push(variable.type);
+			var _g2 = 0, _g3 = this.range(variable);
+			while(_g2 < _g3.length) {
+				var value = _g3[_g2];
+				++_g2;
+				rows.push({ values : [value], stats : null, cells : null});
+			}
+		}
+		var _g1 = 1, _g = this.rowVariables.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			variable = this.rowVariables[i];
+			row_headers.push(variable.type);
+			var tmp = rows.copy();
+			rows = [];
+			var _g2 = 0;
+			while(_g2 < tmp.length) {
+				var src = tmp[_g2];
+				++_g2;
+				var _g3 = 0, _g4 = this.range(variable);
+				while(_g3 < _g4.length) {
+					var value = _g4[_g3];
+					++_g3;
+					var row = Objects.clone(src);
+					row.values.push(value);
+					rows.push(row);
+				}
+			}
+		}
+		var name1, headers1 = row_headers;
+		var _g = 0;
+		while(_g < rows.length) {
+			var row = [rows[_g]];
+			++_g;
+			row[0].stats = new rg.data.StatsNumeric(null);
+			row[0].cells = [];
+			var rdps = Arrays.filter(dps,(function(row) {
+				return function(d) {
+					var _g2 = 0, _g1 = headers1.length;
+					while(_g2 < _g1) {
+						var j = _g2++;
+						name1 = headers1[j];
+						if(Reflect.field(d,name1) != row[0].values[j]) return false;
+					}
+					return true;
+				};
+			})(row));
+			var _g1 = 0;
+			while(_g1 < columns.length) {
+				var column = [columns[_g1]];
+				++_g1;
+				var dp = Arrays.firstf(rdps,(function(column) {
+					return function(dp) {
+						var _g3 = 0, _g2 = column[0].values.length;
+						while(_g3 < _g2) {
+							var i = _g3++;
+							if(Reflect.field(dp,column_headers[i]) != column[0].values[i]) return false;
+						}
+						return true;
+					};
+				})(column));
+				var v = Reflect.field(dp,this.cellVariable.type);
+				if(null == v) {
+					row[0].cells.push({ });
+					continue;
+				}
+				row[0].cells.push(dp);
+				row[0].stats.add(v);
+			}
+		}
+		return { column_headers : column_headers, row_headers : row_headers, columns : columns, rows : rows, stats : tcalc};
+	}
+	,range: function(variable) {
+		return variable.axis.range(variable.min(),variable.max());
+	}
+	,__class__: rg.view.html.chart.PivotTable
+}
 rg.data.Sources = $hxClasses["rg.data.Sources"] = function(sources) {
 	this.sources = sources;
 	this.length = sources.length;
@@ -21807,9 +21734,9 @@ rg.graph.EdgeSplitter.prototype = {
 }
 rg.controller.info.InfoLeaderboard = $hxClasses["rg.controller.info.InfoLeaderboard"] = function() {
 	this.animation = new rg.controller.info.InfoAnimation();
-	this.label = new rg.controller.info.InfoLabel();
-	this.displayGradient = true;
-	this.gradientOnMax = false;
+	this.label = new rg.controller.info.InfoLabelLeaderboard();
+	this.usemax = false;
+	this.displaybar = true;
 }
 rg.controller.info.InfoLeaderboard.__name__ = ["rg","controller","info","InfoLeaderboard"];
 rg.controller.info.InfoLeaderboard.filters = function() {
@@ -21822,33 +21749,26 @@ rg.controller.info.InfoLeaderboard.filters = function() {
 	}},{ field : "label", validator : function(v) {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
+		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelLeaderboard(),v)}];
 	}},{ field : "click", validator : function(v) {
 		return Reflect.isFunction(v);
 	}, filter : null},{ field : "sort", validator : function(v) {
 		return Reflect.isFunction(v);
 	}, filter : function(v) {
 		return [{ field : "sortDataPoint", value : v}];
-	}},{ field : "effect", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		switch(v.toLowerCase()) {
-		case "gradient":case "gradient-tot":
-			return [{ field : "displayGradient", value : true},{ field : "gradientOnMax", value : false}];
-		case "gradient-max":
-			return [{ field : "displayGradient", value : true},{ field : "gradientOnMax", value : true}];
-		default:
-			return [{ field : "displayGradient", value : false},{ field : "gradientOnMax", value : true}];
-		}
-	}}];
+	}},{ field : "displaybar", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "usemax", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null}];
 }
 rg.controller.info.InfoLeaderboard.prototype = {
 	animation: null
 	,label: null
 	,click: null
 	,sortDataPoint: null
-	,displayGradient: null
-	,gradientOnMax: null
+	,usemax: null
+	,displaybar: null
 	,__class__: rg.controller.info.InfoLeaderboard
 }
 rg.util.Urls = $hxClasses["rg.util.Urls"] = function() { }
@@ -23019,7 +22939,7 @@ rg.controller.visualization.VisualizationPivotTable.prototype = $extend(rg.contr
 	,chart: null
 	,init: function() {
 		var me = this;
-		this.chart = new rg.view.html.widget.PivotTable(this.container);
+		this.chart = new rg.view.html.chart.PivotTable(this.container);
 		this.chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -24029,15 +23949,6 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(stats.type,"."),".")) + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			}};
 			break;
-		case "leaderboard":
-			var type = params.axes[0].type;
-			params.options.label = { datapointover : function(dp,stats) {
-				var v = Reflect.field(dp,stats.type);
-				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
-			}, datapoint : function(dp,stats) {
-				return rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
-			break;
 		case "sankey":
 			var axes = params.axes, type = axes[axes.length - 1].type;
 			params.options.label = { datapointover : function(dp,stats) {
@@ -24870,6 +24781,118 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",9];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
+rg.view.html.chart.Leadeboard = $hxClasses["rg.view.html.chart.Leadeboard"] = function(container) {
+	this.ready = new hxevents.Notifier();
+	this.container = container;
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.elasticf();
+	this.animationDelay = 150;
+	this._created = 0;
+	this.displayGradient = true;
+	this.useMax = false;
+}
+rg.view.html.chart.Leadeboard.__name__ = ["rg","view","html","chart","Leadeboard"];
+rg.view.html.chart.Leadeboard.prototype = {
+	variableIndependent: null
+	,variableDependent: null
+	,animated: null
+	,animationDuration: null
+	,animationDelay: null
+	,animationEase: null
+	,click: null
+	,sortDataPoint: null
+	,displayGradient: null
+	,useMax: null
+	,ready: null
+	,displayBar: null
+	,container: null
+	,list: null
+	,_created: null
+	,stats: null
+	,labelDataPoint: function(dp,stats) {
+		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(Reflect.field(dp,this.variableIndependent.type),"."),"."));
+	}
+	,labelDataPointOver: function(dp,stats) {
+		return Floats.format(100 * Reflect.field(dp,stats.type) / (this.useMax?stats.max:stats.tot),"P:1");
+	}
+	,labelRank: function(dp,i,stats) {
+		return "" + (i + 1);
+	}
+	,labelValue: function(dp,stats) {
+		return rg.util.Properties.formatValue(stats.type,dp);
+	}
+	,init: function() {
+		var div = this.container.append("div").attr("class").string("leaderboard");
+		this.list = div.append("ul");
+		div.append("div").attr("class").string("clear");
+	}
+	,setVariables: function(variableIndependents,variableDependents) {
+		this.variableDependent = variableDependents[0];
+		this.variableIndependent = variableIndependents[0];
+	}
+	,backgroundSize: function(dp,i) {
+		return 100 * Reflect.field(dp,this.variableDependent.type) / (this.useMax?this.stats.max:this.stats.tot) + "%";
+	}
+	,data: function(dps) {
+		var name = this.variableDependent.type;
+		if(null != this.sortDataPoint) dps.sort(this.sortDataPoint);
+		if(null == this.variableDependent.stats) return;
+		var stats = this.stats = (function($this) {
+			var $r;
+			var $t = $this.variableDependent.stats;
+			if(Std["is"]($t,rg.data.StatsNumeric)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this));
+		var choice = this.list.selectAll("li").data(dps,this.id.$bind(this));
+		var enterli = choice.enter().append("li");
+		enterli.attr("title").stringf(this.lTitle.$bind(this));
+		enterli.append("div").attr("class").stringf(function(_,i) {
+			return i % 2 == 0?"background fill-0":"background";
+		});
+		var enterlabels = enterli.append("div").attr("class").string("labels");
+		if(null != this.labelRank.$bind(this)) enterlabels.append("div").attr("class").string("rank").text().stringf(this.lRank.$bind(this));
+		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("description text-0").text().stringf(this.lDataPoint.$bind(this));
+		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("value text-1").text().stringf(this.lValue.$bind(this));
+		enterli.append("div").attr("class").string("clear");
+		if(this.displayBar) {
+			var barpadding = enterli.append("div").attr("class").string("barpadding"), enterbar = barpadding.append("div").attr("class").string("barcontainer");
+			enterbar.append("div").attr("class").string("barback fill-0");
+			enterbar.append("div").attr("class").string("bar fill-0").style("width").stringf(this.backgroundSize.$bind(this));
+			enterli.append("div").attr("class").string("clear");
+		}
+		if(null != this.click) enterli.on("click.user",this.onClick.$bind(this));
+		if(this.animated) enterli.style("opacity")["float"](0).eachNode(this.fadeIn.$bind(this)); else enterli.style("opacity")["float"](1);
+		if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
+		this.ready.dispatch();
+	}
+	,onClick: function(dp,_) {
+		this.click(dp);
+	}
+	,fadeIn: function(n,i) {
+		var me = this;
+		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).attr("opacity")["float"](1).endNode(function(_,_1) {
+			me._created++;
+		});
+	}
+	,lRank: function(dp,i) {
+		return this.labelRank(dp,i,this.stats);
+	}
+	,lValue: function(dp,i) {
+		return this.labelValue(dp,this.stats);
+	}
+	,lDataPoint: function(dp,i) {
+		return this.labelDataPoint(dp,this.stats);
+	}
+	,lTitle: function(dp,i) {
+		return this.labelDataPointOver(dp,this.stats);
+	}
+	,id: function(dp,_) {
+		return rg.util.DataPoints.id(dp,[this.variableDependent.type]);
+	}
+	,__class__: rg.view.html.chart.Leadeboard
+}
 rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(container) {
 	this.mapvalues = new Hash();
 	this.id = ++rg.view.html.widget.Logo._id;
@@ -27063,8 +27086,6 @@ chx.text.Sprintf.kLONG_VALUE = 32;
 chx.text.Sprintf.kUSE_SEPARATOR = 64;
 chx.text.Sprintf.DEBUG = false;
 chx.text.Sprintf.TRACE = false;
-rg.view.html.widget.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
-rg.view.html.widget.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.data.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
 thx.js.Timer.timeout = 0;
 thx.js.Timer.queue = null;
@@ -27169,6 +27190,8 @@ Constants.PROTO_FTP = "ftp://";
 Constants.PROTO_RTMP = "rtmp://";
 math.BigInteger.MAX_RADIX = 36;
 math.BigInteger.MIN_RADIX = 2;
+rg.view.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
+rg.view.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;

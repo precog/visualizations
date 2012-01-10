@@ -519,6 +519,14 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "bin/demo/flixmaster/index.html",
+			"settings":
+			{
+				"buffer_size": 1042,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -612,6 +620,7 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/flixmaster/simple.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/pivottable.html",
 		"/Users/francoponticelli/Desktop/snapengage annotations",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/MVPOptions.hx",
@@ -738,8 +747,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/website/demo/geo-static.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestOneCycleRemover.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/js/visualizations.test.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GreedyCyclePartitioner.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/graph/TestGreedyCyclePartitioner.hx"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/graph/GreedyCyclePartitioner.hx"
 	],
 	"find":
 	{
@@ -913,8 +921,36 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "bin/demo/flixmaster/index.html",
+					"settings":
+					{
+						"buffer_size": 1042,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								915,
+								915
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],

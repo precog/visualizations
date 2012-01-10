@@ -260,26 +260,6 @@ class MVPOptions
 								;
 							}
 						};
-					case "leaderboard":
-						var type = params.axes[0].type;
-						params.options.label = {
-							datapointover : function(dp, stats) {
-								var v = DataPoints.value(dp, stats.type);
-								return
-									stats.tot != 0.0
-									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
-									: RGStrings.humanize(v)
-								;
-							},
-
-							datapoint : function(dp, stats) {
-								return
-									Properties.formatValue(type, dp)
-									 + ": " +
-									Properties.formatValue(stats.type, dp)
-								;
-							}
-						};
 					case "sankey":
 						var axes : Array<Dynamic> = params.axes,
 							type = axes[axes.length - 1].type;
