@@ -6218,7 +6218,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.0.5473"};
+	r.info.charts = { version : "1.2.0.5489"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -10842,13 +10842,17 @@ rg.util.Auth.prototype = {
 		return this.test == host;
 	}
 	,authorizeMany: function(hosts) {
+		var auth = false;
 		var _g = 0;
 		while(_g < hosts.length) {
 			var host = hosts[_g];
 			++_g;
-			if(this.authorize(host)) return true;
+			if(this.authorize(host)) {
+				auth = true;
+				break;
+			}
 		}
-		return false;
+		return auth;
 	}
 	,__class__: rg.util.Auth
 }
@@ -23893,6 +23897,47 @@ Iterators.prototype = {
 }
 rg.controller.MVPOptions = $hxClasses["rg.controller.MVPOptions"] = function() { }
 rg.controller.MVPOptions.__name__ = ["rg","controller","MVPOptions"];
+rg.controller.MVPOptions.a1 = function(params,handler) {
+	var authcode = ReportGrid.authCode, authorized = false;
+	if(null == authcode) {
+		var script = rg.util.Js.findScript("reportgrid-charts.js");
+		var args = rg.util.Urls.parseQueryParameters(script.src);
+		authcode = Reflect.field(args,"authCode");
+	}
+	if(null != authcode) {
+		var auth = new rg.util.Auth(authcode), hosts = [], host = js.Lib.window.location.hostname;
+		if(new EReg("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$","").match(host)) hosts.push(host); else {
+			var parts = host.split(".");
+			if(parts.length == 3 && parts[0] == "www") parts.shift();
+			hosts.push(parts.join("."));
+			while(parts.length > 2) parts.shift();
+			hosts.push("*." + parts.join("."));
+		}
+		authorized = auth.authorizeMany(hosts);
+	} else authorized = false;
+	rg.controller.MVPOptions.a1 = function(params1,handler1) {
+		params1.options.a = authorized;
+		handler1(params1);
+	};
+	rg.controller.MVPOptions.a1(params,handler);
+}
+rg.controller.MVPOptions.a2 = function(params,handler) {
+	var changeAndToggle = function(auth) {
+		if(null == auth) rg.controller.MVPOptions.a2 = function(params1,handler1) {
+			handler1(params1);
+		}; else rg.controller.MVPOptions.a2 = function(params1,handler1) {
+			params1.options.a = auth;
+			handler1(params1);
+		};
+		rg.controller.MVPOptions.a2(params,handler);
+	};
+	var api = ReportGrid.token;
+	if(params.options.a || null == api) changeAndToggle(null); else api(function(result) {
+		changeAndToggle((result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read);
+	},function(err) {
+		changeAndToggle(null);
+	});
+}
 rg.controller.MVPOptions.complete = function(parameters,handler) {
 	var chain = new rg.util.ChainedExecutor(handler), datapoints = null;
 	if(null == parameters.options) parameters.options = { };
@@ -23904,7 +23949,7 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 48, className : "rg.controller.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 124, className : "rg.controller.MVPOptions", methodName : "complete"});
 	}
 	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
 	if(null == options.logoposition) options.logoposition = (function($this) {
@@ -23930,35 +23975,8 @@ rg.controller.MVPOptions.complete = function(parameters,handler) {
 		}
 		return $r;
 	}(this));
-	chain.addAction(function(params,handler1) {
-		var authcode = ReportGrid.authCode, authorized = false;
-		if(null == authcode) {
-			var script = rg.util.Js.findScript("reportgrid-charts.js");
-			var args = rg.util.Urls.parseQueryParameters(script.src);
-			authcode = Reflect.field(args,"authCode");
-		}
-		if(null != authcode) {
-			var auth = new rg.util.Auth(authcode), hosts = [], host = js.Lib.window.location.hostname;
-			if(new EReg("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$","").match(host)) hosts.push(host); else {
-				var parts = host.split(".");
-				if(parts.length == 3 && parts[0] == "www") parts.shift();
-				hosts.push(parts.join("."));
-				while(parts.length > 2) parts.shift();
-				hosts.push("*." + parts.join("."));
-			}
-			params.options.a = authorized = auth.authorizeMany(hosts);
-		} else params.options.a = authorized = false;
-		handler1(params);
-	});
-	chain.addAction(function(params,handler1) {
-		var api = ReportGrid.token;
-		if(params.options.a || null == api) handler1(params); else api(function(result) {
-			params.options.a = (result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read;
-			handler1(params);
-		},function(err) {
-			handler1(params);
-		});
-	});
+	chain.addAction(rg.controller.MVPOptions.a1);
+	chain.addAction(rg.controller.MVPOptions.a2);
 	chain.addAction(function(params,handler1) {
 		if(null == params.data) {
 			var src = [];

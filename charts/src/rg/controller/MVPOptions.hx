@@ -19,6 +19,82 @@ using Arrays;
 
 class MVPOptions
 {
+	public dynamic static function a1(params : Dynamic, handler : Dynamic -> Void)
+	{
+		var authcode = untyped __js__("ReportGrid.authCode"),
+			authorized = false;
+		if(null == authcode)
+		{
+			var script = rg.util.Js.findScript("reportgrid-charts.js");
+			var args = Urls.parseQueryParameters(untyped script.src);
+			authcode = Reflect.field(args, "authCode");
+		}
+		if(null != authcode)
+		{
+			var auth  = new Auth(authcode),
+				hosts = [],
+				host = js.Lib.window.location.hostname;
+			if((~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/).match(host))
+			{
+				hosts.push(host);
+			} else {
+				var parts = host.split('.');
+				if(parts.length == 3 && parts[0] == 'www')
+				{
+					parts.shift();
+				}
+				hosts.push(parts.join('.'));
+				while(parts.length > 2)
+				{
+					parts.shift();
+				}
+				hosts.push("*."+parts.join('.'));
+			}
+			authorized = auth.authorizeMany(hosts);
+		} else {
+			authorized = false;
+		}
+		a1 = function(params : Dynamic, handler : Dynamic -> Void)
+		{
+			params.options.a = authorized;
+			handler(params);
+		}
+		a1(params, handler);
+	}
+
+	public dynamic static function a2(params : Dynamic, handler : Dynamic -> Void)
+	{
+		var changeAndToggle = function(auth : Null<Bool>)
+		{
+			if(null == auth)
+			{
+				a2 = function(params : Dynamic, handler : Dynamic -> Void)
+				{
+					handler(params);
+				}
+			} else {
+				a2 = function(params : Dynamic, handler : Dynamic -> Void)
+				{
+					params.options.a = auth;
+					handler(params);
+				}
+			}
+			a2(params, handler);
+		}
+		var api : (Dynamic -> Void) -> (String -> Void) -> Void = untyped __js__("ReportGrid.token");
+		if(params.options.a || null == api)
+		{
+			changeAndToggle(null);
+		} else
+		{
+			api(function(result) {
+				changeAndToggle((result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read);
+			}, function(err) {
+				changeAndToggle(null);
+			});
+		}
+	}
+
 	public static function complete(parameters : Dynamic, handler : Dynamic -> Void)
 	{
 		var chain      = new ChainedExecutor(handler),
@@ -77,61 +153,11 @@ class MVPOptions
 		// TODO test with multiple charts in one page
 		// TODO move to a function that is called only once for many viz
 		// check authorization
-		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
-		{
-			var authcode = untyped __js__("ReportGrid.authCode"),
-				authorized = false;
-			if(null == authcode)
-			{
-				var script = rg.util.Js.findScript("reportgrid-charts.js");
-				var args = Urls.parseQueryParameters(untyped script.src);
-				authcode = Reflect.field(args, "authCode");
-			}
-			if(null != authcode)
-			{
-				var auth  = new Auth(authcode),
-					hosts = [],
-					host = js.Lib.window.location.hostname;
-				if((~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/).match(host))
-				{
-					hosts.push(host);
-				} else {
-					var parts = host.split('.');
-					if(parts.length == 3 && parts[0] == 'www')
-					{
-						parts.shift();
-					}
-					hosts.push(parts.join('.'));
-					while(parts.length > 2)
-					{
-						parts.shift();
-					}
-					hosts.push("*."+parts.join('.'));
-				}
-				params.options.a = authorized = auth.authorizeMany(hosts);
-			} else {
-				params.options.a = authorized = false;
-			}
-			handler(params);
-		});
+		chain.addAction(a1);
 
 		// TODO: this should probably be moved to reportgrid-query.js
 		// check RG token
-		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
-		{
-			var api : (Dynamic -> Void) -> (String -> Void) -> Void = untyped __js__("ReportGrid.token");
-			if(params.options.a || null == api)
-				handler(params);
-			else
-			{
-				api(function(result) {
-					params.options.a = (result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read;
-					handler(params);
-				}, function(err) {
-					handler(params);
-				});
-			}
-		});
+		chain.addAction(a2);
 
 		// ensure data
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)

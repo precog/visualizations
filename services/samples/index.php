@@ -6,7 +6,6 @@ define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
 define('AUTHCODE_LOCALHOST', 'IGLBxMA3vSoTDWz+Fu3cjPZNmdpS+fYSlwyN7LvpssTRTRpE4Lt+hqO9nX6LaLf2SZZBVf7vFDTyUID1uWUdoPC73kAA9HVzsOZwxO5jY+NdazmeBwK64oD5vRkxth5vO3ejfjx0nkh7mgaoSwde0zri1V+b+SVHR92RidT5Isk=');
 
-
 $viz_categories = array(
 	'SK' => array("name" => 'Sankey',				"sequence" => 0),
 	'GE' => array("name" => 'Geo Chart',			"sequence" => 10),

@@ -15,9 +15,15 @@ class Auth
 
 	public function authorizeMany(hosts : Array<String>)
 	{
+		var auth = false;
 		for(host in hosts)
+		{
 			if(authorize(host))
-				return true;
-		return false;
+			{
+				auth = true;
+				break;
+			}
+		}
+		return auth;
 	}
 }
