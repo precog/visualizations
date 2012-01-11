@@ -249,7 +249,30 @@ class TickmarksOrtho extends Layer
 				case Left, Right:
 					labelOrientation = LabelOrientation.Aligned;
 			}
+		} else if(null == labelAnchor)
+		{
+			switch(labelOrientation)
+			{
+				case Aligned:
+					switch(anchor)
+					{
+						case Top, Left:
+							labelAnchor = GridAnchor.Left;
+						case Bottom, Right:
+							labelAnchor = GridAnchor.Right;
+					}
+				case Orthogonal:
+					switch(anchor)
+					{
+						case Top, Left:
+							labelAnchor = GridAnchor.Top;
+						case Bottom, Right:
+							labelAnchor = GridAnchor.Bottom;
+					}
+				case FixedAngle(a):
+			}
 		}
+
 		if (null == labelAnchor)
 		{
 			switch(anchor)

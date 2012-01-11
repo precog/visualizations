@@ -13,8 +13,7 @@ ReportGrid.lineChart("#chart", {
 				return dp.year + ": " + ReportGrid.format(dp.population) + " individuals";
 			}
 		},
-		labelangle : 0,
-		labelanchor : "right",
+		labelorientation : "align",
 		symbol : function(dp) {
 			return ReportGrid.symbol("square", (dp.area / 3794083) * 200) // max area
 		}

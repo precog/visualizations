@@ -15,7 +15,7 @@ class RGConst
 #else
 	public static var BASE_URL_GEOJSON = "/rg/vis/geo/json/";
 	//http://devapp01.reportgrid.com:20000/
-	public static var SERVICE_RENDERING_STATIC= "http://devapi.reportgrid.com/services/viz/renderer/";
+	public static var SERVICE_RENDERING_STATIC= "/rg/services/viz/renderer/";
 	public static var TRACKING_TOKEN = "SUPERFAKETOKEN";
 #end
 }

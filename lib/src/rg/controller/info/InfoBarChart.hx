@@ -14,6 +14,7 @@ class InfoBarChart extends InfoCartesianChart
 	public var barPaddingDataPoint : Float;
 	public var barPaddingAxis: Float;
 	public var barPadding : Float;
+	public var horizontal : Bool;
 	public function new()
 	{
 		super();
@@ -22,12 +23,17 @@ class InfoBarChart extends InfoCartesianChart
 		barPadding = 12;
 		barPaddingAxis = 4;
 		barPaddingDataPoint = 2;
+		horizontal = false;
 	}
 
 	public static function filters()
 	{
 		return [{
 			field : "stacked",
+			validator : function(v) return Std.is(v, Bool),
+			filter : null
+		}, {
+			field : "horizontal",
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
 		}, {

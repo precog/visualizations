@@ -204,12 +204,16 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			tickmarks.paddingMajor = info.paddingTickMajor;
 			tickmarks.paddingLabel = info.paddingLabel;
 
-			var s = info.labelOrientation(type);
-			if (null != s)
-				tickmarks.labelOrientation = LabelOrientations.parse(s);
+			var s;
 			s = info.labelAnchor(type);
 			if (null != s)
 				tickmarks.labelAnchor = GridAnchors.parse(s);
+			s = info.labelOrientation(type);
+			if (null != s)
+			{
+				tickmarks.labelOrientation = LabelOrientations.parse(s);
+				
+			}
 			var a;
 			if(null != (a = info.labelAngle(type)))
 				tickmarks.labelAngle = a;

@@ -5,11 +5,11 @@
 
 package rg.view.svg.widget;
 
-class LabelOrientations 
+class LabelOrientations
 {
 	public static function parse(s : String) : LabelOrientation
 	{
-		return switch(s.toLowerCase()) 
+		return switch(s.toLowerCase())
 		{
 			case "ortho", "orthogonal":
 				LabelOrientation.Orthogonal;

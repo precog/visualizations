@@ -19,8 +19,14 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 
 	override function initAxes()
 	{
-		xvariable = cast independentVariables[0];
-		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+		if(infoBar.horizontal)
+		{
+			xvariable = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d)[0];
+			yvariables = cast [independentVariables[0]];
+		} else {
+			yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+			xvariable = cast independentVariables[0];
+		}
 	}
 
 	override function initChart()
@@ -40,6 +46,8 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 		chart.padding = infoBar.barPadding;
 		chart.paddingAxis = infoBar.barPaddingAxis;
 		chart.paddingDataPoint = infoBar.barPaddingDataPoint;
+		chart.horizontal = infoBar.horizontal;
+
 
 		this.chart = chart;
 	}

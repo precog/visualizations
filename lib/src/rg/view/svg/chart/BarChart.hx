@@ -36,6 +36,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	public var padding : Float;
 	public var paddingAxis : Float;
 	public var paddingDataPoint : Float;
+	public var horizontal : Bool;
 
 	public function new(panel : Panel)
 	{
@@ -49,14 +50,22 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		padding = 10;
 		paddingAxis = 4;
 		paddingDataPoint = 2;
+		horizontal = false;
 	}
 
-	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
 	{
-		super.setVariables(variables, variableIndependents, yVariables, data);
+		if(horizontal)
+		{
+			this.xVariable  = cast variableDependents[0];
+			this.yVariables = cast variableIndependents;
+		} else {
+			this.xVariable  = cast variableIndependents[0];
+			this.yVariables = cast variableDependents;
+		}
 		if (stacked)
 		{
-			for (v in this.yVariables)
+			for (v in variableDependents)
 				v.meta.max = Math.NEGATIVE_INFINITY;
 
 			// datapoints
@@ -65,7 +74,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				// y axis
 				for (j in 0...data[i].length)
 				{
-					var v = yVariables[j],
+					var v = variableDependents[j],
 						t = 0.0;
 					// segment
 					for (k in 0...data[i][j].length)
@@ -79,18 +88,92 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		}
 	}
 
+
 	override function data(dps : Array<Array<Array<DataPoint>>>)
 	{
-		var values = dps.length,
-			axisgs = new Hash(),
-			discrete, scaledist = ScaleDistribution.ScaleFill,
-			span
-		;
-
-		if (null != (discrete = Types.as(xVariable.axis, IAxisDiscrete)) && !Type.enumEq(ScaleDistribution.ScaleFill, (scaledist = discrete.scaleDistribution)))
-			span = (width - (padding * (values - 1))) / values;
+		if(horizontal)
+			datah(dps);
 		else
-			span = (width - (padding * (values - 1))) / values;
+			datav(dps);
+	}
+
+	function datah(dps : Array<Array<Array<DataPoint>>>)
+	{
+		var axisgs = new Hash(),
+			span = (height - (padding * (dps.length - 1))) / dps.length;
+
+		function getGroup(name : String, container : Selection)
+		{
+			var gr = axisgs.get(name);
+			if (null == gr)
+			{
+				gr = container.append("svg:g").attr("class").string(name);
+				axisgs.set(name, gr);
+			}
+			return gr;
+		}
+
+		var flatdata = dps.flatten().flatten();
+
+		// dependent values
+		for (i in 0...dps.length)
+		{
+			var valuedps = dps[i],
+				dist = (span - (paddingAxis * (valuedps.length - 1))) / valuedps.length;
+
+			// axis values
+			for (j in 0...valuedps.length)
+			{
+				var axisdps = valuedps[j],
+					axisg = getGroup("group-" + j, chart),
+					xtype = xVariable.type,
+					xaxis = xVariable.axis,
+					xmin  = xVariable.min(),
+					xmax  = xVariable.max(),
+					ytype = yVariables[j].type,
+					yaxis = yVariables[j].axis,
+					ymin  = yVariables[j].min(),
+					ymax  = yVariables[j].max(),
+					pad   = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
+					offset = - span / 2 + j * (dist + paddingAxis),
+					stats = xVariable.stats,
+					over = callback(onmouseover, stats),
+					click = callback(onclick, stats)
+				;
+
+				var prev = 0.0;
+				// segment values, datapoints
+				for (k in 0...axisdps.length)
+				{
+					var dp = axisdps[k],
+						seggroup = getGroup("fill-" + k, axisg),
+						x = prev,
+						y = height * yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)),
+						w = (xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)) * width);
+					var bar = seggroup.append("svg:rect")
+						.attr("class").string("bar")
+						.attr("x").float(x)
+						.attr("y").float(height - (stacked ? y - offset : y - offset - k * (pad + paddingDataPoint)))
+						.attr("height").float(stacked ? dist : pad)
+						.attr("width").float(w)
+						.onNode("mouseover", over)
+						.onNode("click", callback(click, dp))
+					;
+					Access.setData(bar.node(), dp);
+					if(displayGradient)
+						bar.eachNode(applyGradient);
+					if(stacked)
+						prev = x + w;
+				}
+			}
+		}
+		ready.dispatch();
+	}
+
+	function datav(dps : Array<Array<Array<DataPoint>>>)
+	{
+		var axisgs = new Hash(),
+			span = (width - (padding * (dps.length - 1))) / dps.length;
 
 		function getGroup(name : String, container : Selection)
 		{
@@ -108,23 +191,26 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		for (i in 0...dps.length)
 		{
 			var valuedps = dps[i],
-				waxis = (span - (paddingAxis * (valuedps.length - 1))) / valuedps.length
-			;
+				dist = (span - (paddingAxis * (valuedps.length - 1))) / valuedps.length;
 
 			// axis values
 			for (j in 0...valuedps.length)
 			{
 				var axisdps = valuedps[j],
 					axisg = getGroup("group-" + j, chart),
+					xtype = xVariable.type,
+					xaxis = xVariable.axis,
+					xmin  = xVariable.min(),
+					xmax  = xVariable.max(),
 					ytype = yVariables[j].type,
 					yaxis = yVariables[j].axis,
-					ymin = yVariables[j].min(),
-					ymax = yVariables[j].max(),
-					w = Math.max(1, (waxis - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
-					offset = - span / 2 + j * (waxis + paddingAxis),
-					ystats = yVariables[j].stats,
-					over = callback(onmouseover, ystats),
-					click = callback(onclick, ystats)
+					ymin  = yVariables[j].min(),
+					ymax  = yVariables[j].max(),
+					pad = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
+					offset = - span / 2 + j * (dist + paddingAxis),
+					stats = yVariables[j].stats,
+					over = callback(onmouseover, stats),
+					click = callback(onclick, stats)
 				;
 
 				var prev = 0.0;
@@ -133,13 +219,13 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				{
 					var dp = axisdps[k],
 						seggroup = getGroup("fill-" + k, axisg),
-						x = width * xVariable.axis.scale(xVariable.min(), xVariable.max(), DataPoints.value(dp, xVariable.type)),
+						x = width * xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)),
 						y = prev,
 						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height;
 					var bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
-						.attr("x").float(stacked ? x + offset : x + offset + k * (w + paddingDataPoint))
-						.attr("width").float(stacked ? waxis : w)
+						.attr("x").float(stacked ? x + offset : x + offset + k * (pad + paddingDataPoint))
+						.attr("width").float(stacked ? dist : pad)
 						.attr("y").float(height - h - y)
 						.attr("height").float(h)
 						.onNode("mouseover", over)
@@ -156,15 +242,15 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		ready.dispatch();
 	}
 
-	function onclick(ystats : Stats<Dynamic>, dp : DataPoint, _, i : Int)
+	function onclick(stats : Stats<Dynamic>, dp : DataPoint, _, i : Int)
 	{
-		click(dp, ystats);
+		click(dp, stats);
 	}
 
-	function onmouseover(ystats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
+	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
 	{
 		var dp = Access.getData(n),
-			text = labelDataPointOver(dp, ystats);
+			text = labelDataPointOver(dp, stats);
 		if (null == text)
 			tooltip.hide();
 		else
@@ -174,10 +260,6 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				y = sel.attr("y").getFloat(),
 				w = sel.attr("width").getFloat();
 
-//			for (j in 0...segments.length)
-//				tooltip.removeClass("fill-" + j);
-//			tooltip.addClass("fill-" + seg);
-//			tooltip.show();
 			tooltip.text = text.split("\n");
 			moveTooltip(x + w / 2, y);
 		}

@@ -12,8 +12,6 @@ ReportGrid.lineChart("#chart", {
 			datapointover : function(dp) {
 				return dp.year + ": " + ReportGrid.format(dp.population) + " individuals";
 			}
-		},
-		labelangle : function(a) { return a != "year" ? 180 : 0; },
-		labelanchor : function(a) { return a == "year" ? "right" : "left"; }
+		}
 	}
 })
