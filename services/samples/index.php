@@ -5,7 +5,7 @@ define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
 //define('AUTHCODE_LOCALHOST', 'IGLBxMA3vSoTDWz+Fu3cjPZNmdpS+fYSlwyN7LvpssTRTRpE4Lt+hqO9nX6LaLf2SZZBVf7vFDTyUID1uWUdoPC73kAA9HVzsOZwxO5jY+NdazmeBwK64oD5vRkxth5vO3ejfjx0nkh7mgaoSwde0zri1V+b+SVHR92RidT5Isk=');
-define('AUTHCODE_LOCALHOST', 'kcb+LX2KAKWofM1W54YYcFEE+aZ1L00UGK9PgcnrHpLRuFjCh6bOFSoMwc0NN3jmpZYqsBZ0uR08TQd0R0CmKj1o8FSJfNhPl2ZdjxqmhcZnYgiiFTWN2TLFVu4KvhSUAHp6jMaCzAPNlq7ImGjOovsVyti541aOn5+oFQXNeX0=');'
+define('AUTHCODE_LOCALHOST', 'kcb+LX2KAKWofM1W54YYcFEE+aZ1L00UGK9PgcnrHpLRuFjCh6bOFSoMwc0NN3jmpZYqsBZ0uR08TQd0R0CmKj1o8FSJfNhPl2ZdjxqmhcZnYgiiFTWN2TLFVu4KvhSUAHp6jMaCzAPNlq7ImGjOovsVyti541aOn5+oFQXNeX0=');
 
 $viz_categories = array(
 	'SK' => array("name" => 'Sankey',				"sequence" => 0),
