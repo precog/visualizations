@@ -5890,7 +5890,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.1.5557"};
+	r.info.charts = { version : "1.2.1.5558"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -27159,7 +27159,7 @@ rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|
 thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
-rg.RGConst.BASE_URL_GEOJSON = "http://localhost/rg/vis/geo/json/";
+rg.RGConst.BASE_URL_GEOJSON = "/rg/vis/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://devapi.reportgrid.com/services/viz/renderer/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 rg.util.Properties.TIME_TOKEN = "time:";
