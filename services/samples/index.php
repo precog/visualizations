@@ -28,7 +28,7 @@ $viz_categories = array(
 	'BB' => array("name" => 'Leaderboard',			"sequence" => 100)
 );
 
-if(in_array($_SERVER['SERVER_NAME'], array('localhost')) || intval($_SERVER['SERVER_NAME']) > 0)
+if(in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0)
 {
 	define('REPORTGRID_VIZ_API', '/rg/charts/js/reportgrid-charts.js?authCode='.urlencode(AUTHCODE_LOCALHOST));
 	define('REPORTGRID_CSS_API', '/rg/charts/css/rg.css');

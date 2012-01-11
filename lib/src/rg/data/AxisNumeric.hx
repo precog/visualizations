@@ -33,7 +33,7 @@ class AxisNumeric implements IAxis<Float>
 				stepM = _step(span, mM),
 				stepm = _step(span, mm);
 			minors = Floats.range(start, end + stepM, stepm);
-			majors = Floats.range(start, end, stepM);
+			majors = Floats.range(start, end * 1.0001, stepM);
 		}
 		return Tickmarks.bound(null == minors
 			? majors.map(function(d : Float, i : Int) return Tickmarks.forFloat(start, end, d, true))
