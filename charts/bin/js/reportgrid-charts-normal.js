@@ -1224,7 +1224,7 @@ rg.data.AxisNumeric.prototype = {
 		} else {
 			var mM = 5, mm = 20, stepM = rg.data.AxisNumeric._step(span,mM), stepm = rg.data.AxisNumeric._step(span,mm);
 			minors = Floats.range(start,end + stepM,stepm);
-			majors = Floats.range(start,end,stepM);
+			majors = Floats.range(start,end * 1.0001,stepM);
 		}
 		return rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.data.Tickmark(d,true,(d - start) / (end - start));
@@ -1446,10 +1446,11 @@ rg.controller.visualization.VisualizationCartesian.prototype = $extend(rg.contro
 			tickmarks.paddingMinor = this.info.paddingTickMinor;
 			tickmarks.paddingMajor = this.info.paddingTickMajor;
 			tickmarks.paddingLabel = this.info.paddingLabel;
-			var s = this.info.labelOrientation(type);
-			if(null != s) tickmarks.labelOrientation = rg.view.svg.widget.LabelOrientations.parse(s);
+			var s;
 			s = this.info.labelAnchor(type);
 			if(null != s) tickmarks.labelAnchor = rg.view.svg.widget.GridAnchors.parse(s);
+			s = this.info.labelOrientation(type);
+			if(null != s) tickmarks.labelOrientation = rg.view.svg.widget.LabelOrientations.parse(s);
 			var a;
 			if(null != (a = this.info.labelAngle(type))) tickmarks.labelAngle = a;
 			tickmarks.displayAnchorLine = displayAnchorLine;
@@ -1485,10 +1486,17 @@ rg.controller.visualization.VisualizationBarChart.__super__ = rg.controller.visu
 rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
 	infoBar: null
 	,initAxes: function() {
-		this.xvariable = this.independentVariables[0];
-		this.yvariables = this.dependentVariables.map(function(d,_) {
-			return d;
-		});
+		if(this.infoBar.horizontal) {
+			this.xvariable = this.dependentVariables.map(function(d,_) {
+				return d;
+			})[0];
+			this.yvariables = [this.independentVariables[0]];
+		} else {
+			this.yvariables = this.dependentVariables.map(function(d,_) {
+				return d;
+			});
+			this.xvariable = this.independentVariables[0];
+		}
 	}
 	,initChart: function() {
 		var me = this;
@@ -1511,6 +1519,7 @@ rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.control
 		chart.padding = this.infoBar.barPadding;
 		chart.paddingAxis = this.infoBar.barPaddingAxis;
 		chart.paddingDataPoint = this.infoBar.barPaddingDataPoint;
+		chart.horizontal = this.infoBar.horizontal;
 		this.chart = chart;
 	}
 	,transformData: function(dps) {
@@ -5696,6 +5705,7 @@ rg.view.svg.chart.BarChart = $hxClasses["rg.view.svg.chart.BarChart"] = function
 	this.padding = 10;
 	this.paddingAxis = 4;
 	this.paddingDataPoint = 2;
+	this.horizontal = false;
 }
 rg.view.svg.chart.BarChart.__name__ = ["rg","view","svg","chart","BarChart"];
 rg.view.svg.chart.BarChart.__super__ = rg.view.svg.chart.CartesianChart;
@@ -5709,12 +5719,19 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,padding: null
 	,paddingAxis: null
 	,paddingDataPoint: null
-	,setVariables: function(variables,variableIndependents,yVariables,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,yVariables,data);
+	,horizontal: null
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		if(this.horizontal) {
+			this.xVariable = variableDependents[0];
+			this.yVariables = variableIndependents;
+		} else {
+			this.xVariable = variableIndependents[0];
+			this.yVariables = variableDependents;
+		}
 		if(this.stacked) {
-			var _g = 0, _g1 = this.yVariables;
-			while(_g < _g1.length) {
-				var v = _g1[_g];
+			var _g = 0;
+			while(_g < variableDependents.length) {
+				var v = variableDependents[_g];
 				++_g;
 				v.meta.max = Math.NEGATIVE_INFINITY;
 			}
@@ -5724,7 +5741,7 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 				var _g3 = 0, _g2 = data[i].length;
 				while(_g3 < _g2) {
 					var j = _g3++;
-					var v = yVariables[j], t = 0.0;
+					var v = variableDependents[j], t = 0.0;
 					var _g5 = 0, _g4 = data[i][j].length;
 					while(_g5 < _g4) {
 						var k = _g5++;
@@ -5736,8 +5753,10 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		}
 	}
 	,data: function(dps) {
-		var values = dps.length, axisgs = new Hash(), discrete, scaledist = rg.data.ScaleDistribution.ScaleFill, span;
-		if(null != (discrete = Types["as"](this.xVariable.axis,rg.data.IAxisDiscrete)) && !Type.enumEq(rg.data.ScaleDistribution.ScaleFill,scaledist = discrete.scaleDistribution)) span = (this.width - this.padding * (values - 1)) / values; else span = (this.width - this.padding * (values - 1)) / values;
+		if(this.horizontal) this.datah(dps); else this.datav(dps);
+	}
+	,datah: function(dps) {
+		var axisgs = new Hash(), span = (this.height - this.padding * (dps.length - 1)) / dps.length;
 		var getGroup = function(name,container) {
 			var gr = axisgs.get(name);
 			if(null == gr) {
@@ -5750,25 +5769,70 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		var _g1 = 0, _g = dps.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var valuedps = dps[i], waxis = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
+			var valuedps = dps[i], dist = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
 			var _g3 = 0, _g2 = valuedps.length;
 			while(_g3 < _g2) {
 				var j = _g3++;
-				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), w = Math.max(1,(waxis - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (waxis + this.paddingAxis), ystats = this.yVariables[j].stats, over = (function(f,a1) {
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f,a1) {
 					return function(a2,a3) {
 						return f(a1,a2,a3);
 					};
-				})(this.onmouseover.$bind(this),ystats), click = (function(f,a1) {
+				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
 					return function(a2,a3,a4) {
 						return f(a1,a2,a3,a4);
 					};
-				})(this.onclick.$bind(this),ystats);
+				})(this.onclick.$bind(this),stats);
 				var prev = 0.0;
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),Reflect.field(dp,this.xVariable.type)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (w + this.paddingDataPoint)).attr("width")["float"](this.stacked?waxis:w).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,a1) {
+					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f,a1) {
+						return function(a2,a3) {
+							return f(a1,a2,a3);
+						};
+					})(click,dp));
+					bar.node()["__data__"] = dp;
+					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
+					if(this.stacked) prev = x + w;
+				}
+			}
+		}
+		this.ready.dispatch();
+	}
+	,datav: function(dps) {
+		var axisgs = new Hash(), span = (this.width - this.padding * (dps.length - 1)) / dps.length;
+		var getGroup = function(name,container) {
+			var gr = axisgs.get(name);
+			if(null == gr) {
+				gr = container.append("svg:g").attr("class").string(name);
+				axisgs.set(name,gr);
+			}
+			return gr;
+		};
+		var flatdata = Arrays.flatten(Arrays.flatten(dps));
+		var _g1 = 0, _g = dps.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var valuedps = dps[i], dist = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
+			var _g3 = 0, _g2 = valuedps.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f,a1) {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
+					return function(a2,a3,a4) {
+						return f(a1,a2,a3,a4);
+					};
+				})(this.onclick.$bind(this),stats);
+				var prev = 0.0;
+				var _g5 = 0, _g4 = axisdps.length;
+				while(_g5 < _g4) {
+					var k = _g5++;
+					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,a1) {
 						return function(a2,a3) {
 							return f(a1,a2,a3);
 						};
@@ -5781,11 +5845,11 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		}
 		this.ready.dispatch();
 	}
-	,onclick: function(ystats,dp,_,i) {
-		this.click(dp,ystats);
+	,onclick: function(stats,dp,_,i) {
+		this.click(dp,stats);
 	}
-	,onmouseover: function(ystats,n,i) {
-		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,ystats);
+	,onmouseover: function(stats,n,i) {
+		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
 			this.tooltip.setText(text.split("\n"));
@@ -5887,7 +5951,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.1.5548"};
+	r.info.charts = { version : "1.2.2.5665"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -13544,6 +13608,37 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 				this.labelOrientation = rg.view.svg.widget.LabelOrientation.Aligned;
 				break;
 			}
+		} else if(null == this.labelAnchor) {
+			var $e = (this.labelOrientation);
+			switch( $e[1] ) {
+			case 1:
+				switch( (this.anchor)[1] ) {
+				case 0:
+				case 2:
+					this.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
+					break;
+				case 1:
+				case 3:
+					this.labelAnchor = rg.view.svg.widget.GridAnchor.Right;
+					break;
+				}
+				break;
+			case 2:
+				switch( (this.anchor)[1] ) {
+				case 0:
+				case 2:
+					this.labelAnchor = rg.view.svg.widget.GridAnchor.Top;
+					break;
+				case 1:
+				case 3:
+					this.labelAnchor = rg.view.svg.widget.GridAnchor.Bottom;
+					break;
+				}
+				break;
+			case 0:
+				var a = $e[2];
+				break;
+			}
 		}
 		if(null == this.labelAnchor) {
 			switch( (this.anchor)[1] ) {
@@ -17905,10 +18000,13 @@ rg.controller.info.InfoBarChart = $hxClasses["rg.controller.info.InfoBarChart"] 
 	this.barPadding = 12;
 	this.barPaddingAxis = 4;
 	this.barPaddingDataPoint = 2;
+	this.horizontal = false;
 }
 rg.controller.info.InfoBarChart.__name__ = ["rg","controller","info","InfoBarChart"];
 rg.controller.info.InfoBarChart.filters = function() {
 	return [{ field : "stacked", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "horizontal", validator : function(v) {
 		return Std["is"](v,Bool);
 	}, filter : null},{ field : "effect", validator : function(v) {
 		return Std["is"](v,String);
@@ -17935,6 +18033,7 @@ rg.controller.info.InfoBarChart.prototype = $extend(rg.controller.info.InfoCarte
 	,barPaddingDataPoint: null
 	,barPaddingAxis: null
 	,barPadding: null
+	,horizontal: null
 	,__class__: rg.controller.info.InfoBarChart
 });
 rg.view.svg.chart.ColorScaleModes = $hxClasses["rg.view.svg.chart.ColorScaleModes"] = function() { }

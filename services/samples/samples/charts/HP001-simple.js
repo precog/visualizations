@@ -31,7 +31,7 @@ ReportGrid.barChart("#chart", {
 				return a == 'date' ? v : ReportGrid.format(v * 100, "P:0");
 			}
 		},
-		labelorientation : "aligned",
+		barpadding : 10,
 		horizontal : true
 	}
 });
