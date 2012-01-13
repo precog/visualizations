@@ -1,7 +1,14 @@
-<?
+<?php
 
 define("PHANTOMJS", "DISPLAY=:0 /usr/local/bin/phantomjs");
-define("SERVICE_PATH", "/services/renderer/v1/");
+define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
+if(LOCAL)
+{
+	define("SERVICE_PATH", "/rg/services/viz/renderer/");
+} else {
+	define("SERVICE_PATH", "/services/viz/renderer/");
+}
+
 
 require_once('lib/config.class.php');
 
@@ -87,9 +94,17 @@ function phantom($script, $input, $output, $width, $height)
 	return shell_exec($cmd);
 }
 
+function hostname()
+{
+	if(LOCAL)
+		return $_SERVER['SERVER_NAME'];
+	else
+		return trim(`hostname -f`);
+}
+
 function serviceUrl()
 {
-	return "http://".trim(`hostname -f`).SERVICE_PATH;
+	return "http://".hostname().SERVICE_PATH;
 }
 
 function url($name, $ext = null)

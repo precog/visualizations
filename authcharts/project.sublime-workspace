@@ -520,126 +520,6 @@
 	"buffers":
 	[
 		{
-			"file": "src/Main.hx",
-			"settings":
-			{
-				"buffer_size": 725,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/private/etc/apache2/httpd.conf",
-			"settings":
-			{
-				"buffer_size": 24465,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Documents/scripts/installneko.sh",
-			"settings":
-			{
-				"buffer_size": 1315,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "terms combinations:\njs/html/html5/svg/client-side charting/charts/visualizations/reports/reporting\n\n\ncompetitors:\nd3\nd3.js\nhighcharts\njscharts\namcharts\nraphael\nraphaeljs\ntuftegraph\ndygraphs\nmilkchart\nvisualize\njqplot\nprotovis\nflot\nGoogle Chart API\nprocessing\njsxgraph\nprotochart\nthejit\ndojox charting\nplotkit\nbluff\n\n\nother keywords:\ntufte",
-			"settings":
-			{
-				"buffer_size": 338,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/TODO",
-			"settings":
-			{
-				"buffer_size": 58,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.common",
-			"settings":
-			{
-				"buffer_size": 945,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.win32",
-			"settings":
-			{
-				"buffer_size": 201,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.mac",
-			"settings":
-			{
-				"buffer_size": 170,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Sites/logs/access_log",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Sites/logs/error_log",
-			"settings":
-			{
-				"buffer_size": 7289,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/authcharts/lib/EReg.class.php",
-			"settings":
-			{
-				"buffer_size": 3124,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/Key.hx",
-			"settings":
-			{
-				"buffer_size": 925,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "build.hxml",
-			"settings":
-			{
-				"buffer_size": 94,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/genphp.ml",
-			"settings":
-			{
-				"buffer_size": 61356,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/build-php.sh",
-			"settings":
-			{
-				"buffer_size": 51,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "/Users/francoponticelli/Documents/scripts/haxesrc/build.ml",
 			"settings":
 			{
@@ -744,9 +624,23 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/build-php.sh",
+		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/genphp.ml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/authcharts/build.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/authcharts/src/Key.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/authcharts/lib/EReg.class.php",
-		"/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.linux",
 		"/Users/francoponticelli/Sites/logs/error_log",
+		"/Users/francoponticelli/Sites/logs/access_log",
+		"/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.mac",
+		"/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.win32",
+		"/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.common",
+		"/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/TODO",
+		"/Users/francoponticelli/Documents/scripts/installneko.sh",
+		"/private/etc/apache2/httpd.conf",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/authcharts/src/Main.hx",
+		"/Users/francoponticelli/Projects/reportgrid/client-libraries/geo/json/rn-world-name.json",
+		"/Users/francoponticelli/Projects/reportgrid/client-libraries/geo/json/world-countries-name.json",
+		"/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.linux",
 		"/Users/francoponticelli/local.bak/neko/mod_neko2.ndll",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/authcharts/build-php.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/authcharts/project.sublime-project",
@@ -857,21 +751,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SG002-Stream Graph - Flat.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SG001-Stream Graph.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/PC003-Donut Chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/template.php",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC008-Line Chart, Inverted Axis.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC009-Line Chart - Symbols.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisNumeric.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC014-Line Chart - Complex.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC010-Line Chart - Multiple Axis.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/LC011-Line Chart - Segmented Values.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC001-Bar Chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/BC002-Bar Chart, Multiple Segments.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/SP019-Scatter Graph.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/css/rg.css",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/RGConst.hx",
-		"/Users/francoponticelli/Projects/reportgrid/client-libraries/js/src/v1/reportgrid-viz.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/TickmarkOrdinal.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoCartesianChart.hx"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/template.php"
 	],
 	"find":
 	{
@@ -1090,408 +970,11 @@
 	"groups":
 	[
 		{
-			"selected": 13,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "src/Main.hx",
-					"settings":
-					{
-						"buffer_size": 725,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								487,
-								487
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/private/etc/apache2/httpd.conf",
-					"settings":
-					{
-						"buffer_size": 24465,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 9.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/Users/francoponticelli/Documents/scripts/installneko.sh",
-					"settings":
-					{
-						"buffer_size": 1315,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								692,
-								692
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"settings":
-					{
-						"buffer_size": 338,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								338,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/TODO",
-					"settings":
-					{
-						"buffer_size": 58,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.common",
-					"settings":
-					{
-						"buffer_size": 945,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.win32",
-					"settings":
-					{
-						"buffer_size": 201,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/Users/francoponticelli/Projects/extern/caffeine-hx/dll_src/crypt/Makefile.mac",
-					"settings":
-					{
-						"buffer_size": 170,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8,
-								8
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "/Users/francoponticelli/Sites/logs/access_log",
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "/Users/francoponticelli/Sites/logs/error_log",
-					"settings":
-					{
-						"buffer_size": 7289,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/authcharts/lib/EReg.class.php",
-					"settings":
-					{
-						"buffer_size": 3124,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1301,
-								1321
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML5/Syntaxes/HTML 5.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 4.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "src/Key.hx",
-					"settings":
-					{
-						"buffer_size": 925,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								925,
-								925
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "build.hxml",
-					"settings":
-					{
-						"buffer_size": 94,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								74,
-								74
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/Hxml.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/genphp.ml",
-					"settings":
-					{
-						"buffer_size": 61356,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								16420,
-								16420
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/OCaml/OCaml.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 7104.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/build-php.sh",
-					"settings":
-					{
-						"buffer_size": 51,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 15,
 					"file": "/Users/francoponticelli/Documents/scripts/haxesrc/build.ml",
 					"settings":
 					{
@@ -1512,7 +995,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1962.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1551,10 +1034,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 92.0
-	},
 	"replace":
 	{
 		"height": 62.0

@@ -4,6 +4,7 @@ define('SAMPLES_CHARTS_DIR', 'samples/charts/');
 define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
+define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
 //define('AUTHCODE_LOCALHOST', 'IGLBxMA3vSoTDWz+Fu3cjPZNmdpS+fYSlwyN7LvpssTRTRpE4Lt+hqO9nX6LaLf2SZZBVf7vFDTyUID1uWUdoPC73kAA9HVzsOZwxO5jY+NdazmeBwK64oD5vRkxth5vO3ejfjx0nkh7mgaoSwde0zri1V+b+SVHR92RidT5Isk=');
 define('AUTHCODE_LOCALHOST', 'kcb+LX2KAKWofM1W54YYcFEE+aZ1L00UGK9PgcnrHpLRuFjCh6bOFSoMwc0NN3jmpZYqsBZ0uR08TQd0R0CmKj1o8FSJfNhPl2ZdjxqmhcZnYgiiFTWN2TLFVu4KvhSUAHp6jMaCzAPNlq7ImGjOovsVyti541aOn5+oFQXNeX0=');
 
@@ -32,7 +33,7 @@ $viz_categories = array(
 	'BB' => array("name" => 'Leaderboard',			"sequence" => 210)
 );
 
-if(in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0)
+if(LOCAL)
 {
 	define('REPORTGRID_VIZ_API', '/rg/charts/js/reportgrid-charts.js?authCode='.urlencode(AUTHCODE_LOCALHOST));
 	define('REPORTGRID_CSS_API', '/rg/charts/css/rg.css');
@@ -62,7 +63,7 @@ function categoryOptions($cat)
 			continue;
 		$results[] = array('sample' => $entry, 'title' => extractTitle($entry));
 	}
-	usort($results, optionComparison);
+	usort($results, 'optionComparison');
 	return $results;
 }
 
@@ -193,7 +194,7 @@ function manage()
 function json($v)
 {
 	$json = json_encode($v);
-	if($_GET['callback'])
+	if(@$_GET['callback'])
 	{
 		echo $_GET['callback']."($json);";
 	} else {

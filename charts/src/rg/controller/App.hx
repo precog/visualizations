@@ -103,8 +103,10 @@ class App
 
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
-		if(!supportsSvg())
+		if(supportsSvg())
 		{
+
+// IMAGE RENDERING FOR DEVICES
 			var downloader = new Downloader(visualization.container, download.service, download.background);
 			visualization.addReadyOnce(function() {
 				downloader.download("png", "#ffffff", function(url : String) {

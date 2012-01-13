@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" href="samples/css/sample.css"/>
 <script src="<?php echo $VIZ_API; ?>"></script>
 <?php
-if($info['style'])
+if(@$info['style'])
 {
 	echo "<style>\n";
 	echo $info['style']."\n";
@@ -22,7 +22,7 @@ if(@$info['html'])
 echo $info['html'];
 } else {
 ?>
-<div id="chart"<?php echo ($info['class']?' class="'.$info['class'].'"':'')?>></div>
+<div id="chart"<?php echo (@$info['class']?' class="'.$info['class'].'"':'')?>></div>
 <?php
 }
 ?>

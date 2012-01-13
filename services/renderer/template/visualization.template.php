@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>ReportGrid Renderer</title>
-<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=<?=$config->tokenId?>" type="text/javascript"></script>
+<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=<?php echo $config->tokenId?>" type="text/javascript"></script>
 <script src="http://api.reportgrid.com/js/reportgrid-viz.js" type="text/javascript"></script>
 <?php
 for($i=0;$i<count($css = $config->css());$i++)
@@ -10,18 +10,18 @@ for($i=0;$i<count($css = $config->css());$i++)
 }
 ?>
 </head>
-<body<?=($config->backgroundColor() ? (' bgcolor="'.$config->backgroundColor().'" style="background-color:' . $config->backgroundColor() .'"') : '')?>>
-<<?=$config->element()?><?=$config->id()?' id="'.$config->id().'"':''?><?=$config->className()?' class="'.$config->className().'"':''?>></<?=$config->element()?>>
+<body<?php echo ($config->backgroundColor() ? (' bgcolor="'.$config->backgroundColor().'" style="background-color:' . $config->backgroundColor() .'"') : ''); ?>>
+<<?php echo $config->element()?><?php echo ($config->id()?' id="'.$config->id().'"':''); ?><?php echo ($config->className()?' class="'.$config->className().'"':''); ?>></<?php echo $config->element(); ?>>
 <script type="text/javascript"><![CDATA[
 
-var params = <?=$config->params()?>;
+var params = <?php echo $config->params(); ?>;
 params.options = params.options || {};
 params.options.ready = function() { RG_READY = true; };
 params.options.track = { enabled : false };
 params.options.animation = { animated : false };
 params.options.visualization = params.options.visualization || "linechart";
 
-ReportGrid.viz("<?=$config->id()?'#'.$config->id():'.'.str_replace(' ', '.', $config->className())?>", params);
+ReportGrid.viz("<?php echo $config->id()?'#'.$config->id():'.'.str_replace(' ', '.', $config->className())?>", params);
 
 window.setTimeout(function() {
     RG_READY = true;
