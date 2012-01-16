@@ -2,11 +2,12 @@ package rg.view.html.widget;
 
 import haxe.Timer;
 import thx.js.Dom;
-import js.Dom;
 import thx.js.Selection;
+import js.Dom;
 
 class Logo
 {
+	public var chartContainer(default, null) : Selection;
 	static var _id = 0;
 	static inline var LOGO_WIDTH = 194;
 	static inline var LOGO_HEIGHT = 29;
@@ -16,9 +17,11 @@ class Logo
 	var image : Selection;
 	var id : Int;
 	var mapvalues : Hash<Dynamic>;
-	public function new(container : Selection)
+	var padRight : Int;
+	public function new(container : Selection, padright : Int)
 	{
 		mapvalues = new Hash();
+		this.padRight = padright;
 		id = ++_id;
 		this.container = container;
 		create();
@@ -51,8 +54,8 @@ class Logo
 
 	function createFrame()
 	{
-		var chart = container.select('*').node();
-		frame = container.insert('div', chart)
+		chartContainer = container.select('*');
+		frame = container.insert('div', chartContainer.node())
 			.attr('class').string('reportgridbrandcontainer')
 		;
 		updateFrame();
@@ -127,7 +130,7 @@ class Logo
 		setStyle(anchor, 'height', LOGO_HEIGHT+'px');
 		setStyle(anchor, 'width', LOGO_WIDTH+'px');
 		setStyle(anchor, 'top', pos.y + 'px');
-		setStyle(anchor, 'left', (pos.x - LOGO_WIDTH + width) + 'px');
+		setStyle(anchor, 'left', (pos.x - LOGO_WIDTH + width-padRight) + 'px');
 	}
 
 	function updateImage()

@@ -1,5 +1,6 @@
 //** DATA
-var data = [{
+function data() {
+	return [{
 		id : "Clip 1",
 		count : 100,
 		parents : { "Clip 10" : 1, "Clip 6" : 10 }
@@ -40,11 +41,12 @@ var data = [{
 		count : 9,
 		parents : { "Clip 8" : 1, "Clip 9" : 5, "Clip 7" : 3 }
 	}];
+}
 
 //** VIZ
 ReportGrid.sankey("#chart", {
 	axes : ["count"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		layoutmethod : "weightbalance"
 	}

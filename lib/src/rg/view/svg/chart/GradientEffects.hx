@@ -12,7 +12,7 @@ class GradientEffects
 		if (!Std.is(d, String))
 			return false;
 		var s : String = d,
-			parts = s.toLowerCase().split("-");
+			parts = s.toLowerCase().split(":");
 		return switch(parts[0])
 		{
 			case "gradient", "noeffect": true;
@@ -22,7 +22,7 @@ class GradientEffects
 	
 	public static function parse(s : String) : GradientEffect 
 	{
-		var parts = s.toLowerCase().split("-");
+		var parts = s.toLowerCase().split(":");
 		switch(parts.shift())
 		{
 			case "gradient":

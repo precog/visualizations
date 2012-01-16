@@ -101,9 +101,11 @@ class App
 		};
 		request.request();
 
+
+		var brandPadding = 0;
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
-		if(supportsSvg())
+		if(!supportsSvg())
 		{
 
 // IMAGE RENDERING FOR DEVICES
@@ -129,6 +131,7 @@ class App
 				visualization.addReadyOnce(function()
 				{
 					var widget = new DownloaderMenu(downloader.download, download.position, download.formats, visualization.container);
+					brandPadding = 24;
 				});
 
 			}
@@ -138,7 +141,7 @@ class App
 		{
 			visualization.addReadyOnce(function()
 			{
-				var widget = new Logo(visualization.container);
+				var widget = new Logo(visualization.container, brandPadding);
 			});
 		}
 		return visualization;

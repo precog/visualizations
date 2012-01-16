@@ -4,7 +4,7 @@ usa-population-and-area-1790-2000
 //** VIZ
 ReportGrid.lineChart("#chart", {
 	axes : ["year", "population"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		label : {
 			axis : function(a) { return a },

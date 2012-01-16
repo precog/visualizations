@@ -36,11 +36,11 @@ $viz_categories = array(
 if(LOCAL)
 {
 	define('REPORTGRID_VIZ_API', '/rg/charts/js/reportgrid-charts.js?authCode='.urlencode(AUTHCODE_LOCALHOST));
-	define('REPORTGRID_CSS_API', '/rg/charts/css/rg.css');
+	define('REPORTGRID_CSS_API', '/rg/charts/css/rg-charts.css');
 	$viz_categories['XX'] = array('name' => 'Test', 'sequence' => 1000);
 } else {
 	define('REPORTGRID_VIZ_API', 'http://api.reportgrid.com/js/reportgrid-charts.js');
-	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg.css');
+	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg-charts.css');
 }
 
 function categories()
@@ -49,7 +49,7 @@ function categories()
 	$result = array();
 	foreach($viz_categories as $key => $value)
 	{
-		$result[] = array(category => $value['name'], code => $key);
+		$result[] = array('category' => $value['name'], 'code' => $key);
 	}
 	return $result;
 }
@@ -105,7 +105,7 @@ function listSamples($filtered = true)
 			continue;
 		$results[] = array('sample' => $entry, 'title' => extractTitle($entry));
 	}
-	usort($results, sampleComparison);
+	usort($results, 'sampleComparison');
 	return $results;
 }
 
@@ -131,13 +131,35 @@ function parseContent($content)
 		$value = trim($pair[1]);
 		if($key == 'load')
 		{
-			$info['data'] = 'var data = '.file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";";
+			$info['data'] = "function data() {\n\t return ".file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";\n}";
 		} else {
 			$info[$key] = $value;
 		}
 	}
 
 	return $info;
+}
+
+function infoSamples()
+{
+	$list = listSamples(true);
+	$result = array();
+	foreach($list as $item)
+	{
+		if(substr($item['sample'], 0, 2) == "XX")
+			continue;
+		$result[] = infoSample($item['sample']);
+	}
+	return $result;
+}
+
+function displayMonster()
+{
+	$list = infoSamples();
+	$VIZ_API = REPORTGRID_VIZ_API;
+	$CSS_API = REPORTGRID_CSS_API;
+	require('template-monster.php');
+	exit;
 }
 
 function display($sample)
@@ -224,6 +246,9 @@ switch($_GET['action'])
 		json(infoSample($_GET['sample']));
 	case 'display':
 		display($_GET['sample']);
+	case 'monster':
+		displayMonster();
+		break;
 //	case 'manage':
 //		if($_GET['code'] == MANAGE_CODE)
 //			manage();

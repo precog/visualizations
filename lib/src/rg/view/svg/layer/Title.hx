@@ -17,30 +17,30 @@ class Title extends Layer
 	public var text(getText, setText) : String;
 	public var anchor(default, setAnchor) : Anchor;
 	public var padding(default, setPadding) : Int;
-	
+
 	var label : Label;
 	var group : Selection;
 //	var nodeText : Selection;
 //	var nodeGroup : Selection;
-	
-	public function new(panel : Panel, text : String, anchor : Anchor, padding = 1, className = "title", shadow = true, outline = false) 
+
+	public function new(panel : Panel, text : String, anchor : Anchor, padding = 1, className = "title", shadow = false, outline = false)
 	{
 		super(panel);
 		this.addClass(className);
 		group = g.append("svg:g");
 		label = new Label(group, false, shadow, outline);
 		label.orientation = LabelOrientation.Orthogonal;
-		
+
 //		nodeGroup = g.append("svg:g");
 //		nodeText = nodeGroup.append("svg:text")
 //			.attr("text-anchor").string("middle");
 		this.anchor = anchor;
 		this.padding = padding;
 		this.text = text;
-		
+
 		resize();
 	}
-	
+
 	public function idealHeight() : Int
 	{
 		var size = label.getSize();
@@ -54,7 +54,7 @@ class Title extends Layer
 //		var bbox : { height : Float } = untyped nodeText.node().getBBox();
 //		return Math.round(bbox.height);
 	}
-	
+
 	override function resize()
 	{
 //		if (null == nodeText || null == anchor || null == width || padding == null)
@@ -68,7 +68,7 @@ class Title extends Layer
 			case Left:   group.attr("transform").string("translate(" + (padding) + "," + (height / 2) + ")");
 			case Bottom: group.attr("transform").string("translate(" + (width / 2) + "," + (height - padding) + ")");
 		}
-			
+
 /*
 		switch(anchor)
 		{
@@ -99,9 +99,9 @@ class Title extends Layer
 		}
 */
 	}
-	
+
 	function getText() return label.text
-	
+
 	function setText(v : String)
 	{
 		return label.text = v;
@@ -110,10 +110,10 @@ class Title extends Layer
 //			nodeText.text().string(text);
 //		return v;
 	}
-	
+
 	function setAnchor(v : Anchor)
 	{
-		
+
 		switch(this.anchor = v)
 		{
 			case Top:    label.anchor = GridAnchor.Top;
@@ -127,7 +127,7 @@ class Title extends Layer
 //		resize();
 //		return v;
 	}
-	
+
 	function setPadding(v : Int)
 	{
 		this.padding = v;

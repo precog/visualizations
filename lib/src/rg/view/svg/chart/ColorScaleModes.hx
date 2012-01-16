@@ -17,7 +17,7 @@ class ColorScaleModes
 			return ColorScaleMode.Fun(v);
 		if (!Std.is(v, String))
 			return throw new Error("invalid color mode '{0}'", [v]);
-		var s = cast(v, String).split("-");
+		var s = cast(v, String).split(":");
 		switch(s[0].toLowerCase())
 		{
 			case "css":

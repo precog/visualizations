@@ -104,7 +104,7 @@ class Balloon
 
 	function createLabel(i : Int)
 	{
-		var label = new Label(labelsContainer, true, true, false);
+		var label = new Label(labelsContainer, true, false, false);
 		label.addClass("line-" + i);
 		label.anchor = GridAnchor.Top;
 		label.orientation = LabelOrientation.Orthogonal;

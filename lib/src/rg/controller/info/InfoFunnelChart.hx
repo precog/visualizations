@@ -10,7 +10,7 @@ import rg.view.svg.chart.GradientEffect;
 import rg.view.svg.chart.GradientEffects;
 using rg.controller.info.Info;
 
-class InfoFunnelChart 
+class InfoFunnelChart
 {
 	public var animation : InfoAnimation;
 	public var label : InfoLabelFunnel;
@@ -20,14 +20,14 @@ class InfoFunnelChart
 	public var flatness : Float;
 	public var effect : GradientEffect;
 	public var arrowSize : Float;
-	
+
 	public function new()
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabelFunnel();
 		padding = 2.5;
 		flatness = 1.0;
-		effect = GradientEffect.Gradient(0.75);
+		effect = GradientEffect.Gradient(1.25);
 		arrowSize = 30;
 	}
 

@@ -2,7 +2,8 @@
 usa-population-and-area-1790-2000
 
 //** VIZ
-var max = 0;
+var max = 0,
+	data = data();
 data.forEach(function(dp) {
 	if(dp.area > max)
 		max = dp.area;

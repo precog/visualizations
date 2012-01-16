@@ -17,7 +17,7 @@ class StreamEffects
 	
 	public static function parse(s : String) : StreamEffect 
 	{
-		var parts = s.toLowerCase().split("-");
+		var parts = s.toLowerCase().split(":");
 		switch(parts.shift())
 		{
 			case "gradient", "gradientv", "gradientvert", "gradientvertical":

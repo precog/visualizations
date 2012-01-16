@@ -11,7 +11,8 @@ import rg.data.Stats;
 
 enum ColorScaleMode 
 {
-	FromCss(?Steps : Int);
+	FromCssInterpolation(?steps : Int);
+	FromCss(?steps : Int);
 	Interpolation(colors : Array<Rgb>);
 	Sequence(colors : Array<Rgb>);
 	Fixed(color : Rgb);

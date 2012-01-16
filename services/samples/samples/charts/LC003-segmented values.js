@@ -4,7 +4,7 @@ usa-deathrate-by-gender
 //** VIZ
 ReportGrid.lineChart("#chart", {
 	axes : ["year", "deathRate"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		label : {
 			axis : function(a) { return ReportGrid.humanize(a); },

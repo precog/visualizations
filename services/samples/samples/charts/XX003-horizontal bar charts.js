@@ -2,11 +2,14 @@
 top10-emoticons-twitter
 
 //** VIZ
+var data = data();
+
 ReportGrid.barChart("#chart1", {
 	axes : ["emoticon", "count"],
 	datapoints : data,
 	options : {
-		horizontal : true
+		horizontal : true,
+		download : true
 	}
 });
 
@@ -16,6 +19,7 @@ ReportGrid.barChart("#chart2", {
 	options : {
 		horizontal : true,
 		labelorientation : "align",
+		download : true
 	}
 });
 
@@ -23,7 +27,8 @@ ReportGrid.barChart("#chart3", {
 	axes : ["emoticon", "count"],
 	datapoints : data,
 	options : {
-		horizontal : false
+		horizontal : false,
+		download : true
 	}
 });
 
@@ -33,6 +38,7 @@ ReportGrid.barChart("#chart4", {
 	options : {
 		horizontal : false,
 		labelorientation : "align",
+		download : true
 	}
 });
 

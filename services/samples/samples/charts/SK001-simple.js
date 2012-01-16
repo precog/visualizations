@@ -1,5 +1,6 @@
 //** DATA
-var data = [{
+function data() {
+	return [{
 		id : "Individual income taxes",
 		billions : 1100,
 		parents : { }
@@ -80,11 +81,12 @@ var data = [{
 		billions : 11,
 		parents : { "Total Spending" : 11 }
 	}];
+}
 
 //** VIZ
 ReportGrid.sankey("#chart", {
 	axes : ["billions"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		layerwidth : 130
 	}

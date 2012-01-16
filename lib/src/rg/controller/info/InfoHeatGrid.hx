@@ -8,7 +8,7 @@ import rg.view.svg.chart.ColorScaleMode;
 import rg.view.svg.chart.ColorScaleModes;
 import thx.color.Rgb;
 import thx.color.NamedColors;
-import rg.view.svg.util.RGColors;
+import rg.util.RGColors;
 using rg.controller.info.Info;
 
 class InfoHeatGrid extends InfoCartesianChart

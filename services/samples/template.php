@@ -28,9 +28,9 @@ echo $info['html'];
 ?>
 <script>
 <?php
-	echo $info['data'];
-	echo "\n\n";
 	echo $info['viz'];
+	echo "\n\n";
+	echo $info['data'];
 	echo "\n";
 ?>
 </script>

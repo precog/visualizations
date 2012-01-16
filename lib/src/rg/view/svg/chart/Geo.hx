@@ -12,6 +12,7 @@ import rg.view.svg.widget.Map;
 import rg.view.svg.panel.Panel;
 import rg.util.DataPoints;
 import rg.view.svg.widget.Label;
+import thx.color.Colors;
 import thx.color.NamedColors;
 import thx.color.Rgb;
 import thx.js.Selection;
@@ -20,6 +21,7 @@ import rg.view.svg.chart.ColorScaleMode;
 import rg.view.svg.util.RGCss;
 import rg.data.Variable;
 import rg.data.IAxis;
+using Arrays;
 
 class Geo extends Chart
 {
@@ -125,9 +127,19 @@ class Geo extends Chart
 	{
 		switch(colorMode = v)
 		{
+			case FromCssInterpolation(g):
+				if (null == g)
+					g = 2;
+				var colors = RGCss.colorsInCss();
+				if (colors.length > g)
+				{
+					colors = colors.slice(0, g);
+				}
+				colors.reverse();
+				setColorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
 			case FromCss(g):
 				if (null == g)
-					g = RGCss.colorsInCss();
+					g = RGCss.numberOfColorsInCss();
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
@@ -140,25 +152,25 @@ class Geo extends Chart
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(colors.length * t);
-					svg.attr("fill").string(colors[index]);
+					svg.style("fill").string(colors[index]);
 				}
 			case Interpolation(colors):
 				var interpolator = Rgb.interpolateStepsf(colors);
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type));
-					svg.attr("fill").string(interpolator(t).toCss());
+					svg.style("fill").string(interpolator(t).toCss());
 				}
 			case Fixed(c):
 				var color = c.toCss();
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
-					svg.attr("fill").string(color);
+					svg.style("fill").string(color);
 				}
 			case Fun(f):
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
-					svg.attr("fill").string(f(dp, variableDependent.stats));
+					svg.style("fill").string(f(dp, variableDependent.stats));
 				}
 		}
 		return v;
@@ -189,25 +201,25 @@ class Geo extends Chart
 				{
 					var t = variable.axis.scale(variable.min(), variable.max(), DataPoints.value(dp, variable.type)),
 						index = Math.floor(colors.length * t);
-					svg.attr("fill").string(colors[index]);
+					svg.style("fill").string(colors[index]);
 				}
 			case Interpolation(colors):
 				var interpolator = Rgb.interpolateStepsf(colors);
 				return function(svg : Selection, dp : DataPoint)
 				{
 					var t = variable.axis.scale(variable.min(), variable.max(), DataPoints.value(dp, variable.type));
-					svg.attr("fill").string(interpolator(t).toCss());
+					svg.style("fill").string(interpolator(t).toCss());
 				}
 			case Fixed(c):
 				var color = c.toCss();
 				return function(svg : Selection, dp : DataPoint)
 				{
-					svg.attr("fill").string(color);
+					svg.style("fill").string(color);
 				}
 			case Fun(f):
 				return function(svg : Selection, dp : DataPoint)
 				{
-					svg.attr("fill").string(f(dp, variable.stats));
+					svg.style("fill").string(f(dp, variable.stats));
 				}
 		}
 	}

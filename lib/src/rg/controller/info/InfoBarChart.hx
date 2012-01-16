@@ -19,7 +19,7 @@ class InfoBarChart extends InfoCartesianChart
 	{
 		super();
 		stacked = true;
-		effect = GradientEffect.Gradient(0.75);
+		effect = GradientEffect.Gradient(1.25);
 		barPadding = 12;
 		barPaddingAxis = 4;
 		barPaddingDataPoint = 2;

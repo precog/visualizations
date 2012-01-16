@@ -4,7 +4,7 @@ english-speakers
 //** VIZ
 ReportGrid.pieChart("#chart", {
 	axes : ["count"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		label : {
 			datapointover : function(dp) {

@@ -5,7 +5,7 @@ boulder-weather-2011-1Q
 
 ReportGrid.lineChart("#chart", {
 	axes : ["time:day", "tAverage"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		effect: "none"
 	}

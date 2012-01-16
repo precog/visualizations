@@ -6,6 +6,7 @@
 package rg.view.svg.chart;
 
 import rg.data.ScaleDistribution;
+import rg.util.RGColors;
 import thx.js.Selection;
 import rg.data.DataPoint;
 import rg.util.DataPoints;
@@ -16,7 +17,7 @@ import rg.data.IAxisDiscrete;
 import thx.js.Dom;
 import thx.color.Hsl;
 import thx.color.Colors;
-import rg.view.svg.util.RGColors;
+import rg.util.RGColors;
 import rg.data.Stats;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
@@ -45,7 +46,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		addClass("bar-chart");
 		defs = g.append("svg:defs");
 		chart = g.append("svg:g");
-		gradientLightness = 1.4;
+		gradientLightness = 2;
 		displayGradient = true;
 		padding = 10;
 		paddingAxis = 4;
@@ -274,7 +275,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 		if (defs.select('#'+id).empty())
 		{
-			var scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness).toRgbString();
+			var scolor = RGColors.applyLightness(Hsl.toHsl(color), gradientLightness).toRgbString();
 
 			var gradient = defs
 				.append("svg:linearGradient")

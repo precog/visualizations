@@ -11,7 +11,7 @@ import rg.data.Variable;
 import rg.data.IAxis;
 import rg.view.svg.panel.Panel;
 import rg.data.DataPoint;
-import rg.view.svg.util.RGColors;
+import rg.util.RGColors;
 import thx.color.Hsl;
 import thx.js.Selection;
 import rg.util.DataPoints;
@@ -173,7 +173,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 						.attr("class").stringf(classsf(i, "line"))
 						.eachNode(function(n, i) {
 							var start = Hsl.toHsl(RGColors.parse(Dom.selectNode(n).style("stroke").get(), "#000000")),
-								end = Hsl.darker(start, lightness);
+								end = RGColors.applyLightness(start, lightness);
 							fs[i] = Hsl.interpolatef(end, start);
 						}).remove();
 
@@ -265,7 +265,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				var f = this.labelDataPoint;
 				gsymbol.eachNode(function(n, i) {
 					var dp = Access.getData(n),
-						label = new Label(thx.js.Dom.selectNode(n), true, true, true);
+						label = new Label(thx.js.Dom.selectNode(n), true, false, false);
 					label.text = f(dp, stats);
 //					label.orientation = LabelOrientation.Aligned;
 //					label.place(3, 3, -30);

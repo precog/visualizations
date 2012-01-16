@@ -226,9 +226,13 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 	{
 		switch(colorMode = v)
 		{
+			case FromCssInterpolation(g):
+				if (null == g)
+					g = 2;
+				
 			case FromCss(g):
 				if (null == g)
-					g = RGCss.colorsInCss();
+					g = RGCss.numberOfColorsInCss();
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
@@ -241,25 +245,25 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(colors.length * t);
-					svg.attr("fill").string(colors[index]);
+					svg.style("fill").string(colors[index]);
 				}
 			case Interpolation(colors):
 				var interpolator = Rgb.interpolateStepsf(colors);
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type));
-					svg.attr("fill").string(interpolator(t).toCss());
+					svg.style("fill").string(interpolator(t).toCss());
 				}
 			case Fixed(c):
 				var color = c.toCss();
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
-					svg.attr("fill").string(color);
+					svg.style("fill").string(color);
 				}
 			case Fun(f):
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
-					svg.attr("fill").string(f(dp, variableDependent.stats));
+					svg.style("fill").string(f(dp, variableDependent.stats));
 				}
 		}
 		return v;

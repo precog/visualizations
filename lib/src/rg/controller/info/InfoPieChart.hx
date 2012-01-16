@@ -39,23 +39,23 @@ class InfoPieChart
 		tooltipradius = 0.5;
 		animation = new InfoAnimation();
 		label = new InfoLabel();
-		effect = GradientEffect.Gradient(0.65);
+		effect = GradientEffect.Gradient(1.2);
 		dontfliplabel = true;
 	}
 
 	static function validateOrientation(s : String)
 	{
-		var name = s.split("-")[0].toLowerCase();
+		var name = s.split(":")[0].toLowerCase();
 		return ["fixed", "ortho", "orthogonal", "align", "aligned", "horizontal"].exists(name);
 	}
 
 	static function filterOrientation(s : String)
 	{
-		var name = s.split("-")[0].toLowerCase();
+		var name = s.split(":")[0].toLowerCase();
 		switch(name)
 		{
 			case "fixed":
-				var v = Std.parseFloat(s.split("-")[1]);
+				var v = Std.parseFloat(s.split(":")[1]);
 				if (null == v || !Math.isFinite(v))
 					throw new Error("when 'fixed' is used a number should follow the 'dash' character");
 				return LabelOrientation.FixedAngle(v);

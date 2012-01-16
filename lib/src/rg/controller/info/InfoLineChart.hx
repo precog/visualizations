@@ -26,7 +26,7 @@ class InfoLineChart extends InfoCartesianChart
 	{
 		super();
 		segment = new InfoSegment();
-		effect = LineEffect.Gradient(0.75, 2);
+		effect = LineEffect.Gradient(-1.2, 2);
 		interpolation = LineInterpolator.Linear;
 		displayarea = false;
 	}

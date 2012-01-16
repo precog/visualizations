@@ -74,9 +74,9 @@ class Sankey extends Chart
 		labelNodeSpacing = 4;
 
 		styleNode = "0"; // 4
-		styleExtraIn = "2";
-		styleExtraOut = "3";
-		styleEdgeBackward = "1";
+		styleExtraIn = "4";
+		styleExtraOut = "6";
+		styleEdgeBackward = "3";
 		styleEdgeForward = "0";
 	}
 
@@ -541,7 +541,7 @@ class Sankey extends Chart
 				if(hasimage)
 					label = new Label(node, true, true, true);
 				else
-					label = new Label(node, true, true, false);
+					label = new Label(node, true, false, false);
 				label.anchor = GridAnchor.Bottom;
 				label.place(0, -labelNodeSpacing, 0);
 				label.text = labelNode(n.data.dp, this.dependentVariable.stats);

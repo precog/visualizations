@@ -16,7 +16,7 @@ import rg.view.svg.widget.Label;
 import thx.culture.FormatNumber;
 import thx.js.Selection;
 import thx.js.Dom;
-import rg.view.svg.util.RGColors;
+import rg.util.RGColors;
 import thx.color.Hsl;
 import thx.color.NamedColors;
 import thx.math.scale.Linear;
@@ -230,7 +230,7 @@ class FunnelChart extends Chart
 				.attr("d").string(Symbol.arrowDownWide(arrowSize*arrowSize))
 			;
 
-			var label = new Label(node, true, true, true);
+			var label = new Label(node, true, false, true);
 			label.anchor = GridAnchor.Bottom;
 			label.text = text;
 		});
@@ -294,12 +294,12 @@ class FunnelChart extends Chart
 		;
 		stops.append("svg:stop")
 			.attr("offset").string("0%")
-			.attr("stop-color").string(Hsl.darker(Hsl.toHsl(color), 1.25 * gradientLightness).toRgbString())
+			.attr("stop-color").string(RGColors.applyLightness(Hsl.toHsl(color), gradientLightness).toRgbString())
 		;
 
 		stops.append("svg:stop")
 			.attr("offset").string("100%")
-			.attr("stop-color").string(Hsl.darker(Hsl.toHsl(color), 0.4 * gradientLightness).toRgbString())
+			.attr("stop-color").string(RGColors.applyLightness(Hsl.toHsl(color), -gradientLightness).toRgbString())
 		;
 
 		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
@@ -330,7 +330,9 @@ class FunnelChart extends Chart
 			.attr("stop-color").string(top)
 		;
 
-		var middlecolor = Hsl.darker(color, 1 + Math.log(ratio) / (2.5 * gradientLightness)).toCss();
+//		var middlecolor = RGColors.applyLightness(color, 1 + Math.log(ratio) / (2.5 * gradientLightness)).toCss();
+		var ratio = 1 - (vc < vn ? vc / vn : vn / vc),
+			middlecolor = RGColors.applyLightness(color, ratio, gradientLightness * (vc >= vn ? 1 : -1)).toCss();
 
 		stops.append("svg:stop")
 			.attr("offset").string("50%")

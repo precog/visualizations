@@ -4,9 +4,10 @@ english-speakers
 //** VIZ
 ReportGrid.barChart("#chart", {
 	axes : ["country","count"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		displayrules : true,
-		horizontal : true
+		horizontal : true,
+		download : true
 	}
 });

@@ -3,7 +3,10 @@ usa-deathrate-by-race
 
 //** VIZ
 
-var years = {}, max = 6000, v;
+var years = {},
+	max = 6000,
+	data = data(),
+	v;
 // inject the value for the positioning the bottom of the area correctly
 data.forEach(function(item) {
 	item.y0 = (v = years[item.year]) ? v : 0;

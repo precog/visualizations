@@ -24,7 +24,7 @@ data = data.map(function(item){
 
 ReportGrid.sankey("#chart", {
 	axes : ["viz"],
-	datapoints : data
+	datapoints : data()
 });
 
 //** CLASS

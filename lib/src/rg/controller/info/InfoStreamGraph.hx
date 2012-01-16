@@ -23,7 +23,7 @@ class InfoStreamGraph extends InfoCartesianChart
 		super();
 		segment = new InfoSegment();
 		interpolation = LineInterpolator.Cardinal();
-		effect = GradientVertical(0.75);
+		effect = GradientVertical(1.25);
 	}
 
 	public static function filters()

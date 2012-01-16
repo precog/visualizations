@@ -12,9 +12,10 @@ var colormap = {
 	male : "blue",
 	female : "pink"
 }
+
 ReportGrid.scatterGraph("#chart", {
 	axes : ["year", "deathRate"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 //		labelorientation : "ortho"
 		label : {

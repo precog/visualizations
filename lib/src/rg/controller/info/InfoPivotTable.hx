@@ -7,7 +7,7 @@ package rg.controller.info;
 import rg.data.DataPoint;
 import thx.color.Hsl;
 import thx.color.NamedColors;
-import rg.view.svg.util.RGColors;
+import rg.util.RGColors;
 using rg.controller.info.Info;
 
 class InfoPivotTable

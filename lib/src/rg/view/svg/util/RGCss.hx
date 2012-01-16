@@ -8,8 +8,9 @@ import js.Lib;
 import thx.js.Dom;
 import thx.js.Selection;
 
-class RGCss 
+class RGCss
 {
+	static var cache : Array<String>;
 	public static function cssSources()
 	{
 		var sources = [];
@@ -18,25 +19,32 @@ class RGCss
 		});
 		return sources;
 	}
-	
+
 	public static function colorsInCss()
 	{
-		var container = Dom.select("body").append("svg:svg").attr("class").string("rg");
-		var first = createBlock(container, 0).style("fill").get(),
-			length = 0;
+		if (null != cache)
+			return cache;
+		var container = Dom.select("body").append("svg:svg").attr("class").string("rg"),
+			first = createBlock(container, 0).style("fill").get();
+		cache = [first];
 		for (i in 1...1000) // tollerance value
 		{
-			var other = createBlock(container, i);
-			if (first == other.style("fill").get())
+			var other = createBlock(container, i).style("fill").get();
+			if (first == other)
 			{
-				length = i;
 				break;
-			}
+			} else
+				cache.push(other);
 		}
 		container.remove();
-		return length;
+		return cache;
 	}
-	
+
+	public static function numberOfColorsInCss()
+	{
+		return colorsInCss().length;
+	}
+
 	static function createBlock(container : Selection, pos : Int)
 	{
 		return container.append("svg:rect").attr("class").string("fill-" + pos);

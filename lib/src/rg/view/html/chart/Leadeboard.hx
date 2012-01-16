@@ -131,7 +131,7 @@ class Leadeboard
 		if(null != labelDataPoint)
 		{
 			enterlabels.append("span")
-				.attr("class").string("description text-0")
+				.attr("class").string("description color-0")
 				.text().stringf(lDataPoint);
 		}
 
@@ -139,7 +139,7 @@ class Leadeboard
 		if(null != labelValue)
 		{
 			enterlabels.append("span")
-				.attr("class").string("value text-1")
+				.attr("class").string("value color-2")
 				.text().stringf(lValue);
 		}
 

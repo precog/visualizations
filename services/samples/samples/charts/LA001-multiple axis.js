@@ -6,7 +6,7 @@ ReportGrid.lineChart("#chart", {
 	axes : ["year",
 			{ type : "area", variable : "dependent" },
 			{ type : "population", variable : "dependent" }],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		label : {
 			axis : function(a) { return a },

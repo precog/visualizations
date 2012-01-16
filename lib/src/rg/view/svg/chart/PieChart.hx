@@ -26,7 +26,7 @@ import rg.data.Stats;
 import rg.view.svg.widget.LabelOrientation;
 import rg.view.svg.widget.Label;
 import rg.view.svg.widget.GridAnchor;
-import rg.view.svg.util.RGColors;
+import rg.util.RGColors;
 using Arrays;
 
 // TODO add overDataPoint
@@ -245,7 +245,7 @@ class PieChart extends Chart
 				box : { x : Float, y : Float, width : Float, height : Float } = try { untyped t.node().getBBox(); } catch (e : Dynamic) { { x : 0.0, y : 0.0, width : 0.0, height : 0.0 }; };
 			t.remove();
 			var color = RGColors.parse(slice.style("fill").get(), "#cccccc"),
-				scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness);
+				scolor = RGColors.applyLightness(Hsl.toHsl(color), gradientLightness);
 
 			var ratio = box.width / box.height,
 				cx = -box.x * 100 / box.width / ratio,

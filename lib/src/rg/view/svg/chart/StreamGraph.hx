@@ -19,9 +19,10 @@ import thx.svg.Area;
 import thx.js.Dom;
 import thx.js.Selection;
 import thx.color.Hsl;
+import thx.color.Rgb;
 import thx.js.Svg;
 import thx.js.Access;
-import rg.view.svg.util.RGColors;
+import rg.util.RGColors;
 using Arrays;
 
 
@@ -175,7 +176,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		if (defs.select('#'+id).empty())
 		{
 
-			var scolor = Hsl.darker(Hsl.toHsl(color), gradientLightness).toRgbString();
+			var scolor = RGColors.applyLightness(Hsl.toHsl(color), gradientLightness).toRgbString();
 
 			var gradient = defs
 				.append("svg:linearGradient")
@@ -228,12 +229,11 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		for (i in 0...d.length)
 		{
 			var dp = d[i],
-				v = 1 + (dp.coord.y / max - 0.5) * gradientLightness;
-//			if (Floats.equals(v, lastv, tollerance))
-//				continue;
+				v = dp.coord.y / max;
+			var gcolor = RGColors.applyLightness(color, gradientLightness, v);
 			gradient.append("svg:stop")
 				.attr("offset").string(percent(dp.coord.x) +  "%")
-				.attr("stop-color").string(Hsl.darker(color, v).toCss())
+				.attr("stop-color").string(gcolor.toCss())
 				.attr("stop-opacity").float(1);
 //			lastv = v;
 		}

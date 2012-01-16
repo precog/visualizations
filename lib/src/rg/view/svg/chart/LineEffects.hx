@@ -9,7 +9,7 @@ class LineEffects
 {
 	public static function parse(s : String) : LineEffect 
 	{
-		var parts = s.toLowerCase().split("-");
+		var parts = s.toLowerCase().split(":");
 		switch(parts.shift())
 		{
 			case "dropshadow":

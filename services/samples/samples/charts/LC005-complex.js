@@ -30,6 +30,7 @@ function transform(dp) {
 	}];
 }
 
+var data = data();
 data = Arrays.flatten(data.map(transform));
 
 ReportGrid.lineChart("#chart", {

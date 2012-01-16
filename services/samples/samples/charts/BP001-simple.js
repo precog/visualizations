@@ -2,7 +2,8 @@
 usa-debt
 
 //** VIZ
-var o = {};
+var o = {},
+	data = data();
 
 data.forEach(function(item){
 	if(!o[item.date])

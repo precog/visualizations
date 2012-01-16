@@ -40,7 +40,7 @@ class InfoMap
 	{
 		property = "location";
 		type = "geojson";
-		colorScaleMode = ColorScaleMode.FromCss();
+		colorScaleMode = ColorScaleMode.FromCssInterpolation();
 		usejsonp = true;
 		radius = function(_, _) return 10;
 	}

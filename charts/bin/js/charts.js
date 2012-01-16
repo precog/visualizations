@@ -10,7 +10,7 @@ $(document).ready(function(){
 	var lastsampleclass;
 	var displaySample = function(info)
 	{
-		var source = info['data'] + "\n\n" + info['viz'];
+		var source = info['viz'] + "\n\n" + info['data'];
 		source = source.replace(/\t/g, "  ");
 		if(lastsampleclass)
 			$("#samplevisualization").removeClass(lastsampleclass);

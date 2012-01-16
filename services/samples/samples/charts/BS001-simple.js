@@ -4,7 +4,7 @@ usa-agestructure
 //** VIZ
 ReportGrid.barChart("#chart", {
 	axes : ["gender","count"],
-	datapoints : data,
+	datapoints : data(),
 	options : {
 		segmenton : "age",
 		label : {
