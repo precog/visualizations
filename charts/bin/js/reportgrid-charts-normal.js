@@ -882,9 +882,10 @@ thx.color.Rgb.equals = function(a,b) {
 	return a.red == b.red && a.green == b.green && a.blue == b.blue;
 }
 thx.color.Rgb.darker = function(color,t,equation) {
-	var interpolator = Ints.interpolatef(0,255,equation);
-	t /= 255;
-	return new thx.color.Rgb(interpolator(t * color.red),interpolator(t * color.green),interpolator(t * color.blue));
+	return new thx.color.Rgb(Ints.interpolate(t,color.red,0,equation),Ints.interpolate(t,color.green,0,equation),Ints.interpolate(t,color.blue,0,equation));
+}
+thx.color.Rgb.lighter = function(color,t,equation) {
+	return new thx.color.Rgb(Ints.interpolate(t,color.red,255,equation),Ints.interpolate(t,color.green,255,equation),Ints.interpolate(t,color.blue,255,equation));
 }
 thx.color.Rgb.interpolate = function(a,b,t,equation) {
 	return new thx.color.Rgb(Ints.interpolate(t,a.red,b.red,equation),Ints.interpolate(t,a.green,b.green,equation),Ints.interpolate(t,a.blue,b.blue,equation));
@@ -929,7 +930,7 @@ thx.color.Rgb.interpolateRainbowf = function(equation) {
 thx.color.Rgb.interpolateStepsf = function(steps,equation) {
 	if(steps.length <= 0) return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid number of steps",null,null,{ fileName : "Rgb.hx", lineNumber : 157, className : "thx.color.Rgb", methodName : "interpolateStepsf"});
+		throw new thx.error.Error("invalid number of steps",null,null,{ fileName : "Rgb.hx", lineNumber : 164, className : "thx.color.Rgb", methodName : "interpolateStepsf"});
 		return $r;
 	}(this)); else if(steps.length == 1) return function(t) {
 		return steps[0];
@@ -1710,9 +1711,9 @@ rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(pan
 	this.imageSpacing = 0;
 	this.labelNodeSpacing = 4;
 	this.styleNode = "0";
-	this.styleExtraIn = "2";
-	this.styleExtraOut = "3";
-	this.styleEdgeBackward = "1";
+	this.styleExtraIn = "4";
+	this.styleExtraOut = "6";
+	this.styleEdgeBackward = "3";
 	this.styleEdgeForward = "0";
 }
 rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
@@ -2023,7 +2024,7 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 				}
 			}
 			if(null != me.labelNode) {
-				if(hasimage) label = new rg.view.svg.widget.Label(node,true,true,true); else label = new rg.view.svg.widget.Label(node,true,true,false);
+				if(hasimage) label = new rg.view.svg.widget.Label(node,true,true,true); else label = new rg.view.svg.widget.Label(node,true,false,false);
 				label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
 				label.place(0,-me.labelNodeSpacing,0);
 				label.setText(me.labelNode(n.data.dp,me.dependentVariable.stats));
@@ -2243,7 +2244,7 @@ rg.controller.info.InfoFunnelChart = $hxClasses["rg.controller.info.InfoFunnelCh
 	this.label = new rg.controller.info.InfoLabelFunnel();
 	this.padding = 2.5;
 	this.flatness = 1.0;
-	this.effect = rg.view.svg.chart.GradientEffect.Gradient(0.75);
+	this.effect = rg.view.svg.chart.GradientEffect.Gradient(1.25);
 	this.arrowSize = 30;
 }
 rg.controller.info.InfoFunnelChart.__name__ = ["rg","controller","info","InfoFunnelChart"];
@@ -2513,7 +2514,7 @@ rg.view.svg.widget.Balloon.prototype = {
 		this.frame.select("path.bg").classed().remove(name);
 	}
 	,createLabel: function(i) {
-		var label = new rg.view.svg.widget.Label(this.labelsContainer,true,true,false);
+		var label = new rg.view.svg.widget.Label(this.labelsContainer,true,false,false);
 		label.addClass("line-" + i);
 		label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
 		label.setOrientation(rg.view.svg.widget.LabelOrientation.Orthogonal);
@@ -4292,7 +4293,7 @@ thx.js.AccessDataProperty.prototype = $extend(thx.js.AccessProperty.prototype,{
 rg.controller.info.InfoMap = $hxClasses["rg.controller.info.InfoMap"] = function() {
 	this.property = "location";
 	this.type = "geojson";
-	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
+	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCssInterpolation();
 	this.usejsonp = true;
 	this.radius = function(_,_1) {
 		return 10;
@@ -4416,8 +4417,10 @@ thx.color.Hsl.equals = function(a,b) {
 	return a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
 }
 thx.color.Hsl.darker = function(color,t,equation) {
-	var v = color.lightness * t;
-	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(v,0,1,equation));
+	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,0,equation));
+}
+thx.color.Hsl.lighter = function(color,t,equation) {
+	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,1,equation));
 }
 thx.color.Hsl.interpolate = function(a,b,t,equation) {
 	return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
@@ -5700,7 +5703,7 @@ rg.view.svg.chart.BarChart = $hxClasses["rg.view.svg.chart.BarChart"] = function
 	this.addClass("bar-chart");
 	this.defs = this.g.append("svg:defs");
 	this.chart = this.g.append("svg:g");
-	this.gradientLightness = 1.4;
+	this.gradientLightness = 2;
 	this.displayGradient = true;
 	this.padding = 10;
 	this.paddingAxis = 4;
@@ -5857,9 +5860,9 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		}
 	}
 	,applyGradient: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
+		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
-			var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
+			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
 			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
 			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
 			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
@@ -5951,7 +5954,7 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.5665"};
+	r.info.charts = { version : "1.2.2.5851"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -6443,6 +6446,24 @@ hxevents.Dispatcher.prototype = {
 	}
 	,__class__: hxevents.Dispatcher
 }
+if(!rg.util) rg.util = {}
+rg.util.RGColors = $hxClasses["rg.util.RGColors"] = function() { }
+rg.util.RGColors.__name__ = ["rg","util","RGColors"];
+rg.util.RGColors.parse = function(s,alt) {
+	try {
+		var c = thx.color.Colors.parse(s);
+		if(null != c) return c;
+	} catch( _ ) {
+	}
+	return thx.color.Colors.parse(alt);
+}
+rg.util.RGColors.applyLightness = function(color,lightness,t) {
+	if(null == t) t = 1 / Math.abs(lightness);
+	return lightness >= 0?thx.color.Hsl.lighter(color,(1 - t) * (1 + lightness)):thx.color.Hsl.darker(color,(1 - t) * (1 - lightness));
+}
+rg.util.RGColors.prototype = {
+	__class__: rg.util.RGColors
+}
 if(!thx.text) thx.text = {}
 thx.text.ERegs = $hxClasses["thx.text.ERegs"] = function() { }
 thx.text.ERegs.__name__ = ["thx","text","ERegs"];
@@ -6454,7 +6475,6 @@ thx.text.ERegs.escapeERegChars = function(s) {
 thx.text.ERegs.prototype = {
 	__class__: thx.text.ERegs
 }
-if(!rg.util) rg.util = {}
 rg.util.Periodicity = $hxClasses["rg.util.Periodicity"] = function() { }
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.defaultPeriodicity = function(span) {
@@ -7145,7 +7165,7 @@ rg.view.svg.chart.GradientEffects = $hxClasses["rg.view.svg.chart.GradientEffect
 rg.view.svg.chart.GradientEffects.__name__ = ["rg","view","svg","chart","GradientEffects"];
 rg.view.svg.chart.GradientEffects.canParse = function(d) {
 	if(!Std["is"](d,String)) return false;
-	var s = d, parts = s.toLowerCase().split("-");
+	var s = d, parts = s.toLowerCase().split(":");
 	return (function($this) {
 		var $r;
 		switch(parts[0]) {
@@ -7159,7 +7179,7 @@ rg.view.svg.chart.GradientEffects.canParse = function(d) {
 	}(this));
 }
 rg.view.svg.chart.GradientEffects.parse = function(s) {
-	var parts = s.toLowerCase().split("-");
+	var parts = s.toLowerCase().split(":");
 	switch(parts.shift()) {
 	case "gradient":
 		var lightness = 0.75, parameters = parts.pop();
@@ -8311,7 +8331,7 @@ rg.controller.visualization.VisualizationStreamGraph.prototype = $extend(rg.cont
 });
 rg.view.svg.layer.Title = $hxClasses["rg.view.svg.layer.Title"] = function(panel,text,anchor,padding,className,shadow,outline) {
 	if(outline == null) outline = false;
-	if(shadow == null) shadow = true;
+	if(shadow == null) shadow = false;
 	if(className == null) className = "title";
 	if(padding == null) padding = 1;
 	rg.view.svg.panel.Layer.call(this,panel);
@@ -9979,7 +9999,7 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 			var node = thx.js.Dom.selectNode(thx.js.Group.current);
 			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
 			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
-			var label = new rg.view.svg.widget.Label(node,true,true,true);
+			var label = new rg.view.svg.widget.Label(node,true,false,true);
 			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
 			label.setText(text);
 		});
@@ -10009,17 +10029,17 @@ rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.protot
 		this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
 	}
 	,internalGradient: function(d) {
-		var color = rg.view.svg.util.RGColors.parse(d.style("fill").get(),"#cccccc"), stops = this.defs.append("svg:radialGradient").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
-		stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),1.25 * this.gradientLightness).toRgbString());
-		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),0.4 * this.gradientLightness).toRgbString());
+		var color = rg.util.RGColors.parse(d.style("fill").get(),"#cccccc"), stops = this.defs.append("svg:radialGradient").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
+		stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString());
+		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),-this.gradientLightness).toRgbString());
 		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
 	}
 	,externalGradient: function(n,i) {
-		var g = thx.js.Dom.selectNode(n), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
+		var g = thx.js.Dom.selectNode(n), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
 		var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
 		var top = color.hex("#");
 		stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
-		var middlecolor = thx.color.Hsl.darker(color,1 + Math.log(ratio) / (2.5 * this.gradientLightness)).hex("#");
+		var ratio1 = 1 - (vc < vn?vc / vn:vn / vc), middlecolor = rg.util.RGColors.applyLightness(color,ratio1,this.gradientLightness * (vc >= vn?1:-1)).hex("#");
 		stops.append("svg:stop").attr("offset").string("50%").attr("stop-color").string(middlecolor);
 		stops.append("svg:stop").attr("offset").string("90%").attr("stop-color").string(top);
 		d.attr("style").string("fill:url(#" + id + ")");
@@ -10210,7 +10230,7 @@ rg.controller.info.InfoStreamGraph = $hxClasses["rg.controller.info.InfoStreamGr
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.segment = new rg.controller.info.InfoSegment();
 	this.interpolation = thx.svg.LineInterpolator.Cardinal();
-	this.effect = rg.view.svg.chart.StreamEffect.GradientVertical(0.75);
+	this.effect = rg.view.svg.chart.StreamEffect.GradientVertical(1.25);
 }
 rg.controller.info.InfoStreamGraph.__name__ = ["rg","controller","info","InfoStreamGraph"];
 rg.controller.info.InfoStreamGraph.filters = function() {
@@ -11490,6 +11510,7 @@ rg.controller.App.prototype = {
 			visualization.feedData(datapoints);
 		};
 		request.request();
+		var brandPadding = 0;
 		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
 		if(!rg.controller.App.supportsSvg()) {
 			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
@@ -11506,10 +11527,11 @@ rg.controller.App.prototype = {
 				download.handler(downloader.download.$bind(downloader));
 			}); else visualization.addReadyOnce(function() {
 				var widget = new rg.view.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
+				brandPadding = 24;
 			});
 		}
 		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
-			var widget = new rg.view.html.widget.Logo(visualization.container);
+			var widget = new rg.view.html.widget.Logo(visualization.container,brandPadding);
 		});
 		return visualization;
 	}
@@ -11638,41 +11660,45 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 		switch( $e[1] ) {
 		case 0:
 			var g = $e[2];
-			if(null == g) g = rg.view.svg.util.RGCss.colorsInCss();
+			if(null == g) g = 2;
+			break;
+		case 1:
+			var g = $e[2];
+			if(null == g) g = rg.view.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
 				svg.attr("class").string("fill-" + index);
 			};
 			break;
-		case 2:
+		case 3:
 			var c = $e[2];
 			var colors = c.map(function(d,_) {
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
-				svg.attr("fill").string(colors[index]);
+				svg.style("fill").string(colors[index]);
 			};
 			break;
-		case 1:
+		case 2:
 			var colors = $e[2];
 			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
-				svg.attr("fill").string(interpolator(t).hex("#"));
-			};
-			break;
-		case 3:
-			var c = $e[2];
-			var color = c.hex("#");
-			this.stylefeature = function(svg,dp) {
-				svg.attr("fill").string(color);
+				svg.style("fill").string(interpolator(t).hex("#"));
 			};
 			break;
 		case 4:
+			var c = $e[2];
+			var color = c.hex("#");
+			this.stylefeature = function(svg,dp) {
+				svg.style("fill").string(color);
+			};
+			break;
+		case 5:
 			var f = $e[2];
 			this.stylefeature = function(svg,dp) {
-				svg.attr("fill").string(f(dp,me.variableDependent.stats));
+				svg.style("fill").string(f(dp,me.variableDependent.stats));
 			};
 			break;
 		}
@@ -11681,19 +11707,6 @@ rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	,__class__: rg.view.svg.chart.HeatGrid
 	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
-rg.view.svg.util.RGColors = $hxClasses["rg.view.svg.util.RGColors"] = function() { }
-rg.view.svg.util.RGColors.__name__ = ["rg","view","svg","util","RGColors"];
-rg.view.svg.util.RGColors.parse = function(s,alt) {
-	try {
-		var c = thx.color.Colors.parse(s);
-		if(null != c) return c;
-	} catch( _ ) {
-	}
-	return thx.color.Colors.parse(alt);
-}
-rg.view.svg.util.RGColors.prototype = {
-	__class__: rg.view.svg.util.RGColors
-}
 rg.graph.Graph = $hxClasses["rg.graph.Graph"] = function(nodeidf,edgeidf) {
 	this.nodes = rg.graph.GraphNodes.newInstance(this,nodeidf);
 	this.edges = rg.graph.GraphEdges.newInstance(this,edgeidf);
@@ -13531,7 +13544,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 	,createLabel: function(n,i) {
 		var d = Reflect.field(n,"__data__");
 		if(!d.getMajor()) return;
-		var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,true,false);
+		var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,false,false);
 		label.setAnchor(this.labelAnchor);
 		label.setOrientation(this.labelOrientation);
 		var padding = this.paddingLabel;
@@ -13750,6 +13763,7 @@ rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.pro
 });
 rg.view.svg.util.RGCss = $hxClasses["rg.view.svg.util.RGCss"] = function() { }
 rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
+rg.view.svg.util.RGCss.cache = null;
 rg.view.svg.util.RGCss.cssSources = function() {
 	var sources = [];
 	thx.js.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
@@ -13758,19 +13772,20 @@ rg.view.svg.util.RGCss.cssSources = function() {
 	return sources;
 }
 rg.view.svg.util.RGCss.colorsInCss = function() {
-	var container = thx.js.Dom.select("body").append("svg:svg").attr("class").string("rg");
-	var first = rg.view.svg.util.RGCss.createBlock(container,0).style("fill").get(), length = 0;
+	if(null != rg.view.svg.util.RGCss.cache) return rg.view.svg.util.RGCss.cache;
+	var container = thx.js.Dom.select("body").append("svg:svg").attr("class").string("rg"), first = rg.view.svg.util.RGCss.createBlock(container,0).style("fill").get();
+	rg.view.svg.util.RGCss.cache = [first];
 	var _g = 1;
 	while(_g < 1000) {
 		var i = _g++;
-		var other = rg.view.svg.util.RGCss.createBlock(container,i);
-		if(first == other.style("fill").get()) {
-			length = i;
-			break;
-		}
+		var other = rg.view.svg.util.RGCss.createBlock(container,i).style("fill").get();
+		if(first == other) break; else rg.view.svg.util.RGCss.cache.push(other);
 	}
 	container.remove();
-	return length;
+	return rg.view.svg.util.RGCss.cache;
+}
+rg.view.svg.util.RGCss.numberOfColorsInCss = function() {
+	return rg.view.svg.util.RGCss.colorsInCss().length;
 }
 rg.view.svg.util.RGCss.createBlock = function(container,pos) {
 	return container.append("svg:rect").attr("class").string("fill-" + pos);
@@ -16263,19 +16278,19 @@ rg.controller.info.InfoPieChart = $hxClasses["rg.controller.info.InfoPieChart"] 
 	this.tooltipradius = 0.5;
 	this.animation = new rg.controller.info.InfoAnimation();
 	this.label = new rg.controller.info.InfoLabel();
-	this.effect = rg.view.svg.chart.GradientEffect.Gradient(0.65);
+	this.effect = rg.view.svg.chart.GradientEffect.Gradient(1.2);
 	this.dontfliplabel = true;
 }
 rg.controller.info.InfoPieChart.__name__ = ["rg","controller","info","InfoPieChart"];
 rg.controller.info.InfoPieChart.validateOrientation = function(s) {
-	var name = s.split("-")[0].toLowerCase();
+	var name = s.split(":")[0].toLowerCase();
 	return Arrays.exists(["fixed","ortho","orthogonal","align","aligned","horizontal"],name);
 }
 rg.controller.info.InfoPieChart.filterOrientation = function(s) {
-	var name = s.split("-")[0].toLowerCase();
+	var name = s.split(":")[0].toLowerCase();
 	switch(name) {
 	case "fixed":
-		var v = Std.parseFloat(s.split("-")[1]);
+		var v = Std.parseFloat(s.split(":")[1]);
 		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 		return rg.view.svg.widget.LabelOrientation.FixedAngle(v);
 	case "ortho":case "orthogonal":
@@ -16610,7 +16625,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 				var fs = [[]];
 				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).eachNode((function(fs,lightness1) {
 					return function(n,i1) {
-						var start = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(thx.js.Dom.selectNode(n).style("stroke").get(),"#000000")), end = thx.color.Hsl.darker(start,lightness1[0]);
+						var start = thx.color.Hsl.toHsl(rg.util.RGColors.parse(thx.js.Dom.selectNode(n).style("stroke").get(),"#000000")), end = rg.util.RGColors.applyLightness(start,lightness1[0]);
 						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
 					};
 				})(fs,lightness1)).remove();
@@ -16694,7 +16709,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 				var f = [this.labelDataPoint];
 				gsymbol.eachNode((function(f,stats) {
 					return function(n,i1) {
-						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
+						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,false,false);
 						label.setText(f[0](dp,stats[0]));
 					};
 				})(f,stats));
@@ -17186,9 +17201,9 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		});
 	}
 	,applyGradientV: function(d,i) {
-		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
+		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
-			var scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
+			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
 			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
 			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
 			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
@@ -17196,7 +17211,7 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		gn.attr("style").string("fill:url(#" + id + ")");
 	}
 	,applyGradientH: function(d,i) {
-		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
+		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
 		var gradient = this.defs.append("svg:linearGradient").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
 		var bx = d[0].coord.x, ax = d[d.length - 1].coord.x, span = ax - bx, percent = function(x) {
 			return Math.round((x - bx) / span * 10000) / 100;
@@ -17206,8 +17221,9 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 		var _g1 = 0, _g = d.length;
 		while(_g1 < _g) {
 			var i1 = _g1++;
-			var dp = d[i1], v = 1 + (dp.coord.y / max - 0.5) * this.gradientLightness;
-			gradient.append("svg:stop").attr("offset").string(percent(dp.coord.x) + "%").attr("stop-color").string(thx.color.Hsl.darker(color,v).hex("#")).attr("stop-opacity")["float"](1);
+			var dp = d[i1], v = dp.coord.y / max;
+			var gcolor = rg.util.RGColors.applyLightness(color,this.gradientLightness,v);
+			gradient.append("svg:stop").attr("offset").string(percent(dp.coord.x) + "%").attr("stop-color").string(gcolor.hex("#")).attr("stop-opacity")["float"](1);
 		}
 		gn.attr("style").string("fill:url(#" + id + ")");
 	}
@@ -17996,7 +18012,7 @@ rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
 rg.controller.info.InfoBarChart = $hxClasses["rg.controller.info.InfoBarChart"] = function() {
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.stacked = true;
-	this.effect = rg.view.svg.chart.GradientEffect.Gradient(0.75);
+	this.effect = rg.view.svg.chart.GradientEffect.Gradient(1.25);
 	this.barPadding = 12;
 	this.barPaddingAxis = 4;
 	this.barPaddingDataPoint = 2;
@@ -18051,7 +18067,7 @@ rg.view.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 		if(Std["is"]($t,String)) $t; else throw "Class cast error";
 		$r = $t;
 		return $r;
-	}(this))).split("-");
+	}(this))).split(":");
 	switch(s[0].toLowerCase()) {
 	case "css":
 		return rg.view.svg.chart.ColorScaleMode.FromCss(null == s[1]?null:Std.parseInt(s[1]));
@@ -18467,8 +18483,10 @@ thx.color.Cmyk.equals = function(a,b) {
 	return a.black == b.black && a.cyan == b.cyan && a.magenta == b.magenta && a.yellow == b.yellow;
 }
 thx.color.Cmyk.darker = function(color,t,equation) {
-	var v = t * color.black;
-	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(v,0,1,equation));
+	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,0,equation));
+}
+thx.color.Cmyk.lighter = function(color,t,equation) {
+	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,1,equation));
 }
 thx.color.Cmyk.interpolate = function(a,b,t,equation) {
 	return new thx.color.Cmyk(Floats.interpolate(t,a.cyan,b.cyan,equation),Floats.interpolate(t,a.magenta,b.magenta,equation),Floats.interpolate(t,a.yellow,b.yellow,equation),Floats.interpolate(t,a.black,b.black,equation));
@@ -18739,8 +18757,10 @@ thx.color.Grey.equals = function(a,b) {
 	return a.grey == b.grey;
 }
 thx.color.Grey.darker = function(color,t,equation) {
-	var v = t * color.grey;
-	return new thx.color.Grey(Floats.interpolate(v,0,1,equation));
+	return new thx.color.Grey(Floats.interpolate(t,color.grey,0,equation));
+}
+thx.color.Grey.lighter = function(color,t,equation) {
+	return new thx.color.Grey(Floats.interpolate(t,color.grey,1,equation));
 }
 thx.color.Grey.interpolate = function(a,b,t,equation) {
 	return new thx.color.Grey(Floats.interpolate(t,a.grey,b.grey,equation));
@@ -20943,12 +20963,13 @@ rg.controller.info.InfoLabelAxis.prototype = $extend(rg.controller.info.InfoLabe
 	,tickmark: null
 	,__class__: rg.controller.info.InfoLabelAxis
 });
-rg.view.svg.chart.ColorScaleMode = $hxClasses["rg.view.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","view","svg","chart","ColorScaleMode"], __constructs__ : ["FromCss","Interpolation","Sequence","Fixed","Fun"] }
-rg.view.svg.chart.ColorScaleMode.FromCss = function(Steps) { var $x = ["FromCss",0,Steps]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interpolation",1,colors]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Sequence = function(colors) { var $x = ["Sequence",2,colors]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Fixed = function(color) { var $x = ["Fixed",3,color]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Fun = function(f) { var $x = ["Fun",4,f]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.view.svg.chart.ColorScaleMode = $hxClasses["rg.view.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","view","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
+rg.view.svg.chart.ColorScaleMode.FromCssInterpolation = function(steps) { var $x = ["FromCssInterpolation",0,steps]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.view.svg.chart.ColorScaleMode.FromCss = function(steps) { var $x = ["FromCss",1,steps]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.view.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interpolation",2,colors]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.view.svg.chart.ColorScaleMode.Sequence = function(colors) { var $x = ["Sequence",3,colors]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.view.svg.chart.ColorScaleMode.Fixed = function(color) { var $x = ["Fixed",4,color]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.view.svg.chart.ColorScaleMode.Fun = function(f) { var $x = ["Fun",5,f]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 haxe.Http = $hxClasses["haxe.Http"] = function(url) {
 	this.url = url;
 	this.headers = new Hash();
@@ -21054,7 +21075,7 @@ haxe.Http.prototype = {
 rg.controller.info.InfoLineChart = $hxClasses["rg.controller.info.InfoLineChart"] = function() {
 	rg.controller.info.InfoCartesianChart.call(this);
 	this.segment = new rg.controller.info.InfoSegment();
-	this.effect = rg.view.svg.chart.LineEffect.Gradient(0.75,2);
+	this.effect = rg.view.svg.chart.LineEffect.Gradient(-1.2,2);
 	this.interpolation = thx.svg.LineInterpolator.Linear;
 	this.displayarea = false;
 }
@@ -22623,11 +22644,11 @@ rg.controller.info.InfoPivotTable.filters = function() {
 	}},{ field : "startcolor", validator : function(v) {
 		return Std["is"](v,String);
 	}, filter : function(v) {
-		return [{ field : "heatmapColorStart", value : thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(v,rg.controller.info.InfoPivotTable.defaultStartColor.hex("#")))}];
+		return [{ field : "heatmapColorStart", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.controller.info.InfoPivotTable.defaultStartColor.hex("#")))}];
 	}},{ field : "endcolor", validator : function(v) {
 		return Std["is"](v,String);
 	}, filter : function(v) {
-		return [{ field : "heatmapColorEnd", value : thx.color.Hsl.toHsl(rg.view.svg.util.RGColors.parse(v,rg.controller.info.InfoPivotTable.defaultEndColor.hex("#")))}];
+		return [{ field : "heatmapColorEnd", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.controller.info.InfoPivotTable.defaultEndColor.hex("#")))}];
 	}},{ field : "label", validator : function(v) {
 		return Reflect.isObject(v) && null == Type.getClass(v);
 	}, filter : function(v) {
@@ -22729,41 +22750,52 @@ rg.view.svg.chart.Geo.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		switch( $e[1] ) {
 		case 0:
 			var g = $e[2];
-			if(null == g) g = rg.view.svg.util.RGCss.colorsInCss();
+			if(null == g) g = 1;
+			var colors = rg.view.svg.util.RGCss.colorsInCss();
+			if(colors.length > g) colors = colors.slice(0,g);
+			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
+			colors.reverse();
+			this.setColorMode(rg.view.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
+				return thx.color.Colors.parse(s);
+			})));
+			break;
+		case 1:
+			var g = $e[2];
+			if(null == g) g = rg.view.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
 				svg.attr("class").string("fill-" + index);
 			};
 			break;
-		case 2:
+		case 3:
 			var c = $e[2];
 			var colors = c.map(function(d,_) {
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
-				svg.attr("fill").string(colors[index]);
+				svg.style("fill").string(colors[index]);
 			};
 			break;
-		case 1:
+		case 2:
 			var colors = $e[2];
 			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
-				svg.attr("fill").string(interpolator(t).hex("#"));
-			};
-			break;
-		case 3:
-			var c = $e[2];
-			var color = c.hex("#");
-			this.stylefeature = function(svg,dp) {
-				svg.attr("fill").string(color);
+				svg.style("fill").string(interpolator(t).hex("#"));
 			};
 			break;
 		case 4:
+			var c = $e[2];
+			var color = c.hex("#");
+			this.stylefeature = function(svg,dp) {
+				svg.style("fill").string(color);
+			};
+			break;
+		case 5:
 			var f = $e[2];
 			this.stylefeature = function(svg,dp) {
-				svg.attr("fill").string(f(dp,me.variableDependent.stats));
+				svg.style("fill").string(f(dp,me.variableDependent.stats));
 			};
 			break;
 		}
@@ -22787,7 +22819,7 @@ rg.view.svg.chart.Geo.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 rg.view.svg.chart.LineEffects = $hxClasses["rg.view.svg.chart.LineEffects"] = function() { }
 rg.view.svg.chart.LineEffects.__name__ = ["rg","view","svg","chart","LineEffects"];
 rg.view.svg.chart.LineEffects.parse = function(s) {
-	var parts = s.toLowerCase().split("-");
+	var parts = s.toLowerCase().split(":");
 	switch(parts.shift()) {
 	case "dropshadow":
 		var offsetx = 0.5, offsety = 0.5, levels = 2, parameters = parts.pop();
@@ -24505,7 +24537,7 @@ rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype
 				return $r;
 			}(this));
 			t.remove();
-			var color = rg.view.svg.util.RGColors.parse(slice.style("fill").get(),"#cccccc"), scolor = thx.color.Hsl.darker(thx.color.Hsl.toHsl(color),this.gradientLightness);
+			var color = rg.util.RGColors.parse(slice.style("fill").get(),"#cccccc"), scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness);
 			var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
 			var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
 			var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
@@ -24568,7 +24600,7 @@ rg.view.svg.chart.StreamEffects.getLightness = function(p,alt) {
 	if(null == p) return alt; else return Std.parseFloat(p);
 }
 rg.view.svg.chart.StreamEffects.parse = function(s) {
-	var parts = s.toLowerCase().split("-");
+	var parts = s.toLowerCase().split(":");
 	switch(parts.shift()) {
 	case "gradient":case "gradientv":case "gradientvert":case "gradientvertical":
 		return rg.view.svg.chart.StreamEffect.GradientVertical(rg.view.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
@@ -24952,8 +24984,8 @@ rg.view.html.chart.Leadeboard.prototype = {
 		});
 		var enterlabels = enterli.append("div").attr("class").string("labels");
 		if(null != this.labelRank.$bind(this)) enterlabels.append("div").attr("class").string("rank").text().stringf(this.lRank.$bind(this));
-		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("description text-0").text().stringf(this.lDataPoint.$bind(this));
-		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("value text-1").text().stringf(this.lValue.$bind(this));
+		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("description color-0").text().stringf(this.lDataPoint.$bind(this));
+		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("value color-2").text().stringf(this.lValue.$bind(this));
 		enterli.append("div").attr("class").string("clear");
 		if(this.displayBar) {
 			var barpadding = enterli.append("div").attr("class").string("barpadding"), enterbar = barpadding.append("div").attr("class").string("barcontainer");
@@ -24992,8 +25024,9 @@ rg.view.html.chart.Leadeboard.prototype = {
 	}
 	,__class__: rg.view.html.chart.Leadeboard
 }
-rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(container) {
+rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(container,padright) {
 	this.mapvalues = new Hash();
+	this.padRight = padright;
 	this.id = ++rg.view.html.widget.Logo._id;
 	this.container = container;
 	this.create();
@@ -25010,12 +25043,14 @@ rg.view.html.widget.Logo.position = function(el) {
 	return p;
 }
 rg.view.html.widget.Logo.prototype = {
-	container: null
+	chartContainer: null
+	,container: null
 	,frame: null
 	,anchor: null
 	,image: null
 	,id: null
 	,mapvalues: null
+	,padRight: null
 	,live: function() {
 		if(this.container.select("div.reportgridbrandcontainer").empty()) this.createFrame(); else this.updateFrame();
 		if(thx.js.Dom.select("body").select("a.reportgridbrandanchor" + this.id).empty()) this.createAnchor(); else this.updateAnchor();
@@ -25027,8 +25062,8 @@ rg.view.html.widget.Logo.prototype = {
 		this.createImage();
 	}
 	,createFrame: function() {
-		var chart = this.container.select("*").node();
-		this.frame = this.container.insert("div",chart).attr("class").string("reportgridbrandcontainer");
+		this.chartContainer = this.container.select("*");
+		this.frame = this.container.insert("div",this.chartContainer.node()).attr("class").string("reportgridbrandcontainer");
 		this.updateFrame();
 	}
 	,createAnchor: function() {
@@ -25073,7 +25108,7 @@ rg.view.html.widget.Logo.prototype = {
 		this.setStyle(this.anchor,"height",29 + "px");
 		this.setStyle(this.anchor,"width",194 + "px");
 		this.setStyle(this.anchor,"top",pos.y + "px");
-		this.setStyle(this.anchor,"left",pos.x - 194 + width + "px");
+		this.setStyle(this.anchor,"left",pos.x - 194 + width - this.padRight + "px");
 	}
 	,updateImage: function() {
 		this.setAttr(this.image,"src",this.getLogo());

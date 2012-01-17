@@ -225,6 +225,7 @@
 
 .rg div.leaderboard li
 {
+	font-size: 12px;
 	position: relative;
 	width: 100%;
 	clear: left;
@@ -324,8 +325,7 @@
 	border-bottom: 1px solid #CECECE;
 	padding: 1px 6px 1px 3px;
 	text-align: right;
-
-	font-size:9px;
+	font-size:11px;
 	text-shadow: 1px 1px 1px #aaa;
 	-moz-text-shadow: 0.5px 0.25px 1px #aaa;
 	min-width: 40px;
@@ -345,12 +345,12 @@
 	-webkit-text-shadow: 1px 1px 0 #FFFFFF;
 	font-weight: normal;
 	color: #000000;
+	font-size:11px;
 }
 
 .rg .pivot-table tfoot th.column.total, .rg .pivot-table tbody th.row.total, .rg .pivot-table tfoot th.table.total
 {
 	font-weight: bold;
-	font-size:9px;
 	text-align: right;
 	padding-right: 4px;
 }
@@ -359,7 +359,6 @@
 {
 	font-weight: bold;
 	padding: 0px 6px;
-	font-size:9px;
 	background-color: #eee;
 	color: #444;
 }
@@ -368,7 +367,6 @@
 {
 	font-weight: bold;
 	padding: 2px 6px;
-	font-size:9px;
 }
 
 .rg .pivot-table thead th
@@ -493,7 +491,6 @@
 
 .rg .funnel-chart .arrow text
 {
-	font-size:9px;
 	font-weight: bold;
 }
 
@@ -506,7 +503,7 @@
 
 .rg .balloon .label text.nooutline, .rg .balloon .label text.shadow.nooutline
 {
-	font-size:9px;
+	fill: #000;
 	font-weight: bold;
 }
 
@@ -581,7 +578,6 @@
 {
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	color:#999;
-	font-size: 80%;
 	text-decoration: none;
 	display: block;
 	padding-left: 1em;
@@ -595,7 +591,6 @@
 	border-bottom: 1px solid #CCC;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	color:#999;
-	font-size: 85%;
 	border-bottom: 1px solid #CCC;
 	padding-left:.3em;
 	padding-right: .3em;
@@ -677,7 +672,6 @@
 
 .rg .sankey g.label.node text
 {
-	font-size: 9px;
 	fill: #fff;
 	stroke: none;
 }
