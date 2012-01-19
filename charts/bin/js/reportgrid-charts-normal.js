@@ -5122,7 +5122,7 @@ thx.js.BaseSelection.prototype = {
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 633, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 634, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -5877,7 +5877,18 @@ rg.JSBridge.log = function(msg) {
 	var c = (window.console && window.console.warn) || alert;
 	c(msg);
 }
+rg.JSBridge.getInternetExplorerVersion = function() {
+	var rv = -1.0;
+	if(js.Lib.window.navigator.appName == "Microsoft Internet Explorer") {
+		var ua = js.Lib.window.navigator.userAgent;
+		var re = new EReg("MSIE ([0-9]{1,}[\\.0-9]{0,})","");
+		if(re.match(ua) != null) rv = Std.parseFloat(re.matched(1));
+	}
+	return rv;
+}
 rg.JSBridge.main = function() {
+	var msiev = rg.JSBridge.getInternetExplorerVersion();
+	if(msiev >= 0 && msiev < 9) return;
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
 	var app = new rg.controller.App();
 	r.viz = function(el,options,type) {
@@ -5954,11 +5965,11 @@ rg.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.5851"};
+	r.info.charts = { version : "1.2.2.6135"};
 }
 rg.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 118, className : "rg.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 139, className : "rg.JSBridge", methodName : "select"});
 	return s;
 }
 rg.JSBridge.opt = function(ob) {
@@ -6432,6 +6443,14 @@ hxevents.Dispatcher.prototype = {
 				return false;
 			} else throw(exc);
 		}
+	}
+	,dispatchAndAutomate: function(e) {
+		this.dispatch(e);
+		this.handlers = [];
+		this.add = function(h) {
+			h(e);
+			return h;
+		};
 	}
 	,has: function(h) {
 		if(null == h) return this.handlers.length > 0; else {
@@ -10384,7 +10403,7 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 	,floatTweenNodef: function(tween,priority) {
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(d,i,Std.parseFloat(window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
 				d.style.setProperty(name,"" + f(t),null == priority?"":priority);
 			};
@@ -10402,7 +10421,7 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
+			var f = tween(d,i,window.getComputedStyle(d,null).getPropertyValue(name));
 			return function(t) {
 				d.style.setProperty(name,f(t),null == priority?"":priority);
 			};
@@ -10420,7 +10439,7 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(d,i,thx.color.Colors.parse(window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
 				d.style.setProperty(name,f(t).toRgbString(),null == priority?"":priority);
 			};
@@ -10445,7 +10464,7 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
 				d.style.setProperty(name,"" + f(t),null == priority?"":priority);
 			};
@@ -10462,7 +10481,7 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,js.Lib.window.getComputedStyle(d,null).getPropertyValue(name));
+			var f = tween(Reflect.field(d,"__data__"),i,window.getComputedStyle(d,null).getPropertyValue(name));
 			return function(t) {
 				d.style.setProperty(name,f(t),null == priority?"":priority);
 			};
@@ -10479,7 +10498,7 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(js.Lib.window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(window.getComputedStyle(d,null).getPropertyValue(name)));
 			return function(t) {
 				d.style.setProperty(name,f(t).toRgbString(),null == priority?"":priority);
 			};
@@ -17699,6 +17718,14 @@ hxevents.Notifier.prototype = {
 			} else throw(exc);
 		}
 	}
+	,dispatchAndAutomate: function() {
+		this.dispatch();
+		this.handlers = [];
+		this.add = function(h) {
+			h();
+			return h;
+		};
+	}
 	,has: function(h) {
 		if(null == h) return this.handlers.length > 0; else {
 			var _g = 0, _g1 = this.handlers;
@@ -20498,7 +20525,7 @@ thx.js.AccessStyle = $hxClasses["thx.js.AccessStyle"] = function(name,selection)
 }
 thx.js.AccessStyle.__name__ = ["thx","js","AccessStyle"];
 thx.js.AccessStyle.getComputedStyleValue = function(node,key) {
-	return js.Lib.window.getComputedStyle(node,null).getPropertyValue(key);
+	return window.getComputedStyle(node,null).getPropertyValue(key);
 }
 thx.js.AccessStyle.setStyleProperty = function(node,key,value,priority) {
 	node.style.setProperty(key,value,null == priority?"":priority);
@@ -20512,7 +20539,7 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 	,get: function() {
 		var me = this;
 		return this.selection.firstNode(function(node) {
-			return js.Lib.window.getComputedStyle(node,null).getPropertyValue(me.name);
+			return window.getComputedStyle(node,null).getPropertyValue(me.name);
 		});
 	}
 	,getFloat: function() {
