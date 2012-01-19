@@ -14,7 +14,7 @@ class Panel
 	public var frame(default, null) : Frame;
 	public var g(default, null) : Selection;
 	public var parent(default, null) : Container;
-	
+
 	var _layers : Array<Layer>;
 
 	public function new(frame : StackItem)
@@ -23,18 +23,18 @@ class Panel
 		frame.change = reframe;
 		_layers = [];
 	}
-	
+
 	function addLayer(layer : Layer)
 	{
 		_layers.remove(layer);
 		_layers.push(layer);
 	}
-	
+
 	function removeLayer(layer : Layer)
 	{
 		_layers.remove(layer);
 	}
-	
+
 	function setParent(container : Container)
 	{
 		if (null != g)
@@ -43,10 +43,10 @@ class Panel
 		parent = container;
 		if (null == container)
 			return;
-			
+
 		init(container.g);
 	}
-	
+
 	function init(container : Selection)
 	{
 		g = container.append("svg:g")
@@ -59,7 +59,7 @@ class Panel
 			.attr("height").float(frame.height);
 #end
 	}
-	
+
 	function reframe()
 	{
 		g

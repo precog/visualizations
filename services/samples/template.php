@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="chrome=IE8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $info['title'] ?></title>
 <link rel="stylesheet" type="text/css" href="<?php echo $CSS_API; ?>"/>
@@ -34,5 +35,14 @@ echo $info['html'];
 	echo "\n";
 ?>
 </script>
+<!--[if IE]>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+<script>
+CFInstall.check({
+	mode: "overlay",
+	destination: "http://www.reportgrid.com/charts/"
+});
+</script>
+<![endif]-->
 </body>
 </html>

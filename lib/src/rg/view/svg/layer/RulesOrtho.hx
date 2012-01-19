@@ -19,11 +19,11 @@ using Arrays;
 class RulesOrtho extends Layer
 {
 	public var orientation(default, null) : Orientation;
-	
+
 	public var displayMinor : Bool;
 	public var displayMajor : Bool;
 	public var displayAnchorLine : Bool;
-	
+
 	var translate : ITickmark<Dynamic> -> Int -> String;
 	var x1 : ITickmark<Dynamic> -> Int -> Float;
 	var y1 : ITickmark<Dynamic> -> Int -> Float;
@@ -31,23 +31,23 @@ class RulesOrtho extends Layer
 	var y2 : ITickmark<Dynamic> -> Int -> Float;
 	var x : ITickmark<Dynamic> -> Int -> Float;
 	var y : ITickmark<Dynamic> -> Int -> Float;
-	
-	public function new(panel : Panel, orientation : Orientation) 
+
+	public function new(panel : Panel, orientation : Orientation)
 	{
 		super(panel);
 		this.orientation = orientation;
-		
+
 		displayMinor = true;
 		displayMajor = true;
 		displayAnchorLine = true;
-		
+
 		g.classed().add("tickmarks");
 	}
-	
+
 	var axis : IAxis<Dynamic>;
 	var min : Dynamic;
 	var max : Dynamic;
-	
+
 	override function resize()
 	{
 		if (null == axis)
@@ -56,7 +56,7 @@ class RulesOrtho extends Layer
 			updateAnchorLine();
 		redraw();
 	}
-	
+
 	public function update(axis : IAxis<Dynamic>, min : Dynamic, max : Dynamic)
 	{
 		this.axis = axis;
@@ -64,7 +64,7 @@ class RulesOrtho extends Layer
 		this.max = max;
 		redraw();
 	}
-	
+
 	function updateAnchorLine()
 	{
 		var line = g.select("line.anchor-line");
@@ -82,7 +82,7 @@ class RulesOrtho extends Layer
 					.attr("y2").float(height);
 		}
 	}
-	
+
 	function maxTicks()
 	{
 		var size = switch(orientation)
@@ -92,20 +92,20 @@ class RulesOrtho extends Layer
 		}
 		return Math.round(size / 2.5);
 	}
-	
+
 	function id(d : ITickmark<Dynamic>, i) return "" + d.value
-	
+
 	function redraw()
 	{
 		var ticks = maxTicks(),
 			data = axis.ticks(min, max, ticks);
-		
+
 		// ticks
 		var rule = g.selectAll("g.rule").data(data, id);
 		var enter = rule.enter()
 			.append("svg:g").attr("class").string("rule")
 			.attr("transform").stringf(translate);
-		
+
 		if (displayMinor)
 		{
 			enter.filter(function(d, i) return !d.major)
@@ -116,7 +116,7 @@ class RulesOrtho extends Layer
 					.attr("y2").floatf(y2)
 					.attr("class").stringf(tickClass);
 		}
-		
+
 		if (displayMajor)
 		{
 			enter.filter(function(d, i) return d.major)
@@ -130,11 +130,11 @@ class RulesOrtho extends Layer
 
 		rule.update()
 			.attr("transform").stringf(translate);
-			
+
 		rule.exit()
 			.remove();
 	}
-	
+
 	function initf()
 	{
 		switch(orientation)
@@ -153,7 +153,7 @@ class RulesOrtho extends Layer
 				y2 = y2Vertical;
 		}
 	}
-	
+
 	public function init()
 	{
 		initf();
@@ -163,9 +163,9 @@ class RulesOrtho extends Layer
 			updateAnchorLine();
 		}
 	}
-	
+
 	inline function t(x : Float, y : Float) return "translate(" + x + "," + y + ")"
-	
+
 	function translateHorizontal(d : ITickmark<Dynamic>, i : Int)	return t(0, height - d.delta * height)
 	function translateVertical(d : ITickmark<Dynamic>, i : Int)		return t(d.delta * width, 0)
 
@@ -177,6 +177,6 @@ class RulesOrtho extends Layer
 	function x2Vertical(d : ITickmark<Dynamic>, i : Int)	return 0
 	function y2Horizontal(d : ITickmark<Dynamic>, i : Int)	return 0
 	function y2Vertical(d : ITickmark<Dynamic>, i : Int)	return height
-	
+
 	function tickClass(d : ITickmark<Dynamic>, i : Int)	return d.major ? "major" : null
 }

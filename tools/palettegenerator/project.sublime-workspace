@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"File",
+				"FileSystem"
+			],
+			[
 				"cont",
 				"continue"
 			],
@@ -510,10 +514,6 @@
 			[
 				"text",
 				"text"
-			],
-			[
-				"fo",
-				"formatValue(...) : String"
 			]
 		]
 	},
@@ -523,7 +523,31 @@
 			"file": "build.hxml",
 			"settings":
 			{
-				"buffer_size": 48,
+				"buffer_size": 81,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "run.sh",
+			"settings":
+			{
+				"buffer_size": 116,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "bin/css/rg-colors-accent-3-qual.css",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Main.hx",
+			"settings":
+			{
+				"buffer_size": 5163,
 				"line_ending": "Windows"
 			}
 		}
@@ -531,9 +555,13 @@
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
 	{
-		"height": 267.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"tr",
+				"Trailing Spaces: Delete Trailing Spaces"
+			],
 			[
 				"Package Control: ",
 				"Package Control: List Packages"
@@ -541,10 +569,6 @@
 			[
 				"upda",
 				"Package Control: Upgrade/Overwrite All Packages"
-			],
-			[
-				"tr",
-				"Trailing Spaces: Delete Trailing Spaces"
 			],
 			[
 				"ins",
@@ -632,6 +656,8 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Library/Application Support/Sublime Text 2/Packages/Default/Global.sublime-settings",
+		"/Users/francoponticelli/Library/Application Support/Sublime Text 2/Packages/User/Global.sublime-settings",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoBarChart.hx",
 		"/Users/francoponticelli/Projects/reportgrid/website/charts/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
@@ -706,8 +732,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/charts/HC002-multiple segments.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/charts/XX003-horizontal bar charts.js",
 		"/Users/francoponticelli/Projects/extern/porthole/example/abc.com/proxy.html",
-		"/Users/francoponticelli/Library/Application Support/Sublime Text 2/Packages/Default/Global.sublime-settings",
-		"/Users/francoponticelli/Library/Application Support/Sublime Text 2/Packages/User/Global.sublime-settings",
 		"/Users/francoponticelli/Projects/extern/porthole/example/abc.com/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/css/rg.css",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/BarChart.hx",
@@ -789,6 +813,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"unable",
 			"LOAD",
 			"menu",
 			"name",
@@ -915,8 +940,7 @@
 			"L",
 			"\\.[^L,]+",
 			"viz",
-			"hover",
-			"pie-chart"
+			"hover"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -980,7 +1004,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -988,7 +1012,60 @@
 					"file": "build.hxml",
 					"settings":
 					{
-						"buffer_size": 48,
+						"buffer_size": 81,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								72,
+								72
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/Hxml.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "run.sh",
+					"settings":
+					{
+						"buffer_size": 116,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								95,
+								95
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "bin/css/rg-colors-accent-3-qual.css",
+					"settings":
+					{
+						"buffer_size": 0,
 						"regions":
 						{
 						},
@@ -1001,11 +1078,38 @@
 						],
 						"settings":
 						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/Hxml.tmLanguage"
+							"syntax": "Packages/CSS/CSS.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/Main.hx",
+					"settings":
+					{
+						"buffer_size": 5163,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								354,
+								354
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 241.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

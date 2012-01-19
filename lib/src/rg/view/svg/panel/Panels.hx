@@ -5,9 +5,9 @@
 
 package rg.view.svg.panel;
 
-class Panels 
+class Panels
 {
-	public static function rootSize(panel : Panel) 
+	public static function rootSize(panel : Panel)
 	{
 		var p = panel.parent;
 		while (p != null)
@@ -18,7 +18,7 @@ class Panels
 		}
 		return { width : panel.frame.width, height : panel.frame.height };
 	}
-	
+
 	public static function boundingBox(panel : Panel, ?ancestor : Panel)
 	{
 		var p = panel, x = 0, y = 0;
@@ -35,7 +35,7 @@ class Panels
 			height : panel.frame.height
 		};
 	}
-	
+
 	public static function ancestorBoundingBox(panel : Panel, ?ancestor : Panel)
 	{
 		var p = panel, x = 0, y = 0, w = 0, h = 0;
