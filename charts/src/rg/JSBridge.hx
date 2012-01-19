@@ -23,8 +23,29 @@ class JSBridge
 		var c : String -> Void = untyped __js__("(window.console && window.console.warn) || alert");
 		c(msg);
 	}
+
+	// Returns the version of Internet Explorer or a -1
+	// (indicating the use of another browser).
+	static function getInternetExplorerVersion()
+	{
+		var rv = -1.0; // Return value assumes failure.
+		if (js.Lib.window.navigator.appName == 'Microsoft Internet Explorer')
+		{
+			var ua = js.Lib.window.navigator.userAgent;
+			var re  = ~/MSIE ([0-9]{1,}[\.0-9]{0,})/;
+			if (re.match(ua) != null)
+				rv = Std.parseFloat(re.matched(1));
+		}
+		return rv;
+	}
+
 	static function main()
 	{
+		// check for IE8 or older and return
+		var msiev = getInternetExplorerVersion();
+		if(msiev >= 0 && msiev < 9)
+			return;
+
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid");
 		// init app
 		var app = new App();
