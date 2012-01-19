@@ -40,7 +40,7 @@ echo $info['html'];
 <script>
 CFInstall.check({
 	mode: "overlay",
-	destination: "http://www.reportgrid.com/charts/"
+	oninstall : function() { parent.location.reload(); }
 });
 </script>
 <![endif]-->
