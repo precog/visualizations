@@ -1,13 +1,5 @@
-
 services/renderer/cache
 charts/cache/haxecompiler-cache
-
-charts/cache/haxecompiler-cache
-
 charts/charts.sublime-workspace
-
-charts/cache/haxecompiler-cache
-
-charts/charts.sublime-workspace
-
 tools/palettegenerator/project.sublime-workspace
+.gitignore
