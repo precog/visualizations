@@ -1,9 +1,7 @@
 package rg.app.query;
 
-import rg.app.query.App;
-import rg.app.query.MVPOptions;
 import rg.data.DataPoint;
-import rg.data.source.rgquery.ReportGridExecutorMemoryCache;
+import rg.data.reportgrid.ReportGridExecutorMemoryCache;
 
 class JSBridge
 {
@@ -15,16 +13,21 @@ class JSBridge
 
 		r.query = function(?options : Dynamic) {
 			options = opt(options);
-			return function(handler : Array<DataPoint> -> Void)
+			var params = null;
+			MVPOptions.complete(executor, options, function(opt : Dynamic)
 			{
-				trace(handler);
-				MVPOptions.complete(executor, options, function(opt : Dynamic)
+				params = opt;
+			});
+			function queue(handler : Array<DataPoint> -> Void)
+			{
+				if(null == params)
 				{
-					trace(options);
-					trace(handler);
-					app.query(opt, handler);
-				});
+					haxe.Timer.delay(callback(queue, handler), 30);
+					return;
+				}
+				app.query(params, handler);
 			}
+			return queue;
 		};
 
 		r.info = null != r.info ? r.info : { };

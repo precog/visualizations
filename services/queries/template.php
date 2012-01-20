@@ -65,11 +65,11 @@ for(var i = 0; i < paths.length; i++)
     {
         var event = events[j];
         ReportGrid.track(path, event,
-            (function(p, e) {
-                return function() {
-                    out.innerHTML += p + ": " + JSON.stringify(e) + "\n";
-                };
-            })(path, event));
+        (function(p, e) {
+            return function() {
+                out.innerHTML += p + ": " + JSON.stringify(e) + "\n";
+            };
+        })(path, event));
     }
 }
 <?php

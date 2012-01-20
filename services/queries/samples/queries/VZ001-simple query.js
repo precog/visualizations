@@ -1,12 +1,15 @@
 //** QUERY
 ReportGrid.query({
-	path : "/test/query",
-	event : "impression"
+	path : "/query/test",
+	event : "impression",
+	periodicity : "eternity",
+	query : "gender",
+	start : 1,
+	end : new Date().getTime()
 })
 
 //** VIZ
 ReportGrid.barChart("#chart", {
 	axes : ['gender', 'count'],
-//	load : loader
-	datapoints : [{ count : 99, gender : "male"}, { count : 80, gender : "female" }]
+	load : loader
 })

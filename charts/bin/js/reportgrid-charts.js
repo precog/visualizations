@@ -966,7 +966,7 @@ rg.app.charts.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6252"};
+	r.info.charts = { version : "1.2.2.6256"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -20980,7 +20980,7 @@ haxe.Http.prototype = {
 			while( $it0.hasNext() ) {
 				var p = $it0.next();
 				if(uri == null) uri = ""; else uri += "&";
-				uri += StringTools.urlDecode(p) + "=" + StringTools.urlEncode(this.params.get(p));
+				uri += StringTools.urlEncode(p) + "=" + StringTools.urlEncode(this.params.get(p));
 			}
 		}
 		try {
@@ -21320,11 +21320,11 @@ rg.app.charts.App.prototype = {
 		visualization.setVariables(variables,ivariables,dvariables);
 		visualization.init();
 		if(null != general.ready) visualization.addReady(general.ready);
-		loader.onLoad.add(function(data) {
+		loader.onLoad.addOnce(function(data) {
 			new rg.data.IndependentVariableProcessor().process(data,ivariables);
 			new rg.data.DependentVariableProcessor().process(data,dvariables);
 		});
-		loader.onLoad.add(function(datapoints) {
+		loader.onLoad.addOnce(function(datapoints) {
 			visualization.feedData(datapoints);
 		});
 		loader.load();

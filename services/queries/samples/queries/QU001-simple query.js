@@ -1,5 +1,5 @@
 //** query
 ReportGrid.query({
-	path : "/test/query",
+	path : "/query/test",
 	event : "impression"
 })

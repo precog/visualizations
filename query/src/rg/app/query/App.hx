@@ -1,8 +1,11 @@
 package rg.app.query;
 
-import rg.data.source.rgquery.IExecutorReportGrid;
+import rg.data.reportgrid.IExecutorReportGrid;
+import rg.controller.info.InfoDataSourceReportGrid;
+import rg.controller.factory.FactoryDataSourceReportGrid;
+using rg.controller.info.Info;
 
-class App 
+class App
 {
 	var executor : IExecutorReportGrid;
 	public function new(executor : IExecutorReportGrid)
@@ -12,12 +15,9 @@ class App
 
 	public function query(options : Dynamic, handler : Dynamic -> Void)
 	{
-		handler([{
-			count : 93,
-			gender : "males"
-		}, {
-			count : 107,
-			gender : "females"
-		}]);
+		var info       = new InfoDataSourceReportGrid().feed(options);
+		var datasource = new FactoryDataSourceReportGrid(executor).create(info);
+		datasource.onLoad.add(handler);
+		datasource.load();
 	}
 }

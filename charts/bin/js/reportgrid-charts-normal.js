@@ -96,6 +96,66 @@ thx.collection.Set.prototype = {
 	}
 	,__class__: thx.collection.Set
 }
+if(!thx.util) thx.util = {}
+thx.util.Message = $hxClasses["thx.util.Message"] = function(message,params,param) {
+	this.message = message;
+	if(null == params) this.params = []; else this.params = params;
+	if(null != param) this.params.push(param);
+}
+thx.util.Message.__name__ = ["thx","util","Message"];
+thx.util.Message.prototype = {
+	message: null
+	,params: null
+	,toString: function() {
+		return Strings.format(this.message,this.params);
+	}
+	,translatef: function(translator) {
+		return Strings.format(translator(this.message),this.params);
+	}
+	,translate: function(translator,domain) {
+		if(null == domain) domain = translator.getDomain();
+		var culture = thx.culture.Culture.get(domain);
+		if(this.params.length == 1 && Std["is"](this.params[0],Int)) return Strings.format(translator.__(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator._(this.message,domain),this.params,null,culture);
+	}
+	,__class__: thx.util.Message
+}
+if(!thx.error) thx.error = {}
+thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
+	thx.util.Message.call(this,message,params,param);
+	this.pos = pos;
+}
+thx.error.Error.__name__ = ["thx","error","Error"];
+thx.error.Error.__super__ = thx.util.Message;
+thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
+	pos: null
+	,inner: null
+	,setInner: function(inner) {
+		this.inner = inner;
+		return this;
+	}
+	,toStringError: function(pattern) {
+		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
+		return prefix + this.toString();
+	}
+	,toString: function() {
+		try {
+			return Strings.format(this.message,this.params);
+		} catch( e ) {
+			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
+			return "";
+		}
+	}
+	,__class__: thx.error.Error
+});
+thx.error.NullArgument = $hxClasses["thx.error.NullArgument"] = function(argumentName,message,posInfo) {
+	if(null == message) message = "invalid null or empty argument '{0}' for method {1}.{2}()";
+	thx.error.Error.call(this,message,[argumentName,posInfo.className,posInfo.methodName],posInfo,{ fileName : "NullArgument.hx", lineNumber : 16, className : "thx.error.NullArgument", methodName : "new"});
+}
+thx.error.NullArgument.__name__ = ["thx","error","NullArgument"];
+thx.error.NullArgument.__super__ = thx.error.Error;
+thx.error.NullArgument.prototype = $extend(thx.error.Error.prototype,{
+	__class__: thx.error.NullArgument
+});
 if(!rg.data) rg.data = {}
 rg.data.IAxis = $hxClasses["rg.data.IAxis"] = function() { }
 rg.data.IAxis.__name__ = ["rg","data","IAxis"];
@@ -806,6 +866,121 @@ rg.controller.visualization.VisualizationSvg.prototype = $extend(rg.controller.v
 	layout: null
 	,__class__: rg.controller.visualization.VisualizationSvg
 });
+if(!rg.app) rg.app = {}
+if(!rg.app.charts) rg.app.charts = {}
+rg.app.charts.JSBridge = $hxClasses["rg.app.charts.JSBridge"] = function() { }
+rg.app.charts.JSBridge.__name__ = ["rg","app","charts","JSBridge"];
+rg.app.charts.JSBridge.log = function(msg) {
+	var c = (window.console && window.console.warn) || alert;
+	c(msg);
+}
+rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
+	var rv = -1.0;
+	if(js.Lib.window.navigator.appName == "Microsoft Internet Explorer") {
+		var ua = js.Lib.window.navigator.userAgent;
+		var re = new EReg("MSIE ([0-9]{1,}[\\.0-9]{0,})","");
+		if(re.match(ua) != null) rv = Std.parseFloat(re.matched(1));
+	}
+	return rv;
+}
+rg.app.charts.JSBridge.main = function() {
+	var msiev = rg.app.charts.JSBridge.getInternetExplorerVersion();
+	if(msiev >= 0 && msiev < 9) return;
+	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
+	var app = new rg.app.charts.App();
+	r.viz = function(el,options,type) {
+		var copt = rg.app.charts.JSBridge.chartopt(options,type);
+		copt.options.a = false;
+		rg.app.charts.MVPOptions.complete(copt,function(opt) {
+			try {
+				app.visualization(rg.app.charts.JSBridge.select(el),opt);
+			} catch( $e0 ) {
+				if( js.Boot.__instanceof($e0,thx.error.Error) ) {
+					var e = $e0;
+					rg.app.charts.JSBridge.log(e.toString());
+				} else {
+				var e = $e0;
+				rg.app.charts.JSBridge.log(Std.string(e));
+				}
+			}
+		});
+	};
+	r.barChart = function(el,options) {
+		return r.viz(el,options,"barchart");
+	};
+	r.funnelChart = function(el,options) {
+		return r.viz(el,options,"funnelchart");
+	};
+	r.geo = function(el,options) {
+		return r.viz(el,options,"geo");
+	};
+	r.heatGrid = function(el,options) {
+		return r.viz(el,options,"heatgrid");
+	};
+	r.leaderBoard = function(el,options) {
+		return r.viz(el,options,"leaderboard");
+	};
+	r.lineChart = function(el,options) {
+		return r.viz(el,options,"linechart");
+	};
+	r.pieChart = function(el,options) {
+		return r.viz(el,options,"piechart");
+	};
+	r.pivotTable = function(el,options) {
+		return r.viz(el,options,"pivottable");
+	};
+	r.sankey = function(el,options) {
+		return r.viz(el,options,"sankey");
+	};
+	r.scatterGraph = function(el,options) {
+		return r.viz(el,options,"scattergraph");
+	};
+	r.streamGraph = function(el,options) {
+		return r.viz(el,options,"streamgraph");
+	};
+	r.parseQueryParameters = rg.util.Urls.parseQueryParameters;
+	r.findScript = rg.util.Js.findScript;
+	r.format = Dynamics.format;
+	r.compare = Dynamics.compare;
+	r.dump = Dynamics.string;
+	r.symbol = ($_=rg.view.svg.util.SymbolCache.cache,$_.get.$bind($_));
+	r.date = { range : function(a,b,p) {
+		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
+		if(null == a) a = rg.util.Periodicity.defaultRange(p)[0];
+		if(Std["is"](a,Date)) a = a.getTime();
+		if(Std["is"](b,String)) b = thx.date.DateParser.parse(b);
+		if(null == b) b = rg.util.Periodicity.defaultRange(p)[1];
+		if(Std["is"](b,Date)) b = b.getTime();
+		return rg.util.Periodicity.range(a,b,p);
+	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
+	r.humanize = function(v) {
+		if(Std["is"](v,String) && v.indexOf("time:") >= 0) return v.substr(v.indexOf("time:") + "time:".length);
+		return rg.util.RGStrings.humanize(v);
+	};
+	var rand = new thx.math.Random(666);
+	r.math = { random : function() {
+		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
+	}};
+	r.info = null != r.info?r.info:{ };
+	r.info.charts = { version : "1.2.2.6253"};
+}
+rg.app.charts.JSBridge.select = function(el) {
+	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 139, className : "rg.app.charts.JSBridge", methodName : "select"});
+	return s;
+}
+rg.app.charts.JSBridge.opt = function(ob) {
+	return null == ob?{ }:Objects.clone(ob);
+}
+rg.app.charts.JSBridge.chartopt = function(ob,viz) {
+	ob = null == ob?{ }:Objects.clone(ob);
+	ob.options = rg.app.charts.JSBridge.opt(ob.options);
+	ob.options.visualization = null != viz?viz:ob.options.visualization;
+	return ob;
+}
+rg.app.charts.JSBridge.prototype = {
+	__class__: rg.app.charts.JSBridge
+}
 var Hash = $hxClasses["Hash"] = function() {
 	this.h = {}
 	if(this.h.__proto__ != null) {
@@ -4070,16 +4245,25 @@ rg.controller.info.InfoDataSource = $hxClasses["rg.controller.info.InfoDataSourc
 rg.controller.info.InfoDataSource.__name__ = ["rg","controller","info","InfoDataSource"];
 rg.controller.info.InfoDataSource.filters = function() {
 	return [{ field : "data", validator : function(v) {
-		return Std["is"](v,String) || Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			return Reflect.isObject(v1) && null == Type.getClass(v1);
-		});
+		return Std["is"](v,Array);
 	}, filter : function(v) {
-		if(Std["is"](v,Array)) return [{ field : "data", value : v}]; else return [{ field : "namedData", value : v}];
+		return [{ field : "loader", value : function(handler) {
+			handler(v);
+		}}];
+	}},{ field : "datapoints", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : function(v) {
+		return [{ field : "loader", value : function(handler) {
+			handler(v);
+		}}];
+	}},{ field : "load", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "loader", value : v}];
 	}}];
 }
 rg.controller.info.InfoDataSource.prototype = {
-	namedData: null
-	,data: null
+	loader: null
 	,__class__: rg.controller.info.InfoDataSource
 }
 if(!rg.controller.factory) rg.controller.factory = {}
@@ -5871,119 +6055,6 @@ rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.
 	}
 	,__class__: rg.view.svg.chart.BarChart
 });
-rg.JSBridge = $hxClasses["rg.JSBridge"] = function() { }
-rg.JSBridge.__name__ = ["rg","JSBridge"];
-rg.JSBridge.log = function(msg) {
-	var c = (window.console && window.console.warn) || alert;
-	c(msg);
-}
-rg.JSBridge.getInternetExplorerVersion = function() {
-	var rv = -1.0;
-	if(js.Lib.window.navigator.appName == "Microsoft Internet Explorer") {
-		var ua = js.Lib.window.navigator.userAgent;
-		var re = new EReg("MSIE ([0-9]{1,}[\\.0-9]{0,})","");
-		if(re.match(ua) != null) rv = Std.parseFloat(re.matched(1));
-	}
-	return rv;
-}
-rg.JSBridge.main = function() {
-	var msiev = rg.JSBridge.getInternetExplorerVersion();
-	if(msiev >= 0 && msiev < 9) return;
-	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
-	var app = new rg.controller.App();
-	r.viz = function(el,options,type) {
-		var copt = rg.JSBridge.chartopt(options,type);
-		copt.options.a = false;
-		rg.controller.MVPOptions.complete(copt,function(opt) {
-			try {
-				app.visualization(rg.JSBridge.select(el),opt);
-			} catch( $e0 ) {
-				if( js.Boot.__instanceof($e0,thx.error.Error) ) {
-					var e = $e0;
-					rg.JSBridge.log(e.toString());
-				} else {
-				var e = $e0;
-				rg.JSBridge.log(Std.string(e));
-				}
-			}
-		});
-	};
-	r.barChart = function(el,options) {
-		return r.viz(el,options,"barchart");
-	};
-	r.funnelChart = function(el,options) {
-		return r.viz(el,options,"funnelchart");
-	};
-	r.geo = function(el,options) {
-		return r.viz(el,options,"geo");
-	};
-	r.heatGrid = function(el,options) {
-		return r.viz(el,options,"heatgrid");
-	};
-	r.leaderBoard = function(el,options) {
-		return r.viz(el,options,"leaderboard");
-	};
-	r.lineChart = function(el,options) {
-		return r.viz(el,options,"linechart");
-	};
-	r.pieChart = function(el,options) {
-		return r.viz(el,options,"piechart");
-	};
-	r.pivotTable = function(el,options) {
-		return r.viz(el,options,"pivottable");
-	};
-	r.sankey = function(el,options) {
-		return r.viz(el,options,"sankey");
-	};
-	r.scatterGraph = function(el,options) {
-		return r.viz(el,options,"scattergraph");
-	};
-	r.streamGraph = function(el,options) {
-		return r.viz(el,options,"streamgraph");
-	};
-	r.parseQueryParameters = rg.util.Urls.parseQueryParameters;
-	r.findScript = rg.util.Js.findScript;
-	r.format = Dynamics.format;
-	r.compare = Dynamics.compare;
-	r.dump = Dynamics.string;
-	r.symbol = ($_=rg.view.svg.util.SymbolCache.cache,$_.get.$bind($_));
-	r.date = { range : function(a,b,p) {
-		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
-		if(null == a) a = rg.util.Periodicity.defaultRange(p)[0];
-		if(Std["is"](a,Date)) a = a.getTime();
-		if(Std["is"](b,String)) b = thx.date.DateParser.parse(b);
-		if(null == b) b = rg.util.Periodicity.defaultRange(p)[1];
-		if(Std["is"](b,Date)) b = b.getTime();
-		return rg.util.Periodicity.range(a,b,p);
-	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
-	r.humanize = function(v) {
-		if(Std["is"](v,String) && v.indexOf("time:") >= 0) return v.substr(v.indexOf("time:") + "time:".length);
-		return rg.util.RGStrings.humanize(v);
-	};
-	var rand = new thx.math.Random(666);
-	r.math = { random : function() {
-		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
-	}};
-	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6135"};
-}
-rg.JSBridge.select = function(el) {
-	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 139, className : "rg.JSBridge", methodName : "select"});
-	return s;
-}
-rg.JSBridge.opt = function(ob) {
-	return null == ob?{ }:Objects.clone(ob);
-}
-rg.JSBridge.chartopt = function(ob,viz) {
-	ob = null == ob?{ }:Objects.clone(ob);
-	ob.options = rg.JSBridge.opt(ob.options);
-	ob.options.visualization = null != viz?viz:ob.options.visualization;
-	return ob;
-}
-rg.JSBridge.prototype = {
-	__class__: rg.JSBridge
-}
 rg.data.ScaleDistribution = $hxClasses["rg.data.ScaleDistribution"] = { __ename__ : ["rg","data","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
 rg.data.ScaleDistribution.ScaleFit = ["ScaleFit",0];
 rg.data.ScaleDistribution.ScaleFit.toString = $estr;
@@ -7707,13 +7778,6 @@ thx.js.Svg.mouse = function(dom) {
 thx.js.Svg.prototype = {
 	__class__: thx.js.Svg
 }
-rg.data.IDataSource = $hxClasses["rg.data.IDataSource"] = function() { }
-rg.data.IDataSource.__name__ = ["rg","data","IDataSource"];
-rg.data.IDataSource.prototype = {
-	onLoad: null
-	,load: null
-	,__class__: rg.data.IDataSource
-}
 if(!math.reduction) math.reduction = {}
 math.reduction.ModularReduction = $hxClasses["math.reduction.ModularReduction"] = function() { }
 math.reduction.ModularReduction.__name__ = ["math","reduction","ModularReduction"];
@@ -8047,7 +8111,6 @@ thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype = {
 	__class__: thx.math.Const
 }
-if(!thx.util) thx.util = {}
 thx.util.MacroVersion = $hxClasses["thx.util.MacroVersion"] = function() { }
 thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
 thx.util.MacroVersion.prototype = {
@@ -8064,39 +8127,6 @@ chx.lang.EofException.prototype = $extend(chx.lang.IOException.prototype,{
 	}
 	,__class__: chx.lang.EofException
 });
-rg.controller.factory.FactoryDataContext = $hxClasses["rg.controller.factory.FactoryDataContext"] = function(factoryDataSource) {
-	this.factoryDataSource = factoryDataSource;
-}
-rg.controller.factory.FactoryDataContext.__name__ = ["rg","controller","factory","FactoryDataContext"];
-rg.controller.factory.FactoryDataContext.prototype = {
-	factoryDataSource: null
-	,create: function(info) {
-		if(info.sources.length == 0) throw new thx.error.Error("the data object does not contain valid data sources information",null,null,{ fileName : "FactoryDataContext.hx", lineNumber : 26, className : "rg.controller.factory.FactoryDataContext", methodName : "create"});
-		var sources = [];
-		var _g = 0, _g1 = info.sources;
-		while(_g < _g1.length) {
-			var src = _g1[_g];
-			++_g;
-			sources.push(this.factoryDataSource.create(src));
-		}
-		var processor = new rg.data.DataProcessor(new rg.data.Sources(sources));
-		if(null != info.transform) processor.transform = function(dps) {
-			var res = info.transform.apply(this,dps);
-			if(null == res) return [];
-			if(!Std["is"](res,Array)) res = [res];
-			return res;
-		};
-		if(null != info.scale) processor.scale = function(dps) {
-			var res = info.scale.apply(this,dps);
-			if(null == res) return [[]];
-			if(!Std["is"](res,Array)) res = [res];
-			if(!Std["is"](res[0],Array)) res = [res];
-			return res;
-		};
-		return new rg.data.DataContext(info.name,processor);
-	}
-	,__class__: rg.controller.factory.FactoryDataContext
-}
 var BytesBuffer = $hxClasses["BytesBuffer"] = function() {
 	this.b = new Array();
 }
@@ -8145,21 +8175,6 @@ thx.math.scale.IScale.prototype = {
 	,getDomain: null
 	,getRange: null
 	,__class__: thx.math.scale.IScale
-}
-if(!rg.data.source) rg.data.source = {}
-rg.data.source.DataSourceArray = $hxClasses["rg.data.source.DataSourceArray"] = function(data) {
-	this.data = data;
-	this.onLoad = new hxevents.Dispatcher();
-}
-rg.data.source.DataSourceArray.__name__ = ["rg","data","source","DataSourceArray"];
-rg.data.source.DataSourceArray.__interfaces__ = [rg.data.IDataSource];
-rg.data.source.DataSourceArray.prototype = {
-	data: null
-	,onLoad: null
-	,load: function() {
-		this.onLoad.dispatch(this.data);
-	}
-	,__class__: rg.data.source.DataSourceArray
 }
 var Floats = $hxClasses["Floats"] = function() { }
 Floats.__name__ = ["Floats"];
@@ -8303,6 +8318,25 @@ Floats.round = function(number,precision) {
 }
 Floats.prototype = {
 	__class__: Floats
+}
+rg.data.IndependentVariableProcessor = $hxClasses["rg.data.IndependentVariableProcessor"] = function() {
+}
+rg.data.IndependentVariableProcessor.__name__ = ["rg","data","IndependentVariableProcessor"];
+rg.data.IndependentVariableProcessor.prototype = {
+	process: function(data,variables) {
+		var _g = 0;
+		while(_g < variables.length) {
+			var variable = variables[_g];
+			++_g;
+			variable.stats.addMany(rg.util.DataPoints.values(data,variable.type));
+			var discrete;
+			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.data.IAxisDiscrete))) {
+				discrete.setScaleDistribution(variable.scaleDistribution);
+				variable.scaleDistribution = null;
+			}
+		}
+	}
+	,__class__: rg.data.IndependentVariableProcessor
 }
 rg.controller.visualization.VisualizationStreamGraph = $hxClasses["rg.controller.visualization.VisualizationStreamGraph"] = function(layout) {
 	rg.controller.visualization.VisualizationCartesian.call(this,layout);
@@ -8781,34 +8815,6 @@ rg.view.layout.Layout.prototype = {
 	}
 	,__class__: rg.view.layout.Layout
 }
-rg.controller.info.InfoDataContext = $hxClasses["rg.controller.info.InfoDataContext"] = function() {
-	this.sources = [];
-}
-rg.controller.info.InfoDataContext.__name__ = ["rg","controller","info","InfoDataContext"];
-rg.controller.info.InfoDataContext.filters = function() {
-	return [{ field : "name", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "transform", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "scale", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "src", validator : function(v) {
-		return Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			return Reflect.isObject(v1) && null == Type.getClass(v1);
-		}) || Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "sources", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			return rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),v1);
-		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),v)]}];
-	}}];
-}
-rg.controller.info.InfoDataContext.prototype = {
-	name: null
-	,transform: null
-	,scale: null
-	,sources: null
-	,__class__: rg.controller.info.InfoDataContext
-}
 var StringTools = $hxClasses["StringTools"] = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
@@ -9033,18 +9039,13 @@ thx.culture.core.NumberInfo.prototype = {
 	,patternPositive: null
 	,__class__: thx.culture.core.NumberInfo
 }
-rg.controller.factory.FactoryVariable = $hxClasses["rg.controller.factory.FactoryVariable"] = function(knownproperties) {
-	this.knownProperties = knownproperties;
+rg.controller.factory.FactoryVariable = $hxClasses["rg.controller.factory.FactoryVariable"] = function() {
 	this.independentFactory = new rg.controller.factory.FactoryVariableIndependent();
 	this.dependentFactory = new rg.controller.factory.FactoryVariableDependent();
 }
 rg.controller.factory.FactoryVariable.__name__ = ["rg","controller","factory","FactoryVariable"];
-rg.controller.factory.FactoryVariable.createFromDataContexts = function(contexts) {
-	return new rg.controller.factory.FactoryVariable(new thx.collection.Set());
-}
 rg.controller.factory.FactoryVariable.prototype = {
-	knownProperties: null
-	,independentFactory: null
+	independentFactory: null
 	,dependentFactory: null
 	,createVariables: function(arr) {
 		var me = this;
@@ -9055,8 +9056,7 @@ rg.controller.factory.FactoryVariable.prototype = {
 			case 2:
 				return me.dependentFactory.create(info,null);
 			case 0:
-				if(me.knownProperties.exists(info.type)) return me.independentFactory.create(info); else return me.dependentFactory.create(info,null);
-				break;
+				return me.dependentFactory.create(info,null);
 			}
 		});
 	}
@@ -9073,7 +9073,7 @@ rg.controller.factory.FactoryVariable.prototype = {
 					$r = false;
 					break;
 				case 0:
-					$r = !$this.knownProperties.exists(i.type);
+					$r = true;
 					break;
 				default:
 					$r = true;
@@ -9098,7 +9098,7 @@ rg.controller.factory.FactoryVariable.prototype = {
 					$r = false;
 					break;
 				case 0:
-					$r = $this.knownProperties.exists(i.type);
+					$r = false;
 					break;
 				default:
 					$r = true;
@@ -10552,6 +10552,151 @@ rg.util.Auth.prototype = {
 	}
 	,__class__: rg.util.Auth
 }
+rg.app.charts.MVPOptions = $hxClasses["rg.app.charts.MVPOptions"] = function() { }
+rg.app.charts.MVPOptions.__name__ = ["rg","app","charts","MVPOptions"];
+rg.app.charts.MVPOptions.a1 = function(params,handler) {
+	var authcode = ReportGrid.authCode, authorized = false;
+	if(null == authcode) {
+		var script = rg.util.Js.findScript("reportgrid-charts.js");
+		var args = rg.util.Urls.parseQueryParameters(script.src);
+		authcode = Reflect.field(args,"authCode");
+	}
+	if(null != authcode) {
+		var auth = new rg.util.Auth(authcode), hosts = [], host = js.Lib.window.location.hostname;
+		if(new EReg("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$","").match(host)) hosts.push(host); else {
+			var parts = host.split(".");
+			if(parts.length == 3 && parts[0] == "www") parts.shift();
+			hosts.push(parts.join("."));
+			while(parts.length > 2) parts.shift();
+			hosts.push("*." + parts.join("."));
+		}
+		authorized = auth.authorizeMany(hosts);
+	} else authorized = false;
+	rg.app.charts.MVPOptions.a1 = function(params1,handler1) {
+		params1.options.a = authorized;
+		handler1(params1);
+	};
+	rg.app.charts.MVPOptions.a1(params,handler);
+}
+rg.app.charts.MVPOptions.a2 = function(params,handler) {
+	var changeAndToggle = function(auth) {
+		if(null == auth) rg.app.charts.MVPOptions.a2 = function(params1,handler1) {
+			handler1(params1);
+		}; else rg.app.charts.MVPOptions.a2 = function(params1,handler1) {
+			params1.options.a = auth;
+			handler1(params1);
+		};
+		rg.app.charts.MVPOptions.a2(params,handler);
+	};
+	var api = ReportGrid.token;
+	if(params.options.a || null == api) changeAndToggle(null); else api(function(result) {
+		changeAndToggle((result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read);
+	},function(err) {
+		changeAndToggle(null);
+	});
+}
+rg.app.charts.MVPOptions.complete = function(parameters,handler) {
+	var chain = new rg.util.ChainedExecutor(handler);
+	if(null == parameters.options) parameters.options = { };
+	var options = parameters.options;
+	if(null != options.download && !Types.isAnonymous(options.download)) {
+		var v = options.download;
+		Reflect.deleteField(options,"download");
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 117, className : "rg.app.charts.MVPOptions", methodName : "complete"});
+	}
+	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
+	if(null == options.logoposition) options.logoposition = (function($this) {
+		var $r;
+		switch(options.visualization) {
+		case "barchart":case "linechart":case "streamgraph":case "scattergraph":
+			$r = "top";
+			break;
+		case "heatgrid":case "funnelchart":
+			$r = "bottomleft";
+			break;
+		case "geo":case "sankey":
+			$r = "topright";
+			break;
+		case "piechart":
+			$r = "bottomright";
+			break;
+		case "leaderboard":case "pivottable":
+			$r = "after";
+			break;
+		default:
+			$r = "top";
+		}
+		return $r;
+	}(this));
+	chain.addAction(rg.app.charts.MVPOptions.a1);
+	chain.addAction(rg.app.charts.MVPOptions.a2);
+	chain.addAction(function(params,handler1) {
+		var axes = params.axes, hasdependent = false;
+		if(null == axes) axes = [];
+		params.axes = axes = axes.map(function(v,_) {
+			return Std["is"](v,String)?{ type : v}:v;
+		});
+		var _g1 = 0, _g = axes.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var variable = axes[i].variable;
+			if(null == variable) axes[i].variable = !hasdependent && i == axes.length - 1?"dependent":"independent"; else if("dependent" == variable) hasdependent = true;
+		}
+		handler1(params);
+	});
+	chain.addAction(function(params,handler1) {
+		if(null == params.options.label) switch(params.options.visualization) {
+		case "linechart":case "barchart":case "streamgraph":
+			var type = params.axes[0].type;
+			params.options.label = { datapointover : function(dp,stats) {
+				return (null != params.options.segmenton?rg.util.Properties.formatValue(params.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			}};
+			break;
+		case "scattergraph":case "heatgrid":
+			var type = params.axes[0].type;
+			params.options.label = { datapointover : function(dp,stats) {
+				return rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			}};
+			break;
+		case "geo":
+			var type = params.axes[0].type, maps = params.options.map;
+			maps[maps.length - 1].label = { datapointover : function(dp,stats) {
+				var v = rg.util.Properties.formatValue(type,dp);
+				if(null == v) return null;
+				return v + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			}};
+			break;
+		case "piechart":
+			params.options.label = { datapoint : function(dp,stats) {
+				var v = Reflect.field(dp,stats.type);
+				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
+			}, datapointover : function(dp,stats) {
+				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(stats.type,"."),".")) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			}};
+			break;
+		case "sankey":
+			var axes = params.axes, type = axes[axes.length - 1].type;
+			params.options.label = { datapointover : function(dp,stats) {
+				var v = Reflect.field(dp,type);
+				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),".")) + ": " + rg.util.Properties.formatValue(type,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
+			}, node : function(dp,stats) {
+				return dp.id;
+			}, datapoint : function(dp,stats) {
+				return rg.util.Properties.formatValue(type,dp) + "\n" + rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),"."));
+			}, edge : function(dp,stats) {
+				return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
+			}, edgeover : function(dp,stats) {
+				return Floats.format(dp.edgeweight,"D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
+			}};
+			break;
+		}
+		handler1(params);
+	});
+	chain.execute(parameters);
+}
+rg.app.charts.MVPOptions.prototype = {
+	__class__: rg.app.charts.MVPOptions
+}
 var Strings = $hxClasses["Strings"] = function() { }
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
@@ -11469,102 +11614,6 @@ rg.controller.visualization.VisualizationScatterGraph.prototype = $extend(rg.con
 	}
 	,__class__: rg.controller.visualization.VisualizationScatterGraph
 });
-rg.controller.App = $hxClasses["rg.controller.App"] = function() {
-	this.layouts = new Hash();
-}
-rg.controller.App.__name__ = ["rg","controller","App"];
-rg.controller.App.nextid = function() {
-	return ":RGVIZ-" + ++rg.controller.App.lastid;
-}
-rg.controller.App.supportsSvg = function() {
-	return !!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect;
-}
-rg.controller.App.prototype = {
-	layouts: null
-	,visualization: function(el,jsoptions) {
-		var node = el.node();
-		var id = node.id;
-		if(null == id) node.id = id = rg.controller.App.nextid();
-		var cache = new Hash();
-		var params = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions);
-		var factoryDataSource = new rg.controller.factory.FactoryDataSource(cache);
-		var factoryDataContext = new rg.controller.factory.FactoryDataContext(factoryDataSource);
-		var datacontexts = params.data.map(function(d,_) {
-			return factoryDataContext.create(d);
-		});
-		var factoryVariableContexts = rg.controller.factory.FactoryVariable.createFromDataContexts(datacontexts);
-		var variables = factoryVariableContexts.createVariables(params.variables);
-		var independentVariables = Arrays.filter(variables,function(v) {
-			return Std["is"](v,rg.data.VariableIndependent);
-		});
-		var dependentVariables = Arrays.filter(variables,function(v) {
-			return Std["is"](v,rg.data.VariableDependent);
-		});
-		var _g = 0;
-		while(_g < datacontexts.length) {
-			var context = datacontexts[_g];
-			++_g;
-			context.data.independentVariables = independentVariables;
-			context.data.dependentVariables = dependentVariables;
-		}
-		var visualization = null;
-		var general = rg.controller.info.Info.feed(new rg.controller.info.InfoGeneral(),params.options);
-		var infoviz = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationType(),params.options);
-		params.options.marginheight = 29;
-		switch( (rg.controller.info.Info.feed(new rg.controller.info.InfoDomType(),params.options).kind)[1] ) {
-		case 1:
-			var layout = this.getLayout(id,params.options,el,infoviz.replace);
-			visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
-			break;
-		case 0:
-			if(infoviz.replace) el.selectAll("*").remove();
-			visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
-			break;
-		}
-		visualization.setVariables(variables,independentVariables,dependentVariables);
-		visualization.init();
-		if(null != general.ready) visualization.addReady(general.ready);
-		var request = new rg.data.DataRequest(cache,datacontexts);
-		request.onData = function(datapoints) {
-			visualization.feedData(datapoints);
-		};
-		request.request();
-		var brandPadding = 0;
-		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
-		if(!rg.controller.App.supportsSvg()) {
-			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
-			visualization.addReadyOnce(function() {
-				downloader.download("png","#ffffff",function(url) {
-					visualization.container.selectAll("*").remove();
-					visualization.container.append("img").attr("src").string(url);
-					return false;
-				},null);
-			});
-		} else if(null != download.position || null != download.handler) {
-			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
-			if(null != download.handler) visualization.addReadyOnce(function() {
-				download.handler(downloader.download.$bind(downloader));
-			}); else visualization.addReadyOnce(function() {
-				var widget = new rg.view.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
-				brandPadding = 24;
-			});
-		}
-		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
-			var widget = new rg.view.html.widget.Logo(visualization.container,brandPadding);
-		});
-		return visualization;
-	}
-	,getLayout: function(id,options,container,replace) {
-		var old = this.layouts.get(id);
-		if(null != old) {
-			if(replace) old.destroy(); else return old;
-		}
-		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),options), layout = new rg.controller.factory.FactoryLayout().create(info,options.marginheight,container);
-		this.layouts.set(id,layout);
-		return layout;
-	}
-	,__class__: rg.controller.App
-}
 rg.view.svg.chart.HeatGrid = $hxClasses["rg.view.svg.chart.HeatGrid"] = function(panel) {
 	rg.view.svg.chart.CartesianChart.call(this,panel);
 	this.useContour = false;
@@ -12700,56 +12749,6 @@ List.prototype = {
 	}
 	,__class__: List
 }
-thx.util.Message = $hxClasses["thx.util.Message"] = function(message,params,param) {
-	this.message = message;
-	if(null == params) this.params = []; else this.params = params;
-	if(null != param) this.params.push(param);
-}
-thx.util.Message.__name__ = ["thx","util","Message"];
-thx.util.Message.prototype = {
-	message: null
-	,params: null
-	,toString: function() {
-		return Strings.format(this.message,this.params);
-	}
-	,translatef: function(translator) {
-		return Strings.format(translator(this.message),this.params);
-	}
-	,translate: function(translator,domain) {
-		if(null == domain) domain = translator.getDomain();
-		var culture = thx.culture.Culture.get(domain);
-		if(this.params.length == 1 && Std["is"](this.params[0],Int)) return Strings.format(translator.__(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator._(this.message,domain),this.params,null,culture);
-	}
-	,__class__: thx.util.Message
-}
-if(!thx.error) thx.error = {}
-thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
-	thx.util.Message.call(this,message,params,param);
-	this.pos = pos;
-}
-thx.error.Error.__name__ = ["thx","error","Error"];
-thx.error.Error.__super__ = thx.util.Message;
-thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
-	pos: null
-	,inner: null
-	,setInner: function(inner) {
-		this.inner = inner;
-		return this;
-	}
-	,toStringError: function(pattern) {
-		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
-		return prefix + this.toString();
-	}
-	,toString: function() {
-		try {
-			return Strings.format(this.message,this.params);
-		} catch( e ) {
-			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
-			return "";
-		}
-	}
-	,__class__: thx.error.Error
-});
 thx.error.AbstractMethod = $hxClasses["thx.error.AbstractMethod"] = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 14, className : "thx.error.AbstractMethod", methodName : "new"});
 }
@@ -14571,193 +14570,6 @@ rg.graph.GreedySwitch2Decrosser.prototype = $extend(rg.graph.GreedySwitchDecross
 	}
 	,__class__: rg.graph.GreedySwitch2Decrosser
 });
-thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
-	this._order = thx.geom.layout.StackOrder.DefaultOrder;
-	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
-}
-thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
-thx.geom.layout.Stack.getStackOrder = function(order,data) {
-	switch( (order)[1] ) {
-	case 0:
-		return Ints.range(data.length);
-	case 1:
-		var n = data.length, max = data.map(thx.geom.layout.Stack.stackMaxIndex), sums = data.map(thx.geom.layout.Stack.stackReduceSum), index = Ints.range(n), top = 0.0, bottom = 0.0, tops = [], bottoms = [];
-		index.sort(function(a,b) {
-			return max[a] - max[b];
-		});
-		var _g = 0;
-		while(_g < n) {
-			var i = _g++;
-			var j = index[i];
-			if(top < bottom) {
-				top += sums[j];
-				tops.push(j);
-			} else {
-				bottom += sums[j];
-				bottoms.push(j);
-			}
-		}
-		bottoms.reverse();
-		return bottoms.concat(tops);
-	case 2:
-		var index = Ints.range(data.length);
-		index.reverse();
-		return index;
-	}
-}
-thx.geom.layout.Stack.getStackOffset = function(offset,index,data) {
-	switch( (offset)[1] ) {
-	case 0:
-		var n = data.length, m = data[0].length, sums = [], max = 0.0, o;
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			o = 0.0;
-			var _g1 = 0;
-			while(_g1 < n) {
-				var i = _g1++;
-				o += data[i][j].y;
-			}
-			if(o > max) max = o;
-			sums.push(o);
-		}
-		var i = index[0];
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			data[i][j].y0 = (max - sums[j]) / 2;
-		}
-		break;
-	case 1:
-		var n = data.length, x = data[0], m = x.length, max = 0.0, k, ii, ik, i0 = index[0], s1, s2, s3, dx, o, o0;
-		data[i0][0].y0 = o = o0 = 0.0;
-		var _g = 1;
-		while(_g < m) {
-			var j = _g++;
-			s1 = 0.0;
-			var _g1 = 0;
-			while(_g1 < n) {
-				var i = _g1++;
-				s1 += data[i][j].y;
-			}
-			s2 = 0.0;
-			dx = x[j].x - x[j - 1].x;
-			var _g1 = 0;
-			while(_g1 < n) {
-				var i = _g1++;
-				ii = index[i];
-				s3 = (data[ii][j].y - data[ii][j - 1].y) / (2 * dx);
-				var _g2 = 0;
-				while(_g2 < i) {
-					var k1 = _g2++;
-					s3 += (data[ik = index[k1]][j].y - data[ik][j - 1].y) / dx;
-				}
-				s2 += s3 * data[ii][j].y;
-			}
-			data[i0][j].y0 = o -= s1 != 0?s2 / s1 * dx:0;
-			if(o < o0) o0 = o;
-		}
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			data[i0][j].y0 -= o0;
-		}
-		break;
-	case 2:
-		var m = data[0].length, i0 = index[0];
-		var _g = 0;
-		while(_g < m) {
-			var j = _g++;
-			data[i0][j].y0 = 0.0;
-		}
-		break;
-	}
-}
-thx.geom.layout.Stack.stackMaxIndex = function(data,_) {
-	var j = 0, v = data[0].y, k, n = data.length;
-	var _g = 1;
-	while(_g < n) {
-		var i = _g++;
-		if((k = data[i].y) > v) {
-			j = i;
-			v = k;
-		}
-	}
-	return j;
-}
-thx.geom.layout.Stack.stackReduceSum = function(data,_) {
-	return data.reduce(thx.geom.layout.Stack.stackSum,0.0);
-}
-thx.geom.layout.Stack.stackSum = function(p,c,i) {
-	return p + c.y;
-}
-thx.geom.layout.Stack.prototype = {
-	_order: null
-	,_offset: null
-	,stack: function(data) {
-		var n = data.length, m = data[0].length, i, j, y0, result = [];
-		var _g = 0;
-		while(_g < n) {
-			var i1 = _g++;
-			var r = [];
-			result.push(r);
-			var _g1 = 0;
-			while(_g1 < m) {
-				var j1 = _g1++;
-				var s = data[i1][j1];
-				r[j1] = { x : s.x, y : s.y, y0 : 0.0};
-			}
-		}
-		var index = thx.geom.layout.Stack.getStackOrder(this._order,result);
-		thx.geom.layout.Stack.getStackOffset(this._offset,index,result);
-		var _g = 0;
-		while(_g < m) {
-			var j1 = _g++;
-			y0 = result[index[0]][j1].y0;
-			var _g1 = 1;
-			while(_g1 < n) {
-				var i1 = _g1++;
-				result[index[i1]][j1].y0 = y0 += result[index[i1 - 1]][j1].y;
-			}
-		}
-		return result;
-	}
-	,getOrder: function() {
-		return this._order;
-	}
-	,order: function(x) {
-		this._order = x;
-		return this;
-	}
-	,getOffset: function() {
-		return this._offset;
-	}
-	,offset: function(x) {
-		this._offset = x;
-		return this;
-	}
-	,__class__: thx.geom.layout.Stack
-}
-thx.geom.layout.StackOrder = $hxClasses["thx.geom.layout.StackOrder"] = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
-thx.geom.layout.StackOrder.DefaultOrder = ["DefaultOrder",0];
-thx.geom.layout.StackOrder.DefaultOrder.toString = $estr;
-thx.geom.layout.StackOrder.DefaultOrder.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOrder.InsideOut = ["InsideOut",1];
-thx.geom.layout.StackOrder.InsideOut.toString = $estr;
-thx.geom.layout.StackOrder.InsideOut.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOrder.ReverseOrder = ["ReverseOrder",2];
-thx.geom.layout.StackOrder.ReverseOrder.toString = $estr;
-thx.geom.layout.StackOrder.ReverseOrder.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOffset = $hxClasses["thx.geom.layout.StackOffset"] = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
-thx.geom.layout.StackOffset.Silhouette = ["Silhouette",0];
-thx.geom.layout.StackOffset.Silhouette.toString = $estr;
-thx.geom.layout.StackOffset.Silhouette.__enum__ = thx.geom.layout.StackOffset;
-thx.geom.layout.StackOffset.Wiggle = ["Wiggle",1];
-thx.geom.layout.StackOffset.Wiggle.toString = $estr;
-thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
-thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
-thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
-thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
 thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
 	this.setScale(500);
 	this.setTranslate([480.0,250]);
@@ -15150,6 +14962,193 @@ thx.svg.CentroidTypes.prototype = {
 	}
 	,__class__: thx.svg.CentroidTypes
 }
+thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
+	this._order = thx.geom.layout.StackOrder.DefaultOrder;
+	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
+}
+thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
+thx.geom.layout.Stack.getStackOrder = function(order,data) {
+	switch( (order)[1] ) {
+	case 0:
+		return Ints.range(data.length);
+	case 1:
+		var n = data.length, max = data.map(thx.geom.layout.Stack.stackMaxIndex), sums = data.map(thx.geom.layout.Stack.stackReduceSum), index = Ints.range(n), top = 0.0, bottom = 0.0, tops = [], bottoms = [];
+		index.sort(function(a,b) {
+			return max[a] - max[b];
+		});
+		var _g = 0;
+		while(_g < n) {
+			var i = _g++;
+			var j = index[i];
+			if(top < bottom) {
+				top += sums[j];
+				tops.push(j);
+			} else {
+				bottom += sums[j];
+				bottoms.push(j);
+			}
+		}
+		bottoms.reverse();
+		return bottoms.concat(tops);
+	case 2:
+		var index = Ints.range(data.length);
+		index.reverse();
+		return index;
+	}
+}
+thx.geom.layout.Stack.getStackOffset = function(offset,index,data) {
+	switch( (offset)[1] ) {
+	case 0:
+		var n = data.length, m = data[0].length, sums = [], max = 0.0, o;
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			o = 0.0;
+			var _g1 = 0;
+			while(_g1 < n) {
+				var i = _g1++;
+				o += data[i][j].y;
+			}
+			if(o > max) max = o;
+			sums.push(o);
+		}
+		var i = index[0];
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			data[i][j].y0 = (max - sums[j]) / 2;
+		}
+		break;
+	case 1:
+		var n = data.length, x = data[0], m = x.length, max = 0.0, k, ii, ik, i0 = index[0], s1, s2, s3, dx, o, o0;
+		data[i0][0].y0 = o = o0 = 0.0;
+		var _g = 1;
+		while(_g < m) {
+			var j = _g++;
+			s1 = 0.0;
+			var _g1 = 0;
+			while(_g1 < n) {
+				var i = _g1++;
+				s1 += data[i][j].y;
+			}
+			s2 = 0.0;
+			dx = x[j].x - x[j - 1].x;
+			var _g1 = 0;
+			while(_g1 < n) {
+				var i = _g1++;
+				ii = index[i];
+				s3 = (data[ii][j].y - data[ii][j - 1].y) / (2 * dx);
+				var _g2 = 0;
+				while(_g2 < i) {
+					var k1 = _g2++;
+					s3 += (data[ik = index[k1]][j].y - data[ik][j - 1].y) / dx;
+				}
+				s2 += s3 * data[ii][j].y;
+			}
+			data[i0][j].y0 = o -= s1 != 0?s2 / s1 * dx:0;
+			if(o < o0) o0 = o;
+		}
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			data[i0][j].y0 -= o0;
+		}
+		break;
+	case 2:
+		var m = data[0].length, i0 = index[0];
+		var _g = 0;
+		while(_g < m) {
+			var j = _g++;
+			data[i0][j].y0 = 0.0;
+		}
+		break;
+	}
+}
+thx.geom.layout.Stack.stackMaxIndex = function(data,_) {
+	var j = 0, v = data[0].y, k, n = data.length;
+	var _g = 1;
+	while(_g < n) {
+		var i = _g++;
+		if((k = data[i].y) > v) {
+			j = i;
+			v = k;
+		}
+	}
+	return j;
+}
+thx.geom.layout.Stack.stackReduceSum = function(data,_) {
+	return data.reduce(thx.geom.layout.Stack.stackSum,0.0);
+}
+thx.geom.layout.Stack.stackSum = function(p,c,i) {
+	return p + c.y;
+}
+thx.geom.layout.Stack.prototype = {
+	_order: null
+	,_offset: null
+	,stack: function(data) {
+		var n = data.length, m = data[0].length, i, j, y0, result = [];
+		var _g = 0;
+		while(_g < n) {
+			var i1 = _g++;
+			var r = [];
+			result.push(r);
+			var _g1 = 0;
+			while(_g1 < m) {
+				var j1 = _g1++;
+				var s = data[i1][j1];
+				r[j1] = { x : s.x, y : s.y, y0 : 0.0};
+			}
+		}
+		var index = thx.geom.layout.Stack.getStackOrder(this._order,result);
+		thx.geom.layout.Stack.getStackOffset(this._offset,index,result);
+		var _g = 0;
+		while(_g < m) {
+			var j1 = _g++;
+			y0 = result[index[0]][j1].y0;
+			var _g1 = 1;
+			while(_g1 < n) {
+				var i1 = _g1++;
+				result[index[i1]][j1].y0 = y0 += result[index[i1 - 1]][j1].y;
+			}
+		}
+		return result;
+	}
+	,getOrder: function() {
+		return this._order;
+	}
+	,order: function(x) {
+		this._order = x;
+		return this;
+	}
+	,getOffset: function() {
+		return this._offset;
+	}
+	,offset: function(x) {
+		this._offset = x;
+		return this;
+	}
+	,__class__: thx.geom.layout.Stack
+}
+thx.geom.layout.StackOrder = $hxClasses["thx.geom.layout.StackOrder"] = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
+thx.geom.layout.StackOrder.DefaultOrder = ["DefaultOrder",0];
+thx.geom.layout.StackOrder.DefaultOrder.toString = $estr;
+thx.geom.layout.StackOrder.DefaultOrder.__enum__ = thx.geom.layout.StackOrder;
+thx.geom.layout.StackOrder.InsideOut = ["InsideOut",1];
+thx.geom.layout.StackOrder.InsideOut.toString = $estr;
+thx.geom.layout.StackOrder.InsideOut.__enum__ = thx.geom.layout.StackOrder;
+thx.geom.layout.StackOrder.ReverseOrder = ["ReverseOrder",2];
+thx.geom.layout.StackOrder.ReverseOrder.toString = $estr;
+thx.geom.layout.StackOrder.ReverseOrder.__enum__ = thx.geom.layout.StackOrder;
+thx.geom.layout.StackOffset = $hxClasses["thx.geom.layout.StackOffset"] = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
+thx.geom.layout.StackOffset.Silhouette = ["Silhouette",0];
+thx.geom.layout.StackOffset.Silhouette.toString = $estr;
+thx.geom.layout.StackOffset.Silhouette.__enum__ = thx.geom.layout.StackOffset;
+thx.geom.layout.StackOffset.Wiggle = ["Wiggle",1];
+thx.geom.layout.StackOffset.Wiggle.toString = $estr;
+thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
+thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
+thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
+thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
 rg.data.ScaleDistributions = $hxClasses["rg.data.ScaleDistributions"] = function() { }
 rg.data.ScaleDistributions.__name__ = ["rg","data","ScaleDistributions"];
 rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
@@ -15433,26 +15432,6 @@ rg.view.svg.widget.Label.prototype = {
 	,__class__: rg.view.svg.widget.Label
 	,__properties__: {set_anchor:"setAnchor",set_orientation:"setOrientation",set_text:"setText"}
 }
-rg.controller.factory.FactoryDataSource = $hxClasses["rg.controller.factory.FactoryDataSource"] = function(cache) {
-	this.cache = cache;
-}
-rg.controller.factory.FactoryDataSource.__name__ = ["rg","controller","factory","FactoryDataSource"];
-rg.controller.factory.FactoryDataSource.prototype = {
-	cache: null
-	,create: function(info) {
-		if(null != info.namedData) {
-			var data = this.cache.get(info.namedData);
-			if(null == data) throw new thx.error.Error("the data source named '{0}' cannot be found in the current context",null,info.namedData,{ fileName : "FactoryDataSource.hx", lineNumber : 27, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
-			return data;
-		}
-		if(null != info.data) return this.createFromData(info.data);
-		throw new thx.error.Error("the arguments object doesn't contain any reference to data",null,null,{ fileName : "FactoryDataSource.hx", lineNumber : 34, className : "rg.controller.factory.FactoryDataSource", methodName : "create"});
-	}
-	,createFromData: function(data) {
-		return new rg.data.source.DataSourceArray(data);
-	}
-	,__class__: rg.controller.factory.FactoryDataSource
-}
 rg.view.layout.Anchor = $hxClasses["rg.view.layout.Anchor"] = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
 rg.view.layout.Anchor.Top = ["Top",0];
 rg.view.layout.Anchor.Top.toString = $estr;
@@ -15693,19 +15672,12 @@ rg.controller.info.InfoVisualizationOption.filters = function() {
 		return [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
 			return rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v1);
 		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v)]}];
-	}},{ field : "data", validator : function(v) {
-		return Std["is"](v,Array) || Reflect.isObject(v);
-	}, filter : function(v) {
-		return [{ field : "data", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			return rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v1);
-		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoDataContext(),v)]}];
 	}},{ field : "options", validator : function(v) {
 		return Reflect.isObject(v);
 	}, filter : null}];
 }
 rg.controller.info.InfoVisualizationOption.prototype = {
 	variables: null
-	,data: null
 	,options: null
 	,__class__: rg.controller.info.InfoVisualizationOption
 }
@@ -16371,6 +16343,23 @@ rg.controller.info.InfoPieChart.prototype = {
 	,dontfliplabel: null
 	,click: null
 	,__class__: rg.controller.info.InfoPieChart
+}
+rg.data.DataLoader = $hxClasses["rg.data.DataLoader"] = function(loader) {
+	if(null == loader) throw new thx.error.NullArgument("loader","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "DataLoader.hx", lineNumber : 12, className : "rg.data.DataLoader", methodName : "new"}); else null;
+	this.loader = loader;
+	this.onLoad = new hxevents.Dispatcher();
+}
+rg.data.DataLoader.__name__ = ["rg","data","DataLoader"];
+rg.data.DataLoader.prototype = {
+	loader: null
+	,onLoad: null
+	,load: function() {
+		var me = this;
+		this.loader(function(datapoints) {
+			me.onLoad.dispatch(datapoints);
+		});
+	}
+	,__class__: rg.data.DataLoader
 }
 thx.error.NotImplemented = $hxClasses["thx.error.NotImplemented"] = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() needs to be implemented",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "NotImplemented.hx", lineNumber : 13, className : "thx.error.NotImplemented", methodName : "new"});
@@ -17118,6 +17107,48 @@ Types.isPrimitive = function(v) {
 Types.prototype = {
 	__class__: Types
 }
+rg.view.svg.widget.GridAnchors = $hxClasses["rg.view.svg.widget.GridAnchors"] = function() { }
+rg.view.svg.widget.GridAnchors.__name__ = ["rg","view","svg","widget","GridAnchors"];
+rg.view.svg.widget.GridAnchors.parse = function(s) {
+	return (function($this) {
+		var $r;
+		switch(s.toLowerCase()) {
+		case "topleft":
+			$r = rg.view.svg.widget.GridAnchor.TopLeft;
+			break;
+		case "top":
+			$r = rg.view.svg.widget.GridAnchor.Top;
+			break;
+		case "topright":
+			$r = rg.view.svg.widget.GridAnchor.TopRight;
+			break;
+		case "left":
+			$r = rg.view.svg.widget.GridAnchor.Left;
+			break;
+		case "center":
+			$r = rg.view.svg.widget.GridAnchor.Center;
+			break;
+		case "right":
+			$r = rg.view.svg.widget.GridAnchor.Right;
+			break;
+		case "bottomleft":
+			$r = rg.view.svg.widget.GridAnchor.BottomLeft;
+			break;
+		case "bottom":
+			$r = rg.view.svg.widget.GridAnchor.Bottom;
+			break;
+		case "bottomright":
+			$r = rg.view.svg.widget.GridAnchor.BottomRight;
+			break;
+		default:
+			$r = rg.view.svg.widget.GridAnchor.Center;
+		}
+		return $r;
+	}(this));
+}
+rg.view.svg.widget.GridAnchors.prototype = {
+	__class__: rg.view.svg.widget.GridAnchors
+}
 rg.view.svg.chart.StreamGraph = $hxClasses["rg.view.svg.chart.StreamGraph"] = function(panel) {
 	rg.view.svg.chart.CartesianChart.call(this,panel);
 	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
@@ -17248,48 +17279,6 @@ rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianCha
 	}
 	,__class__: rg.view.svg.chart.StreamGraph
 });
-rg.view.svg.widget.GridAnchors = $hxClasses["rg.view.svg.widget.GridAnchors"] = function() { }
-rg.view.svg.widget.GridAnchors.__name__ = ["rg","view","svg","widget","GridAnchors"];
-rg.view.svg.widget.GridAnchors.parse = function(s) {
-	return (function($this) {
-		var $r;
-		switch(s.toLowerCase()) {
-		case "topleft":
-			$r = rg.view.svg.widget.GridAnchor.TopLeft;
-			break;
-		case "top":
-			$r = rg.view.svg.widget.GridAnchor.Top;
-			break;
-		case "topright":
-			$r = rg.view.svg.widget.GridAnchor.TopRight;
-			break;
-		case "left":
-			$r = rg.view.svg.widget.GridAnchor.Left;
-			break;
-		case "center":
-			$r = rg.view.svg.widget.GridAnchor.Center;
-			break;
-		case "right":
-			$r = rg.view.svg.widget.GridAnchor.Right;
-			break;
-		case "bottomleft":
-			$r = rg.view.svg.widget.GridAnchor.BottomLeft;
-			break;
-		case "bottom":
-			$r = rg.view.svg.widget.GridAnchor.Bottom;
-			break;
-		case "bottomright":
-			$r = rg.view.svg.widget.GridAnchor.BottomRight;
-			break;
-		default:
-			$r = rg.view.svg.widget.GridAnchor.Center;
-		}
-		return $r;
-	}(this));
-}
-rg.view.svg.widget.GridAnchors.prototype = {
-	__class__: rg.view.svg.widget.GridAnchors
-}
 rg.controller.visualization.VisualizationPieChart = $hxClasses["rg.controller.visualization.VisualizationPieChart"] = function(layout) {
 	rg.controller.visualization.VisualizationSvg.call(this,layout);
 }
@@ -18724,44 +18713,6 @@ thx.data.ValueHandler.prototype = {
 	,comment: function(s) {
 	}
 	,__class__: thx.data.ValueHandler
-}
-rg.data.DataRequest = $hxClasses["rg.data.DataRequest"] = function(cache,datacontexts) {
-	this.cache = cache;
-	this.datacontexts = datacontexts;
-}
-rg.data.DataRequest.__name__ = ["rg","data","DataRequest"];
-rg.data.DataRequest.prototype = {
-	queue: null
-	,cache: null
-	,datacontexts: null
-	,collectedData: null
-	,onData: function(data) {
-		null;
-	}
-	,request: function() {
-		this.collectedData = [];
-		this.queue = this.datacontexts.copy();
-		this.processQueue();
-	}
-	,processQueue: function() {
-		var next = this.queue.shift();
-		if(null == next) {
-			this.onData(this.collectedData);
-			return;
-		}
-		next.data.onData.addOnce((function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
-			};
-		})(this.receiveData.$bind(this),next.name));
-		next.data.load();
-	}
-	,receiveData: function(name,data) {
-		if(null != name) this.cache.set(name,new rg.data.source.DataSourceArray(data));
-		this.collectedData = this.collectedData.concat(data);
-		this.processQueue();
-	}
-	,__class__: rg.data.DataRequest
 }
 thx.color.Grey = $hxClasses["thx.color.Grey"] = function(value) {
 	this.grey = Floats.normalize(value);
@@ -20361,50 +20312,6 @@ rg.view.html.chart.PivotTable.prototype = {
 	}
 	,__class__: rg.view.html.chart.PivotTable
 }
-rg.data.Sources = $hxClasses["rg.data.Sources"] = function(sources) {
-	this.sources = sources;
-	this.length = sources.length;
-	var _g1 = 0, _g = this.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		sources[i].onLoad.add((function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
-			};
-		})(this.loaded.$bind(this),i));
-	}
-	this.onLoad = new hxevents.Dispatcher();
-	this.onLoading = new hxevents.Notifier();
-}
-rg.data.Sources.__name__ = ["rg","data","Sources"];
-rg.data.Sources.prototype = {
-	onLoading: null
-	,onLoad: null
-	,sources: null
-	,length: null
-	,data: null
-	,count: null
-	,iterator: function() {
-		return this.sources.iterator();
-	}
-	,load: function() {
-		this.onLoading.dispatch();
-		this.count = 0;
-		this.data = [];
-		this.sources.forEach(function(source,_) {
-			source.load();
-		});
-	}
-	,loaded: function(pos,d) {
-		this.data[pos] = d;
-		this.count++;
-		if(this.count == this.length) this.complete();
-	}
-	,complete: function() {
-		this.onLoad.dispatch(this.data);
-	}
-	,__class__: rg.data.Sources
-}
 haxe.Log = $hxClasses["haxe.Log"] = function() { }
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
@@ -21372,15 +21279,86 @@ rg.view.svg.chart.Coords.fromTransform = function(s) {
 rg.view.svg.chart.Coords.prototype = {
 	__class__: rg.view.svg.chart.Coords
 }
-rg.data.DataContext = $hxClasses["rg.data.DataContext"] = function(name,data) {
-	this.name = name;
-	this.data = data;
+rg.app.charts.App = $hxClasses["rg.app.charts.App"] = function() {
+	this.layouts = new Hash();
 }
-rg.data.DataContext.__name__ = ["rg","data","DataContext"];
-rg.data.DataContext.prototype = {
-	name: null
-	,data: null
-	,__class__: rg.data.DataContext
+rg.app.charts.App.__name__ = ["rg","app","charts","App"];
+rg.app.charts.App.nextid = function() {
+	return ":RGVIZ-" + ++rg.app.charts.App.lastid;
+}
+rg.app.charts.App.supportsSvg = function() {
+	return !!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect;
+}
+rg.app.charts.App.prototype = {
+	layouts: null
+	,visualization: function(el,jsoptions) {
+		var node = el.node(), id = node.id;
+		if(null == id) node.id = id = rg.app.charts.App.nextid();
+		var params = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions), loader = new rg.data.DataLoader(rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),jsoptions).loader), variables = new rg.controller.factory.FactoryVariable().createVariables(params.variables), general = rg.controller.info.Info.feed(new rg.controller.info.InfoGeneral(),params.options), infoviz = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationType(),params.options);
+		var visualization = null;
+		params.options.marginheight = 29;
+		var ivariables = Arrays.filter(variables,function(v) {
+			return Std["is"](v,rg.data.VariableIndependent);
+		});
+		var dvariables = Arrays.filter(variables,function(v) {
+			return Std["is"](v,rg.data.VariableDependent);
+		});
+		switch( (rg.controller.info.Info.feed(new rg.controller.info.InfoDomType(),params.options).kind)[1] ) {
+		case 1:
+			var layout = this.getLayout(id,params.options,el,infoviz.replace);
+			visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
+			break;
+		case 0:
+			if(infoviz.replace) el.selectAll("*").remove();
+			visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
+			break;
+		}
+		visualization.setVariables(variables,ivariables,dvariables);
+		visualization.init();
+		if(null != general.ready) visualization.addReady(general.ready);
+		loader.onLoad.add(function(data) {
+			new rg.data.IndependentVariableProcessor().process(data,ivariables);
+			new rg.data.DependentVariableProcessor().process(data,dvariables);
+		});
+		loader.onLoad.add(function(datapoints) {
+			visualization.feedData(datapoints);
+		});
+		loader.load();
+		var brandPadding = 0;
+		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
+		if(!rg.app.charts.App.supportsSvg()) {
+			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
+			visualization.addReadyOnce(function() {
+				downloader.download("png","#ffffff",function(url) {
+					visualization.container.selectAll("*").remove();
+					visualization.container.append("img").attr("src").string(url);
+					return false;
+				},null);
+			});
+		} else if(null != download.position || null != download.handler) {
+			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
+			if(null != download.handler) visualization.addReadyOnce(function() {
+				download.handler(downloader.download.$bind(downloader));
+			}); else visualization.addReadyOnce(function() {
+				var widget = new rg.view.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
+				brandPadding = 24;
+			});
+		}
+		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
+			var widget = new rg.view.html.widget.Logo(visualization.container,brandPadding);
+		});
+		return visualization;
+	}
+	,getLayout: function(id,options,container,replace) {
+		var old = this.layouts.get(id);
+		if(null != old) {
+			if(replace) old.destroy(); else return old;
+		}
+		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),options), layout = new rg.controller.factory.FactoryLayout().create(info,options.marginheight,container);
+		this.layouts.set(id,layout);
+		return layout;
+	}
+	,__class__: rg.app.charts.App
 }
 thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
 }
@@ -21947,59 +21925,14 @@ rg.util.Urls.parseQueryParameters = function(url) {
 rg.util.Urls.prototype = {
 	__class__: rg.util.Urls
 }
-rg.data.DataProcessor = $hxClasses["rg.data.DataProcessor"] = function(sources) {
-	this.sources = sources;
-	sources.onLoading.add(this.preprocess.$bind(this));
-	sources.onLoad.add(this.process.$bind(this));
-	this.onData = new hxevents.Dispatcher();
+rg.data.DependentVariableProcessor = $hxClasses["rg.data.DependentVariableProcessor"] = function() {
 }
-rg.data.DataProcessor.__name__ = ["rg","data","DataProcessor"];
-rg.data.DataProcessor.prototype = {
-	sources: null
-	,onData: null
-	,independentVariables: null
-	,dependentVariables: null
-	,transform: function(s) {
-		return Arrays.flatten(s);
-	}
-	,scale: function(s) {
-		return s;
-	}
-	,load: function() {
-		this.sources.load();
-	}
-	,filterSubset: function(subset,variables) {
-		return Arrays.filter(subset,(function(f,a1) {
-			return function(a2) {
-				return f(a1,a2);
-			};
-		})(this.filterDatapoint.$bind(this),variables));
-	}
-	,filterDatapoint: function(variables,dp) {
-		var _g1 = 0, _g = this.independentVariables.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(Reflect.field(dp,this.independentVariables[i].type) != variables[i]) return false;
-		}
-		return true;
-	}
-	,preprocess: function() {
-	}
-	,process: function(data) {
-		if(null == data || data.length == 0 || data[0].length == 0) {
-			this.onData.dispatch([]);
-			return;
-		}
-		data = this.scale(data);
-		var dataPoints = this.transform(data);
-		this.fillIndependentVariables(dataPoints);
-		this.fillDependentVariables(dataPoints);
-		this.onData.dispatch(dataPoints);
-	}
-	,fillDependentVariables: function(data) {
-		var _g = 0, _g1 = this.dependentVariables;
-		while(_g < _g1.length) {
-			var variable = _g1[_g];
+rg.data.DependentVariableProcessor.__name__ = ["rg","data","DependentVariableProcessor"];
+rg.data.DependentVariableProcessor.prototype = {
+	process: function(data,variables) {
+		var _g = 0;
+		while(_g < variables.length) {
+			var variable = variables[_g];
 			++_g;
 			var values = rg.util.DataPoints.values(data,variable.type);
 			if(values.length == 0) continue;
@@ -22012,25 +21945,7 @@ rg.data.DataProcessor.prototype = {
 			}
 		}
 	}
-	,fillIndependentVariables: function(flatten) {
-		var _g = 0, _g1 = this.independentVariables;
-		while(_g < _g1.length) {
-			var variable = _g1[_g];
-			++_g;
-			variable.stats.addMany(rg.util.DataPoints.values(flatten,variable.type));
-			var discrete;
-			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.data.IAxisDiscrete))) {
-				discrete.setScaleDistribution(variable.scaleDistribution);
-				variable.scaleDistribution = null;
-			}
-		}
-	}
-	,getVariableIndependentValues: function() {
-		return Arrays.product(this.independentVariables.map(function(variable,i) {
-			return variable.axis.range(variable.min(),variable.max());
-		}));
-	}
-	,__class__: rg.data.DataProcessor
+	,__class__: rg.data.DependentVariableProcessor
 }
 rg.util.Decrypt = $hxClasses["rg.util.Decrypt"] = function() { }
 rg.util.Decrypt.__name__ = ["rg","util","Decrypt"];
@@ -23972,163 +23887,6 @@ Iterators.isIterator = function(v) {
 }
 Iterators.prototype = {
 	__class__: Iterators
-}
-rg.controller.MVPOptions = $hxClasses["rg.controller.MVPOptions"] = function() { }
-rg.controller.MVPOptions.__name__ = ["rg","controller","MVPOptions"];
-rg.controller.MVPOptions.a1 = function(params,handler) {
-	var authcode = ReportGrid.authCode, authorized = false;
-	if(null == authcode) {
-		var script = rg.util.Js.findScript("reportgrid-charts.js");
-		var args = rg.util.Urls.parseQueryParameters(script.src);
-		authcode = Reflect.field(args,"authCode");
-	}
-	if(null != authcode) {
-		var auth = new rg.util.Auth(authcode), hosts = [], host = js.Lib.window.location.hostname;
-		if(new EReg("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$","").match(host)) hosts.push(host); else {
-			var parts = host.split(".");
-			if(parts.length == 3 && parts[0] == "www") parts.shift();
-			hosts.push(parts.join("."));
-			while(parts.length > 2) parts.shift();
-			hosts.push("*." + parts.join("."));
-		}
-		authorized = auth.authorizeMany(hosts);
-	} else authorized = false;
-	rg.controller.MVPOptions.a1 = function(params1,handler1) {
-		params1.options.a = authorized;
-		handler1(params1);
-	};
-	rg.controller.MVPOptions.a1(params,handler);
-}
-rg.controller.MVPOptions.a2 = function(params,handler) {
-	var changeAndToggle = function(auth) {
-		if(null == auth) rg.controller.MVPOptions.a2 = function(params1,handler1) {
-			handler1(params1);
-		}; else rg.controller.MVPOptions.a2 = function(params1,handler1) {
-			params1.options.a = auth;
-			handler1(params1);
-		};
-		rg.controller.MVPOptions.a2(params,handler);
-	};
-	var api = ReportGrid.token;
-	if(params.options.a || null == api) changeAndToggle(null); else api(function(result) {
-		changeAndToggle((result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read);
-	},function(err) {
-		changeAndToggle(null);
-	});
-}
-rg.controller.MVPOptions.complete = function(parameters,handler) {
-	var chain = new rg.util.ChainedExecutor(handler), datapoints = null;
-	if(null == parameters.options) parameters.options = { };
-	var options = parameters.options;
-	if(null != parameters.datapoints) {
-		datapoints = parameters.datapoints;
-		Reflect.deleteField(parameters,"datapoints");
-	}
-	if(null != options.download && !Types.isAnonymous(options.download)) {
-		var v = options.download;
-		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 124, className : "rg.controller.MVPOptions", methodName : "complete"});
-	}
-	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
-	if(null == options.logoposition) options.logoposition = (function($this) {
-		var $r;
-		switch(options.visualization) {
-		case "barchart":case "linechart":case "streamgraph":case "scattergraph":
-			$r = "top";
-			break;
-		case "heatgrid":case "funnelchart":
-			$r = "bottomleft";
-			break;
-		case "geo":case "sankey":
-			$r = "topright";
-			break;
-		case "piechart":
-			$r = "bottomright";
-			break;
-		case "leaderboard":case "pivottable":
-			$r = "after";
-			break;
-		default:
-			$r = "top";
-		}
-		return $r;
-	}(this));
-	chain.addAction(rg.controller.MVPOptions.a1);
-	chain.addAction(rg.controller.MVPOptions.a2);
-	chain.addAction(function(params,handler1) {
-		if(null == params.data) {
-			var src = [];
-			params.data = [{ src : src}];
-			if(null != datapoints) src.push({ data : datapoints});
-		}
-		handler1(params);
-	});
-	chain.addAction(function(params,handler1) {
-		var axes = params.axes, hasdependent = false;
-		if(null == axes) axes = [];
-		params.axes = axes = axes.map(function(v,_) {
-			return Std["is"](v,String)?{ type : v}:v;
-		});
-		var _g1 = 0, _g = axes.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var variable = axes[i].variable;
-			if(null == variable) axes[i].variable = !hasdependent && i == axes.length - 1?"dependent":"independent"; else if("dependent" == variable) hasdependent = true;
-		}
-		handler1(params);
-	});
-	chain.addAction(function(params,handler1) {
-		if(null == params.options.label) switch(params.options.visualization) {
-		case "linechart":case "barchart":case "streamgraph":
-			var type = params.axes[0].type;
-			params.options.label = { datapointover : function(dp,stats) {
-				return (null != params.options.segmenton?rg.util.Properties.formatValue(params.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
-			break;
-		case "scattergraph":case "heatgrid":
-			var type = params.axes[0].type;
-			params.options.label = { datapointover : function(dp,stats) {
-				return rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
-			break;
-		case "geo":
-			var type = params.axes[0].type, maps = params.options.map;
-			maps[maps.length - 1].label = { datapointover : function(dp,stats) {
-				var v = rg.util.Properties.formatValue(type,dp);
-				if(null == v) return null;
-				return v + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
-			break;
-		case "piechart":
-			params.options.label = { datapoint : function(dp,stats) {
-				var v = Reflect.field(dp,stats.type);
-				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
-			}, datapointover : function(dp,stats) {
-				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(stats.type,"."),".")) + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
-			break;
-		case "sankey":
-			var axes = params.axes, type = axes[axes.length - 1].type;
-			params.options.label = { datapointover : function(dp,stats) {
-				var v = Reflect.field(dp,type);
-				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),".")) + ": " + rg.util.Properties.formatValue(type,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
-			}, node : function(dp,stats) {
-				return dp.id;
-			}, datapoint : function(dp,stats) {
-				return rg.util.Properties.formatValue(type,dp) + "\n" + rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),"."));
-			}, edge : function(dp,stats) {
-				return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
-			}, edgeover : function(dp,stats) {
-				return Floats.format(dp.edgeweight,"D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
-			}};
-			break;
-		}
-		handler1(params);
-	});
-	chain.execute(parameters);
-}
-rg.controller.MVPOptions.prototype = {
-	__class__: rg.controller.MVPOptions
 }
 thx.geo.Azimuthal = $hxClasses["thx.geo.Azimuthal"] = function() {
 	this.setMode(thx.geo.ProjectionMode.Orthographic);
@@ -27226,6 +26984,7 @@ window.Sizzle = Sizzle;
 	BytesUtil.EMPTY = bb.getBytes();
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 rg.graph.Graphs.id = 0;
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
 rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
@@ -27310,8 +27069,6 @@ rg.view.layout.LayoutX.ALT_RIGHT = 20;
 rg.view.layout.LayoutX.ALT_LEFT = 20;
 rg.view.layout.LayoutX.ALT_TOP = 8;
 rg.view.layout.LayoutX.ALT_BOTTOM = 8;
-rg.controller.App.lastid = 0;
-thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
 thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
@@ -27367,6 +27124,7 @@ thx.xml.Namespace.prefix = (function() {
 	return h;
 })();
 rg.view.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:[, ]\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
+rg.app.charts.App.lastid = 0;
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
 rg.controller.Visualizations.html = ["pivottable","leaderboard"];
@@ -27393,4 +27151,4 @@ rg.view.html.widget.Logo.LOGO_WIDTH = 194;
 rg.view.html.widget.Logo.LOGO_HEIGHT = 29;
 thx.svg.Symbol.sqrt3 = Math.sqrt(3);
 thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
-rg.JSBridge.main()
+rg.app.charts.JSBridge.main()

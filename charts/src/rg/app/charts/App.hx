@@ -80,12 +80,12 @@ class App
 		if (null != general.ready)
 			visualization.addReady(general.ready);
 
-		loader.onLoad.add(function(data) {
+		loader.onLoad.addOnce(function(data) {
 			new IndependentVariableProcessor().process(data, ivariables);
 			new DependentVariableProcessor().process(data, dvariables);
 		});
 
-		loader.onLoad.add(function(datapoints : Array<DataPoint>) {
+		loader.onLoad.addOnce(function(datapoints : Array<DataPoint>) {
 			visualization.feedData(datapoints);
 		});
 		loader.load();

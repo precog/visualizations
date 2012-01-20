@@ -4,7 +4,8 @@
  */
 
 package rg.app.query;
-import rg.data.source.rgquery.IExecutorReportGrid;
+
+import rg.data.reportgrid.IExecutorReportGrid;
 import rg.util.ChainedExecutor;
 import rg.util.Jsonp;
 import rg.util.Properties;
@@ -59,7 +60,10 @@ class MVPOptions
 
 	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void)
 	{
-		trace("options");
+		var chain = new ChainedExecutor(handler);
+		chain.execute(parameters);
+/*
+		trace("HERE");
 		var start       = null,
 			end         = null,
 			path        = "/",
@@ -79,9 +83,6 @@ class MVPOptions
 			parent      = null,
 			where       = null;
 
-		if (null == parameters.options)
-			parameters.options = { };
-		var options : Dynamic = parameters.options;
 		// capture defaults
 		// statistic
 		if (null != parameters.statistic)
@@ -230,38 +231,38 @@ class MVPOptions
 			else
 				throw new Error("invalid value for download '{0}'", [v]);
 		}
-/*
-		// ensure hash for tracking
-		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
-		{
-			var opt : Dynamic = params.options;
 
-			if (null == opt.track)
-				opt.track = { enabled : false };
-			if (null == opt.track.hash)
-				opt.track.hash = defaultHash;
-			if ("" == opt.track.hash)
-				opt.track.enabled = false;
-			if (opt.track.enabled && null == opt.track.hash)
-			{
-				var tokenid = RG.getTokenId(),
-					service = null != opt.track.hashService ? opt.track.hashService : RGConst.SERVICE_VISTRACK_HASH;
-				service = StringTools.replace(service, "{$token}", tokenid);
-				Jsonp.get(service, function(hash) {
-					opt.track = {
-						enabled : hash != "",
-						hash : defaultHash = hash
-					};
-					handler(params);
-				}, function(_, e) {
-					opt.track.enabled = false;
-					handler(params);
-				}, null, null);
-			} else {
-				handler(params);
-			}
-		});
-*/
+//		// ensure hash for tracking
+//		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
+//		{
+//			var opt : Dynamic = params.options;
+//
+//			if (null == opt.track)
+//				opt.track = { enabled : false };
+//			if (null == opt.track.hash)
+//				opt.track.hash = defaultHash;
+//			if ("" == opt.track.hash)
+//				opt.track.enabled = false;
+//			if (opt.track.enabled && null == opt.track.hash)
+//			{
+//				var tokenid = RG.getTokenId(),
+//					service = null != opt.track.hashService ? opt.track.hashService : RGConst.SERVICE_VISTRACK_HASH;
+//				service = StringTools.replace(service, "{$token}", tokenid);
+//				Jsonp.get(service, function(hash) {
+//					opt.track = {
+//						enabled : hash != "",
+//						hash : defaultHash = hash
+//					};
+//					handler(params);
+//				}, function(_, e) {
+//					opt.track.enabled = false;
+//					handler(params);
+//				}, null, null);
+//			} else {
+//				handler(params);
+//			}
+//		});
+
 		// ensure events
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -525,5 +526,6 @@ class MVPOptions
 		});
 
 		chain.execute(parameters);
+*/
 	}
 }
