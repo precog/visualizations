@@ -10,7 +10,15 @@ $(document).ready(function(){
 	var lastsampleclass;
 	var displaySample = function(info)
 	{
-		var source = info['viz'] + "\n\n" + info['data'];
+		var source = "\n";
+		if(info['viz']) {
+			source += info['viz'].replace('loader', (info['query'] || "").split("\n").join("\n\t")) + "\n\n";
+		} else if(info['query']) {
+			source += info['query'] + "\n\n";
+		}
+		if(info['data']) {
+			source += "// " + info['data'];
+		}
 		source = source.replace(/\t/g, "  ");
 		if(lastsampleclass)
 			$("#samplevisualization").removeClass(lastsampleclass);
