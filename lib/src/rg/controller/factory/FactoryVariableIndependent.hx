@@ -17,7 +17,7 @@ import rg.util.Periodicity;
 class FactoryVariableIndependent
 {
 	public function new() { }
-	
+
 	public function create(info : InfoVariable) : VariableIndependent<Dynamic>
 	{
 		if (null == info.type)
@@ -30,7 +30,7 @@ class FactoryVariableIndependent
 		variable.maxf = convertBound(axis, info.max);
 		return variable;
 	}
-	
+
 	public static function convertBound(axis : IAxis<Dynamic>, value : Dynamic) : Stats<Dynamic> -> Dynamic -> Dynamic
 	{
 		if (null == value || Reflect.isFunction(value))

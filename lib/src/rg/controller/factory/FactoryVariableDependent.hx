@@ -11,7 +11,7 @@ import thx.error.Error;
 class FactoryVariableDependent
 {
 	public function new() { }
-	
+
 	public function create(info : InfoVariable, isnumeric : Bool) : VariableDependent<Dynamic>
 	{
 		if (null == info.type)

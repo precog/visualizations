@@ -14,11 +14,11 @@ import rg.controller.info.InfoLeaderboard;
 import thx.error.Error;
 using rg.controller.info.Info;
 
-class FactoryHtmlVisualization 
+class FactoryHtmlVisualization
 {
 
 	public function new() { }
-	
+
 	public function create(type : String, container : Selection, options : Dynamic) : VisualizationHtml
 	{
 		switch(type)

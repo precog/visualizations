@@ -19,7 +19,7 @@ class TestDataProcessor
 		var cache = new Hash();
 		var datasources : Array<IDataSource> = cast [new DataSourceArray([{ count : 100, event : "click" }])];
 		var sources = new Sources(datasources);
-		var processor = new DataProcessor(sources);
+		var processor = new VariableProcessor(sources);
 		var datacontexts = [new DataContext("count", processor)];
 		var request = new DataRequest(cache, datacontexts);
 
@@ -42,7 +42,7 @@ class TestDataProcessor
 			{ gender : "female", count : 3, event : "click" }
 		]),
 			sources = new Sources(cast [ds]),
-			processor = new DataProcessor(sources),
+			processor = new VariableProcessor(sources),
 			vi : VariableIndependent<Dynamic>, vd : VariableDependent<Dynamic>;
 		processor.independentVariables = [
 			new VariableIndependentContext(vi = new VariableIndependent("gender", new AxisOrdinal(), null), true)
@@ -66,7 +66,7 @@ class TestDataProcessor
 		var cache = new Hash();
 		var datasources : Array<IDataSource> = cast [new DataSourceArray([{ count : 100, event : "click" }, { count : 10, event : "impression" }])];
 		var sources = new Sources(datasources);
-		var processor = new DataProcessor(sources);
+		var processor = new VariableProcessor(sources);
 		var datacontexts = [new DataContext("count", processor)];
 		var request = new DataRequest(cache, datacontexts);
 
@@ -125,7 +125,7 @@ class TestDataProcessor
 		dv.push(new VariableDependentContext(new VariableDependent("count", new AxisNumeric(), null, 0, 10), false));
 
 		var sources = new Sources(src),
-			processor = new DataProcessor(sources);
+			processor = new VariableProcessor(sources);
 		processor.independentVariables = iv;
 		processor.dependentVariables = dv;
 

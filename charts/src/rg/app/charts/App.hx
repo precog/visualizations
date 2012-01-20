@@ -6,34 +6,29 @@
 package rg.app.charts;
 import rg.controller.factory.FactoryLayout;
 import rg.controller.factory.FactoryVariable;
-import rg.controller.info.InfoDataContext;
+import rg.controller.factory.FactoryHtmlVisualization;
+import rg.controller.factory.FactorySvgVisualization;
 import rg.controller.info.InfoDataSource;
 import rg.controller.info.InfoDomType;
 import rg.controller.info.InfoDownload;
 import rg.controller.info.InfoGeneral;
 import rg.controller.info.InfoLayout;
 import rg.controller.info.InfoTrack;
+import rg.controller.info.InfoVisualizationOption;
 import rg.controller.info.InfoVisualizationType;
 import rg.controller.interactive.Downloader;
 import rg.controller.visualization.Visualization;
-import rg.data.DataRequest;
-import thx.error.Error;
-import thx.error.NotImplemented;
-import thx.js.Selection;
-import rg.controller.info.InfoVisualizationOption;
-import rg.controller.factory.FactoryDataContext;
-import rg.controller.factory.FactoryDataSource;
+import rg.data.DataLoader;
 import rg.data.DataPoint;
+import rg.data.DependentVariableProcessor;
+import rg.data.IndependentVariableProcessor;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
-import rg.view.layout.Layout;
-import rg.controller.factory.FactoryHtmlVisualization;
-import rg.controller.factory.FactorySvgVisualization;
 import rg.view.html.widget.DownloaderMenu;
 import rg.view.html.widget.Logo;
-import rg.data.DataProcessor;
-import rg.data.DataContext;
-import rg.data.Sources;
+import rg.view.layout.Layout;
+import thx.error.Error;
+import thx.js.Selection;
 using rg.controller.info.Info;
 using Arrays;
 
@@ -53,45 +48,21 @@ class App
 
 	public function visualization(el : Selection, jsoptions : Dynamic)
 	{
-		var node = el.node();
-		var id = node.id;
+		var node = el.node(),
+			id = node.id;
 		if (null == id)
-		{
 			node.id = id = nextid();
-		}
-		var cache = new Hash();
-		var params = new InfoVisualizationOption().feed(jsoptions);
-		var factoryDataSource = new FactoryDataSource(cache);
-		var factoryDataContext = new FactoryDataContext(factoryDataSource);
 
-		// TODO remove
-//		var datacontexts = params.data.map(function(d : InfoDataContext, _) return factoryDataContext.create(d));
-		var processor = new DataProcessor(new Sources([factoryDataSource.create(new InfoDataSource().feed(jsoptions))]));
-		var datacontexts = [new DataContext(null, processor)];
-trace("here");
-trace(jsoptions);
-//trace(new InfoDataContext().feed(jsoptions));
-//		var datacontexts = [factoryDataContext.create(new InfoDataContext().feed(jsoptions))];
-trace("there");
-
-
-		var factoryVariableContexts = FactoryVariable.createFromDataContexts(datacontexts);
-		var variables = factoryVariableContexts.createVariables(params.variables);
-		var independentVariables : Array<rg.data.VariableIndependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableIndependent));
-		var dependentVariables : Array<rg.data.VariableDependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableDependent));
-		for (context in datacontexts)
-		{
-			context.data.independentVariables = independentVariables;
-			context.data.dependentVariables = dependentVariables;
-		}
+		var params    = new InfoVisualizationOption().feed(jsoptions),
+			loader    = new DataLoader(new InfoDataSource().feed(jsoptions).loader),
+			variables = new FactoryVariable().createVariables(params.variables),
+			general   = new InfoGeneral().feed(params.options),
+			infoviz   = new InfoVisualizationType().feed(params.options);
 
 		var visualization : Visualization = null;
-
-		var general = new InfoGeneral().feed(params.options);
-
-		var infoviz = new InfoVisualizationType().feed(params.options);
-
 		params.options.marginheight = 29;
+		var ivariables : Array<rg.data.VariableIndependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableIndependent));
+		var dvariables : Array<rg.data.VariableDependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableDependent));
 
 		switch(new InfoDomType().feed(params.options).kind)
 		{
@@ -104,26 +75,27 @@ trace("there");
 				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
 		}
 
-		visualization.setVariables(variables, independentVariables, dependentVariables);
+		visualization.setVariables(variables, ivariables, dvariables);
 		visualization.init();
 		if (null != general.ready)
 			visualization.addReady(general.ready);
 
-		var request = new DataRequest(cache, datacontexts);
-		request.onData = function(datapoints : Array<DataPoint>) {
-//			trace(datapoints);
-			visualization.feedData(datapoints);
-		};
-		request.request();
+		loader.onLoad.add(function(data) {
+			new IndependentVariableProcessor().process(data, ivariables);
+			new DependentVariableProcessor().process(data, dvariables);
+		});
 
+		loader.onLoad.add(function(datapoints : Array<DataPoint>) {
+			visualization.feedData(datapoints);
+		});
+		loader.load();
 
 		var brandPadding = 0;
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
 		if(!supportsSvg())
 		{
-
-// IMAGE RENDERING FOR DEVICES
+			// IMAGE RENDERING FOR DEVICES
 			var downloader = new Downloader(visualization.container, download.service, download.background);
 			visualization.addReadyOnce(function() {
 				downloader.download("png", "#ffffff", function(url : String) {

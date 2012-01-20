@@ -21,7 +21,7 @@ class InfoScatterGraph extends InfoCartesianChart
 		segment = new InfoSegment();
 		symbol = function(dp, s) return SymbolCache.cache.get("circle", 16);
 	}
-	
+
 	public static function filters()
 	{
 		return [{
@@ -52,13 +52,6 @@ class InfoScatterGraph extends InfoCartesianChart
 				field : "segment",
 				value : new InfoSegment().feed(v)
 			}]
-		}/*, {
-			field : "effect",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "effect",
-				value : LineEffects.parse(v)
-			}]
-		}*/].concat(cast InfoCartesianChart.filters());
+		}].concat(cast InfoCartesianChart.filters());
 	}
 }

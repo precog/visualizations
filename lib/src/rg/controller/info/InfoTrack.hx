@@ -7,13 +7,13 @@ package rg.controller.info;
 import rg.RGConst;
 using rg.controller.info.Info;
 
-class InfoTrack 
+class InfoTrack
 {
 	public var enabled : Bool;
 	public var token : String;
 	public var paths : Array<String>;
 	public var hash : String;
-	
+
 	public function new()
 	{
 		enabled = false;
@@ -24,7 +24,7 @@ class InfoTrack
 		];
 		hash = null;
 	}
-	
+
 	public static function filters()
 	{
 		return [{

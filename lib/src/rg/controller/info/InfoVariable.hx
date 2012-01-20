@@ -78,7 +78,7 @@ class InfoVariable extends Info
 			}
 		}];
 	}
-	
+
 	static function testViewValue(v : Dynamic)
 	{
 		return v == null || Types.isPrimitive(v) || Std.is(v, Date) || Reflect.isFunction(v);

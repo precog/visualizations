@@ -5,15 +5,15 @@
 
 package rg.controller.info;
 
-class InfoPadding 
+class InfoPadding
 {
 	public var top : Null<Int>;
 	public var bottom : Null<Int>;
 	public var left : Null<Int>;
 	public var right : Null<Int>;
 	public function new() { }
-	
-	public static function filters() 
+
+	public static function filters()
 	{
 		return [{
 			field : "top",

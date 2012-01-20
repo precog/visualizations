@@ -12,10 +12,10 @@ import thx.geo.Azimuthal;
 import thx.geo.IProjection;
 import thx.geo.Mercator;
 
-class FactoryGeoProjection 
+class FactoryGeoProjection
 {
 	public function new() { }
-	
+
 	public function create(info : InfoMap) : IProjection
 	{
 		switch(info.projection.toLowerCase())

@@ -14,7 +14,6 @@ class InfoLeaderboard
 	public var label : InfoLabelLeaderboard;
 	public var click : DataPoint -> Void;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
-//	public var displayGradient : Bool;
 	public var usemax : Bool;
 	public var displaybar : Bool;
 
@@ -22,7 +21,6 @@ class InfoLeaderboard
 	{
 		animation = new InfoAnimation();
 		label = new InfoLabelLeaderboard();
-//		displayGradient = true;
 		usemax = false;
 		displaybar = true;
 	}
@@ -66,41 +64,6 @@ class InfoLeaderboard
 			field : "usemax",
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
-
-/*
-			field : "effect",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v)
-			{
-				switch(v.toLowerCase())
-				{
-					case "gradient", "gradient-tot":
-						return [{
-							field : "displayGradient",
-							value : true
-						}, {
-							field : "gradientOnMax",
-							value : false
-						}];
-					case "gradient-max":
-						return [{
-							field : "displayGradient",
-							value : true
-						}, {
-							field : "gradientOnMax",
-							value : true
-						}];
-					default: // none
-						return [{
-							field : "displayGradient",
-							value : false
-						}, {
-							field : "gradientOnMax",
-							value : true
-						}];
-				};
-			}
-*/
 		}];
 	}
 }

@@ -13,14 +13,14 @@ class AxisGroupByTime extends AxisOrdinalFixedValues<Int>
 		super(valuesByGroup(groupby));
 		groupBy = groupby;
 	}
-	
+
 	public var groupBy(default, null) : String;
-	
+
 	public static function valuesByGroup(groupby : String)
 	{
 		return Ints.range(defaultMin(groupby), defaultMax(groupby) + 1);
 	}
-	
+
 
 	public static function defaultMin(periodicity : String)
 	{
@@ -34,7 +34,7 @@ class AxisGroupByTime extends AxisOrdinalFixedValues<Int>
 				throw new Error("invalid periodicity '{0}' for groupBy min", periodicity);
 		}
 	}
-	
+
 	public static function defaultMax(periodicity : String)
 	{
 		switch(periodicity)

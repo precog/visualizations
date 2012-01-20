@@ -6,13 +6,13 @@
 package rg.controller.info;
 import rg.data.DataPoint;
 
-class InfoSegment 
+class InfoSegment
 {
 	public var on : String;
 	public var transform : Null<Array<DataPoint> -> Array<DataPoint>>;
 	public var scale : Null<Array<DataPoint> -> Array<DataPoint>>;
 	public function new() { }
-	
+
 	public static function filters()
 	{
 		return [{

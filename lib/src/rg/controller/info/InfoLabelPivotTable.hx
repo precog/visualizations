@@ -13,7 +13,7 @@ class InfoLabelPivotTable extends InfoLabelAxis
 	public var total : Float -> Stats<Dynamic> -> String;
 	public var totalover : Float -> Stats<Dynamic> -> String;
 	public var axisvalue : Dynamic -> String -> String;
-	
+
 	public static function filters()
 	{
 		return [{

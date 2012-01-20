@@ -6,8 +6,6 @@
 package rg.controller.factory;
 import rg.controller.info.InfoVariable;
 import rg.util.Properties;
-import thx.collection.Set;
-import rg.data.DataContext;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
 import rg.data.Variable;
@@ -16,12 +14,10 @@ using Arrays;
 
 class FactoryVariable
 {
-	var knownProperties : Set<String>;
 	var independentFactory : FactoryVariableIndependent;
 	var dependentFactory : FactoryVariableDependent;
-	public function new(knownproperties : Set<String>)
+	public function new()
 	{
-		knownProperties = knownproperties;
 		independentFactory = new FactoryVariableIndependent();
 		dependentFactory = new FactoryVariableDependent();
 	}
@@ -36,10 +32,7 @@ class FactoryVariable
 				case Dependent:
 					return dependentFactory.create(info, null);
 				case Unknown:
-					if(knownProperties.exists(info.type))
-						return cast independentFactory.create(info);
-					else
-						return dependentFactory.create(info, null);
+					return dependentFactory.create(info, null);
 			}
 		});
 	}
@@ -52,7 +45,7 @@ class FactoryVariable
 			var moveon = switch(i.variableType)
 			{
 				case Independent: false;
-				case Unknown: !knownProperties.exists(i.type);
+				case Unknown: true;
 				default: true;
 			}
 			if (moveon)
@@ -70,7 +63,7 @@ class FactoryVariable
 			var moveon = switch(i.variableType)
 			{
 				case Dependent: false;
-				case Unknown: knownProperties.exists(i.type);
+				case Unknown: false;
 				default: true;
 			}
 			if (moveon)
@@ -78,10 +71,5 @@ class FactoryVariable
 			result.push(dependentFactory.create(i, null/*isnumeric*/));
 		}
 		return result;
-	}
-
-	public static function createFromDataContexts(contexts : Array<DataContext>)
-	{
-		return new FactoryVariable(new Set());
 	}
 }
