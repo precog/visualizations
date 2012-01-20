@@ -6,7 +6,7 @@
 package rg.controller.factory;
 import rg.controller.info.InfoDataSource;
 import rg.data.IDataSource;
-import rg.data.source.DataSourceArray;
+import rg.data.source.DataSourceLoader;
 import thx.error.Error;
 import rg.data.DataPoint;
 
@@ -20,22 +20,10 @@ class FactoryDataSource<T : InfoDataSource>
 
 	public function create(info : T) : IDataSource
 	{
-		if (null != info.namedData)
+		if (null != info.loader)
 		{
-			var data = cache.get(info.namedData);
-			if (null == data)
-				throw new Error("the data source named '{0}' cannot be found in the current context", info.namedData);
-			return data;
-		}
-		if (null != info.data)
-		{
-			return createFromData(info.data);
+			return new DataSourceLoader(info.loader);
 		}
 		throw new Error("the arguments object doesn't contain any reference to data");
-	}
-
-	function createFromData(data : Array<DataPoint>)
-	{
-		return new DataSourceArray(data);
 	}
 }

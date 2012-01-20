@@ -9,8 +9,7 @@ import thx.error.Error;
 
 class InfoDataSource
 {
-	public var namedData : Null<String>;
-	public var data : Null<Array<DataPoint>>;
+	public var loader : (Array<DataPoint> -> Void) -> Void;
 
 	public function new()
 	{
@@ -18,15 +17,35 @@ class InfoDataSource
 
 	public static function filters() : Array<FieldFilter>
 	{
-		return [{
+		return cast [{
 			field : "data",
-			validator : function(v) return Std.is(v, String) || (Std.is(v, Array) && Arrays.all(v, function(v) return Types.isAnonymous(v))),
+			validator : function(v) return Std.is(v, Array),
 			filter : function(v)
 			{
-				if(Std.is(v, Array))
-					return [{ field : "data", value : v }];
-				else
-					return [{ field : "namedData", value : v }];
+				return [{
+					field : "loader",
+					value : function(handler : Array<DataPoint> -> Void) handler(v)
+				}];
+			}
+		}, {
+			field : "datapoints",
+			validator : function(v) return Std.is(v, Array),
+			filter : function(v)
+			{
+				return [{
+					field : "loader",
+					value : function(handler : Array<DataPoint> -> Void) handler(v)
+				}];
+			}
+		}, {
+			field : "load",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : function(v)
+			{
+				return [{
+					field : "loader",
+					value : v
+				}];
 			}
 		}];
 	}

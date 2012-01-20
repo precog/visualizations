@@ -12,12 +12,12 @@ class Sources<T>
 {
 	public var onLoading(default, null) : Notifier;
 	public var onLoad(default, null) : Dispatcher<Array<Array<DataPoint>>>;
-	
+
 	var sources : Array<IDataSource>;
 	public var length(default, null) : Int;
 	var data : Array<Array<DataPoint>>;
 	var count : Int;
-	public function new(sources : Array<IDataSource>) 
+	public function new(sources : Array<IDataSource>)
 	{
 		this.sources = sources;
 		this.length = sources.length;
@@ -26,7 +26,7 @@ class Sources<T>
 		onLoad = new Dispatcher();
 		onLoading = new Notifier();
 	}
-	
+
 	public function iterator() return sources.iterator()
 
 	public function load()
@@ -36,7 +36,7 @@ class Sources<T>
 		data = [];
 		sources.each(function(source,_) source.load());
 	}
-	
+
 	function loaded(pos : Int, d : Array<DataPoint>)
 	{
 		data[pos] = d;
@@ -44,7 +44,7 @@ class Sources<T>
 		if (count == length)
 			complete();
 	}
-	
+
 	function complete()
 	{
 		onLoad.dispatch(data);

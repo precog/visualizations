@@ -4,7 +4,7 @@
 -lib thx
 -lib hxevents
 -js bin/js/reportgrid-charts.js
--main rg.JSBridge
+-main rg.app.charts.JSBridge
 -D release
 #-D reportgridapi
 --no-traces
