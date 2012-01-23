@@ -225,16 +225,22 @@ class MVPOptions
 							datapoint : function(dp, stats) {
 								var v = DataPoints.value(dp, stats.type);
 								return
-									stats.tot != 0.0
-									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
-									: RGStrings.humanize(v)
+									params.axes.length > 1
+									? Properties.formatValue(params.axes[0].type, dp)
+									: (stats.tot != 0.0
+										? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
+										: RGStrings.humanize(v))
 								;
 							},
 
 							datapointover : function(dp, stats) {
+								var v = DataPoints.value(dp, stats.type);
 								return
 									Properties.humanize(stats.type) + ": " +
-									Properties.formatValue(stats.type, dp)
+									RGStrings.humanize(v) + (
+										params.axes.length > 1 && stats.tot != 0.0
+										? " ("+Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")+")"
+										: "")
 								;
 							}
 						};

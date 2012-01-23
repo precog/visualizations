@@ -30,6 +30,11 @@ class JSBridge
 			return queue;
 		};
 
+		r.load = function(?options : Dynamic)
+		{
+			r.query(options)(function() {});
+		}
+
 		r.info = null != r.info ? r.info : { };
 		r.info.query = {
 			version : thx.util.MacroVersion.fullVersion()

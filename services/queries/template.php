@@ -47,6 +47,7 @@ echo $info['html'];
 }
 ?>
 <script>
+
 <?php
 if(isset($info['data']))
 {
@@ -74,10 +75,64 @@ for(var i = 0; i < paths.length; i++)
 }
 <?php
 }
+
+function detab($s)
+{
+    return str_replace("\t", "    ", $s);
+}
+
+function query($s, $load) {
+    if(!$s)
+        return "";
+    if(!strpos($s, 'callback'))
+    {
+?>
+var callback = function(dps) {
+    document.getElementById('out').innerHTML += 'QUERY RESULT:\n[\n  '
+        + dps.map(function(o){ return JSON.stringify(o); }).join(',\n  ')+'\n]';
+};
+
+<?php
+        $lines = split("\n", $s);
+        $last = $lines[count($lines)-1];
+        if(trim($last) != "}")
+        {
+            $lines[count($lines)-1] = rtrim($last, " }");
+        } else {
+            array_pop($lines);
+        }
+        if(substr(trim($lines[count($lines)-1]), -1, 1) != "{")
+        {
+            $lines[count($lines)-1] = rtrim($lines[count($lines)-1], " ").",";
+        }
+        $lines[] = "\tcallback : callback";
+        $lines[] = "}";
+        $s = join("\n", $lines);
+    }
+    return "ReportGrid.".($load ? 'load' : 'query')."($s)";
+}
+
+function indent($s) {
+    return join("\n\t", split("\n", $s));
+}
+
+if(isset($info['viz']))
+{
+    echo detab(str_replace('loader', indent(query(@$info['query'], false)), $info['viz']));
+} else if(isset($info['query'])) {
+    echo detab(query(@$info['query'], true));
+}
+
+
+/*
+
 if(isset($info['query']))
 {
 ?>
-var loader = <?php echo $info['query']; ?>;
+var loader = <?php 
+$query = $info['query'];
+
+echo $query ?>;
 loader(function(r) {
     var out = document.getElementById('out');
     out.innerHTML += "QUERY RESULT:\n";
@@ -88,7 +143,10 @@ loader(function(r) {
 <?php
 }
 echo isset($info['viz']) ? $info['viz']."\n\n" : "";
+*/
 ?>
+
+
 </script>
 </body>
 </html>

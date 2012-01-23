@@ -966,7 +966,7 @@ rg.app.charts.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6256"};
+	r.info.charts = { version : "1.2.2.6273"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5310,7 +5310,7 @@ thx.js.BaseSelection.prototype = {
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 1, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 634, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -10673,9 +10673,10 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 		case "piechart":
 			params.options.label = { datapoint : function(dp,stats) {
 				var v = Reflect.field(dp,stats.type);
-				return stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
+				return params.axes.length > 1?rg.util.Properties.formatValue(params.axes[0].type,dp):stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapointover : function(dp,stats) {
-				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(stats.type,"."),".")) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+				var v = Reflect.field(dp,stats.type);
+				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(stats.type,"."),".")) + ": " + rg.util.RGStrings.humanize(v) + (params.axes.length > 1 && stats.tot != 0.0?" (" + Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1") + ")":"");
 			}};
 			break;
 		case "sankey":
@@ -12290,14 +12291,14 @@ thx.math.scale.NumericScale.prototype = {
 	,ticks: function() {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 1, className : "thx.math.scale.NumericScale", methodName : "ticks"});
+			throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 86, className : "thx.math.scale.NumericScale", methodName : "ticks"});
 			return $r;
 		}(this));
 	}
 	,tickFormat: function(v,i) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 1, className : "thx.math.scale.NumericScale", methodName : "tickFormat"});
+			throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 91, className : "thx.math.scale.NumericScale", methodName : "tickFormat"});
 			return $r;
 		}(this));
 	}
@@ -12331,7 +12332,7 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 		return this;
 	}
 	,tickRange: function() {
-		var start = Arrays.min(this._domain), stop = Arrays.max(this._domain), span = stop - start, step = Math.pow(this.m,Math.floor(Math.log(span / this.m) / 2.302585092994046)), err = this.m / (span / step);
+		var start = Arrays.min(this._domain), stop = Arrays.max(this._domain), span = stop - start, step = Math.pow(10,Math.floor(Math.log(span / this.m) / 2.302585092994046)), err = this.m / (span / step);
 		if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
 		return { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
 	}
@@ -12340,7 +12341,7 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 		return Floats.range(range.start,range.stop,range.step);
 	}
 	,tickFormat: function(v,i) {
-		var n = Math.max(this.m,-Math.floor(Math.log(this.tickRange().step) / 2.302585092994046 + .01));
+		var n = Math.max(0,-Math.floor(Math.log(this.tickRange().step) / 2.302585092994046 + .01));
 		return Floats.format(v,"D:" + n);
 	}
 	,__class__: thx.math.scale.Linear
@@ -20774,7 +20775,7 @@ Ints.range = function(start,stop,step) {
 		stop = start;
 		start = 0;
 	}
-	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 1, className : "Ints", methodName : "range"});
+	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 19, className : "Ints", methodName : "range"});
 	var range = [], i = -1, j;
 	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;

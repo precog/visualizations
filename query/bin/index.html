@@ -86,7 +86,8 @@ h2 {
 $(document).ready(function(){
 	$("#samplecurrent").click(function(){
 		var src = $('#samplevisualization iframe').attr('src');
-		window.location = src;
+		$("#samplecurrent").attr('href', src);
+		return true;
 	})
 })
 </script>

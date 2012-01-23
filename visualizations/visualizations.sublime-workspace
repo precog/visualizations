@@ -523,7 +523,7 @@
 			"file": "bin/demo/flixmaster/index.html",
 			"settings":
 			{
-				"buffer_size": 1042,
+				"buffer_size": 1044,
 				"line_ending": "Unix"
 			}
 		}
@@ -921,7 +921,6 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
 				{
@@ -929,15 +928,15 @@
 					"file": "bin/demo/flixmaster/index.html",
 					"settings":
 					{
-						"buffer_size": 1042,
+						"buffer_size": 1044,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								915,
-								915
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1410,6 +1409,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 250.0,
+	"side_bar_width": 332.0,
 	"status_bar_visible": true
 }

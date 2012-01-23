@@ -14,7 +14,7 @@ class InfoDataSourceReportGrid
 {
 	public var query : Null<String>;
 	public var path : Null<String>;
-	public var event : Null<String>;
+	public var events : Array<String>;
 	public var statistic : QOperation;
 	public var groupBy : Null<String>;
 	public var timeZone : Null<String>;
@@ -30,6 +30,7 @@ class InfoDataSourceReportGrid
 	public function new()
 	{
 		statistic = Count;
+		events = [];
 	}
 
 	public static function filters() : Array<FieldFilter>
@@ -46,8 +47,8 @@ class InfoDataSourceReportGrid
 			validator : function(v) return Std.is(v, String),
 			filter : null
 		}, {
-			field : "event",
-			validator : function(v) return Std.is(v, String),
+			field : "events",
+			validator : function(v) return Std.is(v, Array),
 			filter : null
 		}, {
 			field : "start",

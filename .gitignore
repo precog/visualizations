@@ -3,3 +3,7 @@ charts/cache/haxecompiler-cache
 charts/charts.sublime-workspace
 tools/palettegenerator/project.sublime-workspace
 .gitignore
+
+query/cache/haxecompiler-cache
+
+query/bin/js/reportgrid-query.js

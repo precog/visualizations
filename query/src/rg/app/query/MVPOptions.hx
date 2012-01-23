@@ -22,6 +22,7 @@ using Arrays;
 // TODO default labeling
 class MVPOptions
 {
+/*
 	static var defaultHash : String;
 	static function timestamp(d : Dynamic) : Float
 	{
@@ -57,156 +58,53 @@ class MVPOptions
 
 		return q;
 	}
-
+*/
 	public static function complete(executor : IExecutorReportGrid, parameters : Dynamic, handler : Dynamic -> Void)
 	{
-		var chain = new ChainedExecutor(handler);
-		chain.execute(parameters);
-/*
-		trace("HERE");
-		var start       = null,
-			end         = null,
-			path        = "/",
-			events : Array<String> = [],
-			property    = null,
-			values : Array<String> = null,
-			chain       = new ChainedExecutor(handler),
-			query,
-			periodicity,
-			groupby     = null,
-			groupfilter = null,
-			statistic   = null,
-			tag         = null,
-			location    = null,
-			datapoints  = null,
-			identifier  = null,
-			parent      = null,
-			where       = null;
-
-		// capture defaults
-		// statistic
-		if (null != parameters.statistic)
+		if(null == parameters.path)
+			parameters.path = "/";
+		if(null != parameters.event)
 		{
-			statistic = parameters.statistic;
-			Reflect.deleteField(parameters, "statistic");
-		}
-		// tag and location
-		if (null != parameters.tag)
-		{
-			tag = parameters.tag;
-			Reflect.deleteField(parameters, "tag");
-		} else {
-			tag = switch(options.visualization) { case "geo": "location"; default: null; }
-		}
-		if (null != parameters.location)
-		{
-			location = parameters.location;
-			Reflect.deleteField(parameters, "location");
-		} else {
-			location = switch(options.visualization) { case "geo": "/"; default: null; }
-		}
-		// grouping
-		if (null != parameters.groupby)
-		{
-			groupby = parameters.groupby;
-			Reflect.deleteField(parameters, "groupby");
-			if (null != parameters.groupfilter)
-			{
-				groupfilter = parameters.groupfilter;
-				Reflect.deleteField(parameters, "groupfilter");
-			}
-		}
-		// property
-		if (null != parameters.property)
-		{
-			property = (parameters.property.substr(0, 1) == '.' ? '' : '.') + parameters.property;
-			Reflect.deleteField(parameters, "property");
-		}
-
-		// start/end
-		if (null != parameters.start)
-		{
-			start = timestamp(parameters.start);
-			Reflect.deleteField(parameters, "start");
-		}
-		if (null != parameters.end)
-		{
-			end = timestamp(parameters.end);
-			Reflect.deleteField(parameters, "end");
-		}
-
-		// graph options
-		if(null != parameters.identifier)
-		{
-			identifier = parameters.identifier;
-			Reflect.deleteField(parameters, "identifier");
-			if(null != parameters.parent)
-			{
-				parent = parameters.parent;
-				Reflect.deleteField(parameters, "parent");
-			}
-
-			if(null != parameters.where)
-			{
-				where = parameters.where;
-				Reflect.deleteField(parameters, "where");
-			}
-		}
-
-		// datapoints option
-		if(null != parameters.datapoints)
-		{
-			datapoints = parameters.datapoints;
-			Reflect.deleteField(parameters, "datapoints");
-		}
-
-		if (null != parameters.periodicity)
-		{
-			periodicity = parameters.periodicity;
-			Reflect.deleteField(parameters, "periodicity");
-		} else if (null != start) {
-			periodicity = Periodicity.defaultPeriodicity(end - start);
-		} else {
-			periodicity = switch(options.visualization) { case "piechart", "funnelchart", "sankey": "eternity"; default: "day"; };
-		}
-
-		if (null == start && "eternity" != periodicity && null != periodicity)
-		{
-			var range = Periodicity.defaultRange(periodicity);
-			start = range[0];
-			end = range[1];
-		}
-
-		// path
-		if (null != parameters.path)
-		{
-			path = parameters.path;
-			Reflect.deleteField(parameters, "path");
-		}
-
-		// event/events
-		if (null != parameters.events)
-		{
-			events = Std.is(parameters.events, Array) ? parameters.events : [cast parameters.events];
-			Reflect.deleteField(parameters, "events");
-		}
-		if (null != parameters.event)
-		{
-			events = [cast parameters.event];
+			parameters.events = [parameters.event];
 			Reflect.deleteField(parameters, "event");
 		}
 
-		// value/values
-		if (null != parameters.values)
+		var chain = new ChainedExecutor(handler);
+
+		// ensure events
+		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
 		{
-			values = Std.is(parameters.values, Array) ? parameters.values : [cast parameters.values];
-			Reflect.deleteField(parameters, "values");
-		}
-		if (null != parameters.value)
-		{
-			values = [cast parameters.value];
-			Reflect.deleteField(parameters, "value");
-		}
+			if (null == parameters.events)
+			{
+				executor.children(parameters.path, { type : "property" }, function(arr) {
+					parameters.events = arr;
+					handler(params);
+				});
+			} else
+				handler(params);
+		});
+		chain.execute(parameters);
+/*
+//    		start = timestamp(parameters.start);
+// 			end = timestamp(parameters.end);
+// 			graph properties: indentifier, parent, where
+//		if (null != start) {
+//			periodicity = Periodicity.defaultPeriodicity(end - start);
+//		} else {
+//			periodicity = switch(options.visualization) { case "piechart", "funnelchart", "sankey": "eternity"; default: "day"; };
+//		}
+//		if (null == start && "eternity" != periodicity && null != periodicity)
+//		{
+//			var range = Periodicity.defaultRange(periodicity);
+//			start = range[0];
+//			end = range[1];
+//		}
+// 		parameter.value/values
+
+//			tag = switch(options.visualization) { case "geo": "location"; default: null; }
+//			location = switch(options.visualization) { case "geo": "/"; default: null; }
+//			property = (parameters.property.substr(0, 1) == '.' ? '' : '.') + parameters.property;
+
 
 		// query
 		if (null != parameters.query)
@@ -232,49 +130,6 @@ class MVPOptions
 				throw new Error("invalid value for download '{0}'", [v]);
 		}
 
-//		// ensure hash for tracking
-//		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
-//		{
-//			var opt : Dynamic = params.options;
-//
-//			if (null == opt.track)
-//				opt.track = { enabled : false };
-//			if (null == opt.track.hash)
-//				opt.track.hash = defaultHash;
-//			if ("" == opt.track.hash)
-//				opt.track.enabled = false;
-//			if (opt.track.enabled && null == opt.track.hash)
-//			{
-//				var tokenid = RG.getTokenId(),
-//					service = null != opt.track.hashService ? opt.track.hashService : RGConst.SERVICE_VISTRACK_HASH;
-//				service = StringTools.replace(service, "{$token}", tokenid);
-//				Jsonp.get(service, function(hash) {
-//					opt.track = {
-//						enabled : hash != "",
-//						hash : defaultHash = hash
-//					};
-//					handler(params);
-//				}, function(_, e) {
-//					opt.track.enabled = false;
-//					handler(params);
-//				}, null, null);
-//			} else {
-//				handler(params);
-//			}
-//		});
-
-		// ensure events
-		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)
-		{
-			if (null == params.data && events.length == 0)
-			{
-				executor.children(path, { type : "property" }, function(arr) {
-					events = arr;
-					handler(params);
-				});
-			} else
-				handler(params);
-		});
 
 		// ensure data
 		chain.addAction(function(params : Dynamic, handler : Dynamic -> Void)

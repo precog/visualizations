@@ -958,31 +958,19 @@ if(!rg.app) rg.app = {}
 if(!rg.app.query) rg.app.query = {}
 rg.app.query.MVPOptions = $hxClasses["rg.app.query.MVPOptions"] = function() { }
 rg.app.query.MVPOptions.__name__ = ["rg","app","query","MVPOptions"];
-rg.app.query.MVPOptions.defaultHash = null;
-rg.app.query.MVPOptions.timestamp = function(d) {
-	if(Std["is"](d,String)) return thx.date.DateParser.parse(d).getTime(); else if(Std["is"](d,Date)) return d.getTime(); else return d;
-}
-rg.app.query.MVPOptions.quote = function(v,_) {
-	return "\"" + StringTools.replace(v,"\"","\\\"") + "\"";
-}
-rg.app.query.MVPOptions.buildQuery = function(type,property,values,periodicity) {
-	var p = null;
-	if(null != property) {
-		p = property;
-		if(null != values) p += " = " + values.map(rg.app.query.MVPOptions.quote).join(",");
-	}
-	var q = (function($this) {
-		var $r;
-		switch(type) {
-		default:
-			$r = (null != p?p + " * ":"") + ".#time:" + periodicity;
-		}
-		return $r;
-	}(this));
-	return q;
-}
 rg.app.query.MVPOptions.complete = function(executor,parameters,handler) {
+	if(null == parameters.path) parameters.path = "/";
+	if(null != parameters.event) {
+		parameters.events = [parameters.event];
+		Reflect.deleteField(parameters,"event");
+	}
 	var chain = new rg.util.ChainedExecutor(handler);
+	chain.addAction(function(params,handler1) {
+		if(null == parameters.events) executor.children(parameters.path,{ type : "property"},function(arr) {
+			parameters.events = arr;
+			handler1(params);
+		}); else handler1(params);
+	});
 	chain.execute(parameters);
 }
 rg.app.query.MVPOptions.prototype = {
@@ -1110,6 +1098,7 @@ Ints.prototype = {
 }
 rg.controller.info.InfoDataSourceReportGrid = $hxClasses["rg.controller.info.InfoDataSourceReportGrid"] = function() {
 	this.statistic = rg.data.reportgrid.QOperation.Count;
+	this.events = [];
 }
 rg.controller.info.InfoDataSourceReportGrid.__name__ = ["rg","controller","info","InfoDataSourceReportGrid"];
 rg.controller.info.InfoDataSourceReportGrid.filters = function() {
@@ -1119,8 +1108,8 @@ rg.controller.info.InfoDataSourceReportGrid.filters = function() {
 		return [{ field : "query", value : v}];
 	}},{ field : "path", validator : function(v) {
 		return Std["is"](v,String);
-	}, filter : null},{ field : "event", validator : function(v) {
-		return Std["is"](v,String);
+	}, filter : null},{ field : "events", validator : function(v) {
+		return Std["is"](v,Array);
 	}, filter : null},{ field : "start", validator : rg.controller.info.InfoDataSourceReportGrid.validateDate, filter : function(v) {
 		return [{ field : "start", value : rg.controller.info.InfoDataSourceReportGrid.filterDate(v)}];
 	}},{ field : "end", validator : rg.controller.info.InfoDataSourceReportGrid.validateDate, filter : function(v) {
@@ -1189,7 +1178,7 @@ rg.controller.info.InfoDataSourceReportGrid.filterDate = function(v) {
 rg.controller.info.InfoDataSourceReportGrid.prototype = {
 	query: null
 	,path: null
-	,event: null
+	,events: null
 	,statistic: null
 	,groupBy: null
 	,timeZone: null
@@ -1630,6 +1619,22 @@ thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
 	}
 	,__class__: thx.color.Cmyk
 });
+rg.controller.info.InfoCallback = $hxClasses["rg.controller.info.InfoCallback"] = function() {
+	this.handler = function(_) {
+	};
+}
+rg.controller.info.InfoCallback.__name__ = ["rg","controller","info","InfoCallback"];
+rg.controller.info.InfoCallback.filters = function() {
+	return [{ field : "callback", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "handler", value : v}];
+	}}];
+}
+rg.controller.info.InfoCallback.prototype = {
+	handler: null
+	,__class__: rg.controller.info.InfoCallback
+}
 var hxevents = hxevents || {}
 hxevents.EventException = $hxClasses["hxevents.EventException"] = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
 hxevents.EventException.StopPropagation = ["StopPropagation",0];
@@ -2317,9 +2322,26 @@ rg.controller.factory.FactoryDataSourceReportGrid.prototype = {
 	parser: null
 	,executor: null
 	,create: function(info) {
-		haxe.Log.trace("CREATE",{ fileName : "FactoryDataSourceReportGrid.hx", lineNumber : 1, className : "rg.controller.factory.FactoryDataSourceReportGrid", methodName : "create"});
-		if(null != info.path && null != info.event && null != info.identifier && null != info.parent) return this.createFromGraph(info.path,info.event,info.identifier,info.parent,info.where,info.start,info.end);
-		if(null != info.path && null != info.event) return this.createFromQuery(info.path,info.event,info.query,info.statistic,info.tag,info.location,info.groupBy,info.timeZone,info.start,info.end);
+		if(null != info.path && info.events.length > 0 && null != info.identifier && null != info.parent) {
+			var results = [];
+			var _g = 0, _g1 = info.events;
+			while(_g < _g1.length) {
+				var event = _g1[_g];
+				++_g;
+				results.push(this.createFromGraph(info.path,event,info.identifier,info.parent,info.where,info.start,info.end));
+			}
+			return results;
+		}
+		if(null != info.path && info.events.length > 0) {
+			var results = [];
+			var _g = 0, _g1 = info.events;
+			while(_g < _g1.length) {
+				var event = _g1[_g];
+				++_g;
+				results.push(this.createFromQuery(info.path,event,info.query,info.statistic,info.tag,info.location,info.groupBy,info.timeZone,info.start,info.end));
+			}
+			return results;
+		}
 		return (function($this) {
 			var $r;
 			throw new thx.error.Error("not enough information have been passed for the query to work",null,null,{ fileName : "FactoryDataSourceReportGrid.hx", lineNumber : 1, className : "rg.controller.factory.FactoryDataSourceReportGrid", methodName : "create"});
@@ -3889,10 +3911,22 @@ rg.app.query.App.__name__ = ["rg","app","query","App"];
 rg.app.query.App.prototype = {
 	executor: null
 	,query: function(options,handler) {
-		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoDataSourceReportGrid(),options);
-		var datasource = new rg.controller.factory.FactoryDataSourceReportGrid(this.executor).create(info);
-		datasource.onLoad.add(handler);
-		datasource.load();
+		var datasources = new rg.controller.factory.FactoryDataSourceReportGrid(this.executor).create(rg.controller.info.Info.feed(new rg.controller.info.InfoDataSourceReportGrid(),options)), len = datasources.length, dps = [], count = 0;
+		var complete = function(dp) {
+			count++;
+			dps = dps.concat(dp);
+			if(count == len) {
+				handler(dps);
+				rg.controller.info.Info.feed(new rg.controller.info.InfoCallback(),options).handler(dps);
+			}
+		};
+		var _g = 0;
+		while(_g < datasources.length) {
+			var datasource = datasources[_g];
+			++_g;
+			datasource.onLoad.add(complete);
+			datasource.load();
+		}
 	}
 	,__class__: rg.app.query.App
 }
@@ -3925,8 +3959,12 @@ rg.app.query.JSBridge.main = function() {
 		}(this));
 		return queue;
 	};
+	r.load = function(options) {
+		(r.query(options))(function() {
+		});
+	};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.64"};
+	r.info.query = { version : "1.0.0.82"};
 }
 rg.app.query.JSBridge.opt = function(ob) {
 	return null == ob?{ }:Objects.clone(ob);

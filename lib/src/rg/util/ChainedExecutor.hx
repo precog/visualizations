@@ -8,7 +8,7 @@ package rg.util;
 class ChainedExecutor<T>
 {
 	var handler : Dynamic -> Void;
-	var actions : Array < T -> (T -> Void) -> Void > ;
+	var actions : Array< T -> (T -> Void) -> Void > ;
 	var pos : Int;
 
 	public function new(handler : T -> Void)
