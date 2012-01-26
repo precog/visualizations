@@ -12,13 +12,14 @@ import thx.error.Error;
 
 class InfoDataSourceReportGrid
 {
-	public var query : Null<String>;
+//	public var query : Null<String>;
 	public var path : Null<String>;
 	public var events : Array<String>;
 	public var statistic : QOperation;
 	public var groupBy : Null<String>;
 	public var timeZone : Null<String>;
 	public var groups : Null<Array<String>>;
+	public var periodicity : Null<String>;
 	public var start : Null<Float>;
 	public var end : Null<Float>;
 	public var tag : Null<String>;
@@ -26,29 +27,38 @@ class InfoDataSourceReportGrid
 	public var identifier : Null<String>;
 	public var parent : Null<String>;
 	public var where : Null<Array<{ property : String, value : Dynamic }>>;
+	public var properties : Null<Array<String>>;
+	public var descending : Bool;
+	public var limit : Int;
 
 	public function new()
 	{
 		statistic = Count;
 		events = [];
+		descending = false;
+		limit = 10;
 	}
 
 	public static function filters() : Array<FieldFilter>
 	{
-		return [{
+		return [/*{
 			field : "query",
 			validator : function(v) return Std.is(v, String),
 			filter : function(v)
 			{
 				return [{ field : "query", value : v }];
 			}
-		}, {
+		}, */{
 			field : "path",
 			validator : function(v) return Std.is(v, String),
 			filter : null
 		}, {
 			field : "events",
 			validator : function(v) return Std.is(v, Array),
+			filter : null
+		}, {
+			field : "periodicity",
+			validator : function(v) return Std.is(v, String),
 			filter : null
 		}, {
 			field : "start",
@@ -111,7 +121,40 @@ class InfoDataSourceReportGrid
 			filter : null
 		}, {
 			field : "where",
+			validator : function(v : Dynamic) return Types.isAnonymous(v) || Std.is(v, Array),
+			filter : function(v) {
+				return [{
+					field : "where",
+					value : Std.is(v, Array) ? cast v : [v]
+				}];
+			}
+		}, {
+			field : "property",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) {
+				return [{ field : "properties", value : [v] }];
+			}
+		}, {
+			field : "properties",
 			validator : function(v : Dynamic) return Std.is(v, Array),
+			filter : null
+		}, {
+			field : "order",
+			validator : function(v : Dynamic) return Std.is(v, Array),
+			filter : cast function(v)
+			{
+				return [{
+					field : "descending",
+					value : switch((""+v).toLowerCase())
+					{
+						case "ascending", "asc": false;
+						default: true;
+					}
+				}];
+			}
+		}, {
+			field : "limit",
+			validator : function(v : Dynamic) return Std.is(v, Int),
 			filter : null
 		}];
 	}

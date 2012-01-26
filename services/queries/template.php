@@ -81,7 +81,7 @@ function detab($s)
     return str_replace("\t", "    ", $s);
 }
 
-function query($s, $load) {
+function query($s, $useload) {
     if(!$s)
         return "";
     if(!strpos($s, 'callback'))
@@ -93,23 +93,11 @@ var callback = function(dps) {
 };
 
 <?php
-        $lines = split("\n", $s);
-        $last = $lines[count($lines)-1];
-        if(trim($last) != "}")
-        {
-            $lines[count($lines)-1] = rtrim($last, " }");
-        } else {
-            array_pop($lines);
-        }
-        if(substr(trim($lines[count($lines)-1]), -1, 1) != "{")
-        {
-            $lines[count($lines)-1] = rtrim($lines[count($lines)-1], " ").",";
-        }
-        $lines[] = "\tcallback : callback";
-        $lines[] = "}";
-        $s = join("\n", $lines);
     }
-    return "ReportGrid.".($load ? 'load' : 'query')."($s)";
+    if(!$useload)
+        return $s.".log(callback)";
+    else
+        return $s.".load(callback)";
 }
 
 function indent($s) {
@@ -144,6 +132,11 @@ loader(function(r) {
 }
 echo isset($info['viz']) ? $info['viz']."\n\n" : "";
 */
+
+if(isset($info['code']))
+{
+    echo "\n\n".detab($info['code']);
+}
 ?>
 
 

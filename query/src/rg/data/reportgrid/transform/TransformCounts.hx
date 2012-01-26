@@ -14,14 +14,14 @@ class TransformCounts implements ITransform<Array<{ count : Int, value : Dynamic
 	var unit : String;
 	var event : String;
 	var unitvalue : String;
-	public function new(properties : Dynamic, event : String, unit : String, unitvalue = "value") 
+	public function new(properties : Dynamic, event : String, unit : String, unitvalue = "value")
 	{
 		this.properties = properties;
 		this.unit = unit;
 		this.event = event;
 		this.unitvalue = unitvalue;
 	}
-	
+
 	public function transform(data : Array<{ count : Int, value : Dynamic }>) : Array<DataPoint>
 	{
 		var result = data.map(function(d, i) {

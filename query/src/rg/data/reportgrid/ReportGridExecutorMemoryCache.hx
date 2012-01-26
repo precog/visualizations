@@ -159,6 +159,19 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 			executor.intersect(path, options, cacheSuccess(id, success), error);
 	}
 
+	public function histogram(path : String, options : { property : String, ?limit : Int, ?order : String }, success : Int -> Void, ?error : String -> Void) : Void
+	{
+		var id = id("histogram", path, options),
+			val = getCache(id);
+		if(null != val)
+			success(val);
+		var q = getQueue(id);
+		if(null != q)
+			q.push(success);
+		else
+			executor.histogram(path, options, cacheSuccess(id, success), error);
+	}
+
 	function cacheSuccess(id : String, success : Dynamic)
 	{
 		queue.set(id, []);

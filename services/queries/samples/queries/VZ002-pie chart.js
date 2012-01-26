@@ -1,9 +1,10 @@
 //** QUERY
-{
-	path : "/query/test",
-	event : "impression",
-	query : "gender"
-}
+ReportGrid.query
+	.properties({
+		path : "/query/test",
+		event : "impression"
+	})
+	.count()
 
 //** VIZ
 ReportGrid.pieChart("#chart", {

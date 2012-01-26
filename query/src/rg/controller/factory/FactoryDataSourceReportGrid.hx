@@ -16,11 +16,9 @@ import rg.data.reportgrid.QueryAst;
 
 class FactoryDataSourceReportGrid
 {
-	var parser : QueryParser;
 	var executor : IExecutorReportGrid;
 	public function new(executor : IExecutorReportGrid)
 	{
-		this.parser = new QueryParser();
 		this.executor = executor;
 	}
 
@@ -37,17 +35,15 @@ class FactoryDataSourceReportGrid
 		{
 			var results = [];
 			for(event in info.events)
-				results.push(createFromQuery(info.path, event, info.query, info.statistic, info.tag, info.location, info.groupBy, info.timeZone, info.start, info.end));
+				results.push(createFromQuery(info.path, event, info.properties, info.where, info.statistic, info.tag, info.location, info.groupBy, info.timeZone, info.periodicity, info.start, info.end, info.limit, info.descending));
 			return results;
 		}
 		return throw new Error("not enough information have been passed for the query to work");
 	}
 
-	function createFromQuery(path : String, event : String, query : Null<String>, statistic : QOperation, tag : Null<String>, location : Null<String>, groupby : Null<String>, timeZone : Null<String>, start : Null<Float>, end : Null<Float>) : IDataSource
+	function createFromQuery(path : String, event : String, properties : Null<Array<String>>, where : Null<Array<{ property : String, value : Dynamic }>>, statistic : QOperation, tag : Null<String>, location : Null<String>, groupby : Null<String>, timeZone : Null<String>, periodicity : Null<String>, start : Null<Float>, end : Null<Float>, limit : Int, descending : Bool) : IDataSource
 	{
-		if (null == query)
-			query = "";
-		return new DataSourceReportGrid(executor, path, event, parser.parse(query), statistic, tag, location, groupby, timeZone, start, end);
+		return new DataSourceReportGrid(executor, path, event, properties, where, statistic, tag, location, groupby, timeZone, periodicity, start, end, limit, descending);
 	}
 
 	function createFromGraph(path : String, event : String, idproperty : String, parentproperty : String, whereConditions : Null<Array<{ property : String, value : Dynamic }>>, start : Null<Float>, end : Null<Float>) : IDataSource

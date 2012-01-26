@@ -18,6 +18,7 @@ interface IExecutorReportGrid
 	public function searchCount(path : String, options : { }, success : Int -> Void, ?error : String -> Void) : Void;
 	public function searchSeries(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void;
 	public function intersect(path : String, options : { }, success : Dynamic<Dynamic> -> Void, ?error : String -> Void) : Void;
+	public function histogram(path : String, options : { property : String, ?limit : Int, ?order : String }, success : Int -> Void, ?error : String -> Void) : Void;
 }
 
 typedef TimeSeriesType = Array<Array<Dynamic>>;

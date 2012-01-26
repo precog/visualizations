@@ -2,6 +2,8 @@ package rg.app.query;
 
 import rg.data.DataPoint;
 import rg.data.reportgrid.ReportGridExecutorMemoryCache;
+import rg.query.ReportGridQuery;
+import thx.math.Random;
 
 class JSBridge
 {
@@ -11,34 +13,18 @@ class JSBridge
 			executor = new ReportGridExecutorMemoryCache(r),
 			app = new App(executor);
 
-		r.query = function(?options : Dynamic) {
-			options = opt(options);
-			var params = null;
-			MVPOptions.complete(executor, options, function(opt : Dynamic)
-			{
-				params = opt;
-			});
-			function queue(handler : Array<DataPoint> -> Void)
-			{
-				if(null == params)
-				{
-					haxe.Timer.delay(callback(queue, handler), 30);
-					return;
-				}
-				app.query(params, handler);
-			}
-			return queue;
-		};
-
-		r.load = function(?options : Dynamic)
-		{
-			r.query(options)(function() {});
-		}
+		r.query = ReportGridQuery.create(executor);
 
 		r.info = null != r.info ? r.info : { };
 		r.info.query = {
 			version : thx.util.MacroVersion.fullVersion()
 		};
+
+		var rand = new Random(666);
+		r.math = {
+			setRandomSeed : function(s) rand = new Random(666),
+			random : function() return rand.float()
+		}
 	}
 
 	static inline function opt(ob : Dynamic) return null == ob ? { } : Objects.clone(ob)

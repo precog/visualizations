@@ -29,64 +29,59 @@ class DataSourceReportGrid implements IDataSource
 	var executor : IExecutorReportGrid;
 
 	// specific query stuff
-//	var exp : Array<{ property : String, event : String, limit : Int, order : String }>;
+	var exp : Array<{ property : String, event : String, limit : Int, order : String }>;
 	var operation : QOperation;
-	var where : Array<{ property : String, value : Dynamic }>;
+	var where : Array<{ property : String, event : String, values : Array<Dynamic> }>;
 	var periodicity : String;
-	var event : String;
-	var path : String;
-	var timeStart : Float;
-	var timeEnd : Float;
-	var groupBy : Null<String>;
-	var timeZone : Null<String>;
-	var tag : Null<String>;
-	var location : Null<String>;
+
+	// general query stuff
+	public var event(default, null) : String;
+	public var path(default, null) : String;
+	public var timeStart : Float;
+	public var timeEnd : Float;
+	public var groupBy : Null<String>;
+	public var timeZone : Null<String>;
+	public var tag : Null<String>;
+	public var location : Null<String>;
+
 	var transform : ITransform<Dynamic>;
+
+	public var query(default, null) : Query;
 	public var onLoad(default, null) : Dispatcher<Array<DataPoint>>;
 
-	// TODO TO REMOVE
-//	public var query(default, null) : Query;
-
-	// TODO NEW PROPERTIES
-	var properties : Null<Array<String>>;
-	var limit : Int;
-	var descending : Bool;
-
-
-//	function mapProperties(d, _)
-//	{
-//		switch(d)
-//		{
-//			case Property(name, limit, descending):
-//				return {
-//					event : event,
-//					property : name,
-//					limit : null == limit ? 10 : limit,
-//					order : false == descending ? "ascending" : "descending"
-//				};
-//			case Event:
-//				return {
-//					event : event,
-//					property : null,
-//					limit : null,
-//					order : null
-//				};
-//			default:
-//				throw new Error("normalization failed, only Property values should be allowed");
-//		}
-//	}
-
-	public function new(executor : IExecutorReportGrid, path : String, event : String, properties : Null<Array<String>>, where : Null<Array<{ property : String, value : Dynamic }>>, operation : QOperation, tag : Null<String>, location : Null<String>, groupby : Null<String>, timezone : Null<String>, periodicity : Null<String>, start : Null<Float>, end : Null<Float>, limit : Int, descending : Bool)
+	function mapProperties(d, _)
 	{
-//		this.query = query;
+		switch(d)
+		{
+			case Property(name, limit, descending):
+				return {
+					event : event,
+					property : name,
+					limit : null == limit ? 10 : limit,
+					order : false == descending ? "ascending" : "descending"
+				};
+			case Event:
+				return {
+					event : event,
+					property : null,
+					limit : null,
+					order : null
+				};
+			default:
+				throw new Error("normalization failed, only Property values should be allowed");
+		}
+	}
+
+	public function new(executor : IExecutorReportGrid, path : String, event : String, query : Query, operation : QOperation, tag : Null<String>, location : Null<String>, groupby : Null<String>, timezone : Null<String>, start : Null<Float>, end : Null<Float>)
+	{
+		this.query = query;
 		this.executor = executor;
 		this.groupBy = groupby;
 		this.timeZone = timezone;
-//		var e = normalize(query.exp);
+		var e = normalize(query.exp);
 		this.event = event;
-//		this.periodicity = switch(e.pop()) { case Time(p): p; default: throw new Error("normalization failed, the last value should always be a Time expression"); };
-//		this.exp = e.map(mapProperties);
-/*
+		this.periodicity = switch(e.pop()) { case Time(p): p; default: throw new Error("normalization failed, the last value should always be a Time expression"); };
+		this.exp = e.map(mapProperties);
 		this.where = query.where.map(function(d, i) return switch(d)
 		{
 			case Equality(property, value): {
@@ -100,19 +95,12 @@ class DataSourceReportGrid implements IDataSource
 				values : values
 			};
 			default: throw new Error("invalid data for 'where' condition"); } );
-*/
 		this.operation = operation;
 		this.tag = tag;
 		this.location = location;
 		this.path = path;
-		this.periodicity = periodicity;
 		this.timeStart = start;
 		this.timeEnd = end;
-		this.properties = properties;
-		this.limit = limit;
-		this.descending = descending;
-		this.where = where;
-
 		this.onLoad = new Dispatcher();
 	}
 
@@ -143,14 +131,17 @@ class DataSourceReportGrid implements IDataSource
 			Reflect.setField(opt, "tag", tag);
 		}
 
-		if (hasWhere())
+		if (where.length > 1)
 		{
 			var arr = [];
 			for (c in where)
 			{
-				var cond : Dynamic = { };
-				Reflect.setField(cond, prefixProperty(event) + prefixProperty(c.property), c.value);
-				arr.push(cond);
+				for(v in c.values)
+				{
+					var cond : Dynamic = { };
+					Reflect.setField(cond, propertyName(c), v);
+					arr.push(cond);
+				}
 			}
 			opt.where = arr;
 		}
@@ -164,6 +155,7 @@ class DataSourceReportGrid implements IDataSource
 			case Count: "count";
 			case Mean:  "mean";
 			case StandardDeviation:  "standardDeviation";
+//			default: throw new Error("unsupported operation '{0}'", operation);
 		}
 	}
 
@@ -217,85 +209,24 @@ class DataSourceReportGrid implements IDataSource
 		actions.shift()(value, next(), error);
 	}
 
-	inline function hasWhere() return null != where && where.length > 0
-	inline function hasOneWhere() return null != where && where.length == 1
-	inline function hasOneProperty() return null != properties && properties.length == 1
-
 	public function load()
 	{
-		var opt : Dynamic = basicOptions(null == periodicity || "eternity" == periodicity);
-		if(null == properties || properties.length <= 1)
+		if (0 == exp.length)
 		{
-			// work on events only
-			opt.property = hasOneProperty() ? prefixProperty(event) + prefixProperty(properties[0]) : prefixProperty(event);
-			if(null != tag)
-				transform = new TransformTagCount( { }, event, unit(), tag);
-			else
-				transform = new TransformCount( { }, event, unit());
-			if(hasOneProperty() && hasOneWhere() && properties[0] == where[0].property)
-			{
-trace("propertyValueCount");
-				opt.value = where[0].value;
-				executor.propertyValueCount(path, opt, success, error);
-			} else if(hasWhere()) {
-trace("searchCount");
-				if(hasOneProperty())
-					error("Invalid query: can't count on a property with a where condition that has multiple conditions or just one condition that does not include the property itself");
-				executor.searchCount(path, opt, success, error);
-			} else {
-trace("propertyCount");
-				executor.propertyCount(path, opt, success, error);
-			}
-		} else {
-			var whereproperties = null == where ? [] : where.map(function(w, _) return w.property),
-				valueproperty = properties.filter(function(property) return !whereproperties.exists(property)).shift();
-
-			trace(valueproperty);
-
-			transform = new TransformCounts( { }, event, unit(), valueproperty);
-			var counts : Dynamic = {};
-			var actions = [];
-			actions.push(function(value : Dynamic, s : Dynamic -> Void, e : String -> Void) {
-				//public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
-				var o : Dynamic = Objects.clone(opt);
-				o.property = prefixProperty(event) + prefixProperty(valueproperty);
-//trace("2");
-				executor.propertyValues(path, o, s, e);
-			});
-			actions.push(function(values : Array<String>, s : Dynamic -> Void, e : String -> Void) {
-				trace(values);
-				var subs = [];
-				for(v in values)
-				{
-					var o : Dynamic = Objects.clone(opt);
-					if(null == o.where) o.where = [];
-					var where : Array<Dynamic> = o.where;
-					var cond = {};
-					Reflect.setField(cond, prefixProperty(event) + prefixProperty(valueproperty), v);
-					o.where.push(cond);
-					trace(o);
-					subs.push(cast {
-						method : callback(executor.searchCount, path, o),
-						value : v
-					});
-				}
-
-				parallelExecution(subs, s, e);
-			});
-			serialExecution(null, actions, success, error);
-		}
-		trace(properties);
-		trace(event);
-		trace(path);
-		trace(periodicity);
-		/*
-		if (exp.length == 1 && null == exp[0].property || where.length > 0)
+			throw new Error("invalid empty query");
+		} else if (exp.length == 1 && null == exp[0].property || where.length > 0)
 		{
 			if (periodicity == "eternity")
 			{
 				var opt : Dynamic = basicOptions(false);
 				if (where.length > 1)
 				{
+					if(null != tag)
+						transform = new TransformTagCount( { }, event, unit(), tag);
+					else
+						transform = new TransformCount( { }, event, unit());
+//trace("1");
+					executor.searchCount(path, opt, success, error);
 				} else if (where.length == 1)
 				{
 					if(exp.length > 1) {
@@ -320,23 +251,25 @@ trace("propertyCount");
 								var cond = {};
 								Reflect.setField(cond, propertyName(valueproperty), v);
 								o.where.push(cond);
-								
-//								Reflect.setField(o.where, propertyName(valueproperty), v);
-//								for(w in where)
-//								{
-//									var p = propertyName(w);
-//									for(v in w.values)
-//										Reflect.setField(o.where, p, v);
-//								}
-								
+								/*
+								Reflect.setField(o.where, propertyName(valueproperty), v);
+								for(w in where)
+								{
+									var p = propertyName(w);
+									for(v in w.values)
+										Reflect.setField(o.where, p, v);
+								}
+								*/
 								////trace("!!!!!!");
 								for(w in where)
 								{
 									var p = propertyName(w);
-									
-									cond = {};
-									Reflect.setField(cond, p, w.value);
-									o.where.push(cond);
+									for(v in w.values)
+									{
+										cond = {};
+										Reflect.setField(cond, p, v);
+										o.where.push(cond);
+									}
 								}
 								subs.push(cast {
 									method : callback(executor.searchCount, path, o),
@@ -348,8 +281,34 @@ trace("propertyCount");
 						});
 						serialExecution(null, actions, success, error);
 					} else {
+						opt.property = propertyName(exp[0]);
+						if (where[0].values.length > 1)
+						{
+							transform = new TransformCounts( { }, event, unit());
+							var actions : Array<{ method : ExCallback<Int>, value : Dynamic }> = cast where[0].values.map(function(v, _) {
+								var o : Dynamic = Objects.clone(opt);
+								o.value = v;
+								return { method : callback(executor.propertyValueCount, path, o), value : v };
+							});
+							parallelExecution(actions, success, error);
+						} else {
+							if(null != tag)
+								transform = new TransformTagCount( { }, event, unit(), tag);
+							else
+								transform = new TransformCount( { }, event, unit());
+							opt.value = where[0].values[0];
+//trace("3");
+							executor.propertyValueCount(path, opt, success, error);
+						}
 					}
 				} else {
+					if(null != tag)
+						transform = new TransformTagCount( { }, event, unit(), tag);
+					else
+						transform = new TransformCount( { }, event, unit());
+					opt.property = propertyName(exp[0]);
+//trace("4");
+					executor.propertyCount(path, opt, success, error);
 				}
 			} else {
 				var opt : Dynamic = basicOptions(true);
@@ -386,20 +345,23 @@ trace("propertyCount");
 								for(w in where)
 								{
 									var p = propertyName(w);
-									cond = {};
-									Reflect.setField(cond, p, w.value);
-									o.where.push(cond);
+									for(v in w.values)
+									{
+										cond = {};
+										Reflect.setField(cond, p, v);
+										o.where.push(cond);
+									}
 								}
 								//o.where = {};
-								
-//								Reflect.setField(o.where, propertyName(valueproperty), v);
-//								for(w in where)
-//								{
-//									var p = propertyName(w);
-//									for(v in w.values)
-//										Reflect.setField(o.where, p, v);
-//								}
-								
+								/*
+								Reflect.setField(o.where, propertyName(valueproperty), v);
+								for(w in where)
+								{
+									var p = propertyName(w);
+									for(v in w.values)
+										Reflect.setField(o.where, p, v);
+								}
+								*/
 								subs.push(cast {
 									method : callback(executor.searchSeries, path, o),
 									value : v
@@ -411,24 +373,24 @@ trace("propertyCount");
 						serialExecution(null, actions, success, error);
 					} else {
 						opt.property = propertyName(exp[0]);
-//						if (where[0].values.length > 1)
-//						{
-//							transform = new TransformTimeSeriesValues( { periodicity : periodicity }, event, periodicity, unit());
-//							var actions : Array<{ method : ExCallback<TimeSeriesType>, value : Dynamic }> = cast where[0].values.map(function(v, _) {
-//								var o : Dynamic = Objects.clone(opt);
-//								o.value = v;
-//								return { method : callback(executor.propertyValueSeries, path, o), value : v };
-//							});
-//							parallelExecution(actions, success, error);
-//
-//	//						opt.value = where[0].values;
-//	//						executor.propertyValuesSeries(path, opt, success, error);
-//						} else {
+						if (where[0].values.length > 1)
+						{
+							transform = new TransformTimeSeriesValues( { periodicity : periodicity }, event, periodicity, unit());
+							var actions : Array<{ method : ExCallback<TimeSeriesType>, value : Dynamic }> = cast where[0].values.map(function(v, _) {
+								var o : Dynamic = Objects.clone(opt);
+								o.value = v;
+								return { method : callback(executor.propertyValueSeries, path, o), value : v };
+							});
+							parallelExecution(actions, success, error);
+
+	//						opt.value = where[0].values;
+	//						executor.propertyValuesSeries(path, opt, success, error);
+						} else {
 							transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
-							opt.value = where[0].value;
+							opt.value = where[0].values[0];
 //trace("7");
 							executor.propertyValueSeries(path, opt, success, error);
-//						}
+						}
 					}
 				} else {
 					transform = new TransformTimeSeries( { periodicity : periodicity }, event, periodicity, unit());
@@ -479,7 +441,6 @@ trace("propertyCount");
 					executor.propertyStandardDeviations(path, opt, success, error);
 			}
 		}
-*/
 	}
 
 	public dynamic function error(msg : String)
@@ -492,7 +453,7 @@ trace("propertyCount");
 		var data = transform.transform(src);
 		onLoad.dispatch(data);
 	}
-/*
+
 	public static function normalize(exp : Array<QExp>)
 	{
 		if (exp.length > 1)
@@ -527,41 +488,40 @@ trace("propertyCount");
 		} else {
 			return [Event, Time("eternity")];
 		}
-
-//		switch(exp)
-//		{
-//			case Property(name, type):
-//				switch(type)
-//				{
-//					case Time(_):
-//						return Cross(Property(name, Unbound(None)), Property(name, type));
-//					default:
-//						return Cross(Property(name, type), Property(name, Time("eternity"));
-//				}
-//			case Cross(left, right):
-//				if (isTimeProperty(left))
-//				{
-//					if (isTimeProperty(right))
-//						throw new Error("cannot perform intersections on two time properties");
-//					return normalize(Cross(right, left));
-//				}
-//			default:
-//				//
-//		}
-
+		/*
+		switch(exp)
+		{
+			case Property(name, type):
+				switch(type)
+				{
+					case Time(_):
+						return Cross(Property(name, Unbound(None)), Property(name, type));
+					default:
+						return Cross(Property(name, type), Property(name, Time("eternity"));
+				}
+			case Cross(left, right):
+				if (isTimeProperty(left))
+				{
+					if (isTimeProperty(right))
+						throw new Error("cannot perform intersections on two time properties");
+					return normalize(Cross(right, left));
+				}
+			default:
+				//
+		}
+		*/
 	}
-*/
+
 	static function prefixProperty(s : String) return (s.substr(0, 1) == '.') ? s : ('.' + s)
-/*
-	function propertyName(p : { property : String } )
+
+	static function propertyName(p : { property : String, event : String } )
 	{
 		if(null == p.property)
-			return prefixProperty(event);
+			return prefixProperty(p.event);
 		else
-			return prefixProperty(event) + prefixProperty(p.property);
+			return prefixProperty(p.event) + prefixProperty(p.property);
 	}
-*/
-/*
+
 	static function isTimeProperty(exp : QExp) : Bool
 	{
 		switch(exp)
@@ -572,7 +532,6 @@ trace("propertyCount");
 				return false;
 		}
 	}
-*/
 }
 
 typedef StringVoid = String -> Void;
