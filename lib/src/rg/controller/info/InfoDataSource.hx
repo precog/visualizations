@@ -24,7 +24,7 @@ class InfoDataSource
 			{
 				return [{
 					field : "loader",
-					value : function(handler : Array<DataPoint> -> Void) handler(v)
+					value : { load : function(handler : Array<DataPoint> -> Void) handler(v) }
 				}];
 			}
 		}, {
@@ -34,17 +34,17 @@ class InfoDataSource
 			{
 				return [{
 					field : "loader",
-					value : function(handler : Array<DataPoint> -> Void) handler(v)
+					value : { load : function(handler : Array<DataPoint> -> Void) handler(v) }
 				}];
 			}
 		}, {
 			field : "load",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : function(v)
+			validator : function(v) return Reflect.isFunction(v) || (null != Reflect.field(v, "load")),
+			filter : function(v : { public function load(handler : Array<DataPoint> -> Void) : Void; })
 			{
 				return [{
 					field : "loader",
-					value : v
+					value : Reflect.isObject(v) ? v.load : cast v
 				}];
 			}
 		}];

@@ -4,15 +4,6 @@ function $extend(from, fields) {
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
-var rg = rg || {}
-if(!rg.data) rg.data = {}
-if(!rg.data.reportgrid) rg.data.reportgrid = {}
-rg.data.reportgrid.ITransform = $hxClasses["rg.data.reportgrid.ITransform"] = function() { }
-rg.data.reportgrid.ITransform.__name__ = ["rg","data","reportgrid","ITransform"];
-rg.data.reportgrid.ITransform.prototype = {
-	transform: null
-	,__class__: rg.data.reportgrid.ITransform
-}
 var thx = thx || {}
 if(!thx.color) thx.color = {}
 thx.color.Rgb = $hxClasses["thx.color.Rgb"] = function(r,g,b) {
@@ -168,54 +159,25 @@ thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
 	}
 	,__class__: thx.color.Hsl
 });
-if(!rg.data.reportgrid.transform) rg.data.reportgrid.transform = {}
-rg.data.reportgrid.transform.TransformIntersectGroupUtc = $hxClasses["rg.data.reportgrid.transform.TransformIntersectGroupUtc"] = function(properties,fields,event,periodicity,unit) {
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.reportgrid.transform.TransformIntersectGroupUtc.__name__ = ["rg","data","reportgrid","transform","TransformIntersectGroupUtc"];
-rg.data.reportgrid.transform.TransformIntersectGroupUtc.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformIntersectGroupUtc.prototype = {
-	properties: null
-	,unit: null
-	,periodicity: null
-	,groupby: null
-	,fields: null
-	,event: null
-	,transform: function(data) {
-		var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-		if(null == items || 0 == items.length) return [];
-		var result = [], shift = 0.0;
-		var _g1 = 0, _g = items.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			try {
-				shift = Reflect.field(items[i].value[0][0],this.periodicity);
-				break;
-			} catch( e ) {
-			}
-		}
-		var _g = 0;
-		while(_g < items.length) {
-			var item = items[_g];
-			++_g;
-			var arr = item.value;
-			var _g2 = 0, _g1 = arr.length;
-			while(_g2 < _g1) {
-				var i = _g2++;
-				var p = Dynamics.clone(properties);
-				Objects.addFields(p,this.fields,item.fields.map(rg.data.reportgrid.transform.Transforms.typedValue));
-				Objects.addFields(p,["." + "time:" + this.periodicity,unit],[Reflect.field(arr[i][0],this.periodicity) - shift,arr[i][1]]);
-				p.event = this.event;
-				result.push(p);
-			}
-		}
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformIntersectGroupUtc
+var rg = rg || {}
+if(!rg.data) rg.data = {}
+if(!rg.data.reportgrid) rg.data.reportgrid = {}
+rg.data.reportgrid.IExecutorReportGrid = $hxClasses["rg.data.reportgrid.IExecutorReportGrid"] = function() { }
+rg.data.reportgrid.IExecutorReportGrid.__name__ = ["rg","data","reportgrid","IExecutorReportGrid"];
+rg.data.reportgrid.IExecutorReportGrid.prototype = {
+	children: null
+	,propertyCount: null
+	,propertySeries: null
+	,propertyMeans: null
+	,propertyStandardDeviations: null
+	,propertyValues: null
+	,propertyValueCount: null
+	,propertyValueSeries: null
+	,searchCount: null
+	,searchSeries: null
+	,intersect: null
+	,histogram: null
+	,__class__: rg.data.reportgrid.IExecutorReportGrid
 }
 var Types = $hxClasses["Types"] = function() { }
 Types.__name__ = ["Types"];
@@ -326,23 +288,6 @@ Types.isPrimitive = function(v) {
 }
 Types.prototype = {
 	__class__: Types
-}
-rg.data.reportgrid.IExecutorReportGrid = $hxClasses["rg.data.reportgrid.IExecutorReportGrid"] = function() { }
-rg.data.reportgrid.IExecutorReportGrid.__name__ = ["rg","data","reportgrid","IExecutorReportGrid"];
-rg.data.reportgrid.IExecutorReportGrid.prototype = {
-	children: null
-	,propertyCount: null
-	,propertySeries: null
-	,propertyMeans: null
-	,propertyStandardDeviations: null
-	,propertyValues: null
-	,propertyValueCount: null
-	,propertyValueSeries: null
-	,searchCount: null
-	,searchSeries: null
-	,intersect: null
-	,histogram: null
-	,__class__: rg.data.reportgrid.IExecutorReportGrid
 }
 if(!thx.culture) thx.culture = {}
 thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
@@ -621,37 +566,118 @@ thx.cultures.EnUS.__super__ = thx.culture.Culture;
 thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 	__class__: thx.cultures.EnUS
 });
-if(!rg.controller) rg.controller = {}
-if(!rg.controller.info) rg.controller.info = {}
-rg.controller.info.Info = $hxClasses["rg.controller.info.Info"] = function() { }
-rg.controller.info.Info.__name__ = ["rg","controller","info","Info"];
-rg.controller.info.Info.feed = function(info,ob) {
-	if(null == ob) return info;
-	var cl = Type.getClass(info), method = Reflect.field(cl,"filters");
-	if(null == method) {
-		Objects.copyTo(ob,info);
-		return info;
-	}
-	var filters = method.apply(cl,[]), value;
-	var _g = 0;
-	while(_g < filters.length) {
-		var filter = filters[_g];
-		++_g;
-		if(Reflect.hasField(ob,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 31, className : "rg.controller.info.Info", methodName : "feed"});
-			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
-			var _g1 = 0;
-			while(_g1 < items.length) {
-				var item = items[_g1];
-				++_g1;
-				info[item.field] = item.value;
-			}
-		}
-	}
-	return info;
+var List = $hxClasses["List"] = function() {
+	this.length = 0;
 }
-rg.controller.info.Info.prototype = {
-	__class__: rg.controller.info.Info
+List.__name__ = ["List"];
+List.prototype = {
+	h: null
+	,q: null
+	,length: null
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,first: function() {
+		return this.h == null?null:this.h[0];
+	}
+	,last: function() {
+		return this.q == null?null:this.q[0];
+	}
+	,pop: function() {
+		if(this.h == null) return null;
+		var x = this.h[0];
+		this.h = this.h[1];
+		if(this.h == null) this.q = null;
+		this.length--;
+		return x;
+	}
+	,isEmpty: function() {
+		return this.h == null;
+	}
+	,clear: function() {
+		this.h = null;
+		this.q = null;
+		this.length = 0;
+	}
+	,remove: function(v) {
+		var prev = null;
+		var l = this.h;
+		while(l != null) {
+			if(l[0] == v) {
+				if(prev == null) this.h = l[1]; else prev[1] = l[1];
+				if(this.q == l) this.q = prev;
+				this.length--;
+				return true;
+			}
+			prev = l;
+			l = l[1];
+		}
+		return false;
+	}
+	,iterator: function() {
+		return { h : this.h, hasNext : function() {
+			return this.h != null;
+		}, next : function() {
+			if(this.h == null) return null;
+			var x = this.h[0];
+			this.h = this.h[1];
+			return x;
+		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		s.b[s.b.length] = "{";
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = ", ";
+			s.add(Std.string(l[0]));
+			l = l[1];
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
+	}
+	,join: function(sep) {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = sep == null?"null":sep;
+			s.add(l[0]);
+			l = l[1];
+		}
+		return s.b.join("");
+	}
+	,filter: function(f) {
+		var l2 = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			if(f(v)) l2.add(v);
+		}
+		return l2;
+	}
+	,map: function(f) {
+		var b = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			b.add(f(v));
+		}
+		return b;
+	}
+	,__class__: List
 }
 if(!thx.json) thx.json = {}
 thx.json.JsonDecoder = $hxClasses["thx.json.JsonDecoder"] = function(handler,tabsize) {
@@ -923,119 +949,6 @@ thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamErro
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
-var List = $hxClasses["List"] = function() {
-	this.length = 0;
-}
-List.__name__ = ["List"];
-List.prototype = {
-	h: null
-	,q: null
-	,length: null
-	,add: function(item) {
-		var x = [item];
-		if(this.h == null) this.h = x; else this.q[1] = x;
-		this.q = x;
-		this.length++;
-	}
-	,push: function(item) {
-		var x = [item,this.h];
-		this.h = x;
-		if(this.q == null) this.q = x;
-		this.length++;
-	}
-	,first: function() {
-		return this.h == null?null:this.h[0];
-	}
-	,last: function() {
-		return this.q == null?null:this.q[0];
-	}
-	,pop: function() {
-		if(this.h == null) return null;
-		var x = this.h[0];
-		this.h = this.h[1];
-		if(this.h == null) this.q = null;
-		this.length--;
-		return x;
-	}
-	,isEmpty: function() {
-		return this.h == null;
-	}
-	,clear: function() {
-		this.h = null;
-		this.q = null;
-		this.length = 0;
-	}
-	,remove: function(v) {
-		var prev = null;
-		var l = this.h;
-		while(l != null) {
-			if(l[0] == v) {
-				if(prev == null) this.h = l[1]; else prev[1] = l[1];
-				if(this.q == l) this.q = prev;
-				this.length--;
-				return true;
-			}
-			prev = l;
-			l = l[1];
-		}
-		return false;
-	}
-	,iterator: function() {
-		return { h : this.h, hasNext : function() {
-			return this.h != null;
-		}, next : function() {
-			if(this.h == null) return null;
-			var x = this.h[0];
-			this.h = this.h[1];
-			return x;
-		}};
-	}
-	,toString: function() {
-		var s = new StringBuf();
-		var first = true;
-		var l = this.h;
-		s.b[s.b.length] = "{";
-		while(l != null) {
-			if(first) first = false; else s.b[s.b.length] = ", ";
-			s.add(Std.string(l[0]));
-			l = l[1];
-		}
-		s.b[s.b.length] = "}";
-		return s.b.join("");
-	}
-	,join: function(sep) {
-		var s = new StringBuf();
-		var first = true;
-		var l = this.h;
-		while(l != null) {
-			if(first) first = false; else s.b[s.b.length] = sep == null?"null":sep;
-			s.add(l[0]);
-			l = l[1];
-		}
-		return s.b.join("");
-	}
-	,filter: function(f) {
-		var l2 = new List();
-		var l = this.h;
-		while(l != null) {
-			var v = l[0];
-			l = l[1];
-			if(f(v)) l2.add(v);
-		}
-		return l2;
-	}
-	,map: function(f) {
-		var b = new List();
-		var l = this.h;
-		while(l != null) {
-			var v = l[0];
-			l = l[1];
-			b.add(f(v));
-		}
-		return b;
-	}
-	,__class__: List
-}
 var Iterables = $hxClasses["Iterables"] = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.count = function(it) {
@@ -1257,158 +1170,6 @@ Ints.compare = function(a,b) {
 Ints.prototype = {
 	__class__: Ints
 }
-rg.controller.info.InfoDataSourceReportGrid = $hxClasses["rg.controller.info.InfoDataSourceReportGrid"] = function() {
-	this.statistic = rg.data.reportgrid.QOperation.Count;
-	this.events = [];
-	this.descending = false;
-	this.limit = 10;
-}
-rg.controller.info.InfoDataSourceReportGrid.__name__ = ["rg","controller","info","InfoDataSourceReportGrid"];
-rg.controller.info.InfoDataSourceReportGrid.filters = function() {
-	return [{ field : "path", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "events", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "periodicity", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "start", validator : rg.controller.info.InfoDataSourceReportGrid.validateDate, filter : function(v) {
-		return [{ field : "start", value : rg.controller.info.InfoDataSourceReportGrid.filterDate(v)}];
-	}},{ field : "end", validator : rg.controller.info.InfoDataSourceReportGrid.validateDate, filter : function(v) {
-		return [{ field : "end", value : rg.controller.info.InfoDataSourceReportGrid.filterDate(v)}];
-	}},{ field : "timezone", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "timeZone", value : v}];
-	}},{ field : "groupby", validator : function(v) {
-		return Std["is"](v,String) && rg.util.Periodicity.isValid(v);
-	}, filter : function(v) {
-		return [{ field : "groupBy", value : v}];
-	}},{ field : "groupfilter", validator : function(v) {
-		return Std["is"](v,String) || Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "groups", value : Std["is"](v,String)?v.split(","):v}];
-	}},{ field : "statistic", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "statistic", value : (function($this) {
-			var $r;
-			switch(("" + v).toLowerCase()) {
-			case "deviation":case "stddeviation":case "standarddeviation":
-				$r = rg.data.reportgrid.QOperation.StandardDeviation;
-				break;
-			case "mean":
-				$r = rg.data.reportgrid.QOperation.Mean;
-				break;
-			default:
-				$r = rg.data.reportgrid.QOperation.Count;
-			}
-			return $r;
-		}(this))}];
-	}},{ field : "tag", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "location", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "identifier", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "parent", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "where", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v) || Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "where", value : Std["is"](v,Array)?v:[v]}];
-	}},{ field : "property", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "properties", value : [v]}];
-	}},{ field : "properties", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "order", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "descending", value : (function($this) {
-			var $r;
-			switch(("" + v).toLowerCase()) {
-			case "ascending":case "asc":
-				$r = false;
-				break;
-			default:
-				$r = true;
-			}
-			return $r;
-		}(this))}];
-	}},{ field : "limit", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null}];
-}
-rg.controller.info.InfoDataSourceReportGrid.validateDate = function(v) {
-	return Std["is"](v,Float) || Std["is"](v,Date) || Std["is"](v,String);
-}
-rg.controller.info.InfoDataSourceReportGrid.filterDate = function(v) {
-	if(null == v) return null;
-	if(Std["is"](v,Float)) return v;
-	if(Std["is"](v,Date)) return ((function($this) {
-		var $r;
-		var $t = v;
-		if(Std["is"]($t,Date)) $t; else throw "Class cast error";
-		$r = $t;
-		return $r;
-	}(this))).getTime();
-	if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime();
-	return (function($this) {
-		var $r;
-		throw new thx.error.Error("invalid date '{0}' for start or end",[v],null,{ fileName : "InfoDataSourceReportGrid.hx", lineNumber : 174, className : "rg.controller.info.InfoDataSourceReportGrid", methodName : "filterDate"});
-		return $r;
-	}(this));
-}
-rg.controller.info.InfoDataSourceReportGrid.prototype = {
-	path: null
-	,events: null
-	,statistic: null
-	,groupBy: null
-	,timeZone: null
-	,groups: null
-	,periodicity: null
-	,start: null
-	,end: null
-	,tag: null
-	,location: null
-	,identifier: null
-	,parent: null
-	,where: null
-	,properties: null
-	,descending: null
-	,limit: null
-	,__class__: rg.controller.info.InfoDataSourceReportGrid
-}
-rg.data.ITickmark = $hxClasses["rg.data.ITickmark"] = function() { }
-rg.data.ITickmark.__name__ = ["rg","data","ITickmark"];
-rg.data.ITickmark.prototype = {
-	delta: null
-	,major: null
-	,value: null
-	,label: null
-	,__class__: rg.data.ITickmark
-	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
-}
-rg.data.IAxis = $hxClasses["rg.data.IAxis"] = function() { }
-rg.data.IAxis.__name__ = ["rg","data","IAxis"];
-rg.data.IAxis.prototype = {
-	scale: null
-	,ticks: null
-	,max: null
-	,min: null
-	,createStats: null
-	,__class__: rg.data.IAxis
-}
-rg.data.IAxisDiscrete = $hxClasses["rg.data.IAxisDiscrete"] = function() { }
-rg.data.IAxisDiscrete.__name__ = ["rg","data","IAxisDiscrete"];
-rg.data.IAxisDiscrete.__interfaces__ = [rg.data.IAxis];
-rg.data.IAxisDiscrete.prototype = {
-	scaleDistribution: null
-	,range: null
-	,__class__: rg.data.IAxisDiscrete
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
-}
 var Dynamics = $hxClasses["Dynamics"] = function() { }
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
@@ -1433,10 +1194,12 @@ Dynamics.formatf = function(param,params,nullstring,culture) {
 			break;
 		case 4:
 			return Objects.format(v,param,params,culture);
+		case 5:
+			return "function()";
 		default:
 			return (function($this) {
 				var $r;
-				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 42, className : "Dynamics", methodName : "formatf"});
+				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 44, className : "Dynamics", methodName : "formatf"});
 				return $r;
 			}(this));
 		}
@@ -1448,7 +1211,7 @@ Dynamics.interpolate = function(v,a,b,equation) {
 Dynamics.interpolatef = function(a,b,equation) {
 	var ta = Type["typeof"](a);
 	var tb = Type["typeof"](b);
-	if(!((Std["is"](a,Float) || Std["is"](a,Int)) && (Std["is"](b,Float) || Std["is"](b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 57, className : "Dynamics", methodName : "interpolatef"});
+	if(!((Std["is"](a,Float) || Std["is"](a,Int)) && (Std["is"](b,Float) || Std["is"](b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 59, className : "Dynamics", methodName : "interpolatef"});
 	var $e = (ta);
 	switch( $e[1] ) {
 	case 0:
@@ -1473,11 +1236,11 @@ Dynamics.interpolatef = function(a,b,equation) {
 		case "Date":
 			return Dates.interpolatef(a,b,equation);
 		default:
-			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 75, className : "Dynamics", methodName : "interpolatef"});
+			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 77, className : "Dynamics", methodName : "interpolatef"});
 		}
 		break;
 	default:
-		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 77, className : "Dynamics", methodName : "interpolatef"});
+		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 79, className : "Dynamics", methodName : "interpolatef"});
 	}
 }
 Dynamics.string = function(v) {
@@ -1527,7 +1290,7 @@ Dynamics.string = function(v) {
 	}
 }
 Dynamics.compare = function(a,b) {
-	if(!Types.sameType(a,b)) throw new thx.error.Error("cannot compare 2 different types",null,null,{ fileName : "Dynamics.hx", lineNumber : 129, className : "Dynamics", methodName : "compare"});
+	if(!Types.sameType(a,b)) throw new thx.error.Error("cannot compare 2 different types",null,null,{ fileName : "Dynamics.hx", lineNumber : 131, className : "Dynamics", methodName : "compare"});
 	if(null == a && null == b) return 0;
 	if(null == a) return -1;
 	if(null == b) return 1;
@@ -1596,7 +1359,8 @@ Dynamics.comparef = function(sample) {
 		return Dynamics.compare;
 	}
 }
-Dynamics.clone = function(v) {
+Dynamics.clone = function(v,cloneInstances) {
+	if(cloneInstances == null) cloneInstances = false;
 	var $e = (Type["typeof"](v));
 	switch( $e[1] ) {
 	case 0:
@@ -1628,14 +1392,16 @@ Dynamics.clone = function(v) {
 		case "String":case "Date":
 			return v;
 		default:
-			var o = Type.createEmptyInstance(c);
-			var _g = 0, _g1 = Reflect.fields(v);
-			while(_g < _g1.length) {
-				var field = _g1[_g];
-				++_g;
-				o[field] = Dynamics.clone(Reflect.field(v,field));
-			}
-			return o;
+			if(cloneInstances) {
+				var o = Type.createEmptyInstance(c);
+				var _g = 0, _g1 = Reflect.fields(v);
+				while(_g < _g1.length) {
+					var field = _g1[_g];
+					++_g;
+					o[field] = Dynamics.clone(Reflect.field(v,field));
+				}
+				return o;
+			} else return v;
 		}
 		break;
 	}
@@ -1753,7 +1519,7 @@ Dynamics.same = function(a,b) {
 	}
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 364, className : "Dynamics", methodName : "same"});
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 371, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
 }
@@ -1807,27 +1573,6 @@ thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
 	}
 	,__class__: thx.color.Cmyk
 });
-rg.controller.info.InfoCallback = $hxClasses["rg.controller.info.InfoCallback"] = function() {
-	this.handler = function(_) {
-	};
-}
-rg.controller.info.InfoCallback.__name__ = ["rg","controller","info","InfoCallback"];
-rg.controller.info.InfoCallback.filters = function() {
-	return [{ field : "callback", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "handler", value : v}];
-	}}];
-}
-rg.controller.info.InfoCallback.prototype = {
-	handler: null
-	,__class__: rg.controller.info.InfoCallback
-}
-var hxevents = hxevents || {}
-hxevents.EventException = $hxClasses["hxevents.EventException"] = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
-hxevents.EventException.StopPropagation = ["StopPropagation",0];
-hxevents.EventException.StopPropagation.toString = $estr;
-hxevents.EventException.StopPropagation.__enum__ = hxevents.EventException;
 var Iterators = $hxClasses["Iterators"] = function() { }
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
@@ -1970,32 +1715,6 @@ thx.json.Json.decode = function(value) {
 thx.json.Json.prototype = {
 	__class__: thx.json.Json
 }
-rg.data.reportgrid.transform.TransformTimeSeries = $hxClasses["rg.data.reportgrid.transform.TransformTimeSeries"] = function(properties,event,periodicity,unit) {
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.event = event;
-}
-rg.data.reportgrid.transform.TransformTimeSeries.__name__ = ["rg","data","reportgrid","transform","TransformTimeSeries"];
-rg.data.reportgrid.transform.TransformTimeSeries.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformTimeSeries.snapTimestamp = function(periodicity,value) {
-	return periodicity != "minute" && periodicity != "hour"?Dates.snap(value,periodicity):value;
-}
-rg.data.reportgrid.transform.TransformTimeSeries.prototype = {
-	properties: null
-	,unit: null
-	,periodicity: null
-	,event: null
-	,transform: function(data) {
-		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
-		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),["." + "time:" + periodicity,unit,"event"],[rg.data.reportgrid.transform.TransformTimeSeries.snapTimestamp(periodicity,d[0].timestamp),d[1],event]);
-			return p;
-		});
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformTimeSeries
-}
 thx.culture.FormatParams = $hxClasses["thx.culture.FormatParams"] = function() { }
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
@@ -2016,30 +1735,6 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 }
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
-}
-if(!rg.util) rg.util = {}
-rg.util.Properties = $hxClasses["rg.util.Properties"] = function() { }
-rg.util.Properties.__name__ = ["rg","util","Properties"];
-rg.util.Properties.isTime = function(s) {
-	return s.indexOf("time:") >= 0;
-}
-rg.util.Properties.periodicity = function(s) {
-	return s.substr(s.indexOf("time:") + "time:".length);
-}
-rg.util.Properties.timeProperty = function(periodicity) {
-	return "." + "time:" + periodicity;
-}
-rg.util.Properties.humanize = function(s) {
-	return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(s,"."),"."));
-}
-rg.util.Properties.formatValue = function(type,dp) {
-	var value = Reflect.field(dp,type);
-	if(null == value) return value;
-	if(type.indexOf("time:") >= 0) return rg.util.Periodicity.format(type.substr(type.indexOf("time:") + "time:".length),value);
-	return rg.util.RGStrings.humanize(value);
-}
-rg.util.Properties.prototype = {
-	__class__: rg.util.Properties
 }
 var Reflect = $hxClasses["Reflect"] = function() { }
 Reflect.__name__ = ["Reflect"];
@@ -2137,109 +1832,6 @@ Reflect.makeVarArgs = function(f) {
 }
 Reflect.prototype = {
 	__class__: Reflect
-}
-if(!thx.collection) thx.collection = {}
-thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
-	this.length = 0;
-	this.__keys = [];
-	this.__hash = new Hash();
-}
-thx.collection.HashList.__name__ = ["thx","collection","HashList"];
-thx.collection.HashList.prototype = {
-	length: null
-	,set: function(key,value) {
-		if(!this.__hash.exists(key)) {
-			this.__keys.push(key);
-			this.length++;
-		}
-		this.__hash.set(key,value);
-	}
-	,setAt: function(index,key,value) {
-		this.remove(key);
-		this.__keys.insert(index,key);
-		this.__hash.set(key,value);
-		this.length++;
-	}
-	,get: function(key) {
-		return this.__hash.get(key);
-	}
-	,getAt: function(index) {
-		return this.__hash.get(this.__keys[index]);
-	}
-	,indexOf: function(key) {
-		if(!this.__hash.exists(key)) return -1;
-		var _g1 = 0, _g = this.__keys.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(this.__keys[i] == key) return i;
-		}
-		return (function($this) {
-			var $r;
-			throw "this should never happen";
-			return $r;
-		}(this));
-	}
-	,exists: function(key) {
-		return this.__hash.exists(key);
-	}
-	,remove: function(key) {
-		var item = this.__hash.get(key);
-		if(item == null) return null;
-		this.__hash.remove(key);
-		this.__keys.remove(key);
-		this.length--;
-		return item;
-	}
-	,removeAt: function(index) {
-		var key = this.__keys[index];
-		if(key == null) return null;
-		var item = this.__hash.get(key);
-		this.__hash.remove(key);
-		this.__keys.remove(key);
-		this.length--;
-		return item;
-	}
-	,keyAt: function(index) {
-		return this.__keys[index];
-	}
-	,keys: function() {
-		return this.__keys.iterator();
-	}
-	,iterator: function() {
-		return this.array().iterator();
-	}
-	,clear: function() {
-		this.__hash = new Hash();
-		this.__keys = [];
-		this.length = 0;
-	}
-	,array: function() {
-		var values = [];
-		var _g = 0, _g1 = this.__keys;
-		while(_g < _g1.length) {
-			var k = _g1[_g];
-			++_g;
-			values.push(this.__hash.get(k));
-		}
-		return values;
-	}
-	,toString: function() {
-		var s = new StringBuf();
-		s.b[s.b.length] = "{";
-		var it = this.keys();
-		while( it.hasNext() ) {
-			var i = it.next();
-			s.b[s.b.length] = i == null?"null":i;
-			s.b[s.b.length] = " => ";
-			s.add(Std.string(this.get(i)));
-			if(it.hasNext()) s.b[s.b.length] = ", ";
-		}
-		s.b[s.b.length] = "}";
-		return s.b.join("");
-	}
-	,__keys: null
-	,__hash: null
-	,__class__: thx.collection.HashList
 }
 if(!thx.util) thx.util = {}
 thx.util.MacroVersion = $hxClasses["thx.util.MacroVersion"] = function() { }
@@ -2507,51 +2099,9 @@ IntIter.prototype = {
 	}
 	,__class__: IntIter
 }
-if(!rg.controller.factory) rg.controller.factory = {}
-rg.controller.factory.FactoryDataSourceReportGrid = $hxClasses["rg.controller.factory.FactoryDataSourceReportGrid"] = function(executor) {
-	this.executor = executor;
-}
-rg.controller.factory.FactoryDataSourceReportGrid.__name__ = ["rg","controller","factory","FactoryDataSourceReportGrid"];
-rg.controller.factory.FactoryDataSourceReportGrid.prototype = {
-	executor: null
-	,create: function(info) {
-		if(null != info.path && info.events.length > 0 && null != info.identifier && null != info.parent) {
-			var results = [];
-			var _g = 0, _g1 = info.events;
-			while(_g < _g1.length) {
-				var event = _g1[_g];
-				++_g;
-				results.push(this.createFromGraph(info.path,event,info.identifier,info.parent,info.where,info.start,info.end));
-			}
-			return results;
-		}
-		if(null != info.path && info.events.length > 0) {
-			var results = [];
-			var _g = 0, _g1 = info.events;
-			while(_g < _g1.length) {
-				var event = _g1[_g];
-				++_g;
-				results.push(this.createFromQuery(info.path,event,info.properties,info.where,info.statistic,info.tag,info.location,info.groupBy,info.timeZone,info.periodicity,info.start,info.end,info.limit,info.descending));
-			}
-			return results;
-		}
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("not enough information have been passed for the query to work",null,null,{ fileName : "FactoryDataSourceReportGrid.hx", lineNumber : 41, className : "rg.controller.factory.FactoryDataSourceReportGrid", methodName : "create"});
-			return $r;
-		}(this));
-	}
-	,createFromQuery: function(path,event,properties,where,statistic,tag,location,groupby,timeZone,periodicity,start,end,limit,descending) {
-		return new rg.data.reportgrid.DataSourceReportGrid(this.executor,path,event,properties,where,statistic,tag,location,groupby,timeZone,periodicity,start,end,limit,descending);
-	}
-	,createFromGraph: function(path,event,idproperty,parentproperty,whereConditions,start,end) {
-		return new rg.data.reportgrid.DataSourceReportGridGraph(this.executor,path,event,idproperty,parentproperty,whereConditions,start,end);
-	}
-	,__class__: rg.controller.factory.FactoryDataSourceReportGrid
-}
-rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(delegate,_first) {
+rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(delegate,first) {
 	this._delegate = delegate;
-	this._first = _first;
+	this._first = first;
 }
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.delegateTransform = function(t) {
@@ -2680,8 +2230,8 @@ rg.query.BaseQuery.prototype = {
 	}
 	,__class__: rg.query.BaseQuery
 }
-rg.query.ReportGridBaseQuery = $hxClasses["rg.query.ReportGridBaseQuery"] = function(delegate,_first) {
-	rg.query.BaseQuery.call(this,delegate,_first);
+rg.query.ReportGridBaseQuery = $hxClasses["rg.query.ReportGridBaseQuery"] = function(delegate,first) {
+	rg.query.BaseQuery.call(this,delegate,first);
 }
 rg.query.ReportGridBaseQuery.__name__ = ["rg","query","ReportGridBaseQuery"];
 rg.query.ReportGridBaseQuery._defaultOptions = function(params,options) {
@@ -2744,7 +2294,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 410, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 415, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,handler) {
 	return function(data) {
@@ -2891,7 +2441,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
-			haxe.Log.trace(options,{ fileName : "ReportGridQuery.hx", lineNumber : 257, className : "rg.query.ReportGridBaseQuery", methodName : "histogram"});
+			haxe.Log.trace(options,{ fileName : "ReportGridQuery.hx", lineNumber : 262, className : "rg.query.ReportGridBaseQuery", methodName : "histogram"});
 			if(null != params.top) {
 				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
 				options.top = params.top;
@@ -2949,141 +2499,6 @@ rg.query.ReportGridQuery.prototype = $extend(rg.query.ReportGridBaseQuery.protot
 	}
 	,__class__: rg.query.ReportGridQuery
 });
-rg.data.Variable = $hxClasses["rg.data.Variable"] = function(type,scaleDistribution) {
-	this.type = type;
-	this.scaleDistribution = scaleDistribution;
-	this.meta = { };
-}
-rg.data.Variable.__name__ = ["rg","data","Variable"];
-rg.data.Variable.prototype = {
-	type: null
-	,scaleDistribution: null
-	,axis: null
-	,stats: null
-	,meta: null
-	,minf: null
-	,maxf: null
-	,setAxis: function(axis) {
-		this.axis = axis;
-		if(null != axis) this.stats = axis.createStats(this.type); else this.stats = null;
-	}
-	,min: function() {
-		return (this.getMinF())(this.stats,this.meta);
-	}
-	,max: function() {
-		return (this.getMaxF())(this.stats,this.meta);
-	}
-	,setMinF: function(f) {
-		return this.minf = f;
-	}
-	,setMaxF: function(f) {
-		return this.maxf = f;
-	}
-	,getMinF: function() {
-		if(null == this.minf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 48, className : "rg.data.Variable", methodName : "getMinF"});
-			this.setMinF(($_=this.axis,$_.min.$bind($_)));
-		}
-		return this.minf;
-	}
-	,getMaxF: function() {
-		if(null == this.maxf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 59, className : "rg.data.Variable", methodName : "getMaxF"});
-			this.setMaxF(($_=this.axis,$_.max.$bind($_)));
-		}
-		return this.maxf;
-	}
-	,__class__: rg.data.Variable
-	,__properties__: {set_maxf:"setMaxF",get_maxf:"getMaxF",set_minf:"setMinF",get_minf:"getMinF"}
-}
-rg.data.VariableIndependent = $hxClasses["rg.data.VariableIndependent"] = function(type,scaleDistribution) {
-	rg.data.Variable.call(this,type,scaleDistribution);
-}
-rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
-rg.data.VariableIndependent.__super__ = rg.data.Variable;
-rg.data.VariableIndependent.prototype = $extend(rg.data.Variable.prototype,{
-	__class__: rg.data.VariableIndependent
-});
-rg.util.DataPoints = $hxClasses["rg.util.DataPoints"] = function() { }
-rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
-rg.util.DataPoints.partition = function(dps,property,def) {
-	if(def == null) def = "default";
-	var map = new thx.collection.HashList();
-	var getBucket = function(n) {
-		var bucket = map.get(n);
-		if(null == bucket) {
-			bucket = [];
-			map.set(n,bucket);
-		}
-		return bucket;
-	};
-	var v, name, bucket;
-	var _g = 0;
-	while(_g < dps.length) {
-		var dp = dps[_g];
-		++_g;
-		v = Reflect.field(dp,property);
-		if(null == v) name = def; else name = Dynamics.string(v);
-		getBucket(name).push(dp);
-	}
-	return map.array();
-}
-rg.util.DataPoints.filterByIndependents = function(dps,variables) {
-	var _g = 0;
-	while(_g < variables.length) {
-		var variable = [variables[_g]];
-		++_g;
-		var values = [variable[0].axis.range(variable[0].min(),variable[0].max())];
-		dps = Arrays.filter(dps,(function(values,variable) {
-			return function(dp) {
-				var v = Reflect.field(dp,variable[0].type);
-				if(null == v) return false;
-				return Arrays.exists(values[0],v);
-			};
-		})(values,variable));
-	}
-	return dps;
-}
-rg.util.DataPoints.filterByDependents = function(dps,variables) {
-	var _g = 0;
-	while(_g < variables.length) {
-		var variable = [variables[_g]];
-		++_g;
-		dps = Arrays.filter(dps,(function(variable) {
-			return function(dp) {
-				if(null == Reflect.field(dp,variable[0].type)) return false; else return true;
-			};
-		})(variable));
-	}
-	return dps;
-}
-rg.util.DataPoints.value = function(dp,property) {
-	return Reflect.field(dp,property);
-}
-rg.util.DataPoints.valueAlt = function(dp,property,alt) {
-	var v;
-	return null == (v = Reflect.field(dp,property))?alt:v;
-}
-rg.util.DataPoints.values = function(dps,property) {
-	return Arrays.filter(dps.map(function(dp,_) {
-		return Reflect.field(dp,property);
-	}),function(d) {
-		return d != null;
-	});
-}
-rg.util.DataPoints.id = function(dp,dependentProperties) {
-	var cdp = Objects.clone(dp);
-	var _g = 0;
-	while(_g < dependentProperties.length) {
-		var p = dependentProperties[_g];
-		++_g;
-		Reflect.deleteField(cdp,p);
-	}
-	return haxe.Md5.encode(Dynamics.string(cdp));
-}
-rg.util.DataPoints.prototype = {
-	__class__: rg.util.DataPoints
-}
 var Dates = $hxClasses["Dates"] = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
@@ -3542,64 +2957,6 @@ thx.date.DateParser.plusPm = function(s) {
 thx.date.DateParser.prototype = {
 	__class__: thx.date.DateParser
 }
-rg.util.RGStrings = $hxClasses["rg.util.RGStrings"] = function() { }
-rg.util.RGStrings.__name__ = ["rg","util","RGStrings"];
-rg.util.RGStrings.humanize = function(d) {
-	if(Std["is"](d,Int)) return Ints.format(d);
-	if(Std["is"](d,Float)) return Floats.format(d);
-	var s = Std.string(d);
-	if(rg.util.RGStrings.range.match(s)) {
-		var v1 = rg.util.RGStrings.range.matched(1), v2 = rg.util.RGStrings.range.matched(2);
-		if(null != v1) v1 = Ints.canParse(v1)?Ints.format(Ints.parse(v1)):Floats.format(Floats.parse(v1)); else v1 = "";
-		if(null != v2) v2 = Ints.canParse(v2)?Ints.format(Ints.parse(v2)):Floats.format(Floats.parse(v2)); else v2 = "";
-		return rg.util.RGStrings.hstring(rg.util.RGStrings.range.matchedLeft()) + v1 + "-" + v2 + rg.util.RGStrings.hstring(rg.util.RGStrings.range.matchedRight());
-	} else return rg.util.RGStrings.hstring(s);
-}
-rg.util.RGStrings.hstring = function(s) {
-	return Strings.ucwords(Strings.humanize(s));
-}
-rg.util.RGStrings.prototype = {
-	__class__: rg.util.RGStrings
-}
-rg.data.reportgrid.transform.TransformIntersectGroup = $hxClasses["rg.data.reportgrid.transform.TransformIntersectGroup"] = function(properties,fields,event,periodicity,unit) {
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.reportgrid.transform.TransformIntersectGroup.__name__ = ["rg","data","reportgrid","transform","TransformIntersectGroup"];
-rg.data.reportgrid.transform.TransformIntersectGroup.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformIntersectGroup.prototype = {
-	properties: null
-	,unit: null
-	,periodicity: null
-	,groupby: null
-	,fields: null
-	,event: null
-	,transform: function(data) {
-		var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-		if(null == items || 0 == items.length) return [];
-		var result = [];
-		var _g = 0;
-		while(_g < items.length) {
-			var item = items[_g];
-			++_g;
-			var arr = item.value;
-			var _g2 = 0, _g1 = arr.length;
-			while(_g2 < _g1) {
-				var i = _g2++;
-				var p = Dynamics.clone(properties);
-				Objects.addFields(p,this.fields,item.fields.map(rg.data.reportgrid.transform.Transforms.typedValue));
-				Objects.addFields(p,["." + "time:" + this.periodicity,unit],[Reflect.field(arr[i][0],this.periodicity),arr[i][1]]);
-				p.event = this.event;
-				result.push(p);
-			}
-		}
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformIntersectGroup
-}
 var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -4033,6 +3390,16 @@ haxe.Timer.prototype = {
 	}
 	,__class__: haxe.Timer
 }
+if(!thx.translation) thx.translation = {}
+thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
+thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
+thx.translation.ITranslation.prototype = {
+	domain: null
+	,_: null
+	,__: null
+	,__class__: thx.translation.ITranslation
+	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
+}
 rg.query.ReportGridTransformers = $hxClasses["rg.query.ReportGridTransformers"] = function() { }
 rg.query.ReportGridTransformers.__name__ = ["rg","query","ReportGridTransformers"];
 rg.query.ReportGridTransformers.childrenPath = function(arr,params) {
@@ -4185,12 +3552,15 @@ rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy = function(ob,
 	}));
 }
 rg.query.ReportGridTransformers.propertyValueCount = function(count,params) {
-	return [{ path : params.path, event : params.event, property : params.property, value : params.value, count : count}];
+	var ob = { path : params.path, event : params.event, count : count};
+	ob[params.property] = params.value;
+	return [ob];
 }
 rg.query.ReportGridTransformers.propertyValueCountTag = function(counts,params) {
 	var path = params.path, event = params.event, property = params.property, value = params.value, tag = params.tag;
 	return Objects.map(counts,function(key,count) {
-		var o = { path : path, event : event, value : value, property : property, count : count};
+		var o = { path : path, event : event, count : count};
+		o[params.property] = params.value;
 		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 		return o;
 	});
@@ -4201,7 +3571,8 @@ rg.query.ReportGridTransformers.propertyValueSeries = function(values,params) {
 	while(_g < values.length) {
 		var item = values[_g];
 		++_g;
-		var o = { path : path, event : event, property : property, count : item[1], value : value};
+		var o = { path : path, event : event, count : item[1]};
+		o[property] = value;
 		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 		result.push(o);
 	}
@@ -4215,7 +3586,8 @@ rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy = function(ob,pa
 		while(_g < values.length) {
 			var item = values[_g];
 			++_g;
-			var o = { path : path, event : event, property : property, count : item[1], value : value};
+			var o = { path : path, event : event, count : item[1]};
+			ob[property] = value;
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
 			result.push(o);
@@ -4246,16 +3618,6 @@ rg.query.ReportGridTransformers._trimPrefix = function(v) {
 }
 rg.query.ReportGridTransformers.prototype = {
 	__class__: rg.query.ReportGridTransformers
-}
-if(!thx.translation) thx.translation = {}
-thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
-thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
-thx.translation.ITranslation.prototype = {
-	domain: null
-	,_: null
-	,__: null
-	,__class__: thx.translation.ITranslation
-	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
 var IntHash = $hxClasses["IntHash"] = function() {
 	this.h = {}
@@ -4310,86 +3672,6 @@ IntHash.prototype = {
 	}
 	,__class__: IntHash
 }
-rg.data.reportgrid.IDataSource = $hxClasses["rg.data.reportgrid.IDataSource"] = function() { }
-rg.data.reportgrid.IDataSource.__name__ = ["rg","data","reportgrid","IDataSource"];
-rg.data.reportgrid.IDataSource.prototype = {
-	onLoad: null
-	,load: null
-	,__class__: rg.data.reportgrid.IDataSource
-}
-rg.data.Stats = $hxClasses["rg.data.Stats"] = function(type,sortf) {
-	this.type = type;
-	this.sortf = sortf;
-	this.reset();
-}
-rg.data.Stats.__name__ = ["rg","data","Stats"];
-rg.data.Stats.prototype = {
-	min: null
-	,max: null
-	,count: null
-	,values: null
-	,sortf: null
-	,type: null
-	,reset: function() {
-		this.min = null;
-		this.max = null;
-		this.count = 0;
-		this.values = [];
-		return this;
-	}
-	,add: function(v) {
-		this.count++;
-		if(Arrays.exists(this.values,v)) return this;
-		this.values.push(v);
-		if(null != this.sortf) this.values.sort(this.sortf);
-		this.min = this.values[0];
-		this.max = Arrays.last(this.values);
-		return this;
-	}
-	,addMany: function(it) {
-		var $it0 = it.iterator();
-		while( $it0.hasNext() ) {
-			var v = $it0.next();
-			this.count++;
-			if(Arrays.exists(this.values,v)) continue;
-			this.values.push(v);
-		}
-		if(null != this.sortf) this.values.sort(this.sortf);
-		this.min = this.values[0];
-		this.max = Arrays.last(this.values);
-		return this;
-	}
-	,__class__: rg.data.Stats
-}
-rg.data.StatsNumeric = $hxClasses["rg.data.StatsNumeric"] = function(type,sortf) {
-	if(null == sortf) sortf = Floats.compare;
-	rg.data.Stats.call(this,type,sortf);
-}
-rg.data.StatsNumeric.__name__ = ["rg","data","StatsNumeric"];
-rg.data.StatsNumeric.__super__ = rg.data.Stats;
-rg.data.StatsNumeric.prototype = $extend(rg.data.Stats.prototype,{
-	tot: null
-	,reset: function() {
-		rg.data.Stats.prototype.reset.call(this);
-		this.tot = 0.0;
-		return this;
-	}
-	,add: function(v) {
-		rg.data.Stats.prototype.add.call(this,v);
-		this.tot += v;
-		return this;
-	}
-	,addMany: function(it) {
-		rg.data.Stats.prototype.addMany.call(this,it);
-		var $it0 = it.iterator();
-		while( $it0.hasNext() ) {
-			var v = $it0.next();
-			this.tot += v;
-		}
-		return this;
-	}
-	,__class__: rg.data.StatsNumeric
-});
 thx.color.NamedColors = $hxClasses["thx.color.NamedColors"] = function() { }
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
 thx.color.NamedColors.aliceblue = null;
@@ -4543,81 +3825,18 @@ thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype = {
 	__class__: thx.color.NamedColors
 }
-if(!thx.error) thx.error = {}
-thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
-	thx.util.Message.call(this,message,params,param);
-	this.pos = pos;
-}
-thx.error.Error.__name__ = ["thx","error","Error"];
-thx.error.Error.__super__ = thx.util.Message;
-thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
-	pos: null
-	,inner: null
-	,setInner: function(inner) {
-		this.inner = inner;
-		return this;
-	}
-	,toStringError: function(pattern) {
-		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
-		return prefix + this.toString();
-	}
-	,toString: function() {
-		try {
-			return Strings.format(this.message,this.params);
-		} catch( e ) {
-			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
-			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 42, className : "thx.error.Error", methodName : "toString"});
-			return "";
-		}
-	}
-	,__class__: thx.error.Error
-});
-thx.error.AbstractMethod = $hxClasses["thx.error.AbstractMethod"] = function(posInfo) {
-	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 14, className : "thx.error.AbstractMethod", methodName : "new"});
-}
-thx.error.AbstractMethod.__name__ = ["thx","error","AbstractMethod"];
-thx.error.AbstractMethod.__super__ = thx.error.Error;
-thx.error.AbstractMethod.prototype = $extend(thx.error.Error.prototype,{
-	__class__: thx.error.AbstractMethod
-});
 if(!rg.app) rg.app = {}
 if(!rg.app.query) rg.app.query = {}
-rg.app.query.App = $hxClasses["rg.app.query.App"] = function(executor) {
-	this.executor = executor;
-}
-rg.app.query.App.__name__ = ["rg","app","query","App"];
-rg.app.query.App.prototype = {
-	executor: null
-	,query: function(options,handler) {
-		var datasources = new rg.controller.factory.FactoryDataSourceReportGrid(this.executor).create(rg.controller.info.Info.feed(new rg.controller.info.InfoDataSourceReportGrid(),options)), len = datasources.length, dps = [], count = 0;
-		var complete = function(dp) {
-			count++;
-			dps = dps.concat(dp);
-			if(count == len) {
-				handler(dps);
-				rg.controller.info.Info.feed(new rg.controller.info.InfoCallback(),options).handler(dps);
-			}
-		};
-		var _g = 0;
-		while(_g < datasources.length) {
-			var datasource = datasources[_g];
-			++_g;
-			datasource.onLoad.add(complete);
-			datasource.load();
-		}
-	}
-	,__class__: rg.app.query.App
-}
 rg.app.query.JSBridge = $hxClasses["rg.app.query.JSBridge"] = function() { }
 rg.app.query.JSBridge.__name__ = ["rg","app","query","JSBridge"];
 rg.app.query.JSBridge.main = function() {
-	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r), app = new rg.app.query.App(executor);
+	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r);
 	r.query = rg.query.ReportGridQuery.create(executor);
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.786"};
+	r.info.query = { version : "1.0.0.818"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
-		rand = new thx.math.Random(666);
+		rand = new thx.math.Random(s);
 	}, random : function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
@@ -4627,56 +3846,6 @@ rg.app.query.JSBridge.opt = function(ob) {
 }
 rg.app.query.JSBridge.prototype = {
 	__class__: rg.app.query.JSBridge
-}
-rg.data.reportgrid.transform.TransformTagCount = $hxClasses["rg.data.reportgrid.transform.TransformTagCount"] = function(properties,event,unit,tag) {
-	this.properties = properties;
-	this.unit = unit;
-	this.event = event;
-	this.tag = tag;
-}
-rg.data.reportgrid.transform.TransformTagCount.__name__ = ["rg","data","reportgrid","transform","TransformTagCount"];
-rg.data.reportgrid.transform.TransformTagCount.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformTagCount.prototype = {
-	properties: null
-	,unit: null
-	,event: null
-	,tag: null
-	,transform: function(data) {
-		var result = [], dp, value;
-		var _g = 0, _g1 = Reflect.fields(data);
-		while(_g < _g1.length) {
-			var field = _g1[_g];
-			++_g;
-			value = Reflect.field(data,field);
-			dp = { event : this.event};
-			Objects.copyTo(this.properties,dp);
-			Objects.addField(dp,this.unit,value);
-			Objects.addField(dp,this.tag,Strings.rtrim(Strings.ltrim(field,"/"),"/"));
-			result.push(dp);
-		}
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformTagCount
-}
-var StringBuf = $hxClasses["StringBuf"] = function() {
-	this.b = new Array();
-}
-StringBuf.__name__ = ["StringBuf"];
-StringBuf.prototype = {
-	add: function(x) {
-		this.b[this.b.length] = x == null?"null":x;
-	}
-	,addSub: function(s,pos,len) {
-		this.b[this.b.length] = s.substr(pos,len);
-	}
-	,addChar: function(c) {
-		this.b[this.b.length] = String.fromCharCode(c);
-	}
-	,toString: function() {
-		return this.b.join("");
-	}
-	,b: null
-	,__class__: StringBuf
 }
 var Strings = $hxClasses["Strings"] = function() { }
 Strings.__name__ = ["Strings"];
@@ -5019,6 +4188,27 @@ Strings.compare = function(a,b) {
 Strings.prototype = {
 	__class__: Strings
 }
+var StringBuf = $hxClasses["StringBuf"] = function() {
+	this.b = new Array();
+}
+StringBuf.__name__ = ["StringBuf"];
+StringBuf.prototype = {
+	add: function(x) {
+		this.b[this.b.length] = x == null?"null":x;
+	}
+	,addSub: function(s,pos,len) {
+		this.b[this.b.length] = s.substr(pos,len);
+	}
+	,addChar: function(c) {
+		this.b[this.b.length] = String.fromCharCode(c);
+	}
+	,toString: function() {
+		return this.b.join("");
+	}
+	,b: null
+	,__class__: StringBuf
+}
+if(!rg.util) rg.util = {}
 rg.util.Periodicity = $hxClasses["rg.util.Periodicity"] = function() { }
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.defaultPeriodicity = function(span) {
@@ -5388,51 +4578,35 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 rg.util.Periodicity.prototype = {
 	__class__: rg.util.Periodicity
 }
-rg.data.reportgrid.transform.TransformTimeSeriesValues = $hxClasses["rg.data.reportgrid.transform.TransformTimeSeriesValues"] = function(properties,event,periodicity,unit,unitvalue) {
-	if(unitvalue == null) unitvalue = "value";
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.event = event;
-	this.unitvalue = unitvalue;
+if(!thx.error) thx.error = {}
+thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
+	thx.util.Message.call(this,message,params,param);
+	this.pos = pos;
 }
-rg.data.reportgrid.transform.TransformTimeSeriesValues.__name__ = ["rg","data","reportgrid","transform","TransformTimeSeriesValues"];
-rg.data.reportgrid.transform.TransformTimeSeriesValues.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformTimeSeriesValues.prototype = {
-	properties: null
-	,unit: null
-	,periodicity: null
-	,event: null
-	,unitvalue: null
-	,transform: function(data) {
-		var me = this;
-		var properties = this.properties, unit = this.unit, event = this.event, periodicity = this.periodicity;
-		var result = data.map(function(d,_) {
-			var p = Objects.addFields(Dynamics.clone(properties),["." + "time:" + periodicity,unit,"event",me.unitvalue],[rg.data.reportgrid.transform.TransformTimeSeries.snapTimestamp(periodicity,d.count[0].timestamp),d.count[1],event,d.value]);
-			return p;
-		});
-		return result;
+thx.error.Error.__name__ = ["thx","error","Error"];
+thx.error.Error.__super__ = thx.util.Message;
+thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
+	pos: null
+	,inner: null
+	,setInner: function(inner) {
+		this.inner = inner;
+		return this;
 	}
-	,__class__: rg.data.reportgrid.transform.TransformTimeSeriesValues
-}
-var Function = $hxClasses["Function"] = function() { }
-Function.__name__ = ["Function"];
-Function.prototype = {
-	__class__: Function
-}
-rg.data.ScaleDistribution = $hxClasses["rg.data.ScaleDistribution"] = { __ename__ : ["rg","data","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
-rg.data.ScaleDistribution.ScaleFit = ["ScaleFit",0];
-rg.data.ScaleDistribution.ScaleFit.toString = $estr;
-rg.data.ScaleDistribution.ScaleFit.__enum__ = rg.data.ScaleDistribution;
-rg.data.ScaleDistribution.ScaleFill = ["ScaleFill",1];
-rg.data.ScaleDistribution.ScaleFill.toString = $estr;
-rg.data.ScaleDistribution.ScaleFill.__enum__ = rg.data.ScaleDistribution;
-rg.data.ScaleDistribution.ScaleBefore = ["ScaleBefore",2];
-rg.data.ScaleDistribution.ScaleBefore.toString = $estr;
-rg.data.ScaleDistribution.ScaleBefore.__enum__ = rg.data.ScaleDistribution;
-rg.data.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
-rg.data.ScaleDistribution.ScaleAfter.toString = $estr;
-rg.data.ScaleDistribution.ScaleAfter.__enum__ = rg.data.ScaleDistribution;
+	,toStringError: function(pattern) {
+		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
+		return prefix + this.toString();
+	}
+	,toString: function() {
+		try {
+			return Strings.format(this.message,this.params);
+		} catch( e ) {
+			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
+			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 42, className : "thx.error.Error", methodName : "toString"});
+			return "";
+		}
+	}
+	,__class__: thx.error.Error
+});
 var Lambda = $hxClasses["Lambda"] = function() { }
 Lambda.__name__ = ["Lambda"];
 Lambda.array = function(it) {
@@ -5574,251 +4748,6 @@ Lambda.concat = function(a,b) {
 }
 Lambda.prototype = {
 	__class__: Lambda
-}
-rg.data.reportgrid.DataSourceReportGrid = $hxClasses["rg.data.reportgrid.DataSourceReportGrid"] = function(executor,path,event,properties,where,operation,tag,location,groupby,timezone,periodicity,start,end,limit,descending) {
-	this.executor = executor;
-	this.groupBy = groupby;
-	this.timeZone = timezone;
-	this.event = event;
-	this.operation = operation;
-	this.tag = tag;
-	this.location = location;
-	this.path = path;
-	this.periodicity = periodicity;
-	this.timeStart = start;
-	this.timeEnd = end;
-	this.properties = properties;
-	this.limit = limit;
-	this.descending = descending;
-	this.where = where;
-	this.onLoad = new hxevents.Dispatcher();
-}
-rg.data.reportgrid.DataSourceReportGrid.__name__ = ["rg","data","reportgrid","DataSourceReportGrid"];
-rg.data.reportgrid.DataSourceReportGrid.__interfaces__ = [rg.data.reportgrid.IDataSource];
-rg.data.reportgrid.DataSourceReportGrid.parallelExecution = function(actions,success,error) {
-	var tot = actions.length, result = [];
-	var complete = function() {
-		success(result);
-	};
-	var handler = function(v,r) {
-		var t;
-		if(Std["is"](r,Array)) t = r; else t = [r];
-		var _g = 0;
-		while(_g < t.length) {
-			var item = t[_g];
-			++_g;
-			var ob = Reflect.isObject(item) && null == Type.getClass(item)?item:{ count : item};
-			ob.value = v;
-			result.push(ob);
-		}
-		tot--;
-		if(tot == 0) complete();
-	};
-	var i = 0;
-	while(i < actions.length) actions[i].method((function(f,a1) {
-		return function(a2) {
-			return f(a1,a2);
-		};
-	})(handler,actions[i++].value),error);
-}
-rg.data.reportgrid.DataSourceReportGrid.serialExecution = function(value,actions,success,error) {
-	var next = (function($this) {
-		var $r;
-		var next = null;
-		next = function() {
-			if(actions.length == 0) return success; else return function(v) {
-				var action = actions.shift();
-				action(v,next(),error);
-			};
-		};
-		$r = next;
-		return $r;
-	}(this));
-	(actions.shift())(value,next(),error);
-}
-rg.data.reportgrid.DataSourceReportGrid.prefixProperty = function(s) {
-	return s.substr(0,1) == "."?s:"." + s;
-}
-rg.data.reportgrid.DataSourceReportGrid.prototype = {
-	executor: null
-	,operation: null
-	,where: null
-	,periodicity: null
-	,event: null
-	,path: null
-	,timeStart: null
-	,timeEnd: null
-	,groupBy: null
-	,timeZone: null
-	,tag: null
-	,location: null
-	,transform: null
-	,onLoad: null
-	,properties: null
-	,limit: null
-	,descending: null
-	,basicOptions: function(appendPeriodicity) {
-		if(appendPeriodicity == null) appendPeriodicity = true;
-		var opt = { };
-		if(null != this.timeStart) opt["start"] = this.timeStart;
-		if(null != this.timeEnd) {
-			var e = rg.util.Periodicity.next(this.periodicity,this.timeEnd);
-			opt["end"] = e;
-		}
-		if(appendPeriodicity) {
-			opt["periodicity"] = this.periodicity;
-			if(null != this.groupBy) opt["groupBy"] = this.groupBy;
-			if(null != this.timeZone) opt["timeZone"] = this.timeZone;
-		}
-		if(null != this.location) opt["location"] = this.location;
-		if(null != this.tag) opt["tag"] = this.tag;
-		if(null != this.where && this.where.length > 0) {
-			var arr = [];
-			var _g = 0, _g1 = this.where;
-			while(_g < _g1.length) {
-				var c = _g1[_g];
-				++_g;
-				var cond = { };
-				cond[rg.data.reportgrid.DataSourceReportGrid.prefixProperty(this.event) + rg.data.reportgrid.DataSourceReportGrid.prefixProperty(c.property)] = c.value;
-				arr.push(cond);
-			}
-			opt.where = arr;
-		}
-		return opt;
-	}
-	,unit: function() {
-		return (function($this) {
-			var $r;
-			switch( ($this.operation)[1] ) {
-			case 0:
-				$r = "count";
-				break;
-			case 1:
-				$r = "mean";
-				break;
-			case 2:
-				$r = "standardDeviation";
-				break;
-			}
-			return $r;
-		}(this));
-	}
-	,hasWhere: function() {
-		return null != this.where && this.where.length > 0;
-	}
-	,hasOneWhere: function() {
-		return null != this.where && this.where.length == 1;
-	}
-	,hasOneProperty: function() {
-		return null != this.properties && this.properties.length == 1;
-	}
-	,load: function() {
-		var me = this;
-		var opt = this.basicOptions(null == this.periodicity || "eternity" == this.periodicity);
-		if(null == this.properties || this.properties.length <= 1) {
-			opt.property = null != this.properties && this.properties.length == 1?rg.data.reportgrid.DataSourceReportGrid.prefixProperty(this.event) + rg.data.reportgrid.DataSourceReportGrid.prefixProperty(this.properties[0]):rg.data.reportgrid.DataSourceReportGrid.prefixProperty(this.event);
-			if(null != this.tag) this.transform = new rg.data.reportgrid.transform.TransformTagCount({ },this.event,this.unit(),this.tag); else this.transform = new rg.data.reportgrid.transform.TransformCount({ },this.event,this.unit());
-			if(null != this.properties && this.properties.length == 1 && (null != this.where && this.where.length == 1) && this.properties[0] == this.where[0].property) {
-				haxe.Log.trace("propertyValueCount",{ fileName : "DataSourceReportGrid.hx", lineNumber : 237, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-				opt.value = this.where[0].value;
-				this.executor.propertyValueCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
-			} else if(null != this.where && this.where.length > 0) {
-				haxe.Log.trace("searchCount",{ fileName : "DataSourceReportGrid.hx", lineNumber : 241, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-				if(null != this.properties && this.properties.length == 1) this.error("Invalid query: can't count on a property with a where condition that has multiple conditions or just one condition that does not include the property itself");
-				this.executor.searchCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
-			} else {
-				haxe.Log.trace("propertyCount",{ fileName : "DataSourceReportGrid.hx", lineNumber : 246, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-				this.executor.propertyCount(this.path,opt,this.success.$bind(this),this.error.$bind(this));
-			}
-		} else {
-			var whereproperties = null == this.where?[]:this.where.map(function(w,_) {
-				return w.property;
-			}), valueproperty = Arrays.filter(this.properties,function(property) {
-				return !Arrays.exists(whereproperties,property);
-			}).shift();
-			haxe.Log.trace(valueproperty,{ fileName : "DataSourceReportGrid.hx", lineNumber : 253, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-			this.transform = new rg.data.reportgrid.transform.TransformCounts({ },this.event,this.unit(),valueproperty);
-			var counts = { };
-			var actions = [];
-			actions.push(function(value,s,e) {
-				var o = Objects.clone(opt);
-				o.property = rg.data.reportgrid.DataSourceReportGrid.prefixProperty(me.event) + rg.data.reportgrid.DataSourceReportGrid.prefixProperty(valueproperty);
-				me.executor.propertyValues(me.path,o,s,e);
-			});
-			actions.push(function(values,s,e) {
-				haxe.Log.trace(values,{ fileName : "DataSourceReportGrid.hx", lineNumber : 266, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-				var subs = [];
-				var _g = 0;
-				while(_g < values.length) {
-					var v = values[_g];
-					++_g;
-					var o = Objects.clone(opt);
-					if(null == o.where) o.where = [];
-					var where = o.where;
-					var cond = { };
-					cond[rg.data.reportgrid.DataSourceReportGrid.prefixProperty(me.event) + rg.data.reportgrid.DataSourceReportGrid.prefixProperty(valueproperty)] = v;
-					o.where.push(cond);
-					haxe.Log.trace(o,{ fileName : "DataSourceReportGrid.hx", lineNumber : 276, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-					subs.push({ method : (function(f,a1,a2) {
-						return function(a3,a4) {
-							return f(a1,a2,a3,a4);
-						};
-					})(($_=me.executor,$_.searchCount.$bind($_)),me.path,o), value : v});
-				}
-				rg.data.reportgrid.DataSourceReportGrid.parallelExecution(subs,s,e);
-			});
-			rg.data.reportgrid.DataSourceReportGrid.serialExecution(null,actions,this.success.$bind(this),this.error.$bind(this));
-		}
-		haxe.Log.trace(this.properties,{ fileName : "DataSourceReportGrid.hx", lineNumber : 287, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-		haxe.Log.trace(this.event,{ fileName : "DataSourceReportGrid.hx", lineNumber : 288, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-		haxe.Log.trace(this.path,{ fileName : "DataSourceReportGrid.hx", lineNumber : 289, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-		haxe.Log.trace(this.periodicity,{ fileName : "DataSourceReportGrid.hx", lineNumber : 290, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "load"});
-	}
-	,error: function(msg) {
-		throw new thx.error.Error(msg,null,null,{ fileName : "DataSourceReportGrid.hx", lineNumber : 487, className : "rg.data.reportgrid.DataSourceReportGrid", methodName : "error"});
-	}
-	,success: function(src) {
-		var data = this.transform.transform(src);
-		this.onLoad.dispatch(data);
-	}
-	,__class__: rg.data.reportgrid.DataSourceReportGrid
-}
-rg.data.reportgrid.transform.TransformIntersect = $hxClasses["rg.data.reportgrid.transform.TransformIntersect"] = function(properties,fields,event,orderDescending) {
-	this.properties = properties;
-	this.fields = fields;
-	this.event = event;
-	this.orderDescending = orderDescending;
-}
-rg.data.reportgrid.transform.TransformIntersect.__name__ = ["rg","data","reportgrid","transform","TransformIntersect"];
-rg.data.reportgrid.transform.TransformIntersect.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformIntersect.prototype = {
-	properties: null
-	,fields: null
-	,event: null
-	,orderDescending: null
-	,transform: function(data) {
-		var items = Objects.flatten(data,this.fields.length);
-		if(null == items || 0 == items.length) return [];
-		var result = [];
-		var _g = 0;
-		while(_g < items.length) {
-			var item = items[_g];
-			++_g;
-			var count = item.value, p = Dynamics.clone(this.properties);
-			Objects.addFields(p,this.fields,item.fields.map(rg.data.reportgrid.transform.Transforms.typedValue));
-			p[".#time:eternity"] = 0;
-			p.count = count;
-			p.event = this.event;
-			result.push(p);
-		}
-		if(this.orderDescending) result.sort(function(a,b) {
-			return b.count - a.count;
-		}); else result.sort(function(a,b) {
-			return a.count - b.count;
-		});
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformIntersect
 }
 thx.culture.FormatDate = $hxClasses["thx.culture.FormatDate"] = function() { }
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
@@ -6052,25 +4981,6 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 thx.culture.FormatDate.prototype = {
 	__class__: thx.culture.FormatDate
 }
-rg.data.reportgrid.QExp = $hxClasses["rg.data.reportgrid.QExp"] = { __ename__ : ["rg","data","reportgrid","QExp"], __constructs__ : ["Time","Property","Event"] }
-rg.data.reportgrid.QExp.Time = function(periodicity) { var $x = ["Time",0,periodicity]; $x.__enum__ = rg.data.reportgrid.QExp; $x.toString = $estr; return $x; }
-rg.data.reportgrid.QExp.Property = function(name,limit,descending) { var $x = ["Property",1,name,limit,descending]; $x.__enum__ = rg.data.reportgrid.QExp; $x.toString = $estr; return $x; }
-rg.data.reportgrid.QExp.Event = ["Event",2];
-rg.data.reportgrid.QExp.Event.toString = $estr;
-rg.data.reportgrid.QExp.Event.__enum__ = rg.data.reportgrid.QExp;
-rg.data.reportgrid.QCondition = $hxClasses["rg.data.reportgrid.QCondition"] = { __ename__ : ["rg","data","reportgrid","QCondition"], __constructs__ : ["Equality","In"] }
-rg.data.reportgrid.QCondition.Equality = function(property,v) { var $x = ["Equality",0,property,v]; $x.__enum__ = rg.data.reportgrid.QCondition; $x.toString = $estr; return $x; }
-rg.data.reportgrid.QCondition.In = function(property,v) { var $x = ["In",1,property,v]; $x.__enum__ = rg.data.reportgrid.QCondition; $x.toString = $estr; return $x; }
-rg.data.reportgrid.QOperation = $hxClasses["rg.data.reportgrid.QOperation"] = { __ename__ : ["rg","data","reportgrid","QOperation"], __constructs__ : ["Count","Mean","StandardDeviation"] }
-rg.data.reportgrid.QOperation.Count = ["Count",0];
-rg.data.reportgrid.QOperation.Count.toString = $estr;
-rg.data.reportgrid.QOperation.Count.__enum__ = rg.data.reportgrid.QOperation;
-rg.data.reportgrid.QOperation.Mean = ["Mean",1];
-rg.data.reportgrid.QOperation.Mean.toString = $estr;
-rg.data.reportgrid.QOperation.Mean.__enum__ = rg.data.reportgrid.QOperation;
-rg.data.reportgrid.QOperation.StandardDeviation = ["StandardDeviation",2];
-rg.data.reportgrid.QOperation.StandardDeviation.toString = $estr;
-rg.data.reportgrid.QOperation.StandardDeviation.__enum__ = rg.data.reportgrid.QOperation;
 var Bools = $hxClasses["Bools"] = function() { }
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
@@ -6200,38 +5110,6 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 }
 thx.culture.FormatNumber.prototype = {
 	__class__: thx.culture.FormatNumber
-}
-rg.data.reportgrid.transform.TransformStatisticTime = $hxClasses["rg.data.reportgrid.transform.TransformStatisticTime"] = function(properties,fields,event,periodicity,unit) {
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.reportgrid.transform.TransformStatisticTime.__name__ = ["rg","data","reportgrid","transform","TransformStatisticTime"];
-rg.data.reportgrid.transform.TransformStatisticTime.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformStatisticTime.prototype = {
-	properties: null
-	,unit: null
-	,periodicity: null
-	,fields: null
-	,event: null
-	,transform: function(data) {
-		var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-		if(null == items || 0 == items.length) return [];
-		var result = [];
-		var _g = 0;
-		while(_g < data.length) {
-			var arr = data[_g];
-			++_g;
-			var p = Dynamics.clone(properties);
-			Objects.addFields(p,["." + "time:" + this.periodicity,unit],[rg.data.reportgrid.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[0].timestamp),arr[1]]);
-			p.event = this.event;
-			result.push(p);
-		}
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformStatisticTime
 }
 var Arrays = $hxClasses["Arrays"] = function() { }
 Arrays.__name__ = ["Arrays"];
@@ -6915,77 +5793,6 @@ haxe.Log.clear = function() {
 haxe.Log.prototype = {
 	__class__: haxe.Log
 }
-hxevents.Dispatcher = $hxClasses["hxevents.Dispatcher"] = function() {
-	this.handlers = new Array();
-}
-hxevents.Dispatcher.__name__ = ["hxevents","Dispatcher"];
-hxevents.Dispatcher.stop = function() {
-	throw hxevents.EventException.StopPropagation;
-}
-hxevents.Dispatcher.prototype = {
-	handlers: null
-	,add: function(h) {
-		this.handlers.push(h);
-		return h;
-	}
-	,addOnce: function(h) {
-		var me = this;
-		var _h = null;
-		_h = function(v) {
-			me.remove(_h);
-			h(v);
-		};
-		this.add(_h);
-		return _h;
-	}
-	,remove: function(h) {
-		var _g1 = 0, _g = this.handlers.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			if(Reflect.compareMethods(this.handlers[i],h)) return this.handlers.splice(i,1)[0];
-		}
-		return null;
-	}
-	,clear: function() {
-		this.handlers = new Array();
-	}
-	,dispatch: function(e) {
-		try {
-			var list = this.handlers.copy();
-			var _g = 0;
-			while(_g < list.length) {
-				var l = list[_g];
-				++_g;
-				l(e);
-			}
-			return true;
-		} catch( exc ) {
-			if( js.Boot.__instanceof(exc,hxevents.EventException) ) {
-				return false;
-			} else throw(exc);
-		}
-	}
-	,dispatchAndAutomate: function(e) {
-		this.dispatch(e);
-		this.handlers = [];
-		this.add = function(h) {
-			h(e);
-			return h;
-		};
-	}
-	,has: function(h) {
-		if(null == h) return this.handlers.length > 0; else {
-			var _g = 0, _g1 = this.handlers;
-			while(_g < _g1.length) {
-				var handler = _g1[_g];
-				++_g;
-				if(h == handler) return true;
-			}
-			return false;
-		}
-	}
-	,__class__: hxevents.Dispatcher
-}
 var Objects = $hxClasses["Objects"] = function() { }
 Objects.__name__ = ["Objects"];
 Objects.field = function(o,fieldname,alt) {
@@ -7480,300 +6287,6 @@ Std.random = function(x) {
 Std.prototype = {
 	__class__: Std
 }
-rg.data.reportgrid.transform.TransformIntersectUtc = $hxClasses["rg.data.reportgrid.transform.TransformIntersectUtc"] = function(properties,fields,event,periodicity,unit) {
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.reportgrid.transform.TransformIntersectUtc.__name__ = ["rg","data","reportgrid","transform","TransformIntersectUtc"];
-rg.data.reportgrid.transform.TransformIntersectUtc.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformIntersectUtc.prototype = {
-	properties: null
-	,unit: null
-	,periodicity: null
-	,fields: null
-	,event: null
-	,transform: function(data) {
-		var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-		if(null == items || 0 == items.length) return [];
-		var result = [];
-		var _g = 0;
-		while(_g < items.length) {
-			var item = items[_g];
-			++_g;
-			var arr = item.value;
-			var _g2 = 0, _g1 = arr.length;
-			while(_g2 < _g1) {
-				var i = _g2++;
-				var p = Dynamics.clone(properties);
-				Objects.addFields(p,this.fields,item.fields.map(rg.data.reportgrid.transform.Transforms.typedValue));
-				Objects.addFields(p,["." + "time:" + this.periodicity,unit],[Date.fromString(arr[i][0].datetime),arr[i][1]]);
-				p.event = this.event;
-				result.push(p);
-			}
-		}
-		haxe.Log.trace(result,{ fileName : "TransformIntersectUtc.hx", lineNumber : 54, className : "rg.data.reportgrid.transform.TransformIntersectUtc", methodName : "transform"});
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformIntersectUtc
-}
-rg.data.VariableDependent = $hxClasses["rg.data.VariableDependent"] = function(type,scaleDistribution) {
-	rg.data.Variable.call(this,type,scaleDistribution);
-}
-rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
-rg.data.VariableDependent.__super__ = rg.data.Variable;
-rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
-	__class__: rg.data.VariableDependent
-});
-rg.data.reportgrid.DataSourceReportGridGraph = $hxClasses["rg.data.reportgrid.DataSourceReportGridGraph"] = function(executor,path,event,idproperty,parentproperty,whereConditions,start,end) {
-	this.path = path;
-	this.executor = executor;
-	this.event = rg.data.reportgrid.DataSourceReportGridGraph.np(event);
-	this.idproperty = rg.data.reportgrid.DataSourceReportGridGraph.np(idproperty);
-	this.parentproperty = rg.data.reportgrid.DataSourceReportGridGraph.np(parentproperty);
-	this.whereConditions = null == whereConditions?[]:whereConditions;
-	this.timeStart = start;
-	this.timeEnd = end;
-	this.onLoad = new hxevents.Dispatcher();
-}
-rg.data.reportgrid.DataSourceReportGridGraph.__name__ = ["rg","data","reportgrid","DataSourceReportGridGraph"];
-rg.data.reportgrid.DataSourceReportGridGraph.__interfaces__ = [rg.data.reportgrid.IDataSource];
-rg.data.reportgrid.DataSourceReportGridGraph.np = function(v) {
-	return StringTools.startsWith(v,".")?v:"." + v;
-}
-rg.data.reportgrid.DataSourceReportGridGraph.val = function(v) {
-	if(v == "null") return null;
-	if(v.substr(0,1) == "\"") return v.substr(1,v.length - 2);
-	return Std.parseFloat(v);
-}
-rg.data.reportgrid.DataSourceReportGridGraph.prototype = {
-	executor: null
-	,path: null
-	,event: null
-	,idproperty: null
-	,parentproperty: null
-	,timeStart: null
-	,timeEnd: null
-	,whereConditions: null
-	,onLoad: null
-	,basicOptions: function() {
-		var opt = { };
-		if(null != this.timeStart) opt["start"] = this.timeStart;
-		if(null != this.timeEnd) opt["end"] = this.timeEnd;
-		opt.periodicity = "eternity";
-		return opt;
-	}
-	,load: function() {
-		var me = this;
-		var properties = [{ property : this.event + this.idproperty},{ property : this.event + this.parentproperty}];
-		var _g = 0, _g1 = this.whereConditions;
-		while(_g < _g1.length) {
-			var item = _g1[_g];
-			++_g;
-			properties.push({ property : this.event + rg.data.reportgrid.DataSourceReportGridGraph.np(item.property)});
-		}
-		this.executor.intersect(this.path,{ properties : properties},function(r) {
-			var map = new Hash(), queue = 0;
-			var dequeue = function() {
-				if(--queue > 0) return;
-				var result = [];
-				var $it0 = map.keys();
-				while( $it0.hasNext() ) {
-					var id = $it0.next();
-					result.push(map.get(id));
-				}
-				me.onLoad.dispatch(result);
-			};
-			var enqueue = function() {
-				queue++;
-			};
-			var _g = 0, _g1 = Reflect.fields(r);
-			while(_g < _g1.length) {
-				var key = _g1[_g];
-				++_g;
-				var id = rg.data.reportgrid.DataSourceReportGridGraph.val(key);
-				if(null == id) continue;
-				var item = { id : id, count : 0, parents : { }};
-				map.set("" + id,item);
-				var relations = Reflect.field(r,key), where = { };
-				where[me.event + me.idproperty] = id;
-				var _g2 = 0, _g3 = me.whereConditions;
-				while(_g2 < _g3.length) {
-					var condition = _g3[_g2];
-					++_g2;
-					where[me.event + rg.data.reportgrid.DataSourceReportGridGraph.np(condition.property)] = condition.value;
-				}
-				enqueue();
-				me.executor.searchCount(me.path,{ where : where},(function(f,a1) {
-					return function(a2) {
-						return f(a1,a2);
-					};
-				})(function(id1,count) {
-					map.get(id1).count = count;
-					dequeue();
-				},id));
-				var _g2 = 0, _g3 = Reflect.fields(relations);
-				while(_g2 < _g3.length) {
-					var kparent = _g3[_g2];
-					++_g2;
-					if(kparent == "null") continue;
-					var parent = rg.data.reportgrid.DataSourceReportGridGraph.val(kparent), cur = Reflect.field(relations,kparent);
-					var _g4 = 0, _g5 = me.whereConditions;
-					while(_g4 < _g5.length) {
-						var item1 = _g5[_g4];
-						++_g4;
-						if(Std["is"](item1.value,String)) cur = Reflect.field(cur,"\"" + item1.value + "\""); else cur = Reflect.field(cur,item1.value);
-					}
-					if(null != cur) map.get("" + id).parents[parent] = cur;
-				}
-			}
-		});
-	}
-	,__class__: rg.data.reportgrid.DataSourceReportGridGraph
-}
-rg.data.reportgrid.transform.TransformCounts = $hxClasses["rg.data.reportgrid.transform.TransformCounts"] = function(properties,event,unit,unitvalue) {
-	if(unitvalue == null) unitvalue = "value";
-	this.properties = properties;
-	this.unit = unit;
-	this.event = event;
-	this.unitvalue = unitvalue;
-}
-rg.data.reportgrid.transform.TransformCounts.__name__ = ["rg","data","reportgrid","transform","TransformCounts"];
-rg.data.reportgrid.transform.TransformCounts.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformCounts.prototype = {
-	properties: null
-	,unit: null
-	,event: null
-	,unitvalue: null
-	,transform: function(data) {
-		var me = this;
-		var result = data.map(function(d,i) {
-			var dp = { event : me.event};
-			Objects.copyTo(me.properties,dp);
-			Objects.addField(dp,me.unit,d.count);
-			Objects.addField(dp,me.unitvalue,d.value);
-			return dp;
-		});
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformCounts
-}
-rg.data.reportgrid.QueryParser = $hxClasses["rg.data.reportgrid.QueryParser"] = function() {
-}
-rg.data.reportgrid.QueryParser.__name__ = ["rg","data","reportgrid","QueryParser"];
-rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE = null;
-rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE = null;
-rg.data.reportgrid.QueryParser.TOKEN_CONDITION_PARSE = null;
-rg.data.reportgrid.QueryParser.SPLIT_CONDITIONS = null;
-rg.data.reportgrid.QueryParser.cleanName = function(name) {
-	var dot = StringTools.startsWith(name,".");
-	if(dot) name = name.substr(1);
-	var chars = ["\"","'"];
-	var _g = 0;
-	while(_g < chars.length) {
-		var $char = chars[_g];
-		++_g;
-		if(!StringTools.startsWith(name,$char)) continue;
-		var pos = name.indexOf($char,1);
-		while(pos < name.length && pos >= 0) if(name.substr(pos - 1,1) == "\\") pos = name.indexOf($char,pos + 1); else break;
-		if(pos < 0) throw new thx.error.Error("quoted property is not properly formatted",null,null,{ fileName : "QueryParser.hx", lineNumber : 96, className : "rg.data.reportgrid.QueryParser", methodName : "cleanName"});
-		var rest = name.substr(pos + 1);
-		name = name.substr(1,pos - 1);
-		if(rest.length > 0) name += rg.data.reportgrid.QueryParser.cleanName(rest);
-		break;
-	}
-	return (dot?".":"") + name;
-}
-rg.data.reportgrid.QueryParser.parseQuoted = function(s,q,results) {
-	var pos = s.indexOf(q,1);
-	if(pos < 0) throw new thx.error.Error("value is not correctly quoted",null,null,{ fileName : "QueryParser.hx", lineNumber : 185, className : "rg.data.reportgrid.QueryParser", methodName : "parseQuoted"});
-	results.push(s.substr(1,pos - 1));
-	pos = s.indexOf(",");
-	if(pos < 0) return "";
-	return s.substr(pos + 1);
-}
-rg.data.reportgrid.QueryParser.parseValues = function(s) {
-	var results = [], pos, v;
-	while((s = StringTools.trim(s)).length > 0) if(s.substr(0,1) == "\"") s = rg.data.reportgrid.QueryParser.parseQuoted(s,"\"",results); else if(s.substr(0,1) == "'") s = rg.data.reportgrid.QueryParser.parseQuoted(s,"'",results); else {
-		pos = s.indexOf(",");
-		if(pos >= 0) {
-			v = s.substr(0,pos);
-			s = s.substr(pos + 1);
-		} else {
-			v = s;
-			s = "";
-		}
-		if(Bools.canParse(v)) results.push(Bools.parse(v)); else if(Ints.canParse(v)) results.push(Ints.parse(v)); else if(Floats.canParse(v)) results.push(Floats.parse(v)); else throw new thx.error.Error("invalid value '{0}'",null,v,{ fileName : "QueryParser.hx", lineNumber : 221, className : "rg.data.reportgrid.QueryParser", methodName : "parseValues"});
-	}
-	return results;
-}
-rg.data.reportgrid.QueryParser.prototype = {
-	exp: null
-	,where: null
-	,parse: function(s) {
-		this.exp = [];
-		this.where = [];
-		this.parseExp(s);
-		return { exp : this.exp, where : this.where};
-	}
-	,parseExp: function(e) {
-		var tokens = e.split("*").map(function(d,_) {
-			return StringTools.trim(d);
-		});
-		if(tokens.length == 1 && "" == tokens[0]) {
-			this.exp.push(rg.data.reportgrid.QExp.Event);
-			return;
-		}
-		var _g = 0;
-		while(_g < tokens.length) {
-			var token = tokens[_g];
-			++_g;
-			var etoken = this.parseToken(token);
-			if(null != etoken) this.exp.push(etoken);
-		}
-	}
-	,parseToken: function(token) {
-		var pos;
-		if(token.indexOf("time:") >= 0) return rg.data.reportgrid.QExp.Time(token.substr(token.indexOf("time:") + "time:".length)); else return this.processProperty(token);
-	}
-	,processProperty: function(token) {
-		if("(" == token.substr(0,1)) token = token.substr(1,token.length - 2);
-		var parts = [token], name = null, limit = null, descending = null;
-		if(parts.length == 1) {
-			if(!rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.match(token)) throw new thx.error.Error("invalid individual expression '{0}'",null,token,{ fileName : "QueryParser.hx", lineNumber : 121, className : "rg.data.reportgrid.QueryParser", methodName : "processProperty"});
-			name = rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1);
-			if(null != rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2)) limit = Std.parseInt(rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(2));
-			if(null != rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3)) descending = rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(3).toLowerCase() == "desc";
-			if(null != rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4)) this.addWhereCondition(rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(1),rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(4),rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE.matched(5));
-		} else {
-			if(!rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.match(parts[0])) throw new thx.error.Error("invalid first expression '{0}' in '{1}'",[parts[0],token],null,{ fileName : "QueryParser.hx", lineNumber : 138, className : "rg.data.reportgrid.QueryParser", methodName : "processProperty"});
-			name = rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(1);
-			if(null != rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(2)) limit = Std.parseInt(rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(2));
-			if(null != rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(3)) descending = rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(3).toLowerCase() == "desc";
-			this.addWhereCondition(rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(1),rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(4),rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE.matched(5));
-			var _g1 = 1, _g = parts.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				if(!rg.data.reportgrid.QueryParser.TOKEN_CONDITION_PARSE.match(parts[i])) throw new thx.error.Error("invalid expression condition '{0}' in '{1}'",[parts[i],token],null,{ fileName : "QueryParser.hx", lineNumber : 154, className : "rg.data.reportgrid.QueryParser", methodName : "processProperty"});
-				this.addWhereCondition(rg.data.reportgrid.QueryParser.TOKEN_CONDITION_PARSE.matched(1),rg.data.reportgrid.QueryParser.TOKEN_CONDITION_PARSE.matched(2),rg.data.reportgrid.QueryParser.TOKEN_CONDITION_PARSE.matched(3));
-			}
-		}
-		return rg.data.reportgrid.QExp.Property(rg.data.reportgrid.QueryParser.cleanName(name),limit,descending);
-	}
-	,addWhereCondition: function(name,operator,value) {
-		switch(operator) {
-		case "=":
-			var v = rg.data.reportgrid.QueryParser.parseValues(value);
-			if(v.length > 1) this.where.push(rg.data.reportgrid.QCondition.In(name,v)); else this.where.push(rg.data.reportgrid.QCondition.Equality(name,v[0]));
-			break;
-		default:
-			throw new thx.error.Error("invalid operator '{0}'",null,operator,{ fileName : "QueryParser.hx", lineNumber : 177, className : "rg.data.reportgrid.QueryParser", methodName : "addWhereCondition"});
-		}
-	}
-	,__class__: rg.data.reportgrid.QueryParser
-}
 haxe.Md5 = $hxClasses["haxe.Md5"] = function() {
 }
 haxe.Md5.__name__ = ["haxe","Md5"];
@@ -7938,25 +6451,6 @@ haxe.Md5.prototype = {
 		return this.rhex(a) + this.rhex(b) + this.rhex(c) + this.rhex(d);
 	}
 	,__class__: haxe.Md5
-}
-rg.data.reportgrid.transform.TransformCount = $hxClasses["rg.data.reportgrid.transform.TransformCount"] = function(properties,event,unit) {
-	this.properties = properties;
-	this.unit = unit;
-	this.event = event;
-}
-rg.data.reportgrid.transform.TransformCount.__name__ = ["rg","data","reportgrid","transform","TransformCount"];
-rg.data.reportgrid.transform.TransformCount.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformCount.prototype = {
-	properties: null
-	,unit: null
-	,event: null
-	,transform: function(data) {
-		var dp = { event : this.event};
-		Objects.copyTo(this.properties,dp);
-		Objects.addField(dp,this.unit,data);
-		return [dp];
-	}
-	,__class__: rg.data.reportgrid.transform.TransformCount
 }
 rg.data.reportgrid.ReportGridExecutorMemoryCache = $hxClasses["rg.data.reportgrid.ReportGridExecutorMemoryCache"] = function(executor) {
 	this.executor = executor;
@@ -8220,52 +6714,6 @@ js.Lib.setErrorHandler = function(f) {
 }
 js.Lib.prototype = {
 	__class__: js.Lib
-}
-rg.data.reportgrid.transform.TransformIntersectTime = $hxClasses["rg.data.reportgrid.transform.TransformIntersectTime"] = function(properties,fields,event,periodicity,unit) {
-	this.properties = properties;
-	this.unit = unit;
-	this.periodicity = periodicity;
-	this.fields = fields;
-	this.event = event;
-}
-rg.data.reportgrid.transform.TransformIntersectTime.__name__ = ["rg","data","reportgrid","transform","TransformIntersectTime"];
-rg.data.reportgrid.transform.TransformIntersectTime.__interfaces__ = [rg.data.reportgrid.ITransform];
-rg.data.reportgrid.transform.TransformIntersectTime.prototype = {
-	properties: null
-	,unit: null
-	,periodicity: null
-	,fields: null
-	,event: null
-	,transform: function(data) {
-		var items = Objects.flatten(data,this.fields.length), properties = this.properties, unit = this.unit;
-		if(null == items || 0 == items.length) return [];
-		var result = [];
-		var _g = 0;
-		while(_g < items.length) {
-			var item = items[_g];
-			++_g;
-			var arr = item.value;
-			var _g2 = 0, _g1 = arr.length;
-			while(_g2 < _g1) {
-				var i = _g2++;
-				var p = Dynamics.clone(properties);
-				Objects.addFields(p,this.fields,item.fields.map(rg.data.reportgrid.transform.Transforms.typedValue));
-				Objects.addFields(p,["." + "time:" + this.periodicity,unit],[rg.data.reportgrid.transform.TransformTimeSeries.snapTimestamp(this.periodicity,arr[i][0].timestamp),arr[i][1]]);
-				p.event = this.event;
-				result.push(p);
-			}
-		}
-		return result;
-	}
-	,__class__: rg.data.reportgrid.transform.TransformIntersectTime
-}
-rg.data.reportgrid.transform.Transforms = $hxClasses["rg.data.reportgrid.transform.Transforms"] = function() { }
-rg.data.reportgrid.transform.Transforms.__name__ = ["rg","data","reportgrid","transform","Transforms"];
-rg.data.reportgrid.transform.Transforms.typedValue = function(s,_) {
-	if(s.substr(0,1) == "\"") return StringTools.replace(s.substr(1,s.length - 2),"\\\"","\""); else if((s = s.toLowerCase()) == "true") return true; else if(s == "false") return false; else return Std.parseFloat(s);
-}
-rg.data.reportgrid.transform.Transforms.prototype = {
-	__class__: rg.data.reportgrid.transform.Transforms
 }
 var StringTools = $hxClasses["StringTools"] = function() { }
 StringTools.__name__ = ["StringTools"];
@@ -8644,13 +7092,6 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
 }
 {
-	var _PNAME = "((?:\\.?#?\\w+)+|(?:\\.?\"[^\"]+\")+|(?:\\.?'[^']+')+)", _LIMIT = "(?:\\s*[(]\\s*(\\d+)(?:\\s*,\\s*(ASC|DESC))?\\s*[)])?", _COND = "(?:\\s*([=])\\s*(.+)\\s*)";
-	rg.data.reportgrid.QueryParser.TOKEN_INDIVIDUAL_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "?" + "$","i");
-	rg.data.reportgrid.QueryParser.TOKEN_FIRST_PARSE = new EReg("^" + _PNAME + _LIMIT + _COND + "$","i");
-	rg.data.reportgrid.QueryParser.TOKEN_CONDITION_PARSE = new EReg("^" + _PNAME + _COND + "$","i");
-	rg.data.reportgrid.QueryParser.SPLIT_CONDITIONS = new EReg("\"\\s*,\\s*\"","g");
-}
-{
 	js.Lib.document = document;
 	js.Lib.window = window;
 	onerror = function(msg,url,line) {
@@ -8705,7 +7146,6 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	d.__name__ = ["Date"];
 }
 Ints._reparse = new EReg("^([+-])?\\d+$","");
-rg.util.Properties.TIME_TOKEN = "time:";
 thx.color.Colors._reParse = new EReg("^(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))$","i");
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
@@ -8739,8 +7179,6 @@ thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.s
 thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
-rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
-thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
 Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
 Strings._reReduceWS = new EReg("\\s+","");
@@ -8754,9 +7192,9 @@ Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
+thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
-rg.data.reportgrid.QueryParser.TOKEN_SPLIT = new EReg("and","gi");
 js.Lib.onerror = null;
 rg.app.query.JSBridge.main()

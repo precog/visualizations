@@ -142,7 +142,7 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 			return Strings.format(this.message,this.params);
 		} catch( e ) {
 			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
-			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 1, className : "thx.error.Error", methodName : "toString"});
+			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 42, className : "thx.error.Error", methodName : "toString"});
 			return "";
 		}
 	}
@@ -150,7 +150,7 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 });
 thx.error.NullArgument = $hxClasses["thx.error.NullArgument"] = function(argumentName,message,posInfo) {
 	if(null == message) message = "invalid null or empty argument '{0}' for method {1}.{2}()";
-	thx.error.Error.call(this,message,[argumentName,posInfo.className,posInfo.methodName],posInfo,{ fileName : "NullArgument.hx", lineNumber : 1, className : "thx.error.NullArgument", methodName : "new"});
+	thx.error.Error.call(this,message,[argumentName,posInfo.className,posInfo.methodName],posInfo,{ fileName : "NullArgument.hx", lineNumber : 16, className : "thx.error.NullArgument", methodName : "new"});
 }
 thx.error.NullArgument.__name__ = ["thx","error","NullArgument"];
 thx.error.NullArgument.__super__ = thx.error.Error;
@@ -177,6 +177,174 @@ rg.data.IAxisDiscrete.prototype = {
 	,__class__: rg.data.IAxisDiscrete
 	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
+if(!rg.query) rg.query = {}
+rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(delegate,first) {
+	this._delegate = delegate;
+	this._first = first;
+}
+rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
+rg.query.BaseQuery.delegateTransform = function(t) {
+	return function(data,handler) {
+		handler(t(data));
+	};
+}
+rg.query.BaseQuery.prototype = {
+	_first: null
+	,_next: null
+	,_delegate: null
+	,data: function(handler) {
+		return this.delegate(function(_,h) {
+			handler(h);
+		});
+	}
+	,cross: function(values) {
+		return this.transform(rg.query.Transformers.cross(values));
+	}
+	,map: function(handler) {
+		return this.transform(rg.query.Transformers.map(handler));
+	}
+	,log: function(f) {
+		var api = console;
+		if(null == f) f = api.log.$bind(api);
+		if(null == f) return this;
+		return this.transform(function(d) {
+			f(d);
+			return d;
+		});
+	}
+	,logFirst: function(f) {
+		var api = console;
+		if(null == f) f = api.log.$bind(api);
+		if(null == f) return this;
+		return this.transform(function(d) {
+			f(d[0]);
+			return d;
+		});
+	}
+	,mapFields: function(o) {
+		var pairs = Reflect.fields(o).map(function(d,_) {
+			return { src : d, dst : Reflect.field(o,d)};
+		});
+		return this.map(function(src,_) {
+			var out = { };
+			var _g = 0;
+			while(_g < pairs.length) {
+				var pair = pairs[_g];
+				++_g;
+				out[pair.dst] = Reflect.field(src,pair.src);
+			}
+			return out;
+		});
+	}
+	,transform: function(t) {
+		return this.delegate(rg.query.BaseQuery.delegateTransform(t));
+	}
+	,delegate: function(d) {
+		var query = this._createQuery(d,this._first);
+		this._next = query;
+		return query;
+	}
+	,each: function(f) {
+		return this.delegate(function(data,handler) {
+			var tot = data.length, pos = 0, results = [];
+			var complete = function(i,r) {
+				results[i] = r;
+				if(++pos == tot) handler(Arrays.flatten(results));
+			};
+			var _g = 0;
+			while(_g < tot) {
+				var i = _g++;
+				f(data[i],(function(f1,a1) {
+					return function(a2) {
+						return f1(a1,a2);
+					};
+				})(complete,i));
+			}
+		});
+	}
+	,filter: function(f) {
+		return this.transform(rg.query.Transformers.filter(f));
+	}
+	,sort: function(f) {
+		return this.transform(rg.query.Transformers.sort(f));
+	}
+	,sortByField: function(field,reverse) {
+		return this.sortByFields([field],reverse);
+	}
+	,sortByFields: function(fields,reverse) {
+		reverse = null == reverse?false:reverse;
+		var r;
+		return this.sort(function(a,b) {
+			var _g = 0;
+			while(_g < fields.length) {
+				var field = fields[_g];
+				++_g;
+				r = (reverse?-1:1) * Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field));
+				if(r != 0) return r;
+			}
+			return 0;
+		});
+	}
+	,limit: function(offset,count) {
+		if(null == count) {
+			count = offset;
+			offset = 0;
+		}
+		return this.transform(rg.query.Transformers.limit(offset,count));
+	}
+	,reverse: function() {
+		return this.transform(rg.query.Transformers.reverse);
+	}
+	,load: function(handler) {
+		this._first.load(handler);
+	}
+	,_createQuery: function(delegate,first) {
+		return new rg.query.BaseQuery(delegate,first);
+	}
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + (null != this._next) + ", delegate: " + (null != this._delegate) + "]");
+	}
+	,_this: function(q) {
+		return q;
+	}
+	,__class__: rg.query.BaseQuery
+}
+rg.query.Query = $hxClasses["rg.query.Query"] = function() {
+	rg.query.BaseQuery.call(this,null,this);
+}
+rg.query.Query.__name__ = ["rg","query","Query"];
+rg.query.Query.create = function() {
+	var start = new rg.query.Query(), query = start._createQuery(function(data,handler) {
+		handler(data);
+	},start);
+	start._next = query;
+	return query;
+}
+rg.query.Query.loadHandler = function(instance,handler) {
+	var current = instance._next;
+	var execute = (function($this) {
+		var $r;
+		var execute = null;
+		execute = function(results) {
+			if(null == current._next) {
+				handler(results);
+				return;
+			}
+			current = current._next;
+			current._delegate(results,execute);
+		};
+		$r = execute;
+		return $r;
+	}(this));
+	execute([{ }]);
+}
+rg.query.Query.__super__ = rg.query.BaseQuery;
+rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
+	load: function(handler) {
+		rg.query.Query.loadHandler(this,handler);
+	}
+	,__class__: rg.query.Query
+});
 var chx = chx || {}
 if(!chx.crypt) chx.crypt = {}
 chx.crypt.IBlockCipher = $hxClasses["chx.crypt.IBlockCipher"] = function() { }
@@ -737,8 +905,8 @@ rg.graph.Graphs.addConnections = function(graph,arr) {
 }
 rg.graph.Graphs.reverseConnection = function(graph,a,b) {
 	var path = rg.graph.Graphs.findPath(graph,a,b);
-	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 1, className : "rg.graph.Graphs", methodName : "reverseConnection"});
-	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 1, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 168, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 169, className : "rg.graph.Graphs", methodName : "reverseConnection"});
 	if(null == path) return false;
 	var _g1 = 0, _g = path.length - 1;
 	while(_g1 < _g) {
@@ -839,10 +1007,10 @@ rg.controller.visualization.Visualization.prototype = {
 		});
 	}
 	,init: function() {
-		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 1, className : "rg.controller.visualization.Visualization", methodName : "init"});
+		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 43, className : "rg.controller.visualization.Visualization", methodName : "init"});
 	}
 	,feedData: function(data) {
-		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 1, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
+		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 48, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
 	}
 	,destroy: function() {
 	}
@@ -895,18 +1063,7 @@ rg.app.charts.JSBridge.main = function() {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
 		rg.app.charts.MVPOptions.complete(copt,function(opt) {
-			try {
-				app.visualization(rg.app.charts.JSBridge.select(el),opt);
-			} catch( $e0 ) {
-				if( js.Boot.__instanceof($e0,thx.error.Error) ) {
-					var e = $e0;
-					var msg = "ERROR AT " + e.toStringError();
-					rg.app.charts.JSBridge.log(msg);
-				} else {
-				var e = $e0;
-				rg.app.charts.JSBridge.log(Std.string(e));
-				}
-			}
+			app.visualization(rg.app.charts.JSBridge.select(el),opt);
 		});
 	};
 	r.barChart = function(el,options) {
@@ -947,7 +1104,10 @@ rg.app.charts.JSBridge.main = function() {
 	r.format = Dynamics.format;
 	r.compare = Dynamics.compare;
 	r.dump = Dynamics.string;
-	r.symbol = ($_=rg.view.svg.util.SymbolCache.cache,$_.get.$bind($_));
+	var scache = rg.view.svg.util.SymbolCache.cache;
+	r.symbol = function(type) {
+		return scache.get(type);
+	};
 	r.date = { range : function(a,b,p) {
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
 		if(null == a) a = rg.util.Periodicity.defaultRange(p)[0];
@@ -962,15 +1122,18 @@ rg.app.charts.JSBridge.main = function() {
 		return rg.util.RGStrings.humanize(v);
 	};
 	var rand = new thx.math.Random(666);
-	r.math = { random : function() {
+	r.math = { setRandomSeed : function(s) {
+		rand = new thx.math.Random(s);
+	}, random : function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
+	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6273"};
+	r.info.charts = { version : "1.2.2.6385"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 1, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 142, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -1052,7 +1215,7 @@ thx.color.Rgb = $hxClasses["thx.color.Rgb"] = function(r,g,b) {
 }
 thx.color.Rgb.__name__ = ["thx","color","Rgb"];
 thx.color.Rgb.fromFloats = function(r,g,b) {
-	return new thx.color.Rgb(Ints.interpolate(r,0,255),Ints.interpolate(g,0,255),Ints.interpolate(b,0,255));
+	return new thx.color.Rgb(Ints.interpolate(r,0,255,null),Ints.interpolate(g,0,255,null),Ints.interpolate(b,0,255,null));
 }
 thx.color.Rgb.fromInt = function(v) {
 	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
@@ -1109,7 +1272,7 @@ thx.color.Rgb.interpolateRainbowf = function(equation) {
 thx.color.Rgb.interpolateStepsf = function(steps,equation) {
 	if(steps.length <= 0) return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid number of steps",null,null,{ fileName : "Rgb.hx", lineNumber : 1, className : "thx.color.Rgb", methodName : "interpolateStepsf"});
+		throw new thx.error.Error("invalid number of steps",null,null,{ fileName : "Rgb.hx", lineNumber : 164, className : "thx.color.Rgb", methodName : "interpolateStepsf"});
 		return $r;
 	}(this)); else if(steps.length == 1) return function(t) {
 		return steps[0];
@@ -1147,6 +1310,132 @@ thx.color.Rgb.prototype = {
 		return this.toRgbString();
 	}
 	,__class__: thx.color.Rgb
+}
+var EReg = $hxClasses["EReg"] = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+}
+EReg.__name__ = ["EReg"];
+EReg.prototype = {
+	r: null
+	,match: function(s) {
+		this.r.m = this.r.exec(s);
+		this.r.s = s;
+		this.r.l = RegExp.leftContext;
+		this.r.r = RegExp.rightContext;
+		return this.r.m != null;
+	}
+	,matched: function(n) {
+		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
+			var $r;
+			throw "EReg::matched";
+			return $r;
+		}(this));
+	}
+	,matchedLeft: function() {
+		if(this.r.m == null) throw "No string matched";
+		if(this.r.l == null) return this.r.s.substr(0,this.r.m.index);
+		return this.r.l;
+	}
+	,matchedRight: function() {
+		if(this.r.m == null) throw "No string matched";
+		if(this.r.r == null) {
+			var sz = this.r.m.index + this.r.m[0].length;
+			return this.r.s.substr(sz,this.r.s.length - sz);
+		}
+		return this.r.r;
+	}
+	,matchedPos: function() {
+		if(this.r.m == null) throw "No string matched";
+		return { pos : this.r.m.index, len : this.r.m[0].length};
+	}
+	,split: function(s) {
+		var d = "#__delim__#";
+		return s.replace(this.r,d).split(d);
+	}
+	,replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,customReplace: function(s,f) {
+		var buf = new StringBuf();
+		while(true) {
+			if(!this.match(s)) break;
+			buf.add(this.matchedLeft());
+			buf.add(f(this));
+			s = this.matchedRight();
+		}
+		buf.b[buf.b.length] = s == null?"null":s;
+		return buf.b.join("");
+	}
+	,__class__: EReg
+}
+var Ints = $hxClasses["Ints"] = function() { }
+Ints.__name__ = ["Ints"];
+Ints.range = function(start,stop,step) {
+	if(step == null) step = 1;
+	if(null == stop) {
+		stop = start;
+		start = 0;
+	}
+	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 19, className : "Ints", methodName : "range"});
+	var range = [], i = -1, j;
+	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	return range;
+}
+Ints.sign = function(v) {
+	return v < 0?-1:1;
+}
+Ints.abs = function(a) {
+	return a < 0?-a:a;
+}
+Ints.min = function(a,b) {
+	return a < b?a:b;
+}
+Ints.max = function(a,b) {
+	return a > b?a:b;
+}
+Ints.wrap = function(v,min,max) {
+	return Math.round(Floats.wrap(v,min,max));
+}
+Ints.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Ints.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
+Ints.interpolate = function(f,min,max,equation) {
+	if(max == null) max = 100.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return Math.round(min + equation(f) * (max - min));
+}
+Ints.interpolatef = function(min,max,equation) {
+	if(max == null) max = 1.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = max - min;
+	return function(f) {
+		return Math.round(min + equation(f) * d);
+	};
+}
+Ints.format = function(v,param,params,culture) {
+	return (Ints.formatf(param,params,culture))(v);
+}
+Ints.formatf = function(param,params,culture) {
+	return Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
+}
+Ints.canParse = function(s) {
+	return Ints._reparse.match(s);
+}
+Ints.parse = function(s) {
+	if(s.substr(0,1) == "+") s = s.substr(1);
+	return Std.parseInt(s);
+}
+Ints.compare = function(a,b) {
+	return a - b;
+}
+Ints.prototype = {
+	__class__: Ints
 }
 thx.color.NamedColors = $hxClasses["thx.color.NamedColors"] = function() { }
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
@@ -1524,7 +1813,7 @@ rg.controller.visualization.VisualizationCartesian.prototype = $extend(rg.contro
 		this.initCartesianChart();
 	}
 	,initAxes: function() {
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 1, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initAxes"});
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 46, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initAxes"});
 	}
 	,initPadding: function() {
 		this.layout.adjustPadding();
@@ -1545,7 +1834,7 @@ rg.controller.visualization.VisualizationCartesian.prototype = $extend(rg.contro
 		this.xrule = this.createRules(0,this.xvariable.type,rg.view.frame.Orientation.Vertical);
 	}
 	,initChart: function() {
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 1, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 88, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
 	}
 	,initCartesianChart: function() {
 		this.chart.animated = this.info.animation.animated;
@@ -1599,7 +1888,7 @@ rg.controller.visualization.VisualizationCartesian.prototype = $extend(rg.contro
 	,transformData: function(dps) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 1, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
+			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 163, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
 			return $r;
 		}(this));
 	}
@@ -1756,7 +2045,7 @@ rg.controller.interactive.Downloader.prototype = {
 	,defaultBackgroundColor: null
 	,container: null
 	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 1, className : "rg.controller.interactive.Downloader", methodName : "download"});
+		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
 		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
 		if(null != bg) ob.backgroundcolor = bg;
@@ -1764,7 +2053,7 @@ rg.controller.interactive.Downloader.prototype = {
 		if(null != cls) ob.className = cls;
 		var http = new haxe.Http(this.serviceUrl);
 		if(null != error) http.onError = error; else http.onError = function(e) {
-			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 1, className : "rg.controller.interactive.Downloader", methodName : "download"});
+			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 56, className : "rg.controller.interactive.Downloader", methodName : "download"});
 		};
 		http.onData = (function(f,a1,a2) {
 			return function(a3) {
@@ -2152,9 +2441,9 @@ rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
 		});
 		var cont = choice.enter().append("svg:g").attr("class").string("node");
 		if(this.layerWidth > 0) {
-			($_=cont.append("svg:rect").attr("class").stringf(function(n,_) {
+			cont.append("svg:rect").attr("class").stringf(function(n,_) {
 				return "fill fill-" + (me.isdummy(n)?me.styleEdgeForward + " nonode":me.styleNode + " node");
-			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this)),$_.filter.$bind($_));
+			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this));
 			cont.each(function(node,_) {
 				me.addToMap(node.id,"node",thx.js.Dom.selectNode(thx.js.Group.current));
 			});
@@ -3195,7 +3484,11 @@ rg.controller.info.Info.feed = function(info,ob) {
 		var filter = filters[_g];
 		++_g;
 		if(Reflect.hasField(ob,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 1, className : "rg.controller.info.Info", methodName : "feed"});
+			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) {
+				haxe.Log.trace(value,{ fileName : "Info.hx", lineNumber : 32, className : "rg.controller.info.Info", methodName : "feed"});
+				haxe.Log.trace(filter.field,{ fileName : "Info.hx", lineNumber : 33, className : "rg.controller.info.Info", methodName : "feed"});
+				throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 34, className : "rg.controller.info.Info", methodName : "feed"});
+			}
 			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
 			var _g1 = 0;
 			while(_g1 < items.length) {
@@ -3266,64 +3559,6 @@ rg.controller.info.VariableType.Independent.__enum__ = rg.controller.info.Variab
 rg.controller.info.VariableType.Dependent = ["Dependent",2];
 rg.controller.info.VariableType.Dependent.toString = $estr;
 rg.controller.info.VariableType.Dependent.__enum__ = rg.controller.info.VariableType;
-var EReg = $hxClasses["EReg"] = function(r,opt) {
-	opt = opt.split("u").join("");
-	this.r = new RegExp(r,opt);
-}
-EReg.__name__ = ["EReg"];
-EReg.prototype = {
-	r: null
-	,match: function(s) {
-		this.r.m = this.r.exec(s);
-		this.r.s = s;
-		this.r.l = RegExp.leftContext;
-		this.r.r = RegExp.rightContext;
-		return this.r.m != null;
-	}
-	,matched: function(n) {
-		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
-			var $r;
-			throw "EReg::matched";
-			return $r;
-		}(this));
-	}
-	,matchedLeft: function() {
-		if(this.r.m == null) throw "No string matched";
-		if(this.r.l == null) return this.r.s.substr(0,this.r.m.index);
-		return this.r.l;
-	}
-	,matchedRight: function() {
-		if(this.r.m == null) throw "No string matched";
-		if(this.r.r == null) {
-			var sz = this.r.m.index + this.r.m[0].length;
-			return this.r.s.substr(sz,this.r.s.length - sz);
-		}
-		return this.r.r;
-	}
-	,matchedPos: function() {
-		if(this.r.m == null) throw "No string matched";
-		return { pos : this.r.m.index, len : this.r.m[0].length};
-	}
-	,split: function(s) {
-		var d = "#__delim__#";
-		return s.replace(this.r,d).split(d);
-	}
-	,replace: function(s,by) {
-		return s.replace(this.r,by);
-	}
-	,customReplace: function(s,f) {
-		var buf = new StringBuf();
-		while(true) {
-			if(!this.match(s)) break;
-			buf.add(this.matchedLeft());
-			buf.add(f(this));
-			s = this.matchedRight();
-		}
-		buf.b[buf.b.length] = s == null?"null":s;
-		return buf.b.join("");
-	}
-	,__class__: EReg
-}
 var Dates = $hxClasses["Dates"] = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
@@ -3422,7 +3657,7 @@ Dates.formatf = function(param,params,culture) {
 		};
 		break;
 	default:
-		throw new thx.error.Error("Unsupported date format: {0}",null,format,{ fileName : "Dates.hx", lineNumber : 1, className : "Dates", methodName : "formatf"});
+		throw new thx.error.Error("Unsupported date format: {0}",null,format,{ fileName : "Dates.hx", lineNumber : 71, className : "Dates", methodName : "formatf"});
 	}
 }
 Dates.interpolate = function(f,a,b,equation) {
@@ -3458,7 +3693,7 @@ Dates.snap = function(time,period,mode) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 1, className : "Dates", methodName : "snap"});
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 111, className : "Dates", methodName : "snap"});
 			return $r;
 		}(this));
 	} else if(mode > 0) switch(period) {
@@ -3483,7 +3718,7 @@ Dates.snap = function(time,period,mode) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 1, className : "Dates", methodName : "snap"});
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 136, className : "Dates", methodName : "snap"});
 			return $r;
 		}(this));
 	} else switch(period) {
@@ -3508,7 +3743,7 @@ Dates.snap = function(time,period,mode) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 1, className : "Dates", methodName : "snap"});
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 162, className : "Dates", methodName : "snap"});
 			return $r;
 		}(this));
 	}
@@ -3539,7 +3774,7 @@ Dates.snapToWeekDay = function(time,day) {
 		s = 6;
 		break;
 	default:
-		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 1, className : "Dates", methodName : "snapToWeekDay"});
+		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 188, className : "Dates", methodName : "snapToWeekDay"});
 	}
 	return time - (d - s) % 7 * 24 * 60 * 60 * 1000;
 }
@@ -3965,7 +4200,7 @@ rg.view.svg.chart.CartesianChart.prototype = $extend(rg.view.svg.chart.Chart.pro
 		this.yVariables = variables.slice(1);
 	}
 	,data: function(dps) {
-		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 1, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
+		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 38, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
 	}
 	,__class__: rg.view.svg.chart.CartesianChart
 });
@@ -4106,7 +4341,7 @@ rg.view.svg.widget.Map.loadJsonAjax = function(url,handler) {
 		handler(json);
 	};
 	http.onError = function(err) {
-		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 1, className : "rg.view.svg.widget.Map", methodName : "loadJsonAjax"});
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.view.svg.widget.Map", methodName : "loadJsonAjax"});
 	};
 	http.request(false);
 }
@@ -4129,7 +4364,7 @@ rg.view.svg.widget.Map.prototype = {
 			this.loadGeoJson(path,mappingurl,usejsonp);
 			break;
 		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 1, className : "rg.view.svg.widget.Map", methodName : "load"});
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 58, className : "rg.view.svg.widget.Map", methodName : "load"});
 		}
 	}
 	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
@@ -4172,7 +4407,7 @@ rg.view.svg.widget.Map.prototype = {
 			}
 			break;
 		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 1, className : "rg.view.svg.widget.Map", methodName : "draw"});
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.view.svg.widget.Map", methodName : "draw"});
 			break;
 		default:
 			this.g.append("svg:path").attr("d").string(path.path(json));
@@ -4251,19 +4486,19 @@ rg.controller.info.InfoDataSource.filters = function() {
 	return [{ field : "data", validator : function(v) {
 		return Std["is"](v,Array);
 	}, filter : function(v) {
-		return [{ field : "loader", value : function(handler) {
+		return [{ field : "loader", value : { load : function(handler) {
 			handler(v);
-		}}];
+		}}}];
 	}},{ field : "datapoints", validator : function(v) {
 		return Std["is"](v,Array);
 	}, filter : function(v) {
-		return [{ field : "loader", value : function(handler) {
+		return [{ field : "loader", value : { load : function(handler) {
 			handler(v);
-		}}];
+		}}}];
 	}},{ field : "load", validator : function(v) {
-		return Reflect.isFunction(v);
+		return Reflect.isFunction(v) || null != Reflect.field(v,"load");
 	}, filter : function(v) {
-		return [{ field : "loader", value : v}];
+		return [{ field : "loader", value : Reflect.isObject(v)?v.load.$bind(v):v}];
 	}}];
 }
 rg.controller.info.InfoDataSource.prototype = {
@@ -4304,7 +4539,7 @@ rg.controller.factory.FactoryGeoProjection.prototype = {
 		default:
 			return (function($this) {
 				var $r;
-				throw new thx.error.Error("the projection '{0}' does not exist or is not implemented",[info.projection],null,{ fileName : "FactoryGeoProjection.hx", lineNumber : 1, className : "rg.controller.factory.FactoryGeoProjection", methodName : "create"});
+				throw new thx.error.Error("the projection '{0}' does not exist or is not implemented",[info.projection],null,{ fileName : "FactoryGeoProjection.hx", lineNumber : 68, className : "rg.controller.factory.FactoryGeoProjection", methodName : "create"});
 				return $r;
 			}(this));
 		}
@@ -4354,6 +4589,59 @@ rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) {
 rg.view.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
+rg.query.Transformers.__name__ = ["rg","query","Transformers"];
+rg.query.Transformers.cross = function(values) {
+	return function(data) {
+		var results = [];
+		var _g = 0;
+		while(_g < data.length) {
+			var item = data[_g];
+			++_g;
+			var _g1 = 0;
+			while(_g1 < values.length) {
+				var value = values[_g1];
+				++_g1;
+				results.push(Objects.copyTo(value,Objects.copyTo(item,{ })));
+			}
+		}
+		return results;
+	};
+}
+rg.query.Transformers.map = function(handler) {
+	return function(data) {
+		return data.map(handler);
+	};
+}
+rg.query.Transformers.filter = function(handler) {
+	return function(data) {
+		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.sort = function(handler) {
+	return function(data) {
+		return (function($this) {
+			var $r;
+			data.sort(null == handler?Dynamics.compare:handler);
+			$r = data;
+			return $r;
+		}(this));
+	};
+}
+rg.query.Transformers.limit = function(offset,count) {
+	return function(data) {
+		if(offset >= data.length) return [];
+		var end = offset + count > data.length?data.length:offset + count;
+		return data.slice(offset,end);
+	};
+}
+rg.query.Transformers.reverse = function(arr) {
+	arr.reverse();
+	return arr;
+}
+rg.query.Transformers.prototype = {
+	__class__: rg.query.Transformers
+}
 if(!thx.math) thx.math = {}
 thx.math.Ease = $hxClasses["thx.math.Ease"] = function() { }
 thx.math.Ease.__name__ = ["thx","math","Ease"];
@@ -4553,7 +4841,7 @@ rg.controller.info.InfoMap.fromTemplate = function(t) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 1, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
+			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 194, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
 			return $r;
 		}(this));
 	}
@@ -4628,6 +4916,213 @@ thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
 	}
 	,__class__: thx.color.Hsl
 });
+var Floats = $hxClasses["Floats"] = function() { }
+Floats.__name__ = ["Floats"];
+Floats.normalize = function(v) {
+	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
+}
+Floats.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Floats.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
+Floats.range = function(start,stop,step) {
+	if(step == null) step = 1.0;
+	if(null == stop) {
+		stop = start;
+		start = 0.0;
+	}
+	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 50, className : "Floats", methodName : "range"});
+	var range = [], i = -1.0, j;
+	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	return range;
+}
+Floats.sign = function(v) {
+	return v < 0?-1:1;
+}
+Floats.abs = function(a) {
+	return a < 0?-a:a;
+}
+Floats.min = function(a,b) {
+	return a < b?a:b;
+}
+Floats.max = function(a,b) {
+	return a > b?a:b;
+}
+Floats.wrap = function(v,min,max) {
+	var range = max - min + 1;
+	if(v < min) v += range * ((min - v) / range + 1);
+	return min + (v - min) % range;
+}
+Floats.circularWrap = function(v,max) {
+	v = v % max;
+	if(v < 0) v += max;
+	return v;
+}
+Floats.interpolate = function(f,a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return a + equation(f) * (b - a);
+}
+Floats.interpolatef = function(a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = b - a;
+	return function(f) {
+		return a + equation(f) * d;
+	};
+}
+Floats.interpolateClampf = function(min,max,equation) {
+	if(null == equation) equation = thx.math.Equations.linear;
+	return function(a,b) {
+		var d = b - a;
+		return function(f) {
+			return a + equation(Floats.clamp(f,min,max)) * d;
+		};
+	};
+}
+Floats.format = function(v,param,params,culture) {
+	return (Floats.formatf(param,params,culture))(v);
+}
+Floats.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"D");
+	var format = params.shift();
+	var decimals = params.length > 0?Std.parseInt(params[0]):null;
+	switch(format) {
+	case "D":
+		return function(v) {
+			return thx.culture.FormatNumber.decimal(v,decimals,culture);
+		};
+	case "I":
+		return function(v) {
+			return thx.culture.FormatNumber["int"](v,culture);
+		};
+	case "C":
+		var s = params.length > 1?params[1]:null;
+		return function(v) {
+			return thx.culture.FormatNumber.currency(v,s,decimals,culture);
+		};
+	case "P":
+		return function(v) {
+			return thx.culture.FormatNumber.percent(v,decimals,culture);
+		};
+	case "M":
+		return function(v) {
+			return thx.culture.FormatNumber.permille(v,decimals,culture);
+		};
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 145, className : "Floats", methodName : "formatf"});
+			return $r;
+		}(this));
+	}
+}
+Floats.canParse = function(s) {
+	return Floats._reparse.match(s);
+}
+Floats.parse = function(s) {
+	if(s.substr(0,1) == "+") s = s.substr(1);
+	return Std.parseFloat(s);
+}
+Floats.compare = function(a,b) {
+	return a < b?-1:a > b?1:0;
+}
+Floats.isNumeric = function(v) {
+	return Std["is"](v,Float) || Std["is"](v,Int);
+}
+Floats.equals = function(a,b,approx) {
+	if(approx == null) approx = 1e-5;
+	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
+	return Math.abs(b - a) < approx;
+}
+Floats.uninterpolatef = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return (x - a) * b;
+	};
+}
+Floats.uninterpolateClampf = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return Floats.clamp((x - a) * b,0.0,1.0);
+	};
+}
+Floats.round = function(number,precision) {
+	if(precision == null) precision = 2;
+	number *= Math.pow(10,precision);
+	return Math.round(number) / Math.pow(10,precision);
+}
+Floats.prototype = {
+	__class__: Floats
+}
+thx.math.Equations = $hxClasses["thx.math.Equations"] = function() { }
+thx.math.Equations.__name__ = ["thx","math","Equations"];
+thx.math.Equations.linear = function(v) {
+	return v;
+}
+thx.math.Equations.polynomial = function(t,e) {
+	return Math.pow(t,e);
+}
+thx.math.Equations.quadratic = function(t) {
+	return thx.math.Equations.polynomial(t,2);
+}
+thx.math.Equations.cubic = function(t) {
+	return thx.math.Equations.polynomial(t,3);
+}
+thx.math.Equations.sin = function(t) {
+	return 1 - Math.cos(t * Math.PI / 2);
+}
+thx.math.Equations.exponential = function(t) {
+	return t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
+}
+thx.math.Equations.circle = function(t) {
+	return 1 - Math.sqrt(1 - t * t);
+}
+thx.math.Equations.elastic = function(t,a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+}
+thx.math.Equations.elasticf = function(a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return function(t) {
+		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+	};
+}
+thx.math.Equations.back = function(t,s) {
+	if(null == s) s = 1.70158;
+	return t * t * ((s + 1) * t - s);
+}
+thx.math.Equations.backf = function(s) {
+	if(null == s) s = 1.70158;
+	return function(t) {
+		return t * t * ((s + 1) * t - s);
+	};
+}
+thx.math.Equations.bounce = function(t) {
+	return t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
+}
+thx.math.Equations.polynomialf = function(e) {
+	return function(t) {
+		thx.math.Equations.polynomial(t,e);
+	};
+}
+thx.math.Equations.prototype = {
+	__class__: thx.math.Equations
+}
 if(!thx.math.scale) thx.math.scale = {}
 thx.math.scale.Linears = $hxClasses["thx.math.scale.Linears"] = function() { }
 thx.math.scale.Linears.__name__ = ["thx","math","scale","Linears"];
@@ -4831,15 +5326,15 @@ rg.data.AxisOrdinal.prototype = {
 	}
 	,range: function(start,end) {
 		var values = this.values(), s = values.indexOf(start), e = values.indexOf(end);
-		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 1, className : "rg.data.AxisOrdinal", methodName : "range"});
-		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 1, className : "rg.data.AxisOrdinal", methodName : "range"});
+		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 41, className : "rg.data.AxisOrdinal", methodName : "range"});
+		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 43, className : "rg.data.AxisOrdinal", methodName : "range"});
 		return values.slice(s,e + 1);
 	}
 	,scale: function(start,end,v) {
 		var values = this.values(), s = values.indexOf(start), e = values.indexOf(end), p = values.indexOf(v);
-		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 1, className : "rg.data.AxisOrdinal", methodName : "scale"});
-		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 1, className : "rg.data.AxisOrdinal", methodName : "scale"});
-		if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 1, className : "rg.data.AxisOrdinal", methodName : "scale"});
+		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 54, className : "rg.data.AxisOrdinal", methodName : "scale"});
+		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 56, className : "rg.data.AxisOrdinal", methodName : "scale"});
+		if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 58, className : "rg.data.AxisOrdinal", methodName : "scale"});
 		return rg.data.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
 	}
 	,first: function() {
@@ -4851,7 +5346,7 @@ rg.data.AxisOrdinal.prototype = {
 	,values: function() {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 1, className : "rg.data.AxisOrdinal", methodName : "values"});
+			throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.data.AxisOrdinal", methodName : "values"});
 			return $r;
 		}(this));
 	}
@@ -5679,7 +6174,7 @@ chx.text.Sprintf.format = function(format,args) {
 			}
 			if(fieldOutcome != true) {
 				if(chx.text.Sprintf.DEBUG) destString += fieldOutcome;
-				if(chx.text.Sprintf.TRACE) haxe.Log.trace(fieldOutcome,{ fileName : "Sprintf.hx", lineNumber : 1, className : "chx.text.Sprintf", methodName : "format"});
+				if(chx.text.Sprintf.TRACE) haxe.Log.trace(fieldOutcome,{ fileName : "Sprintf.hx", lineNumber : 243, className : "chx.text.Sprintf", methodName : "format"});
 			}
 		}
 	}
@@ -6972,6 +7467,45 @@ rg.view.svg.panel.Panels.ancestorBoundingBox = function(panel,ancestor) {
 rg.view.svg.panel.Panels.prototype = {
 	__class__: rg.view.svg.panel.Panels
 }
+if(!thx.languages) thx.languages = {}
+thx.languages.En = $hxClasses["thx.languages.En"] = function() {
+	this.name = "en";
+	this.english = "English";
+	this["native"] = "English";
+	this.iso2 = "en";
+	this.iso3 = "eng";
+	this.pluralRule = 1;
+	thx.culture.Language.add(this);
+}
+thx.languages.En.__name__ = ["thx","languages","En"];
+thx.languages.En.__properties__ = {get_language:"getLanguage"}
+thx.languages.En.language = null;
+thx.languages.En.getLanguage = function() {
+	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
+	return thx.languages.En.language;
+}
+thx.languages.En.__super__ = thx.culture.Language;
+thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
+	__class__: thx.languages.En
+});
+thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
+	this.decimals = decimals;
+	this.decimalsSeparator = decimalsSeparator;
+	this.groups = groups;
+	this.groupsSeparator = groupsSeparator;
+	this.patternNegative = patternNegative;
+	this.patternPositive = patternPositive;
+}
+thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
+thx.culture.core.NumberInfo.prototype = {
+	decimals: null
+	,decimalsSeparator: null
+	,groups: null
+	,groupsSeparator: null
+	,patternNegative: null
+	,patternPositive: null
+	,__class__: thx.culture.core.NumberInfo
+}
 if(!thx.cultures) thx.cultures = {}
 thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
 	this.language = thx.languages.En.getLanguage();
@@ -7164,7 +7698,7 @@ thx.date.DateParser.parse = function(s,d) {
 			break;
 		}
 	}
-	if(!found) throw new thx.error.Error("no date information found in the string '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 1, className : "thx.date.DateParser", methodName : "parse"});
+	if(!found) throw new thx.error.Error("no date information found in the string '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 338, className : "thx.date.DateParser", methodName : "parse"});
 	return Date.fromTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
 }
 thx.date.DateParser.parseTime = function(s) {
@@ -7208,7 +7742,7 @@ thx.date.DateParser.parseTime = function(s) {
 		result.second = 59;
 		result.millis = 0.999;
 		break;
-	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 1, className : "thx.date.DateParser", methodName : "parseTime"});
+	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 405, className : "thx.date.DateParser", methodName : "parseTime"});
 	return result;
 }
 thx.date.DateParser.fixyear = function(y) {
@@ -7286,27 +7820,6 @@ rg.view.svg.chart.GradientEffects.parse = function(s) {
 rg.view.svg.chart.GradientEffects.prototype = {
 	__class__: rg.view.svg.chart.GradientEffects
 }
-if(!thx.languages) thx.languages = {}
-thx.languages.En = $hxClasses["thx.languages.En"] = function() {
-	this.name = "en";
-	this.english = "English";
-	this["native"] = "English";
-	this.iso2 = "en";
-	this.iso3 = "eng";
-	this.pluralRule = 1;
-	thx.culture.Language.add(this);
-}
-thx.languages.En.__name__ = ["thx","languages","En"];
-thx.languages.En.__properties__ = {get_language:"getLanguage"}
-thx.languages.En.language = null;
-thx.languages.En.getLanguage = function() {
-	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
-	return thx.languages.En.language;
-}
-thx.languages.En.__super__ = thx.culture.Language;
-thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
-	__class__: thx.languages.En
-});
 var haxe = haxe || {}
 haxe.Int32 = $hxClasses["haxe.Int32"] = function() { }
 haxe.Int32.__name__ = ["haxe","Int32"];
@@ -7628,7 +8141,7 @@ rg.graph.GraphLayout.prototype = {
 		}
 	}
 	,cell: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 1, className : "rg.graph.GraphLayout", methodName : "cell"});
+		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 57, className : "rg.graph.GraphLayout", methodName : "cell"});
 		var pos = this._map.get(node.id);
 		if(null == pos) return null;
 		return new rg.graph.LayoutCell(pos[0],pos[1],this._layers.length,this._layers[pos[0]].length);
@@ -7910,7 +8423,7 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 	}
 	,create: function(tail,head,weight,data) {
 		if(weight == null) weight = 1.0;
-		if(tail.graph != head.graph || tail.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 1, className : "rg.graph.GraphEdges", methodName : "create"});
+		if(tail.graph != head.graph || tail.graph != this.graph) throw new thx.error.Error("can't create an edge between nodes on different graphs",null,null,{ fileName : "GraphEdges.hx", lineNumber : 39, className : "rg.graph.GraphEdges", methodName : "create"});
 		return this._create(++this.nextid,tail,head,weight,data);
 	}
 	,_create: function(id,tail,head,weight,data) {
@@ -7921,7 +8434,7 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		return e;
 	}
 	,remove: function(edge) {
-		if(edge.graph != this.graph) throw new thx.error.Error("remove: the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 1, className : "rg.graph.GraphEdges", methodName : "remove"});
+		if(edge.graph != this.graph) throw new thx.error.Error("remove: the edge is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 55, className : "rg.graph.GraphEdges", methodName : "remove"});
 		this._remove(edge);
 	}
 	,_remove: function(edge) {
@@ -7931,7 +8444,7 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		edge.destroy();
 	}
 	,unlink: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("unlink: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 1, className : "rg.graph.GraphEdges", methodName : "unlink"});
+		if(node.graph != this.graph) throw new thx.error.Error("unlink: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 70, className : "rg.graph.GraphEdges", methodName : "unlink"});
 		this._unlink(node,this.edgesp);
 		this._unlink(node,this.edgesn);
 	}
@@ -7965,11 +8478,11 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		});
 	}
 	,unlinkPositives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 1, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 121, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
 		this._unlink(node,this.edgesp);
 	}
 	,unlinkNegatives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 1, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 128, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
 		this._unlink(node,this.edgesn);
 	}
 	,_unlink: function(node,connections) {
@@ -8179,149 +8692,6 @@ thx.math.scale.IScale.prototype = {
 	,getDomain: null
 	,getRange: null
 	,__class__: thx.math.scale.IScale
-}
-var Floats = $hxClasses["Floats"] = function() { }
-Floats.__name__ = ["Floats"];
-Floats.normalize = function(v) {
-	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
-}
-Floats.clamp = function(v,min,max) {
-	if(v < min) return min; else if(v > max) return max; else return v;
-}
-Floats.clampSym = function(v,max) {
-	if(v < -max) return -max; else if(v > max) return max; else return v;
-}
-Floats.range = function(start,stop,step) {
-	if(step == null) step = 1.0;
-	if(null == stop) {
-		stop = start;
-		start = 0.0;
-	}
-	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 1, className : "Floats", methodName : "range"});
-	var range = [], i = -1.0, j;
-	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
-	return range;
-}
-Floats.sign = function(v) {
-	return v < 0?-1:1;
-}
-Floats.abs = function(a) {
-	return a < 0?-a:a;
-}
-Floats.min = function(a,b) {
-	return a < b?a:b;
-}
-Floats.max = function(a,b) {
-	return a > b?a:b;
-}
-Floats.wrap = function(v,min,max) {
-	var range = max - min + 1;
-	if(v < min) v += range * ((min - v) / range + 1);
-	return min + (v - min) % range;
-}
-Floats.circularWrap = function(v,max) {
-	v = v % max;
-	if(v < 0) v += max;
-	return v;
-}
-Floats.interpolate = function(f,a,b,equation) {
-	if(b == null) b = 1.0;
-	if(a == null) a = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	return a + equation(f) * (b - a);
-}
-Floats.interpolatef = function(a,b,equation) {
-	if(b == null) b = 1.0;
-	if(a == null) a = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	var d = b - a;
-	return function(f) {
-		return a + equation(f) * d;
-	};
-}
-Floats.interpolateClampf = function(min,max,equation) {
-	if(null == equation) equation = thx.math.Equations.linear;
-	return function(a,b) {
-		var d = b - a;
-		return function(f) {
-			return a + equation(Floats.clamp(f,min,max)) * d;
-		};
-	};
-}
-Floats.format = function(v,param,params,culture) {
-	return (Floats.formatf(param,params,culture))(v);
-}
-Floats.formatf = function(param,params,culture) {
-	params = thx.culture.FormatParams.params(param,params,"D");
-	var format = params.shift();
-	var decimals = params.length > 0?Std.parseInt(params[0]):null;
-	switch(format) {
-	case "D":
-		return function(v) {
-			return thx.culture.FormatNumber.decimal(v,decimals,culture);
-		};
-	case "I":
-		return function(v) {
-			return thx.culture.FormatNumber["int"](v,culture);
-		};
-	case "C":
-		var s = params.length > 1?params[1]:null;
-		return function(v) {
-			return thx.culture.FormatNumber.currency(v,s,decimals,culture);
-		};
-	case "P":
-		return function(v) {
-			return thx.culture.FormatNumber.percent(v,decimals,culture);
-		};
-	case "M":
-		return function(v) {
-			return thx.culture.FormatNumber.permille(v,decimals,culture);
-		};
-	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 1, className : "Floats", methodName : "formatf"});
-			return $r;
-		}(this));
-	}
-}
-Floats.canParse = function(s) {
-	return Floats._reparse.match(s);
-}
-Floats.parse = function(s) {
-	if(s.substr(0,1) == "+") s = s.substr(1);
-	return Std.parseFloat(s);
-}
-Floats.compare = function(a,b) {
-	return a < b?-1:a > b?1:0;
-}
-Floats.isNumeric = function(v) {
-	return Std["is"](v,Float) || Std["is"](v,Int);
-}
-Floats.equals = function(a,b,approx) {
-	if(approx == null) approx = 1e-5;
-	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
-	return Math.abs(b - a) < approx;
-}
-Floats.uninterpolatef = function(a,b) {
-	b = 1 / (b - a);
-	return function(x) {
-		return (x - a) * b;
-	};
-}
-Floats.uninterpolateClampf = function(a,b) {
-	b = 1 / (b - a);
-	return function(x) {
-		return Floats.clamp((x - a) * b,0.0,1.0);
-	};
-}
-Floats.round = function(number,precision) {
-	if(precision == null) precision = 2;
-	number *= Math.pow(10,precision);
-	return Math.round(number) / Math.pow(10,precision);
-}
-Floats.prototype = {
-	__class__: Floats
 }
 rg.data.IndependentVariableProcessor = $hxClasses["rg.data.IndependentVariableProcessor"] = function() {
 }
@@ -9025,24 +9395,6 @@ Iterables.isIterable = function(v) {
 Iterables.prototype = {
 	__class__: Iterables
 }
-thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
-	this.decimals = decimals;
-	this.decimalsSeparator = decimalsSeparator;
-	this.groups = groups;
-	this.groupsSeparator = groupsSeparator;
-	this.patternNegative = patternNegative;
-	this.patternPositive = patternPositive;
-}
-thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
-thx.culture.core.NumberInfo.prototype = {
-	decimals: null
-	,decimalsSeparator: null
-	,groups: null
-	,groupsSeparator: null
-	,patternNegative: null
-	,patternPositive: null
-	,__class__: thx.culture.core.NumberInfo
-}
 rg.controller.factory.FactoryVariable = $hxClasses["rg.controller.factory.FactoryVariable"] = function() {
 	this.independentFactory = new rg.controller.factory.FactoryVariableIndependent();
 	this.dependentFactory = new rg.controller.factory.FactoryVariableDependent();
@@ -9320,10 +9672,12 @@ Dynamics.formatf = function(param,params,nullstring,culture) {
 			break;
 		case 4:
 			return Objects.format(v,param,params,culture);
+		case 5:
+			return "function()";
 		default:
 			return (function($this) {
 				var $r;
-				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 1, className : "Dynamics", methodName : "formatf"});
+				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 44, className : "Dynamics", methodName : "formatf"});
 				return $r;
 			}(this));
 		}
@@ -9335,7 +9689,7 @@ Dynamics.interpolate = function(v,a,b,equation) {
 Dynamics.interpolatef = function(a,b,equation) {
 	var ta = Type["typeof"](a);
 	var tb = Type["typeof"](b);
-	if(!((Std["is"](a,Float) || Std["is"](a,Int)) && (Std["is"](b,Float) || Std["is"](b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 1, className : "Dynamics", methodName : "interpolatef"});
+	if(!((Std["is"](a,Float) || Std["is"](a,Int)) && (Std["is"](b,Float) || Std["is"](b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 59, className : "Dynamics", methodName : "interpolatef"});
 	var $e = (ta);
 	switch( $e[1] ) {
 	case 0:
@@ -9360,11 +9714,11 @@ Dynamics.interpolatef = function(a,b,equation) {
 		case "Date":
 			return Dates.interpolatef(a,b,equation);
 		default:
-			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 1, className : "Dynamics", methodName : "interpolatef"});
+			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 77, className : "Dynamics", methodName : "interpolatef"});
 		}
 		break;
 	default:
-		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 1, className : "Dynamics", methodName : "interpolatef"});
+		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 79, className : "Dynamics", methodName : "interpolatef"});
 	}
 }
 Dynamics.string = function(v) {
@@ -9414,7 +9768,7 @@ Dynamics.string = function(v) {
 	}
 }
 Dynamics.compare = function(a,b) {
-	if(!Types.sameType(a,b)) throw new thx.error.Error("cannot compare 2 different types",null,null,{ fileName : "Dynamics.hx", lineNumber : 1, className : "Dynamics", methodName : "compare"});
+	if(!Types.sameType(a,b)) throw new thx.error.Error("cannot compare 2 different types",null,null,{ fileName : "Dynamics.hx", lineNumber : 131, className : "Dynamics", methodName : "compare"});
 	if(null == a && null == b) return 0;
 	if(null == a) return -1;
 	if(null == b) return 1;
@@ -9483,7 +9837,8 @@ Dynamics.comparef = function(sample) {
 		return Dynamics.compare;
 	}
 }
-Dynamics.clone = function(v) {
+Dynamics.clone = function(v,cloneInstances) {
+	if(cloneInstances == null) cloneInstances = false;
 	var $e = (Type["typeof"](v));
 	switch( $e[1] ) {
 	case 0:
@@ -9515,14 +9870,16 @@ Dynamics.clone = function(v) {
 		case "String":case "Date":
 			return v;
 		default:
-			var o = Type.createEmptyInstance(c);
-			var _g = 0, _g1 = Reflect.fields(v);
-			while(_g < _g1.length) {
-				var field = _g1[_g];
-				++_g;
-				o[field] = Dynamics.clone(Reflect.field(v,field));
-			}
-			return o;
+			if(cloneInstances) {
+				var o = Type.createEmptyInstance(c);
+				var _g = 0, _g1 = Reflect.fields(v);
+				while(_g < _g1.length) {
+					var field = _g1[_g];
+					++_g;
+					o[field] = Dynamics.clone(Reflect.field(v,field));
+				}
+				return o;
+			} else return v;
 		}
 		break;
 	}
@@ -9640,7 +9997,7 @@ Dynamics.same = function(a,b) {
 	}
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 1, className : "Dynamics", methodName : "same"});
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 371, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
 }
@@ -9693,7 +10050,7 @@ rg.controller.factory.FactorySvgVisualization.prototype = {
 			chart.info = chart.infoStream = rg.controller.info.Info.feed(new rg.controller.info.InfoStreamGraph(),options);
 			return chart;
 		default:
-			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 1, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
+			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 76, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
 		}
 	}
 	,__class__: rg.controller.factory.FactorySvgVisualization
@@ -10606,7 +10963,7 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 1, className : "rg.app.charts.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 117, className : "rg.app.charts.MVPOptions", methodName : "complete"});
 	}
 	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
 	if(null == options.logoposition) options.logoposition = (function($this) {
@@ -11445,7 +11802,7 @@ thx.json.JsonDecoder.prototype = {
 	}
 	,error: function(msg) {
 		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + this.src.substr(this.pos) + "...";
-		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 1, className : "thx.json.JsonDecoder", methodName : "error"});
+		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 358, className : "thx.json.JsonDecoder", methodName : "error"});
 	}
 	,__class__: thx.json.JsonDecoder
 }
@@ -12622,7 +12979,7 @@ rg.controller.factory.FactoryHtmlVisualization.prototype = {
 			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoLeaderboard(),options);
 			return chart;
 		default:
-			throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 1, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
+			throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 35, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
 		}
 		return null;
 	}
@@ -12755,7 +13112,7 @@ List.prototype = {
 	,__class__: List
 }
 thx.error.AbstractMethod = $hxClasses["thx.error.AbstractMethod"] = function(posInfo) {
-	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 1, className : "thx.error.AbstractMethod", methodName : "new"});
+	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 14, className : "thx.error.AbstractMethod", methodName : "new"});
 }
 thx.error.AbstractMethod.__name__ = ["thx","error","AbstractMethod"];
 thx.error.AbstractMethod.__super__ = thx.error.Error;
@@ -13113,14 +13470,14 @@ rg.data.Variable.prototype = {
 	}
 	,getMinF: function() {
 		if(null == this.minf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 1, className : "rg.data.Variable", methodName : "getMinF"});
+			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 48, className : "rg.data.Variable", methodName : "getMinF"});
 			this.setMinF(($_=this.axis,$_.min.$bind($_)));
 		}
 		return this.minf;
 	}
 	,getMaxF: function() {
 		if(null == this.maxf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 1, className : "rg.data.Variable", methodName : "getMaxF"});
+			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 59, className : "rg.data.Variable", methodName : "getMaxF"});
 			this.setMaxF(($_=this.axis,$_.max.$bind($_)));
 		}
 		return this.maxf;
@@ -14693,7 +15050,7 @@ thx.svg.PathGeoJson.applyBounds = function(d,f) {
 		}
 		break;
 	default:
-		throw new thx.error.Error("invalid geomtry type '{0}'",null,d.type,{ fileName : "PathGeoJson.hx", lineNumber : 1, className : "thx.svg.PathGeoJson", methodName : "applyBounds"});
+		throw new thx.error.Error("invalid geomtry type '{0}'",null,d.type,{ fileName : "PathGeoJson.hx", lineNumber : 113, className : "thx.svg.PathGeoJson", methodName : "applyBounds"});
 	}
 }
 thx.svg.PathGeoJson.prototype = {
@@ -15724,7 +16081,7 @@ rg.controller.factory.FactoryVariableDependent = $hxClasses["rg.controller.facto
 rg.controller.factory.FactoryVariableDependent.__name__ = ["rg","controller","factory","FactoryVariableDependent"];
 rg.controller.factory.FactoryVariableDependent.prototype = {
 	create: function(info,isnumeric) {
-		if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 1, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
+		if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 18, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
 		var axiscreator = new rg.controller.factory.FactoryAxis(), variable = new rg.data.VariableDependent(info.type,info.scaleDistribution), axis = axiscreator.create(info.type,isnumeric,variable,info.values);
 		variable.setAxis(axis);
 		variable.setMinF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min));
@@ -16287,7 +16644,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	switch(name) {
 	case "fixed":
 		var v = Std.parseFloat(s.split(":")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 1, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 		return rg.view.svg.widget.LabelOrientation.FixedAngle(v);
 	case "ortho":case "orthogonal":
 		return rg.view.svg.widget.LabelOrientation.Orthogonal;
@@ -16296,7 +16653,7 @@ rg.controller.info.InfoPieChart.filterOrientation = function(s) {
 	case "horizontal":
 		return rg.view.svg.widget.LabelOrientation.FixedAngle(0);
 	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 1, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 69, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
 	}
 }
 rg.controller.info.InfoPieChart.filters = function() {
@@ -16350,7 +16707,7 @@ rg.controller.info.InfoPieChart.prototype = {
 	,__class__: rg.controller.info.InfoPieChart
 }
 rg.data.DataLoader = $hxClasses["rg.data.DataLoader"] = function(loader) {
-	if(null == loader) throw new thx.error.NullArgument("loader","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "DataLoader.hx", lineNumber : 1, className : "rg.data.DataLoader", methodName : "new"}); else null;
+	if(null == loader) throw new thx.error.NullArgument("loader","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "DataLoader.hx", lineNumber : 12, className : "rg.data.DataLoader", methodName : "new"}); else null;
 	this.loader = loader;
 	this.onLoad = new hxevents.Dispatcher();
 }
@@ -16367,7 +16724,7 @@ rg.data.DataLoader.prototype = {
 	,__class__: rg.data.DataLoader
 }
 thx.error.NotImplemented = $hxClasses["thx.error.NotImplemented"] = function(posInfo) {
-	thx.error.Error.call(this,"method {0}.{1}() needs to be implemented",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "NotImplemented.hx", lineNumber : 1, className : "thx.error.NotImplemented", methodName : "new"});
+	thx.error.Error.call(this,"method {0}.{1}() needs to be implemented",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "NotImplemented.hx", lineNumber : 13, className : "thx.error.NotImplemented", methodName : "new"});
 }
 thx.error.NotImplemented.__name__ = ["thx","error","NotImplemented"];
 thx.error.NotImplemented.__super__ = thx.error.Error;
@@ -16393,7 +16750,7 @@ rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,va
 		if(Std["is"](value,String)) return function(_,_1) {
 			return thx.date.DateParser.parse(value).getTime();
 		};
-		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 1, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "convertBound"});
+		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 46, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "convertBound"});
 	}
 	return function(_,_1) {
 		return value;
@@ -17394,7 +17751,7 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 		rg.graph.GraphElement.prototype.destroy.call(this);
 	}
 	,isConnectedTo: function(other) {
-		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 1, className : "rg.graph.GNode", methodName : "isConnectedTo"});
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 30, className : "rg.graph.GNode", methodName : "isConnectedTo"});
 		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
 			return edge.head.id == other.id;
 		}) || Iterators.contains(this.graph.edges.negatives(this),null,function(edge) {
@@ -17402,7 +17759,7 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 		});
 	}
 	,connectedBy: function(other) {
-		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 1, className : "rg.graph.GNode", methodName : "connectedBy"});
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 41, className : "rg.graph.GNode", methodName : "connectedBy"});
 		var edge = Iterators.firstf(this.graph.edges.positives(this),function(edge) {
 			return edge.head.id == other.id;
 		});
@@ -17506,7 +17863,7 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 	}
 	,split: function(times,dataf,edgef) {
 		if(times == null) times = 1;
-		if(times < 1) throw new thx.error.Error("the split times parameter must be an integer value greater than zero",null,null,{ fileName : "GEdge.hx", lineNumber : 1, className : "rg.graph.GEdge", methodName : "split"});
+		if(times < 1) throw new thx.error.Error("the split times parameter must be an integer value greater than zero",null,null,{ fileName : "GEdge.hx", lineNumber : 37, className : "rg.graph.GEdge", methodName : "split"});
 		if(null == edgef) edgef = function(_,_1,_2) {
 		};
 		if(null == dataf) dataf = function(_) {
@@ -17529,8 +17886,8 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		return result;
 	}
 	,other: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 1, className : "rg.graph.GEdge", methodName : "other"});
-		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 1, className : "rg.graph.GEdge", methodName : "other"});
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 64, className : "rg.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 70, className : "rg.graph.GEdge", methodName : "other"});
 	}
 	,invert: function() {
 		var inverted = this.graph.edges.create(this.head,this.tail,this.weight,this.data);
@@ -17599,18 +17956,18 @@ thx.data.ValueEncoder.prototype = {
 			this.encodeObject(o);
 			break;
 		case 5:
-			throw new thx.error.Error("unable to encode TFunction type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 1, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			throw new thx.error.Error("unable to encode TFunction type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 39, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 6:
 			var c = $e[2];
-			if(Std["is"](o,String)) this.handler.string(o); else if(Std["is"](o,Array)) this.encodeArray(o); else if(Std["is"](o,Date)) this.handler.date(o); else if(Std["is"](o,Hash)) this.encodeHash(o); else if(Std["is"](o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 1, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			if(Std["is"](o,String)) this.handler.string(o); else if(Std["is"](o,Array)) this.encodeArray(o); else if(Std["is"](o,Date)) this.handler.date(o); else if(Std["is"](o,Hash)) this.encodeHash(o); else if(Std["is"](o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 7:
 			var e = $e[2];
-			throw new thx.error.Error("unable to encode TEnum type '{0}'",null,Type.getEnumName(e),{ fileName : "ValueEncoder.hx", lineNumber : 1, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			throw new thx.error.Error("unable to encode TEnum type '{0}'",null,Type.getEnumName(e),{ fileName : "ValueEncoder.hx", lineNumber : 55, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 8:
-			throw new thx.error.Error("unable to encode TUnknown type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 1, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			throw new thx.error.Error("unable to encode TUnknown type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 57, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		}
 	}
@@ -18079,7 +18436,7 @@ rg.view.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 	if(Reflect.isFunction(v)) return rg.view.svg.chart.ColorScaleMode.Fun(v);
 	if(!Std["is"](v,String)) return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid color mode '{0}'",[v],null,{ fileName : "ColorScaleModes.hx", lineNumber : 1, className : "rg.view.svg.chart.ColorScaleModes", methodName : "createFromDynamic"});
+		throw new thx.error.Error("invalid color mode '{0}'",[v],null,{ fileName : "ColorScaleModes.hx", lineNumber : 19, className : "rg.view.svg.chart.ColorScaleModes", methodName : "createFromDynamic"});
 		return $r;
 	}(this));
 	var s = ((function($this) {
@@ -18412,7 +18769,7 @@ rg.data.AxisGroupByTime.defaultMin = function(periodicity) {
 	case "day":
 		return 1;
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for groupBy min",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 1, className : "rg.data.AxisGroupByTime", methodName : "defaultMin"});
+		throw new thx.error.Error("invalid periodicity '{0}' for groupBy min",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 34, className : "rg.data.AxisGroupByTime", methodName : "defaultMin"});
 	}
 }
 rg.data.AxisGroupByTime.defaultMax = function(periodicity) {
@@ -18428,7 +18785,7 @@ rg.data.AxisGroupByTime.defaultMax = function(periodicity) {
 	case "month":
 		return 11;
 	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for groupBy max",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 1, className : "rg.data.AxisGroupByTime", methodName : "defaultMax"});
+		throw new thx.error.Error("invalid periodicity '{0}' for groupBy max",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 48, className : "rg.data.AxisGroupByTime", methodName : "defaultMax"});
 	}
 }
 rg.data.AxisGroupByTime.__super__ = rg.data.AxisOrdinalFixedValues;
@@ -20402,7 +20759,7 @@ thx.geo.AlbersUsa.prototype = {
 	,invert: function(coords) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.NotImplemented({ fileName : "AlbersUsa.hx", lineNumber : 1, className : "thx.geo.AlbersUsa", methodName : "invert"});
+			throw new thx.error.NotImplemented({ fileName : "AlbersUsa.hx", lineNumber : 67, className : "thx.geo.AlbersUsa", methodName : "invert"});
 			return $r;
 		}(this));
 	}
@@ -20700,7 +21057,7 @@ thx.js.BaseTransition.prototype = {
 	,createTransition: function(selection) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 1, className : "thx.js.BaseTransition", methodName : "createTransition"});
+			throw new thx.error.AbstractMethod({ fileName : "Transition.hx", lineNumber : 243, className : "thx.js.BaseTransition", methodName : "createTransition"});
 			return $r;
 		}(this));
 	}
@@ -20767,74 +21124,6 @@ chx.lang.OverflowException.__super__ = chx.lang.Exception;
 chx.lang.OverflowException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.OverflowException
 });
-var Ints = $hxClasses["Ints"] = function() { }
-Ints.__name__ = ["Ints"];
-Ints.range = function(start,stop,step) {
-	if(step == null) step = 1;
-	if(null == stop) {
-		stop = start;
-		start = 0;
-	}
-	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 19, className : "Ints", methodName : "range"});
-	var range = [], i = -1, j;
-	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
-	return range;
-}
-Ints.sign = function(v) {
-	return v < 0?-1:1;
-}
-Ints.abs = function(a) {
-	return a < 0?-a:a;
-}
-Ints.min = function(a,b) {
-	return a < b?a:b;
-}
-Ints.max = function(a,b) {
-	return a > b?a:b;
-}
-Ints.wrap = function(v,min,max) {
-	return Math.round(Floats.wrap(v,min,max));
-}
-Ints.clamp = function(v,min,max) {
-	if(v < min) return min; else if(v > max) return max; else return v;
-}
-Ints.clampSym = function(v,max) {
-	if(v < -max) return -max; else if(v > max) return max; else return v;
-}
-Ints.interpolate = function(f,min,max,equation) {
-	if(max == null) max = 100.0;
-	if(min == null) min = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	return Math.round(min + equation(f) * (max - min));
-}
-Ints.interpolatef = function(min,max,equation) {
-	if(max == null) max = 1.0;
-	if(min == null) min = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	var d = max - min;
-	return function(f) {
-		return Math.round(min + equation(f) * d);
-	};
-}
-Ints.format = function(v,param,params,culture) {
-	return (Ints.formatf(param,params,culture))(v);
-}
-Ints.formatf = function(param,params,culture) {
-	return Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
-}
-Ints.canParse = function(s) {
-	return Ints._reparse.match(s);
-}
-Ints.parse = function(s) {
-	if(s.substr(0,1) == "+") s = s.substr(1);
-	return Std.parseInt(s);
-}
-Ints.compare = function(a,b) {
-	return a - b;
-}
-Ints.prototype = {
-	__class__: Ints
-}
 thx.svg.Line = $hxClasses["thx.svg.Line"] = function(x,y,interpolator) {
 	this._x = x;
 	this._y = y;
@@ -21070,7 +21359,7 @@ thx.xml.Namespace.qualify = function(name) {
 	var i = name.indexOf(":");
 	if(i < 0) return null; else {
 		var space = thx.xml.Namespace.prefix.get(name.substr(0,i));
-		if(null == space) throw new thx.error.Error("unable to find a namespace for {0}",[space],null,{ fileName : "Namespace.hx", lineNumber : 1, className : "thx.xml.Namespace", methodName : "qualify"});
+		if(null == space) throw new thx.error.Error("unable to find a namespace for {0}",[space],null,{ fileName : "Namespace.hx", lineNumber : 29, className : "thx.xml.Namespace", methodName : "qualify"});
 		return new thx.xml.NSQualifier(space,name.substr(i + 1));
 	}
 }
@@ -22883,7 +23172,7 @@ rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		return n;
 	}
 	,remove: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 1, className : "rg.graph.GraphNodes", methodName : "remove"});
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "rg.graph.GraphNodes", methodName : "remove"});
 		this._remove(node);
 	}
 	,_remove: function(node) {
@@ -23378,7 +23667,7 @@ rg.controller.factory.FactoryLayout.prototype = {
 		var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
 		var layoutName = info.layout;
 		if(null == layoutName) layoutName = rg.controller.Visualizations.layoutDefault.get(info.type);
-		if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 1, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
+		if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
 		var layout = rg.controller.Visualizations.instantiateLayout(layoutName,width,height,container);
 		layout.feedOptions(info);
 		return layout;
@@ -24029,6 +24318,24 @@ Objects.entries = function(o) {
 	}
 	return arr;
 }
+Objects.each = function(o,handler) {
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		handler(key,Reflect.field(o,key));
+	}
+}
+Objects.map = function(o,handler) {
+	var results = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		results.push(handler(key,Reflect.field(o,key)));
+	}
+	return results;
+}
 Objects["with"] = function(ob,f) {
 	f(ob);
 	return ob;
@@ -24189,7 +24496,7 @@ Objects.formatf = function(param,params,culture) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 1, className : "Objects", methodName : "formatf"});
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 263, className : "Objects", methodName : "formatf"});
 			return $r;
 		}(this));
 	}
@@ -24996,70 +25303,6 @@ thx.svg.Symbol.star = function(size) {
 thx.svg.Symbol.prototype = {
 	__class__: thx.svg.Symbol
 }
-thx.math.Equations = $hxClasses["thx.math.Equations"] = function() { }
-thx.math.Equations.__name__ = ["thx","math","Equations"];
-thx.math.Equations.linear = function(v) {
-	return v;
-}
-thx.math.Equations.polynomial = function(t,e) {
-	return Math.pow(t,e);
-}
-thx.math.Equations.quadratic = function(t) {
-	return thx.math.Equations.polynomial(t,2);
-}
-thx.math.Equations.cubic = function(t) {
-	return thx.math.Equations.polynomial(t,3);
-}
-thx.math.Equations.sin = function(t) {
-	return 1 - Math.cos(t * Math.PI / 2);
-}
-thx.math.Equations.exponential = function(t) {
-	return t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
-}
-thx.math.Equations.circle = function(t) {
-	return 1 - Math.sqrt(1 - t * t);
-}
-thx.math.Equations.elastic = function(t,a,p) {
-	var s;
-	if(null == p) p = 0.45;
-	if(null == a) {
-		a = 1;
-		s = p / 4;
-	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
-	return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
-}
-thx.math.Equations.elasticf = function(a,p) {
-	var s;
-	if(null == p) p = 0.45;
-	if(null == a) {
-		a = 1;
-		s = p / 4;
-	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
-	return function(t) {
-		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
-	};
-}
-thx.math.Equations.back = function(t,s) {
-	if(null == s) s = 1.70158;
-	return t * t * ((s + 1) * t - s);
-}
-thx.math.Equations.backf = function(s) {
-	if(null == s) s = 1.70158;
-	return function(t) {
-		return t * t * ((s + 1) * t - s);
-	};
-}
-thx.math.Equations.bounce = function(t) {
-	return t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
-}
-thx.math.Equations.polynomialf = function(e) {
-	return function(t) {
-		thx.math.Equations.polynomial(t,e);
-	};
-}
-thx.math.Equations.prototype = {
-	__class__: thx.math.Equations
-}
 rg.controller.info.InfoLabelPivotTable = $hxClasses["rg.controller.info.InfoLabelPivotTable"] = function() {
 	rg.controller.info.InfoLabelAxis.call(this);
 }
@@ -25331,6 +25574,19 @@ js.Boot.__init();
 	thx.color.NamedColors.byName.set("yellow green",thx.color.NamedColors.yellowgreen);
 }
 {
+	Math.__name__ = ["Math"];
+	Math.NaN = Number["NaN"];
+	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
+	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
+	$hxClasses["Math"] = Math;
+	Math.isFinite = function(i) {
+		return isFinite(i);
+	};
+	Math.isNaN = function(i) {
+		return isNaN(i);
+	};
+}
+{
 	String.prototype.__class__ = $hxClasses["String"] = String;
 	String.__name__ = ["String"];
 	Array.prototype.__class__ = $hxClasses["Array"] = Array;
@@ -25360,8 +25616,8 @@ window.requestAnimationFrame = window.requestAnimationFrame
     || window.oRequestAnimationFrame
     || window.msRequestAnimationFrame
     || function(callback) { setTimeout(callback, 1000 / 60); } ;
-thx.cultures.EnUS.getCulture();
 thx.languages.En.getLanguage();
+thx.cultures.EnUS.getCulture();
 rg.view.svg.util.SymbolCache.cache = new rg.view.svg.util.SymbolCache();
 {
 	var JSON;
@@ -25473,19 +25729,6 @@ js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject
 	throw "Unable to create XMLHttpRequest object.";
 	return $r;
 }(this));
-{
-	Math.__name__ = ["Math"];
-	Math.NaN = Number["NaN"];
-	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
-	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
-	$hxClasses["Math"] = Math;
-	Math.isFinite = function(i) {
-		return isFinite(i);
-	};
-	Math.isNaN = function(i) {
-		return isNaN(i);
-	};
-}
 {
 	var dbits;
 	var j_lm;
@@ -26991,9 +27234,11 @@ window.Sizzle = Sizzle;
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 rg.graph.Graphs.id = 0;
+Ints._reparse = new EReg("^([+-])?\\d+$","");
 rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
 rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
+Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
 js.Lib.onerror = null;
 thx.js.Dom.doc = (function() {
@@ -27058,7 +27303,6 @@ thx.math.Const.HALF_PI = 1.570796326794896619;
 thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
-Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
 Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
 Strings._reReduceWS = new EReg("\\s+","");
@@ -27118,7 +27362,6 @@ rg.view.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
-Ints._reparse = new EReg("^([+-])?\\d+$","");
 thx.xml.Namespace.prefix = (function() {
 	var h = new Hash();
 	h.set("svg","http://www.w3.org/2000/svg");

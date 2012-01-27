@@ -751,7 +751,7 @@
 	],
 	"find":
 	{
-		"height": 33.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -770,6 +770,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"timeZone",
+			"groupBy",
+			"timezone",
+			"location",
+			"tag",
+			"limit",
+			"getBoundResults",
 			"axes",
 			"segment",
 			"depen",
@@ -890,14 +897,7 @@
 			"TransformCount",
 			"intersect",
 			"groupQuery",
-			"oper",
-			"visible",
-			"show",
-			"hide",
-			"display",
-			"trace",
-			"count",
-			"propertySeries"
+			"oper"
 		],
 		"highlight": true,
 		"in_selection": false,

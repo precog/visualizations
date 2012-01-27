@@ -31,6 +31,11 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 {
 	public var executor : IExecutorReportGrid;
 
+	public function new(delegate : Delegate, first : BaseQuery<This>)
+	{
+		super(delegate, first);
+	}
+
 	public function paths(?p : { ?parent : String })
 	{
 		return _crossp(p).each(function(params : { parent : String }, handler) {

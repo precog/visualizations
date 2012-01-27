@@ -10,8 +10,7 @@ class JSBridge
 	static function main()
 	{
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid"),
-			executor = new ReportGridExecutorMemoryCache(r),
-			app = new App(executor);
+			executor = new ReportGridExecutorMemoryCache(r);
 
 		r.query = ReportGridQuery.create(executor);
 
@@ -22,7 +21,7 @@ class JSBridge
 
 		var rand = new Random(666);
 		r.math = {
-			setRandomSeed : function(s) rand = new Random(666),
+			setRandomSeed : function(s) rand = new Random(s),
 			random : function() return rand.float()
 		}
 	}

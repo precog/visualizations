@@ -1,9 +1,9 @@
 services/renderer/cache
 charts/cache/haxecompiler-cache
 charts/charts.sublime-workspace
+charts/bin/js/reportgrid-charts.js
 tools/palettegenerator/project.sublime-workspace
 .gitignore
-
 query/cache/haxecompiler-cache
-
 query/bin/js/reportgrid-query.js
+*.tmp

@@ -5,17 +5,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $info['title'] ?></title>
 <script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D" type="text/javascript"></script>
-<script src="<?php echo $QUERY_API; ?>"></script>
 <?php if(isset($info['viz'])) { ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $CSS_API; ?>"/>
 <script src="<?php echo $VIZ_API; ?>"></script>
 <style>
 #chart {
-	width: 600px;
-	height: 400px;
+    width: 600px;
+    height: 400px;
 }
 </style>
 <?php } ?>
+<script src="<?php echo $QUERY_API; ?>"></script>
 <?php
 if(@$info['style'])
 {
@@ -84,16 +84,13 @@ function detab($s)
 function query($s, $useload) {
     if(!$s)
         return "";
-    if(!strpos($s, 'callback'))
-    {
 ?>
 var callback = function(dps) {
     document.getElementById('out').innerHTML += 'QUERY RESULT:\n[\n  '
-        + dps.map(function(o){ return JSON.stringify(o); }).join(',\n  ')+'\n]';
+        + dps.map(function(o){ return JSON.stringify(o); }).join(',\n  ')+'\n]\n\n';
 };
 
 <?php
-    }
     if(!$useload)
         return $s.".log(callback)";
     else
@@ -111,34 +108,11 @@ if(isset($info['viz']))
     echo detab(query(@$info['query'], true));
 }
 
-
-/*
-
-if(isset($info['query']))
-{
-?>
-var loader = <?php 
-$query = $info['query'];
-
-echo $query ?>;
-loader(function(r) {
-    var out = document.getElementById('out');
-    out.innerHTML += "QUERY RESULT:\n";
-    out.innerHTML += "[\n    "+r.map(function(o){
-        return JSON.stringify(o);
-    }).join(",\n    ")+"\n]";
-})
-<?php
-}
-echo isset($info['viz']) ? $info['viz']."\n\n" : "";
-*/
-
 if(isset($info['code']))
 {
     echo "\n\n".detab($info['code']);
 }
 ?>
-
 
 </script>
 </body>

@@ -28,7 +28,11 @@ class Info
 			if (Reflect.hasField(ob, filter.field))
 			{
 				if (null != filter.validator && !filter.validator(value = Reflect.field(ob, filter.field)))
+				{
+					trace(value);
+					trace(filter.field);
 					throw new Error("the parameter '{0}' can't have value '{1}'", [filter.field, value]);
+				}
 
 				var items = null == filter.filter ? [ { field : filter.field, value : value } ] : filter.filter(value);
 				for(item in items)

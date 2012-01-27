@@ -453,7 +453,7 @@ class Sankey extends Chart
 				.attr("x").float(-layerWidth / 2)
 				.attr("y").float(0)
 				.attr("width").float(Math.round(layerWidth))
-				.attr("height").floatf(hnode).filter;
+				.attr("height").floatf(hnode);
 			cont.each(function(node, _) {
 				addToMap(node.id, "node", Selection.current);
 			});

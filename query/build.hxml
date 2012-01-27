@@ -4,6 +4,7 @@
 -lib hxevents
 -js bin/js/reportgrid-query.js
 -main rg.app.query.JSBridge
+#--dead-code-elimination
 #--cache cache/haxecompiler-cache
 #-D js_shims
 #--times

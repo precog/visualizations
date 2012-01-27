@@ -2,7 +2,7 @@ package rg.query;
 
 using Arrays;
 
-
+@:keep
 class Query extends BaseQuery<Query>
 {
 	public static function create()
@@ -40,15 +40,16 @@ class Query extends BaseQuery<Query>
 	}
 }
 
+@:keep
 class BaseQuery<This>
 {
 	var _first : BaseQuery<This>;
 	var _next : BaseQuery<This>;
 	var _delegate : Delegate;
-	public function new(delegate : Delegate, _first : BaseQuery<This>)
+	public function new(delegate : Delegate, first : BaseQuery<This>)
 	{
 		this._delegate = delegate;
-		this._first = _first;
+		this._first = first;
 	}
 
 	public function data(handler : (Array<Dynamic> -> Void) -> Void)

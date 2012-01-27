@@ -32,9 +32,7 @@ class ChainedExecutor<T>
 			handler(ob);
 		}
 		else
-		{
 			actions[pos++](ob, execute);
-		}
 	}
 
 	var executor : T -> Void;

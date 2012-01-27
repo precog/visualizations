@@ -58,21 +58,17 @@ class JSBridge
 			copt.options.a = false; // authorized
 			MVPOptions.complete(copt, function(opt : Dynamic) {
 //				trace(Dynamics.string(opt));
-				try {
-					app.visualization(select(el), opt);
-				} catch (e : Error) {
 #if release
+				try {
+#end
+					app.visualization(select(el), opt);
+#if release
+				} catch (e : Error) {
 					log(e.toString());
-#else
-					var msg = "ERROR AT " + e.toStringError();
-#if debug // stack trace is available
-					msg += "\n\n  " + rg.util.RGStacks.exceptionStack().join("\n  ");
-#end
-					log(msg);
-#end
 				} catch (e : Dynamic) {
 					log(Std.string(e));
 				}
+#end
 			});
 		}
 
@@ -95,7 +91,8 @@ class JSBridge
 		r.format               = Dynamics.format;
 		r.compare              = Dynamics.compare;
 		r.dump                 = Dynamics.string;
-		r.symbol               = SymbolCache.cache.get;
+		var scache             = SymbolCache.cache;
+		r.symbol               = function(type) return scache.get(type);
 		r.date                 = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
@@ -122,8 +119,14 @@ class JSBridge
 				return Properties.periodicity(v);
 			return RGStrings.humanize(v);
 		}
+
 		var rand = new Random(666);
-		r.math = { random : function() return rand.float() }
+		r.math = {
+			setRandomSeed : function(s) rand = new Random(s),
+			random : function() return rand.float()
+		}
+
+		r.query = null != r.query ? r.query : rg.query.Query.create();
 
 		r.info = null != r.info ? r.info : { };
 		r.info.charts = {
