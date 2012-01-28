@@ -181,6 +181,7 @@ if(!rg.query) rg.query = {}
 rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(delegate,first) {
 	this._delegate = delegate;
 	this._first = first;
+	this._collected = [];
 }
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.delegateTransform = function(t) {
@@ -192,6 +193,7 @@ rg.query.BaseQuery.prototype = {
 	_first: null
 	,_next: null
 	,_delegate: null
+	,_collected: null
 	,data: function(handler) {
 		return this.delegate(function(_,h) {
 			handler(h);
@@ -265,6 +267,9 @@ rg.query.BaseQuery.prototype = {
 	,filter: function(f) {
 		return this.transform(rg.query.Transformers.filter(f));
 	}
+	,filterByFields: function(f) {
+		return this.transform(rg.query.Transformers.filterByFields(f));
+	}
 	,sort: function(f) {
 		return this.transform(rg.query.Transformers.sort(f));
 	}
@@ -273,8 +278,8 @@ rg.query.BaseQuery.prototype = {
 	}
 	,sortByFields: function(fields,reverse) {
 		reverse = null == reverse?false:reverse;
-		var r;
 		return this.sort(function(a,b) {
+			var r;
 			var _g = 0;
 			while(_g < fields.length) {
 				var field = fields[_g];
@@ -292,11 +297,43 @@ rg.query.BaseQuery.prototype = {
 		}
 		return this.transform(rg.query.Transformers.limit(offset,count));
 	}
+	,append: function(useAseSource) {
+		var me = this;
+		if(null == useAseSource) useAseSource = false;
+		return this.transform(function(arr) {
+			me._first._collected.push(arr);
+			if(useAseSource) return arr; else return [{ }];
+		});
+	}
+	,collect: function() {
+		var me = this;
+		return this.transform(function(arr) {
+			var collected = me._first._collected.pop();
+			return collected.concat(arr);
+		});
+	}
 	,reverse: function() {
 		return this.transform(rg.query.Transformers.reverse);
 	}
+	,accumulate: function(groupby,on,forproperty,atproperty) {
+		var map = new Hash();
+		var q = this.sortByFields([groupby,on]);
+		return q.transform(function(data) {
+			var v, f;
+			data.forEach(function(dp,_) {
+				v = map.get(f = "" + Reflect.field(dp,on));
+				if(null == v) v = 0.0;
+				dp[atproperty] = v;
+				map.set(f,v + Reflect.field(dp,forproperty));
+			});
+			return data;
+		});
+	}
 	,load: function(handler) {
 		this._first.load(handler);
+	}
+	,_query: function(t) {
+		return t;
 	}
 	,_createQuery: function(delegate,first) {
 		return new rg.query.BaseQuery(delegate,first);
@@ -1129,7 +1166,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6385"};
+	r.info.charts = { version : "1.2.2.6475"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -4486,15 +4523,15 @@ rg.controller.info.InfoDataSource.filters = function() {
 	return [{ field : "data", validator : function(v) {
 		return Std["is"](v,Array);
 	}, filter : function(v) {
-		return [{ field : "loader", value : { load : function(handler) {
+		return [{ field : "loader", value : function(handler) {
 			handler(v);
-		}}}];
+		}}];
 	}},{ field : "datapoints", validator : function(v) {
 		return Std["is"](v,Array);
 	}, filter : function(v) {
-		return [{ field : "loader", value : { load : function(handler) {
+		return [{ field : "loader", value : function(handler) {
 			handler(v);
-		}}}];
+		}}];
 	}},{ field : "load", validator : function(v) {
 		return Reflect.isFunction(v) || null != Reflect.field(v,"load");
 	}, filter : function(v) {
@@ -4592,6 +4629,7 @@ rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Flo
 rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.cross = function(values) {
+	if(!Std["is"](values,Array)) values = [values];
 	return function(data) {
 		var results = [];
 		var _g = 0;
@@ -4614,6 +4652,21 @@ rg.query.Transformers.map = function(handler) {
 	};
 }
 rg.query.Transformers.filter = function(handler) {
+	return function(data) {
+		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.filterByFields = function(o) {
+	var entries = Objects.entries(o);
+	var handler = function(d) {
+		var _g = 0;
+		while(_g < entries.length) {
+			var entry = entries[_g];
+			++_g;
+			if(Reflect.field(d,entry.key) != entry.value) return false;
+		}
+		return true;
+	};
 	return function(data) {
 		return Arrays.filter(data,handler);
 	};
@@ -10966,29 +11019,6 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 117, className : "rg.app.charts.MVPOptions", methodName : "complete"});
 	}
 	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
-	if(null == options.logoposition) options.logoposition = (function($this) {
-		var $r;
-		switch(options.visualization) {
-		case "barchart":case "linechart":case "streamgraph":case "scattergraph":
-			$r = "top";
-			break;
-		case "heatgrid":case "funnelchart":
-			$r = "bottomleft";
-			break;
-		case "geo":case "sankey":
-			$r = "topright";
-			break;
-		case "piechart":
-			$r = "bottomright";
-			break;
-		case "leaderboard":case "pivottable":
-			$r = "after";
-			break;
-		default:
-			$r = "top";
-		}
-		return $r;
-	}(this));
 	chain.addAction(rg.app.charts.MVPOptions.a1);
 	chain.addAction(rg.app.charts.MVPOptions.a2);
 	chain.addAction(function(params,handler1) {
@@ -11002,6 +11032,17 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 			var i = _g1++;
 			var variable = axes[i].variable;
 			if(null == variable) axes[i].variable = !hasdependent && i == axes.length - 1?"dependent":"independent"; else if("dependent" == variable) hasdependent = true;
+		}
+		var _g = 0;
+		while(_g < axes.length) {
+			var axis = axes[_g];
+			++_g;
+			if(axis.variable == "dependent") {
+			} else switch(params.options.visualization) {
+			case "barchart":
+				if(null == axis.scalemode) axis.scalemode = "fit";
+				break;
+			}
 		}
 		handler1(params);
 	});
@@ -16908,8 +16949,33 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 	,chart: null
 	,dps: null
 	,segment: null
-	,setVariables: function(variables,variableIndependents,yVariables,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,yVariables,data);
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
+		if(this.y0property != null && this.y0property != "") {
+			var t, dp;
+			var _g = 0;
+			while(_g < variableDependents.length) {
+				var v = variableDependents[_g];
+				++_g;
+				v.meta.max = Math.NEGATIVE_INFINITY;
+			}
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var v = variableDependents[i];
+				var _g3 = 0, _g2 = data[i].length;
+				while(_g3 < _g2) {
+					var j = _g3++;
+					var _g5 = 0, _g4 = data[i][j].length;
+					while(_g5 < _g4) {
+						var k = _g5++;
+						dp = data[i][j][k];
+						t = rg.util.DataPoints.valueAlt(dp,v.type,0.0) + rg.util.DataPoints.valueAlt(dp,this.y0property,0.0);
+						if(v.meta.max < t) v.meta.max = t;
+					}
+				}
+			}
+		}
 	}
 	,x: function(d,i) {
 		var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
@@ -18653,8 +18719,8 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 			var _g3 = 1, _g2 = path.length - 1;
 			while(_g3 < _g2) {
 				var i = _g3++;
-				var id = path[i], data1 = { id : id, weight : weight, extrain : 0.0, extraout : 0.0, dp : null};
-				npath.push(graph.nodes.create(data1));
+				var id = path[i], d = { id : id, weight : weight, extrain : 0.0, extraout : 0.0, dp : null};
+				npath.push(graph.nodes.create(d));
 			}
 			npath.push(head);
 			var _g3 = 0, _g2 = npath.length - 1;
@@ -18676,25 +18742,19 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 		edgesf = rg.controller.visualization.VisualizationSankey.defaultEdgesf(idf,edgesf);
 		weightf = this.defaultWeightf(weightf);
 		var graph = new rg.graph.Graph(idf);
+		var nodes = this.extractNodes(data), edges = this.extractEdges(data);
 		var _g = 0;
-		while(_g < data.length) {
-			var dp = data[_g];
+		while(_g < nodes.length) {
+			var dp = nodes[_g];
 			++_g;
 			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), extrain : 0.0, extraout : 0.0});
 		}
 		var _g = 0;
-		while(_g < data.length) {
-			var dp = data[_g];
+		while(_g < edges.length) {
+			var edge = edges[_g];
 			++_g;
-			var edges = edgesf(dp);
-			var _g1 = 0;
-			while(_g1 < edges.length) {
-				var edge = edges[_g1];
-				++_g1;
-				var head = graph.nodes.getById(edge.head);
-				var tail = graph.nodes.getById(edge.tail);
-				graph.edges.create(tail,head,edge.weight == null?0:edge.weight);
-			}
+			var head = graph.nodes.getById(edge.head), tail = graph.nodes.getById(edge.tail);
+			graph.edges.create(tail,head,weightf(edge));
 		}
 		var $it0 = graph.nodes.collection.iterator();
 		while( $it0.hasNext() ) {
@@ -18705,6 +18765,41 @@ rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controlle
 			node.data.extraout = Math.max(0,node.data.weight - wout);
 		}
 		return graph;
+	}
+	,extractNodes: function(data) {
+		var nodes = Arrays.filter(data,function(dp) {
+			return dp.id != null;
+		});
+		if(nodes.length == 0) {
+			var type = this.dependentVariables[0].type, map = new Hash(), edges = Arrays.filter(data,function(dp) {
+				return Reflect.hasField(dp,"head") || Reflect.hasField(dp,"tail");
+			});
+			var nodize = function(name,istail,weight) {
+				if(null == name) return;
+				var n = map.get(name);
+				if(null == n) {
+					n = { node : { id : name}, positive : 0.0, negative : 0.0};
+					map.set(name,n);
+				}
+				if(istail) n.positive += weight; else n.negative += weight;
+			};
+			edges.forEach(function(dp,i) {
+				var v = Reflect.field(dp,type);
+				nodize(dp.tail,true,v);
+				nodize(dp.head,false,v);
+			});
+			nodes = Iterators.array(map.iterator()).map(function(n,i) {
+				var node = n.node;
+				node[type] = Math.max(n.positive,n.negative);
+				return node;
+			});
+		}
+		return nodes;
+	}
+	,extractEdges: function(data) {
+		return Arrays.filter(data,function(dp) {
+			return dp.head != null && dp.tail != null;
+		});
 	}
 	,layoutData: function(data,method,idf,nodef,weightf,edgesf) {
 		var graph = this.createGraph(data,idf,weightf,edgesf);
@@ -21777,9 +21872,9 @@ thx.svg.Area.prototype = {
 	,_y1: null
 	,_interpolator: null
 	,shape: function(data,i) {
-		var second = thx.svg.LineInternals.linePoints(data,this._x,this._y0);
+		var second = thx.svg.LineInternals.linePoints(data,this._x,this._y1);
 		second.reverse();
-		return data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y1),this._interpolator) + "L" + thx.svg.LineInternals.interpolatePoints(second,this._interpolator) + "Z";
+		return data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y0),this._interpolator) + "L" + thx.svg.LineInternals.interpolatePoints(second,this._interpolator) + "Z";
 	}
 	,getInterpolator: function() {
 		return this._interpolator;
@@ -23125,6 +23220,9 @@ thx.svg.LineInterpolators.parse = function(s,sep) {
 		case "monotone":
 			$r = thx.svg.LineInterpolator.Monotone;
 			break;
+		case "step":
+			$r = thx.svg.LineInterpolator.Step;
+			break;
 		case "stepafter":
 			$r = thx.svg.LineInterpolator.StepAfter;
 			break;
@@ -23358,20 +23456,31 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 		}
 		break;
 	case 1:
+		var p1;
+		path.push(p[0] + "," + p[1]);
+		while(++i < n - 1) {
+			p = points[i];
+			p1 = points[i + 1];
+			path.push("H" + (p[0] + p1[0]) / 2 + "V" + p[1]);
+		}
+		p = points[i];
+		path.push("H" + p[0] + "V" + p[1]);
+		break;
+	case 2:
 		path.push(p[0] + "," + p[1]);
 		while(++i < n) {
 			p = points[i];
 			path.push("V" + p[1] + "H" + p[0]);
 		}
 		break;
-	case 2:
+	case 3:
 		path.push(p[0] + "," + p[1]);
 		while(++i < n) {
 			p = points[i];
 			path.push("H" + p[0] + "V" + p[1]);
 		}
 		break;
-	case 3:
+	case 4:
 		if(points.length < 3) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
 		i = 1;
 		var x0 = p[0], y0 = p[1], px = [x0,x0,x0,(p = points[1])[0]], py = [y0,y0,y0,p[1]];
@@ -23394,7 +23503,7 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 			thx.svg.LineInternals._lineBasisBezier(path,px,py);
 		}
 		break;
-	case 4:
+	case 5:
 		if(points.length < 4) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear);
 		i = -1;
 		var pi, px = [0.0], py = [0.0];
@@ -23414,7 +23523,7 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 			thx.svg.LineInternals._lineBasisBezier(path,px,py);
 		}
 		break;
-	case 5:
+	case 6:
 		i = -1;
 		var m = n + 4, px = [], py = [];
 		while(++i < 4) {
@@ -23433,19 +23542,19 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 			thx.svg.LineInternals._lineBasisBezier(path,px,py);
 		}
 		break;
-	case 6:
+	case 7:
 		var tension = $e[2];
 		if(null == tension) tension = .7;
 		if(points.length < 3) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear); else return points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents(points,tension));
 		break;
-	case 7:
+	case 8:
 		var tension = $e[2];
 		return points.length < 4?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[1][0] + "," + points[1][1] + thx.svg.LineInternals._lineCardinalTangents(points,tension);
-	case 8:
+	case 9:
 		var tension = $e[2];
 		if(null == tension) tension = .7;
 		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents([points[points.length - 2]].concat(points).concat([points[1]]),tension));
-	case 9:
+	case 10:
 		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
 	}
 	return path.join("");
@@ -24984,29 +25093,32 @@ rg.view.svg.chart.StreamEffect.NoEffect.toString = $estr;
 rg.view.svg.chart.StreamEffect.NoEffect.__enum__ = rg.view.svg.chart.StreamEffect;
 rg.view.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.view.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
-thx.svg.LineInterpolator = $hxClasses["thx.svg.LineInterpolator"] = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
+thx.svg.LineInterpolator = $hxClasses["thx.svg.LineInterpolator"] = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
 thx.svg.LineInterpolator.Linear.__enum__ = thx.svg.LineInterpolator;
-thx.svg.LineInterpolator.StepBefore = ["StepBefore",1];
+thx.svg.LineInterpolator.Step = ["Step",1];
+thx.svg.LineInterpolator.Step.toString = $estr;
+thx.svg.LineInterpolator.Step.__enum__ = thx.svg.LineInterpolator;
+thx.svg.LineInterpolator.StepBefore = ["StepBefore",2];
 thx.svg.LineInterpolator.StepBefore.toString = $estr;
 thx.svg.LineInterpolator.StepBefore.__enum__ = thx.svg.LineInterpolator;
-thx.svg.LineInterpolator.StepAfter = ["StepAfter",2];
+thx.svg.LineInterpolator.StepAfter = ["StepAfter",3];
 thx.svg.LineInterpolator.StepAfter.toString = $estr;
 thx.svg.LineInterpolator.StepAfter.__enum__ = thx.svg.LineInterpolator;
-thx.svg.LineInterpolator.Basis = ["Basis",3];
+thx.svg.LineInterpolator.Basis = ["Basis",4];
 thx.svg.LineInterpolator.Basis.toString = $estr;
 thx.svg.LineInterpolator.Basis.__enum__ = thx.svg.LineInterpolator;
-thx.svg.LineInterpolator.BasisOpen = ["BasisOpen",4];
+thx.svg.LineInterpolator.BasisOpen = ["BasisOpen",5];
 thx.svg.LineInterpolator.BasisOpen.toString = $estr;
 thx.svg.LineInterpolator.BasisOpen.__enum__ = thx.svg.LineInterpolator;
-thx.svg.LineInterpolator.BasisClosed = ["BasisClosed",5];
+thx.svg.LineInterpolator.BasisClosed = ["BasisClosed",6];
 thx.svg.LineInterpolator.BasisClosed.toString = $estr;
 thx.svg.LineInterpolator.BasisClosed.__enum__ = thx.svg.LineInterpolator;
-thx.svg.LineInterpolator.Cardinal = function(tension) { var $x = ["Cardinal",6,tension]; $x.__enum__ = thx.svg.LineInterpolator; $x.toString = $estr; return $x; }
-thx.svg.LineInterpolator.CardinalOpen = function(tension) { var $x = ["CardinalOpen",7,tension]; $x.__enum__ = thx.svg.LineInterpolator; $x.toString = $estr; return $x; }
-thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["CardinalClosed",8,tension]; $x.__enum__ = thx.svg.LineInterpolator; $x.toString = $estr; return $x; }
-thx.svg.LineInterpolator.Monotone = ["Monotone",9];
+thx.svg.LineInterpolator.Cardinal = function(tension) { var $x = ["Cardinal",7,tension]; $x.__enum__ = thx.svg.LineInterpolator; $x.toString = $estr; return $x; }
+thx.svg.LineInterpolator.CardinalOpen = function(tension) { var $x = ["CardinalOpen",8,tension]; $x.__enum__ = thx.svg.LineInterpolator; $x.toString = $estr; return $x; }
+thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["CardinalClosed",9,tension]; $x.__enum__ = thx.svg.LineInterpolator; $x.toString = $estr; return $x; }
+thx.svg.LineInterpolator.Monotone = ["Monotone",10];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
 rg.view.html.chart.Leadeboard = $hxClasses["rg.view.html.chart.Leadeboard"] = function(container) {

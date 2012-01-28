@@ -4,7 +4,7 @@
 <meta http-equiv="X-UA-Compatible" content="chrome=IE8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $info['title'] ?></title>
-<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D" type="text/javascript"></script>
+<script src="<?php echo $CORE_API; ?>"></script>
 <?php if(isset($info['viz'])) { ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $CSS_API; ?>"/>
 <script src="<?php echo $VIZ_API; ?>"></script>

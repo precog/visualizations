@@ -190,8 +190,13 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 				properties = [];
 				options.properties = properties;
 
-			for(item in params.properties)
+			for(i in 0...params.properties.length)
 			{
+				var item = params.properties[i];
+				if(Std.is(item, String))
+				{
+					item = params.properties[i] = { property : cast item };
+				}
 				var o : Dynamic = { property : params.event + _prefixProperty(item.property) };
 				if(null != item.top)
 				{
@@ -226,8 +231,13 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 			options.properties = properties;
 
-			for(item in params.properties)
+			for(i in 0...params.properties.length)
 			{
+				var item = params.properties[i];
+				if(Std.is(item, String))
+				{
+					item = params.properties[i] = { property : cast item };
+				}
 				var o : Dynamic = { property : params.event + _prefixProperty(item.property) };
 				if(null != item.top)
 				{
@@ -273,6 +283,19 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 				params.path,
 				options,
 				_complete(ReportGridTransformers.histogram, params, handler)
+			);
+		});
+	}
+
+	public function propertiesHistogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String })
+	{
+		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+		// TODO tag?
+			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
+			executor.propertiesHistogram(
+				params.path,
+				options,
+				_complete(ReportGridTransformers.propertiesHistogram, params, handler)
 			);
 		});
 	}

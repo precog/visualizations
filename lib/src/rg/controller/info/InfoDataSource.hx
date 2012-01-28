@@ -24,7 +24,7 @@ class InfoDataSource
 			{
 				return [{
 					field : "loader",
-					value : { load : function(handler : Array<DataPoint> -> Void) handler(v) }
+					value : function(handler : Array<DataPoint> -> Void) handler(v)
 				}];
 			}
 		}, {
@@ -34,7 +34,7 @@ class InfoDataSource
 			{
 				return [{
 					field : "loader",
-					value : { load : function(handler : Array<DataPoint> -> Void) handler(v) }
+					value : function(handler : Array<DataPoint> -> Void) handler(v)
 				}];
 			}
 		}, {

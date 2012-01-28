@@ -107,14 +107,14 @@ class VisualizationSankey extends VisualizationSvg
 			for(i in 1...path.length-1)
 			{
 				var id = path[i],
-					data = {
+					d = {
 						id : id,
 						weight : weight,
 						extrain : 0.0,
 						extraout : 0.0,
 						dp : null
 					};
-				npath.push(graph.nodes.create(data));
+				npath.push(graph.nodes.create(d));
 			}
 			npath.push(head);
 			// add dummy edges
@@ -139,7 +139,10 @@ class VisualizationSankey extends VisualizationSvg
 		weightf = defaultWeightf(weightf);
 		var graph = new Graph(idf);
 
-		for(dp in data)
+		var nodes = extractNodes(data),
+			edges = extractEdges(data);
+
+		for(dp in nodes)
 		{
 			graph.nodes.create({
 				dp       : dp,
@@ -150,15 +153,11 @@ class VisualizationSankey extends VisualizationSvg
 			});
 		}
 
-		for(dp in data)
+		for(edge in edges)
 		{
-			var edges = edgesf(dp);
-			for(edge in edges)
-			{
-				var head = graph.nodes.getById(edge.head);
-				var tail = graph.nodes.getById(edge.tail);
-				graph.edges.create(tail, head, edge.weight == null ? 0 : edge.weight);
-			}
+			var head = graph.nodes.getById(edge.head),
+				tail = graph.nodes.getById(edge.tail);
+			graph.edges.create(tail, head, weightf(edge));
 		}
 
 		for(node in graph.nodes)
@@ -174,6 +173,56 @@ class VisualizationSankey extends VisualizationSvg
 		}
 
 		return graph;
+	}
+
+	function extractNodes(data : Array<DataPoint>)
+	{
+		var nodes = data.filter(function(dp) {
+			return dp.id != null;
+		});
+		if(nodes.length == 0)
+		{
+			// try getting nodes from edges
+			var type  = dependentVariables[0].type,
+				map   = new Hash<{ node : { id : String }, positive : Float, negative : Float }>(),
+				edges = data.filter(function(dp) return Reflect.hasField(dp, "head") || Reflect.hasField(dp, "tail"));
+
+			function nodize(name : String, istail : Bool, weight : Float)
+			{
+				if(null == name)
+					return;
+				var n = map.get(name);
+				if(null == n)
+				{
+					n = { node : { id : name }, positive : 0.0, negative : 0.0 };
+					map.set(name, n);
+				}
+				if(istail)
+					n.positive += weight;
+				else
+					n.negative += weight;
+			}
+
+			edges.each(function(dp, i) {
+				var v = Reflect.field(dp, type);
+				nodize(dp.tail, true, v);
+				nodize(dp.head, false, v);
+			});
+
+			nodes = Iterables.array(map).map(function(n, i) {
+				var node = n.node;
+				Reflect.setField(node, type, Math.max(n.positive, n.negative));
+				return node;
+			});
+		}
+		return nodes;
+	}
+
+	function extractEdges(data : Array<DataPoint>)
+	{
+		return data.filter(function(dp) {
+			return dp.head != null && dp.tail != null;
+		});
 	}
 
 	function layoutData(data : Array<DataPoint>, method : String, ?idf : NodeData -> String, ?nodef : GEdge<NodeData, Dynamic> -> DataPoint, ?weightf : DataPoint -> Float, ?edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>) : GraphLayout<NodeData, Dynamic>

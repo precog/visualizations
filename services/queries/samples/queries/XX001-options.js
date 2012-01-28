@@ -1,15 +1,9 @@
 //** QUERY
 ReportGrid.query
-	.summarySeries({
+	.propertiesHistogram({
 		path : "/query/test",
 		event : "impression",
-		property : "age",
-		start       : "24 hours ago",
-		end         : "now",
-		periodicity : "minute",
-		groupby     : "hour",
-		tag         : "location",
-		location    : "/"
+		property : "keywords"
 	})
 
 //** DOC

@@ -97,7 +97,7 @@ class MVPOptions
 
 	public static function complete(parameters : Dynamic, handler : Dynamic -> Void)
 	{
-		var chain      = new ChainedExecutor(handler);
+		var chain = new ChainedExecutor(handler);
 
 		if (null == parameters.options)
 			parameters.options = { };
@@ -121,26 +121,6 @@ class MVPOptions
 		if(null != options.map && Types.isAnonymous(options.map))
 		{
 			options.map = [options.map];
-		}
-
-		// best default logo position
-		if(null == options.logoposition)
-		{
-			options.logoposition = switch(options.visualization)
-			{
-				case "barchart", "linechart", "streamgraph", "scattergraph":
-					"top";
-				case "heatgrid", "funnelchart":
-					"bottomleft";
-				case "geo", "sankey":
-					"topright";
-				case "piechart":
-					"bottomright";
-				case "leaderboard", "pivottable":
-					"after";
-				default:
-					"top";
-			}
 		}
 
 		// TODO test with multiple charts in one page
@@ -167,6 +147,20 @@ class MVPOptions
 					axes[i].variable = !hasdependent && i == axes.length - 1 ? "dependent" : "independent";
 				else if("dependent" == variable)
 					hasdependent = true;
+			}
+			for(axis in axes)
+			{
+				if(axis.variable == "dependent")
+				{
+					
+				} else {
+					switch(params.options.visualization)
+					{
+						case "barchart":
+							if(null == axis.scalemode)
+								axis.scalemode = "fit";
+					}
+				}
 			}
 			handler(params);
 		});

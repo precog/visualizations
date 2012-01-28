@@ -57,19 +57,35 @@ class ReportGridTransformers
 		});
 	}
 
-	public static function histogram(arr : Array<Array<Dynamic>>, params : { path : String, event : String, property : String }) : Array<{ event : String, path : String, property : String, value : Dynamic, count : Int }>
+	public static function histogram(arr : Array<Array<Dynamic>>, params : { path : String, event : String, property : String }) : Array<{ event : String, path : String, count : Int }>
 	{
 		var path     = params.path,
 			event    = params.event,
 			property = params.property;
 		return arr.map(function(value : Array<Dynamic>, _) {
-			return {
+			var ob = {
 				path :     path,
 				event :    event,
-				property : property,
-				value :    value[0],
 				count :    value[1]
 			};
+			Reflect.setField(ob, property, value[0]);
+			return ob;
+		});
+	}
+
+	public static function propertiesHistogram(arr : Array<Array<Dynamic>>, params : { path : String, event : String, property : String }) : Array<{ event : String, path : String, count : Int }>
+	{
+		var path     = params.path,
+			event    = params.event,
+			property = params.property;
+		return arr.map(function(value : Array<Dynamic>, _) {
+			var ob = {
+				path :     path,
+				event :    event,
+				count :    value[1]
+			};
+			Reflect.setField(ob, property, Strings.ltrim(value[0], '.'));
+			return ob;
 		});
 	}
 

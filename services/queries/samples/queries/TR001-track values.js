@@ -1,12 +1,12 @@
 //** DATA
-data(20)
+data("impression", 50, { click : 10, conversion : 5 })
 
 //** CODE
 
-function data(samples)
+function data(event, samples, related)
 {
 	var d = new Date(),
-		s = parseInt(d.getFullYear() + d.getMonth() + d.getDate() + d.getHours() + d.getMinutes()),
+		s = parseInt(d.getFullYear()*100000000 + d.getMonth()*1000000 + d.getDate()*10000 + d.getHours()*100 + d.getMinutes()),
 		values = {
 			browser : {
 				chrome  : 10,
@@ -45,9 +45,18 @@ function data(samples)
 				'{"country": "usa", "state": "usa/nevada", "city": "usa/nevada/las vegas"}' : 2,
 				'{"country": "italy", "state": "italy/lombardia", "city": "italy/lombardia/milano"}' : 2,
 				'{"country": "portugal", "state": "portugal/beja", "city": "portugal/beja/serpa"}' : 1
+			},
+			keywords : {
+				'{"apple":true,"pear":true,"peach":true}' : 2,
+				'{"apple":true}' : 2,
+				'{"pear":true,"peach":true}' : 2,
+				'{"peach":true}' : 2,
+				'{"kiwi":true}' : 2,
+				'{"lemon":true,"orange":true}' : 2,
+				'{"orange":true}' : 2,
+				'{"pear":true,"orange":true,"kiwi":true}' : 2
 			}
 		};
-console.log(s);
 	ReportGrid.math.setRandomSeed(s);
 
 	for(var type in values)
@@ -79,23 +88,31 @@ console.log(s);
 		return "ERRROR";
 	}
 
-	function _data(samples)
+	function _data(event, samples, related)
 	{
 		var result = [];
 		for(var i = 0; i < samples; i++)
 		{
-			result.push({ 
-				impression : {
-					browser : random("browser"),
-					env :     random("env"),
-					gender :  random("gender"),
-					age :     parseInt(random("age")),
-					'#location' : thx.json.Json.decode(random("location"))
-				}
-			});
+			var data = {
+				browser : random("browser"),
+				env :     random("env"),
+				gender :  random("gender"),
+				age :     parseInt(random("age")),
+				'#location' : thx.json.Json.decode(random("location")),
+				keywords : thx.json.Json.decode(random("keywords"))
+			};
+			var o = {};
+			o[event] = data;
+			var rand = Math.floor(Math.random() * 100);
+			for(r in related)
+			{
+				if(rand <= related[r])
+					o[r] = data;
+			}
+			result.push(o);
 		}
 		return result;
 	}
 
-	return _data(samples);
+	return _data(event, samples, related);
 }

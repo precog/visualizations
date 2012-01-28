@@ -50,11 +50,32 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		chart = g.append("svg:g");
 	}
 
-	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, yVariables : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
 	{
-		super.setVariables(variables, variableIndependents, yVariables, data);
-
-		// TODO: add v.meta.max for area charts (copy barchart)
+		super.setVariables(variables, variableIndependents, variableDependents, data);
+		if (y0property != null && y0property != "")
+		{
+			var t, dp;
+			for (v in variableDependents)
+				v.meta.max = Math.NEGATIVE_INFINITY;
+			// y axis
+			for (i in 0...data.length)
+			{
+				var v = variableDependents[i];
+				// segment
+				for (j in 0...data[i].length)
+				{
+					// datapoints
+					for (k in 0...data[i][j].length)
+					{
+						dp = data[i][j][k];
+						t = DataPoints.valueAlt(dp, v.type, 0.0) + DataPoints.valueAlt(dp, y0property, 0.0);
+						if (v.meta.max < t)
+							v.meta.max = t;
+					}
+				}
+			}
+		}
 	}
 
 	function x(d : DataPoint, ?i)
@@ -142,6 +163,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		for (i in 0...dps.length)
 		{
 			segments = dps[i];
+
 			var gi = chart.select("g.group-" + i),
 				stats = new Stats(yVariables[i].type);
 			stats.addMany(DataPoints.values(segments.flatten(), yVariables[i].type));

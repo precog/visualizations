@@ -46,10 +46,13 @@ class BaseQuery<This>
 	var _first : BaseQuery<This>;
 	var _next : BaseQuery<This>;
 	var _delegate : Delegate;
+	var _collected : Array<Array<Dynamic>>;
+
 	public function new(delegate : Delegate, first : BaseQuery<This>)
 	{
 		this._delegate = delegate;
 		this._first = first;
+		this._collected = [];
 	}
 
 	public function data(handler : (Array<Dynamic> -> Void) -> Void)
@@ -150,6 +153,11 @@ class BaseQuery<This>
 		return transform(Transformers.filter(f));
 	}
 
+	public function filterByFields(f : Dynamic)
+	{
+		return transform(Transformers.filterByFields(f));
+	}
+
 	public function sort(f : Dynamic -> Dynamic -> Int)
 	{
 		return transform(Transformers.sort(f));
@@ -163,8 +171,8 @@ class BaseQuery<This>
 	public function sortByFields(fields : Array<String>, ?reverse : Bool)
 	{
 		reverse = null == reverse ? false : reverse;
-		var r;
 		return sort(function(a, b) {
+			var r;
 			for(field in fields)
 			{
 				r = (reverse ? -1 : 1) * Dynamics.compare(Reflect.field(a, field), Reflect.field(b, field));
@@ -185,15 +193,54 @@ class BaseQuery<This>
 		return transform(Transformers.limit(offset, count));
 	}
 
+	public function append(?useAseSource : Bool)
+	{
+		if(null == useAseSource)
+			useAseSource = false;
+		return transform(function(arr : Array<Dynamic>) {
+			_first._collected.push(arr);
+			if(useAseSource)
+				return arr;
+			else
+				return [{}];
+		});
+	}
+
+	public function collect()
+	{
+		return transform(function(arr : Array<Dynamic>) {
+			var collected = _first._collected.pop();
+			return collected.concat(arr);
+		});
+	}
+
 	public function reverse()
 	{
 		return transform(Transformers.reverse);
+	}
+
+	public function accumulate(groupby : String, on : String, forproperty : String, atproperty : String)
+	{
+		var map = new Hash();
+		var q = sortByFields([groupby, on]);
+		return _query(q).transform(function(data : Array<Dynamic>){
+			var v : Float, f : String;
+			data.each(function(dp, _) {
+				v = map.get(f = "" + Reflect.field(dp, on));
+				if(null == v) v = 0.0;
+				Reflect.setField(dp, atproperty, v);
+				map.set(f, v + Reflect.field(dp, forproperty));
+			});
+			return data;
+		});
 	}
 
 	public function load(handler : Array<Dynamic> -> Void)
 	{
 		_first.load(handler);
 	}
+
+	inline function _query(t : This) : BaseQuery<This> return cast t
 
 	function _createQuery(delegate : Delegate, first : BaseQuery<This>) : BaseQuery<This>
 	{

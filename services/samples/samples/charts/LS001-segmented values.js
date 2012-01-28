@@ -14,7 +14,7 @@ data.forEach(function(item) {
 });
 
 ReportGrid.lineChart("#chart", {
-	axes : ["year", { type : "deathRate", view : [0, max] }],
+	axes : ["year", { type : "deathRate" }],
 	datapoints : data,
 	options : {
 		label : {

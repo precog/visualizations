@@ -16,152 +16,74 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 		timeout = 60;
 	}
 
-	public function children(path : String, options : { }, success : Array<String> -> Void, ?error : String -> Void) : Void
+	public function children(path : String, options : { ?type : String, ?property : String}, success : Array<String> -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("children", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.children(path, options, cacheSuccess(id, success), error);
+		execute("children", path, options, success, error);
 	}
 
 	public function propertyCount(path : String, options : { property : String }, success : Int -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("propertyCount", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.propertyCount(path, options, cacheSuccess(id, success), error);
+		execute("propertyCount", path, options, success, error);
 	}
 
-	public function propertySeries(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
+	public function propertySeries(path : String, options : { property : String }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("propertySeries", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.propertySeries(path, options, cacheSuccess(id, success), error);
+		execute("propertySeries", path, options, success, error);
 	}
 
-	public function propertyMeans(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
+	public function propertyMeans(path : String, options : { property : String, periodicity : String }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("propertyMeans", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.propertyMeans(path, options, cacheSuccess(id, success), error);
+		execute("propertyMeans", path, options, success, error);
 	}
 
-	public function propertyStandardDeviations(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
+	public function propertyStandardDeviations(path : String, options : { property : String, periodicity : String }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("propertyStandardDeviations", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.propertyStandardDeviations(path, options, cacheSuccess(id, success), error);
+		execute("propertyStandardDeviations", path, options, success, error);
 	}
 
-	public function propertyValues(path : String, options : { }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void
+	public function propertyValues(path : String, options : { property : String }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("propertyValues", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.propertyValues(path, options, cacheSuccess(id, success), error);
+		execute("propertyValues", path, options, success, error);
 	}
 
-	public function propertyValueCount(path : String, options : { }, success : Int -> Void, ?error : String -> Void) : Void
+	public function propertyValueCount(path : String, options : { property : String, value : Dynamic }, success : Int -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("propertyValueCount", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.propertyValueCount(path, options, cacheSuccess(id, success), error);
+		execute("propertyValueCount", path, options, success, error);
 	}
 
 	public function propertyValueSeries(path : String, options : { property : String, value : Dynamic }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("propertyValueSeries", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.propertyValueSeries(path, options, cacheSuccess(id, success), error);
+		execute("propertyValueSeries", path, options, success, error);
 	}
 
 	public function searchCount(path : String, options : { }, success : Int -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("searchCount", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.searchCount(path, options, cacheSuccess(id, success), error);
+		execute("searchCount", path, options, success, error);
 	}
 
 	public function searchSeries(path : String, options : { }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("searchSeries", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.searchSeries(path, options, cacheSuccess(id, success), error);
+		execute("searchSeries", path, options, success, error);
 	}
 
 	public function intersect(path : String, options : { }, success : Dynamic<Dynamic> -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("intersect", path, options),
-			val = getCache(id);
-		if(null != val)
-			success(val);
-		var q = getQueue(id);
-		if(null != q)
-			q.push(success);
-		else
-			executor.intersect(path, options, cacheSuccess(id, success), error);
+		execute("intersect", path, options, success, error);
 	}
 
-	public function histogram(path : String, options : { property : String, ?limit : Int, ?order : String }, success : Int -> Void, ?error : String -> Void) : Void
+	public function histogram(path : String, options : { property : String, ?top : Int, ?bottom : Int }, success : Int -> Void, ?error : String -> Void) : Void
 	{
-		var id = id("histogram", path, options),
+		execute("histogram", path, options, success, error);
+	}
+
+	public function propertiesHistogram(path : String, options : { property : String, ?top : Int, ?bottom : Int }, success : Int -> Void, ?error : String -> Void) : Void
+	{
+		execute("propertiesHistogram", path, options, success, error);
+	}
+
+	function execute(name : String, path : String, options : {}, success : Dynamic -> Void, ?error : String -> Void)
+	{
+		var id = id(name, path, options),
 			val = getCache(id);
 		if(null != val)
 			success(val);
@@ -169,7 +91,7 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 		if(null != q)
 			q.push(success);
 		else
-			executor.histogram(path, options, cacheSuccess(id, success), error);
+			Reflect.field(executor, name)(path, options, cacheSuccess(id, success), error);
 	}
 
 	function cacheSuccess(id : String, success : Dynamic)

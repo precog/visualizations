@@ -2,7 +2,7 @@ package rg.query;
 
 using Arrays;
 
-
+@:keep
 class Query extends BaseQuery<Query>
 {
 	public static function create()
@@ -40,15 +40,19 @@ class Query extends BaseQuery<Query>
 	}
 }
 
+@:keep
 class BaseQuery<This>
 {
 	var _first : BaseQuery<This>;
 	var _next : BaseQuery<This>;
 	var _delegate : Delegate;
-	public function new(delegate : Delegate, _first : BaseQuery<This>)
+	var _collected : Array<Array<Dynamic>>;
+
+	public function new(delegate : Delegate, first : BaseQuery<This>)
 	{
 		this._delegate = delegate;
-		this._first = _first;
+		this._first = first;
+		this._collected = [];
 	}
 
 	public function data(handler : (Array<Dynamic> -> Void) -> Void)
@@ -66,26 +70,28 @@ class BaseQuery<This>
 		return transform(Transformers.map(handler));
 	}
 
-	public function log(?f : Arrays<Dynamic>)
+	public function log(?f : Array<Dynamic> -> Void)
 	{
 		var api : { function log(v : Dynamic) : Void; } = untyped __js__("console");
 		if(null == f)
-			f = api.
-		if(null == api)
+			f = api.log;
+		if(null == f)
 			return _this(this);
 		return transform(function(d : Array<Dynamic>) : Array<Dynamic> {
-			api.log(Dynamics.string(d));
+			f(d);
 			return d;
 		});
 	}
 
-	public function logFirst(?f : Dynamic)
+	public function logFirst(?f : Dynamic -> Void)
 	{
 		var api : { function log(v : Dynamic) : Void; } = untyped __js__("console");
-		if(null == api)
+		if(null == f)
+			f = api.log;
+		if(null == f)
 			return _this(this);
 		return transform(function(d : Array<Dynamic>) : Array<Dynamic> {
-			api.log(Dynamics.string(d[0]));
+			f(d[0]);
 			return d;
 		});
 	}
@@ -147,6 +153,11 @@ class BaseQuery<This>
 		return transform(Transformers.filter(f));
 	}
 
+	public function filterByFields(f : Dynamic)
+	{
+		return transform(Transformers.filterByFields(f));
+	}
+
 	public function sort(f : Dynamic -> Dynamic -> Int)
 	{
 		return transform(Transformers.sort(f));
@@ -160,8 +171,8 @@ class BaseQuery<This>
 	public function sortByFields(fields : Array<String>, ?reverse : Bool)
 	{
 		reverse = null == reverse ? false : reverse;
-		var r;
 		return sort(function(a, b) {
+			var r;
 			for(field in fields)
 			{
 				r = (reverse ? -1 : 1) * Dynamics.compare(Reflect.field(a, field), Reflect.field(b, field));
@@ -182,9 +193,47 @@ class BaseQuery<This>
 		return transform(Transformers.limit(offset, count));
 	}
 
+	public function append(?useAseSource : Bool)
+	{
+		if(null == useAseSource)
+			useAseSource = false;
+		return transform(function(arr : Array<Dynamic>) {
+			_first._collected.push(arr);
+			if(useAseSource)
+				return arr;
+			else
+				return [{}];
+		});
+	}
+
+	public function collect()
+	{
+		return transform(function(arr : Array<Dynamic>) {
+			var collected = _first._collected.pop();
+			return collected.concat(arr);
+		});
+	}
+
 	public function reverse()
 	{
 		return transform(Transformers.reverse);
+	}
+
+	public function accumulate(groupby : String, on : String, forproperty : String, atproperty : String)
+	{
+		var map = new Hash();
+		var q = sortByFields([groupby, on]);
+
+		return transform(function(data : Array<Dynamic>){
+			var v : Float, f : String;
+			data.each(function(dp, _) {
+				v = map.get(f = "" + Reflect.field(dp, on));
+				if(null == v) v = 0.0;
+				Reflect.setField(dp, atproperty, v);
+				map.set(f, v + Reflect.field(dp, forproperty));
+			});
+			return data;
+		});
 	}
 
 	public function load(handler : Array<Dynamic> -> Void)

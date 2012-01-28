@@ -1,14 +1,14 @@
 //** QUERY
 ReportGrid.query
-	.values({
+	.series({
 		path : "/query/test",
 		event : "impression",
-		property : "gender"
+		periodicity : "hour",
+		start : "24 hours ago"
 	})
-	.count()
 
 //** VIZ
 ReportGrid.barChart("#chart", {
-	axes : ['gender', 'count'],
+	axes : ['time:hour', 'count'],
 	load : loader
 })

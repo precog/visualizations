@@ -6,6 +6,8 @@ class Transformers
 {
 	public static function cross(values : Array<Dynamic>)
 	{
+		if(!Std.is(values, Array))
+			values = [values];
 		return function(data : Array<Dynamic>)
 		{
 			var results = [];
@@ -27,6 +29,21 @@ class Transformers
 
 	public static function filter(handler : Dynamic -> Bool)
 	{
+		return function(data : Array<Dynamic>) return data.filter(handler);
+	}
+
+	public static function filterByFields(o : Dynamic)
+	{
+		var entries = Objects.entries(o);
+		function handler(d : Dynamic)
+		{
+			for(entry in entries)
+			{
+				if(Reflect.field(d, entry.key) != entry.value)
+					return false;
+			}
+			return true;
+		}
 		return function(data : Array<Dynamic>) return data.filter(handler);
 	}
 

@@ -177,6 +177,7 @@ rg.data.reportgrid.IExecutorReportGrid.prototype = {
 	,searchSeries: null
 	,intersect: null
 	,histogram: null
+	,propertiesHistogram: null
 	,__class__: rg.data.reportgrid.IExecutorReportGrid
 }
 var Types = $hxClasses["Types"] = function() { }
@@ -1887,6 +1888,7 @@ if(!rg.query) rg.query = {}
 rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.cross = function(values) {
+	if(!Std["is"](values,Array)) values = [values];
 	return function(data) {
 		var results = [];
 		var _g = 0;
@@ -1909,6 +1911,21 @@ rg.query.Transformers.map = function(handler) {
 	};
 }
 rg.query.Transformers.filter = function(handler) {
+	return function(data) {
+		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.filterByFields = function(o) {
+	var entries = Objects.entries(o);
+	var handler = function(d) {
+		var _g = 0;
+		while(_g < entries.length) {
+			var entry = entries[_g];
+			++_g;
+			if(Reflect.field(d,entry.key) != entry.value) return false;
+		}
+		return true;
+	};
 	return function(data) {
 		return Arrays.filter(data,handler);
 	};
@@ -2102,6 +2119,7 @@ IntIter.prototype = {
 rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(delegate,first) {
 	this._delegate = delegate;
 	this._first = first;
+	this._collected = [];
 }
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.delegateTransform = function(t) {
@@ -2113,6 +2131,7 @@ rg.query.BaseQuery.prototype = {
 	_first: null
 	,_next: null
 	,_delegate: null
+	,_collected: null
 	,data: function(handler) {
 		return this.delegate(function(_,h) {
 			handler(h);
@@ -2186,6 +2205,9 @@ rg.query.BaseQuery.prototype = {
 	,filter: function(f) {
 		return this.transform(rg.query.Transformers.filter(f));
 	}
+	,filterByFields: function(f) {
+		return this.transform(rg.query.Transformers.filterByFields(f));
+	}
 	,sort: function(f) {
 		return this.transform(rg.query.Transformers.sort(f));
 	}
@@ -2194,8 +2216,8 @@ rg.query.BaseQuery.prototype = {
 	}
 	,sortByFields: function(fields,reverse) {
 		reverse = null == reverse?false:reverse;
-		var r;
 		return this.sort(function(a,b) {
+			var r;
 			var _g = 0;
 			while(_g < fields.length) {
 				var field = fields[_g];
@@ -2213,11 +2235,43 @@ rg.query.BaseQuery.prototype = {
 		}
 		return this.transform(rg.query.Transformers.limit(offset,count));
 	}
+	,append: function(useAseSource) {
+		var me = this;
+		if(null == useAseSource) useAseSource = false;
+		return this.transform(function(arr) {
+			me._first._collected.push(arr);
+			if(useAseSource) return arr; else return [{ }];
+		});
+	}
+	,collect: function() {
+		var me = this;
+		return this.transform(function(arr) {
+			var collected = me._first._collected.pop();
+			return collected.concat(arr);
+		});
+	}
 	,reverse: function() {
 		return this.transform(rg.query.Transformers.reverse);
 	}
+	,accumulate: function(groupby,on,forproperty,atproperty) {
+		var map = new Hash();
+		var q = this.sortByFields([groupby,on]);
+		return q.transform(function(data) {
+			var v, f;
+			data.forEach(function(dp,_) {
+				v = map.get(f = "" + Reflect.field(dp,on));
+				if(null == v) v = 0.0;
+				dp[atproperty] = v;
+				map.set(f,v + Reflect.field(dp,forproperty));
+			});
+			return data;
+		});
+	}
 	,load: function(handler) {
 		this._first.load(handler);
+	}
+	,_query: function(t) {
+		return t;
 	}
 	,_createQuery: function(delegate,first) {
 		return new rg.query.BaseQuery(delegate,first);
@@ -2294,7 +2348,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 415, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 438, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,handler) {
 	return function(data) {
@@ -2394,10 +2448,11 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ periodicity : "eternity"}), properties = [];
 			options.properties = properties;
-			var _g = 0, _g1 = params.properties;
-			while(_g < _g1.length) {
-				var item = _g1[_g];
-				++_g;
+			var _g1 = 0, _g = params.properties.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var item = params.properties[i];
+				if(Std["is"](item,String)) item = params.properties[i] = { property : item};
 				var o = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(item.property)};
 				if(null != item.top) {
 					if(null != item.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property");
@@ -2418,10 +2473,11 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params), properties = [];
 			options.properties = properties;
-			var _g = 0, _g1 = params.properties;
-			while(_g < _g1.length) {
-				var item = _g1[_g];
-				++_g;
+			var _g1 = 0, _g = params.properties.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var item = params.properties[i];
+				if(Std["is"](item,String)) item = params.properties[i] = { property : item};
 				var o = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(item.property)};
 				if(null != item.top) {
 					if(null != item.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property");
@@ -2441,12 +2497,19 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
-			haxe.Log.trace(options,{ fileName : "ReportGridQuery.hx", lineNumber : 262, className : "rg.query.ReportGridBaseQuery", methodName : "histogram"});
+			haxe.Log.trace(options,{ fileName : "ReportGridQuery.hx", lineNumber : 272, className : "rg.query.ReportGridBaseQuery", methodName : "histogram"});
 			if(null != params.top) {
 				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
 				options.top = params.top;
 			} else if(null != params.bottom) options.bottom = params.bottom;
 			me.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.histogram,params,handler));
+		});
+	}
+	,propertiesHistogram: function(p) {
+		var me = this;
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
+			me.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,handler));
 		});
 	}
 	,series: function(p) {
@@ -3429,7 +3492,17 @@ rg.query.ReportGridTransformers.propertyValues = function(arr,params) {
 rg.query.ReportGridTransformers.histogram = function(arr,params) {
 	var path = params.path, event = params.event, property = params.property;
 	return arr.map(function(value,_) {
-		return { path : path, event : event, property : property, value : value[0], count : value[1]};
+		var ob = { path : path, event : event, count : value[1]};
+		ob[property] = value[0];
+		return ob;
+	});
+}
+rg.query.ReportGridTransformers.propertiesHistogram = function(arr,params) {
+	var path = params.path, event = params.event, property = params.property;
+	return arr.map(function(value,_) {
+		var ob = { path : path, event : event, count : value[1]};
+		ob[property] = Strings.ltrim(value[0],".");
+		return ob;
 	});
 }
 rg.query.ReportGridTransformers.intersect = function(ob,params) {
@@ -3517,7 +3590,7 @@ rg.query.ReportGridTransformers.eventSeries = function(values,params) {
 }
 rg.query.ReportGridTransformers.propertySummary = function(count,params) {
 	var o = { path : params.path, event : params.event, count : count};
-	haxe.Log.trace(count,{ fileName : "ReportGridTransformers.hx", lineNumber : 218, className : "rg.query.ReportGridTransformers", methodName : "propertySummary"});
+	haxe.Log.trace(count,{ fileName : "ReportGridTransformers.hx", lineNumber : 234, className : "rg.query.ReportGridTransformers", methodName : "propertySummary"});
 	if(null != params.where) Objects.copyTo(params.where,o);
 	return [o];
 }
@@ -3833,7 +3906,7 @@ rg.app.query.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r);
 	r.query = rg.query.ReportGridQuery.create(executor);
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.818"};
+	r.info.query = { version : "1.0.0.916"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -6466,76 +6539,49 @@ rg.data.reportgrid.ReportGridExecutorMemoryCache.prototype = {
 	,cache: null
 	,queue: null
 	,children: function(path,options,success,error) {
-		var id = this.id("children",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.children(path,options,this.cacheSuccess(id,success),error);
+		this.execute("children",path,options,success,error);
 	}
 	,propertyCount: function(path,options,success,error) {
-		var id = this.id("propertyCount",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.propertyCount(path,options,this.cacheSuccess(id,success),error);
+		this.execute("propertyCount",path,options,success,error);
 	}
 	,propertySeries: function(path,options,success,error) {
-		var id = this.id("propertySeries",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.propertySeries(path,options,this.cacheSuccess(id,success),error);
+		this.execute("propertySeries",path,options,success,error);
 	}
 	,propertyMeans: function(path,options,success,error) {
-		var id = this.id("propertyMeans",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.propertyMeans(path,options,this.cacheSuccess(id,success),error);
+		this.execute("propertyMeans",path,options,success,error);
 	}
 	,propertyStandardDeviations: function(path,options,success,error) {
-		var id = this.id("propertyStandardDeviations",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.propertyStandardDeviations(path,options,this.cacheSuccess(id,success),error);
+		this.execute("propertyStandardDeviations",path,options,success,error);
 	}
 	,propertyValues: function(path,options,success,error) {
-		var id = this.id("propertyValues",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.propertyValues(path,options,this.cacheSuccess(id,success),error);
+		this.execute("propertyValues",path,options,success,error);
 	}
 	,propertyValueCount: function(path,options,success,error) {
-		var id = this.id("propertyValueCount",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.propertyValueCount(path,options,this.cacheSuccess(id,success),error);
+		this.execute("propertyValueCount",path,options,success,error);
 	}
 	,propertyValueSeries: function(path,options,success,error) {
-		var id = this.id("propertyValueSeries",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.propertyValueSeries(path,options,this.cacheSuccess(id,success),error);
+		this.execute("propertyValueSeries",path,options,success,error);
 	}
 	,searchCount: function(path,options,success,error) {
-		var id = this.id("searchCount",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.searchCount(path,options,this.cacheSuccess(id,success),error);
+		this.execute("searchCount",path,options,success,error);
 	}
 	,searchSeries: function(path,options,success,error) {
-		var id = this.id("searchSeries",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.searchSeries(path,options,this.cacheSuccess(id,success),error);
+		this.execute("searchSeries",path,options,success,error);
 	}
 	,intersect: function(path,options,success,error) {
-		var id = this.id("intersect",path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.intersect(path,options,this.cacheSuccess(id,success),error);
+		this.execute("intersect",path,options,success,error);
 	}
 	,histogram: function(path,options,success,error) {
-		var id = this.id("histogram",path,options), val = this.getCache(id);
+		this.execute("histogram",path,options,success,error);
+	}
+	,propertiesHistogram: function(path,options,success,error) {
+		this.execute("propertiesHistogram",path,options,success,error);
+	}
+	,execute: function(name,path,options,success,error) {
+		var id = this.id(name,path,options), val = this.getCache(id);
 		if(null != val) success(val);
 		var q = this.getQueue(id);
-		if(null != q) q.push(success); else this.executor.histogram(path,options,this.cacheSuccess(id,success),error);
+		if(null != q) q.push(success); else (Reflect.field(this.executor,name))(path,options,this.cacheSuccess(id,success),error);
 	}
 	,cacheSuccess: function(id,success) {
 		var me = this;
