@@ -4,48 +4,6 @@ function $extend(from, fields) {
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
-var rg = rg || {}
-if(!rg.view) rg.view = {}
-if(!rg.view.svg) rg.view.svg = {}
-if(!rg.view.svg.widget) rg.view.svg.widget = {}
-rg.view.svg.widget.BalloonShape = $hxClasses["rg.view.svg.widget.BalloonShape"] = function() { }
-rg.view.svg.widget.BalloonShape.__name__ = ["rg","view","svg","widget","BalloonShape"];
-rg.view.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
-	var w = width - rc * 2, h = height - rc * 2;
-	var buf = "M" + rc + ",0";
-	if(0 == side) {
-		buf += "h" + offset;
-		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + -rc;
-		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + rc;
-		buf += "h" + (w - (offset + 2 * rc));
-	} else buf += "h" + w;
-	buf += "a" + rc + "," + rc + ",0,0,1," + rc + "," + rc;
-	if(1 == side) {
-		buf += "v" + (offset - rc);
-		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + rc;
-		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + rc;
-		buf += "v" + (h - (offset + rc));
-	} else buf += "v" + h;
-	buf += "a" + rc + "," + rc + ",0,0,1," + -rc + "," + rc;
-	if(2 == side) {
-		buf += "h" + -(w - (offset + 2 * rc));
-		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + rc;
-		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + -rc;
-		buf += "h" + -offset;
-	} else buf += "h" + -w;
-	buf += "a" + rc + "," + rc + ",0,0,1," + -rc + "," + -rc;
-	if(3 == side) {
-		buf += "v" + -(h - (offset + rc));
-		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + -rc;
-		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + -rc;
-		buf += "v" + -(offset - rc);
-	} else buf += "v" + -h;
-	buf += "a" + rc + "," + rc + ",0,0,1," + rc + "," + -rc;
-	return buf + "Z";
-}
-rg.view.svg.widget.BalloonShape.prototype = {
-	__class__: rg.view.svg.widget.BalloonShape
-}
 var thx = thx || {}
 if(!thx.collection) thx.collection = {}
 thx.collection.Set = $hxClasses["thx.collection.Set"] = function() {
@@ -157,26 +115,383 @@ thx.error.NullArgument.__super__ = thx.error.Error;
 thx.error.NullArgument.prototype = $extend(thx.error.Error.prototype,{
 	__class__: thx.error.NullArgument
 });
-if(!rg.data) rg.data = {}
-rg.data.IAxis = $hxClasses["rg.data.IAxis"] = function() { }
-rg.data.IAxis.__name__ = ["rg","data","IAxis"];
-rg.data.IAxis.prototype = {
-	scale: null
-	,ticks: null
-	,max: null
+var rg = rg || {}
+if(!rg.svg) rg.svg = {}
+if(!rg.svg.panel) rg.svg.panel = {}
+rg.svg.panel.Layer = $hxClasses["rg.svg.panel.Layer"] = function(panel) {
+	this.frame = (this.panel = panel).frame;
+	var p = panel;
+	p.addLayer(this);
+	this.g = panel.g.append("svg:g");
+	this.g.attr("class").string("layer");
+	this._resize();
+}
+rg.svg.panel.Layer.__name__ = ["rg","svg","panel","Layer"];
+rg.svg.panel.Layer.prototype = {
+	panel: null
+	,frame: null
+	,g: null
+	,width: null
+	,height: null
+	,customClass: null
+	,addClass: function(name) {
+		var me = this;
+		name.split(" ").forEach(function(d,i) {
+			me.g.classed().add(d);
+		});
+	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
+	}
+	,toggleClass: function(name) {
+		this.g.classed().toggle(name);
+	}
+	,_resize: function() {
+		this.width = this.frame.width;
+		this.height = this.frame.height;
+		this.resize();
+	}
+	,resize: function() {
+	}
+	,destroy: function() {
+		var p = this.panel;
+		p.removeLayer(this);
+		this.g.remove();
+	}
+	,setCustomClass: function(v) {
+		if(null != this.customClass) this.g.classed().remove(this.customClass);
+		this.g.classed().add(v);
+		return this.customClass = v;
+	}
+	,__class__: rg.svg.panel.Layer
+	,__properties__: {set_customClass:"setCustomClass"}
+}
+if(!rg.svg.layer) rg.svg.layer = {}
+rg.svg.layer.TickmarksOrtho = $hxClasses["rg.svg.layer.TickmarksOrtho"] = function(panel,anchor) {
+	rg.svg.panel.Layer.call(this,panel);
+	this.anchor = anchor;
+	this.displayMinor = true;
+	this.displayMajor = true;
+	this.displayLabel = true;
+	this.displayAnchorLine = false;
+	this.lengthMinor = 2;
+	this.lengthMajor = 5;
+	this.paddingMinor = 1;
+	this.paddingMajor = 1;
+	this.paddingLabel = 10;
+	this.g.classed().add("tickmarks");
+}
+rg.svg.layer.TickmarksOrtho.__name__ = ["rg","svg","layer","TickmarksOrtho"];
+rg.svg.layer.TickmarksOrtho.__super__ = rg.svg.panel.Layer;
+rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
+	anchor: null
+	,displayMinor: null
+	,displayMajor: null
+	,displayLabel: null
+	,displayAnchorLine: null
+	,lengthMinor: null
+	,lengthMajor: null
+	,paddingMinor: null
+	,paddingMajor: null
+	,paddingLabel: null
+	,labelOrientation: null
+	,labelAnchor: null
+	,labelAngle: null
+	,desiredSize: null
+	,tickLabel: null
+	,translate: null
+	,x1: null
+	,y1: null
+	,x2: null
+	,y2: null
+	,x: null
+	,y: null
+	,axis: null
 	,min: null
-	,createStats: null
-	,__class__: rg.data.IAxis
-}
-rg.data.IAxisDiscrete = $hxClasses["rg.data.IAxisDiscrete"] = function() { }
-rg.data.IAxisDiscrete.__name__ = ["rg","data","IAxisDiscrete"];
-rg.data.IAxisDiscrete.__interfaces__ = [rg.data.IAxis];
-rg.data.IAxisDiscrete.prototype = {
-	scaleDistribution: null
-	,range: null
-	,__class__: rg.data.IAxisDiscrete
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
-}
+	,max: null
+	,resize: function() {
+		if(null == this.axis) return;
+		if(this.displayAnchorLine) this.updateAnchorLine();
+		this.redraw();
+	}
+	,update: function(axis,min,max) {
+		this.axis = axis;
+		this.min = min;
+		this.max = max;
+		this.redraw();
+	}
+	,updateAnchorLine: function() {
+		var line = this.g.select("line.anchor-line");
+		switch( (this.anchor)[1] ) {
+		case 0:
+			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](0);
+			break;
+		case 1:
+			line.attr("x1")["float"](0).attr("y1")["float"](this.panel.frame.height).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](this.panel.frame.height);
+			break;
+		case 2:
+			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](0).attr("y2")["float"](this.panel.frame.height);
+			break;
+		case 3:
+			line.attr("x1")["float"](this.panel.frame.width).attr("y1")["float"](0).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](this.panel.frame.height);
+			break;
+		}
+	}
+	,maxTicks: function() {
+		var size = (function($this) {
+			var $r;
+			switch( ($this.anchor)[1] ) {
+			case 2:
+			case 3:
+				$r = $this.height;
+				break;
+			case 0:
+			case 1:
+				$r = $this.width;
+				break;
+			}
+			return $r;
+		}(this));
+		return Math.round(size / 2.5);
+	}
+	,id: function(d,i) {
+		return "" + d.getValue();
+	}
+	,redraw: function() {
+		this.desiredSize = Math.max(this.paddingMinor + this.lengthMinor,this.paddingMajor + this.lengthMajor);
+		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
+		var tick = this.g.selectAll("g.tick").data(data,this.id.$bind(this));
+		var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
+		if(this.displayMinor) enter.filter(function(d,i) {
+			return !d.major;
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
+		if(this.displayMajor) enter.filter(function(d,i) {
+			return d.major;
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
+		if(this.displayLabel) enter.eachNode(this.createLabel.$bind(this));
+		tick.update().attr("transform").stringf(this.translate);
+		tick.exit().remove();
+	}
+	,createLabel: function(n,i) {
+		var d = Reflect.field(n,"__data__");
+		if(!d.getMajor()) return;
+		var label = new rg.svg.widget.Label(thx.js.Dom.selectNode(n),false,false,false);
+		label.setAnchor(this.labelAnchor);
+		label.setOrientation(this.labelOrientation);
+		var padding = this.paddingLabel;
+		label.setText(null == this.tickLabel?d.getLabel():this.tickLabel(d.getValue()));
+		switch( (this.anchor)[1] ) {
+		case 0:
+			label.place(0,padding,this.labelAngle);
+			break;
+		case 1:
+			label.place(0,-padding,this.labelAngle);
+			break;
+		case 2:
+			label.place(padding,0,this.labelAngle);
+			break;
+		case 3:
+			label.place(-padding,0,this.labelAngle);
+			break;
+		}
+		var s = (function($this) {
+			var $r;
+			switch( ($this.anchor)[1] ) {
+			case 0:
+			case 1:
+				$r = label.getSize().height + padding;
+				break;
+			case 2:
+			case 3:
+				$r = label.getSize().width + padding;
+				break;
+			}
+			return $r;
+		}(this));
+		if(s > this.desiredSize) this.desiredSize = s;
+	}
+	,initf: function() {
+		switch( (this.anchor)[1] ) {
+		case 0:
+			this.translate = this.translateTop.$bind(this);
+			this.x1 = this.x1Top.$bind(this);
+			this.y1 = this.y1Top.$bind(this);
+			this.x2 = this.x2Top.$bind(this);
+			this.y2 = this.y2Top.$bind(this);
+			break;
+		case 1:
+			this.translate = this.translateBottom.$bind(this);
+			this.x1 = this.x1Bottom.$bind(this);
+			this.y1 = this.y1Bottom.$bind(this);
+			this.x2 = this.x2Bottom.$bind(this);
+			this.y2 = this.y2Bottom.$bind(this);
+			break;
+		case 2:
+			this.translate = this.translateLeft.$bind(this);
+			this.x1 = this.x1Left.$bind(this);
+			this.y1 = this.y1Left.$bind(this);
+			this.x2 = this.x2Left.$bind(this);
+			this.y2 = this.y2Left.$bind(this);
+			break;
+		case 3:
+			this.translate = this.translateRight.$bind(this);
+			this.x1 = this.x1Right.$bind(this);
+			this.y1 = this.y1Right.$bind(this);
+			this.x2 = this.x2Right.$bind(this);
+			this.y2 = this.y2Right.$bind(this);
+			break;
+		}
+		if(null == this.labelOrientation) {
+			switch( (this.anchor)[1] ) {
+			case 0:
+			case 1:
+				this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
+				break;
+			case 2:
+			case 3:
+				this.labelOrientation = rg.svg.widget.LabelOrientation.Aligned;
+				break;
+			}
+		} else if(null == this.labelAnchor) {
+			var $e = (this.labelOrientation);
+			switch( $e[1] ) {
+			case 1:
+				switch( (this.anchor)[1] ) {
+				case 0:
+				case 2:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Left;
+					break;
+				case 1:
+				case 3:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Right;
+					break;
+				}
+				break;
+			case 2:
+				switch( (this.anchor)[1] ) {
+				case 0:
+				case 2:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Top;
+					break;
+				case 1:
+				case 3:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Bottom;
+					break;
+				}
+				break;
+			case 0:
+				var a = $e[2];
+				break;
+			}
+		}
+		if(null == this.labelAnchor) {
+			switch( (this.anchor)[1] ) {
+			case 0:
+				this.labelAnchor = rg.svg.widget.GridAnchor.Top;
+				break;
+			case 1:
+				this.labelAnchor = rg.svg.widget.GridAnchor.Bottom;
+				break;
+			case 2:
+				this.labelAnchor = rg.svg.widget.GridAnchor.Left;
+				break;
+			case 3:
+				this.labelAnchor = rg.svg.widget.GridAnchor.Right;
+				break;
+			}
+		}
+		if(null == this.labelAngle) {
+			switch( (this.anchor)[1] ) {
+			case 0:
+				this.labelAngle = 90;
+				break;
+			case 1:
+				this.labelAngle = 90;
+				break;
+			case 2:
+				this.labelAngle = 0;
+				break;
+			case 3:
+				this.labelAngle = 0;
+				break;
+			}
+		}
+	}
+	,init: function() {
+		this.initf();
+		if(this.displayAnchorLine) {
+			this.g.append("svg:line").attr("class").string("anchor-line");
+			this.updateAnchorLine();
+		}
+	}
+	,t: function(x,y) {
+		return "translate(" + x + "," + y + ")";
+	}
+	,translateTop: function(d,i) {
+		return "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
+	}
+	,translateBottom: function(d,i) {
+		return "translate(" + d.getDelta() * this.panel.frame.width + "," + this.panel.frame.height + ")";
+	}
+	,translateLeft: function(d,i) {
+		return "translate(" + 0 + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+	}
+	,translateRight: function(d,i) {
+		return "translate(" + this.panel.frame.width + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+	}
+	,x1Top: function(d,i) {
+		return 0;
+	}
+	,x1Bottom: function(d,i) {
+		return 0;
+	}
+	,x1Left: function(d,i) {
+		return d.getMajor()?this.paddingMajor:this.paddingMinor;
+	}
+	,x1Right: function(d,i) {
+		return -(d.getMajor()?this.paddingMajor:this.paddingMinor);
+	}
+	,y1Top: function(d,i) {
+		return d.getMajor()?this.paddingMajor:this.paddingMinor;
+	}
+	,y1Bottom: function(d,i) {
+		return -(d.getMajor()?this.paddingMajor:this.paddingMinor);
+	}
+	,y1Left: function(d,i) {
+		return 0;
+	}
+	,y1Right: function(d,i) {
+		return 0;
+	}
+	,x2Top: function(d,i) {
+		return 0;
+	}
+	,x2Bottom: function(d,i) {
+		return 0;
+	}
+	,x2Left: function(d,i) {
+		return d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
+	}
+	,x2Right: function(d,i) {
+		return -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
+	}
+	,y2Top: function(d,i) {
+		return d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
+	}
+	,y2Bottom: function(d,i) {
+		return -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
+	}
+	,y2Left: function(d,i) {
+		return 0;
+	}
+	,y2Right: function(d,i) {
+		return 0;
+	}
+	,tickClass: function(d,i) {
+		return d.getMajor()?"major":null;
+	}
+	,__class__: rg.svg.layer.TickmarksOrtho
+});
 if(!rg.query) rg.query = {}
 rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(delegate,first) {
 	this._delegate = delegate;
@@ -1019,61 +1334,6 @@ rg.graph.Graphs.count = function(graph) {
 rg.graph.Graphs.prototype = {
 	__class__: rg.graph.Graphs
 }
-if(!rg.controller) rg.controller = {}
-if(!rg.controller.visualization) rg.controller.visualization = {}
-rg.controller.visualization.Visualization = $hxClasses["rg.controller.visualization.Visualization"] = function(container) {
-	this.container = container;
-}
-rg.controller.visualization.Visualization.__name__ = ["rg","controller","visualization","Visualization"];
-rg.controller.visualization.Visualization.prototype = {
-	independentVariables: null
-	,dependentVariables: null
-	,variables: null
-	,container: null
-	,ready: null
-	,hasRendered: null
-	,setVariables: function(variables,independentVariables,dependentVariables) {
-		var me = this;
-		this.variables = variables;
-		this.independentVariables = independentVariables;
-		this.dependentVariables = dependentVariables;
-		this.hasRendered = false;
-		this.ready = new hxevents.Notifier();
-		this.ready.addOnce(function() {
-			me.hasRendered = true;
-		});
-	}
-	,init: function() {
-		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 43, className : "rg.controller.visualization.Visualization", methodName : "init"});
-	}
-	,feedData: function(data) {
-		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 48, className : "rg.controller.visualization.Visualization", methodName : "feedData"});
-	}
-	,destroy: function() {
-	}
-	,addReadyOnce: function(handler) {
-		this.ready.addOnce(handler);
-		if(this.hasRendered) handler();
-	}
-	,addReady: function(handler) {
-		this.ready.add(handler);
-		if(this.hasRendered) handler();
-	}
-	,removeReady: function(handler) {
-		this.ready.remove(handler);
-	}
-	,__class__: rg.controller.visualization.Visualization
-}
-rg.controller.visualization.VisualizationSvg = $hxClasses["rg.controller.visualization.VisualizationSvg"] = function(layout) {
-	rg.controller.visualization.Visualization.call(this,layout.container);
-	this.layout = layout;
-}
-rg.controller.visualization.VisualizationSvg.__name__ = ["rg","controller","visualization","VisualizationSvg"];
-rg.controller.visualization.VisualizationSvg.__super__ = rg.controller.visualization.Visualization;
-rg.controller.visualization.VisualizationSvg.prototype = $extend(rg.controller.visualization.Visualization.prototype,{
-	layout: null
-	,__class__: rg.controller.visualization.VisualizationSvg
-});
 if(!rg.app) rg.app = {}
 if(!rg.app.charts) rg.app.charts = {}
 rg.app.charts.JSBridge = $hxClasses["rg.app.charts.JSBridge"] = function() { }
@@ -1141,7 +1401,7 @@ rg.app.charts.JSBridge.main = function() {
 	r.format = Dynamics.format;
 	r.compare = Dynamics.compare;
 	r.dump = Dynamics.string;
-	var scache = rg.view.svg.util.SymbolCache.cache;
+	var scache = rg.svg.util.SymbolCache.cache;
 	r.symbol = function(type) {
 		return scache.get(type);
 	};
@@ -1166,7 +1426,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6500"};
+	r.info.charts = { version : "1.2.2.6505"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -1697,81 +1957,257 @@ math.prng.Random.prototype = {
 	}
 	,__class__: math.prng.Random
 }
-rg.data.AxisNumeric = $hxClasses["rg.data.AxisNumeric"] = function() {
+if(!rg.visualization) rg.visualization = {}
+rg.visualization.Visualization = $hxClasses["rg.visualization.Visualization"] = function(container) {
+	this.container = container;
 }
-rg.data.AxisNumeric.__name__ = ["rg","data","AxisNumeric"];
-rg.data.AxisNumeric.__interfaces__ = [rg.data.IAxis];
-rg.data.AxisNumeric._step = function(span,m) {
-	var step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / span * step;
-	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
-	return step;
-}
-rg.data.AxisNumeric.nice = function(v) {
-	return Math.pow(10,Math.round(Math.log(v) / 2.302585092994046) - 1);
-}
-rg.data.AxisNumeric.niceMin = function(d,v) {
-	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
-	return Math.floor(v / dv) * dv;
-}
-rg.data.AxisNumeric.niceMax = function(d,v) {
-	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
-	return Math.ceil(v / dv) * dv;
-}
-rg.data.AxisNumeric.prototype = {
-	scale: function(start,end,v) {
-		if(start == end) return start;
-		return (Floats.uninterpolatef(start,end))(v);
+rg.visualization.Visualization.__name__ = ["rg","visualization","Visualization"];
+rg.visualization.Visualization.prototype = {
+	independentVariables: null
+	,dependentVariables: null
+	,variables: null
+	,container: null
+	,ready: null
+	,hasRendered: null
+	,setVariables: function(variables,independentVariables,dependentVariables) {
+		var me = this;
+		this.variables = variables;
+		this.independentVariables = independentVariables;
+		this.dependentVariables = dependentVariables;
+		this.hasRendered = false;
+		this.ready = new hxevents.Notifier();
+		this.ready.addOnce(function() {
+			me.hasRendered = true;
+		});
 	}
-	,ticks: function(start,end,maxTicks) {
-		var span = end - start, step = 1.0, minors, majors;
-		if(start % step == 0 && end % step == 0 && span < 10 && span >= step) {
-			majors = Floats.range(start,end + step,step);
-			minors = null;
-		} else {
-			var mM = 5, mm = 20, stepM = rg.data.AxisNumeric._step(span,mM), stepm = rg.data.AxisNumeric._step(span,mm);
-			minors = Floats.range(start,end + stepM,stepm);
-			majors = Floats.range(start,end * 1.0001,stepM);
+	,init: function() {
+		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 43, className : "rg.visualization.Visualization", methodName : "init"});
+	}
+	,feedData: function(data) {
+		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 48, className : "rg.visualization.Visualization", methodName : "feedData"});
+	}
+	,destroy: function() {
+	}
+	,addReadyOnce: function(handler) {
+		this.ready.addOnce(handler);
+		if(this.hasRendered) handler();
+	}
+	,addReady: function(handler) {
+		this.ready.add(handler);
+		if(this.hasRendered) handler();
+	}
+	,removeReady: function(handler) {
+		this.ready.remove(handler);
+	}
+	,__class__: rg.visualization.Visualization
+}
+rg.visualization.VisualizationSvg = $hxClasses["rg.visualization.VisualizationSvg"] = function(layout) {
+	rg.visualization.Visualization.call(this,layout.container);
+	this.layout = layout;
+}
+rg.visualization.VisualizationSvg.__name__ = ["rg","visualization","VisualizationSvg"];
+rg.visualization.VisualizationSvg.__super__ = rg.visualization.Visualization;
+rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualization.prototype,{
+	layout: null
+	,__class__: rg.visualization.VisualizationSvg
+});
+rg.visualization.VisualizationCartesian = $hxClasses["rg.visualization.VisualizationCartesian"] = function(layout) {
+	rg.visualization.VisualizationSvg.call(this,layout);
+}
+rg.visualization.VisualizationCartesian.__name__ = ["rg","visualization","VisualizationCartesian"];
+rg.visualization.VisualizationCartesian.__super__ = rg.visualization.VisualizationSvg;
+rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
+	info: null
+	,chart: null
+	,xlabel: null
+	,xrule: null
+	,ylabels: null
+	,yrules: null
+	,title: null
+	,xvariable: null
+	,yvariables: null
+	,init: function() {
+		this.initAxes();
+		this.initYAxes();
+		this.initXAxis();
+		this.initTitle();
+		this.initPadding();
+		this.initChart();
+		this.initCartesianChart();
+	}
+	,initAxes: function() {
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 46, className : "rg.visualization.VisualizationCartesian", methodName : "initAxes"});
+	}
+	,initPadding: function() {
+		this.layout.adjustPadding();
+	}
+	,initYAxes: function() {
+		this.ylabels = [];
+		this.yrules = [];
+		var _g1 = 0, _g = this.yvariables.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var tickmarks = this.createTickmarks(i + 1,this.yvariables[i].type,"y" + i), rules = this.createRules(i + 1,this.yvariables[i].type,rg.frame.Orientation.Horizontal);
+			if(null != tickmarks) this.ylabels.push({ id : i, tickmarks : tickmarks});
+			if(null != rules) this.yrules.push({ id : i, rules : rules});
 		}
-		return rg.data.Tickmarks.bound(null == minors?majors.map(function(d,i) {
-			return new rg.data.Tickmark(d,true,(d - start) / (end - start));
-		}):minors.map(function(d,i) {
-			return new rg.data.Tickmark(d,majors.remove(d),(d - start) / (end - start));
-		}),maxTicks);
 	}
-	,min: function(stats,meta) {
-		if(null != meta.min) return meta.min;
-		var min = rg.data.AxisNumeric.niceMin(stats.max - stats.min,stats.min);
-		if(min < 0) return min; else return 0.0;
+	,initXAxis: function() {
+		this.xlabel = this.createTickmarks(0,this.xvariable.type,"x");
+		this.xrule = this.createRules(0,this.xvariable.type,rg.frame.Orientation.Vertical);
 	}
-	,max: function(stats,meta) {
-		if(null != meta.max) return meta.max;
-		var max = rg.data.AxisNumeric.niceMax(stats.max - stats.min,stats.max);
-		if(max > 0) return max; else return 0.0;
+	,initChart: function() {
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 88, className : "rg.visualization.VisualizationCartesian", methodName : "initChart"});
 	}
-	,createStats: function(type) {
-		return new rg.data.StatsNumeric(type);
+	,initCartesianChart: function() {
+		this.chart.animated = this.info.animation.animated;
+		this.chart.animationDuration = this.info.animation.duration;
+		this.chart.animationEase = this.info.animation.ease;
+		this.chart.click = this.info.click;
+		this.chart.labelDataPoint = this.info.label.datapoint;
+		this.chart.labelDataPointOver = this.info.label.datapointover;
+		this.chart.init();
 	}
-	,__class__: rg.data.AxisNumeric
+	,initTitle: function() {
+		if(null == this.info.label.title) return;
+		var panelContextTitle = this.layout.getContext("title");
+		if(null == panelContextTitle) return;
+		this.title = new rg.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+	}
+	,feedData: function(data) {
+		if(0 == data.length) return;
+		if(null != this.title && null != this.info.label.title) {
+			this.title.setText(this.info.label.title(this.variables,data));
+			this.layout.suggestSize("title",this.title.idealHeight());
+		}
+		var transformed = this.transformData(data);
+		this.chart.setVariables(this.variables,this.independentVariables,this.dependentVariables,transformed);
+		var _g1 = 0, _g = this.ylabels.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var item = this.ylabels[i], variable = this.yvariables[item.id];
+			item.tickmarks.update(variable.axis,variable.min(),variable.max());
+			var size = Math.round(item.tickmarks.desiredSize);
+			this.layout.suggestSize("y" + item.id,size);
+		}
+		var _g1 = 0, _g = this.yrules.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var item = this.yrules[i], variable = this.yvariables[item.id];
+			item.rules.update(variable.axis,variable.min(),variable.max());
+		}
+		if(null != this.xlabel) {
+			var variable = this.xvariable;
+			this.xlabel.update(variable.axis,variable.min(),variable.max());
+			var size = Math.round(this.xlabel.desiredSize);
+			this.layout.suggestSize("x",size);
+		}
+		if(null != this.xrule) {
+			var variable = this.xvariable;
+			this.xrule.update(variable.axis,variable.min(),variable.max());
+		}
+		this.chart.data(transformed);
+	}
+	,transformData: function(dps) {
+		return (function($this) {
+			var $r;
+			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 163, className : "rg.visualization.VisualizationCartesian", methodName : "transformData"});
+			return $r;
+		}(this));
+	}
+	,destroy: function() {
+		this.chart.destroy();
+	}
+	,setTickmarksDefaults: function(tickmarks,i,type,pname) {
+	}
+	,createTickmarks: function(i,type,pname) {
+		var me = this;
+		var displayMinor = this.info.displayMinorTick(type), displayMajor = this.info.displayMajorTick(type), displayLabel = this.info.displayLabelTick(type), displayAnchorLine = this.info.displayAnchorLineTick(type), title = null != this.info.label.axis?this.info.label.axis(type):null, tickmarks = null, context;
+		if(displayMinor || displayMajor || displayLabel || displayAnchorLine) {
+			context = this.layout.getContext(pname);
+			if(null == context) return null;
+			tickmarks = new rg.svg.layer.TickmarksOrtho(context.panel,context.anchor);
+			this.setTickmarksDefaults(tickmarks,i,type,pname);
+			if(!displayLabel) tickmarks.displayLabel = false; else if(null != this.info.label.tickmark) tickmarks.tickLabel = function(d) {
+				return me.info.label.tickmark(d,type);
+			};
+			tickmarks.displayMinor = displayMinor;
+			tickmarks.displayMajor = displayMajor;
+			tickmarks.lengthMinor = this.info.lengthTickMinor;
+			tickmarks.lengthMajor = this.info.lengthTickMajor;
+			tickmarks.paddingMinor = this.info.paddingTickMinor;
+			tickmarks.paddingMajor = this.info.paddingTickMajor;
+			tickmarks.paddingLabel = this.info.paddingLabel;
+			var s;
+			s = this.info.labelAnchor(type);
+			if(null != s) tickmarks.labelAnchor = rg.svg.widget.GridAnchors.parse(s);
+			s = this.info.labelOrientation(type);
+			if(null != s) tickmarks.labelOrientation = rg.svg.widget.LabelOrientations.parse(s);
+			var a;
+			if(null != (a = this.info.labelAngle(type))) tickmarks.labelAngle = a;
+			tickmarks.displayAnchorLine = displayAnchorLine;
+		}
+		if(null != title && null != (context = this.layout.getContext(pname + "title"))) {
+			var t = new rg.svg.layer.Title(context.panel,title,context.anchor,null,"axis-title");
+			var h = t.idealHeight();
+			this.layout.suggestSize(pname + "title",h);
+		}
+		if(null != tickmarks) tickmarks.init();
+		return tickmarks;
+	}
+	,createRules: function(i,type,orientation) {
+		var displayMinor = this.info.displayMinorRule(type), displayMajor = this.info.displayMajorRule(type), displayAnchorLine = this.info.displayAnchorLineRule(type), title = null != this.info.label.axis?this.info.label.axis(type):null, rules = null, panel;
+		if(displayMinor || displayMajor) {
+			panel = this.layout.getPanel("main");
+			if(null == panel) return null;
+			rules = new rg.svg.layer.RulesOrtho(panel,orientation);
+			rules.displayMinor = displayMinor;
+			rules.displayMajor = displayMajor;
+			rules.displayAnchorLine = displayAnchorLine;
+			rules.init();
+		}
+		return rules;
+	}
+	,__class__: rg.visualization.VisualizationCartesian
+});
+rg.visualization.VisualizationLineChart = $hxClasses["rg.visualization.VisualizationLineChart"] = function(layout) {
+	rg.visualization.VisualizationCartesian.call(this,layout);
 }
-if(!rg.controller.info) rg.controller.info = {}
-rg.controller.info.InfoSegment = $hxClasses["rg.controller.info.InfoSegment"] = function() {
-}
-rg.controller.info.InfoSegment.__name__ = ["rg","controller","info","InfoSegment"];
-rg.controller.info.InfoSegment.filters = function() {
-	return [{ field : "on", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "transform", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "scale", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
-}
-rg.controller.info.InfoSegment.prototype = {
-	on: null
-	,transform: null
-	,scale: null
-	,__class__: rg.controller.info.InfoSegment
-}
+rg.visualization.VisualizationLineChart.__name__ = ["rg","visualization","VisualizationLineChart"];
+rg.visualization.VisualizationLineChart.__super__ = rg.visualization.VisualizationCartesian;
+rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
+	infoLine: null
+	,initAxes: function() {
+		this.xvariable = this.variables[0];
+		this.yvariables = this.variables.slice(1);
+	}
+	,initChart: function() {
+		var me = this;
+		var chart = new rg.svg.chart.LineChart(this.layout.getPanel(this.layout.mainPanelName));
+		chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		chart.symbol = this.infoLine.symbol;
+		chart.symbolStyle = this.infoLine.symbolStyle;
+		chart.lineInterpolator = this.infoLine.interpolation;
+		chart.lineEffect = this.infoLine.effect;
+		if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.axis.ScaleDistribution.ScaleFill;
+		if(null != this.infoLine.y0property) chart.y0property = this.infoLine.y0property; else if(this.infoLine.displayarea) chart.y0property = "";
+		this.chart = chart;
+	}
+	,transformData: function(dps) {
+		var results = [], segmenter = new rg.data.Segmenter(this.infoLine.segment.on,this.infoLine.segment.transform,this.infoLine.segment.scale);
+		var _g1 = 0, _g = this.dependentVariables.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var variable = this.dependentVariables[i];
+			var values = rg.util.DataPoints.filterByDependents(dps,[variable]);
+			results.push(segmenter.segment(values));
+		}
+		return results;
+	}
+	,__class__: rg.visualization.VisualizationLineChart
+});
 var IntHash = $hxClasses["IntHash"] = function() {
 	this.h = {}
 	if(this.h.__proto__ != null) {
@@ -1825,231 +2261,237 @@ IntHash.prototype = {
 	}
 	,__class__: IntHash
 }
-rg.controller.visualization.VisualizationCartesian = $hxClasses["rg.controller.visualization.VisualizationCartesian"] = function(layout) {
-	rg.controller.visualization.VisualizationSvg.call(this,layout);
+if(!rg.svg.chart) rg.svg.chart = {}
+rg.svg.chart.Chart = $hxClasses["rg.svg.chart.Chart"] = function(panel) {
+	rg.svg.panel.Layer.call(this,panel);
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.linear;
+	this.ready = new hxevents.Notifier();
 }
-rg.controller.visualization.VisualizationCartesian.__name__ = ["rg","controller","visualization","VisualizationCartesian"];
-rg.controller.visualization.VisualizationCartesian.__super__ = rg.controller.visualization.VisualizationSvg;
-rg.controller.visualization.VisualizationCartesian.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
-	info: null
-	,chart: null
-	,xlabel: null
-	,xrule: null
-	,ylabels: null
-	,yrules: null
-	,title: null
-	,xvariable: null
-	,yvariables: null
+rg.svg.chart.Chart.__name__ = ["rg","svg","chart","Chart"];
+rg.svg.chart.Chart.__super__ = rg.svg.panel.Layer;
+rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
+	animated: null
+	,animationDuration: null
+	,animationEase: null
+	,click: null
+	,labelDataPoint: null
+	,labelDataPointOver: null
+	,ready: null
+	,panelx: null
+	,panely: null
+	,tooltip: null
+	,resize: function() {
+		var coords = rg.svg.panel.Panels.boundingBox(this.panel);
+		this.panelx = coords.x;
+		this.panely = coords.y;
+	}
 	,init: function() {
-		this.initAxes();
-		this.initYAxes();
-		this.initXAxis();
-		this.initTitle();
-		this.initPadding();
-		this.initChart();
-		this.initCartesianChart();
+		if(null != this.labelDataPointOver) this.tooltip = new rg.svg.widget.Balloon(this.g);
+		this.resize();
 	}
-	,initAxes: function() {
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 46, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initAxes"});
+	,moveTooltip: function(x,y,animated) {
+		if(0 == this.tooltip.x && 0 == this.tooltip.y) {
+			this.tooltip.hide();
+			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
+			this.tooltip.show(animated);
+		} else if(!this.tooltip.visible) {
+			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
+			this.tooltip.show(animated);
+		} else this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
 	}
-	,initPadding: function() {
-		this.layout.adjustPadding();
-	}
-	,initYAxes: function() {
-		this.ylabels = [];
-		this.yrules = [];
-		var _g1 = 0, _g = this.yvariables.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var tickmarks = this.createTickmarks(i + 1,this.yvariables[i].type,"y" + i), rules = this.createRules(i + 1,this.yvariables[i].type,rg.view.frame.Orientation.Horizontal);
-			if(null != tickmarks) this.ylabels.push({ id : i, tickmarks : tickmarks});
-			if(null != rules) this.yrules.push({ id : i, rules : rules});
-		}
-	}
-	,initXAxis: function() {
-		this.xlabel = this.createTickmarks(0,this.xvariable.type,"x");
-		this.xrule = this.createRules(0,this.xvariable.type,rg.view.frame.Orientation.Vertical);
-	}
-	,initChart: function() {
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 88, className : "rg.controller.visualization.VisualizationCartesian", methodName : "initChart"});
-	}
-	,initCartesianChart: function() {
-		this.chart.animated = this.info.animation.animated;
-		this.chart.animationDuration = this.info.animation.duration;
-		this.chart.animationEase = this.info.animation.ease;
-		this.chart.click = this.info.click;
-		this.chart.labelDataPoint = this.info.label.datapoint;
-		this.chart.labelDataPointOver = this.info.label.datapointover;
-		this.chart.init();
-	}
-	,initTitle: function() {
-		if(null == this.info.label.title) return;
-		var panelContextTitle = this.layout.getContext("title");
-		if(null == panelContextTitle) return;
-		this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
-	}
-	,feedData: function(data) {
-		if(0 == data.length) return;
-		if(null != this.title && null != this.info.label.title) {
-			this.title.setText(this.info.label.title(this.variables,data));
-			this.layout.suggestSize("title",this.title.idealHeight());
-		}
-		var transformed = this.transformData(data);
-		this.chart.setVariables(this.variables,this.independentVariables,this.dependentVariables,transformed);
-		var _g1 = 0, _g = this.ylabels.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var item = this.ylabels[i], variable = this.yvariables[item.id];
-			item.tickmarks.update(variable.axis,variable.min(),variable.max());
-			var size = Math.round(item.tickmarks.desiredSize);
-			this.layout.suggestSize("y" + item.id,size);
-		}
-		var _g1 = 0, _g = this.yrules.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var item = this.yrules[i], variable = this.yvariables[item.id];
-			item.rules.update(variable.axis,variable.min(),variable.max());
-		}
-		if(null != this.xlabel) {
-			var variable = this.xvariable;
-			this.xlabel.update(variable.axis,variable.min(),variable.max());
-			var size = Math.round(this.xlabel.desiredSize);
-			this.layout.suggestSize("x",size);
-		}
-		if(null != this.xrule) {
-			var variable = this.xvariable;
-			this.xrule.update(variable.axis,variable.min(),variable.max());
-		}
-		this.chart.data(transformed);
-	}
-	,transformData: function(dps) {
-		return (function($this) {
-			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 163, className : "rg.controller.visualization.VisualizationCartesian", methodName : "transformData"});
-			return $r;
-		}(this));
-	}
-	,destroy: function() {
-		this.chart.destroy();
-	}
-	,setTickmarksDefaults: function(tickmarks,i,type,pname) {
-	}
-	,createTickmarks: function(i,type,pname) {
-		var me = this;
-		var displayMinor = this.info.displayMinorTick(type), displayMajor = this.info.displayMajorTick(type), displayLabel = this.info.displayLabelTick(type), displayAnchorLine = this.info.displayAnchorLineTick(type), title = null != this.info.label.axis?this.info.label.axis(type):null, tickmarks = null, context;
-		if(displayMinor || displayMajor || displayLabel || displayAnchorLine) {
-			context = this.layout.getContext(pname);
-			if(null == context) return null;
-			tickmarks = new rg.view.svg.layer.TickmarksOrtho(context.panel,context.anchor);
-			this.setTickmarksDefaults(tickmarks,i,type,pname);
-			if(!displayLabel) tickmarks.displayLabel = false; else if(null != this.info.label.tickmark) tickmarks.tickLabel = function(d) {
-				return me.info.label.tickmark(d,type);
-			};
-			tickmarks.displayMinor = displayMinor;
-			tickmarks.displayMajor = displayMajor;
-			tickmarks.lengthMinor = this.info.lengthTickMinor;
-			tickmarks.lengthMajor = this.info.lengthTickMajor;
-			tickmarks.paddingMinor = this.info.paddingTickMinor;
-			tickmarks.paddingMajor = this.info.paddingTickMajor;
-			tickmarks.paddingLabel = this.info.paddingLabel;
-			var s;
-			s = this.info.labelAnchor(type);
-			if(null != s) tickmarks.labelAnchor = rg.view.svg.widget.GridAnchors.parse(s);
-			s = this.info.labelOrientation(type);
-			if(null != s) tickmarks.labelOrientation = rg.view.svg.widget.LabelOrientations.parse(s);
-			var a;
-			if(null != (a = this.info.labelAngle(type))) tickmarks.labelAngle = a;
-			tickmarks.displayAnchorLine = displayAnchorLine;
-		}
-		if(null != title && null != (context = this.layout.getContext(pname + "title"))) {
-			var t = new rg.view.svg.layer.Title(context.panel,title,context.anchor,null,"axis-title");
-			var h = t.idealHeight();
-			this.layout.suggestSize(pname + "title",h);
-		}
-		if(null != tickmarks) tickmarks.init();
-		return tickmarks;
-	}
-	,createRules: function(i,type,orientation) {
-		var displayMinor = this.info.displayMinorRule(type), displayMajor = this.info.displayMajorRule(type), displayAnchorLine = this.info.displayAnchorLineRule(type), title = null != this.info.label.axis?this.info.label.axis(type):null, rules = null, panel;
-		if(displayMinor || displayMajor) {
-			panel = this.layout.getPanel("main");
-			if(null == panel) return null;
-			rules = new rg.view.svg.layer.RulesOrtho(panel,orientation);
-			rules.displayMinor = displayMinor;
-			rules.displayMajor = displayMajor;
-			rules.displayAnchorLine = displayAnchorLine;
-			rules.init();
-		}
-		return rules;
-	}
-	,__class__: rg.controller.visualization.VisualizationCartesian
+	,__class__: rg.svg.chart.Chart
 });
-rg.controller.visualization.VisualizationBarChart = $hxClasses["rg.controller.visualization.VisualizationBarChart"] = function(layout) {
-	rg.controller.visualization.VisualizationCartesian.call(this,layout);
+rg.svg.chart.CartesianChart = $hxClasses["rg.svg.chart.CartesianChart"] = function(panel) {
+	rg.svg.chart.Chart.call(this,panel);
 }
-rg.controller.visualization.VisualizationBarChart.__name__ = ["rg","controller","visualization","VisualizationBarChart"];
-rg.controller.visualization.VisualizationBarChart.__super__ = rg.controller.visualization.VisualizationCartesian;
-rg.controller.visualization.VisualizationBarChart.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
-	infoBar: null
-	,initAxes: function() {
-		if(this.infoBar.horizontal) {
-			this.xvariable = this.dependentVariables.map(function(d,_) {
-				return d;
-			})[0];
-			this.yvariables = [this.independentVariables[0]];
+rg.svg.chart.CartesianChart.__name__ = ["rg","svg","chart","CartesianChart"];
+rg.svg.chart.CartesianChart.__super__ = rg.svg.chart.Chart;
+rg.svg.chart.CartesianChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
+	yVariables: null
+	,xVariable: null
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		this.xVariable = variables[0];
+		this.yVariables = variables.slice(1);
+	}
+	,data: function(dps) {
+		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 38, className : "rg.svg.chart.CartesianChart", methodName : "data"});
+	}
+	,__class__: rg.svg.chart.CartesianChart
+});
+rg.svg.chart.BarChart = $hxClasses["rg.svg.chart.BarChart"] = function(panel) {
+	rg.svg.chart.CartesianChart.call(this,panel);
+	this.addClass("bar-chart");
+	this.defs = this.g.append("svg:defs");
+	this.chart = this.g.append("svg:g");
+	this.gradientLightness = 2;
+	this.displayGradient = true;
+	this.padding = 10;
+	this.paddingAxis = 4;
+	this.paddingDataPoint = 2;
+	this.horizontal = false;
+}
+rg.svg.chart.BarChart.__name__ = ["rg","svg","chart","BarChart"];
+rg.svg.chart.BarChart.__super__ = rg.svg.chart.CartesianChart;
+rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
+	stacked: null
+	,chart: null
+	,defs: null
+	,dps: null
+	,gradientLightness: null
+	,displayGradient: null
+	,padding: null
+	,paddingAxis: null
+	,paddingDataPoint: null
+	,horizontal: null
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		if(this.horizontal) {
+			this.xVariable = variableDependents[0];
+			this.yVariables = variableIndependents;
 		} else {
-			this.yvariables = this.dependentVariables.map(function(d,_) {
-				return d;
-			});
-			this.xvariable = this.independentVariables[0];
+			this.xVariable = variableIndependents[0];
+			this.yVariables = variableDependents;
 		}
-	}
-	,initChart: function() {
-		var me = this;
-		var chart = new rg.view.svg.chart.BarChart(this.layout.getPanel(this.layout.mainPanelName));
-		chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		chart.stacked = this.infoBar.stacked;
-		var $e = (this.infoBar.effect);
-		switch( $e[1] ) {
-		case 0:
-			chart.displayGradient = false;
-			break;
-		case 1:
-			var lightness = $e[2];
-			chart.displayGradient = true;
-			chart.gradientLightness = lightness;
-			break;
-		}
-		chart.padding = this.infoBar.barPadding;
-		chart.paddingAxis = this.infoBar.barPaddingAxis;
-		chart.paddingDataPoint = this.infoBar.barPaddingDataPoint;
-		chart.horizontal = this.infoBar.horizontal;
-		this.chart = chart;
-	}
-	,transformData: function(dps) {
-		var results = [], variable = this.independentVariables[0], values = variable.axis.range(variable.min(),variable.max());
-		var _g = 0;
-		while(_g < values.length) {
-			var value = [values[_g]];
-			++_g;
-			var axisresults = [];
-			var _g2 = 0, _g1 = this.dependentVariables.length;
-			while(_g2 < _g1) {
-				var i = _g2++;
-				var dps1 = rg.util.DataPoints.filterByDependents(dps,[this.dependentVariables[i]]);
-				axisresults.push(Arrays.filter(dps1,(function(value) {
-					return function(d) {
-						return Reflect.field(d,variable.type) == value[0];
-					};
-				})(value)));
+		if(this.stacked) {
+			var _g = 0;
+			while(_g < variableDependents.length) {
+				var v = variableDependents[_g];
+				++_g;
+				v.meta.max = Math.NEGATIVE_INFINITY;
 			}
-			results.push(axisresults);
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var _g3 = 0, _g2 = data[i].length;
+				while(_g3 < _g2) {
+					var j = _g3++;
+					var v = variableDependents[j], t = 0.0;
+					var _g5 = 0, _g4 = data[i][j].length;
+					while(_g5 < _g4) {
+						var k = _g5++;
+						t += rg.util.DataPoints.valueAlt(data[i][j][k],v.type,0.0);
+					}
+					if(v.meta.max < t) v.meta.max = t;
+				}
+			}
 		}
-		return results;
 	}
-	,__class__: rg.controller.visualization.VisualizationBarChart
+	,data: function(dps) {
+		if(this.horizontal) this.datah(dps); else this.datav(dps);
+	}
+	,datah: function(dps) {
+		var axisgs = new Hash(), span = (this.height - this.padding * (dps.length - 1)) / dps.length;
+		var getGroup = function(name,container) {
+			var gr = axisgs.get(name);
+			if(null == gr) {
+				gr = container.append("svg:g").attr("class").string(name);
+				axisgs.set(name,gr);
+			}
+			return gr;
+		};
+		var flatdata = Arrays.flatten(Arrays.flatten(dps));
+		var _g1 = 0, _g = dps.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var valuedps = dps[i], dist = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
+			var _g3 = 0, _g2 = valuedps.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f,a1) {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
+					return function(a2,a3,a4) {
+						return f(a1,a2,a3,a4);
+					};
+				})(this.onclick.$bind(this),stats);
+				var prev = 0.0;
+				var _g5 = 0, _g4 = axisdps.length;
+				while(_g5 < _g4) {
+					var k = _g5++;
+					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f,a1) {
+						return function(a2,a3) {
+							return f(a1,a2,a3);
+						};
+					})(click,dp));
+					bar.node()["__data__"] = dp;
+					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
+					if(this.stacked) prev = x + w;
+				}
+			}
+		}
+		this.ready.dispatch();
+	}
+	,datav: function(dps) {
+		var axisgs = new Hash(), span = (this.width - this.padding * (dps.length - 1)) / dps.length;
+		var getGroup = function(name,container) {
+			var gr = axisgs.get(name);
+			if(null == gr) {
+				gr = container.append("svg:g").attr("class").string(name);
+				axisgs.set(name,gr);
+			}
+			return gr;
+		};
+		var flatdata = Arrays.flatten(Arrays.flatten(dps));
+		var _g1 = 0, _g = dps.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var valuedps = dps[i], dist = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
+			var _g3 = 0, _g2 = valuedps.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f,a1) {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
+					return function(a2,a3,a4) {
+						return f(a1,a2,a3,a4);
+					};
+				})(this.onclick.$bind(this),stats);
+				var prev = 0.0;
+				var _g5 = 0, _g4 = axisdps.length;
+				while(_g5 < _g4) {
+					var k = _g5++;
+					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,a1) {
+						return function(a2,a3) {
+							return f(a1,a2,a3);
+						};
+					})(click,dp));
+					bar.node()["__data__"] = dp;
+					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
+					if(this.stacked) prev = y + h;
+				}
+			}
+		}
+		this.ready.dispatch();
+	}
+	,onclick: function(stats,dp,_,i) {
+		this.click(dp,stats);
+	}
+	,onmouseover: function(stats,n,i) {
+		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
+		if(null == text) this.tooltip.hide(); else {
+			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x + w / 2,y);
+		}
+	}
+	,applyGradient: function(n,i) {
+		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
+		if(this.defs.select("#" + id).empty()) {
+			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
+			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
+			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
+			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+		}
+		gn.attr("style").string("fill:url(#" + id + ")");
+	}
+	,__class__: rg.svg.chart.BarChart
 });
 if(!chx.lang) chx.lang = {}
 chx.lang.FatalException = $hxClasses["chx.lang.FatalException"] = function(msg,cause) {
@@ -2064,737 +2506,6 @@ chx.lang.FatalException.prototype = {
 		return Type.getClassName(Type.getClass(this)) + "(" + (this.message == null?"":this.message + ")");
 	}
 	,__class__: chx.lang.FatalException
-}
-if(!rg.controller.interactive) rg.controller.interactive = {}
-rg.controller.interactive.Downloader = $hxClasses["rg.controller.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
-	this.container = container;
-	this.serviceUrl = serviceurl;
-	this.defaultBackgroundColor = backgroundcolor;
-}
-rg.controller.interactive.Downloader.__name__ = ["rg","controller","interactive","Downloader"];
-rg.controller.interactive.Downloader.getClassName = function(container) {
-	var name = container.attr("class").get();
-	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
-	return "" == name?null:name;
-}
-rg.controller.interactive.Downloader.prototype = {
-	serviceUrl: null
-	,defaultBackgroundColor: null
-	,container: null
-	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.controller.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.controller.interactive.Downloader", methodName : "download"});
-		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.view.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
-		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
-		if(null != bg) ob.backgroundcolor = bg;
-		var cls = rg.controller.interactive.Downloader.getClassName(this.container);
-		if(null != cls) ob.className = cls;
-		var http = new haxe.Http(this.serviceUrl);
-		if(null != error) http.onError = error; else http.onError = function(e) {
-			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 56, className : "rg.controller.interactive.Downloader", methodName : "download"});
-		};
-		http.onData = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
-			};
-		})(this.complete.$bind(this),success,error);
-		var buf = [];
-		var _g = 0, _g1 = Reflect.fields(ob);
-		while(_g < _g1.length) {
-			var field = _g1[_g];
-			++_g;
-			http.setParameter(field,Reflect.field(ob,field));
-		}
-		http.request(true);
-	}
-	,complete: function(success,error,content) {
-		if(content.substr(0,rg.controller.interactive.Downloader.ERROR_PREFIX.length) == rg.controller.interactive.Downloader.ERROR_PREFIX) {
-			if(null != error) error(content.substr(rg.controller.interactive.Downloader.ERROR_PREFIX.length));
-		} else if(null == success || success(content)) js.Lib.window.location.href = content;
-	}
-	,__class__: rg.controller.interactive.Downloader
-}
-if(!rg.view.svg.panel) rg.view.svg.panel = {}
-rg.view.svg.panel.Layer = $hxClasses["rg.view.svg.panel.Layer"] = function(panel) {
-	this.frame = (this.panel = panel).frame;
-	var p = panel;
-	p.addLayer(this);
-	this.g = panel.g.append("svg:g");
-	this.g.attr("class").string("layer");
-	this._resize();
-}
-rg.view.svg.panel.Layer.__name__ = ["rg","view","svg","panel","Layer"];
-rg.view.svg.panel.Layer.prototype = {
-	panel: null
-	,frame: null
-	,g: null
-	,width: null
-	,height: null
-	,customClass: null
-	,addClass: function(name) {
-		var me = this;
-		name.split(" ").forEach(function(d,i) {
-			me.g.classed().add(d);
-		});
-	}
-	,removeClass: function(name) {
-		this.g.classed().remove(name);
-	}
-	,toggleClass: function(name) {
-		this.g.classed().toggle(name);
-	}
-	,_resize: function() {
-		this.width = this.frame.width;
-		this.height = this.frame.height;
-		this.resize();
-	}
-	,resize: function() {
-	}
-	,destroy: function() {
-		var p = this.panel;
-		p.removeLayer(this);
-		this.g.remove();
-	}
-	,setCustomClass: function(v) {
-		if(null != this.customClass) this.g.classed().remove(this.customClass);
-		this.g.classed().add(v);
-		return this.customClass = v;
-	}
-	,__class__: rg.view.svg.panel.Layer
-	,__properties__: {set_customClass:"setCustomClass"}
-}
-if(!rg.view.svg.chart) rg.view.svg.chart = {}
-rg.view.svg.chart.Chart = $hxClasses["rg.view.svg.chart.Chart"] = function(panel) {
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.animated = true;
-	this.animationDuration = 1500;
-	this.animationEase = thx.math.Equations.linear;
-	this.ready = new hxevents.Notifier();
-}
-rg.view.svg.chart.Chart.__name__ = ["rg","view","svg","chart","Chart"];
-rg.view.svg.chart.Chart.__super__ = rg.view.svg.panel.Layer;
-rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
-	animated: null
-	,animationDuration: null
-	,animationEase: null
-	,click: null
-	,labelDataPoint: null
-	,labelDataPointOver: null
-	,ready: null
-	,panelx: null
-	,panely: null
-	,tooltip: null
-	,resize: function() {
-		var coords = rg.view.svg.panel.Panels.boundingBox(this.panel);
-		this.panelx = coords.x;
-		this.panely = coords.y;
-	}
-	,init: function() {
-		if(null != this.labelDataPointOver) this.tooltip = new rg.view.svg.widget.Balloon(this.g);
-		this.resize();
-	}
-	,moveTooltip: function(x,y,animated) {
-		if(0 == this.tooltip.x && 0 == this.tooltip.y) {
-			this.tooltip.hide();
-			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
-			this.tooltip.show(animated);
-		} else if(!this.tooltip.visible) {
-			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
-			this.tooltip.show(animated);
-		} else this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
-	}
-	,__class__: rg.view.svg.chart.Chart
-});
-rg.view.svg.chart.Sankey = $hxClasses["rg.view.svg.chart.Sankey"] = function(panel) {
-	rg.view.svg.chart.Chart.call(this,panel);
-	this.addClass("sankey");
-	this.layerWidth = 61;
-	this.nodeSpacing = 28;
-	this.dummySpacing = 18;
-	this.extraWidth = 28;
-	this.backEdgeSpacing = 4.0;
-	this.extraHeight = 5;
-	this.extraRadius = 5;
-	this.imageWidth = 60;
-	this.imageHeight = 48;
-	this.imageSpacing = 0;
-	this.labelNodeSpacing = 4;
-	this.styleNode = "0";
-	this.styleExtraIn = "4";
-	this.styleExtraOut = "6";
-	this.styleEdgeBackward = "3";
-	this.styleEdgeForward = "0";
-}
-rg.view.svg.chart.Sankey.__name__ = ["rg","view","svg","chart","Sankey"];
-rg.view.svg.chart.Sankey.__super__ = rg.view.svg.chart.Chart;
-rg.view.svg.chart.Sankey.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	layerWidth: null
-	,nodeSpacing: null
-	,dummySpacing: null
-	,extraWidth: null
-	,backEdgeSpacing: null
-	,extraHeight: null
-	,extraRadius: null
-	,imageWidth: null
-	,imageHeight: null
-	,imageSpacing: null
-	,labelNodeSpacing: null
-	,labelEdge: null
-	,labelEdgeOver: null
-	,labelNode: null
-	,imagePath: null
-	,clickEdge: null
-	,layout: null
-	,maxweight: null
-	,availableheight: null
-	,padBefore: null
-	,padAfter: null
-	,layerstarty: null
-	,styleNode: null
-	,styleExtraIn: null
-	,styleExtraOut: null
-	,styleEdgeBackward: null
-	,styleEdgeForward: null
-	,dependentVariable: null
-	,mapelements: null
-	,maphi: null
-	,setVariables: function(variableIndependents,variableDependents,data) {
-		this.dependentVariable = variableDependents[0];
-	}
-	,data: function(graphlayout) {
-		var me = this;
-		this.layout = graphlayout.clone();
-		var nodes = Arrays.filter(Iterators.filter(this.layout.graph.nodes.iterator(),function(node) {
-			return me.isdummy(node);
-		}),function(node) {
-			var edge = node.graph.edges.positives(node).next(), cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
-			return celltail.layer > cellhead.layer;
-		});
-		var layers = this.layout.layers();
-		var _g = 0;
-		while(_g < nodes.length) {
-			var node = nodes[_g];
-			++_g;
-			var cell = this.layout.cell(node), ehead = node.graph.edges.positives(node).next(), etail = node.graph.edges.negatives(node).next();
-			layers[cell.layer].splice(cell.position,1);
-			this.layout.graph.edges.create(etail.tail,ehead.head,ehead.weight,ehead.data);
-			node.graph.nodes._remove(node);
-		}
-		this.redraw();
-	}
-	,redraw: function() {
-		var me = this;
-		this.mapelements = new Hash();
-		this.maphi = new Hash();
-		this.maxweight = 0;
-		this.layerstarty = [];
-		var _g1 = 0, _g = this.layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var v = this.layout.layer(i).reduce(function(cum,cur,_) {
-				return cum + cur.data.weight;
-			},0);
-			if(v > this.maxweight) this.maxweight = v;
-		}
-		var occupiedspace = 0.0;
-		var _g1 = 0, _g = this.layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var v = this.layout.layer(i).reduce(function(cum,cur,_) {
-				return cum + me.nodepadding(cur);
-			},0.0);
-			if(v > occupiedspace) occupiedspace = v;
-		}
-		this.availableheight = this.height - occupiedspace;
-		var $it0 = this.layout.graph.edges.collection.iterator();
-		while( $it0.hasNext() ) {
-			var edge = $it0.next();
-			if(this.layout.cell(edge.tail).layer < this.layout.cell(edge.head).layer) continue;
-			this.availableheight -= this.backEdgeSpacing;
-			this.maxweight += edge.weight;
-		}
-		this.availableheight -= this.extraRadius + this.extraHeight;
-		var backedgesy = 0.0;
-		var _g1 = 0, _g = this.layout.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var layer = this.layout.layer(i), t = 0.0;
-			var _g2 = 0;
-			while(_g2 < layer.length) {
-				var node = layer[_g2];
-				++_g2;
-				t += this.nodepadding(node) + this.nheight(node.data.weight);
-			}
-			this.layerstarty[i] = t;
-			if(t > backedgesy) backedgesy = t;
-		}
-		var _g1 = 0, _g = this.layerstarty.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this.layerstarty[i] = (backedgesy - this.layerstarty[i]) / 2;
-		}
-		backedgesy += this.extraRadius + this.extraHeight;
-		this.padBefore = 0.0;
-		var _g = 0, _g1 = this.layout.layer(0);
-		while(_g < _g1.length) {
-			var node = _g1[_g];
-			++_g;
-			var extra = Math.min(this.nheight(node.data.extrain),this.extraWidth);
-			var $it1 = node.graph.edges.negatives(node);
-			while( $it1.hasNext() ) {
-				var edge = $it1.next();
-				var tail = edge.tail, parentweight = this.hafter(edge.id,node.graph.edges.negatives(node)) + this.nheight(edge.weight);
-				if(parentweight > extra) extra = parentweight;
-			}
-			if(extra > this.padBefore) this.padBefore = extra;
-		}
-		this.padBefore += 2;
-		this.padAfter = 0.0;
-		var _g = 0, _g1 = this.layout.layer(this.layout.length - 1);
-		while(_g < _g1.length) {
-			var node = _g1[_g];
-			++_g;
-			var extra = Math.min(this.nheight(node.data.extraout),this.extraWidth);
-			var $it2 = node.graph.edges.positives(node);
-			while( $it2.hasNext() ) {
-				var edge = $it2.next();
-				var head = edge.head, childweight = this.hafter(edge.id,node.graph.edges.positives(node)) + this.nheight(edge.weight) + Math.min(this.nheight(node.data.extraout),this.extraWidth);
-				if(childweight > extra) extra = childweight;
-			}
-			if(extra > this.padAfter) this.padAfter = extra;
-		}
-		this.padAfter += 2;
-		var edgescontainer = this.g.select("g.edges");
-		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
-		var edges = Arrays.order(Iterators.array(this.layout.graph.edges.iterator()),function(ea,eb) {
-			var lena = me.layout.cell(ea.tail).layer - me.layout.cell(ea.head).layer, lenb = me.layout.cell(eb.tail).layer - me.layout.cell(eb.head).layer, comp = lenb - lena;
-			if(comp != 0) return comp; else return Floats.compare(eb.weight,ea.weight);
-		});
-		edges.forEach(function(edge,_) {
-			if(edge.weight <= 0) return;
-			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
-			if(cellhead.layer > celltail.layer) return;
-			var weight = me.nheight(edge.weight), hook = new rg.view.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.extraWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
-			me.addToMap(edge.id,"edge",hook.g);
-			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
-			hook.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
-				};
-			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy + weight / 2,edge));
-			if(null != me.clickEdge) hook.g.onNode("click",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
-				};
-			})(me.edgeClickWithEdge.$bind(me),edge));
-			backedgesy += weight + me.backEdgeSpacing;
-		});
-		edges.forEach(function(edge,_) {
-			if(edge.weight <= 0) return;
-			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail);
-			if(cellhead.layer <= celltail.layer) return;
-			var x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head)), weight = me.nheight(edge.weight), diagonal = new rg.view.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
-			diagonal.update(x1,y1,x2,y2,weight,weight);
-			me.addToMap(edge.id,"edge",diagonal.g);
-			diagonal.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
-				};
-			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
-			if(null != me.clickEdge) diagonal.g.onNode("click",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
-				};
-			})(me.edgeClickWithEdge.$bind(me),edge));
-		});
-		var normMin = function(v) {
-			return Math.max(0,Math.min(v - 3,me.extraRadius));
-		};
-		this.layout.each(function(cell,node) {
-			if(node.data.extraout <= 0 || me.extraWidth <= 0) return;
-			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraOut,"stroke stroke-" + me.styleExtraOut), extra = me.nheight(node.data.extraout), x = me.layerWidth / 2 + me.xlayer(cell.layer), y = me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
-			elbow.update(rg.view.svg.widget.Orientation.RightBottom,extra,x,y + extra,minr,me.extraWidth,0,me.extraHeight);
-			if(null != me.labelEdge) {
-				var label, text = me.labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.extraout},me.dependentVariable.stats), nodeSpacing = 0;
-				label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
-				label.addClass("edge");
-				label.place(x,y + extra / 2,0);
-				label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
-				label.setText(text);
-				if(label.getSize().height > extra * .75) label.destroy();
-			}
-			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
-				};
-			})(me.onmouseoverextraout.$bind(me),x + minr + (-minr + Math.min(me.extraWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.extraHeight,node));
-			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
-				return function(a3,a4) {
-					return f(a1,a2,a3,a4);
-				};
-			})(me.edgeClickWithNode.$bind(me),node,true));
-			me.addToMap(node.id,"extraout",elbow.g);
-		});
-		this.layout.each(function(cell,node) {
-			if(node.data.extrain <= 0 || me.extraWidth <= 0) return;
-			var elbow = new rg.view.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraIn,"stroke stroke-" + me.styleExtraIn), extra = me.nheight(node.data.extrain), minr = normMin(extra), x = -me.layerWidth / 2 + me.xlayer(cell.layer);
-			elbow.update(rg.view.svg.widget.Orientation.LeftTop,extra,x,me.ynode(node),minr,me.extraWidth,0,me.extraHeight);
-			if(null != me.labelEdge) {
-				var label, text = me.labelEdge({ head : null, tail : node, nodeweight : node.data.weight, edgeweight : node.data.extrain},me.dependentVariable.stats), nodeSpacing = 0;
-				label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
-				label.addClass("edge");
-				label.place(x,me.ynode(node) + extra / 2,0);
-				label.setAnchor(rg.view.svg.widget.GridAnchor.Right);
-				label.setText(text);
-				if(label.getSize().height > extra * .75) label.destroy();
-			}
-			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
-				};
-			})(me.onmouseoverextrain.$bind(me),x - minr + (minr - Math.min(me.extraWidth,extra)) / 2,me.ynode(node) - minr - me.extraHeight,node));
-			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
-				return function(a3,a4) {
-					return f(a1,a2,a3,a4);
-				};
-			})(me.edgeClickWithNode.$bind(me),node,false));
-			me.addToMap(node.id,"extrain",elbow.g);
-		});
-		if(null != this.labelEdge) edges.forEach(function(edge,_) {
-			if(edge.weight <= 0) return;
-			var tail = edge.tail;
-			if(me.isdummy(tail)) return;
-			var celltail = me.layout.cell(tail), weight = me.nheight(edge.weight), label, text = me.labelEdge(me.edgeData(edge),me.dependentVariable.stats), nodeSpacing = 2;
-			label = new rg.view.svg.widget.Label(edgescontainer,true,true,false);
-			label.addClass("edge");
-			label.place(me.layerWidth / 2 + me.xlayer(celltail.layer) + nodeSpacing,me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)) + weight / 2,0);
-			label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
-			label.setText(text);
-			if(label.getSize().height > weight * .75) label.destroy();
-		});
-		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
-			return "rule rule-" + i;
-		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
-			return "translate(" + me.xlayer(i) + ",0)";
-		}).exit().remove();
-		var choice = rules.update().selectAll("g.node").dataf(function(d,i) {
-			return me.layout.layer(i);
-		});
-		var cont = choice.enter().append("svg:g").attr("class").string("node");
-		if(this.layerWidth > 0) {
-			cont.append("svg:rect").attr("class").stringf(function(n,_) {
-				return "fill fill-" + (me.isdummy(n)?me.styleEdgeForward + " nonode":me.styleNode + " node");
-			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this));
-			cont.each(function(node,_) {
-				me.addToMap(node.id,"node",thx.js.Dom.selectNode(thx.js.Group.current));
-			});
-			cont.append("svg:line").attr("class").stringf(function(n,_) {
-				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
-			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
-			cont.append("svg:line").attr("class").stringf(function(n,_) {
-				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
-			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
-		}
-		choice.update().attr("transform").stringf(function(n,i) {
-			return "translate(0," + me.ynode(n) + ")";
-		});
-		cont.each(function(n,i) {
-			var node = thx.js.Dom.selectNode(thx.js.Group.current);
-			if(me.isdummy(n)) return;
-			var nodeheight = me.hnode(n), label;
-			if(null != me.labelDataPoint) {
-				var lines = me.labelDataPoint(n.data.dp,me.dependentVariable.stats).split("\n"), nodeSpacing = 3, prev = null, text, pos = 0.0;
-				var _g1 = 0, _g = lines.length;
-				while(_g1 < _g) {
-					var i1 = _g1++;
-					text = lines[i1];
-					label = new rg.view.svg.widget.Label(node,true,true,false);
-					label.addClass("node");
-					if(i1 == 0) label.addClass("first");
-					pos = nodeSpacing;
-					if(null != prev) pos += prev.y + prev.getSize().height;
-					label.place(-me.layerWidth / 2 + nodeSpacing * 2,pos,0);
-					label.setAnchor(rg.view.svg.widget.GridAnchor.TopLeft);
-					label.setText(text);
-					if(label.y + label.getSize().height > nodeheight) {
-						label.destroy();
-						break;
-					}
-					prev = label;
-				}
-			}
-			var hasimage = false;
-			if(null != me.imagePath && !me.isdummy(n)) {
-				var path = me.imagePath(n.data.dp);
-				if(path != null) {
-					hasimage = true;
-					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-me.imageWidth / 2) + "," + Math.round(-me.imageHeight - me.imageSpacing) + ")");
-					container.append("svg:image").attr("preserveAspectRatio").string("xMidYMid slice").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
-				}
-			}
-			if(null != me.labelNode) {
-				if(hasimage) label = new rg.view.svg.widget.Label(node,true,true,true); else label = new rg.view.svg.widget.Label(node,true,false,false);
-				label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
-				label.place(0,-me.labelNodeSpacing,0);
-				label.setText(me.labelNode(n.data.dp,me.dependentVariable.stats));
-			}
-		});
-		cont.each(function(n,i) {
-			var node = thx.js.Dom.selectNode(thx.js.Group.current);
-			node.onNode("mouseover",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
-				};
-			})(me.onmouseovernode.$bind(me),n));
-			if(null != me.click) node.onNode("click",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
-				};
-			})(me.nodeclick.$bind(me),n));
-		});
-		this.ready.dispatch();
-	}
-	,addToMap: function(id,type,el) {
-		this.mapelements.set(type + ":" + id,el);
-	}
-	,isbackward: function(edge) {
-		return this.layout.cell(edge.head).layer <= this.layout.cell(edge.tail).layer;
-	}
-	,highlight: function(id,type) {
-		var me = this;
-		var $it0 = this.maphi.iterator();
-		while( $it0.hasNext() ) {
-			var el = $it0.next();
-			el.classed().remove("over");
-		}
-		this.maphi = new Hash();
-		var hiedgep = null, hinodep = null, hiedgen = null, hinoden = null;
-		var hielement = function(id1,type1) {
-			var key = type1 + ":" + id1;
-			me.maphi.set(key,me.mapelements.get(key).classed().add("over"));
-		};
-		var hiextrain = function(id1) {
-			var key = "extrain:" + id1, extra = me.mapelements.get(key);
-			if(null == extra) return;
-			me.maphi.set(key,extra.classed().add("over"));
-		};
-		var hiextraout = function(id1) {
-			var key = "extraout:" + id1, extra = me.mapelements.get(key);
-			if(null == extra) return;
-			me.maphi.set(key,extra.classed().add("over"));
-		};
-		var ishi = function(id1,type1) {
-			return me.maphi.exists(type1 + ":" + id1);
-		};
-		hiedgep = function(edge) {
-			if(ishi(edge.id,"edge")) return;
-			hielement(edge.id,"edge");
-			if(!me.isbackward(edge)) hinodep(edge.head);
-		};
-		hinodep = function(node) {
-			if(ishi(node.id,"node")) return;
-			hielement(node.id,"node");
-			hiextraout(node.id);
-			var $it1 = node.graph.edges.positives(node);
-			while( $it1.hasNext() ) {
-				var edge = $it1.next();
-				hiedgep(edge);
-			}
-		};
-		hiedgen = function(edge) {
-			if(!me.isbackward(edge)) hinoden(edge.tail);
-			if(ishi(edge.id,"edge")) return;
-			if(!me.isbackward(edge)) hielement(edge.id,"edge");
-		};
-		hinoden = function(node) {
-			var $it2 = node.graph.edges.negatives(node);
-			while( $it2.hasNext() ) {
-				var edge = $it2.next();
-				hiedgen(edge);
-			}
-			if(ishi(node.id,"node")) return;
-			hielement(node.id,"node");
-			hiextrain(node.id);
-		};
-		if(type == "edge") {
-			hiedgep(this.layout.graph.edges.get(id));
-			hiedgen(this.layout.graph.edges.get(id));
-		} else if(type == "node") {
-			hinodep(this.layout.graph.nodes.get(id));
-			hinoden(this.layout.graph.nodes.get(id));
-			hiextrain(id);
-		}
-	}
-	,edgeData: function(edge) {
-		var head = edge.head, tail = edge.tail;
-		while(this.isdummy(head)) head = head.graph.edges.positives(head).next().head;
-		while(this.isdummy(tail)) tail = tail.graph.edges.negatives(tail).next().tail;
-		return { head : head.data.dp, tail : tail.data.dp, edgeweight : edge.weight, nodeweight : tail.data.weight};
-	}
-	,edgeDataWithNode: function(node,out) {
-		return { tail : out?node.data.dp:null, head : out?null:node.data.dp, edgeweight : out?node.data.extraout:node.data.extrain, nodeweight : node.data.weight};
-	}
-	,nodeclick: function(node,el,i) {
-		this.click(node.data.dp,this.dependentVariable.stats);
-	}
-	,edgeclick: function(data,el,i) {
-		this.clickEdge(data,this.dependentVariable.stats);
-	}
-	,edgeClickWithEdge: function(edge,el,i) {
-		this.edgeclick(this.edgeData(edge),el,i);
-	}
-	,edgeClickWithNode: function(node,out,el,i) {
-		this.edgeclick(this.edgeDataWithNode(node,out),el,i);
-	}
-	,onmouseovernode: function(node,el,i) {
-		this.highlight(node.id,"node");
-		if(this.isdummy(node)) {
-			if(null == this.labelEdgeOver) return;
-			var text = this.labelEdgeOver(this.edgeData(node.graph.edges.positives(node).next()),this.dependentVariable.stats);
-			if(null == text) this.tooltip.hide(); else {
-				var cell = this.layout.cell(node);
-				this.tooltip.setPreferredSide(2);
-				this.tooltip.setText(text.split("\n"));
-				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
-			}
-		} else {
-			if(null == this.labelDataPointOver) return;
-			var text = this.labelDataPointOver(node.data.dp,this.dependentVariable.stats);
-			if(null == text) this.tooltip.hide(); else {
-				var cell = this.layout.cell(node);
-				this.tooltip.setPreferredSide(0);
-				this.tooltip.setText(text.split("\n"));
-				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
-			}
-		}
-	}
-	,onmouseoveredge: function(x,y,edge,el,i) {
-		this.highlight(edge.id,"edge");
-		if(null == this.labelEdgeOver) return;
-		var text = this.labelEdgeOver(this.edgeData(edge),this.dependentVariable.stats);
-		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setPreferredSide(2);
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(x,y);
-		}
-	}
-	,onmouseoverextrain: function(x,y,node,el,i) {
-		this.highlight(node.id,"node");
-		if(null == this.labelEdgeOver) return;
-		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
-		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setPreferredSide(2);
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(x,y);
-		}
-	}
-	,onmouseoverextraout: function(x,y,node,el,i) {
-		this.highlight(node.id,"node");
-		if(null == this.labelEdgeOver) return;
-		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
-		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setPreferredSide(0);
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(x,y);
-		}
-	}
-	,nheight: function(v) {
-		return Math.round(v / this.maxweight * this.availableheight);
-	}
-	,ydiagonal: function(id,edges) {
-		var weight = 0.0;
-		while( edges.hasNext() ) {
-			var edge = edges.next();
-			if(edge.id == id) break;
-			weight += edge.weight;
-		}
-		return this.nheight(weight);
-	}
-	,hafter: function(id,edges) {
-		var found = false, pad = this.backEdgeSpacing / this.nheight(1), weight = pad;
-		while( edges.hasNext() ) {
-			var edge = edges.next();
-			if(!found) {
-				if(edge.id == id) found = true;
-				continue;
-			}
-			weight += edge.weight + pad;
-		}
-		return this.nheight(weight);
-	}
-	,xlayer: function(pos,_) {
-		if(this.layout.length <= 1) return this.width / 2;
-		return Math.round((this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore);
-	}
-	,ynode: function(node,_) {
-		var cell = this.layout.cell(node), before = this.layerstarty[cell.layer];
-		var _g1 = 0, _g = cell.position;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var prev = this.layout.nodeAt(cell.layer,i);
-			before += this.hnode(prev) + this.nodepadding(prev);
-		}
-		before += this.nodepadding(node);
-		return Math.round(before) + 0.5;
-	}
-	,nodepadding: function(node) {
-		return this.isdummy(node)?this.dummySpacing:this.nodeSpacing;
-	}
-	,isdummy: function(node) {
-		return node.data.id.substr(0,1) == "#";
-	}
-	,hnode: function(node,_) {
-		return this.nheight(node.data.weight);
-	}
-	,__class__: rg.view.svg.chart.Sankey
-});
-rg.controller.info.InfoFunnelChart = $hxClasses["rg.controller.info.InfoFunnelChart"] = function() {
-	this.animation = new rg.controller.info.InfoAnimation();
-	this.label = new rg.controller.info.InfoLabelFunnel();
-	this.padding = 2.5;
-	this.flatness = 1.0;
-	this.effect = rg.view.svg.chart.GradientEffect.Gradient(1.25);
-	this.arrowSize = 30;
-}
-rg.controller.info.InfoFunnelChart.__name__ = ["rg","controller","info","InfoFunnelChart"];
-rg.controller.info.InfoFunnelChart.filters = function() {
-	return [{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelFunnel(),v)}];
-	}},{ field : "sort", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "sortDataPoint", value : v}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "segmentpadding", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "padding", value : v}];
-	}},{ field : "flatness", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "effect", validator : rg.view.svg.chart.GradientEffects.canParse, filter : function(v) {
-		return [{ field : "effect", value : rg.view.svg.chart.GradientEffects.parse(v)}];
-	}},{ field : "arrowsize", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "arrowSize", value : v}];
-	}}];
-}
-rg.controller.info.InfoFunnelChart.prototype = {
-	animation: null
-	,label: null
-	,sortDataPoint: null
-	,click: null
-	,padding: null
-	,flatness: null
-	,effect: null
-	,arrowSize: null
-	,__class__: rg.controller.info.InfoFunnelChart
 }
 rg.graph.OneCycleRemover = $hxClasses["rg.graph.OneCycleRemover"] = function() {
 }
@@ -2814,79 +2525,24 @@ rg.graph.OneCycleRemover.prototype = {
 	}
 	,__class__: rg.graph.OneCycleRemover
 }
-rg.data.Stats = $hxClasses["rg.data.Stats"] = function(type,sortf) {
-	this.type = type;
-	this.sortf = sortf;
-	this.reset();
+if(!rg.axis) rg.axis = {}
+rg.axis.ScaleDistributions = $hxClasses["rg.axis.ScaleDistributions"] = function() { }
+rg.axis.ScaleDistributions.__name__ = ["rg","axis","ScaleDistributions"];
+rg.axis.ScaleDistributions.distribute = function(scale,pos,values) {
+	switch( (scale)[1] ) {
+	case 0:
+		return (pos + 0.5) / values;
+	case 1:
+		return pos / (values - 1);
+	case 2:
+		return pos / values;
+	case 3:
+		return (pos + 1) / values;
+	}
 }
-rg.data.Stats.__name__ = ["rg","data","Stats"];
-rg.data.Stats.prototype = {
-	min: null
-	,max: null
-	,count: null
-	,values: null
-	,sortf: null
-	,type: null
-	,reset: function() {
-		this.min = null;
-		this.max = null;
-		this.count = 0;
-		this.values = [];
-		return this;
-	}
-	,add: function(v) {
-		this.count++;
-		if(Arrays.exists(this.values,v)) return this;
-		this.values.push(v);
-		if(null != this.sortf) this.values.sort(this.sortf);
-		this.min = this.values[0];
-		this.max = Arrays.last(this.values);
-		return this;
-	}
-	,addMany: function(it) {
-		var $it0 = it.iterator();
-		while( $it0.hasNext() ) {
-			var v = $it0.next();
-			this.count++;
-			if(Arrays.exists(this.values,v)) continue;
-			this.values.push(v);
-		}
-		if(null != this.sortf) this.values.sort(this.sortf);
-		this.min = this.values[0];
-		this.max = Arrays.last(this.values);
-		return this;
-	}
-	,__class__: rg.data.Stats
+rg.axis.ScaleDistributions.prototype = {
+	__class__: rg.axis.ScaleDistributions
 }
-rg.data.StatsNumeric = $hxClasses["rg.data.StatsNumeric"] = function(type,sortf) {
-	if(null == sortf) sortf = Floats.compare;
-	rg.data.Stats.call(this,type,sortf);
-}
-rg.data.StatsNumeric.__name__ = ["rg","data","StatsNumeric"];
-rg.data.StatsNumeric.__super__ = rg.data.Stats;
-rg.data.StatsNumeric.prototype = $extend(rg.data.Stats.prototype,{
-	tot: null
-	,reset: function() {
-		rg.data.Stats.prototype.reset.call(this);
-		this.tot = 0.0;
-		return this;
-	}
-	,add: function(v) {
-		rg.data.Stats.prototype.add.call(this,v);
-		this.tot += v;
-		return this;
-	}
-	,addMany: function(it) {
-		rg.data.Stats.prototype.addMany.call(this,it);
-		var $it0 = it.iterator();
-		while( $it0.hasNext() ) {
-			var v = $it0.next();
-			this.tot += v;
-		}
-		return this;
-	}
-	,__class__: rg.data.StatsNumeric
-});
 if(!thx.culture) thx.culture = {}
 thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
@@ -2958,658 +2614,79 @@ thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
 	,percent: null
 	,__class__: thx.culture.Culture
 });
-rg.view.svg.widget.Balloon = $hxClasses["rg.view.svg.widget.Balloon"] = function(container,bindOnTop) {
-	if(bindOnTop == null) bindOnTop = true;
-	if(bindOnTop) {
-		var parent = container.node();
-		while(null != parent && parent.nodeName != "svg") parent = parent.parentNode;
-		this.container = null == parent?container:thx.js.Dom.selectNode(parent);
-	} else this.container = container;
-	this.visible = true;
-	this.duration = 350;
-	this.minwidth = 30;
-	this.setPreferredSide(2);
-	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseOut,thx.math.Equations.cubic);
-	this.setRoundedCorner(5);
-	this.paddingHorizontal = 3.5;
-	this.paddingVertical = 1.5;
-	this.transition_id = 0;
-	this.balloon = this.container.append("svg:g").attr("pointer-events").string("none").attr("class").string("balloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
-	this.frame = this.balloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
-	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)");
-	this.connectorShapeV = thx.svg.Diagonal.forObject();
-	this.connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
-		return [d[1],d[0]];
-	});
-	this.connector = this.balloon.append("svg:path").attr("class").string("balloon-connector").style("fill").string("none").style("display").string("none").attr("transform").string("translate(0, 0)");
-	this.frame.append("svg:path").attr("class").string("bg");
-	this.labelsContainer = this.frame.append("svg:g").attr("class").string("labels");
-	this.labels = [];
-	var temp = this.createLabel(0);
-	temp.setText("HELLO");
-	this.setLineHeight(temp.getSize().height);
-	temp.destroy();
+if(!rg.layout) rg.layout = {}
+rg.layout.Layout = $hxClasses["rg.layout.Layout"] = function(width,height,container) {
+	this.container = container;
+	container.classed().add("rg");
+	this.space = new rg.svg.panel.Space(this.width = width,this.height = height,container);
 }
-rg.view.svg.widget.Balloon.__name__ = ["rg","view","svg","widget","Balloon"];
-rg.view.svg.widget.Balloon.prototype = {
-	text: null
-	,x: null
-	,y: null
-	,boxWidth: null
-	,boxHeight: null
-	,visible: null
-	,lineHeight: null
-	,roundedCorner: null
-	,paddingHorizontal: null
-	,paddingVertical: null
-	,preferredSide: null
-	,minwidth: null
-	,labels: null
+rg.layout.Layout.__name__ = ["rg","layout","Layout"];
+rg.layout.Layout.prototype = {
+	mainPanelName: null
+	,width: null
+	,height: null
+	,space: null
 	,container: null
-	,balloon: null
-	,frame: null
-	,labelsContainer: null
-	,connector: null
-	,duration: null
-	,ease: null
-	,connectorShapeV: null
-	,connectorShapeH: null
-	,boundingBox: null
-	,addClass: function(name) {
-		this.frame.select("path.bg").classed().add(name);
+	,getContext: function(name) {
+		return null;
 	}
-	,removeClass: function(name) {
-		this.frame.select("path.bg").classed().remove(name);
+	,getPanel: function(name) {
+		return null;
 	}
-	,createLabel: function(i) {
-		var label = new rg.view.svg.widget.Label(this.labelsContainer,true,false,false);
-		label.addClass("line-" + i);
-		label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
-		label.setOrientation(rg.view.svg.widget.LabelOrientation.Orthogonal);
-		label.place(0,i * this.lineHeight,90);
-		return label;
+	,suggestSize: function(name,size) {
+		var panel = this.getPanel(name);
+		if(null == panel) return;
+		this.suggestPanelSize(panel,size);
 	}
-	,setPreferredSide: function(v) {
-		this.preferredSide = Ints.clamp(v,0,3);
-		this.redraw();
-		return v;
+	,destroy: function() {
+		this.container.selectAll("*").remove();
 	}
-	,setText: function(v) {
-		while(this.labels.length > v.length) {
-			var label = this.labels.pop();
-			label.destroy();
-		}
-		var _g1 = this.labels.length, _g = v.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this.labels[i] = this.createLabel(i);
-		}
-		var _g1 = 0, _g = v.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this.labels[i].setText(v[i]);
-		}
-		this.text = v;
-		this.redraw();
-		return v;
-	}
-	,setLineHeight: function(v) {
-		this.lineHeight = v;
-		this.redraw();
-		return v;
-	}
-	,setPadding: function(h,v) {
-		this.paddingHorizontal = h;
-		this.paddingVertical = v;
-		this.redraw();
-	}
-	,setRoundedCorner: function(v) {
-		this.roundedCorner = v;
-		this.redraw();
-		return v;
-	}
-	,setBoundingBox: function(v) {
-		this.boundingBox = v;
-		this.redraw();
-		return v;
-	}
-	,getBoundingBox: function() {
-		if(null == this.boundingBox) try {
-			this.setBoundingBox(this.container.node().getBBox());
-		} catch( e ) {
-			return { width : 0.0, height : 0.0, x : 0.0, y : 0.0};
-		}
-		return this.boundingBox;
-	}
-	,transition_id: null
-	,moveTo: function(x,y,animate) {
-		if(animate == null) animate = true;
-		var me = this;
-		if(animate) {
-			var $int = thx.math.Equations.elasticf(), tid = ++this.transition_id, ix = Floats.interpolatef(this.x,x,this.ease), iy = Floats.interpolatef(this.y,y,this.ease);
-			thx.js.Timer.timer(function(t) {
-				if(tid != me.transition_id) return true;
-				if(t > me.duration) {
-					me._moveTo(x,y);
-					return true;
-				}
-				me._moveTo(ix(t / me.duration),iy(t / me.duration));
-				return false;
-			},0);
-		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f,a1,a2) {
-			return function() {
-				return f(a1,a2);
-			};
-		})(this._moveTo.$bind(this),x,y),15); else this._moveTo(x,y);
-	}
-	,_moveTo: function(x,y) {
-		var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
-		var tx = 0.0, ty = 0.0, side = this.preferredSide, found = 1;
-		while(found > 0 && found < 5) {
-			if(x >= right - limit) {
-				if(y <= top + limit) {
-					if(x - right < top - y) {
-						tx = -this.boxWidth + right - x;
-						ty = top - y + this.roundedCorner;
-						side = 0;
-						offset = this.boxWidth - 4 * this.roundedCorner;
-					} else {
-						tx = -this.boxWidth + right - x - this.roundedCorner;
-						ty = top - y;
-						side = 1;
-						offset = this.roundedCorner;
-					}
-					found = 0;
-					diagonal = 1;
-					break;
-				} else if(y >= bottom - limit) {
-					if(x - right < y - bottom) {
-						tx = -this.boxWidth + right - x;
-						ty = bottom - y - this.boxHeight - this.roundedCorner;
-						side = 2;
-						offset = this.boxWidth - 4 * this.roundedCorner;
-					} else {
-						tx = -this.boxWidth + right - x - this.roundedCorner;
-						ty = bottom - y - this.boxHeight;
-						side = 1;
-						offset = this.boxHeight - 3 * this.roundedCorner;
-					}
-					found = 0;
-					diagonal = 1;
-					break;
-				}
-			} else if(x <= left + limit) {
-				if(y <= top + limit) {
-					if(left - x < top - y) {
-						tx = left - x;
-						ty = top - y + this.roundedCorner;
-						side = 0;
-						offset = 0;
-					} else {
-						tx = left - x + this.roundedCorner;
-						ty = top - y;
-						side = 3;
-						offset = this.roundedCorner;
-					}
-					found = 0;
-					diagonal = 1;
-					break;
-				} else if(y >= bottom - limit) {
-					if(left - x < y - bottom) {
-						tx = left - x;
-						ty = bottom - y - this.boxHeight - this.roundedCorner;
-						side = 2;
-						offset = 0;
-					} else {
-						tx = left - x + this.roundedCorner;
-						ty = bottom - y - this.boxHeight;
-						side = 3;
-						offset = this.boxHeight - 3 * this.roundedCorner;
-					}
-					found = 0;
-					diagonal = 1;
-					break;
-				}
-			}
-			switch(side) {
-			case 0:
-				if(y + this.boxHeight + this.roundedCorner >= bottom) {
-					side = 2;
-					found++;
-					continue;
-				} else if(x <= left + limit) {
-					side = 3;
-					found++;
-					continue;
-				} else if(x >= right - limit) {
-					side = 1;
-					found++;
-					continue;
-				}
-				tx = -this.boxWidth / 2;
-				ty = this.roundedCorner;
-				offset = this.boxWidth / 2 - this.roundedCorner * 2;
-				if(x - this.boxWidth / 2 <= left) {
-					var d = left - x + this.boxWidth / 2;
-					offset = Math.max(0,offset - d);
-					tx += d;
-				} else if(x + this.boxWidth / 2 >= right) {
-					var d = right - x - this.boxWidth / 2;
-					offset = Math.min(this.boxWidth - this.roundedCorner * 3,offset - d);
-					tx += d;
-				}
-				if(y < top) {
-					diagonal = 1;
-					ty = top - y + this.roundedCorner;
-				}
-				break;
-			case 1:
-				if(x - this.boxWidth - this.roundedCorner <= left) {
-					side = 3;
-					found++;
-					continue;
-				} else if(y <= top + limit) {
-					side = 2;
-					found++;
-					continue;
-				} else if(y >= bottom - limit) {
-					side = 0;
-					found++;
-					continue;
-				}
-				tx = -this.boxWidth - this.roundedCorner;
-				ty = -this.boxHeight / 2;
-				offset = (this.boxHeight - this.roundedCorner * 2) / 2;
-				if(y - this.boxHeight / 2 <= top) {
-					var d = top - y + this.boxHeight / 2;
-					offset = Math.max(0,offset - d);
-					ty += d;
-				} else if(y + this.boxHeight / 2 >= bottom) {
-					var d = bottom - y - this.boxHeight / 2;
-					offset = Math.min(this.boxHeight - this.roundedCorner * 3,offset - d);
-					ty += d;
-				}
-				if(x > right) {
-					diagonal = 2;
-					tx = right - x - this.boxWidth - this.roundedCorner;
-				}
-				break;
-			case 2:
-				if(y - this.boxHeight - this.roundedCorner <= top) {
-					side = 0;
-					found++;
-					continue;
-				} else if(x <= left + limit) {
-					side = 3;
-					found++;
-					continue;
-				} else if(x >= right - limit) {
-					side = 1;
-					found++;
-					continue;
-				}
-				tx = -this.boxWidth / 2;
-				ty = -this.boxHeight - this.roundedCorner;
-				offset = this.boxWidth / 2 - this.roundedCorner * 2;
-				if(x - this.boxWidth / 2 <= left) {
-					var d = left - x + this.boxWidth / 2;
-					offset = Math.max(this.roundedCorner,offset - d);
-					tx += d;
-				} else if(x + this.boxWidth / 2 >= right) {
-					var d = right - x - this.boxWidth / 2;
-					offset = Math.min(this.boxWidth - this.roundedCorner * 3,offset - d);
-					tx += d;
-				}
-				if(y > bottom) {
-					diagonal = 1;
-					ty = bottom - y - this.boxHeight - this.roundedCorner;
-				}
-				break;
-			case 3:
-				if(x + this.boxWidth + this.roundedCorner >= right) {
-					side = 1;
-					found++;
-					continue;
-				} else if(y <= top + limit) {
-					side = 2;
-					found++;
-					continue;
-				} else if(y >= bottom - limit) {
-					side = 0;
-					found++;
-					continue;
-				}
-				tx = this.roundedCorner;
-				ty = -this.boxHeight / 2;
-				offset = (this.boxHeight - this.roundedCorner * 2) / 2;
-				if(y - this.boxHeight / 2 <= top) {
-					var d = top - y + this.boxHeight / 2;
-					offset = Math.max(this.roundedCorner,offset - d);
-					ty += d;
-				} else if(y + this.boxHeight / 2 >= bottom) {
-					var d = bottom - y - this.boxHeight / 2;
-					offset = Math.min(this.boxHeight - this.roundedCorner * 3,offset - d);
-					ty += d;
-				}
-				if(x < left) {
-					diagonal = 2;
-					tx = left - x + this.roundedCorner;
-				}
-				break;
-			}
-			found = 0;
-		}
-		var coords = null, off = 1.0;
-		if(0 == diagonal) this.connector.style("display").string("none"); else {
-			this.connector.style("display").string("block");
-			coords = { x0 : off, y0 : off, x1 : off, y1 : off};
-			switch(side) {
-			case 0:
-				coords.x1 = tx + off + offset + 2 * this.roundedCorner;
-				coords.y1 = ty + off - this.roundedCorner;
-				break;
-			case 1:
-				coords.y1 = tx + off + this.boxWidth + this.roundedCorner;
-				coords.x1 = ty + off + offset + this.roundedCorner;
-				break;
-			case 2:
-				coords.x1 = tx + off + offset + 2 * this.roundedCorner;
-				coords.y1 = ty + off + this.boxHeight + this.roundedCorner;
-				break;
-			case 3:
-				coords.y1 = tx + off + -this.roundedCorner;
-				coords.x1 = ty + off + offset + this.roundedCorner;
-				break;
-			}
-		}
-		this.balloon.attr("transform").string("translate(" + (this.x = x) + ", " + (this.y = y) + ")");
-		this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.view.svg.widget.BalloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
-		if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(coords):this.connectorShapeH.diagonal(coords));
-	}
-	,show: function(animate) {
-		if(this.visible) return;
-		this.visible = true;
-		this.balloon.style("display").string("block");
-		if(animate) this.balloon.transition().attr("opacity")["float"](1); else this.balloon.attr("opacity")["float"](1);
-	}
-	,hide: function(animate) {
-		if(animate == null) animate = false;
-		var me = this;
-		if(!this.visible) return;
-		this.visible = false;
-		if(animate) this.balloon.transition().attr("opacity")["float"](0).endNode(function(_,_1) {
-			me.balloon.style("display").string("none");
-		}); else {
-			this.balloon.attr("opacity")["float"](0);
-			this.balloon.style("display").string("none");
+	,suggestPanelSize: function(panel,size) {
+		var stackitem = Types["as"](panel.frame,rg.frame.StackItem);
+		if(null == stackitem) return;
+		var $e = (stackitem.disposition);
+		switch( $e[1] ) {
+		case 3:
+			var a = $e[3], b = $e[2];
+			stackitem.setDisposition(rg.frame.FrameLayout.Fixed(b,a,size));
+			break;
+		default:
 		}
 	}
-	,redraw: function() {
-		var me = this;
-		if(null == this.text || this.text.length == 0) return;
-		this.boxWidth = 0.0;
-		var w = 0;
-		var _g = 0, _g1 = this.labels;
-		while(_g < _g1.length) {
-			var label = _g1[_g];
-			++_g;
-			if((w = Math.ceil(label.getSize().width)) > this.boxWidth) this.boxWidth = w;
+	,suggestPanelPadding: function(panel,before,after) {
+		if(null == panel) return;
+		var stackitem = Types["as"](panel.frame,rg.frame.StackItem);
+		if(null == stackitem) return;
+		var $e = (stackitem.disposition);
+		switch( $e[1] ) {
+		case 0:
+			var max = $e[5], min = $e[4], a = $e[3], b = $e[2];
+			stackitem.setDisposition(rg.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
+			break;
+		case 1:
+			var max = $e[6], min = $e[5], percent = $e[4], a = $e[3], b = $e[2];
+			stackitem.setDisposition(rg.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
+			break;
+		case 2:
+			var ratio = $e[4], a = $e[3], b = $e[2];
+			stackitem.setDisposition(rg.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
+			break;
+		case 3:
+			var size = $e[4], a = $e[3], b = $e[2];
+			stackitem.setDisposition(rg.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
+			break;
+		default:
 		}
-		if(w == 0) {
-			var t = this.text;
-			haxe.Timer.delay(function() {
-				me.setText(t);
-			},15);
-			return;
-		}
-		this.boxWidth += this.paddingHorizontal * 2;
-		this.boxHeight = this.lineHeight * this.labels.length + this.paddingVertical * 2;
-		var bg = this.frame.selectAll(".bg"), sw = bg.style("stroke-width").getFloat();
-		if(Math.isNaN(sw)) sw = 0;
-		this.labelsContainer.attr("transform").string("translate(" + this.boxWidth / 2 + "," + (sw + this.paddingVertical) + ")");
-		bg.transition().ease(this.ease).delay(null,this.duration);
 	}
-	,__class__: rg.view.svg.widget.Balloon
-	,__properties__: {set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox",set_preferredSide:"setPreferredSide",set_roundedCorner:"setRoundedCorner",set_lineHeight:"setLineHeight",set_text:"setText"}
+	,paddings: null
+	,feedOptions: function(info) {
+		this.mainPanelName = info.main;
+		this.paddings = info.padding;
+	}
+	,adjustPadding: function() {
+	}
+	,__class__: rg.layout.Layout
 }
-rg.view.svg.panel.Panel = $hxClasses["rg.view.svg.panel.Panel"] = function(frame) {
-	this.frame = frame;
-	frame.change = this.reframe.$bind(this);
-	this._layers = [];
-}
-rg.view.svg.panel.Panel.__name__ = ["rg","view","svg","panel","Panel"];
-rg.view.svg.panel.Panel.prototype = {
-	frame: null
-	,g: null
-	,parent: null
-	,_layers: null
-	,addLayer: function(layer) {
-		this._layers.remove(layer);
-		this._layers.push(layer);
-	}
-	,removeLayer: function(layer) {
-		this._layers.remove(layer);
-	}
-	,setParent: function(container) {
-		if(null != this.g) this.g.remove();
-		this.parent = container;
-		if(null == container) return;
-		this.init(container.g);
-	}
-	,init: function(container) {
-		this.g = container.append("svg:g").attr("class").string("panel").attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
-	}
-	,reframe: function() {
-		this.g.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
-		var layer;
-		var _g1 = 0, _g = this._layers.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			layer = this._layers[i];
-			layer._resize();
-		}
-	}
-	,__class__: rg.view.svg.panel.Panel
-}
-rg.view.svg.panel.Container = $hxClasses["rg.view.svg.panel.Container"] = function(frame,orientation) {
-	rg.view.svg.panel.Panel.call(this,frame);
-	this.stack = new rg.view.frame.Stack(frame.width,frame.height,orientation);
-	this.panels = [];
-}
-rg.view.svg.panel.Container.__name__ = ["rg","view","svg","panel","Container"];
-rg.view.svg.panel.Container.__super__ = rg.view.svg.panel.Panel;
-rg.view.svg.panel.Container.prototype = $extend(rg.view.svg.panel.Panel.prototype,{
-	stack: null
-	,panels: null
-	,insertPanel: function(pos,panel) {
-		if(null == panel) return this;
-		if(pos >= this.stack.getLength()) return this.addPanel(panel); else if(pos < 0) pos = 0;
-		if(null != panel.parent) panel.parent.removePanel(panel);
-		this.panels.insert(pos,panel);
-		var f = panel;
-		f.setParent(this);
-		this.stack.insertItem(pos,(function($this) {
-			var $r;
-			var $t = panel.frame;
-			if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this)));
-		return this;
-	}
-	,addPanel: function(panel) {
-		return this.addPanels([panel]);
-	}
-	,addPanels: function(it) {
-		var frames = [];
-		var $it0 = it.iterator();
-		while( $it0.hasNext() ) {
-			var panel = $it0.next();
-			if(null == panel) continue;
-			if(null != panel.parent) panel.parent.removePanel(panel);
-			this.panels.push(panel);
-			var f = panel;
-			f.setParent(this);
-			frames.push((function($this) {
-				var $r;
-				var $t = panel.frame;
-				if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
-				$r = $t;
-				return $r;
-			}(this)));
-		}
-		this.stack.addItems(frames);
-		return this;
-	}
-	,removePanel: function(panel) {
-		if(!this.panels.remove(panel)) return this;
-		this.stack.removeChild((function($this) {
-			var $r;
-			var $t = panel.frame;
-			if(Std["is"]($t,rg.view.frame.StackItem)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this)));
-		var f = panel;
-		f.setParent(null);
-		return this;
-	}
-	,createPanel: function(layout) {
-		var panel = new rg.view.svg.panel.Panel(new rg.view.frame.StackItem(layout));
-		this.addPanel(panel);
-		return panel;
-	}
-	,createContainer: function(layout,orientation) {
-		var panel = new rg.view.svg.panel.Container(new rg.view.frame.StackItem(layout),orientation);
-		this.addPanel(panel);
-		return panel;
-	}
-	,createPanelAt: function(pos,layout) {
-		var panel = new rg.view.svg.panel.Panel(new rg.view.frame.StackItem(layout));
-		this.insertPanel(pos,panel);
-		return panel;
-	}
-	,createContainerAt: function(pos,layout,orientation) {
-		var panel = new rg.view.svg.panel.Container(new rg.view.frame.StackItem(layout),orientation);
-		this.insertPanel(pos,panel);
-		return panel;
-	}
-	,reframe: function() {
-		rg.view.svg.panel.Panel.prototype.reframe.call(this);
-		this.stack.setSize(this.frame.width,this.frame.height);
-		this.stack.reflow();
-	}
-	,__class__: rg.view.svg.panel.Container
-});
-rg.view.svg.panel.Space = $hxClasses["rg.view.svg.panel.Space"] = function(width,height,domcontainer) {
-	this.panel = new rg.view.frame.StackItem(rg.view.frame.FrameLayout.Fill(0,0));
-	rg.view.svg.panel.Container.call(this,this.panel,rg.view.frame.Orientation.Vertical);
-	this.init(this.svg = domcontainer.append("svg:svg").attr("xmlns").string("http://www.w3.org/2000/svg"));
-	this.resize(width,height);
-}
-rg.view.svg.panel.Space.__name__ = ["rg","view","svg","panel","Space"];
-rg.view.svg.panel.Space.__super__ = rg.view.svg.panel.Container;
-rg.view.svg.panel.Space.prototype = $extend(rg.view.svg.panel.Container.prototype,{
-	panel: null
-	,svg: null
-	,resize: function(width,height) {
-		if(this.panel.width == width && this.panel.height == height) return;
-		this.svg.attr("width")["float"](width).attr("height")["float"](height);
-		var sf = this.panel;
-		sf.setLayout(0,0,width,height);
-	}
-	,__class__: rg.view.svg.panel.Space
-});
-rg.controller.info.Info = $hxClasses["rg.controller.info.Info"] = function() { }
-rg.controller.info.Info.__name__ = ["rg","controller","info","Info"];
-rg.controller.info.Info.feed = function(info,ob) {
-	if(null == ob) return info;
-	var cl = Type.getClass(info), method = Reflect.field(cl,"filters");
-	if(null == method) {
-		Objects.copyTo(ob,info);
-		return info;
-	}
-	var filters = method.apply(cl,[]), value;
-	var _g = 0;
-	while(_g < filters.length) {
-		var filter = filters[_g];
-		++_g;
-		if(Reflect.hasField(ob,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) {
-				haxe.Log.trace(value,{ fileName : "Info.hx", lineNumber : 32, className : "rg.controller.info.Info", methodName : "feed"});
-				haxe.Log.trace(filter.field,{ fileName : "Info.hx", lineNumber : 33, className : "rg.controller.info.Info", methodName : "feed"});
-				throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 34, className : "rg.controller.info.Info", methodName : "feed"});
-			}
-			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
-			var _g1 = 0;
-			while(_g1 < items.length) {
-				var item = items[_g1];
-				++_g1;
-				info[item.field] = item.value;
-			}
-		}
-	}
-	return info;
-}
-rg.controller.info.Info.prototype = {
-	__class__: rg.controller.info.Info
-}
-rg.controller.info.InfoVariable = $hxClasses["rg.controller.info.InfoVariable"] = function() {
-	this.variableType = rg.controller.info.VariableType.Unknown;
-}
-rg.controller.info.InfoVariable.__name__ = ["rg","controller","info","InfoVariable"];
-rg.controller.info.InfoVariable.filters = function() {
-	return [{ field : "type", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "view", validator : function(v) {
-		return Std["is"](v,Array) && rg.controller.info.InfoVariable.testViewValue(v[0]) && rg.controller.info.InfoVariable.testViewValue(v[1]);
-	}, filter : function(v) {
-		var result = [];
-		if(null != v[0]) result.push({ field : "min", value : v[0]});
-		if(null != v[1]) result.push({ field : "max", value : v[1]});
-		return result;
-	}},{ field : "values", validator : function(v) {
-		return Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			return Types.isPrimitive(v1);
-		});
-	}, filter : null},{ field : "groupby", validator : function(v) {
-		return Std["is"](v,String) && rg.util.Periodicity.isValidGroupBy(v);
-	}, filter : function(v) {
-		return [{ field : "groupBy", value : v}];
-	}},{ field : "variable", validator : function(v) {
-		return Std["is"](v,String) && Arrays.exists(["independent","dependent"],v.toLowerCase());
-	}, filter : function(v) {
-		return [{ field : "variableType", value : Type.createEnum(rg.controller.info.VariableType,Strings.ucfirst(("" + v).toLowerCase()),[])}];
-	}},{ field : "scalemode", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "scaleDistribution", value : Type.createEnum(rg.data.ScaleDistribution,"Scale" + Strings.ucfirst(("" + v).toLowerCase()),[])}];
-	}}];
-}
-rg.controller.info.InfoVariable.testViewValue = function(v) {
-	return v == null || Types.isPrimitive(v) || Std["is"](v,Date) || Reflect.isFunction(v);
-}
-rg.controller.info.InfoVariable.__super__ = rg.controller.info.Info;
-rg.controller.info.InfoVariable.prototype = $extend(rg.controller.info.Info.prototype,{
-	type: null
-	,min: null
-	,max: null
-	,values: null
-	,groupBy: null
-	,variableType: null
-	,scaleDistribution: null
-	,__class__: rg.controller.info.InfoVariable
-});
-rg.controller.info.VariableType = $hxClasses["rg.controller.info.VariableType"] = { __ename__ : ["rg","controller","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
-rg.controller.info.VariableType.Unknown = ["Unknown",0];
-rg.controller.info.VariableType.Unknown.toString = $estr;
-rg.controller.info.VariableType.Unknown.__enum__ = rg.controller.info.VariableType;
-rg.controller.info.VariableType.Independent = ["Independent",1];
-rg.controller.info.VariableType.Independent.toString = $estr;
-rg.controller.info.VariableType.Independent.__enum__ = rg.controller.info.VariableType;
-rg.controller.info.VariableType.Dependent = ["Dependent",2];
-rg.controller.info.VariableType.Dependent.toString = $estr;
-rg.controller.info.VariableType.Dependent.__enum__ = rg.controller.info.VariableType;
 var Dates = $hxClasses["Dates"] = function() { }
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
@@ -3922,80 +2999,56 @@ thx.geo.Albers.prototype = {
 	,__class__: thx.geo.Albers
 	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate",set_parallels:"setParallels",get_parallels:"getParallels",set_origin:"setOrigin",get_origin:"getOrigin"}
 }
-rg.view.svg.widget.ElbowArea = $hxClasses["rg.view.svg.widget.ElbowArea"] = function(container,classarea,classborder) {
-	this.g = container.append("svg:g").attr("class").string("elbow");
-	this.area = this.g.append("svg:path").attr("class").string("elbow-fill" + (null == classarea?"":" " + classarea));
-	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder?"":" " + classborder));
-	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder?"":" " + classborder));
+if(!rg.info) rg.info = {}
+rg.info.InfoFunnelChart = $hxClasses["rg.info.InfoFunnelChart"] = function() {
+	this.animation = new rg.info.InfoAnimation();
+	this.label = new rg.info.InfoLabelFunnel();
+	this.padding = 2.5;
+	this.flatness = 1.0;
+	this.effect = rg.svg.chart.GradientEffect.Gradient(1.25);
+	this.arrowSize = 30;
 }
-rg.view.svg.widget.ElbowArea.__name__ = ["rg","view","svg","widget","ElbowArea"];
-rg.view.svg.widget.ElbowArea.prototype = {
-	g: null
-	,area: null
-	,outer: null
-	,inner: null
-	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
-		if(after == null) after = 10.0;
-		if(before == null) before = 0.0;
-		if(maxradius == null) maxradius = 16.0;
-		if(minradius == null) minradius = 3.0;
-		var dinner = "", douter = "", rad = weight < 0?Math.max(maxradius,weight):Math.min(maxradius,weight);
-		switch( (orientation)[1] ) {
-		case 0:
-			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + Math.abs(minradius) + "," + Math.abs(minradius) + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
-			douter = "M" + x + "," + (y - weight) + "L" + (before + x) + "," + (y - weight) + "A" + Math.abs(rad) + "," + Math.abs(rad) + " 0 0,1 " + (before + x + rad) + "," + (y - weight + rad) + "L" + (before + x + rad) + "," + (y + after + minradius);
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			this.update(rg.view.svg.widget.Orientation.RightBottom,-weight,x,y,-minradius,-maxradius,-before,-after);
-			return;
-			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + minradius + "," + minradius + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
-			douter = "M" + x + "," + (y + weight) + "L" + (-before + x) + "," + (y + weight) + "A" + rad + "," + rad + " 0 0,1 " + (-before + x - rad) + "," + (y + weight - rad) + "L" + (-before + x - rad) + "," + (y - after - minradius);
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
-			break;
-		}
-		var darea = douter + "L" + dinner.substr(1) + "z";
-		this.inner.attr("d").string(dinner);
-		this.outer.attr("d").string(douter);
-		this.area.attr("d").string(darea);
-	}
-	,__class__: rg.view.svg.widget.ElbowArea
+rg.info.InfoFunnelChart.__name__ = ["rg","info","InfoFunnelChart"];
+rg.info.InfoFunnelChart.filters = function() {
+	return [{ field : "animation", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "animation", value : rg.info.Info.feed(new rg.info.InfoAnimation(),v)}];
+	}},{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelFunnel(),v)}];
+	}},{ field : "sort", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "sortDataPoint", value : v}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "segmentpadding", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "padding", value : v}];
+	}},{ field : "flatness", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "effect", validator : rg.svg.chart.GradientEffects.canParse, filter : function(v) {
+		return [{ field : "effect", value : rg.svg.chart.GradientEffects.parse(v)}];
+	}},{ field : "arrowsize", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "arrowSize", value : v}];
+	}}];
 }
-rg.view.svg.widget.Orientation = $hxClasses["rg.view.svg.widget.Orientation"] = { __ename__ : ["rg","view","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
-rg.view.svg.widget.Orientation.RightBottom = ["RightBottom",0];
-rg.view.svg.widget.Orientation.RightBottom.toString = $estr;
-rg.view.svg.widget.Orientation.RightBottom.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.LeftBottom = ["LeftBottom",1];
-rg.view.svg.widget.Orientation.LeftBottom.toString = $estr;
-rg.view.svg.widget.Orientation.LeftBottom.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.RightTop = ["RightTop",2];
-rg.view.svg.widget.Orientation.RightTop.toString = $estr;
-rg.view.svg.widget.Orientation.RightTop.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.LeftTop = ["LeftTop",3];
-rg.view.svg.widget.Orientation.LeftTop.toString = $estr;
-rg.view.svg.widget.Orientation.LeftTop.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.BottomRight = ["BottomRight",4];
-rg.view.svg.widget.Orientation.BottomRight.toString = $estr;
-rg.view.svg.widget.Orientation.BottomRight.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.BottomLeft = ["BottomLeft",5];
-rg.view.svg.widget.Orientation.BottomLeft.toString = $estr;
-rg.view.svg.widget.Orientation.BottomLeft.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.TopRight = ["TopRight",6];
-rg.view.svg.widget.Orientation.TopRight.toString = $estr;
-rg.view.svg.widget.Orientation.TopRight.__enum__ = rg.view.svg.widget.Orientation;
-rg.view.svg.widget.Orientation.TopLeft = ["TopLeft",7];
-rg.view.svg.widget.Orientation.TopLeft.toString = $estr;
-rg.view.svg.widget.Orientation.TopLeft.__enum__ = rg.view.svg.widget.Orientation;
+rg.info.InfoFunnelChart.prototype = {
+	animation: null
+	,label: null
+	,sortDataPoint: null
+	,click: null
+	,padding: null
+	,flatness: null
+	,effect: null
+	,arrowSize: null
+	,__class__: rg.info.InfoFunnelChart
+}
 chx.lang.Exception = $hxClasses["chx.lang.Exception"] = function(msg,cause) {
 	this.message = msg;
 	this.cause = cause;
@@ -4238,408 +3291,6 @@ chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
 	}
 	,__class__: chx.io.BytesOutput
 });
-rg.view.svg.chart.CartesianChart = $hxClasses["rg.view.svg.chart.CartesianChart"] = function(panel) {
-	rg.view.svg.chart.Chart.call(this,panel);
-}
-rg.view.svg.chart.CartesianChart.__name__ = ["rg","view","svg","chart","CartesianChart"];
-rg.view.svg.chart.CartesianChart.__super__ = rg.view.svg.chart.Chart;
-rg.view.svg.chart.CartesianChart.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	yVariables: null
-	,xVariable: null
-	,setVariables: function(variables,variableIndependents,variableDependents,data) {
-		this.xVariable = variables[0];
-		this.yVariables = variables.slice(1);
-	}
-	,data: function(dps) {
-		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 38, className : "rg.view.svg.chart.CartesianChart", methodName : "data"});
-	}
-	,__class__: rg.view.svg.chart.CartesianChart
-});
-rg.view.svg.chart.ScatterGraph = $hxClasses["rg.view.svg.chart.ScatterGraph"] = function(panel) {
-	rg.view.svg.chart.CartesianChart.call(this,panel);
-	this.addClass("scatter-graph");
-	this.chart = this.g.append("svg:g");
-}
-rg.view.svg.chart.ScatterGraph.__name__ = ["rg","view","svg","chart","ScatterGraph"];
-rg.view.svg.chart.ScatterGraph.__super__ = rg.view.svg.chart.CartesianChart;
-rg.view.svg.chart.ScatterGraph.prototype = $extend(rg.view.svg.chart.CartesianChart.prototype,{
-	symbol: null
-	,symbolStyle: null
-	,chart: null
-	,dps: null
-	,x: function(d,i) {
-		var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
-		return scaledw;
-	}
-	,getY1: function(pos) {
-		var h = this.height, v = this.yVariables[pos];
-		return function(d,i) {
-			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
-			return h - scaledh;
-		};
-	}
-	,classf: function(pos,cls) {
-		return function(_,i) {
-			return cls + " stroke-" + pos + " fill-" + pos;
-		};
-	}
-	,data: function(dps) {
-		this.dps = dps;
-		this.redraw();
-	}
-	,resize: function() {
-		rg.view.svg.chart.CartesianChart.prototype.resize.call(this);
-		this.redraw();
-	}
-	,redraw: function() {
-		var me = this;
-		if(null == this.dps || null == this.dps[0] || null == this.dps[0][0]) return;
-		var axisgroup = this.chart.selectAll("g.group").data(this.dps);
-		var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
-			return "group group-" + i;
-		});
-		axisgroup.exit().remove();
-		var _g1 = 0, _g = this.dps.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [this.yVariables[i].stats];
-			var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.yVariables, onclick = ((function() {
-				return function(f,a1) {
-					return (function() {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
-						};
-					})();
-				};
-			})())(this.onclick.$bind(this),stats[0]), onmouseover = ((function() {
-				return function(f,a1) {
-					return (function() {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
-						};
-					})();
-				};
-			})())(this.onmouseover.$bind(this),stats[0]);
-			var enter = gsymbol.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbol")).attr("transform").stringf(this.getTranslatePointf(i));
-			if(null != this.click) enter.on("click",onclick);
-			if(null != this.labelDataPointOver) enter.onNode("mouseover",onmouseover);
-			var spath = enter.append("svg:path").attr("d").stringf((function(stats) {
-				return function(dp,_) {
-					return me.symbol(dp,stats[0]);
-				};
-			})(stats));
-			if(null != this.symbolStyle) spath.attr("style").stringf((function(stats) {
-				return function(dp,_) {
-					return me.symbolStyle(dp,stats[0]);
-				};
-			})(stats));
-			if(null != this.labelDataPoint) {
-				var f = [this.labelDataPoint];
-				enter.eachNode((function(f,stats) {
-					return function(n,i1) {
-						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
-						label.setText(f[0](dp,stats[0]));
-					};
-				})(f,stats));
-			}
-			gsymbol.update().selectAll("g.symbol").dataf((function() {
-				return function(d,i1) {
-					return d;
-				};
-			})()).update().attr("transform").stringf(this.getTranslatePointf(i));
-			gsymbol.exit().remove();
-		}
-		this.ready.dispatch();
-	}
-	,getTranslatePointf: function(pos) {
-		var x = this.x.$bind(this), y = this.getY1(pos);
-		return function(dp,i) {
-			return "translate(" + x(dp) + "," + y(dp,i) + ")";
-		};
-	}
-	,onmouseover: function(stats,n,i) {
-		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
-		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(coords[0],coords[1]);
-		}
-	}
-	,onclick: function(stats,dp,i) {
-		this.click(dp,stats);
-	}
-	,__class__: rg.view.svg.chart.ScatterGraph
-});
-rg.view.svg.widget.Map = $hxClasses["rg.view.svg.widget.Map"] = function(container,projection) {
-	var me = this;
-	this.g = container.append("svg:g").attr("class").string("map");
-	this.projection = projection;
-	this.map = new Hash();
-	this.ready = false;
-	this.onReady = new hxevents.Notifier();
-	this.onReady.addOnce(function() {
-		me.ready = true;
-	});
-}
-rg.view.svg.widget.Map.__name__ = ["rg","view","svg","widget","Map"];
-rg.view.svg.widget.Map.loadJsonp = function(url,handler) {
-	rg.util.Jsonp.get(url,handler,null,null,null);
-}
-rg.view.svg.widget.Map.loadJsonAjax = function(url,handler) {
-	var http = new haxe.Http(url);
-	http.onData = function(data) {
-		var json = thx.json.Json.decode(data);
-		handler(json);
-	};
-	http.onError = function(err) {
-		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.view.svg.widget.Map", methodName : "loadJsonAjax"});
-	};
-	http.request(false);
-}
-rg.view.svg.widget.Map.prototype = {
-	className: null
-	,map: null
-	,onReady: null
-	,click: null
-	,labelDataPoint: null
-	,labelDataPointOver: null
-	,radius: null
-	,colorMode: null
-	,ready: null
-	,mapping: null
-	,projection: null
-	,g: null
-	,load: function(path,type,mappingurl,usejsonp) {
-		switch(type) {
-		case "geojson":
-			this.loadGeoJson(path,mappingurl,usejsonp);
-			break;
-		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 58, className : "rg.view.svg.widget.Map", methodName : "load"});
-		}
-	}
-	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
-		var me = this;
-		var load = usejsonp?rg.view.svg.widget.Map.loadJsonp:rg.view.svg.widget.Map.loadJsonAjax;
-		if(null == mappingurl) load(geourl,this.draw.$bind(this)); else load(mappingurl,function(m) {
-			me.mapping = m;
-			load(geourl,me.draw.$bind(me));
-		});
-	}
-	,draw: function(json) {
-		var me = this;
-		var id = null != this.mapping?function(s) {
-			return Reflect.hasField(me.mapping,s)?Reflect.field(me.mapping,s):s;
-		}:function(s) {
-			return s;
-		};
-		var path = new thx.svg.PathGeoJson();
-		path.setProjection(this.projection);
-		switch(json.type) {
-		case "FeatureCollection":
-			var _g1 = 0, _g = json.features.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				var feature = json.features[i], centroid = path.centroid(feature.geometry), p = feature.geometry.type == "Point"?this.g.append("svg:circle").attr("cx")["float"](centroid[0]).attr("cy")["float"](centroid[1]).attr("r")["float"](5):this.g.append("svg:path").attr("d").string(path.path(feature.geometry));
-				var dp = { };
-				dp["#centroid"] = centroid;
-				dp["#data"] = feature.properties;
-				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
-				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
-					};
-				})(this.onMouseOver.$bind(this),dp));
-				if(null != this.click) p.onNode("click",(function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
-					};
-				})(this.onClick.$bind(this),dp));
-			}
-			break;
-		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.view.svg.widget.Map", methodName : "draw"});
-			break;
-		default:
-			this.g.append("svg:path").attr("d").string(path.path(json));
-		}
-		this.onReady.dispatch();
-	}
-	,onMouseOver: function(dp,_,_1) {
-		this.handlerDataPointOver(dp,this.labelDataPointOver);
-	}
-	,onClick: function(dp,_,_1) {
-		this.handlerClick(dp,this.click);
-	}
-	,handlerDataPointOver: null
-	,handlerClick: null
-	,setClassName: function(cls) {
-		this.g.attr("class").string("map" + (null == cls?"":" " + cls));
-		return cls;
-	}
-	,__class__: rg.view.svg.widget.Map
-	,__properties__: {set_className:"setClassName"}
-}
-rg.controller.info.InfoAnimation = $hxClasses["rg.controller.info.InfoAnimation"] = function() {
-	this.animated = false;
-	this.duration = 1500;
-	this.delay = 150;
-	this.ease = thx.math.Equations.elasticf();
-}
-rg.controller.info.InfoAnimation.__name__ = ["rg","controller","info","InfoAnimation"];
-rg.controller.info.InfoAnimation.filters = function() {
-	return [{ field : "animated", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "duration", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "delay", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "ease", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
-}
-rg.controller.info.InfoAnimation.prototype = {
-	animated: null
-	,duration: null
-	,ease: null
-	,delay: null
-	,__class__: rg.controller.info.InfoAnimation
-}
-if(!rg.view.html) rg.view.html = {}
-if(!rg.view.html.widget) rg.view.html.widget = {}
-rg.view.html.widget.DownloaderPositions = $hxClasses["rg.view.html.widget.DownloaderPositions"] = function() { }
-rg.view.html.widget.DownloaderPositions.__name__ = ["rg","view","html","widget","DownloaderPositions"];
-rg.view.html.widget.DownloaderPositions.parse = function(v) {
-	switch(v.toLowerCase()) {
-	case "topleft":
-		return rg.view.html.widget.DownloaderPosition.TopLeft;
-	case "topright":case "auto":
-		return rg.view.html.widget.DownloaderPosition.TopRight;
-	case "bottomleft":
-		return rg.view.html.widget.DownloaderPosition.BottomLeft;
-	case "bottomright":
-		return rg.view.html.widget.DownloaderPosition.BottomRight;
-	case "before":
-		return rg.view.html.widget.DownloaderPosition.Before;
-	case "after":
-		return rg.view.html.widget.DownloaderPosition.After;
-	default:
-		return rg.view.html.widget.DownloaderPosition.ElementSelector(v);
-	}
-}
-rg.view.html.widget.DownloaderPositions.prototype = {
-	__class__: rg.view.html.widget.DownloaderPositions
-}
-rg.controller.info.InfoDataSource = $hxClasses["rg.controller.info.InfoDataSource"] = function() {
-}
-rg.controller.info.InfoDataSource.__name__ = ["rg","controller","info","InfoDataSource"];
-rg.controller.info.InfoDataSource.filters = function() {
-	return [{ field : "data", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "loader", value : function(handler) {
-			handler(v);
-		}}];
-	}},{ field : "datapoints", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "loader", value : function(handler) {
-			handler(v);
-		}}];
-	}},{ field : "load", validator : function(v) {
-		return Reflect.isFunction(v) || null != Reflect.field(v,"load");
-	}, filter : function(v) {
-		return [{ field : "loader", value : Reflect.isObject(v)?v.load.$bind(v):v}];
-	}}];
-}
-rg.controller.info.InfoDataSource.prototype = {
-	loader: null
-	,__class__: rg.controller.info.InfoDataSource
-}
-if(!rg.controller.factory) rg.controller.factory = {}
-rg.controller.factory.FactoryGeoProjection = $hxClasses["rg.controller.factory.FactoryGeoProjection"] = function() {
-}
-rg.controller.factory.FactoryGeoProjection.__name__ = ["rg","controller","factory","FactoryGeoProjection"];
-rg.controller.factory.FactoryGeoProjection.prototype = {
-	create: function(info) {
-		switch(info.projection.toLowerCase()) {
-		case "mercator":
-			var projection = new thx.geo.Mercator();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
-			return projection;
-		case "albers":
-			var projection = new thx.geo.Albers();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
-			if(null != info.origin) projection.setOrigin(info.origin);
-			if(null != info.parallels) projection.setParallels(info.parallels);
-			return projection;
-		case "albersusa":
-			var projection = new thx.geo.AlbersUsa();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
-			return projection;
-		case "azimuthal":
-			var projection = new thx.geo.Azimuthal();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
-			if(null != info.mode) projection.setMode(info.mode);
-			if(null != info.origin) projection.setOrigin(info.origin);
-			return projection;
-		default:
-			return (function($this) {
-				var $r;
-				throw new thx.error.Error("the projection '{0}' does not exist or is not implemented",[info.projection],null,{ fileName : "FactoryGeoProjection.hx", lineNumber : 68, className : "rg.controller.factory.FactoryGeoProjection", methodName : "create"});
-				return $r;
-			}(this));
-		}
-	}
-	,__class__: rg.controller.factory.FactoryGeoProjection
-}
-rg.controller.info.InfoLabel = $hxClasses["rg.controller.info.InfoLabel"] = function() {
-}
-rg.controller.info.InfoLabel.__name__ = ["rg","controller","info","InfoLabel"];
-rg.controller.info.InfoLabel.filters = function() {
-	return [{ field : "title", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "title", value : Std["is"](v,String)?function() {
-			return v;
-		}:v}];
-	}},{ field : "datapoint", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "datapointover", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
-}
-rg.controller.info.InfoLabel.prototype = {
-	title: null
-	,datapoint: null
-	,datapointover: null
-	,__class__: rg.controller.info.InfoLabel
-}
-rg.controller.info.InfoLabelFunnel = $hxClasses["rg.controller.info.InfoLabelFunnel"] = function() {
-	rg.controller.info.InfoLabel.call(this);
-}
-rg.controller.info.InfoLabelFunnel.__name__ = ["rg","controller","info","InfoLabelFunnel"];
-rg.controller.info.InfoLabelFunnel.filters = function() {
-	return [{ field : "arrow", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
-}
-rg.controller.info.InfoLabelFunnel.__super__ = rg.controller.info.InfoLabel;
-rg.controller.info.InfoLabelFunnel.prototype = $extend(rg.controller.info.InfoLabel.prototype,{
-	arrow: null
-	,__class__: rg.controller.info.InfoLabelFunnel
-});
-if(!rg.view.frame) rg.view.frame = {}
-rg.view.frame.FrameLayout = $hxClasses["rg.view.frame.FrameLayout"] = { __ename__ : ["rg","view","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
-rg.view.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
-rg.view.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
-rg.view.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
-rg.view.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
-rg.view.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.view.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.cross = function(values) {
@@ -4733,20 +3384,187 @@ thx.math.Ease.mode = function(easemode,f) {
 thx.math.Ease.prototype = {
 	__class__: thx.math.Ease
 }
-rg.controller.factory.FactoryAxis = $hxClasses["rg.controller.factory.FactoryAxis"] = function() {
+rg.svg.chart.HeatGrid = $hxClasses["rg.svg.chart.HeatGrid"] = function(panel) {
+	rg.svg.chart.CartesianChart.call(this,panel);
+	this.useContour = false;
+	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
 }
-rg.controller.factory.FactoryAxis.__name__ = ["rg","controller","factory","FactoryAxis"];
-rg.controller.factory.FactoryAxis.prototype = {
-	create: function(type,isnumeric,variable,samples) {
-		if(null != samples && samples.length > 0) return new rg.data.AxisOrdinalFixedValues(samples); else if(true == isnumeric) return new rg.data.AxisNumeric(); else if(false == isnumeric) return new rg.data.AxisOrdinalStats(variable); else return null;
+rg.svg.chart.HeatGrid.__name__ = ["rg","svg","chart","HeatGrid"];
+rg.svg.chart.HeatGrid.__super__ = rg.svg.chart.CartesianChart;
+rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
+	useContour: null
+	,colorMode: null
+	,dps: null
+	,variableDependent: null
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		this.xVariable = variableIndependents[0];
+		this.yVariables = [variableIndependents[1]];
+		this.variableDependent = variableDependents[0];
 	}
-	,createDiscrete: function(type,variable,samples,groupBy) {
-		if(type.indexOf("time:") >= 0) {
-			if(null != groupBy) return new rg.data.AxisGroupByTime(type.substr(type.indexOf("time:") + "time:".length)); else return new rg.data.AxisTime(type.substr(type.indexOf("time:") + "time:".length));
-		} else if(null != samples && samples.length > 0) return new rg.data.AxisOrdinalFixedValues(samples);
-		return new rg.data.AxisOrdinalStats(variable);
+	,init: function() {
+		rg.svg.chart.CartesianChart.prototype.init.call(this);
+		this.g.classed().add("heat-grid");
 	}
-	,__class__: rg.controller.factory.FactoryAxis
+	,resize: function() {
+		rg.svg.chart.CartesianChart.prototype.resize.call(this);
+		this.redraw();
+	}
+	,data: function(dps) {
+		this.dps = dps;
+		this.redraw();
+	}
+	,value: function(dp) {
+		var v = Reflect.field(dp,this.variableDependent.type);
+		return this.scale(v);
+	}
+	,scale: function(v) {
+		return this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),v);
+	}
+	,xrange: null
+	,yrange: null
+	,cols: null
+	,rows: null
+	,w: null
+	,h: null
+	,stats: null
+	,x: function(dp,i) {
+		return this.xrange.indexOf(Reflect.field(dp,this.xVariable.type)) * this.w;
+	}
+	,y: function(dp,i) {
+		return this.height - (1 + this.yrange.indexOf(Reflect.field(dp,this.yVariables[0].type))) * this.h;
+	}
+	,redraw: function() {
+		if(null == this.dps || 0 == this.dps.length) return;
+		this.stats = this.variableDependent.stats;
+		this.xrange = this.range(this.xVariable);
+		this.yrange = this.range(this.yVariables[0]);
+		this.cols = this.xrange.length;
+		this.rows = this.yrange.length;
+		this.w = this.width / this.cols;
+		this.h = this.height / this.rows;
+		if(this.useContour) this.drawContour(); else this.drawSquares();
+		this.ready.dispatch();
+	}
+	,drawContour: function() {
+	}
+	,createGridMap: function(grid) {
+		var map = new Hash();
+		var _g1 = 0, _g = this.rows;
+		while(_g1 < _g) {
+			var r = _g1++;
+			var _g3 = 0, _g2 = this.cols;
+			while(_g3 < _g2) {
+				var c = _g3++;
+				if(grid(c,r)) map.set(r + "-" + c,[r,c]);
+			}
+		}
+		return map;
+	}
+	,drawSquares: function() {
+		var me = this;
+		var choice = this.g.selectAll("rect").data(this.dps);
+		choice.enter().append("svg:rect").attr("x").floatf(this.x.$bind(this)).attr("y").floatf(this.y.$bind(this)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
+			me.stylefeature(thx.js.Dom.selectNode(thx.js.Group.current),dp);
+		}).on("click",this.onclick.$bind(this)).on("mouseover",this.onmouseover.$bind(this));
+	}
+	,onmouseover: function(dp,i) {
+		if(null == this.labelDataPointOver) return;
+		var text = this.labelDataPointOver(dp,this.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(this.x(dp,i) + this.w / 2,this.y(dp,i) + this.h / 2);
+		}
+	}
+	,onclick: function(dp,i) {
+		if(null == this.click) return;
+		this.click(dp,this.stats);
+	}
+	,range: function(variable) {
+		var v = Std["is"](variable,rg.data.VariableIndependent)?variable:null;
+		if(null != v) return v.axis.range(v.min(),v.max());
+		var tickmarks = variable.axis.ticks(variable.min(),variable.max());
+		return tickmarks.map(function(d,i) {
+			return d.getValue();
+		});
+	}
+	,stylefeature: function(svg,dp) {
+	}
+	,getColorMode: function() {
+		return this.colorMode;
+	}
+	,setColorMode: function(v) {
+		var me = this;
+		var $e = (this.colorMode = v);
+		switch( $e[1] ) {
+		case 0:
+			var g = $e[2];
+			if(null == g) g = 2;
+			break;
+		case 1:
+			var g = $e[2];
+			if(null == g) g = rg.svg.util.RGCss.numberOfColorsInCss();
+			this.stylefeature = function(svg,dp) {
+				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
+				svg.attr("class").string("fill-" + index);
+			};
+			break;
+		case 3:
+			var c = $e[2];
+			var colors = c.map(function(d,_) {
+				return d.hex("#");
+			});
+			this.stylefeature = function(svg,dp) {
+				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
+				svg.style("fill").string(colors[index]);
+			};
+			break;
+		case 2:
+			var colors = $e[2];
+			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
+			this.stylefeature = function(svg,dp) {
+				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
+				svg.style("fill").string(interpolator(t).hex("#"));
+			};
+			break;
+		case 4:
+			var c = $e[2];
+			var color = c.hex("#");
+			this.stylefeature = function(svg,dp) {
+				svg.style("fill").string(color);
+			};
+			break;
+		case 5:
+			var f = $e[2];
+			this.stylefeature = function(svg,dp) {
+				svg.style("fill").string(f(dp,me.variableDependent.stats));
+			};
+			break;
+		}
+		return v;
+	}
+	,__class__: rg.svg.chart.HeatGrid
+	,__properties__: $extend(rg.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
+});
+rg.info.InfoPadding = $hxClasses["rg.info.InfoPadding"] = function() {
+}
+rg.info.InfoPadding.__name__ = ["rg","info","InfoPadding"];
+rg.info.InfoPadding.filters = function() {
+	return [{ field : "top", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "bottom", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "left", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "right", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null}];
+}
+rg.info.InfoPadding.prototype = {
+	top: null
+	,bottom: null
+	,left: null
+	,right: null
+	,__class__: rg.info.InfoPadding
 }
 var DynamicsT = $hxClasses["DynamicsT"] = function() { }
 DynamicsT.__name__ = ["DynamicsT"];
@@ -4833,105 +3651,27 @@ thx.js.AccessDataProperty.prototype = $extend(thx.js.AccessProperty.prototype,{
 	}
 	,__class__: thx.js.AccessDataProperty
 });
-rg.controller.info.InfoMap = $hxClasses["rg.controller.info.InfoMap"] = function() {
-	this.property = "location";
-	this.type = "geojson";
-	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCssInterpolation();
-	this.usejsonp = true;
-	this.radius = function(_,_1) {
-		return 10;
-	};
+if(!rg.factory) rg.factory = {}
+rg.factory.FactoryHtmlVisualization = $hxClasses["rg.factory.FactoryHtmlVisualization"] = function() {
 }
-rg.controller.info.InfoMap.__name__ = ["rg","controller","info","InfoMap"];
-rg.controller.info.InfoMap.filters = function() {
-	return [{ field : "url", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "type", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "scale", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "projection", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "classname", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "translate", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "origin", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "parallels", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "mode", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "mode", value : Type.createEnum(thx.geo.ProjectionMode,Strings.ucfirst(v.toLowerCase()),[])}];
-	}},{ field : "property", validator : function(v) {
-		return v == null || Std["is"](v,String);
-	}, filter : null},{ field : "usejsonp", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "template", validator : function(v) {
-		return Std["is"](v,String) && rg.controller.info.InfoMap.isValidTemplate(v);
-	}, filter : rg.controller.info.InfoMap.fromTemplate},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "color", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "colorScaleMode", value : rg.view.svg.chart.ColorScaleModes.createFromDynamic(v)}];
-	}},{ field : "radius", validator : function(v) {
-		return Std["is"](v,Float) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "radius", value : Std["is"](v,Float)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "mapping", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		if(Std["is"](v,String)) return [{ field : "mappingurl", value : v}]; else return [{ field : "mapping", value : v}];
-	}}];
-}
-rg.controller.info.InfoMap.isValidTemplate = function(t) {
-	return Arrays.exists(["world","world-countries","usa-states","usa-state-centroids","usa-counties"],t.toLowerCase());
-}
-rg.controller.info.InfoMap.fromTemplate = function(t) {
-	switch(t.toLowerCase()) {
-	case "world":case "world-countries":
-		return [{ field : "projection", value : "mercator"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "world-countries.json.js"}];
-	case "usa-states":
-		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-states.json.js"}];
-	case "usa-state-centroids":
-		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"}];
-	case "usa-counties":
-		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"}];
-	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 194, className : "rg.controller.info.InfoMap", methodName : "fromTemplate"});
-			return $r;
-		}(this));
+rg.factory.FactoryHtmlVisualization.__name__ = ["rg","factory","FactoryHtmlVisualization"];
+rg.factory.FactoryHtmlVisualization.prototype = {
+	create: function(type,container,options) {
+		switch(type) {
+		case "pivottable":
+			var chart = new rg.visualization.VisualizationPivotTable(container);
+			chart.info = rg.info.Info.feed(new rg.info.InfoPivotTable(),options);
+			return chart;
+		case "leaderboard":
+			var chart = new rg.visualization.VisualizationLeaderboard(container);
+			chart.info = rg.info.Info.feed(new rg.info.InfoLeaderboard(),options);
+			return chart;
+		default:
+			throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 35, className : "rg.factory.FactoryHtmlVisualization", methodName : "create"});
+		}
+		return null;
 	}
-}
-rg.controller.info.InfoMap.prototype = {
-	url: null
-	,type: null
-	,scale: null
-	,projection: null
-	,classname: null
-	,translate: null
-	,origin: null
-	,parallels: null
-	,mode: null
-	,property: null
-	,label: null
-	,click: null
-	,radius: null
-	,colorScaleMode: null
-	,usejsonp: null
-	,mapping: null
-	,mappingurl: null
-	,__class__: rg.controller.info.InfoMap
+	,__class__: rg.factory.FactoryHtmlVisualization
 }
 thx.color.Hsl = $hxClasses["thx.color.Hsl"] = function(h,s,l) {
 	this.hue = h = Floats.circularWrap(h,360);
@@ -5227,6 +3967,25 @@ thx.math.scale.Linears.forRgbString = function() {
 thx.math.scale.Linears.prototype = {
 	__class__: thx.math.scale.Linears
 }
+rg.svg.chart.StreamEffects = $hxClasses["rg.svg.chart.StreamEffects"] = function() { }
+rg.svg.chart.StreamEffects.__name__ = ["rg","svg","chart","StreamEffects"];
+rg.svg.chart.StreamEffects.getLightness = function(p,alt) {
+	if(null == p) return alt; else return Std.parseFloat(p);
+}
+rg.svg.chart.StreamEffects.parse = function(s) {
+	var parts = s.toLowerCase().split(":");
+	switch(parts.shift()) {
+	case "gradient":case "gradientv":case "gradientvert":case "gradientvertical":
+		return rg.svg.chart.StreamEffect.GradientVertical(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	case "gradienth":case "gradienthoriz":case "gradienthorizontal":
+		return rg.svg.chart.StreamEffect.GradientHorizontal(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	default:
+		return rg.svg.chart.StreamEffect.NoEffect;
+	}
+}
+rg.svg.chart.StreamEffects.prototype = {
+	__class__: rg.svg.chart.StreamEffects
+}
 thx.culture.FormatNumber = $hxClasses["thx.culture.FormatNumber"] = function() { }
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
@@ -5305,24 +4064,6 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 thx.culture.FormatNumber.prototype = {
 	__class__: thx.culture.FormatNumber
 }
-rg.view.svg.widget.LabelOrientations = $hxClasses["rg.view.svg.widget.LabelOrientations"] = function() { }
-rg.view.svg.widget.LabelOrientations.__name__ = ["rg","view","svg","widget","LabelOrientations"];
-rg.view.svg.widget.LabelOrientations.parse = function(s) {
-	return (function($this) {
-		var $r;
-		switch(s.toLowerCase()) {
-		case "ortho":case "orthogonal":
-			$r = rg.view.svg.widget.LabelOrientation.Orthogonal;
-			break;
-		default:
-			$r = rg.view.svg.widget.LabelOrientation.Aligned;
-		}
-		return $r;
-	}(this));
-}
-rg.view.svg.widget.LabelOrientations.prototype = {
-	__class__: rg.view.svg.widget.LabelOrientations
-}
 rg.graph.HeaviestNodeLayer = $hxClasses["rg.graph.HeaviestNodeLayer"] = function() {
 }
 rg.graph.HeaviestNodeLayer.__name__ = ["rg","graph","HeaviestNodeLayer"];
@@ -5364,160 +4105,6 @@ rg.graph.HeaviestNodeLayer.prototype = {
 		return layers;
 	}
 	,__class__: rg.graph.HeaviestNodeLayer
-}
-rg.data.IAxisOrdinal = $hxClasses["rg.data.IAxisOrdinal"] = function() { }
-rg.data.IAxisOrdinal.__name__ = ["rg","data","IAxisOrdinal"];
-rg.data.IAxisOrdinal.__interfaces__ = [rg.data.IAxisDiscrete];
-rg.data.IAxisOrdinal.prototype = {
-	first: null
-	,last: null
-	,allTicks: null
-	,values: null
-	,__class__: rg.data.IAxisOrdinal
-}
-rg.data.AxisOrdinal = $hxClasses["rg.data.AxisOrdinal"] = function() {
-	this.setScaleDistribution(rg.data.ScaleDistribution.ScaleFit);
-}
-rg.data.AxisOrdinal.__name__ = ["rg","data","AxisOrdinal"];
-rg.data.AxisOrdinal.__interfaces__ = [rg.data.IAxisOrdinal];
-rg.data.AxisOrdinal.prototype = {
-	scaleDistribution: null
-	,toTickmark: function(start,end,value) {
-		var r = this.range(start,end);
-		return new rg.data.TickmarkOrdinal(r.indexOf(value),r,null,this.scaleDistribution);
-	}
-	,ticks: function(start,end,upperBound) {
-		if(0 == upperBound) return [];
-		var ticks = rg.data.TickmarkOrdinal.fromArray(this.range(start,end),this.scaleDistribution);
-		return rg.data.Tickmarks.bound(ticks,upperBound);
-	}
-	,range: function(start,end) {
-		var values = this.values(), s = values.indexOf(start), e = values.indexOf(end);
-		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 41, className : "rg.data.AxisOrdinal", methodName : "range"});
-		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 43, className : "rg.data.AxisOrdinal", methodName : "range"});
-		return values.slice(s,e + 1);
-	}
-	,scale: function(start,end,v) {
-		var values = this.values(), s = values.indexOf(start), e = values.indexOf(end), p = values.indexOf(v);
-		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 54, className : "rg.data.AxisOrdinal", methodName : "scale"});
-		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 56, className : "rg.data.AxisOrdinal", methodName : "scale"});
-		if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 58, className : "rg.data.AxisOrdinal", methodName : "scale"});
-		return rg.data.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
-	}
-	,first: function() {
-		return this.values()[0];
-	}
-	,last: function() {
-		return Arrays.last(this.values());
-	}
-	,values: function() {
-		return (function($this) {
-			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.data.AxisOrdinal", methodName : "values"});
-			return $r;
-		}(this));
-	}
-	,allTicks: function() {
-		var me = this;
-		var f = this.first(), l = this.last();
-		return this.range(f,l).map(function(d,i) {
-			return me.toTickmark(f,l,d);
-		});
-	}
-	,setScaleDistribution: function(v) {
-		return this.scaleDistribution = v;
-	}
-	,min: function(stats,meta) {
-		return this.values()[0];
-	}
-	,max: function(stats,meta) {
-		return Arrays.last(this.values());
-	}
-	,createStats: function(type) {
-		return new rg.data.Stats(type);
-	}
-	,__class__: rg.data.AxisOrdinal
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
-}
-rg.view.svg.widget.HookConnectorArea = $hxClasses["rg.view.svg.widget.HookConnectorArea"] = function(container,classarea,classborder) {
-	this.g = container.append("svg:g").attr("class").string("hook");
-	this.area = this.g.append("svg:path").attr("class").string("hook-fill" + (null == classarea?"":" " + classarea));
-	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper" + (null == classborder?"":" " + classborder));
-	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower" + (null == classborder?"":" " + classborder));
-}
-rg.view.svg.widget.HookConnectorArea.__name__ = ["rg","view","svg","widget","HookConnectorArea"];
-rg.view.svg.widget.HookConnectorArea.lineTo = function(x,y) {
-	return "L" + x + "," + y;
-}
-rg.view.svg.widget.HookConnectorArea.quarterTo = function(x,y,r) {
-	return "A" + Math.abs(r) + "," + Math.abs(r) + " 0 0," + (r < 0?0:1) + " " + x + "," + y;
-}
-rg.view.svg.widget.HookConnectorArea.prototype = {
-	g: null
-	,area: null
-	,upper: null
-	,lower: null
-	,update: function(x1,y1,x2,y2,weight,yreference,before,after) {
-		var min = Math.min(5,weight), upperp = this.createPath(x1,y1,x2,y2,y1 > yreference?yreference:yreference + weight,before + weight,after + weight,weight,weight), lowerp = this.createPath(x2,y2 + weight,x1,y1 + weight,y1 > yreference?yreference - weight:yreference,-after,-before,-min,min);
-		this.upper.attr("d").string(upperp);
-		this.lower.attr("d").string(lowerp);
-		this.area.attr("d").string(upperp + "L" + lowerp.substr(1) + "z");
-	}
-	,createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
-		var path = "M" + x1 + "," + y1;
-		path += rg.view.svg.widget.HookConnectorArea.lineTo(x1 + before - r1,y1);
-		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x1 + before,y1 + r2,r1);
-		path += rg.view.svg.widget.HookConnectorArea.lineTo(x1 + before,yref - r2);
-		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x1 + before - r1,yref,r1);
-		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2 - after + r1,yref);
-		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x2 - after,yref - r2,r1);
-		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2 - after,y2 + r2);
-		path += rg.view.svg.widget.HookConnectorArea.quarterTo(x2 - after + r1,y2,r1);
-		path += rg.view.svg.widget.HookConnectorArea.lineTo(x2,y2);
-		return path;
-	}
-	,createPath2: function(x1,y1,sr,x2,y2,yreference) {
-		var path = "M" + x1 + "," + y1;
-		if(yreference > y1) {
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x1 + sr) + "," + (y1 + sr);
-			path += "L" + (sr + x1) + "," + (yreference - sr);
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x1 + "," + yreference;
-		} else {
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x1 + sr) + "," + (y1 - sr);
-			path += "L" + (sr + x1) + "," + (yreference + sr);
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x1 + "," + yreference;
-		}
-		path += "L" + x2 + "," + yreference;
-		if(yreference > y2) {
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x2 - sr) + "," + (yreference - sr);
-			path += "L" + (x2 - sr) + "," + (y2 + sr);
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x2 + "," + y2;
-		} else {
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x2 - sr) + "," + (yreference + sr);
-			path += "L" + (x2 - sr) + "," + (y2 - sr);
-			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x2 + "," + y2;
-		}
-		return path;
-	}
-	,__class__: rg.view.svg.widget.HookConnectorArea
-}
-rg.controller.info.InfoVisualizationType = $hxClasses["rg.controller.info.InfoVisualizationType"] = function() {
-	this.replace = true;
-}
-rg.controller.info.InfoVisualizationType.__name__ = ["rg","controller","info","InfoVisualizationType"];
-rg.controller.info.InfoVisualizationType.filters = function() {
-	return [{ field : "visualization", validator : function(v) {
-		return Arrays.exists(rg.controller.Visualizations.visualizations,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ value : v.toLowerCase(), field : "type"}];
-	}},{ field : "replace", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filtern : null}];
-}
-rg.controller.info.InfoVisualizationType.prototype = {
-	replace: null
-	,type: null
-	,__class__: rg.controller.info.InfoVisualizationType
 }
 var Std = $hxClasses["Std"] = function() { }
 Std.__name__ = ["Std"];
@@ -6034,51 +4621,67 @@ thx.js.Dom.event = null;
 thx.js.Dom.prototype = {
 	__class__: thx.js.Dom
 }
-rg.view.html.widget.DownloaderPosition = $hxClasses["rg.view.html.widget.DownloaderPosition"] = { __ename__ : ["rg","view","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
-rg.view.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.view.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
-rg.view.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
-rg.view.html.widget.DownloaderPosition.TopLeft.toString = $estr;
-rg.view.html.widget.DownloaderPosition.TopLeft.__enum__ = rg.view.html.widget.DownloaderPosition;
-rg.view.html.widget.DownloaderPosition.TopRight = ["TopRight",2];
-rg.view.html.widget.DownloaderPosition.TopRight.toString = $estr;
-rg.view.html.widget.DownloaderPosition.TopRight.__enum__ = rg.view.html.widget.DownloaderPosition;
-rg.view.html.widget.DownloaderPosition.BottomLeft = ["BottomLeft",3];
-rg.view.html.widget.DownloaderPosition.BottomLeft.toString = $estr;
-rg.view.html.widget.DownloaderPosition.BottomLeft.__enum__ = rg.view.html.widget.DownloaderPosition;
-rg.view.html.widget.DownloaderPosition.BottomRight = ["BottomRight",4];
-rg.view.html.widget.DownloaderPosition.BottomRight.toString = $estr;
-rg.view.html.widget.DownloaderPosition.BottomRight.__enum__ = rg.view.html.widget.DownloaderPosition;
-rg.view.html.widget.DownloaderPosition.Before = ["Before",5];
-rg.view.html.widget.DownloaderPosition.Before.toString = $estr;
-rg.view.html.widget.DownloaderPosition.Before.__enum__ = rg.view.html.widget.DownloaderPosition;
-rg.view.html.widget.DownloaderPosition.After = ["After",6];
-rg.view.html.widget.DownloaderPosition.After.toString = $estr;
-rg.view.html.widget.DownloaderPosition.After.__enum__ = rg.view.html.widget.DownloaderPosition;
-rg.controller.info.InfoTrack = $hxClasses["rg.controller.info.InfoTrack"] = function() {
-	this.enabled = false;
-	this.token = rg.RGConst.TRACKING_TOKEN;
-	this.paths = ["/","/{hash}/"];
-	this.hash = null;
+rg.visualization.VisualizationFunnelChart = $hxClasses["rg.visualization.VisualizationFunnelChart"] = function(layout) {
+	rg.visualization.VisualizationSvg.call(this,layout);
 }
-rg.controller.info.InfoTrack.__name__ = ["rg","controller","info","InfoTrack"];
-rg.controller.info.InfoTrack.filters = function() {
-	return [{ field : "enabled", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "token", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "paths", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "hash", validator : function(v) {
-		return v == null || Std["is"](v,String);
-	}, filter : null}];
-}
-rg.controller.info.InfoTrack.prototype = {
-	enabled: null
-	,token: null
-	,paths: null
-	,hash: null
-	,__class__: rg.controller.info.InfoTrack
-}
+rg.visualization.VisualizationFunnelChart.__name__ = ["rg","visualization","VisualizationFunnelChart"];
+rg.visualization.VisualizationFunnelChart.__super__ = rg.visualization.VisualizationSvg;
+rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
+	info: null
+	,title: null
+	,chart: null
+	,init: function() {
+		var me = this;
+		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
+		this.chart = new rg.svg.chart.FunnelChart(panelChart);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
+		if(null != this.info.label.datapoint) this.chart.labelDataPointOver = this.info.label.datapointover;
+		if(null != this.info.label.arrow) this.chart.labelArrow = this.info.label.arrow;
+		if(null != this.info.click) this.chart.click = this.info.click;
+		this.chart.padding = this.info.padding;
+		this.chart.flatness = this.info.flatness;
+		var $e = (this.info.effect);
+		switch( $e[1] ) {
+		case 1:
+			var v = $e[2];
+			this.chart.displayGradient = true;
+			this.chart.gradientLightness = v;
+			break;
+		case 0:
+			this.chart.displayGradient = false;
+			break;
+		}
+		this.chart.arrowSize = this.info.arrowSize;
+		if(null != this.info.label.title) {
+			var panelContextTitle = this.layout.getContext("title");
+			if(null == panelContextTitle) return;
+			this.title = new rg.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+		}
+	}
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables);
+		var data1 = rg.util.DataPoints.filterByIndependents(rg.util.DataPoints.filterByDependents(data,this.dependentVariables),this.independentVariables);
+		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
+		if(null != this.title) {
+			if(null != this.info.label.title) {
+				this.title.setText(this.info.label.title(this.variables,data1));
+				this.layout.suggestSize("title",this.title.idealHeight());
+			} else this.layout.suggestSize("title",0);
+		}
+		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
+		this.chart.init();
+		this.chart.data(data1);
+	}
+	,destroy: function() {
+		this.chart.destroy();
+		if(null != this.title) this.title.destroy();
+		rg.visualization.VisualizationSvg.prototype.destroy.call(this);
+	}
+	,__class__: rg.visualization.VisualizationFunnelChart
+});
 thx.culture.Language = $hxClasses["thx.culture.Language"] = function() { }
 thx.culture.Language.__name__ = ["thx","culture","Language"];
 thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
@@ -6100,50 +4703,249 @@ thx.culture.Language.__super__ = thx.culture.Info;
 thx.culture.Language.prototype = $extend(thx.culture.Info.prototype,{
 	__class__: thx.culture.Language
 });
-rg.data.AxisOrdinalStats = $hxClasses["rg.data.AxisOrdinalStats"] = function(variable) {
-	rg.data.AxisOrdinal.call(this);
-	this.variable = variable;
+rg.info.InfoCartesianChart = $hxClasses["rg.info.InfoCartesianChart"] = function() {
+	this.animation = new rg.info.InfoAnimation();
+	this.label = new rg.info.InfoLabelAxis();
+	this.displayMinorTick = function(_) {
+		return true;
+	};
+	this.displayMajorTick = function(_) {
+		return true;
+	};
+	this.displayLabelTick = function(_) {
+		return true;
+	};
+	this.displayAnchorLineTick = function(_) {
+		return false;
+	};
+	this.displayMinorRule = function(_) {
+		return false;
+	};
+	this.displayMajorRule = function(_) {
+		return false;
+	};
+	this.displayAnchorLineRule = function(_) {
+		return false;
+	};
+	this.labelOrientation = function(_) {
+		return null;
+	};
+	this.labelAnchor = function(_) {
+		return null;
+	};
+	this.labelAngle = function(_) {
+		return null;
+	};
+	this.lengthTickMinor = 2;
+	this.lengthTickMajor = 5;
+	this.paddingTickMinor = 1;
+	this.paddingTickMajor = 1;
+	this.paddingLabel = 10;
 }
-rg.data.AxisOrdinalStats.__name__ = ["rg","data","AxisOrdinalStats"];
-rg.data.AxisOrdinalStats.__super__ = rg.data.AxisOrdinal;
-rg.data.AxisOrdinalStats.prototype = $extend(rg.data.AxisOrdinal.prototype,{
-	variable: null
-	,values: function() {
-		return this.variable.stats.values;
-	}
-	,__class__: rg.data.AxisOrdinalStats
+rg.info.InfoCartesianChart.__name__ = ["rg","info","InfoCartesianChart"];
+rg.info.InfoCartesianChart.filters = function() {
+	return [{ field : "animation", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "animation", value : rg.info.Info.feed(new rg.info.InfoAnimation(),v)}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelAxis(),v)}];
+	}},{ field : "displaytickmarks", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v},{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v},{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displaytickminor", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displaytickmajor", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displayticklabel", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displayanchorlinetick", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayAnchorLineTick", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displayrules", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v},{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displayruleminor", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displayrulemajor", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "displayanchorlinerule", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayAnchorLineRule", value : Std["is"](v,Bool)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "lengthtick", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "lengthTickMajor", value : v},{ field : "lengthTickMinor", value : v}];
+	}},{ field : "lengthtickminor", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "lengthTickMinor", value : v}];
+	}},{ field : "lengthtickmajor", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "lengthTickMajor", value : v}];
+	}},{ field : "paddingtick", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "paddingTickMajor", value : v},{ field : "paddingTickMinor", value : v}];
+	}},{ field : "paddingtickminor", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "paddingTickMinor", value : v}];
+	}},{ field : "paddingtickmajor", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "paddingTickMajor", value : v}];
+	}},{ field : "paddingticklabel", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "paddingLabel", value : v}];
+	}},{ field : "labelorientation", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "labelOrientation", value : Std["is"](v,String)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "labelanchor", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "labelAnchor", value : Std["is"](v,String)?function(_) {
+			return v;
+		}:v}];
+	}},{ field : "labelangle", validator : function(v) {
+		return Reflect.isFunction(v) || Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "labelAngle", value : Std["is"](v,Float)?function(_) {
+			return v;
+		}:v}];
+	}}];
+}
+rg.info.InfoCartesianChart.prototype = {
+	animation: null
+	,click: null
+	,label: null
+	,displayMinorTick: null
+	,displayMajorTick: null
+	,displayLabelTick: null
+	,displayAnchorLineTick: null
+	,displayMinorRule: null
+	,displayMajorRule: null
+	,displayAnchorLineRule: null
+	,labelOrientation: null
+	,labelAnchor: null
+	,labelAngle: null
+	,lengthTickMinor: null
+	,lengthTickMajor: null
+	,paddingTickMinor: null
+	,paddingTickMajor: null
+	,paddingLabel: null
+	,__class__: rg.info.InfoCartesianChart
+}
+rg.info.InfoStreamGraph = $hxClasses["rg.info.InfoStreamGraph"] = function() {
+	rg.info.InfoCartesianChart.call(this);
+	this.segment = new rg.info.InfoSegment();
+	this.interpolation = thx.svg.LineInterpolator.Cardinal();
+	this.effect = rg.svg.chart.StreamEffect.GradientVertical(1.25);
+}
+rg.info.InfoStreamGraph.__name__ = ["rg","info","InfoStreamGraph"];
+rg.info.InfoStreamGraph.filters = function() {
+	return [{ field : "interpolation", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
+	}},{ field : "effect", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "effect", value : rg.svg.chart.StreamEffects.parse(v)}];
+	}},{ field : "segmenton", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),{ on : v})}];
+	}},{ field : "segment", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),v)}];
+	}}].concat(rg.info.InfoCartesianChart.filters());
+}
+rg.info.InfoStreamGraph.__super__ = rg.info.InfoCartesianChart;
+rg.info.InfoStreamGraph.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
+	interpolation: null
+	,effect: null
+	,segment: null
+	,__class__: rg.info.InfoStreamGraph
 });
-rg.data.Tickmarks = $hxClasses["rg.data.Tickmarks"] = function() { }
-rg.data.Tickmarks.__name__ = ["rg","data","Tickmarks"];
-rg.data.Tickmarks.bound = function(tickmarks,max) {
-	if(null == max || tickmarks.length <= (2 > max?2:max)) return tickmarks;
-	var majors = Arrays.filter(tickmarks,function(d) {
-		return d.getMajor();
-	});
-	if(majors.length > max) return rg.data.Tickmarks.reduce(majors,max);
-	var result = rg.data.Tickmarks.reduce(Arrays.filter(tickmarks,function(d) {
-		return !d.getMajor();
-	}),max - majors.length).concat(majors);
-	result.sort(function(a,b) {
-		return Floats.compare(a.getDelta(),b.getDelta());
-	});
-	return result;
+rg.svg.chart.GradientEffects = $hxClasses["rg.svg.chart.GradientEffects"] = function() { }
+rg.svg.chart.GradientEffects.__name__ = ["rg","svg","chart","GradientEffects"];
+rg.svg.chart.GradientEffects.canParse = function(d) {
+	if(!Std["is"](d,String)) return false;
+	var s = d, parts = s.toLowerCase().split(":");
+	return (function($this) {
+		var $r;
+		switch(parts[0]) {
+		case "gradient":case "noeffect":
+			$r = true;
+			break;
+		default:
+			$r = false;
+		}
+		return $r;
+	}(this));
 }
-rg.data.Tickmarks.reduce = function(arr,max) {
-	if(max == 1) return [arr[0]];
-	if(max == 2) return [arr[arr.length - 1]];
-	var keep = arr.length / max, result = [], i = 0;
-	do result.push(arr[Math.round(keep * i++)]); while(max > result.length);
-	return result;
+rg.svg.chart.GradientEffects.parse = function(s) {
+	var parts = s.toLowerCase().split(":");
+	switch(parts.shift()) {
+	case "gradient":
+		var lightness = 0.75, parameters = parts.pop();
+		if(null != parameters) lightness = Std.parseFloat(parameters.split(",").shift());
+		return rg.svg.chart.GradientEffect.Gradient(lightness);
+	default:
+		return rg.svg.chart.GradientEffect.NoEffect;
+	}
 }
-rg.data.Tickmarks.string = function(tick) {
-	return Dynamics.string(tick.getValue()) + " (" + (tick.getMajor()?"Major":"minor") + ", " + Floats.format(tick.getDelta()) + ")";
-}
-rg.data.Tickmarks.forFloat = function(start,end,value,major) {
-	return new rg.data.Tickmark(value,major,(value - start) / (end - start));
-}
-rg.data.Tickmarks.prototype = {
-	__class__: rg.data.Tickmarks
+rg.svg.chart.GradientEffects.prototype = {
+	__class__: rg.svg.chart.GradientEffects
 }
 if(!chx.text) chx.text = {}
 chx.text.Sprintf = $hxClasses["chx.text.Sprintf"] = function() { }
@@ -6389,6 +5191,59 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
 }
+if(!rg.frame) rg.frame = {}
+rg.frame.Frame = $hxClasses["rg.frame.Frame"] = function() {
+	this.x = this.y = this.width = this.height = 0;
+}
+rg.frame.Frame.__name__ = ["rg","frame","Frame"];
+rg.frame.Frame.prototype = {
+	x: null
+	,y: null
+	,width: null
+	,height: null
+	,change: function() {
+	}
+	,setLayout: function(x,y,width,height) {
+		if(this.x == x && this.y == y && this.width == width && this.height == height) return;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.change();
+	}
+	,toString: function() {
+		return "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
+	}
+	,__class__: rg.frame.Frame
+}
+rg.frame.StackItem = $hxClasses["rg.frame.StackItem"] = function(disposition) {
+	rg.frame.Frame.call(this);
+	this.setDisposition(disposition);
+}
+rg.frame.StackItem.__name__ = ["rg","frame","StackItem"];
+rg.frame.StackItem.__super__ = rg.frame.Frame;
+rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
+	disposition: null
+	,parent: null
+	,setParent: function(v) {
+		if(null != this.parent) this.parent.removeChild(this);
+		return this.parent = v;
+	}
+	,setDisposition: function(v) {
+		this.disposition = v;
+		if(null != this.parent) this.parent.reflow();
+		return v;
+	}
+	,__class__: rg.frame.StackItem
+	,__properties__: {set_disposition:"setDisposition"}
+});
+rg.svg.chart.ColorScaleMode = $hxClasses["rg.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
+rg.svg.chart.ColorScaleMode.FromCssInterpolation = function(steps) { var $x = ["FromCssInterpolation",0,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.svg.chart.ColorScaleMode.FromCss = function(steps) { var $x = ["FromCss",1,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interpolation",2,colors]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.svg.chart.ColorScaleMode.Sequence = function(colors) { var $x = ["Sequence",3,colors]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.svg.chart.ColorScaleMode.Fixed = function(color) { var $x = ["Fixed",4,color]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.svg.chart.ColorScaleMode.Fun = function(f) { var $x = ["Fun",5,f]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.graph.GreedySwitchDecrosser = $hxClasses["rg.graph.GreedySwitchDecrosser"] = function() {
 }
 rg.graph.GreedySwitchDecrosser.__name__ = ["rg","graph","GreedySwitchDecrosser"];
@@ -6448,192 +5303,217 @@ rg.graph.GreedySwitchDecrosser.prototype = {
 	}
 	,__class__: rg.graph.GreedySwitchDecrosser
 }
-rg.view.svg.chart.BarChart = $hxClasses["rg.view.svg.chart.BarChart"] = function(panel) {
-	rg.view.svg.chart.CartesianChart.call(this,panel);
-	this.addClass("bar-chart");
-	this.defs = this.g.append("svg:defs");
-	this.chart = this.g.append("svg:g");
-	this.gradientLightness = 2;
-	this.displayGradient = true;
-	this.padding = 10;
-	this.paddingAxis = 4;
-	this.paddingDataPoint = 2;
-	this.horizontal = false;
+rg.visualization.VisualizationPieChart = $hxClasses["rg.visualization.VisualizationPieChart"] = function(layout) {
+	rg.visualization.VisualizationSvg.call(this,layout);
 }
-rg.view.svg.chart.BarChart.__name__ = ["rg","view","svg","chart","BarChart"];
-rg.view.svg.chart.BarChart.__super__ = rg.view.svg.chart.CartesianChart;
-rg.view.svg.chart.BarChart.prototype = $extend(rg.view.svg.chart.CartesianChart.prototype,{
-	stacked: null
-	,chart: null
-	,defs: null
-	,dps: null
-	,gradientLightness: null
-	,displayGradient: null
-	,padding: null
-	,paddingAxis: null
-	,paddingDataPoint: null
-	,horizontal: null
-	,setVariables: function(variables,variableIndependents,variableDependents,data) {
-		if(this.horizontal) {
-			this.xVariable = variableDependents[0];
-			this.yVariables = variableIndependents;
-		} else {
-			this.xVariable = variableIndependents[0];
-			this.yVariables = variableDependents;
+rg.visualization.VisualizationPieChart.__name__ = ["rg","visualization","VisualizationPieChart"];
+rg.visualization.VisualizationPieChart.__super__ = rg.visualization.VisualizationSvg;
+rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
+	chart: null
+	,title: null
+	,info: null
+	,init: function() {
+		var me = this;
+		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
+		this.chart = new rg.svg.chart.PieChart(panelChart);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		this.chart.innerRadius = this.info.innerradius;
+		this.chart.outerRadius = this.info.outerradius;
+		this.chart.overRadius = this.info.overradius;
+		this.chart.tooltipRadius = this.info.tooltipradius;
+		var $e = (this.info.effect);
+		switch( $e[1] ) {
+		case 1:
+			var v = $e[2];
+			this.chart.displayGradient = true;
+			this.chart.gradientLightness = v;
+			break;
+		case 0:
+			this.chart.displayGradient = false;
+			break;
 		}
-		if(this.stacked) {
-			var _g = 0;
-			while(_g < variableDependents.length) {
-				var v = variableDependents[_g];
-				++_g;
-				v.meta.max = Math.NEGATIVE_INFINITY;
-			}
-			var _g1 = 0, _g = data.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				var _g3 = 0, _g2 = data[i].length;
-				while(_g3 < _g2) {
-					var j = _g3++;
-					var v = variableDependents[j], t = 0.0;
-					var _g5 = 0, _g4 = data[i][j].length;
-					while(_g5 < _g4) {
-						var k = _g5++;
-						t += rg.util.DataPoints.valueAlt(data[i][j][k],v.type,0.0);
-					}
-					if(v.meta.max < t) v.meta.max = t;
-				}
-			}
-		}
-	}
-	,data: function(dps) {
-		if(this.horizontal) this.datah(dps); else this.datav(dps);
-	}
-	,datah: function(dps) {
-		var axisgs = new Hash(), span = (this.height - this.padding * (dps.length - 1)) / dps.length;
-		var getGroup = function(name,container) {
-			var gr = axisgs.get(name);
-			if(null == gr) {
-				gr = container.append("svg:g").attr("class").string(name);
-				axisgs.set(name,gr);
-			}
-			return gr;
-		};
-		var flatdata = Arrays.flatten(Arrays.flatten(dps));
-		var _g1 = 0, _g = dps.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var valuedps = dps[i], dist = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
-			var _g3 = 0, _g2 = valuedps.length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
-					};
-				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
-					return function(a2,a3,a4) {
-						return f(a1,a2,a3,a4);
-					};
-				})(this.onclick.$bind(this),stats);
-				var prev = 0.0;
-				var _g5 = 0, _g4 = axisdps.length;
-				while(_g5 < _g4) {
-					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f,a1) {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
-						};
-					})(click,dp));
-					bar.node()["__data__"] = dp;
-					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
-					if(this.stacked) prev = x + w;
-				}
-			}
-		}
-		this.ready.dispatch();
-	}
-	,datav: function(dps) {
-		var axisgs = new Hash(), span = (this.width - this.padding * (dps.length - 1)) / dps.length;
-		var getGroup = function(name,container) {
-			var gr = axisgs.get(name);
-			if(null == gr) {
-				gr = container.append("svg:g").attr("class").string(name);
-				axisgs.set(name,gr);
-			}
-			return gr;
-		};
-		var flatdata = Arrays.flatten(Arrays.flatten(dps));
-		var _g1 = 0, _g = dps.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var valuedps = dps[i], dist = (span - this.paddingAxis * (valuedps.length - 1)) / valuedps.length;
-			var _g3 = 0, _g2 = valuedps.length;
-			while(_g3 < _g2) {
-				var j = _g3++;
-				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
-					};
-				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
-					return function(a2,a3,a4) {
-						return f(a1,a2,a3,a4);
-					};
-				})(this.onclick.$bind(this),stats);
-				var prev = 0.0;
-				var _g5 = 0, _g4 = axisdps.length;
-				while(_g5 < _g4) {
-					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,a1) {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
-						};
-					})(click,dp));
-					bar.node()["__data__"] = dp;
-					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
-					if(this.stacked) prev = y + h;
-				}
-			}
-		}
-		this.ready.dispatch();
-	}
-	,onclick: function(stats,dp,_,i) {
-		this.click(dp,stats);
-	}
-	,onmouseover: function(stats,n,i) {
-		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
-		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(x + w / 2,y);
+		this.chart.labelDataPoint = this.info.label.datapoint;
+		this.chart.labelDataPointOver = this.info.label.datapointover;
+		this.chart.labelRadius = this.info.labelradius;
+		this.chart.labelOrientation = this.info.labelorientation;
+		this.chart.labelDontFlip = this.info.dontfliplabel;
+		this.chart.animated = this.info.animation.animated;
+		this.chart.animationDuration = this.info.animation.duration;
+		this.chart.animationEase = this.info.animation.ease;
+		this.chart.animationDelay = this.info.animation.delay;
+		if(null != this.info.click) this.chart.mouseClick = this.info.click;
+		if(null != this.info.label.title) {
+			var panelContextTitle = this.layout.getContext("title");
+			if(null == panelContextTitle) return;
+			this.title = new rg.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
 		}
 	}
-	,applyGradient: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
-		if(this.defs.select("#" + id).empty()) {
-			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
-			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
-			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
-			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables);
+		if(null != this.title) {
+			if(null != this.info.label.title) {
+				this.title.setText(this.info.label.title(this.variables,data));
+				this.layout.suggestSize("title",this.title.idealHeight());
+			} else this.layout.suggestSize("title",0);
 		}
-		gn.attr("style").string("fill:url(#" + id + ")");
+		if(null != this.info.sortDataPoint) data.sort(this.info.sortDataPoint);
+		this.chart.init();
+		this.chart.data(data);
 	}
-	,__class__: rg.view.svg.chart.BarChart
+	,destroy: function() {
+		this.chart.destroy();
+		if(null != this.title) this.title.destroy();
+		rg.visualization.VisualizationSvg.prototype.destroy.call(this);
+	}
+	,__class__: rg.visualization.VisualizationPieChart
 });
-rg.data.ScaleDistribution = $hxClasses["rg.data.ScaleDistribution"] = { __ename__ : ["rg","data","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
-rg.data.ScaleDistribution.ScaleFit = ["ScaleFit",0];
-rg.data.ScaleDistribution.ScaleFit.toString = $estr;
-rg.data.ScaleDistribution.ScaleFit.__enum__ = rg.data.ScaleDistribution;
-rg.data.ScaleDistribution.ScaleFill = ["ScaleFill",1];
-rg.data.ScaleDistribution.ScaleFill.toString = $estr;
-rg.data.ScaleDistribution.ScaleFill.__enum__ = rg.data.ScaleDistribution;
-rg.data.ScaleDistribution.ScaleBefore = ["ScaleBefore",2];
-rg.data.ScaleDistribution.ScaleBefore.toString = $estr;
-rg.data.ScaleDistribution.ScaleBefore.__enum__ = rg.data.ScaleDistribution;
-rg.data.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
-rg.data.ScaleDistribution.ScaleAfter.toString = $estr;
-rg.data.ScaleDistribution.ScaleAfter.__enum__ = rg.data.ScaleDistribution;
+rg.axis.IAxis = $hxClasses["rg.axis.IAxis"] = function() { }
+rg.axis.IAxis.__name__ = ["rg","axis","IAxis"];
+rg.axis.IAxis.prototype = {
+	scale: null
+	,ticks: null
+	,max: null
+	,min: null
+	,createStats: null
+	,__class__: rg.axis.IAxis
+}
+rg.axis.IAxisDiscrete = $hxClasses["rg.axis.IAxisDiscrete"] = function() { }
+rg.axis.IAxisDiscrete.__name__ = ["rg","axis","IAxisDiscrete"];
+rg.axis.IAxisDiscrete.__interfaces__ = [rg.axis.IAxis];
+rg.axis.IAxisDiscrete.prototype = {
+	scaleDistribution: null
+	,range: null
+	,__class__: rg.axis.IAxisDiscrete
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
+}
+rg.axis.IAxisOrdinal = $hxClasses["rg.axis.IAxisOrdinal"] = function() { }
+rg.axis.IAxisOrdinal.__name__ = ["rg","axis","IAxisOrdinal"];
+rg.axis.IAxisOrdinal.__interfaces__ = [rg.axis.IAxisDiscrete];
+rg.axis.IAxisOrdinal.prototype = {
+	first: null
+	,last: null
+	,allTicks: null
+	,values: null
+	,__class__: rg.axis.IAxisOrdinal
+}
+rg.axis.AxisOrdinal = $hxClasses["rg.axis.AxisOrdinal"] = function() {
+	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFit);
+}
+rg.axis.AxisOrdinal.__name__ = ["rg","axis","AxisOrdinal"];
+rg.axis.AxisOrdinal.__interfaces__ = [rg.axis.IAxisOrdinal];
+rg.axis.AxisOrdinal.prototype = {
+	scaleDistribution: null
+	,toTickmark: function(start,end,value) {
+		var r = this.range(start,end);
+		return new rg.axis.TickmarkOrdinal(r.indexOf(value),r,null,this.scaleDistribution);
+	}
+	,ticks: function(start,end,upperBound) {
+		if(0 == upperBound) return [];
+		var ticks = rg.axis.TickmarkOrdinal.fromArray(this.range(start,end),this.scaleDistribution);
+		return rg.axis.Tickmarks.bound(ticks,upperBound);
+	}
+	,range: function(start,end) {
+		var values = this.values(), s = values.indexOf(start), e = values.indexOf(end);
+		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the acceptable values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 41, className : "rg.axis.AxisOrdinal", methodName : "range"});
+		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the acceptable values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 43, className : "rg.axis.AxisOrdinal", methodName : "range"});
+		return values.slice(s,e + 1);
+	}
+	,scale: function(start,end,v) {
+		var values = this.values(), s = values.indexOf(start), e = values.indexOf(end), p = values.indexOf(v);
+		if(s < 0) throw new thx.error.Error("the start bound '{0}' is not part of the values {1}",[start,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 54, className : "rg.axis.AxisOrdinal", methodName : "scale"});
+		if(e < 0) throw new thx.error.Error("the end bound '{0}' is not part of the values {1}",[end,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 56, className : "rg.axis.AxisOrdinal", methodName : "scale"});
+		if(p < 0) throw new thx.error.Error("the value '{0}' is not part of the values {1}",[v,values],null,{ fileName : "AxisOrdinal.hx", lineNumber : 58, className : "rg.axis.AxisOrdinal", methodName : "scale"});
+		return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,p - s,e - s + 1);
+	}
+	,first: function() {
+		return this.values()[0];
+	}
+	,last: function() {
+		return Arrays.last(this.values());
+	}
+	,values: function() {
+		return (function($this) {
+			var $r;
+			throw new thx.error.AbstractMethod({ fileName : "AxisOrdinal.hx", lineNumber : 64, className : "rg.axis.AxisOrdinal", methodName : "values"});
+			return $r;
+		}(this));
+	}
+	,allTicks: function() {
+		var me = this;
+		var f = this.first(), l = this.last();
+		return this.range(f,l).map(function(d,i) {
+			return me.toTickmark(f,l,d);
+		});
+	}
+	,setScaleDistribution: function(v) {
+		return this.scaleDistribution = v;
+	}
+	,min: function(stats,meta) {
+		return this.values()[0];
+	}
+	,max: function(stats,meta) {
+		return Arrays.last(this.values());
+	}
+	,createStats: function(type) {
+		return new rg.axis.Stats(type);
+	}
+	,__class__: rg.axis.AxisOrdinal
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
+}
+rg.axis.AxisOrdinalFixedValues = $hxClasses["rg.axis.AxisOrdinalFixedValues"] = function(arr) {
+	rg.axis.AxisOrdinal.call(this);
+	this._values = arr;
+}
+rg.axis.AxisOrdinalFixedValues.__name__ = ["rg","axis","AxisOrdinalFixedValues"];
+rg.axis.AxisOrdinalFixedValues.__super__ = rg.axis.AxisOrdinal;
+rg.axis.AxisOrdinalFixedValues.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
+	_values: null
+	,values: function() {
+		return this._values;
+	}
+	,__class__: rg.axis.AxisOrdinalFixedValues
+});
+rg.axis.AxisGroupByTime = $hxClasses["rg.axis.AxisGroupByTime"] = function(groupby) {
+	rg.axis.AxisOrdinalFixedValues.call(this,rg.axis.AxisGroupByTime.valuesByGroup(groupby));
+	this.groupBy = groupby;
+}
+rg.axis.AxisGroupByTime.__name__ = ["rg","axis","AxisGroupByTime"];
+rg.axis.AxisGroupByTime.valuesByGroup = function(groupby) {
+	return Ints.range(rg.axis.AxisGroupByTime.defaultMin(groupby),rg.axis.AxisGroupByTime.defaultMax(groupby) + 1);
+}
+rg.axis.AxisGroupByTime.defaultMin = function(periodicity) {
+	switch(periodicity) {
+	case "minute":case "hour":case "week":case "month":
+		return 0;
+	case "day":
+		return 1;
+	default:
+		throw new thx.error.Error("invalid periodicity '{0}' for groupBy min",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 34, className : "rg.axis.AxisGroupByTime", methodName : "defaultMin"});
+	}
+}
+rg.axis.AxisGroupByTime.defaultMax = function(periodicity) {
+	switch(periodicity) {
+	case "minute":
+		return 59;
+	case "hour":
+		return 23;
+	case "day":
+		return 31;
+	case "week":
+		return 6;
+	case "month":
+		return 11;
+	default:
+		throw new thx.error.Error("invalid periodicity '{0}' for groupBy max",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 48, className : "rg.axis.AxisGroupByTime", methodName : "defaultMax"});
+	}
+}
+rg.axis.AxisGroupByTime.__super__ = rg.axis.AxisOrdinalFixedValues;
+rg.axis.AxisGroupByTime.prototype = $extend(rg.axis.AxisOrdinalFixedValues.prototype,{
+	groupBy: null
+	,__class__: rg.axis.AxisGroupByTime
+});
 chx.lang.NullPointerException = $hxClasses["chx.lang.NullPointerException"] = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 }
@@ -6642,13 +5522,6 @@ chx.lang.NullPointerException.__super__ = chx.lang.Exception;
 chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.NullPointerException
 });
-rg.view.frame.Orientation = $hxClasses["rg.view.frame.Orientation"] = { __ename__ : ["rg","view","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
-rg.view.frame.Orientation.Vertical = ["Vertical",0];
-rg.view.frame.Orientation.Vertical.toString = $estr;
-rg.view.frame.Orientation.Vertical.__enum__ = rg.view.frame.Orientation;
-rg.view.frame.Orientation.Horizontal = ["Horizontal",1];
-rg.view.frame.Orientation.Horizontal.toString = $estr;
-rg.view.frame.Orientation.Horizontal.__enum__ = rg.view.frame.Orientation;
 rg.graph.GreedyCyclePartitioner = $hxClasses["rg.graph.GreedyCyclePartitioner"] = function() {
 }
 rg.graph.GreedyCyclePartitioner.__name__ = ["rg","graph","GreedyCyclePartitioner"];
@@ -6714,6 +5587,251 @@ rg.graph.GreedyCyclePartitioner.prototype = {
 	}
 	,__class__: rg.graph.GreedyCyclePartitioner
 }
+if(!rg.svg.widget) rg.svg.widget = {}
+rg.svg.widget.Label = $hxClasses["rg.svg.widget.Label"] = function(container,dontflip,shadow,outline) {
+	if(dontflip == null) dontflip = true;
+	this.shadow = shadow;
+	this.outline = outline;
+	this.g = container.append("svg:g").attr("class").string("label");
+	if(shadow) {
+		this.gshadow = this.g.append("svg:g").attr("transform").string("translate(0,0)");
+		this.gshadowrot = this.gshadow.append("svg:g");
+		this.tshadow = this.gshadowrot.append("svg:text").attr("class").string("shadow" + (outline?"":" nooutline"));
+	}
+	this.gtext = this.g.append("svg:g");
+	if(outline) this.toutline = this.gtext.append("svg:text").attr("class").string("outline" + (shadow?"":" noshadow"));
+	var cls = Arrays.addIf(Arrays.addIf(["text"],!outline,"nooutline"),!shadow,"noshadow");
+	this.ttext = this.gtext.append("svg:text").attr("class").string(cls.join(" "));
+	this.dontFlip = dontflip;
+	if(outline) this.setShadowOffset(1,1.25); else this.setShadowOffset(0.5,0.5);
+	this.x = 0;
+	this.y = 0;
+	this.angle = 0;
+	this.setOrientation(rg.svg.widget.LabelOrientation.FixedAngle(0));
+	this.setAnchor(rg.svg.widget.GridAnchor.Center);
+}
+rg.svg.widget.Label.__name__ = ["rg","svg","widget","Label"];
+rg.svg.widget.Label.prototype = {
+	text: null
+	,orientation: null
+	,anchor: null
+	,x: null
+	,y: null
+	,angle: null
+	,dontFlip: null
+	,shadowOffsetX: null
+	,shadowOffsetY: null
+	,shadow: null
+	,outline: null
+	,g: null
+	,gshadow: null
+	,gtext: null
+	,gshadowrot: null
+	,ttext: null
+	,toutline: null
+	,tshadow: null
+	,addClass: function(name) {
+		this.g.classed().add(name);
+	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
+	}
+	,getSize: function() {
+		try {
+			return this.g.node().getBBox();
+		} catch( e ) {
+			return { width : 0.0, height : 0.0};
+		}
+	}
+	,place: function(x,y,angle) {
+		this.x = x;
+		this.y = y;
+		this.angle = angle % 360;
+		if(this.angle < 0) this.angle += 360;
+		this.g.attr("transform").string("translate(" + x + "," + y + ")");
+		var $e = (this.orientation);
+		switch( $e[1] ) {
+		case 0:
+			var a = $e[2];
+			this.gtext.attr("transform").string("rotate(" + a + ")");
+			break;
+		case 1:
+			if(this.dontFlip && this.angle > 90 && this.angle < 270) angle += 180;
+			this.gtext.attr("transform").string("rotate(" + angle + ")");
+			break;
+		case 2:
+			if(this.dontFlip && this.angle > 180) angle -= 180;
+			this.gtext.attr("transform").string("rotate(" + (-90 + angle) + ")");
+			break;
+		}
+		if(this.shadow) this.gshadowrot.attr("transform").string(this.gtext.attr("transform").get());
+		this.reanchor();
+	}
+	,setShadowOffset: function(x,y) {
+		this.shadowOffsetX = x;
+		this.shadowOffsetY = y;
+		if(this.shadow) this.gshadow.attr("transform").string("translate(" + this.shadowOffsetX + "," + this.shadowOffsetY + ")");
+	}
+	,setText: function(v) {
+		this.text = v;
+		if(this.outline) this.toutline.text().string(v);
+		this.ttext.text().string(v);
+		if(this.shadow) this.tshadow.text().string(v);
+		this.reanchor();
+		return v;
+	}
+	,setOrientation: function(v) {
+		this.orientation = v;
+		this.place(this.x,this.y,this.angle);
+		return v;
+	}
+	,setAnchor: function(v) {
+		this.anchor = v;
+		this.reanchor();
+		return v;
+	}
+	,getBB: function() {
+		var n = this.ttext.node(), h = this.ttext.style("font-size").getFloat();
+		if(null == h || 0 >= h) try {
+			h = n.getExtentOfChar("A").height;
+		} catch( e ) {
+			h = thx.js.Dom.selectNode(n).style("height").getFloat();
+		}
+		var w;
+		try {
+			w = n.getComputedTextLength();
+		} catch( e ) {
+			w = thx.js.Dom.selectNode(n).style("width").getFloat();
+		}
+		return { width : w, height : h};
+	}
+	,reanchor: function() {
+		if(null == this.anchor) return;
+		var bb = this.getBB(), x, y;
+		var a = this.anchor;
+		if(this.dontFlip) {
+			switch( (this.orientation)[1] ) {
+			case 1:
+				if(this.angle > 90 && this.angle < 270) a = (function($this) {
+					var $r;
+					switch( (a)[1] ) {
+					case 0:
+						$r = rg.svg.widget.GridAnchor.BottomRight;
+						break;
+					case 1:
+						$r = rg.svg.widget.GridAnchor.Bottom;
+						break;
+					case 2:
+						$r = rg.svg.widget.GridAnchor.BottomLeft;
+						break;
+					case 3:
+						$r = rg.svg.widget.GridAnchor.Right;
+						break;
+					case 4:
+						$r = rg.svg.widget.GridAnchor.Center;
+						break;
+					case 5:
+						$r = rg.svg.widget.GridAnchor.Left;
+						break;
+					case 6:
+						$r = rg.svg.widget.GridAnchor.TopRight;
+						break;
+					case 7:
+						$r = rg.svg.widget.GridAnchor.Top;
+						break;
+					case 8:
+						$r = rg.svg.widget.GridAnchor.TopLeft;
+						break;
+					}
+					return $r;
+				}(this));
+				break;
+			case 2:
+				if(this.angle > 180) a = (function($this) {
+					var $r;
+					switch( (a)[1] ) {
+					case 0:
+						$r = rg.svg.widget.GridAnchor.BottomRight;
+						break;
+					case 1:
+						$r = rg.svg.widget.GridAnchor.Bottom;
+						break;
+					case 2:
+						$r = rg.svg.widget.GridAnchor.BottomLeft;
+						break;
+					case 3:
+						$r = rg.svg.widget.GridAnchor.Right;
+						break;
+					case 4:
+						$r = rg.svg.widget.GridAnchor.Center;
+						break;
+					case 5:
+						$r = rg.svg.widget.GridAnchor.Left;
+						break;
+					case 6:
+						$r = rg.svg.widget.GridAnchor.TopRight;
+						break;
+					case 7:
+						$r = rg.svg.widget.GridAnchor.Top;
+						break;
+					case 8:
+						$r = rg.svg.widget.GridAnchor.TopLeft;
+						break;
+					}
+					return $r;
+				}(this));
+				break;
+			default:
+			}
+		}
+		switch( (a)[1] ) {
+		case 0:
+			x = 0;
+			y = bb.height;
+			break;
+		case 1:
+			x = -bb.width / 2;
+			y = bb.height;
+			break;
+		case 2:
+			x = -bb.width;
+			y = bb.height;
+			break;
+		case 3:
+			x = 0;
+			y = bb.height / 2;
+			break;
+		case 4:
+			x = -bb.width / 2;
+			y = bb.height / 2;
+			break;
+		case 5:
+			x = -bb.width;
+			y = bb.height / 2;
+			break;
+		case 6:
+			x = 0;
+			y = 0;
+			break;
+		case 7:
+			x = -bb.width / 2;
+			y = 0;
+			break;
+		case 8:
+			x = -bb.width;
+			y = 0;
+			break;
+		}
+		if(this.outline) this.toutline.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+		this.ttext.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+		if(this.shadow) this.tshadow.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+	}
+	,destroy: function() {
+		this.g.remove();
+	}
+	,__class__: rg.svg.widget.Label
+	,__properties__: {set_anchor:"setAnchor",set_orientation:"setOrientation",set_text:"setText"}
+}
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	this.months = months;
@@ -6760,71 +5878,6 @@ thx.culture.core.DateTimeInfo.prototype = {
 	,patternTime: null
 	,patternTimeShort: null
 	,__class__: thx.culture.core.DateTimeInfo
-}
-rg.data.AxisTime = $hxClasses["rg.data.AxisTime"] = function(periodicity) {
-	this.periodicity = periodicity;
-	this.setScaleDistribution(rg.data.ScaleDistribution.ScaleFill);
-}
-rg.data.AxisTime.__name__ = ["rg","data","AxisTime"];
-rg.data.AxisTime.__interfaces__ = [rg.data.IAxisDiscrete];
-rg.data.AxisTime.prototype = {
-	periodicity: null
-	,scaleDistribution: null
-	,isMajor: function(units,value) {
-		switch(this.periodicity) {
-		case "day":
-			if(units <= 31) return true;
-			if(units < 121) {
-				var d = Date.fromTime(value).getDate();
-				return rg.util.Periodicity.firstInSeries("month",value) || rg.util.Periodicity.firstInSeries("week",value);
-			}
-			return rg.util.Periodicity.firstInSeries("month",value);
-		case "week":
-			if(units < 31) return true; else return Date.fromTime(value).getDate() <= 7;
-			break;
-		default:
-			var series = Reflect.field(rg.data.AxisTime.snapping,this.periodicity), unit = rg.util.Periodicity.units(value,this.periodicity);
-			if(null == series) return true;
-			var _g = 0;
-			while(_g < series.length) {
-				var item = series[_g];
-				++_g;
-				if(units > item.to) continue;
-				return 0 == unit % item.s;
-			}
-			var top = Reflect.field(rg.data.AxisTime.snapping,this.periodicity + "top");
-			if(null == top) top = 1;
-			return 0 == unit % top;
-		}
-	}
-	,ticks: function(start,end,upperBound) {
-		var me = this;
-		var span = end - start, units = rg.util.Periodicity.unitsBetween(start,end,this.periodicity), values = this.range(start,end), range = values.map(function(value,i) {
-			return new rg.data.TickmarkTime(value,values,me.isMajor(units,value),me.periodicity,me.scaleDistribution);
-		});
-		return rg.data.Tickmarks.bound(range,upperBound);
-	}
-	,range: function(start,end) {
-		return rg.util.Periodicity.range(start,end,this.periodicity);
-	}
-	,scale: function(start,end,v) {
-		var values = this.range(start,end);
-		return rg.data.ScaleDistributions.distribute(this.scaleDistribution,values.indexOf(v),values.length);
-	}
-	,setScaleDistribution: function(v) {
-		return this.scaleDistribution = v;
-	}
-	,min: function(stats,meta) {
-		return stats.min;
-	}
-	,max: function(stats,meta) {
-		return stats.max;
-	}
-	,createStats: function(type) {
-		return new rg.data.StatsNumeric(type);
-	}
-	,__class__: rg.data.AxisTime
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 thx.js.Timer = $hxClasses["thx.js.Timer"] = function() { }
 thx.js.Timer.__name__ = ["thx","js","Timer"];
@@ -6888,148 +5941,6 @@ thx.js.Timer._flush = function() {
 thx.js.Timer.prototype = {
 	__class__: thx.js.Timer
 }
-if(!rg.view.svg.layer) rg.view.svg.layer = {}
-rg.view.svg.layer.RulesOrtho = $hxClasses["rg.view.svg.layer.RulesOrtho"] = function(panel,orientation) {
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.orientation = orientation;
-	this.displayMinor = true;
-	this.displayMajor = true;
-	this.displayAnchorLine = true;
-	this.g.classed().add("tickmarks");
-}
-rg.view.svg.layer.RulesOrtho.__name__ = ["rg","view","svg","layer","RulesOrtho"];
-rg.view.svg.layer.RulesOrtho.__super__ = rg.view.svg.panel.Layer;
-rg.view.svg.layer.RulesOrtho.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
-	orientation: null
-	,displayMinor: null
-	,displayMajor: null
-	,displayAnchorLine: null
-	,translate: null
-	,x1: null
-	,y1: null
-	,x2: null
-	,y2: null
-	,x: null
-	,y: null
-	,axis: null
-	,min: null
-	,max: null
-	,resize: function() {
-		if(null == this.axis) return;
-		if(this.displayAnchorLine) this.updateAnchorLine();
-		this.redraw();
-	}
-	,update: function(axis,min,max) {
-		this.axis = axis;
-		this.min = min;
-		this.max = max;
-		this.redraw();
-	}
-	,updateAnchorLine: function() {
-		var line = this.g.select("line.anchor-line");
-		switch( (this.orientation)[1] ) {
-		case 1:
-			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](0).attr("y2")["float"](this.height);
-			break;
-		case 0:
-			line.attr("x1")["float"](0).attr("y1")["float"](this.height).attr("x2")["float"](this.width).attr("y2")["float"](this.height);
-			break;
-		}
-	}
-	,maxTicks: function() {
-		var size = (function($this) {
-			var $r;
-			switch( ($this.orientation)[1] ) {
-			case 1:
-				$r = $this.width;
-				break;
-			case 0:
-				$r = $this.height;
-				break;
-			}
-			return $r;
-		}(this));
-		return Math.round(size / 2.5);
-	}
-	,id: function(d,i) {
-		return "" + d.getValue();
-	}
-	,redraw: function() {
-		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
-		var rule = this.g.selectAll("g.rule").data(data,this.id.$bind(this));
-		var enter = rule.enter().append("svg:g").attr("class").string("rule").attr("transform").stringf(this.translate);
-		if(this.displayMinor) enter.filter(function(d,i) {
-			return !d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
-		if(this.displayMajor) enter.filter(function(d,i) {
-			return d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
-		rule.update().attr("transform").stringf(this.translate);
-		rule.exit().remove();
-	}
-	,initf: function() {
-		switch( (this.orientation)[1] ) {
-		case 1:
-			this.translate = this.translateHorizontal.$bind(this);
-			this.x1 = this.x1Horizontal.$bind(this);
-			this.y1 = this.y1Horizontal.$bind(this);
-			this.x2 = this.x2Horizontal.$bind(this);
-			this.y2 = this.y2Horizontal.$bind(this);
-			break;
-		case 0:
-			this.translate = this.translateVertical.$bind(this);
-			this.x1 = this.x1Vertical.$bind(this);
-			this.y1 = this.y1Vertical.$bind(this);
-			this.x2 = this.x2Vertical.$bind(this);
-			this.y2 = this.y2Vertical.$bind(this);
-			break;
-		}
-	}
-	,init: function() {
-		this.initf();
-		if(this.displayAnchorLine) {
-			this.g.append("svg:line").attr("class").string("anchor-line");
-			this.updateAnchorLine();
-		}
-	}
-	,t: function(x,y) {
-		return "translate(" + x + "," + y + ")";
-	}
-	,translateHorizontal: function(d,i) {
-		return "translate(" + 0 + "," + (this.height - d.getDelta() * this.height) + ")";
-	}
-	,translateVertical: function(d,i) {
-		return "translate(" + d.getDelta() * this.width + "," + 0 + ")";
-	}
-	,x1Horizontal: function(d,i) {
-		return 0;
-	}
-	,x1Vertical: function(d,i) {
-		return 0;
-	}
-	,y1Horizontal: function(d,i) {
-		return 0;
-	}
-	,y1Vertical: function(d,i) {
-		return 0;
-	}
-	,x2Horizontal: function(d,i) {
-		return this.width;
-	}
-	,x2Vertical: function(d,i) {
-		return 0;
-	}
-	,y2Horizontal: function(d,i) {
-		return 0;
-	}
-	,y2Vertical: function(d,i) {
-		return this.height;
-	}
-	,tickClass: function(d,i) {
-		return d.getMajor()?"major":null;
-	}
-	,__class__: rg.view.svg.layer.RulesOrtho
-});
 var hxevents = hxevents || {}
 hxevents.Dispatcher = $hxClasses["hxevents.Dispatcher"] = function() {
 	this.handlers = new Array();
@@ -7500,40 +6411,50 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 rg.util.Periodicity.prototype = {
 	__class__: rg.util.Periodicity
 }
-rg.view.svg.panel.Panels = $hxClasses["rg.view.svg.panel.Panels"] = function() { }
-rg.view.svg.panel.Panels.__name__ = ["rg","view","svg","panel","Panels"];
-rg.view.svg.panel.Panels.rootSize = function(panel) {
-	var p = panel.parent;
-	while(p != null) {
-		var t = p;
-		p = panel.parent;
-		panel = t;
+rg.visualization.VisualizationStreamGraph = $hxClasses["rg.visualization.VisualizationStreamGraph"] = function(layout) {
+	rg.visualization.VisualizationCartesian.call(this,layout);
+}
+rg.visualization.VisualizationStreamGraph.__name__ = ["rg","visualization","VisualizationStreamGraph"];
+rg.visualization.VisualizationStreamGraph.__super__ = rg.visualization.VisualizationCartesian;
+rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
+	infoStream: null
+	,initAxes: function() {
+		this.xvariable = this.independentVariables[0];
+		this.yvariables = this.dependentVariables.map(function(d,_) {
+			return d;
+		});
 	}
-	return { width : panel.frame.width, height : panel.frame.height};
-}
-rg.view.svg.panel.Panels.boundingBox = function(panel,ancestor) {
-	var p = panel, x = 0, y = 0;
-	while(ancestor != p) {
-		x += p.frame.x;
-		y += p.frame.y;
-		p = p.parent;
+	,initChart: function() {
+		var me = this;
+		var chart = new rg.svg.chart.StreamGraph(this.layout.getPanel(this.layout.mainPanelName));
+		chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		chart.interpolator = this.infoStream.interpolation;
+		var $e = (this.infoStream.effect);
+		switch( $e[1] ) {
+		case 0:
+			chart.gradientStyle = 0;
+			break;
+		case 2:
+			var lightness = $e[2];
+			chart.gradientStyle = 1;
+			chart.gradientLightness = lightness;
+			break;
+		case 1:
+			var lightness = $e[2];
+			chart.gradientStyle = 2;
+			chart.gradientLightness = lightness;
+			break;
+		}
+		this.chart = chart;
 	}
-	return { x : x, y : y, width : panel.frame.width, height : panel.frame.height};
-}
-rg.view.svg.panel.Panels.ancestorBoundingBox = function(panel,ancestor) {
-	var p = panel, x = 0, y = 0, w = 0, h = 0;
-	while(ancestor != p) {
-		x += p.frame.x;
-		y += p.frame.y;
-		w = p.frame.width;
-		h = p.frame.height;
-		p = p.parent;
+	,transformData: function(dps) {
+		var segmenter = new rg.data.Segmenter(this.infoStream.segment.on,this.infoStream.segment.transform,this.infoStream.segment.scale);
+		return segmenter.segment(dps);
 	}
-	return { x : -x, y : -y, width : w, height : h};
-}
-rg.view.svg.panel.Panels.prototype = {
-	__class__: rg.view.svg.panel.Panels
-}
+	,__class__: rg.visualization.VisualizationStreamGraph
+});
 if(!thx.languages) thx.languages = {}
 thx.languages.En = $hxClasses["thx.languages.En"] = function() {
 	this.name = "en";
@@ -7837,56 +6758,6 @@ thx.date.DateParser.plusPm = function(s) {
 thx.date.DateParser.prototype = {
 	__class__: thx.date.DateParser
 }
-rg.controller.info.InfoGeo = $hxClasses["rg.controller.info.InfoGeo"] = function() {
-	this.label = new rg.controller.info.InfoLabel();
-	this.map = [rg.controller.info.Info.feed(new rg.controller.info.InfoMap(),{ template : "world"})];
-}
-rg.controller.info.InfoGeo.__name__ = ["rg","controller","info","InfoGeo"];
-rg.controller.info.InfoGeo.filters = function() {
-	return [{ field : "map", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v) || Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "map", value : (Std["is"](v,Array)?v:[v]).map(function(d,i) {
-			return rg.controller.info.Info.feed(new rg.controller.info.InfoMap(),d);
-		})}];
-	}}];
-}
-rg.controller.info.InfoGeo.prototype = {
-	map: null
-	,label: null
-	,__class__: rg.controller.info.InfoGeo
-}
-rg.view.svg.chart.GradientEffects = $hxClasses["rg.view.svg.chart.GradientEffects"] = function() { }
-rg.view.svg.chart.GradientEffects.__name__ = ["rg","view","svg","chart","GradientEffects"];
-rg.view.svg.chart.GradientEffects.canParse = function(d) {
-	if(!Std["is"](d,String)) return false;
-	var s = d, parts = s.toLowerCase().split(":");
-	return (function($this) {
-		var $r;
-		switch(parts[0]) {
-		case "gradient":case "noeffect":
-			$r = true;
-			break;
-		default:
-			$r = false;
-		}
-		return $r;
-	}(this));
-}
-rg.view.svg.chart.GradientEffects.parse = function(s) {
-	var parts = s.toLowerCase().split(":");
-	switch(parts.shift()) {
-	case "gradient":
-		var lightness = 0.75, parameters = parts.pop();
-		if(null != parameters) lightness = Std.parseFloat(parameters.split(",").shift());
-		return rg.view.svg.chart.GradientEffect.Gradient(lightness);
-	default:
-		return rg.view.svg.chart.GradientEffect.NoEffect;
-	}
-}
-rg.view.svg.chart.GradientEffects.prototype = {
-	__class__: rg.view.svg.chart.GradientEffects
-}
 var haxe = haxe || {}
 haxe.Int32 = $hxClasses["haxe.Int32"] = function() { }
 haxe.Int32.__name__ = ["haxe","Int32"];
@@ -7961,6 +6832,38 @@ haxe.Int32.ucompare = function(a,b) {
 haxe.Int32.prototype = {
 	__class__: haxe.Int32
 }
+rg.visualization.VisualizationHeatGrid = $hxClasses["rg.visualization.VisualizationHeatGrid"] = function(layout) {
+	rg.visualization.VisualizationCartesian.call(this,layout);
+}
+rg.visualization.VisualizationHeatGrid.__name__ = ["rg","visualization","VisualizationHeatGrid"];
+rg.visualization.VisualizationHeatGrid.__super__ = rg.visualization.VisualizationCartesian;
+rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
+	infoHeatGrid: null
+	,initAxes: function() {
+		this.xvariable = this.independentVariables[0];
+		this.yvariables = [this.independentVariables[1]];
+	}
+	,initChart: function() {
+		var me = this;
+		var chart = new rg.svg.chart.HeatGrid(this.layout.getPanel(this.layout.mainPanelName));
+		chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		chart.useContour = this.infoHeatGrid.contour;
+		chart.setColorMode(this.infoHeatGrid.colorScaleMode);
+		this.chart = chart;
+	}
+	,transformData: function(dps) {
+		return dps;
+	}
+	,setTickmarksDefaults: function(tickmarks,i,type,pname) {
+		if(i != 0) return;
+		tickmarks.labelAnchor = rg.svg.widget.GridAnchor.Left;
+		tickmarks.labelAngle = 180;
+	}
+	,__class__: rg.visualization.VisualizationHeatGrid
+});
+if(!rg.data) rg.data = {}
 rg.data.Segmenter = $hxClasses["rg.data.Segmenter"] = function(on,transform,scale) {
 	this.on = on;
 	this.transform = transform;
@@ -8038,29 +6941,71 @@ rg.util.Jsonp.post_api = function(path,content,actions,query,headers) {
 rg.util.Jsonp.prototype = {
 	__class__: rg.util.Jsonp
 }
-if(!rg.view.svg.util) rg.view.svg.util = {}
-rg.view.svg.util.SymbolCache = $hxClasses["rg.view.svg.util.SymbolCache"] = function() {
-	this.c = new Hash();
-	this.r = 0;
+if(!rg.html) rg.html = {}
+if(!rg.html.widget) rg.html.widget = {}
+rg.html.widget.DownloaderMenu = $hxClasses["rg.html.widget.DownloaderMenu"] = function(handler,position,formats,container) {
+	this.handler = handler;
+	this.formats = null == formats?rg.html.widget.DownloaderMenu.DEFAULT_FORMATS:formats;
+	this.title = rg.html.widget.DownloaderMenu.DEFAULT_TITLE;
+	this.build(position,container);
 }
-rg.view.svg.util.SymbolCache.__name__ = ["rg","view","svg","util","SymbolCache"];
-rg.view.svg.util.SymbolCache.cache = null;
-rg.view.svg.util.SymbolCache.prototype = {
-	c: null
-	,r: null
-	,get: function(type,size) {
-		if(size == null) size = 100;
-		var k = type + ":" + size, s = this.c.get(k);
-		if(null == s) {
-			s = (Reflect.field(thx.svg.Symbol,type))(size);
-			this.c.set(k,s);
+rg.html.widget.DownloaderMenu.__name__ = ["rg","html","widget","DownloaderMenu"];
+rg.html.widget.DownloaderMenu.prototype = {
+	handler: null
+	,formats: null
+	,title: null
+	,backgroundColor: null
+	,menu: null
+	,build: function(position,container) {
+		this.createMenu(container);
+		var el = this.menu.node();
+		var $e = (position);
+		switch( $e[1] ) {
+		case 6:
+			container.node().parentNode.insertBefore(el,container.node().nextSibling);
+			break;
+		case 5:
+			container.node().parentNode.insertBefore(el,container.node());
+			break;
+		case 3:
+			this.menu.classed().add("bottom").classed().add("left");
+			break;
+		case 4:
+			this.menu.classed().add("bottom").classed().add("right");
+			break;
+		case 0:
+			var selector = $e[2];
+			thx.js.Dom.select(selector).node().appendChild(el);
+			break;
+		case 1:
+			this.menu.classed().add("top").classed().add("left");
+			break;
+		case 2:
+			this.menu.classed().add("top").classed().add("right");
+			break;
 		}
-		return s;
 	}
-	,stats: function() {
-		return { cachedSymbols : Iterators.array(this.c.iterator()).length};
+	,createMenu: function(container) {
+		this.menu = container.append("div").attr("class").string("rg menu");
+		var options = this.menu.append("div").attr("class").string("options");
+		var title = options.append("div").attr("class").string("title").html().string(this.title);
+		var list = options.append("ul").selectAll("li").data(this.formats);
+		list.enter().append("li").on("click.download",this.click.$bind(this)).html().stringf(function(d,i) {
+			return d;
+		});
 	}
-	,__class__: rg.view.svg.util.SymbolCache
+	,click: function(format,_) {
+		var me = this;
+		this.menu.classed().add("downloading");
+		this.handler(format,this.backgroundColor,function(_1) {
+			me.menu.classed().remove("downloading");
+			return true;
+		},function(e) {
+			me.menu.classed().remove("downloading");
+			js.Lib.alert("ERROR: " + e);
+		});
+	}
+	,__class__: rg.html.widget.DownloaderMenu
 }
 if(!thx.translation) thx.translation = {}
 thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
@@ -8071,6 +7016,24 @@ thx.translation.ITranslation.prototype = {
 	,__: null
 	,__class__: thx.translation.ITranslation
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
+}
+rg.info.InfoVisualizationType = $hxClasses["rg.info.InfoVisualizationType"] = function() {
+	this.replace = true;
+}
+rg.info.InfoVisualizationType.__name__ = ["rg","info","InfoVisualizationType"];
+rg.info.InfoVisualizationType.filters = function() {
+	return [{ field : "visualization", validator : function(v) {
+		return Arrays.exists(rg.visualization.Visualizations.visualizations,v.toLowerCase());
+	}, filter : function(v) {
+		return [{ value : v.toLowerCase(), field : "type"}];
+	}},{ field : "replace", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filtern : null}];
+}
+rg.info.InfoVisualizationType.prototype = {
+	replace: null
+	,type: null
+	,__class__: rg.info.InfoVisualizationType
 }
 math.prng.IPrng = $hxClasses["math.prng.IPrng"] = function() { }
 math.prng.IPrng.__name__ = ["math","prng","IPrng"];
@@ -8591,110 +7554,17 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 	}
 	,__class__: rg.graph.GraphEdges
 });
-rg.controller.info.InfoSankey = $hxClasses["rg.controller.info.InfoSankey"] = function() {
-	this.label = new rg.controller.info.InfoLabelSankey();
-	this.idproperty = "id";
-	this.weightproperty = "count";
-	this.parentsproperty = "parents";
-}
-rg.controller.info.InfoSankey.__name__ = ["rg","controller","info","InfoSankey"];
-rg.controller.info.InfoSankey.filters = function() {
-	return [{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelSankey(),v)}];
-	}},{ field : "layerwidth", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "layerWidth", value : v}];
-	}},{ field : "nodespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "nodeSpacing", value : v}];
-	}},{ field : "dummyspacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "dummySpacing", value : v}];
-	}},{ field : "extrawidth", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "extraWidth", value : v}];
-	}},{ field : "backedgespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "backEdgeSpacing", value : v}];
-	}},{ field : "extraheight", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "extraHeight", value : v}];
-	}},{ field : "extraradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "extraRadius", value : v}];
-	}},{ field : "imagewidth", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "imageWidth", value : v}];
-	}},{ field : "imageheight", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "imageHeight", value : v}];
-	}},{ field : "imagespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "imageSpacing", value : v}];
-	}},{ field : "labelnodespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "labelNodeSpacing", value : v}];
-	}},{ field : "imagepath", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "imagePath", value : v}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "click", value : v}];
-	}},{ field : "clickedge", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "clickEdge", value : v}];
-	}},{ field : "layoutmap", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "layoutmap", value : v}];
-	}},{ field : "layoutmethod", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null}];
-}
-rg.controller.info.InfoSankey.prototype = {
-	label: null
-	,idproperty: null
-	,weightproperty: null
-	,parentsproperty: null
-	,layerWidth: null
-	,nodeSpacing: null
-	,dummySpacing: null
-	,extraWidth: null
-	,backEdgeSpacing: null
-	,extraHeight: null
-	,extraRadius: null
-	,imageWidth: null
-	,imageHeight: null
-	,imageSpacing: null
-	,labelNodeSpacing: null
-	,imagePath: null
-	,layoutmap: null
-	,click: null
-	,clickEdge: null
-	,layoutmethod: null
-	,__class__: rg.controller.info.InfoSankey
-}
 thx.math.Const = $hxClasses["thx.math.Const"] = function() { }
 thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype = {
 	__class__: thx.math.Const
 }
+rg.svg.chart.StreamEffect = $hxClasses["rg.svg.chart.StreamEffect"] = { __ename__ : ["rg","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
+rg.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
+rg.svg.chart.StreamEffect.NoEffect.toString = $estr;
+rg.svg.chart.StreamEffect.NoEffect.__enum__ = rg.svg.chart.StreamEffect;
+rg.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
+rg.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 thx.util.MacroVersion = $hxClasses["thx.util.MacroVersion"] = function() { }
 thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
 thx.util.MacroVersion.prototype = {
@@ -8711,6 +7581,629 @@ chx.lang.EofException.prototype = $extend(chx.lang.IOException.prototype,{
 	}
 	,__class__: chx.lang.EofException
 });
+rg.svg.widget.Balloon = $hxClasses["rg.svg.widget.Balloon"] = function(container,bindOnTop) {
+	if(bindOnTop == null) bindOnTop = true;
+	if(bindOnTop) {
+		var parent = container.node();
+		while(null != parent && parent.nodeName != "svg") parent = parent.parentNode;
+		this.container = null == parent?container:thx.js.Dom.selectNode(parent);
+	} else this.container = container;
+	this.visible = true;
+	this.duration = 350;
+	this.minwidth = 30;
+	this.setPreferredSide(2);
+	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseOut,thx.math.Equations.cubic);
+	this.setRoundedCorner(5);
+	this.paddingHorizontal = 3.5;
+	this.paddingVertical = 1.5;
+	this.transition_id = 0;
+	this.balloon = this.container.append("svg:g").attr("pointer-events").string("none").attr("class").string("balloon").attr("transform").string("translate(" + (this.x = 0) + ", " + (this.y = 0) + ")");
+	this.frame = this.balloon.append("svg:g").attr("transform").string("translate(0, 0)").attr("class").string("frame");
+	this.frame.append("svg:path").attr("class").string("shadow").attr("transform").string("translate(1, 1)");
+	this.connectorShapeV = thx.svg.Diagonal.forObject();
+	this.connectorShapeH = thx.svg.Diagonal.forObject().projection(function(d,i) {
+		return [d[1],d[0]];
+	});
+	this.connector = this.balloon.append("svg:path").attr("class").string("balloon-connector").style("fill").string("none").style("display").string("none").attr("transform").string("translate(0, 0)");
+	this.frame.append("svg:path").attr("class").string("bg");
+	this.labelsContainer = this.frame.append("svg:g").attr("class").string("labels");
+	this.labels = [];
+	var temp = this.createLabel(0);
+	temp.setText("HELLO");
+	this.setLineHeight(temp.getSize().height);
+	temp.destroy();
+}
+rg.svg.widget.Balloon.__name__ = ["rg","svg","widget","Balloon"];
+rg.svg.widget.Balloon.prototype = {
+	text: null
+	,x: null
+	,y: null
+	,boxWidth: null
+	,boxHeight: null
+	,visible: null
+	,lineHeight: null
+	,roundedCorner: null
+	,paddingHorizontal: null
+	,paddingVertical: null
+	,preferredSide: null
+	,minwidth: null
+	,labels: null
+	,container: null
+	,balloon: null
+	,frame: null
+	,labelsContainer: null
+	,connector: null
+	,duration: null
+	,ease: null
+	,connectorShapeV: null
+	,connectorShapeH: null
+	,boundingBox: null
+	,addClass: function(name) {
+		this.frame.select("path.bg").classed().add(name);
+	}
+	,removeClass: function(name) {
+		this.frame.select("path.bg").classed().remove(name);
+	}
+	,createLabel: function(i) {
+		var label = new rg.svg.widget.Label(this.labelsContainer,true,false,false);
+		label.addClass("line-" + i);
+		label.setAnchor(rg.svg.widget.GridAnchor.Top);
+		label.setOrientation(rg.svg.widget.LabelOrientation.Orthogonal);
+		label.place(0,i * this.lineHeight,90);
+		return label;
+	}
+	,setPreferredSide: function(v) {
+		this.preferredSide = Ints.clamp(v,0,3);
+		this.redraw();
+		return v;
+	}
+	,setText: function(v) {
+		while(this.labels.length > v.length) {
+			var label = this.labels.pop();
+			label.destroy();
+		}
+		var _g1 = this.labels.length, _g = v.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.labels[i] = this.createLabel(i);
+		}
+		var _g1 = 0, _g = v.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.labels[i].setText(v[i]);
+		}
+		this.text = v;
+		this.redraw();
+		return v;
+	}
+	,setLineHeight: function(v) {
+		this.lineHeight = v;
+		this.redraw();
+		return v;
+	}
+	,setPadding: function(h,v) {
+		this.paddingHorizontal = h;
+		this.paddingVertical = v;
+		this.redraw();
+	}
+	,setRoundedCorner: function(v) {
+		this.roundedCorner = v;
+		this.redraw();
+		return v;
+	}
+	,setBoundingBox: function(v) {
+		this.boundingBox = v;
+		this.redraw();
+		return v;
+	}
+	,getBoundingBox: function() {
+		if(null == this.boundingBox) try {
+			this.setBoundingBox(this.container.node().getBBox());
+		} catch( e ) {
+			return { width : 0.0, height : 0.0, x : 0.0, y : 0.0};
+		}
+		return this.boundingBox;
+	}
+	,transition_id: null
+	,moveTo: function(x,y,animate) {
+		if(animate == null) animate = true;
+		var me = this;
+		if(animate) {
+			var $int = thx.math.Equations.elasticf(), tid = ++this.transition_id, ix = Floats.interpolatef(this.x,x,this.ease), iy = Floats.interpolatef(this.y,y,this.ease);
+			thx.js.Timer.timer(function(t) {
+				if(tid != me.transition_id) return true;
+				if(t > me.duration) {
+					me._moveTo(x,y);
+					return true;
+				}
+				me._moveTo(ix(t / me.duration),iy(t / me.duration));
+				return false;
+			},0);
+		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f,a1,a2) {
+			return function() {
+				return f(a1,a2);
+			};
+		})(this._moveTo.$bind(this),x,y),15); else this._moveTo(x,y);
+	}
+	,_moveTo: function(x,y) {
+		var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
+		var tx = 0.0, ty = 0.0, side = this.preferredSide, found = 1;
+		while(found > 0 && found < 5) {
+			if(x >= right - limit) {
+				if(y <= top + limit) {
+					if(x - right < top - y) {
+						tx = -this.boxWidth + right - x;
+						ty = top - y + this.roundedCorner;
+						side = 0;
+						offset = this.boxWidth - 4 * this.roundedCorner;
+					} else {
+						tx = -this.boxWidth + right - x - this.roundedCorner;
+						ty = top - y;
+						side = 1;
+						offset = this.roundedCorner;
+					}
+					found = 0;
+					diagonal = 1;
+					break;
+				} else if(y >= bottom - limit) {
+					if(x - right < y - bottom) {
+						tx = -this.boxWidth + right - x;
+						ty = bottom - y - this.boxHeight - this.roundedCorner;
+						side = 2;
+						offset = this.boxWidth - 4 * this.roundedCorner;
+					} else {
+						tx = -this.boxWidth + right - x - this.roundedCorner;
+						ty = bottom - y - this.boxHeight;
+						side = 1;
+						offset = this.boxHeight - 3 * this.roundedCorner;
+					}
+					found = 0;
+					diagonal = 1;
+					break;
+				}
+			} else if(x <= left + limit) {
+				if(y <= top + limit) {
+					if(left - x < top - y) {
+						tx = left - x;
+						ty = top - y + this.roundedCorner;
+						side = 0;
+						offset = 0;
+					} else {
+						tx = left - x + this.roundedCorner;
+						ty = top - y;
+						side = 3;
+						offset = this.roundedCorner;
+					}
+					found = 0;
+					diagonal = 1;
+					break;
+				} else if(y >= bottom - limit) {
+					if(left - x < y - bottom) {
+						tx = left - x;
+						ty = bottom - y - this.boxHeight - this.roundedCorner;
+						side = 2;
+						offset = 0;
+					} else {
+						tx = left - x + this.roundedCorner;
+						ty = bottom - y - this.boxHeight;
+						side = 3;
+						offset = this.boxHeight - 3 * this.roundedCorner;
+					}
+					found = 0;
+					diagonal = 1;
+					break;
+				}
+			}
+			switch(side) {
+			case 0:
+				if(y + this.boxHeight + this.roundedCorner >= bottom) {
+					side = 2;
+					found++;
+					continue;
+				} else if(x <= left + limit) {
+					side = 3;
+					found++;
+					continue;
+				} else if(x >= right - limit) {
+					side = 1;
+					found++;
+					continue;
+				}
+				tx = -this.boxWidth / 2;
+				ty = this.roundedCorner;
+				offset = this.boxWidth / 2 - this.roundedCorner * 2;
+				if(x - this.boxWidth / 2 <= left) {
+					var d = left - x + this.boxWidth / 2;
+					offset = Math.max(0,offset - d);
+					tx += d;
+				} else if(x + this.boxWidth / 2 >= right) {
+					var d = right - x - this.boxWidth / 2;
+					offset = Math.min(this.boxWidth - this.roundedCorner * 3,offset - d);
+					tx += d;
+				}
+				if(y < top) {
+					diagonal = 1;
+					ty = top - y + this.roundedCorner;
+				}
+				break;
+			case 1:
+				if(x - this.boxWidth - this.roundedCorner <= left) {
+					side = 3;
+					found++;
+					continue;
+				} else if(y <= top + limit) {
+					side = 2;
+					found++;
+					continue;
+				} else if(y >= bottom - limit) {
+					side = 0;
+					found++;
+					continue;
+				}
+				tx = -this.boxWidth - this.roundedCorner;
+				ty = -this.boxHeight / 2;
+				offset = (this.boxHeight - this.roundedCorner * 2) / 2;
+				if(y - this.boxHeight / 2 <= top) {
+					var d = top - y + this.boxHeight / 2;
+					offset = Math.max(0,offset - d);
+					ty += d;
+				} else if(y + this.boxHeight / 2 >= bottom) {
+					var d = bottom - y - this.boxHeight / 2;
+					offset = Math.min(this.boxHeight - this.roundedCorner * 3,offset - d);
+					ty += d;
+				}
+				if(x > right) {
+					diagonal = 2;
+					tx = right - x - this.boxWidth - this.roundedCorner;
+				}
+				break;
+			case 2:
+				if(y - this.boxHeight - this.roundedCorner <= top) {
+					side = 0;
+					found++;
+					continue;
+				} else if(x <= left + limit) {
+					side = 3;
+					found++;
+					continue;
+				} else if(x >= right - limit) {
+					side = 1;
+					found++;
+					continue;
+				}
+				tx = -this.boxWidth / 2;
+				ty = -this.boxHeight - this.roundedCorner;
+				offset = this.boxWidth / 2 - this.roundedCorner * 2;
+				if(x - this.boxWidth / 2 <= left) {
+					var d = left - x + this.boxWidth / 2;
+					offset = Math.max(this.roundedCorner,offset - d);
+					tx += d;
+				} else if(x + this.boxWidth / 2 >= right) {
+					var d = right - x - this.boxWidth / 2;
+					offset = Math.min(this.boxWidth - this.roundedCorner * 3,offset - d);
+					tx += d;
+				}
+				if(y > bottom) {
+					diagonal = 1;
+					ty = bottom - y - this.boxHeight - this.roundedCorner;
+				}
+				break;
+			case 3:
+				if(x + this.boxWidth + this.roundedCorner >= right) {
+					side = 1;
+					found++;
+					continue;
+				} else if(y <= top + limit) {
+					side = 2;
+					found++;
+					continue;
+				} else if(y >= bottom - limit) {
+					side = 0;
+					found++;
+					continue;
+				}
+				tx = this.roundedCorner;
+				ty = -this.boxHeight / 2;
+				offset = (this.boxHeight - this.roundedCorner * 2) / 2;
+				if(y - this.boxHeight / 2 <= top) {
+					var d = top - y + this.boxHeight / 2;
+					offset = Math.max(this.roundedCorner,offset - d);
+					ty += d;
+				} else if(y + this.boxHeight / 2 >= bottom) {
+					var d = bottom - y - this.boxHeight / 2;
+					offset = Math.min(this.boxHeight - this.roundedCorner * 3,offset - d);
+					ty += d;
+				}
+				if(x < left) {
+					diagonal = 2;
+					tx = left - x + this.roundedCorner;
+				}
+				break;
+			}
+			found = 0;
+		}
+		var coords = null, off = 1.0;
+		if(0 == diagonal) this.connector.style("display").string("none"); else {
+			this.connector.style("display").string("block");
+			coords = { x0 : off, y0 : off, x1 : off, y1 : off};
+			switch(side) {
+			case 0:
+				coords.x1 = tx + off + offset + 2 * this.roundedCorner;
+				coords.y1 = ty + off - this.roundedCorner;
+				break;
+			case 1:
+				coords.y1 = tx + off + this.boxWidth + this.roundedCorner;
+				coords.x1 = ty + off + offset + this.roundedCorner;
+				break;
+			case 2:
+				coords.x1 = tx + off + offset + 2 * this.roundedCorner;
+				coords.y1 = ty + off + this.boxHeight + this.roundedCorner;
+				break;
+			case 3:
+				coords.y1 = tx + off + -this.roundedCorner;
+				coords.x1 = ty + off + offset + this.roundedCorner;
+				break;
+			}
+		}
+		this.balloon.attr("transform").string("translate(" + (this.x = x) + ", " + (this.y = y) + ")");
+		this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.svg.widget.BalloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
+		if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(coords):this.connectorShapeH.diagonal(coords));
+	}
+	,show: function(animate) {
+		if(this.visible) return;
+		this.visible = true;
+		this.balloon.style("display").string("block");
+		if(animate) this.balloon.transition().attr("opacity")["float"](1); else this.balloon.attr("opacity")["float"](1);
+	}
+	,hide: function(animate) {
+		if(animate == null) animate = false;
+		var me = this;
+		if(!this.visible) return;
+		this.visible = false;
+		if(animate) this.balloon.transition().attr("opacity")["float"](0).endNode(function(_,_1) {
+			me.balloon.style("display").string("none");
+		}); else {
+			this.balloon.attr("opacity")["float"](0);
+			this.balloon.style("display").string("none");
+		}
+	}
+	,redraw: function() {
+		var me = this;
+		if(null == this.text || this.text.length == 0) return;
+		this.boxWidth = 0.0;
+		var w = 0;
+		var _g = 0, _g1 = this.labels;
+		while(_g < _g1.length) {
+			var label = _g1[_g];
+			++_g;
+			if((w = Math.ceil(label.getSize().width)) > this.boxWidth) this.boxWidth = w;
+		}
+		if(w == 0) {
+			var t = this.text;
+			haxe.Timer.delay(function() {
+				me.setText(t);
+			},15);
+			return;
+		}
+		this.boxWidth += this.paddingHorizontal * 2;
+		this.boxHeight = this.lineHeight * this.labels.length + this.paddingVertical * 2;
+		var bg = this.frame.selectAll(".bg"), sw = bg.style("stroke-width").getFloat();
+		if(Math.isNaN(sw)) sw = 0;
+		this.labelsContainer.attr("transform").string("translate(" + this.boxWidth / 2 + "," + (sw + this.paddingVertical) + ")");
+		bg.transition().ease(this.ease).delay(null,this.duration);
+	}
+	,__class__: rg.svg.widget.Balloon
+	,__properties__: {set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox",set_preferredSide:"setPreferredSide",set_roundedCorner:"setRoundedCorner",set_lineHeight:"setLineHeight",set_text:"setText"}
+}
+rg.frame.Stack = $hxClasses["rg.frame.Stack"] = function(width,height,orientation) {
+	this.orientation = null == orientation?rg.frame.Orientation.Vertical:orientation;
+	this.children = [];
+	this.width = width;
+	this.height = height;
+}
+rg.frame.Stack.__name__ = ["rg","frame","Stack"];
+rg.frame.Stack.prototype = {
+	children: null
+	,width: null
+	,height: null
+	,orientation: null
+	,length: null
+	,moreSpaceRequired: function(size) {
+	}
+	,insertItem: function(pos,child) {
+		if(null == child) return this;
+		if(pos >= this.children.length) return this.addItem(child);
+		if(pos < 0) pos = 0;
+		this.children.insert(pos,child);
+		var f = child;
+		f.setParent(this);
+		this.reflow();
+		return this;
+	}
+	,addItem: function(child) {
+		if(null == child) return this;
+		this.children.push(child);
+		var f = child;
+		f.setParent(this);
+		this.reflow();
+		return this;
+	}
+	,addItems: function(it) {
+		var added = false;
+		var $it0 = it.iterator();
+		while( $it0.hasNext() ) {
+			var child = $it0.next();
+			if(null == child) continue;
+			added = true;
+			this.children.push(child);
+			var f = child;
+			f.setParent(this);
+		}
+		if(added) this.reflow();
+		return this;
+	}
+	,removeChild: function(child) {
+		if(!this.children.remove(child)) return false;
+		var f = child;
+		f.setParent(null);
+		this.reflow();
+		return true;
+	}
+	,iterator: function() {
+		return this.children.iterator();
+	}
+	,reflow: function() {
+		var available = (function($this) {
+			var $r;
+			switch( ($this.orientation)[1] ) {
+			case 0:
+				$r = $this.height;
+				break;
+			case 1:
+				$r = $this.width;
+				break;
+			}
+			return $r;
+		}(this)), otherdimension = (function($this) {
+			var $r;
+			switch( ($this.orientation)[1] ) {
+			case 0:
+				$r = $this.width;
+				break;
+			case 1:
+				$r = $this.height;
+				break;
+			}
+			return $r;
+		}(this));
+		var required = 0, values = [], variables = [], i = 0, variablespace = 0;
+		var _g = 0, _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			var $e = (child.disposition);
+			switch( $e[1] ) {
+			case 0:
+				var max = $e[5], min = $e[4], after = $e[3], before = $e[2];
+				if(null == min) min = 0;
+				if(null == max) max = available;
+				required += min + before + after;
+				variablespace += variables[i] = max - min;
+				values.push(min + before + after);
+				break;
+			case 1:
+				var max = $e[6], min = $e[5], percent = $e[4], after = $e[3], before = $e[2];
+				var size = Math.round(percent * available);
+				if(null != min && size < min) size = min;
+				if(null != max && size > max) size = max;
+				required += size + before + after;
+				values.push(size + before + after);
+				break;
+			case 2:
+				var ratio = $e[4], after = $e[3], before = $e[2];
+				if(null == ratio) ratio = 1;
+				var size = Math.round(otherdimension * ratio);
+				required += size + before + after;
+				values.push(size + before + after);
+				break;
+			case 3:
+				var size = $e[4], after = $e[3], before = $e[2];
+				required += size + before + after;
+				values.push(size + before + after);
+				break;
+			case 4:
+				var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+				values.push(0);
+				break;
+			}
+			i++;
+		}
+		available -= required;
+		if(available > 0) {
+			i = 0;
+			var _g = 0, _g1 = this.children;
+			while(_g < _g1.length) {
+				var child = _g1[_g];
+				++_g;
+				switch( (child.disposition)[1] ) {
+				case 0:
+					var size = Math.round(variables[i] / variablespace * available);
+					values[i] += size;
+					break;
+				default:
+				}
+				i++;
+			}
+		}
+		i = 0;
+		var sizeable;
+		var pos = 0;
+		switch( (this.orientation)[1] ) {
+		case 0:
+			var _g = 0, _g1 = this.children;
+			while(_g < _g1.length) {
+				var child = _g1[_g];
+				++_g;
+				sizeable = child;
+				var $e = (child.disposition);
+				switch( $e[1] ) {
+				case 4:
+					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+					sizeable.setLayout(x,y,w,h);
+					break;
+				case 3:
+				case 0:
+				case 1:
+				case 2:
+					var after = $e[3], before = $e[2];
+					sizeable.setLayout(0,pos + before,this.width,values[i] - after - before);
+					break;
+				}
+				pos += values[i++];
+			}
+			break;
+		case 1:
+			var _g = 0, _g1 = this.children;
+			while(_g < _g1.length) {
+				var child = _g1[_g];
+				++_g;
+				sizeable = child;
+				var $e = (child.disposition);
+				switch( $e[1] ) {
+				case 4:
+					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+					sizeable.setLayout(x,y,w,h);
+					break;
+				case 3:
+				case 0:
+				case 1:
+				case 2:
+					var after = $e[3], before = $e[2];
+					sizeable.setLayout(pos + before,0,values[i] - after - before,this.height);
+					break;
+				}
+				pos += values[i++];
+			}
+			break;
+		}
+		if(available < 0) this.moreSpaceRequired(required);
+	}
+	,getLength: function() {
+		return this.children.length;
+	}
+	,setSize: function(width,height) {
+		if(this.width == width && this.height == height) return this;
+		this.width = width;
+		this.height = height;
+		this.reflow();
+		return this;
+	}
+	,toString: function() {
+		return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
+	}
+	,__class__: rg.frame.Stack
+	,__properties__: {get_length:"getLength"}
+}
 var BytesBuffer = $hxClasses["BytesBuffer"] = function() {
 	this.b = new Array();
 }
@@ -8760,6 +8253,235 @@ thx.math.scale.IScale.prototype = {
 	,getRange: null
 	,__class__: thx.math.scale.IScale
 }
+rg.visualization.VisualizationSankey = $hxClasses["rg.visualization.VisualizationSankey"] = function(layout) {
+	rg.visualization.VisualizationSvg.call(this,layout);
+}
+rg.visualization.VisualizationSankey.__name__ = ["rg","visualization","VisualizationSankey"];
+rg.visualization.VisualizationSankey.defaultIdf = function(idf) {
+	if(idf == null) return function(data) {
+		return data.id;
+	}; else return idf;
+}
+rg.visualization.VisualizationSankey.defaultNodef = function(nodef) {
+	if(nodef == null) {
+		var dummynodeid = 0;
+		return function(edge) {
+			return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
+		};
+	} else return nodef;
+}
+rg.visualization.VisualizationSankey.defaultEdgesf = function(idf,edgesf) {
+	if(edgesf == null) return function(dp) {
+		var r = [], id = idf(dp);
+		var _g = 0, _g1 = Reflect.fields(dp.parents);
+		while(_g < _g1.length) {
+			var parent = _g1[_g];
+			++_g;
+			r.push({ head : id, tail : parent, weight : Reflect.field(dp.parents,parent)});
+		}
+		return r;
+	}; else return edgesf;
+}
+rg.visualization.VisualizationSankey.__super__ = rg.visualization.VisualizationSvg;
+rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
+	info: null
+	,title: null
+	,chart: null
+	,init: function() {
+		var me = this;
+		if(null != this.info.label.title) {
+			var panelContextTitle = this.layout.getContext("title");
+			if(null == panelContextTitle) return;
+			this.title = new rg.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+		}
+		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
+		this.chart = new rg.svg.chart.Sankey(panelChart);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+	}
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
+		if(null != this.title) {
+			if(null != this.info.label.title) {
+				this.title.setText(this.info.label.title(this.variables,data));
+				this.layout.suggestSize("title",this.title.idealHeight());
+			} else this.layout.suggestSize("title",0);
+		}
+		var layout = null != this.info.layoutmap?this.layoutDataWithMap(data,this.info.layoutmap):this.layoutData(data,this.info.layoutmethod);
+		if(null != this.info.layerWidth) this.chart.layerWidth = this.info.layerWidth;
+		if(null != this.info.nodeSpacing) this.chart.nodeSpacing = this.info.nodeSpacing;
+		if(null != this.info.dummySpacing) this.chart.dummySpacing = this.info.dummySpacing;
+		if(null != this.info.extraWidth) this.chart.extraWidth = this.info.extraWidth;
+		if(null != this.info.backEdgeSpacing) this.chart.backEdgeSpacing = this.info.backEdgeSpacing;
+		if(null != this.info.extraHeight) this.chart.extraHeight = this.info.extraHeight;
+		if(null != this.info.extraRadius) this.chart.extraRadius = this.info.extraRadius;
+		if(null != this.info.imageWidth) this.chart.imageWidth = this.info.imageWidth;
+		if(null != this.info.imageHeight) this.chart.imageHeight = this.info.imageHeight;
+		if(null != this.info.imageSpacing) this.chart.imageSpacing = this.info.imageSpacing;
+		if(null != this.info.labelNodeSpacing) this.chart.labelNodeSpacing = this.info.labelNodeSpacing;
+		this.chart.labelDataPoint = this.info.label.datapoint;
+		this.chart.labelDataPointOver = this.info.label.datapointover;
+		this.chart.labelNode = this.info.label.node;
+		this.chart.labelEdge = this.info.label.edge;
+		this.chart.labelEdgeOver = this.info.label.edgeover;
+		this.chart.imagePath = this.info.imagePath;
+		this.chart.click = this.info.click;
+		this.chart.clickEdge = this.info.clickEdge;
+		this.chart.init();
+		this.chart.data(layout);
+	}
+	,layoutDataWithMap: function(data,map,idf,weightf,edgesf) {
+		var graph = this.createGraph(data,idf,weightf,edgesf);
+		var _g = 0, _g1 = map.dummies;
+		while(_g < _g1.length) {
+			var path = _g1[_g];
+			++_g;
+			var tail = graph.nodes.getById(path[0]), head = graph.nodes.getById(path[path.length - 1]), npath = [tail], edge = tail.connectedBy(head), weight = null == edge?0.0:edge.weight;
+			var _g3 = 1, _g2 = path.length - 1;
+			while(_g3 < _g2) {
+				var i = _g3++;
+				var id = path[i], d = { id : id, weight : weight, extrain : 0.0, extraout : 0.0, dp : null};
+				npath.push(graph.nodes.create(d));
+			}
+			npath.push(head);
+			var _g3 = 0, _g2 = npath.length - 1;
+			while(_g3 < _g2) {
+				var i = _g3++;
+				graph.edges.create(npath[i],npath[i + 1],weight);
+			}
+			if(null != edge) edge.graph.edges._remove(edge);
+		}
+		var layers = map.layers.map(function(layer,_) {
+			return layer.map(function(id,_1) {
+				return graph.nodes.getById(id).id;
+			});
+		});
+		return new rg.graph.GraphLayout(graph,layers);
+	}
+	,createGraph: function(data,idf,weightf,edgesf) {
+		idf = rg.visualization.VisualizationSankey.defaultIdf(idf);
+		edgesf = rg.visualization.VisualizationSankey.defaultEdgesf(idf,edgesf);
+		weightf = this.defaultWeightf(weightf);
+		var graph = new rg.graph.Graph(idf);
+		var nodes = this.extractNodes(data), edges = this.extractEdges(data);
+		var _g = 0;
+		while(_g < nodes.length) {
+			var dp = nodes[_g];
+			++_g;
+			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), extrain : 0.0, extraout : 0.0});
+		}
+		var _g = 0;
+		while(_g < edges.length) {
+			var edge = edges[_g];
+			++_g;
+			var head = graph.nodes.getById(edge.head), tail = graph.nodes.getById(edge.tail);
+			graph.edges.create(tail,head,weightf(edge));
+		}
+		var $it0 = graph.nodes.collection.iterator();
+		while( $it0.hasNext() ) {
+			var node = $it0.next();
+			var win = node.negativeWeight(), wout = node.positiveWeight();
+			if(node.data.weight == 0) node.data.weight = win;
+			node.data.extrain = Math.max(0,node.data.weight - win);
+			node.data.extraout = Math.max(0,node.data.weight - wout);
+		}
+		return graph;
+	}
+	,extractNodes: function(data) {
+		var nodes = Arrays.filter(data,function(dp) {
+			return dp.id != null;
+		});
+		if(nodes.length == 0) {
+			var type = this.dependentVariables[0].type, map = new Hash(), edges = Arrays.filter(data,function(dp) {
+				return Reflect.hasField(dp,"head") || Reflect.hasField(dp,"tail");
+			});
+			var nodize = function(name,istail,weight) {
+				if(null == name) return;
+				var n = map.get(name);
+				if(null == n) {
+					n = { node : { id : name}, positive : 0.0, negative : 0.0};
+					map.set(name,n);
+				}
+				if(istail) n.positive += weight; else n.negative += weight;
+			};
+			edges.forEach(function(dp,i) {
+				var v = Reflect.field(dp,type);
+				nodize(dp.tail,true,v);
+				nodize(dp.head,false,v);
+			});
+			nodes = Iterators.array(map.iterator()).map(function(n,i) {
+				var node = n.node;
+				node[type] = Math.max(n.positive,n.negative);
+				return node;
+			});
+		}
+		return nodes;
+	}
+	,extractEdges: function(data) {
+		return Arrays.filter(data,function(dp) {
+			return dp.head != null && dp.tail != null;
+		});
+	}
+	,layoutData: function(data,method,idf,nodef,weightf,edgesf) {
+		var graph = this.createGraph(data,idf,weightf,edgesf);
+		nodef = rg.visualization.VisualizationSankey.defaultNodef(nodef);
+		switch(method) {
+		case "weightbalance":
+			return this.weightBalance(graph,nodef);
+		default:
+			return this.sugiyama(graph,nodef);
+		}
+	}
+	,weightBalance: function(graph,nodef) {
+		var layout = new rg.graph.GraphLayout(graph,new rg.graph.HeaviestNodeLayer().lay(graph));
+		layout = new rg.graph.EdgeSplitter().split(layout,[],nodef);
+		layout = rg.graph.GreedySwitchDecrosser.best().decross(layout);
+		return layout;
+	}
+	,sugiyama: function(graph,nodef) {
+		return new rg.graph.SugiyamaMethod().resolve(graph,nodef);
+	}
+	,defaultWeightf: function(weightf) {
+		if(null == weightf) {
+			var type = this.dependentVariables[0].type;
+			return function(dp) {
+				var v = Reflect.field(dp,type);
+				return null != v?v:0.0;
+			};
+		} else return weightf;
+	}
+	,destroy: function() {
+		this.chart.destroy();
+		if(null != this.title) this.title.destroy();
+		rg.visualization.VisualizationSvg.prototype.destroy.call(this);
+	}
+	,__class__: rg.visualization.VisualizationSankey
+});
+if(!rg.svg.util) rg.svg.util = {}
+rg.svg.util.SymbolCache = $hxClasses["rg.svg.util.SymbolCache"] = function() {
+	this.c = new Hash();
+	this.r = 0;
+}
+rg.svg.util.SymbolCache.__name__ = ["rg","svg","util","SymbolCache"];
+rg.svg.util.SymbolCache.cache = null;
+rg.svg.util.SymbolCache.prototype = {
+	c: null
+	,r: null
+	,get: function(type,size) {
+		if(size == null) size = 100;
+		var k = type + ":" + size, s = this.c.get(k);
+		if(null == s) {
+			s = (Reflect.field(thx.svg.Symbol,type))(size);
+			this.c.set(k,s);
+		}
+		return s;
+	}
+	,stats: function() {
+		return { cachedSymbols : Iterators.array(this.c.iterator()).length};
+	}
+	,__class__: rg.svg.util.SymbolCache
+}
 rg.data.IndependentVariableProcessor = $hxClasses["rg.data.IndependentVariableProcessor"] = function() {
 }
 rg.data.IndependentVariableProcessor.__name__ = ["rg","data","IndependentVariableProcessor"];
@@ -8771,7 +8493,7 @@ rg.data.IndependentVariableProcessor.prototype = {
 			++_g;
 			variable.stats.addMany(rg.util.DataPoints.values(data,variable.type));
 			var discrete;
-			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.data.IAxisDiscrete))) {
+			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.axis.IAxisDiscrete))) {
 				discrete.setScaleDistribution(variable.scaleDistribution);
 				variable.scaleDistribution = null;
 			}
@@ -8779,151 +8501,509 @@ rg.data.IndependentVariableProcessor.prototype = {
 	}
 	,__class__: rg.data.IndependentVariableProcessor
 }
-rg.controller.visualization.VisualizationStreamGraph = $hxClasses["rg.controller.visualization.VisualizationStreamGraph"] = function(layout) {
-	rg.controller.visualization.VisualizationCartesian.call(this,layout);
-}
-rg.controller.visualization.VisualizationStreamGraph.__name__ = ["rg","controller","visualization","VisualizationStreamGraph"];
-rg.controller.visualization.VisualizationStreamGraph.__super__ = rg.controller.visualization.VisualizationCartesian;
-rg.controller.visualization.VisualizationStreamGraph.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
-	infoStream: null
-	,initAxes: function() {
-		this.xvariable = this.independentVariables[0];
-		this.yvariables = this.dependentVariables.map(function(d,_) {
-			return d;
-		});
-	}
-	,initChart: function() {
-		var me = this;
-		var chart = new rg.view.svg.chart.StreamGraph(this.layout.getPanel(this.layout.mainPanelName));
-		chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		chart.interpolator = this.infoStream.interpolation;
-		var $e = (this.infoStream.effect);
-		switch( $e[1] ) {
-		case 0:
-			chart.gradientStyle = 0;
+rg.svg.widget.GridAnchors = $hxClasses["rg.svg.widget.GridAnchors"] = function() { }
+rg.svg.widget.GridAnchors.__name__ = ["rg","svg","widget","GridAnchors"];
+rg.svg.widget.GridAnchors.parse = function(s) {
+	return (function($this) {
+		var $r;
+		switch(s.toLowerCase()) {
+		case "topleft":
+			$r = rg.svg.widget.GridAnchor.TopLeft;
 			break;
-		case 2:
-			var lightness = $e[2];
-			chart.gradientStyle = 1;
-			chart.gradientLightness = lightness;
+		case "top":
+			$r = rg.svg.widget.GridAnchor.Top;
 			break;
-		case 1:
-			var lightness = $e[2];
-			chart.gradientStyle = 2;
-			chart.gradientLightness = lightness;
+		case "topright":
+			$r = rg.svg.widget.GridAnchor.TopRight;
 			break;
+		case "left":
+			$r = rg.svg.widget.GridAnchor.Left;
+			break;
+		case "center":
+			$r = rg.svg.widget.GridAnchor.Center;
+			break;
+		case "right":
+			$r = rg.svg.widget.GridAnchor.Right;
+			break;
+		case "bottomleft":
+			$r = rg.svg.widget.GridAnchor.BottomLeft;
+			break;
+		case "bottom":
+			$r = rg.svg.widget.GridAnchor.Bottom;
+			break;
+		case "bottomright":
+			$r = rg.svg.widget.GridAnchor.BottomRight;
+			break;
+		default:
+			$r = rg.svg.widget.GridAnchor.Center;
 		}
-		this.chart = chart;
-	}
-	,transformData: function(dps) {
-		var segmenter = new rg.data.Segmenter(this.infoStream.segment.on,this.infoStream.segment.transform,this.infoStream.segment.scale);
-		return segmenter.segment(dps);
-	}
-	,__class__: rg.controller.visualization.VisualizationStreamGraph
-});
-rg.view.svg.layer.Title = $hxClasses["rg.view.svg.layer.Title"] = function(panel,text,anchor,padding,className,shadow,outline) {
-	if(outline == null) outline = false;
-	if(shadow == null) shadow = false;
-	if(className == null) className = "title";
-	if(padding == null) padding = 1;
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.addClass(className);
-	this.group = this.g.append("svg:g");
-	this.label = new rg.view.svg.widget.Label(this.group,false,shadow,outline);
-	this.label.setOrientation(rg.view.svg.widget.LabelOrientation.Orthogonal);
-	this.setAnchor(anchor);
-	this.setPadding(padding);
-	this.setText(text);
-	this.resize();
+		return $r;
+	}(this));
 }
-rg.view.svg.layer.Title.__name__ = ["rg","view","svg","layer","Title"];
-rg.view.svg.layer.Title.__super__ = rg.view.svg.panel.Layer;
-rg.view.svg.layer.Title.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
-	text: null
-	,anchor: null
-	,padding: null
-	,label: null
-	,group: null
-	,idealHeight: function() {
-		var size = this.label.getSize();
-		return Math.round((function($this) {
-			var $r;
-			switch( ($this.anchor)[1] ) {
-			case 2:
-			case 3:
-				$r = size.width + $this.padding;
-				break;
-			case 0:
-			case 1:
-				$r = size.height + $this.padding;
-				break;
+rg.svg.widget.GridAnchors.prototype = {
+	__class__: rg.svg.widget.GridAnchors
+}
+rg.info.InfoBarChart = $hxClasses["rg.info.InfoBarChart"] = function() {
+	rg.info.InfoCartesianChart.call(this);
+	this.stacked = true;
+	this.effect = rg.svg.chart.GradientEffect.Gradient(1.25);
+	this.barPadding = 12;
+	this.barPaddingAxis = 4;
+	this.barPaddingDataPoint = 2;
+	this.horizontal = false;
+}
+rg.info.InfoBarChart.__name__ = ["rg","info","InfoBarChart"];
+rg.info.InfoBarChart.filters = function() {
+	return [{ field : "stacked", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "horizontal", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "effect", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "effect", value : rg.svg.chart.GradientEffects.parse(v)}];
+	}},{ field : "barpadding", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "barPadding", value : v}];
+	}},{ field : "barpaddingaxis", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "barPaddingAxis", value : v}];
+	}},{ field : "barpaddingdatapoint", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "barPaddingDataPoint", value : v}];
+	}}].concat(rg.info.InfoCartesianChart.filters());
+}
+rg.info.InfoBarChart.__super__ = rg.info.InfoCartesianChart;
+rg.info.InfoBarChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
+	stacked: null
+	,effect: null
+	,barPaddingDataPoint: null
+	,barPaddingAxis: null
+	,barPadding: null
+	,horizontal: null
+	,__class__: rg.info.InfoBarChart
+});
+rg.info.InfoSegment = $hxClasses["rg.info.InfoSegment"] = function() {
+}
+rg.info.InfoSegment.__name__ = ["rg","info","InfoSegment"];
+rg.info.InfoSegment.filters = function() {
+	return [{ field : "on", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "transform", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "scale", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}];
+}
+rg.info.InfoSegment.prototype = {
+	on: null
+	,transform: null
+	,scale: null
+	,__class__: rg.info.InfoSegment
+}
+rg.layout.LayoutCartesian = $hxClasses["rg.layout.LayoutCartesian"] = function(width,height,container) {
+	rg.layout.Layout.call(this,width,height,container);
+	this.titleOnTop = true;
+	this.left = true;
+	this.alternating = true;
+	this.yitems = [];
+}
+rg.layout.LayoutCartesian.__name__ = ["rg","layout","LayoutCartesian"];
+rg.layout.LayoutCartesian.__super__ = rg.layout.Layout;
+rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
+	main: null
+	,titleOnTop: null
+	,leftcontainer: null
+	,rightcontainer: null
+	,bottomcontainer: null
+	,bottommiddlecontainer: null
+	,maincontainer: null
+	,middlecontainer: null
+	,bottomleft: null
+	,bottomright: null
+	,xtickmarks: null
+	,title: null
+	,left: null
+	,alternating: null
+	,yitems: null
+	,xtitle: null
+	,getContext: function(name) {
+		if(this.isY(name)) return this.getYContext(this.getYIndex(name)); else if(this.isYTitle(name)) return this.getYTitle(this.getYIndex(name));
+		switch(name) {
+		case "title":
+			if(null == this.title) this.title = new rg.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.frame.FrameLayout.Fixed(0,0,0)),this.titleOnTop?rg.layout.Anchor.Bottom:rg.layout.Anchor.Top);
+			return this.title;
+		case "x":
+			return this.getXTickmarks();
+		case "xtitle":
+			return this.getXTitle();
+		default:
+			return null;
+		}
+	}
+	,getPanel: function(name) {
+		switch(name) {
+		case "main":
+			return this.getMain();
+		case "xtickmarks":
+			return this.getBottomContainer();
+		case "left":
+			return this.getLeftContainer();
+		case "right":
+			return this.getRightContainer();
+		case "bottomleft":
+			return this.bottomleft;
+		case "bottomright":
+			return this.bottomright;
+		default:
+			var ctx = this.getContext(name);
+			if(null == ctx) return null;
+			return ctx.panel;
+		}
+	}
+	,getYItem: function(index) {
+		if(null == this.yitems[index]) this.yitems[index] = { container : null, context : null, title : null, anchor : this.alternating && index % 2 == 0?rg.layout.Anchor.Right:rg.layout.Anchor.Left};
+		return this.yitems[index];
+	}
+	,getYContainer: function(index) {
+		var item = this.getYItem(index);
+		if(null == item.container) {
+			if(this.alternating && index % 2 == 0) item.container = this.getLeftContainer().createContainerAt(0,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal); else item.container = this.getRightContainer().createContainer(rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+			item.container.g.classed().add("group-" + index);
+		}
+		return item.container;
+	}
+	,getYContext: function(index) {
+		var item = this.getYItem(index);
+		if(null == item.context) {
+			var panel = (function($this) {
+				var $r;
+				switch( (item.anchor)[1] ) {
+				case 2:
+					$r = $this.getYContainer(index).createPanelAt(0,rg.frame.FrameLayout.Fixed(0,0,0));
+					break;
+				case 3:
+					$r = $this.getYContainer(index).createPanel(rg.frame.FrameLayout.Fixed(0,0,0));
+					break;
+				default:
+					$r = null;
+				}
+				return $r;
+			}(this));
+			item.context = new rg.layout.PanelContext(panel,item.anchor);
+		}
+		return item.context;
+	}
+	,getYTitle: function(index) {
+		var item = this.getYItem(index);
+		if(null == item.title) {
+			var panel = (function($this) {
+				var $r;
+				switch( (item.anchor)[1] ) {
+				case 2:
+					$r = $this.getYContainer(index).createPanel(rg.frame.FrameLayout.Fixed(0,0,0));
+					break;
+				case 3:
+					$r = $this.getYContainer(index).createPanelAt(0,rg.frame.FrameLayout.Fixed(0,0,0));
+					break;
+				default:
+					$r = null;
+				}
+				return $r;
+			}(this));
+			item.title = new rg.layout.PanelContext(panel,item.anchor);
+		}
+		return item.title;
+	}
+	,getYIndex: function(s) {
+		if(!rg.layout.LayoutCartesian.REYINDEX.match(s)) return -1; else return Std.parseInt(rg.layout.LayoutCartesian.REYINDEX.matched(1));
+	}
+	,isY: function(s) {
+		return rg.layout.LayoutCartesian.REYAXIS.match(s);
+	}
+	,isYTitle: function(s) {
+		return rg.layout.LayoutCartesian.REYTITLE.match(s);
+	}
+	,suggestSize: function(name,size) {
+		if(this.isY(name) || this.isYTitle(name)) {
+			var index = this.getYIndex(name), item = this.getYItem(index);
+			if(null == item.container) return;
+			var ysize = 0.0;
+			if(null != item.context) {
+				if(this.isY(name)) this.suggestPanelSize(item.context.panel,size);
+				ysize += item.context.panel.frame.width;
 			}
-			return $r;
-		}(this)));
-	}
-	,resize: function() {
-		if(null == this.anchor || null == this.width || this.padding == null) return;
-		switch( (this.anchor)[1] ) {
-		case 0:
-			this.group.attr("transform").string("translate(" + this.width / 2 + "," + this.padding + ")");
-			break;
-		case 3:
-			this.group.attr("transform").string("translate(" + (this.width - this.padding) + "," + this.height / 2 + ")");
-			break;
-		case 2:
-			this.group.attr("transform").string("translate(" + this.padding + "," + this.height / 2 + ")");
-			break;
-		case 1:
-			this.group.attr("transform").string("translate(" + this.width / 2 + "," + (this.height - this.padding) + ")");
+			if(null != item.title) {
+				if(this.isYTitle(name)) this.suggestPanelSize(item.title.panel,size);
+				ysize += item.title.panel.frame.width;
+			}
+			this.suggestPanelSize(item.container,Math.round(ysize));
+			this.suggestLateralSize(item.anchor);
+			return;
+		}
+		rg.layout.Layout.prototype.suggestSize.call(this,name,size);
+		switch(name) {
+		case "x":case "xtitle":
+			var size1 = 0, c = this.getPanel("x");
+			if(null != c) size1 += c.frame.height;
+			c = this.getPanel("xtitle");
+			if(null != c) size1 += c.frame.height;
+			rg.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
 			break;
 		}
 	}
-	,getText: function() {
-		return this.label.text;
-	}
-	,setText: function(v) {
-		return this.label.setText(v);
-	}
-	,setAnchor: function(v) {
-		switch( (this.anchor = v)[1] ) {
-		case 0:
-			this.label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
-			break;
-		case 1:
-			this.label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+	,suggestLateralSize: function(anchor) {
+		var size = 0;
+		var i = 0;
+		var _g = 0, _g1 = this.yitems;
+		while(_g < _g1.length) {
+			var item = _g1[_g];
+			++_g;
+			i++;
+			if(null == item.container || !Type.enumEq(item.anchor,anchor)) continue;
+			size += item.container.frame.width;
+		}
+		switch( (anchor)[1] ) {
+		case 3:
+			this.suggestSize("left",size);
+			this.suggestSize("bottomleft",size);
 			break;
 		case 2:
-			this.label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
+			this.suggestSize("right",size);
+			this.suggestSize("bottomright",size);
 			break;
-		case 3:
-			this.label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
-			break;
+		default:
 		}
-		return v;
 	}
-	,setPadding: function(v) {
-		this.padding = v;
-		switch( (this.anchor)[1] ) {
+	,getXTitle: function() {
+		if(null == this.xtitle) this.xtitle = new rg.layout.PanelContext(this.getBottomMiddleContainer().createPanel(rg.frame.FrameLayout.Fixed(0,0,0)),rg.layout.Anchor.Top);
+		return this.xtitle;
+	}
+	,getMainContainer: function() {
+		if(null == this.maincontainer) this.maincontainer = this.space.createContainerAt(this.titleOnTop?1:0,rg.frame.FrameLayout.Fill(0,0),rg.frame.Orientation.Vertical);
+		return this.maincontainer;
+	}
+	,getMiddleContainer: function() {
+		if(null == this.middlecontainer) this.middlecontainer = this.getMainContainer().createContainerAt(0,rg.frame.FrameLayout.Fill(0,0),rg.frame.Orientation.Horizontal);
+		return this.middlecontainer;
+	}
+	,getLeftContainer: function() {
+		if(null == this.leftcontainer) this.leftcontainer = this.getMiddleContainer().createContainerAt(0,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+		return this.leftcontainer;
+	}
+	,getRightContainer: function() {
+		if(null == this.rightcontainer) this.rightcontainer = this.getMiddleContainer().createContainerAt(2,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+		return this.rightcontainer;
+	}
+	,getBottomContainer: function() {
+		if(null == this.bottomcontainer) this.bottomcontainer = this.getMainContainer().createContainerAt(1,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+		return this.bottomcontainer;
+	}
+	,getBottomMiddleContainer: function() {
+		if(null == this.bottommiddlecontainer) {
+			var container = this.getBottomContainer();
+			this.bottomleft = container.createPanel(rg.frame.FrameLayout.Fixed(0,0,0));
+			this.bottommiddlecontainer = container.createContainer(rg.frame.FrameLayout.Fill(0,0),rg.frame.Orientation.Vertical);
+			this.bottommiddlecontainer.g.classed().add("axis-x");
+			this.bottomright = container.createPanel(rg.frame.FrameLayout.Fixed(0,0,0));
+		}
+		return this.bottommiddlecontainer;
+	}
+	,getXTickmarks: function() {
+		if(null == this.xtickmarks) {
+			var container = this.getBottomMiddleContainer();
+			this.xtickmarks = new rg.layout.PanelContext(container.createPanelAt(0,rg.frame.FrameLayout.Fixed(0,0,0)),rg.layout.Anchor.Top);
+		}
+		return this.xtickmarks;
+	}
+	,getMain: function() {
+		if(null == this.main) this.main = this.getMiddleContainer().createPanelAt(1,rg.frame.FrameLayout.Fill(0,0));
+		return this.main;
+	}
+	,feedOptions: function(info) {
+		rg.layout.Layout.prototype.feedOptions.call(this,info);
+		this.titleOnTop = info.titleOnTop;
+		switch( (info.scalePattern)[1] ) {
 		case 0:
-			this.label.place(0,0,90);
+			this.left = true;
+			this.alternating = false;
 			break;
 		case 1:
-			this.label.place(0,0,90);
+			this.left = false;
+			this.alternating = false;
 			break;
 		case 2:
-			this.label.place(0,0,180);
-			break;
-		case 3:
-			this.label.place(0,0,0);
+			this.left = true;
+			this.alternating = true;
 			break;
 		}
-		return v;
 	}
-	,__class__: rg.view.svg.layer.Title
-	,__properties__: $extend(rg.view.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
+	,adjustPadding: function() {
+		var top = null == this.title && null == this.paddings.top?8:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?8:this.paddings.bottom, left = null == this.leftcontainer && null == this.paddings.left?20:this.paddings.left, right = null == this.rightcontainer && null == this.paddings.right?20:this.paddings.right;
+		if(null != left || null != right) {
+			this.suggestPanelPadding(this.getMain(),left,right);
+			this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
+		}
+		if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
+	}
+	,__class__: rg.layout.LayoutCartesian
 });
+rg.layout.LayoutSimple = $hxClasses["rg.layout.LayoutSimple"] = function(width,height,container) {
+	rg.layout.Layout.call(this,width,height,container);
+	this.titleOnTop = true;
+}
+rg.layout.LayoutSimple.__name__ = ["rg","layout","LayoutSimple"];
+rg.layout.LayoutSimple.__super__ = rg.layout.Layout;
+rg.layout.LayoutSimple.prototype = $extend(rg.layout.Layout.prototype,{
+	main: null
+	,titleOnTop: null
+	,getContext: function(name) {
+		switch(name) {
+		case "title":
+			if(null != this.title) return null;
+			return this.getTitle();
+		default:
+			return null;
+		}
+	}
+	,getPanel: function(name) {
+		switch(name) {
+		case "main":
+			if(null == this.main) this.main = this.space.createPanelAt(this.titleOnTop?1:0,rg.frame.FrameLayout.Fill(0,0));
+			return this.main;
+		case "title":
+			return this.getTitle().panel;
+		default:
+			return null;
+		}
+	}
+	,title: null
+	,getTitle: function() {
+		if(null == this.title) this.title = new rg.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.frame.FrameLayout.Fixed(0,0,20)),this.titleOnTop?rg.layout.Anchor.Bottom:rg.layout.Anchor.Top);
+		return this.title;
+	}
+	,feedOptions: function(info) {
+		rg.layout.Layout.prototype.feedOptions.call(this,info);
+		this.titleOnTop = info.titleOnTop;
+	}
+	,__class__: rg.layout.LayoutSimple
+});
+rg.layout.LayoutX = $hxClasses["rg.layout.LayoutX"] = function(width,height,container) {
+	rg.layout.Layout.call(this,width,height,container);
+	this.titleOnTop = true;
+}
+rg.layout.LayoutX.__name__ = ["rg","layout","LayoutX"];
+rg.layout.LayoutX.__super__ = rg.layout.Layout;
+rg.layout.LayoutX.prototype = $extend(rg.layout.Layout.prototype,{
+	main: null
+	,titleOnTop: null
+	,bottomcontainer: null
+	,bottommiddlecontainer: null
+	,maincontainer: null
+	,middlecontainer: null
+	,xtickmarks: null
+	,title: null
+	,xtitle: null
+	,getContext: function(name) {
+		switch(name) {
+		case "title":
+			if(null == this.title) this.title = new rg.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.frame.FrameLayout.Fixed(0,0,0)),this.titleOnTop?rg.layout.Anchor.Bottom:rg.layout.Anchor.Top);
+			return this.title;
+		case "x":
+			return this.getXTickmarks();
+		case "xtitle":
+			return this.getXTitle();
+		default:
+			return null;
+		}
+	}
+	,getPanel: function(name) {
+		switch(name) {
+		case "main":
+			return this.getMain();
+		case "xtickmarks":
+			return this.getBottomContainer();
+		default:
+			var ctx = this.getContext(name);
+			if(null == ctx) return null;
+			return ctx.panel;
+		}
+	}
+	,suggestSize: function(name,size) {
+		rg.layout.Layout.prototype.suggestSize.call(this,name,size);
+		switch(name) {
+		case "x":case "xtitle":
+			var size1 = 0, c = this.getPanel("x");
+			if(null != c) size1 += c.frame.height;
+			c = this.getPanel("xtitle");
+			if(null != c) size1 += c.frame.height;
+			rg.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
+			break;
+		}
+	}
+	,getXTitle: function() {
+		if(null == this.xtitle) this.xtitle = new rg.layout.PanelContext(this.getBottomMiddleContainer().createPanel(rg.frame.FrameLayout.Fixed(0,0,0)),rg.layout.Anchor.Top);
+		return this.xtitle;
+	}
+	,getMainContainer: function() {
+		if(null == this.maincontainer) this.maincontainer = this.space.createContainerAt(this.titleOnTop?1:0,rg.frame.FrameLayout.Fill(0,0),rg.frame.Orientation.Vertical);
+		return this.maincontainer;
+	}
+	,getMiddleContainer: function() {
+		if(null == this.middlecontainer) this.middlecontainer = this.getMainContainer().createContainerAt(0,rg.frame.FrameLayout.Fill(0,0),rg.frame.Orientation.Horizontal);
+		return this.middlecontainer;
+	}
+	,getBottomContainer: function() {
+		if(null == this.bottomcontainer) this.bottomcontainer = this.getMainContainer().createContainerAt(1,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+		return this.bottomcontainer;
+	}
+	,getBottomMiddleContainer: function() {
+		if(null == this.bottommiddlecontainer) {
+			var container = this.getBottomContainer();
+			this.bottommiddlecontainer = container.createContainer(rg.frame.FrameLayout.Fill(0,0),rg.frame.Orientation.Vertical);
+			this.bottommiddlecontainer.g.classed().add("axis-x");
+		}
+		return this.bottommiddlecontainer;
+	}
+	,getXTickmarks: function() {
+		if(null == this.xtickmarks) {
+			var container = this.getBottomMiddleContainer();
+			this.xtickmarks = new rg.layout.PanelContext(container.createPanelAt(0,rg.frame.FrameLayout.Fixed(0,0,0)),rg.layout.Anchor.Top);
+		}
+		return this.xtickmarks;
+	}
+	,getMain: function() {
+		if(null == this.main) this.main = this.getMiddleContainer().createPanelAt(1,rg.frame.FrameLayout.Fill(0,0));
+		return this.main;
+	}
+	,feedOptions: function(info) {
+		rg.layout.Layout.prototype.feedOptions.call(this,info);
+		this.titleOnTop = info.titleOnTop;
+	}
+	,adjustPadding: function() {
+		var top = null == this.title && null == this.paddings.top?8:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?8:this.paddings.bottom, left = null == this.paddings.left?20:this.paddings.left, right = null == this.paddings.right?20:this.paddings.right;
+		if(null != left || null != right) {
+			this.suggestPanelPadding(this.getMain(),left,right);
+			this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
+		}
+		if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
+	}
+	,__class__: rg.layout.LayoutX
+});
+rg.visualization.Visualizations = $hxClasses["rg.visualization.Visualizations"] = function() { }
+rg.visualization.Visualizations.__name__ = ["rg","visualization","Visualizations"];
+rg.visualization.Visualizations.layoutDefault = null;
+rg.visualization.Visualizations.layoutType = null;
+rg.visualization.Visualizations.layoutArgs = null;
+rg.visualization.Visualizations.instantiateLayout = function(name,width,height,container) {
+	return Type.createInstance(rg.visualization.Visualizations.layoutType.get(name),[width,height,container]);
+}
+rg.visualization.Visualizations.prototype = {
+	__class__: rg.visualization.Visualizations
+}
 chx.io.Input = $hxClasses["chx.io.Input"] = function() { }
 chx.io.Input.__name__ = ["chx","io","Input"];
 chx.io.Input.prototype = {
@@ -9183,79 +9263,6 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 	,__class__: chx.io.BytesInput
 	,__properties__: $extend(chx.io.Input.prototype.__properties__,{set_position:"setPosition",get_position:"getPosition"})
 });
-if(!rg.view.layout) rg.view.layout = {}
-rg.view.layout.Layout = $hxClasses["rg.view.layout.Layout"] = function(width,height,container) {
-	this.container = container;
-	container.classed().add("rg");
-	this.space = new rg.view.svg.panel.Space(this.width = width,this.height = height,container);
-}
-rg.view.layout.Layout.__name__ = ["rg","view","layout","Layout"];
-rg.view.layout.Layout.prototype = {
-	mainPanelName: null
-	,width: null
-	,height: null
-	,space: null
-	,container: null
-	,getContext: function(name) {
-		return null;
-	}
-	,getPanel: function(name) {
-		return null;
-	}
-	,suggestSize: function(name,size) {
-		var panel = this.getPanel(name);
-		if(null == panel) return;
-		this.suggestPanelSize(panel,size);
-	}
-	,destroy: function() {
-		this.container.selectAll("*").remove();
-	}
-	,suggestPanelSize: function(panel,size) {
-		var stackitem = Types["as"](panel.frame,rg.view.frame.StackItem);
-		if(null == stackitem) return;
-		var $e = (stackitem.disposition);
-		switch( $e[1] ) {
-		case 3:
-			var a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(b,a,size));
-			break;
-		default:
-		}
-	}
-	,suggestPanelPadding: function(panel,before,after) {
-		if(null == panel) return;
-		var stackitem = Types["as"](panel.frame,rg.view.frame.StackItem);
-		if(null == stackitem) return;
-		var $e = (stackitem.disposition);
-		switch( $e[1] ) {
-		case 0:
-			var max = $e[5], min = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.view.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
-			break;
-		case 1:
-			var max = $e[6], min = $e[5], percent = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.view.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
-			break;
-		case 2:
-			var ratio = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.view.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
-			break;
-		case 3:
-			var size = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.view.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
-			break;
-		default:
-		}
-	}
-	,paddings: null
-	,feedOptions: function(info) {
-		this.mainPanelName = info.main;
-		this.paddings = info.padding;
-	}
-	,adjustPadding: function() {
-	}
-	,__class__: rg.view.layout.Layout
-}
 var StringTools = $hxClasses["StringTools"] = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
@@ -9395,11 +9402,6 @@ StringTools.splitLines = function(str) {
 StringTools.prototype = {
 	__class__: StringTools
 }
-rg.view.svg.chart.GradientEffect = $hxClasses["rg.view.svg.chart.GradientEffect"] = { __ename__ : ["rg","view","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
-rg.view.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
-rg.view.svg.chart.GradientEffect.NoEffect.toString = $estr;
-rg.view.svg.chart.GradientEffect.NoEffect.__enum__ = rg.view.svg.chart.GradientEffect;
-rg.view.svg.chart.GradientEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.view.svg.chart.GradientEffect; $x.toString = $estr; return $x; }
 var Iterables = $hxClasses["Iterables"] = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.count = function(it) {
@@ -9461,79 +9463,6 @@ Iterables.isIterable = function(v) {
 }
 Iterables.prototype = {
 	__class__: Iterables
-}
-rg.controller.factory.FactoryVariable = $hxClasses["rg.controller.factory.FactoryVariable"] = function() {
-	this.independentFactory = new rg.controller.factory.FactoryVariableIndependent();
-	this.dependentFactory = new rg.controller.factory.FactoryVariableDependent();
-}
-rg.controller.factory.FactoryVariable.__name__ = ["rg","controller","factory","FactoryVariable"];
-rg.controller.factory.FactoryVariable.prototype = {
-	independentFactory: null
-	,dependentFactory: null
-	,createVariables: function(arr) {
-		var me = this;
-		return arr.map(function(info,_) {
-			switch( (info.variableType)[1] ) {
-			case 1:
-				return me.independentFactory.create(info);
-			case 2:
-				return me.dependentFactory.create(info,null);
-			case 0:
-				return me.dependentFactory.create(info,null);
-			}
-		});
-	}
-	,createIndependents: function(info) {
-		var result = [], ordinal, discrete, ctx;
-		var _g = 0;
-		while(_g < info.length) {
-			var i = info[_g];
-			++_g;
-			var moveon = (function($this) {
-				var $r;
-				switch( (i.variableType)[1] ) {
-				case 1:
-					$r = false;
-					break;
-				case 0:
-					$r = true;
-					break;
-				default:
-					$r = true;
-				}
-				return $r;
-			}(this));
-			if(moveon) continue;
-			result.push(this.independentFactory.create(i));
-		}
-		return result;
-	}
-	,createDependents: function(info) {
-		var result = [], ordinal;
-		var _g = 0;
-		while(_g < info.length) {
-			var i = info[_g];
-			++_g;
-			var moveon = (function($this) {
-				var $r;
-				switch( (i.variableType)[1] ) {
-				case 2:
-					$r = false;
-					break;
-				case 0:
-					$r = false;
-					break;
-				default:
-					$r = true;
-				}
-				return $r;
-			}(this));
-			if(moveon) continue;
-			result.push(this.dependentFactory.create(i,null));
-		}
-		return result;
-	}
-	,__class__: rg.controller.factory.FactoryVariable
 }
 js.Boot = $hxClasses["js.Boot"] = function() { }
 js.Boot.__name__ = ["js","Boot"];
@@ -9715,6 +9644,11 @@ js.Boot.__init = function() {
 js.Boot.prototype = {
 	__class__: js.Boot
 }
+rg.svg.chart.GradientEffect = $hxClasses["rg.svg.chart.GradientEffect"] = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
+rg.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
+rg.svg.chart.GradientEffect.NoEffect.toString = $estr;
+rg.svg.chart.GradientEffect.NoEffect.__enum__ = rg.svg.chart.GradientEffect;
+rg.svg.chart.GradientEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.svg.chart.GradientEffect; $x.toString = $estr; return $x; }
 var Dynamics = $hxClasses["Dynamics"] = function() { }
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
@@ -10074,54 +10008,12 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
-rg.controller.factory.FactorySvgVisualization = $hxClasses["rg.controller.factory.FactorySvgVisualization"] = function() {
-}
-rg.controller.factory.FactorySvgVisualization.__name__ = ["rg","controller","factory","FactorySvgVisualization"];
-rg.controller.factory.FactorySvgVisualization.prototype = {
-	create: function(type,layout,options) {
-		switch(type) {
-		case "barchart":
-			var chart = new rg.controller.visualization.VisualizationBarChart(layout);
-			chart.info = chart.infoBar = rg.controller.info.Info.feed(new rg.controller.info.InfoBarChart(),options);
-			return chart;
-		case "funnelchart":
-			var chart = new rg.controller.visualization.VisualizationFunnelChart(layout);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoFunnelChart(),options);
-			return chart;
-		case "geo":
-			var chart = new rg.controller.visualization.VisualizationGeo(layout);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoGeo(),options);
-			return chart;
-		case "heatgrid":
-			var chart = new rg.controller.visualization.VisualizationHeatGrid(layout);
-			chart.info = chart.infoHeatGrid = rg.controller.info.Info.feed(new rg.controller.info.InfoHeatGrid(),options);
-			return chart;
-		case "linechart":
-			var chart = new rg.controller.visualization.VisualizationLineChart(layout);
-			chart.info = chart.infoLine = rg.controller.info.Info.feed(new rg.controller.info.InfoLineChart(),options);
-			return chart;
-		case "piechart":
-			var chart = new rg.controller.visualization.VisualizationPieChart(layout);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoPieChart(),options);
-			return chart;
-		case "sankey":
-			var chart = new rg.controller.visualization.VisualizationSankey(layout);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoSankey(),options);
-			return chart;
-		case "scattergraph":
-			var chart = new rg.controller.visualization.VisualizationScatterGraph(layout);
-			chart.info = chart.infoScatter = rg.controller.info.Info.feed(new rg.controller.info.InfoScatterGraph(),options);
-			return chart;
-		case "streamgraph":
-			var chart = new rg.controller.visualization.VisualizationStreamGraph(layout);
-			chart.info = chart.infoStream = rg.controller.info.Info.feed(new rg.controller.info.InfoStreamGraph(),options);
-			return chart;
-		default:
-			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 76, className : "rg.controller.factory.FactorySvgVisualization", methodName : "create"});
-		}
-	}
-	,__class__: rg.controller.factory.FactorySvgVisualization
-}
+rg.svg.chart.LineEffect = $hxClasses["rg.svg.chart.LineEffect"] = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
+rg.svg.chart.LineEffect.NoEffect = ["NoEffect",0];
+rg.svg.chart.LineEffect.NoEffect.toString = $estr;
+rg.svg.chart.LineEffect.NoEffect.__enum__ = rg.svg.chart.LineEffect;
+rg.svg.chart.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
+rg.svg.chart.LineEffect.DropShadow = function(ox,oy,evels) { var $x = ["DropShadow",2,ox,oy,evels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
 thx.js.AccessText = $hxClasses["thx.js.AccessText"] = function(selection) {
 	thx.js.Access.call(this,selection);
 }
@@ -10200,567 +10092,72 @@ thx.js.AccessDataText.prototype = $extend(thx.js.AccessText.prototype,{
 	}
 	,__class__: thx.js.AccessDataText
 });
-rg.controller.info.InfoLayout = $hxClasses["rg.controller.info.InfoLayout"] = function() {
-	this.main = "main";
-	this.titleOnTop = true;
-	this.scalePattern = rg.view.layout.ScalePattern.ScalesAlternating;
-	this.padding = new rg.controller.info.InfoPadding();
+rg.svg.panel.Panels = $hxClasses["rg.svg.panel.Panels"] = function() { }
+rg.svg.panel.Panels.__name__ = ["rg","svg","panel","Panels"];
+rg.svg.panel.Panels.rootSize = function(panel) {
+	var p = panel.parent;
+	while(p != null) {
+		var t = p;
+		p = panel.parent;
+		panel = t;
+	}
+	return { width : panel.frame.width, height : panel.frame.height};
 }
-rg.controller.info.InfoLayout.__name__ = ["rg","controller","info","InfoLayout"];
-rg.controller.info.InfoLayout.filters = function() {
-	return [{ field : "layout", validator : function(v) {
-		return Std["is"](v,String) && Arrays.exists(rg.controller.Visualizations.layouts,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ field : "layout", value : v.toLowerCase()}];
-	}},{ field : "width", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ value : Math.round(v), field : "width"}];
-	}},{ field : "height", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ value : Math.round(v), field : "height"}];
-	}},{ field : "visualization", validator : function(v) {
-		return Arrays.exists(rg.controller.Visualizations.svg,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ value : v.toLowerCase(), field : "type"}];
-	}},{ field : "main", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "titleontop", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ value : v, field : "titleOnTop"}];
-	}},{ field : "yscaleposition", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ value : v, field : (function($this) {
-			var $r;
-			switch(v) {
-			case "alt":case "alternate":case "alternating":
-				$r = rg.view.layout.ScalePattern.ScalesAlternating;
-				break;
-			case "right":
-				$r = rg.view.layout.ScalePattern.ScalesAfter;
-				break;
-			default:
-				$r = rg.view.layout.ScalePattern.ScalesBefore;
-			}
-			return $r;
-		}(this))}];
-	}},{ field : "padding", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "padding", value : rg.controller.info.Info.feed(new rg.controller.info.InfoPadding(),v)}];
-	}}];
+rg.svg.panel.Panels.boundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		p = p.parent;
+	}
+	return { x : x, y : y, width : panel.frame.width, height : panel.frame.height};
 }
-rg.controller.info.InfoLayout.prototype = {
-	layout: null
-	,width: null
-	,height: null
-	,type: null
-	,main: null
-	,titleOnTop: null
-	,scalePattern: null
-	,padding: null
-	,__class__: rg.controller.info.InfoLayout
+rg.svg.panel.Panels.ancestorBoundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0, w = 0, h = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		w = p.frame.width;
+		h = p.frame.height;
+		p = p.parent;
+	}
+	return { x : -x, y : -y, width : w, height : h};
 }
-rg.data.ITickmark = $hxClasses["rg.data.ITickmark"] = function() { }
-rg.data.ITickmark.__name__ = ["rg","data","ITickmark"];
-rg.data.ITickmark.prototype = {
-	delta: null
-	,major: null
-	,value: null
-	,label: null
-	,__class__: rg.data.ITickmark
-	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
+rg.svg.panel.Panels.prototype = {
+	__class__: rg.svg.panel.Panels
 }
-rg.data.TickmarkOrdinal = $hxClasses["rg.data.TickmarkOrdinal"] = function(pos,values,major,scaleDistribution) {
-	if(major == null) major = true;
-	this.pos = pos;
-	this.values = values;
-	this.scaleDistribution = scaleDistribution;
-	this.major = major;
-}
-rg.data.TickmarkOrdinal.__name__ = ["rg","data","TickmarkOrdinal"];
-rg.data.TickmarkOrdinal.__interfaces__ = [rg.data.ITickmark];
-rg.data.TickmarkOrdinal.fromArray = function(values,scaleDistribution) {
-	return values.map(function(_,i) {
-		return new rg.data.TickmarkOrdinal(i,values,null,scaleDistribution);
+rg.svg.util.RGCss = $hxClasses["rg.svg.util.RGCss"] = function() { }
+rg.svg.util.RGCss.__name__ = ["rg","svg","util","RGCss"];
+rg.svg.util.RGCss.cache = null;
+rg.svg.util.RGCss.cssSources = function() {
+	var sources = [];
+	thx.js.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
+		sources.push(n.href);
 	});
+	return sources;
 }
-rg.data.TickmarkOrdinal.prototype = {
-	pos: null
-	,values: null
-	,scaleDistribution: null
-	,delta: null
-	,getDelta: function() {
-		return rg.data.ScaleDistributions.distribute(this.scaleDistribution,this.pos,this.values.length);
+rg.svg.util.RGCss.colorsInCss = function() {
+	if(null != rg.svg.util.RGCss.cache) return rg.svg.util.RGCss.cache;
+	var container = thx.js.Dom.select("body").append("svg:svg").attr("class").string("rg"), first = rg.svg.util.RGCss.createBlock(container,0).style("fill").get();
+	rg.svg.util.RGCss.cache = [first];
+	var _g = 1;
+	while(_g < 1000) {
+		var i = _g++;
+		var other = rg.svg.util.RGCss.createBlock(container,i).style("fill").get();
+		if(first == other) break; else rg.svg.util.RGCss.cache.push(other);
 	}
-	,major: null
-	,getMajor: function() {
-		return this.major;
-	}
-	,value: null
-	,getValue: function() {
-		return this.values[this.pos];
-	}
-	,label: null
-	,getLabel: function() {
-		return rg.util.RGStrings.humanize(this.values[this.pos]);
-	}
-	,toString: function() {
-		return rg.data.Tickmarks.string(this);
-	}
-	,__class__: rg.data.TickmarkOrdinal
-	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
+	container.remove();
+	return rg.svg.util.RGCss.cache;
 }
-rg.view.svg.chart.FunnelChart = $hxClasses["rg.view.svg.chart.FunnelChart"] = function(panel) {
-	rg.view.svg.chart.Chart.call(this,panel);
-	this.padding = 2.5;
-	this.flatness = 1.0;
-	this.arrowSize = 30;
-	this.gradientLightness = 1;
-	this.displayGradient = true;
-	this.labelArrow = this.defaultLabelArrow.$bind(this);
-	this.labelDataPoint = this.defaultLabelDataPoint.$bind(this);
-	this.labelDataPointOver = this.defaultLabelDataPointOver.$bind(this);
+rg.svg.util.RGCss.numberOfColorsInCss = function() {
+	return rg.svg.util.RGCss.colorsInCss().length;
 }
-rg.view.svg.chart.FunnelChart.__name__ = ["rg","view","svg","chart","FunnelChart"];
-rg.view.svg.chart.FunnelChart.__super__ = rg.view.svg.chart.Chart;
-rg.view.svg.chart.FunnelChart.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	padding: null
-	,flatness: null
-	,displayGradient: null
-	,gradientLightness: null
-	,arrowSize: null
-	,labelArrow: null
-	,variableIndependent: null
-	,variableDependent: null
-	,defs: null
-	,dps: null
-	,defaultLabelArrow: function(dp,stats) {
-		var value = Reflect.field(dp,this.variableDependent.type) / stats.max;
-		return thx.culture.FormatNumber.percent(100 * value,0);
-	}
-	,defaultLabelDataPoint: function(dp,stats) {
-		return rg.util.RGStrings.humanize(Reflect.field(dp,this.variableIndependent.type)).split(" ").join("\n");
-	}
-	,defaultLabelDataPointOver: function(dp,stats) {
-		return Ints.format(Reflect.field(dp,this.variableDependent.type));
-	}
-	,setVariables: function(variableIndependents,variableDependents) {
-		this.variableIndependent = variableIndependents[0];
-		this.variableDependent = variableDependents[0];
-	}
-	,data: function(dps) {
-		this.dps = dps;
-		this.redraw();
-	}
-	,resize: function() {
-		rg.view.svg.chart.Chart.prototype.resize.call(this);
-		this.redraw();
-	}
-	,dpvalue: function(dp) {
-		return Reflect.field(dp,this.variableDependent.type);
-	}
-	,stats: null
-	,topheight: null
-	,h: null
-	,scale: function(value) {
-		return this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),value);
-	}
-	,next: function(i) {
-		return this.dpvalue(this.dps[i + 1 < this.dps.length?i + 1:i]);
-	}
-	,redraw: function() {
-		var me = this;
-		if(null == this.dps || 0 == this.dps.length) return;
-		this.g.selectAll("g").remove();
-		this.g.selectAll("radialGradient").remove();
-		this.stats = this.variableDependent.stats;
-		var max = this.scale(this.stats.max), wscale = function(v) {
-			return me.scale(v) / max * (me.width - 2) / 2;
-		}, fx1 = function(v) {
-			return me.width / 2 - wscale(v);
-		}, fx2 = function(v) {
-			return me.width - fx1(v);
-		}, diagonal1 = new thx.svg.Diagonal().sourcef(function(o,i) {
-			return [fx1(me.dpvalue(o)),0.0];
-		}).targetf(function(o,i) {
-			return [fx1(me.next(i)),me.h];
-		}), diagonal2 = new thx.svg.Diagonal().sourcef(function(o,i) {
-			return [fx2(me.next(i)),me.h];
-		}).targetf(function(o,i) {
-			return [fx2(me.dpvalue(o)),0.0];
-		}), conj = function(v,r,dir) {
-			var x2 = r?fx1(v) - fx2(v):fx2(v) - fx1(v), a = 5, d = r?dir == 0?1:0:dir;
-			return " a " + a + " " + me.flatness + " 0 0 " + d + " " + x2 + " 0";
-		}, conj1 = function(d,i) {
-			return conj(me.dpvalue(d),true,0);
-		}, conj2 = function(d,i) {
-			return conj(me.next(i),false,0);
-		}, conjr = function(d,i) {
-			var v = me.dpvalue(d);
-			return " M " + fx1(v) + " 0 " + conj(v,false,0) + conj(v,true,1);
-		};
-		var top = this.g.append("svg:g");
-		var path = top.append("svg:path").attr("class").string("funnel-inside fill-0").attr("d").string(conjr(this.dps[0]));
-		if(null != this.click) top.onNode("click",function(_,_1) {
-			me.click(me.dps[0],me.stats);
-		});
-		if(this.displayGradient) this.internalGradient(path);
-		top.onNode("mouseover",function(_,_1) {
-			me.mouseOver(me.dps[0],0,me.stats);
-		});
-		this.topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
-		var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside fill-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
-		bottom.remove();
-		this.h = (this.height - this.topheight - bottomheight - (this.dps.length - 1) * this.padding) / this.dps.length;
-		top.attr("transform").string("translate(0," + (1 + this.topheight) + ")");
-		var section = this.g.selectAll("g.section").data(this.dps);
-		var enter = section.enter().append("svg:g").attr("class").string("section").attr("transform").stringf(function(d,i) {
-			return "translate(0," + (me.topheight + i * (me.padding + me.h)) + ")";
-		});
-		if(null != this.click) enter.on("click",function(d,_) {
-			me.click(d,me.stats);
-		});
-		enter.on("mouseover",function(d,i) {
-			me.mouseOver(d,i,me.stats);
-		});
-		var funnel = enter.append("svg:path").attr("class").stringf(function(d,i) {
-			return "funnel-outside fill-" + i;
-		}).attr("d").stringf(function(d,i) {
-			var t = diagonal2.diagonal(d,i).split("C");
-			t.shift();
-			var d2 = "C" + t.join("C");
-			return diagonal1.diagonal(d,i) + conj2(d,i) + d2 + conj1(d,i);
-		});
-		if(this.displayGradient) enter.eachNode(this.externalGradient.$bind(this));
-		var ga = this.g.selectAll("g.arrow").data(this.dps).enter().append("svg:g").attr("class").string("arrow").attr("transform").stringf(function(d,i) {
-			return "translate(" + me.width / 2 + "," + (me.topheight + me.h * i + me.arrowSize / 2) + ")";
-		});
-		ga.each(function(d,i) {
-			if(null == me.labelArrow) return;
-			var text = me.labelArrow(d,me.stats);
-			if(null == text) return;
-			var node = thx.js.Dom.selectNode(thx.js.Group.current);
-			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
-			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
-			var label = new rg.view.svg.widget.Label(node,true,false,true);
-			label.setAnchor(rg.view.svg.widget.GridAnchor.Bottom);
-			label.setText(text);
-		});
-		ga.each(function(d,i) {
-			if(null == me.labelDataPoint) return;
-			var text = me.labelDataPoint(d,me.stats);
-			if(null == text) return;
-			var balloon = new rg.view.svg.widget.Balloon(me.g);
-			balloon.setBoundingBox({ x : me.width / 2 + me.arrowSize / 3 * 2, y : 0, width : me.width, height : me.height});
-			balloon.setPreferredSide(3);
-			balloon.setText(text.split("\n"));
-			balloon.moveTo(me.width / 2,me.topheight + me.h * .6 + (me.h + me.padding) * i,false);
-		});
-		this.ready.dispatch();
-	}
-	,mouseOver: function(dp,i,stats) {
-		if(null == this.labelDataPointOver) return;
-		var text = this.labelDataPointOver(dp,stats);
-		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,true);
-		}
-	}
-	,init: function() {
-		rg.view.svg.chart.Chart.prototype.init.call(this);
-		if(null != this.tooltip) this.tooltip.setPreferredSide(1);
-		this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
-	}
-	,internalGradient: function(d) {
-		var color = rg.util.RGColors.parse(d.style("fill").get(),"#cccccc"), stops = this.defs.append("svg:radialGradient").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
-		stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString());
-		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),-this.gradientLightness).toRgbString());
-		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
-	}
-	,externalGradient: function(n,i) {
-		var g = thx.js.Dom.selectNode(n), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
-		var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
-		var top = color.hex("#");
-		stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
-		var ratio1 = 1 - (vc < vn?vc / vn:vn / vc), middlecolor = rg.util.RGColors.applyLightness(color,ratio1,this.gradientLightness * (vc >= vn?1:-1)).hex("#");
-		stops.append("svg:stop").attr("offset").string("50%").attr("stop-color").string(middlecolor);
-		stops.append("svg:stop").attr("offset").string("90%").attr("stop-color").string(top);
-		d.attr("style").string("fill:url(#" + id + ")");
-	}
-	,__class__: rg.view.svg.chart.FunnelChart
-});
-rg.controller.info.InfoCartesianChart = $hxClasses["rg.controller.info.InfoCartesianChart"] = function() {
-	this.animation = new rg.controller.info.InfoAnimation();
-	this.label = new rg.controller.info.InfoLabelAxis();
-	this.displayMinorTick = function(_) {
-		return true;
-	};
-	this.displayMajorTick = function(_) {
-		return true;
-	};
-	this.displayLabelTick = function(_) {
-		return true;
-	};
-	this.displayAnchorLineTick = function(_) {
-		return false;
-	};
-	this.displayMinorRule = function(_) {
-		return false;
-	};
-	this.displayMajorRule = function(_) {
-		return false;
-	};
-	this.displayAnchorLineRule = function(_) {
-		return false;
-	};
-	this.labelOrientation = function(_) {
-		return null;
-	};
-	this.labelAnchor = function(_) {
-		return null;
-	};
-	this.labelAngle = function(_) {
-		return null;
-	};
-	this.lengthTickMinor = 2;
-	this.lengthTickMajor = 5;
-	this.paddingTickMinor = 1;
-	this.paddingTickMajor = 1;
-	this.paddingLabel = 10;
+rg.svg.util.RGCss.createBlock = function(container,pos) {
+	return container.append("svg:rect").attr("class").string("fill-" + pos);
 }
-rg.controller.info.InfoCartesianChart.__name__ = ["rg","controller","info","InfoCartesianChart"];
-rg.controller.info.InfoCartesianChart.filters = function() {
-	return [{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelAxis(),v)}];
-	}},{ field : "displaytickmarks", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v},{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v},{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displaytickminor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displaytickmajor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayticklabel", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayanchorlinetick", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayAnchorLineTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayrules", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v},{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayruleminor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayrulemajor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayanchorlinerule", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayAnchorLineRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "lengthtick", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "lengthTickMajor", value : v},{ field : "lengthTickMinor", value : v}];
-	}},{ field : "lengthtickminor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "lengthTickMinor", value : v}];
-	}},{ field : "lengthtickmajor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "lengthTickMajor", value : v}];
-	}},{ field : "paddingtick", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingTickMajor", value : v},{ field : "paddingTickMinor", value : v}];
-	}},{ field : "paddingtickminor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingTickMinor", value : v}];
-	}},{ field : "paddingtickmajor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingTickMajor", value : v}];
-	}},{ field : "paddingticklabel", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingLabel", value : v}];
-	}},{ field : "labelorientation", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "labelOrientation", value : Std["is"](v,String)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "labelanchor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "labelAnchor", value : Std["is"](v,String)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "labelangle", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "labelAngle", value : Std["is"](v,Float)?function(_) {
-			return v;
-		}:v}];
-	}}];
+rg.svg.util.RGCss.prototype = {
+	__class__: rg.svg.util.RGCss
 }
-rg.controller.info.InfoCartesianChart.prototype = {
-	animation: null
-	,click: null
-	,label: null
-	,displayMinorTick: null
-	,displayMajorTick: null
-	,displayLabelTick: null
-	,displayAnchorLineTick: null
-	,displayMinorRule: null
-	,displayMajorRule: null
-	,displayAnchorLineRule: null
-	,labelOrientation: null
-	,labelAnchor: null
-	,labelAngle: null
-	,lengthTickMinor: null
-	,lengthTickMajor: null
-	,paddingTickMinor: null
-	,paddingTickMajor: null
-	,paddingLabel: null
-	,__class__: rg.controller.info.InfoCartesianChart
-}
-rg.controller.info.InfoStreamGraph = $hxClasses["rg.controller.info.InfoStreamGraph"] = function() {
-	rg.controller.info.InfoCartesianChart.call(this);
-	this.segment = new rg.controller.info.InfoSegment();
-	this.interpolation = thx.svg.LineInterpolator.Cardinal();
-	this.effect = rg.view.svg.chart.StreamEffect.GradientVertical(1.25);
-}
-rg.controller.info.InfoStreamGraph.__name__ = ["rg","controller","info","InfoStreamGraph"];
-rg.controller.info.InfoStreamGraph.filters = function() {
-	return [{ field : "interpolation", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
-	}},{ field : "effect", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "effect", value : rg.view.svg.chart.StreamEffects.parse(v)}];
-	}},{ field : "segmenton", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),{ on : v})}];
-	}},{ field : "segment", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),v)}];
-	}}].concat(rg.controller.info.InfoCartesianChart.filters());
-}
-rg.controller.info.InfoStreamGraph.__super__ = rg.controller.info.InfoCartesianChart;
-rg.controller.info.InfoStreamGraph.prototype = $extend(rg.controller.info.InfoCartesianChart.prototype,{
-	interpolation: null
-	,effect: null
-	,segment: null
-	,__class__: rg.controller.info.InfoStreamGraph
-});
-rg.controller.visualization.VisualizationLineChart = $hxClasses["rg.controller.visualization.VisualizationLineChart"] = function(layout) {
-	rg.controller.visualization.VisualizationCartesian.call(this,layout);
-}
-rg.controller.visualization.VisualizationLineChart.__name__ = ["rg","controller","visualization","VisualizationLineChart"];
-rg.controller.visualization.VisualizationLineChart.__super__ = rg.controller.visualization.VisualizationCartesian;
-rg.controller.visualization.VisualizationLineChart.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
-	infoLine: null
-	,initAxes: function() {
-		this.xvariable = this.variables[0];
-		this.yvariables = this.variables.slice(1);
-	}
-	,initChart: function() {
-		var me = this;
-		var chart = new rg.view.svg.chart.LineChart(this.layout.getPanel(this.layout.mainPanelName));
-		chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		chart.symbol = this.infoLine.symbol;
-		chart.symbolStyle = this.infoLine.symbolStyle;
-		chart.lineInterpolator = this.infoLine.interpolation;
-		chart.lineEffect = this.infoLine.effect;
-		if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.data.ScaleDistribution.ScaleFill;
-		if(null != this.infoLine.y0property) chart.y0property = this.infoLine.y0property; else if(this.infoLine.displayarea) chart.y0property = "";
-		this.chart = chart;
-	}
-	,transformData: function(dps) {
-		var results = [], segmenter = new rg.data.Segmenter(this.infoLine.segment.on,this.infoLine.segment.transform,this.infoLine.segment.scale);
-		var _g1 = 0, _g = this.dependentVariables.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var variable = this.dependentVariables[i];
-			var values = rg.util.DataPoints.filterByDependents(dps,[variable]);
-			results.push(segmenter.segment(values));
-		}
-		return results;
-	}
-	,__class__: rg.controller.visualization.VisualizationLineChart
-});
-rg.controller.info.InfoLabelLeaderboard = $hxClasses["rg.controller.info.InfoLabelLeaderboard"] = function() {
-	rg.controller.info.InfoLabel.call(this);
-}
-rg.controller.info.InfoLabelLeaderboard.__name__ = ["rg","controller","info","InfoLabelLeaderboard"];
-rg.controller.info.InfoLabelLeaderboard.filters = function() {
-	return [{ field : "rank", validator : function(v) {
-		return v == null || Reflect.isFunction(v);
-	}, filter : null},{ field : "value", validator : function(v) {
-		return v == null || Reflect.isFunction(v);
-	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
-}
-rg.controller.info.InfoLabelLeaderboard.__super__ = rg.controller.info.InfoLabel;
-rg.controller.info.InfoLabelLeaderboard.prototype = $extend(rg.controller.info.InfoLabel.prototype,{
-	rank: null
-	,value: null
-	,__class__: rg.controller.info.InfoLabelLeaderboard
-});
 thx.js.AccessTween = $hxClasses["thx.js.AccessTween"] = function(transition,tweens) {
 	this.transition = transition;
 	this.tweens = tweens;
@@ -10955,6 +10352,107 @@ thx.json.Json.decode = function(value) {
 }
 thx.json.Json.prototype = {
 	__class__: thx.json.Json
+}
+rg.visualization.VisualizationBarChart = $hxClasses["rg.visualization.VisualizationBarChart"] = function(layout) {
+	rg.visualization.VisualizationCartesian.call(this,layout);
+}
+rg.visualization.VisualizationBarChart.__name__ = ["rg","visualization","VisualizationBarChart"];
+rg.visualization.VisualizationBarChart.__super__ = rg.visualization.VisualizationCartesian;
+rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
+	infoBar: null
+	,initAxes: function() {
+		if(this.infoBar.horizontal) {
+			this.xvariable = this.dependentVariables.map(function(d,_) {
+				return d;
+			})[0];
+			this.yvariables = [this.independentVariables[0]];
+		} else {
+			this.yvariables = this.dependentVariables.map(function(d,_) {
+				return d;
+			});
+			this.xvariable = this.independentVariables[0];
+		}
+	}
+	,initChart: function() {
+		var me = this;
+		var chart = new rg.svg.chart.BarChart(this.layout.getPanel(this.layout.mainPanelName));
+		chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		chart.stacked = this.infoBar.stacked;
+		var $e = (this.infoBar.effect);
+		switch( $e[1] ) {
+		case 0:
+			chart.displayGradient = false;
+			break;
+		case 1:
+			var lightness = $e[2];
+			chart.displayGradient = true;
+			chart.gradientLightness = lightness;
+			break;
+		}
+		chart.padding = this.infoBar.barPadding;
+		chart.paddingAxis = this.infoBar.barPaddingAxis;
+		chart.paddingDataPoint = this.infoBar.barPaddingDataPoint;
+		chart.horizontal = this.infoBar.horizontal;
+		this.chart = chart;
+	}
+	,transformData: function(dps) {
+		var results = [], variable = this.independentVariables[0], values = variable.axis.range(variable.min(),variable.max());
+		var _g = 0;
+		while(_g < values.length) {
+			var value = [values[_g]];
+			++_g;
+			var axisresults = [];
+			var _g2 = 0, _g1 = this.dependentVariables.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
+				var dps1 = rg.util.DataPoints.filterByDependents(dps,[this.dependentVariables[i]]);
+				axisresults.push(Arrays.filter(dps1,(function(value) {
+					return function(d) {
+						return Reflect.field(d,variable.type) == value[0];
+					};
+				})(value)));
+			}
+			results.push(axisresults);
+		}
+		return results;
+	}
+	,__class__: rg.visualization.VisualizationBarChart
+});
+rg.info.Info = $hxClasses["rg.info.Info"] = function() { }
+rg.info.Info.__name__ = ["rg","info","Info"];
+rg.info.Info.feed = function(info,ob) {
+	if(null == ob) return info;
+	var cl = Type.getClass(info), method = Reflect.field(cl,"filters");
+	if(null == method) {
+		Objects.copyTo(ob,info);
+		return info;
+	}
+	var filters = method.apply(cl,[]), value;
+	var _g = 0;
+	while(_g < filters.length) {
+		var filter = filters[_g];
+		++_g;
+		if(Reflect.hasField(ob,filter.field)) {
+			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) {
+				haxe.Log.trace(value,{ fileName : "Info.hx", lineNumber : 32, className : "rg.info.Info", methodName : "feed"});
+				haxe.Log.trace(filter.field,{ fileName : "Info.hx", lineNumber : 33, className : "rg.info.Info", methodName : "feed"});
+				throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 34, className : "rg.info.Info", methodName : "feed"});
+			}
+			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
+			var _g1 = 0;
+			while(_g1 < items.length) {
+				var item = items[_g1];
+				++_g1;
+				info[item.field] = item.value;
+			}
+		}
+	}
+	return info;
+}
+rg.info.Info.prototype = {
+	__class__: rg.info.Info
 }
 rg.util.Auth = $hxClasses["rg.util.Auth"] = function(authCode) {
 	this.test = rg.util.Decrypt.decrypt(authCode);
@@ -11455,148 +10953,6 @@ Strings.compare = function(a,b) {
 Strings.prototype = {
 	__class__: Strings
 }
-rg.view.layout.LayoutX = $hxClasses["rg.view.layout.LayoutX"] = function(width,height,container) {
-	rg.view.layout.Layout.call(this,width,height,container);
-	this.titleOnTop = true;
-}
-rg.view.layout.LayoutX.__name__ = ["rg","view","layout","LayoutX"];
-rg.view.layout.LayoutX.__super__ = rg.view.layout.Layout;
-rg.view.layout.LayoutX.prototype = $extend(rg.view.layout.Layout.prototype,{
-	main: null
-	,titleOnTop: null
-	,bottomcontainer: null
-	,bottommiddlecontainer: null
-	,maincontainer: null
-	,middlecontainer: null
-	,xtickmarks: null
-	,title: null
-	,xtitle: null
-	,getContext: function(name) {
-		switch(name) {
-		case "title":
-			if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,0)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
-			return this.title;
-		case "x":
-			return this.getXTickmarks();
-		case "xtitle":
-			return this.getXTitle();
-		default:
-			return null;
-		}
-	}
-	,getPanel: function(name) {
-		switch(name) {
-		case "main":
-			return this.getMain();
-		case "xtickmarks":
-			return this.getBottomContainer();
-		default:
-			var ctx = this.getContext(name);
-			if(null == ctx) return null;
-			return ctx.panel;
-		}
-	}
-	,suggestSize: function(name,size) {
-		rg.view.layout.Layout.prototype.suggestSize.call(this,name,size);
-		switch(name) {
-		case "x":case "xtitle":
-			var size1 = 0, c = this.getPanel("x");
-			if(null != c) size1 += c.frame.height;
-			c = this.getPanel("xtitle");
-			if(null != c) size1 += c.frame.height;
-			rg.view.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
-			break;
-		}
-	}
-	,getXTitle: function() {
-		if(null == this.xtitle) this.xtitle = new rg.view.layout.PanelContext(this.getBottomMiddleContainer().createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
-		return this.xtitle;
-	}
-	,getMainContainer: function() {
-		if(null == this.maincontainer) this.maincontainer = this.space.createContainerAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
-		return this.maincontainer;
-	}
-	,getMiddleContainer: function() {
-		if(null == this.middlecontainer) this.middlecontainer = this.getMainContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Horizontal);
-		return this.middlecontainer;
-	}
-	,getBottomContainer: function() {
-		if(null == this.bottomcontainer) this.bottomcontainer = this.getMainContainer().createContainerAt(1,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-		return this.bottomcontainer;
-	}
-	,getBottomMiddleContainer: function() {
-		if(null == this.bottommiddlecontainer) {
-			var container = this.getBottomContainer();
-			this.bottommiddlecontainer = container.createContainer(rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
-			this.bottommiddlecontainer.g.classed().add("axis-x");
-		}
-		return this.bottommiddlecontainer;
-	}
-	,getXTickmarks: function() {
-		if(null == this.xtickmarks) {
-			var container = this.getBottomMiddleContainer();
-			this.xtickmarks = new rg.view.layout.PanelContext(container.createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
-		}
-		return this.xtickmarks;
-	}
-	,getMain: function() {
-		if(null == this.main) this.main = this.getMiddleContainer().createPanelAt(1,rg.view.frame.FrameLayout.Fill(0,0));
-		return this.main;
-	}
-	,feedOptions: function(info) {
-		rg.view.layout.Layout.prototype.feedOptions.call(this,info);
-		this.titleOnTop = info.titleOnTop;
-	}
-	,adjustPadding: function() {
-		var top = null == this.title && null == this.paddings.top?8:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?8:this.paddings.bottom, left = null == this.paddings.left?20:this.paddings.left, right = null == this.paddings.right?20:this.paddings.right;
-		if(null != left || null != right) {
-			this.suggestPanelPadding(this.getMain(),left,right);
-			this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
-		}
-		if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
-	}
-	,__class__: rg.view.layout.LayoutX
-});
-rg.view.layout.LayoutSimple = $hxClasses["rg.view.layout.LayoutSimple"] = function(width,height,container) {
-	rg.view.layout.Layout.call(this,width,height,container);
-	this.titleOnTop = true;
-}
-rg.view.layout.LayoutSimple.__name__ = ["rg","view","layout","LayoutSimple"];
-rg.view.layout.LayoutSimple.__super__ = rg.view.layout.Layout;
-rg.view.layout.LayoutSimple.prototype = $extend(rg.view.layout.Layout.prototype,{
-	main: null
-	,titleOnTop: null
-	,getContext: function(name) {
-		switch(name) {
-		case "title":
-			if(null != this.title) return null;
-			return this.getTitle();
-		default:
-			return null;
-		}
-	}
-	,getPanel: function(name) {
-		switch(name) {
-		case "main":
-			if(null == this.main) this.main = this.space.createPanelAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0));
-			return this.main;
-		case "title":
-			return this.getTitle().panel;
-		default:
-			return null;
-		}
-	}
-	,title: null
-	,getTitle: function() {
-		if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,20)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
-		return this.title;
-	}
-	,feedOptions: function(info) {
-		rg.view.layout.Layout.prototype.feedOptions.call(this,info);
-		this.titleOnTop = info.titleOnTop;
-	}
-	,__class__: rg.view.layout.LayoutSimple
-});
 thx.json.JsonDecoder = $hxClasses["thx.json.JsonDecoder"] = function(handler,tabsize) {
 	if(tabsize == null) tabsize = 4;
 	this.handler = handler;
@@ -11995,203 +11351,106 @@ thx.js.ClientHost.hasNavigator = function() {
 thx.js.ClientHost.prototype = {
 	__class__: thx.js.ClientHost
 }
-rg.controller.visualization.VisualizationScatterGraph = $hxClasses["rg.controller.visualization.VisualizationScatterGraph"] = function(layout) {
-	rg.controller.visualization.VisualizationCartesian.call(this,layout);
+rg.info.InfoMap = $hxClasses["rg.info.InfoMap"] = function() {
+	this.property = "location";
+	this.type = "geojson";
+	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCssInterpolation();
+	this.usejsonp = true;
+	this.radius = function(_,_1) {
+		return 10;
+	};
 }
-rg.controller.visualization.VisualizationScatterGraph.__name__ = ["rg","controller","visualization","VisualizationScatterGraph"];
-rg.controller.visualization.VisualizationScatterGraph.__super__ = rg.controller.visualization.VisualizationCartesian;
-rg.controller.visualization.VisualizationScatterGraph.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
-	infoScatter: null
-	,initAxes: function() {
-		this.xvariable = this.independentVariables[0];
-		this.yvariables = this.dependentVariables.map(function(d,_) {
-			return d;
-		});
-	}
-	,initChart: function() {
-		var me = this;
-		var chart = new rg.view.svg.chart.ScatterGraph(this.layout.getPanel(this.layout.mainPanelName));
-		chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		chart.symbol = this.infoScatter.symbol;
-		chart.symbolStyle = this.infoScatter.symbolStyle;
-		if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.data.ScaleDistribution.ScaleFill;
-		this.chart = chart;
-	}
-	,transformData: function(dps) {
-		var results = [], segmenter = new rg.data.Segmenter(this.infoScatter.segment.on,this.infoScatter.segment.transform,this.infoScatter.segment.scale);
-		var _g = 0, _g1 = this.dependentVariables;
-		while(_g < _g1.length) {
-			var variable = _g1[_g];
-			++_g;
-			results.push(rg.util.DataPoints.filterByDependents(dps,[variable]));
-		}
-		return results;
-	}
-	,__class__: rg.controller.visualization.VisualizationScatterGraph
-});
-rg.view.svg.chart.HeatGrid = $hxClasses["rg.view.svg.chart.HeatGrid"] = function(panel) {
-	rg.view.svg.chart.CartesianChart.call(this,panel);
-	this.useContour = false;
-	this.setColorMode(rg.view.svg.chart.ColorScaleMode.FromCss());
+rg.info.InfoMap.__name__ = ["rg","info","InfoMap"];
+rg.info.InfoMap.filters = function() {
+	return [{ field : "url", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "type", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "scale", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "projection", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "classname", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "translate", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : null},{ field : "origin", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : null},{ field : "parallels", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : null},{ field : "mode", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "mode", value : Type.createEnum(thx.geo.ProjectionMode,Strings.ucfirst(v.toLowerCase()),[])}];
+	}},{ field : "property", validator : function(v) {
+		return v == null || Std["is"](v,String);
+	}, filter : null},{ field : "usejsonp", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "template", validator : function(v) {
+		return Std["is"](v,String) && rg.info.InfoMap.isValidTemplate(v);
+	}, filter : rg.info.InfoMap.fromTemplate},{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabel(),v)}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "color", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "colorScaleMode", value : rg.svg.chart.ColorScaleModes.createFromDynamic(v)}];
+	}},{ field : "radius", validator : function(v) {
+		return Std["is"](v,Float) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "radius", value : Std["is"](v,Float)?function(_,_1) {
+			return v;
+		}:v}];
+	}},{ field : "mapping", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		if(Std["is"](v,String)) return [{ field : "mappingurl", value : v}]; else return [{ field : "mapping", value : v}];
+	}}];
 }
-rg.view.svg.chart.HeatGrid.__name__ = ["rg","view","svg","chart","HeatGrid"];
-rg.view.svg.chart.HeatGrid.__super__ = rg.view.svg.chart.CartesianChart;
-rg.view.svg.chart.HeatGrid.prototype = $extend(rg.view.svg.chart.CartesianChart.prototype,{
-	useContour: null
-	,colorMode: null
-	,dps: null
-	,variableDependent: null
-	,setVariables: function(variables,variableIndependents,variableDependents,data) {
-		this.xVariable = variableIndependents[0];
-		this.yVariables = [variableIndependents[1]];
-		this.variableDependent = variableDependents[0];
+rg.info.InfoMap.isValidTemplate = function(t) {
+	return Arrays.exists(["world","world-countries","usa-states","usa-state-centroids","usa-counties"],t.toLowerCase());
+}
+rg.info.InfoMap.fromTemplate = function(t) {
+	switch(t.toLowerCase()) {
+	case "world":case "world-countries":
+		return [{ field : "projection", value : "mercator"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "world-countries.json.js"}];
+	case "usa-states":
+		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-states.json.js"}];
+	case "usa-state-centroids":
+		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"}];
+	case "usa-counties":
+		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"}];
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 194, className : "rg.info.InfoMap", methodName : "fromTemplate"});
+			return $r;
+		}(this));
 	}
-	,init: function() {
-		rg.view.svg.chart.CartesianChart.prototype.init.call(this);
-		this.g.classed().add("heat-grid");
-	}
-	,resize: function() {
-		rg.view.svg.chart.CartesianChart.prototype.resize.call(this);
-		this.redraw();
-	}
-	,data: function(dps) {
-		this.dps = dps;
-		this.redraw();
-	}
-	,value: function(dp) {
-		var v = Reflect.field(dp,this.variableDependent.type);
-		return this.scale(v);
-	}
-	,scale: function(v) {
-		return this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),v);
-	}
-	,xrange: null
-	,yrange: null
-	,cols: null
-	,rows: null
-	,w: null
-	,h: null
-	,stats: null
-	,x: function(dp,i) {
-		return this.xrange.indexOf(Reflect.field(dp,this.xVariable.type)) * this.w;
-	}
-	,y: function(dp,i) {
-		return this.height - (1 + this.yrange.indexOf(Reflect.field(dp,this.yVariables[0].type))) * this.h;
-	}
-	,redraw: function() {
-		if(null == this.dps || 0 == this.dps.length) return;
-		this.stats = this.variableDependent.stats;
-		this.xrange = this.range(this.xVariable);
-		this.yrange = this.range(this.yVariables[0]);
-		this.cols = this.xrange.length;
-		this.rows = this.yrange.length;
-		this.w = this.width / this.cols;
-		this.h = this.height / this.rows;
-		if(this.useContour) this.drawContour(); else this.drawSquares();
-		this.ready.dispatch();
-	}
-	,drawContour: function() {
-	}
-	,createGridMap: function(grid) {
-		var map = new Hash();
-		var _g1 = 0, _g = this.rows;
-		while(_g1 < _g) {
-			var r = _g1++;
-			var _g3 = 0, _g2 = this.cols;
-			while(_g3 < _g2) {
-				var c = _g3++;
-				if(grid(c,r)) map.set(r + "-" + c,[r,c]);
-			}
-		}
-		return map;
-	}
-	,drawSquares: function() {
-		var me = this;
-		var choice = this.g.selectAll("rect").data(this.dps);
-		choice.enter().append("svg:rect").attr("x").floatf(this.x.$bind(this)).attr("y").floatf(this.y.$bind(this)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
-			me.stylefeature(thx.js.Dom.selectNode(thx.js.Group.current),dp);
-		}).on("click",this.onclick.$bind(this)).on("mouseover",this.onmouseover.$bind(this));
-	}
-	,onmouseover: function(dp,i) {
-		if(null == this.labelDataPointOver) return;
-		var text = this.labelDataPointOver(dp,this.stats);
-		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(this.x(dp,i) + this.w / 2,this.y(dp,i) + this.h / 2);
-		}
-	}
-	,onclick: function(dp,i) {
-		if(null == this.click) return;
-		this.click(dp,this.stats);
-	}
-	,range: function(variable) {
-		var v = Std["is"](variable,rg.data.VariableIndependent)?variable:null;
-		if(null != v) return v.axis.range(v.min(),v.max());
-		var tickmarks = variable.axis.ticks(variable.min(),variable.max());
-		return tickmarks.map(function(d,i) {
-			return d.getValue();
-		});
-	}
-	,stylefeature: function(svg,dp) {
-	}
-	,getColorMode: function() {
-		return this.colorMode;
-	}
-	,setColorMode: function(v) {
-		var me = this;
-		var $e = (this.colorMode = v);
-		switch( $e[1] ) {
-		case 0:
-			var g = $e[2];
-			if(null == g) g = 2;
-			break;
-		case 1:
-			var g = $e[2];
-			if(null == g) g = rg.view.svg.util.RGCss.numberOfColorsInCss();
-			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
-				svg.attr("class").string("fill-" + index);
-			};
-			break;
-		case 3:
-			var c = $e[2];
-			var colors = c.map(function(d,_) {
-				return d.hex("#");
-			});
-			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
-				svg.style("fill").string(colors[index]);
-			};
-			break;
-		case 2:
-			var colors = $e[2];
-			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
-			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
-				svg.style("fill").string(interpolator(t).hex("#"));
-			};
-			break;
-		case 4:
-			var c = $e[2];
-			var color = c.hex("#");
-			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(color);
-			};
-			break;
-		case 5:
-			var f = $e[2];
-			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(f(dp,me.variableDependent.stats));
-			};
-			break;
-		}
-		return v;
-	}
-	,__class__: rg.view.svg.chart.HeatGrid
-	,__properties__: $extend(rg.view.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
-});
+}
+rg.info.InfoMap.prototype = {
+	url: null
+	,type: null
+	,scale: null
+	,projection: null
+	,classname: null
+	,translate: null
+	,origin: null
+	,parallels: null
+	,mode: null
+	,property: null
+	,label: null
+	,click: null
+	,radius: null
+	,colorScaleMode: null
+	,usejsonp: null
+	,mapping: null
+	,mappingurl: null
+	,__class__: rg.info.InfoMap
+}
 rg.graph.Graph = $hxClasses["rg.graph.Graph"] = function(nodeidf,edgeidf) {
 	this.nodes = rg.graph.GraphNodes.newInstance(this,nodeidf);
 	this.edges = rg.graph.GraphEdges.newInstance(this,edgeidf);
@@ -12334,214 +11593,30 @@ rg.graph.Graph.prototype = {
 	}
 	,__class__: rg.graph.Graph
 }
-rg.view.frame.Stack = $hxClasses["rg.view.frame.Stack"] = function(width,height,orientation) {
-	this.orientation = null == orientation?rg.view.frame.Orientation.Vertical:orientation;
-	this.children = [];
-	this.width = width;
-	this.height = height;
+rg.info.InfoAnimation = $hxClasses["rg.info.InfoAnimation"] = function() {
+	this.animated = false;
+	this.duration = 1500;
+	this.delay = 150;
+	this.ease = thx.math.Equations.elasticf();
 }
-rg.view.frame.Stack.__name__ = ["rg","view","frame","Stack"];
-rg.view.frame.Stack.prototype = {
-	children: null
-	,width: null
-	,height: null
-	,orientation: null
-	,length: null
-	,moreSpaceRequired: function(size) {
-	}
-	,insertItem: function(pos,child) {
-		if(null == child) return this;
-		if(pos >= this.children.length) return this.addItem(child);
-		if(pos < 0) pos = 0;
-		this.children.insert(pos,child);
-		var f = child;
-		f.setParent(this);
-		this.reflow();
-		return this;
-	}
-	,addItem: function(child) {
-		if(null == child) return this;
-		this.children.push(child);
-		var f = child;
-		f.setParent(this);
-		this.reflow();
-		return this;
-	}
-	,addItems: function(it) {
-		var added = false;
-		var $it0 = it.iterator();
-		while( $it0.hasNext() ) {
-			var child = $it0.next();
-			if(null == child) continue;
-			added = true;
-			this.children.push(child);
-			var f = child;
-			f.setParent(this);
-		}
-		if(added) this.reflow();
-		return this;
-	}
-	,removeChild: function(child) {
-		if(!this.children.remove(child)) return false;
-		var f = child;
-		f.setParent(null);
-		this.reflow();
-		return true;
-	}
-	,iterator: function() {
-		return this.children.iterator();
-	}
-	,reflow: function() {
-		var available = (function($this) {
-			var $r;
-			switch( ($this.orientation)[1] ) {
-			case 0:
-				$r = $this.height;
-				break;
-			case 1:
-				$r = $this.width;
-				break;
-			}
-			return $r;
-		}(this)), otherdimension = (function($this) {
-			var $r;
-			switch( ($this.orientation)[1] ) {
-			case 0:
-				$r = $this.width;
-				break;
-			case 1:
-				$r = $this.height;
-				break;
-			}
-			return $r;
-		}(this));
-		var required = 0, values = [], variables = [], i = 0, variablespace = 0;
-		var _g = 0, _g1 = this.children;
-		while(_g < _g1.length) {
-			var child = _g1[_g];
-			++_g;
-			var $e = (child.disposition);
-			switch( $e[1] ) {
-			case 0:
-				var max = $e[5], min = $e[4], after = $e[3], before = $e[2];
-				if(null == min) min = 0;
-				if(null == max) max = available;
-				required += min + before + after;
-				variablespace += variables[i] = max - min;
-				values.push(min + before + after);
-				break;
-			case 1:
-				var max = $e[6], min = $e[5], percent = $e[4], after = $e[3], before = $e[2];
-				var size = Math.round(percent * available);
-				if(null != min && size < min) size = min;
-				if(null != max && size > max) size = max;
-				required += size + before + after;
-				values.push(size + before + after);
-				break;
-			case 2:
-				var ratio = $e[4], after = $e[3], before = $e[2];
-				if(null == ratio) ratio = 1;
-				var size = Math.round(otherdimension * ratio);
-				required += size + before + after;
-				values.push(size + before + after);
-				break;
-			case 3:
-				var size = $e[4], after = $e[3], before = $e[2];
-				required += size + before + after;
-				values.push(size + before + after);
-				break;
-			case 4:
-				var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
-				values.push(0);
-				break;
-			}
-			i++;
-		}
-		available -= required;
-		if(available > 0) {
-			i = 0;
-			var _g = 0, _g1 = this.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				switch( (child.disposition)[1] ) {
-				case 0:
-					var size = Math.round(variables[i] / variablespace * available);
-					values[i] += size;
-					break;
-				default:
-				}
-				i++;
-			}
-		}
-		i = 0;
-		var sizeable;
-		var pos = 0;
-		switch( (this.orientation)[1] ) {
-		case 0:
-			var _g = 0, _g1 = this.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				sizeable = child;
-				var $e = (child.disposition);
-				switch( $e[1] ) {
-				case 4:
-					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
-					sizeable.setLayout(x,y,w,h);
-					break;
-				case 3:
-				case 0:
-				case 1:
-				case 2:
-					var after = $e[3], before = $e[2];
-					sizeable.setLayout(0,pos + before,this.width,values[i] - after - before);
-					break;
-				}
-				pos += values[i++];
-			}
-			break;
-		case 1:
-			var _g = 0, _g1 = this.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				sizeable = child;
-				var $e = (child.disposition);
-				switch( $e[1] ) {
-				case 4:
-					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
-					sizeable.setLayout(x,y,w,h);
-					break;
-				case 3:
-				case 0:
-				case 1:
-				case 2:
-					var after = $e[3], before = $e[2];
-					sizeable.setLayout(pos + before,0,values[i] - after - before,this.height);
-					break;
-				}
-				pos += values[i++];
-			}
-			break;
-		}
-		if(available < 0) this.moreSpaceRequired(required);
-	}
-	,getLength: function() {
-		return this.children.length;
-	}
-	,setSize: function(width,height) {
-		if(this.width == width && this.height == height) return this;
-		this.width = width;
-		this.height = height;
-		this.reflow();
-		return this;
-	}
-	,toString: function() {
-		return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
-	}
-	,__class__: rg.view.frame.Stack
-	,__properties__: {get_length:"getLength"}
+rg.info.InfoAnimation.__name__ = ["rg","info","InfoAnimation"];
+rg.info.InfoAnimation.filters = function() {
+	return [{ field : "animated", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "duration", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "delay", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : null},{ field : "ease", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}];
+}
+rg.info.InfoAnimation.prototype = {
+	animated: null
+	,duration: null
+	,ease: null
+	,delay: null
+	,__class__: rg.info.InfoAnimation
 }
 chx.lang.UnsupportedException = $hxClasses["chx.lang.UnsupportedException"] = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
@@ -12610,16 +11685,6 @@ math.reduction.Montgomery.prototype = {
 	}
 	,__class__: math.reduction.Montgomery
 }
-rg.view.layout.ScalePattern = $hxClasses["rg.view.layout.ScalePattern"] = { __ename__ : ["rg","view","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
-rg.view.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
-rg.view.layout.ScalePattern.ScalesBefore.toString = $estr;
-rg.view.layout.ScalePattern.ScalesBefore.__enum__ = rg.view.layout.ScalePattern;
-rg.view.layout.ScalePattern.ScalesAfter = ["ScalesAfter",1];
-rg.view.layout.ScalePattern.ScalesAfter.toString = $estr;
-rg.view.layout.ScalePattern.ScalesAfter.__enum__ = rg.view.layout.ScalePattern;
-rg.view.layout.ScalePattern.ScalesAlternating = ["ScalesAlternating",2];
-rg.view.layout.ScalePattern.ScalesAlternating.toString = $estr;
-rg.view.layout.ScalePattern.ScalesAlternating.__enum__ = rg.view.layout.ScalePattern;
 thx.math.scale.NumericScale = $hxClasses["thx.math.scale.NumericScale"] = function() {
 	this._domain = [0.0,1.0];
 	this._range = [0.0,1.0];
@@ -12758,30 +11823,81 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	}
 	,__class__: thx.math.scale.Linear
 });
-rg.view.svg.widget.DiagonalArea = $hxClasses["rg.view.svg.widget.DiagonalArea"] = function(container,classarea,classborder) {
-	this.g = container.append("svg:g").attr("class").string("diagonal");
-	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
-		return [a[1],a[0]];
-	});
-	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill" + (null == classarea?"":" " + classarea));
-	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before" + (null == classborder?"":" " + classborder));
-	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder?"":" " + classborder));
+rg.factory.FactoryVariableIndependent = $hxClasses["rg.factory.FactoryVariableIndependent"] = function() {
 }
-rg.view.svg.widget.DiagonalArea.__name__ = ["rg","view","svg","widget","DiagonalArea"];
-rg.view.svg.widget.DiagonalArea.prototype = {
-	g: null
-	,diagonal: null
-	,area: null
-	,before: null
-	,after: null
-	,update: function(x1,y1,x2,y2,sw,ew) {
-		var top = this.diagonal.diagonal([y1,x1,y2,x2]), bottom = this.diagonal.diagonal([y2 + ew,x2,y1 + sw,x1]);
-		var path = top + "L" + bottom.substr(1) + "z";
-		this.before.attr("d").string(top);
-		this.after.attr("d").string(bottom);
-		this.area.attr("d").string(path);
+rg.factory.FactoryVariableIndependent.__name__ = ["rg","factory","FactoryVariableIndependent"];
+rg.factory.FactoryVariableIndependent.convertBound = function(axis,value) {
+	if(null == value || Reflect.isFunction(value)) return value;
+	if(Std["is"](axis,rg.axis.AxisTime)) {
+		if(Std["is"](value,Date)) value = ((function($this) {
+			var $r;
+			var $t = value;
+			if(Std["is"]($t,Date)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).getTime();
+		if(Std["is"](value,Float)) return function(_,_1) {
+			return value;
+		};
+		if(Std["is"](value,String)) return function(_,_1) {
+			return thx.date.DateParser.parse(value).getTime();
+		};
+		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 46, className : "rg.factory.FactoryVariableIndependent", methodName : "convertBound"});
 	}
-	,__class__: rg.view.svg.widget.DiagonalArea
+	return function(_,_1) {
+		return value;
+	};
+}
+rg.factory.FactoryVariableIndependent.prototype = {
+	create: function(info) {
+		if(null == info.type) return null;
+		var axiscreateer = new rg.factory.FactoryAxis(), variable = new rg.data.VariableIndependent(info.type,info.scaleDistribution), axis = axiscreateer.createDiscrete(info.type,variable,info.values,info.groupBy);
+		variable.setAxis(axis);
+		variable.setMinF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.min));
+		variable.setMaxF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.max));
+		return variable;
+	}
+	,__class__: rg.factory.FactoryVariableIndependent
+}
+rg.axis.ITickmark = $hxClasses["rg.axis.ITickmark"] = function() { }
+rg.axis.ITickmark.__name__ = ["rg","axis","ITickmark"];
+rg.axis.ITickmark.prototype = {
+	delta: null
+	,major: null
+	,value: null
+	,label: null
+	,__class__: rg.axis.ITickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
+}
+rg.axis.Tickmark = $hxClasses["rg.axis.Tickmark"] = function(value,major,delta) {
+	this.value = value;
+	this.major = major;
+	this.delta = delta;
+}
+rg.axis.Tickmark.__name__ = ["rg","axis","Tickmark"];
+rg.axis.Tickmark.__interfaces__ = [rg.axis.ITickmark];
+rg.axis.Tickmark.prototype = {
+	delta: null
+	,major: null
+	,value: null
+	,label: null
+	,getDelta: function() {
+		return this.delta;
+	}
+	,getMajor: function() {
+		return this.major;
+	}
+	,getValue: function() {
+		return this.value;
+	}
+	,getLabel: function() {
+		return rg.util.RGStrings.humanize(this.getValue());
+	}
+	,toString: function() {
+		return rg.axis.Tickmarks.string(this);
+	}
+	,__class__: rg.axis.Tickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.util.DataPoints = $hxClasses["rg.util.DataPoints"] = function() { }
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
@@ -12967,34 +12083,6 @@ thx.svg.Arc.prototype = {
 	}
 	,__class__: thx.svg.Arc
 }
-rg.controller.info.InfoDownload = $hxClasses["rg.controller.info.InfoDownload"] = function() {
-	this.service = rg.RGConst.SERVICE_RENDERING_STATIC;
-	this.formats = ["png","jpg","pdf"];
-}
-rg.controller.info.InfoDownload.__name__ = ["rg","controller","info","InfoDownload"];
-rg.controller.info.InfoDownload.filters = function() {
-	return [{ field : "handler", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "service", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "background", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "formats", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "position", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "position", value : rg.view.html.widget.DownloaderPositions.parse(v)}];
-	}}];
-}
-rg.controller.info.InfoDownload.prototype = {
-	handler: null
-	,service: null
-	,background: null
-	,position: null
-	,formats: null
-	,__class__: rg.controller.info.InfoDownload
-}
 rg.util.Js = $hxClasses["rg.util.Js"] = function() { }
 rg.util.Js.__name__ = ["rg","util","Js"];
 rg.util.Js.findScript = function(fragment) {
@@ -13019,39 +12107,57 @@ rg.util.Js.findScript = function(fragment) {
 rg.util.Js.prototype = {
 	__class__: rg.util.Js
 }
-rg.controller.factory.FactoryHtmlVisualization = $hxClasses["rg.controller.factory.FactoryHtmlVisualization"] = function() {
+rg.info.InfoLineChart = $hxClasses["rg.info.InfoLineChart"] = function() {
+	rg.info.InfoCartesianChart.call(this);
+	this.segment = new rg.info.InfoSegment();
+	this.effect = rg.svg.chart.LineEffect.Gradient(-1.2,2);
+	this.interpolation = thx.svg.LineInterpolator.Linear;
+	this.displayarea = false;
 }
-rg.controller.factory.FactoryHtmlVisualization.__name__ = ["rg","controller","factory","FactoryHtmlVisualization"];
-rg.controller.factory.FactoryHtmlVisualization.prototype = {
-	create: function(type,container,options) {
-		switch(type) {
-		case "pivottable":
-			var chart = new rg.controller.visualization.VisualizationPivotTable(container);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoPivotTable(),options);
-			return chart;
-		case "leaderboard":
-			var chart = new rg.controller.visualization.VisualizationLeaderboard(container);
-			chart.info = rg.controller.info.Info.feed(new rg.controller.info.InfoLeaderboard(),options);
-			return chart;
-		default:
-			throw new thx.error.Error("unsupported visualization '{0}'",null,type,{ fileName : "FactoryHtmlVisualization.hx", lineNumber : 35, className : "rg.controller.factory.FactoryHtmlVisualization", methodName : "create"});
-		}
-		return null;
-	}
-	,__class__: rg.controller.factory.FactoryHtmlVisualization
+rg.info.InfoLineChart.__name__ = ["rg","info","InfoLineChart"];
+rg.info.InfoLineChart.filters = function() {
+	return [{ field : "symbol", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
+			return v;
+		}:v}];
+	}},{ field : "symbolstyle", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "symbolStyle", value : v}];
+	}},{ field : "y0property", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "displayarea", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "effect", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "effect", value : rg.svg.chart.LineEffects.parse(v)}];
+	}},{ field : "interpolation", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
+	}},{ field : "segmenton", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),{ on : v})}];
+	}},{ field : "segment", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),v)}];
+	}}].concat(rg.info.InfoCartesianChart.filters());
 }
-rg.data.TickmarkTime = $hxClasses["rg.data.TickmarkTime"] = function(value,values,major,periodicity,scaleDistribution) {
-	rg.data.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
-	this.periodicity = periodicity;
-}
-rg.data.TickmarkTime.__name__ = ["rg","data","TickmarkTime"];
-rg.data.TickmarkTime.__super__ = rg.data.TickmarkOrdinal;
-rg.data.TickmarkTime.prototype = $extend(rg.data.TickmarkOrdinal.prototype,{
-	periodicity: null
-	,getLabel: function() {
-		return rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
-	}
-	,__class__: rg.data.TickmarkTime
+rg.info.InfoLineChart.__super__ = rg.info.InfoCartesianChart;
+rg.info.InfoLineChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
+	effect: null
+	,interpolation: null
+	,symbol: null
+	,symbolStyle: null
+	,displayarea: null
+	,y0property: null
+	,segment: null
+	,__class__: rg.info.InfoLineChart
 });
 var List = $hxClasses["List"] = function() {
 	this.length = 0;
@@ -13193,6 +12299,21 @@ rg.util.RGStrings.hstring = function(s) {
 rg.util.RGStrings.prototype = {
 	__class__: rg.util.RGStrings
 }
+rg.factory.FactoryLayout = $hxClasses["rg.factory.FactoryLayout"] = function() {
+}
+rg.factory.FactoryLayout.__name__ = ["rg","factory","FactoryLayout"];
+rg.factory.FactoryLayout.prototype = {
+	create: function(info,heightmargin,container) {
+		var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
+		var layoutName = info.layout;
+		if(null == layoutName) layoutName = rg.visualization.Visualizations.layoutDefault.get(info.type);
+		if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.factory.FactoryLayout", methodName : "create"});
+		var layout = rg.visualization.Visualizations.instantiateLayout(layoutName,width,height,container);
+		layout.feedOptions(info);
+		return layout;
+	}
+	,__class__: rg.factory.FactoryLayout
+}
 if(!thx.geom) thx.geom = {}
 thx.geom.Contour = $hxClasses["thx.geom.Contour"] = function() { }
 thx.geom.Contour.__name__ = ["thx","geom","Contour"];
@@ -13257,16 +12378,6 @@ IntIter.prototype = {
 	}
 	,__class__: IntIter
 }
-rg.view.layout.PanelContext = $hxClasses["rg.view.layout.PanelContext"] = function(panel,anchor) {
-	this.panel = panel;
-	this.anchor = anchor;
-}
-rg.view.layout.PanelContext.__name__ = ["rg","view","layout","PanelContext"];
-rg.view.layout.PanelContext.prototype = {
-	panel: null
-	,anchor: null
-	,__class__: rg.view.layout.PanelContext
-}
 if(!chx.formats) chx.formats = {}
 chx.formats.Base64 = $hxClasses["chx.formats.Base64"] = function() { }
 chx.formats.Base64.__name__ = ["chx","formats","Base64"];
@@ -13306,6 +12417,16 @@ chx.formats.Base64.decode = function(s) {
 }
 chx.formats.Base64.prototype = {
 	__class__: chx.formats.Base64
+}
+rg.layout.PanelContext = $hxClasses["rg.layout.PanelContext"] = function(panel,anchor) {
+	this.panel = panel;
+	this.anchor = anchor;
+}
+rg.layout.PanelContext.__name__ = ["rg","layout","PanelContext"];
+rg.layout.PanelContext.prototype = {
+	panel: null
+	,anchor: null
+	,__class__: rg.layout.PanelContext
 }
 thx.js.AccessAttribute = $hxClasses["thx.js.AccessAttribute"] = function(name,selection) {
 	thx.js.Access.call(this,selection);
@@ -13417,6 +12538,32 @@ thx.js.AccessDataAttribute.prototype = $extend(thx.js.AccessAttribute.prototype,
 	}
 	,__class__: thx.js.AccessDataAttribute
 });
+rg.info.InfoDataSource = $hxClasses["rg.info.InfoDataSource"] = function() {
+}
+rg.info.InfoDataSource.__name__ = ["rg","info","InfoDataSource"];
+rg.info.InfoDataSource.filters = function() {
+	return [{ field : "data", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : function(v) {
+		return [{ field : "loader", value : function(handler) {
+			handler(v);
+		}}];
+	}},{ field : "datapoints", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : function(v) {
+		return [{ field : "loader", value : function(handler) {
+			handler(v);
+		}}];
+	}},{ field : "load", validator : function(v) {
+		return Reflect.isFunction(v) || null != Reflect.field(v,"load");
+	}, filter : function(v) {
+		return [{ field : "loader", value : Reflect.isObject(v)?v.load.$bind(v):v}];
+	}}];
+}
+rg.info.InfoDataSource.prototype = {
+	loader: null
+	,__class__: rg.info.InfoDataSource
+}
 rg.graph.TwoCycleRemover = $hxClasses["rg.graph.TwoCycleRemover"] = function() {
 }
 rg.graph.TwoCycleRemover.__name__ = ["rg","graph","TwoCycleRemover"];
@@ -13444,26 +12591,6 @@ rg.RGConst.__name__ = ["rg","RGConst"];
 rg.RGConst.prototype = {
 	__class__: rg.RGConst
 }
-rg.controller.info.InfoLabelSankey = $hxClasses["rg.controller.info.InfoLabelSankey"] = function() {
-	rg.controller.info.InfoLabel.call(this);
-}
-rg.controller.info.InfoLabelSankey.__name__ = ["rg","controller","info","InfoLabelSankey"];
-rg.controller.info.InfoLabelSankey.filters = function() {
-	return [{ field : "edge", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "edgeover", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "node", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
-}
-rg.controller.info.InfoLabelSankey.__super__ = rg.controller.info.InfoLabel;
-rg.controller.info.InfoLabelSankey.prototype = $extend(rg.controller.info.InfoLabel.prototype,{
-	edge: null
-	,edgeover: null
-	,node: null
-	,__class__: rg.controller.info.InfoLabelSankey
-});
 rg.util.RG = $hxClasses["rg.util.RG"] = function() { }
 rg.util.RG.__name__ = ["rg","util","RG"];
 rg.util.RG.getTokenId = function() {
@@ -13471,6 +12598,62 @@ rg.util.RG.getTokenId = function() {
 }
 rg.util.RG.prototype = {
 	__class__: rg.util.RG
+}
+rg.axis.AxisNumeric = $hxClasses["rg.axis.AxisNumeric"] = function() {
+}
+rg.axis.AxisNumeric.__name__ = ["rg","axis","AxisNumeric"];
+rg.axis.AxisNumeric.__interfaces__ = [rg.axis.IAxis];
+rg.axis.AxisNumeric._step = function(span,m) {
+	var step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / span * step;
+	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
+	return step;
+}
+rg.axis.AxisNumeric.nice = function(v) {
+	return Math.pow(10,Math.round(Math.log(v) / 2.302585092994046) - 1);
+}
+rg.axis.AxisNumeric.niceMin = function(d,v) {
+	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
+	return Math.floor(v / dv) * dv;
+}
+rg.axis.AxisNumeric.niceMax = function(d,v) {
+	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
+	return Math.ceil(v / dv) * dv;
+}
+rg.axis.AxisNumeric.prototype = {
+	scale: function(start,end,v) {
+		if(start == end) return start;
+		return (Floats.uninterpolatef(start,end))(v);
+	}
+	,ticks: function(start,end,maxTicks) {
+		var span = end - start, step = 1.0, minors, majors;
+		if(start % step == 0 && end % step == 0 && span < 10 && span >= step) {
+			majors = Floats.range(start,end + step,step);
+			minors = null;
+		} else {
+			var mM = 5, mm = 20, stepM = rg.axis.AxisNumeric._step(span,mM), stepm = rg.axis.AxisNumeric._step(span,mm);
+			minors = Floats.range(start,end + stepM,stepm);
+			majors = Floats.range(start,end * 1.0001,stepM);
+		}
+		return rg.axis.Tickmarks.bound(null == minors?majors.map(function(d,i) {
+			return new rg.axis.Tickmark(d,true,(d - start) / (end - start));
+		}):minors.map(function(d,i) {
+			return new rg.axis.Tickmark(d,majors.remove(d),(d - start) / (end - start));
+		}),maxTicks);
+	}
+	,min: function(stats,meta) {
+		if(null != meta.min) return meta.min;
+		var min = rg.axis.AxisNumeric.niceMin(stats.max - stats.min,stats.min);
+		if(min < 0) return min; else return 0.0;
+	}
+	,max: function(stats,meta) {
+		if(null != meta.max) return meta.max;
+		var max = rg.axis.AxisNumeric.niceMax(stats.max - stats.min,stats.max);
+		if(max > 0) return max; else return 0.0;
+	}
+	,createStats: function(type) {
+		return new rg.axis.StatsNumeric(type);
+	}
+	,__class__: rg.axis.AxisNumeric
 }
 var Enums = $hxClasses["Enums"] = function() { }
 Enums.__name__ = ["Enums"];
@@ -13525,14 +12708,14 @@ rg.data.Variable.prototype = {
 	}
 	,getMinF: function() {
 		if(null == this.minf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 48, className : "rg.data.Variable", methodName : "getMinF"});
+			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 50, className : "rg.data.Variable", methodName : "getMinF"});
 			this.setMinF(($_=this.axis,$_.min.$bind($_)));
 		}
 		return this.minf;
 	}
 	,getMaxF: function() {
 		if(null == this.maxf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 59, className : "rg.data.Variable", methodName : "getMaxF"});
+			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 61, className : "rg.data.Variable", methodName : "getMaxF"});
 			this.setMaxF(($_=this.axis,$_.max.$bind($_)));
 		}
 		return this.maxf;
@@ -13548,6 +12731,136 @@ rg.data.VariableIndependent.__super__ = rg.data.Variable;
 rg.data.VariableIndependent.prototype = $extend(rg.data.Variable.prototype,{
 	__class__: rg.data.VariableIndependent
 });
+rg.info.InfoLabel = $hxClasses["rg.info.InfoLabel"] = function() {
+}
+rg.info.InfoLabel.__name__ = ["rg","info","InfoLabel"];
+rg.info.InfoLabel.filters = function() {
+	return [{ field : "title", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "title", value : Std["is"](v,String)?function() {
+			return v;
+		}:v}];
+	}},{ field : "datapoint", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "datapointover", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}];
+}
+rg.info.InfoLabel.prototype = {
+	title: null
+	,datapoint: null
+	,datapointover: null
+	,__class__: rg.info.InfoLabel
+}
+rg.info.InfoLabelAxis = $hxClasses["rg.info.InfoLabelAxis"] = function() {
+	rg.info.InfoLabel.call(this);
+}
+rg.info.InfoLabelAxis.__name__ = ["rg","info","InfoLabelAxis"];
+rg.info.InfoLabelAxis.filters = function() {
+	return [{ field : "axis", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "tickmark", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}].concat(rg.info.InfoLabel.filters());
+}
+rg.info.InfoLabelAxis.__super__ = rg.info.InfoLabel;
+rg.info.InfoLabelAxis.prototype = $extend(rg.info.InfoLabel.prototype,{
+	axis: null
+	,tickmark: null
+	,__class__: rg.info.InfoLabelAxis
+});
+rg.info.InfoPieChart = $hxClasses["rg.info.InfoPieChart"] = function() {
+	this.innerradius = 0.0;
+	this.labelradius = 0.45;
+	this.labelorientation = rg.svg.widget.LabelOrientation.Aligned;
+	this.outerradius = 0.9;
+	this.overradius = 0.95;
+	this.tooltipradius = 0.5;
+	this.animation = new rg.info.InfoAnimation();
+	this.label = new rg.info.InfoLabel();
+	this.effect = rg.svg.chart.GradientEffect.Gradient(1.2);
+	this.dontfliplabel = true;
+}
+rg.info.InfoPieChart.__name__ = ["rg","info","InfoPieChart"];
+rg.info.InfoPieChart.validateOrientation = function(s) {
+	var name = s.split(":")[0].toLowerCase();
+	return Arrays.exists(["fixed","ortho","orthogonal","align","aligned","horizontal"],name);
+}
+rg.info.InfoPieChart.filterOrientation = function(s) {
+	var name = s.split(":")[0].toLowerCase();
+	switch(name) {
+	case "fixed":
+		var v = Std.parseFloat(s.split(":")[1]);
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
+		return rg.svg.widget.LabelOrientation.FixedAngle(v);
+	case "ortho":case "orthogonal":
+		return rg.svg.widget.LabelOrientation.Orthogonal;
+	case "align":case "aligned":
+		return rg.svg.widget.LabelOrientation.Aligned;
+	case "horizontal":
+		return rg.svg.widget.LabelOrientation.FixedAngle(0);
+	default:
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 69, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
+	}
+}
+rg.info.InfoPieChart.filters = function() {
+	return [{ field : "labelradius", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "dontfliplabel", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "labelorientation", validator : function(v) {
+		return Std["is"](v,String) && rg.info.InfoPieChart.validateOrientation(v);
+	}, filter : function(v) {
+		return [{ field : "labelorientation", value : rg.info.InfoPieChart.filterOrientation(v)}];
+	}},{ field : "innerradius", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "outerradius", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "overradius", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "tooltipradius", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : null},{ field : "animation", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "animation", value : rg.info.Info.feed(new rg.info.InfoAnimation(),v)}];
+	}},{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabel(),v)}];
+	}},{ field : "sort", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "sortDataPoint", value : v}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "effect", validator : rg.svg.chart.GradientEffects.canParse, filter : function(v) {
+		return [{ field : "effect", value : rg.svg.chart.GradientEffects.parse(v)}];
+	}}];
+}
+rg.info.InfoPieChart.prototype = {
+	labelradius: null
+	,labelorientation: null
+	,innerradius: null
+	,outerradius: null
+	,overradius: null
+	,tooltipradius: null
+	,animation: null
+	,label: null
+	,effect: null
+	,sortDataPoint: null
+	,dontfliplabel: null
+	,click: null
+	,__class__: rg.info.InfoPieChart
+}
+rg.frame.Orientation = $hxClasses["rg.frame.Orientation"] = { __ename__ : ["rg","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
+rg.frame.Orientation.Vertical = ["Vertical",0];
+rg.frame.Orientation.Vertical.toString = $estr;
+rg.frame.Orientation.Vertical.__enum__ = rg.frame.Orientation;
+rg.frame.Orientation.Horizontal = ["Horizontal",1];
+rg.frame.Orientation.Horizontal.toString = $estr;
+rg.frame.Orientation.Horizontal.__enum__ = rg.frame.Orientation;
 thx.math.scale.LinearT = $hxClasses["thx.math.scale.LinearT"] = function() {
 	this._domain = [0.0,1.0];
 	this._range = null;
@@ -13871,363 +13184,79 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 thx.culture.FormatDate.prototype = {
 	__class__: thx.culture.FormatDate
 }
-rg.view.svg.layer.TickmarksOrtho = $hxClasses["rg.view.svg.layer.TickmarksOrtho"] = function(panel,anchor) {
-	rg.view.svg.panel.Layer.call(this,panel);
-	this.anchor = anchor;
-	this.displayMinor = true;
-	this.displayMajor = true;
-	this.displayLabel = true;
-	this.displayAnchorLine = false;
-	this.lengthMinor = 2;
-	this.lengthMajor = 5;
-	this.paddingMinor = 1;
-	this.paddingMajor = 1;
-	this.paddingLabel = 10;
-	this.g.classed().add("tickmarks");
+rg.axis.Stats = $hxClasses["rg.axis.Stats"] = function(type,sortf) {
+	this.type = type;
+	this.sortf = sortf;
+	this.reset();
 }
-rg.view.svg.layer.TickmarksOrtho.__name__ = ["rg","view","svg","layer","TickmarksOrtho"];
-rg.view.svg.layer.TickmarksOrtho.__super__ = rg.view.svg.panel.Layer;
-rg.view.svg.layer.TickmarksOrtho.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
-	anchor: null
-	,displayMinor: null
-	,displayMajor: null
-	,displayLabel: null
-	,displayAnchorLine: null
-	,lengthMinor: null
-	,lengthMajor: null
-	,paddingMinor: null
-	,paddingMajor: null
-	,paddingLabel: null
-	,labelOrientation: null
-	,labelAnchor: null
-	,labelAngle: null
-	,desiredSize: null
-	,tickLabel: null
-	,translate: null
-	,x1: null
-	,y1: null
-	,x2: null
-	,y2: null
-	,x: null
-	,y: null
-	,axis: null
-	,min: null
+rg.axis.Stats.__name__ = ["rg","axis","Stats"];
+rg.axis.Stats.prototype = {
+	min: null
 	,max: null
-	,resize: function() {
-		if(null == this.axis) return;
-		if(this.displayAnchorLine) this.updateAnchorLine();
-		this.redraw();
+	,count: null
+	,values: null
+	,sortf: null
+	,type: null
+	,reset: function() {
+		this.min = null;
+		this.max = null;
+		this.count = 0;
+		this.values = [];
+		return this;
 	}
-	,update: function(axis,min,max) {
-		this.axis = axis;
-		this.min = min;
-		this.max = max;
-		this.redraw();
+	,add: function(v) {
+		this.count++;
+		if(Arrays.exists(this.values,v)) return this;
+		this.values.push(v);
+		if(null != this.sortf) this.values.sort(this.sortf);
+		this.min = this.values[0];
+		this.max = Arrays.last(this.values);
+		return this;
 	}
-	,updateAnchorLine: function() {
-		var line = this.g.select("line.anchor-line");
-		switch( (this.anchor)[1] ) {
-		case 0:
-			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](0);
-			break;
-		case 1:
-			line.attr("x1")["float"](0).attr("y1")["float"](this.panel.frame.height).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](this.panel.frame.height);
-			break;
-		case 2:
-			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](0).attr("y2")["float"](this.panel.frame.height);
-			break;
-		case 3:
-			line.attr("x1")["float"](this.panel.frame.width).attr("y1")["float"](0).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](this.panel.frame.height);
-			break;
+	,addMany: function(it) {
+		var $it0 = it.iterator();
+		while( $it0.hasNext() ) {
+			var v = $it0.next();
+			this.count++;
+			if(Arrays.exists(this.values,v)) continue;
+			this.values.push(v);
 		}
+		if(null != this.sortf) this.values.sort(this.sortf);
+		this.min = this.values[0];
+		this.max = Arrays.last(this.values);
+		return this;
 	}
-	,maxTicks: function() {
-		var size = (function($this) {
-			var $r;
-			switch( ($this.anchor)[1] ) {
-			case 2:
-			case 3:
-				$r = $this.height;
-				break;
-			case 0:
-			case 1:
-				$r = $this.width;
-				break;
-			}
-			return $r;
-		}(this));
-		return Math.round(size / 2.5);
+	,__class__: rg.axis.Stats
+}
+rg.axis.StatsNumeric = $hxClasses["rg.axis.StatsNumeric"] = function(type,sortf) {
+	if(null == sortf) sortf = Floats.compare;
+	rg.axis.Stats.call(this,type,sortf);
+}
+rg.axis.StatsNumeric.__name__ = ["rg","axis","StatsNumeric"];
+rg.axis.StatsNumeric.__super__ = rg.axis.Stats;
+rg.axis.StatsNumeric.prototype = $extend(rg.axis.Stats.prototype,{
+	tot: null
+	,reset: function() {
+		rg.axis.Stats.prototype.reset.call(this);
+		this.tot = 0.0;
+		return this;
 	}
-	,id: function(d,i) {
-		return "" + d.getValue();
+	,add: function(v) {
+		rg.axis.Stats.prototype.add.call(this,v);
+		this.tot += v;
+		return this;
 	}
-	,redraw: function() {
-		this.desiredSize = Math.max(this.paddingMinor + this.lengthMinor,this.paddingMajor + this.lengthMajor);
-		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
-		var tick = this.g.selectAll("g.tick").data(data,this.id.$bind(this));
-		var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
-		if(this.displayMinor) enter.filter(function(d,i) {
-			return !d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
-		if(this.displayMajor) enter.filter(function(d,i) {
-			return d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
-		if(this.displayLabel) enter.eachNode(this.createLabel.$bind(this));
-		tick.update().attr("transform").stringf(this.translate);
-		tick.exit().remove();
-	}
-	,createLabel: function(n,i) {
-		var d = Reflect.field(n,"__data__");
-		if(!d.getMajor()) return;
-		var label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),false,false,false);
-		label.setAnchor(this.labelAnchor);
-		label.setOrientation(this.labelOrientation);
-		var padding = this.paddingLabel;
-		label.setText(null == this.tickLabel?d.getLabel():this.tickLabel(d.getValue()));
-		switch( (this.anchor)[1] ) {
-		case 0:
-			label.place(0,padding,this.labelAngle);
-			break;
-		case 1:
-			label.place(0,-padding,this.labelAngle);
-			break;
-		case 2:
-			label.place(padding,0,this.labelAngle);
-			break;
-		case 3:
-			label.place(-padding,0,this.labelAngle);
-			break;
+	,addMany: function(it) {
+		rg.axis.Stats.prototype.addMany.call(this,it);
+		var $it0 = it.iterator();
+		while( $it0.hasNext() ) {
+			var v = $it0.next();
+			this.tot += v;
 		}
-		var s = (function($this) {
-			var $r;
-			switch( ($this.anchor)[1] ) {
-			case 0:
-			case 1:
-				$r = label.getSize().height + padding;
-				break;
-			case 2:
-			case 3:
-				$r = label.getSize().width + padding;
-				break;
-			}
-			return $r;
-		}(this));
-		if(s > this.desiredSize) this.desiredSize = s;
+		return this;
 	}
-	,initf: function() {
-		switch( (this.anchor)[1] ) {
-		case 0:
-			this.translate = this.translateTop.$bind(this);
-			this.x1 = this.x1Top.$bind(this);
-			this.y1 = this.y1Top.$bind(this);
-			this.x2 = this.x2Top.$bind(this);
-			this.y2 = this.y2Top.$bind(this);
-			break;
-		case 1:
-			this.translate = this.translateBottom.$bind(this);
-			this.x1 = this.x1Bottom.$bind(this);
-			this.y1 = this.y1Bottom.$bind(this);
-			this.x2 = this.x2Bottom.$bind(this);
-			this.y2 = this.y2Bottom.$bind(this);
-			break;
-		case 2:
-			this.translate = this.translateLeft.$bind(this);
-			this.x1 = this.x1Left.$bind(this);
-			this.y1 = this.y1Left.$bind(this);
-			this.x2 = this.x2Left.$bind(this);
-			this.y2 = this.y2Left.$bind(this);
-			break;
-		case 3:
-			this.translate = this.translateRight.$bind(this);
-			this.x1 = this.x1Right.$bind(this);
-			this.y1 = this.y1Right.$bind(this);
-			this.x2 = this.x2Right.$bind(this);
-			this.y2 = this.y2Right.$bind(this);
-			break;
-		}
-		if(null == this.labelOrientation) {
-			switch( (this.anchor)[1] ) {
-			case 0:
-			case 1:
-				this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
-				break;
-			case 2:
-			case 3:
-				this.labelOrientation = rg.view.svg.widget.LabelOrientation.Aligned;
-				break;
-			}
-		} else if(null == this.labelAnchor) {
-			var $e = (this.labelOrientation);
-			switch( $e[1] ) {
-			case 1:
-				switch( (this.anchor)[1] ) {
-				case 0:
-				case 2:
-					this.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
-					break;
-				case 1:
-				case 3:
-					this.labelAnchor = rg.view.svg.widget.GridAnchor.Right;
-					break;
-				}
-				break;
-			case 2:
-				switch( (this.anchor)[1] ) {
-				case 0:
-				case 2:
-					this.labelAnchor = rg.view.svg.widget.GridAnchor.Top;
-					break;
-				case 1:
-				case 3:
-					this.labelAnchor = rg.view.svg.widget.GridAnchor.Bottom;
-					break;
-				}
-				break;
-			case 0:
-				var a = $e[2];
-				break;
-			}
-		}
-		if(null == this.labelAnchor) {
-			switch( (this.anchor)[1] ) {
-			case 0:
-				this.labelAnchor = rg.view.svg.widget.GridAnchor.Top;
-				break;
-			case 1:
-				this.labelAnchor = rg.view.svg.widget.GridAnchor.Bottom;
-				break;
-			case 2:
-				this.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
-				break;
-			case 3:
-				this.labelAnchor = rg.view.svg.widget.GridAnchor.Right;
-				break;
-			}
-		}
-		if(null == this.labelAngle) {
-			switch( (this.anchor)[1] ) {
-			case 0:
-				this.labelAngle = 90;
-				break;
-			case 1:
-				this.labelAngle = 90;
-				break;
-			case 2:
-				this.labelAngle = 0;
-				break;
-			case 3:
-				this.labelAngle = 0;
-				break;
-			}
-		}
-	}
-	,init: function() {
-		this.initf();
-		if(this.displayAnchorLine) {
-			this.g.append("svg:line").attr("class").string("anchor-line");
-			this.updateAnchorLine();
-		}
-	}
-	,t: function(x,y) {
-		return "translate(" + x + "," + y + ")";
-	}
-	,translateTop: function(d,i) {
-		return "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
-	}
-	,translateBottom: function(d,i) {
-		return "translate(" + d.getDelta() * this.panel.frame.width + "," + this.panel.frame.height + ")";
-	}
-	,translateLeft: function(d,i) {
-		return "translate(" + 0 + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
-	}
-	,translateRight: function(d,i) {
-		return "translate(" + this.panel.frame.width + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
-	}
-	,x1Top: function(d,i) {
-		return 0;
-	}
-	,x1Bottom: function(d,i) {
-		return 0;
-	}
-	,x1Left: function(d,i) {
-		return d.getMajor()?this.paddingMajor:this.paddingMinor;
-	}
-	,x1Right: function(d,i) {
-		return -(d.getMajor()?this.paddingMajor:this.paddingMinor);
-	}
-	,y1Top: function(d,i) {
-		return d.getMajor()?this.paddingMajor:this.paddingMinor;
-	}
-	,y1Bottom: function(d,i) {
-		return -(d.getMajor()?this.paddingMajor:this.paddingMinor);
-	}
-	,y1Left: function(d,i) {
-		return 0;
-	}
-	,y1Right: function(d,i) {
-		return 0;
-	}
-	,x2Top: function(d,i) {
-		return 0;
-	}
-	,x2Bottom: function(d,i) {
-		return 0;
-	}
-	,x2Left: function(d,i) {
-		return d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
-	}
-	,x2Right: function(d,i) {
-		return -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
-	}
-	,y2Top: function(d,i) {
-		return d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
-	}
-	,y2Bottom: function(d,i) {
-		return -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
-	}
-	,y2Left: function(d,i) {
-		return 0;
-	}
-	,y2Right: function(d,i) {
-		return 0;
-	}
-	,tickClass: function(d,i) {
-		return d.getMajor()?"major":null;
-	}
-	,__class__: rg.view.svg.layer.TickmarksOrtho
+	,__class__: rg.axis.StatsNumeric
 });
-rg.view.svg.util.RGCss = $hxClasses["rg.view.svg.util.RGCss"] = function() { }
-rg.view.svg.util.RGCss.__name__ = ["rg","view","svg","util","RGCss"];
-rg.view.svg.util.RGCss.cache = null;
-rg.view.svg.util.RGCss.cssSources = function() {
-	var sources = [];
-	thx.js.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
-		sources.push(n.href);
-	});
-	return sources;
-}
-rg.view.svg.util.RGCss.colorsInCss = function() {
-	if(null != rg.view.svg.util.RGCss.cache) return rg.view.svg.util.RGCss.cache;
-	var container = thx.js.Dom.select("body").append("svg:svg").attr("class").string("rg"), first = rg.view.svg.util.RGCss.createBlock(container,0).style("fill").get();
-	rg.view.svg.util.RGCss.cache = [first];
-	var _g = 1;
-	while(_g < 1000) {
-		var i = _g++;
-		var other = rg.view.svg.util.RGCss.createBlock(container,i).style("fill").get();
-		if(first == other) break; else rg.view.svg.util.RGCss.cache.push(other);
-	}
-	container.remove();
-	return rg.view.svg.util.RGCss.cache;
-}
-rg.view.svg.util.RGCss.numberOfColorsInCss = function() {
-	return rg.view.svg.util.RGCss.colorsInCss().length;
-}
-rg.view.svg.util.RGCss.createBlock = function(container,pos) {
-	return container.append("svg:rect").attr("class").string("fill-" + pos);
-}
-rg.view.svg.util.RGCss.prototype = {
-	__class__: rg.view.svg.util.RGCss
-}
 rg.graph.LongestPathLayer = $hxClasses["rg.graph.LongestPathLayer"] = function() {
 }
 rg.graph.LongestPathLayer.__name__ = ["rg","graph","LongestPathLayer"];
@@ -14271,6 +13300,77 @@ rg.graph.LongestPathLayer.prototype = {
 		return layers;
 	}
 	,__class__: rg.graph.LongestPathLayer
+}
+rg.visualization.VisualizationHtml = $hxClasses["rg.visualization.VisualizationHtml"] = function(container) {
+	rg.visualization.Visualization.call(this,container);
+	container.classed().add("rg");
+}
+rg.visualization.VisualizationHtml.__name__ = ["rg","visualization","VisualizationHtml"];
+rg.visualization.VisualizationHtml.__super__ = rg.visualization.Visualization;
+rg.visualization.VisualizationHtml.prototype = $extend(rg.visualization.Visualization.prototype,{
+	__class__: rg.visualization.VisualizationHtml
+});
+rg.svg.widget.HookConnectorArea = $hxClasses["rg.svg.widget.HookConnectorArea"] = function(container,classarea,classborder) {
+	this.g = container.append("svg:g").attr("class").string("hook");
+	this.area = this.g.append("svg:path").attr("class").string("hook-fill" + (null == classarea?"":" " + classarea));
+	this.upper = this.g.append("svg:path").attr("class").string("hook-stroke upper" + (null == classborder?"":" " + classborder));
+	this.lower = this.g.append("svg:path").attr("class").string("hook-stroke lower" + (null == classborder?"":" " + classborder));
+}
+rg.svg.widget.HookConnectorArea.__name__ = ["rg","svg","widget","HookConnectorArea"];
+rg.svg.widget.HookConnectorArea.lineTo = function(x,y) {
+	return "L" + x + "," + y;
+}
+rg.svg.widget.HookConnectorArea.quarterTo = function(x,y,r) {
+	return "A" + Math.abs(r) + "," + Math.abs(r) + " 0 0," + (r < 0?0:1) + " " + x + "," + y;
+}
+rg.svg.widget.HookConnectorArea.prototype = {
+	g: null
+	,area: null
+	,upper: null
+	,lower: null
+	,update: function(x1,y1,x2,y2,weight,yreference,before,after) {
+		var min = Math.min(5,weight), upperp = this.createPath(x1,y1,x2,y2,y1 > yreference?yreference:yreference + weight,before + weight,after + weight,weight,weight), lowerp = this.createPath(x2,y2 + weight,x1,y1 + weight,y1 > yreference?yreference - weight:yreference,-after,-before,-min,min);
+		this.upper.attr("d").string(upperp);
+		this.lower.attr("d").string(lowerp);
+		this.area.attr("d").string(upperp + "L" + lowerp.substr(1) + "z");
+	}
+	,createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
+		var path = "M" + x1 + "," + y1;
+		path += rg.svg.widget.HookConnectorArea.lineTo(x1 + before - r1,y1);
+		path += rg.svg.widget.HookConnectorArea.quarterTo(x1 + before,y1 + r2,r1);
+		path += rg.svg.widget.HookConnectorArea.lineTo(x1 + before,yref - r2);
+		path += rg.svg.widget.HookConnectorArea.quarterTo(x1 + before - r1,yref,r1);
+		path += rg.svg.widget.HookConnectorArea.lineTo(x2 - after + r1,yref);
+		path += rg.svg.widget.HookConnectorArea.quarterTo(x2 - after,yref - r2,r1);
+		path += rg.svg.widget.HookConnectorArea.lineTo(x2 - after,y2 + r2);
+		path += rg.svg.widget.HookConnectorArea.quarterTo(x2 - after + r1,y2,r1);
+		path += rg.svg.widget.HookConnectorArea.lineTo(x2,y2);
+		return path;
+	}
+	,createPath2: function(x1,y1,sr,x2,y2,yreference) {
+		var path = "M" + x1 + "," + y1;
+		if(yreference > y1) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x1 + sr) + "," + (y1 + sr);
+			path += "L" + (sr + x1) + "," + (yreference - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x1 + "," + yreference;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x1 + sr) + "," + (y1 - sr);
+			path += "L" + (sr + x1) + "," + (yreference + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x1 + "," + yreference;
+		}
+		path += "L" + x2 + "," + yreference;
+		if(yreference > y2) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x2 - sr) + "," + (yreference - sr);
+			path += "L" + (x2 - sr) + "," + (y2 + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x2 + "," + y2;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x2 - sr) + "," + (yreference + sr);
+			path += "L" + (x2 - sr) + "," + (y2 - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x2 + "," + y2;
+		}
+		return path;
+	}
+	,__class__: rg.svg.widget.HookConnectorArea
 }
 chx.crypt.IPad = $hxClasses["chx.crypt.IPad"] = function() { }
 chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
@@ -14399,6 +13499,44 @@ rg.util.Properties.formatValue = function(type,dp) {
 }
 rg.util.Properties.prototype = {
 	__class__: rg.util.Properties
+}
+rg.svg.widget.BalloonShape = $hxClasses["rg.svg.widget.BalloonShape"] = function() { }
+rg.svg.widget.BalloonShape.__name__ = ["rg","svg","widget","BalloonShape"];
+rg.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
+	var w = width - rc * 2, h = height - rc * 2;
+	var buf = "M" + rc + ",0";
+	if(0 == side) {
+		buf += "h" + offset;
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + -rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + rc;
+		buf += "h" + (w - (offset + 2 * rc));
+	} else buf += "h" + w;
+	buf += "a" + rc + "," + rc + ",0,0,1," + rc + "," + rc;
+	if(1 == side) {
+		buf += "v" + (offset - rc);
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + rc;
+		buf += "v" + (h - (offset + rc));
+	} else buf += "v" + h;
+	buf += "a" + rc + "," + rc + ",0,0,1," + -rc + "," + rc;
+	if(2 == side) {
+		buf += "h" + -(w - (offset + 2 * rc));
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + -rc;
+		buf += "h" + -offset;
+	} else buf += "h" + -w;
+	buf += "a" + rc + "," + rc + ",0,0,1," + -rc + "," + -rc;
+	if(3 == side) {
+		buf += "v" + -(h - (offset + rc));
+		buf += "a" + rc + "," + rc + ",0,0,0," + -rc + "," + -rc;
+		buf += "a" + rc + "," + rc + ",0,0,0," + rc + "," + -rc;
+		buf += "v" + -(offset - rc);
+	} else buf += "v" + -h;
+	buf += "a" + rc + "," + rc + ",0,0,1," + rc + "," + -rc;
+	return buf + "Z";
+}
+rg.svg.widget.BalloonShape.prototype = {
+	__class__: rg.svg.widget.BalloonShape
 }
 thx.geom.Polygon = $hxClasses["thx.geom.Polygon"] = function(coordinates) {
 	this.coordinates = coordinates;
@@ -14618,6 +13756,42 @@ DateTools.make = function(o) {
 DateTools.prototype = {
 	__class__: DateTools
 }
+rg.info.InfoScatterGraph = $hxClasses["rg.info.InfoScatterGraph"] = function() {
+	rg.info.InfoCartesianChart.call(this);
+	this.segment = new rg.info.InfoSegment();
+	this.symbol = function(dp,s) {
+		return rg.svg.util.SymbolCache.cache.get("circle",16);
+	};
+}
+rg.info.InfoScatterGraph.__name__ = ["rg","info","InfoScatterGraph"];
+rg.info.InfoScatterGraph.filters = function() {
+	return [{ field : "symbol", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
+			return v;
+		}:v}];
+	}},{ field : "symbolstyle", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "symbolStyle", value : v}];
+	}},{ field : "segmenton", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),{ on : v})}];
+	}},{ field : "segment", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),v)}];
+	}}].concat(rg.info.InfoCartesianChart.filters());
+}
+rg.info.InfoScatterGraph.__super__ = rg.info.InfoCartesianChart;
+rg.info.InfoScatterGraph.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
+	symbol: null
+	,symbolStyle: null
+	,segment: null
+	,__class__: rg.info.InfoScatterGraph
+});
 if(!thx.geom.layout) thx.geom.layout = {}
 thx.geom.layout.Pie = $hxClasses["thx.geom.layout.Pie"] = function() {
 	this._startAngle = function(_,_1) {
@@ -14917,6 +14091,175 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
+rg.info.InfoLeaderboard = $hxClasses["rg.info.InfoLeaderboard"] = function() {
+	this.animation = new rg.info.InfoAnimation();
+	this.label = new rg.info.InfoLabelLeaderboard();
+	this.usemax = false;
+	this.displaybar = true;
+}
+rg.info.InfoLeaderboard.__name__ = ["rg","info","InfoLeaderboard"];
+rg.info.InfoLeaderboard.filters = function() {
+	return [{ field : "animation", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		var animation = new rg.info.InfoAnimation();
+		animation.ease = thx.math.Equations.linear;
+		return [{ field : "animation", value : rg.info.Info.feed(animation,v)}];
+	}},{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelLeaderboard(),v)}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "sort", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "sortDataPoint", value : v}];
+	}},{ field : "displaybar", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "usemax", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null}];
+}
+rg.info.InfoLeaderboard.prototype = {
+	animation: null
+	,label: null
+	,click: null
+	,sortDataPoint: null
+	,usemax: null
+	,displaybar: null
+	,__class__: rg.info.InfoLeaderboard
+}
+rg.svg.chart.StreamGraph = $hxClasses["rg.svg.chart.StreamGraph"] = function(panel) {
+	rg.svg.chart.CartesianChart.call(this,panel);
+	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
+	this.gradientLightness = 0.75;
+	this.gradientStyle = 1;
+}
+rg.svg.chart.StreamGraph.__name__ = ["rg","svg","chart","StreamGraph"];
+rg.svg.chart.StreamGraph.__super__ = rg.svg.chart.CartesianChart;
+rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
+	interpolator: null
+	,gradientLightness: null
+	,gradientStyle: null
+	,dps: null
+	,area: null
+	,transformedData: null
+	,stats: null
+	,defs: null
+	,maxy: null
+	,init: function() {
+		rg.svg.chart.CartesianChart.prototype.init.call(this);
+		this.defs = this.g.append("svg:defs");
+		this.g.classed().add("stream-chart");
+	}
+	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+		rg.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
+	}
+	,data: function(dps) {
+		this.dps = dps;
+		this.prepareData();
+		this.redraw();
+	}
+	,redraw: function() {
+		if(null == this.transformedData) return;
+		var layer = this.g.selectAll("g.group").data(this.transformedData);
+		layer.update().select("path.line").attr("d").stringf(($_=this.area,$_.shape.$bind($_)));
+		var node = layer.enter().append("svg:g").attr("class").string("group").onNode("mousemove",this.onover.$bind(this)).onNode("click",this.onclick.$bind(this)).append("svg:path").attr("class").stringf(function(d,i) {
+			return "line fill-" + i + " stroke-" + i;
+		}).attr("d").stringf(($_=this.area,$_.shape.$bind($_)));
+		if(this.gradientStyle != 0) node.each(this.gradientStyle == 1?this.applyGradientV.$bind(this):this.applyGradientH.$bind(this));
+		layer.exit().remove();
+		this.ready.dispatch();
+	}
+	,getDataAtNode: function(n,i) {
+		var px = thx.js.Svg.mouse(n)[0], x = (Floats.uninterpolatef(this.transformedData[i][0].coord.x,Arrays.last(this.transformedData[i]).coord.x))(px / this.width);
+		var data = Reflect.field(n,"__data__");
+		return Arrays.nearest(this.transformedData[i],x,function(d) {
+			return d.coord.x;
+		});
+	}
+	,onover: function(n,i) {
+		if(null == this.labelDataPointOver) return;
+		var dp = this.getDataAtNode(n,i);
+		this.tooltip.setText(this.labelDataPointOver(dp.dp,this.stats).split("\n"));
+		this.moveTooltip(dp.coord.x * this.width,this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy);
+	}
+	,onclick: function(n,i) {
+		if(null == this.click) return;
+		var dp = this.getDataAtNode(n,i);
+		this.click(dp.dp,this.stats);
+	}
+	,prepareData: function() {
+		var me = this;
+		this.defs.selectAll("linearGradient.h").remove();
+		var xscale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=this.xVariable.axis,$_.scale.$bind($_)),this.xVariable.min(),this.xVariable.max()), xtype = this.xVariable.type, x = function(d) {
+			return xscale(Reflect.field(d,xtype));
+		}, yscale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=this.yVariables[0].axis,$_.scale.$bind($_)),this.yVariables[0].min(),this.yVariables[0].max()), ytype = this.yVariables[0].type, y = function(d) {
+			return yscale(Reflect.field(d,ytype));
+		};
+		var coords = this.dps.map(function(d,i) {
+			return d.map(function(d1,i1) {
+				return { x : x(d1), y : Math.max(0,y(d1))};
+			});
+		});
+		var data = new thx.geom.layout.Stack().offset(thx.geom.layout.StackOffset.Silhouette).order(thx.geom.layout.StackOrder.DefaultOrder).stack(coords);
+		this.transformedData = data.map(function(d,i) {
+			return d.map(function(d1,j) {
+				return { coord : d1, dp : me.dps[i][j]};
+			});
+		});
+		this.stats = this.yVariables[0].stats;
+		this.maxy = Arrays.floatMax(data,function(d) {
+			return Arrays.floatMax(d,function(d1) {
+				return d1.y0 + d1.y;
+			});
+		});
+		this.area = new thx.svg.Area().interpolator(this.interpolator).x(function(d,i) {
+			return d.coord.x * me.width;
+		}).y0(function(d,i) {
+			return me.height - d.coord.y0 * me.height / me.maxy;
+		}).y1(function(d,i) {
+			return me.height - (d.coord.y + d.coord.y0) * me.height / me.maxy;
+		});
+	}
+	,applyGradientV: function(d,i) {
+		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
+		if(this.defs.select("#" + id).empty()) {
+			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
+			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
+			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
+			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+		}
+		gn.attr("style").string("fill:url(#" + id + ")");
+	}
+	,applyGradientH: function(d,i) {
+		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.svg.chart.StreamGraph.vid++;
+		var gradient = this.defs.append("svg:linearGradient").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
+		var bx = d[0].coord.x, ax = d[d.length - 1].coord.x, span = ax - bx, percent = function(x) {
+			return Math.round((x - bx) / span * 10000) / 100;
+		}, max = Arrays.floatMax(d,function(d1) {
+			return d1.coord.y;
+		});
+		var _g1 = 0, _g = d.length;
+		while(_g1 < _g) {
+			var i1 = _g1++;
+			var dp = d[i1], v = dp.coord.y / max;
+			var gcolor = rg.util.RGColors.applyLightness(color,this.gradientLightness,v);
+			gradient.append("svg:stop").attr("offset").string(percent(dp.coord.x) + "%").attr("stop-color").string(gcolor.hex("#")).attr("stop-opacity")["float"](1);
+		}
+		gn.attr("style").string("fill:url(#" + id + ")");
+	}
+	,__class__: rg.svg.chart.StreamGraph
+});
 var IntHashes = $hxClasses["IntHashes"] = function() { }
 IntHashes.__name__ = ["IntHashes"];
 IntHashes.empty = function(hash) {
@@ -14987,6 +14330,14 @@ rg.graph.GreedySwitch2Decrosser.prototype = $extend(rg.graph.GreedySwitchDecross
 	}
 	,__class__: rg.graph.GreedySwitch2Decrosser
 });
+rg.svg.widget.LabelOrientation = $hxClasses["rg.svg.widget.LabelOrientation"] = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
+rg.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
+rg.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
+rg.svg.widget.LabelOrientation.Aligned.toString = $estr;
+rg.svg.widget.LabelOrientation.Aligned.__enum__ = rg.svg.widget.LabelOrientation;
+rg.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
+rg.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
+rg.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.svg.widget.LabelOrientation;
 thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
 	this.setScale(500);
 	this.setTranslate([480.0,250]);
@@ -15379,6 +14730,154 @@ thx.svg.CentroidTypes.prototype = {
 	}
 	,__class__: thx.svg.CentroidTypes
 }
+rg.svg.widget.Map = $hxClasses["rg.svg.widget.Map"] = function(container,projection) {
+	var me = this;
+	this.g = container.append("svg:g").attr("class").string("map");
+	this.projection = projection;
+	this.map = new Hash();
+	this.ready = false;
+	this.onReady = new hxevents.Notifier();
+	this.onReady.addOnce(function() {
+		me.ready = true;
+	});
+}
+rg.svg.widget.Map.__name__ = ["rg","svg","widget","Map"];
+rg.svg.widget.Map.loadJsonp = function(url,handler) {
+	rg.util.Jsonp.get(url,handler,null,null,null);
+}
+rg.svg.widget.Map.loadJsonAjax = function(url,handler) {
+	var http = new haxe.Http(url);
+	http.onData = function(data) {
+		var json = thx.json.Json.decode(data);
+		handler(json);
+	};
+	http.onError = function(err) {
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.svg.widget.Map", methodName : "loadJsonAjax"});
+	};
+	http.request(false);
+}
+rg.svg.widget.Map.prototype = {
+	className: null
+	,map: null
+	,onReady: null
+	,click: null
+	,labelDataPoint: null
+	,labelDataPointOver: null
+	,radius: null
+	,colorMode: null
+	,ready: null
+	,mapping: null
+	,projection: null
+	,g: null
+	,load: function(path,type,mappingurl,usejsonp) {
+		switch(type) {
+		case "geojson":
+			this.loadGeoJson(path,mappingurl,usejsonp);
+			break;
+		default:
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 58, className : "rg.svg.widget.Map", methodName : "load"});
+		}
+	}
+	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
+		var me = this;
+		var load = usejsonp?rg.svg.widget.Map.loadJsonp:rg.svg.widget.Map.loadJsonAjax;
+		if(null == mappingurl) load(geourl,this.draw.$bind(this)); else load(mappingurl,function(m) {
+			me.mapping = m;
+			load(geourl,me.draw.$bind(me));
+		});
+	}
+	,draw: function(json) {
+		var me = this;
+		var id = null != this.mapping?function(s) {
+			return Reflect.hasField(me.mapping,s)?Reflect.field(me.mapping,s):s;
+		}:function(s) {
+			return s;
+		};
+		var path = new thx.svg.PathGeoJson();
+		path.setProjection(this.projection);
+		switch(json.type) {
+		case "FeatureCollection":
+			var _g1 = 0, _g = json.features.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var feature = json.features[i], centroid = path.centroid(feature.geometry), p = feature.geometry.type == "Point"?this.g.append("svg:circle").attr("cx")["float"](centroid[0]).attr("cy")["float"](centroid[1]).attr("r")["float"](5):this.g.append("svg:path").attr("d").string(path.path(feature.geometry));
+				var dp = { };
+				dp["#centroid"] = centroid;
+				dp["#data"] = feature.properties;
+				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
+				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,a1) {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})(this.onMouseOver.$bind(this),dp));
+				if(null != this.click) p.onNode("click",(function(f,a1) {
+					return function(a2,a3) {
+						return f(a1,a2,a3);
+					};
+				})(this.onClick.$bind(this),dp));
+			}
+			break;
+		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.svg.widget.Map", methodName : "draw"});
+			break;
+		default:
+			this.g.append("svg:path").attr("d").string(path.path(json));
+		}
+		this.onReady.dispatch();
+	}
+	,onMouseOver: function(dp,_,_1) {
+		this.handlerDataPointOver(dp,this.labelDataPointOver);
+	}
+	,onClick: function(dp,_,_1) {
+		this.handlerClick(dp,this.click);
+	}
+	,handlerDataPointOver: null
+	,handlerClick: null
+	,setClassName: function(cls) {
+		this.g.attr("class").string("map" + (null == cls?"":" " + cls));
+		return cls;
+	}
+	,__class__: rg.svg.widget.Map
+	,__properties__: {set_className:"setClassName"}
+}
+rg.visualization.VisualizationPivotTable = $hxClasses["rg.visualization.VisualizationPivotTable"] = function(container) {
+	rg.visualization.VisualizationHtml.call(this,container);
+}
+rg.visualization.VisualizationPivotTable.__name__ = ["rg","visualization","VisualizationPivotTable"];
+rg.visualization.VisualizationPivotTable.__super__ = rg.visualization.VisualizationHtml;
+rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
+	info: null
+	,chart: null
+	,init: function() {
+		var me = this;
+		this.chart = new rg.html.chart.PivotTable(this.container);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		this.chart.displayColumnTotal = this.info.displayColumnTotal;
+		this.chart.displayHeatMap = this.info.displayHeatmap;
+		this.chart.displayRowTotal = this.info.displayRowTotal;
+		this.chart.colorStart = this.info.heatmapColorStart;
+		this.chart.colorEnd = this.info.heatmapColorEnd;
+		if(null != this.info.click) this.chart.click = this.info.click;
+		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
+		if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
+		if(null != this.info.label.axis) this.chart.labelAxis = this.info.label.axis;
+		if(null != this.info.label.axisvalue) this.chart.labelAxisValue = this.info.label.axisvalue;
+		if(null != this.info.label.total) this.chart.labelTotal = this.info.label.total;
+		if(null != this.info.label.totalover) this.chart.labelTotalOver = this.info.label.totalover;
+		this.chart.incolumns = Ints.min(this.info.columnAxes,this.independentVariables.length);
+		this.chart.init();
+	}
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables);
+		this.chart.data(data);
+	}
+	,destroy: function() {
+		this.chart.destroy();
+	}
+	,__class__: rg.visualization.VisualizationPivotTable
+});
 thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
@@ -15566,23 +15065,678 @@ thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
 thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
 thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
 thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
-rg.data.ScaleDistributions = $hxClasses["rg.data.ScaleDistributions"] = function() { }
-rg.data.ScaleDistributions.__name__ = ["rg","data","ScaleDistributions"];
-rg.data.ScaleDistributions.distribute = function(scale,pos,values) {
-	switch( (scale)[1] ) {
-	case 0:
-		return (pos + 0.5) / values;
-	case 1:
-		return pos / (values - 1);
-	case 2:
-		return pos / values;
-	case 3:
-		return (pos + 1) / values;
+rg.svg.chart.Sankey = $hxClasses["rg.svg.chart.Sankey"] = function(panel) {
+	rg.svg.chart.Chart.call(this,panel);
+	this.addClass("sankey");
+	this.layerWidth = 61;
+	this.nodeSpacing = 28;
+	this.dummySpacing = 18;
+	this.extraWidth = 28;
+	this.backEdgeSpacing = 4.0;
+	this.extraHeight = 5;
+	this.extraRadius = 5;
+	this.imageWidth = 60;
+	this.imageHeight = 48;
+	this.imageSpacing = 0;
+	this.labelNodeSpacing = 4;
+	this.styleNode = "0";
+	this.styleExtraIn = "4";
+	this.styleExtraOut = "6";
+	this.styleEdgeBackward = "3";
+	this.styleEdgeForward = "0";
+}
+rg.svg.chart.Sankey.__name__ = ["rg","svg","chart","Sankey"];
+rg.svg.chart.Sankey.__super__ = rg.svg.chart.Chart;
+rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
+	layerWidth: null
+	,nodeSpacing: null
+	,dummySpacing: null
+	,extraWidth: null
+	,backEdgeSpacing: null
+	,extraHeight: null
+	,extraRadius: null
+	,imageWidth: null
+	,imageHeight: null
+	,imageSpacing: null
+	,labelNodeSpacing: null
+	,labelEdge: null
+	,labelEdgeOver: null
+	,labelNode: null
+	,imagePath: null
+	,clickEdge: null
+	,layout: null
+	,maxweight: null
+	,availableheight: null
+	,padBefore: null
+	,padAfter: null
+	,layerstarty: null
+	,styleNode: null
+	,styleExtraIn: null
+	,styleExtraOut: null
+	,styleEdgeBackward: null
+	,styleEdgeForward: null
+	,dependentVariable: null
+	,mapelements: null
+	,maphi: null
+	,setVariables: function(variableIndependents,variableDependents,data) {
+		this.dependentVariable = variableDependents[0];
 	}
+	,data: function(graphlayout) {
+		var me = this;
+		this.layout = graphlayout.clone();
+		var nodes = Arrays.filter(Iterators.filter(this.layout.graph.nodes.iterator(),function(node) {
+			return me.isdummy(node);
+		}),function(node) {
+			var edge = node.graph.edges.positives(node).next(), cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			return celltail.layer > cellhead.layer;
+		});
+		var layers = this.layout.layers();
+		var _g = 0;
+		while(_g < nodes.length) {
+			var node = nodes[_g];
+			++_g;
+			var cell = this.layout.cell(node), ehead = node.graph.edges.positives(node).next(), etail = node.graph.edges.negatives(node).next();
+			layers[cell.layer].splice(cell.position,1);
+			this.layout.graph.edges.create(etail.tail,ehead.head,ehead.weight,ehead.data);
+			node.graph.nodes._remove(node);
+		}
+		this.redraw();
+	}
+	,redraw: function() {
+		var me = this;
+		this.mapelements = new Hash();
+		this.maphi = new Hash();
+		this.maxweight = 0;
+		this.layerstarty = [];
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var v = this.layout.layer(i).reduce(function(cum,cur,_) {
+				return cum + cur.data.weight;
+			},0);
+			if(v > this.maxweight) this.maxweight = v;
+		}
+		var occupiedspace = 0.0;
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var v = this.layout.layer(i).reduce(function(cum,cur,_) {
+				return cum + me.nodepadding(cur);
+			},0.0);
+			if(v > occupiedspace) occupiedspace = v;
+		}
+		this.availableheight = this.height - occupiedspace;
+		var $it0 = this.layout.graph.edges.collection.iterator();
+		while( $it0.hasNext() ) {
+			var edge = $it0.next();
+			if(this.layout.cell(edge.tail).layer < this.layout.cell(edge.head).layer) continue;
+			this.availableheight -= this.backEdgeSpacing;
+			this.maxweight += edge.weight;
+		}
+		this.availableheight -= this.extraRadius + this.extraHeight;
+		var backedgesy = 0.0;
+		var _g1 = 0, _g = this.layout.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var layer = this.layout.layer(i), t = 0.0;
+			var _g2 = 0;
+			while(_g2 < layer.length) {
+				var node = layer[_g2];
+				++_g2;
+				t += this.nodepadding(node) + this.nheight(node.data.weight);
+			}
+			this.layerstarty[i] = t;
+			if(t > backedgesy) backedgesy = t;
+		}
+		var _g1 = 0, _g = this.layerstarty.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.layerstarty[i] = (backedgesy - this.layerstarty[i]) / 2;
+		}
+		backedgesy += this.extraRadius + this.extraHeight;
+		this.padBefore = 0.0;
+		var _g = 0, _g1 = this.layout.layer(0);
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			var extra = Math.min(this.nheight(node.data.extrain),this.extraWidth);
+			var $it1 = node.graph.edges.negatives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				var tail = edge.tail, parentweight = this.hafter(edge.id,node.graph.edges.negatives(node)) + this.nheight(edge.weight);
+				if(parentweight > extra) extra = parentweight;
+			}
+			if(extra > this.padBefore) this.padBefore = extra;
+		}
+		this.padBefore += 2;
+		this.padAfter = 0.0;
+		var _g = 0, _g1 = this.layout.layer(this.layout.length - 1);
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			var extra = Math.min(this.nheight(node.data.extraout),this.extraWidth);
+			var $it2 = node.graph.edges.positives(node);
+			while( $it2.hasNext() ) {
+				var edge = $it2.next();
+				var head = edge.head, childweight = this.hafter(edge.id,node.graph.edges.positives(node)) + this.nheight(edge.weight) + Math.min(this.nheight(node.data.extraout),this.extraWidth);
+				if(childweight > extra) extra = childweight;
+			}
+			if(extra > this.padAfter) this.padAfter = extra;
+		}
+		this.padAfter += 2;
+		var edgescontainer = this.g.select("g.edges");
+		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
+		var edges = Arrays.order(Iterators.array(this.layout.graph.edges.iterator()),function(ea,eb) {
+			var lena = me.layout.cell(ea.tail).layer - me.layout.cell(ea.head).layer, lenb = me.layout.cell(eb.tail).layer - me.layout.cell(eb.head).layer, comp = lenb - lena;
+			if(comp != 0) return comp; else return Floats.compare(eb.weight,ea.weight);
+		});
+		edges.forEach(function(edge,_) {
+			if(edge.weight <= 0) return;
+			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			if(cellhead.layer > celltail.layer) return;
+			var weight = me.nheight(edge.weight), hook = new rg.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.extraWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
+			me.addToMap(edge.id,"edge",hook.g);
+			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
+			hook.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy + weight / 2,edge));
+			if(null != me.clickEdge) hook.g.onNode("click",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.edgeClickWithEdge.$bind(me),edge));
+			backedgesy += weight + me.backEdgeSpacing;
+		});
+		edges.forEach(function(edge,_) {
+			if(edge.weight <= 0) return;
+			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail);
+			if(cellhead.layer <= celltail.layer) return;
+			var x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head)), weight = me.nheight(edge.weight), diagonal = new rg.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
+			diagonal.update(x1,y1,x2,y2,weight,weight);
+			me.addToMap(edge.id,"edge",diagonal.g);
+			diagonal.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
+			if(null != me.clickEdge) diagonal.g.onNode("click",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.edgeClickWithEdge.$bind(me),edge));
+		});
+		var normMin = function(v) {
+			return Math.max(0,Math.min(v - 3,me.extraRadius));
+		};
+		this.layout.each(function(cell,node) {
+			if(node.data.extraout <= 0 || me.extraWidth <= 0) return;
+			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraOut,"stroke stroke-" + me.styleExtraOut), extra = me.nheight(node.data.extraout), x = me.layerWidth / 2 + me.xlayer(cell.layer), y = me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
+			elbow.update(rg.svg.widget.Orientation.RightBottom,extra,x,y + extra,minr,me.extraWidth,0,me.extraHeight);
+			if(null != me.labelEdge) {
+				var label, text = me.labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.extraout},me.dependentVariable.stats), nodeSpacing = 0;
+				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
+				label.addClass("edge");
+				label.place(x,y + extra / 2,0);
+				label.setAnchor(rg.svg.widget.GridAnchor.Left);
+				label.setText(text);
+				if(label.getSize().height > extra * .75) label.destroy();
+			}
+			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoverextraout.$bind(me),x + minr + (-minr + Math.min(me.extraWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.extraHeight,node));
+			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+				return function(a3,a4) {
+					return f(a1,a2,a3,a4);
+				};
+			})(me.edgeClickWithNode.$bind(me),node,true));
+			me.addToMap(node.id,"extraout",elbow.g);
+		});
+		this.layout.each(function(cell,node) {
+			if(node.data.extrain <= 0 || me.extraWidth <= 0) return;
+			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraIn,"stroke stroke-" + me.styleExtraIn), extra = me.nheight(node.data.extrain), minr = normMin(extra), x = -me.layerWidth / 2 + me.xlayer(cell.layer);
+			elbow.update(rg.svg.widget.Orientation.LeftTop,extra,x,me.ynode(node),minr,me.extraWidth,0,me.extraHeight);
+			if(null != me.labelEdge) {
+				var label, text = me.labelEdge({ head : null, tail : node, nodeweight : node.data.weight, edgeweight : node.data.extrain},me.dependentVariable.stats), nodeSpacing = 0;
+				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
+				label.addClass("edge");
+				label.place(x,me.ynode(node) + extra / 2,0);
+				label.setAnchor(rg.svg.widget.GridAnchor.Right);
+				label.setText(text);
+				if(label.getSize().height > extra * .75) label.destroy();
+			}
+			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
+				return function(a4,a5) {
+					return f(a1,a2,a3,a4,a5);
+				};
+			})(me.onmouseoverextrain.$bind(me),x - minr + (minr - Math.min(me.extraWidth,extra)) / 2,me.ynode(node) - minr - me.extraHeight,node));
+			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+				return function(a3,a4) {
+					return f(a1,a2,a3,a4);
+				};
+			})(me.edgeClickWithNode.$bind(me),node,false));
+			me.addToMap(node.id,"extrain",elbow.g);
+		});
+		if(null != this.labelEdge) edges.forEach(function(edge,_) {
+			if(edge.weight <= 0) return;
+			var tail = edge.tail;
+			if(me.isdummy(tail)) return;
+			var celltail = me.layout.cell(tail), weight = me.nheight(edge.weight), label, text = me.labelEdge(me.edgeData(edge),me.dependentVariable.stats), nodeSpacing = 2;
+			label = new rg.svg.widget.Label(edgescontainer,true,true,false);
+			label.addClass("edge");
+			label.place(me.layerWidth / 2 + me.xlayer(celltail.layer) + nodeSpacing,me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)) + weight / 2,0);
+			label.setAnchor(rg.svg.widget.GridAnchor.Left);
+			label.setText(text);
+			if(label.getSize().height > weight * .75) label.destroy();
+		});
+		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
+			return "rule rule-" + i;
+		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
+			return "translate(" + me.xlayer(i) + ",0)";
+		}).exit().remove();
+		var choice = rules.update().selectAll("g.node").dataf(function(d,i) {
+			return me.layout.layer(i);
+		});
+		var cont = choice.enter().append("svg:g").attr("class").string("node");
+		if(this.layerWidth > 0) {
+			cont.append("svg:rect").attr("class").stringf(function(n,_) {
+				return "fill fill-" + (me.isdummy(n)?me.styleEdgeForward + " nonode":me.styleNode + " node");
+			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this));
+			cont.each(function(node,_) {
+				me.addToMap(node.id,"node",thx.js.Dom.selectNode(thx.js.Group.current));
+			});
+			cont.append("svg:line").attr("class").stringf(function(n,_) {
+				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
+			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
+			cont.append("svg:line").attr("class").stringf(function(n,_) {
+				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
+			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+		}
+		choice.update().attr("transform").stringf(function(n,i) {
+			return "translate(0," + me.ynode(n) + ")";
+		});
+		cont.each(function(n,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			if(me.isdummy(n)) return;
+			var nodeheight = me.hnode(n), label;
+			if(null != me.labelDataPoint) {
+				var lines = me.labelDataPoint(n.data.dp,me.dependentVariable.stats).split("\n"), nodeSpacing = 3, prev = null, text, pos = 0.0;
+				var _g1 = 0, _g = lines.length;
+				while(_g1 < _g) {
+					var i1 = _g1++;
+					text = lines[i1];
+					label = new rg.svg.widget.Label(node,true,true,false);
+					label.addClass("node");
+					if(i1 == 0) label.addClass("first");
+					pos = nodeSpacing;
+					if(null != prev) pos += prev.y + prev.getSize().height;
+					label.place(-me.layerWidth / 2 + nodeSpacing * 2,pos,0);
+					label.setAnchor(rg.svg.widget.GridAnchor.TopLeft);
+					label.setText(text);
+					if(label.y + label.getSize().height > nodeheight) {
+						label.destroy();
+						break;
+					}
+					prev = label;
+				}
+			}
+			var hasimage = false;
+			if(null != me.imagePath && !me.isdummy(n)) {
+				var path = me.imagePath(n.data.dp);
+				if(path != null) {
+					hasimage = true;
+					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-me.imageWidth / 2) + "," + Math.round(-me.imageHeight - me.imageSpacing) + ")");
+					container.append("svg:image").attr("preserveAspectRatio").string("xMidYMid slice").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
+				}
+			}
+			if(null != me.labelNode) {
+				if(hasimage) label = new rg.svg.widget.Label(node,true,true,true); else label = new rg.svg.widget.Label(node,true,false,false);
+				label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+				label.place(0,-me.labelNodeSpacing,0);
+				label.setText(me.labelNode(n.data.dp,me.dependentVariable.stats));
+			}
+		});
+		cont.each(function(n,i) {
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			node.onNode("mouseover",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.onmouseovernode.$bind(me),n));
+			if(null != me.click) node.onNode("click",(function(f,a1) {
+				return function(a2,a3) {
+					return f(a1,a2,a3);
+				};
+			})(me.nodeclick.$bind(me),n));
+		});
+		this.ready.dispatch();
+	}
+	,addToMap: function(id,type,el) {
+		this.mapelements.set(type + ":" + id,el);
+	}
+	,isbackward: function(edge) {
+		return this.layout.cell(edge.head).layer <= this.layout.cell(edge.tail).layer;
+	}
+	,highlight: function(id,type) {
+		var me = this;
+		var $it0 = this.maphi.iterator();
+		while( $it0.hasNext() ) {
+			var el = $it0.next();
+			el.classed().remove("over");
+		}
+		this.maphi = new Hash();
+		var hiedgep = null, hinodep = null, hiedgen = null, hinoden = null;
+		var hielement = function(id1,type1) {
+			var key = type1 + ":" + id1;
+			me.maphi.set(key,me.mapelements.get(key).classed().add("over"));
+		};
+		var hiextrain = function(id1) {
+			var key = "extrain:" + id1, extra = me.mapelements.get(key);
+			if(null == extra) return;
+			me.maphi.set(key,extra.classed().add("over"));
+		};
+		var hiextraout = function(id1) {
+			var key = "extraout:" + id1, extra = me.mapelements.get(key);
+			if(null == extra) return;
+			me.maphi.set(key,extra.classed().add("over"));
+		};
+		var ishi = function(id1,type1) {
+			return me.maphi.exists(type1 + ":" + id1);
+		};
+		hiedgep = function(edge) {
+			if(ishi(edge.id,"edge")) return;
+			hielement(edge.id,"edge");
+			if(!me.isbackward(edge)) hinodep(edge.head);
+		};
+		hinodep = function(node) {
+			if(ishi(node.id,"node")) return;
+			hielement(node.id,"node");
+			hiextraout(node.id);
+			var $it1 = node.graph.edges.positives(node);
+			while( $it1.hasNext() ) {
+				var edge = $it1.next();
+				hiedgep(edge);
+			}
+		};
+		hiedgen = function(edge) {
+			if(!me.isbackward(edge)) hinoden(edge.tail);
+			if(ishi(edge.id,"edge")) return;
+			if(!me.isbackward(edge)) hielement(edge.id,"edge");
+		};
+		hinoden = function(node) {
+			var $it2 = node.graph.edges.negatives(node);
+			while( $it2.hasNext() ) {
+				var edge = $it2.next();
+				hiedgen(edge);
+			}
+			if(ishi(node.id,"node")) return;
+			hielement(node.id,"node");
+			hiextrain(node.id);
+		};
+		if(type == "edge") {
+			hiedgep(this.layout.graph.edges.get(id));
+			hiedgen(this.layout.graph.edges.get(id));
+		} else if(type == "node") {
+			hinodep(this.layout.graph.nodes.get(id));
+			hinoden(this.layout.graph.nodes.get(id));
+			hiextrain(id);
+		}
+	}
+	,edgeData: function(edge) {
+		var head = edge.head, tail = edge.tail;
+		while(this.isdummy(head)) head = head.graph.edges.positives(head).next().head;
+		while(this.isdummy(tail)) tail = tail.graph.edges.negatives(tail).next().tail;
+		return { head : head.data.dp, tail : tail.data.dp, edgeweight : edge.weight, nodeweight : tail.data.weight};
+	}
+	,edgeDataWithNode: function(node,out) {
+		return { tail : out?node.data.dp:null, head : out?null:node.data.dp, edgeweight : out?node.data.extraout:node.data.extrain, nodeweight : node.data.weight};
+	}
+	,nodeclick: function(node,el,i) {
+		this.click(node.data.dp,this.dependentVariable.stats);
+	}
+	,edgeclick: function(data,el,i) {
+		this.clickEdge(data,this.dependentVariable.stats);
+	}
+	,edgeClickWithEdge: function(edge,el,i) {
+		this.edgeclick(this.edgeData(edge),el,i);
+	}
+	,edgeClickWithNode: function(node,out,el,i) {
+		this.edgeclick(this.edgeDataWithNode(node,out),el,i);
+	}
+	,onmouseovernode: function(node,el,i) {
+		this.highlight(node.id,"node");
+		if(this.isdummy(node)) {
+			if(null == this.labelEdgeOver) return;
+			var text = this.labelEdgeOver(this.edgeData(node.graph.edges.positives(node).next()),this.dependentVariable.stats);
+			if(null == text) this.tooltip.hide(); else {
+				var cell = this.layout.cell(node);
+				this.tooltip.setPreferredSide(2);
+				this.tooltip.setText(text.split("\n"));
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+			}
+		} else {
+			if(null == this.labelDataPointOver) return;
+			var text = this.labelDataPointOver(node.data.dp,this.dependentVariable.stats);
+			if(null == text) this.tooltip.hide(); else {
+				var cell = this.layout.cell(node);
+				this.tooltip.setPreferredSide(0);
+				this.tooltip.setText(text.split("\n"));
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+			}
+		}
+	}
+	,onmouseoveredge: function(x,y,edge,el,i) {
+		this.highlight(edge.id,"edge");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver(this.edgeData(edge),this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(2);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
+	}
+	,onmouseoverextrain: function(x,y,node,el,i) {
+		this.highlight(node.id,"node");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(2);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
+	}
+	,onmouseoverextraout: function(x,y,node,el,i) {
+		this.highlight(node.id,"node");
+		if(null == this.labelEdgeOver) return;
+		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setPreferredSide(0);
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(x,y);
+		}
+	}
+	,nheight: function(v) {
+		return Math.round(v / this.maxweight * this.availableheight);
+	}
+	,ydiagonal: function(id,edges) {
+		var weight = 0.0;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
+			if(edge.id == id) break;
+			weight += edge.weight;
+		}
+		return this.nheight(weight);
+	}
+	,hafter: function(id,edges) {
+		var found = false, pad = this.backEdgeSpacing / this.nheight(1), weight = pad;
+		while( edges.hasNext() ) {
+			var edge = edges.next();
+			if(!found) {
+				if(edge.id == id) found = true;
+				continue;
+			}
+			weight += edge.weight + pad;
+		}
+		return this.nheight(weight);
+	}
+	,xlayer: function(pos,_) {
+		if(this.layout.length <= 1) return this.width / 2;
+		return Math.round((this.width - this.padBefore - this.padAfter - this.layerWidth) / (this.layout.length - 1) * pos + this.layerWidth / 2 + this.padBefore);
+	}
+	,ynode: function(node,_) {
+		var cell = this.layout.cell(node), before = this.layerstarty[cell.layer];
+		var _g1 = 0, _g = cell.position;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var prev = this.layout.nodeAt(cell.layer,i);
+			before += this.hnode(prev) + this.nodepadding(prev);
+		}
+		before += this.nodepadding(node);
+		return Math.round(before) + 0.5;
+	}
+	,nodepadding: function(node) {
+		return this.isdummy(node)?this.dummySpacing:this.nodeSpacing;
+	}
+	,isdummy: function(node) {
+		return node.data.id.substr(0,1) == "#";
+	}
+	,hnode: function(node,_) {
+		return this.nheight(node.data.weight);
+	}
+	,__class__: rg.svg.chart.Sankey
+});
+rg.svg.panel.Panel = $hxClasses["rg.svg.panel.Panel"] = function(frame) {
+	this.frame = frame;
+	frame.change = this.reframe.$bind(this);
+	this._layers = [];
 }
-rg.data.ScaleDistributions.prototype = {
-	__class__: rg.data.ScaleDistributions
+rg.svg.panel.Panel.__name__ = ["rg","svg","panel","Panel"];
+rg.svg.panel.Panel.prototype = {
+	frame: null
+	,g: null
+	,parent: null
+	,_layers: null
+	,addLayer: function(layer) {
+		this._layers.remove(layer);
+		this._layers.push(layer);
+	}
+	,removeLayer: function(layer) {
+		this._layers.remove(layer);
+	}
+	,setParent: function(container) {
+		if(null != this.g) this.g.remove();
+		this.parent = container;
+		if(null == container) return;
+		this.init(container.g);
+	}
+	,init: function(container) {
+		this.g = container.append("svg:g").attr("class").string("panel").attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
+	}
+	,reframe: function() {
+		this.g.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
+		var layer;
+		var _g1 = 0, _g = this._layers.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			layer = this._layers[i];
+			layer._resize();
+		}
+	}
+	,__class__: rg.svg.panel.Panel
 }
+rg.svg.panel.Container = $hxClasses["rg.svg.panel.Container"] = function(frame,orientation) {
+	rg.svg.panel.Panel.call(this,frame);
+	this.stack = new rg.frame.Stack(frame.width,frame.height,orientation);
+	this.panels = [];
+}
+rg.svg.panel.Container.__name__ = ["rg","svg","panel","Container"];
+rg.svg.panel.Container.__super__ = rg.svg.panel.Panel;
+rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
+	stack: null
+	,panels: null
+	,insertPanel: function(pos,panel) {
+		if(null == panel) return this;
+		if(pos >= this.stack.getLength()) return this.addPanel(panel); else if(pos < 0) pos = 0;
+		if(null != panel.parent) panel.parent.removePanel(panel);
+		this.panels.insert(pos,panel);
+		var f = panel;
+		f.setParent(this);
+		this.stack.insertItem(pos,(function($this) {
+			var $r;
+			var $t = panel.frame;
+			if(Std["is"]($t,rg.frame.StackItem)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this)));
+		return this;
+	}
+	,addPanel: function(panel) {
+		return this.addPanels([panel]);
+	}
+	,addPanels: function(it) {
+		var frames = [];
+		var $it0 = it.iterator();
+		while( $it0.hasNext() ) {
+			var panel = $it0.next();
+			if(null == panel) continue;
+			if(null != panel.parent) panel.parent.removePanel(panel);
+			this.panels.push(panel);
+			var f = panel;
+			f.setParent(this);
+			frames.push((function($this) {
+				var $r;
+				var $t = panel.frame;
+				if(Std["is"]($t,rg.frame.StackItem)) $t; else throw "Class cast error";
+				$r = $t;
+				return $r;
+			}(this)));
+		}
+		this.stack.addItems(frames);
+		return this;
+	}
+	,removePanel: function(panel) {
+		if(!this.panels.remove(panel)) return this;
+		this.stack.removeChild((function($this) {
+			var $r;
+			var $t = panel.frame;
+			if(Std["is"]($t,rg.frame.StackItem)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this)));
+		var f = panel;
+		f.setParent(null);
+		return this;
+	}
+	,createPanel: function(layout) {
+		var panel = new rg.svg.panel.Panel(new rg.frame.StackItem(layout));
+		this.addPanel(panel);
+		return panel;
+	}
+	,createContainer: function(layout,orientation) {
+		var panel = new rg.svg.panel.Container(new rg.frame.StackItem(layout),orientation);
+		this.addPanel(panel);
+		return panel;
+	}
+	,createPanelAt: function(pos,layout) {
+		var panel = new rg.svg.panel.Panel(new rg.frame.StackItem(layout));
+		this.insertPanel(pos,panel);
+		return panel;
+	}
+	,createContainerAt: function(pos,layout,orientation) {
+		var panel = new rg.svg.panel.Container(new rg.frame.StackItem(layout),orientation);
+		this.insertPanel(pos,panel);
+		return panel;
+	}
+	,reframe: function() {
+		rg.svg.panel.Panel.prototype.reframe.call(this);
+		this.stack.setSize(this.frame.width,this.frame.height);
+		this.stack.reflow();
+	}
+	,__class__: rg.svg.panel.Container
+});
 rg.graph.GraphElement = $hxClasses["rg.graph.GraphElement"] = function(graph,id,data) {
 	this.id = id;
 	this.data = data;
@@ -15605,263 +15759,66 @@ rg.graph.GraphElement.prototype = {
 	}
 	,__class__: rg.graph.GraphElement
 }
-rg.view.svg.widget.Label = $hxClasses["rg.view.svg.widget.Label"] = function(container,dontflip,shadow,outline) {
-	if(dontflip == null) dontflip = true;
-	this.shadow = shadow;
-	this.outline = outline;
-	this.g = container.append("svg:g").attr("class").string("label");
-	if(shadow) {
-		this.gshadow = this.g.append("svg:g").attr("transform").string("translate(0,0)");
-		this.gshadowrot = this.gshadow.append("svg:g");
-		this.tshadow = this.gshadowrot.append("svg:text").attr("class").string("shadow" + (outline?"":" nooutline"));
-	}
-	this.gtext = this.g.append("svg:g");
-	if(outline) this.toutline = this.gtext.append("svg:text").attr("class").string("outline" + (shadow?"":" noshadow"));
-	var cls = Arrays.addIf(Arrays.addIf(["text"],!outline,"nooutline"),!shadow,"noshadow");
-	this.ttext = this.gtext.append("svg:text").attr("class").string(cls.join(" "));
-	this.dontFlip = dontflip;
-	if(outline) this.setShadowOffset(1,1.25); else this.setShadowOffset(0.5,0.5);
-	this.x = 0;
-	this.y = 0;
-	this.angle = 0;
-	this.setOrientation(rg.view.svg.widget.LabelOrientation.FixedAngle(0));
-	this.setAnchor(rg.view.svg.widget.GridAnchor.Center);
+rg.visualization.VisualizationGeo = $hxClasses["rg.visualization.VisualizationGeo"] = function(layout) {
+	rg.visualization.VisualizationSvg.call(this,layout);
 }
-rg.view.svg.widget.Label.__name__ = ["rg","view","svg","widget","Label"];
-rg.view.svg.widget.Label.prototype = {
-	text: null
-	,orientation: null
-	,anchor: null
-	,x: null
-	,y: null
-	,angle: null
-	,dontFlip: null
-	,shadowOffsetX: null
-	,shadowOffsetY: null
-	,shadow: null
-	,outline: null
-	,g: null
-	,gshadow: null
-	,gtext: null
-	,gshadowrot: null
-	,ttext: null
-	,toutline: null
-	,tshadow: null
-	,addClass: function(name) {
-		this.g.classed().add(name);
-	}
-	,removeClass: function(name) {
-		this.g.classed().remove(name);
-	}
-	,getSize: function() {
-		try {
-			return this.g.node().getBBox();
-		} catch( e ) {
-			return { width : 0.0, height : 0.0};
+rg.visualization.VisualizationGeo.__name__ = ["rg","visualization","VisualizationGeo"];
+rg.visualization.VisualizationGeo.__super__ = rg.visualization.VisualizationSvg;
+rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
+	info: null
+	,title: null
+	,chart: null
+	,init: function() {
+		var me = this;
+		if(null != this.info.label.title) {
+			var panelContextTitle = this.layout.getContext("title");
+			if(null == panelContextTitle) return;
+			this.title = new rg.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
+		}
+		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
+		this.chart = new rg.svg.chart.Geo(panelChart);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		var pfactory = new rg.factory.FactoryGeoProjection();
+		var _g = 0, _g1 = this.info.map;
+		while(_g < _g1.length) {
+			var imap = _g1[_g];
+			++_g;
+			var projection = pfactory.create(imap), map = new rg.svg.widget.Map(this.chart.mapcontainer,projection);
+			map.setClassName(imap.classname);
+			if(null == imap.label) map.labelDataPoint = this.info.label.datapoint; else map.labelDataPoint = imap.label.datapoint;
+			if(null == imap.label) map.labelDataPointOver = this.info.label.datapointover; else map.labelDataPointOver = imap.label.datapointover;
+			map.click = imap.click;
+			map.radius = imap.radius;
+			map.colorMode = imap.colorScaleMode;
+			map.handlerClick = ($_=this.chart,$_.handlerClick.$bind($_));
+			map.handlerDataPointOver = ($_=this.chart,$_.handlerDataPointOver.$bind($_));
+			map.mapping = imap.mapping;
+			var mappingurl = imap.mappingurl;
+			if(null != mappingurl && (!StringTools.startsWith(mappingurl,"http://") || !StringTools.startsWith(mappingurl,"https://"))) mappingurl = rg.RGConst.BASE_URL_GEOJSON + mappingurl + ".json" + (imap.usejsonp?".js":"");
+			map.load(imap.url,imap.type,mappingurl,imap.usejsonp);
+			this.chart.addMap(map,imap.property);
 		}
 	}
-	,place: function(x,y,angle) {
-		this.x = x;
-		this.y = y;
-		this.angle = angle % 360;
-		if(this.angle < 0) this.angle += 360;
-		this.g.attr("transform").string("translate(" + x + "," + y + ")");
-		var $e = (this.orientation);
-		switch( $e[1] ) {
-		case 0:
-			var a = $e[2];
-			this.gtext.attr("transform").string("rotate(" + a + ")");
-			break;
-		case 1:
-			if(this.dontFlip && this.angle > 90 && this.angle < 270) angle += 180;
-			this.gtext.attr("transform").string("rotate(" + angle + ")");
-			break;
-		case 2:
-			if(this.dontFlip && this.angle > 180) angle -= 180;
-			this.gtext.attr("transform").string("rotate(" + (-90 + angle) + ")");
-			break;
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
+		if(null != this.title) {
+			if(null != this.info.label.title) {
+				this.title.setText(this.info.label.title(this.variables,data));
+				this.layout.suggestSize("title",this.title.idealHeight());
+			} else this.layout.suggestSize("title",0);
 		}
-		if(this.shadow) this.gshadowrot.attr("transform").string(this.gtext.attr("transform").get());
-		this.reanchor();
-	}
-	,setShadowOffset: function(x,y) {
-		this.shadowOffsetX = x;
-		this.shadowOffsetY = y;
-		if(this.shadow) this.gshadow.attr("transform").string("translate(" + this.shadowOffsetX + "," + this.shadowOffsetY + ")");
-	}
-	,setText: function(v) {
-		this.text = v;
-		if(this.outline) this.toutline.text().string(v);
-		this.ttext.text().string(v);
-		if(this.shadow) this.tshadow.text().string(v);
-		this.reanchor();
-		return v;
-	}
-	,setOrientation: function(v) {
-		this.orientation = v;
-		this.place(this.x,this.y,this.angle);
-		return v;
-	}
-	,setAnchor: function(v) {
-		this.anchor = v;
-		this.reanchor();
-		return v;
-	}
-	,getBB: function() {
-		var n = this.ttext.node(), h = this.ttext.style("font-size").getFloat();
-		if(null == h || 0 >= h) try {
-			h = n.getExtentOfChar("A").height;
-		} catch( e ) {
-			h = thx.js.Dom.selectNode(n).style("height").getFloat();
-		}
-		var w;
-		try {
-			w = n.getComputedTextLength();
-		} catch( e ) {
-			w = thx.js.Dom.selectNode(n).style("width").getFloat();
-		}
-		return { width : w, height : h};
-	}
-	,reanchor: function() {
-		if(null == this.anchor) return;
-		var bb = this.getBB(), x, y;
-		var a = this.anchor;
-		if(this.dontFlip) {
-			switch( (this.orientation)[1] ) {
-			case 1:
-				if(this.angle > 90 && this.angle < 270) a = (function($this) {
-					var $r;
-					switch( (a)[1] ) {
-					case 0:
-						$r = rg.view.svg.widget.GridAnchor.BottomRight;
-						break;
-					case 1:
-						$r = rg.view.svg.widget.GridAnchor.Bottom;
-						break;
-					case 2:
-						$r = rg.view.svg.widget.GridAnchor.BottomLeft;
-						break;
-					case 3:
-						$r = rg.view.svg.widget.GridAnchor.Right;
-						break;
-					case 4:
-						$r = rg.view.svg.widget.GridAnchor.Center;
-						break;
-					case 5:
-						$r = rg.view.svg.widget.GridAnchor.Left;
-						break;
-					case 6:
-						$r = rg.view.svg.widget.GridAnchor.TopRight;
-						break;
-					case 7:
-						$r = rg.view.svg.widget.GridAnchor.Top;
-						break;
-					case 8:
-						$r = rg.view.svg.widget.GridAnchor.TopLeft;
-						break;
-					}
-					return $r;
-				}(this));
-				break;
-			case 2:
-				if(this.angle > 180) a = (function($this) {
-					var $r;
-					switch( (a)[1] ) {
-					case 0:
-						$r = rg.view.svg.widget.GridAnchor.BottomRight;
-						break;
-					case 1:
-						$r = rg.view.svg.widget.GridAnchor.Bottom;
-						break;
-					case 2:
-						$r = rg.view.svg.widget.GridAnchor.BottomLeft;
-						break;
-					case 3:
-						$r = rg.view.svg.widget.GridAnchor.Right;
-						break;
-					case 4:
-						$r = rg.view.svg.widget.GridAnchor.Center;
-						break;
-					case 5:
-						$r = rg.view.svg.widget.GridAnchor.Left;
-						break;
-					case 6:
-						$r = rg.view.svg.widget.GridAnchor.TopRight;
-						break;
-					case 7:
-						$r = rg.view.svg.widget.GridAnchor.Top;
-						break;
-					case 8:
-						$r = rg.view.svg.widget.GridAnchor.TopLeft;
-						break;
-					}
-					return $r;
-				}(this));
-				break;
-			default:
-			}
-		}
-		switch( (a)[1] ) {
-		case 0:
-			x = 0;
-			y = bb.height;
-			break;
-		case 1:
-			x = -bb.width / 2;
-			y = bb.height;
-			break;
-		case 2:
-			x = -bb.width;
-			y = bb.height;
-			break;
-		case 3:
-			x = 0;
-			y = bb.height / 2;
-			break;
-		case 4:
-			x = -bb.width / 2;
-			y = bb.height / 2;
-			break;
-		case 5:
-			x = -bb.width;
-			y = bb.height / 2;
-			break;
-		case 6:
-			x = 0;
-			y = 0;
-			break;
-		case 7:
-			x = -bb.width / 2;
-			y = 0;
-			break;
-		case 8:
-			x = -bb.width;
-			y = 0;
-			break;
-		}
-		if(this.outline) this.toutline.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
-		this.ttext.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
-		if(this.shadow) this.tshadow.attr("x")["float"](x + 0.5).attr("y")["float"](y - 1.5);
+		this.chart.init();
+		this.chart.data(data);
 	}
 	,destroy: function() {
-		this.g.remove();
+		this.chart.destroy();
+		if(null != this.title) this.title.destroy();
+		rg.visualization.VisualizationSvg.prototype.destroy.call(this);
 	}
-	,__class__: rg.view.svg.widget.Label
-	,__properties__: {set_anchor:"setAnchor",set_orientation:"setOrientation",set_text:"setText"}
-}
-rg.view.layout.Anchor = $hxClasses["rg.view.layout.Anchor"] = { __ename__ : ["rg","view","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
-rg.view.layout.Anchor.Top = ["Top",0];
-rg.view.layout.Anchor.Top.toString = $estr;
-rg.view.layout.Anchor.Top.__enum__ = rg.view.layout.Anchor;
-rg.view.layout.Anchor.Bottom = ["Bottom",1];
-rg.view.layout.Anchor.Bottom.toString = $estr;
-rg.view.layout.Anchor.Bottom.__enum__ = rg.view.layout.Anchor;
-rg.view.layout.Anchor.Left = ["Left",2];
-rg.view.layout.Anchor.Left.toString = $estr;
-rg.view.layout.Anchor.Left.__enum__ = rg.view.layout.Anchor;
-rg.view.layout.Anchor.Right = ["Right",3];
-rg.view.layout.Anchor.Right.toString = $estr;
-rg.view.layout.Anchor.Right.__enum__ = rg.view.layout.Anchor;
+	,__class__: rg.visualization.VisualizationGeo
+});
 var I32 = $hxClasses["I32"] = function() { }
 I32.__name__ = ["I32"];
 I32.B4 = function(v) {
@@ -16075,41 +16032,119 @@ I32.xor = function(a,b) {
 I32.prototype = {
 	__class__: I32
 }
+rg.info.InfoPivotTable = $hxClasses["rg.info.InfoPivotTable"] = function() {
+	this.label = new rg.info.InfoLabelPivotTable();
+	this.heatmapColorStart = rg.info.InfoPivotTable.defaultStartColor;
+	this.heatmapColorEnd = rg.info.InfoPivotTable.defaultEndColor;
+	this.displayHeatmap = true;
+	this.displayColumnTotal = true;
+	this.displayRowTotal = true;
+	this.columnAxes = 1;
+}
+rg.info.InfoPivotTable.__name__ = ["rg","info","InfoPivotTable"];
+rg.info.InfoPivotTable.filters = function() {
+	return [{ field : "columnaxes", validator : function(v) {
+		return Std["is"](v,Int);
+	}, filter : function(v) {
+		return [{ field : "columnAxes", value : v}];
+	}},{ field : "displayheatmap", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayHeatmap", value : v}];
+	}},{ field : "displaycolumntotal", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayColumnTotal", value : v}];
+	}},{ field : "displayrowtotal", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ field : "displayRowTotal", value : v}];
+	}},{ field : "startcolor", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "heatmapColorStart", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.info.InfoPivotTable.defaultStartColor.hex("#")))}];
+	}},{ field : "endcolor", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "heatmapColorEnd", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.info.InfoPivotTable.defaultEndColor.hex("#")))}];
+	}},{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelPivotTable(),v)}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}];
+}
+rg.info.InfoPivotTable.prototype = {
+	label: null
+	,heatmapColorStart: null
+	,heatmapColorEnd: null
+	,displayHeatmap: null
+	,displayColumnTotal: null
+	,displayRowTotal: null
+	,columnAxes: null
+	,click: null
+	,__class__: rg.info.InfoPivotTable
+}
+rg.html.widget.DownloaderPosition = $hxClasses["rg.html.widget.DownloaderPosition"] = { __ename__ : ["rg","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
+rg.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
+rg.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
+rg.html.widget.DownloaderPosition.TopLeft.toString = $estr;
+rg.html.widget.DownloaderPosition.TopLeft.__enum__ = rg.html.widget.DownloaderPosition;
+rg.html.widget.DownloaderPosition.TopRight = ["TopRight",2];
+rg.html.widget.DownloaderPosition.TopRight.toString = $estr;
+rg.html.widget.DownloaderPosition.TopRight.__enum__ = rg.html.widget.DownloaderPosition;
+rg.html.widget.DownloaderPosition.BottomLeft = ["BottomLeft",3];
+rg.html.widget.DownloaderPosition.BottomLeft.toString = $estr;
+rg.html.widget.DownloaderPosition.BottomLeft.__enum__ = rg.html.widget.DownloaderPosition;
+rg.html.widget.DownloaderPosition.BottomRight = ["BottomRight",4];
+rg.html.widget.DownloaderPosition.BottomRight.toString = $estr;
+rg.html.widget.DownloaderPosition.BottomRight.__enum__ = rg.html.widget.DownloaderPosition;
+rg.html.widget.DownloaderPosition.Before = ["Before",5];
+rg.html.widget.DownloaderPosition.Before.toString = $estr;
+rg.html.widget.DownloaderPosition.Before.__enum__ = rg.html.widget.DownloaderPosition;
+rg.html.widget.DownloaderPosition.After = ["After",6];
+rg.html.widget.DownloaderPosition.After.toString = $estr;
+rg.html.widget.DownloaderPosition.After.__enum__ = rg.html.widget.DownloaderPosition;
+rg.info.InfoLabelFunnel = $hxClasses["rg.info.InfoLabelFunnel"] = function() {
+	rg.info.InfoLabel.call(this);
+}
+rg.info.InfoLabelFunnel.__name__ = ["rg","info","InfoLabelFunnel"];
+rg.info.InfoLabelFunnel.filters = function() {
+	return [{ field : "arrow", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}].concat(rg.info.InfoLabel.filters());
+}
+rg.info.InfoLabelFunnel.__super__ = rg.info.InfoLabel;
+rg.info.InfoLabelFunnel.prototype = $extend(rg.info.InfoLabel.prototype,{
+	arrow: null
+	,__class__: rg.info.InfoLabelFunnel
+});
 hxevents.EventException = $hxClasses["hxevents.EventException"] = { __ename__ : ["hxevents","EventException"], __constructs__ : ["StopPropagation"] }
 hxevents.EventException.StopPropagation = ["StopPropagation",0];
 hxevents.EventException.StopPropagation.toString = $estr;
 hxevents.EventException.StopPropagation.__enum__ = hxevents.EventException;
-rg.controller.info.InfoVisualizationOption = $hxClasses["rg.controller.info.InfoVisualizationOption"] = function() {
+rg.info.InfoDomType = $hxClasses["rg.info.InfoDomType"] = function() {
 }
-rg.controller.info.InfoVisualizationOption.__name__ = ["rg","controller","info","InfoVisualizationOption"];
-rg.controller.info.InfoVisualizationOption.filters = function() {
-	return [{ field : "axes", validator : function(v) {
-		return Std["is"](v,Array) || Reflect.isObject(v);
+rg.info.InfoDomType.__name__ = ["rg","info","InfoDomType"];
+rg.info.InfoDomType.filters = function() {
+	return [{ field : "visualization", validator : function(v) {
+		return Arrays.exists(rg.visualization.Visualizations.visualizations,v.toLowerCase());
 	}, filter : function(v) {
-		return [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			return rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v1);
-		}):[rg.controller.info.Info.feed(new rg.controller.info.InfoVariable(),v)]}];
-	}},{ field : "options", validator : function(v) {
-		return Reflect.isObject(v);
-	}, filter : null}];
+		return [{ value : Arrays.exists(rg.visualization.Visualizations.html,v.toLowerCase())?rg.info.DomKind.Html:rg.info.DomKind.Svg, field : "kind"}];
+	}}];
 }
-rg.controller.info.InfoVisualizationOption.prototype = {
-	variables: null
-	,options: null
-	,__class__: rg.controller.info.InfoVisualizationOption
+rg.info.InfoDomType.prototype = {
+	kind: null
+	,__class__: rg.info.InfoDomType
 }
-rg.controller.info.InfoGeneral = $hxClasses["rg.controller.info.InfoGeneral"] = function() {
-}
-rg.controller.info.InfoGeneral.__name__ = ["rg","controller","info","InfoGeneral"];
-rg.controller.info.InfoGeneral.filter = function() {
-	return [{ field : "ready", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, value : null}];
-}
-rg.controller.info.InfoGeneral.prototype = {
-	ready: null
-	,__class__: rg.controller.info.InfoGeneral
-}
+rg.info.DomKind = $hxClasses["rg.info.DomKind"] = { __ename__ : ["rg","info","DomKind"], __constructs__ : ["Html","Svg"] }
+rg.info.DomKind.Html = ["Html",0];
+rg.info.DomKind.Html.toString = $estr;
+rg.info.DomKind.Html.__enum__ = rg.info.DomKind;
+rg.info.DomKind.Svg = ["Svg",1];
+rg.info.DomKind.Svg.toString = $estr;
+rg.info.DomKind.Svg.__enum__ = rg.info.DomKind;
 if(!chx.vm) chx.vm = {}
 chx.vm.Lock = $hxClasses["chx.vm.Lock"] = function() {
 	this.lock = 1;
@@ -16130,20 +16165,6 @@ chx.vm.Lock.prototype = {
 		this.lock--;
 	}
 	,__class__: chx.vm.Lock
-}
-rg.controller.factory.FactoryVariableDependent = $hxClasses["rg.controller.factory.FactoryVariableDependent"] = function() {
-}
-rg.controller.factory.FactoryVariableDependent.__name__ = ["rg","controller","factory","FactoryVariableDependent"];
-rg.controller.factory.FactoryVariableDependent.prototype = {
-	create: function(info,isnumeric) {
-		if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 18, className : "rg.controller.factory.FactoryVariableDependent", methodName : "create"});
-		var axiscreator = new rg.controller.factory.FactoryAxis(), variable = new rg.data.VariableDependent(info.type,info.scaleDistribution), axis = axiscreator.create(info.type,isnumeric,variable,info.values);
-		variable.setAxis(axis);
-		variable.setMinF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min));
-		variable.setMaxF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.max));
-		return variable;
-	}
-	,__class__: rg.controller.factory.FactoryVariableDependent
 }
 var Arrays = $hxClasses["Arrays"] = function() { }
 Arrays.__name__ = ["Arrays"];
@@ -16677,90 +16698,97 @@ Arrays.shuffle = function(a) {
 Arrays.prototype = {
 	__class__: Arrays
 }
-rg.controller.info.InfoPieChart = $hxClasses["rg.controller.info.InfoPieChart"] = function() {
-	this.innerradius = 0.0;
-	this.labelradius = 0.45;
-	this.labelorientation = rg.view.svg.widget.LabelOrientation.Aligned;
-	this.outerradius = 0.9;
-	this.overradius = 0.95;
-	this.tooltipradius = 0.5;
-	this.animation = new rg.controller.info.InfoAnimation();
-	this.label = new rg.controller.info.InfoLabel();
-	this.effect = rg.view.svg.chart.GradientEffect.Gradient(1.2);
-	this.dontfliplabel = true;
+rg.axis.AxisOrdinalStats = $hxClasses["rg.axis.AxisOrdinalStats"] = function(variable) {
+	rg.axis.AxisOrdinal.call(this);
+	this.variable = variable;
 }
-rg.controller.info.InfoPieChart.__name__ = ["rg","controller","info","InfoPieChart"];
-rg.controller.info.InfoPieChart.validateOrientation = function(s) {
-	var name = s.split(":")[0].toLowerCase();
-	return Arrays.exists(["fixed","ortho","orthogonal","align","aligned","horizontal"],name);
-}
-rg.controller.info.InfoPieChart.filterOrientation = function(s) {
-	var name = s.split(":")[0].toLowerCase();
-	switch(name) {
-	case "fixed":
-		var v = Std.parseFloat(s.split(":")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
-		return rg.view.svg.widget.LabelOrientation.FixedAngle(v);
-	case "ortho":case "orthogonal":
-		return rg.view.svg.widget.LabelOrientation.Orthogonal;
-	case "align":case "aligned":
-		return rg.view.svg.widget.LabelOrientation.Aligned;
-	case "horizontal":
-		return rg.view.svg.widget.LabelOrientation.FixedAngle(0);
-	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 69, className : "rg.controller.info.InfoPieChart", methodName : "filterOrientation"});
+rg.axis.AxisOrdinalStats.__name__ = ["rg","axis","AxisOrdinalStats"];
+rg.axis.AxisOrdinalStats.__super__ = rg.axis.AxisOrdinal;
+rg.axis.AxisOrdinalStats.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
+	variable: null
+	,values: function() {
+		return this.variable.stats.values;
 	}
+	,__class__: rg.axis.AxisOrdinalStats
+});
+rg.axis.Tickmarks = $hxClasses["rg.axis.Tickmarks"] = function() { }
+rg.axis.Tickmarks.__name__ = ["rg","axis","Tickmarks"];
+rg.axis.Tickmarks.bound = function(tickmarks,max) {
+	if(null == max || tickmarks.length <= (2 > max?2:max)) return tickmarks;
+	var majors = Arrays.filter(tickmarks,function(d) {
+		return d.getMajor();
+	});
+	if(majors.length > max) return rg.axis.Tickmarks.reduce(majors,max);
+	var result = rg.axis.Tickmarks.reduce(Arrays.filter(tickmarks,function(d) {
+		return !d.getMajor();
+	}),max - majors.length).concat(majors);
+	result.sort(function(a,b) {
+		return Floats.compare(a.getDelta(),b.getDelta());
+	});
+	return result;
 }
-rg.controller.info.InfoPieChart.filters = function() {
-	return [{ field : "labelradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "dontfliplabel", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "labelorientation", validator : function(v) {
-		return Std["is"](v,String) && rg.controller.info.InfoPieChart.validateOrientation(v);
-	}, filter : function(v) {
-		return [{ field : "labelorientation", value : rg.controller.info.InfoPieChart.filterOrientation(v)}];
-	}},{ field : "innerradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "outerradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "overradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "tooltipradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "animation", value : rg.controller.info.Info.feed(new rg.controller.info.InfoAnimation(),v)}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabel(),v)}];
-	}},{ field : "sort", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "sortDataPoint", value : v}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "effect", validator : rg.view.svg.chart.GradientEffects.canParse, filter : function(v) {
-		return [{ field : "effect", value : rg.view.svg.chart.GradientEffects.parse(v)}];
-	}}];
+rg.axis.Tickmarks.reduce = function(arr,max) {
+	if(max == 1) return [arr[0]];
+	if(max == 2) return [arr[arr.length - 1]];
+	var keep = arr.length / max, result = [], i = 0;
+	do result.push(arr[Math.round(keep * i++)]); while(max > result.length);
+	return result;
 }
-rg.controller.info.InfoPieChart.prototype = {
-	labelradius: null
-	,labelorientation: null
-	,innerradius: null
-	,outerradius: null
-	,overradius: null
-	,tooltipradius: null
-	,animation: null
-	,label: null
-	,effect: null
-	,sortDataPoint: null
-	,dontfliplabel: null
-	,click: null
-	,__class__: rg.controller.info.InfoPieChart
+rg.axis.Tickmarks.string = function(tick) {
+	return Dynamics.string(tick.getValue()) + " (" + (tick.getMajor()?"Major":"minor") + ", " + Floats.format(tick.getDelta()) + ")";
 }
+rg.axis.Tickmarks.forFloat = function(start,end,value,major) {
+	return new rg.axis.Tickmark(value,major,(value - start) / (end - start));
+}
+rg.axis.Tickmarks.prototype = {
+	__class__: rg.axis.Tickmarks
+}
+rg.visualization.VisualizationScatterGraph = $hxClasses["rg.visualization.VisualizationScatterGraph"] = function(layout) {
+	rg.visualization.VisualizationCartesian.call(this,layout);
+}
+rg.visualization.VisualizationScatterGraph.__name__ = ["rg","visualization","VisualizationScatterGraph"];
+rg.visualization.VisualizationScatterGraph.__super__ = rg.visualization.VisualizationCartesian;
+rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
+	infoScatter: null
+	,initAxes: function() {
+		this.xvariable = this.independentVariables[0];
+		this.yvariables = this.dependentVariables.map(function(d,_) {
+			return d;
+		});
+	}
+	,initChart: function() {
+		var me = this;
+		var chart = new rg.svg.chart.ScatterGraph(this.layout.getPanel(this.layout.mainPanelName));
+		chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		chart.symbol = this.infoScatter.symbol;
+		chart.symbolStyle = this.infoScatter.symbolStyle;
+		if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.axis.ScaleDistribution.ScaleFill;
+		this.chart = chart;
+	}
+	,transformData: function(dps) {
+		var results = [], segmenter = new rg.data.Segmenter(this.infoScatter.segment.on,this.infoScatter.segment.transform,this.infoScatter.segment.scale);
+		var _g = 0, _g1 = this.dependentVariables;
+		while(_g < _g1.length) {
+			var variable = _g1[_g];
+			++_g;
+			results.push(rg.util.DataPoints.filterByDependents(dps,[variable]));
+		}
+		return results;
+	}
+	,__class__: rg.visualization.VisualizationScatterGraph
+});
+rg.layout.ScalePattern = $hxClasses["rg.layout.ScalePattern"] = { __ename__ : ["rg","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
+rg.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
+rg.layout.ScalePattern.ScalesBefore.toString = $estr;
+rg.layout.ScalePattern.ScalesBefore.__enum__ = rg.layout.ScalePattern;
+rg.layout.ScalePattern.ScalesAfter = ["ScalesAfter",1];
+rg.layout.ScalePattern.ScalesAfter.toString = $estr;
+rg.layout.ScalePattern.ScalesAfter.__enum__ = rg.layout.ScalePattern;
+rg.layout.ScalePattern.ScalesAlternating = ["ScalesAlternating",2];
+rg.layout.ScalePattern.ScalesAlternating.toString = $estr;
+rg.layout.ScalePattern.ScalesAlternating.__enum__ = rg.layout.ScalePattern;
 rg.data.DataLoader = $hxClasses["rg.data.DataLoader"] = function(loader) {
 	if(null == loader) throw new thx.error.NullArgument("loader","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "DataLoader.hx", lineNumber : 12, className : "rg.data.DataLoader", methodName : "new"}); else null;
 	this.loader = loader;
@@ -16786,334 +16814,55 @@ thx.error.NotImplemented.__super__ = thx.error.Error;
 thx.error.NotImplemented.prototype = $extend(thx.error.Error.prototype,{
 	__class__: thx.error.NotImplemented
 });
-rg.controller.factory.FactoryVariableIndependent = $hxClasses["rg.controller.factory.FactoryVariableIndependent"] = function() {
-}
-rg.controller.factory.FactoryVariableIndependent.__name__ = ["rg","controller","factory","FactoryVariableIndependent"];
-rg.controller.factory.FactoryVariableIndependent.convertBound = function(axis,value) {
-	if(null == value || Reflect.isFunction(value)) return value;
-	if(Std["is"](axis,rg.data.AxisTime)) {
-		if(Std["is"](value,Date)) value = ((function($this) {
-			var $r;
-			var $t = value;
-			if(Std["is"]($t,Date)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this))).getTime();
-		if(Std["is"](value,Float)) return function(_,_1) {
-			return value;
-		};
-		if(Std["is"](value,String)) return function(_,_1) {
-			return thx.date.DateParser.parse(value).getTime();
-		};
-		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 46, className : "rg.controller.factory.FactoryVariableIndependent", methodName : "convertBound"});
-	}
-	return function(_,_1) {
-		return value;
-	};
-}
-rg.controller.factory.FactoryVariableIndependent.prototype = {
-	create: function(info) {
-		if(null == info.type) return null;
-		var axiscreateer = new rg.controller.factory.FactoryAxis(), variable = new rg.data.VariableIndependent(info.type,info.scaleDistribution), axis = axiscreateer.createDiscrete(info.type,variable,info.values,info.groupBy);
-		variable.setAxis(axis);
-		variable.setMinF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.min));
-		variable.setMaxF(rg.controller.factory.FactoryVariableIndependent.convertBound(axis,info.max));
-		return variable;
-	}
-	,__class__: rg.controller.factory.FactoryVariableIndependent
-}
-rg.view.html.widget.DownloaderMenu = $hxClasses["rg.view.html.widget.DownloaderMenu"] = function(handler,position,formats,container) {
-	this.handler = handler;
-	this.formats = null == formats?rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS:formats;
-	this.title = rg.view.html.widget.DownloaderMenu.DEFAULT_TITLE;
-	this.build(position,container);
-}
-rg.view.html.widget.DownloaderMenu.__name__ = ["rg","view","html","widget","DownloaderMenu"];
-rg.view.html.widget.DownloaderMenu.prototype = {
-	handler: null
-	,formats: null
-	,title: null
-	,backgroundColor: null
-	,menu: null
-	,build: function(position,container) {
-		this.createMenu(container);
-		var el = this.menu.node();
-		var $e = (position);
-		switch( $e[1] ) {
-		case 6:
-			container.node().parentNode.insertBefore(el,container.node().nextSibling);
-			break;
-		case 5:
-			container.node().parentNode.insertBefore(el,container.node());
-			break;
-		case 3:
-			this.menu.classed().add("bottom").classed().add("left");
-			break;
-		case 4:
-			this.menu.classed().add("bottom").classed().add("right");
-			break;
-		case 0:
-			var selector = $e[2];
-			thx.js.Dom.select(selector).node().appendChild(el);
-			break;
-		case 1:
-			this.menu.classed().add("top").classed().add("left");
-			break;
-		case 2:
-			this.menu.classed().add("top").classed().add("right");
-			break;
-		}
-	}
-	,createMenu: function(container) {
-		this.menu = container.append("div").attr("class").string("rg menu");
-		var options = this.menu.append("div").attr("class").string("options");
-		var title = options.append("div").attr("class").string("title").html().string(this.title);
-		var list = options.append("ul").selectAll("li").data(this.formats);
-		list.enter().append("li").on("click.download",this.click.$bind(this)).html().stringf(function(d,i) {
-			return d;
-		});
-	}
-	,click: function(format,_) {
-		var me = this;
-		this.menu.classed().add("downloading");
-		this.handler(format,this.backgroundColor,function(_1) {
-			me.menu.classed().remove("downloading");
-			return true;
-		},function(e) {
-			me.menu.classed().remove("downloading");
-			js.Lib.alert("ERROR: " + e);
-		});
-	}
-	,__class__: rg.view.html.widget.DownloaderMenu
-}
-rg.controller.visualization.VisualizationGeo = $hxClasses["rg.controller.visualization.VisualizationGeo"] = function(layout) {
-	rg.controller.visualization.VisualizationSvg.call(this,layout);
-}
-rg.controller.visualization.VisualizationGeo.__name__ = ["rg","controller","visualization","VisualizationGeo"];
-rg.controller.visualization.VisualizationGeo.__super__ = rg.controller.visualization.VisualizationSvg;
-rg.controller.visualization.VisualizationGeo.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
-	info: null
-	,title: null
-	,chart: null
-	,init: function() {
-		var me = this;
-		if(null != this.info.label.title) {
-			var panelContextTitle = this.layout.getContext("title");
-			if(null == panelContextTitle) return;
-			this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
-		}
-		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
-		this.chart = new rg.view.svg.chart.Geo(panelChart);
-		this.chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		var pfactory = new rg.controller.factory.FactoryGeoProjection();
-		var _g = 0, _g1 = this.info.map;
-		while(_g < _g1.length) {
-			var imap = _g1[_g];
-			++_g;
-			var projection = pfactory.create(imap), map = new rg.view.svg.widget.Map(this.chart.mapcontainer,projection);
-			map.setClassName(imap.classname);
-			if(null == imap.label) map.labelDataPoint = this.info.label.datapoint; else map.labelDataPoint = imap.label.datapoint;
-			if(null == imap.label) map.labelDataPointOver = this.info.label.datapointover; else map.labelDataPointOver = imap.label.datapointover;
-			map.click = imap.click;
-			map.radius = imap.radius;
-			map.colorMode = imap.colorScaleMode;
-			map.handlerClick = ($_=this.chart,$_.handlerClick.$bind($_));
-			map.handlerDataPointOver = ($_=this.chart,$_.handlerDataPointOver.$bind($_));
-			map.mapping = imap.mapping;
-			var mappingurl = imap.mappingurl;
-			if(null != mappingurl && (!StringTools.startsWith(mappingurl,"http://") || !StringTools.startsWith(mappingurl,"https://"))) mappingurl = rg.RGConst.BASE_URL_GEOJSON + mappingurl + ".json" + (imap.usejsonp?".js":"");
-			map.load(imap.url,imap.type,mappingurl,imap.usejsonp);
-			this.chart.addMap(map,imap.property);
-		}
-	}
-	,feedData: function(data) {
-		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
-		if(null != this.title) {
-			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data));
-				this.layout.suggestSize("title",this.title.idealHeight());
-			} else this.layout.suggestSize("title",0);
-		}
-		this.chart.init();
-		this.chart.data(data);
-	}
-	,destroy: function() {
-		this.chart.destroy();
-		if(null != this.title) this.title.destroy();
-		rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
-	}
-	,__class__: rg.controller.visualization.VisualizationGeo
-});
-rg.view.svg.chart.LineChart = $hxClasses["rg.view.svg.chart.LineChart"] = function(panel) {
-	rg.view.svg.chart.CartesianChart.call(this,panel);
-	this.addClass("line-chart");
+rg.svg.chart.ScatterGraph = $hxClasses["rg.svg.chart.ScatterGraph"] = function(panel) {
+	rg.svg.chart.CartesianChart.call(this,panel);
+	this.addClass("scatter-graph");
 	this.chart = this.g.append("svg:g");
 }
-rg.view.svg.chart.LineChart.__name__ = ["rg","view","svg","chart","LineChart"];
-rg.view.svg.chart.LineChart.__super__ = rg.view.svg.chart.CartesianChart;
-rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart.prototype,{
+rg.svg.chart.ScatterGraph.__name__ = ["rg","svg","chart","ScatterGraph"];
+rg.svg.chart.ScatterGraph.__super__ = rg.svg.chart.CartesianChart;
+rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
 	symbol: null
 	,symbolStyle: null
-	,lineInterpolator: null
-	,lineEffect: null
-	,y0property: null
-	,linePathShape: null
 	,chart: null
 	,dps: null
-	,segment: null
-	,setVariables: function(variables,variableIndependents,variableDependents,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
-		if(this.y0property != null && this.y0property != "") {
-			var t, dp;
-			var _g = 0;
-			while(_g < variableDependents.length) {
-				var v = variableDependents[_g];
-				++_g;
-				v.meta.max = Math.NEGATIVE_INFINITY;
-			}
-			var _g1 = 0, _g = data.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				var v = variableDependents[i];
-				var _g3 = 0, _g2 = data[i].length;
-				while(_g3 < _g2) {
-					var j = _g3++;
-					var _g5 = 0, _g4 = data[i][j].length;
-					while(_g5 < _g4) {
-						var k = _g5++;
-						dp = data[i][j][k];
-						t = rg.util.DataPoints.valueAlt(dp,v.type,0.0) + rg.util.DataPoints.valueAlt(dp,this.y0property,0.0);
-						if(v.meta.max < t) v.meta.max = t;
-					}
-				}
-			}
-		}
-	}
 	,x: function(d,i) {
 		var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
 		return scaledw;
 	}
 	,getY1: function(pos) {
-		var me = this;
-		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
-			};
-		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
-		if(null != this.y0property) {
-			var min = scale(v.min()) * this.height;
-			return function(d,i) {
-				return (me.getY0(pos))(d,i) - scale(Reflect.field(d,v.type)) * me.height + min;
-			};
-		} else return function(d,i) {
-			var value = Reflect.field(d,v.type), scaled = scale(value), scaledh = scaled * me.height;
-			return me.height - scaledh;
-		};
-	}
-	,getY0: function(pos) {
-		var me = this;
-		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
-			};
-		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
+		var h = this.height, v = this.yVariables[pos];
 		return function(d,i) {
-			return me.height - scale(rg.util.DataPoints.valueAlt(d,me.y0property,v.min())) * me.height;
+			var value = Reflect.field(d,v.type), scaled = v.axis.scale(v.min(),v.max(),value), scaledh = scaled * h;
+			return h - scaledh;
 		};
 	}
-	,segments: null
-	,classsf: function(pos,cls) {
+	,classf: function(pos,cls) {
 		return function(_,i) {
-			return cls + " stroke-" + (pos + i);
-		};
-	}
-	,classff: function(pos,cls) {
-		return function(_,i) {
-			return cls + " fill-" + (pos + i);
+			return cls + " stroke-" + pos + " fill-" + pos;
 		};
 	}
 	,data: function(dps) {
+		this.dps = dps;
+		this.redraw();
+	}
+	,resize: function() {
+		rg.svg.chart.CartesianChart.prototype.resize.call(this);
+		this.redraw();
+	}
+	,redraw: function() {
 		var me = this;
-		this.linePathShape = [];
-		var _g1 = 0, _g = this.yVariables.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var line = [new thx.svg.Line(this.x.$bind(this),this.getY1(i))];
-			if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
-			this.linePathShape[i] = (function(line) {
-				return function(dp,i1) {
-					me.segment = i1;
-					return line[0].shape(dp,i1);
-				};
-			})(line);
-		}
-		var axisgroup = this.chart.selectAll("g.group").data(dps);
+		if(null == this.dps || null == this.dps[0] || null == this.dps[0][0]) return;
+		var axisgroup = this.chart.selectAll("g.group").data(this.dps);
 		var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
 			return "group group-" + i;
 		});
 		axisgroup.exit().remove();
-		var _g1 = 0, _g = dps.length;
+		var _g1 = 0, _g = this.dps.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			this.segments = dps[i];
-			var gi = this.chart.select("g.group-" + i), stats = [new rg.data.Stats(this.yVariables[i].type)];
-			stats[0].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i].type));
-			if(null != this.y0property) {
-				var area = new thx.svg.Area(this.x.$bind(this),this.getY0(i),this.getY1(i));
-				if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i,"area area-" + i)).attr("d").stringf(area.shape.$bind(area));
-			}
-			var segmentgroup = gi.selectAll("path.main").data(this.segments);
-			var $e = (this.lineEffect);
-			switch( $e[1] ) {
-			case 1:
-				var levels = $e[3], lightness = $e[2];
-				var levels1 = [levels];
-				var lightness1 = [lightness];
-				var fs = [[]];
-				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).eachNode((function(fs,lightness1) {
-					return function(n,i1) {
-						var start = thx.color.Hsl.toHsl(rg.util.RGColors.parse(thx.js.Dom.selectNode(n).style("stroke").get(),"#000000")), end = rg.util.RGColors.applyLightness(start,lightness1[0]);
-						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
-					};
-				})(fs,lightness1)).remove();
-				var _g2 = 0;
-				while(_g2 < levels1[0]) {
-					var j = [_g2++];
-					segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
-						return function(_,i1) {
-							return fs[0][i1](j[0] / levels1[0]).hex("#");
-						};
-					})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i]);
-				}
-				break;
-			case 2:
-				var levels = $e[4], oy = $e[3], ox = $e[2];
-				var _g2 = 0;
-				while(_g2 < levels) {
-					var j = _g2++;
-					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
-				}
-				break;
-			default:
-			}
-			var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).attr("d").stringf(this.linePathShape[i]);
-			switch( (this.lineEffect)[1] ) {
-			case 1:
-				path.classed().add("gradient");
-				break;
-			case 2:
-				path.classed().add("dropshadow");
-				break;
-			case 0:
-				path.classed().add("noeffect");
-				break;
-			}
-			segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
-			segmentgroup.exit().remove();
-			var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.yVariables, onclick = ((function() {
+			var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [this.yVariables[i].stats];
+			var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.yVariables, onclick = ((function() {
 				return function(f,a1) {
 					return (function() {
 						return function(a2,a3) {
@@ -17130,46 +16879,34 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 					})();
 				};
 			})())(this.onmouseover.$bind(this),stats[0]);
-			var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classsf(i,"symbols"));
-			var gsymbol = enter.selectAll("g.symbol").dataf((function() {
-				return function(d,i1) {
-					return d;
+			var enter = gsymbol.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbol")).attr("transform").stringf(this.getTranslatePointf(i));
+			if(null != this.click) enter.on("click",onclick);
+			if(null != this.labelDataPointOver) enter.onNode("mouseover",onmouseover);
+			var spath = enter.append("svg:path").attr("d").stringf((function(stats) {
+				return function(dp,_) {
+					return me.symbol(dp,stats[0]);
 				};
-			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
-			if(null != this.click) gsymbol.on("click",onclick);
-			if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
-			gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
-			if(null != this.symbol) {
-				var sp = [this.symbol];
-				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
-					return function(dp,_) {
-						return sp[0](dp,stats[0]);
-					};
-				})(sp,stats));
-				if(null != this.symbolStyle) {
-					var ss = [this.symbolStyle];
-					spath.attr("style").stringf((function(ss,stats) {
-						return function(dp,_) {
-							return ss[0](dp,stats[0]);
-						};
-					})(ss,stats));
-				}
-			}
+			})(stats));
+			if(null != this.symbolStyle) spath.attr("style").stringf((function(stats) {
+				return function(dp,_) {
+					return me.symbolStyle(dp,stats[0]);
+				};
+			})(stats));
 			if(null != this.labelDataPoint) {
 				var f = [this.labelDataPoint];
-				gsymbol.eachNode((function(f,stats) {
+				enter.eachNode((function(f,stats) {
 					return function(n,i1) {
-						var dp = Reflect.field(n,"__data__"), label = new rg.view.svg.widget.Label(thx.js.Dom.selectNode(n),true,false,false);
+						var dp = Reflect.field(n,"__data__"), label = new rg.svg.widget.Label(thx.js.Dom.selectNode(n),true,true,true);
 						label.setText(f[0](dp,stats[0]));
 					};
 				})(f,stats));
 			}
-			gsymbols.update().selectAll("g.symbol").dataf((function() {
+			gsymbol.update().selectAll("g.symbol").dataf((function() {
 				return function(d,i1) {
 					return d;
 				};
 			})()).update().attr("transform").stringf(this.getTranslatePointf(i));
-			gsymbols.exit().remove();
+			gsymbol.exit().remove();
 		}
 		this.ready.dispatch();
 	}
@@ -17182,7 +16919,7 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 	,onmouseover: function(stats,n,i) {
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Dom.selectNode(n), coords = rg.view.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			var sel = thx.js.Dom.selectNode(n), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.setText(text.split("\n"));
 			this.moveTooltip(coords[0],coords[1]);
 		}
@@ -17190,255 +16927,21 @@ rg.view.svg.chart.LineChart.prototype = $extend(rg.view.svg.chart.CartesianChart
 	,onclick: function(stats,dp,i) {
 		this.click(dp,stats);
 	}
-	,__class__: rg.view.svg.chart.LineChart
+	,__class__: rg.svg.chart.ScatterGraph
 });
-rg.view.layout.LayoutCartesian = $hxClasses["rg.view.layout.LayoutCartesian"] = function(width,height,container) {
-	rg.view.layout.Layout.call(this,width,height,container);
-	this.titleOnTop = true;
-	this.left = true;
-	this.alternating = true;
-	this.yitems = [];
-}
-rg.view.layout.LayoutCartesian.__name__ = ["rg","view","layout","LayoutCartesian"];
-rg.view.layout.LayoutCartesian.__super__ = rg.view.layout.Layout;
-rg.view.layout.LayoutCartesian.prototype = $extend(rg.view.layout.Layout.prototype,{
-	main: null
-	,titleOnTop: null
-	,leftcontainer: null
-	,rightcontainer: null
-	,bottomcontainer: null
-	,bottommiddlecontainer: null
-	,maincontainer: null
-	,middlecontainer: null
-	,bottomleft: null
-	,bottomright: null
-	,xtickmarks: null
-	,title: null
-	,left: null
-	,alternating: null
-	,yitems: null
-	,xtitle: null
-	,getContext: function(name) {
-		if(this.isY(name)) return this.getYContext(this.getYIndex(name)); else if(this.isYTitle(name)) return this.getYTitle(this.getYIndex(name));
-		switch(name) {
-		case "title":
-			if(null == this.title) this.title = new rg.view.layout.PanelContext(this.space.createPanelAt(this.titleOnTop?0:1,rg.view.frame.FrameLayout.Fixed(0,0,0)),this.titleOnTop?rg.view.layout.Anchor.Bottom:rg.view.layout.Anchor.Top);
-			return this.title;
-		case "x":
-			return this.getXTickmarks();
-		case "xtitle":
-			return this.getXTitle();
-		default:
-			return null;
-		}
-	}
-	,getPanel: function(name) {
-		switch(name) {
-		case "main":
-			return this.getMain();
-		case "xtickmarks":
-			return this.getBottomContainer();
-		case "left":
-			return this.getLeftContainer();
-		case "right":
-			return this.getRightContainer();
-		case "bottomleft":
-			return this.bottomleft;
-		case "bottomright":
-			return this.bottomright;
-		default:
-			var ctx = this.getContext(name);
-			if(null == ctx) return null;
-			return ctx.panel;
-		}
-	}
-	,getYItem: function(index) {
-		if(null == this.yitems[index]) this.yitems[index] = { container : null, context : null, title : null, anchor : this.alternating && index % 2 == 0?rg.view.layout.Anchor.Right:rg.view.layout.Anchor.Left};
-		return this.yitems[index];
-	}
-	,getYContainer: function(index) {
-		var item = this.getYItem(index);
-		if(null == item.container) {
-			if(this.alternating && index % 2 == 0) item.container = this.getLeftContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal); else item.container = this.getRightContainer().createContainer(rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-			item.container.g.classed().add("group-" + index);
-		}
-		return item.container;
-	}
-	,getYContext: function(index) {
-		var item = this.getYItem(index);
-		if(null == item.context) {
-			var panel = (function($this) {
-				var $r;
-				switch( (item.anchor)[1] ) {
-				case 2:
-					$r = $this.getYContainer(index).createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0));
-					break;
-				case 3:
-					$r = $this.getYContainer(index).createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-					break;
-				default:
-					$r = null;
-				}
-				return $r;
-			}(this));
-			item.context = new rg.view.layout.PanelContext(panel,item.anchor);
-		}
-		return item.context;
-	}
-	,getYTitle: function(index) {
-		var item = this.getYItem(index);
-		if(null == item.title) {
-			var panel = (function($this) {
-				var $r;
-				switch( (item.anchor)[1] ) {
-				case 2:
-					$r = $this.getYContainer(index).createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-					break;
-				case 3:
-					$r = $this.getYContainer(index).createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0));
-					break;
-				default:
-					$r = null;
-				}
-				return $r;
-			}(this));
-			item.title = new rg.view.layout.PanelContext(panel,item.anchor);
-		}
-		return item.title;
-	}
-	,getYIndex: function(s) {
-		if(!rg.view.layout.LayoutCartesian.REYINDEX.match(s)) return -1; else return Std.parseInt(rg.view.layout.LayoutCartesian.REYINDEX.matched(1));
-	}
-	,isY: function(s) {
-		return rg.view.layout.LayoutCartesian.REYAXIS.match(s);
-	}
-	,isYTitle: function(s) {
-		return rg.view.layout.LayoutCartesian.REYTITLE.match(s);
-	}
-	,suggestSize: function(name,size) {
-		if(this.isY(name) || this.isYTitle(name)) {
-			var index = this.getYIndex(name), item = this.getYItem(index);
-			if(null == item.container) return;
-			var ysize = 0.0;
-			if(null != item.context) {
-				if(this.isY(name)) this.suggestPanelSize(item.context.panel,size);
-				ysize += item.context.panel.frame.width;
-			}
-			if(null != item.title) {
-				if(this.isYTitle(name)) this.suggestPanelSize(item.title.panel,size);
-				ysize += item.title.panel.frame.width;
-			}
-			this.suggestPanelSize(item.container,Math.round(ysize));
-			this.suggestLateralSize(item.anchor);
-			return;
-		}
-		rg.view.layout.Layout.prototype.suggestSize.call(this,name,size);
-		switch(name) {
-		case "x":case "xtitle":
-			var size1 = 0, c = this.getPanel("x");
-			if(null != c) size1 += c.frame.height;
-			c = this.getPanel("xtitle");
-			if(null != c) size1 += c.frame.height;
-			rg.view.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
-			break;
-		}
-	}
-	,suggestLateralSize: function(anchor) {
-		var size = 0;
-		var i = 0;
-		var _g = 0, _g1 = this.yitems;
-		while(_g < _g1.length) {
-			var item = _g1[_g];
-			++_g;
-			i++;
-			if(null == item.container || !Type.enumEq(item.anchor,anchor)) continue;
-			size += item.container.frame.width;
-		}
-		switch( (anchor)[1] ) {
-		case 3:
-			this.suggestSize("left",size);
-			this.suggestSize("bottomleft",size);
-			break;
-		case 2:
-			this.suggestSize("right",size);
-			this.suggestSize("bottomright",size);
-			break;
-		default:
-		}
-	}
-	,getXTitle: function() {
-		if(null == this.xtitle) this.xtitle = new rg.view.layout.PanelContext(this.getBottomMiddleContainer().createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
-		return this.xtitle;
-	}
-	,getMainContainer: function() {
-		if(null == this.maincontainer) this.maincontainer = this.space.createContainerAt(this.titleOnTop?1:0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
-		return this.maincontainer;
-	}
-	,getMiddleContainer: function() {
-		if(null == this.middlecontainer) this.middlecontainer = this.getMainContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Horizontal);
-		return this.middlecontainer;
-	}
-	,getLeftContainer: function() {
-		if(null == this.leftcontainer) this.leftcontainer = this.getMiddleContainer().createContainerAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-		return this.leftcontainer;
-	}
-	,getRightContainer: function() {
-		if(null == this.rightcontainer) this.rightcontainer = this.getMiddleContainer().createContainerAt(2,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-		return this.rightcontainer;
-	}
-	,getBottomContainer: function() {
-		if(null == this.bottomcontainer) this.bottomcontainer = this.getMainContainer().createContainerAt(1,rg.view.frame.FrameLayout.Fixed(0,0,0),rg.view.frame.Orientation.Horizontal);
-		return this.bottomcontainer;
-	}
-	,getBottomMiddleContainer: function() {
-		if(null == this.bottommiddlecontainer) {
-			var container = this.getBottomContainer();
-			this.bottomleft = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-			this.bottommiddlecontainer = container.createContainer(rg.view.frame.FrameLayout.Fill(0,0),rg.view.frame.Orientation.Vertical);
-			this.bottommiddlecontainer.g.classed().add("axis-x");
-			this.bottomright = container.createPanel(rg.view.frame.FrameLayout.Fixed(0,0,0));
-		}
-		return this.bottommiddlecontainer;
-	}
-	,getXTickmarks: function() {
-		if(null == this.xtickmarks) {
-			var container = this.getBottomMiddleContainer();
-			this.xtickmarks = new rg.view.layout.PanelContext(container.createPanelAt(0,rg.view.frame.FrameLayout.Fixed(0,0,0)),rg.view.layout.Anchor.Top);
-		}
-		return this.xtickmarks;
-	}
-	,getMain: function() {
-		if(null == this.main) this.main = this.getMiddleContainer().createPanelAt(1,rg.view.frame.FrameLayout.Fill(0,0));
-		return this.main;
-	}
-	,feedOptions: function(info) {
-		rg.view.layout.Layout.prototype.feedOptions.call(this,info);
-		this.titleOnTop = info.titleOnTop;
-		switch( (info.scalePattern)[1] ) {
-		case 0:
-			this.left = true;
-			this.alternating = false;
-			break;
-		case 1:
-			this.left = false;
-			this.alternating = false;
-			break;
-		case 2:
-			this.left = true;
-			this.alternating = true;
-			break;
-		}
-	}
-	,adjustPadding: function() {
-		var top = null == this.title && null == this.paddings.top?8:this.paddings.top, bottom = (null == this.xtickmarks || !this.titleOnTop && null == this.title) && null == this.paddings.bottom?8:this.paddings.bottom, left = null == this.leftcontainer && null == this.paddings.left?20:this.paddings.left, right = null == this.rightcontainer && null == this.paddings.right?20:this.paddings.right;
-		if(null != left || null != right) {
-			this.suggestPanelPadding(this.getMain(),left,right);
-			this.suggestPanelPadding(this.bottommiddlecontainer,left,right);
-		}
-		if(null != top || null != bottom) this.suggestPanelPadding(this.middlecontainer,top,bottom);
-	}
-	,__class__: rg.view.layout.LayoutCartesian
-});
+rg.axis.ScaleDistribution = $hxClasses["rg.axis.ScaleDistribution"] = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
+rg.axis.ScaleDistribution.ScaleFit = ["ScaleFit",0];
+rg.axis.ScaleDistribution.ScaleFit.toString = $estr;
+rg.axis.ScaleDistribution.ScaleFit.__enum__ = rg.axis.ScaleDistribution;
+rg.axis.ScaleDistribution.ScaleFill = ["ScaleFill",1];
+rg.axis.ScaleDistribution.ScaleFill.toString = $estr;
+rg.axis.ScaleDistribution.ScaleFill.__enum__ = rg.axis.ScaleDistribution;
+rg.axis.ScaleDistribution.ScaleBefore = ["ScaleBefore",2];
+rg.axis.ScaleDistribution.ScaleBefore.toString = $estr;
+rg.axis.ScaleDistribution.ScaleBefore.__enum__ = rg.axis.ScaleDistribution;
+rg.axis.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
+rg.axis.ScaleDistribution.ScaleAfter.toString = $estr;
+rg.axis.ScaleDistribution.ScaleAfter.__enum__ = rg.axis.ScaleDistribution;
 var Types = $hxClasses["Types"] = function() { }
 Types.__name__ = ["Types"];
 Types.className = function(o) {
@@ -17549,275 +17052,258 @@ Types.isPrimitive = function(v) {
 Types.prototype = {
 	__class__: Types
 }
-rg.view.svg.widget.GridAnchors = $hxClasses["rg.view.svg.widget.GridAnchors"] = function() { }
-rg.view.svg.widget.GridAnchors.__name__ = ["rg","view","svg","widget","GridAnchors"];
-rg.view.svg.widget.GridAnchors.parse = function(s) {
-	return (function($this) {
-		var $r;
-		switch(s.toLowerCase()) {
-		case "topleft":
-			$r = rg.view.svg.widget.GridAnchor.TopLeft;
-			break;
-		case "top":
-			$r = rg.view.svg.widget.GridAnchor.Top;
-			break;
-		case "topright":
-			$r = rg.view.svg.widget.GridAnchor.TopRight;
-			break;
-		case "left":
-			$r = rg.view.svg.widget.GridAnchor.Left;
-			break;
-		case "center":
-			$r = rg.view.svg.widget.GridAnchor.Center;
-			break;
-		case "right":
-			$r = rg.view.svg.widget.GridAnchor.Right;
-			break;
-		case "bottomleft":
-			$r = rg.view.svg.widget.GridAnchor.BottomLeft;
-			break;
-		case "bottom":
-			$r = rg.view.svg.widget.GridAnchor.Bottom;
-			break;
-		case "bottomright":
-			$r = rg.view.svg.widget.GridAnchor.BottomRight;
-			break;
-		default:
-			$r = rg.view.svg.widget.GridAnchor.Center;
-		}
-		return $r;
-	}(this));
+rg.svg.chart.LineChart = $hxClasses["rg.svg.chart.LineChart"] = function(panel) {
+	rg.svg.chart.CartesianChart.call(this,panel);
+	this.addClass("line-chart");
+	this.chart = this.g.append("svg:g");
 }
-rg.view.svg.widget.GridAnchors.prototype = {
-	__class__: rg.view.svg.widget.GridAnchors
-}
-rg.view.svg.chart.StreamGraph = $hxClasses["rg.view.svg.chart.StreamGraph"] = function(panel) {
-	rg.view.svg.chart.CartesianChart.call(this,panel);
-	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
-	this.gradientLightness = 0.75;
-	this.gradientStyle = 1;
-}
-rg.view.svg.chart.StreamGraph.__name__ = ["rg","view","svg","chart","StreamGraph"];
-rg.view.svg.chart.StreamGraph.__super__ = rg.view.svg.chart.CartesianChart;
-rg.view.svg.chart.StreamGraph.prototype = $extend(rg.view.svg.chart.CartesianChart.prototype,{
-	interpolator: null
-	,gradientLightness: null
-	,gradientStyle: null
+rg.svg.chart.LineChart.__name__ = ["rg","svg","chart","LineChart"];
+rg.svg.chart.LineChart.__super__ = rg.svg.chart.CartesianChart;
+rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
+	symbol: null
+	,symbolStyle: null
+	,lineInterpolator: null
+	,lineEffect: null
+	,y0property: null
+	,linePathShape: null
+	,chart: null
 	,dps: null
-	,area: null
-	,transformedData: null
-	,stats: null
-	,defs: null
-	,maxy: null
-	,init: function() {
-		rg.view.svg.chart.CartesianChart.prototype.init.call(this);
-		this.defs = this.g.append("svg:defs");
-		this.g.classed().add("stream-chart");
-	}
+	,segment: null
 	,setVariables: function(variables,variableIndependents,variableDependents,data) {
-		rg.view.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
+		rg.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
+		if(this.y0property != null && this.y0property != "") {
+			var t, dp;
+			var _g = 0;
+			while(_g < variableDependents.length) {
+				var v = variableDependents[_g];
+				++_g;
+				v.meta.max = Math.NEGATIVE_INFINITY;
+			}
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var v = variableDependents[i];
+				var _g3 = 0, _g2 = data[i].length;
+				while(_g3 < _g2) {
+					var j = _g3++;
+					var _g5 = 0, _g4 = data[i][j].length;
+					while(_g5 < _g4) {
+						var k = _g5++;
+						dp = data[i][j][k];
+						t = rg.util.DataPoints.valueAlt(dp,v.type,0.0) + rg.util.DataPoints.valueAlt(dp,this.y0property,0.0);
+						if(v.meta.max < t) v.meta.max = t;
+					}
+				}
+			}
+		}
+	}
+	,x: function(d,i) {
+		var value = Reflect.field(d,this.xVariable.type), scaled = this.xVariable.axis.scale(this.xVariable.min(),this.xVariable.max(),value), scaledw = scaled * this.width;
+		return scaledw;
+	}
+	,getY1: function(pos) {
+		var me = this;
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
+		if(null != this.y0property) {
+			var min = scale(v.min()) * this.height;
+			return function(d,i) {
+				return (me.getY0(pos))(d,i) - scale(Reflect.field(d,v.type)) * me.height + min;
+			};
+		} else return function(d,i) {
+			var value = Reflect.field(d,v.type), scaled = scale(value), scaledh = scaled * me.height;
+			return me.height - scaledh;
+		};
+	}
+	,getY0: function(pos) {
+		var me = this;
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
+		return function(d,i) {
+			return me.height - scale(rg.util.DataPoints.valueAlt(d,me.y0property,v.min())) * me.height;
+		};
+	}
+	,segments: null
+	,classsf: function(pos,cls) {
+		return function(_,i) {
+			return cls + " stroke-" + (pos + i);
+		};
+	}
+	,classff: function(pos,cls) {
+		return function(_,i) {
+			return cls + " fill-" + (pos + i);
+		};
 	}
 	,data: function(dps) {
-		this.dps = dps;
-		this.prepareData();
-		this.redraw();
-	}
-	,redraw: function() {
-		if(null == this.transformedData) return;
-		var layer = this.g.selectAll("g.group").data(this.transformedData);
-		layer.update().select("path.line").attr("d").stringf(($_=this.area,$_.shape.$bind($_)));
-		var node = layer.enter().append("svg:g").attr("class").string("group").onNode("mousemove",this.onover.$bind(this)).onNode("click",this.onclick.$bind(this)).append("svg:path").attr("class").stringf(function(d,i) {
-			return "line fill-" + i + " stroke-" + i;
-		}).attr("d").stringf(($_=this.area,$_.shape.$bind($_)));
-		if(this.gradientStyle != 0) node.each(this.gradientStyle == 1?this.applyGradientV.$bind(this):this.applyGradientH.$bind(this));
-		layer.exit().remove();
+		var me = this;
+		this.linePathShape = [];
+		var _g1 = 0, _g = this.yVariables.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var line = [new thx.svg.Line(this.x.$bind(this),this.getY1(i))];
+			if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
+			this.linePathShape[i] = (function(line) {
+				return function(dp,i1) {
+					me.segment = i1;
+					return line[0].shape(dp,i1);
+				};
+			})(line);
+		}
+		var axisgroup = this.chart.selectAll("g.group").data(dps);
+		var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
+			return "group group-" + i;
+		});
+		axisgroup.exit().remove();
+		var _g1 = 0, _g = dps.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.segments = dps[i];
+			var gi = this.chart.select("g.group-" + i), stats = [new rg.axis.Stats(this.yVariables[i].type)];
+			stats[0].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i].type));
+			if(null != this.y0property) {
+				var area = new thx.svg.Area(this.x.$bind(this),this.getY0(i),this.getY1(i));
+				if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
+				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i,"area area-" + i)).attr("d").stringf(area.shape.$bind(area));
+			}
+			var segmentgroup = gi.selectAll("path.main").data(this.segments);
+			var $e = (this.lineEffect);
+			switch( $e[1] ) {
+			case 1:
+				var levels = $e[3], lightness = $e[2];
+				var levels1 = [levels];
+				var lightness1 = [lightness];
+				var fs = [[]];
+				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).eachNode((function(fs,lightness1) {
+					return function(n,i1) {
+						var start = thx.color.Hsl.toHsl(rg.util.RGColors.parse(thx.js.Dom.selectNode(n).style("stroke").get(),"#000000")), end = rg.util.RGColors.applyLightness(start,lightness1[0]);
+						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
+					};
+				})(fs,lightness1)).remove();
+				var _g2 = 0;
+				while(_g2 < levels1[0]) {
+					var j = [_g2++];
+					segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
+						return function(_,i1) {
+							return fs[0][i1](j[0] / levels1[0]).hex("#");
+						};
+					})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i]);
+				}
+				break;
+			case 2:
+				var levels = $e[4], oy = $e[3], ox = $e[2];
+				var _g2 = 0;
+				while(_g2 < levels) {
+					var j = _g2++;
+					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
+				}
+				break;
+			default:
+			}
+			var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).attr("d").stringf(this.linePathShape[i]);
+			switch( (this.lineEffect)[1] ) {
+			case 1:
+				path.classed().add("gradient");
+				break;
+			case 2:
+				path.classed().add("dropshadow");
+				break;
+			case 0:
+				path.classed().add("noeffect");
+				break;
+			}
+			segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
+			segmentgroup.exit().remove();
+			var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.yVariables, onclick = ((function() {
+				return function(f,a1) {
+					return (function() {
+						return function(a2,a3) {
+							return f(a1,a2,a3);
+						};
+					})();
+				};
+			})())(this.onclick.$bind(this),stats[0]), onmouseover = ((function() {
+				return function(f,a1) {
+					return (function() {
+						return function(a2,a3) {
+							return f(a1,a2,a3);
+						};
+					})();
+				};
+			})())(this.onmouseover.$bind(this),stats[0]);
+			var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classsf(i,"symbols"));
+			var gsymbol = enter.selectAll("g.symbol").dataf((function() {
+				return function(d,i1) {
+					return d;
+				};
+			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
+			if(null != this.click) gsymbol.on("click",onclick);
+			if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
+			gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
+			if(null != this.symbol) {
+				var sp = [this.symbol];
+				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
+					return function(dp,_) {
+						return sp[0](dp,stats[0]);
+					};
+				})(sp,stats));
+				if(null != this.symbolStyle) {
+					var ss = [this.symbolStyle];
+					spath.attr("style").stringf((function(ss,stats) {
+						return function(dp,_) {
+							return ss[0](dp,stats[0]);
+						};
+					})(ss,stats));
+				}
+			}
+			if(null != this.labelDataPoint) {
+				var f = [this.labelDataPoint];
+				gsymbol.eachNode((function(f,stats) {
+					return function(n,i1) {
+						var dp = Reflect.field(n,"__data__"), label = new rg.svg.widget.Label(thx.js.Dom.selectNode(n),true,false,false);
+						label.setText(f[0](dp,stats[0]));
+					};
+				})(f,stats));
+			}
+			gsymbols.update().selectAll("g.symbol").dataf((function() {
+				return function(d,i1) {
+					return d;
+				};
+			})()).update().attr("transform").stringf(this.getTranslatePointf(i));
+			gsymbols.exit().remove();
+		}
 		this.ready.dispatch();
 	}
-	,getDataAtNode: function(n,i) {
-		var px = thx.js.Svg.mouse(n)[0], x = (Floats.uninterpolatef(this.transformedData[i][0].coord.x,Arrays.last(this.transformedData[i]).coord.x))(px / this.width);
-		var data = Reflect.field(n,"__data__");
-		return Arrays.nearest(this.transformedData[i],x,function(d) {
-			return d.coord.x;
-		});
-	}
-	,onover: function(n,i) {
-		if(null == this.labelDataPointOver) return;
-		var dp = this.getDataAtNode(n,i);
-		this.tooltip.setText(this.labelDataPointOver(dp.dp,this.stats).split("\n"));
-		this.moveTooltip(dp.coord.x * this.width,this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy);
-	}
-	,onclick: function(n,i) {
-		if(null == this.click) return;
-		var dp = this.getDataAtNode(n,i);
-		this.click(dp.dp,this.stats);
-	}
-	,prepareData: function() {
-		var me = this;
-		this.defs.selectAll("linearGradient.h").remove();
-		var xscale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
-			};
-		})(($_=this.xVariable.axis,$_.scale.$bind($_)),this.xVariable.min(),this.xVariable.max()), xtype = this.xVariable.type, x = function(d) {
-			return xscale(Reflect.field(d,xtype));
-		}, yscale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
-			};
-		})(($_=this.yVariables[0].axis,$_.scale.$bind($_)),this.yVariables[0].min(),this.yVariables[0].max()), ytype = this.yVariables[0].type, y = function(d) {
-			return yscale(Reflect.field(d,ytype));
+	,getTranslatePointf: function(pos) {
+		var x = this.x.$bind(this), y = this.getY1(pos);
+		return function(dp,i) {
+			return "translate(" + x(dp) + "," + y(dp,i) + ")";
 		};
-		var coords = this.dps.map(function(d,i) {
-			return d.map(function(d1,i1) {
-				return { x : x(d1), y : Math.max(0,y(d1))};
-			});
-		});
-		var data = new thx.geom.layout.Stack().offset(thx.geom.layout.StackOffset.Silhouette).order(thx.geom.layout.StackOrder.DefaultOrder).stack(coords);
-		this.transformedData = data.map(function(d,i) {
-			return d.map(function(d1,j) {
-				return { coord : d1, dp : me.dps[i][j]};
-			});
-		});
-		this.stats = this.yVariables[0].stats;
-		this.maxy = Arrays.floatMax(data,function(d) {
-			return Arrays.floatMax(d,function(d1) {
-				return d1.y0 + d1.y;
-			});
-		});
-		this.area = new thx.svg.Area().interpolator(this.interpolator).x(function(d,i) {
-			return d.coord.x * me.width;
-		}).y0(function(d,i) {
-			return me.height - d.coord.y0 * me.height / me.maxy;
-		}).y1(function(d,i) {
-			return me.height - (d.coord.y + d.coord.y0) * me.height / me.maxy;
-		});
 	}
-	,applyGradientV: function(d,i) {
-		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
-		if(this.defs.select("#" + id).empty()) {
-			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
-			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
-			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
-			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+	,onmouseover: function(stats,n,i) {
+		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
+		if(null == text) this.tooltip.hide(); else {
+			var sel = thx.js.Dom.selectNode(n), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(coords[0],coords[1]);
 		}
-		gn.attr("style").string("fill:url(#" + id + ")");
 	}
-	,applyGradientH: function(d,i) {
-		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.view.svg.chart.StreamGraph.vid++;
-		var gradient = this.defs.append("svg:linearGradient").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
-		var bx = d[0].coord.x, ax = d[d.length - 1].coord.x, span = ax - bx, percent = function(x) {
-			return Math.round((x - bx) / span * 10000) / 100;
-		}, max = Arrays.floatMax(d,function(d1) {
-			return d1.coord.y;
-		});
-		var _g1 = 0, _g = d.length;
-		while(_g1 < _g) {
-			var i1 = _g1++;
-			var dp = d[i1], v = dp.coord.y / max;
-			var gcolor = rg.util.RGColors.applyLightness(color,this.gradientLightness,v);
-			gradient.append("svg:stop").attr("offset").string(percent(dp.coord.x) + "%").attr("stop-color").string(gcolor.hex("#")).attr("stop-opacity")["float"](1);
-		}
-		gn.attr("style").string("fill:url(#" + id + ")");
+	,onclick: function(stats,dp,i) {
+		this.click(dp,stats);
 	}
-	,__class__: rg.view.svg.chart.StreamGraph
+	,__class__: rg.svg.chart.LineChart
 });
-rg.controller.visualization.VisualizationPieChart = $hxClasses["rg.controller.visualization.VisualizationPieChart"] = function(layout) {
-	rg.controller.visualization.VisualizationSvg.call(this,layout);
-}
-rg.controller.visualization.VisualizationPieChart.__name__ = ["rg","controller","visualization","VisualizationPieChart"];
-rg.controller.visualization.VisualizationPieChart.__super__ = rg.controller.visualization.VisualizationSvg;
-rg.controller.visualization.VisualizationPieChart.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
-	chart: null
-	,title: null
-	,info: null
-	,init: function() {
-		var me = this;
-		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
-		this.chart = new rg.view.svg.chart.PieChart(panelChart);
-		this.chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		this.chart.innerRadius = this.info.innerradius;
-		this.chart.outerRadius = this.info.outerradius;
-		this.chart.overRadius = this.info.overradius;
-		this.chart.tooltipRadius = this.info.tooltipradius;
-		var $e = (this.info.effect);
-		switch( $e[1] ) {
-		case 1:
-			var v = $e[2];
-			this.chart.displayGradient = true;
-			this.chart.gradientLightness = v;
-			break;
-		case 0:
-			this.chart.displayGradient = false;
-			break;
-		}
-		this.chart.labelDataPoint = this.info.label.datapoint;
-		this.chart.labelDataPointOver = this.info.label.datapointover;
-		this.chart.labelRadius = this.info.labelradius;
-		this.chart.labelOrientation = this.info.labelorientation;
-		this.chart.labelDontFlip = this.info.dontfliplabel;
-		this.chart.animated = this.info.animation.animated;
-		this.chart.animationDuration = this.info.animation.duration;
-		this.chart.animationEase = this.info.animation.ease;
-		this.chart.animationDelay = this.info.animation.delay;
-		if(null != this.info.click) this.chart.mouseClick = this.info.click;
-		if(null != this.info.label.title) {
-			var panelContextTitle = this.layout.getContext("title");
-			if(null == panelContextTitle) return;
-			this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
-		}
-	}
-	,feedData: function(data) {
-		this.chart.setVariables(this.independentVariables,this.dependentVariables);
-		if(null != this.title) {
-			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data));
-				this.layout.suggestSize("title",this.title.idealHeight());
-			} else this.layout.suggestSize("title",0);
-		}
-		if(null != this.info.sortDataPoint) data.sort(this.info.sortDataPoint);
-		this.chart.init();
-		this.chart.data(data);
-	}
-	,destroy: function() {
-		this.chart.destroy();
-		if(null != this.title) this.title.destroy();
-		rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
-	}
-	,__class__: rg.controller.visualization.VisualizationPieChart
-});
-rg.controller.visualization.VisualizationHeatGrid = $hxClasses["rg.controller.visualization.VisualizationHeatGrid"] = function(layout) {
-	rg.controller.visualization.VisualizationCartesian.call(this,layout);
-}
-rg.controller.visualization.VisualizationHeatGrid.__name__ = ["rg","controller","visualization","VisualizationHeatGrid"];
-rg.controller.visualization.VisualizationHeatGrid.__super__ = rg.controller.visualization.VisualizationCartesian;
-rg.controller.visualization.VisualizationHeatGrid.prototype = $extend(rg.controller.visualization.VisualizationCartesian.prototype,{
-	infoHeatGrid: null
-	,initAxes: function() {
-		this.xvariable = this.independentVariables[0];
-		this.yvariables = [this.independentVariables[1]];
-	}
-	,initChart: function() {
-		var me = this;
-		var chart = new rg.view.svg.chart.HeatGrid(this.layout.getPanel(this.layout.mainPanelName));
-		chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		chart.useContour = this.infoHeatGrid.contour;
-		chart.setColorMode(this.infoHeatGrid.colorScaleMode);
-		this.chart = chart;
-	}
-	,transformData: function(dps) {
-		return dps;
-	}
-	,setTickmarksDefaults: function(tickmarks,i,type,pname) {
-		if(i != 0) return;
-		tickmarks.labelAnchor = rg.view.svg.widget.GridAnchor.Left;
-		tickmarks.labelAngle = 180;
-	}
-	,__class__: rg.controller.visualization.VisualizationHeatGrid
-});
+rg.frame.FrameLayout = $hxClasses["rg.frame.FrameLayout"] = { __ename__ : ["rg","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
+rg.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
+rg.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.graph.GNode = $hxClasses["rg.graph.GNode"] = function(graph,id,data) {
 	rg.graph.GraphElement.call(this,graph,id,data);
 }
@@ -17921,6 +17407,71 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 	}
 	,__class__: rg.graph.GNode
 });
+rg.axis.AxisTime = $hxClasses["rg.axis.AxisTime"] = function(periodicity) {
+	this.periodicity = periodicity;
+	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFill);
+}
+rg.axis.AxisTime.__name__ = ["rg","axis","AxisTime"];
+rg.axis.AxisTime.__interfaces__ = [rg.axis.IAxisDiscrete];
+rg.axis.AxisTime.prototype = {
+	periodicity: null
+	,scaleDistribution: null
+	,isMajor: function(units,value) {
+		switch(this.periodicity) {
+		case "day":
+			if(units <= 31) return true;
+			if(units < 121) {
+				var d = Date.fromTime(value).getDate();
+				return rg.util.Periodicity.firstInSeries("month",value) || rg.util.Periodicity.firstInSeries("week",value);
+			}
+			return rg.util.Periodicity.firstInSeries("month",value);
+		case "week":
+			if(units < 31) return true; else return Date.fromTime(value).getDate() <= 7;
+			break;
+		default:
+			var series = Reflect.field(rg.axis.AxisTime.snapping,this.periodicity), unit = rg.util.Periodicity.units(value,this.periodicity);
+			if(null == series) return true;
+			var _g = 0;
+			while(_g < series.length) {
+				var item = series[_g];
+				++_g;
+				if(units > item.to) continue;
+				return 0 == unit % item.s;
+			}
+			var top = Reflect.field(rg.axis.AxisTime.snapping,this.periodicity + "top");
+			if(null == top) top = 1;
+			return 0 == unit % top;
+		}
+	}
+	,ticks: function(start,end,upperBound) {
+		var me = this;
+		var span = end - start, units = rg.util.Periodicity.unitsBetween(start,end,this.periodicity), values = this.range(start,end), range = values.map(function(value,i) {
+			return new rg.axis.TickmarkTime(value,values,me.isMajor(units,value),me.periodicity,me.scaleDistribution);
+		});
+		return rg.axis.Tickmarks.bound(range,upperBound);
+	}
+	,range: function(start,end) {
+		return rg.util.Periodicity.range(start,end,this.periodicity);
+	}
+	,scale: function(start,end,v) {
+		var values = this.range(start,end);
+		return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,values.indexOf(v),values.length);
+	}
+	,setScaleDistribution: function(v) {
+		return this.scaleDistribution = v;
+	}
+	,min: function(stats,meta) {
+		return stats.min;
+	}
+	,max: function(stats,meta) {
+		return stats.max;
+	}
+	,createStats: function(type) {
+		return new rg.axis.StatsNumeric(type);
+	}
+	,__class__: rg.axis.AxisTime
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
+}
 rg.graph.GEdge = $hxClasses["rg.graph.GEdge"] = function(graph,id,tail,head,weight,data) {
 	rg.graph.GraphElement.call(this,graph,id,data);
 	this.tail = tail;
@@ -17985,25 +17536,153 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 	}
 	,__class__: rg.graph.GEdge
 });
-rg.controller.info.InfoHeatGrid = $hxClasses["rg.controller.info.InfoHeatGrid"] = function() {
-	rg.controller.info.InfoCartesianChart.call(this);
-	this.colorScaleMode = rg.view.svg.chart.ColorScaleMode.FromCss();
+rg.svg.chart.Geo = $hxClasses["rg.svg.chart.Geo"] = function(panel) {
+	rg.svg.chart.Chart.call(this,panel);
+	this.mapcontainer = this.g.append("svg:g").attr("class").string("mapcontainer");
+	this.queue = [];
+	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
+	this.resize();
 }
-rg.controller.info.InfoHeatGrid.__name__ = ["rg","controller","info","InfoHeatGrid"];
-rg.controller.info.InfoHeatGrid.filters = function() {
-	return [{ field : "contour", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "color", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "colorScaleMode", value : rg.view.svg.chart.ColorScaleModes.createFromDynamic(v)}];
-	}}].concat(rg.controller.info.InfoCartesianChart.filters());
-}
-rg.controller.info.InfoHeatGrid.__super__ = rg.controller.info.InfoCartesianChart;
-rg.controller.info.InfoHeatGrid.prototype = $extend(rg.controller.info.InfoCartesianChart.prototype,{
-	contour: null
-	,colorScaleMode: null
-	,__class__: rg.controller.info.InfoHeatGrid
+rg.svg.chart.Geo.__name__ = ["rg","svg","chart","Geo"];
+rg.svg.chart.Geo.__super__ = rg.svg.chart.Chart;
+rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
+	mapcontainer: null
+	,colorMode: null
+	,variableDependent: null
+	,dps: null
+	,queue: null
+	,setVariables: function(variableIndependents,variableDependents,data) {
+		this.variableDependent = variableDependents[0];
+	}
+	,data: function(dps) {
+		this.dps = dps;
+		this.redraw();
+	}
+	,resize: function() {
+		rg.svg.chart.Chart.prototype.resize.call(this);
+		if(null != this.mapcontainer) this.mapcontainer.attr("transform").string("translate(" + this.width / 2 + "," + this.height / 2 + ")");
+	}
+	,dpvalue: function(dp) {
+		return Reflect.field(dp,this.variableDependent.type);
+	}
+	,drawmap: function(map,field) {
+		if(null == this.dps || 0 == this.dps.length) {
+			this.queue.push((function(f,a1,a2) {
+				return function() {
+					return f(a1,a2);
+				};
+			})(this.drawmap.$bind(this),map,field));
+			return;
+		}
+		this.setColorMode(map.colorMode);
+		var text = null;
+		var _g = 0, _g1 = this.dps;
+		while(_g < _g1.length) {
+			var dp = _g1[_g];
+			++_g;
+			var id = Reflect.field(dp,field), feature = map.map.get(id);
+			if(null == feature) continue;
+			this.stylefeature(feature.svg,Objects.copyTo(dp,feature.dp));
+			if(null != map.radius && feature.svg.node().nodeName == "circle") feature.svg.attr("r")["float"](map.radius(feature.dp,this.variableDependent.stats));
+			if(null != map.labelDataPoint && null != (text = map.labelDataPoint(feature.dp,this.variableDependent.stats))) {
+				var c = Reflect.field(feature.dp,"#centroid");
+				var label = new rg.svg.widget.Label(this.mapcontainer,true,false,false);
+				label.setText(text);
+				label.place(c[0],c[1],0);
+			}
+		}
+		if(this.queue.length == 0) this.ready.dispatch();
+	}
+	,handlerDataPointOver: function(dp,f) {
+		var text = f(dp,this.variableDependent.stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setText(text.split("\n"));
+			var centroid = Reflect.field(dp,"#centroid");
+			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,true);
+		}
+	}
+	,handlerClick: function(dp,f) {
+		f(dp,this.variableDependent.stats);
+	}
+	,stylefeature: function(svg,dp) {
+	}
+	,redraw: function() {
+		while(this.queue.length > 0) (this.queue.shift())();
+	}
+	,getColorMode: function() {
+		return this.colorMode;
+	}
+	,setColorMode: function(v) {
+		var me = this;
+		var $e = (this.colorMode = v);
+		switch( $e[1] ) {
+		case 0:
+			var g = $e[2];
+			if(null == g) g = 1;
+			var colors = rg.svg.util.RGCss.colorsInCss();
+			if(colors.length > g) colors = colors.slice(0,g);
+			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
+			colors.reverse();
+			this.setColorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
+				return thx.color.Colors.parse(s);
+			})));
+			break;
+		case 1:
+			var g = $e[2];
+			if(null == g) g = rg.svg.util.RGCss.numberOfColorsInCss();
+			this.stylefeature = function(svg,dp) {
+				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
+				svg.attr("class").string("fill-" + index);
+			};
+			break;
+		case 3:
+			var c = $e[2];
+			var colors = c.map(function(d,_) {
+				return d.hex("#");
+			});
+			this.stylefeature = function(svg,dp) {
+				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
+				svg.style("fill").string(colors[index]);
+			};
+			break;
+		case 2:
+			var colors = $e[2];
+			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
+			this.stylefeature = function(svg,dp) {
+				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
+				svg.style("fill").string(interpolator(t).hex("#"));
+			};
+			break;
+		case 4:
+			var c = $e[2];
+			var color = c.hex("#");
+			this.stylefeature = function(svg,dp) {
+				svg.style("fill").string(color);
+			};
+			break;
+		case 5:
+			var f = $e[2];
+			this.stylefeature = function(svg,dp) {
+				svg.style("fill").string(f(dp,me.variableDependent.stats));
+			};
+			break;
+		}
+		return v;
+	}
+	,init: function() {
+		rg.svg.chart.Chart.prototype.init.call(this);
+		if(null == this.tooltip) this.tooltip = new rg.svg.widget.Balloon(this.g);
+		this.g.classed().add("geo");
+	}
+	,addMap: function(map,field) {
+		if(null != field) map.onReady.add((function(f,a1,a2) {
+			return function() {
+				return f(a1,a2);
+			};
+		})(this.drawmap.$bind(this),map,field));
+	}
+	,__class__: rg.svg.chart.Geo
+	,__properties__: $extend(rg.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 if(!thx.data) thx.data = {}
 thx.data.ValueEncoder = $hxClasses["thx.data.ValueEncoder"] = function(handler) {
@@ -18169,6 +17848,107 @@ hxevents.Notifier.prototype = {
 		}
 	}
 	,__class__: hxevents.Notifier
+}
+rg.html.widget.Logo = $hxClasses["rg.html.widget.Logo"] = function(container,padright) {
+	this.mapvalues = new Hash();
+	this.padRight = padright;
+	this.id = ++rg.html.widget.Logo._id;
+	this.container = container;
+	this.create();
+	var timer = new haxe.Timer(5000);
+	timer.run = this.live.$bind(this);
+}
+rg.html.widget.Logo.__name__ = ["rg","html","widget","Logo"];
+rg.html.widget.Logo.position = function(el) {
+	var p = { x : el.offsetLeft || 0, y : el.offsetTop || 0};
+	while(null != (el = el.offsetParent)) {
+		p.x += el.offsetLeft;
+		p.y += el.offsetTop;
+	}
+	return p;
+}
+rg.html.widget.Logo.prototype = {
+	chartContainer: null
+	,container: null
+	,frame: null
+	,anchor: null
+	,image: null
+	,id: null
+	,mapvalues: null
+	,padRight: null
+	,live: function() {
+		if(this.container.select("div.reportgridbrandcontainer").empty()) this.createFrame(); else this.updateFrame();
+		if(thx.js.Dom.select("body").select("a.reportgridbrandanchor" + this.id).empty()) this.createAnchor(); else this.updateAnchor();
+		if(this.anchor.select("img").empty()) this.createImage(); else this.updateImage();
+	}
+	,create: function() {
+		this.createFrame();
+		this.createAnchor();
+		this.createImage();
+	}
+	,createFrame: function() {
+		this.chartContainer = this.container.select("*");
+		this.frame = this.container.insert("div",this.chartContainer.node()).attr("class").string("reportgridbrandcontainer");
+		this.updateFrame();
+	}
+	,createAnchor: function() {
+		this.anchor = thx.js.Dom.select("body").append("a").attr("class").string("reportgridbrandanchor" + this.id).attr("target").string("_blank");
+		this.updateAnchor();
+	}
+	,createImage: function() {
+		this.image = this.anchor.append("img");
+		this.updateImage();
+	}
+	,updateFrame: function() {
+		this.setStyle(this.frame,"display","block");
+		this.setStyle(this.frame,"opacity","1");
+		this.setStyle(this.frame,"width","100%");
+		this.setStyle(this.frame,"height",29 + "px");
+		this.setStyle(this.frame,"position","relative");
+	}
+	,setStyle: function(s,name,value) {
+		var key = "style:" + name + ":" + value, v;
+		if(null != (v = this.mapvalues.get(key)) && v != s.style(name).get()) s.style(name).string(v,"important"); else if(null == v) {
+			s.style(name).string(value,"important");
+			this.mapvalues.set(key,s.style(name).get());
+		}
+	}
+	,setAttr: function(s,name,value) {
+		var key = "attr:" + name + ":" + value, v;
+		if(null != (v = this.mapvalues.get(key)) && v != s.attr(name).get()) s.attr(name).string(v); else if(null == v) {
+			s.attr(name).string(value);
+			this.mapvalues.set(key,s.attr(name).get());
+		}
+	}
+	,updateAnchor: function() {
+		var body = js.Lib.document.body, len = body.childNodes.length;
+		if(thx.js.Dom.select("body > :last").node() != this.anchor.node()) body.appendChild(this.anchor.node());
+		var pos = rg.html.widget.Logo.position(this.frame.node()), width = this.frame.style("width").getFloat();
+		this.setAttr(this.anchor,"title","Powered by ReportGrid");
+		this.setAttr(this.anchor,"href","http://www.reportgrid.com/charts/");
+		this.setStyle(this.anchor,"z-index","2147483647");
+		this.setStyle(this.anchor,"display","block");
+		this.setStyle(this.anchor,"opacity","1");
+		this.setStyle(this.anchor,"position","absolute");
+		this.setStyle(this.anchor,"height",29 + "px");
+		this.setStyle(this.anchor,"width",194 + "px");
+		this.setStyle(this.anchor,"top",pos.y + "px");
+		this.setStyle(this.anchor,"left",pos.x - 194 + width - this.padRight + "px");
+	}
+	,updateImage: function() {
+		this.setAttr(this.image,"src",this.getLogo());
+		this.setAttr(this.image,"title","Powered by ReportGrid");
+		this.setAttr(this.image,"height","" + 29);
+		this.setAttr(this.image,"width","" + 194);
+		this.setStyle(this.image,"opacity","1");
+		this.setStyle(this.image,"border","none");
+		this.setStyle(this.image,"height",29 + "px");
+		this.setStyle(this.image,"width",194 + "px");
+	}
+	,getLogo: function() {
+		return "http://api.reportgrid.com/css/images/reportgrid-clear.png";
+	}
+	,__class__: rg.html.widget.Logo
 }
 thx.math.EaseMode = $hxClasses["thx.math.EaseMode"] = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
@@ -18467,86 +18247,33 @@ rg.data.VariableDependent.__super__ = rg.data.Variable;
 rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
 	__class__: rg.data.VariableDependent
 });
-rg.controller.info.InfoBarChart = $hxClasses["rg.controller.info.InfoBarChart"] = function() {
-	rg.controller.info.InfoCartesianChart.call(this);
-	this.stacked = true;
-	this.effect = rg.view.svg.chart.GradientEffect.Gradient(1.25);
-	this.barPadding = 12;
-	this.barPaddingAxis = 4;
-	this.barPaddingDataPoint = 2;
-	this.horizontal = false;
+rg.info.InfoDownload = $hxClasses["rg.info.InfoDownload"] = function() {
+	this.service = rg.RGConst.SERVICE_RENDERING_STATIC;
+	this.formats = ["png","jpg","pdf"];
 }
-rg.controller.info.InfoBarChart.__name__ = ["rg","controller","info","InfoBarChart"];
-rg.controller.info.InfoBarChart.filters = function() {
-	return [{ field : "stacked", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "horizontal", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "effect", validator : function(v) {
+rg.info.InfoDownload.__name__ = ["rg","info","InfoDownload"];
+rg.info.InfoDownload.filters = function() {
+	return [{ field : "handler", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "service", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "background", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "formats", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : null},{ field : "position", validator : function(v) {
 		return Std["is"](v,String);
 	}, filter : function(v) {
-		return [{ field : "effect", value : rg.view.svg.chart.GradientEffects.parse(v)}];
-	}},{ field : "barpadding", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "barPadding", value : v}];
-	}},{ field : "barpaddingaxis", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "barPaddingAxis", value : v}];
-	}},{ field : "barpaddingdatapoint", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "barPaddingDataPoint", value : v}];
-	}}].concat(rg.controller.info.InfoCartesianChart.filters());
+		return [{ field : "position", value : rg.html.widget.DownloaderPositions.parse(v)}];
+	}}];
 }
-rg.controller.info.InfoBarChart.__super__ = rg.controller.info.InfoCartesianChart;
-rg.controller.info.InfoBarChart.prototype = $extend(rg.controller.info.InfoCartesianChart.prototype,{
-	stacked: null
-	,effect: null
-	,barPaddingDataPoint: null
-	,barPaddingAxis: null
-	,barPadding: null
-	,horizontal: null
-	,__class__: rg.controller.info.InfoBarChart
-});
-rg.view.svg.chart.ColorScaleModes = $hxClasses["rg.view.svg.chart.ColorScaleModes"] = function() { }
-rg.view.svg.chart.ColorScaleModes.__name__ = ["rg","view","svg","chart","ColorScaleModes"];
-rg.view.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
-	if(Reflect.isFunction(v)) return rg.view.svg.chart.ColorScaleMode.Fun(v);
-	if(!Std["is"](v,String)) return (function($this) {
-		var $r;
-		throw new thx.error.Error("invalid color mode '{0}'",[v],null,{ fileName : "ColorScaleModes.hx", lineNumber : 19, className : "rg.view.svg.chart.ColorScaleModes", methodName : "createFromDynamic"});
-		return $r;
-	}(this));
-	var s = ((function($this) {
-		var $r;
-		var $t = v;
-		if(Std["is"]($t,String)) $t; else throw "Class cast error";
-		$r = $t;
-		return $r;
-	}(this))).split(":");
-	switch(s[0].toLowerCase()) {
-	case "css":
-		return rg.view.svg.chart.ColorScaleMode.FromCss(null == s[1]?null:Std.parseInt(s[1]));
-	case "i":case "interpolated":
-		return rg.view.svg.chart.ColorScaleMode.Interpolation(s[1].split(",").map(function(d,i) {
-			return thx.color.Colors.parse(d);
-		}));
-	case "s":case "sequence":
-		return rg.view.svg.chart.ColorScaleMode.Sequence(s[1].split(",").map(function(d,i) {
-			return thx.color.Colors.parse(d);
-		}));
-	case "f":case "fixed":
-		return rg.view.svg.chart.ColorScaleMode.Fixed(thx.color.Colors.parse(s[1]));
-	default:
-		if(s[0].indexOf(",") >= 0) return rg.view.svg.chart.ColorScaleMode.Sequence(s[0].split(",").map(function(d,i) {
-			return thx.color.Colors.parse(d);
-		})); else return rg.view.svg.chart.ColorScaleMode.Fixed(thx.color.Colors.parse(s[0]));
-	}
-}
-rg.view.svg.chart.ColorScaleModes.prototype = {
-	__class__: rg.view.svg.chart.ColorScaleModes
+rg.info.InfoDownload.prototype = {
+	handler: null
+	,service: null
+	,background: null
+	,position: null
+	,formats: null
+	,__class__: rg.info.InfoDownload
 }
 math.reduction.Barrett = $hxClasses["math.reduction.Barrett"] = function(m) {
 	this.r2 = math.BigInteger.nbi();
@@ -18595,355 +18322,270 @@ math.reduction.Barrett.prototype = {
 	}
 	,__class__: math.reduction.Barrett
 }
-rg.view.frame.Frame = $hxClasses["rg.view.frame.Frame"] = function() {
-	this.x = this.y = this.width = this.height = 0;
-}
-rg.view.frame.Frame.__name__ = ["rg","view","frame","Frame"];
-rg.view.frame.Frame.prototype = {
-	x: null
-	,y: null
-	,width: null
-	,height: null
-	,change: function() {
-	}
-	,setLayout: function(x,y,width,height) {
-		if(this.x == x && this.y == y && this.width == width && this.height == height) return;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.change();
-	}
-	,toString: function() {
-		return "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
-	}
-	,__class__: rg.view.frame.Frame
-}
-rg.view.frame.StackItem = $hxClasses["rg.view.frame.StackItem"] = function(disposition) {
-	rg.view.frame.Frame.call(this);
-	this.setDisposition(disposition);
-}
-rg.view.frame.StackItem.__name__ = ["rg","view","frame","StackItem"];
-rg.view.frame.StackItem.__super__ = rg.view.frame.Frame;
-rg.view.frame.StackItem.prototype = $extend(rg.view.frame.Frame.prototype,{
-	disposition: null
-	,parent: null
-	,setParent: function(v) {
-		if(null != this.parent) this.parent.removeChild(this);
-		return this.parent = v;
-	}
-	,setDisposition: function(v) {
-		this.disposition = v;
-		if(null != this.parent) this.parent.reflow();
-		return v;
-	}
-	,__class__: rg.view.frame.StackItem
-	,__properties__: {set_disposition:"setDisposition"}
-});
 var Constants = $hxClasses["Constants"] = function() { }
 Constants.__name__ = ["Constants"];
 Constants.prototype = {
 	__class__: Constants
 }
-rg.controller.visualization.VisualizationSankey = $hxClasses["rg.controller.visualization.VisualizationSankey"] = function(layout) {
-	rg.controller.visualization.VisualizationSvg.call(this,layout);
+rg.factory.FactoryVariable = $hxClasses["rg.factory.FactoryVariable"] = function() {
+	this.independentFactory = new rg.factory.FactoryVariableIndependent();
+	this.dependentFactory = new rg.factory.FactoryVariableDependent();
 }
-rg.controller.visualization.VisualizationSankey.__name__ = ["rg","controller","visualization","VisualizationSankey"];
-rg.controller.visualization.VisualizationSankey.defaultIdf = function(idf) {
-	if(idf == null) return function(data) {
-		return data.id;
-	}; else return idf;
-}
-rg.controller.visualization.VisualizationSankey.defaultNodef = function(nodef) {
-	if(nodef == null) {
-		var dummynodeid = 0;
-		return function(edge) {
-			return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
-		};
-	} else return nodef;
-}
-rg.controller.visualization.VisualizationSankey.defaultEdgesf = function(idf,edgesf) {
-	if(edgesf == null) return function(dp) {
-		var r = [], id = idf(dp);
-		var _g = 0, _g1 = Reflect.fields(dp.parents);
-		while(_g < _g1.length) {
-			var parent = _g1[_g];
-			++_g;
-			r.push({ head : id, tail : parent, weight : Reflect.field(dp.parents,parent)});
-		}
-		return r;
-	}; else return edgesf;
-}
-rg.controller.visualization.VisualizationSankey.__super__ = rg.controller.visualization.VisualizationSvg;
-rg.controller.visualization.VisualizationSankey.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
-	info: null
-	,title: null
-	,chart: null
-	,init: function() {
+rg.factory.FactoryVariable.__name__ = ["rg","factory","FactoryVariable"];
+rg.factory.FactoryVariable.prototype = {
+	independentFactory: null
+	,dependentFactory: null
+	,createVariables: function(arr) {
 		var me = this;
-		if(null != this.info.label.title) {
-			var panelContextTitle = this.layout.getContext("title");
-			if(null == panelContextTitle) return;
-			this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
-		}
-		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
-		this.chart = new rg.view.svg.chart.Sankey(panelChart);
-		this.chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-	}
-	,feedData: function(data) {
-		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
-		if(null != this.title) {
-			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data));
-				this.layout.suggestSize("title",this.title.idealHeight());
-			} else this.layout.suggestSize("title",0);
-		}
-		var layout = null != this.info.layoutmap?this.layoutDataWithMap(data,this.info.layoutmap):this.layoutData(data,this.info.layoutmethod);
-		if(null != this.info.layerWidth) this.chart.layerWidth = this.info.layerWidth;
-		if(null != this.info.nodeSpacing) this.chart.nodeSpacing = this.info.nodeSpacing;
-		if(null != this.info.dummySpacing) this.chart.dummySpacing = this.info.dummySpacing;
-		if(null != this.info.extraWidth) this.chart.extraWidth = this.info.extraWidth;
-		if(null != this.info.backEdgeSpacing) this.chart.backEdgeSpacing = this.info.backEdgeSpacing;
-		if(null != this.info.extraHeight) this.chart.extraHeight = this.info.extraHeight;
-		if(null != this.info.extraRadius) this.chart.extraRadius = this.info.extraRadius;
-		if(null != this.info.imageWidth) this.chart.imageWidth = this.info.imageWidth;
-		if(null != this.info.imageHeight) this.chart.imageHeight = this.info.imageHeight;
-		if(null != this.info.imageSpacing) this.chart.imageSpacing = this.info.imageSpacing;
-		if(null != this.info.labelNodeSpacing) this.chart.labelNodeSpacing = this.info.labelNodeSpacing;
-		this.chart.labelDataPoint = this.info.label.datapoint;
-		this.chart.labelDataPointOver = this.info.label.datapointover;
-		this.chart.labelNode = this.info.label.node;
-		this.chart.labelEdge = this.info.label.edge;
-		this.chart.labelEdgeOver = this.info.label.edgeover;
-		this.chart.imagePath = this.info.imagePath;
-		this.chart.click = this.info.click;
-		this.chart.clickEdge = this.info.clickEdge;
-		this.chart.init();
-		this.chart.data(layout);
-	}
-	,layoutDataWithMap: function(data,map,idf,weightf,edgesf) {
-		var graph = this.createGraph(data,idf,weightf,edgesf);
-		var _g = 0, _g1 = map.dummies;
-		while(_g < _g1.length) {
-			var path = _g1[_g];
-			++_g;
-			var tail = graph.nodes.getById(path[0]), head = graph.nodes.getById(path[path.length - 1]), npath = [tail], edge = tail.connectedBy(head), weight = null == edge?0.0:edge.weight;
-			var _g3 = 1, _g2 = path.length - 1;
-			while(_g3 < _g2) {
-				var i = _g3++;
-				var id = path[i], d = { id : id, weight : weight, extrain : 0.0, extraout : 0.0, dp : null};
-				npath.push(graph.nodes.create(d));
+		return arr.map(function(info,_) {
+			switch( (info.variableType)[1] ) {
+			case 1:
+				return me.independentFactory.create(info);
+			case 2:
+				return me.dependentFactory.create(info,null);
+			case 0:
+				return me.dependentFactory.create(info,null);
 			}
-			npath.push(head);
-			var _g3 = 0, _g2 = npath.length - 1;
-			while(_g3 < _g2) {
-				var i = _g3++;
-				graph.edges.create(npath[i],npath[i + 1],weight);
-			}
-			if(null != edge) edge.graph.edges._remove(edge);
-		}
-		var layers = map.layers.map(function(layer,_) {
-			return layer.map(function(id,_1) {
-				return graph.nodes.getById(id).id;
-			});
 		});
-		return new rg.graph.GraphLayout(graph,layers);
 	}
-	,createGraph: function(data,idf,weightf,edgesf) {
-		idf = rg.controller.visualization.VisualizationSankey.defaultIdf(idf);
-		edgesf = rg.controller.visualization.VisualizationSankey.defaultEdgesf(idf,edgesf);
-		weightf = this.defaultWeightf(weightf);
-		var graph = new rg.graph.Graph(idf);
-		var nodes = this.extractNodes(data), edges = this.extractEdges(data);
+	,createIndependents: function(info) {
+		var result = [], ordinal, discrete, ctx;
 		var _g = 0;
-		while(_g < nodes.length) {
-			var dp = nodes[_g];
+		while(_g < info.length) {
+			var i = info[_g];
 			++_g;
-			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), extrain : 0.0, extraout : 0.0});
-		}
-		var _g = 0;
-		while(_g < edges.length) {
-			var edge = edges[_g];
-			++_g;
-			var head = graph.nodes.getById(edge.head), tail = graph.nodes.getById(edge.tail);
-			graph.edges.create(tail,head,weightf(edge));
-		}
-		var $it0 = graph.nodes.collection.iterator();
-		while( $it0.hasNext() ) {
-			var node = $it0.next();
-			var win = node.negativeWeight(), wout = node.positiveWeight();
-			if(node.data.weight == 0) node.data.weight = win;
-			node.data.extrain = Math.max(0,node.data.weight - win);
-			node.data.extraout = Math.max(0,node.data.weight - wout);
-		}
-		return graph;
-	}
-	,extractNodes: function(data) {
-		var nodes = Arrays.filter(data,function(dp) {
-			return dp.id != null;
-		});
-		if(nodes.length == 0) {
-			var type = this.dependentVariables[0].type, map = new Hash(), edges = Arrays.filter(data,function(dp) {
-				return Reflect.hasField(dp,"head") || Reflect.hasField(dp,"tail");
-			});
-			var nodize = function(name,istail,weight) {
-				if(null == name) return;
-				var n = map.get(name);
-				if(null == n) {
-					n = { node : { id : name}, positive : 0.0, negative : 0.0};
-					map.set(name,n);
+			var moveon = (function($this) {
+				var $r;
+				switch( (i.variableType)[1] ) {
+				case 1:
+					$r = false;
+					break;
+				case 0:
+					$r = true;
+					break;
+				default:
+					$r = true;
 				}
-				if(istail) n.positive += weight; else n.negative += weight;
-			};
-			edges.forEach(function(dp,i) {
-				var v = Reflect.field(dp,type);
-				nodize(dp.tail,true,v);
-				nodize(dp.head,false,v);
-			});
-			nodes = Iterators.array(map.iterator()).map(function(n,i) {
-				var node = n.node;
-				node[type] = Math.max(n.positive,n.negative);
-				return node;
-			});
+				return $r;
+			}(this));
+			if(moveon) continue;
+			result.push(this.independentFactory.create(i));
 		}
-		return nodes;
+		return result;
 	}
-	,extractEdges: function(data) {
-		return Arrays.filter(data,function(dp) {
-			return dp.head != null && dp.tail != null;
+	,createDependents: function(info) {
+		var result = [], ordinal;
+		var _g = 0;
+		while(_g < info.length) {
+			var i = info[_g];
+			++_g;
+			var moveon = (function($this) {
+				var $r;
+				switch( (i.variableType)[1] ) {
+				case 2:
+					$r = false;
+					break;
+				case 0:
+					$r = false;
+					break;
+				default:
+					$r = true;
+				}
+				return $r;
+			}(this));
+			if(moveon) continue;
+			result.push(this.dependentFactory.create(i,null));
+		}
+		return result;
+	}
+	,__class__: rg.factory.FactoryVariable
+}
+rg.svg.chart.PieChart = $hxClasses["rg.svg.chart.PieChart"] = function(panel) {
+	rg.svg.chart.Chart.call(this,panel);
+	this.addClass("pie-chart");
+	this.g.append("svg:defs");
+	this.pie = new thx.geom.layout.Pie();
+	this.gradientLightness = 0.75;
+	this.displayGradient = true;
+	this.animationDelay = 0;
+	this.innerRadius = 0.0;
+	this.outerRadius = 0.9;
+	this.overRadius = 0.95;
+	this.labelRadius = 0.45;
+	this.tooltipRadius = 0.5;
+	this.labels = new Hash();
+	this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
+	this.labelDontFlip = true;
+}
+rg.svg.chart.PieChart.__name__ = ["rg","svg","chart","PieChart"];
+rg.svg.chart.PieChart.__super__ = rg.svg.chart.Chart;
+rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
+	innerRadius: null
+	,outerRadius: null
+	,overRadius: null
+	,labelRadius: null
+	,tooltipRadius: null
+	,arcNormal: null
+	,arcStart: null
+	,arcBig: null
+	,pie: null
+	,radius: null
+	,stats: null
+	,variableDependent: null
+	,gradientLightness: null
+	,displayGradient: null
+	,animationDelay: null
+	,labelOrientation: null
+	,labelDontFlip: null
+	,labels: null
+	,mouseClick: null
+	,setVariables: function(variableIndependents,variableDependents) {
+		this.variableDependent = variableDependents[0];
+	}
+	,resize: function() {
+		rg.svg.chart.Chart.prototype.resize.call(this);
+		this.radius = Math.min(this.width,this.height) / 2;
+		this.arcStart = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.innerRadius);
+		this.arcNormal = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.outerRadius);
+		this.arcBig = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.overRadius);
+		if(this.width > this.height) this.g.attr("transform").string("translate(" + (this.width / 2 - this.height / 2) + ",0)"); else this.g.attr("transform").string("translate(0," + (this.height / 2 - this.width / 2) + ")");
+	}
+	,data: function(dp) {
+		var pv = this.variableDependent.type;
+		dp = Arrays.filter(dp,function(dp1) {
+			return Reflect.field(dp1,pv) > 0;
 		});
+		this.stats = this.variableDependent.stats;
+		var choice = this.g.selectAll("g.group").data(this.pief(dp),this.id.$bind(this));
+		var enter = choice.enter();
+		var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
+			return "group fill-" + i;
+		}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
+		var path = arc.append("svg:path").attr("class").string("slice");
+		if(this.displayGradient) arc.eachNode(this.applyGradient.$bind(this));
+		if(this.animated) {
+			path.attr("d").stringf(this.arcShape(this.arcStart));
+			arc.eachNode(this.fadein.$bind(this)).onNode("mouseover.animation",this.highlight.$bind(this)).onNode("mouseout.animation",this.backtonormal.$bind(this));
+		} else path.attr("d").stringf(this.arcShape(this.arcNormal));
+		arc.onNode("mouseover.label",this.onMouseOver.$bind(this));
+		if(null != this.labelDataPoint) arc.eachNode(this.appendLabel.$bind(this));
+		if(null != this.mouseClick) arc.onNode("click.user",this.onMouseClick.$bind(this));
+		choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
+		if(null != this.labelDataPoint) choice.update().eachNode(this.updateLabel.$bind(this));
+		choice.exit().eachNode(this.removeLabel.$bind(this)).remove();
+		this.ready.dispatch();
 	}
-	,layoutData: function(data,method,idf,nodef,weightf,edgesf) {
-		var graph = this.createGraph(data,idf,weightf,edgesf);
-		nodef = rg.controller.visualization.VisualizationSankey.defaultNodef(nodef);
-		switch(method) {
-		case "weightbalance":
-			return this.weightBalance(graph,nodef);
-		default:
-			return this.sugiyama(graph,nodef);
+	,onMouseOver: function(dom,i) {
+		if(null == this.labelDataPointOver) return;
+		var d = Reflect.field(dom,"__data__"), text = this.labelDataPointOver(d.dp,this.stats);
+		if(null == text) this.tooltip.hide(); else {
+			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2, r = this.radius * this.tooltipRadius;
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r);
 		}
 	}
-	,weightBalance: function(graph,nodef) {
-		var layout = new rg.graph.GraphLayout(graph,new rg.graph.HeaviestNodeLayer().lay(graph));
-		layout = new rg.graph.EdgeSplitter().split(layout,[],nodef);
-		layout = rg.graph.GreedySwitchDecrosser.best().decross(layout);
-		return layout;
+	,onMouseClick: function(dom,i) {
+		var d = Reflect.field(dom,"__data__");
+		this.mouseClick(d.dp);
 	}
-	,sugiyama: function(graph,nodef) {
-		return new rg.graph.SugiyamaMethod().resolve(graph,nodef);
+	,removeLabel: function(dom,i) {
+		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
+		var label = this.labels.get(d.id);
+		label.destroy();
+		this.labels.remove(d.id);
 	}
-	,defaultWeightf: function(weightf) {
-		if(null == weightf) {
-			var type = this.dependentVariables[0].type;
-			return function(dp) {
-				var v = Reflect.field(dp,type);
-				return null != v?v:0.0;
-			};
-		} else return weightf;
+	,updateLabel: function(dom,i) {
+		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+		label.setText(this.labelDataPoint(d.dp,this.stats));
+		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
+	}
+	,appendLabel: function(dom,i) {
+		var n = thx.js.Dom.selectNode(dom), label = new rg.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
+		label.setOrientation(this.labelOrientation);
+		switch( (this.labelOrientation)[1] ) {
+		case 0:
+			label.setAnchor(rg.svg.widget.GridAnchor.Center);
+			break;
+		case 1:
+			label.setAnchor(rg.svg.widget.GridAnchor.Left);
+			break;
+		case 2:
+			label.setAnchor(rg.svg.widget.GridAnchor.Top);
+			break;
+		}
+		label.setText(this.labelDataPoint(d.dp,this.stats));
+		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
+		this.labels.set(d.id,label);
+	}
+	,applyGradient: function(n,i) {
+		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
+		if(this.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
+			var slice = gn.select("path.slice"), shape = this.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = (function($this) {
+				var $r;
+				try {
+					$r = t.node().getBBox();
+				} catch( e ) {
+					$r = { x : 0.0, y : 0.0, width : 0.0, height : 0.0};
+				}
+				return $r;
+			}(this));
+			t.remove();
+			var color = rg.util.RGColors.parse(slice.style("fill").get(),"#cccccc"), scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness);
+			var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
+			var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
+			var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
+			stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+			stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(scolor.toRgbString()).attr("stop-opacity")["float"](1);
+		}
+		gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
+	}
+	,fadein: function(n,i) {
+		var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
+		gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay).attr("d").string(shape);
+	}
+	,highlight: function(d,i) {
+		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcBig));
+	}
+	,backtonormal: function(d,i) {
+		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
+		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
+	}
+	,id: function(dp,i) {
+		return dp.id;
+	}
+	,makeid: function(dp) {
+		var c = Objects.clone(dp);
+		Reflect.deleteField(c,this.variableDependent.type);
+		return haxe.Md5.encode(Dynamics.string(c));
+	}
+	,arcShape: function(a) {
+		return function(d,i) {
+			return a.shape(d);
+		};
+	}
+	,pief: function(dp) {
+		var name = this.variableDependent.type, temp = dp.map(function(d,i) {
+			return Reflect.field(d,name);
+		}), arr = this.pie.pie(temp);
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var id = this.makeid(dp[i]);
+			arr[i]["id"] = id;
+			arr[i]["dp"] = dp[i];
+		}
+		return arr;
 	}
 	,destroy: function() {
-		this.chart.destroy();
-		if(null != this.title) this.title.destroy();
-		rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
+		var $it0 = this.labels.iterator();
+		while( $it0.hasNext() ) {
+			var label = $it0.next();
+			label.destroy();
+		}
+		rg.svg.chart.Chart.prototype.destroy.call(this);
 	}
-	,__class__: rg.controller.visualization.VisualizationSankey
-});
-rg.data.AxisOrdinalFixedValues = $hxClasses["rg.data.AxisOrdinalFixedValues"] = function(arr) {
-	rg.data.AxisOrdinal.call(this);
-	this._values = arr;
-}
-rg.data.AxisOrdinalFixedValues.__name__ = ["rg","data","AxisOrdinalFixedValues"];
-rg.data.AxisOrdinalFixedValues.__super__ = rg.data.AxisOrdinal;
-rg.data.AxisOrdinalFixedValues.prototype = $extend(rg.data.AxisOrdinal.prototype,{
-	_values: null
-	,values: function() {
-		return this._values;
-	}
-	,__class__: rg.data.AxisOrdinalFixedValues
-});
-rg.data.AxisGroupByTime = $hxClasses["rg.data.AxisGroupByTime"] = function(groupby) {
-	rg.data.AxisOrdinalFixedValues.call(this,rg.data.AxisGroupByTime.valuesByGroup(groupby));
-	this.groupBy = groupby;
-}
-rg.data.AxisGroupByTime.__name__ = ["rg","data","AxisGroupByTime"];
-rg.data.AxisGroupByTime.valuesByGroup = function(groupby) {
-	return Ints.range(rg.data.AxisGroupByTime.defaultMin(groupby),rg.data.AxisGroupByTime.defaultMax(groupby) + 1);
-}
-rg.data.AxisGroupByTime.defaultMin = function(periodicity) {
-	switch(periodicity) {
-	case "minute":case "hour":case "week":case "month":
-		return 0;
-	case "day":
-		return 1;
-	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for groupBy min",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 34, className : "rg.data.AxisGroupByTime", methodName : "defaultMin"});
-	}
-}
-rg.data.AxisGroupByTime.defaultMax = function(periodicity) {
-	switch(periodicity) {
-	case "minute":
-		return 59;
-	case "hour":
-		return 23;
-	case "day":
-		return 31;
-	case "week":
-		return 6;
-	case "month":
-		return 11;
-	default:
-		throw new thx.error.Error("invalid periodicity '{0}' for groupBy max",null,periodicity,{ fileName : "AxisGroupByTime.hx", lineNumber : 48, className : "rg.data.AxisGroupByTime", methodName : "defaultMax"});
-	}
-}
-rg.data.AxisGroupByTime.__super__ = rg.data.AxisOrdinalFixedValues;
-rg.data.AxisGroupByTime.prototype = $extend(rg.data.AxisOrdinalFixedValues.prototype,{
-	groupBy: null
-	,__class__: rg.data.AxisGroupByTime
-});
-rg.controller.visualization.VisualizationHtml = $hxClasses["rg.controller.visualization.VisualizationHtml"] = function(container) {
-	rg.controller.visualization.Visualization.call(this,container);
-	container.classed().add("rg");
-}
-rg.controller.visualization.VisualizationHtml.__name__ = ["rg","controller","visualization","VisualizationHtml"];
-rg.controller.visualization.VisualizationHtml.__super__ = rg.controller.visualization.Visualization;
-rg.controller.visualization.VisualizationHtml.prototype = $extend(rg.controller.visualization.Visualization.prototype,{
-	__class__: rg.controller.visualization.VisualizationHtml
-});
-rg.controller.visualization.VisualizationLeaderboard = $hxClasses["rg.controller.visualization.VisualizationLeaderboard"] = function(container) {
-	rg.controller.visualization.VisualizationHtml.call(this,container);
-}
-rg.controller.visualization.VisualizationLeaderboard.__name__ = ["rg","controller","visualization","VisualizationLeaderboard"];
-rg.controller.visualization.VisualizationLeaderboard.__super__ = rg.controller.visualization.VisualizationHtml;
-rg.controller.visualization.VisualizationLeaderboard.prototype = $extend(rg.controller.visualization.VisualizationHtml.prototype,{
-	info: null
-	,chart: null
-	,init: function() {
-		var me = this;
-		this.chart = new rg.view.html.chart.Leadeboard(this.container);
-		this.chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
-		if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
-		if(null != this.info.label.rank) this.chart.labelRank = this.info.label.rank;
-		if(null != this.info.label.value) this.chart.labelValue = this.info.label.value;
-		this.chart.animated = this.info.animation.animated;
-		this.chart.animationDuration = this.info.animation.duration;
-		this.chart.animationDelay = this.info.animation.delay;
-		this.chart.animationEase = this.info.animation.ease;
-		this.chart.useMax = this.info.usemax;
-		this.chart.displayBar = this.info.displaybar;
-		if(null != this.info.click) this.chart.click = this.info.click;
-		if(null != this.info.sortDataPoint) this.chart.sortDataPoint = this.info.sortDataPoint;
-		this.chart.init();
-	}
-	,feedData: function(data) {
-		this.chart.setVariables(this.independentVariables,this.dependentVariables);
-		this.chart.data(data);
-	}
-	,__class__: rg.controller.visualization.VisualizationLeaderboard
+	,__class__: rg.svg.chart.PieChart
 });
 thx.color.Cmyk = $hxClasses["thx.color.Cmyk"] = function(cyan,magenta,yellow,black) {
 	thx.color.Rgb.call(this,Ints.interpolate(Floats.normalize(1 - cyan - black),0,255,null),Ints.interpolate(Floats.normalize(1 - magenta - black),0,255,null),Ints.interpolate(Floats.normalize(1 - yellow - black),0,255,null));
@@ -19078,6 +18720,21 @@ haxe.BaseCode.prototype = {
 	}
 	,__class__: haxe.BaseCode
 }
+rg.factory.FactoryAxis = $hxClasses["rg.factory.FactoryAxis"] = function() {
+}
+rg.factory.FactoryAxis.__name__ = ["rg","factory","FactoryAxis"];
+rg.factory.FactoryAxis.prototype = {
+	create: function(type,isnumeric,variable,samples) {
+		if(null != samples && samples.length > 0) return new rg.axis.AxisOrdinalFixedValues(samples); else if(true == isnumeric) return new rg.axis.AxisNumeric(); else if(false == isnumeric) return new rg.axis.AxisOrdinalStats(variable); else return null;
+	}
+	,createDiscrete: function(type,variable,samples,groupBy) {
+		if(type.indexOf("time:") >= 0) {
+			if(null != groupBy) return new rg.axis.AxisGroupByTime(type.substr(type.indexOf("time:") + "time:".length)); else return new rg.axis.AxisTime(type.substr(type.indexOf("time:") + "time:".length));
+		} else if(null != samples && samples.length > 0) return new rg.axis.AxisOrdinalFixedValues(samples);
+		return new rg.axis.AxisOrdinalStats(variable);
+	}
+	,__class__: rg.factory.FactoryAxis
+}
 rg.util.ChainedExecutor = $hxClasses["rg.util.ChainedExecutor"] = function(handler) {
 	this.handler = handler;
 	this.actions = [];
@@ -19100,6 +18757,31 @@ rg.util.ChainedExecutor.prototype = {
 	}
 	,executor: null
 	,__class__: rg.util.ChainedExecutor
+}
+rg.svg.widget.DiagonalArea = $hxClasses["rg.svg.widget.DiagonalArea"] = function(container,classarea,classborder) {
+	this.g = container.append("svg:g").attr("class").string("diagonal");
+	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
+		return [a[1],a[0]];
+	});
+	this.area = this.g.append("svg:path").attr("class").string("diagonal-fill" + (null == classarea?"":" " + classarea));
+	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before" + (null == classborder?"":" " + classborder));
+	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder?"":" " + classborder));
+}
+rg.svg.widget.DiagonalArea.__name__ = ["rg","svg","widget","DiagonalArea"];
+rg.svg.widget.DiagonalArea.prototype = {
+	g: null
+	,diagonal: null
+	,area: null
+	,before: null
+	,after: null
+	,update: function(x1,y1,x2,y2,sw,ew) {
+		var top = this.diagonal.diagonal([y1,x1,y2,x2]), bottom = this.diagonal.diagonal([y2 + ew,x2,y1 + sw,x1]);
+		var path = top + "L" + bottom.substr(1) + "z";
+		this.before.attr("d").string(top);
+		this.after.attr("d").string(bottom);
+		this.area.attr("d").string(path);
+	}
+	,__class__: rg.svg.widget.DiagonalArea
 }
 thx.data.IDataHandler = $hxClasses["thx.data.IDataHandler"] = function() { }
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
@@ -19229,6 +18911,51 @@ thx.color.PerceivedLuminance.Perceived.__enum__ = thx.color.PerceivedLuminance;
 thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
 thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
+rg.info.InfoHeatGrid = $hxClasses["rg.info.InfoHeatGrid"] = function() {
+	rg.info.InfoCartesianChart.call(this);
+	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCss();
+}
+rg.info.InfoHeatGrid.__name__ = ["rg","info","InfoHeatGrid"];
+rg.info.InfoHeatGrid.filters = function() {
+	return [{ field : "contour", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "color", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "colorScaleMode", value : rg.svg.chart.ColorScaleModes.createFromDynamic(v)}];
+	}}].concat(rg.info.InfoCartesianChart.filters());
+}
+rg.info.InfoHeatGrid.__super__ = rg.info.InfoCartesianChart;
+rg.info.InfoHeatGrid.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
+	contour: null
+	,colorScaleMode: null
+	,__class__: rg.info.InfoHeatGrid
+});
+rg.info.InfoTrack = $hxClasses["rg.info.InfoTrack"] = function() {
+	this.enabled = false;
+	this.token = rg.RGConst.TRACKING_TOKEN;
+	this.paths = ["/","/{hash}/"];
+	this.hash = null;
+}
+rg.info.InfoTrack.__name__ = ["rg","info","InfoTrack"];
+rg.info.InfoTrack.filters = function() {
+	return [{ field : "enabled", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : null},{ field : "token", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "paths", validator : function(v) {
+		return Std["is"](v,Array);
+	}, filter : null},{ field : "hash", validator : function(v) {
+		return v == null || Std["is"](v,String);
+	}, filter : null}];
+}
+rg.info.InfoTrack.prototype = {
+	enabled: null
+	,token: null
+	,paths: null
+	,hash: null
+	,__class__: rg.info.InfoTrack
+}
 math.BigInteger = $hxClasses["math.BigInteger"] = function() {
 	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
 	if(math.BigInteger.BI_RM.length == 0) throw "BI_RM not initialized";
@@ -20451,19 +20178,250 @@ math.BigInteger.prototype = {
 	}
 	,__class__: math.BigInteger
 }
-if(!rg.view.html.chart) rg.view.html.chart = {}
-rg.view.html.chart.PivotTable = $hxClasses["rg.view.html.chart.PivotTable"] = function(container) {
+rg.info.InfoLayout = $hxClasses["rg.info.InfoLayout"] = function() {
+	this.main = "main";
+	this.titleOnTop = true;
+	this.scalePattern = rg.layout.ScalePattern.ScalesAlternating;
+	this.padding = new rg.info.InfoPadding();
+}
+rg.info.InfoLayout.__name__ = ["rg","info","InfoLayout"];
+rg.info.InfoLayout.filters = function() {
+	return [{ field : "layout", validator : function(v) {
+		return Std["is"](v,String) && Arrays.exists(rg.visualization.Visualizations.layouts,v.toLowerCase());
+	}, filter : function(v) {
+		return [{ field : "layout", value : v.toLowerCase()}];
+	}},{ field : "width", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ value : Math.round(v), field : "width"}];
+	}},{ field : "height", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ value : Math.round(v), field : "height"}];
+	}},{ field : "visualization", validator : function(v) {
+		return Arrays.exists(rg.visualization.Visualizations.svg,v.toLowerCase());
+	}, filter : function(v) {
+		return [{ value : v.toLowerCase(), field : "type"}];
+	}},{ field : "main", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "titleontop", validator : function(v) {
+		return Std["is"](v,Bool);
+	}, filter : function(v) {
+		return [{ value : v, field : "titleOnTop"}];
+	}},{ field : "yscaleposition", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ value : v, field : (function($this) {
+			var $r;
+			switch(v) {
+			case "alt":case "alternate":case "alternating":
+				$r = rg.layout.ScalePattern.ScalesAlternating;
+				break;
+			case "right":
+				$r = rg.layout.ScalePattern.ScalesAfter;
+				break;
+			default:
+				$r = rg.layout.ScalePattern.ScalesBefore;
+			}
+			return $r;
+		}(this))}];
+	}},{ field : "padding", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "padding", value : rg.info.Info.feed(new rg.info.InfoPadding(),v)}];
+	}}];
+}
+rg.info.InfoLayout.prototype = {
+	layout: null
+	,width: null
+	,height: null
+	,type: null
+	,main: null
+	,titleOnTop: null
+	,scalePattern: null
+	,padding: null
+	,__class__: rg.info.InfoLayout
+}
+rg.info.InfoSankey = $hxClasses["rg.info.InfoSankey"] = function() {
+	this.label = new rg.info.InfoLabelSankey();
+	this.idproperty = "id";
+	this.weightproperty = "count";
+	this.parentsproperty = "parents";
+}
+rg.info.InfoSankey.__name__ = ["rg","info","InfoSankey"];
+rg.info.InfoSankey.filters = function() {
+	return [{ field : "label", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelSankey(),v)}];
+	}},{ field : "layerwidth", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "layerWidth", value : v}];
+	}},{ field : "nodespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "nodeSpacing", value : v}];
+	}},{ field : "dummyspacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "dummySpacing", value : v}];
+	}},{ field : "extrawidth", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "extraWidth", value : v}];
+	}},{ field : "backedgespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "backEdgeSpacing", value : v}];
+	}},{ field : "extraheight", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "extraHeight", value : v}];
+	}},{ field : "extraradius", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "extraRadius", value : v}];
+	}},{ field : "imagewidth", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "imageWidth", value : v}];
+	}},{ field : "imageheight", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "imageHeight", value : v}];
+	}},{ field : "imagespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "imageSpacing", value : v}];
+	}},{ field : "labelnodespacing", validator : function(v) {
+		return Std["is"](v,Float);
+	}, filter : function(v) {
+		return [{ field : "labelNodeSpacing", value : v}];
+	}},{ field : "imagepath", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "imagePath", value : v}];
+	}},{ field : "click", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "click", value : v}];
+	}},{ field : "clickedge", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "clickEdge", value : v}];
+	}},{ field : "layoutmap", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v);
+	}, filter : function(v) {
+		return [{ field : "layoutmap", value : v}];
+	}},{ field : "layoutmethod", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null}];
+}
+rg.info.InfoSankey.prototype = {
+	label: null
+	,idproperty: null
+	,weightproperty: null
+	,parentsproperty: null
+	,layerWidth: null
+	,nodeSpacing: null
+	,dummySpacing: null
+	,extraWidth: null
+	,backEdgeSpacing: null
+	,extraHeight: null
+	,extraRadius: null
+	,imageWidth: null
+	,imageHeight: null
+	,imageSpacing: null
+	,labelNodeSpacing: null
+	,imagePath: null
+	,layoutmap: null
+	,click: null
+	,clickEdge: null
+	,layoutmethod: null
+	,__class__: rg.info.InfoSankey
+}
+rg.html.widget.DownloaderPositions = $hxClasses["rg.html.widget.DownloaderPositions"] = function() { }
+rg.html.widget.DownloaderPositions.__name__ = ["rg","html","widget","DownloaderPositions"];
+rg.html.widget.DownloaderPositions.parse = function(v) {
+	switch(v.toLowerCase()) {
+	case "topleft":
+		return rg.html.widget.DownloaderPosition.TopLeft;
+	case "topright":case "auto":
+		return rg.html.widget.DownloaderPosition.TopRight;
+	case "bottomleft":
+		return rg.html.widget.DownloaderPosition.BottomLeft;
+	case "bottomright":
+		return rg.html.widget.DownloaderPosition.BottomRight;
+	case "before":
+		return rg.html.widget.DownloaderPosition.Before;
+	case "after":
+		return rg.html.widget.DownloaderPosition.After;
+	default:
+		return rg.html.widget.DownloaderPosition.ElementSelector(v);
+	}
+}
+rg.html.widget.DownloaderPositions.prototype = {
+	__class__: rg.html.widget.DownloaderPositions
+}
+rg.visualization.VisualizationLeaderboard = $hxClasses["rg.visualization.VisualizationLeaderboard"] = function(container) {
+	rg.visualization.VisualizationHtml.call(this,container);
+}
+rg.visualization.VisualizationLeaderboard.__name__ = ["rg","visualization","VisualizationLeaderboard"];
+rg.visualization.VisualizationLeaderboard.__super__ = rg.visualization.VisualizationHtml;
+rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
+	info: null
+	,chart: null
+	,init: function() {
+		var me = this;
+		this.chart = new rg.html.chart.Leadeboard(this.container);
+		this.chart.ready.add(function() {
+			me.ready.dispatch();
+		});
+		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
+		if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
+		if(null != this.info.label.rank) this.chart.labelRank = this.info.label.rank;
+		if(null != this.info.label.value) this.chart.labelValue = this.info.label.value;
+		this.chart.animated = this.info.animation.animated;
+		this.chart.animationDuration = this.info.animation.duration;
+		this.chart.animationDelay = this.info.animation.delay;
+		this.chart.animationEase = this.info.animation.ease;
+		this.chart.useMax = this.info.usemax;
+		this.chart.displayBar = this.info.displaybar;
+		if(null != this.info.click) this.chart.click = this.info.click;
+		if(null != this.info.sortDataPoint) this.chart.sortDataPoint = this.info.sortDataPoint;
+		this.chart.init();
+	}
+	,feedData: function(data) {
+		this.chart.setVariables(this.independentVariables,this.dependentVariables);
+		this.chart.data(data);
+	}
+	,__class__: rg.visualization.VisualizationLeaderboard
+});
+haxe.Log = $hxClasses["haxe.Log"] = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
+haxe.Log.clear = function() {
+	js.Boot.__clear_trace();
+}
+haxe.Log.prototype = {
+	__class__: haxe.Log
+}
+if(!rg.html.chart) rg.html.chart = {}
+rg.html.chart.PivotTable = $hxClasses["rg.html.chart.PivotTable"] = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
 	this.displayColumnTotal = true;
 	this.displayRowTotal = true;
 	this.displayHeatMap = true;
-	this.colorStart = rg.view.html.chart.PivotTable.defaultColorStart;
-	this.colorEnd = rg.view.html.chart.PivotTable.defaultColorEnd;
+	this.colorStart = rg.html.chart.PivotTable.defaultColorStart;
+	this.colorEnd = rg.html.chart.PivotTable.defaultColorEnd;
 	this.incolumns = 1;
 }
-rg.view.html.chart.PivotTable.__name__ = ["rg","view","html","chart","PivotTable"];
-rg.view.html.chart.PivotTable.prototype = {
+rg.html.chart.PivotTable.__name__ = ["rg","html","chart","PivotTable"];
+rg.html.chart.PivotTable.prototype = {
 	displayColumnTotal: null
 	,displayRowTotal: null
 	,displayHeatMap: null
@@ -20641,7 +20599,7 @@ rg.view.html.chart.PivotTable.prototype = {
 		this.container.html().string("");
 	}
 	,transformData: function(dps) {
-		var column_headers = [], row_headers = [], columns = [], rows = [], tcalc = new rg.data.StatsNumeric(null);
+		var column_headers = [], row_headers = [], columns = [], rows = [], tcalc = new rg.axis.StatsNumeric(null);
 		var variable;
 		var _g1 = 0, _g = Ints.min(1,this.columnVariables.length);
 		while(_g1 < _g) {
@@ -20680,7 +20638,7 @@ rg.view.html.chart.PivotTable.prototype = {
 		var _g1 = 0, _g = columns.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var column = [columns[i]], ccalc = new rg.data.StatsNumeric(null);
+			var column = [columns[i]], ccalc = new rg.axis.StatsNumeric(null);
 			column[0].stats = ccalc;
 			var _g2 = 0, _g3 = Arrays.filter(dps,(function(column) {
 				return function(dp) {
@@ -20740,7 +20698,7 @@ rg.view.html.chart.PivotTable.prototype = {
 		while(_g < rows.length) {
 			var row = [rows[_g]];
 			++_g;
-			row[0].stats = new rg.data.StatsNumeric(null);
+			row[0].stats = new rg.axis.StatsNumeric(null);
 			row[0].cells = [];
 			var rdps = Arrays.filter(dps,(function(row) {
 				return function(d) {
@@ -20781,63 +20739,8 @@ rg.view.html.chart.PivotTable.prototype = {
 	,range: function(variable) {
 		return variable.axis.range(variable.min(),variable.max());
 	}
-	,__class__: rg.view.html.chart.PivotTable
+	,__class__: rg.html.chart.PivotTable
 }
-haxe.Log = $hxClasses["haxe.Log"] = function() { }
-haxe.Log.__name__ = ["haxe","Log"];
-haxe.Log.trace = function(v,infos) {
-	js.Boot.__trace(v,infos);
-}
-haxe.Log.clear = function() {
-	js.Boot.__clear_trace();
-}
-haxe.Log.prototype = {
-	__class__: haxe.Log
-}
-rg.controller.info.InfoScatterGraph = $hxClasses["rg.controller.info.InfoScatterGraph"] = function() {
-	rg.controller.info.InfoCartesianChart.call(this);
-	this.segment = new rg.controller.info.InfoSegment();
-	this.symbol = function(dp,s) {
-		return rg.view.svg.util.SymbolCache.cache.get("circle",16);
-	};
-}
-rg.controller.info.InfoScatterGraph.__name__ = ["rg","controller","info","InfoScatterGraph"];
-rg.controller.info.InfoScatterGraph.filters = function() {
-	return [{ field : "symbol", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "symbolstyle", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbolStyle", value : v}];
-	}},{ field : "segmenton", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),{ on : v})}];
-	}},{ field : "segment", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),v)}];
-	}}].concat(rg.controller.info.InfoCartesianChart.filters());
-}
-rg.controller.info.InfoScatterGraph.__super__ = rg.controller.info.InfoCartesianChart;
-rg.controller.info.InfoScatterGraph.prototype = $extend(rg.controller.info.InfoCartesianChart.prototype,{
-	symbol: null
-	,symbolStyle: null
-	,segment: null
-	,__class__: rg.controller.info.InfoScatterGraph
-});
-rg.view.svg.widget.LabelOrientation = $hxClasses["rg.view.svg.widget.LabelOrientation"] = { __ename__ : ["rg","view","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
-rg.view.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.view.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
-rg.view.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
-rg.view.svg.widget.LabelOrientation.Aligned.toString = $estr;
-rg.view.svg.widget.LabelOrientation.Aligned.__enum__ = rg.view.svg.widget.LabelOrientation;
-rg.view.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
-rg.view.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
-rg.view.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.view.svg.widget.LabelOrientation;
 thx.geo.AlbersUsa = $hxClasses["thx.geo.AlbersUsa"] = function() {
 	this.lower48 = new thx.geo.Albers();
 	this.alaska = new thx.geo.Albers();
@@ -20897,6 +20800,175 @@ thx.geo.AlbersUsa.prototype = {
 	,__class__: thx.geo.AlbersUsa
 	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
+rg.info.InfoGeneral = $hxClasses["rg.info.InfoGeneral"] = function() {
+}
+rg.info.InfoGeneral.__name__ = ["rg","info","InfoGeneral"];
+rg.info.InfoGeneral.filter = function() {
+	return [{ field : "ready", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, value : null}];
+}
+rg.info.InfoGeneral.prototype = {
+	ready: null
+	,__class__: rg.info.InfoGeneral
+}
+rg.svg.layer.Title = $hxClasses["rg.svg.layer.Title"] = function(panel,text,anchor,padding,className,shadow,outline) {
+	if(outline == null) outline = false;
+	if(shadow == null) shadow = false;
+	if(className == null) className = "title";
+	if(padding == null) padding = 1;
+	rg.svg.panel.Layer.call(this,panel);
+	this.addClass(className);
+	this.group = this.g.append("svg:g");
+	this.label = new rg.svg.widget.Label(this.group,false,shadow,outline);
+	this.label.setOrientation(rg.svg.widget.LabelOrientation.Orthogonal);
+	this.setAnchor(anchor);
+	this.setPadding(padding);
+	this.setText(text);
+	this.resize();
+}
+rg.svg.layer.Title.__name__ = ["rg","svg","layer","Title"];
+rg.svg.layer.Title.__super__ = rg.svg.panel.Layer;
+rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
+	text: null
+	,anchor: null
+	,padding: null
+	,label: null
+	,group: null
+	,idealHeight: function() {
+		var size = this.label.getSize();
+		return Math.round((function($this) {
+			var $r;
+			switch( ($this.anchor)[1] ) {
+			case 2:
+			case 3:
+				$r = size.width + $this.padding;
+				break;
+			case 0:
+			case 1:
+				$r = size.height + $this.padding;
+				break;
+			}
+			return $r;
+		}(this)));
+	}
+	,resize: function() {
+		if(null == this.anchor || null == this.width || this.padding == null) return;
+		switch( (this.anchor)[1] ) {
+		case 0:
+			this.group.attr("transform").string("translate(" + this.width / 2 + "," + this.padding + ")");
+			break;
+		case 3:
+			this.group.attr("transform").string("translate(" + (this.width - this.padding) + "," + this.height / 2 + ")");
+			break;
+		case 2:
+			this.group.attr("transform").string("translate(" + this.padding + "," + this.height / 2 + ")");
+			break;
+		case 1:
+			this.group.attr("transform").string("translate(" + this.width / 2 + "," + (this.height - this.padding) + ")");
+			break;
+		}
+	}
+	,getText: function() {
+		return this.label.text;
+	}
+	,setText: function(v) {
+		return this.label.setText(v);
+	}
+	,setAnchor: function(v) {
+		switch( (this.anchor = v)[1] ) {
+		case 0:
+			this.label.setAnchor(rg.svg.widget.GridAnchor.Top);
+			break;
+		case 1:
+			this.label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+			break;
+		case 2:
+			this.label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+			break;
+		case 3:
+			this.label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+			break;
+		}
+		return v;
+	}
+	,setPadding: function(v) {
+		this.padding = v;
+		switch( (this.anchor)[1] ) {
+		case 0:
+			this.label.place(0,0,90);
+			break;
+		case 1:
+			this.label.place(0,0,90);
+			break;
+		case 2:
+			this.label.place(0,0,180);
+			break;
+		case 3:
+			this.label.place(0,0,0);
+			break;
+		}
+		return v;
+	}
+	,__class__: rg.svg.layer.Title
+	,__properties__: $extend(rg.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
+});
+rg.info.InfoVariable = $hxClasses["rg.info.InfoVariable"] = function() {
+	this.variableType = rg.info.VariableType.Unknown;
+}
+rg.info.InfoVariable.__name__ = ["rg","info","InfoVariable"];
+rg.info.InfoVariable.filters = function() {
+	return [{ field : "type", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : null},{ field : "view", validator : function(v) {
+		return Std["is"](v,Array) && rg.info.InfoVariable.testViewValue(v[0]) && rg.info.InfoVariable.testViewValue(v[1]);
+	}, filter : function(v) {
+		var result = [];
+		if(null != v[0]) result.push({ field : "min", value : v[0]});
+		if(null != v[1]) result.push({ field : "max", value : v[1]});
+		return result;
+	}},{ field : "values", validator : function(v) {
+		return Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
+			return Types.isPrimitive(v1);
+		});
+	}, filter : null},{ field : "groupby", validator : function(v) {
+		return Std["is"](v,String) && rg.util.Periodicity.isValidGroupBy(v);
+	}, filter : function(v) {
+		return [{ field : "groupBy", value : v}];
+	}},{ field : "variable", validator : function(v) {
+		return Std["is"](v,String) && Arrays.exists(["independent","dependent"],v.toLowerCase());
+	}, filter : function(v) {
+		return [{ field : "variableType", value : Type.createEnum(rg.info.VariableType,Strings.ucfirst(("" + v).toLowerCase()),[])}];
+	}},{ field : "scalemode", validator : function(v) {
+		return Std["is"](v,String);
+	}, filter : function(v) {
+		return [{ field : "scaleDistribution", value : Type.createEnum(rg.axis.ScaleDistribution,"Scale" + Strings.ucfirst(("" + v).toLowerCase()),[])}];
+	}}];
+}
+rg.info.InfoVariable.testViewValue = function(v) {
+	return v == null || Types.isPrimitive(v) || Std["is"](v,Date) || Reflect.isFunction(v);
+}
+rg.info.InfoVariable.__super__ = rg.info.Info;
+rg.info.InfoVariable.prototype = $extend(rg.info.Info.prototype,{
+	type: null
+	,min: null
+	,max: null
+	,values: null
+	,groupBy: null
+	,variableType: null
+	,scaleDistribution: null
+	,__class__: rg.info.InfoVariable
+});
+rg.info.VariableType = $hxClasses["rg.info.VariableType"] = { __ename__ : ["rg","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
+rg.info.VariableType.Unknown = ["Unknown",0];
+rg.info.VariableType.Unknown.toString = $estr;
+rg.info.VariableType.Unknown.__enum__ = rg.info.VariableType;
+rg.info.VariableType.Independent = ["Independent",1];
+rg.info.VariableType.Independent.toString = $estr;
+rg.info.VariableType.Independent.__enum__ = rg.info.VariableType;
+rg.info.VariableType.Dependent = ["Dependent",2];
+rg.info.VariableType.Dependent.toString = $estr;
+rg.info.VariableType.Dependent.__enum__ = rg.info.VariableType;
 thx.js.AccessStyle = $hxClasses["thx.js.AccessStyle"] = function(name,selection) {
 	thx.js.Access.call(this,selection);
 	this.name = name;
@@ -21233,6 +21305,74 @@ chx.lang.OverflowException.__super__ = chx.lang.Exception;
 chx.lang.OverflowException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.OverflowException
 });
+rg.svg.widget.GridAnchor = $hxClasses["rg.svg.widget.GridAnchor"] = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
+rg.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
+rg.svg.widget.GridAnchor.TopLeft.toString = $estr;
+rg.svg.widget.GridAnchor.TopLeft.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.Top = ["Top",1];
+rg.svg.widget.GridAnchor.Top.toString = $estr;
+rg.svg.widget.GridAnchor.Top.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.TopRight = ["TopRight",2];
+rg.svg.widget.GridAnchor.TopRight.toString = $estr;
+rg.svg.widget.GridAnchor.TopRight.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.Left = ["Left",3];
+rg.svg.widget.GridAnchor.Left.toString = $estr;
+rg.svg.widget.GridAnchor.Left.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.Center = ["Center",4];
+rg.svg.widget.GridAnchor.Center.toString = $estr;
+rg.svg.widget.GridAnchor.Center.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.Right = ["Right",5];
+rg.svg.widget.GridAnchor.Right.toString = $estr;
+rg.svg.widget.GridAnchor.Right.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.BottomLeft = ["BottomLeft",6];
+rg.svg.widget.GridAnchor.BottomLeft.toString = $estr;
+rg.svg.widget.GridAnchor.BottomLeft.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.Bottom = ["Bottom",7];
+rg.svg.widget.GridAnchor.Bottom.toString = $estr;
+rg.svg.widget.GridAnchor.Bottom.__enum__ = rg.svg.widget.GridAnchor;
+rg.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
+rg.svg.widget.GridAnchor.BottomRight.toString = $estr;
+rg.svg.widget.GridAnchor.BottomRight.__enum__ = rg.svg.widget.GridAnchor;
+rg.factory.FactoryGeoProjection = $hxClasses["rg.factory.FactoryGeoProjection"] = function() {
+}
+rg.factory.FactoryGeoProjection.__name__ = ["rg","factory","FactoryGeoProjection"];
+rg.factory.FactoryGeoProjection.prototype = {
+	create: function(info) {
+		switch(info.projection.toLowerCase()) {
+		case "mercator":
+			var projection = new thx.geo.Mercator();
+			if(null != info.scale) projection.setScale(info.scale);
+			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
+			return projection;
+		case "albers":
+			var projection = new thx.geo.Albers();
+			if(null != info.scale) projection.setScale(info.scale);
+			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
+			if(null != info.origin) projection.setOrigin(info.origin);
+			if(null != info.parallels) projection.setParallels(info.parallels);
+			return projection;
+		case "albersusa":
+			var projection = new thx.geo.AlbersUsa();
+			if(null != info.scale) projection.setScale(info.scale);
+			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
+			return projection;
+		case "azimuthal":
+			var projection = new thx.geo.Azimuthal();
+			if(null != info.scale) projection.setScale(info.scale);
+			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
+			if(null != info.mode) projection.setMode(info.mode);
+			if(null != info.origin) projection.setOrigin(info.origin);
+			return projection;
+		default:
+			return (function($this) {
+				var $r;
+				throw new thx.error.Error("the projection '{0}' does not exist or is not implemented",[info.projection],null,{ fileName : "FactoryGeoProjection.hx", lineNumber : 68, className : "rg.factory.FactoryGeoProjection", methodName : "create"});
+				return $r;
+			}(this));
+		}
+	}
+	,__class__: rg.factory.FactoryGeoProjection
+}
 thx.svg.Line = $hxClasses["thx.svg.Line"] = function(x,y,interpolator) {
 	this._x = x;
 	this._y = y;
@@ -21283,30 +21423,87 @@ thx.svg.Line.prototype = {
 	}
 	,__class__: thx.svg.Line
 }
-rg.controller.info.InfoLabelAxis = $hxClasses["rg.controller.info.InfoLabelAxis"] = function() {
-	rg.controller.info.InfoLabel.call(this);
+if(!rg.interactive) rg.interactive = {}
+rg.interactive.Downloader = $hxClasses["rg.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
+	this.container = container;
+	this.serviceUrl = serviceurl;
+	this.defaultBackgroundColor = backgroundcolor;
 }
-rg.controller.info.InfoLabelAxis.__name__ = ["rg","controller","info","InfoLabelAxis"];
-rg.controller.info.InfoLabelAxis.filters = function() {
-	return [{ field : "axis", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "tickmark", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.controller.info.InfoLabel.filters());
+rg.interactive.Downloader.__name__ = ["rg","interactive","Downloader"];
+rg.interactive.Downloader.getClassName = function(container) {
+	var name = container.attr("class").get();
+	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
+	return "" == name?null:name;
 }
-rg.controller.info.InfoLabelAxis.__super__ = rg.controller.info.InfoLabel;
-rg.controller.info.InfoLabelAxis.prototype = $extend(rg.controller.info.InfoLabel.prototype,{
-	axis: null
-	,tickmark: null
-	,__class__: rg.controller.info.InfoLabelAxis
+rg.interactive.Downloader.prototype = {
+	serviceUrl: null
+	,defaultBackgroundColor: null
+	,container: null
+	,download: function(format,backgroundcolor,success,error) {
+		if(!Arrays.exists(rg.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.interactive.Downloader", methodName : "download"});
+		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
+		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
+		if(null != bg) ob.backgroundcolor = bg;
+		var cls = rg.interactive.Downloader.getClassName(this.container);
+		if(null != cls) ob.className = cls;
+		var http = new haxe.Http(this.serviceUrl);
+		if(null != error) http.onError = error; else http.onError = function(e) {
+			haxe.Log.trace(e,{ fileName : "Downloader.hx", lineNumber : 56, className : "rg.interactive.Downloader", methodName : "download"});
+		};
+		http.onData = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(this.complete.$bind(this),success,error);
+		var buf = [];
+		var _g = 0, _g1 = Reflect.fields(ob);
+		while(_g < _g1.length) {
+			var field = _g1[_g];
+			++_g;
+			http.setParameter(field,Reflect.field(ob,field));
+		}
+		http.request(true);
+	}
+	,complete: function(success,error,content) {
+		if(content.substr(0,rg.interactive.Downloader.ERROR_PREFIX.length) == rg.interactive.Downloader.ERROR_PREFIX) {
+			if(null != error) error(content.substr(rg.interactive.Downloader.ERROR_PREFIX.length));
+		} else if(null == success || success(content)) js.Lib.window.location.href = content;
+	}
+	,__class__: rg.interactive.Downloader
+}
+rg.svg.panel.Space = $hxClasses["rg.svg.panel.Space"] = function(width,height,domcontainer) {
+	this.panel = new rg.frame.StackItem(rg.frame.FrameLayout.Fill(0,0));
+	rg.svg.panel.Container.call(this,this.panel,rg.frame.Orientation.Vertical);
+	this.init(this.svg = domcontainer.append("svg:svg").attr("xmlns").string("http://www.w3.org/2000/svg"));
+	this.resize(width,height);
+}
+rg.svg.panel.Space.__name__ = ["rg","svg","panel","Space"];
+rg.svg.panel.Space.__super__ = rg.svg.panel.Container;
+rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
+	panel: null
+	,svg: null
+	,resize: function(width,height) {
+		if(this.panel.width == width && this.panel.height == height) return;
+		this.svg.attr("width")["float"](width).attr("height")["float"](height);
+		var sf = this.panel;
+		sf.setLayout(0,0,width,height);
+	}
+	,__class__: rg.svg.panel.Space
 });
-rg.view.svg.chart.ColorScaleMode = $hxClasses["rg.view.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","view","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
-rg.view.svg.chart.ColorScaleMode.FromCssInterpolation = function(steps) { var $x = ["FromCssInterpolation",0,steps]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.FromCss = function(steps) { var $x = ["FromCss",1,steps]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interpolation",2,colors]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Sequence = function(colors) { var $x = ["Sequence",3,colors]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Fixed = function(color) { var $x = ["Fixed",4,color]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.view.svg.chart.ColorScaleMode.Fun = function(f) { var $x = ["Fun",5,f]; $x.__enum__ = rg.view.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
+rg.factory.FactoryVariableDependent = $hxClasses["rg.factory.FactoryVariableDependent"] = function() {
+}
+rg.factory.FactoryVariableDependent.__name__ = ["rg","factory","FactoryVariableDependent"];
+rg.factory.FactoryVariableDependent.prototype = {
+	create: function(info,isnumeric) {
+		if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 18, className : "rg.factory.FactoryVariableDependent", methodName : "create"});
+		var axiscreator = new rg.factory.FactoryAxis(), variable = new rg.data.VariableDependent(info.type,info.scaleDistribution), axis = axiscreator.create(info.type,isnumeric,variable,info.values);
+		variable.setAxis(axis);
+		variable.setMinF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.min));
+		variable.setMaxF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.max));
+		return variable;
+	}
+	,__class__: rg.factory.FactoryVariableDependent
+}
 haxe.Http = $hxClasses["haxe.Http"] = function(url) {
 	this.url = url;
 	this.headers = new Hash();
@@ -21409,58 +21606,6 @@ haxe.Http.prototype = {
 	}
 	,__class__: haxe.Http
 }
-rg.controller.info.InfoLineChart = $hxClasses["rg.controller.info.InfoLineChart"] = function() {
-	rg.controller.info.InfoCartesianChart.call(this);
-	this.segment = new rg.controller.info.InfoSegment();
-	this.effect = rg.view.svg.chart.LineEffect.Gradient(-1.2,2);
-	this.interpolation = thx.svg.LineInterpolator.Linear;
-	this.displayarea = false;
-}
-rg.controller.info.InfoLineChart.__name__ = ["rg","controller","info","InfoLineChart"];
-rg.controller.info.InfoLineChart.filters = function() {
-	return [{ field : "symbol", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "symbolstyle", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbolStyle", value : v}];
-	}},{ field : "y0property", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "displayarea", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "effect", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "effect", value : rg.view.svg.chart.LineEffects.parse(v)}];
-	}},{ field : "interpolation", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
-	}},{ field : "segmenton", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),{ on : v})}];
-	}},{ field : "segment", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.controller.info.Info.feed(new rg.controller.info.InfoSegment(),v)}];
-	}}].concat(rg.controller.info.InfoCartesianChart.filters());
-}
-rg.controller.info.InfoLineChart.__super__ = rg.controller.info.InfoCartesianChart;
-rg.controller.info.InfoLineChart.prototype = $extend(rg.controller.info.InfoCartesianChart.prototype,{
-	effect: null
-	,interpolation: null
-	,symbol: null
-	,symbolStyle: null
-	,displayarea: null
-	,y0property: null
-	,segment: null
-	,__class__: rg.controller.info.InfoLineChart
-});
 if(!thx.xml) thx.xml = {}
 thx.xml.Namespace = $hxClasses["thx.xml.Namespace"] = function() { }
 thx.xml.Namespace.__name__ = ["thx","xml","Namespace"];
@@ -21671,17 +21816,225 @@ Type.allEnums = function(e) {
 Type.prototype = {
 	__class__: Type
 }
-rg.view.svg.chart.Coords = $hxClasses["rg.view.svg.chart.Coords"] = function() { }
-rg.view.svg.chart.Coords.__name__ = ["rg","view","svg","chart","Coords"];
-rg.view.svg.chart.Coords.fromTransform = function(s) {
-	if(!rg.view.svg.chart.Coords.retransform.match(s)) return [0.0,0]; else {
-		var y = rg.view.svg.chart.Coords.retransform.matched(2);
-		return [Std.parseFloat(rg.view.svg.chart.Coords.retransform.matched(1)),null == y?0:Std.parseFloat(y)];
+rg.axis.TickmarkOrdinal = $hxClasses["rg.axis.TickmarkOrdinal"] = function(pos,values,major,scaleDistribution) {
+	if(major == null) major = true;
+	this.pos = pos;
+	this.values = values;
+	this.scaleDistribution = scaleDistribution;
+	this.major = major;
+}
+rg.axis.TickmarkOrdinal.__name__ = ["rg","axis","TickmarkOrdinal"];
+rg.axis.TickmarkOrdinal.__interfaces__ = [rg.axis.ITickmark];
+rg.axis.TickmarkOrdinal.fromArray = function(values,scaleDistribution) {
+	return values.map(function(_,i) {
+		return new rg.axis.TickmarkOrdinal(i,values,null,scaleDistribution);
+	});
+}
+rg.axis.TickmarkOrdinal.prototype = {
+	pos: null
+	,values: null
+	,scaleDistribution: null
+	,delta: null
+	,getDelta: function() {
+		return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,this.pos,this.values.length);
 	}
+	,major: null
+	,getMajor: function() {
+		return this.major;
+	}
+	,value: null
+	,getValue: function() {
+		return this.values[this.pos];
+	}
+	,label: null
+	,getLabel: function() {
+		return rg.util.RGStrings.humanize(this.values[this.pos]);
+	}
+	,toString: function() {
+		return rg.axis.Tickmarks.string(this);
+	}
+	,__class__: rg.axis.TickmarkOrdinal
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
-rg.view.svg.chart.Coords.prototype = {
-	__class__: rg.view.svg.chart.Coords
+rg.svg.chart.FunnelChart = $hxClasses["rg.svg.chart.FunnelChart"] = function(panel) {
+	rg.svg.chart.Chart.call(this,panel);
+	this.padding = 2.5;
+	this.flatness = 1.0;
+	this.arrowSize = 30;
+	this.gradientLightness = 1;
+	this.displayGradient = true;
+	this.labelArrow = this.defaultLabelArrow.$bind(this);
+	this.labelDataPoint = this.defaultLabelDataPoint.$bind(this);
+	this.labelDataPointOver = this.defaultLabelDataPointOver.$bind(this);
 }
+rg.svg.chart.FunnelChart.__name__ = ["rg","svg","chart","FunnelChart"];
+rg.svg.chart.FunnelChart.__super__ = rg.svg.chart.Chart;
+rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
+	padding: null
+	,flatness: null
+	,displayGradient: null
+	,gradientLightness: null
+	,arrowSize: null
+	,labelArrow: null
+	,variableIndependent: null
+	,variableDependent: null
+	,defs: null
+	,dps: null
+	,defaultLabelArrow: function(dp,stats) {
+		var value = Reflect.field(dp,this.variableDependent.type) / stats.max;
+		return thx.culture.FormatNumber.percent(100 * value,0);
+	}
+	,defaultLabelDataPoint: function(dp,stats) {
+		return rg.util.RGStrings.humanize(Reflect.field(dp,this.variableIndependent.type)).split(" ").join("\n");
+	}
+	,defaultLabelDataPointOver: function(dp,stats) {
+		return Ints.format(Reflect.field(dp,this.variableDependent.type));
+	}
+	,setVariables: function(variableIndependents,variableDependents) {
+		this.variableIndependent = variableIndependents[0];
+		this.variableDependent = variableDependents[0];
+	}
+	,data: function(dps) {
+		this.dps = dps;
+		this.redraw();
+	}
+	,resize: function() {
+		rg.svg.chart.Chart.prototype.resize.call(this);
+		this.redraw();
+	}
+	,dpvalue: function(dp) {
+		return Reflect.field(dp,this.variableDependent.type);
+	}
+	,stats: null
+	,topheight: null
+	,h: null
+	,scale: function(value) {
+		return this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),value);
+	}
+	,next: function(i) {
+		return this.dpvalue(this.dps[i + 1 < this.dps.length?i + 1:i]);
+	}
+	,redraw: function() {
+		var me = this;
+		if(null == this.dps || 0 == this.dps.length) return;
+		this.g.selectAll("g").remove();
+		this.g.selectAll("radialGradient").remove();
+		this.stats = this.variableDependent.stats;
+		var max = this.scale(this.stats.max), wscale = function(v) {
+			return me.scale(v) / max * (me.width - 2) / 2;
+		}, fx1 = function(v) {
+			return me.width / 2 - wscale(v);
+		}, fx2 = function(v) {
+			return me.width - fx1(v);
+		}, diagonal1 = new thx.svg.Diagonal().sourcef(function(o,i) {
+			return [fx1(me.dpvalue(o)),0.0];
+		}).targetf(function(o,i) {
+			return [fx1(me.next(i)),me.h];
+		}), diagonal2 = new thx.svg.Diagonal().sourcef(function(o,i) {
+			return [fx2(me.next(i)),me.h];
+		}).targetf(function(o,i) {
+			return [fx2(me.dpvalue(o)),0.0];
+		}), conj = function(v,r,dir) {
+			var x2 = r?fx1(v) - fx2(v):fx2(v) - fx1(v), a = 5, d = r?dir == 0?1:0:dir;
+			return " a " + a + " " + me.flatness + " 0 0 " + d + " " + x2 + " 0";
+		}, conj1 = function(d,i) {
+			return conj(me.dpvalue(d),true,0);
+		}, conj2 = function(d,i) {
+			return conj(me.next(i),false,0);
+		}, conjr = function(d,i) {
+			var v = me.dpvalue(d);
+			return " M " + fx1(v) + " 0 " + conj(v,false,0) + conj(v,true,1);
+		};
+		var top = this.g.append("svg:g");
+		var path = top.append("svg:path").attr("class").string("funnel-inside fill-0").attr("d").string(conjr(this.dps[0]));
+		if(null != this.click) top.onNode("click",function(_,_1) {
+			me.click(me.dps[0],me.stats);
+		});
+		if(this.displayGradient) this.internalGradient(path);
+		top.onNode("mouseover",function(_,_1) {
+			me.mouseOver(me.dps[0],0,me.stats);
+		});
+		this.topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
+		var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside fill-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
+		bottom.remove();
+		this.h = (this.height - this.topheight - bottomheight - (this.dps.length - 1) * this.padding) / this.dps.length;
+		top.attr("transform").string("translate(0," + (1 + this.topheight) + ")");
+		var section = this.g.selectAll("g.section").data(this.dps);
+		var enter = section.enter().append("svg:g").attr("class").string("section").attr("transform").stringf(function(d,i) {
+			return "translate(0," + (me.topheight + i * (me.padding + me.h)) + ")";
+		});
+		if(null != this.click) enter.on("click",function(d,_) {
+			me.click(d,me.stats);
+		});
+		enter.on("mouseover",function(d,i) {
+			me.mouseOver(d,i,me.stats);
+		});
+		var funnel = enter.append("svg:path").attr("class").stringf(function(d,i) {
+			return "funnel-outside fill-" + i;
+		}).attr("d").stringf(function(d,i) {
+			var t = diagonal2.diagonal(d,i).split("C");
+			t.shift();
+			var d2 = "C" + t.join("C");
+			return diagonal1.diagonal(d,i) + conj2(d,i) + d2 + conj1(d,i);
+		});
+		if(this.displayGradient) enter.eachNode(this.externalGradient.$bind(this));
+		var ga = this.g.selectAll("g.arrow").data(this.dps).enter().append("svg:g").attr("class").string("arrow").attr("transform").stringf(function(d,i) {
+			return "translate(" + me.width / 2 + "," + (me.topheight + me.h * i + me.arrowSize / 2) + ")";
+		});
+		ga.each(function(d,i) {
+			if(null == me.labelArrow) return;
+			var text = me.labelArrow(d,me.stats);
+			if(null == text) return;
+			var node = thx.js.Dom.selectNode(thx.js.Group.current);
+			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
+			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
+			var label = new rg.svg.widget.Label(node,true,false,true);
+			label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+			label.setText(text);
+		});
+		ga.each(function(d,i) {
+			if(null == me.labelDataPoint) return;
+			var text = me.labelDataPoint(d,me.stats);
+			if(null == text) return;
+			var balloon = new rg.svg.widget.Balloon(me.g);
+			balloon.setBoundingBox({ x : me.width / 2 + me.arrowSize / 3 * 2, y : 0, width : me.width, height : me.height});
+			balloon.setPreferredSide(3);
+			balloon.setText(text.split("\n"));
+			balloon.moveTo(me.width / 2,me.topheight + me.h * .6 + (me.h + me.padding) * i,false);
+		});
+		this.ready.dispatch();
+	}
+	,mouseOver: function(dp,i,stats) {
+		if(null == this.labelDataPointOver) return;
+		var text = this.labelDataPointOver(dp,stats);
+		if(null == text) this.tooltip.hide(); else {
+			this.tooltip.setText(text.split("\n"));
+			this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,true);
+		}
+	}
+	,init: function() {
+		rg.svg.chart.Chart.prototype.init.call(this);
+		if(null != this.tooltip) this.tooltip.setPreferredSide(1);
+		this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
+	}
+	,internalGradient: function(d) {
+		var color = rg.util.RGColors.parse(d.style("fill").get(),"#cccccc"), stops = this.defs.append("svg:radialGradient").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
+		stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString());
+		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),-this.gradientLightness).toRgbString());
+		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
+	}
+	,externalGradient: function(n,i) {
+		var g = thx.js.Dom.selectNode(n), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
+		var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
+		var top = color.hex("#");
+		stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
+		var ratio1 = 1 - (vc < vn?vc / vn:vn / vc), middlecolor = rg.util.RGColors.applyLightness(color,ratio1,this.gradientLightness * (vc >= vn?1:-1)).hex("#");
+		stops.append("svg:stop").attr("offset").string("50%").attr("stop-color").string(middlecolor);
+		stops.append("svg:stop").attr("offset").string("90%").attr("stop-color").string(top);
+		d.attr("style").string("fill:url(#" + id + ")");
+	}
+	,__class__: rg.svg.chart.FunnelChart
+});
 rg.app.charts.App = $hxClasses["rg.app.charts.App"] = function() {
 	this.layouts = new Hash();
 }
@@ -21697,7 +22050,7 @@ rg.app.charts.App.prototype = {
 	,visualization: function(el,jsoptions) {
 		var node = el.node(), id = node.id;
 		if(null == id) node.id = id = rg.app.charts.App.nextid();
-		var params = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationOption(),jsoptions), loader = new rg.data.DataLoader(rg.controller.info.Info.feed(new rg.controller.info.InfoDataSource(),jsoptions).loader), variables = new rg.controller.factory.FactoryVariable().createVariables(params.variables), general = rg.controller.info.Info.feed(new rg.controller.info.InfoGeneral(),params.options), infoviz = rg.controller.info.Info.feed(new rg.controller.info.InfoVisualizationType(),params.options);
+		var params = rg.info.Info.feed(new rg.info.InfoVisualizationOption(),jsoptions), loader = new rg.data.DataLoader(rg.info.Info.feed(new rg.info.InfoDataSource(),jsoptions).loader), variables = new rg.factory.FactoryVariable().createVariables(params.variables), general = rg.info.Info.feed(new rg.info.InfoGeneral(),params.options), infoviz = rg.info.Info.feed(new rg.info.InfoVisualizationType(),params.options);
 		var visualization = null;
 		params.options.marginheight = 29;
 		var ivariables = Arrays.filter(variables,function(v) {
@@ -21706,14 +22059,14 @@ rg.app.charts.App.prototype = {
 		var dvariables = Arrays.filter(variables,function(v) {
 			return Std["is"](v,rg.data.VariableDependent);
 		});
-		switch( (rg.controller.info.Info.feed(new rg.controller.info.InfoDomType(),params.options).kind)[1] ) {
+		switch( (rg.info.Info.feed(new rg.info.InfoDomType(),params.options).kind)[1] ) {
 		case 1:
 			var layout = this.getLayout(id,params.options,el,infoviz.replace);
-			visualization = new rg.controller.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
+			visualization = new rg.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
 			break;
 		case 0:
 			if(infoviz.replace) el.selectAll("*").remove();
-			visualization = new rg.controller.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
+			visualization = new rg.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
 			break;
 		}
 		visualization.setVariables(variables,ivariables,dvariables);
@@ -21728,9 +22081,9 @@ rg.app.charts.App.prototype = {
 		});
 		loader.load();
 		var brandPadding = 0;
-		var download = rg.controller.info.Info.feed(new rg.controller.info.InfoDownload(),jsoptions.options.download);
+		var download = rg.info.Info.feed(new rg.info.InfoDownload(),jsoptions.options.download);
 		if(!rg.app.charts.App.supportsSvg()) {
-			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
+			var downloader = new rg.interactive.Downloader(visualization.container,download.service,download.background);
 			visualization.addReadyOnce(function() {
 				downloader.download("png","#ffffff",function(url) {
 					visualization.container.selectAll("*").remove();
@@ -21739,16 +22092,16 @@ rg.app.charts.App.prototype = {
 				},null);
 			});
 		} else if(null != download.position || null != download.handler) {
-			var downloader = new rg.controller.interactive.Downloader(visualization.container,download.service,download.background);
+			var downloader = new rg.interactive.Downloader(visualization.container,download.service,download.background);
 			if(null != download.handler) visualization.addReadyOnce(function() {
 				download.handler(downloader.download.$bind(downloader));
 			}); else visualization.addReadyOnce(function() {
-				var widget = new rg.view.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
+				var widget = new rg.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
 				brandPadding = 24;
 			});
 		}
 		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
-			var widget = new rg.view.html.widget.Logo(visualization.container,brandPadding);
+			var widget = new rg.html.widget.Logo(visualization.container,brandPadding);
 		});
 		return visualization;
 	}
@@ -21757,12 +22110,32 @@ rg.app.charts.App.prototype = {
 		if(null != old) {
 			if(replace) old.destroy(); else return old;
 		}
-		var info = rg.controller.info.Info.feed(new rg.controller.info.InfoLayout(),options), layout = new rg.controller.factory.FactoryLayout().create(info,options.marginheight,container);
+		var info = rg.info.Info.feed(new rg.info.InfoLayout(),options), layout = new rg.factory.FactoryLayout().create(info,options.marginheight,container);
 		this.layouts.set(id,layout);
 		return layout;
 	}
 	,__class__: rg.app.charts.App
 }
+rg.info.InfoLabelSankey = $hxClasses["rg.info.InfoLabelSankey"] = function() {
+	rg.info.InfoLabel.call(this);
+}
+rg.info.InfoLabelSankey.__name__ = ["rg","info","InfoLabelSankey"];
+rg.info.InfoLabelSankey.filters = function() {
+	return [{ field : "edge", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "edgeover", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "node", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}].concat(rg.info.InfoLabel.filters());
+}
+rg.info.InfoLabelSankey.__super__ = rg.info.InfoLabel;
+rg.info.InfoLabelSankey.prototype = $extend(rg.info.InfoLabel.prototype,{
+	edge: null
+	,edgeover: null
+	,node: null
+	,__class__: rg.info.InfoLabelSankey
+});
 thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
 }
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
@@ -21920,27 +22293,6 @@ thx.svg.Area.prototype = {
 	}
 	,__class__: thx.svg.Area
 }
-rg.controller.info.InfoPadding = $hxClasses["rg.controller.info.InfoPadding"] = function() {
-}
-rg.controller.info.InfoPadding.__name__ = ["rg","controller","info","InfoPadding"];
-rg.controller.info.InfoPadding.filters = function() {
-	return [{ field : "top", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "bottom", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "left", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "right", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null}];
-}
-rg.controller.info.InfoPadding.prototype = {
-	top: null
-	,bottom: null
-	,left: null
-	,right: null
-	,__class__: rg.controller.info.InfoPadding
-}
 rg.graph.SugiyamaMethod = $hxClasses["rg.graph.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
 	var id = 0;
 	this.partitioner = null == partitioner?new rg.graph.GreedyCyclePartitioner():partitioner;
@@ -21992,67 +22344,6 @@ rg.graph.SugiyamaMethod.prototype = {
 	}
 	,__class__: rg.graph.SugiyamaMethod
 }
-rg.controller.visualization.VisualizationFunnelChart = $hxClasses["rg.controller.visualization.VisualizationFunnelChart"] = function(layout) {
-	rg.controller.visualization.VisualizationSvg.call(this,layout);
-}
-rg.controller.visualization.VisualizationFunnelChart.__name__ = ["rg","controller","visualization","VisualizationFunnelChart"];
-rg.controller.visualization.VisualizationFunnelChart.__super__ = rg.controller.visualization.VisualizationSvg;
-rg.controller.visualization.VisualizationFunnelChart.prototype = $extend(rg.controller.visualization.VisualizationSvg.prototype,{
-	info: null
-	,title: null
-	,chart: null
-	,init: function() {
-		var me = this;
-		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
-		this.chart = new rg.view.svg.chart.FunnelChart(panelChart);
-		this.chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
-		if(null != this.info.label.datapoint) this.chart.labelDataPointOver = this.info.label.datapointover;
-		if(null != this.info.label.arrow) this.chart.labelArrow = this.info.label.arrow;
-		if(null != this.info.click) this.chart.click = this.info.click;
-		this.chart.padding = this.info.padding;
-		this.chart.flatness = this.info.flatness;
-		var $e = (this.info.effect);
-		switch( $e[1] ) {
-		case 1:
-			var v = $e[2];
-			this.chart.displayGradient = true;
-			this.chart.gradientLightness = v;
-			break;
-		case 0:
-			this.chart.displayGradient = false;
-			break;
-		}
-		this.chart.arrowSize = this.info.arrowSize;
-		if(null != this.info.label.title) {
-			var panelContextTitle = this.layout.getContext("title");
-			if(null == panelContextTitle) return;
-			this.title = new rg.view.svg.layer.Title(panelContextTitle.panel,null,panelContextTitle.anchor);
-		}
-	}
-	,feedData: function(data) {
-		this.chart.setVariables(this.independentVariables,this.dependentVariables);
-		var data1 = rg.util.DataPoints.filterByIndependents(rg.util.DataPoints.filterByDependents(data,this.dependentVariables),this.independentVariables);
-		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
-		if(null != this.title) {
-			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data1));
-				this.layout.suggestSize("title",this.title.idealHeight());
-			} else this.layout.suggestSize("title",0);
-		}
-		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
-		this.chart.init();
-		this.chart.data(data1);
-	}
-	,destroy: function() {
-		this.chart.destroy();
-		if(null != this.title) this.title.destroy();
-		rg.controller.visualization.VisualizationSvg.prototype.destroy.call(this);
-	}
-	,__class__: rg.controller.visualization.VisualizationFunnelChart
-});
 var Reflect = $hxClasses["Reflect"] = function() { }
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
@@ -22260,45 +22551,6 @@ rg.graph.EdgeSplitter.prototype = {
 	}
 	,__class__: rg.graph.EdgeSplitter
 }
-rg.controller.info.InfoLeaderboard = $hxClasses["rg.controller.info.InfoLeaderboard"] = function() {
-	this.animation = new rg.controller.info.InfoAnimation();
-	this.label = new rg.controller.info.InfoLabelLeaderboard();
-	this.usemax = false;
-	this.displaybar = true;
-}
-rg.controller.info.InfoLeaderboard.__name__ = ["rg","controller","info","InfoLeaderboard"];
-rg.controller.info.InfoLeaderboard.filters = function() {
-	return [{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		var animation = new rg.controller.info.InfoAnimation();
-		animation.ease = thx.math.Equations.linear;
-		return [{ field : "animation", value : rg.controller.info.Info.feed(animation,v)}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelLeaderboard(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "sort", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "sortDataPoint", value : v}];
-	}},{ field : "displaybar", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "usemax", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null}];
-}
-rg.controller.info.InfoLeaderboard.prototype = {
-	animation: null
-	,label: null
-	,click: null
-	,sortDataPoint: null
-	,usemax: null
-	,displaybar: null
-	,__class__: rg.controller.info.InfoLeaderboard
-}
 rg.util.Urls = $hxClasses["rg.util.Urls"] = function() { }
 rg.util.Urls.__name__ = ["rg","util","Urls"];
 rg.util.Urls.addQueryParameters = function(url,query) {
@@ -22339,10 +22591,10 @@ rg.data.DependentVariableProcessor.prototype = {
 			++_g;
 			var values = rg.util.DataPoints.values(data,variable.type);
 			if(values.length == 0) continue;
-			if(null == variable.axis) variable.setAxis(new rg.controller.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float),variable,null));
+			if(null == variable.axis) variable.setAxis(new rg.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float),variable,null));
 			variable.stats.addMany(values);
 			var discrete;
-			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.data.IAxisDiscrete))) {
+			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.axis.IAxisDiscrete))) {
 				discrete.setScaleDistribution(variable.scaleDistribution);
 				variable.scaleDistribution = null;
 			}
@@ -22362,17 +22614,6 @@ rg.util.Decrypt.decrypt = function(s) {
 }
 rg.util.Decrypt.prototype = {
 	__class__: rg.util.Decrypt
-}
-rg.controller.Visualizations = $hxClasses["rg.controller.Visualizations"] = function() { }
-rg.controller.Visualizations.__name__ = ["rg","controller","Visualizations"];
-rg.controller.Visualizations.layoutDefault = null;
-rg.controller.Visualizations.layoutType = null;
-rg.controller.Visualizations.layoutArgs = null;
-rg.controller.Visualizations.instantiateLayout = function(name,width,height,container) {
-	return Type.createInstance(rg.controller.Visualizations.layoutType.get(name),[width,height,container]);
-}
-rg.controller.Visualizations.prototype = {
-	__class__: rg.controller.Visualizations
 }
 thx.js.AccessTweenText = $hxClasses["thx.js.AccessTweenText"] = function(transition,tweens) {
 	thx.js.AccessTween.call(this,transition,tweens);
@@ -22959,237 +23200,6 @@ math.IEEE754.prototype = {
 	,__class__: math.IEEE754
 	,__properties__: {set_bigEndian:"setEndian"}
 }
-rg.controller.info.InfoPivotTable = $hxClasses["rg.controller.info.InfoPivotTable"] = function() {
-	this.label = new rg.controller.info.InfoLabelPivotTable();
-	this.heatmapColorStart = rg.controller.info.InfoPivotTable.defaultStartColor;
-	this.heatmapColorEnd = rg.controller.info.InfoPivotTable.defaultEndColor;
-	this.displayHeatmap = true;
-	this.displayColumnTotal = true;
-	this.displayRowTotal = true;
-	this.columnAxes = 1;
-}
-rg.controller.info.InfoPivotTable.__name__ = ["rg","controller","info","InfoPivotTable"];
-rg.controller.info.InfoPivotTable.filters = function() {
-	return [{ field : "columnaxes", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : function(v) {
-		return [{ field : "columnAxes", value : v}];
-	}},{ field : "displayheatmap", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayHeatmap", value : v}];
-	}},{ field : "displaycolumntotal", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayColumnTotal", value : v}];
-	}},{ field : "displayrowtotal", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayRowTotal", value : v}];
-	}},{ field : "startcolor", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "heatmapColorStart", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.controller.info.InfoPivotTable.defaultStartColor.hex("#")))}];
-	}},{ field : "endcolor", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "heatmapColorEnd", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.controller.info.InfoPivotTable.defaultEndColor.hex("#")))}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.controller.info.Info.feed(new rg.controller.info.InfoLabelPivotTable(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
-}
-rg.controller.info.InfoPivotTable.prototype = {
-	label: null
-	,heatmapColorStart: null
-	,heatmapColorEnd: null
-	,displayHeatmap: null
-	,displayColumnTotal: null
-	,displayRowTotal: null
-	,columnAxes: null
-	,click: null
-	,__class__: rg.controller.info.InfoPivotTable
-}
-rg.view.svg.chart.Geo = $hxClasses["rg.view.svg.chart.Geo"] = function(panel) {
-	rg.view.svg.chart.Chart.call(this,panel);
-	this.mapcontainer = this.g.append("svg:g").attr("class").string("mapcontainer");
-	this.queue = [];
-	this.setColorMode(rg.view.svg.chart.ColorScaleMode.FromCss());
-	this.resize();
-}
-rg.view.svg.chart.Geo.__name__ = ["rg","view","svg","chart","Geo"];
-rg.view.svg.chart.Geo.__super__ = rg.view.svg.chart.Chart;
-rg.view.svg.chart.Geo.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	mapcontainer: null
-	,colorMode: null
-	,variableDependent: null
-	,dps: null
-	,queue: null
-	,setVariables: function(variableIndependents,variableDependents,data) {
-		this.variableDependent = variableDependents[0];
-	}
-	,data: function(dps) {
-		this.dps = dps;
-		this.redraw();
-	}
-	,resize: function() {
-		rg.view.svg.chart.Chart.prototype.resize.call(this);
-		if(null != this.mapcontainer) this.mapcontainer.attr("transform").string("translate(" + this.width / 2 + "," + this.height / 2 + ")");
-	}
-	,dpvalue: function(dp) {
-		return Reflect.field(dp,this.variableDependent.type);
-	}
-	,drawmap: function(map,field) {
-		if(null == this.dps || 0 == this.dps.length) {
-			this.queue.push((function(f,a1,a2) {
-				return function() {
-					return f(a1,a2);
-				};
-			})(this.drawmap.$bind(this),map,field));
-			return;
-		}
-		this.setColorMode(map.colorMode);
-		var text = null;
-		var _g = 0, _g1 = this.dps;
-		while(_g < _g1.length) {
-			var dp = _g1[_g];
-			++_g;
-			var id = Reflect.field(dp,field), feature = map.map.get(id);
-			if(null == feature) continue;
-			this.stylefeature(feature.svg,Objects.copyTo(dp,feature.dp));
-			if(null != map.radius && feature.svg.node().nodeName == "circle") feature.svg.attr("r")["float"](map.radius(feature.dp,this.variableDependent.stats));
-			if(null != map.labelDataPoint && null != (text = map.labelDataPoint(feature.dp,this.variableDependent.stats))) {
-				var c = Reflect.field(feature.dp,"#centroid");
-				var label = new rg.view.svg.widget.Label(this.mapcontainer,true,false,false);
-				label.setText(text);
-				label.place(c[0],c[1],0);
-			}
-		}
-		if(this.queue.length == 0) this.ready.dispatch();
-	}
-	,handlerDataPointOver: function(dp,f) {
-		var text = f(dp,this.variableDependent.stats);
-		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setText(text.split("\n"));
-			var centroid = Reflect.field(dp,"#centroid");
-			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,true);
-		}
-	}
-	,handlerClick: function(dp,f) {
-		f(dp,this.variableDependent.stats);
-	}
-	,stylefeature: function(svg,dp) {
-	}
-	,redraw: function() {
-		while(this.queue.length > 0) (this.queue.shift())();
-	}
-	,getColorMode: function() {
-		return this.colorMode;
-	}
-	,setColorMode: function(v) {
-		var me = this;
-		var $e = (this.colorMode = v);
-		switch( $e[1] ) {
-		case 0:
-			var g = $e[2];
-			if(null == g) g = 1;
-			var colors = rg.view.svg.util.RGCss.colorsInCss();
-			if(colors.length > g) colors = colors.slice(0,g);
-			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
-			colors.reverse();
-			this.setColorMode(rg.view.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
-				return thx.color.Colors.parse(s);
-			})));
-			break;
-		case 1:
-			var g = $e[2];
-			if(null == g) g = rg.view.svg.util.RGCss.numberOfColorsInCss();
-			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
-				svg.attr("class").string("fill-" + index);
-			};
-			break;
-		case 3:
-			var c = $e[2];
-			var colors = c.map(function(d,_) {
-				return d.hex("#");
-			});
-			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
-				svg.style("fill").string(colors[index]);
-			};
-			break;
-		case 2:
-			var colors = $e[2];
-			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
-			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
-				svg.style("fill").string(interpolator(t).hex("#"));
-			};
-			break;
-		case 4:
-			var c = $e[2];
-			var color = c.hex("#");
-			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(color);
-			};
-			break;
-		case 5:
-			var f = $e[2];
-			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(f(dp,me.variableDependent.stats));
-			};
-			break;
-		}
-		return v;
-	}
-	,init: function() {
-		rg.view.svg.chart.Chart.prototype.init.call(this);
-		if(null == this.tooltip) this.tooltip = new rg.view.svg.widget.Balloon(this.g);
-		this.g.classed().add("geo");
-	}
-	,addMap: function(map,field) {
-		if(null != field) map.onReady.add((function(f,a1,a2) {
-			return function() {
-				return f(a1,a2);
-			};
-		})(this.drawmap.$bind(this),map,field));
-	}
-	,__class__: rg.view.svg.chart.Geo
-	,__properties__: $extend(rg.view.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
-});
-rg.view.svg.chart.LineEffects = $hxClasses["rg.view.svg.chart.LineEffects"] = function() { }
-rg.view.svg.chart.LineEffects.__name__ = ["rg","view","svg","chart","LineEffects"];
-rg.view.svg.chart.LineEffects.parse = function(s) {
-	var parts = s.toLowerCase().split(":");
-	switch(parts.shift()) {
-	case "dropshadow":
-		var offsetx = 0.5, offsety = 0.5, levels = 2, parameters = parts.pop();
-		if(null != parameters) {
-			var parameters1 = parameters.split(",");
-			offsetx = Std.parseFloat(parameters1[0]);
-			if(parameters1.length > 1) offsety = Std.parseFloat(parameters1[1]); else offsety = offsetx;
-			if(parameters1.length > 2) levels = Std.parseInt(parameters1[2]);
-		}
-		return rg.view.svg.chart.LineEffect.DropShadow(offsetx,offsety,levels);
-	case "gradient":
-		var lightness = 0.75, levels = 2, parameters = parts.pop();
-		if(null != parameters) {
-			lightness = Std.parseFloat(parameters.split(",").shift());
-			var nlevels = parameters.split(",").pop();
-			if(null != nlevels) levels = Std.parseInt(nlevels);
-		}
-		return rg.view.svg.chart.LineEffect.Gradient(lightness,levels);
-	default:
-		return rg.view.svg.chart.LineEffect.NoEffect;
-	}
-}
-rg.view.svg.chart.LineEffects.prototype = {
-	__class__: rg.view.svg.chart.LineEffects
-}
 thx.math.Random = $hxClasses["thx.math.Random"] = function(seed) {
 	if(seed == null) seed = 1;
 	this.seed = seed;
@@ -23306,6 +23316,19 @@ rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
 	}
 	,__class__: rg.graph.GraphNodes
 });
+rg.layout.Anchor = $hxClasses["rg.layout.Anchor"] = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
+rg.layout.Anchor.Top = ["Top",0];
+rg.layout.Anchor.Top.toString = $estr;
+rg.layout.Anchor.Top.__enum__ = rg.layout.Anchor;
+rg.layout.Anchor.Bottom = ["Bottom",1];
+rg.layout.Anchor.Bottom.toString = $estr;
+rg.layout.Anchor.Bottom.__enum__ = rg.layout.Anchor;
+rg.layout.Anchor.Left = ["Left",2];
+rg.layout.Anchor.Left.toString = $estr;
+rg.layout.Anchor.Left.__enum__ = rg.layout.Anchor;
+rg.layout.Anchor.Right = ["Right",3];
+rg.layout.Anchor.Right.toString = $estr;
+rg.layout.Anchor.Right.__enum__ = rg.layout.Anchor;
 thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
 	this.length = 0;
 	this.__keys = [];
@@ -23408,43 +23431,37 @@ thx.collection.HashList.prototype = {
 	,__hash: null
 	,__class__: thx.collection.HashList
 }
-rg.controller.visualization.VisualizationPivotTable = $hxClasses["rg.controller.visualization.VisualizationPivotTable"] = function(container) {
-	rg.controller.visualization.VisualizationHtml.call(this,container);
+rg.info.InfoVisualizationOption = $hxClasses["rg.info.InfoVisualizationOption"] = function() {
 }
-rg.controller.visualization.VisualizationPivotTable.__name__ = ["rg","controller","visualization","VisualizationPivotTable"];
-rg.controller.visualization.VisualizationPivotTable.__super__ = rg.controller.visualization.VisualizationHtml;
-rg.controller.visualization.VisualizationPivotTable.prototype = $extend(rg.controller.visualization.VisualizationHtml.prototype,{
-	info: null
-	,chart: null
-	,init: function() {
-		var me = this;
-		this.chart = new rg.view.html.chart.PivotTable(this.container);
-		this.chart.ready.add(function() {
-			me.ready.dispatch();
-		});
-		this.chart.displayColumnTotal = this.info.displayColumnTotal;
-		this.chart.displayHeatMap = this.info.displayHeatmap;
-		this.chart.displayRowTotal = this.info.displayRowTotal;
-		this.chart.colorStart = this.info.heatmapColorStart;
-		this.chart.colorEnd = this.info.heatmapColorEnd;
-		if(null != this.info.click) this.chart.click = this.info.click;
-		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
-		if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
-		if(null != this.info.label.axis) this.chart.labelAxis = this.info.label.axis;
-		if(null != this.info.label.axisvalue) this.chart.labelAxisValue = this.info.label.axisvalue;
-		if(null != this.info.label.total) this.chart.labelTotal = this.info.label.total;
-		if(null != this.info.label.totalover) this.chart.labelTotalOver = this.info.label.totalover;
-		this.chart.incolumns = Ints.min(this.info.columnAxes,this.independentVariables.length);
-		this.chart.init();
+rg.info.InfoVisualizationOption.__name__ = ["rg","info","InfoVisualizationOption"];
+rg.info.InfoVisualizationOption.filters = function() {
+	return [{ field : "axes", validator : function(v) {
+		return Std["is"](v,Array) || Reflect.isObject(v);
+	}, filter : function(v) {
+		return [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
+			return rg.info.Info.feed(new rg.info.InfoVariable(),v1);
+		}):[rg.info.Info.feed(new rg.info.InfoVariable(),v)]}];
+	}},{ field : "options", validator : function(v) {
+		return Reflect.isObject(v);
+	}, filter : null}];
+}
+rg.info.InfoVisualizationOption.prototype = {
+	variables: null
+	,options: null
+	,__class__: rg.info.InfoVisualizationOption
+}
+rg.axis.TickmarkTime = $hxClasses["rg.axis.TickmarkTime"] = function(value,values,major,periodicity,scaleDistribution) {
+	rg.axis.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
+	this.periodicity = periodicity;
+}
+rg.axis.TickmarkTime.__name__ = ["rg","axis","TickmarkTime"];
+rg.axis.TickmarkTime.__super__ = rg.axis.TickmarkOrdinal;
+rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
+	periodicity: null
+	,getLabel: function() {
+		return rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
 	}
-	,feedData: function(data) {
-		this.chart.setVariables(this.independentVariables,this.dependentVariables);
-		this.chart.data(data);
-	}
-	,destroy: function() {
-		this.chart.destroy();
-	}
-	,__class__: rg.controller.visualization.VisualizationPivotTable
+	,__class__: rg.axis.TickmarkTime
 });
 thx.svg.LineInternals = $hxClasses["thx.svg.LineInternals"] = function() { }
 thx.svg.LineInternals.__name__ = ["thx","svg","LineInternals"];
@@ -23762,6 +23779,23 @@ thx.js.AccessDataTweenAttribute.prototype = $extend(thx.js.AccessTweenAttribute.
 	}
 	,__class__: thx.js.AccessDataTweenAttribute
 });
+rg.info.InfoLabelLeaderboard = $hxClasses["rg.info.InfoLabelLeaderboard"] = function() {
+	rg.info.InfoLabel.call(this);
+}
+rg.info.InfoLabelLeaderboard.__name__ = ["rg","info","InfoLabelLeaderboard"];
+rg.info.InfoLabelLeaderboard.filters = function() {
+	return [{ field : "rank", validator : function(v) {
+		return v == null || Reflect.isFunction(v);
+	}, filter : null},{ field : "value", validator : function(v) {
+		return v == null || Reflect.isFunction(v);
+	}, filter : null}].concat(rg.info.InfoLabel.filters());
+}
+rg.info.InfoLabelLeaderboard.__super__ = rg.info.InfoLabel;
+rg.info.InfoLabelLeaderboard.prototype = $extend(rg.info.InfoLabel.prototype,{
+	rank: null
+	,value: null
+	,__class__: rg.info.InfoLabelLeaderboard
+});
 var StringBuf = $hxClasses["StringBuf"] = function() {
 	this.b = new Array();
 }
@@ -23782,27 +23816,6 @@ StringBuf.prototype = {
 	,b: null
 	,__class__: StringBuf
 }
-rg.controller.factory.FactoryLayout = $hxClasses["rg.controller.factory.FactoryLayout"] = function() {
-}
-rg.controller.factory.FactoryLayout.__name__ = ["rg","controller","factory","FactoryLayout"];
-rg.controller.factory.FactoryLayout.prototype = {
-	create: function(info,heightmargin,container) {
-		var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
-		var layoutName = info.layout;
-		if(null == layoutName) layoutName = rg.controller.Visualizations.layoutDefault.get(info.type);
-		if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.controller.factory.FactoryLayout", methodName : "create"});
-		var layout = rg.controller.Visualizations.instantiateLayout(layoutName,width,height,container);
-		layout.feedOptions(info);
-		return layout;
-	}
-	,__class__: rg.controller.factory.FactoryLayout
-}
-rg.view.svg.chart.LineEffect = $hxClasses["rg.view.svg.chart.LineEffect"] = { __ename__ : ["rg","view","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
-rg.view.svg.chart.LineEffect.NoEffect = ["NoEffect",0];
-rg.view.svg.chart.LineEffect.NoEffect.toString = $estr;
-rg.view.svg.chart.LineEffect.NoEffect.__enum__ = rg.view.svg.chart.LineEffect;
-rg.view.svg.chart.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.view.svg.chart.LineEffect; $x.toString = $estr; return $x; }
-rg.view.svg.chart.LineEffect.DropShadow = function(ox,oy,evels) { var $x = ["DropShadow",2,ox,oy,evels]; $x.__enum__ = rg.view.svg.chart.LineEffect; $x.toString = $estr; return $x; }
 thx.js.AccessHtml = $hxClasses["thx.js.AccessHtml"] = function(selection) {
 	thx.js.Access.call(this,selection);
 }
@@ -24182,6 +24195,147 @@ Bytes.prototype = {
 	}
 	,__class__: Bytes
 }
+rg.svg.layer.RulesOrtho = $hxClasses["rg.svg.layer.RulesOrtho"] = function(panel,orientation) {
+	rg.svg.panel.Layer.call(this,panel);
+	this.orientation = orientation;
+	this.displayMinor = true;
+	this.displayMajor = true;
+	this.displayAnchorLine = true;
+	this.g.classed().add("tickmarks");
+}
+rg.svg.layer.RulesOrtho.__name__ = ["rg","svg","layer","RulesOrtho"];
+rg.svg.layer.RulesOrtho.__super__ = rg.svg.panel.Layer;
+rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
+	orientation: null
+	,displayMinor: null
+	,displayMajor: null
+	,displayAnchorLine: null
+	,translate: null
+	,x1: null
+	,y1: null
+	,x2: null
+	,y2: null
+	,x: null
+	,y: null
+	,axis: null
+	,min: null
+	,max: null
+	,resize: function() {
+		if(null == this.axis) return;
+		if(this.displayAnchorLine) this.updateAnchorLine();
+		this.redraw();
+	}
+	,update: function(axis,min,max) {
+		this.axis = axis;
+		this.min = min;
+		this.max = max;
+		this.redraw();
+	}
+	,updateAnchorLine: function() {
+		var line = this.g.select("line.anchor-line");
+		switch( (this.orientation)[1] ) {
+		case 1:
+			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](0).attr("y2")["float"](this.height);
+			break;
+		case 0:
+			line.attr("x1")["float"](0).attr("y1")["float"](this.height).attr("x2")["float"](this.width).attr("y2")["float"](this.height);
+			break;
+		}
+	}
+	,maxTicks: function() {
+		var size = (function($this) {
+			var $r;
+			switch( ($this.orientation)[1] ) {
+			case 1:
+				$r = $this.width;
+				break;
+			case 0:
+				$r = $this.height;
+				break;
+			}
+			return $r;
+		}(this));
+		return Math.round(size / 2.5);
+	}
+	,id: function(d,i) {
+		return "" + d.getValue();
+	}
+	,redraw: function() {
+		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
+		var rule = this.g.selectAll("g.rule").data(data,this.id.$bind(this));
+		var enter = rule.enter().append("svg:g").attr("class").string("rule").attr("transform").stringf(this.translate);
+		if(this.displayMinor) enter.filter(function(d,i) {
+			return !d.major;
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
+		if(this.displayMajor) enter.filter(function(d,i) {
+			return d.major;
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
+		rule.update().attr("transform").stringf(this.translate);
+		rule.exit().remove();
+	}
+	,initf: function() {
+		switch( (this.orientation)[1] ) {
+		case 1:
+			this.translate = this.translateHorizontal.$bind(this);
+			this.x1 = this.x1Horizontal.$bind(this);
+			this.y1 = this.y1Horizontal.$bind(this);
+			this.x2 = this.x2Horizontal.$bind(this);
+			this.y2 = this.y2Horizontal.$bind(this);
+			break;
+		case 0:
+			this.translate = this.translateVertical.$bind(this);
+			this.x1 = this.x1Vertical.$bind(this);
+			this.y1 = this.y1Vertical.$bind(this);
+			this.x2 = this.x2Vertical.$bind(this);
+			this.y2 = this.y2Vertical.$bind(this);
+			break;
+		}
+	}
+	,init: function() {
+		this.initf();
+		if(this.displayAnchorLine) {
+			this.g.append("svg:line").attr("class").string("anchor-line");
+			this.updateAnchorLine();
+		}
+	}
+	,t: function(x,y) {
+		return "translate(" + x + "," + y + ")";
+	}
+	,translateHorizontal: function(d,i) {
+		return "translate(" + 0 + "," + (this.height - d.getDelta() * this.height) + ")";
+	}
+	,translateVertical: function(d,i) {
+		return "translate(" + d.getDelta() * this.width + "," + 0 + ")";
+	}
+	,x1Horizontal: function(d,i) {
+		return 0;
+	}
+	,x1Vertical: function(d,i) {
+		return 0;
+	}
+	,y1Horizontal: function(d,i) {
+		return 0;
+	}
+	,y1Vertical: function(d,i) {
+		return 0;
+	}
+	,x2Horizontal: function(d,i) {
+		return this.width;
+	}
+	,x2Vertical: function(d,i) {
+		return 0;
+	}
+	,y2Horizontal: function(d,i) {
+		return 0;
+	}
+	,y2Vertical: function(d,i) {
+		return this.height;
+	}
+	,tickClass: function(d,i) {
+		return d.getMajor()?"major":null;
+	}
+	,__class__: rg.svg.layer.RulesOrtho
+});
 var Iterators = $hxClasses["Iterators"] = function() { }
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
@@ -24305,6 +24459,54 @@ Iterators.isIterator = function(v) {
 Iterators.prototype = {
 	__class__: Iterators
 }
+rg.factory.FactorySvgVisualization = $hxClasses["rg.factory.FactorySvgVisualization"] = function() {
+}
+rg.factory.FactorySvgVisualization.__name__ = ["rg","factory","FactorySvgVisualization"];
+rg.factory.FactorySvgVisualization.prototype = {
+	create: function(type,layout,options) {
+		switch(type) {
+		case "barchart":
+			var chart = new rg.visualization.VisualizationBarChart(layout);
+			chart.info = chart.infoBar = rg.info.Info.feed(new rg.info.InfoBarChart(),options);
+			return chart;
+		case "funnelchart":
+			var chart = new rg.visualization.VisualizationFunnelChart(layout);
+			chart.info = rg.info.Info.feed(new rg.info.InfoFunnelChart(),options);
+			return chart;
+		case "geo":
+			var chart = new rg.visualization.VisualizationGeo(layout);
+			chart.info = rg.info.Info.feed(new rg.info.InfoGeo(),options);
+			return chart;
+		case "heatgrid":
+			var chart = new rg.visualization.VisualizationHeatGrid(layout);
+			chart.info = chart.infoHeatGrid = rg.info.Info.feed(new rg.info.InfoHeatGrid(),options);
+			return chart;
+		case "linechart":
+			var chart = new rg.visualization.VisualizationLineChart(layout);
+			chart.info = chart.infoLine = rg.info.Info.feed(new rg.info.InfoLineChart(),options);
+			return chart;
+		case "piechart":
+			var chart = new rg.visualization.VisualizationPieChart(layout);
+			chart.info = rg.info.Info.feed(new rg.info.InfoPieChart(),options);
+			return chart;
+		case "sankey":
+			var chart = new rg.visualization.VisualizationSankey(layout);
+			chart.info = rg.info.Info.feed(new rg.info.InfoSankey(),options);
+			return chart;
+		case "scattergraph":
+			var chart = new rg.visualization.VisualizationScatterGraph(layout);
+			chart.info = chart.infoScatter = rg.info.Info.feed(new rg.info.InfoScatterGraph(),options);
+			return chart;
+		case "streamgraph":
+			var chart = new rg.visualization.VisualizationStreamGraph(layout);
+			chart.info = chart.infoStream = rg.info.Info.feed(new rg.info.InfoStreamGraph(),options);
+			return chart;
+		default:
+			throw new thx.error.Error("unsupported visualization type '{0}'",null,type,{ fileName : "FactorySvgVisualization.hx", lineNumber : 76, className : "rg.factory.FactorySvgVisualization", methodName : "create"});
+		}
+	}
+	,__class__: rg.factory.FactorySvgVisualization
+}
 thx.geo.Azimuthal = $hxClasses["thx.geo.Azimuthal"] = function() {
 	this.setMode(thx.geo.ProjectionMode.Orthographic);
 	this.setScale(200);
@@ -24392,27 +24594,138 @@ thx.geo.ProjectionMode.Orthographic.__enum__ = thx.geo.ProjectionMode;
 thx.geo.ProjectionMode.Stereographic = ["Stereographic",1];
 thx.geo.ProjectionMode.Stereographic.toString = $estr;
 thx.geo.ProjectionMode.Stereographic.__enum__ = thx.geo.ProjectionMode;
-rg.controller.info.InfoDomType = $hxClasses["rg.controller.info.InfoDomType"] = function() {
+rg.info.InfoLabelPivotTable = $hxClasses["rg.info.InfoLabelPivotTable"] = function() {
+	rg.info.InfoLabelAxis.call(this);
 }
-rg.controller.info.InfoDomType.__name__ = ["rg","controller","info","InfoDomType"];
-rg.controller.info.InfoDomType.filters = function() {
-	return [{ field : "visualization", validator : function(v) {
-		return Arrays.exists(rg.controller.Visualizations.visualizations,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ value : Arrays.exists(rg.controller.Visualizations.html,v.toLowerCase())?rg.controller.info.DomKind.Html:rg.controller.info.DomKind.Svg, field : "kind"}];
-	}}];
+rg.info.InfoLabelPivotTable.__name__ = ["rg","info","InfoLabelPivotTable"];
+rg.info.InfoLabelPivotTable.filters = function() {
+	return [{ field : "total", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "totalover", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "axisvalue", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null}].concat(rg.info.InfoLabelAxis.filters());
 }
-rg.controller.info.InfoDomType.prototype = {
-	kind: null
-	,__class__: rg.controller.info.InfoDomType
+rg.info.InfoLabelPivotTable.__super__ = rg.info.InfoLabelAxis;
+rg.info.InfoLabelPivotTable.prototype = $extend(rg.info.InfoLabelAxis.prototype,{
+	total: null
+	,totalover: null
+	,axisvalue: null
+	,__class__: rg.info.InfoLabelPivotTable
+});
+rg.html.chart.Leadeboard = $hxClasses["rg.html.chart.Leadeboard"] = function(container) {
+	this.ready = new hxevents.Notifier();
+	this.container = container;
+	this.animated = true;
+	this.animationDuration = 1500;
+	this.animationEase = thx.math.Equations.elasticf();
+	this.animationDelay = 150;
+	this._created = 0;
+	this.displayGradient = true;
+	this.useMax = false;
 }
-rg.controller.info.DomKind = $hxClasses["rg.controller.info.DomKind"] = { __ename__ : ["rg","controller","info","DomKind"], __constructs__ : ["Html","Svg"] }
-rg.controller.info.DomKind.Html = ["Html",0];
-rg.controller.info.DomKind.Html.toString = $estr;
-rg.controller.info.DomKind.Html.__enum__ = rg.controller.info.DomKind;
-rg.controller.info.DomKind.Svg = ["Svg",1];
-rg.controller.info.DomKind.Svg.toString = $estr;
-rg.controller.info.DomKind.Svg.__enum__ = rg.controller.info.DomKind;
+rg.html.chart.Leadeboard.__name__ = ["rg","html","chart","Leadeboard"];
+rg.html.chart.Leadeboard.prototype = {
+	variableIndependent: null
+	,variableDependent: null
+	,animated: null
+	,animationDuration: null
+	,animationDelay: null
+	,animationEase: null
+	,click: null
+	,sortDataPoint: null
+	,displayGradient: null
+	,useMax: null
+	,ready: null
+	,displayBar: null
+	,container: null
+	,list: null
+	,_created: null
+	,stats: null
+	,labelDataPoint: function(dp,stats) {
+		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(Reflect.field(dp,this.variableIndependent.type),"."),"."));
+	}
+	,labelDataPointOver: function(dp,stats) {
+		return Floats.format(100 * Reflect.field(dp,stats.type) / (this.useMax?stats.max:stats.tot),"P:1");
+	}
+	,labelRank: function(dp,i,stats) {
+		return "" + (i + 1);
+	}
+	,labelValue: function(dp,stats) {
+		return rg.util.Properties.formatValue(stats.type,dp);
+	}
+	,init: function() {
+		var div = this.container.append("div").attr("class").string("leaderboard");
+		this.list = div.append("ul");
+		div.append("div").attr("class").string("clear");
+	}
+	,setVariables: function(variableIndependents,variableDependents) {
+		this.variableDependent = variableDependents[0];
+		this.variableIndependent = variableIndependents[0];
+	}
+	,backgroundSize: function(dp,i) {
+		return 100 * Reflect.field(dp,this.variableDependent.type) / (this.useMax?this.stats.max:this.stats.tot) + "%";
+	}
+	,data: function(dps) {
+		var name = this.variableDependent.type;
+		if(null != this.sortDataPoint) dps.sort(this.sortDataPoint);
+		if(null == this.variableDependent.stats) return;
+		var stats = this.stats = (function($this) {
+			var $r;
+			var $t = $this.variableDependent.stats;
+			if(Std["is"]($t,rg.axis.StatsNumeric)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this));
+		var choice = this.list.selectAll("li").data(dps,this.id.$bind(this));
+		var enterli = choice.enter().append("li");
+		enterli.attr("title").stringf(this.lTitle.$bind(this));
+		enterli.append("div").attr("class").stringf(function(_,i) {
+			return i % 2 == 0?"background fill-0":"background";
+		});
+		var enterlabels = enterli.append("div").attr("class").string("labels");
+		if(null != this.labelRank.$bind(this)) enterlabels.append("div").attr("class").string("rank").text().stringf(this.lRank.$bind(this));
+		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("description color-0").text().stringf(this.lDataPoint.$bind(this));
+		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("value color-2").text().stringf(this.lValue.$bind(this));
+		enterli.append("div").attr("class").string("clear");
+		if(this.displayBar) {
+			var barpadding = enterli.append("div").attr("class").string("barpadding"), enterbar = barpadding.append("div").attr("class").string("barcontainer");
+			enterbar.append("div").attr("class").string("barback fill-0");
+			enterbar.append("div").attr("class").string("bar fill-0").style("width").stringf(this.backgroundSize.$bind(this));
+			enterli.append("div").attr("class").string("clear");
+		}
+		if(null != this.click) enterli.on("click.user",this.onClick.$bind(this));
+		if(this.animated) enterli.style("opacity")["float"](0).eachNode(this.fadeIn.$bind(this)); else enterli.style("opacity")["float"](1);
+		if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
+		this.ready.dispatch();
+	}
+	,onClick: function(dp,_) {
+		this.click(dp);
+	}
+	,fadeIn: function(n,i) {
+		var me = this;
+		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).attr("opacity")["float"](1).endNode(function(_,_1) {
+			me._created++;
+		});
+	}
+	,lRank: function(dp,i) {
+		return this.labelRank(dp,i,this.stats);
+	}
+	,lValue: function(dp,i) {
+		return this.labelValue(dp,this.stats);
+	}
+	,lDataPoint: function(dp,i) {
+		return this.labelDataPoint(dp,this.stats);
+	}
+	,lTitle: function(dp,i) {
+		return this.labelDataPointOver(dp,this.stats);
+	}
+	,id: function(dp,_) {
+		return rg.util.DataPoints.id(dp,[this.variableDependent.type]);
+	}
+	,__class__: rg.html.chart.Leadeboard
+}
 var Objects = $hxClasses["Objects"] = function() { }
 Objects.__name__ = ["Objects"];
 Objects.field = function(o,fieldname,alt) {
@@ -24627,211 +24940,42 @@ Objects.formatf = function(param,params,culture) {
 Objects.prototype = {
 	__class__: Objects
 }
-rg.view.svg.chart.PieChart = $hxClasses["rg.view.svg.chart.PieChart"] = function(panel) {
-	rg.view.svg.chart.Chart.call(this,panel);
-	this.addClass("pie-chart");
-	this.g.append("svg:defs");
-	this.pie = new thx.geom.layout.Pie();
-	this.gradientLightness = 0.75;
-	this.displayGradient = true;
-	this.animationDelay = 0;
-	this.innerRadius = 0.0;
-	this.outerRadius = 0.9;
-	this.overRadius = 0.95;
-	this.labelRadius = 0.45;
-	this.tooltipRadius = 0.5;
-	this.labels = new Hash();
-	this.labelOrientation = rg.view.svg.widget.LabelOrientation.Orthogonal;
-	this.labelDontFlip = true;
-}
-rg.view.svg.chart.PieChart.__name__ = ["rg","view","svg","chart","PieChart"];
-rg.view.svg.chart.PieChart.__super__ = rg.view.svg.chart.Chart;
-rg.view.svg.chart.PieChart.prototype = $extend(rg.view.svg.chart.Chart.prototype,{
-	innerRadius: null
-	,outerRadius: null
-	,overRadius: null
-	,labelRadius: null
-	,tooltipRadius: null
-	,arcNormal: null
-	,arcStart: null
-	,arcBig: null
-	,pie: null
-	,radius: null
-	,stats: null
-	,variableDependent: null
-	,gradientLightness: null
-	,displayGradient: null
-	,animationDelay: null
-	,labelOrientation: null
-	,labelDontFlip: null
-	,labels: null
-	,mouseClick: null
-	,setVariables: function(variableIndependents,variableDependents) {
-		this.variableDependent = variableDependents[0];
-	}
-	,resize: function() {
-		rg.view.svg.chart.Chart.prototype.resize.call(this);
-		this.radius = Math.min(this.width,this.height) / 2;
-		this.arcStart = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.innerRadius);
-		this.arcNormal = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.outerRadius);
-		this.arcBig = thx.svg.Arc.fromAngleObject().innerRadius(this.radius * this.innerRadius).outerRadius(this.radius * this.overRadius);
-		if(this.width > this.height) this.g.attr("transform").string("translate(" + (this.width / 2 - this.height / 2) + ",0)"); else this.g.attr("transform").string("translate(0," + (this.height / 2 - this.width / 2) + ")");
-	}
-	,data: function(dp) {
-		var pv = this.variableDependent.type;
-		dp = Arrays.filter(dp,function(dp1) {
-			return Reflect.field(dp1,pv) > 0;
-		});
-		this.stats = this.variableDependent.stats;
-		var choice = this.g.selectAll("g.group").data(this.pief(dp),this.id.$bind(this));
-		var enter = choice.enter();
-		var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
-			return "group fill-" + i;
-		}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
-		var path = arc.append("svg:path").attr("class").string("slice");
-		if(this.displayGradient) arc.eachNode(this.applyGradient.$bind(this));
-		if(this.animated) {
-			path.attr("d").stringf(this.arcShape(this.arcStart));
-			arc.eachNode(this.fadein.$bind(this)).onNode("mouseover.animation",this.highlight.$bind(this)).onNode("mouseout.animation",this.backtonormal.$bind(this));
-		} else path.attr("d").stringf(this.arcShape(this.arcNormal));
-		arc.onNode("mouseover.label",this.onMouseOver.$bind(this));
-		if(null != this.labelDataPoint) arc.eachNode(this.appendLabel.$bind(this));
-		if(null != this.mouseClick) arc.onNode("click.user",this.onMouseClick.$bind(this));
-		choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
-		if(null != this.labelDataPoint) choice.update().eachNode(this.updateLabel.$bind(this));
-		choice.exit().eachNode(this.removeLabel.$bind(this)).remove();
-		this.ready.dispatch();
-	}
-	,onMouseOver: function(dom,i) {
-		if(null == this.labelDataPointOver) return;
-		var d = Reflect.field(dom,"__data__"), text = this.labelDataPointOver(d.dp,this.stats);
-		if(null == text) this.tooltip.hide(); else {
-			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2, r = this.radius * this.tooltipRadius;
-			this.tooltip.setText(text.split("\n"));
-			this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r);
-		}
-	}
-	,onMouseClick: function(dom,i) {
-		var d = Reflect.field(dom,"__data__");
-		this.mouseClick(d.dp);
-	}
-	,removeLabel: function(dom,i) {
-		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__");
-		var label = this.labels.get(d.id);
-		label.destroy();
-		this.labels.remove(d.id);
-	}
-	,updateLabel: function(dom,i) {
-		var n = thx.js.Dom.selectNode(dom), d = Reflect.field(dom,"__data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-		label.setText(this.labelDataPoint(d.dp,this.stats));
-		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
-	}
-	,appendLabel: function(dom,i) {
-		var n = thx.js.Dom.selectNode(dom), label = new rg.view.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-		label.setOrientation(this.labelOrientation);
-		switch( (this.labelOrientation)[1] ) {
-		case 0:
-			label.setAnchor(rg.view.svg.widget.GridAnchor.Center);
+rg.svg.widget.LabelOrientations = $hxClasses["rg.svg.widget.LabelOrientations"] = function() { }
+rg.svg.widget.LabelOrientations.__name__ = ["rg","svg","widget","LabelOrientations"];
+rg.svg.widget.LabelOrientations.parse = function(s) {
+	return (function($this) {
+		var $r;
+		switch(s.toLowerCase()) {
+		case "ortho":case "orthogonal":
+			$r = rg.svg.widget.LabelOrientation.Orthogonal;
 			break;
-		case 1:
-			label.setAnchor(rg.view.svg.widget.GridAnchor.Left);
-			break;
-		case 2:
-			label.setAnchor(rg.view.svg.widget.GridAnchor.Top);
-			break;
+		default:
+			$r = rg.svg.widget.LabelOrientation.Aligned;
 		}
-		label.setText(this.labelDataPoint(d.dp,this.stats));
-		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
-		this.labels.set(d.id,label);
-	}
-	,applyGradient: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
-		if(this.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
-			var slice = gn.select("path.slice"), shape = this.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = (function($this) {
-				var $r;
-				try {
-					$r = t.node().getBBox();
-				} catch( e ) {
-					$r = { x : 0.0, y : 0.0, width : 0.0, height : 0.0};
-				}
-				return $r;
-			}(this));
-			t.remove();
-			var color = rg.util.RGColors.parse(slice.style("fill").get(),"#cccccc"), scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness);
-			var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
-			var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
-			var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
-			stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
-			stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(scolor.toRgbString()).attr("stop-opacity")["float"](1);
-		}
-		gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
-	}
-	,fadein: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
-		gn.selectAll("path.slice").transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay).attr("d").string(shape);
-	}
-	,highlight: function(d,i) {
-		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
-		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcBig));
-	}
-	,backtonormal: function(d,i) {
-		var slice = thx.js.Dom.selectNodeData(d).selectAll("path");
-		slice.transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
-	}
-	,id: function(dp,i) {
-		return dp.id;
-	}
-	,makeid: function(dp) {
-		var c = Objects.clone(dp);
-		Reflect.deleteField(c,this.variableDependent.type);
-		return haxe.Md5.encode(Dynamics.string(c));
-	}
-	,arcShape: function(a) {
-		return function(d,i) {
-			return a.shape(d);
-		};
-	}
-	,pief: function(dp) {
-		var name = this.variableDependent.type, temp = dp.map(function(d,i) {
-			return Reflect.field(d,name);
-		}), arr = this.pie.pie(temp);
-		var _g1 = 0, _g = arr.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var id = this.makeid(dp[i]);
-			arr[i]["id"] = id;
-			arr[i]["dp"] = dp[i];
-		}
-		return arr;
-	}
-	,destroy: function() {
-		var $it0 = this.labels.iterator();
-		while( $it0.hasNext() ) {
-			var label = $it0.next();
-			label.destroy();
-		}
-		rg.view.svg.chart.Chart.prototype.destroy.call(this);
-	}
-	,__class__: rg.view.svg.chart.PieChart
-});
-rg.view.svg.chart.StreamEffects = $hxClasses["rg.view.svg.chart.StreamEffects"] = function() { }
-rg.view.svg.chart.StreamEffects.__name__ = ["rg","view","svg","chart","StreamEffects"];
-rg.view.svg.chart.StreamEffects.getLightness = function(p,alt) {
-	if(null == p) return alt; else return Std.parseFloat(p);
+		return $r;
+	}(this));
 }
-rg.view.svg.chart.StreamEffects.parse = function(s) {
-	var parts = s.toLowerCase().split(":");
-	switch(parts.shift()) {
-	case "gradient":case "gradientv":case "gradientvert":case "gradientvertical":
-		return rg.view.svg.chart.StreamEffect.GradientVertical(rg.view.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
-	case "gradienth":case "gradienthoriz":case "gradienthorizontal":
-		return rg.view.svg.chart.StreamEffect.GradientHorizontal(rg.view.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
-	default:
-		return rg.view.svg.chart.StreamEffect.NoEffect;
-	}
+rg.svg.widget.LabelOrientations.prototype = {
+	__class__: rg.svg.widget.LabelOrientations
 }
-rg.view.svg.chart.StreamEffects.prototype = {
-	__class__: rg.view.svg.chart.StreamEffects
+rg.info.InfoGeo = $hxClasses["rg.info.InfoGeo"] = function() {
+	this.label = new rg.info.InfoLabel();
+	this.map = [rg.info.Info.feed(new rg.info.InfoMap(),{ template : "world"})];
+}
+rg.info.InfoGeo.__name__ = ["rg","info","InfoGeo"];
+rg.info.InfoGeo.filters = function() {
+	return [{ field : "map", validator : function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v) || Std["is"](v,Array);
+	}, filter : function(v) {
+		return [{ field : "map", value : (Std["is"](v,Array)?v:[v]).map(function(d,i) {
+			return rg.info.Info.feed(new rg.info.InfoMap(),d);
+		})}];
+	}}];
+}
+rg.info.InfoGeo.prototype = {
+	map: null
+	,label: null
+	,__class__: rg.info.InfoGeo
 }
 var Lambda = $hxClasses["Lambda"] = function() { }
 Lambda.__name__ = ["Lambda"];
@@ -24975,36 +25119,6 @@ Lambda.concat = function(a,b) {
 Lambda.prototype = {
 	__class__: Lambda
 }
-rg.data.Tickmark = $hxClasses["rg.data.Tickmark"] = function(value,major,delta) {
-	this.value = value;
-	this.major = major;
-	this.delta = delta;
-}
-rg.data.Tickmark.__name__ = ["rg","data","Tickmark"];
-rg.data.Tickmark.__interfaces__ = [rg.data.ITickmark];
-rg.data.Tickmark.prototype = {
-	delta: null
-	,major: null
-	,value: null
-	,label: null
-	,getDelta: function() {
-		return this.delta;
-	}
-	,getMajor: function() {
-		return this.major;
-	}
-	,getValue: function() {
-		return this.value;
-	}
-	,getLabel: function() {
-		return rg.util.RGStrings.humanize(this.getValue());
-	}
-	,toString: function() {
-		return rg.data.Tickmarks.string(this);
-	}
-	,__class__: rg.data.Tickmark
-	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
-}
 thx.color.Colors = $hxClasses["thx.color.Colors"] = function() { }
 thx.color.Colors.__name__ = ["thx","color","Colors"];
 thx.color.Colors.interpolatef = function(a,b,equation) {
@@ -25058,6 +25172,17 @@ thx.color.Colors._p = function(s) {
 thx.color.Colors.prototype = {
 	__class__: thx.color.Colors
 }
+rg.svg.chart.Coords = $hxClasses["rg.svg.chart.Coords"] = function() { }
+rg.svg.chart.Coords.__name__ = ["rg","svg","chart","Coords"];
+rg.svg.chart.Coords.fromTransform = function(s) {
+	if(!rg.svg.chart.Coords.retransform.match(s)) return [0.0,0]; else {
+		var y = rg.svg.chart.Coords.retransform.matched(2);
+		return [Std.parseFloat(rg.svg.chart.Coords.retransform.matched(1)),null == y?0:Std.parseFloat(y)];
+	}
+}
+rg.svg.chart.Coords.prototype = {
+	__class__: rg.svg.chart.Coords
+}
 haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
 	var arr = haxe_timers;
 	this.id = arr.length;
@@ -25101,12 +25226,80 @@ haxe.Timer.prototype = {
 	}
 	,__class__: haxe.Timer
 }
-rg.view.svg.chart.StreamEffect = $hxClasses["rg.view.svg.chart.StreamEffect"] = { __ename__ : ["rg","view","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
-rg.view.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
-rg.view.svg.chart.StreamEffect.NoEffect.toString = $estr;
-rg.view.svg.chart.StreamEffect.NoEffect.__enum__ = rg.view.svg.chart.StreamEffect;
-rg.view.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
-rg.view.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.view.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
+rg.svg.widget.ElbowArea = $hxClasses["rg.svg.widget.ElbowArea"] = function(container,classarea,classborder) {
+	this.g = container.append("svg:g").attr("class").string("elbow");
+	this.area = this.g.append("svg:path").attr("class").string("elbow-fill" + (null == classarea?"":" " + classarea));
+	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder?"":" " + classborder));
+	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder?"":" " + classborder));
+}
+rg.svg.widget.ElbowArea.__name__ = ["rg","svg","widget","ElbowArea"];
+rg.svg.widget.ElbowArea.prototype = {
+	g: null
+	,area: null
+	,outer: null
+	,inner: null
+	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
+		if(after == null) after = 10.0;
+		if(before == null) before = 0.0;
+		if(maxradius == null) maxradius = 16.0;
+		if(minradius == null) minradius = 3.0;
+		var dinner = "", douter = "", rad = weight < 0?Math.max(maxradius,weight):Math.min(maxradius,weight);
+		switch( (orientation)[1] ) {
+		case 0:
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + Math.abs(minradius) + "," + Math.abs(minradius) + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y - weight) + "L" + (before + x) + "," + (y - weight) + "A" + Math.abs(rad) + "," + Math.abs(rad) + " 0 0,1 " + (before + x + rad) + "," + (y - weight + rad) + "L" + (before + x + rad) + "," + (y + after + minradius);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			this.update(rg.svg.widget.Orientation.RightBottom,-weight,x,y,-minradius,-maxradius,-before,-after);
+			return;
+			dinner = "M" + (before + x + minradius) + "," + (y + minradius + after) + "L" + (before + x + minradius) + "," + (y + minradius) + "A" + minradius + "," + minradius + " 0 0,0 " + (before + x) + "," + y + "L" + x + "," + y;
+			douter = "M" + x + "," + (y + weight) + "L" + (-before + x) + "," + (y + weight) + "A" + rad + "," + rad + " 0 0,1 " + (-before + x - rad) + "," + (y + weight - rad) + "L" + (-before + x - rad) + "," + (y - after - minradius);
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		}
+		var darea = douter + "L" + dinner.substr(1) + "z";
+		this.inner.attr("d").string(dinner);
+		this.outer.attr("d").string(douter);
+		this.area.attr("d").string(darea);
+	}
+	,__class__: rg.svg.widget.ElbowArea
+}
+rg.svg.widget.Orientation = $hxClasses["rg.svg.widget.Orientation"] = { __ename__ : ["rg","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.svg.widget.Orientation.RightBottom = ["RightBottom",0];
+rg.svg.widget.Orientation.RightBottom.toString = $estr;
+rg.svg.widget.Orientation.RightBottom.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.Orientation.LeftBottom = ["LeftBottom",1];
+rg.svg.widget.Orientation.LeftBottom.toString = $estr;
+rg.svg.widget.Orientation.LeftBottom.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.Orientation.RightTop = ["RightTop",2];
+rg.svg.widget.Orientation.RightTop.toString = $estr;
+rg.svg.widget.Orientation.RightTop.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.Orientation.LeftTop = ["LeftTop",3];
+rg.svg.widget.Orientation.LeftTop.toString = $estr;
+rg.svg.widget.Orientation.LeftTop.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.Orientation.BottomRight = ["BottomRight",4];
+rg.svg.widget.Orientation.BottomRight.toString = $estr;
+rg.svg.widget.Orientation.BottomRight.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.Orientation.BottomLeft = ["BottomLeft",5];
+rg.svg.widget.Orientation.BottomLeft.toString = $estr;
+rg.svg.widget.Orientation.BottomLeft.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.Orientation.TopRight = ["TopRight",6];
+rg.svg.widget.Orientation.TopRight.toString = $estr;
+rg.svg.widget.Orientation.TopRight.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.Orientation.TopLeft = ["TopLeft",7];
+rg.svg.widget.Orientation.TopLeft.toString = $estr;
+rg.svg.widget.Orientation.TopLeft.__enum__ = rg.svg.widget.Orientation;
 thx.svg.LineInterpolator = $hxClasses["thx.svg.LineInterpolator"] = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
@@ -25135,247 +25328,73 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",10];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
-rg.view.html.chart.Leadeboard = $hxClasses["rg.view.html.chart.Leadeboard"] = function(container) {
-	this.ready = new hxevents.Notifier();
-	this.container = container;
-	this.animated = true;
-	this.animationDuration = 1500;
-	this.animationEase = thx.math.Equations.elasticf();
-	this.animationDelay = 150;
-	this._created = 0;
-	this.displayGradient = true;
-	this.useMax = false;
+rg.svg.chart.ColorScaleModes = $hxClasses["rg.svg.chart.ColorScaleModes"] = function() { }
+rg.svg.chart.ColorScaleModes.__name__ = ["rg","svg","chart","ColorScaleModes"];
+rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
+	if(Reflect.isFunction(v)) return rg.svg.chart.ColorScaleMode.Fun(v);
+	if(!Std["is"](v,String)) return (function($this) {
+		var $r;
+		throw new thx.error.Error("invalid color mode '{0}'",[v],null,{ fileName : "ColorScaleModes.hx", lineNumber : 19, className : "rg.svg.chart.ColorScaleModes", methodName : "createFromDynamic"});
+		return $r;
+	}(this));
+	var s = ((function($this) {
+		var $r;
+		var $t = v;
+		if(Std["is"]($t,String)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this))).split(":");
+	switch(s[0].toLowerCase()) {
+	case "css":
+		return rg.svg.chart.ColorScaleMode.FromCss(null == s[1]?null:Std.parseInt(s[1]));
+	case "i":case "interpolated":
+		return rg.svg.chart.ColorScaleMode.Interpolation(s[1].split(",").map(function(d,i) {
+			return thx.color.Colors.parse(d);
+		}));
+	case "s":case "sequence":
+		return rg.svg.chart.ColorScaleMode.Sequence(s[1].split(",").map(function(d,i) {
+			return thx.color.Colors.parse(d);
+		}));
+	case "f":case "fixed":
+		return rg.svg.chart.ColorScaleMode.Fixed(thx.color.Colors.parse(s[1]));
+	default:
+		if(s[0].indexOf(",") >= 0) return rg.svg.chart.ColorScaleMode.Sequence(s[0].split(",").map(function(d,i) {
+			return thx.color.Colors.parse(d);
+		})); else return rg.svg.chart.ColorScaleMode.Fixed(thx.color.Colors.parse(s[0]));
+	}
 }
-rg.view.html.chart.Leadeboard.__name__ = ["rg","view","html","chart","Leadeboard"];
-rg.view.html.chart.Leadeboard.prototype = {
-	variableIndependent: null
-	,variableDependent: null
-	,animated: null
-	,animationDuration: null
-	,animationDelay: null
-	,animationEase: null
-	,click: null
-	,sortDataPoint: null
-	,displayGradient: null
-	,useMax: null
-	,ready: null
-	,displayBar: null
-	,container: null
-	,list: null
-	,_created: null
-	,stats: null
-	,labelDataPoint: function(dp,stats) {
-		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(Reflect.field(dp,this.variableIndependent.type),"."),"."));
-	}
-	,labelDataPointOver: function(dp,stats) {
-		return Floats.format(100 * Reflect.field(dp,stats.type) / (this.useMax?stats.max:stats.tot),"P:1");
-	}
-	,labelRank: function(dp,i,stats) {
-		return "" + (i + 1);
-	}
-	,labelValue: function(dp,stats) {
-		return rg.util.Properties.formatValue(stats.type,dp);
-	}
-	,init: function() {
-		var div = this.container.append("div").attr("class").string("leaderboard");
-		this.list = div.append("ul");
-		div.append("div").attr("class").string("clear");
-	}
-	,setVariables: function(variableIndependents,variableDependents) {
-		this.variableDependent = variableDependents[0];
-		this.variableIndependent = variableIndependents[0];
-	}
-	,backgroundSize: function(dp,i) {
-		return 100 * Reflect.field(dp,this.variableDependent.type) / (this.useMax?this.stats.max:this.stats.tot) + "%";
-	}
-	,data: function(dps) {
-		var name = this.variableDependent.type;
-		if(null != this.sortDataPoint) dps.sort(this.sortDataPoint);
-		if(null == this.variableDependent.stats) return;
-		var stats = this.stats = (function($this) {
-			var $r;
-			var $t = $this.variableDependent.stats;
-			if(Std["is"]($t,rg.data.StatsNumeric)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this));
-		var choice = this.list.selectAll("li").data(dps,this.id.$bind(this));
-		var enterli = choice.enter().append("li");
-		enterli.attr("title").stringf(this.lTitle.$bind(this));
-		enterli.append("div").attr("class").stringf(function(_,i) {
-			return i % 2 == 0?"background fill-0":"background";
-		});
-		var enterlabels = enterli.append("div").attr("class").string("labels");
-		if(null != this.labelRank.$bind(this)) enterlabels.append("div").attr("class").string("rank").text().stringf(this.lRank.$bind(this));
-		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("description color-0").text().stringf(this.lDataPoint.$bind(this));
-		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("value color-2").text().stringf(this.lValue.$bind(this));
-		enterli.append("div").attr("class").string("clear");
-		if(this.displayBar) {
-			var barpadding = enterli.append("div").attr("class").string("barpadding"), enterbar = barpadding.append("div").attr("class").string("barcontainer");
-			enterbar.append("div").attr("class").string("barback fill-0");
-			enterbar.append("div").attr("class").string("bar fill-0").style("width").stringf(this.backgroundSize.$bind(this));
-			enterli.append("div").attr("class").string("clear");
+rg.svg.chart.ColorScaleModes.prototype = {
+	__class__: rg.svg.chart.ColorScaleModes
+}
+rg.svg.chart.LineEffects = $hxClasses["rg.svg.chart.LineEffects"] = function() { }
+rg.svg.chart.LineEffects.__name__ = ["rg","svg","chart","LineEffects"];
+rg.svg.chart.LineEffects.parse = function(s) {
+	var parts = s.toLowerCase().split(":");
+	switch(parts.shift()) {
+	case "dropshadow":
+		var offsetx = 0.5, offsety = 0.5, levels = 2, parameters = parts.pop();
+		if(null != parameters) {
+			var parameters1 = parameters.split(",");
+			offsetx = Std.parseFloat(parameters1[0]);
+			if(parameters1.length > 1) offsety = Std.parseFloat(parameters1[1]); else offsety = offsetx;
+			if(parameters1.length > 2) levels = Std.parseInt(parameters1[2]);
 		}
-		if(null != this.click) enterli.on("click.user",this.onClick.$bind(this));
-		if(this.animated) enterli.style("opacity")["float"](0).eachNode(this.fadeIn.$bind(this)); else enterli.style("opacity")["float"](1);
-		if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
-		this.ready.dispatch();
-	}
-	,onClick: function(dp,_) {
-		this.click(dp);
-	}
-	,fadeIn: function(n,i) {
-		var me = this;
-		thx.js.Dom.selectNodeData(n).transition().ease(this.animationEase).duration(null,this.animationDuration).delay(null,this.animationDelay * (i - this._created)).attr("opacity")["float"](1).endNode(function(_,_1) {
-			me._created++;
-		});
-	}
-	,lRank: function(dp,i) {
-		return this.labelRank(dp,i,this.stats);
-	}
-	,lValue: function(dp,i) {
-		return this.labelValue(dp,this.stats);
-	}
-	,lDataPoint: function(dp,i) {
-		return this.labelDataPoint(dp,this.stats);
-	}
-	,lTitle: function(dp,i) {
-		return this.labelDataPointOver(dp,this.stats);
-	}
-	,id: function(dp,_) {
-		return rg.util.DataPoints.id(dp,[this.variableDependent.type]);
-	}
-	,__class__: rg.view.html.chart.Leadeboard
-}
-rg.view.html.widget.Logo = $hxClasses["rg.view.html.widget.Logo"] = function(container,padright) {
-	this.mapvalues = new Hash();
-	this.padRight = padright;
-	this.id = ++rg.view.html.widget.Logo._id;
-	this.container = container;
-	this.create();
-	var timer = new haxe.Timer(5000);
-	timer.run = this.live.$bind(this);
-}
-rg.view.html.widget.Logo.__name__ = ["rg","view","html","widget","Logo"];
-rg.view.html.widget.Logo.position = function(el) {
-	var p = { x : el.offsetLeft || 0, y : el.offsetTop || 0};
-	while(null != (el = el.offsetParent)) {
-		p.x += el.offsetLeft;
-		p.y += el.offsetTop;
-	}
-	return p;
-}
-rg.view.html.widget.Logo.prototype = {
-	chartContainer: null
-	,container: null
-	,frame: null
-	,anchor: null
-	,image: null
-	,id: null
-	,mapvalues: null
-	,padRight: null
-	,live: function() {
-		if(this.container.select("div.reportgridbrandcontainer").empty()) this.createFrame(); else this.updateFrame();
-		if(thx.js.Dom.select("body").select("a.reportgridbrandanchor" + this.id).empty()) this.createAnchor(); else this.updateAnchor();
-		if(this.anchor.select("img").empty()) this.createImage(); else this.updateImage();
-	}
-	,create: function() {
-		this.createFrame();
-		this.createAnchor();
-		this.createImage();
-	}
-	,createFrame: function() {
-		this.chartContainer = this.container.select("*");
-		this.frame = this.container.insert("div",this.chartContainer.node()).attr("class").string("reportgridbrandcontainer");
-		this.updateFrame();
-	}
-	,createAnchor: function() {
-		this.anchor = thx.js.Dom.select("body").append("a").attr("class").string("reportgridbrandanchor" + this.id).attr("target").string("_blank");
-		this.updateAnchor();
-	}
-	,createImage: function() {
-		this.image = this.anchor.append("img");
-		this.updateImage();
-	}
-	,updateFrame: function() {
-		this.setStyle(this.frame,"display","block");
-		this.setStyle(this.frame,"opacity","1");
-		this.setStyle(this.frame,"width","100%");
-		this.setStyle(this.frame,"height",29 + "px");
-		this.setStyle(this.frame,"position","relative");
-	}
-	,setStyle: function(s,name,value) {
-		var key = "style:" + name + ":" + value, v;
-		if(null != (v = this.mapvalues.get(key)) && v != s.style(name).get()) s.style(name).string(v,"important"); else if(null == v) {
-			s.style(name).string(value,"important");
-			this.mapvalues.set(key,s.style(name).get());
+		return rg.svg.chart.LineEffect.DropShadow(offsetx,offsety,levels);
+	case "gradient":
+		var lightness = 0.75, levels = 2, parameters = parts.pop();
+		if(null != parameters) {
+			lightness = Std.parseFloat(parameters.split(",").shift());
+			var nlevels = parameters.split(",").pop();
+			if(null != nlevels) levels = Std.parseInt(nlevels);
 		}
+		return rg.svg.chart.LineEffect.Gradient(lightness,levels);
+	default:
+		return rg.svg.chart.LineEffect.NoEffect;
 	}
-	,setAttr: function(s,name,value) {
-		var key = "attr:" + name + ":" + value, v;
-		if(null != (v = this.mapvalues.get(key)) && v != s.attr(name).get()) s.attr(name).string(v); else if(null == v) {
-			s.attr(name).string(value);
-			this.mapvalues.set(key,s.attr(name).get());
-		}
-	}
-	,updateAnchor: function() {
-		var body = js.Lib.document.body, len = body.childNodes.length;
-		if(thx.js.Dom.select("body > :last").node() != this.anchor.node()) body.appendChild(this.anchor.node());
-		var pos = rg.view.html.widget.Logo.position(this.frame.node()), width = this.frame.style("width").getFloat();
-		this.setAttr(this.anchor,"title","Powered by ReportGrid");
-		this.setAttr(this.anchor,"href","http://www.reportgrid.com/charts/");
-		this.setStyle(this.anchor,"z-index","2147483647");
-		this.setStyle(this.anchor,"display","block");
-		this.setStyle(this.anchor,"opacity","1");
-		this.setStyle(this.anchor,"position","absolute");
-		this.setStyle(this.anchor,"height",29 + "px");
-		this.setStyle(this.anchor,"width",194 + "px");
-		this.setStyle(this.anchor,"top",pos.y + "px");
-		this.setStyle(this.anchor,"left",pos.x - 194 + width - this.padRight + "px");
-	}
-	,updateImage: function() {
-		this.setAttr(this.image,"src",this.getLogo());
-		this.setAttr(this.image,"title","Powered by ReportGrid");
-		this.setAttr(this.image,"height","" + 29);
-		this.setAttr(this.image,"width","" + 194);
-		this.setStyle(this.image,"opacity","1");
-		this.setStyle(this.image,"border","none");
-		this.setStyle(this.image,"height",29 + "px");
-		this.setStyle(this.image,"width",194 + "px");
-	}
-	,getLogo: function() {
-		return "http://api.reportgrid.com/css/images/reportgrid-clear.png";
-	}
-	,__class__: rg.view.html.widget.Logo
 }
-rg.view.svg.widget.GridAnchor = $hxClasses["rg.view.svg.widget.GridAnchor"] = { __ename__ : ["rg","view","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
-rg.view.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
-rg.view.svg.widget.GridAnchor.TopLeft.toString = $estr;
-rg.view.svg.widget.GridAnchor.TopLeft.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Top = ["Top",1];
-rg.view.svg.widget.GridAnchor.Top.toString = $estr;
-rg.view.svg.widget.GridAnchor.Top.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.TopRight = ["TopRight",2];
-rg.view.svg.widget.GridAnchor.TopRight.toString = $estr;
-rg.view.svg.widget.GridAnchor.TopRight.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Left = ["Left",3];
-rg.view.svg.widget.GridAnchor.Left.toString = $estr;
-rg.view.svg.widget.GridAnchor.Left.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Center = ["Center",4];
-rg.view.svg.widget.GridAnchor.Center.toString = $estr;
-rg.view.svg.widget.GridAnchor.Center.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Right = ["Right",5];
-rg.view.svg.widget.GridAnchor.Right.toString = $estr;
-rg.view.svg.widget.GridAnchor.Right.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.BottomLeft = ["BottomLeft",6];
-rg.view.svg.widget.GridAnchor.BottomLeft.toString = $estr;
-rg.view.svg.widget.GridAnchor.BottomLeft.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.Bottom = ["Bottom",7];
-rg.view.svg.widget.GridAnchor.Bottom.toString = $estr;
-rg.view.svg.widget.GridAnchor.Bottom.__enum__ = rg.view.svg.widget.GridAnchor;
-rg.view.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
-rg.view.svg.widget.GridAnchor.BottomRight.toString = $estr;
-rg.view.svg.widget.GridAnchor.BottomRight.__enum__ = rg.view.svg.widget.GridAnchor;
+rg.svg.chart.LineEffects.prototype = {
+	__class__: rg.svg.chart.LineEffects
+}
 thx.svg.Symbol = $hxClasses["thx.svg.Symbol"] = function() { }
 thx.svg.Symbol.__name__ = ["thx","svg","Symbol"];
 thx.svg.Symbol.triangleDown = function(size) {
@@ -25429,26 +25448,6 @@ thx.svg.Symbol.star = function(size) {
 thx.svg.Symbol.prototype = {
 	__class__: thx.svg.Symbol
 }
-rg.controller.info.InfoLabelPivotTable = $hxClasses["rg.controller.info.InfoLabelPivotTable"] = function() {
-	rg.controller.info.InfoLabelAxis.call(this);
-}
-rg.controller.info.InfoLabelPivotTable.__name__ = ["rg","controller","info","InfoLabelPivotTable"];
-rg.controller.info.InfoLabelPivotTable.filters = function() {
-	return [{ field : "total", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "totalover", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "axisvalue", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.controller.info.InfoLabelAxis.filters());
-}
-rg.controller.info.InfoLabelPivotTable.__super__ = rg.controller.info.InfoLabelAxis;
-rg.controller.info.InfoLabelPivotTable.prototype = $extend(rg.controller.info.InfoLabelAxis.prototype,{
-	total: null
-	,totalover: null
-	,axisvalue: null
-	,__class__: rg.controller.info.InfoLabelPivotTable
-});
 js.Boot.__res = {}
 js.Boot.__init();
 {
@@ -25744,7 +25743,24 @@ window.requestAnimationFrame = window.requestAnimationFrame
     || function(callback) { setTimeout(callback, 1000 / 60); } ;
 thx.languages.En.getLanguage();
 thx.cultures.EnUS.getCulture();
-rg.view.svg.util.SymbolCache.cache = new rg.view.svg.util.SymbolCache();
+rg.svg.util.SymbolCache.cache = new rg.svg.util.SymbolCache();
+{
+	rg.visualization.Visualizations.layoutDefault = new Hash();
+	rg.visualization.Visualizations.layoutType = new Hash();
+	rg.visualization.Visualizations.layoutArgs = new Hash();
+	rg.visualization.Visualizations.layoutDefault.set("barchart","cartesian");
+	rg.visualization.Visualizations.layoutDefault.set("funnelchart","simple");
+	rg.visualization.Visualizations.layoutDefault.set("geo","simple");
+	rg.visualization.Visualizations.layoutDefault.set("heatgrid","cartesian");
+	rg.visualization.Visualizations.layoutDefault.set("linechart","cartesian");
+	rg.visualization.Visualizations.layoutDefault.set("piechart","simple");
+	rg.visualization.Visualizations.layoutDefault.set("sankey","simple");
+	rg.visualization.Visualizations.layoutDefault.set("scattergraph","cartesian");
+	rg.visualization.Visualizations.layoutDefault.set("streamgraph","x");
+	rg.visualization.Visualizations.layoutType.set("cartesian",rg.layout.LayoutCartesian);
+	rg.visualization.Visualizations.layoutType.set("simple",rg.layout.LayoutSimple);
+	rg.visualization.Visualizations.layoutType.set("x",rg.layout.LayoutX);
+}
 {
 	var JSON;
 	if(null != (JSON = JSON)) {
@@ -27337,23 +27353,6 @@ window.Sizzle = Sizzle;
 	thx.js.Sizzle.select = s;
 }
 {
-	rg.controller.Visualizations.layoutDefault = new Hash();
-	rg.controller.Visualizations.layoutType = new Hash();
-	rg.controller.Visualizations.layoutArgs = new Hash();
-	rg.controller.Visualizations.layoutDefault.set("barchart","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("funnelchart","simple");
-	rg.controller.Visualizations.layoutDefault.set("geo","simple");
-	rg.controller.Visualizations.layoutDefault.set("heatgrid","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("linechart","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("piechart","simple");
-	rg.controller.Visualizations.layoutDefault.set("sankey","simple");
-	rg.controller.Visualizations.layoutDefault.set("scattergraph","cartesian");
-	rg.controller.Visualizations.layoutDefault.set("streamgraph","x");
-	rg.controller.Visualizations.layoutType.set("cartesian",rg.view.layout.LayoutCartesian);
-	rg.controller.Visualizations.layoutType.set("simple",rg.view.layout.LayoutSimple);
-	rg.controller.Visualizations.layoutType.set("x",rg.view.layout.LayoutX);
-}
-{
 	var bb = new BytesBuffer();
 	BytesUtil.EMPTY = bb.getBytes();
 }
@@ -27361,8 +27360,6 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 rg.graph.Graphs.id = 0;
 Ints._reparse = new EReg("^([+-])?\\d+$","");
-rg.controller.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
-rg.controller.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
@@ -27382,7 +27379,6 @@ chx.text.Sprintf.kLONG_VALUE = 32;
 chx.text.Sprintf.kUSE_SEPARATOR = 64;
 chx.text.Sprintf.DEBUG = false;
 chx.text.Sprintf.TRACE = false;
-rg.data.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
 thx.js.Timer.timeout = 0;
 thx.js.Timer.queue = null;
 thx.js.Timer.interval = 0;
@@ -27421,7 +27417,8 @@ thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.s
 thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
-rg.view.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
+rg.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
+rg.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
 thx.js.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 thx.math.Const.TWO_PI = 6.283185307179586477;
 thx.math.Const.PI = 3.141592653589793238;
@@ -27429,6 +27426,22 @@ thx.math.Const.HALF_PI = 1.570796326794896619;
 thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
+rg.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
+rg.layout.LayoutCartesian.ALT_RIGHT = 20;
+rg.layout.LayoutCartesian.ALT_LEFT = 20;
+rg.layout.LayoutCartesian.ALT_TOP = 8;
+rg.layout.LayoutCartesian.ALT_BOTTOM = 8;
+rg.layout.LayoutCartesian.REYAXIS = new EReg("^y(\\d+)$","");
+rg.layout.LayoutCartesian.REYINDEX = new EReg("^y(\\d+)","");
+rg.layout.LayoutCartesian.REYTITLE = new EReg("^y(\\d+)title$","");
+rg.layout.LayoutX.ALT_RIGHT = 20;
+rg.layout.LayoutX.ALT_LEFT = 20;
+rg.layout.LayoutX.ALT_TOP = 8;
+rg.layout.LayoutX.ALT_BOTTOM = 8;
+rg.visualization.Visualizations.html = ["pivottable","leaderboard"];
+rg.visualization.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
+rg.visualization.Visualizations.visualizations = rg.visualization.Visualizations.svg.concat(rg.visualization.Visualizations.html);
+rg.visualization.Visualizations.layouts = ["simple","cartesian","x"];
 Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
 Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
 Strings._reReduceWS = new EReg("\\s+","");
@@ -27440,11 +27453,11 @@ Strings.__ucwordswsPattern = new EReg("\\s([a-z])","");
 Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
 Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
-rg.view.layout.LayoutX.ALT_RIGHT = 20;
-rg.view.layout.LayoutX.ALT_LEFT = 20;
-rg.view.layout.LayoutX.ALT_TOP = 8;
-rg.view.layout.LayoutX.ALT_BOTTOM = 8;
 rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
+rg.factory.FactoryLayout.LIMIT_WIDTH = 10;
+rg.factory.FactoryLayout.LIMIT_HEIGHT = 10;
+rg.factory.FactoryLayout.DEFAULT_WIDTH = 400;
+rg.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
@@ -27457,19 +27470,16 @@ DateTools.WEEKDAYS_ABBREV = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 DateTools.MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 DateTools.MONTHS_ABBREV = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+rg.svg.chart.StreamGraph.vid = 0;
 I32.ZERO = 0;
 I32.ONE = 1;
 I32.BYTE_MASK = 255;
-rg.view.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
-rg.view.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
-rg.view.layout.LayoutCartesian.ALT_RIGHT = 20;
-rg.view.layout.LayoutCartesian.ALT_LEFT = 20;
-rg.view.layout.LayoutCartesian.ALT_TOP = 8;
-rg.view.layout.LayoutCartesian.ALT_BOTTOM = 8;
-rg.view.layout.LayoutCartesian.REYAXIS = new EReg("^y(\\d+)$","");
-rg.view.layout.LayoutCartesian.REYINDEX = new EReg("^y(\\d+)","");
-rg.view.layout.LayoutCartesian.REYTITLE = new EReg("^y(\\d+)title$","");
-rg.view.svg.chart.StreamGraph.vid = 0;
+rg.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
+rg.info.InfoPivotTable.defaultEndColor = new thx.color.Hsl(210,1,0.5);
+rg.axis.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
+rg.html.widget.Logo._id = 0;
+rg.html.widget.Logo.LOGO_WIDTH = 194;
+rg.html.widget.Logo.LOGO_HEIGHT = 29;
 Constants.DIGITS_BASE10 = "0123456789";
 Constants.DIGITS_HEXU = "0123456789ABCDEF";
 Constants.DIGITS_HEXL = "0123456789abcdef";
@@ -27483,11 +27493,13 @@ Constants.PROTO_FTP = "ftp://";
 Constants.PROTO_RTMP = "rtmp://";
 math.BigInteger.MAX_RADIX = 36;
 math.BigInteger.MIN_RADIX = 2;
-rg.view.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
-rg.view.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
+rg.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
+rg.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
+rg.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
+rg.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 thx.xml.Namespace.prefix = (function() {
 	var h = new Hash();
 	h.set("svg","http://www.w3.org/2000/svg");
@@ -27497,32 +27509,19 @@ thx.xml.Namespace.prefix = (function() {
 	h.set("xmlns","http://www.w3.org/2000/xmlns/");
 	return h;
 })();
-rg.view.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:[, ]\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
 rg.app.charts.App.lastid = 0;
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
-rg.controller.Visualizations.html = ["pivottable","leaderboard"];
-rg.controller.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
-rg.controller.Visualizations.visualizations = rg.controller.Visualizations.svg.concat(rg.controller.Visualizations.html);
-rg.controller.Visualizations.layouts = ["simple","cartesian","x"];
 math.IEEE754.bias = 1024;
 math.IEEE754.cnst = 2102;
-rg.controller.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
-rg.controller.info.InfoPivotTable.defaultEndColor = new thx.color.Hsl(210,1,0.5);
 thx.svg.LineInternals.arcOffset = -Math.PI / 2;
 thx.svg.LineInternals.arcMax = 2 * Math.PI - 1e-6;
 thx.svg.LineInternals._lineBasisBezier1 = [0,2 / 3,1 / 3,0];
 thx.svg.LineInternals._lineBasisBezier2 = [0,1 / 3,2 / 3,0];
 thx.svg.LineInternals._lineBasisBezier3 = [0,1 / 6,2 / 3,1 / 6];
-rg.controller.factory.FactoryLayout.LIMIT_WIDTH = 10;
-rg.controller.factory.FactoryLayout.LIMIT_HEIGHT = 10;
-rg.controller.factory.FactoryLayout.DEFAULT_WIDTH = 400;
-rg.controller.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
 thx.color.Colors._reParse = new EReg("^(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))$","i");
-rg.view.html.widget.Logo._id = 0;
-rg.view.html.widget.Logo.LOGO_WIDTH = 194;
-rg.view.html.widget.Logo.LOGO_HEIGHT = 29;
+rg.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:[, ]\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
 thx.svg.Symbol.sqrt3 = Math.sqrt(3);
 thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
 rg.app.charts.JSBridge.main()

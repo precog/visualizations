@@ -5,7 +5,9 @@
 
 package rg.data;
 
-import rg.data.Stats;
+import rg.axis.IAxis;
+import rg.axis.Stats;
+import rg.axis.ScaleDistribution;
 import thx.error.Error;
 
 class Variable<T, TAxis : IAxis<T>>
