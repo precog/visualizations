@@ -69,12 +69,14 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function values(?p : { ?path : String, ?event : String, ?property : String })
+	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic })
 	{
-		return _crossp(p).each(function(params : { path : String, event : String, property : String }, handler) {
+		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
+			_ensureOptionalTimeParams(params);
+			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			executor.propertyValues(
 				params.path,
-				{ property : params.event + _prefixProperty(params.property) },
+				options,
 				_complete(ReportGridTransformers.propertyValues, params, handler)
 			);
 		});
