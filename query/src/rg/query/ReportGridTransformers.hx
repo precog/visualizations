@@ -129,6 +129,32 @@ class ReportGridTransformers
 		return result;
 	}
 
+	public static function intersectTag(ob : Dynamic, params : { path : String, event : String, tag : String, ?properties : Array<{ property : String }> }) : Array<{ event : String, path : String, property : String, value : Dynamic, count : Int }>
+	{
+		var path       = params.path,
+			event      = params.event,
+			tag        = params.tag,
+			properties = params.properties,
+			result     = [];
+		Objects.each(ob, function(key, value) {
+			for(pair in Objects.flatten(value))
+			{
+				var o : Dynamic = {
+					path  : path,
+					event : event,
+					count : pair.value
+				};
+				Reflect.setField(o, tag, Strings.trim(key, '/'));
+				for(i in 0...properties.length)
+				{
+					Reflect.setField(o, properties[i].property, thx.json.Json.decode(pair.fields[i]));
+				}
+				result.push(o);
+			}
+		});
+		return result;
+	}
+
 	public static function intersectSeries(ob : Dynamic, params : { path : String, event : String, periodicity : String, ?timezone : Dynamic, ?groupby : String, ?properties : Array<{ property : String }> }) : Array<{ event : String, path : String, property : String, value : Dynamic, count : Int }>
 	{
 		var path        = params.path,
@@ -157,6 +183,40 @@ class ReportGridTransformers
 				result.push(o);
 			}
 		}
+		return result;
+	}
+
+	public static function intersectSeriesTag(ob : Dynamic, params : { path : String, event : String, periodicity : String, tag : String, ?timezone : Dynamic, ?groupby : String, ?properties : Array<{ property : String }> }) : Array<{ event : String, path : String, property : String, value : Dynamic, count : Int }>
+	{
+		var path        = params.path,
+			event       = params.event,
+			properties  = params.properties,
+			periodicity = params.periodicity,
+			tag         = params.tag,
+			timezone    = params.timezone,
+			groupby     = params.groupby,
+			result      = [];
+		Objects.each(ob, function(key, value) {
+			for(pair in Objects.flatten(value))
+			{
+				var values : Array<Array<Dynamic>> = pair.value;
+				for(item in values)
+				{
+					var o : Dynamic = {
+						path  : path,
+						event : event,
+						count : item[1]
+					};
+					_injectTime(o, item[0], periodicity, timezone, groupby);
+					Reflect.setField(o, tag, Strings.trim(key, '/'));
+					for(i in 0...properties.length)
+					{
+						Reflect.setField(o, properties[i].property, thx.json.Json.decode(pair.fields[i]));
+					}
+					result.push(o);
+				}
+			}
+		});
 		return result;
 	}
 

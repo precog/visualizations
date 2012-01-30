@@ -215,7 +215,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			executor.intersect(
 				params.path,
 				options,
-				_complete(ReportGridTransformers.intersect, params, handler)
+				_complete(null != params.tag ? ReportGridTransformers.intersectTag : ReportGridTransformers.intersect, params, handler)
 			);
 		});
 	}
@@ -256,7 +256,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			executor.intersect(
 				params.path,
 				options,
-				_complete(ReportGridTransformers.intersectSeries, params, handler)
+				_complete(null != params.tag ? ReportGridTransformers.intersectSeriesTag : ReportGridTransformers.intersectSeries, params, handler)
 			);
 		});
 	}

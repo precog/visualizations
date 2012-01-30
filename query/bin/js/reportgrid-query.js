@@ -2464,7 +2464,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				}
 				properties.push(o);
 			}
-			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.intersect,params,handler));
+			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectTag:rg.query.ReportGridTransformers.intersect,params,handler));
 		});
 	}
 	,intersectSeries: function(p) {
@@ -2489,7 +2489,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				}
 				properties.push(o);
 			}
-			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.intersectSeries,params,handler));
+			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectSeriesTag:rg.query.ReportGridTransformers.intersectSeries,params,handler));
 		});
 	}
 	,histogram: function(p) {
@@ -3530,6 +3530,25 @@ rg.query.ReportGridTransformers.intersect = function(ob,params) {
 	}
 	return result;
 }
+rg.query.ReportGridTransformers.intersectTag = function(ob,params) {
+	var path = params.path, event = params.event, tag = params.tag, properties = params.properties, result = [];
+	Objects.each(ob,function(key,value) {
+		var _g = 0, _g1 = Objects.flatten(value);
+		while(_g < _g1.length) {
+			var pair = _g1[_g];
+			++_g;
+			var o = { path : path, event : event, count : pair.value};
+			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+			var _g3 = 0, _g2 = properties.length;
+			while(_g3 < _g2) {
+				var i = _g3++;
+				o[properties[i].property] = thx.json.Json.decode(pair.fields[i]);
+			}
+			result.push(o);
+		}
+	});
+	return result;
+}
 rg.query.ReportGridTransformers.intersectSeries = function(ob,params) {
 	var path = params.path, event = params.event, properties = params.properties, periodicity = params.periodicity, timezone = params.timezone, groupby = params.groupby, result = [];
 	var _g = 0, _g1 = Objects.flatten(ob);
@@ -3551,6 +3570,32 @@ rg.query.ReportGridTransformers.intersectSeries = function(ob,params) {
 			result.push(o);
 		}
 	}
+	return result;
+}
+rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params) {
+	var path = params.path, event = params.event, properties = params.properties, periodicity = params.periodicity, tag = params.tag, timezone = params.timezone, groupby = params.groupby, result = [];
+	Objects.each(ob,function(key,value) {
+		var _g = 0, _g1 = Objects.flatten(value);
+		while(_g < _g1.length) {
+			var pair = _g1[_g];
+			++_g;
+			var values = pair.value;
+			var _g2 = 0;
+			while(_g2 < values.length) {
+				var item = values[_g2];
+				++_g2;
+				var o = { path : path, event : event, count : item[1]};
+				rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
+				o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+				var _g4 = 0, _g3 = properties.length;
+				while(_g4 < _g3) {
+					var i = _g4++;
+					o[properties[i].property] = thx.json.Json.decode(pair.fields[i]);
+				}
+				result.push(o);
+			}
+		}
+	});
 	return result;
 }
 rg.query.ReportGridTransformers.eventCount = function(count,params) {
@@ -3599,7 +3644,7 @@ rg.query.ReportGridTransformers.eventSeries = function(values,params) {
 }
 rg.query.ReportGridTransformers.propertySummary = function(count,params) {
 	var o = { path : params.path, event : params.event, count : count};
-	haxe.Log.trace(count,{ fileName : "ReportGridTransformers.hx", lineNumber : 251, className : "rg.query.ReportGridTransformers", methodName : "propertySummary"});
+	haxe.Log.trace(count,{ fileName : "ReportGridTransformers.hx", lineNumber : 311, className : "rg.query.ReportGridTransformers", methodName : "propertySummary"});
 	if(null != params.where) Objects.copyTo(params.where,o);
 	return [o];
 }
@@ -3915,7 +3960,7 @@ rg.app.query.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r);
 	r.query = rg.query.ReportGridQuery.create(executor);
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.922"};
+	r.info.query = { version : "1.0.0.933"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
