@@ -73,6 +73,23 @@ class ReportGridTransformers
 		});
 	}
 
+	public static function histogramTag(counts : Dynamic, params : { path : String, event : String, property : String, tag : String }) : Array<{ event : String, path : String, count : Int }>
+	{
+		var path     = params.path,
+			event    = params.event,
+			tag      = params.tag,
+			property = params.property;
+		return Objects.map(counts, function(key : String, value : Array<Dynamic>) {
+			var o = {
+				path :     path,
+				event :    event,
+				count :    value[0]
+			};
+			Reflect.setField(o, tag, Strings.trim(key, "/"));
+			return o;
+		});
+	}
+
 	public static function propertiesHistogram(arr : Array<Array<Dynamic>>, params : { path : String, event : String, property : String }) : Array<{ event : String, path : String, count : Int }>
 	{
 		var path     = params.path,

@@ -2348,7 +2348,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 438, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 439, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,handler) {
 	return function(data) {
@@ -2502,12 +2502,13 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
 				options.top = params.top;
 			} else if(null != params.bottom) options.bottom = params.bottom;
-			me.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.histogram,params,handler));
+			me.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,params,handler));
 		});
 	}
 	,propertiesHistogram: function(p) {
 		var me = this;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
 			me.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,handler));
 		});
@@ -3497,6 +3498,14 @@ rg.query.ReportGridTransformers.histogram = function(arr,params) {
 		return ob;
 	});
 }
+rg.query.ReportGridTransformers.histogramTag = function(counts,params) {
+	var path = params.path, event = params.event, tag = params.tag, property = params.property;
+	return Objects.map(counts,function(key,value) {
+		var o = { path : path, event : event, count : value[0]};
+		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+		return o;
+	});
+}
 rg.query.ReportGridTransformers.propertiesHistogram = function(arr,params) {
 	var path = params.path, event = params.event, property = params.property;
 	return arr.map(function(value,_) {
@@ -3590,7 +3599,7 @@ rg.query.ReportGridTransformers.eventSeries = function(values,params) {
 }
 rg.query.ReportGridTransformers.propertySummary = function(count,params) {
 	var o = { path : params.path, event : params.event, count : count};
-	haxe.Log.trace(count,{ fileName : "ReportGridTransformers.hx", lineNumber : 234, className : "rg.query.ReportGridTransformers", methodName : "propertySummary"});
+	haxe.Log.trace(count,{ fileName : "ReportGridTransformers.hx", lineNumber : 251, className : "rg.query.ReportGridTransformers", methodName : "propertySummary"});
 	if(null != params.where) Objects.copyTo(params.where,o);
 	return [o];
 }
@@ -3906,7 +3915,7 @@ rg.app.query.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r);
 	r.query = rg.query.ReportGridQuery.create(executor);
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.916"};
+	r.info.query = { version : "1.0.0.921"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);

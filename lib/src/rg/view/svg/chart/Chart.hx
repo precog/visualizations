@@ -54,11 +54,15 @@ class Chart extends Layer
 
 	function moveTooltip(x : Float, y : Float, ?animated : Bool)
 	{
-		if(0 == tooltip.x && 0 == tooltip.y || !tooltip.visible)
+		if(0 == tooltip.x && 0 == tooltip.y)
 		{
 			tooltip.hide();
 			tooltip.moveTo(panelx + x, panely + y, false);
-			tooltip.show(true);
+			tooltip.show(animated);
+		} else if(!tooltip.visible)
+		{
+			tooltip.moveTo(panelx + x, panely + y, false);
+			tooltip.show(animated);
 		} else
 			tooltip.moveTo(panelx + x, panely + y, animated);
 	}

@@ -207,7 +207,10 @@ class Balloon
 				return false;
 			}, 0);
 		} else {
-			_moveTo(x, y);
+			if(0 == boxWidth)
+				haxe.Timer.delay(callback(_moveTo, x, y), 15);
+			else
+				_moveTo(x, y);
 		}
 	}
 
@@ -576,16 +579,19 @@ class Balloon
 			.remove()
 		;
 */
-		var last = boxWidth;
 		boxWidth = 0.0;
 		//linewidth + padding * 2;
-		var w;
+		var w = 0;
 		for (label in labels)
 		{
-			if ((w = label.getSize().width) > boxWidth)
+			if ((w = Math.ceil(label.getSize().width)) > boxWidth)
 				boxWidth = w;
-			else if(w == 0) // fix for firefox
-				boxWidth = last;
+		}
+		if(w == 0) // fix for firefox
+		{
+			var t = text;
+			haxe.Timer.delay(function() setText(t), 15);
+			return;
 		}
 		boxWidth += paddingHorizontal * 2;
 		boxHeight = lineHeight * labels.length + paddingVertical * 2;
@@ -594,7 +600,6 @@ class Balloon
 			sw = bg.style("stroke-width").getFloat();
 		if (Math.isNaN(sw))
 			sw = 0;
-
 		labelsContainer.attr("transform").string("translate(" + (boxWidth / 2) + "," + (sw + paddingVertical) + ")");
 
 		bg.transition().ease(ease)

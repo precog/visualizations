@@ -282,7 +282,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			executor.histogram(
 				params.path,
 				options,
-				_complete(ReportGridTransformers.histogram, params, handler)
+				_complete(null != params.tag ? ReportGridTransformers.histogramTag : ReportGridTransformers.histogram, params, handler)
 			);
 		});
 	}
@@ -291,6 +291,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	{
 		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
 		// TODO tag?
+			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			executor.propertiesHistogram(
 				params.path,

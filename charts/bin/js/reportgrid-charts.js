@@ -1166,7 +1166,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6475"};
+	r.info.charts = { version : "1.2.2.6500"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -2193,10 +2193,13 @@ rg.view.svg.chart.Chart.prototype = $extend(rg.view.svg.panel.Layer.prototype,{
 		this.resize();
 	}
 	,moveTooltip: function(x,y,animated) {
-		if(0 == this.tooltip.x && 0 == this.tooltip.y || !this.tooltip.visible) {
+		if(0 == this.tooltip.x && 0 == this.tooltip.y) {
 			this.tooltip.hide();
 			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
-			this.tooltip.show(true);
+			this.tooltip.show(animated);
+		} else if(!this.tooltip.visible) {
+			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
+			this.tooltip.show(animated);
 		} else this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
 	}
 	,__class__: rg.view.svg.chart.Chart
@@ -3093,7 +3096,11 @@ rg.view.svg.widget.Balloon.prototype = {
 				me._moveTo(ix(t / me.duration),iy(t / me.duration));
 				return false;
 			},0);
-		} else this._moveTo(x,y);
+		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f,a1,a2) {
+			return function() {
+				return f(a1,a2);
+			};
+		})(this._moveTo.$bind(this),x,y),15); else this._moveTo(x,y);
 	}
 	,_moveTo: function(x,y) {
 		var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
@@ -3338,15 +3345,22 @@ rg.view.svg.widget.Balloon.prototype = {
 		}
 	}
 	,redraw: function() {
+		var me = this;
 		if(null == this.text || this.text.length == 0) return;
-		var last = this.boxWidth;
 		this.boxWidth = 0.0;
-		var w;
+		var w = 0;
 		var _g = 0, _g1 = this.labels;
 		while(_g < _g1.length) {
 			var label = _g1[_g];
 			++_g;
-			if((w = label.getSize().width) > this.boxWidth) this.boxWidth = w; else if(w == 0) this.boxWidth = last;
+			if((w = Math.ceil(label.getSize().width)) > this.boxWidth) this.boxWidth = w;
+		}
+		if(w == 0) {
+			var t = this.text;
+			haxe.Timer.delay(function() {
+				me.setText(t);
+			},15);
+			return;
 		}
 		this.boxWidth += this.paddingHorizontal * 2;
 		this.boxHeight = this.lineHeight * this.labels.length + this.paddingVertical * 2;
