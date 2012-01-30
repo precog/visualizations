@@ -4,7 +4,7 @@
  */
 
 package rg;
-import rg.controller.App;
+import rg.App;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.ITrackReportGrid;
 import rg.data.source.rgquery.ReportGridExecutorMemoryCache;
@@ -15,9 +15,9 @@ import thx.date.DateParser;
 import thx.js.Dom;
 import thx.error.Error;
 import thx.math.Random;
-import rg.controller.MVPOptions;
+import rg.MVPOptions;
 //import thx.svg.Symbol;
-import rg.view.svg.util.SymbolCache;
+import rg.svg.util.SymbolCache;
 
 class JSBridge
 {

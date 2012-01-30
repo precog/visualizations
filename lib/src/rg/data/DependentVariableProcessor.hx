@@ -4,9 +4,10 @@
  */
 
 package rg.data;
-import rg.controller.factory.FactoryAxis;
+import rg.factory.FactoryAxis;
 import rg.util.DataPoints;
-import rg.data.Stats;
+import rg.axis.Stats;
+import rg.axis.IAxisDiscrete;
 
 class DependentVariableProcessor
 {

@@ -3,10 +3,10 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.factory;
+package rg.factory;
 
 import rg.data.IDataSource;
-import rg.controller.info.InfoDataSource;
+import rg.info.InfoDataSource;
 import rg.data.source.DataSourceArray;
 import rg.data.source.DataSourceReportGrid;
 import rg.data.source.rgquery.IExecutorReportGrid;
@@ -14,7 +14,7 @@ import rg.data.source.rgquery.MockRGExecutor;
 import thx.error.Error;
 import utest.Assert;
 import rg.data.source.rgquery.QueryAst;
-using rg.controller.info.Info;
+using rg.info.Info;
 
 class TestFactoryDataSource
 {

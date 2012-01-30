@@ -3,10 +3,10 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.factory;
+package rg.factory;
 
-import rg.controller.info.Info;
-import rg.controller.info.InfoDataContext;
+import rg.info.Info;
+import rg.info.InfoDataContext;
 import rg.data.source.rgquery.MockRGExecutor;
 import thx.error.Error;
 import utest.Assert;

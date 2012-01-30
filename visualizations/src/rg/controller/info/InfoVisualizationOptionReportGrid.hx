@@ -3,10 +3,10 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.info;
-import rg.controller.factory.FactoryAxis;
-import rg.controller.factory.FactoryDataContext;
-using rg.controller.info.Info;
+package rg.info;
+import rg.factory.FactoryAxis;
+import rg.factory.FactoryDataContext;
+using rg.info.Info;
 using Arrays;
 
 class InfoVisualizationOptionReportGrid extends InfoVisualizationOption

@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.info;
+package rg.info;
 import rg.data.DataPoint;
 import rg.data.source.rgquery.QueryAst;
 import rg.util.Periodicity;

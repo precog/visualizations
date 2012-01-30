@@ -3,8 +3,8 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.info;
-using rg.controller.info.Info;
+package rg.info;
+using rg.info.Info;
 using Arrays;
 
 class InfoDataContextReportGrid extends InfoDataContext

@@ -5,7 +5,9 @@
 
 package rg.data;
 
-class VariableDependent<T> extends Variable<T, IAxis<T>> 
+import rg.axis.IAxis;
+
+class VariableDependent<T> extends Variable<T, IAxis<T>>
 {
 
 }

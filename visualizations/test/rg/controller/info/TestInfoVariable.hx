@@ -3,12 +3,12 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.info;
+package rg.info;
 
 import thx.error.Error;
 import utest.Assert;
 import rg.util.Properties;
-using rg.controller.info.Info;
+using rg.info.Info;
 
 class TestInfoVariable
 {

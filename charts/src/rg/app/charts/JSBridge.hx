@@ -14,7 +14,7 @@ import thx.error.Error;
 import thx.math.Random;
 import rg.app.charts.MVPOptions;
 //import thx.svg.Symbol;
-import rg.view.svg.util.SymbolCache;
+import rg.svg.util.SymbolCache;
 
 class JSBridge
 {

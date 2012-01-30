@@ -3,8 +3,8 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.factory;
-import rg.controller.info.InfoVariable;
+package rg.factory;
+import rg.info.InfoVariable;
 import rg.data.source.DataSourceReportGrid;
 import rg.util.Properties;
 import thx.collection.Set;

@@ -3,12 +3,12 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.frame;
+package rg.frame;
 
 import haxe.PosInfos;
 import utest.Assert;
-import rg.view.frame.FrameLayout;
-import rg.view.frame.Orientation;
+import rg.frame.FrameLayout;
+import rg.frame.Orientation;
 using Iterators;
 
 class TestStack 

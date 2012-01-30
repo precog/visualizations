@@ -7,7 +7,7 @@ package rg.util;
 
 import haxe.Md5;
 import rg.data.DataPoint;
-import rg.data.Stats;
+import rg.axis.Stats;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
 import thx.collection.HashList;

@@ -3,15 +3,15 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.factory;
+package rg.factory;
 
-import rg.data.AxisOrdinal;
+import rg.axis.AxisOrdinal;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
-import rg.controller.info.InfoVariable;
+import rg.info.InfoVariable;
 import utest.Assert;
-import rg.data.AxisGroupByTime;
-using rg.controller.info.Info;
+import rg.axis.AxisGroupByTime;
+using rg.info.Info;
 
 class TestFactoryVariableIndependent
 {
@@ -19,8 +19,8 @@ class TestFactoryVariableIndependent
 	{
 		Assert.isNull(new FactoryVariableIndependent().create(new InfoVariable()));
 	}
-	
-	public function testSimpleParameters() 
+
+	public function testSimpleParameters()
 	{
 		var info = new InfoVariable().feed( {
 				view : [1.0, 10.0],
@@ -32,7 +32,7 @@ class TestFactoryVariableIndependent
 		Assert.same(1.0, variable.min);
 		Assert.same(10.0, variable.max);
 		Assert.equals(".impression", variable.type);
-		
+
 		info = new InfoVariable().feed( {
 			type : ".impression"
 		} );
@@ -40,12 +40,12 @@ class TestFactoryVariableIndependent
 		Assert.isNull(variable.min);
 		Assert.isNull(variable.max);
 		Assert.equals(".impression", variable.type);
-		
+
 		info = new InfoVariable();
 		variable = factory.create(info);
 		Assert.isNull(variable);
 	}
-	
+
 	public function testAxisType()
 	{
 		var info = new InfoVariable().feed( {
@@ -56,7 +56,7 @@ class TestFactoryVariableIndependent
 			variable = factory.create(info);
 		Assert.is(variable.axis, AxisOrdinal);
 	}
-	
+
 	public function testValues()
 	{
 		var info = new InfoVariable().feed( {
@@ -68,7 +68,7 @@ class TestFactoryVariableIndependent
 			variable = factory.create(info);
 		Assert.same([1.0, 5.0, 10.0], variable.range());
 	}
-	
+
 	public function testTimeWithStringView()
 	{
 		var min = "2011-01-01",
@@ -82,7 +82,7 @@ class TestFactoryVariableIndependent
 		Assert.floatEquals(Date.fromString(min).getTime(), variable.min);
 		Assert.floatEquals(Date.fromString(max).getTime(), variable.max);
 	}
-	
+
 	public function testTimeWithFloatView()
 	{
 		var min = "2011-01-01",
@@ -96,7 +96,7 @@ class TestFactoryVariableIndependent
 		Assert.floatEquals(Date.fromString(min).getTime(), variable.min);
 		Assert.floatEquals(Date.fromString(max).getTime(), variable.max);
 	}
-	
+
 	public function testTimeWithDateView()
 	{
 		var min = "2011-01-01",
@@ -110,7 +110,7 @@ class TestFactoryVariableIndependent
 		Assert.floatEquals(Date.fromString(min).getTime(), variable.min);
 		Assert.floatEquals(Date.fromString(max).getTime(), variable.max);
 	}
-	
+
 	public function testTimeGroupBy()
 	{
 		var min = "2011-01-01",
@@ -126,6 +126,6 @@ class TestFactoryVariableIndependent
 		var axis = Types.as(variable.axis, AxisGroupByTime);
 		Assert.equals("day", axis.groupBy);
 	}
-	
+
 	public function new() { }
 }

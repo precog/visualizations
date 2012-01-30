@@ -5,7 +5,8 @@
 
 package rg.data;
 import rg.util.DataPoints;
-import rg.data.Stats;
+import rg.axis.Stats;
+import rg.axis.IAxisDiscrete;
 
 class IndependentVariableProcessor
 {

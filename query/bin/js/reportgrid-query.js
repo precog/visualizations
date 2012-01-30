@@ -3915,7 +3915,7 @@ rg.app.query.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r);
 	r.query = rg.query.ReportGridQuery.create(executor);
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.921"};
+	r.info.query = { version : "1.0.0.922"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);

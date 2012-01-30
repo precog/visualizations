@@ -5,9 +5,9 @@
 
 package rg.data;
 import hxevents.Dispatcher;
-import rg.controller.factory.FactoryAxis;
+import rg.factory.FactoryAxis;
 import rg.util.DataPoints;
-import rg.data.Stats;
+import rg.axis.Stats;
 using Arrays;
 
 class VariableProcessor

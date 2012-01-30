@@ -3,13 +3,13 @@
  * @author Franco Ponticelli
  */
 
-package rg.view.svg.panel;
+package rg.svg.panel;
 
 import utest.Assert;
 import thx.js.Dom;
 import thx.js.Selection;
-import rg.view.frame.FrameLayout;
-import rg.view.frame.Orientation;
+import rg.frame.FrameLayout;
+import rg.frame.Orientation;
 
 class TestSpace 
 {

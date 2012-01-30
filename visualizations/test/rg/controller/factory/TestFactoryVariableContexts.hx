@@ -3,12 +3,12 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.factory;
+package rg.factory;
 
-import rg.controller.info.InfoVariable;
+import rg.info.InfoVariable;
 import thx.collection.Set;
 import utest.Assert;
-using rg.controller.info.Info;
+using rg.info.Info;
 
 class TestFactoryVariableContexts
 {

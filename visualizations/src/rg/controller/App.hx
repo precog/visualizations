@@ -4,17 +4,17 @@
  */
 
 package rg.controller;
-import rg.controller.factory.FactoryLayout;
-import rg.controller.factory.FactoryVariableReportGrid;
-import rg.controller.info.InfoDataContext;
-import rg.controller.info.InfoDomType;
-import rg.controller.info.InfoDownload;
-import rg.controller.info.InfoGeneral;
-import rg.controller.info.InfoLayout;
-import rg.controller.info.InfoTrack;
-import rg.controller.info.InfoVisualizationType;
-import rg.controller.interactive.Downloader;
-import rg.controller.visualization.Visualization;
+import rg.factory.FactoryLayout;
+import rg.factory.FactoryVariableReportGrid;
+import rg.info.InfoDataContext;
+import rg.info.InfoDomType;
+import rg.info.InfoDownload;
+import rg.info.InfoGeneral;
+import rg.info.InfoLayout;
+import rg.info.InfoTrack;
+import rg.info.InfoVisualizationType;
+import rg.interactive.Downloader;
+import rg.visualization.Visualization;
 import rg.data.DataRequest;
 import rg.data.source.rgquery.IExecutorReportGrid;
 import rg.data.source.rgquery.ITrackReportGrid;
@@ -22,17 +22,17 @@ import rg.track.Tracker;
 import thx.error.Error;
 import thx.error.NotImplemented;
 import thx.js.Selection;
-import rg.controller.info.InfoVisualizationOptionReportGrid;
-import rg.controller.factory.FactoryDataContext;
-import rg.controller.factory.FactoryDataSourceReportGrid;
+import rg.info.InfoVisualizationOptionReportGrid;
+import rg.factory.FactoryDataContext;
+import rg.factory.FactoryDataSourceReportGrid;
 import rg.data.DataPoint;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
-import rg.view.layout.Layout;
-import rg.controller.factory.FactoryHtmlVisualization;
-import rg.controller.factory.FactorySvgVisualization;
-import rg.view.html.widget.DownloaderMenu;
-using rg.controller.info.Info;
+import rg.layout.Layout;
+import rg.factory.FactoryHtmlVisualization;
+import rg.factory.FactorySvgVisualization;
+import rg.html.widget.DownloaderMenu;
+using rg.info.Info;
 using Arrays;
 
 class App

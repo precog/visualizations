@@ -3,8 +3,8 @@
  * @author Franco Ponticelli
  */
 
-package rg.controller.factory;
-import rg.controller.info.InfoDataSourceReportGrid;
+package rg.factory;
+import rg.info.InfoDataSourceReportGrid;
 import rg.data.IDataSource;
 import rg.data.source.DataSourceArray;
 import rg.data.source.DataSourceReportGrid;

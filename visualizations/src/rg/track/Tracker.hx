@@ -9,9 +9,9 @@ import thx.js.ClientHost;
 import js.Lib;
 import js.LocalStorage;
 import js.Storage;
-import rg.controller.visualization.Visualization;
-import rg.controller.visualization.VisualizationHtml;
-import rg.controller.visualization.VisualizationSvg;
+import rg.visualization.Visualization;
+import rg.visualization.VisualizationHtml;
+import rg.visualization.VisualizationSvg;
 import rg.data.source.rgquery.ITrackReportGrid;
 import thx.collection.Set;
 
