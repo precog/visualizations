@@ -11,6 +11,7 @@ import rg.axis.IAxis;
 import rg.svg.panel.Panel;
 import rg.data.DataPoint;
 import thx.color.Rgb;
+import thx.color.Colors;
 import thx.geom.Contour;
 import thx.js.Selection;
 import rg.data.VariableIndependent;
@@ -228,8 +229,17 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		{
 			case FromCssInterpolation(g):
 				if (null == g)
-					g = 2;
-				
+					g = 1;
+				var colors = RGCss.colorsInCss();
+				if (colors.length > g)
+				{
+					colors = colors.slice(0, g);
+				}
+				if (colors.length == 1) {
+					colors.push(Hsl.lighter(Hsl.toHsl(Colors.parse(colors[0])), 0.9).toCss());
+				}
+				colors.reverse();
+				setColorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.numberOfColorsInCss();

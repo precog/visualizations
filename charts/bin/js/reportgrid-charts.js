@@ -1414,7 +1414,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6507"};
+	r.info.charts = { version : "1.2.2.6510"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -3486,7 +3486,14 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		switch( $e[1] ) {
 		case 0:
 			var g = $e[2];
-			if(null == g) g = 2;
+			if(null == g) g = 1;
+			var colors = rg.svg.util.RGCss.colorsInCss();
+			if(colors.length > g) colors = colors.slice(0,g);
+			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
+			colors.reverse();
+			this.setColorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
+				return thx.color.Colors.parse(s);
+			})));
 			break;
 		case 1:
 			var g = $e[2];
@@ -18901,7 +18908,7 @@ thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
 rg.info.InfoHeatGrid = $hxClasses["rg.info.InfoHeatGrid"] = function() {
 	rg.info.InfoCartesianChart.call(this);
-	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCss();
+	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCssInterpolation();
 }
 rg.info.InfoHeatGrid.__name__ = ["rg","info","InfoHeatGrid"];
 rg.info.InfoHeatGrid.filters = function() {

@@ -18,7 +18,7 @@ class InfoHeatGrid extends InfoCartesianChart
 	public function new()
 	{
 		super();
-		colorScaleMode = ColorScaleMode.FromCss();
+		colorScaleMode = ColorScaleMode.FromCssInterpolation();
 	}
 
 	public static function filters()
