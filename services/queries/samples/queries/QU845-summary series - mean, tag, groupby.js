@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.summarySeries({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		property : "age",
 		start       : "24 hours ago",

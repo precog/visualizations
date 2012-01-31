@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.series({
-		path        : "/query/test",
+		path        : pathvalue,
 		event       : "impression",
 		where       : {	"gender" : "male" },
 		start       : "24 hours ago",

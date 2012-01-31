@@ -3,6 +3,7 @@
 define('SAMPLES_QUERIES_DIR', 'samples/queries/');
 define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
+define('DEFAULT_PATH', '/query/test2');
 define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
 
 $categories = array(
@@ -96,6 +97,8 @@ function infoSample($sample)
 	$result = parseContent(file_get_contents(SAMPLES_QUERIES_DIR.basename($sample)));
 	$result['title']  = extractTitle($sample);
 	$result['sample'] = $sample;
+	if(isset($result['query']))
+		$result['query'] = str_replace('pathvalue', "'".DEFAULT_PATH."'", $result['query']);
 	return $result;
 }
 
@@ -113,7 +116,7 @@ function parseContent($content)
 		$value = trim($pair[1]);
 		if($key == 'load')
 		{
-			$info['data'] = "function data() {\n\t return ".file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";\n}";
+			$info['data'] = "(function() {\n\t ".file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";\nreturn {$info['data']}\n})()";
 		} else {
 			$info[$key] = $value;
 		}
@@ -142,6 +145,7 @@ function display($sample)
 	$VIZ_API = REPORTGRID_CHARTS_API;
 	$CSS_API = REPORTGRID_CSS_API;
 	$CORE_API = REPORTGRID_CORE_API;
+	$DEFAULT_PATH = DEFAULT_PATH;
 	require('template.php');
 	exit;
 }

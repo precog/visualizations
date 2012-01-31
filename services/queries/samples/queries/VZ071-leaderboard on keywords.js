@@ -2,7 +2,7 @@
 ReportGrid.query
 	.propertiesHistogram({
 		event : "impression",
-		path : "/query/test",
+		path : pathvalue,
 		property : "keywords"
 	})
 	.sortByField("count")

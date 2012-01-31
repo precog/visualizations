@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.count({
-		path  : "/query/test",
+		path  : pathvalue,
 		event : "impression",
 		start : "2 hours ago",
 		end   : "now"

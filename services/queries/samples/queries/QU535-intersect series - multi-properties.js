@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.intersectSeries({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		start : "5 hours ago",
 		periodicity : "hour",

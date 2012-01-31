@@ -1,6 +1,6 @@
 //** QUERY
 ReportGrid.query
 	.series({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression"
 	})

@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.histogram({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		property : "browser"
 	}, ['path', 'event'])

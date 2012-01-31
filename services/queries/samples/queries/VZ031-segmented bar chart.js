@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.values({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		property : "gender"
 	})

@@ -1,19 +1,19 @@
 //** QUERY
 ReportGrid.query
 	.values({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		property : "gender"
 	})
 	.series({
-		periodicity : "day",
-		start : "10 days ago"
+		periodicity : "hour",
+		start : "10 hours ago"
 	})
-	.accumulate('gender', 'time:day', 'count', 'y0')
+	.accumulate('gender', 'time:hour', 'count', 'y0')
 
 //** VIZ
 ReportGrid.streamGraph("#chart", {
-	axes : ['time:day', 'count'],
+	axes : ['time:hour', 'count'],
 	load : loader,
 	options : {
 		segmenton : "gender",

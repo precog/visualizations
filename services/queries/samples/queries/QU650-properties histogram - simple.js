@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.propertiesHistogram({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		property : "keywords"
 	})

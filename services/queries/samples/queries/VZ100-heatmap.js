@@ -2,7 +2,7 @@
 ReportGrid.query
 	.intersect({
 		event : "impression",
-		path : "/query/test",
+		path : pathvalue,
 		properties : ['age', 'browser']
 	})
 	.sortByFields(['age', 'browser'])

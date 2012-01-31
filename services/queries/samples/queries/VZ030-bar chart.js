@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.series({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		periodicity : "hour",
 		start : "24 hours ago"

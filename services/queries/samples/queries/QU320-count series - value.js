@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.series({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		property : "browser",
 		value : "chrome"

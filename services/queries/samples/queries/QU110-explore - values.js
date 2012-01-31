@@ -1,4 +1,4 @@
 //** QUERY
 ReportGrid.query
-	.events({ path : "/query/test" })
+	.events({ path : pathvalue })
 	.values({ property : "browser" })

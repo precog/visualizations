@@ -1,7 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.intersect({
-		path : "/query/test",
+		path : pathvalue,
 		event : "impression",
 		properties : [{ property : "browser" }],
 		tag : "location",

@@ -134,12 +134,25 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			x = function(d) return xscale(DataPoints.value(d, xtype)),
 			yscale = callback(yVariables[0].axis.scale, yVariables[0].min(), yVariables[0].max()),
 			ytype = yVariables[0].type,
-			y = function(d) return yscale(DataPoints.value(d, ytype));
-		var coords = dps.map(function(d : Array<DataPoint>, i) {
-			return d.map(function(d, i) {
+			y = function(d) return yscale(DataPoints.value(d, ytype)),
+			m = Std.int(dps.floatMax(function(d) return d.length));
+
+		function altDp(pos : Int)
+		{
+			for(i in 0...dps.length)
+				if(null != dps[i][pos])
+					return dps[i][pos];
+			return null;
+		}
+
+		var coords = dps.map(function(d : Array<DataPoint>, j) {
+			return Ints.range(0, m).map(function(_, i) {
+				var dp = d[i];
+				if(null == dp)
+					return { x : x(altDp(i)), y : .0 };
 				return {
-					x : x(d),
-					y : Math.max(0, y(d))
+					x : x(dp),
+					y : Math.max(0, y(dp))
 				};
 			});
 		});

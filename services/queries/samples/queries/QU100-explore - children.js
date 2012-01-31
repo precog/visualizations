@@ -1,6 +1,6 @@
 //** QUERY
 ReportGrid.query
-	.paths({ parent : "/" })
+	.paths({ parent : "/test" })
 	.mapFields({ "path" : "parent" })
 	.paths()
 	.events()

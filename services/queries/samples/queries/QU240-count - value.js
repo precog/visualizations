@@ -1,5 +1,5 @@
 //** QUERY
 ReportGrid.query
-	.properties({ path : "/query/test", event : "impression" })
+	.properties({ path : pathvalue, event : "impression" })
 	.values()
 	.count()

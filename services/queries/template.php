@@ -51,7 +51,7 @@ echo $info['html'];
 <?php
 if(isset($info['data']))
 {
-    $paths = split("\n",isset($info['path']) ? $info['path'] : '/query/test');
+    $paths = split("\n",isset($info['path']) ? $info['path'] : $DEFAULT_PATH);
 ?>
 var paths  = ['<?php echo implode("', '", $paths); ?>'];
     events = <?php echo $info['data']; ?>;
