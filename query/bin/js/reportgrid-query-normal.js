@@ -4,161 +4,6 @@ function $extend(from, fields) {
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
-var thx = thx || {}
-if(!thx.color) thx.color = {}
-thx.color.Rgb = $hxClasses["thx.color.Rgb"] = function(r,g,b) {
-	this.red = Ints.clamp(r,0,255);
-	this.green = Ints.clamp(g,0,255);
-	this.blue = Ints.clamp(b,0,255);
-}
-thx.color.Rgb.__name__ = ["thx","color","Rgb"];
-thx.color.Rgb.fromFloats = function(r,g,b) {
-	return new thx.color.Rgb(Ints.interpolate(r,0,255,null),Ints.interpolate(g,0,255,null),Ints.interpolate(b,0,255,null));
-}
-thx.color.Rgb.fromInt = function(v) {
-	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
-}
-thx.color.Rgb.equals = function(a,b) {
-	return a.red == b.red && a.green == b.green && a.blue == b.blue;
-}
-thx.color.Rgb.darker = function(color,t,equation) {
-	return new thx.color.Rgb(Ints.interpolate(t,color.red,0,equation),Ints.interpolate(t,color.green,0,equation),Ints.interpolate(t,color.blue,0,equation));
-}
-thx.color.Rgb.lighter = function(color,t,equation) {
-	return new thx.color.Rgb(Ints.interpolate(t,color.red,255,equation),Ints.interpolate(t,color.green,255,equation),Ints.interpolate(t,color.blue,255,equation));
-}
-thx.color.Rgb.interpolate = function(a,b,t,equation) {
-	return new thx.color.Rgb(Ints.interpolate(t,a.red,b.red,equation),Ints.interpolate(t,a.green,b.green,equation),Ints.interpolate(t,a.blue,b.blue,equation));
-}
-thx.color.Rgb.interpolatef = function(a,b,equation) {
-	var r = Ints.interpolatef(a.red,b.red,equation), g = Ints.interpolatef(a.green,b.green,equation), b1 = Ints.interpolatef(a.blue,b.blue,equation);
-	return function(t) {
-		return new thx.color.Rgb(r(t),g(t),b1(t));
-	};
-}
-thx.color.Rgb.contrast = function(c) {
-	var nc = thx.color.Hsl.toHsl(c);
-	if(nc.lightness < .5) return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness + 0.5); else return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness - 0.5);
-}
-thx.color.Rgb.contrastBW = function(c) {
-	var g = thx.color.Grey.toGrey(c);
-	var nc = thx.color.Hsl.toHsl(c);
-	if(g.grey < .5) return new thx.color.Hsl(nc.hue,nc.saturation,1.0); else return new thx.color.Hsl(nc.hue,nc.saturation,0);
-}
-thx.color.Rgb.interpolateBrightness = function(t,equation) {
-	return (thx.color.Rgb.interpolateBrightnessf(equation))(t);
-}
-thx.color.Rgb.interpolateBrightnessf = function(equation) {
-	var i = Ints.interpolatef(0,255,equation);
-	return function(t) {
-		var g = i(t);
-		return new thx.color.Rgb(g,g,g);
-	};
-}
-thx.color.Rgb.interpolateHeat = function(t,middle,equation) {
-	return (thx.color.Rgb.interpolateHeatf(middle,equation))(t);
-}
-thx.color.Rgb.interpolateHeatf = function(middle,equation) {
-	return thx.color.Rgb.interpolateStepsf([new thx.color.Rgb(0,0,0),null != middle?middle:new thx.color.Rgb(255,127,0),new thx.color.Rgb(255,255,255)],equation);
-}
-thx.color.Rgb.interpolateRainbow = function(t,equation) {
-	return (thx.color.Rgb.interpolateRainbowf(equation))(t);
-}
-thx.color.Rgb.interpolateRainbowf = function(equation) {
-	return thx.color.Rgb.interpolateStepsf([new thx.color.Rgb(0,0,255),new thx.color.Rgb(0,255,255),new thx.color.Rgb(0,255,0),new thx.color.Rgb(255,255,0),new thx.color.Rgb(255,0,0)],equation);
-}
-thx.color.Rgb.interpolateStepsf = function(steps,equation) {
-	if(steps.length <= 0) return (function($this) {
-		var $r;
-		throw new thx.error.Error("invalid number of steps",null,null,{ fileName : "Rgb.hx", lineNumber : 164, className : "thx.color.Rgb", methodName : "interpolateStepsf"});
-		return $r;
-	}(this)); else if(steps.length == 1) return function(t) {
-		return steps[0];
-	}; else if(steps.length == 2) return thx.color.Rgb.interpolatef(steps[0],steps[1],equation);
-	var len = steps.length - 1, step = 1 / len, f = [];
-	var _g = 0;
-	while(_g < len) {
-		var i = _g++;
-		f[i] = thx.color.Rgb.interpolatef(steps[i],steps[i + 1]);
-	}
-	return function(t) {
-		if(t < 0) t = 0; else if(t > 1) t = 1;
-		var pos = t == 1?len - 1:Math.floor(t / step);
-		return f[pos](len * (t - pos * step));
-	};
-}
-thx.color.Rgb.prototype = {
-	blue: null
-	,green: null
-	,red: null
-	,'int': function() {
-		return (this.red & 255) << 16 | (this.green & 255) << 8 | this.blue & 255;
-	}
-	,hex: function(prefix) {
-		if(prefix == null) prefix = "";
-		return prefix + StringTools.hex(this.red,2) + StringTools.hex(this.green,2) + StringTools.hex(this.blue,2);
-	}
-	,toCss: function() {
-		return this.hex("#");
-	}
-	,toRgbString: function() {
-		return "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
-	}
-	,toString: function() {
-		return this.toRgbString();
-	}
-	,__class__: thx.color.Rgb
-}
-thx.color.Hsl = $hxClasses["thx.color.Hsl"] = function(h,s,l) {
-	this.hue = h = Floats.circularWrap(h,360);
-	this.saturation = s = Floats.normalize(s);
-	this.lightness = l = Floats.normalize(l);
-	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
-}
-thx.color.Hsl.__name__ = ["thx","color","Hsl"];
-thx.color.Hsl._c = function(d,s,l) {
-	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
-	var m1 = 2 * l - m2;
-	d = Floats.circularWrap(d,360);
-	if(d < 60) return m1 + (m2 - m1) * d / 60; else if(d < 180) return m2; else if(d < 240) return m1 + (m2 - m1) * (240 - d) / 60; else return m1;
-}
-thx.color.Hsl.toHsl = function(c) {
-	var r = c.red / 255.0;
-	var g = c.green / 255.0, b = c.blue / 255.0, min = Floats.min(r < g?r:g,b), max = Floats.max(r > g?r:g,b), delta = max - min, h, s, l = (max + min) / 2;
-	if(delta == 0.0) s = h = 0.0; else {
-		s = l < 0.5?delta / (max + min):delta / (2 - max - min);
-		if(r == max) h = (g - b) / delta + (g < b?6:0); else if(g == max) h = (b - r) / delta + 2; else h = (r - g) / delta + 4;
-		h *= 60;
-	}
-	return new thx.color.Hsl(h,s,l);
-}
-thx.color.Hsl.equals = function(a,b) {
-	return a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
-}
-thx.color.Hsl.darker = function(color,t,equation) {
-	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,0,equation));
-}
-thx.color.Hsl.lighter = function(color,t,equation) {
-	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,1,equation));
-}
-thx.color.Hsl.interpolate = function(a,b,t,equation) {
-	return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
-}
-thx.color.Hsl.interpolatef = function(a,b,equation) {
-	return function(t) {
-		return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
-	};
-}
-thx.color.Hsl.__super__ = thx.color.Rgb;
-thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
-	hue: null
-	,saturation: null
-	,lightness: null
-	,toHslString: function() {
-		return "hsl(" + this.hue + "," + this.saturation * 100 + "%," + this.lightness * 100 + "%)";
-	}
-	,__class__: thx.color.Hsl
-});
 var rg = rg || {}
 if(!rg.data) rg.data = {}
 if(!rg.data.reportgrid) rg.data.reportgrid = {}
@@ -290,6 +135,7 @@ Types.isPrimitive = function(v) {
 Types.prototype = {
 	__class__: Types
 }
+var thx = thx || {}
 if(!thx.culture) thx.culture = {}
 thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
@@ -1530,50 +1376,6 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
-thx.color.Cmyk = $hxClasses["thx.color.Cmyk"] = function(cyan,magenta,yellow,black) {
-	thx.color.Rgb.call(this,Ints.interpolate(Floats.normalize(1 - cyan - black),0,255,null),Ints.interpolate(Floats.normalize(1 - magenta - black),0,255,null),Ints.interpolate(Floats.normalize(1 - yellow - black),0,255,null));
-	this.cyan = Floats.normalize(cyan);
-	this.magenta = Floats.normalize(magenta);
-	this.yellow = Floats.normalize(yellow);
-	this.black = Floats.normalize(black);
-}
-thx.color.Cmyk.__name__ = ["thx","color","Cmyk"];
-thx.color.Cmyk.toCmyk = function(rgb) {
-	var c = 0.0, y = 0.0, m = 0.0, k;
-	if(rgb.red + rgb.blue + rgb.green == 0) k = 1.0; else {
-		c = 1 - rgb.red / 255;
-		m = 1 - rgb.green / 255;
-		y = 1 - rgb.blue / 255;
-		k = Floats.min(c < m?c:m,y);
-		c = (c - k) / (1 - k);
-		m = (m - k) / (1 - k);
-		y = (y - k) / (1 - k);
-	}
-	return new thx.color.Cmyk(c,m,y,k);
-}
-thx.color.Cmyk.equals = function(a,b) {
-	return a.black == b.black && a.cyan == b.cyan && a.magenta == b.magenta && a.yellow == b.yellow;
-}
-thx.color.Cmyk.darker = function(color,t,equation) {
-	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,0,equation));
-}
-thx.color.Cmyk.lighter = function(color,t,equation) {
-	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,1,equation));
-}
-thx.color.Cmyk.interpolate = function(a,b,t,equation) {
-	return new thx.color.Cmyk(Floats.interpolate(t,a.cyan,b.cyan,equation),Floats.interpolate(t,a.magenta,b.magenta,equation),Floats.interpolate(t,a.yellow,b.yellow,equation),Floats.interpolate(t,a.black,b.black,equation));
-}
-thx.color.Cmyk.__super__ = thx.color.Rgb;
-thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
-	black: null
-	,cyan: null
-	,magenta: null
-	,yellow: null
-	,toCmykString: function() {
-		return "cmyk(" + this.cyan + "," + this.magenta + "," + this.yellow + "," + this.black + ")";
-	}
-	,__class__: thx.color.Cmyk
-});
 var Iterators = $hxClasses["Iterators"] = function() { }
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
@@ -1840,50 +1642,6 @@ thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
 thx.util.MacroVersion.prototype = {
 	__class__: thx.util.MacroVersion
 }
-thx.color.Grey = $hxClasses["thx.color.Grey"] = function(value) {
-	this.grey = Floats.normalize(value);
-	var c = Ints.interpolate(this.grey,0,255,null);
-	thx.color.Rgb.call(this,c,c,c);
-}
-thx.color.Grey.__name__ = ["thx","color","Grey"];
-thx.color.Grey.toGrey = function(rgb,luminance) {
-	if(null == luminance) luminance = thx.color.PerceivedLuminance.Perceived;
-	switch( (luminance)[1] ) {
-	case 0:
-		return new thx.color.Grey(rgb.red / 255 * .2126 + rgb.green / 255 * .7152 + rgb.blue / 255 * .0722);
-	case 1:
-		return new thx.color.Grey(rgb.red / 255 * .299 + rgb.green / 255 * .587 + rgb.blue / 255 * .114);
-	case 2:
-		return new thx.color.Grey(Math.sqrt(0.241 * Math.pow(rgb.red / 255,2) + 0.691 * Math.pow(rgb.green / 255,2) + 0.068 * Math.pow(rgb.blue / 255,2)));
-	}
-}
-thx.color.Grey.equals = function(a,b) {
-	return a.grey == b.grey;
-}
-thx.color.Grey.darker = function(color,t,equation) {
-	return new thx.color.Grey(Floats.interpolate(t,color.grey,0,equation));
-}
-thx.color.Grey.lighter = function(color,t,equation) {
-	return new thx.color.Grey(Floats.interpolate(t,color.grey,1,equation));
-}
-thx.color.Grey.interpolate = function(a,b,t,equation) {
-	return new thx.color.Grey(Floats.interpolate(t,a.grey,b.grey,equation));
-}
-thx.color.Grey.__super__ = thx.color.Rgb;
-thx.color.Grey.prototype = $extend(thx.color.Rgb.prototype,{
-	grey: null
-	,__class__: thx.color.Grey
-});
-thx.color.PerceivedLuminance = $hxClasses["thx.color.PerceivedLuminance"] = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
-thx.color.PerceivedLuminance.Standard = ["Standard",0];
-thx.color.PerceivedLuminance.Standard.toString = $estr;
-thx.color.PerceivedLuminance.Standard.__enum__ = thx.color.PerceivedLuminance;
-thx.color.PerceivedLuminance.Perceived = ["Perceived",1];
-thx.color.PerceivedLuminance.Perceived.toString = $estr;
-thx.color.PerceivedLuminance.Perceived.__enum__ = thx.color.PerceivedLuminance;
-thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
-thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
-thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
 if(!rg.query) rg.query = {}
 rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
@@ -1953,59 +1711,6 @@ rg.query.Transformers.reverse = function(arr) {
 }
 rg.query.Transformers.prototype = {
 	__class__: rg.query.Transformers
-}
-thx.color.Colors = $hxClasses["thx.color.Colors"] = function() { }
-thx.color.Colors.__name__ = ["thx","color","Colors"];
-thx.color.Colors.interpolatef = function(a,b,equation) {
-	var ca = thx.color.Colors.parse(a);
-	var cb = thx.color.Colors.parse(b);
-	var f = thx.color.Rgb.interpolatef(ca,cb,equation);
-	return function(v) {
-		return f(v).toString();
-	};
-}
-thx.color.Colors.interpolate = function(v,a,b,equation) {
-	return (thx.color.Colors.interpolatef(a,b,equation))(v);
-}
-thx.color.Colors.parse = function(s) {
-	if(!thx.color.Colors._reParse.match(s = StringTools.trim(s.toLowerCase()))) {
-		var v = thx.color.NamedColors.byName.get(s);
-		if(null == v) {
-			if("transparent" == s) return thx.color.Rgb.fromInt(16777215); else return null;
-		} else return v;
-	}
-	var type = thx.color.Colors._reParse.matched(1);
-	if(!Strings.empty(type)) {
-		var values = thx.color.Colors._reParse.matched(2).split(",");
-		switch(type) {
-		case "rgb":case "rgba":
-			return new thx.color.Rgb(thx.color.Colors._c(values[0]),thx.color.Colors._c(values[1]),thx.color.Colors._c(values[2]));
-		case "hsl":
-			return new thx.color.Hsl(thx.color.Colors._d(values[0]),thx.color.Colors._p(values[1]),thx.color.Colors._p(values[2]));
-		case "cmyk":
-			return new thx.color.Cmyk(thx.color.Colors._p(values[0]),thx.color.Colors._p(values[1]),thx.color.Colors._p(values[2]),thx.color.Colors._p(values[3]));
-		}
-	}
-	var color = thx.color.Colors._reParse.matched(3);
-	if(color.length == 3) color = color.split("").map(function(d,_) {
-		return d + d;
-	}).join(""); else if(color.length != 6) return null;
-	return thx.color.Rgb.fromInt(Std.parseInt("0x" + color));
-}
-thx.color.Colors._c = function(s) {
-	return Std.parseInt(StringTools.trim(s));
-}
-thx.color.Colors._d = function(s) {
-	var s1 = StringTools.trim(s);
-	if(s1.substr(-3) == "deg") s1 = s1.substr(0,-3); else if(s1.substr(-1) == "º") s1 = s1.substr(0,-1);
-	return Std.parseFloat(s1);
-}
-thx.color.Colors._p = function(s) {
-	var s1 = StringTools.trim(s);
-	if(s1.substr(-1) == "%") return Std.parseFloat(s1.substr(0,-1)) / 100; else return Std.parseFloat(s1);
-}
-thx.color.Colors.prototype = {
-	__class__: thx.color.Colors
 }
 thx.data.ValueEncoder = $hxClasses["thx.data.ValueEncoder"] = function(handler) {
 	this.handler = handler;
@@ -3838,159 +3543,6 @@ IntHash.prototype = {
 	}
 	,__class__: IntHash
 }
-thx.color.NamedColors = $hxClasses["thx.color.NamedColors"] = function() { }
-thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
-thx.color.NamedColors.aliceblue = null;
-thx.color.NamedColors.antiquewhite = null;
-thx.color.NamedColors.aqua = null;
-thx.color.NamedColors.aquamarine = null;
-thx.color.NamedColors.azure = null;
-thx.color.NamedColors.beige = null;
-thx.color.NamedColors.bisque = null;
-thx.color.NamedColors.black = null;
-thx.color.NamedColors.blanchedalmond = null;
-thx.color.NamedColors.blue = null;
-thx.color.NamedColors.blueviolet = null;
-thx.color.NamedColors.brown = null;
-thx.color.NamedColors.burlywood = null;
-thx.color.NamedColors.cadetblue = null;
-thx.color.NamedColors.chartreuse = null;
-thx.color.NamedColors.chocolate = null;
-thx.color.NamedColors.coral = null;
-thx.color.NamedColors.cornflowerblue = null;
-thx.color.NamedColors.cornsilk = null;
-thx.color.NamedColors.crimson = null;
-thx.color.NamedColors.cyan = null;
-thx.color.NamedColors.darkblue = null;
-thx.color.NamedColors.darkcyan = null;
-thx.color.NamedColors.darkgoldenrod = null;
-thx.color.NamedColors.darkgray = null;
-thx.color.NamedColors.darkgreen = null;
-thx.color.NamedColors.darkgrey = null;
-thx.color.NamedColors.darkkhaki = null;
-thx.color.NamedColors.darkmagenta = null;
-thx.color.NamedColors.darkolivegreen = null;
-thx.color.NamedColors.darkorange = null;
-thx.color.NamedColors.darkorchid = null;
-thx.color.NamedColors.darkred = null;
-thx.color.NamedColors.darksalmon = null;
-thx.color.NamedColors.darkseagreen = null;
-thx.color.NamedColors.darkslateblue = null;
-thx.color.NamedColors.darkslategray = null;
-thx.color.NamedColors.darkslategrey = null;
-thx.color.NamedColors.darkturquoise = null;
-thx.color.NamedColors.darkviolet = null;
-thx.color.NamedColors.deeppink = null;
-thx.color.NamedColors.deepskyblue = null;
-thx.color.NamedColors.dimgray = null;
-thx.color.NamedColors.dimgrey = null;
-thx.color.NamedColors.dodgerblue = null;
-thx.color.NamedColors.firebrick = null;
-thx.color.NamedColors.floralwhite = null;
-thx.color.NamedColors.forestgreen = null;
-thx.color.NamedColors.fuchsia = null;
-thx.color.NamedColors.gainsboro = null;
-thx.color.NamedColors.ghostwhite = null;
-thx.color.NamedColors.gold = null;
-thx.color.NamedColors.goldenrod = null;
-thx.color.NamedColors.gray = null;
-thx.color.NamedColors.green = null;
-thx.color.NamedColors.greenyellow = null;
-thx.color.NamedColors.grey = null;
-thx.color.NamedColors.honeydew = null;
-thx.color.NamedColors.hotpink = null;
-thx.color.NamedColors.indianred = null;
-thx.color.NamedColors.indigo = null;
-thx.color.NamedColors.ivory = null;
-thx.color.NamedColors.khaki = null;
-thx.color.NamedColors.lavender = null;
-thx.color.NamedColors.lavenderblush = null;
-thx.color.NamedColors.lawngreen = null;
-thx.color.NamedColors.lemonchiffon = null;
-thx.color.NamedColors.lightblue = null;
-thx.color.NamedColors.lightcoral = null;
-thx.color.NamedColors.lightcyan = null;
-thx.color.NamedColors.lightgoldenrodyellow = null;
-thx.color.NamedColors.lightgray = null;
-thx.color.NamedColors.lightgreen = null;
-thx.color.NamedColors.lightgrey = null;
-thx.color.NamedColors.lightpink = null;
-thx.color.NamedColors.lightsalmon = null;
-thx.color.NamedColors.lightseagreen = null;
-thx.color.NamedColors.lightskyblue = null;
-thx.color.NamedColors.lightslategray = null;
-thx.color.NamedColors.lightslategrey = null;
-thx.color.NamedColors.lightsteelblue = null;
-thx.color.NamedColors.lightyellow = null;
-thx.color.NamedColors.lime = null;
-thx.color.NamedColors.limegreen = null;
-thx.color.NamedColors.linen = null;
-thx.color.NamedColors.magenta = null;
-thx.color.NamedColors.maroon = null;
-thx.color.NamedColors.mediumaquamarine = null;
-thx.color.NamedColors.mediumblue = null;
-thx.color.NamedColors.mediumorchid = null;
-thx.color.NamedColors.mediumpurple = null;
-thx.color.NamedColors.mediumseagreen = null;
-thx.color.NamedColors.mediumslateblue = null;
-thx.color.NamedColors.mediumspringgreen = null;
-thx.color.NamedColors.mediumturquoise = null;
-thx.color.NamedColors.mediumvioletred = null;
-thx.color.NamedColors.midnightblue = null;
-thx.color.NamedColors.mintcream = null;
-thx.color.NamedColors.mistyrose = null;
-thx.color.NamedColors.moccasin = null;
-thx.color.NamedColors.navajowhite = null;
-thx.color.NamedColors.navy = null;
-thx.color.NamedColors.oldlace = null;
-thx.color.NamedColors.olive = null;
-thx.color.NamedColors.olivedrab = null;
-thx.color.NamedColors.orange = null;
-thx.color.NamedColors.orangered = null;
-thx.color.NamedColors.orchid = null;
-thx.color.NamedColors.palegoldenrod = null;
-thx.color.NamedColors.palegreen = null;
-thx.color.NamedColors.paleturquoise = null;
-thx.color.NamedColors.palevioletred = null;
-thx.color.NamedColors.papayawhip = null;
-thx.color.NamedColors.peachpuff = null;
-thx.color.NamedColors.peru = null;
-thx.color.NamedColors.pink = null;
-thx.color.NamedColors.plum = null;
-thx.color.NamedColors.powderblue = null;
-thx.color.NamedColors.purple = null;
-thx.color.NamedColors.red = null;
-thx.color.NamedColors.rosybrown = null;
-thx.color.NamedColors.royalblue = null;
-thx.color.NamedColors.saddlebrown = null;
-thx.color.NamedColors.salmon = null;
-thx.color.NamedColors.sandybrown = null;
-thx.color.NamedColors.seagreen = null;
-thx.color.NamedColors.seashell = null;
-thx.color.NamedColors.sienna = null;
-thx.color.NamedColors.silver = null;
-thx.color.NamedColors.skyblue = null;
-thx.color.NamedColors.slateblue = null;
-thx.color.NamedColors.slategray = null;
-thx.color.NamedColors.slategrey = null;
-thx.color.NamedColors.snow = null;
-thx.color.NamedColors.springgreen = null;
-thx.color.NamedColors.steelblue = null;
-thx.color.NamedColors.tan = null;
-thx.color.NamedColors.teal = null;
-thx.color.NamedColors.thistle = null;
-thx.color.NamedColors.tomato = null;
-thx.color.NamedColors.turquoise = null;
-thx.color.NamedColors.violet = null;
-thx.color.NamedColors.wheat = null;
-thx.color.NamedColors.white = null;
-thx.color.NamedColors.whitesmoke = null;
-thx.color.NamedColors.yellow = null;
-thx.color.NamedColors.yellowgreen = null;
-thx.color.NamedColors.byName = null;
-thx.color.NamedColors.prototype = {
-	__class__: thx.color.NamedColors
-}
 if(!rg.app) rg.app = {}
 if(!rg.app.query) rg.app.query = {}
 rg.app.query.JSBridge = $hxClasses["rg.app.query.JSBridge"] = function() { }
@@ -4008,7 +3560,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.988"};
+	r.info.query = { version : "1.0.0.994"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -6041,7 +5593,7 @@ Objects.interpolatef = function(a,b,equation) {
 		++_g;
 		if(Reflect.hasField(b,key)) {
 			var va = Reflect.field(a,key);
-			i[key] = (Objects.interpolateByName(key,va))(va,Reflect.field(b,key));
+			i[key] = Dynamics.interpolatef(va,Reflect.field(b,key));
 		} else c[key] = Reflect.field(a,key);
 	}
 	keys = Reflect.fields(b);
@@ -6060,9 +5612,6 @@ Objects.interpolatef = function(a,b,equation) {
 		}
 		return c;
 	};
-}
-Objects.interpolateByName = function(k,v) {
-	return Std["is"](v,String) && Objects._reCheckKeyIsColor.match(k)?thx.color.Colors.interpolatef:Dynamics.interpolatef;
 }
 Objects.copyTo = function(src,dst) {
 	var _g = 0, _g1 = Reflect.fields(src);
@@ -6173,7 +5722,7 @@ Objects.formatf = function(param,params,culture) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 263, className : "Objects", methodName : "formatf"});
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 242, className : "Objects", methodName : "formatf"});
 			return $r;
 		}(this));
 	}
@@ -6977,254 +6526,6 @@ thx.cultures.EnUS.getCulture();
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 {
-	thx.color.NamedColors.byName = new Hash();
-	thx.color.NamedColors.byName.set("aliceblue",thx.color.NamedColors.aliceblue = thx.color.Rgb.fromInt(15792383));
-	thx.color.NamedColors.byName.set("alice blue",thx.color.NamedColors.aliceblue);
-	thx.color.NamedColors.byName.set("antiquewhite",thx.color.NamedColors.antiquewhite = thx.color.Rgb.fromInt(16444375));
-	thx.color.NamedColors.byName.set("antique white",thx.color.NamedColors.antiquewhite);
-	thx.color.NamedColors.byName.set("aqua",thx.color.NamedColors.aqua = thx.color.Rgb.fromInt(65535));
-	thx.color.NamedColors.byName.set("aquamarine",thx.color.NamedColors.aquamarine = thx.color.Rgb.fromInt(8388564));
-	thx.color.NamedColors.byName.set("azure",thx.color.NamedColors.azure = thx.color.Rgb.fromInt(15794175));
-	thx.color.NamedColors.byName.set("beige",thx.color.NamedColors.beige = thx.color.Rgb.fromInt(16119260));
-	thx.color.NamedColors.byName.set("bisque",thx.color.NamedColors.bisque = thx.color.Rgb.fromInt(16770244));
-	thx.color.NamedColors.byName.set("black",thx.color.NamedColors.black = thx.color.Rgb.fromInt(0));
-	thx.color.NamedColors.byName.set("blanchedalmond",thx.color.NamedColors.blanchedalmond = thx.color.Rgb.fromInt(16772045));
-	thx.color.NamedColors.byName.set("blanched almond",thx.color.NamedColors.blanchedalmond);
-	thx.color.NamedColors.byName.set("blue",thx.color.NamedColors.blue = thx.color.Rgb.fromInt(255));
-	thx.color.NamedColors.byName.set("blueviolet",thx.color.NamedColors.blueviolet = thx.color.Rgb.fromInt(9055202));
-	thx.color.NamedColors.byName.set("blue violet",thx.color.NamedColors.blueviolet);
-	thx.color.NamedColors.byName.set("brown",thx.color.NamedColors.brown = thx.color.Rgb.fromInt(10824234));
-	thx.color.NamedColors.byName.set("burlywood",thx.color.NamedColors.burlywood = thx.color.Rgb.fromInt(14596231));
-	thx.color.NamedColors.byName.set("burly wood",thx.color.NamedColors.burlywood);
-	thx.color.NamedColors.byName.set("cadetblue",thx.color.NamedColors.cadetblue = thx.color.Rgb.fromInt(6266528));
-	thx.color.NamedColors.byName.set("cadet blue",thx.color.NamedColors.cadetblue);
-	thx.color.NamedColors.byName.set("chartreuse",thx.color.NamedColors.chartreuse = thx.color.Rgb.fromInt(8388352));
-	thx.color.NamedColors.byName.set("chart reuse",thx.color.NamedColors.chartreuse);
-	thx.color.NamedColors.byName.set("chocolate",thx.color.NamedColors.chocolate = thx.color.Rgb.fromInt(13789470));
-	thx.color.NamedColors.byName.set("coral",thx.color.NamedColors.coral = thx.color.Rgb.fromInt(16744272));
-	thx.color.NamedColors.byName.set("cornflowerblue",thx.color.NamedColors.cornflowerblue = thx.color.Rgb.fromInt(6591981));
-	thx.color.NamedColors.byName.set("corn flower blue",thx.color.NamedColors.cornflowerblue);
-	thx.color.NamedColors.byName.set("cornsilk",thx.color.NamedColors.cornsilk = thx.color.Rgb.fromInt(16775388));
-	thx.color.NamedColors.byName.set("corn silk",thx.color.NamedColors.cornsilk);
-	thx.color.NamedColors.byName.set("crimson",thx.color.NamedColors.crimson = thx.color.Rgb.fromInt(14423100));
-	thx.color.NamedColors.byName.set("cyan",thx.color.NamedColors.cyan = thx.color.Rgb.fromInt(65535));
-	thx.color.NamedColors.byName.set("darkblue",thx.color.NamedColors.darkblue = thx.color.Rgb.fromInt(139));
-	thx.color.NamedColors.byName.set("dark blue",thx.color.NamedColors.darkblue);
-	thx.color.NamedColors.byName.set("darkcyan",thx.color.NamedColors.darkcyan = thx.color.Rgb.fromInt(35723));
-	thx.color.NamedColors.byName.set("dark cyan",thx.color.NamedColors.darkcyan);
-	thx.color.NamedColors.byName.set("darkgoldenrod",thx.color.NamedColors.darkgoldenrod = thx.color.Rgb.fromInt(12092939));
-	thx.color.NamedColors.byName.set("dark golden rod",thx.color.NamedColors.darkgoldenrod);
-	thx.color.NamedColors.byName.set("darkgray",thx.color.NamedColors.darkgray = thx.color.NamedColors.darkgrey = thx.color.Rgb.fromInt(11119017));
-	thx.color.NamedColors.byName.set("dark gray",thx.color.NamedColors.darkgray);
-	thx.color.NamedColors.byName.set("darkgrey",thx.color.NamedColors.darkgrey);
-	thx.color.NamedColors.byName.set("dark grey",thx.color.NamedColors.darkgrey);
-	thx.color.NamedColors.byName.set("darkgreen",thx.color.NamedColors.darkgreen = thx.color.Rgb.fromInt(25600));
-	thx.color.NamedColors.byName.set("dark green",thx.color.NamedColors.darkgreen);
-	thx.color.NamedColors.byName.set("darkkhaki",thx.color.NamedColors.darkkhaki = thx.color.Rgb.fromInt(12433259));
-	thx.color.NamedColors.byName.set("dark khaki",thx.color.NamedColors.darkkhaki);
-	thx.color.NamedColors.byName.set("darkmagenta",thx.color.NamedColors.darkmagenta = thx.color.Rgb.fromInt(9109643));
-	thx.color.NamedColors.byName.set("dark magenta",thx.color.NamedColors.darkmagenta);
-	thx.color.NamedColors.byName.set("darkolivegreen",thx.color.NamedColors.darkolivegreen = thx.color.Rgb.fromInt(5597999));
-	thx.color.NamedColors.byName.set("dark olive green",thx.color.NamedColors.darkolivegreen);
-	thx.color.NamedColors.byName.set("darkorange",thx.color.NamedColors.darkorange = thx.color.Rgb.fromInt(16747520));
-	thx.color.NamedColors.byName.set("dark orange",thx.color.NamedColors.darkorange);
-	thx.color.NamedColors.byName.set("darkorchid",thx.color.NamedColors.darkorchid = thx.color.Rgb.fromInt(10040012));
-	thx.color.NamedColors.byName.set("dark orchid",thx.color.NamedColors.darkorchid);
-	thx.color.NamedColors.byName.set("darkred",thx.color.NamedColors.darkred = thx.color.Rgb.fromInt(9109504));
-	thx.color.NamedColors.byName.set("dark red",thx.color.NamedColors.darkred);
-	thx.color.NamedColors.byName.set("darksalmon",thx.color.NamedColors.darksalmon = thx.color.Rgb.fromInt(15308410));
-	thx.color.NamedColors.byName.set("dark salmon",thx.color.NamedColors.darksalmon);
-	thx.color.NamedColors.byName.set("darkseagreen",thx.color.NamedColors.darkseagreen = thx.color.Rgb.fromInt(9419919));
-	thx.color.NamedColors.byName.set("dark sea green",thx.color.NamedColors.darkseagreen);
-	thx.color.NamedColors.byName.set("darkslateblue",thx.color.NamedColors.darkslateblue = thx.color.Rgb.fromInt(4734347));
-	thx.color.NamedColors.byName.set("dark slate blue",thx.color.NamedColors.darkslateblue);
-	thx.color.NamedColors.byName.set("darkslategray",thx.color.NamedColors.darkslategray = thx.color.NamedColors.darkslategrey = thx.color.Rgb.fromInt(3100495));
-	thx.color.NamedColors.byName.set("dark slate gray",thx.color.NamedColors.darkslategray);
-	thx.color.NamedColors.byName.set("darkslategrey",thx.color.NamedColors.darkslategrey);
-	thx.color.NamedColors.byName.set("dark slate grey",thx.color.NamedColors.darkslategrey);
-	thx.color.NamedColors.byName.set("darkturquoise",thx.color.NamedColors.darkturquoise = thx.color.Rgb.fromInt(52945));
-	thx.color.NamedColors.byName.set("dark turquoise",thx.color.NamedColors.darkturquoise);
-	thx.color.NamedColors.byName.set("darkviolet",thx.color.NamedColors.darkviolet = thx.color.Rgb.fromInt(9699539));
-	thx.color.NamedColors.byName.set("dark violet",thx.color.NamedColors.darkviolet);
-	thx.color.NamedColors.byName.set("deeppink",thx.color.NamedColors.deeppink = thx.color.Rgb.fromInt(16716947));
-	thx.color.NamedColors.byName.set("deep pink",thx.color.NamedColors.deeppink);
-	thx.color.NamedColors.byName.set("deepskyblue",thx.color.NamedColors.deepskyblue = thx.color.Rgb.fromInt(49151));
-	thx.color.NamedColors.byName.set("deep sky blue",thx.color.NamedColors.deepskyblue);
-	thx.color.NamedColors.byName.set("dimgray",thx.color.NamedColors.dimgray = thx.color.NamedColors.dimgrey = thx.color.Rgb.fromInt(6908265));
-	thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
-	thx.color.NamedColors.byName.set("dimgrey",thx.color.NamedColors.dimgrey);
-	thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
-	thx.color.NamedColors.byName.set("dodgerblue",thx.color.NamedColors.dodgerblue = thx.color.Rgb.fromInt(2003199));
-	thx.color.NamedColors.byName.set("dodger blue",thx.color.NamedColors.dodgerblue);
-	thx.color.NamedColors.byName.set("firebrick",thx.color.NamedColors.firebrick = thx.color.Rgb.fromInt(11674146));
-	thx.color.NamedColors.byName.set("fire brick",thx.color.NamedColors.firebrick);
-	thx.color.NamedColors.byName.set("floralwhite",thx.color.NamedColors.floralwhite = thx.color.Rgb.fromInt(16775920));
-	thx.color.NamedColors.byName.set("floral white",thx.color.NamedColors.floralwhite);
-	thx.color.NamedColors.byName.set("forestgreen",thx.color.NamedColors.forestgreen = thx.color.Rgb.fromInt(2263842));
-	thx.color.NamedColors.byName.set("forest green",thx.color.NamedColors.forestgreen);
-	thx.color.NamedColors.byName.set("fuchsia",thx.color.NamedColors.fuchsia = thx.color.Rgb.fromInt(16711935));
-	thx.color.NamedColors.byName.set("gainsboro",thx.color.NamedColors.gainsboro = thx.color.Rgb.fromInt(14474460));
-	thx.color.NamedColors.byName.set("ghostwhite",thx.color.NamedColors.ghostwhite = thx.color.Rgb.fromInt(16316671));
-	thx.color.NamedColors.byName.set("ghost white",thx.color.NamedColors.ghostwhite);
-	thx.color.NamedColors.byName.set("gold",thx.color.NamedColors.gold = thx.color.Rgb.fromInt(16766720));
-	thx.color.NamedColors.byName.set("goldenrod",thx.color.NamedColors.goldenrod = thx.color.Rgb.fromInt(14329120));
-	thx.color.NamedColors.byName.set("golden rod",thx.color.NamedColors.goldenrod);
-	thx.color.NamedColors.byName.set("gray",thx.color.NamedColors.gray = thx.color.NamedColors.grey = thx.color.Rgb.fromInt(8421504));
-	thx.color.NamedColors.byName.set("grey",thx.color.NamedColors.grey);
-	thx.color.NamedColors.byName.set("green",thx.color.NamedColors.green = thx.color.Rgb.fromInt(32768));
-	thx.color.NamedColors.byName.set("greenyellow",thx.color.NamedColors.greenyellow = thx.color.Rgb.fromInt(11403055));
-	thx.color.NamedColors.byName.set("green yellow",thx.color.NamedColors.greenyellow);
-	thx.color.NamedColors.byName.set("honeydew",thx.color.NamedColors.honeydew = thx.color.Rgb.fromInt(15794160));
-	thx.color.NamedColors.byName.set("honey dew",thx.color.NamedColors.honeydew);
-	thx.color.NamedColors.byName.set("hotpink",thx.color.NamedColors.hotpink = thx.color.Rgb.fromInt(16738740));
-	thx.color.NamedColors.byName.set("hot pink",thx.color.NamedColors.hotpink);
-	thx.color.NamedColors.byName.set("indianred",thx.color.NamedColors.indianred = thx.color.Rgb.fromInt(13458524));
-	thx.color.NamedColors.byName.set("indian red",thx.color.NamedColors.indianred);
-	thx.color.NamedColors.byName.set("indigo",thx.color.NamedColors.indigo = thx.color.Rgb.fromInt(4915330));
-	thx.color.NamedColors.byName.set("ivory",thx.color.NamedColors.ivory = thx.color.Rgb.fromInt(16777200));
-	thx.color.NamedColors.byName.set("khaki",thx.color.NamedColors.khaki = thx.color.Rgb.fromInt(15787660));
-	thx.color.NamedColors.byName.set("lavender",thx.color.NamedColors.lavender = thx.color.Rgb.fromInt(15132410));
-	thx.color.NamedColors.byName.set("lavenderblush",thx.color.NamedColors.lavenderblush = thx.color.Rgb.fromInt(16773365));
-	thx.color.NamedColors.byName.set("lavender blush",thx.color.NamedColors.lavenderblush);
-	thx.color.NamedColors.byName.set("lawngreen",thx.color.NamedColors.lawngreen = thx.color.Rgb.fromInt(8190976));
-	thx.color.NamedColors.byName.set("lawn green",thx.color.NamedColors.lawngreen);
-	thx.color.NamedColors.byName.set("lemonchiffon",thx.color.NamedColors.lemonchiffon = thx.color.Rgb.fromInt(16775885));
-	thx.color.NamedColors.byName.set("lemon chiffon",thx.color.NamedColors.lemonchiffon);
-	thx.color.NamedColors.byName.set("lightblue",thx.color.NamedColors.lightblue = thx.color.Rgb.fromInt(11393254));
-	thx.color.NamedColors.byName.set("light blue",thx.color.NamedColors.lightblue);
-	thx.color.NamedColors.byName.set("lightcoral",thx.color.NamedColors.lightcoral = thx.color.Rgb.fromInt(15761536));
-	thx.color.NamedColors.byName.set("light coral",thx.color.NamedColors.lightcoral);
-	thx.color.NamedColors.byName.set("lightcyan",thx.color.NamedColors.lightcyan = thx.color.Rgb.fromInt(14745599));
-	thx.color.NamedColors.byName.set("light cyan",thx.color.NamedColors.lightcyan);
-	thx.color.NamedColors.byName.set("lightgoldenrodyellow",thx.color.NamedColors.lightgoldenrodyellow = thx.color.Rgb.fromInt(16448210));
-	thx.color.NamedColors.byName.set("light golden rod yellow",thx.color.NamedColors.lightgoldenrodyellow);
-	thx.color.NamedColors.byName.set("lightgray",thx.color.NamedColors.lightgray = thx.color.NamedColors.lightgrey = thx.color.Rgb.fromInt(13882323));
-	thx.color.NamedColors.byName.set("light gray",thx.color.NamedColors.lightgray);
-	thx.color.NamedColors.byName.set("lightgrey",thx.color.NamedColors.lightgrey);
-	thx.color.NamedColors.byName.set("light grey",thx.color.NamedColors.lightgrey);
-	thx.color.NamedColors.byName.set("lightgreen",thx.color.NamedColors.lightgreen = thx.color.Rgb.fromInt(9498256));
-	thx.color.NamedColors.byName.set("light green",thx.color.NamedColors.lightgreen);
-	thx.color.NamedColors.byName.set("lightpink",thx.color.NamedColors.lightpink = thx.color.Rgb.fromInt(16758465));
-	thx.color.NamedColors.byName.set("light pink",thx.color.NamedColors.lightpink);
-	thx.color.NamedColors.byName.set("lightsalmon",thx.color.NamedColors.lightsalmon = thx.color.Rgb.fromInt(16752762));
-	thx.color.NamedColors.byName.set("light salmon",thx.color.NamedColors.lightsalmon);
-	thx.color.NamedColors.byName.set("lightseagreen",thx.color.NamedColors.lightseagreen = thx.color.Rgb.fromInt(2142890));
-	thx.color.NamedColors.byName.set("light sea green",thx.color.NamedColors.lightseagreen);
-	thx.color.NamedColors.byName.set("lightskyblue",thx.color.NamedColors.lightskyblue = thx.color.Rgb.fromInt(8900346));
-	thx.color.NamedColors.byName.set("light sky blue",thx.color.NamedColors.lightskyblue);
-	thx.color.NamedColors.byName.set("lightslategray",thx.color.NamedColors.lightslategray = thx.color.NamedColors.lightslategrey = thx.color.Rgb.fromInt(7833753));
-	thx.color.NamedColors.byName.set("light slate gray",thx.color.NamedColors.lightslategray);
-	thx.color.NamedColors.byName.set("lightslategrey",thx.color.NamedColors.lightslategrey);
-	thx.color.NamedColors.byName.set("light slate grey",thx.color.NamedColors.lightslategrey);
-	thx.color.NamedColors.byName.set("lightsteelblue",thx.color.NamedColors.lightsteelblue = thx.color.Rgb.fromInt(11584734));
-	thx.color.NamedColors.byName.set("light steel blue",thx.color.NamedColors.lightsteelblue);
-	thx.color.NamedColors.byName.set("lightyellow",thx.color.NamedColors.lightyellow = thx.color.Rgb.fromInt(16777184));
-	thx.color.NamedColors.byName.set("light yellow",thx.color.NamedColors.lightyellow);
-	thx.color.NamedColors.byName.set("lime",thx.color.NamedColors.lime = thx.color.Rgb.fromInt(65280));
-	thx.color.NamedColors.byName.set("limegreen",thx.color.NamedColors.limegreen = thx.color.Rgb.fromInt(3329330));
-	thx.color.NamedColors.byName.set("lime green",thx.color.NamedColors.limegreen);
-	thx.color.NamedColors.byName.set("linen",thx.color.NamedColors.linen = thx.color.Rgb.fromInt(16445670));
-	thx.color.NamedColors.byName.set("magenta",thx.color.NamedColors.magenta = thx.color.Rgb.fromInt(16711935));
-	thx.color.NamedColors.byName.set("maroon",thx.color.NamedColors.maroon = thx.color.Rgb.fromInt(8388608));
-	thx.color.NamedColors.byName.set("mediumaquamarine",thx.color.NamedColors.mediumaquamarine = thx.color.Rgb.fromInt(6737322));
-	thx.color.NamedColors.byName.set("mediuma quamarine",thx.color.NamedColors.mediumaquamarine);
-	thx.color.NamedColors.byName.set("mediumblue",thx.color.NamedColors.mediumblue = thx.color.Rgb.fromInt(205));
-	thx.color.NamedColors.byName.set("medium blue",thx.color.NamedColors.mediumblue);
-	thx.color.NamedColors.byName.set("mediumorchid",thx.color.NamedColors.mediumorchid = thx.color.Rgb.fromInt(12211667));
-	thx.color.NamedColors.byName.set("medium orchid",thx.color.NamedColors.mediumorchid);
-	thx.color.NamedColors.byName.set("mediumpurple",thx.color.NamedColors.mediumpurple = thx.color.Rgb.fromInt(9662683));
-	thx.color.NamedColors.byName.set("medium purple",thx.color.NamedColors.mediumpurple);
-	thx.color.NamedColors.byName.set("mediumseagreen",thx.color.NamedColors.mediumseagreen = thx.color.Rgb.fromInt(3978097));
-	thx.color.NamedColors.byName.set("medium sea green",thx.color.NamedColors.mediumseagreen);
-	thx.color.NamedColors.byName.set("mediumslateblue",thx.color.NamedColors.mediumslateblue = thx.color.Rgb.fromInt(8087790));
-	thx.color.NamedColors.byName.set("medium slate blue",thx.color.NamedColors.mediumslateblue);
-	thx.color.NamedColors.byName.set("mediumspringgreen",thx.color.NamedColors.mediumspringgreen = thx.color.Rgb.fromInt(64154));
-	thx.color.NamedColors.byName.set("medium spring green",thx.color.NamedColors.mediumspringgreen);
-	thx.color.NamedColors.byName.set("mediumturquoise",thx.color.NamedColors.mediumturquoise = thx.color.Rgb.fromInt(4772300));
-	thx.color.NamedColors.byName.set("medium turquoise",thx.color.NamedColors.mediumturquoise);
-	thx.color.NamedColors.byName.set("mediumvioletred",thx.color.NamedColors.mediumvioletred = thx.color.Rgb.fromInt(13047173));
-	thx.color.NamedColors.byName.set("medium violet red",thx.color.NamedColors.mediumvioletred);
-	thx.color.NamedColors.byName.set("midnightblue",thx.color.NamedColors.midnightblue = thx.color.Rgb.fromInt(1644912));
-	thx.color.NamedColors.byName.set("midnight blue",thx.color.NamedColors.midnightblue);
-	thx.color.NamedColors.byName.set("mintcream",thx.color.NamedColors.mintcream = thx.color.Rgb.fromInt(16121850));
-	thx.color.NamedColors.byName.set("mint cream",thx.color.NamedColors.mintcream);
-	thx.color.NamedColors.byName.set("mistyrose",thx.color.NamedColors.mistyrose = thx.color.Rgb.fromInt(16770273));
-	thx.color.NamedColors.byName.set("misty rose",thx.color.NamedColors.mistyrose);
-	thx.color.NamedColors.byName.set("moccasin",thx.color.NamedColors.moccasin = thx.color.Rgb.fromInt(16770229));
-	thx.color.NamedColors.byName.set("navajowhite",thx.color.NamedColors.navajowhite = thx.color.Rgb.fromInt(16768685));
-	thx.color.NamedColors.byName.set("navajo white",thx.color.NamedColors.navajowhite);
-	thx.color.NamedColors.byName.set("navy",thx.color.NamedColors.navy = thx.color.Rgb.fromInt(128));
-	thx.color.NamedColors.byName.set("oldlace",thx.color.NamedColors.oldlace = thx.color.Rgb.fromInt(16643558));
-	thx.color.NamedColors.byName.set("old lace",thx.color.NamedColors.oldlace);
-	thx.color.NamedColors.byName.set("olive",thx.color.NamedColors.olive = thx.color.Rgb.fromInt(8421376));
-	thx.color.NamedColors.byName.set("olivedrab",thx.color.NamedColors.olivedrab = thx.color.Rgb.fromInt(7048739));
-	thx.color.NamedColors.byName.set("olive drab",thx.color.NamedColors.olivedrab);
-	thx.color.NamedColors.byName.set("orange",thx.color.NamedColors.orange = thx.color.Rgb.fromInt(16753920));
-	thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered = thx.color.Rgb.fromInt(16729344));
-	thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered);
-	thx.color.NamedColors.byName.set("orchid",thx.color.NamedColors.orchid = thx.color.Rgb.fromInt(14315734));
-	thx.color.NamedColors.byName.set("palegoldenrod",thx.color.NamedColors.palegoldenrod = thx.color.Rgb.fromInt(15657130));
-	thx.color.NamedColors.byName.set("pale golden rod",thx.color.NamedColors.palegoldenrod);
-	thx.color.NamedColors.byName.set("palegreen",thx.color.NamedColors.palegreen = thx.color.Rgb.fromInt(10025880));
-	thx.color.NamedColors.byName.set("pale green",thx.color.NamedColors.palegreen);
-	thx.color.NamedColors.byName.set("paleturquoise",thx.color.NamedColors.paleturquoise = thx.color.Rgb.fromInt(11529966));
-	thx.color.NamedColors.byName.set("pale turquoise",thx.color.NamedColors.paleturquoise);
-	thx.color.NamedColors.byName.set("palevioletred",thx.color.NamedColors.palevioletred = thx.color.Rgb.fromInt(14381203));
-	thx.color.NamedColors.byName.set("pale violet red",thx.color.NamedColors.palevioletred);
-	thx.color.NamedColors.byName.set("papayawhip",thx.color.NamedColors.papayawhip = thx.color.Rgb.fromInt(16773077));
-	thx.color.NamedColors.byName.set("papaya whip",thx.color.NamedColors.papayawhip);
-	thx.color.NamedColors.byName.set("peachpuff",thx.color.NamedColors.peachpuff = thx.color.Rgb.fromInt(16767673));
-	thx.color.NamedColors.byName.set("peach puff",thx.color.NamedColors.peachpuff);
-	thx.color.NamedColors.byName.set("peru",thx.color.NamedColors.peru = thx.color.Rgb.fromInt(13468991));
-	thx.color.NamedColors.byName.set("pink",thx.color.NamedColors.pink = thx.color.Rgb.fromInt(16761035));
-	thx.color.NamedColors.byName.set("plum",thx.color.NamedColors.plum = thx.color.Rgb.fromInt(14524637));
-	thx.color.NamedColors.byName.set("powderblue",thx.color.NamedColors.powderblue = thx.color.Rgb.fromInt(11591910));
-	thx.color.NamedColors.byName.set("powder blue",thx.color.NamedColors.powderblue);
-	thx.color.NamedColors.byName.set("purple",thx.color.NamedColors.purple = thx.color.Rgb.fromInt(8388736));
-	thx.color.NamedColors.byName.set("red",thx.color.NamedColors.red = thx.color.Rgb.fromInt(16711680));
-	thx.color.NamedColors.byName.set("rosybrown",thx.color.NamedColors.rosybrown = thx.color.Rgb.fromInt(12357519));
-	thx.color.NamedColors.byName.set("rosy brown",thx.color.NamedColors.rosybrown);
-	thx.color.NamedColors.byName.set("royalblue",thx.color.NamedColors.royalblue = thx.color.Rgb.fromInt(4286945));
-	thx.color.NamedColors.byName.set("royal blue",thx.color.NamedColors.royalblue);
-	thx.color.NamedColors.byName.set("saddlebrown",thx.color.NamedColors.saddlebrown = thx.color.Rgb.fromInt(9127187));
-	thx.color.NamedColors.byName.set("saddle brown",thx.color.NamedColors.saddlebrown);
-	thx.color.NamedColors.byName.set("salmon",thx.color.NamedColors.salmon = thx.color.Rgb.fromInt(16416882));
-	thx.color.NamedColors.byName.set("sandybrown",thx.color.NamedColors.sandybrown = thx.color.Rgb.fromInt(16032864));
-	thx.color.NamedColors.byName.set("sandy brown",thx.color.NamedColors.sandybrown);
-	thx.color.NamedColors.byName.set("seagreen",thx.color.NamedColors.seagreen = thx.color.Rgb.fromInt(3050327));
-	thx.color.NamedColors.byName.set("sea green",thx.color.NamedColors.seagreen);
-	thx.color.NamedColors.byName.set("seashell",thx.color.NamedColors.seashell = thx.color.Rgb.fromInt(16774638));
-	thx.color.NamedColors.byName.set("sea shell",thx.color.NamedColors.seashell);
-	thx.color.NamedColors.byName.set("sienna",thx.color.NamedColors.sienna = thx.color.Rgb.fromInt(10506797));
-	thx.color.NamedColors.byName.set("silver",thx.color.NamedColors.silver = thx.color.Rgb.fromInt(12632256));
-	thx.color.NamedColors.byName.set("skyblue",thx.color.NamedColors.skyblue = thx.color.Rgb.fromInt(8900331));
-	thx.color.NamedColors.byName.set("sky blue",thx.color.NamedColors.skyblue);
-	thx.color.NamedColors.byName.set("slateblue",thx.color.NamedColors.slateblue = thx.color.Rgb.fromInt(6970061));
-	thx.color.NamedColors.byName.set("slate blue",thx.color.NamedColors.slateblue);
-	thx.color.NamedColors.byName.set("slategray",thx.color.NamedColors.slategray = thx.color.NamedColors.slategrey = thx.color.Rgb.fromInt(7372944));
-	thx.color.NamedColors.byName.set("slate gray",thx.color.NamedColors.slategray);
-	thx.color.NamedColors.byName.set("slategrey",thx.color.NamedColors.slategrey);
-	thx.color.NamedColors.byName.set("slate grey",thx.color.NamedColors.slategrey);
-	thx.color.NamedColors.byName.set("snow",thx.color.NamedColors.snow = thx.color.Rgb.fromInt(16775930));
-	thx.color.NamedColors.byName.set("springgreen",thx.color.NamedColors.springgreen = thx.color.Rgb.fromInt(65407));
-	thx.color.NamedColors.byName.set("spring green",thx.color.NamedColors.springgreen);
-	thx.color.NamedColors.byName.set("steelblue",thx.color.NamedColors.steelblue = thx.color.Rgb.fromInt(4620980));
-	thx.color.NamedColors.byName.set("steel blue",thx.color.NamedColors.steelblue);
-	thx.color.NamedColors.byName.set("tan",thx.color.NamedColors.tan = thx.color.Rgb.fromInt(13808780));
-	thx.color.NamedColors.byName.set("teal",thx.color.NamedColors.teal = thx.color.Rgb.fromInt(32896));
-	thx.color.NamedColors.byName.set("thistle",thx.color.NamedColors.thistle = thx.color.Rgb.fromInt(14204888));
-	thx.color.NamedColors.byName.set("tomato",thx.color.NamedColors.tomato = thx.color.Rgb.fromInt(16737095));
-	thx.color.NamedColors.byName.set("turquoise",thx.color.NamedColors.turquoise = thx.color.Rgb.fromInt(4251856));
-	thx.color.NamedColors.byName.set("violet",thx.color.NamedColors.violet = thx.color.Rgb.fromInt(15631086));
-	thx.color.NamedColors.byName.set("wheat",thx.color.NamedColors.wheat = thx.color.Rgb.fromInt(16113331));
-	thx.color.NamedColors.byName.set("white",thx.color.NamedColors.white = thx.color.Rgb.fromInt(16777215));
-	thx.color.NamedColors.byName.set("whitesmoke",thx.color.NamedColors.whitesmoke = thx.color.Rgb.fromInt(16119285));
-	thx.color.NamedColors.byName.set("white smoke",thx.color.NamedColors.whitesmoke);
-	thx.color.NamedColors.byName.set("yellow",thx.color.NamedColors.yellow = thx.color.Rgb.fromInt(16776960));
-	thx.color.NamedColors.byName.set("yellowgreen",thx.color.NamedColors.yellowgreen = thx.color.Rgb.fromInt(10145074));
-	thx.color.NamedColors.byName.set("yellow green",thx.color.NamedColors.yellowgreen);
-}
-{
 	String.prototype.__class__ = $hxClasses["String"] = String;
 	String.__name__ = ["String"];
 	Array.prototype.__class__ = $hxClasses["Array"] = Array;
@@ -7293,7 +6594,6 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	d.__name__ = ["Date"];
 }
 Ints._reparse = new EReg("^([+-])?\\d+$","");
-thx.color.Colors._reParse = new EReg("^(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))$","i");
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
 thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
@@ -7341,7 +6641,6 @@ rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year",
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
 thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
-Objects._reCheckKeyIsColor = new EReg("color\\b|\\bbackground\\b|\\bstroke\\b|\\bfill\\b","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 js.Lib.onerror = null;
 rg.app.query.JSBridge.main()

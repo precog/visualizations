@@ -20,7 +20,7 @@ if(LOCAL)
 	define('REPORTGRID_CORE_API', '/rg/api/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
 	$categories['XX'] = array('name' => 'Test', 'sequence' => 1000);
 } else {
-	define('REPORTGRID_QUERY_API', 'http://api.reportgrid.com/js/reportgrid-queries.js');
+	define('REPORTGRID_QUERY_API', 'http://api.reportgrid.com/js/reportgrid-query.js');
 	define('REPORTGRID_CHARTS_API', 'http://api.reportgrid.com/js/reportgrid-charts.js');
 	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg-charts.css');
 	define('REPORTGRID_CORE_API', 'http://api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D" type="text/javascript');
