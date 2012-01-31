@@ -70,28 +70,10 @@ class BaseQuery<This>
 		return transform(Transformers.map(handler));
 	}
 
-	public function log(?f : Array<Dynamic> -> Void)
+	public function audit(f : Array<Dynamic> -> Void)
 	{
-		var api : { function log(v : Dynamic) : Void; } = untyped __js__("console");
-		if(null == f)
-			f = api.log;
-		if(null == f)
-			return _this(this);
 		return transform(function(d : Array<Dynamic>) : Array<Dynamic> {
 			f(d);
-			return d;
-		});
-	}
-
-	public function logFirst(?f : Dynamic -> Void)
-	{
-		var api : { function log(v : Dynamic) : Void; } = untyped __js__("console");
-		if(null == f)
-			f = api.log;
-		if(null == f)
-			return _this(this);
-		return transform(function(d : Array<Dynamic>) : Array<Dynamic> {
-			f(d[0]);
 			return d;
 		});
 	}

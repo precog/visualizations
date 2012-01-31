@@ -520,21 +520,9 @@ rg.query.BaseQuery.prototype = {
 	,map: function(handler) {
 		return this.transform(rg.query.Transformers.map(handler));
 	}
-	,log: function(f) {
-		var api = console;
-		if(null == f) f = api.log.$bind(api);
-		if(null == f) return this;
+	,audit: function(f) {
 		return this.transform(function(d) {
 			f(d);
-			return d;
-		});
-	}
-	,logFirst: function(f) {
-		var api = console;
-		if(null == f) f = api.log.$bind(api);
-		if(null == f) return this;
-		return this.transform(function(d) {
-			f(d[0]);
 			return d;
 		});
 	}
@@ -1426,7 +1414,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.2.2.6505"};
+	r.info.charts = { version : "1.2.2.6507"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -10586,18 +10574,18 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 				return params.axes.length > 1?rg.util.Properties.formatValue(params.axes[0].type,dp):stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapointover : function(dp,stats) {
 				var v = Reflect.field(dp,stats.type);
-				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(stats.type,"."),".")) + ": " + rg.util.RGStrings.humanize(v) + (params.axes.length > 1 && stats.tot != 0.0?" (" + Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1") + ")":"");
+				return rg.util.RGStrings.humanize(stats.type) + ": " + rg.util.RGStrings.humanize(v) + (params.axes.length > 1 && stats.tot != 0.0?" (" + Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1") + ")":"");
 			}};
 			break;
 		case "sankey":
 			var axes = params.axes, type = axes[axes.length - 1].type;
 			params.options.label = { datapointover : function(dp,stats) {
 				var v = Reflect.field(dp,type);
-				return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),".")) + ": " + rg.util.Properties.formatValue(type,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
+				return rg.util.RGStrings.humanize(type) + ": " + rg.util.Properties.formatValue(type,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
 			}, node : function(dp,stats) {
 				return dp.id;
 			}, datapoint : function(dp,stats) {
-				return rg.util.Properties.formatValue(type,dp) + "\n" + rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(type,"."),"."));
+				return rg.util.Properties.formatValue(type,dp) + "\n" + rg.util.RGStrings.humanize(type);
 			}, edge : function(dp,stats) {
 				return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
 			}, edgeover : function(dp,stats) {
@@ -13489,7 +13477,7 @@ rg.util.Properties.timeProperty = function(periodicity) {
 	return "." + "time:" + periodicity;
 }
 rg.util.Properties.humanize = function(s) {
-	return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(s,"."),"."));
+	return rg.util.RGStrings.humanize(s);
 }
 rg.util.Properties.formatValue = function(type,dp) {
 	var value = Reflect.field(dp,type);
@@ -20446,7 +20434,7 @@ rg.html.chart.PivotTable.prototype = {
 		return thx.culture.FormatNumber.percent(100 * v / stats.tot,1);
 	}
 	,labelAxis: function(v) {
-		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(v,"."),"."));
+		return rg.util.RGStrings.humanize(v);
 	}
 	,labelAxisValue: function(v,axis) {
 		if(axis.indexOf("time:") >= 0) {
@@ -24644,7 +24632,7 @@ rg.html.chart.Leadeboard.prototype = {
 	,_created: null
 	,stats: null
 	,labelDataPoint: function(dp,stats) {
-		return rg.util.RGStrings.humanize(Strings.rtrim(Strings.ltrim(Reflect.field(dp,this.variableIndependent.type),"."),"."));
+		return rg.util.RGStrings.humanize(Reflect.field(dp,this.variableIndependent.type));
 	}
 	,labelDataPointOver: function(dp,stats) {
 		return Floats.format(100 * Reflect.field(dp,stats.type) / (this.useMax?stats.max:stats.tot),"P:1");

@@ -36,54 +36,59 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		super(delegate, first);
 	}
 
-	public function paths(?p : { ?parent : String })
+	public function paths(?p : { ?parent : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { parent : String }, handler) {
 			executor.children(
 				params.parent,
 				{ type : "path" },
-				_complete(ReportGridTransformers.childrenPath, params, handler)
+				_complete(ReportGridTransformers.childrenPath, params, keep, handler)
 			);
 		});
 	}
 
-	public function events(?p : { ?path : String })
+	public function events(?p : { ?path : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String }, handler) {
 			executor.children(
 				params.path,
 				{ type : "property" },
-				_complete(ReportGridTransformers.childrenEvent, params, handler)
+				_complete(ReportGridTransformers.childrenEvent, params, keep, handler)
 			);
 		});
 	}
 
-	public function properties(?p : { ?path : String, ?event : String })
+	public function properties(?p : { ?path : String, ?event : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String }, handler) {
 			executor.children(
 				params.path,
 				{ property : params.event },
-				_complete(ReportGridTransformers.childrenProperty, params, handler)
+				_complete(ReportGridTransformers.childrenProperty, params, keep, handler)
 			);
 		});
 	}
 
-	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic })
+	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			executor.propertyValues(
 				params.path,
 				options,
-				_complete(ReportGridTransformers.propertyValues, params, handler)
+				_complete(ReportGridTransformers.propertyValues, params, keep, handler)
 			);
 		});
 	}
 
-	public function count(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String })
+	public function count(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?where : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
 // TODO tag?
 			_ensureOptionalTimeParams(params);
@@ -97,7 +102,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 				executor.searchCount(
 					params.path,
 					options,
-					_complete(null != params.tag ? ReportGridTransformers.eventCountTag : ReportGridTransformers.eventCount, params, handler)
+					_complete(null != params.tag ? ReportGridTransformers.eventCountTag : ReportGridTransformers.eventCount, params, keep, handler)
 				);
 			} else if(null != params.property)
 			{
@@ -108,21 +113,22 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 				executor.propertyValueCount(
 					params.path,
 					options,
-					_complete(null != params.tag ? ReportGridTransformers.propertyValueCountTag : ReportGridTransformers.propertyValueCount, params, handler)
+					_complete(null != params.tag ? ReportGridTransformers.propertyValueCountTag : ReportGridTransformers.propertyValueCount, params, keep, handler)
 				);
 			} else {
 				options.property = params.event;
 				executor.propertyCount(
 					params.path,
 					options,
-					_complete(null != params.tag ? ReportGridTransformers.eventCountTag : ReportGridTransformers.eventCount, params, handler)
+					_complete(null != params.tag ? ReportGridTransformers.eventCountTag : ReportGridTransformers.eventCount, params, keep, handler)
 				);
 			}
 		});
 	}
 
-	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String })
+	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?type : String }, handler) {
 // TODO tag?
 // TODO time range?
@@ -135,13 +141,13 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 					executor.propertyMeans(
 						params.path,
 						options,
-						_complete(ReportGridTransformers.propertySummary, params, handler)
+						_complete(ReportGridTransformers.propertySummary, params, keep, handler)
 					);
 				case "standarddeviation":
 					executor.propertyStandardDeviations(
 						params.path,
 						options,
-						_complete(ReportGridTransformers.propertySummary, params, handler)
+						_complete(ReportGridTransformers.propertySummary, params, keep, handler)
 					);
 				default:
 					_error(Std.format("invalid summary type: '${params.type}'"));
@@ -149,8 +155,9 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function summarySeries(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?timezone : Dynamic, ?groupby : String })
+	public function summarySeries(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?type : String, ?start : Dynamic, ?end : Dynamic, ?periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
 // TODO tag?
 // TODO groupBy
@@ -159,7 +166,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			_ensureTimeParams(params);
 			var options = _defaultSeriesOptions(params);
 			options.property = params.event + _prefixProperty(params.property);
-			var tranform  : Dynamic -> Dynamic -> Array<Dynamic> = ((null != params.tag)
+			var tranform  : Dynamic -> Dynamic -> Array<String> -> Array<Dynamic> = ((null != params.tag)
 				? cast ReportGridTransformers.propertySummarySeriesTagGroupedBy
 				: cast ReportGridTransformers.propertySummarySeries);
 			switch(params.type.toLowerCase())
@@ -168,13 +175,13 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 					executor.propertyMeans(
 						params.path,
 						options,
-						_complete(tranform, params, handler)
+						_complete(tranform, params, keep, handler)
 					);
 				case "standarddeviation":
 					executor.propertyStandardDeviations(
 						params.path,
 						options,
-						_complete(tranform, params, handler)
+						_complete(tranform, params, keep, handler)
 					);
 				default:
 					_error(Std.format("invalid summary type: '${params.type}'"));
@@ -183,8 +190,9 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	}
 
 // TODO tag?
-	public function intersect(?p : { ?path : String, ?event : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String })
+	public function intersect(?p : { ?path : String, ?event : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String }, handler) {
 
 			_ensureOptionalTimeParams(params);
@@ -217,15 +225,16 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			executor.intersect(
 				params.path,
 				options,
-				_complete(null != params.tag ? ReportGridTransformers.intersectTag : ReportGridTransformers.intersect, params, handler)
+				_complete(null != params.tag ? ReportGridTransformers.intersectTag : ReportGridTransformers.intersect, params, keep, handler)
 			);
 		});
 	}
 
 // TODO tag?
 // TODO groupBy?
-	public function intersectSeries(?p : { ?path : String, ?event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String })
+	public function intersectSeries(?p : { ?path : String, ?event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
 			_ensureTimeParams(params);
 			var options = _defaultSeriesOptions(params),
@@ -258,7 +267,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			executor.intersect(
 				params.path,
 				options,
-				_complete(null != params.tag ? ReportGridTransformers.intersectSeriesTag : ReportGridTransformers.intersectSeries, params, handler)
+				_complete(null != params.tag ? ReportGridTransformers.intersectSeriesTag : ReportGridTransformers.intersectSeries, params, keep, handler)
 			);
 		});
 	}
@@ -266,12 +275,12 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 // TODO timerange?
 // TODO tag?
-	public function histogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String })
+	public function histogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
-			trace(options);
 			if(null != params.top)
 			{
 				if(null != params.bottom)
@@ -284,13 +293,14 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			executor.histogram(
 				params.path,
 				options,
-				_complete(null != params.tag ? ReportGridTransformers.histogramTag : ReportGridTransformers.histogram, params, handler)
+				_complete(null != params.tag ? ReportGridTransformers.histogramTag : ReportGridTransformers.histogram, params, keep, handler)
 			);
 		});
 	}
 
-	public function propertiesHistogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String })
+	public function propertiesHistogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
 		// TODO tag?
 			_ensureOptionalTimeParams(params);
@@ -298,13 +308,14 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			executor.propertiesHistogram(
 				params.path,
 				options,
-				_complete(ReportGridTransformers.propertiesHistogram, params, handler)
+				_complete(ReportGridTransformers.propertiesHistogram, params, keep, handler)
 			);
 		});
 	}
 
-	public function series(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String, ?timezone : Dynamic, ?groupby : String })
+	public function series(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
 	{
+		keep = _normalizeKeep(keep);
 		return _crossp(p).each(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
 			_ensureTimeParams(params);
 			var options : Dynamic = _defaultSeriesOptions(params);
@@ -319,7 +330,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 					options,
 					_complete((null != params.tag)
 						? cast ReportGridTransformers.eventSeriesTagGroupedBy
-						: ReportGridTransformers.eventSeries, params, handler)
+						: ReportGridTransformers.eventSeries, params, keep, handler)
 				);
 			} else if(null != params.property)
 			{
@@ -333,7 +344,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 					options,
 					_complete((null != params.tag)
 						? cast ReportGridTransformers.propertyValueSeriesTagGroupedBy
-						: ReportGridTransformers.propertyValueSeries, params, handler)
+						: ReportGridTransformers.propertyValueSeries, params, keep, handler)
 				);
 			} else {
 // TODO tag?
@@ -344,7 +355,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 					options,
 					_complete((null != params.tag)
 						? cast ReportGridTransformers.eventSeriesTagGroupedBy
-						: ReportGridTransformers.eventSeries, params, handler)
+						: ReportGridTransformers.eventSeries, params, keep, handler)
 				);
 			}
 		});
@@ -441,11 +452,11 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		throw new thx.error.Error(s);
 	}
 
-	static function _complete(transformer : Dynamic -> Dynamic -> Array<Dynamic>, params : Dynamic, handler : Array<Dynamic> -> Void)
+	static function _complete(transformer : Dynamic -> Dynamic -> Array<String> -> Array<Dynamic>, params : Dynamic, ?keep : Array<String>, handler : Array<Dynamic> -> Void)
 	{
 		return function(data : Dynamic)
 		{
-			handler(transformer(data, params));
+			handler(transformer(data, params, keep));
 		};
 	}
 
@@ -458,11 +469,15 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 	inline function _params(p : Dynamic) : Array<Dynamic> return null == p ? [{}] : (Std.is(p, Array) ? p : [p])
 
-
 	override function _createQuery(delegate : Delegate, first : BaseQuery<This>) : BaseQuery<This>
 	{
 		var query = new ReportGridBaseQuery(delegate, first);
 		query.executor = executor;
 		return query;
+	}
+
+	inline function _normalizeKeep(k : Array<String>) : Array<String>
+	{
+		return null == k ? [] : (Std.is(k, String) ? cast [k] : k);
 	}
 }

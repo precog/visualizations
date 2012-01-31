@@ -2143,21 +2143,9 @@ rg.query.BaseQuery.prototype = {
 	,map: function(handler) {
 		return this.transform(rg.query.Transformers.map(handler));
 	}
-	,log: function(f) {
-		var api = console;
-		if(null == f) f = api.log.$bind(api);
-		if(null == f) return this;
+	,audit: function(f) {
 		return this.transform(function(d) {
 			f(d);
-			return d;
-		});
-	}
-	,logFirst: function(f) {
-		var api = console;
-		if(null == f) f = api.log.$bind(api);
-		if(null == f) return this;
-		return this.transform(function(d) {
-			f(d[0]);
 			return d;
 		});
 	}
@@ -2348,11 +2336,11 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 439, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 452, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
-rg.query.ReportGridBaseQuery._complete = function(transformer,params,handler) {
+rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
-		handler(transformer(data,params));
+		handler(transformer(data,params,keep));
 	};
 }
 rg.query.ReportGridBaseQuery._prefixProperty = function(p) {
@@ -2361,69 +2349,78 @@ rg.query.ReportGridBaseQuery._prefixProperty = function(p) {
 rg.query.ReportGridBaseQuery.__super__ = rg.query.BaseQuery;
 rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	executor: null
-	,paths: function(p) {
+	,paths: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
-			me.executor.children(params.parent,{ type : "path"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenPath,params,handler));
+			me.executor.children(params.parent,{ type : "path"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenPath,params,keep,handler));
 		});
 	}
-	,events: function(p) {
+	,events: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
-			me.executor.children(params.path,{ type : "property"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenEvent,params,handler));
+			me.executor.children(params.path,{ type : "property"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenEvent,params,keep,handler));
 		});
 	}
-	,properties: function(p) {
+	,properties: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
-			me.executor.children(params.path,{ property : params.event},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenProperty,params,handler));
+			me.executor.children(params.path,{ property : params.event},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenProperty,params,keep,handler));
 		});
 	}
-	,values: function(p) {
+	,values: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
-			me.executor.propertyValues(params.path,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,params,handler));
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
+			me.executor.propertyValues(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,params,keep,handler));
 		});
 	}
-	,count: function(p) {
+	,count: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
 			if(null != params.where) {
 				if(null != params.property) rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"); else if(null != params.value) rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query");
 				options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-				me.executor.searchCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,handler));
+				me.executor.searchCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
 			} else if(null != params.property) {
 				if(null == params.value) rg.query.ReportGridBaseQuery._error("can't count on a property");
 				options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
 				options.value = params.value;
-				me.executor.propertyValueCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueCountTag:rg.query.ReportGridTransformers.propertyValueCount,params,handler));
+				me.executor.propertyValueCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueCountTag:rg.query.ReportGridTransformers.propertyValueCount,params,keep,handler));
 			} else {
 				options.property = params.event;
-				me.executor.propertyCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,handler));
+				me.executor.propertyCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
 			}
 		});
 	}
-	,summary: function(p) {
+	,summary: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			if(null == params.type) params.type = "mean";
 			var options = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property), periodicity : "eternity"};
 			switch(params.type.toLowerCase()) {
 			case "mean":
-				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,handler));
+				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
 				break;
 			case "standarddeviation":
-				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,handler));
+				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
 				break;
 			default:
 				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
 			}
 		});
 	}
-	,summarySeries: function(p) {
+	,summarySeries: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			if(null == params.type) params.type = "mean";
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
@@ -2432,18 +2429,19 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			var tranform = null != params.tag?rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy:rg.query.ReportGridTransformers.propertySummarySeries;
 			switch(params.type.toLowerCase()) {
 			case "mean":
-				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,handler));
+				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
 				break;
 			case "standarddeviation":
-				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,handler));
+				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
 				break;
 			default:
 				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
 			}
 		});
 	}
-	,intersect: function(p) {
+	,intersect: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ periodicity : "eternity"}), properties = [];
@@ -2464,11 +2462,12 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				}
 				properties.push(o);
 			}
-			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectTag:rg.query.ReportGridTransformers.intersect,params,handler));
+			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectTag:rg.query.ReportGridTransformers.intersect,params,keep,handler));
 		});
 	}
-	,intersectSeries: function(p) {
+	,intersectSeries: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params), properties = [];
@@ -2489,47 +2488,49 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				}
 				properties.push(o);
 			}
-			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectSeriesTag:rg.query.ReportGridTransformers.intersectSeries,params,handler));
+			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectSeriesTag:rg.query.ReportGridTransformers.intersectSeries,params,keep,handler));
 		});
 	}
-	,histogram: function(p) {
+	,histogram: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
-			haxe.Log.trace(options,{ fileName : "ReportGridQuery.hx", lineNumber : 272, className : "rg.query.ReportGridBaseQuery", methodName : "histogram"});
 			if(null != params.top) {
 				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
 				options.top = params.top;
 			} else if(null != params.bottom) options.bottom = params.bottom;
-			me.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,params,handler));
+			me.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,params,keep,handler));
 		});
 	}
-	,propertiesHistogram: function(p) {
+	,propertiesHistogram: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
-			me.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,handler));
+			me.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,keep,handler));
 		});
 	}
-	,series: function(p) {
+	,series: function(p,keep) {
 		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
 			if(null != params.where) {
 				if(null != params.property) rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"); else if(null != params.value) rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query");
 				options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-				me.executor.searchSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,handler));
+				me.executor.searchSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
 			} else if(null != params.property) {
 				if(null == params.value) rg.query.ReportGridBaseQuery._error("can't count on a property");
 				options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
 				options.value = params.value;
-				me.executor.propertyValueSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy:rg.query.ReportGridTransformers.propertyValueSeries,params,handler));
+				me.executor.propertyValueSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy:rg.query.ReportGridTransformers.propertyValueSeries,params,keep,handler));
 			} else {
 				options.property = params.event;
-				me.executor.propertySeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,handler));
+				me.executor.propertySeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
 			}
 		});
 	}
@@ -2543,6 +2544,9 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 		var query = new rg.query.ReportGridBaseQuery(delegate,first);
 		query.executor = this.executor;
 		return query;
+	}
+	,_normalizeKeep: function(k) {
+		return null == k?[]:Std["is"](k,String)?[k]:k;
 	}
 	,__class__: rg.query.ReportGridBaseQuery
 });
@@ -3466,61 +3470,73 @@ thx.translation.ITranslation.prototype = {
 }
 rg.query.ReportGridTransformers = $hxClasses["rg.query.ReportGridTransformers"] = function() { }
 rg.query.ReportGridTransformers.__name__ = ["rg","query","ReportGridTransformers"];
-rg.query.ReportGridTransformers.childrenPath = function(arr,params) {
+rg.query.ReportGridTransformers.childrenPath = function(arr,params,keep) {
 	var parent = params.parent, prefix = parent == "/"?"":parent;
 	return arr.map(function(path,_) {
-		return { parent : parent, path : prefix + "/" + path};
+		var o = { parent : parent, path : prefix + "/" + path};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
 	});
 }
-rg.query.ReportGridTransformers.childrenEvent = function(arr,params) {
+rg.query.ReportGridTransformers.childrenEvent = function(arr,params,keep) {
 	var path = params.path;
 	return arr.map(function(event,_) {
-		return { path : path, event : event.substr(1)};
+		var o = { path : path, event : event.substr(1)};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
 	});
 }
-rg.query.ReportGridTransformers.childrenProperty = function(arr,params) {
+rg.query.ReportGridTransformers.childrenProperty = function(arr,params,keep) {
 	var path = params.path, event = params.event;
 	return arr.map(function(property,_) {
-		return { path : path, event : event, property : property.substr(1)};
+		var o = { path : path, event : event, property : property.substr(1)};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
 	});
 }
-rg.query.ReportGridTransformers.propertyValues = function(arr,params) {
+rg.query.ReportGridTransformers.propertyValues = function(arr,params,keep) {
 	var path = params.path, event = params.event, property = params.property;
 	return arr.map(function(value,_) {
-		return { path : path, event : event, property : property, value : value};
+		var o = { path : path, event : event, property : property, value : value};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
 	});
 }
-rg.query.ReportGridTransformers.histogram = function(arr,params) {
-	var path = params.path, event = params.event, property = params.property;
+rg.query.ReportGridTransformers.histogram = function(arr,params,keep) {
+	var property = params.property;
 	return arr.map(function(value,_) {
-		var ob = { path : path, event : event, count : value[1]};
-		ob[property] = value[0];
-		return ob;
+		var o = { count : value[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[property] = value[0];
+		return o;
 	});
 }
-rg.query.ReportGridTransformers.histogramTag = function(counts,params) {
-	var path = params.path, event = params.event, tag = params.tag, property = params.property;
+rg.query.ReportGridTransformers.histogramTag = function(counts,params,keep) {
+	var tag = params.tag, property = params.property;
 	return Objects.map(counts,function(key,value) {
-		var o = { path : path, event : event, count : value[0]};
+		var o = { count : value[0]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
 		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 		return o;
 	});
 }
-rg.query.ReportGridTransformers.propertiesHistogram = function(arr,params) {
-	var path = params.path, event = params.event, property = params.property;
+rg.query.ReportGridTransformers.propertiesHistogram = function(arr,params,keep) {
+	var property = params.property;
 	return arr.map(function(value,_) {
-		var ob = { path : path, event : event, count : value[1]};
-		ob[property] = Strings.ltrim(value[0],".");
-		return ob;
+		var o = { count : value[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[property] = Strings.ltrim(value[0],".");
+		return o;
 	});
 }
-rg.query.ReportGridTransformers.intersect = function(ob,params) {
-	var path = params.path, event = params.event, properties = params.properties, result = [];
+rg.query.ReportGridTransformers.intersect = function(ob,params,keep) {
+	var properties = params.properties, result = [];
 	var _g = 0, _g1 = Objects.flatten(ob);
 	while(_g < _g1.length) {
 		var pair = _g1[_g];
 		++_g;
-		var o = { path : path, event : event, count : pair.value};
+		var o = { count : pair.value};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
 		var _g3 = 0, _g2 = properties.length;
 		while(_g3 < _g2) {
 			var i = _g3++;
@@ -3530,14 +3546,15 @@ rg.query.ReportGridTransformers.intersect = function(ob,params) {
 	}
 	return result;
 }
-rg.query.ReportGridTransformers.intersectTag = function(ob,params) {
-	var path = params.path, event = params.event, tag = params.tag, properties = params.properties, result = [];
+rg.query.ReportGridTransformers.intersectTag = function(ob,params,keep) {
+	var tag = params.tag, properties = params.properties, result = [];
 	Objects.each(ob,function(key,value) {
 		var _g = 0, _g1 = Objects.flatten(value);
 		while(_g < _g1.length) {
 			var pair = _g1[_g];
 			++_g;
-			var o = { path : path, event : event, count : pair.value};
+			var o = { count : pair.value};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			var _g3 = 0, _g2 = properties.length;
 			while(_g3 < _g2) {
@@ -3549,8 +3566,8 @@ rg.query.ReportGridTransformers.intersectTag = function(ob,params) {
 	});
 	return result;
 }
-rg.query.ReportGridTransformers.intersectSeries = function(ob,params) {
-	var path = params.path, event = params.event, properties = params.properties, periodicity = params.periodicity, timezone = params.timezone, groupby = params.groupby, result = [];
+rg.query.ReportGridTransformers.intersectSeries = function(ob,params,keep) {
+	var properties = params.properties, periodicity = params.periodicity, timezone = params.timezone, groupby = params.groupby, result = [];
 	var _g = 0, _g1 = Objects.flatten(ob);
 	while(_g < _g1.length) {
 		var pair = _g1[_g];
@@ -3560,7 +3577,8 @@ rg.query.ReportGridTransformers.intersectSeries = function(ob,params) {
 		while(_g2 < values.length) {
 			var item = values[_g2];
 			++_g2;
-			var o = { path : path, event : event, count : item[1]};
+			var o = { count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 			var _g4 = 0, _g3 = properties.length;
 			while(_g4 < _g3) {
@@ -3572,8 +3590,8 @@ rg.query.ReportGridTransformers.intersectSeries = function(ob,params) {
 	}
 	return result;
 }
-rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params) {
-	var path = params.path, event = params.event, properties = params.properties, periodicity = params.periodicity, tag = params.tag, timezone = params.timezone, groupby = params.groupby, result = [];
+rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params,keep) {
+	var properties = params.properties, periodicity = params.periodicity, tag = params.tag, timezone = params.timezone, groupby = params.groupby, result = [];
 	Objects.each(ob,function(key,value) {
 		var _g = 0, _g1 = Objects.flatten(value);
 		while(_g < _g1.length) {
@@ -3584,7 +3602,8 @@ rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params) {
 			while(_g2 < values.length) {
 				var item = values[_g2];
 				++_g2;
-				var o = { path : path, event : event, count : item[1]};
+				var o = { count : item[1]};
+				rg.query.ReportGridTransformers._keep(params,o,keep);
 				rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 				o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 				var _g4 = 0, _g3 = properties.length;
@@ -3598,29 +3617,32 @@ rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params) {
 	});
 	return result;
 }
-rg.query.ReportGridTransformers.eventCount = function(count,params) {
-	var o = { path : params.path, event : params.event, count : count};
+rg.query.ReportGridTransformers.eventCount = function(count,params,keep) {
+	var o = { event : params.event, count : count};
+	rg.query.ReportGridTransformers._keep(params,o,keep);
 	if(null != params.where) Objects.copyTo(params.where,o);
 	return [o];
 }
-rg.query.ReportGridTransformers.eventCountTag = function(counts,params) {
-	var path = params.path, event = params.event, tag = params.tag;
+rg.query.ReportGridTransformers.eventCountTag = function(counts,params,keep) {
+	var event = params.event, tag = params.tag;
 	return Objects.map(counts,function(key,count) {
-		var o = { path : path, event : event, count : count};
+		var o = { event : event, count : count};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
 		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 		if(null != params.where) Objects.copyTo(params.where,o);
 		return o;
 	});
 }
-rg.query.ReportGridTransformers.eventSeriesTagGroupedBy = function(ob,params) {
-	var path = params.path, event = params.event, periodicity = params.periodicity, where = params.where, groupby = params.groupby, tag = params.tag;
+rg.query.ReportGridTransformers.eventSeriesTagGroupedBy = function(ob,params,keep) {
+	var event = params.event, periodicity = params.periodicity, where = params.where, groupby = params.groupby, tag = params.tag;
 	return Arrays.flatten(Objects.map(ob,function(key,values) {
 		var result = [];
 		var _g = 0;
 		while(_g < values.length) {
 			var item = values[_g];
 			++_g;
-			var o = { path : path, event : event, count : item[1]};
+			var o = { event : event, count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
 			if(null != where) Objects.copyTo(where,o);
@@ -3629,47 +3651,51 @@ rg.query.ReportGridTransformers.eventSeriesTagGroupedBy = function(ob,params) {
 		return result;
 	}));
 }
-rg.query.ReportGridTransformers.eventSeries = function(values,params) {
-	var path = params.path, event = params.event, periodicity = params.periodicity, where = params.where, timezone = params.timezone, groupby = params.groupby, result = [];
+rg.query.ReportGridTransformers.eventSeries = function(values,params,keep) {
+	var event = params.event, periodicity = params.periodicity, where = params.where, timezone = params.timezone, groupby = params.groupby, result = [];
 	var _g = 0;
 	while(_g < values.length) {
 		var item = values[_g];
 		++_g;
-		var o = { path : path, event : event, count : item[1]};
+		var o = { event : event, count : item[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
 		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 		if(null != where) Objects.copyTo(where,o);
 		result.push(o);
 	}
 	return result;
 }
-rg.query.ReportGridTransformers.propertySummary = function(count,params) {
-	var o = { path : params.path, event : params.event, count : count};
-	haxe.Log.trace(count,{ fileName : "ReportGridTransformers.hx", lineNumber : 311, className : "rg.query.ReportGridTransformers", methodName : "propertySummary"});
+rg.query.ReportGridTransformers.propertySummary = function(value,params,keep) {
+	var o = { };
+	rg.query.ReportGridTransformers._keep(params,o,keep);
 	if(null != params.where) Objects.copyTo(params.where,o);
+	o[params.type] = value;
 	return [o];
 }
-rg.query.ReportGridTransformers.propertySummarySeries = function(values,params) {
-	var path = params.path, event = params.event, property = params.property, periodicity = params.periodicity, type = params.type, timezone = params.timezone, groupby = params.groupby, result = [];
+rg.query.ReportGridTransformers.propertySummarySeries = function(values,params,keep) {
+	var periodicity = params.periodicity, type = params.type, timezone = params.timezone, groupby = params.groupby, result = [];
 	var _g = 0;
 	while(_g < values.length) {
 		var item = values[_g];
 		++_g;
-		var o = { path : path, event : event, property : property};
+		var o = { };
+		rg.query.ReportGridTransformers._keep(params,o,keep);
 		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 		o[type] = item[1];
 		result.push(o);
 	}
 	return result;
 }
-rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy = function(ob,params) {
-	var path = params.path, event = params.event, property = params.property, periodicity = params.periodicity, type = params.type, groupby = params.groupby, tag = params.tag;
+rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy = function(ob,params,keep) {
+	var periodicity = params.periodicity, type = params.type, groupby = params.groupby, tag = params.tag;
 	return Arrays.flatten(Objects.map(ob,function(key,values) {
 		var result = [];
 		var _g = 0;
 		while(_g < values.length) {
 			var item = values[_g];
 			++_g;
-			var o = { path : path, event : event, property : property};
+			var o = { };
+			rg.query.ReportGridTransformers._keep(params,o,keep);
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			o[type] = item[1];
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
@@ -3678,42 +3704,46 @@ rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy = function(ob,
 		return result;
 	}));
 }
-rg.query.ReportGridTransformers.propertyValueCount = function(count,params) {
-	var ob = { path : params.path, event : params.event, count : count};
-	ob[params.property] = params.value;
-	return [ob];
+rg.query.ReportGridTransformers.propertyValueCount = function(count,params,keep) {
+	var o = { count : count};
+	rg.query.ReportGridTransformers._keep(params,o,keep);
+	o[params.property] = params.value;
+	return [o];
 }
-rg.query.ReportGridTransformers.propertyValueCountTag = function(counts,params) {
-	var path = params.path, event = params.event, property = params.property, value = params.value, tag = params.tag;
+rg.query.ReportGridTransformers.propertyValueCountTag = function(counts,params,keep) {
+	var property = params.property, value = params.value, tag = params.tag;
 	return Objects.map(counts,function(key,count) {
-		var o = { path : path, event : event, count : count};
-		o[params.property] = params.value;
+		var o = { count : count};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[property] = value;
 		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 		return o;
 	});
 }
-rg.query.ReportGridTransformers.propertyValueSeries = function(values,params) {
-	var path = params.path, event = params.event, property = params.property, periodicity = params.periodicity, value = params.value, timezone = params.timezone, groupby = params.groupby, result = [];
+rg.query.ReportGridTransformers.propertyValueSeries = function(values,params,keep) {
+	var property = params.property, periodicity = params.periodicity, value = params.value, timezone = params.timezone, groupby = params.groupby, result = [];
 	var _g = 0;
 	while(_g < values.length) {
 		var item = values[_g];
 		++_g;
-		var o = { path : path, event : event, count : item[1]};
+		var o = { count : item[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
 		o[property] = value;
 		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 		result.push(o);
 	}
 	return result;
 }
-rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy = function(ob,params) {
-	var path = params.path, event = params.event, property = params.property, value = params.value, periodicity = params.periodicity, groupby = params.groupby, tag = params.tag;
+rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy = function(ob,params,keep) {
+	var property = params.property, value = params.value, periodicity = params.periodicity, groupby = params.groupby, tag = params.tag;
 	return Arrays.flatten(Objects.map(ob,function(key,values) {
 		var result = [];
 		var _g = 0;
 		while(_g < values.length) {
 			var item = values[_g];
 			++_g;
-			var o = { path : path, event : event, count : item[1]};
+			var o = { count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
 			ob[property] = value;
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
@@ -3721,6 +3751,15 @@ rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy = function(ob,pa
 		}
 		return result;
 	}));
+}
+rg.query.ReportGridTransformers._keep = function(src,dst,tokeep) {
+	var _g = 0;
+	while(_g < tokeep.length) {
+		var k = tokeep[_g];
+		++_g;
+		if(Reflect.hasField(dst,k)) continue;
+		dst[k] = Reflect.field(src,k);
+	}
 }
 rg.query.ReportGridTransformers._injectTime = function(o,value,periodicity,timezone,groupby) {
 	if(null != groupby) {
@@ -3960,7 +3999,7 @@ rg.app.query.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r);
 	r.query = rg.query.ReportGridQuery.create(executor);
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.933"};
+	r.info.query = { version : "1.0.0.981"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);

@@ -92,7 +92,7 @@ var callback = function(dps) {
 
 <?php
     if(!$useload)
-        return $s.".log(callback)";
+        return $s.".audit(callback)";
     else
         return $s.".load(callback)";
 }

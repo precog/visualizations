@@ -27,7 +27,7 @@ class Properties
 
 	inline public static function humanize(s : String)
 	{
-		return RGStrings.humanize(Strings.trim(s, "."));
+		return RGStrings.humanize(s);
 	}
 
 	public static function formatValue(type : String, dp : Dynamic)
