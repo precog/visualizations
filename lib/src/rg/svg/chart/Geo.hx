@@ -17,7 +17,7 @@ import thx.color.NamedColors;
 import thx.color.Rgb;
 import thx.color.Hsl;
 import thx.js.Selection;
-import rg.svg.widget.Balloon;
+import rg.html.widget.Tooltip;
 import rg.svg.chart.ColorScaleMode;
 import rg.svg.util.RGCss;
 import rg.data.Variable;
@@ -101,7 +101,7 @@ class Geo extends Chart
 			tooltip.hide()
 		else
 		{
-			tooltip.text = text.split("\n");
+			tooltip.html(text.split("\n").join("<br>"));
 			var centroid = Reflect.field(dp, "#centroid");
 			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, true);
 		}
@@ -232,7 +232,7 @@ class Geo extends Chart
 	{
 		super.init();
 		if (null == tooltip)
-			tooltip = new Balloon(g);
+			tooltip = new Tooltip();
 
 		g.classed().add("geo");
 	}

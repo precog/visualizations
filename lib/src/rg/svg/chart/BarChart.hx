@@ -261,7 +261,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				y = sel.attr("y").getFloat(),
 				w = sel.attr("width").getFloat();
 
-			tooltip.text = text.split("\n");
+			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x + w / 2, y);
 		}
 	}

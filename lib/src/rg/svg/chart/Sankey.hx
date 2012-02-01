@@ -725,8 +725,8 @@ class Sankey extends Chart
 			else
 			{
 				var cell = layout.cell(node);
-				tooltip.preferredSide = 2;
-				tooltip.text = text.split("\n");
+				tooltip.anchor("top");
+				tooltip.html(text.split("\n").join("<br>"));
 				moveTooltip(
 					xlayer(cell.layer),
 					ynode(node) + hnode(node) / 2
@@ -741,8 +741,8 @@ class Sankey extends Chart
 			else
 			{
 				var cell = layout.cell(node);
-				tooltip.preferredSide = 0;
-				tooltip.text = text.split("\n");
+				tooltip.anchor("bottom");
+				tooltip.html(text.split("\n").join("<br>"));
 				moveTooltip(
 					xlayer(cell.layer),
 					ynode(node) + hnode(node) / 2
@@ -761,8 +761,8 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.preferredSide = 2;
-			tooltip.text = text.split("\n");
+			tooltip.anchor("top");
+			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y);
 		}
 	}
@@ -777,8 +777,8 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.preferredSide = 2;
-			tooltip.text = text.split("\n");
+			tooltip.anchor("top");
+			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y);
 		}
 	}
@@ -793,8 +793,8 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.preferredSide = 0;
-			tooltip.text = text.split("\n");
+			tooltip.anchor("bottom");
+			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y);
 		}
 	}

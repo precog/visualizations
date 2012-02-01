@@ -1,5 +1,7 @@
 package rg.util;
 
+import js.Dom;
+
 class Js 
 {
 	/**
@@ -32,5 +34,18 @@ class Js
 
 		return null;
 #end
+	}
+
+	public static function findPosition(el : HtmlDom)
+	{
+		var x = 0, y = 0, obj = el;
+		do {
+			x += obj.offsetLeft;
+			y += obj.offsetTop;
+		} while(null != (obj = obj.offsetParent));
+		return {
+			x : x,
+			y : y
+		}
 	}
 }

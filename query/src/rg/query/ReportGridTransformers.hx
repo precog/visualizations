@@ -82,14 +82,17 @@ class ReportGridTransformers
 	{
 		var tag      = params.tag,
 			property = params.property;
-		return Objects.map(counts, function(key : String, value : Array<Dynamic>) {
-			var o = {
-				count : value[1]
-			};
-			_keep(params, o, keep);
-			Reflect.setField(o, tag, Strings.trim(key, "/"));
-			return o;
-		});
+		return Objects.map(counts, function(key : String, value : Array<Array<Dynamic>>) {
+			return value.map(function(item, _) {
+				var o = {
+					count : item[1]
+				};
+				_keep(params, o, keep);
+				Reflect.setField(o, tag, Strings.trim(key, "/"));
+				Reflect.setField(o, property, item[0]);
+				return o;
+			});
+		}).flatten();
 	}
 
 	public static function propertiesHistogram(arr : Array<Array<Dynamic>>, params : { property : String }, keep : Array<String>) : Array<{ count : Int }>

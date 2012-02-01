@@ -332,7 +332,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 //			for (j in 0...segments.length)
 //				tooltip.removeClass("stroke-" + j);
 //			tooltip.addClass("stroke-" + seg);
-			tooltip.text = text.split("\n");
+			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(coords[0], coords[1]);
 		}
 	}

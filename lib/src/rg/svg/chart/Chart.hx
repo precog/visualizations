@@ -8,7 +8,7 @@ import rg.svg.panel.Panel;
 import rg.svg.panel.Layer;
 import rg.data.DataPoint;
 import rg.axis.Stats;
-import rg.svg.widget.Balloon;
+import rg.html.widget.Tooltip;
 import thx.math.Equations;
 import rg.svg.panel.Panels;
 import hxevents.Notifier;
@@ -25,7 +25,7 @@ class Chart extends Layer
 
 	var panelx : Float;
 	var panely : Float;
-	var tooltip : Balloon;
+	var tooltip : Tooltip;
 
 	public function new(panel : Panel)
 	{
@@ -38,7 +38,7 @@ class Chart extends Layer
 
 	override function resize()
 	{
-		var coords = Panels.boundingBox(panel);
+		var coords = Panels.absolutePos(panel);
 		panelx = coords.x;
 		panely = coords.y;
 	}
@@ -47,13 +47,19 @@ class Chart extends Layer
 	{
 		if (null != labelDataPointOver)
 		{
-			tooltip = new Balloon(g);
+			tooltip = new Tooltip();
 		}
 		resize();
 	}
 
 	function moveTooltip(x : Float, y : Float, ?animated : Bool)
 	{
+//		var coords = Panels.absolutePos(panel);
+//		panelx = coords.x;
+//		panely = coords.y;
+
+		tooltip.showAt(Std.int(panelx + x), Std.int(panely + y));
+/*
 		if(0 == tooltip.x && 0 == tooltip.y)
 		{
 			tooltip.hide();
@@ -65,5 +71,6 @@ class Chart extends Layer
 			tooltip.show(animated);
 		} else
 			tooltip.moveTo(panelx + x, panely + y, animated);
+*/
 	}
 }

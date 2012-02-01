@@ -1,15 +1,11 @@
 //** QUERY
 ReportGrid.query
-	.intersectSeries({
+	.histogram({
 		path : pathvalue,
 		event : "impression",
-		properties : [{
-			property : "browser", top : 2
-		}, {
-			property : "env", bottom : 5
-		}],
+		property : "browser",
 		tag : "location",
-		location : '/',
+		location : '/usa',
 		start : "2 hours ago",
 		end : "now"
 	})

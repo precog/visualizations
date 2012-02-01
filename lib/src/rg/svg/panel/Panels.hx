@@ -19,6 +19,31 @@ class Panels
 		return { width : panel.frame.width, height : panel.frame.height };
 	}
 
+	public static function absolutePos(panel : Panel)
+	{
+		var p = panel, x = 0, y = 0;
+		while (null != p)
+		{
+			panel = p;
+			x += p.frame.x;
+			y += p.frame.y;
+			p = p.parent;
+		}
+		trace("panel: " + x + " " + y);
+		var node = panel.g.node();
+		do {
+			
+		} while(null == (node = node.parentNode).offsetParent);
+
+		var pos = rg.util.Js.findPosition(node);
+		trace("container: " + pos.x + " " + pos.y);
+
+		pos.x += x;
+		pos.y += y;
+		trace(pos);
+		return pos;
+	}
+
 	public static function boundingBox(panel : Panel, ?ancestor : Panel)
 	{
 		var p = panel, x = 0, y = 0;

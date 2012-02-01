@@ -265,7 +265,7 @@ class FunnelChart extends Chart
 			tooltip.hide()
 		else
 		{
-			tooltip.text = text.split("\n");
+			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(width / 2, topheight + h * .6 + (h + padding) * i, true);
 		}
 	}
@@ -275,7 +275,7 @@ class FunnelChart extends Chart
 		super.init();
 		if (null != tooltip)
 		{
-			tooltip.preferredSide = 1;
+			tooltip.anchor("right");
 		}
 		defs = g.classed().add("funnel-chart")
 			.append("svg:defs");

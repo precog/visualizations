@@ -136,6 +136,40 @@
 	box-shadow: 2px 2px 3px #666;
 }
 
+.rg.tooltip .container
+{
+	max-width: 150px;
+	transition: all 0.25s;
+	-webkit-transition: all 0.25s;
+	-moz-transition: all 0.25s;
+	-ms-transition: all 0.25s;
+	-o-transition: all 0.25s;
+}
+
+.rg.tooltip .background
+{
+	background-color: #fafafa;
+	opacity: 0.9;
+	border: 2px solid #aaa;
+	border-radius: 10px;
+
+	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+}
+
+.rg.tooltip .content
+{
+	padding: 10px 10px;
+	text-align: center;
+	color: #000;
+}
+
+.rg.tooltip .anchor
+{
+	border: 1px solid red;
+}
+
 .rg g.linechart-highlighter line, line.rule
 {
 	stroke-width: 1;

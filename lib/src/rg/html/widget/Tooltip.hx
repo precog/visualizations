@@ -61,7 +61,7 @@ class Tooltip
 		reanchor();
 	}
 
-	public function show(animated : Bool)
+	public function show(animated = true)
 	{
 		if(visible)
 			return;
@@ -77,7 +77,7 @@ class Tooltip
 		}
 	}
 
-	public function hide(animated : Bool)
+	public function hide(animated = true)
 	{
 		if(!visible)
 			return;
@@ -98,8 +98,13 @@ class Tooltip
 
 	public function showAt(x : Int, y : Int)
 	{
-		moveAt(x, y, false);
-		show(true);
+		if(visible)
+		{
+			moveAt(x, y, true);
+		} else {
+			moveAt(x, y, false);
+		}
+			show(true);
 	}
 
 	public function moveAt(x : Int, y : Int, animated : Bool)

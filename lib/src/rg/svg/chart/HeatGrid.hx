@@ -199,7 +199,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		if (null == text)
 			tooltip.hide();
 		else {
-			tooltip.text = text.split("\n");
+			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x(dp, i) + w / 2, y(dp, i) + h / 2);
 		}
 	}
