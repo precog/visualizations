@@ -1414,7 +1414,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.0.6533"};
+	r.info.charts = { version : "1.3.0.6571"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -2271,23 +2271,16 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,panely: null
 	,tooltip: null
 	,resize: function() {
-		var coords = rg.svg.panel.Panels.boundingBox(this.panel);
+		var coords = rg.svg.panel.Panels.absolutePos(this.panel);
 		this.panelx = coords.x;
 		this.panely = coords.y;
 	}
 	,init: function() {
-		if(null != this.labelDataPointOver) this.tooltip = new rg.svg.widget.Balloon(this.g);
+		if(null != this.labelDataPointOver) this.tooltip = new rg.html.widget.Tooltip();
 		this.resize();
 	}
 	,moveTooltip: function(x,y,animated) {
-		if(0 == this.tooltip.x && 0 == this.tooltip.y) {
-			this.tooltip.hide();
-			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
-			this.tooltip.show(animated);
-		} else if(!this.tooltip.visible) {
-			this.tooltip.moveTo(this.panelx + x,this.panely + y,false);
-			this.tooltip.show(animated);
-		} else this.tooltip.moveTo(this.panelx + x,this.panely + y,animated);
+		this.tooltip.showAt(Std["int"](this.panelx + x),Std["int"](this.panely + y));
 	}
 	,__class__: rg.svg.chart.Chart
 });
@@ -2304,7 +2297,7 @@ rg.svg.chart.CartesianChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		this.yVariables = variables.slice(1);
 	}
 	,data: function(dps) {
-		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 38, className : "rg.svg.chart.CartesianChart", methodName : "data"});
+		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 37, className : "rg.svg.chart.CartesianChart", methodName : "data"});
 	}
 	,__class__: rg.svg.chart.CartesianChart
 });
@@ -2465,7 +2458,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x + w / 2,y);
 		}
 	}
@@ -3459,7 +3452,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		if(null == this.labelDataPointOver) return;
 		var text = this.labelDataPointOver(dp,this.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(this.x(dp,i) + this.w / 2,this.y(dp,i) + this.h / 2);
 		}
 	}
@@ -10098,6 +10091,25 @@ rg.svg.panel.Panels.rootSize = function(panel) {
 	}
 	return { width : panel.frame.width, height : panel.frame.height};
 }
+rg.svg.panel.Panels.absolutePos = function(panel) {
+	var p = panel, x = 0, y = 0;
+	while(null != p) {
+		panel = p;
+		x += p.frame.x;
+		y += p.frame.y;
+		p = p.parent;
+	}
+	haxe.Log.trace("panel: " + x + " " + y,{ fileName : "Panels.hx", lineNumber : 32, className : "rg.svg.panel.Panels", methodName : "absolutePos"});
+	var node = panel.g.node();
+	do {
+	} while(null == (node = node.parentNode).offsetParent);
+	var pos = rg.util.Js.findPosition(node);
+	haxe.Log.trace("container: " + pos.x + " " + pos.y,{ fileName : "Panels.hx", lineNumber : 39, className : "rg.svg.panel.Panels", methodName : "absolutePos"});
+	pos.x += x;
+	pos.y += y;
+	haxe.Log.trace(pos,{ fileName : "Panels.hx", lineNumber : 43, className : "rg.svg.panel.Panels", methodName : "absolutePos"});
+	return pos;
+}
 rg.svg.panel.Panels.boundingBox = function(panel,ancestor) {
 	var p = panel, x = 0, y = 0;
 	while(ancestor != p) {
@@ -12099,6 +12111,14 @@ rg.util.Js.findScript = function(fragment) {
 	}
 	return null;
 }
+rg.util.Js.findPosition = function(el) {
+	var x = 0, y = 0, obj = el;
+	do {
+		x += obj.offsetLeft;
+		y += obj.offsetTop;
+	} while(null != (obj = obj.offsetParent));
+	return { x : x, y : y};
+}
 rg.util.Js.prototype = {
 	__class__: rg.util.Js
 }
@@ -12533,6 +12553,92 @@ thx.js.AccessDataAttribute.prototype = $extend(thx.js.AccessAttribute.prototype,
 	}
 	,__class__: thx.js.AccessDataAttribute
 });
+rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function() {
+	this.visible = false;
+	this.tooltip = thx.js.Dom.select("body").append("div").style("display").string("none").style("position").string("absolute").style("opacity")["float"](0).style("left").string("0px").style("top").string("0px").attr("class").string("rg tooltip").style("z-index").string("1000000");
+	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute").attr("class").string("anchor");
+	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("container");
+	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
+	this.content = this.container.append("div").attr("class").string("content");
+	this.anchortype = "bottom";
+	this.anchordistance = 5;
+}
+rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
+rg.html.widget.Tooltip.prototype = {
+	tooltip: null
+	,_anchor: null
+	,container: null
+	,background: null
+	,content: null
+	,anchortype: null
+	,anchordistance: null
+	,visible: null
+	,html: function(value) {
+		this.content.node().innerHTML = value;
+		this.reanchor();
+	}
+	,show: function(animated) {
+		if(animated == null) animated = true;
+		if(this.visible) return;
+		this.tooltip.style("display").string("block");
+		this.visible = true;
+		this.reanchor();
+		if(animated) this.tooltip.transition().style("opacity")["float"](1); else this.tooltip.style("opacity")["float"](1);
+	}
+	,hide: function(animated) {
+		if(animated == null) animated = true;
+		var me = this;
+		if(!this.visible) return;
+		this.visible = false;
+		if(animated) this.tooltip.transition().style("opacity")["float"](0).endNode(function(_,_1) {
+			me.tooltip.style("display").string("none");
+		}); else this.tooltip.style("opacity")["float"](0).style("display").string("none");
+	}
+	,showAt: function(x,y) {
+		if(this.visible) this.moveAt(x,y,true); else this.moveAt(x,y,false);
+		this.show(true);
+	}
+	,moveAt: function(x,y,animated) {
+		if(animated) this.tooltip.transition().style("left").string(x + "px").style("top").string(y + "px"); else this.tooltip.style("left").string(x + "px").style("top").string(y + "px");
+	}
+	,anchor: function(type,distance) {
+		if(distance == null) distance = 5;
+		if(this.anchortype == type && this.anchordistance == distance) return;
+		this.anchortype = type;
+		this.anchordistance = distance;
+		this.reanchor();
+	}
+	,reanchor: function() {
+		if(!this.visible) return;
+		var width = this.container.style("width").getFloat(), height = this.container.style("height").getFloat();
+		var type = this.anchortype;
+		switch(type) {
+		case "top":case "bottom":case "center":
+			this.container.style("left").string(-width / 2 + "px");
+			break;
+		case "left":case "topleft":case "bottomleft":
+			this.container.style("left").string(this.anchordistance + "px");
+			break;
+		case "right":case "topright":case "bottomright":
+			this.container.style("left").string(-this.anchordistance - width + "px");
+			break;
+		default:
+			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 151, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
+		}
+		switch(type) {
+		case "top":case "topleft":case "topright":
+			this.container.style("top").string(this.anchordistance + "px");
+			break;
+		case "left":case "center":case "right":
+			this.container.style("top").string(-height / 2 + "px");
+			break;
+		case "bottom":case "bottomleft":case "bottomright":
+			this.container.style("top").string(-this.anchordistance - height + "px");
+			break;
+		}
+	}
+	,__class__: rg.html.widget.Tooltip
+}
 rg.info.InfoDataSource = $hxClasses["rg.info.InfoDataSource"] = function() {
 }
 rg.info.InfoDataSource.__name__ = ["rg","info","InfoDataSource"];
@@ -14177,7 +14283,7 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 	,onover: function(n,i) {
 		if(null == this.labelDataPointOver) return;
 		var dp = this.getDataAtNode(n,i);
-		this.tooltip.setText(this.labelDataPointOver(dp.dp,this.stats).split("\n"));
+		this.tooltip.html(this.labelDataPointOver(dp.dp,this.stats).split("\n").join("<br>"));
 		this.moveTooltip(dp.coord.x * this.width,this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy);
 	}
 	,onclick: function(n,i) {
@@ -15520,8 +15626,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var text = this.labelEdgeOver(this.edgeData(node.graph.edges.positives(node).next()),this.dependentVariable.stats);
 			if(null == text) this.tooltip.hide(); else {
 				var cell = this.layout.cell(node);
-				this.tooltip.setPreferredSide(2);
-				this.tooltip.setText(text.split("\n"));
+				this.tooltip.anchor("top");
+				this.tooltip.html(text.split("\n").join("<br>"));
 				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
 			}
 		} else {
@@ -15529,8 +15635,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var text = this.labelDataPointOver(node.data.dp,this.dependentVariable.stats);
 			if(null == text) this.tooltip.hide(); else {
 				var cell = this.layout.cell(node);
-				this.tooltip.setPreferredSide(0);
-				this.tooltip.setText(text.split("\n"));
+				this.tooltip.anchor("bottom");
+				this.tooltip.html(text.split("\n").join("<br>"));
 				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
 			}
 		}
@@ -15540,8 +15646,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeData(edge),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setPreferredSide(2);
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.anchor("top");
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y);
 		}
 	}
@@ -15550,8 +15656,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setPreferredSide(2);
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.anchor("top");
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y);
 		}
 	}
@@ -15560,8 +15666,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setPreferredSide(0);
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.anchor("bottom");
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y);
 		}
 	}
@@ -16927,7 +17033,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(coords[0],coords[1]);
 		}
 	}
@@ -17296,7 +17402,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(coords[0],coords[1]);
 		}
 	}
@@ -17603,7 +17709,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,handlerDataPointOver: function(dp,f) {
 		var text = f(dp,this.variableDependent.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.html(text.split("\n").join("<br>"));
 			var centroid = Reflect.field(dp,"#centroid");
 			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,true);
 		}
@@ -17678,7 +17784,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,init: function() {
 		rg.svg.chart.Chart.prototype.init.call(this);
-		if(null == this.tooltip) this.tooltip = new rg.svg.widget.Balloon(this.g);
+		if(null == this.tooltip) this.tooltip = new rg.html.widget.Tooltip();
 		this.g.classed().add("geo");
 	}
 	,addMap: function(map,field) {
@@ -18487,7 +18593,7 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var d = Reflect.field(dom,"__data__"), text = this.labelDataPointOver(d.dp,this.stats);
 		if(null == text) this.tooltip.hide(); else {
 			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2, r = this.radius * this.tooltipRadius;
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r);
 		}
 	}
@@ -22015,13 +22121,13 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelDataPointOver) return;
 		var text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.setText(text.split("\n"));
+			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,true);
 		}
 	}
 	,init: function() {
 		rg.svg.chart.Chart.prototype.init.call(this);
-		if(null != this.tooltip) this.tooltip.setPreferredSide(1);
+		if(null != this.tooltip) this.tooltip.anchor("right");
 		this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
 	}
 	,internalGradient: function(d) {
