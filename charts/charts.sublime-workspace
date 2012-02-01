@@ -4,6 +4,46 @@
 		"selected_items":
 		[
 			[
+				"ax",
+				"axis"
+			],
+			[
+				"v",
+				"values"
+			],
+			[
+				"flo",
+				"floatMax"
+			],
+			[
+				"_",
+				"_moveTo"
+			],
+			[
+				"ma",
+				"map"
+			],
+			[
+				"extract",
+				"extractEdges"
+			],
+			[
+				"fie",
+				"field"
+			],
+			[
+				"TF",
+				"TFunction"
+			],
+			[
+				"clon",
+				"cloneInstances"
+			],
+			[
+				"pro",
+				"prototype"
+			],
+			[
 				"Indep",
 				"VariableIndependent"
 			],
@@ -216,10 +256,6 @@
 				"append"
 			],
 			[
-				"_",
-				"_created [var]"
-			],
-			[
 				"strin",
 				"stringf"
 			],
@@ -296,10 +332,6 @@
 				"push( x : Array<Unknown<0>> ) : Int"
 			],
 			[
-				"ma",
-				"match( s : String ) : Bool"
-			],
-			[
 				"o",
 				"options"
 			],
@@ -362,10 +394,6 @@
 			[
 				"Arrau",
 				"ByteArray [flash9.utils]"
-			],
-			[
-				"fie",
-				"field(...) : Dynamic"
 			],
 			[
 				"U",
@@ -486,39 +514,75 @@
 			[
 				"po",
 				"position : LogoPosition"
-			],
-			[
-				"vi",
-				"view [package]"
-			],
-			[
-				"fi",
-				"firstChild : js.HtmlDom"
-			],
-			[
-				"hre",
-				"href : String"
-			],
-			[
-				"float",
-				"float(...) : thx.js.Selection"
-			],
-			[
-				"w",
-				"window : js.Window"
-			],
-			[
-				"onNo",
-				"onNode(...) : thx.js.Selection"
-			],
-			[
-				"contai",
-				"container : thx.js.Selection"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactoryGeoProjection.hx",
+			"settings":
+			{
+				"buffer_size": 1867,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
+			"settings":
+			{
+				"buffer_size": 872,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/HeatGrid.hx",
+			"settings":
+			{
+				"buffer_size": 7161,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoHeatGrid.hx",
+			"settings":
+			{
+				"buffer_size": 883,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/StreamGraph.hx",
+			"settings":
+			{
+				"buffer_size": 7241,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "version",
+			"settings":
+			{
+				"buffer_size": 10,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
+			"settings":
+			{
+				"buffer_size": 5440,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bin/index.html",
+			"settings":
+			{
+				"buffer_size": 1907,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -531,6 +595,18 @@
 				"Trailing Spaces: Delete Trailing Spaces"
 			],
 			[
+				"rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"pac",
+				"Package Control: Remove Package"
+			],
+			[
 				"t",
 				"Trailing Spaces: Delete Trailing Spaces"
 			],
@@ -541,10 +617,6 @@
 			[
 				"ins",
 				"Package Control: Install Package"
-			],
-			[
-				"remo",
-				"Package Control: Remove Package"
 			],
 			[
 				"Package Control: ",
@@ -561,10 +633,6 @@
 			[
 				"pack",
 				"Package Control: Remove Package"
-			],
-			[
-				"pac",
-				"Package Control: Upgrade Package"
 			],
 			[
 				"inst",
@@ -619,7 +687,7 @@
 				"Set Syntax: HaXe2"
 			]
 		],
-		"width": 593.0
+		"width": 449.0
 	},
 	"console":
 	{
@@ -636,134 +704,134 @@
 	},
 	"file_history":
 	[
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/AxisGroupByTime.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoVisualizationOption.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoVariable.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoTrack.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoSegment.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoScatterGraph.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoPadding.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLeaderboard.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLabelPivotTable.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoDomType.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryVariableIndependent.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryVariableDependent.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryVariable.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryHtmlVisualization.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryGeoProjection.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/CartesianChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/axis/AxisTime.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/axis/IAxisDiscrete.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/axis/IAxisOrdinal.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Variable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/axis/IAxis.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/RGStrings.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactoryHtmlVisualization.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactoryVariableDependent.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/FieldFilter.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/Info.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoAnimation.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoDataSource.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoGeneral.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLeaderboard.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoPadding.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoPivotTable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoSegment.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoTrack.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoVisualizationOption.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationHtml.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/factory/FactoryDataSourceReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/factory/FactoryVariableReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoDataContextReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoDataSourceReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoVisualizationOptionReportGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/track/Tracker.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/factory/TestFactoryDataContext.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/factory/TestFactoryDataSource.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/factory/TestFactoryVariableContexts.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/info/TestInfoDataContext.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/info/TestInfoDataSource.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/info/TestInfoLayout.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/info/TestInfoVariable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/controller/info/TestInfoVisualizationOption.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/app/charts/JSBridge.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/app/charts/App.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/index.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/app/charts/MVPOptions.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/IndependentVariableProcessor.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DependentVariableProcessor.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/TickmarkTime.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/VisualizationData.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryDataSource.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataLoader.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/source/DataSourceLoader.hx.tmp",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryDataContext.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoDataContext.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataRequest.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/Sources.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataContext.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/DataProcessor.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/data/TestDataProcessor.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/RG.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/util/RGStrings.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/source/DataSourceLoader.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/data/IDataSource.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoDataSource.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/MVPOptions.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/ChainedExecutor.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/controller/MVPOptions.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/controller/App.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/build.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/release.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLabelSankey.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/template.php",
-		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/js/JQuery.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Access.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Selection.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/layer/TickmarksOrtho.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessText.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/layer/RulesOrtho.hx",
-		"/Users/francoponticelli/Desktop/ie.svg",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/Label.hx",
-		"/Users/francoponticelli/Projects/reportgrid/website/charts/index.html",
-		"/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/JSBridge.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/template.php",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/src/rg/view/html/widget/Logo.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessStyle.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/Layout.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/js/reportgrid-charts.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/version",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Group.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/widget/LabelOrientation.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/Dom.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/layer/Title.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/LayoutX.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/visualization/VisualizationSankey.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/Visualizations.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/factory/FactoryLayout.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/BarChart.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/AccessAttribute.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/js/ISelectorEngine.hx",
-		"/Users/francoponticelli/Projects/thx/src/Arrays.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/SvgWeb.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/LayoutCartesian.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/layout/LayoutSimple.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations 2/charts/build.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/panel/Space.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/cache/haxecompiler-cache",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/css/rg-charts.css",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/panel/Container.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/panel/Panels.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/panel/Panel.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/panel/Layer.hx",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/AsyncNotifier.hx",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Async.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/Chart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/template-manage.php",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Dispatcher.hx",
-		"/usr/lib/haxe/lib/hxevents/0,3,3/hxevents/Notifier.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/util/RGCss.hx.tmp",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/HeatGrid.hx.tmp",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/panel/Space.hx.tmp",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/util/RGCss.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/LineChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/FunnelChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/PieChart.hx",
-		"/Users/francoponticelli/Library/Application Support/Sublime Text 2/Packages/Default/Base File.sublime-settings",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/StreamGraph.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoBarChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoPieChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/PC002-fixed label orientation.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/GE003-multiple layers.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/PD001-simple.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/XX001-test brand position.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/XX002-multiple charts.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/HeatGrid.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/svg/chart/Geo.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoFunnelChart.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/GE001-world countries.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/HM001-simple.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/HM002-heat colors.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/bin/service/samples/charts/XX003-horizontal bar charts.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/css/rg-charts.css",
-		"/Users/francoponticelli/Projects/reportgrid/integrations/flixmaster/index.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoGeo.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoMap.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/color/Hsl.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/DownloaderMenu.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/view/html/widget/DownloaderPositions.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/interactive/Downloader.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoStreamGraph.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/RGColors.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoBarChart.hx.tmp",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/controller/info/InfoLineChart.hx",
-		"/Users/francoponticelli/Library/Application Support/Sublime Text 2/Packages/User/Global.sublime-settings"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactorySvgVisualization.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/frame/Frame.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/frame/FrameLayout.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/frame/Orientation.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/frame/Stack.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/frame/StackItem.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/widget/DownloaderMenu.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/widget/DownloaderPosition.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/widget/DownloaderPositions.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoBarChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoDownload.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoHeatGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoPieChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/interactive/Downloader.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/layout/Anchor.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/layout/Layout.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/layout/LayoutCartesian.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/layout/LayoutSimple.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/layout/LayoutX.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/layout/PanelContext.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/layout/ScalePattern.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/ColorScaleModes.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/Coords.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/GradientEffect.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/GradientEffects.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/LineEffect.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/LineEffects.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/StreamEffect.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/StreamEffects.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/layer/Title.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/panel/Container.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/panel/Layer.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/panel/Panel.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/panel/Panels.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/panel/Space.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/util/RGCss.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/util/SymbolCache.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/Balloon.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/BalloonShape.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/DiagonalArea.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/ElbowArea.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/GridAnchor.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/GridAnchors.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/HookConnectorArea.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/Label.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/LabelOrientation.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/LabelOrientations.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationFunnelChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationGeo.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationHeatGrid.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationLeaderboard.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationPieChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationSvg.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/Visualizations.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/App.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/JSBridge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/view/frame/TestStack.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/view/svg/panel/TestPanel.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/rg/view/svg/panel/TestSpace.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/test/TestAll.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoDomType.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactoryLayout.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/VisualizationPivotTable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/chart/Leadeboard.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/chart/PivotTable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoCartesianChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoFunnelChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoGeo.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLabelAxis.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLabelFunnel.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLabelLeaderboard.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLabelPivotTable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLabelSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLineChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoMap.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoScatterGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoStreamGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/Chart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/ColorScaleMode.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/FunnelChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/PieChart.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/Sankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/ScatterGraph.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/widget/Map.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/DataPoints.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoVariable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/axis/AxisGroupByTime.hx.tmp",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactoryVariable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactoryVariableIndependent.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/visualization/Visualization.hx"
 	],
 	"find":
 	{
@@ -771,9 +839,12 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
+			"/Users/francoponticelli/Projects/reportgrid/visualizations,*.hx",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations/charts,*.hx",
+			"/Users/francoponticelli/Projects/reportgrid/charts,*.hx",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations,*.hx",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/",
@@ -799,9 +870,48 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"colorMode",
+			"rg.data.AxisOrdinal",
+			"rg.data.AxisTime",
+			"import rg.data.AxisNumeric;",
+			"rg.data.AxisOrdinalStats",
+			"rg.data.AxisOrdinalFixedValues",
+			"rg.data.AxisGroupByTime",
+			"rg.data.ITickmark",
+			"rg.data.IAxis",
+			"rg.data.Stats",
+			"rg.data.ScaleDistribution",
+			"rg.Visualizations",
+			"rg.view.",
+			"rg.controller.",
+			"redra",
+			"boxW",
+			"labels",
+			"label",
+			"text",
+			"tooltip",
+			"moveTooltip",
+			"mapping",
+			"segment",
+			"stacked",
+			"scaleDistribution",
+			"stacked",
+			"barchart",
+			"area",
+			"interpolation",
+			"\n		",
+			"\n	",
+			"taile",
+			"Function",
+			"__init",
+			"filter",
+			"package",
+			"j",
+			"Boot",
+			"$bind",
 			"onLoad",
 			"\\t",
 			"str_re",
@@ -890,46 +1000,7 @@
 			"orienta",
 			"options",
 			"\"count\"",
-			"pieChart",
-			"localhost",
-			"trace",
-			"woopra .",
-			"woopra ",
-			"download",
-			"woopra ",
-			"labelDataPointOver",
-			"labelTitle",
-			"labelDescription",
-			"labeValue",
-			"labelRank",
-			"auth",
-			"authCode",
-			"sequence",
-			"name",
-			"options.a",
-			"new label",
-			"label",
-			"element",
-			"'194px'",
-			"!important",
-			"\"",
-			"!important",
-			"children",
-			"reportgrid-core.js",
-			"reportgrid-viz.js",
-			"reportgrid-[^.].js",
-			"get(",
-			"fill",
-			"style(\"fill",
-			"style(\"opacity\")",
-			"opaci",
-			"style(\"opacity\")",
-			"fill-opacity",
-			"fill : #000",
-			"#000",
-			"#000000",
-			"name",
-			"stroke-wi"
+			"pieChart"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -937,6 +1008,18 @@
 		"regex": false,
 		"replace_history":
 		[
+			"rg.axis.AxisOrdinal",
+			"rg.axis.AxisTime",
+			"import rg.axis.AxisNumeric;",
+			"rg.axis.AxisOrdinalStats",
+			"rg.axis.AxisOrdinalFixedValues",
+			"rg.axis.AxisGroupByTime",
+			"rg.axis.ITickmark",
+			"rg.axis.IAxis",
+			"rg.axis.Stats",
+			"rg.axis.ScaleDistribution",
+			"rg.visualization.Visualizations",
+			"rg.",
 			"VariableProcessor",
 			", \"",
 			" : ",
@@ -994,8 +1077,230 @@
 	"groups":
 	[
 		{
+			"selected": 7,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/factory/FactoryGeoProjection.hx",
+					"settings":
+					{
+						"buffer_size": 1867,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								270,
+								270
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Properties.hx",
+					"settings":
+					{
+						"buffer_size": 872,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								551,
+								560
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/HeatGrid.hx",
+					"settings":
+					{
+						"buffer_size": 7161,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								268,
+								268
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 315.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoHeatGrid.hx",
+					"settings":
+					{
+						"buffer_size": 883,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								448,
+								448
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 104.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/svg/chart/StreamGraph.hx",
+					"settings":
+					{
+						"buffer_size": 7241,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4016,
+								4016
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1950.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "version",
+					"settings":
+					{
+						"buffer_size": 10,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
+					"settings":
+					{
+						"buffer_size": 5440,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4242,
+								4158
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3266.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "bin/index.html",
+					"settings":
+					{
+						"buffer_size": 1907,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1641,
+								1641
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1230.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -1032,7 +1337,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 247.0
+		"height": 204.0
 	},
 	"replace":
 	{
@@ -1045,7 +1350,115 @@
 		"selected_items":
 		[
 			[
+				"axist",
+				"lib/src/rg/axis/AxisTime.hx"
+			],
+			[
+				"iaxis",
+				"lib/src/rg/axis/IAxisOrdinal.hx"
+			],
+			[
+				"iax",
+				"lib/src/rg/axis/IAxisDiscrete.hx"
+			],
+			[
+				"var",
+				"lib/src/rg/data/Variable.hx"
+			],
+			[
+				"strea",
+				"lib/src/rg/svg/chart/StreamGraph.hx"
+			],
+			[
+				"rgstr",
+				"lib/src/rg/util/RGStrings.hx"
+			],
+			[
+				"prope",
+				"lib/src/rg/util/Properties.hx"
+			],
+			[
+				"ballo",
+				"lib/src/rg/view/svg/widget/Balloon.hx"
+			],
+			[
+				"chart",
+				"lib/src/rg/view/svg/chart/Chart.hx"
+			],
+			[
+				"visu",
+				"lib/src/rg/controller/visualization/Visualization.hx"
+			],
+			[
+				"ball",
+				"lib/src/rg/view/svg/widget/Balloon.hx"
+			],
+			[
+				"linec",
+				"lib/src/rg/view/svg/chart/LineChart.hx"
+			],
+			[
+				"area",
+				"src/thx/svg/Area.hx"
+			],
+			[
+				"lineinte",
+				"src/thx/svg/LineInternals.hx"
+			],
+			[
+				"lineinter",
+				"src/thx/svg/LineInterpolator.hx"
+			],
+			[
+				"lineinterpo",
+				"src/thx/svg/LineInterpolators.hx"
+			],
+			[
+				"dynami",
+				"thx/src/Dynamics.hx"
+			],
+			[
+				"erro",
+				"src/thx/error/Error.hx"
+			],
+			[
+				"dynamic",
+				"thx/src/Dynamics.hx"
+			],
+			[
+				"strings",
+				"src/Strings.hx"
+			],
+			[
+				"dynamics",
+				"src/Dynamics.hx"
+			],
+			[
+				"object",
+				"src/Objects.hx"
+			],
+			[
 				"datalo",
+				"lib/src/rg/data/DataLoader.hx"
+			],
+			[
+				"chain",
+				"lib/src/rg/util/ChainedExecutor.hx"
+			],
+			[
+				"sanke",
+				"lib/src/rg/view/svg/chart/Sankey.hx"
+			],
+			[
+				"san",
+				"lib/src/rg/view/svg/chart/Sankey.hx"
+			],
+			[
+				"chained",
+				"lib/src/rg/util/ChainedExecutor.hx"
+			],
+			[
+				"datal",
 				"lib/src/rg/data/DataLoader.hx"
 			],
 			[
@@ -1095,10 +1508,6 @@
 			[
 				"layout.",
 				"lib/src/rg/view/layout/Layout.hx"
-			],
-			[
-				"visu",
-				"lib/src/rg/controller/Visualizations.hx"
 			],
 			[
 				"visualizations",
@@ -1201,10 +1610,6 @@
 				"charts/bin/service/samples/charts/GE002-Geo, USA States.js"
 			],
 			[
-				"prope",
-				"lib/src/rg/util/Properties.hx"
-			],
-			[
 				"colors",
 				"lib/src/rg/view/svg/chart/ColorScaleMode.hx"
 			],
@@ -1235,10 +1640,6 @@
 			[
 				"app",
 				"charts/src/rg/controller/App.hx"
-			],
-			[
-				"area",
-				"src/thx/svg/Area.hx"
 			],
 			[
 				"infodataso",
@@ -1281,10 +1682,6 @@
 				"visualizations/src/rg/graph/SugiyamaMethod.hx"
 			],
 			[
-				"sanke",
-				"visualizations/src/rg/view/svg/chart/Sankey.hx"
-			],
-			[
 				"graph",
 				"visualizations/src/rg/graph/Graph.hx"
 			],
@@ -1305,10 +1702,6 @@
 				"visualizations/src/rg/controller/visualization/VisualizationSankey.hx"
 			],
 			[
-				"san",
-				"visualizations/bin/sankey.html"
-			],
-			[
 				"diago",
 				"visualizations/src/rg/view/svg/widget/DiagonalArea.hx"
 			],
@@ -1319,10 +1712,6 @@
 			[
 				"hook",
 				"visualizations/src/rg/view/svg/widget/HookConnectorArea.hx"
-			],
-			[
-				"ballo",
-				"visualizations/src/rg/view/svg/widget/Balloon.hx"
 			],
 			[
 				"mvp",
@@ -1351,10 +1740,6 @@
 			[
 				"barc",
 				"visualizations/src/rg/view/svg/chart/BarChart.hx"
-			],
-			[
-				"chart",
-				"visualizations/src/rg/view/svg/chart/Chart.hx"
 			],
 			[
 				"hoo",
@@ -1475,86 +1860,6 @@
 			[
 				"testfac",
 				"visualizations/test/rg/controller/factory/TestFactoryDataSource.hx"
-			],
-			[
-				"graphe",
-				"visualizations/src/rg/layout/GraphEdges.hx"
-			],
-			[
-				"mo",
-				"visualizations/test/rg/data/source/rgquery/MockRGExecutor.hx"
-			],
-			[
-				"parse",
-				"visualizations/src/rg/data/source/rgquery/QueryParser.hx"
-			],
-			[
-				"graphno",
-				"visualizations/src/rg/layout/GraphNodes.hx"
-			],
-			[
-				"testgr",
-				"visualizations/test/rg/layout/TestGraph.hx"
-			],
-			[
-				"testno",
-				"visualizations/test/rg/layout/TestNode.hx"
-			],
-			[
-				"testnde",
-				"visualizations/test/rg/layout/TestNode.hx"
-			],
-			[
-				"testgra",
-				"visualizations/test/rg/layout/TestGraph.hx"
-			],
-			[
-				"graphn",
-				"visualizations/src/rg/layout/GraphNodes.hx"
-			],
-			[
-				"graphnode",
-				"visualizations/src/rg/layout/GraphNodes.hx"
-			],
-			[
-				"gr",
-				"visualizations/src/rg/layout/Graph.hx"
-			],
-			[
-				"downloa",
-				"visualizations/src/rg/controller/interactive/Downloader.hx"
-			],
-			[
-				"deb",
-				"visualizations/src/rg/track/DebugExecutor.hx"
-			],
-			[
-				"iterato",
-				"thx/src/Iterators.hx"
-			],
-			[
-				"arrays",
-				"thx/src/Arrays.hx"
-			],
-			[
-				"repor",
-				"visualizations/src/rg/track/ReportGridExecutor.hx"
-			],
-			[
-				"itra",
-				"src/rg/data/source/rgquery/ITrackReportGrid.hx"
-			],
-			[
-				"track",
-				"src/rg/track/Tracker.hx"
-			],
-			[
-				"reportgri",
-				"visualizations/src/rg/data/source/DataSourceReportGrid.hx"
-			],
-			[
-				"downlo",
-				"visualizations/src/rg/view/html/widget/DownloaderMenu.hx"
 			]
 		],
 		"width": 0.0
@@ -1575,6 +1880,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 295.0,
+	"side_bar_width": 305.0,
 	"status_bar_visible": true
 }
