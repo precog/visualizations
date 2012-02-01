@@ -3218,12 +3218,15 @@ rg.query.ReportGridTransformers.histogram = function(arr,params,keep) {
 }
 rg.query.ReportGridTransformers.histogramTag = function(counts,params,keep) {
 	var tag = params.tag, property = params.property;
-	return Objects.map(counts,function(key,value) {
-		var o = { count : value[1]};
-		rg.query.ReportGridTransformers._keep(params,o,keep);
-		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
-		return o;
-	});
+	return Arrays.flatten(Objects.map(counts,function(key,value) {
+		return value.map(function(item,_) {
+			var o = { count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
+			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+			o[property] = item[0];
+			return o;
+		});
+	}));
 }
 rg.query.ReportGridTransformers.propertiesHistogram = function(arr,params,keep) {
 	var property = params.property;
@@ -3560,7 +3563,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.994"};
+	r.info.query = { version : "1.0.0.1007"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
