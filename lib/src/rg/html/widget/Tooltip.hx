@@ -1,9 +1,11 @@
 package rg.html.widget;
 
+import js.Dom;
 import thx.js.Selection;
 
 class Tooltip
 {
+	static inline var DEFAULT_DISTANCE = 5;
 	var tooltip : Selection;
 	var _anchor : Selection;
 	var container : Selection;
@@ -14,10 +16,11 @@ class Tooltip
 	var anchordistance : Int;
 
 	public var visible(default, null) : Bool;
-	public function new()
+	public function new(?el : HtmlDom)
 	{
 		visible = false;
-		tooltip = thx.js.Dom.select("body").append("div")
+		el = null == el ? js.Lib.document.body : el;
+		tooltip = thx.js.Dom.selectNode(el).append("div")
 			.style("display").string("none")
 			.style("position").string("absolute")
 			.style("opacity").float(0)
@@ -52,7 +55,7 @@ class Tooltip
 			.attr("class").string("content");
 
 		anchortype = "bottom";
-		anchordistance = 5;
+		anchordistance = DEFAULT_DISTANCE;
 	}
 
 	public function html(value : String)
@@ -61,68 +64,43 @@ class Tooltip
 		reanchor();
 	}
 
-	public function show(animated = true)
+	public function show()
 	{
 		if(visible)
 			return;
 		tooltip.style("display").string("block");
 		visible = true;
 		reanchor();
-		if(animated)
-		{
-			tooltip.transition()
-				.style("opacity").float(1);
-		} else {
-			tooltip.style("opacity").float(1);
-		}
+		tooltip.style("opacity").float(1);
 	}
 
-	public function hide(animated = true)
+	public function hide()
 	{
 		if(!visible)
 			return;
 		visible = false;
-		if(animated)
-		{
-			tooltip.transition()
-				.style("opacity").float(0)
-				.endNode(function(_, _) {
-					tooltip.style("display").string("none");
-				});
-		} else {
-			tooltip
-				.style("opacity").float(0)
-				.style("display").string("none");
-		}
+		tooltip
+			.style("opacity").float(0)
+			.style("display").string("none");
 	}
 
 	public function showAt(x : Int, y : Int)
 	{
-		if(visible)
-		{
-			moveAt(x, y, true);
-		} else {
-			moveAt(x, y, false);
-		}
-			show(true);
+		moveAt(x, y);
+		show();
 	}
 
-	public function moveAt(x : Int, y : Int, animated : Bool)
+	public function moveAt(x : Int, y : Int)
 	{
-		if(animated)
-		{
-			tooltip.transition()
-				.style("left").string(x+"px")
-				.style("top").string(y+"px");
-		} else {
-			tooltip
-				.style("left").string(x+"px")
-				.style("top").string(y+"px");
-		}
+		tooltip
+			.style("left").string(x+"px")
+			.style("top").string(y+"px");
 	}
 
-	public function anchor(type : String, distance = 5)
+	public function anchor(type : String, ?distance : Int)
 	{
+		if(null == distance)
+			distance = DEFAULT_DISTANCE;
 		if(anchortype == type && anchordistance == distance)
 			return;
 		anchortype = type;
@@ -162,6 +140,4 @@ class Tooltip
 				container.style("top").string((-anchordistance-height) +"px");
 		}
 	}
-
-	// _anchor: left, right, top, bottom, auto
 }

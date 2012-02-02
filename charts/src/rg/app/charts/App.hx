@@ -90,7 +90,8 @@ class App
 		});
 		loader.load();
 
-		var brandPadding = 0;
+		var brandPadding = 0,
+			logoHeight = 29;
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
 		if(!supportsSvg())
@@ -129,6 +130,7 @@ class App
 			visualization.addReadyOnce(function()
 			{
 				var widget = new Logo(visualization.container, brandPadding);
+				visualization.setVerticalOffset(logoHeight);
 			});
 		}
 		return visualization;

@@ -761,7 +761,7 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.anchor("top");
+			tooltip.anchor("bottom");
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y);
 		}
@@ -777,7 +777,7 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.anchor("top");
+			tooltip.anchor("bottom");
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y);
 		}
@@ -793,7 +793,7 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.anchor("bottom");
+			tooltip.anchor("top");
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y);
 		}

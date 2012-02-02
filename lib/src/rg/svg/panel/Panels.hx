@@ -29,19 +29,20 @@ class Panels
 			y += p.frame.y;
 			p = p.parent;
 		}
-		trace("panel: " + x + " " + y);
-		var node = panel.g.node();
-		do {
-			
-		} while(null == (node = node.parentNode).offsetParent);
+		var node = htmlContainer(panel);
 
 		var pos = rg.util.Js.findPosition(node);
-		trace("container: " + pos.x + " " + pos.y);
 
 		pos.x += x;
 		pos.y += y;
-		trace(pos);
 		return pos;
+	}
+
+	public static function htmlContainer(panel : Panel)
+	{
+		var node = panel.g.node();
+		do { } while(null != Reflect.field(node = untyped node.ownerSVGElement, "ownerSVGElement"));
+		return node.parentNode;
 	}
 
 	public static function boundingBox(panel : Panel, ?ancestor : Panel)

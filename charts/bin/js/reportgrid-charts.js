@@ -1414,7 +1414,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.0.6571"};
+	r.info.charts = { version : "1.3.0.6625"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -1974,6 +1974,8 @@ rg.visualization.Visualization.prototype = {
 	,feedData: function(data) {
 		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 48, className : "rg.visualization.Visualization", methodName : "feedData"});
 	}
+	,setVerticalOffset: function(offset) {
+	}
 	,destroy: function() {
 	}
 	,addReadyOnce: function(handler) {
@@ -1996,7 +1998,11 @@ rg.visualization.VisualizationSvg = $hxClasses["rg.visualization.VisualizationSv
 rg.visualization.VisualizationSvg.__name__ = ["rg","visualization","VisualizationSvg"];
 rg.visualization.VisualizationSvg.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualization.prototype,{
-	layout: null
+	baseChart: null
+	,layout: null
+	,setVerticalOffset: function(offset) {
+		this.baseChart.setVerticalChartOffset(offset);
+	}
 	,__class__: rg.visualization.VisualizationSvg
 });
 rg.visualization.VisualizationCartesian = $hxClasses["rg.visualization.VisualizationCartesian"] = function(layout) {
@@ -2172,6 +2178,7 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 	,initChart: function() {
 		var me = this;
 		var chart = new rg.svg.chart.LineChart(this.layout.getPanel(this.layout.mainPanelName));
+		this.baseChart = chart;
 		chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -2256,6 +2263,7 @@ rg.svg.chart.Chart = $hxClasses["rg.svg.chart.Chart"] = function(panel) {
 	this.animationDuration = 1500;
 	this.animationEase = thx.math.Equations.linear;
 	this.ready = new hxevents.Notifier();
+	this.verticalChartOffset = 0;
 }
 rg.svg.chart.Chart.__name__ = ["rg","svg","chart","Chart"];
 rg.svg.chart.Chart.__super__ = rg.svg.panel.Layer;
@@ -2267,6 +2275,7 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,labelDataPoint: null
 	,labelDataPointOver: null
 	,ready: null
+	,verticalChartOffset: null
 	,panelx: null
 	,panely: null
 	,tooltip: null
@@ -2279,8 +2288,14 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		if(null != this.labelDataPointOver) this.tooltip = new rg.html.widget.Tooltip();
 		this.resize();
 	}
+	,setVerticalChartOffset: function(offset) {
+		this.verticalChartOffset = offset;
+	}
 	,moveTooltip: function(x,y,animated) {
-		this.tooltip.showAt(Std["int"](this.panelx + x),Std["int"](this.panely + y));
+		var coords = rg.svg.panel.Panels.absolutePos(this.panel);
+		this.panelx = coords.x;
+		this.panely = coords.y;
+		this.tooltip.showAt(Std["int"](this.panelx + x),Std["int"](this.panely + y + this.verticalChartOffset));
 	}
 	,__class__: rg.svg.chart.Chart
 });
@@ -4622,6 +4637,7 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 		var me = this;
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.FunnelChart(panelChart);
+		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -5304,6 +5320,7 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 		var me = this;
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.PieChart(panelChart);
+		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -6415,6 +6432,7 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 	,initChart: function() {
 		var me = this;
 		var chart = new rg.svg.chart.StreamGraph(this.layout.getPanel(this.layout.mainPanelName));
+		this.baseChart = chart;
 		chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -6834,6 +6852,7 @@ rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.Visu
 	,initChart: function() {
 		var me = this;
 		var chart = new rg.svg.chart.HeatGrid(this.layout.getPanel(this.layout.mainPanelName));
+		this.baseChart = chart;
 		chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -8284,6 +8303,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		}
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.Sankey(panelChart);
+		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -10099,16 +10119,17 @@ rg.svg.panel.Panels.absolutePos = function(panel) {
 		y += p.frame.y;
 		p = p.parent;
 	}
-	haxe.Log.trace("panel: " + x + " " + y,{ fileName : "Panels.hx", lineNumber : 32, className : "rg.svg.panel.Panels", methodName : "absolutePos"});
-	var node = panel.g.node();
-	do {
-	} while(null == (node = node.parentNode).offsetParent);
+	var node = rg.svg.panel.Panels.htmlContainer(panel);
 	var pos = rg.util.Js.findPosition(node);
-	haxe.Log.trace("container: " + pos.x + " " + pos.y,{ fileName : "Panels.hx", lineNumber : 39, className : "rg.svg.panel.Panels", methodName : "absolutePos"});
 	pos.x += x;
 	pos.y += y;
-	haxe.Log.trace(pos,{ fileName : "Panels.hx", lineNumber : 43, className : "rg.svg.panel.Panels", methodName : "absolutePos"});
 	return pos;
+}
+rg.svg.panel.Panels.htmlContainer = function(panel) {
+	var node = panel.g.node();
+	do {
+	} while(null != Reflect.field(node = node.ownerSVGElement,"ownerSVGElement"));
+	return node.parentNode;
 }
 rg.svg.panel.Panels.boundingBox = function(panel,ancestor) {
 	var p = panel, x = 0, y = 0;
@@ -10383,6 +10404,7 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 	,initChart: function() {
 		var me = this;
 		var chart = new rg.svg.chart.BarChart(this.layout.getPanel(this.layout.mainPanelName));
+		this.baseChart = chart;
 		chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -12553,9 +12575,10 @@ thx.js.AccessDataAttribute.prototype = $extend(thx.js.AccessAttribute.prototype,
 	}
 	,__class__: thx.js.AccessDataAttribute
 });
-rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function() {
+rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.visible = false;
-	this.tooltip = thx.js.Dom.select("body").append("div").style("display").string("none").style("position").string("absolute").style("opacity")["float"](0).style("left").string("0px").style("top").string("0px").attr("class").string("rg tooltip").style("z-index").string("1000000");
+	el = null == el?js.Lib.document.body:el;
+	this.tooltip = thx.js.Dom.selectNode(el).append("div").style("display").string("none").style("position").string("absolute").style("opacity")["float"](0).style("left").string("0px").style("top").string("0px").attr("class").string("rg tooltip").style("z-index").string("1000000");
 	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute").attr("class").string("anchor");
 	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("container");
 	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
@@ -12577,32 +12600,27 @@ rg.html.widget.Tooltip.prototype = {
 		this.content.node().innerHTML = value;
 		this.reanchor();
 	}
-	,show: function(animated) {
-		if(animated == null) animated = true;
+	,show: function() {
 		if(this.visible) return;
 		this.tooltip.style("display").string("block");
 		this.visible = true;
 		this.reanchor();
-		if(animated) this.tooltip.transition().style("opacity")["float"](1); else this.tooltip.style("opacity")["float"](1);
+		this.tooltip.style("opacity")["float"](1);
 	}
-	,hide: function(animated) {
-		if(animated == null) animated = true;
-		var me = this;
+	,hide: function() {
 		if(!this.visible) return;
 		this.visible = false;
-		if(animated) this.tooltip.transition().style("opacity")["float"](0).endNode(function(_,_1) {
-			me.tooltip.style("display").string("none");
-		}); else this.tooltip.style("opacity")["float"](0).style("display").string("none");
+		this.tooltip.style("opacity")["float"](0).style("display").string("none");
 	}
 	,showAt: function(x,y) {
-		if(this.visible) this.moveAt(x,y,true); else this.moveAt(x,y,false);
-		this.show(true);
+		this.moveAt(x,y);
+		this.show();
 	}
-	,moveAt: function(x,y,animated) {
-		if(animated) this.tooltip.transition().style("left").string(x + "px").style("top").string(y + "px"); else this.tooltip.style("left").string(x + "px").style("top").string(y + "px");
+	,moveAt: function(x,y) {
+		this.tooltip.style("left").string(x + "px").style("top").string(y + "px");
 	}
 	,anchor: function(type,distance) {
-		if(distance == null) distance = 5;
+		if(null == distance) distance = 5;
 		if(this.anchortype == type && this.anchordistance == distance) return;
 		this.anchortype = type;
 		this.anchordistance = distance;
@@ -12623,7 +12641,7 @@ rg.html.widget.Tooltip.prototype = {
 			this.container.style("left").string(-this.anchordistance - width + "px");
 			break;
 		default:
-			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 151, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
+			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 129, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
 		}
 		switch(type) {
 		case "top":case "topleft":case "topright":
@@ -15646,7 +15664,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeData(edge),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("top");
+			this.tooltip.anchor("bottom");
 			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y);
 		}
@@ -15656,7 +15674,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("top");
+			this.tooltip.anchor("bottom");
 			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y);
 		}
@@ -15666,7 +15684,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("bottom");
+			this.tooltip.anchor("top");
 			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y);
 		}
@@ -15890,6 +15908,7 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 		}
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.Geo(panelChart);
+		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -16872,6 +16891,7 @@ rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.
 	,initChart: function() {
 		var me = this;
 		var chart = new rg.svg.chart.ScatterGraph(this.layout.getPanel(this.layout.mainPanelName));
+		this.baseChart = chart;
 		chart.ready.add(function() {
 			me.ready.dispatch();
 		});
@@ -22193,7 +22213,7 @@ rg.app.charts.App.prototype = {
 			visualization.feedData(datapoints);
 		});
 		loader.load();
-		var brandPadding = 0;
+		var brandPadding = 0, logoHeight = 29;
 		var download = rg.info.Info.feed(new rg.info.InfoDownload(),jsoptions.options.download);
 		if(!rg.app.charts.App.supportsSvg()) {
 			var downloader = new rg.interactive.Downloader(visualization.container,download.service,download.background);
@@ -22215,6 +22235,7 @@ rg.app.charts.App.prototype = {
 		}
 		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
 			var widget = new rg.html.widget.Logo(visualization.container,brandPadding);
+			visualization.setVerticalOffset(logoHeight);
 		});
 		return visualization;
 	}
@@ -27571,6 +27592,7 @@ rg.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
+rg.html.widget.Tooltip.DEFAULT_DISTANCE = 5;
 rg.RGConst.BASE_URL_GEOJSON = "/rg/vis/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "/rg/services/viz/renderer/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";

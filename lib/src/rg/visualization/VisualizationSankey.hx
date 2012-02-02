@@ -36,6 +36,7 @@ class VisualizationSankey extends VisualizationSvg
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new Sankey(panelChart);
+		baseChart = chart;
 		chart.ready.add(function() ready.dispatch());
 	}
 

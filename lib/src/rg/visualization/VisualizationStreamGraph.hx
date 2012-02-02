@@ -25,6 +25,7 @@ class VisualizationStreamGraph extends VisualizationCartesian<Array<Array<DataPo
 	override function initChart()
 	{
 		var chart = new StreamGraph(layout.getPanel(layout.mainPanelName));
+		baseChart = chart;
 		chart.ready.add(function() ready.dispatch());
 
 		chart.interpolator = infoStream.interpolation;

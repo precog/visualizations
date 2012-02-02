@@ -47,6 +47,10 @@ class Visualization
 	{
 		trace("DATA FEED " + Dynamics.string(data));
 	}
+
+	public function setVerticalOffset(offset : Int)
+	{
+	}
 /*
 	function getVariables() : Array<Variable<Dynamic, IAxis<Dynamic>>>
 	{

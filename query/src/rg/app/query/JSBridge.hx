@@ -1,7 +1,10 @@
 package rg.app.query;
 
 import rg.data.DataPoint;
-import rg.data.reportgrid.ReportGridExecutorMemoryCache;
+import rg.data.reportgrid.ReportGridExecutorCache;
+import rg.storage.IStorage;
+import rg.storage.MemoryStorage;
+import rg.storage.BrowserStorage;
 import rg.query.ReportGridQuery;
 import thx.math.Random;
 import thx.date.DateParser;
@@ -11,9 +14,14 @@ class JSBridge
 {
 	static function main()
 	{
-		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid"),
-			executor = new ReportGridExecutorMemoryCache(r);
+		var storage : IStorage;
+		if(BrowserStorage.hasSessionStorage())
+			storage = BrowserStorage.sessionStorage()
+		else
+			storage = new MemoryStorage();
 
+		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid"),
+			executor = new ReportGridExecutorCache(r, storage);
 		r.query = ReportGridQuery.create(executor);
 		r.date  = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {

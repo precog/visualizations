@@ -6,6 +6,10 @@
 <title><?php echo $info['title'] ?></title>
 <link rel="stylesheet" type="text/css" href="<?php echo $CSS_API; ?>"/>
 <link rel="stylesheet" type="text/css" href="samples/css/sample.css"/>
+<?php if(isset($QUERY_API)) { ?>
+<script src="<?php echo $CORE_API; ?>"></script>
+<script src="<?php echo $QUERY_API; ?>"></script>
+<?php } ?>
 <script src="<?php echo $VIZ_API; ?>"></script>
 <?php
 if(@$info['style'])
@@ -31,7 +35,7 @@ echo $info['html'];
 <?php
 	echo $info['viz'];
 	echo "\n\n";
-	echo $info['data'];
+	echo @$info['data'];
 	echo "\n";
 ?>
 </script>

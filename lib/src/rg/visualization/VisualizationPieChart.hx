@@ -25,6 +25,7 @@ class VisualizationPieChart extends VisualizationSvg
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new PieChart(panelChart);
+		baseChart = chart;
 		chart.ready.add(function() ready.dispatch());
 
 		// aesthetic

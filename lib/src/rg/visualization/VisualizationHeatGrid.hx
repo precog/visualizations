@@ -13,18 +13,19 @@ import rg.data.DataPoint;
 class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 {
 	public var infoHeatGrid : InfoHeatGrid;
-	
+
 	override function initAxes()
 	{
 		xvariable = cast independentVariables[0];
 		yvariables = [cast independentVariables[1]];
 	}
-	
+
 	override function initChart()
 	{
 		var chart = new HeatGrid(layout.getPanel(layout.mainPanelName));
+		baseChart = chart;
 		chart.ready.add(function() ready.dispatch());
-		
+
 		chart.useContour = infoHeatGrid.contour;
 		chart.colorMode = infoHeatGrid.colorScaleMode;
 
@@ -35,7 +36,7 @@ class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 	{
 		return dps;
 	}
-	
+
 	override function setTickmarksDefaults(tickmarks : TickmarksOrtho, i : Int, type : String, pname : String)
 	{
 		if (i != 0)

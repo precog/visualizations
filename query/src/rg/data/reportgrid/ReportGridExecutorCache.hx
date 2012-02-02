@@ -1,17 +1,18 @@
 package rg.data.reportgrid;
 
 import rg.data.reportgrid.IExecutorReportGrid;
+import rg.storage.IStorage;
 
-class ReportGridExecutorMemoryCache implements IExecutorReportGrid
+class ReportGridExecutorCache implements IExecutorReportGrid
 {
 	public var timeout : Int;
 	var executor : IExecutorReportGrid;
-	var cache : Hash<Dynamic>;
+	var storage : IStorage;
 	var queue : Hash<Array<Dynamic -> Void>>;
-	public function new(executor : IExecutorReportGrid)
+	public function new(executor : IExecutorReportGrid, storage : IStorage)
 	{
 		this.executor = executor;
-		cache = new Hash();
+		this.storage = storage;
 		queue = new Hash();
 		timeout = 60;
 	}
@@ -81,30 +82,54 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 		execute("propertiesHistogram", path, options, success, error);
 	}
 
-	function execute(name : String, path : String, options : {}, success : Dynamic -> Void, ?error : String -> Void)
+	function execute(name : String, path : String, options : Dynamic, success : Dynamic -> Void, ?error : String -> Void)
 	{
+		normalizePeriod(options);
 		var id = id(name, path, options),
 			val = getCache(id);
 		if(null != val)
+		{
+			trace("from cache: " + name);
 			success(val);
+			return;
+		}
 		var q = getQueue(id);
 		if(null != q)
+		{
+			trace("queues: " + name);
 			q.push(success);
+		}
 		else
-			Reflect.field(executor, name)(path, options, cacheSuccess(id, success), error);
+		{
+			trace("live query: " + name);
+			Reflect.field(executor, name)(path, options, storageSuccess(id, success), error);
+		}
 	}
 
-	function cacheSuccess(id : String, success : Dynamic)
+	function normalizePeriod(options : { ?periodicity : String, ?start : Float, ?end : Float })
+	{
+		var periodicity = options.periodicity;
+		if(null == periodicity && options.start != null && options.end != null)
+			periodicity = rg.util.Periodicity.defaultPeriodicity(options.end-options.start);
+		if(null == periodicity)
+			return;
+		if(null != options.start)
+			options.start = Dates.snap(options.start, periodicity, -1);
+		if(null != options.end)
+			options.end = Dates.snap(options.end, periodicity, -1);
+	}
+
+	function storageSuccess(id : String, success : Dynamic)
 	{
 		queue.set(id, []);
 		return function(r : Dynamic)
 		{
 			if(timeout >= 0)
-				cache.set(id, r);
+				storage.set(id, r);
 			if(timeout > 0)
 			{
 				haxe.Timer.delay(function() {
-					cache.remove(id);
+					storage.remove(id);
 				}, timeout * 1000);
 			}
 			success(r);
@@ -118,7 +143,7 @@ class ReportGridExecutorMemoryCache implements IExecutorReportGrid
 
 	function getCache(id : String)
 	{
-		return cache.get(id);
+		return storage.get(id);
 	}
 
 	function getQueue(id : String)

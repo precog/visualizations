@@ -22,6 +22,7 @@ import rg.svg.chart.ColorScaleMode;
 import rg.svg.util.RGCss;
 import rg.data.Variable;
 import rg.axis.IAxis;
+import rg.svg.panel.Panels;
 using Arrays;
 
 class Geo extends Chart
@@ -232,7 +233,9 @@ class Geo extends Chart
 	{
 		super.init();
 		if (null == tooltip)
+		{
 			tooltip = new Tooltip();
+		}
 
 		g.classed().add("geo");
 	}
