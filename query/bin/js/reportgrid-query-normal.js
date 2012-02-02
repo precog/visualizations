@@ -796,6 +796,161 @@ thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamErro
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
+rg.data.reportgrid.ReportGridExecutorCache = $hxClasses["rg.data.reportgrid.ReportGridExecutorCache"] = function(executor,storage,timeout) {
+	this.executor = executor;
+	this.storage = storage;
+	this.queue = new Hash();
+	this.timeout = timeout;
+	this.cleanOld();
+}
+rg.data.reportgrid.ReportGridExecutorCache.__name__ = ["rg","data","reportgrid","ReportGridExecutorCache"];
+rg.data.reportgrid.ReportGridExecutorCache.__interfaces__ = [rg.data.reportgrid.IExecutorReportGrid];
+rg.data.reportgrid.ReportGridExecutorCache.prototype = {
+	timeout: null
+	,executor: null
+	,storage: null
+	,queue: null
+	,children: function(path,options,success,error) {
+		this.execute("children",path,options,success,error);
+	}
+	,propertyCount: function(path,options,success,error) {
+		this.execute("propertyCount",path,options,success,error);
+	}
+	,propertySeries: function(path,options,success,error) {
+		this.execute("propertySeries",path,options,success,error);
+	}
+	,propertyMeans: function(path,options,success,error) {
+		this.execute("propertyMeans",path,options,success,error);
+	}
+	,propertyStandardDeviations: function(path,options,success,error) {
+		this.execute("propertyStandardDeviations",path,options,success,error);
+	}
+	,propertyValues: function(path,options,success,error) {
+		this.execute("propertyValues",path,options,success,error);
+	}
+	,propertyValueCount: function(path,options,success,error) {
+		this.execute("propertyValueCount",path,options,success,error);
+	}
+	,propertyValueSeries: function(path,options,success,error) {
+		this.execute("propertyValueSeries",path,options,success,error);
+	}
+	,searchCount: function(path,options,success,error) {
+		this.execute("searchCount",path,options,success,error);
+	}
+	,searchSeries: function(path,options,success,error) {
+		this.execute("searchSeries",path,options,success,error);
+	}
+	,intersect: function(path,options,success,error) {
+		this.execute("intersect",path,options,success,error);
+	}
+	,histogram: function(path,options,success,error) {
+		this.execute("histogram",path,options,success,error);
+	}
+	,propertiesHistogram: function(path,options,success,error) {
+		this.execute("propertiesHistogram",path,options,success,error);
+	}
+	,setCacheTimeout: function(t) {
+		this.timeout = t;
+	}
+	,execute: function(name,path,options,success,error) {
+		this.normalizePeriod(options);
+		var id = this.uidquery(name,path,options), val = this.cacheGet(id);
+		if(null != val) {
+			success(val);
+			return;
+		}
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else (Reflect.field(this.executor,name))(path,options,this.storageSuccess(id,success),error);
+	}
+	,normalizePeriod: function(options) {
+		var periodicity = options.periodicity;
+		if(null == periodicity && options.start != null && options.end != null) periodicity = rg.util.Periodicity.defaultPeriodicity(options.end - options.start);
+		if(null == periodicity) return;
+		if(null != options.start) options.start = Dates.snap(options.start,periodicity,-1);
+		if(null != options.end) options.end = Dates.snap(options.end,periodicity,-1);
+	}
+	,storageSuccess: function(id,success) {
+		var me = this;
+		this.queue.set(id,[]);
+		return function(r) {
+			if(me.timeout > 0) {
+				me.cacheSet(id,r);
+				me.delayedCleanup(id);
+			}
+			success(r);
+			var q = me.queue.get(id);
+			if(null != q) {
+				var _g = 0;
+				while(_g < q.length) {
+					var item = q[_g];
+					++_g;
+					item(r);
+				}
+			}
+			me.queue.remove(id);
+		};
+	}
+	,clearValueIfOld: function(id) {
+		var idd = rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id;
+		var v = this.storage.get(idd);
+		if(null == v) return;
+		if(v < Date.now().getTime() - this.timeout * 1000) {
+			this.storage.remove(idd);
+			this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+		}
+	}
+	,delayedCleanup: function(id) {
+		var me = this;
+		haxe.Timer.delay(function() {
+			me.cacheRemove(id);
+		},this.timeout * 1000);
+	}
+	,cacheSet: function(id,value) {
+		this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id,Date.now().getTime());
+		this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id,value);
+	}
+	,cacheGet: function(id) {
+		this.clearValueIfOld(id);
+		var v = this.storage.get(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+		if(null != v) this.delayedCleanup(id);
+		return v;
+	}
+	,cacheRemove: function(id) {
+		this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id);
+		this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+	}
+	,ids: function() {
+		var len = rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX.length;
+		return Iterators.filter(this.storage.keys(),function(cid) {
+			return cid.substr(0,len) == rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX;
+		}).map(function(cid,_) {
+			return cid.substr(len);
+		});
+	}
+	,cleanOld: function() {
+		var _g = 0, _g1 = this.ids();
+		while(_g < _g1.length) {
+			var id = _g1[_g];
+			++_g;
+			this.clearValueIfOld(id);
+		}
+	}
+	,getQueue: function(id) {
+		if(this.timeout < 0) return null;
+		return this.queue.get(id);
+	}
+	,idDate: function(id) {
+		return rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id;
+	}
+	,idValue: function(id) {
+		return rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id;
+	}
+	,uidquery: function(method,path,options) {
+		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
+		return haxe.Md5.encode(s);
+	}
+	,__class__: rg.data.reportgrid.ReportGridExecutorCache
+}
 var Iterables = $hxClasses["Iterables"] = function() { }
 Iterables.__name__ = ["Iterables"];
 Iterables.count = function(it) {
@@ -1648,6 +1803,7 @@ rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.cross = function(values) {
 	if(!Std["is"](values,Array)) values = [values];
 	return function(data) {
+		if(data.length == 0) return values;
 		var results = [];
 		var _g = 0;
 		while(_g < data.length) {
@@ -1673,19 +1829,57 @@ rg.query.Transformers.filter = function(handler) {
 		return Arrays.filter(data,handler);
 	};
 }
-rg.query.Transformers.filterFields = function(o) {
+rg.query.Transformers.filterValues = function(o) {
 	var entries = Objects.entries(o);
+	entries.forEach(function(entry,_) {
+		if(!Reflect.isFunction(entry.value)) {
+			var test = entry.value;
+			entry.value = function(v) {
+				return v == test;
+			};
+		}
+	});
 	var handler = function(d) {
 		var _g = 0;
 		while(_g < entries.length) {
 			var entry = entries[_g];
 			++_g;
-			if(Reflect.field(d,entry.key) != entry.value) return false;
+			if(!entry.value(Reflect.field(d,entry.key))) return false;
 		}
 		return true;
 	};
 	return function(data) {
 		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.filterValue = function(name,o) {
+	if(!Reflect.isFunction(o)) {
+		var test = o;
+		o = function(v) {
+			return v == test;
+		};
+	}
+	var handler = function(d) {
+		if(!o(Reflect.field(d,name))) return false;
+		return true;
+	};
+	return function(data) {
+		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.setField = function(name,o) {
+	if(!Reflect.isFunction(o)) {
+		var value = o;
+		o = function(obj,index) {
+			return value;
+		};
+	}
+	var handler = function(d,i) {
+		d[name] = o(d,i);
+	};
+	return function(data) {
+		data.forEach(handler);
+		return data;
 	};
 }
 rg.query.Transformers.sort = function(handler) {
@@ -1708,6 +1902,21 @@ rg.query.Transformers.limit = function(offset,count) {
 rg.query.Transformers.reverse = function(arr) {
 	arr.reverse();
 	return arr;
+}
+rg.query.Transformers.uniquef = function(fun) {
+	return function(arr) {
+		var i = 0, j;
+		while(i < arr.length - 1) {
+			var cur = arr[i];
+			j = arr.length - 1;
+			while(j > i) {
+				if(fun(cur,arr[j])) arr.splice(j,1);
+				j--;
+			}
+			i++;
+		}
+		return arr;
+	};
 }
 rg.query.Transformers.prototype = {
 	__class__: rg.query.Transformers
@@ -1821,13 +2030,13 @@ IntIter.prototype = {
 	}
 	,__class__: IntIter
 }
-rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(delegate,first) {
-	this._delegate = delegate;
+rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(async,first) {
+	this._async = async;
 	this._first = first;
-	this._collected = [];
+	this._store = new Hash();
 }
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
-rg.query.BaseQuery.delegateTransform = function(t) {
+rg.query.BaseQuery.asyncTransform = function(t) {
 	return function(data,handler) {
 		handler(t(data));
 	};
@@ -1835,11 +2044,16 @@ rg.query.BaseQuery.delegateTransform = function(t) {
 rg.query.BaseQuery.prototype = {
 	_first: null
 	,_next: null
-	,_delegate: null
-	,_collected: null
-	,data: function(handler) {
-		return this.delegate(function(_,h) {
+	,_async: null
+	,_store: null
+	,load: function(handler) {
+		return this.asyncAll(function(_,h) {
 			handler(h);
+		});
+	}
+	,data: function(values) {
+		return this.asyncAll(function(_,h) {
+			h(values);
 		});
 	}
 	,cross: function(values) {
@@ -1848,13 +2062,19 @@ rg.query.BaseQuery.prototype = {
 	,map: function(handler) {
 		return this.transform(rg.query.Transformers.map(handler));
 	}
+	,mapValue: function(name,f) {
+		var fun = function(d,i) {
+			return f(Reflect.field(d,name),i);
+		};
+		return this.transform(rg.query.Transformers.setField(name,fun));
+	}
 	,audit: function(f) {
 		return this.transform(function(d) {
 			f(d);
 			return d;
 		});
 	}
-	,mapFields: function(o) {
+	,renameFields: function(o) {
 		var pairs = Reflect.fields(o).map(function(d,_) {
 			return { src : d, dst : Reflect.field(o,d)};
 		});
@@ -1870,15 +2090,15 @@ rg.query.BaseQuery.prototype = {
 		});
 	}
 	,transform: function(t) {
-		return this.delegate(rg.query.BaseQuery.delegateTransform(t));
+		return this.asyncAll(rg.query.BaseQuery.asyncTransform(t));
 	}
-	,delegate: function(d) {
+	,asyncAll: function(d) {
 		var query = this._createQuery(d,this._first);
 		this._next = query;
 		return query;
 	}
-	,each: function(f) {
-		return this.delegate(function(data,handler) {
+	,asyncEach: function(f) {
+		return this.asyncAll(function(data,handler) {
 			var tot = data.length, pos = 0, results = [];
 			var complete = function(i,r) {
 				results[i] = r;
@@ -1895,27 +2115,45 @@ rg.query.BaseQuery.prototype = {
 			}
 		});
 	}
+	,addField: function(name,f) {
+		return this.transform(rg.query.Transformers.setField(name,f));
+	}
+	,addIndex: function(name) {
+		if(null == name) name = "index";
+		return this.transform(rg.query.Transformers.setField(name,function(_,i) {
+			return i;
+		}));
+	}
 	,filter: function(f) {
 		return this.transform(rg.query.Transformers.filter(f));
 	}
-	,filterByFields: function(f) {
-		return this.transform(rg.query.Transformers.filterByFields(f));
+	,filterValues: function(f) {
+		return this.transform(rg.query.Transformers.filterValues(f));
+	}
+	,filterValue: function(name,f) {
+		return this.transform(rg.query.Transformers.filterValue(name,f));
 	}
 	,sort: function(f) {
 		return this.transform(rg.query.Transformers.sort(f));
 	}
-	,sortByField: function(field,reverse) {
-		return this.sortByFields([field],reverse);
+	,sortField: function(field,reverse) {
+		return this.sortFields([field],[reverse]);
 	}
-	,sortByFields: function(fields,reverse) {
-		reverse = null == reverse?false:reverse;
+	,sortFields: function(fields,reverse) {
+		var rarr;
+		if(null == reverse) rarr = Ints.range(0,fields.length).map(function(_,_1) {
+			return false;
+		}); else if(!Std["is"](reverse,Array)) rarr = Ints.range(0,fields.length).map(function(_,_1) {
+			return reverse;
+		}); else rarr = reverse;
+		while(rarr.length < fields.length) rarr.push(false);
 		return this.sort(function(a,b) {
-			var r;
-			var _g = 0;
-			while(_g < fields.length) {
-				var field = fields[_g];
-				++_g;
-				r = (reverse?-1:1) * Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field));
+			var r, field;
+			var _g1 = 0, _g = fields.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				field = fields[i];
+				r = (rarr[i]?-1:1) * Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field));
 				if(r != 0) return r;
 			}
 			return 0;
@@ -1928,27 +2166,16 @@ rg.query.BaseQuery.prototype = {
 		}
 		return this.transform(rg.query.Transformers.limit(offset,count));
 	}
-	,append: function(useAseSource) {
-		var me = this;
-		if(null == useAseSource) useAseSource = false;
-		return this.transform(function(arr) {
-			me._first._collected.push(arr);
-			if(useAseSource) return arr; else return [{ }];
-		});
-	}
-	,collect: function() {
-		var me = this;
-		return this.transform(function(arr) {
-			var collected = me._first._collected.pop();
-			return collected.concat(arr);
-		});
-	}
 	,reverse: function() {
 		return this.transform(rg.query.Transformers.reverse);
 	}
+	,unique: function(f) {
+		if(null == f) f = Dynamics.same;
+		return this.transform(rg.query.Transformers.uniquef(f));
+	}
 	,accumulate: function(groupby,on,forproperty,atproperty) {
 		var map = new Hash();
-		var q = this.sortByFields([groupby,on]);
+		var q = this.sortFields([groupby,on]);
 		return q.transform(function(data) {
 			var v, f;
 			data.forEach(function(dp,_) {
@@ -1960,25 +2187,43 @@ rg.query.BaseQuery.prototype = {
 			return data;
 		});
 	}
-	,load: function(handler) {
-		this._first.load(handler);
+	,store: function(name) {
+		var me = this;
+		if(null == name) name = "";
+		return this.transform(function(arr) {
+			me._first._store.set(name,arr.copy());
+			return arr;
+		});
+	}
+	,retrieve: function(name) {
+		var me = this;
+		if(null == name) name = "";
+		return this.transform(function(arr) {
+			return arr.concat(me._first._store.get(name));
+		});
+	}
+	,clear: function() {
+		return this.data([]);
+	}
+	,execute: function(handler) {
+		this._first.execute(handler);
 	}
 	,_query: function(t) {
 		return t;
 	}
-	,_createQuery: function(delegate,first) {
-		return new rg.query.BaseQuery(delegate,first);
+	,_createQuery: function(async,first) {
+		return new rg.query.BaseQuery(async,first);
 	}
 	,toString: function() {
-		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + (null != this._next) + ", delegate: " + (null != this._delegate) + "]");
+		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + (null != this._next) + ", async: " + (null != this._async) + "]");
 	}
 	,_this: function(q) {
 		return q;
 	}
 	,__class__: rg.query.BaseQuery
 }
-rg.query.ReportGridBaseQuery = $hxClasses["rg.query.ReportGridBaseQuery"] = function(delegate,first) {
-	rg.query.BaseQuery.call(this,delegate,first);
+rg.query.ReportGridBaseQuery = $hxClasses["rg.query.ReportGridBaseQuery"] = function(async,first) {
+	rg.query.BaseQuery.call(this,async,first);
 }
 rg.query.ReportGridBaseQuery.__name__ = ["rg","query","ReportGridBaseQuery"];
 rg.query.ReportGridBaseQuery._defaultOptions = function(params,options) {
@@ -2057,28 +2302,28 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,paths: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			me.executor.children(params.parent,{ type : "path"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenPath,params,keep,handler));
 		});
 	}
 	,events: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			me.executor.children(params.path,{ type : "property"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenEvent,params,keep,handler));
 		});
 	}
 	,properties: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			me.executor.children(params.path,{ property : params.event},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenProperty,params,keep,handler));
 		});
 	}
 	,values: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
 			me.executor.propertyValues(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,params,keep,handler));
@@ -2087,7 +2332,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,count: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
 			if(null != params.where) {
@@ -2108,7 +2353,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,summary: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			if(null == params.type) params.type = "mean";
 			var options = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property), periodicity : "eternity"};
 			switch(params.type.toLowerCase()) {
@@ -2126,7 +2371,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,summarySeries: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			if(null == params.type) params.type = "mean";
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
@@ -2147,7 +2392,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,intersect: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ periodicity : "eternity"}), properties = [];
 			options.properties = properties;
@@ -2173,7 +2418,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,intersectSeries: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params), properties = [];
 			options.properties = properties;
@@ -2199,7 +2444,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,histogram: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
 			if(null != params.top) {
@@ -2212,7 +2457,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,propertiesHistogram: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
 			me.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,keep,handler));
@@ -2221,7 +2466,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,series: function(p,keep) {
 		var me = this;
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
-		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).each(function(params,handler) {
+		return this.cross(null == p?[{ }]:Std["is"](p,Array)?p:[p]).asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
 			if(null != params.where) {
@@ -2245,8 +2490,8 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,_params: function(p) {
 		return null == p?[{ }]:Std["is"](p,Array)?p:[p];
 	}
-	,_createQuery: function(delegate,first) {
-		var query = new rg.query.ReportGridBaseQuery(delegate,first);
+	,_createQuery: function(async,first) {
+		var query = new rg.query.ReportGridBaseQuery(async,first);
 		query.executor = this.executor;
 		return query;
 	}
@@ -2267,8 +2512,8 @@ rg.query.ReportGridQuery.create = function(executor) {
 }
 rg.query.ReportGridQuery.__super__ = rg.query.ReportGridBaseQuery;
 rg.query.ReportGridQuery.prototype = $extend(rg.query.ReportGridBaseQuery.prototype,{
-	load: function(handler) {
-		rg.query.Query.loadHandler(this,handler);
+	execute: function(handler) {
+		rg.query.Query.executeHandler(this,handler);
 	}
 	,__class__: rg.query.ReportGridQuery
 });
@@ -3551,7 +3796,9 @@ if(!rg.app.query) rg.app.query = {}
 rg.app.query.JSBridge = $hxClasses["rg.app.query.JSBridge"] = function() { }
 rg.app.query.JSBridge.__name__ = ["rg","app","query","JSBridge"];
 rg.app.query.JSBridge.main = function() {
-	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, executor = new rg.data.reportgrid.ReportGridExecutorMemoryCache(r);
+	var storage;
+	if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
+	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
 	r.query = rg.query.ReportGridQuery.create(executor);
 	r.date = { range : function(a,b,p) {
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
@@ -3563,12 +3810,39 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.1007"};
+	r.info.query = { version : "1.0.0.1221"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
 	}, random : function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
+	}};
+	r.cache = { executor : executor, disable : function() {
+		if(null == executor || Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
+			r.cache.executor = executor = r;
+			r.query = rg.query.ReportGridQuery.create(executor);
+		}
+	}, enable : function() {
+		if(null == executor || !Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
+			r.cache.executor = executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
+			r.query = rg.query.ReportGridQuery.create(executor);
+		}
+	}, setTimeout : function(t) {
+		executor = null;
+		timeout = t;
+		r.cache.enable();
+	}, memoryStorage : function() {
+		executor = null;
+		storage = new rg.storage.MemoryStorage();
+		r.cache.enable();
+	}, sessionStorage : function() {
+		executor = null;
+		if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
+		r.cache.enable();
+	}, localStorage : function() {
+		executor = null;
+		if(rg.storage.BrowserStorage.hasLocalStorage()) storage = rg.storage.BrowserStorage.localStorage(); else if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
+		r.cache.enable();
 	}};
 }
 rg.app.query.JSBridge.opt = function(ob) {
@@ -4307,6 +4581,65 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 }
 rg.util.Periodicity.prototype = {
 	__class__: rg.util.Periodicity
+}
+if(!rg.storage) rg.storage = {}
+rg.storage.IStorage = $hxClasses["rg.storage.IStorage"] = function() { }
+rg.storage.IStorage.__name__ = ["rg","storage","IStorage"];
+rg.storage.IStorage.prototype = {
+	keys: null
+	,set: null
+	,get: null
+	,remove: null
+	,clear: null
+	,__class__: rg.storage.IStorage
+}
+rg.storage.BrowserStorage = $hxClasses["rg.storage.BrowserStorage"] = function(api,kind) {
+	this.storage = api;
+	this.kind = kind;
+}
+rg.storage.BrowserStorage.__name__ = ["rg","storage","BrowserStorage"];
+rg.storage.BrowserStorage.__interfaces__ = [rg.storage.IStorage];
+rg.storage.BrowserStorage.hasSessionStorage = function() {
+	return null != sessionStorage;
+}
+rg.storage.BrowserStorage.sessionStorage = function() {
+	return new rg.storage.BrowserStorage(sessionStorage,"sessionStorage");
+}
+rg.storage.BrowserStorage.hasLocalStorage = function() {
+	return null != localStorage;
+}
+rg.storage.BrowserStorage.localStorage = function() {
+	return new rg.storage.BrowserStorage(localStorage,"localStorage");
+}
+rg.storage.BrowserStorage.prototype = {
+	storage: null
+	,kind: null
+	,set: function(name,value) {
+		this.storage.setItem(name,thx.json.Json.encode(value));
+	}
+	,get: function(name) {
+		var v = this.storage.getItem(name);
+		if(null == v) return v; else return thx.json.Json.decode(v);
+	}
+	,clear: function() {
+		this.storage.clear();
+	}
+	,remove: function(name) {
+		this.storage.removeItem(name);
+	}
+	,keys: function() {
+		var keys = [];
+		var _g1 = 0, _g = this.storage.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			keys.push(this.storage.key(i));
+		}
+		return keys.iterator();
+	}
+	,toString: function() {
+		return "BrowserStorage[" + this.kind + "]";
+	}
+	,__class__: rg.storage.BrowserStorage
 }
 if(!thx.error) thx.error = {}
 thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
@@ -5744,7 +6077,7 @@ rg.query.Query.create = function() {
 	start._next = query;
 	return query;
 }
-rg.query.Query.loadHandler = function(instance,handler) {
+rg.query.Query.executeHandler = function(instance,handler) {
 	var current = instance._next;
 	var execute = (function($this) {
 		var $r;
@@ -5755,17 +6088,17 @@ rg.query.Query.loadHandler = function(instance,handler) {
 				return;
 			}
 			current = current._next;
-			current._delegate(results,execute);
+			current._async(results,execute);
 		};
 		$r = execute;
 		return $r;
 	}(this));
-	execute([{ }]);
+	execute([]);
 }
 rg.query.Query.__super__ = rg.query.BaseQuery;
 rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
-	load: function(handler) {
-		rg.query.Query.loadHandler(this,handler);
+	execute: function(handler) {
+		rg.query.Query.executeHandler(this,handler);
 	}
 	,__class__: rg.query.Query
 });
@@ -6178,98 +6511,6 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
-rg.data.reportgrid.ReportGridExecutorMemoryCache = $hxClasses["rg.data.reportgrid.ReportGridExecutorMemoryCache"] = function(executor) {
-	this.executor = executor;
-	this.cache = new Hash();
-	this.queue = new Hash();
-	this.timeout = 60;
-}
-rg.data.reportgrid.ReportGridExecutorMemoryCache.__name__ = ["rg","data","reportgrid","ReportGridExecutorMemoryCache"];
-rg.data.reportgrid.ReportGridExecutorMemoryCache.__interfaces__ = [rg.data.reportgrid.IExecutorReportGrid];
-rg.data.reportgrid.ReportGridExecutorMemoryCache.prototype = {
-	timeout: null
-	,executor: null
-	,cache: null
-	,queue: null
-	,children: function(path,options,success,error) {
-		this.execute("children",path,options,success,error);
-	}
-	,propertyCount: function(path,options,success,error) {
-		this.execute("propertyCount",path,options,success,error);
-	}
-	,propertySeries: function(path,options,success,error) {
-		this.execute("propertySeries",path,options,success,error);
-	}
-	,propertyMeans: function(path,options,success,error) {
-		this.execute("propertyMeans",path,options,success,error);
-	}
-	,propertyStandardDeviations: function(path,options,success,error) {
-		this.execute("propertyStandardDeviations",path,options,success,error);
-	}
-	,propertyValues: function(path,options,success,error) {
-		this.execute("propertyValues",path,options,success,error);
-	}
-	,propertyValueCount: function(path,options,success,error) {
-		this.execute("propertyValueCount",path,options,success,error);
-	}
-	,propertyValueSeries: function(path,options,success,error) {
-		this.execute("propertyValueSeries",path,options,success,error);
-	}
-	,searchCount: function(path,options,success,error) {
-		this.execute("searchCount",path,options,success,error);
-	}
-	,searchSeries: function(path,options,success,error) {
-		this.execute("searchSeries",path,options,success,error);
-	}
-	,intersect: function(path,options,success,error) {
-		this.execute("intersect",path,options,success,error);
-	}
-	,histogram: function(path,options,success,error) {
-		this.execute("histogram",path,options,success,error);
-	}
-	,propertiesHistogram: function(path,options,success,error) {
-		this.execute("propertiesHistogram",path,options,success,error);
-	}
-	,execute: function(name,path,options,success,error) {
-		var id = this.id(name,path,options), val = this.getCache(id);
-		if(null != val) success(val);
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else (Reflect.field(this.executor,name))(path,options,this.cacheSuccess(id,success),error);
-	}
-	,cacheSuccess: function(id,success) {
-		var me = this;
-		this.queue.set(id,[]);
-		return function(r) {
-			if(me.timeout >= 0) me.cache.set(id,r);
-			if(me.timeout > 0) haxe.Timer.delay(function() {
-				me.cache.remove(id);
-			},me.timeout * 1000);
-			success(r);
-			var q = me.queue.get(id);
-			if(null != q) {
-				var _g = 0;
-				while(_g < q.length) {
-					var item = q[_g];
-					++_g;
-					item(r);
-				}
-			}
-			me.queue.remove(id);
-		};
-	}
-	,getCache: function(id) {
-		return this.cache.get(id);
-	}
-	,getQueue: function(id) {
-		if(this.timeout < 0) return null;
-		return this.queue.get(id);
-	}
-	,id: function(method,path,options) {
-		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
-		return haxe.Md5.encode(s);
-	}
-	,__class__: rg.data.reportgrid.ReportGridExecutorMemoryCache
-}
 thx.data.ValueHandler = $hxClasses["thx.data.ValueHandler"] = function() {
 }
 thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
@@ -6413,6 +6654,33 @@ js.Lib.setErrorHandler = function(f) {
 }
 js.Lib.prototype = {
 	__class__: js.Lib
+}
+rg.storage.MemoryStorage = $hxClasses["rg.storage.MemoryStorage"] = function() {
+	this.storage = new Hash();
+}
+rg.storage.MemoryStorage.__name__ = ["rg","storage","MemoryStorage"];
+rg.storage.MemoryStorage.__interfaces__ = [rg.storage.IStorage];
+rg.storage.MemoryStorage.prototype = {
+	storage: null
+	,set: function(name,value) {
+		this.storage.set(name,value);
+	}
+	,get: function(name) {
+		return this.storage.get(name);
+	}
+	,clear: function() {
+		this.storage = new Hash();
+	}
+	,remove: function(name) {
+		this.storage.remove(name);
+	}
+	,keys: function() {
+		return this.storage.keys();
+	}
+	,toString: function() {
+		return "MemoryStorage";
+	}
+	,__class__: rg.storage.MemoryStorage
 }
 var StringTools = $hxClasses["StringTools"] = function() { }
 StringTools.__name__ = ["StringTools"];
@@ -6596,6 +6864,8 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	d.prototype.__class__ = $hxClasses["Date"] = d;
 	d.__name__ = ["Date"];
 }
+rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX = "D:";
+rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX = "V:";
 Ints._reparse = new EReg("^([+-])?\\d+$","");
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
