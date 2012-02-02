@@ -46,6 +46,9 @@ class JSBridge
 		if(msiev >= 0 && msiev < 9)
 			return;
 
+#if !release
+		if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
+#end
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid");
 		// init app
 		var app = new App();

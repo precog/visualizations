@@ -21,9 +21,9 @@ class ReportGridQuery extends ReportGridBaseQuery<ReportGridQuery>
 		this.executor = executor;
 	}
 
-	override public function load(handler : Array<Dynamic> -> Void)
+	override public function execute(handler : Array<Dynamic> -> Void)
 	{
-		Query.loadHandler(this, handler);
+		Query.executeHandler(this, handler);
 	}
 }
 
@@ -31,15 +31,15 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 {
 	public var executor : IExecutorReportGrid;
 
-	public function new(delegate : Delegate, first : BaseQuery<This>)
+	public function new(async : Async, first : BaseQuery<This>)
 	{
-		super(delegate, first);
+		super(async, first);
 	}
 
 	public function paths(?p : { ?parent : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { parent : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { parent : String }, handler) {
 			executor.children(
 				params.parent,
 				{ type : "path" },
@@ -51,7 +51,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function events(?p : { ?path : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String }, handler) {
 			executor.children(
 				params.path,
 				{ type : "property" },
@@ -63,7 +63,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function properties(?p : { ?path : String, ?event : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String }, handler) {
 			executor.children(
 				params.path,
 				{ property : params.event },
@@ -75,7 +75,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			executor.propertyValues(
@@ -89,7 +89,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function count(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?where : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?where : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
 // TODO tag?
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params);
@@ -129,7 +129,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?type : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String }, handler) {
 // TODO tag?
 // TODO time range?
 			if(null == params.type)
@@ -158,7 +158,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function summarySeries(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?type : String, ?start : Dynamic, ?end : Dynamic, ?periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?start : Dynamic, ?end : Dynamic, ?periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
 // TODO tag?
 // TODO groupBy
 			if(null == params.type)
@@ -193,7 +193,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function intersect(?p : { ?path : String, ?event : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String }, handler) {
 
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { periodicity : "eternity" }),
@@ -235,7 +235,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function intersectSeries(?p : { ?path : String, ?event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
 			_ensureTimeParams(params);
 			var options = _defaultSeriesOptions(params),
 				properties = [];
@@ -278,7 +278,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function histogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			if(null != params.top)
@@ -301,7 +301,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function propertiesHistogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
 		// TODO tag?
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
@@ -316,7 +316,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function series(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).each(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
 			_ensureTimeParams(params);
 			var options : Dynamic = _defaultSeriesOptions(params);
 			if(null != params.where)
@@ -469,9 +469,9 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 	inline function _params(p : Dynamic) : Array<Dynamic> return null == p ? [{}] : (Std.is(p, Array) ? p : [p])
 
-	override function _createQuery(delegate : Delegate, first : BaseQuery<This>) : BaseQuery<This>
+	override function _createQuery(async : Async, first : BaseQuery<This>) : BaseQuery<This>
 	{
-		var query = new ReportGridBaseQuery(delegate, first);
+		var query = new ReportGridBaseQuery(async, first);
 		query.executor = executor;
 		return query;
 	}

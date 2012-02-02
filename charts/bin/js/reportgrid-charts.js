@@ -632,8 +632,8 @@ rg.query.BaseQuery.prototype = {
 			return data;
 		});
 	}
-	,load: function(handler) {
-		this._first.load(handler);
+	,execute: function(handler) {
+		this._first.execute(handler);
 	}
 	,_query: function(t) {
 		return t;
@@ -660,7 +660,7 @@ rg.query.Query.create = function() {
 	start._next = query;
 	return query;
 }
-rg.query.Query.loadHandler = function(instance,handler) {
+rg.query.Query.executeHandler = function(instance,handler) {
 	var current = instance._next;
 	var execute = (function($this) {
 		var $r;
@@ -680,8 +680,8 @@ rg.query.Query.loadHandler = function(instance,handler) {
 }
 rg.query.Query.__super__ = rg.query.BaseQuery;
 rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
-	load: function(handler) {
-		rg.query.Query.loadHandler(this,handler);
+	execute: function(handler) {
+		rg.query.Query.executeHandler(this,handler);
 	}
 	,__class__: rg.query.Query
 });
@@ -1342,6 +1342,7 @@ rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
 rg.app.charts.JSBridge.main = function() {
 	var msiev = rg.app.charts.JSBridge.getInternetExplorerVersion();
 	if(msiev >= 0 && msiev < 9) return;
+	if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
 	var app = new rg.app.charts.App();
 	r.viz = function(el,options,type) {
@@ -1414,11 +1415,11 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.0.6625"};
+	r.info.charts = { version : "1.3.0.6629"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 142, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 145, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -6416,6 +6417,39 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 rg.util.Periodicity.prototype = {
 	__class__: rg.util.Periodicity
 }
+var haxe = haxe || {}
+haxe.Firebug = $hxClasses["haxe.Firebug"] = function() { }
+haxe.Firebug.__name__ = ["haxe","Firebug"];
+haxe.Firebug.detect = function() {
+	try {
+		return console != null && console.error != null;
+	} catch( e ) {
+		return false;
+	}
+}
+haxe.Firebug.redirectTraces = function() {
+	haxe.Log.trace = haxe.Firebug.trace;
+	js.Lib.setErrorHandler(haxe.Firebug.onError);
+}
+haxe.Firebug.onError = function(err,stack) {
+	var buf = err + "\n";
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		buf += "Called from " + s + "\n";
+	}
+	haxe.Firebug.trace(buf,null);
+	return true;
+}
+haxe.Firebug.trace = function(v,inf) {
+	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
+	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
+	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
+}
+haxe.Firebug.prototype = {
+	__class__: haxe.Firebug
+}
 rg.visualization.VisualizationStreamGraph = $hxClasses["rg.visualization.VisualizationStreamGraph"] = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 }
@@ -6764,7 +6798,6 @@ thx.date.DateParser.plusPm = function(s) {
 thx.date.DateParser.prototype = {
 	__class__: thx.date.DateParser
 }
-var haxe = haxe || {}
 haxe.Int32 = $hxClasses["haxe.Int32"] = function() { }
 haxe.Int32.__name__ = ["haxe","Int32"];
 haxe.Int32.make = function(a,b) {
@@ -12674,9 +12707,9 @@ rg.info.InfoDataSource.filters = function() {
 			handler(v);
 		}}];
 	}},{ field : "load", validator : function(v) {
-		return Reflect.isFunction(v) || null != Reflect.field(v,"load");
+		return Reflect.isFunction(v) || null != Reflect.field(v,"execute");
 	}, filter : function(v) {
-		return [{ field : "loader", value : Reflect.isObject(v)?v.load.$bind(v):v}];
+		return [{ field : "loader", value : Reflect.isObject(v)?v.execute.$bind(v):v}];
 	}}];
 }
 rg.info.InfoDataSource.prototype = {

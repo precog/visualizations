@@ -5,7 +5,7 @@ ReportGrid.query
 		path : pathvalue,
 		properties : ['age', 'browser']
 	})
-	.sortByFields(['age', 'browser'])
+	.sortFields(['age', 'browser'])
 
 //** VIZ
 ReportGrid.heatGrid("#chart", {

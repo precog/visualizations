@@ -7,8 +7,9 @@ define('DEFAULT_PATH', '/query/test2');
 define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
 
 $categories = array(
-	'QU' => array("name" => 'Query', "sequence" => 0),
-	'VZ' => array("name" => 'Visualization', "sequence" => 0),
+	'RG' => array("name" => 'RG Query', "sequence" => 0),
+	'QU' => array("name" => 'Query', "sequence" => 10),
+	'VZ' => array("name" => 'Visualization', "sequence" => 20),
 	'TR' => array("name" => 'Track', "sequence" => 50)
 );
 
@@ -116,7 +117,7 @@ function parseContent($content)
 		$value = trim($pair[1]);
 		if($key == 'load')
 		{
-			$info['data'] = "(function() {\n\t ".file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";\nreturn {$info['data']}\n})()";
+			$info['data'] = file_get_contents(SAMPLES_DATA_DIR.$value.'.json'); //"(function() {\n\t ".file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";\nreturn {$info['data']}\n})()";
 		} else {
 			$info[$key] = $value;
 		}

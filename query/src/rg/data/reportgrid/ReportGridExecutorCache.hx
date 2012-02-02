@@ -2,19 +2,24 @@ package rg.data.reportgrid;
 
 import rg.data.reportgrid.IExecutorReportGrid;
 import rg.storage.IStorage;
+using Iterators;
+using Arrays;
 
 class ReportGridExecutorCache implements IExecutorReportGrid
 {
-	public var timeout : Int;
+	static var DATE_PREFIX = "D:";
+	static var VALUE_PREFIX = "V:";
+	public var timeout(default, null) : Int;
 	var executor : IExecutorReportGrid;
 	var storage : IStorage;
 	var queue : Hash<Array<Dynamic -> Void>>;
-	public function new(executor : IExecutorReportGrid, storage : IStorage)
+	public function new(executor : IExecutorReportGrid, storage : IStorage, timeout : Int)
 	{
 		this.executor = executor;
 		this.storage = storage;
 		queue = new Hash();
-		timeout = 60;
+		this.timeout = timeout;
+		cleanOld();
 	}
 
 	public function children(path : String, options : { ?type : String, ?property : String}, success : Array<String> -> Void, ?error : String -> Void) : Void
@@ -82,26 +87,31 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		execute("propertiesHistogram", path, options, success, error);
 	}
 
+	public function setCacheTimeout(t : Int)
+	{
+		timeout = t;
+	}
+
 	function execute(name : String, path : String, options : Dynamic, success : Dynamic -> Void, ?error : String -> Void)
 	{
 		normalizePeriod(options);
-		var id = id(name, path, options),
-			val = getCache(id);
+		var id = uidquery(name, path, options),
+			val = cacheGet(id);
 		if(null != val)
 		{
-			trace("from cache: " + name);
+//			trace("from cache: " + name);
 			success(val);
 			return;
 		}
 		var q = getQueue(id);
 		if(null != q)
 		{
-			trace("queues: " + name);
+//			trace("queues: " + name);
 			q.push(success);
 		}
 		else
 		{
-			trace("live query: " + name);
+//			trace("live query: " + name);
 			Reflect.field(executor, name)(path, options, storageSuccess(id, success), error);
 		}
 	}
@@ -124,13 +134,10 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		queue.set(id, []);
 		return function(r : Dynamic)
 		{
-			if(timeout >= 0)
-				storage.set(id, r);
 			if(timeout > 0)
 			{
-				haxe.Timer.delay(function() {
-					storage.remove(id);
-				}, timeout * 1000);
+				cacheSet(id, r);
+				delayedCleanup(id);
 			}
 			success(r);
 			var q = queue.get(id);
@@ -141,9 +148,66 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		}
 	}
 
-	function getCache(id : String)
+	function clearValueIfOld(id : String)
 	{
-		return storage.get(id);
+		var idd = idDate(id);
+		var v = storage.get(idd);
+		if(null == v)
+			return;
+		if(v < Date.now().getTime() - timeout * 1000)
+		{
+			storage.remove(idd);
+			storage.remove(idValue(id));
+//			trace("cleared " + id);
+		}
+	}
+
+	function delayedCleanup(id : String)
+	{
+		haxe.Timer.delay(function() {
+//			trace("delayed cleanup");
+			cacheRemove(id);
+		}, timeout * 1000);
+	}
+
+	function cacheSet(id : String, value : Dynamic)
+	{
+		storage.set(idDate(id), Date.now().getTime());
+		storage.set(idValue(id), value);
+	}
+
+	function cacheGet(id : String)
+	{
+		clearValueIfOld(id);
+		var v = storage.get(idValue(id));
+		if(null != v) delayedCleanup(id);
+		return v;
+	}
+
+	function cacheRemove(id : String)
+	{
+		storage.remove(idDate(id));
+		storage.remove(idValue(id));
+//		trace("removed from cache " + id);
+	}
+
+	function ids()
+	{
+		var len = VALUE_PREFIX.length;
+		return storage.keys().filter(function(cid) {
+			return cid.substr(0, len) == VALUE_PREFIX;
+		}).map(function(cid, _) {
+			return cid.substr(len);
+		});
+	}
+
+	function cleanOld()
+	{
+//		trace("trying cleanup");
+		for(id in ids())
+		{
+			clearValueIfOld(id);
+		}
 	}
 
 	function getQueue(id : String)
@@ -153,7 +217,11 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		return queue.get(id);
 	}
 
-	function id(method : String, path : String, options : Dynamic)
+
+	inline function idDate(id : String) return DATE_PREFIX + id
+	inline function idValue(id : String) return VALUE_PREFIX + id
+
+	function uidquery(method : String, path : String, options : Dynamic)
 	{
 		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
 		return haxe.Md5.encode(s);

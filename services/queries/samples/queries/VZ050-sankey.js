@@ -5,7 +5,7 @@ ReportGrid.query
 		event : "impression",
 		properties : ['clip', 'parent']
 	})
-	.mapFields({
+	.renameFields({
 		clip   : "head",
 		parent : "tail",
 		count  : "impressions"

@@ -5,7 +5,7 @@ ReportGrid.query
 		event : "impression",
 		properties : ["gender", "env", "browser"]
 	})
-	.sortByFields(["env"])
+	.sortFields(["env"])
 
 //** VIZ
 ReportGrid.pivotTable("#chart", {

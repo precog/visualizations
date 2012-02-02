@@ -2,6 +2,7 @@ package rg.app.query;
 
 import rg.data.DataPoint;
 import rg.data.reportgrid.ReportGridExecutorCache;
+import rg.data.reportgrid.IExecutorReportGrid;
 import rg.storage.IStorage;
 import rg.storage.MemoryStorage;
 import rg.storage.BrowserStorage;
@@ -14,6 +15,9 @@ class JSBridge
 {
 	static function main()
 	{
+#if !release
+		if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
+#end
 		var storage : IStorage;
 		if(BrowserStorage.hasSessionStorage())
 			storage = BrowserStorage.sessionStorage()
@@ -21,7 +25,8 @@ class JSBridge
 			storage = new MemoryStorage();
 
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid"),
-			executor = new ReportGridExecutorCache(r, storage);
+			timeout = 120,
+			executor : IExecutorReportGrid = new ReportGridExecutorCache(r, storage, timeout);
 		r.query = ReportGridQuery.create(executor);
 		r.date  = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
@@ -53,6 +58,51 @@ class JSBridge
 			setRandomSeed : function(s) rand = new Random(s),
 			random : function() return rand.float()
 		}
+		r.cache = {
+			executor : executor,
+			disable : function() {
+				if(null == executor || Std.is(executor, ReportGridExecutorCache))
+				{
+					r.cache.executor = executor = r;
+					r.query = ReportGridQuery.create(executor);
+				}
+			},
+			enable : function() {
+				if(null == executor || !Std.is(executor, ReportGridExecutorCache))
+				{
+					r.cache.executor = executor = new ReportGridExecutorCache(r, storage, timeout);
+					r.query = ReportGridQuery.create(executor);
+				}
+			},
+			setTimeout : function(t : Int) {
+				executor = null;
+				timeout = t;
+				r.cache.enable();
+			},
+			memoryStorage : function() {
+				executor = null;
+				storage = new MemoryStorage();
+				r.cache.enable();
+			},
+			sessionStorage : function() {
+				executor = null;
+				if(BrowserStorage.hasSessionStorage())
+					storage = BrowserStorage.sessionStorage()
+				else
+					storage = new MemoryStorage();
+				r.cache.enable();
+			},
+			localStorage : function() {
+				executor = null;
+				if(BrowserStorage.hasLocalStorage())
+					storage = BrowserStorage.localStorage()
+				else if(BrowserStorage.hasSessionStorage())
+					storage = BrowserStorage.sessionStorage()
+				else
+					storage = new MemoryStorage();
+				r.cache.enable();
+			}
+		};
 	}
 
 	static inline function opt(ob : Dynamic) return null == ob ? { } : Objects.clone(ob)

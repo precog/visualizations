@@ -1,8 +1,8 @@
 //** QUERY
 ReportGrid.query
 	.paths({ parent : "/test" })
-	.mapFields({ "path" : "parent" })
+	.renameFields({ "path" : "parent" })
 	.paths()
 	.events()
 	.properties()
-	.sortByFields(["path", "event", "property"])
+	.sortFields(["path", "event", "property"])

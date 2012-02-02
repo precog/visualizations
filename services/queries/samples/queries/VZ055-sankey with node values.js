@@ -7,11 +7,11 @@ ReportGrid.query
 			property : 'clip'
 		}]
 	})
-	.mapFields({
+	.renameFields({
 		clip : "id",
 		count : "impressions"
 	})
-	.append()
+	.store().clear()
 		.intersect({
 			path : "/test/clipmaster/t4/",
 			event : "impression",
@@ -21,12 +21,12 @@ ReportGrid.query
 				property : 'parent'
 			}]
 		})
-		.mapFields({
+		.renameFields({
 			clip   : "head",
 			parent : "tail",
 			count  : "impressions"
 		})
-	.collect()
+	.retrieve()
 
 //** VIZ
 ReportGrid.sankey("#chart", {

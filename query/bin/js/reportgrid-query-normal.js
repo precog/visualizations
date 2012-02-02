@@ -1673,7 +1673,7 @@ rg.query.Transformers.filter = function(handler) {
 		return Arrays.filter(data,handler);
 	};
 }
-rg.query.Transformers.filterByFields = function(o) {
+rg.query.Transformers.filterFields = function(o) {
 	var entries = Objects.entries(o);
 	var handler = function(d) {
 		var _g = 0;

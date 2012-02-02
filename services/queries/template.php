@@ -49,7 +49,7 @@ echo $info['html'];
 <script>
 
 <?php
-if(isset($info['data']))
+if(isset($info['data']) && !isset($info['query']))
 {
     $paths = split("\n",isset($info['path']) ? $info['path'] : $DEFAULT_PATH);
 ?>
@@ -81,7 +81,7 @@ function detab($s)
     return str_replace("\t", "    ", $s);
 }
 
-function query($s, $useload) {
+function query($s, $useexecute) {
     if(!$s)
         return "";
 ?>
@@ -91,10 +91,10 @@ var callback = function(dps) {
 };
 
 <?php
-    if(!$useload)
+    if(!$useexecute)
         return $s.".audit(callback)";
     else
-        return $s.".load(callback)";
+        return $s.".execute(callback)";
 }
 
 function indent($s) {
@@ -111,6 +111,18 @@ if(isset($info['viz']))
 if(isset($info['code']))
 {
     echo "\n\n".detab($info['code']);
+}
+
+if(isset($info['data']) && isset($info['query']))
+{
+?>
+
+
+function data()
+{
+    return <?php echo detab(indent($info['data'])); ?>;
+}
+<?php
 }
 ?>
 

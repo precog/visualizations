@@ -5,7 +5,7 @@ ReportGrid.query
 		path : pathvalue,
 		property : "keywords"
 	})
-	.sortByField("count")
+	.sortField("count")
 	.reverse()
 
 //** VIZ

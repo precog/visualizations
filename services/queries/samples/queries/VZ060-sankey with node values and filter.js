@@ -5,24 +5,24 @@ ReportGrid.query
 		event : "impression",
 		properties : ['clip', 'gender']
 	})
-	.filterByFields({ gender : "male" })
-	.mapFields({
+	.filterValues({ gender : "male" })
+	.renameFields({
 		clip : "id",
 		count : "impressions"
 	})
-	.append()
+	.store().clear()
 		.intersect({
 			path : "/test/clipmaster/t4/",
 			event : "impression",
 			properties : ['clip', 'parent', 'gender']
 		})
-		.filterByFields({ gender : "male" })
-		.mapFields({
+		.filterValues({ gender : "male" })
+		.renameFields({
 			clip   : "head",
 			parent : "tail",
 			count  : "impressions"
 		})
-	.collect()
+	.retrieve()
 
 //** VIZ
 ReportGrid.sankey("#chart", {

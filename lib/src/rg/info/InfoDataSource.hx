@@ -39,12 +39,12 @@ class InfoDataSource
 			}
 		}, {
 			field : "load",
-			validator : function(v) return Reflect.isFunction(v) || (null != Reflect.field(v, "load")),
-			filter : function(v : { public function load(handler : Array<DataPoint> -> Void) : Void; })
+			validator : function(v) return Reflect.isFunction(v) || (null != Reflect.field(v, "execute")),
+			filter : function(v : { public function execute(handler : Array<DataPoint> -> Void) : Void; })
 			{
 				return [{
 					field : "loader",
-					value : Reflect.isObject(v) ? v.load : cast v
+					value : Reflect.isObject(v) ? v.execute : cast v
 				}];
 			}
 		}];
