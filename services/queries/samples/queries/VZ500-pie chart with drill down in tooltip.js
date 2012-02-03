@@ -62,3 +62,7 @@ ReportGrid.pieChart("#chart", {
 	font-size: 10px;
 	font-weight : bold;
 }
+.rg.tooltip .container
+{
+	max-width: 180px;
+}
