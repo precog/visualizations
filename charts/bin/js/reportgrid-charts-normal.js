@@ -1457,7 +1457,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.0.6630"};
+	r.info.charts = { version : "1.3.1.6804"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -2334,10 +2334,11 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,setVerticalChartOffset: function(offset) {
 		this.verticalChartOffset = offset;
 	}
-	,moveTooltip: function(x,y,animated) {
+	,moveTooltip: function(x,y,color) {
 		var coords = rg.svg.panel.Panels.absolutePos(this.panel);
 		this.panelx = coords.x;
 		this.panely = coords.y;
+		this.tooltip.setAnchorColor(color);
 		this.tooltip.showAt(Std["int"](this.panelx + x),Std["int"](this.panely + y + this.verticalChartOffset));
 	}
 	,__class__: rg.svg.chart.Chart
@@ -2457,6 +2458,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 						};
 					})(click,dp));
 					bar.node()["__data__"] = dp;
+					rg.util.RGColors.storeColorForSelection(bar);
 					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
 					if(this.stacked) prev = x + w;
 				}
@@ -2502,6 +2504,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 						};
 					})(click,dp));
 					bar.node()["__data__"] = dp;
+					rg.util.RGColors.storeColorForSelection(bar);
 					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
 					if(this.stacked) prev = y + h;
 				}
@@ -2517,18 +2520,18 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), x = sel.attr("x").getFloat(), y = sel.attr("y").getFloat(), w = sel.attr("width").getFloat();
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(x + w / 2,y);
+			this.moveTooltip(x + w / 2,y,rg.util.RGColors.extractColor(n));
 		}
 	}
 	,applyGradient: function(n,i) {
-		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_bar_gradient_" + color.hex("");
+		var ng = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), scolor = ng.style("fill").get(), color = rg.util.RGColors.parse(scolor,"#ccc"), id = "rg_bar_gradient_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
-			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
+			var scolor1 = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
 			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
-			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
+			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor1).attr("stop-opacity")["float"](1);
 			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
 		}
-		gn.attr("style").string("fill:url(#" + id + ")");
+		ng.attr("style").string("fill:url(#" + id + ")");
 	}
 	,__class__: rg.svg.chart.BarChart
 });
@@ -3553,19 +3556,24 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		}
 		return map;
 	}
+	,currentNode: null
 	,drawSquares: function() {
 		var me = this;
 		var choice = this.g.selectAll("rect").data(this.dps);
-		choice.enter().append("svg:rect").attr("x").floatf(this.x.$bind(this)).attr("y").floatf(this.y.$bind(this)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
+		var rect = choice.enter().append("svg:rect").attr("x").floatf(this.x.$bind(this)).attr("y").floatf(this.y.$bind(this)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
 			me.stylefeature(thx.js.Dom.selectNode(thx.js.Group.current),dp);
-		}).on("click",this.onclick.$bind(this)).on("mouseover",this.onmouseover.$bind(this));
+		}).on("click",this.onclick.$bind(this)).onNode("mouseover",function(n,i) {
+			me.currentNode = n;
+			me.onmouseover(Reflect.field(n,"__data__"),i);
+		});
+		rg.util.RGColors.storeColorForSelection(rect);
 	}
 	,onmouseover: function(dp,i) {
 		if(null == this.labelDataPointOver) return;
 		var text = this.labelDataPointOver(dp,this.stats);
 		if(null == text) this.tooltip.hide(); else {
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(this.x(dp,i) + this.w / 2,this.y(dp,i) + this.h / 2);
+			this.moveTooltip(this.x(dp,i) + this.w / 2,this.y(dp,i) + this.h / 2,rg.util.RGColors.extractColor(this.currentNode));
 		}
 	}
 	,onclick: function(dp,i) {
@@ -6129,6 +6137,19 @@ rg.util.RGColors.parse = function(s,alt) {
 rg.util.RGColors.applyLightness = function(color,lightness,t) {
 	if(null == t) t = 1 / Math.abs(lightness);
 	return lightness >= 0?thx.color.Hsl.lighter(color,(1 - t) * (1 + lightness)):thx.color.Hsl.darker(color,(1 - t) * (1 - lightness));
+}
+rg.util.RGColors.extractColor = function(n) {
+	return n.__rgcolor__;
+}
+rg.util.RGColors.storeColor = function(n,color) {
+	n.__rgcolor__ = color;
+}
+rg.util.RGColors.storeColorForSelection = function(n,style,color) {
+	if(style == null) style = "fill";
+	n.eachNode(function(n1,_) {
+		var c = null == color?thx.js.Dom.selectNode(thx.js.Group.current).style(style).get():color;
+		rg.util.RGColors.storeColor(n1,c);
+	});
 }
 rg.util.RGColors.prototype = {
 	__class__: rg.util.RGColors
@@ -12672,12 +12693,13 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.visible = false;
 	el = null == el?js.Lib.document.body:el;
 	this.tooltip = thx.js.Dom.selectNode(el).append("div").style("display").string("none").style("position").string("absolute").style("opacity")["float"](0).style("left").string("0px").style("top").string("0px").attr("class").string("rg tooltip").style("z-index").string("1000000");
-	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute").attr("class").string("anchor");
+	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute");
+	this.setAnchorClass("");
 	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("container");
 	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
 	this.content = this.container.append("div").attr("class").string("content");
-	this.anchortype = "bottom";
-	this.anchordistance = 5;
+	this.anchortype = "bottomright";
+	this.anchordistance = 0;
 }
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
 rg.html.widget.Tooltip.prototype = {
@@ -12713,11 +12735,17 @@ rg.html.widget.Tooltip.prototype = {
 		this.tooltip.style("left").string(x + "px").style("top").string(y + "px");
 	}
 	,anchor: function(type,distance) {
-		if(null == distance) distance = 5;
+		if(null == distance) distance = 0;
 		if(this.anchortype == type && this.anchordistance == distance) return;
 		this.anchortype = type;
 		this.anchordistance = distance;
 		this.reanchor();
+	}
+	,setAnchorClass: function(value) {
+		this._anchor.attr("class").string("anchor " + value);
+	}
+	,setAnchorColor: function(color) {
+		this._anchor.style("background-color").string(color);
 	}
 	,reanchor: function() {
 		if(!this.visible) return;
@@ -12734,7 +12762,7 @@ rg.html.widget.Tooltip.prototype = {
 			this.container.style("left").string(-this.anchordistance - width + "px");
 			break;
 		default:
-			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 129, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
+			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 140, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
 		}
 		switch(type) {
 		case "top":case "topleft":case "topright":
@@ -14377,10 +14405,12 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 		if(null == this.transformedData) return;
 		var layer = this.g.selectAll("g.group").data(this.transformedData);
 		layer.update().select("path.line").attr("d").stringf(($_=this.area,$_.shape.$bind($_)));
-		var node = layer.enter().append("svg:g").attr("class").string("group").onNode("mousemove",this.onover.$bind(this)).onNode("click",this.onclick.$bind(this)).append("svg:path").attr("class").stringf(function(d,i) {
+		var g = layer.enter().append("svg:g").attr("class").string("group");
+		var path = g.append("svg:path").attr("class").stringf(function(d,i) {
 			return "line fill-" + i + " stroke-" + i;
-		}).attr("d").stringf(($_=this.area,$_.shape.$bind($_)));
-		if(this.gradientStyle != 0) node.each(this.gradientStyle == 1?this.applyGradientV.$bind(this):this.applyGradientH.$bind(this));
+		}).attr("d").stringf(($_=this.area,$_.shape.$bind($_))).onNode("mousemove",this.onover.$bind(this)).onNode("click",this.onclick.$bind(this));
+		rg.util.RGColors.storeColorForSelection(path);
+		if(this.gradientStyle != 0) path.each(this.gradientStyle == 1?this.applyGradientV.$bind(this):this.applyGradientH.$bind(this));
 		layer.exit().remove();
 		this.ready.dispatch();
 	}
@@ -14395,7 +14425,7 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 		if(null == this.labelDataPointOver) return;
 		var dp = this.getDataAtNode(n,i);
 		this.tooltip.html(this.labelDataPointOver(dp.dp,this.stats).split("\n").join("<br>"));
-		this.moveTooltip(dp.coord.x * this.width,this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy);
+		this.moveTooltip(dp.coord.x * this.width,this.height - (dp.coord.y + dp.coord.y0) * this.height / this.maxy,rg.util.RGColors.extractColor(n));
 	}
 	,onclick: function(n,i) {
 		if(null == this.click) return;
@@ -14976,7 +15006,7 @@ rg.svg.widget.Map.loadJsonAjax = function(url,handler) {
 		handler(json);
 	};
 	http.onError = function(err) {
-		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.svg.widget.Map", methodName : "loadJsonAjax"});
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 97, className : "rg.svg.widget.Map", methodName : "loadJsonAjax"});
 	};
 	http.request(false);
 }
@@ -14999,7 +15029,7 @@ rg.svg.widget.Map.prototype = {
 			this.loadGeoJson(path,mappingurl,usejsonp);
 			break;
 		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 58, className : "rg.svg.widget.Map", methodName : "load"});
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 60, className : "rg.svg.widget.Map", methodName : "load"});
 		}
 	}
 	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
@@ -15042,15 +15072,15 @@ rg.svg.widget.Map.prototype = {
 			}
 			break;
 		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.svg.widget.Map", methodName : "draw"});
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 168, className : "rg.svg.widget.Map", methodName : "draw"});
 			break;
 		default:
 			this.g.append("svg:path").attr("d").string(path.path(json));
 		}
 		this.onReady.dispatch();
 	}
-	,onMouseOver: function(dp,_,_1) {
-		this.handlerDataPointOver(dp,this.labelDataPointOver);
+	,onMouseOver: function(dp,n,_) {
+		this.handlerDataPointOver(n,dp,this.labelDataPointOver);
 	}
 	,onClick: function(dp,_,_1) {
 		this.handlerClick(dp,this.click);
@@ -15466,6 +15496,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					return f(a1,a2,a3,a4,a5);
 				};
 			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy + weight / 2,edge));
+			rg.util.RGColors.storeColorForSelection(hook.g,"fill",hook.area.style("fill").get());
 			if(null != me.clickEdge) hook.g.onNode("click",(function(f,a1) {
 				return function(a2,a3) {
 					return f(a1,a2,a3);
@@ -15485,6 +15516,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					return f(a1,a2,a3,a4,a5);
 				};
 			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
+			rg.util.RGColors.storeColorForSelection(diagonal.g,"fill",diagonal.area.style("fill").get());
 			if(null != me.clickEdge) diagonal.g.onNode("click",(function(f,a1) {
 				return function(a2,a3) {
 					return f(a1,a2,a3);
@@ -15512,6 +15544,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					return f(a1,a2,a3,a4,a5);
 				};
 			})(me.onmouseoverextraout.$bind(me),x + minr + (-minr + Math.min(me.extraWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.extraHeight,node));
+			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
 			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
 				return function(a3,a4) {
 					return f(a1,a2,a3,a4);
@@ -15537,6 +15570,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					return f(a1,a2,a3,a4,a5);
 				};
 			})(me.onmouseoverextrain.$bind(me),x - minr + (minr - Math.min(me.extraWidth,extra)) / 2,me.ynode(node) - minr - me.extraHeight,node));
+			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
 			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
 				return function(a3,a4) {
 					return f(a1,a2,a3,a4);
@@ -15566,12 +15600,13 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		});
 		var cont = choice.enter().append("svg:g").attr("class").string("node");
 		if(this.layerWidth > 0) {
-			cont.append("svg:rect").attr("class").stringf(function(n,_) {
+			var rect = cont.append("svg:rect").attr("class").stringf(function(n,_) {
 				return "fill fill-" + (me.isdummy(n)?me.styleEdgeForward + " nonode":me.styleNode + " node");
 			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this));
 			cont.each(function(node,_) {
 				me.addToMap(node.id,"node",thx.js.Dom.selectNode(thx.js.Group.current));
 			});
+			rg.util.RGColors.storeColorForSelection(cont,"fill",rect.style("fill").get());
 			cont.append("svg:line").attr("class").stringf(function(n,_) {
 				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
 			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
@@ -15737,18 +15772,18 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var text = this.labelEdgeOver(this.edgeData(node.graph.edges.positives(node).next()),this.dependentVariable.stats);
 			if(null == text) this.tooltip.hide(); else {
 				var cell = this.layout.cell(node);
-				this.tooltip.anchor("top");
+				this.tooltip.anchor("bottomright");
 				this.tooltip.html(text.split("\n").join("<br>"));
-				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2,rg.util.RGColors.extractColor(el));
 			}
 		} else {
 			if(null == this.labelDataPointOver) return;
 			var text = this.labelDataPointOver(node.data.dp,this.dependentVariable.stats);
 			if(null == text) this.tooltip.hide(); else {
 				var cell = this.layout.cell(node);
-				this.tooltip.anchor("bottom");
+				this.tooltip.anchor("bottomright");
 				this.tooltip.html(text.split("\n").join("<br>"));
-				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2);
+				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2,rg.util.RGColors.extractColor(el));
 			}
 		}
 	}
@@ -15757,9 +15792,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeData(edge),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("bottom");
+			this.tooltip.anchor("bottomright");
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(x,y);
+			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
 	}
 	,onmouseoverextrain: function(x,y,node,el,i) {
@@ -15767,9 +15802,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("bottom");
+			this.tooltip.anchor("bottomright");
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(x,y);
+			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
 	}
 	,onmouseoverextraout: function(x,y,node,el,i) {
@@ -15777,9 +15812,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("top");
+			this.tooltip.anchor("topleft");
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(x,y);
+			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
 	}
 	,nheight: function(v) {
@@ -17147,7 +17182,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 		if(null == text) this.tooltip.hide(); else {
 			var sel = thx.js.Dom.selectNode(n), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(coords[0],coords[1]);
+			this.moveTooltip(coords[0],coords[1],null);
 		}
 	}
 	,onclick: function(stats,dp,i) {
@@ -17469,8 +17504,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				};
 			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
 			if(null != this.click) gsymbol.on("click",onclick);
-			if(null != this.labelDataPointOver) gsymbol.onNode("mouseover",onmouseover);
-			gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
+			var circle = gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
+			if(null != this.labelDataPointOver) circle.onNode("mouseover",onmouseover);
+			rg.util.RGColors.storeColorForSelection(circle,"stroke");
 			if(null != this.symbol) {
 				var sp = [this.symbol];
 				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
@@ -17478,6 +17514,8 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 						return sp[0](dp,stats[0]);
 					};
 				})(sp,stats));
+				if(null != this.labelDataPointOver) spath.onNode("mouseover",onmouseover);
+				rg.util.RGColors.storeColorForSelection(spath,"stroke");
 				if(null != this.symbolStyle) {
 					var ss = [this.symbolStyle];
 					spath.attr("style").stringf((function(ss,stats) {
@@ -17512,11 +17550,12 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 		};
 	}
 	,onmouseover: function(stats,n,i) {
-		var dp = Reflect.field(n,"__data__"), text = this.labelDataPointOver(dp,stats);
+		var p = n.parentNode;
+		var dp = Reflect.field(p,"__data__"), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = thx.js.Dom.selectNode(n), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			var sel = thx.js.Dom.selectNode(p), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(coords[0],coords[1]);
+			this.moveTooltip(coords[0],coords[1],rg.util.RGColors.extractColor(n));
 		}
 	}
 	,onclick: function(stats,dp,i) {
@@ -17819,12 +17858,12 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		}
 		if(this.queue.length == 0) this.ready.dispatch();
 	}
-	,handlerDataPointOver: function(dp,f) {
+	,handlerDataPointOver: function(n,dp,f) {
 		var text = f(dp,this.variableDependent.stats);
 		if(null == text) this.tooltip.hide(); else {
 			this.tooltip.html(text.split("\n").join("<br>"));
 			var centroid = Reflect.field(dp,"#centroid");
-			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,true);
+			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,rg.util.RGColors.extractColor(n));
 		}
 	}
 	,handlerClick: function(dp,f) {
@@ -17859,6 +17898,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
 				svg.attr("class").string("fill-" + index);
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 3:
@@ -17869,6 +17909,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
 				svg.style("fill").string(colors[index]);
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 2:
@@ -17877,6 +17918,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
 				svg.style("fill").string(interpolator(t).hex("#"));
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 4:
@@ -17884,12 +17926,14 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var color = c.hex("#");
 			this.stylefeature = function(svg,dp) {
 				svg.style("fill").string(color);
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 5:
 			var f = $e[2];
 			this.stylefeature = function(svg,dp) {
 				svg.style("fill").string(f(dp,me.variableDependent.stats));
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		}
@@ -18688,6 +18732,7 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			return "group fill-" + i;
 		}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
 		var path = arc.append("svg:path").attr("class").string("slice");
+		rg.util.RGColors.storeColorForSelection(arc);
 		if(this.displayGradient) arc.eachNode(this.applyGradient.$bind(this));
 		if(this.animated) {
 			path.attr("d").stringf(this.arcShape(this.arcStart));
@@ -18707,7 +18752,7 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == text) this.tooltip.hide(); else {
 			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2, r = this.radius * this.tooltipRadius;
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r);
+			this.moveTooltip(this.width / 2 + Math.cos(a) * r,this.height / 2 + Math.sin(a) * r,rg.util.RGColors.extractColor(dom));
 		}
 	}
 	,onMouseClick: function(dom,i) {
@@ -22134,6 +22179,7 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,stats: null
 	,topheight: null
 	,h: null
+	,currentNode: null
 	,scale: function(value) {
 		return this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),value);
 	}
@@ -22177,9 +22223,11 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			me.click(me.dps[0],me.stats);
 		});
 		if(this.displayGradient) this.internalGradient(path);
-		top.onNode("mouseover",function(_,_1) {
+		path.onNode("mouseover",function(d,_) {
+			me.currentNode = d;
 			me.mouseOver(me.dps[0],0,me.stats);
 		});
+		rg.util.RGColors.storeColorForSelection(path);
 		this.topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
 		var index = this.dps.length - 1, bottom = this.g.append("svg:path").attr("class").string("funnel-inside fill-" + index).attr("d").string(conjr(this.dps[index])), bottomheight = Math.ceil(bottom.node().getBBox().height / 2) + 1;
 		bottom.remove();
@@ -22189,12 +22237,6 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var enter = section.enter().append("svg:g").attr("class").string("section").attr("transform").stringf(function(d,i) {
 			return "translate(0," + (me.topheight + i * (me.padding + me.h)) + ")";
 		});
-		if(null != this.click) enter.on("click",function(d,_) {
-			me.click(d,me.stats);
-		});
-		enter.on("mouseover",function(d,i) {
-			me.mouseOver(d,i,me.stats);
-		});
 		var funnel = enter.append("svg:path").attr("class").stringf(function(d,i) {
 			return "funnel-outside fill-" + i;
 		}).attr("d").stringf(function(d,i) {
@@ -22202,6 +22244,14 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			t.shift();
 			var d2 = "C" + t.join("C");
 			return diagonal1.diagonal(d,i) + conj2(d,i) + d2 + conj1(d,i);
+		});
+		if(null != this.click) funnel.on("click",function(d,_) {
+			me.click(d,me.stats);
+		});
+		rg.util.RGColors.storeColorForSelection(funnel);
+		funnel.onNode("mouseover",function(d,i) {
+			me.currentNode = d;
+			me.mouseOver(Reflect.field(d,"__data__"),i,me.stats);
 		});
 		if(this.displayGradient) enter.eachNode(this.externalGradient.$bind(this));
 		var ga = this.g.selectAll("g.arrow").data(this.dps).enter().append("svg:g").attr("class").string("arrow").attr("transform").stringf(function(d,i) {
@@ -22235,12 +22285,12 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
 			this.tooltip.html(text.split("\n").join("<br>"));
-			this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,true);
+			this.moveTooltip(this.width / 2,this.topheight + this.h * .6 + (this.h + this.padding) * i,rg.util.RGColors.extractColor(this.currentNode));
 		}
 	}
 	,init: function() {
 		rg.svg.chart.Chart.prototype.init.call(this);
-		if(null != this.tooltip) this.tooltip.anchor("right");
+		if(null != this.tooltip) this.tooltip.anchor("bottomright");
 		this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
 	}
 	,internalGradient: function(d) {
@@ -27685,7 +27735,8 @@ rg.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
-rg.html.widget.Tooltip.DEFAULT_DISTANCE = 5;
+rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
+rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
 rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/renderer/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";

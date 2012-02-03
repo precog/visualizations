@@ -286,7 +286,7 @@ class FunnelChart extends Chart
 		super.init();
 		if (null != tooltip)
 		{
-			tooltip.anchor("right");
+			tooltip.anchor("bottomright");
 		}
 		defs = g.classed().add("funnel-chart")
 			.append("svg:defs");

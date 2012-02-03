@@ -1,3 +1,6 @@
+v. 1.3.0
+* html tooltip
+* query API integration
 v. 1.2.0
 * added sankey visualization
 v. 1.1.5

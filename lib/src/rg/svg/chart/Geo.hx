@@ -24,6 +24,7 @@ import rg.svg.util.RGCss;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import rg.svg.panel.Panels;
+import js.Dom;
 using Arrays;
 
 class Geo extends Chart
@@ -96,7 +97,7 @@ class Geo extends Chart
 		}
 	}
 
-	public function handlerDataPointOver(dp : DataPoint, f)
+	public function handlerDataPointOver(n : HtmlDom, dp : DataPoint, f)
 	{
 		var text = f(dp, variableDependent.stats);
 		if (null == text)
@@ -105,7 +106,7 @@ class Geo extends Chart
 		{
 			tooltip.html(text.split("\n").join("<br>"));
 			var centroid = Reflect.field(dp, "#centroid");
-			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, null /* RGColors.extractColor(currentNode) */);
+			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, RGColors.extractColor(n));
 		}
 	}
 
@@ -151,6 +152,7 @@ class Geo extends Chart
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(g * t);
 					svg.attr("class").string("fill-" + index);
+					RGColors.storeColorForSelection(svg);
 				}
 			case Sequence(c):
 				var colors = Arrays.map(c, function(d, _) return d.toCss());
@@ -159,6 +161,7 @@ class Geo extends Chart
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(colors.length * t);
 					svg.style("fill").string(colors[index]);
+					RGColors.storeColorForSelection(svg);
 				}
 			case Interpolation(colors):
 				var interpolator = Rgb.interpolateStepsf(colors);
@@ -166,17 +169,20 @@ class Geo extends Chart
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type));
 					svg.style("fill").string(interpolator(t).toCss());
+					RGColors.storeColorForSelection(svg);
 				}
 			case Fixed(c):
 				var color = c.toCss();
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
 					svg.style("fill").string(color);
+					RGColors.storeColorForSelection(svg);
 				}
 			case Fun(f):
 				stylefeature = function(svg : Selection, dp : DataPoint)
 				{
 					svg.style("fill").string(f(dp, variableDependent.stats));
+					RGColors.storeColorForSelection(svg);
 				}
 		}
 		return v;

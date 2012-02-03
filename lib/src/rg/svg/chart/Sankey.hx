@@ -733,7 +733,7 @@ class Sankey extends Chart
 			else
 			{
 				var cell = layout.cell(node);
-				tooltip.anchor("top");
+				tooltip.anchor("bottomright");
 				tooltip.html(text.split("\n").join("<br>"));
 				moveTooltip(
 					xlayer(cell.layer),
@@ -750,7 +750,7 @@ class Sankey extends Chart
 			else
 			{
 				var cell = layout.cell(node);
-				tooltip.anchor("bottom");
+				tooltip.anchor("bottomright");
 				tooltip.html(text.split("\n").join("<br>"));
 				moveTooltip(
 					xlayer(cell.layer),
@@ -771,7 +771,7 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.anchor("bottom");
+			tooltip.anchor("bottomright");
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y, RGColors.extractColor(el));
 		}
@@ -787,7 +787,7 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.anchor("bottom");
+			tooltip.anchor("bottomright");
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y, RGColors.extractColor(el));
 		}
@@ -803,7 +803,7 @@ class Sankey extends Chart
 			tooltip.hide();
 		else
 		{
-			tooltip.anchor("top");
+			tooltip.anchor("topleft");
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(x, y, RGColors.extractColor(el));
 		}

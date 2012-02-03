@@ -6,7 +6,7 @@ import thx.js.Selection;
 class Tooltip
 {
 	static inline var DEFAULT_DISTANCE = 0;
-	static inline var DEFAULT_ANCHOR = "topleft";
+	static inline var DEFAULT_ANCHOR = "bottomright";
 	var tooltip : Selection;
 	var _anchor : Selection;
 	var container : Selection;

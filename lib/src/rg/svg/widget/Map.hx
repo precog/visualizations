@@ -8,6 +8,7 @@ import haxe.Http;
 import hxevents.Notifier;
 import rg.util.Jsonp;
 import rg.svg.chart.ColorScaleMode;
+import rg.util.RGColors;
 import thx.error.Error;
 import thx.geo.Albers;
 import thx.geo.IProjection;
@@ -20,6 +21,7 @@ import thx.json.Json;
 import rg.info.InfoMap;
 import rg.data.DataPoint;
 import rg.axis.Stats;
+import js.Dom;
 using Arrays;
 
 class Map
@@ -155,7 +157,9 @@ class Map
 						} );
 					}
 					if (null != labelDataPointOver)
+					{
 						p.onNode("mouseover", callback(onMouseOver, dp));
+					}
 
 					if (null != click)
 						p.onNode("click", callback(onClick, dp));
@@ -171,11 +175,11 @@ class Map
 	function onMouseOver(dp : DataPoint, n, ?_) 
 	{
 //		currentNode = n;
-		handlerDataPointOver(dp, labelDataPointOver);
+		handlerDataPointOver(n, dp, labelDataPointOver);
 	}
 	function onClick(dp : DataPoint, ?_, ?_) handlerClick(dp, click)
 
-	public var handlerDataPointOver : DataPoint -> (DataPoint -> Stats<Dynamic> -> String) -> Void;
+	public var handlerDataPointOver : HtmlDom -> DataPoint -> (DataPoint -> Stats<Dynamic> -> String) -> Void;
 	public var handlerClick : DataPoint -> (DataPoint -> Stats<Dynamic> -> Void) -> Void;
 
 	function setClassName(cls : String)
