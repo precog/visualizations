@@ -80,19 +80,20 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			.select("path.line").attr("d").stringf(area.shape);
 
 		// enter
-		var node = layer.enter()
+		var g = layer.enter()
 			.append("svg:g")
-			.attr("class").string("group")
-//			.attr("transform").string("translate(0,0)")
-			.onNode("mousemove", onover)
-			.onNode("click", onclick)
-//			.onNode("mouseout", out)
-			.append("svg:path")
+			.attr("class").string("group");
+//			.attr("transform").string("translate(0,0)");
+//			.onNode("mouseout", out);
+		var path = g.append("svg:path")
 				.attr("class").stringf(function(d, i) return "line fill-" + i + " stroke-" + i)
 				.attr("d").stringf(area.shape)
+				.onNode("mousemove", onover)
+				.onNode("click", onclick)
 				;
+		RGColors.storeColorForSelection(cast path);
 		if(gradientStyle != 0)
-			node.each(gradientStyle == 1 ? applyGradientV : applyGradientH);
+			path.each(gradientStyle == 1 ? applyGradientV : applyGradientH);
 		// exit
 		layer.exit().remove();
 		ready.dispatch();
@@ -115,7 +116,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		var dp = getDataAtNode(n, i);
 		tooltip.html(labelDataPointOver(dp.dp, stats).split("\n").join("<br>"));
 //		tooltip.show();
-		moveTooltip(dp.coord.x * width, height - (dp.coord.y + dp.coord.y0) * height / maxy);
+		moveTooltip(dp.coord.x * width, height - (dp.coord.y + dp.coord.y0) * height / maxy, RGColors.extractColor(n));
 	}
 
 	function onclick(n, i)

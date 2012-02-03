@@ -10,7 +10,7 @@ import thx.js.Selection;
 class HookConnectorArea
 {
 	public var g(default, null) : Selection;
-	var area  : Selection;
+	public var area(default, null)  : Selection;
 	var upper : Selection;
 	var lower : Selection;
 	public function new(container : Selection, classarea : String, classborder : String)

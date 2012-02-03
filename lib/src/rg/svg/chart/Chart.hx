@@ -59,7 +59,7 @@ class Chart extends Layer
 		verticalChartOffset = offset;
 	}
 
-	function moveTooltip(x : Float, y : Float, ?animated : Bool)
+	function moveTooltip(x : Float, y : Float, color : Null<String>)
 	{
 //		var coords = Panels.absolutePos(panel);
 //		panelx = coords.x;
@@ -68,6 +68,8 @@ class Chart extends Layer
 		panelx = coords.x;
 		panely = coords.y;
 
+
+		tooltip.setAnchorColor(color);
 		tooltip.showAt(Std.int(panelx + x), Std.int(panely + y + verticalChartOffset));
 /*
 		if(0 == tooltip.x && 0 == tooltip.y)

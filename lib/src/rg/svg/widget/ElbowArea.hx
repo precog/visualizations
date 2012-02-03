@@ -5,7 +5,7 @@ import thx.js.Selection;
 class ElbowArea
 {
 	public var g(default, null) : Selection;
-	var area  : Selection;
+	public var area(default, null)  : Selection;
 	var outer : Selection;
 	var inner : Selection;
 	public function new(container : Selection, classarea : String, classborder : String)

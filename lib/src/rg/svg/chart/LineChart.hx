@@ -260,21 +260,25 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			if (null != click)
 				gsymbol.on("click", onclick);
 
-			if (null != labelDataPointOver)
-				gsymbol.onNode("mouseover", onmouseover);
 
-			gsymbol.append("svg:circle")
+			var circle = gsymbol.append("svg:circle")
 				.attr("r").float(6)
 				.attr("opacity").float(0.0)
 				.style("fill").string("#000000")
 //				.style("stroke").string("none")
 			;
+			if (null != labelDataPointOver)
+				circle.onNode("mouseover", onmouseover);
+			RGColors.storeColorForSelection(cast circle, "stroke");
 
 			if (null != symbol)
 			{
 				var sp = this.symbol;
 				var spath = gsymbol.append("svg:path")
 					.attr("d").stringf(function(dp, _) return sp(dp, stats));
+				if (null != labelDataPointOver)
+				spath.onNode("mouseover", onmouseover);
+				RGColors.storeColorForSelection(cast spath, "stroke");
 				if (null != symbolStyle)
 				{
 					var ss = this.symbolStyle;
@@ -320,20 +324,21 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
 	{
-		var dp = Access.getData(n),
+		var p = n.parentNode;
+		var dp = Access.getData(p),
 			text = labelDataPointOver(dp, stats);
 		if (null == text)
 			tooltip.hide();
 		else
 		{
-			var sel = thx.js.Dom.selectNode(n),
+			var sel = thx.js.Dom.selectNode(p),
 				coords = Coords.fromTransform(sel.attr("transform").get());
 
 //			for (j in 0...segments.length)
 //				tooltip.removeClass("stroke-" + j);
 //			tooltip.addClass("stroke-" + seg);
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(coords[0], coords[1]);
+			moveTooltip(coords[0], coords[1], RGColors.extractColor(n));
 		}
 	}
 

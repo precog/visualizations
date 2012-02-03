@@ -161,6 +161,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 						.onNode("click", callback(click, dp))
 					;
 					Access.setData(bar.node(), dp);
+					RGColors.storeColorForSelection(bar);
 					if(displayGradient)
 						bar.eachNode(applyGradient);
 					if(stacked)
@@ -233,6 +234,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 						.onNode("click", callback(click, dp))
 					;
 					Access.setData(bar.node(), dp);
+					RGColors.storeColorForSelection(bar);
 					if(displayGradient)
 						bar.eachNode(applyGradient);
 					if(stacked)
@@ -262,17 +264,17 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				w = sel.attr("width").getFloat();
 
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(x + w / 2, y);
+			moveTooltip(x + w / 2, y, RGColors.extractColor(n));
 		}
 	}
 
 	function applyGradient(n, i : Int)
 	{
-		var gn = Dom.selectNodeData(n),
+		var ng = Dom.selectNodeData(n),
 			dp = Access.getData(n),
-			color = RGColors.parse(gn.style("fill").get(), "#cccccc"),
+			scolor = ng.style("fill").get(),
+			color = RGColors.parse(scolor, "#ccc"),
 			id = "rg_bar_gradient_" + color.hex("");
-
 		if (defs.select('#'+id).empty())
 		{
 			var scolor = RGColors.applyLightness(Hsl.toHsl(color), gradientLightness).toRgbString();
@@ -295,6 +297,6 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				.attr("stop-color").string(color.toRgbString())
 				.attr("stop-opacity").float(1);
 		}
-		gn.attr("style").string("fill:url(#" + id + ")");
+		ng.attr("style").string("fill:url(#" + id + ")");
 	}
 }

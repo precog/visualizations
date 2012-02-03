@@ -14,6 +14,7 @@ import rg.axis.Stats;
 import rg.svg.widget.GridAnchor;
 import rg.svg.widget.Label;
 import thx.culture.FormatNumber;
+import thx.js.Access;
 import thx.js.Selection;
 import thx.js.Dom;
 import rg.util.RGColors;
@@ -94,6 +95,7 @@ class FunnelChart extends Chart
 	var stats : Stats<Dynamic>;
 	var topheight : Float;
 	var h : Float;
+	var currentNode : js.Dom.HtmlDom;
 	function scale(value : Dynamic)
 	{
 		return variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), value);
@@ -158,7 +160,11 @@ class FunnelChart extends Chart
 			top.onNode("click", function(_, _) click(dps[0], stats));
 		if(displayGradient)
 			internalGradient(path);
-		top.onNode("mouseover", function(_, _) mouseOver(dps[0], 0, stats));
+		path.onNode("mouseover", function(d, _) {
+			currentNode = d;
+			mouseOver(dps[0], 0, stats);
+		});
+		RGColors.storeColorForSelection(path);
 		topheight = Math.ceil(untyped path.node().getBBox().height / 2) + 1;
 
 		// calculate bottom
@@ -183,9 +189,7 @@ class FunnelChart extends Chart
 			+ (topheight + i * (padding + h))
 			+ ")")
 		;
-		if (null != click)
-			enter.on("click", function(d, _) click(d, stats));
-		enter.on("mouseover", function(d, i) mouseOver(d, i, stats));
+
 		var funnel = enter
 			.append("svg:path")
 			.attr("class").stringf(function(d, i) return "funnel-outside fill-" + i)
@@ -195,6 +199,13 @@ class FunnelChart extends Chart
 				var d2 = 'C' + t.join('C');
 				return diagonal1.diagonal(d, i) + conj2(d, i) + d2 + conj1(d, i);
 			});
+		if (null != click)
+			funnel.on("click", function(d, _) click(d, stats));
+		RGColors.storeColorForSelection(cast funnel);
+		funnel.onNode("mouseover", function(d, i) {
+			currentNode = d;
+			mouseOver(Access.getData(d), i, stats);
+		});
 		if(displayGradient)
 			enter.eachNode(externalGradient);
 
@@ -266,7 +277,7 @@ class FunnelChart extends Chart
 		else
 		{
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(width / 2, topheight + h * .6 + (h + padding) * i, true);
+			moveTooltip(width / 2, topheight + h * .6 + (h + padding) * i, RGColors.extractColor(currentNode));
 		}
 	}
 

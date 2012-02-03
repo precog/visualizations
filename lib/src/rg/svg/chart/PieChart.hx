@@ -123,6 +123,7 @@ class PieChart extends Chart
 		var path = arc
 			.append("svg:path")
 			.attr("class").string("slice");
+		RGColors.storeColorForSelection(cast arc);
 		if(displayGradient)
 			arc.eachNode(applyGradient);
 		if (animated)
@@ -173,7 +174,7 @@ class PieChart extends Chart
 			var a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2,
 				r = radius * tooltipRadius;
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(width / 2 + Math.cos(a) * r, height / 2 + Math.sin(a) * r);
+			moveTooltip(width / 2 + Math.cos(a) * r, height / 2 + Math.sin(a) * r, RGColors.extractColor(dom));
 		}
 	}
 

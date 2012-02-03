@@ -12,6 +12,7 @@ import rg.svg.widget.Map;
 import rg.svg.panel.Panel;
 import rg.util.DataPoints;
 import rg.svg.widget.Label;
+import rg.util.RGColors;
 import thx.color.Colors;
 import thx.color.NamedColors;
 import thx.color.Rgb;
@@ -104,7 +105,7 @@ class Geo extends Chart
 		{
 			tooltip.html(text.split("\n").join("<br>"));
 			var centroid = Reflect.field(dp, "#centroid");
-			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, true);
+			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, null /* RGColors.extractColor(currentNode) */);
 		}
 	}
 

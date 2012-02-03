@@ -167,8 +167,12 @@ class Map
 		}
 		onReady.dispatch();
 	}
-
-	function onMouseOver(dp : DataPoint, ?_, ?_) handlerDataPointOver(dp, labelDataPointOver)
+//	var currentNode : js.Dom.HtmlDom;
+	function onMouseOver(dp : DataPoint, n, ?_) 
+	{
+//		currentNode = n;
+		handlerDataPointOver(dp, labelDataPointOver);
+	}
 	function onClick(dp : DataPoint, ?_, ?_) handlerClick(dp, click)
 
 	public var handlerDataPointOver : DataPoint -> (DataPoint -> Stats<Dynamic> -> String) -> Void;

@@ -29,4 +29,22 @@ class RGColors
 			? Hsl.lighter(color, (1 - t) * (1 + lightness))
 			: Hsl.darker(color, (1 - t) * (1 - lightness));
 	}
+
+	public static function extractColor(n : js.Dom.HtmlDom) : String
+	{
+		return untyped n.__rgcolor__;
+	}
+
+	public static function storeColor(n : js.Dom.HtmlDom, color)
+	{
+		untyped n.__rgcolor__ = color;
+	}
+
+	public static function storeColorForSelection(n : thx.js.Selection, style = "fill", ?color : String)
+	{
+		n.eachNode(function(n, _) {
+			var c = (null == color) ? thx.js.Selection.current.style(style).get() : color;
+			RGColors.storeColor(n, c);
+		});
+	}
 }

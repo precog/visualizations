@@ -5,7 +5,8 @@ import thx.js.Selection;
 
 class Tooltip
 {
-	static inline var DEFAULT_DISTANCE = 5;
+	static inline var DEFAULT_DISTANCE = 0;
+	static inline var DEFAULT_ANCHOR = "topleft";
 	var tooltip : Selection;
 	var _anchor : Selection;
 	var container : Selection;
@@ -32,8 +33,8 @@ class Tooltip
 
 		_anchor = tooltip.append("div")
 			.style("display").string("block")
-			.style("position").string("absolute")
-			.attr("class").string("anchor");
+			.style("position").string("absolute");
+		setAnchorClass("");
 
 		container = tooltip.append("div")
 			.style("position").string("relative")
@@ -54,7 +55,7 @@ class Tooltip
 		content = container.append("div")
 			.attr("class").string("content");
 
-		anchortype = "bottom";
+		anchortype     = DEFAULT_ANCHOR;
 		anchordistance = DEFAULT_DISTANCE;
 	}
 
@@ -106,6 +107,16 @@ class Tooltip
 		anchortype = type;
 		anchordistance = distance;
 		reanchor();
+	}
+
+	public function setAnchorClass(value : String)
+	{
+		_anchor.attr("class").string("anchor "+value);
+	}
+
+	public function setAnchorColor(color : Null<String>)
+	{
+		_anchor.style("background-color").string(color);
 	}
 
 	function reanchor()

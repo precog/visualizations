@@ -14,6 +14,7 @@ import rg.graph.GraphLayout;
 import rg.graph.GEdge;
 import rg.graph.GNode;
 import rg.axis.Stats;
+import rg.util.RGColors;
 using Arrays;
 
 // TODO wire labels
@@ -116,6 +117,8 @@ class Sankey extends Chart
 
 		redraw();
 	}
+
+	
 
 	function redraw()
 	{
@@ -250,6 +253,7 @@ class Sankey extends Chart
 				after
 			);
 			hook.g.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, backedgesy + weight / 2, edge));
+			RGColors.storeColorForSelection(hook.g, "fill", hook.area.style("fill").get());
 			if(null != clickEdge)
 			{
 				hook.g.onNode("click", callback(edgeClickWithEdge, edge));
@@ -289,6 +293,7 @@ class Sankey extends Chart
 			);
 			addToMap(edge.id, "edge", diagonal.g);
 			diagonal.g.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, (y1 + y2 + weight) / 2, edge));
+			RGColors.storeColorForSelection(diagonal.g, "fill", diagonal.area.style("fill").get());
 			if(null != clickEdge)
 			{
 				diagonal.g.onNode("click", callback(edgeClickWithEdge, edge));
@@ -336,6 +341,7 @@ class Sankey extends Chart
 				}
 			}
 			elbow.g.onNode("mouseover", callback(onmouseoverextraout, x + minr + (-minr + Math.min(extraWidth, extra)) / 2, ynode(node) + hnode(node) + minr + extraHeight, node));
+			RGColors.storeColorForSelection(elbow.g, "fill", elbow.area.style("fill").get());
 			if(null != clickEdge)
 			{
 				elbow.g.onNode("click", callback(edgeClickWithNode, node, true));
@@ -385,6 +391,7 @@ class Sankey extends Chart
 				x  - minr + (minr - Math.min(extraWidth, extra)) / 2,
 				ynode(node) - minr - extraHeight,
 				node));
+			RGColors.storeColorForSelection(elbow.g, "fill", elbow.area.style("fill").get());
 			if(null != clickEdge)
 			{
 				elbow.g.onNode("click", callback(edgeClickWithNode, node, false));
@@ -448,7 +455,7 @@ class Sankey extends Chart
 
 		if(layerWidth > 0)
 		{
-			cont.append("svg:rect")
+			var rect = cont.append("svg:rect")
 				.attr("class").stringf(function(n, _) return "fill fill-" + (isdummy(n) ? styleEdgeForward + " nonode" : styleNode + " node"))
 				.attr("x").float(-layerWidth / 2)
 				.attr("y").float(0)
@@ -457,6 +464,7 @@ class Sankey extends Chart
 			cont.each(function(node, _) {
 				addToMap(node.id, "node", Selection.current);
 			});
+			RGColors.storeColorForSelection(cast cont, "fill", rect.style("fill").get());
 
 
 			cont.append("svg:line")
@@ -729,7 +737,8 @@ class Sankey extends Chart
 				tooltip.html(text.split("\n").join("<br>"));
 				moveTooltip(
 					xlayer(cell.layer),
-					ynode(node) + hnode(node) / 2
+					ynode(node) + hnode(node) / 2,
+					RGColors.extractColor(el)
 				);
 			}
 		} else {
@@ -745,7 +754,8 @@ class Sankey extends Chart
 				tooltip.html(text.split("\n").join("<br>"));
 				moveTooltip(
 					xlayer(cell.layer),
-					ynode(node) + hnode(node) / 2
+					ynode(node) + hnode(node) / 2,
+					RGColors.extractColor(el)
 				);
 			}
 		}
@@ -763,7 +773,7 @@ class Sankey extends Chart
 		{
 			tooltip.anchor("bottom");
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(x, y);
+			moveTooltip(x, y, RGColors.extractColor(el));
 		}
 	}
 
@@ -779,7 +789,7 @@ class Sankey extends Chart
 		{
 			tooltip.anchor("bottom");
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(x, y);
+			moveTooltip(x, y, RGColors.extractColor(el));
 		}
 	}
 
@@ -795,7 +805,7 @@ class Sankey extends Chart
 		{
 			tooltip.anchor("top");
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(x, y);
+			moveTooltip(x, y, RGColors.extractColor(el));
 		}
 	}
 

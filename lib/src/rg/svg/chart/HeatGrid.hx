@@ -10,9 +10,11 @@ import rg.data.Variable;
 import rg.axis.IAxis;
 import rg.svg.panel.Panel;
 import rg.data.DataPoint;
+import rg.util.RGColors;
 import thx.color.Rgb;
 import thx.color.Colors;
 import thx.geom.Contour;
+import thx.js.Access;
 import thx.js.Selection;
 import rg.data.VariableIndependent;
 import rg.axis.IAxis;
@@ -175,10 +177,11 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		return map;
 	}
 
+	var currentNode : js.Dom.HtmlDom;
 	function drawSquares()
 	{
 		var choice = g.selectAll("rect").data(dps);
-		choice.enter().append("svg:rect")
+		var rect = choice.enter().append("svg:rect")
 			.attr("x").floatf(x)
 			.attr("y").floatf(y)
 			.attr("width").float(w)
@@ -187,8 +190,12 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				stylefeature(Selection.current, dp);
 			})
 			.on("click", onclick)
-			.on("mouseover", onmouseover)
+			.onNode("mouseover", function(n, i) {
+				currentNode = n;
+				onmouseover(Access.getData(n), i);
+			})
 		;
+		RGColors.storeColorForSelection(cast rect);
 	}
 
 	function onmouseover(dp : DataPoint, i : Int)
@@ -200,7 +207,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			tooltip.hide();
 		else {
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(x(dp, i) + w / 2, y(dp, i) + h / 2);
+			moveTooltip(x(dp, i) + w / 2, y(dp, i) + h / 2, RGColors.extractColor(currentNode));
 		}
 	}
 

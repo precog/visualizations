@@ -163,7 +163,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 			var sel = thx.js.Dom.selectNode(n),
 				coords = Coords.fromTransform(sel.attr("transform").get());
 			tooltip.html(text.split("\n").join("<br>"));
-			moveTooltip(coords[0], coords[1]);
+			moveTooltip(coords[0], coords[1], null /* COLOR */);
 		}
 	}
 

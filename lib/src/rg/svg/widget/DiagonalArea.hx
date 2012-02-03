@@ -7,7 +7,7 @@ class DiagonalArea
 {
 	public var g(default, null) : Selection;
 	var diagonal : Diagonal<Array<Float>>;
-	var area : Selection;
+	public var area(default, null) : Selection;
 	var before : Selection;
 	var after : Selection;
 	public function new(container : Selection, classarea : String, classborder : String)
