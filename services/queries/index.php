@@ -5,6 +5,7 @@ define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
 define('DEFAULT_PATH', '/query/test2');
 define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
+define('DISABLE_CACHE', isset($_GET['disableCache']));
 
 $categories = array(
 	'RG' => array("name" => 'RG Query', "sequence" => 0),
@@ -117,7 +118,7 @@ function parseContent($content)
 		$value = trim($pair[1]);
 		if($key == 'load')
 		{
-			$info['data'] = file_get_contents(SAMPLES_DATA_DIR.$value.'.json'); //"(function() {\n\t ".file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";\nreturn {$info['data']}\n})()";
+			$info['load'] = file_get_contents(SAMPLES_DATA_DIR.$value.'.json'); //."\n\n".@$info['data']; //"(function() {\n\t ".file_get_contents(SAMPLES_DATA_DIR.$value.'.json').";\nreturn {$info['data']}\n})()";
 		} else {
 			$info[$key] = $value;
 		}
@@ -147,6 +148,7 @@ function display($sample)
 	$CSS_API = REPORTGRID_CSS_API;
 	$CORE_API = REPORTGRID_CORE_API;
 	$DEFAULT_PATH = DEFAULT_PATH;
+	$DISABLE_CACHE = DISABLE_CACHE;
 	require('template.php');
 	exit;
 }

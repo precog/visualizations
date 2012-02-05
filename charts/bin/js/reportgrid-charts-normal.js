@@ -1457,7 +1457,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.1.6804"};
+	r.info.charts = { version : "1.3.1.6811"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -12698,6 +12698,7 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("container");
 	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
 	this.content = this.container.append("div").attr("class").string("content");
+	this.content.onNode("DOMSubtreeModified",this.resize.$bind(this));
 	this.anchortype = "bottomright";
 	this.anchordistance = 0;
 }
@@ -12747,6 +12748,9 @@ rg.html.widget.Tooltip.prototype = {
 	,setAnchorColor: function(color) {
 		this._anchor.style("background-color").string(color);
 	}
+	,resize: function(_,_1) {
+		this.reanchor();
+	}
 	,reanchor: function() {
 		if(!this.visible) return;
 		var width = this.container.style("width").getFloat(), height = this.container.style("height").getFloat();
@@ -12762,7 +12766,7 @@ rg.html.widget.Tooltip.prototype = {
 			this.container.style("left").string(-this.anchordistance - width + "px");
 			break;
 		default:
-			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 140, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
+			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 148, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
 		}
 		switch(type) {
 		case "top":case "topleft":case "topright":

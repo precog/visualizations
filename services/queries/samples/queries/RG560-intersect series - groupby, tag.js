@@ -4,10 +4,10 @@ ReportGrid.query
 		path        : pathvalue,
 		event       : "impression",
 		properties  : [{ property : "browser" }],
-		start       : "24 hours ago",
+		start       : "10 days ago",
 		end         : "now",
-		periodicity : "minute",
-		groupby     : "hour",
+		periodicity : "hour",
+		groupby     : "day",
 		tag         : "location",
 		location    : "/"
 	})

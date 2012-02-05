@@ -10,6 +10,7 @@ ReportGrid.query
 		}],
 		tag : "location",
 		location : '/',
-		start : "2 hours ago",
-		end : "now"
+		start : "2 days ago",
+		end : "now",
+		periodicity : "hour"
 	})

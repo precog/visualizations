@@ -54,7 +54,10 @@ if(isset($info['data']) && !isset($info['query']))
     $paths = split("\n",isset($info['path']) ? $info['path'] : $DEFAULT_PATH);
 ?>
 var paths  = ['<?php echo implode("', '", $paths); ?>'];
-    events = <?php echo $info['data']; ?>;
+//    events = 
+<?php if(isset($info['load'])) echo $info['load']; ?>
+
+var events = <?php echo $info['data']; ?>;
 if(!(events instanceof Array))
     events = [events];
 var out = document.getElementById('out');
@@ -81,9 +84,15 @@ function detab($s)
     return str_replace("\t", "    ", $s);
 }
 
-function query($s, $useexecute) {
+function query($s, $useexecute, $disablecache) {
     if(!$s)
         return "";
+    if($disablecache)
+    {
+?>
+    ReportGrid.cache.disable();
+<?php
+    }
 ?>
 var callback = function(dps) {
     document.getElementById('out').innerHTML += 'QUERY RESULT:\n[\n  '
@@ -103,9 +112,9 @@ function indent($s) {
 
 if(isset($info['viz']))
 {
-    echo detab(str_replace('loader', indent(query(@$info['query'], false)), $info['viz']));
+    echo detab(str_replace('loader', indent(query(@$info['query'], false, $DISABLE_CACHE)), $info['viz']));
 } else if(isset($info['query'])) {
-    echo detab(query(@$info['query'], true));
+    echo detab(query(@$info['query'], true, $DISABLE_CACHE));
 }
 
 if(isset($info['code']))

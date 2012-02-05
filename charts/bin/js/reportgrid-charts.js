@@ -1451,7 +1451,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.0.6788"};
+	r.info.charts = { version : "1.3.1.6812"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -12728,7 +12728,8 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("container");
 	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
 	this.content = this.container.append("div").attr("class").string("content");
-	this.anchortype = "topleft";
+	this.content.onNode("DOMSubtreeModified",this.resize.$bind(this));
+	this.anchortype = "bottomright";
 	this.anchordistance = 0;
 }
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
@@ -12777,6 +12778,9 @@ rg.html.widget.Tooltip.prototype = {
 	,setAnchorColor: function(color) {
 		this._anchor.style("background-color").string(color);
 	}
+	,resize: function(_,_1) {
+		this.reanchor();
+	}
 	,reanchor: function() {
 		if(!this.visible) return;
 		var width = this.container.style("width").getFloat(), height = this.container.style("height").getFloat();
@@ -12792,7 +12796,7 @@ rg.html.widget.Tooltip.prototype = {
 			this.container.style("left").string(-this.anchordistance - width + "px");
 			break;
 		default:
-			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 140, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
+			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 147, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
 		}
 		switch(type) {
 		case "top":case "topleft":case "topright":
@@ -15036,7 +15040,7 @@ rg.svg.widget.Map.loadJsonAjax = function(url,handler) {
 		handler(json);
 	};
 	http.onError = function(err) {
-		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 95, className : "rg.svg.widget.Map", methodName : "loadJsonAjax"});
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 97, className : "rg.svg.widget.Map", methodName : "loadJsonAjax"});
 	};
 	http.request(false);
 }
@@ -15059,7 +15063,7 @@ rg.svg.widget.Map.prototype = {
 			this.loadGeoJson(path,mappingurl,usejsonp);
 			break;
 		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 58, className : "rg.svg.widget.Map", methodName : "load"});
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 60, className : "rg.svg.widget.Map", methodName : "load"});
 		}
 	}
 	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
@@ -15102,7 +15106,7 @@ rg.svg.widget.Map.prototype = {
 			}
 			break;
 		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 164, className : "rg.svg.widget.Map", methodName : "draw"});
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 168, className : "rg.svg.widget.Map", methodName : "draw"});
 			break;
 		default:
 			this.g.append("svg:path").attr("d").string(path.path(json));
@@ -15110,7 +15114,7 @@ rg.svg.widget.Map.prototype = {
 		this.onReady.dispatch();
 	}
 	,onMouseOver: function(dp,n,_) {
-		this.handlerDataPointOver(dp,this.labelDataPointOver);
+		this.handlerDataPointOver(n,dp,this.labelDataPointOver);
 	}
 	,onClick: function(dp,_,_1) {
 		this.handlerClick(dp,this.click);
@@ -15802,7 +15806,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var text = this.labelEdgeOver(this.edgeData(node.graph.edges.positives(node).next()),this.dependentVariable.stats);
 			if(null == text) this.tooltip.hide(); else {
 				var cell = this.layout.cell(node);
-				this.tooltip.anchor("top");
+				this.tooltip.anchor("bottomright");
 				this.tooltip.html(text.split("\n").join("<br>"));
 				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2,rg.util.RGColors.extractColor(el));
 			}
@@ -15811,7 +15815,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var text = this.labelDataPointOver(node.data.dp,this.dependentVariable.stats);
 			if(null == text) this.tooltip.hide(); else {
 				var cell = this.layout.cell(node);
-				this.tooltip.anchor("bottom");
+				this.tooltip.anchor("bottomright");
 				this.tooltip.html(text.split("\n").join("<br>"));
 				this.moveTooltip(this.xlayer(cell.layer),this.ynode(node) + this.hnode(node) / 2,rg.util.RGColors.extractColor(el));
 			}
@@ -15822,7 +15826,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeData(edge),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("bottom");
+			this.tooltip.anchor("bottomright");
 			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
@@ -15832,7 +15836,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("bottom");
+			this.tooltip.anchor("bottomright");
 			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
@@ -15842,7 +15846,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
 		if(null == text) this.tooltip.hide(); else {
-			this.tooltip.anchor("top");
+			this.tooltip.anchor("topleft");
 			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
@@ -17888,12 +17892,12 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		}
 		if(this.queue.length == 0) this.ready.dispatch();
 	}
-	,handlerDataPointOver: function(dp,f) {
+	,handlerDataPointOver: function(n,dp,f) {
 		var text = f(dp,this.variableDependent.stats);
 		if(null == text) this.tooltip.hide(); else {
 			this.tooltip.html(text.split("\n").join("<br>"));
 			var centroid = Reflect.field(dp,"#centroid");
-			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,null);
+			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,rg.util.RGColors.extractColor(n));
 		}
 	}
 	,handlerClick: function(dp,f) {
@@ -17928,6 +17932,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
 				svg.attr("class").string("fill-" + index);
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 3:
@@ -17938,6 +17943,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
 				svg.style("fill").string(colors[index]);
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 2:
@@ -17946,6 +17952,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.stylefeature = function(svg,dp) {
 				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
 				svg.style("fill").string(interpolator(t).hex("#"));
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 4:
@@ -17953,12 +17960,14 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var color = c.hex("#");
 			this.stylefeature = function(svg,dp) {
 				svg.style("fill").string(color);
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 5:
 			var f = $e[2];
 			this.stylefeature = function(svg,dp) {
 				svg.style("fill").string(f(dp,me.variableDependent.stats));
+				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		}
@@ -22315,7 +22324,7 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,init: function() {
 		rg.svg.chart.Chart.prototype.init.call(this);
-		if(null != this.tooltip) this.tooltip.anchor("right");
+		if(null != this.tooltip) this.tooltip.anchor("bottomright");
 		this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
 	}
 	,internalGradient: function(d) {
@@ -27761,7 +27770,7 @@ thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
 thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
-rg.html.widget.Tooltip.DEFAULT_ANCHOR = "topleft";
+rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
 rg.RGConst.BASE_URL_GEOJSON = "/rg/vis/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "/rg/services/viz/renderer/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";

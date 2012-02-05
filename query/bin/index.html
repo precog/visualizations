@@ -84,8 +84,39 @@ h2 {
 	</style>
 <script>
 $(document).ready(function(){
+	function parseQueryParameters(url) {
+      var index = url.indexOf('?');
+
+      if (index < 0) return {};
+
+      var query = url.substr(index + 1);
+
+      var keyValuePairs = query.split('&');
+
+      var parameters = {};
+
+      for (var i = 0; i < keyValuePairs.length; i++) {
+        var keyValuePair = keyValuePairs[i];
+
+        var split = keyValuePair.split('=');
+
+        var key = split[0];
+        var value = '';
+
+        if (split.length >= 2) {
+          value = decodeURIComponent(split[1]);
+        }
+
+        parameters[key] = value;
+      }
+
+      return parameters;
+    };
 	$("#samplecurrent").click(function(){
 		var src = $('#samplevisualization iframe').attr('src');
+		var params = parseQueryParameters(window.location.href);
+		if(params.disableCache)
+			src += "&disableCache=true";
 		$("#samplecurrent").attr('href', src);
 		return true;
 	})

@@ -54,6 +54,8 @@ class Tooltip
 				.style("bottom").string("0");
 		content = container.append("div")
 			.attr("class").string("content");
+		content
+			.onNode("DOMSubtreeModified", resize);
 
 		anchortype     = DEFAULT_ANCHOR;
 		anchordistance = DEFAULT_DISTANCE;
@@ -117,6 +119,11 @@ class Tooltip
 	public function setAnchorColor(color : Null<String>)
 	{
 		_anchor.style("background-color").string(color);
+	}
+
+	function resize(_, _)
+	{
+		reanchor();
 	}
 
 	function reanchor()
