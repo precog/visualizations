@@ -3795,11 +3795,28 @@ if(!rg.app) rg.app = {}
 if(!rg.app.query) rg.app.query = {}
 rg.app.query.JSBridge = $hxClasses["rg.app.query.JSBridge"] = function() { }
 rg.app.query.JSBridge.__name__ = ["rg","app","query","JSBridge"];
+rg.app.query.JSBridge.createQuery = function(executor) {
+	var inst = rg.query.ReportGridQuery.create(executor);
+	var query = { };
+	var _g = 0, _g1 = Type.getInstanceFields(Type.getClass(inst));
+	while(_g < _g1.length) {
+		var field = [_g1[_g]];
+		++_g;
+		if(field[0].substr(0,1) == "_" || !Reflect.isFunction(Reflect.field(inst,field[0]))) continue;
+		query[field[0]] = (function(field) {
+			return function() {
+				var ob = rg.query.ReportGridQuery.create(executor), f = Reflect.field(ob,field[0]);
+				return f.apply(ob,arguments);
+			};
+		})(field);
+	}
+	return query;
+}
 rg.app.query.JSBridge.main = function() {
 	var storage;
 	if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
-	r.query = rg.query.ReportGridQuery.create(executor);
+	r.query = rg.app.query.JSBridge.createQuery(executor);
 	r.date = { range : function(a,b,p) {
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
 		if(null == a) a = rg.util.Periodicity.defaultRange(p)[0];
@@ -3810,7 +3827,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.1221"};
+	r.info.query = { version : "1.0.0.1234"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -3820,12 +3837,12 @@ rg.app.query.JSBridge.main = function() {
 	r.cache = { executor : executor, disable : function() {
 		if(null == executor || Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
 			r.cache.executor = executor = r;
-			r.query = rg.query.ReportGridQuery.create(executor);
+			r.query = rg.app.query.JSBridge.createQuery(executor);
 		}
 	}, enable : function() {
 		if(null == executor || !Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
 			r.cache.executor = executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
-			r.query = rg.query.ReportGridQuery.create(executor);
+			r.query = rg.app.query.JSBridge.createQuery(executor);
 		}
 	}, setTimeout : function(t) {
 		executor = null;

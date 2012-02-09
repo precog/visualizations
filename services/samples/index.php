@@ -1,5 +1,6 @@
 <?php
 
+define('HOST', 'http://'.$_SERVER['SERVER_NAME']);
 define('SAMPLES_CHARTS_DIR', 'samples/charts/');
 define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
@@ -35,10 +36,11 @@ $viz_categories = array(
 
 if(LOCAL)
 {
-	define('REPORTGRID_VIZ_API', '/rg/charts/js/reportgrid-charts.js?authCode='.urlencode(AUTHCODE_LOCALHOST));
-	define('REPORTGRID_QUERY_API', '/rg/queries/js/reportgrid-query.js');
-	define('REPORTGRID_CSS_API', '/rg/charts/css/rg-charts.css');
-	define('REPORTGRID_CORE_API', '/rg/api/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
+	define('REPORTGRID_VIZ_API', HOST.'/rg/charts/js/reportgrid-charts.js?authCode='.urlencode(AUTHCODE_LOCALHOST));
+	define('REPORTGRID_QUERY_API', HOST.'/rg/queries/js/reportgrid-query.js');
+	define('REPORTGRID_CSS_API', HOST.'/rg/charts/css/rg-charts.css');
+	define('REPORTGRID_CORE_API', HOST.'/rg/api/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
+	define('SAMPLE_CSS', HOST.'/rg/charts/service/samples/css/sample.css');
 
 	$viz_categories['XX'] = array('name' => 'Test', 'sequence' => 1000);
 } else {
@@ -176,8 +178,8 @@ function display($sample)
 		$QUERY_API = REPORTGRID_QUERY_API;
 		$CORE_API = REPORTGRID_CORE_API;
 	}
-
 	$CSS_API = REPORTGRID_CSS_API;
+	$SAMPLE_CSS = SAMPLE_CSS;
 	require('template.php');
 	exit;
 }

@@ -13,6 +13,23 @@ import rg.util.Periodicity;
 
 class JSBridge
 {
+	static function createQuery(executor : IExecutorReportGrid)
+	{
+		var inst = ReportGridQuery.create(executor);
+		var query = {};
+		for(field in Type.getInstanceFields(Type.getClass(inst)))
+		{
+			if(field.substr(0,1) == '_' || !Reflect.isFunction(Reflect.field(inst, field)))
+				continue;
+			Reflect.setField(query, field, function() {
+				var ob = ReportGridQuery.create(executor),
+					f  = Reflect.field(ob, field);
+				return Reflect.callMethod(ob, f, untyped __js__('arguments'));
+			});
+		}
+		return query;
+	}
+
 	static function main()
 	{
 #if !release
@@ -27,7 +44,7 @@ class JSBridge
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid"),
 			timeout = 120,
 			executor : IExecutorReportGrid = new ReportGridExecutorCache(r, storage, timeout);
-		r.query = ReportGridQuery.create(executor);
+		r.query = createQuery(executor);
 		r.date  = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
@@ -64,14 +81,14 @@ class JSBridge
 				if(null == executor || Std.is(executor, ReportGridExecutorCache))
 				{
 					r.cache.executor = executor = r;
-					r.query = ReportGridQuery.create(executor);
+					r.query = createQuery(executor);
 				}
 			},
 			enable : function() {
 				if(null == executor || !Std.is(executor, ReportGridExecutorCache))
 				{
 					r.cache.executor = executor = new ReportGridExecutorCache(r, storage, timeout);
-					r.query = ReportGridQuery.create(executor);
+					r.query = createQuery(executor);
 				}
 			},
 			setTimeout : function(t : Int) {

@@ -81,20 +81,58 @@ h2 {
 {
 	width: 160px;
 }
+
+.export
+{
+	font-size: 8px;
+	text-decoration: none;
+	border: 1px solid #ccc;
+	background-color: #eee;
+	padding: 0 2px;
+	color: #000;
+}
 	</style>
 <script>
 $(document).ready(function(){
-	$("#samplecurrent").click(function(){
-		var src = $('#samplevisualization iframe').attr('src');
-		$("#samplecurrent").attr('href', src);
-		return true;
-	})
+//	$("#samplecurrent").click(function(){
+//		$("#samplecurrent").attr('href', src());
+//		return true;
+//	});
+
+	function formathandler(format)
+	{
+		return function()
+		{
+			var url = src();
+			console.log(url);
+			$.get('http://localhost/rg/services/viz/charts/up/url.json', {
+				urlhtml: url
+			}, function(data){
+				$('#samplevisualization iframe').attr('src', data.info[format]);
+			});
+		};
+	}
+
+	$("#pdf").click(formathandler('pdf'));
+	$("#png").click(formathandler('png'));
+	$("#jpg").click(formathandler('jpg'));
+	$("#html").click(formathandler('html'));
+
+	function src() {
+		return 'http://localhost/rg/charts/' + $('#samplecurrent').attr('href');
+	}
 })
 </script>
 </head>
 <body>
 	<div class="container sidebar">
-		<h1><a href="#details" id="samplecurrent">Open Current</a></h1>
+		<h1>
+			<a href="#details" id="samplecurrent" target="output">Open</a>
+			<a href="#details" class="export" id="pdf">PDF</a>
+			<a href="#details" class="export" id="png">PNG</a>
+			<a href="#details" class="export" id="jpg">JPG</a>
+			<a href="#details" class="export" id="html">HTML</a>
+		</h1>
 		<h1>Categories:</h1>
 		<ul id="samplecategories"></ul>
 		<h1>Options:</h1>
@@ -102,7 +140,7 @@ $(document).ready(function(){
 	</div>
 	<div class="container">
 		<h1>Output:</h1>
-		<div id="samplevisualization"><iframe></iframe></div>
+		<div id="samplevisualization"><iframe id="output"></iframe></div>
 	</div>
 	<div class="container">
 		<h1>Code:</h1>

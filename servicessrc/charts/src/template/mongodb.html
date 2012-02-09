@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MongoDB Status and Setup</title>
+  <link rel="stylesheet" type="text/css" href="@baseurl@url.base('css/style.css')">
+</head>
+<body>
+<h1>MongoDB Status and Setup</h1>
+<div>
+  <h2>DB</h2>
+  <dl>
+    <dt>name:</dt>
+    <dd>@db.name</dd>
+    <dt>collections:</dt>
+    <dd>@db.collections.join(', ')</dd>
+  </dl>
+  <h2>Renderables</h2>
+  <dl>
+    <dt>collection name:</dt>
+    <dd>@renderables.name</dd>
+    <dt>existed:</dt>
+    <dd>@renderables.existed</dd>
+    <dt>renderables:</dt>
+    <dd>@renderables.count</dd>
+  </dl>
+</div>
+</body>
+</html>

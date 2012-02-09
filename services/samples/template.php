@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $info['title'] ?></title>
 <link rel="stylesheet" type="text/css" href="<?php echo $CSS_API; ?>"/>
-<link rel="stylesheet" type="text/css" href="samples/css/sample.css"/>
+<link rel="stylesheet" type="text/css" href="<?php echo $SAMPLE_CSS; ?>"/>
 <?php if(isset($QUERY_API)) { ?>
 <script src="<?php echo $CORE_API; ?>"></script>
 <script src="<?php echo $QUERY_API; ?>"></script>

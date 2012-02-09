@@ -1451,7 +1451,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.1.6812"};
+	r.info.charts = { version : "1.3.1.6817"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5027,7 +5027,7 @@ rg.svg.chart.GradientEffects.canParse = function(d) {
 	return (function($this) {
 		var $r;
 		switch(parts[0]) {
-		case "gradient":case "noeffect":
+		case "gradient":case "noeffect":case "none":case "flat":
 			$r = true;
 			break;
 		default:

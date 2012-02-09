@@ -5,7 +5,7 @@
 
 package rg.svg.chart;
 
-class GradientEffects 
+class GradientEffects
 {
 	public static function canParse(d : Dynamic)
 	{
@@ -15,12 +15,12 @@ class GradientEffects
 			parts = s.toLowerCase().split(":");
 		return switch(parts[0])
 		{
-			case "gradient", "noeffect": true;
+			case "gradient", "noeffect", "none", "flat": true;
 			default: false;
 		}
 	}
-	
-	public static function parse(s : String) : GradientEffect 
+
+	public static function parse(s : String) : GradientEffect
 	{
 		var parts = s.toLowerCase().split(":");
 		switch(parts.shift())

@@ -18,8 +18,10 @@ $(document).ready(function(){
 		{
 			$("#samplevisualization").addClass(lastsampleclass = info['class']);
 		}
-		$('#samplevisualization iframe').attr('src', service + "?action=display&sample=" + encodeURI(info.sample));
+		var url = service + "?action=display&sample=" + encodeURI(info.sample);
+		$('#samplevisualization iframe').attr('src', url);
 		$('#samplecode').html(source);
+		$('#samplecurrent').attr('href', url);
 
 		var doc = info['doc'];
 		if(doc)

@@ -31,6 +31,16 @@ if(@$info['style'])
     white-space: pre;
 }
 </style>
+<?php
+    if($DISABLE_CACHE && (isset($info['query']) || strpos(@$info['viz'].@$info['code'], 'ReportGrid.query') !== false))
+    {
+?>
+<script>
+    ReportGrid.cache.disable();
+</script>
+<?php
+    }
+?>
 <body>
 <?php
 if(@$info['html'])
@@ -84,15 +94,9 @@ function detab($s)
     return str_replace("\t", "    ", $s);
 }
 
-function query($s, $useexecute, $disablecache) {
+function query($s, $useexecute) {
     if(!$s)
         return "";
-    if($disablecache)
-    {
-?>
-    ReportGrid.cache.disable();
-<?php
-    }
 ?>
 var callback = function(dps) {
     document.getElementById('out').innerHTML += 'QUERY RESULT:\n[\n  '
@@ -112,9 +116,9 @@ function indent($s) {
 
 if(isset($info['viz']))
 {
-    echo detab(str_replace('loader', indent(query(@$info['query'], false, $DISABLE_CACHE)), $info['viz']));
+    echo detab(str_replace('loader', indent(query(@$info['query'], false)), $info['viz']));
 } else if(isset($info['query'])) {
-    echo detab(query(@$info['query'], true, $DISABLE_CACHE));
+    echo detab(query(@$info['query'], true));
 }
 
 if(isset($info['code']))
