@@ -12,6 +12,14 @@ class mongo_MongoCursor {
 	public function hasNext() {
 		return $this->c->hasNext();
 	}
+	public function sort($fields) {
+		$this->c->sort(php_Lib::associativeArrayOfObject($fields));
+		return $this;
+	}
+	public function limit($num) {
+		$this->c->limit($num);
+		return $this;
+	}
 	public function toArray() {
 		$r = new _hx_array(array());
 		while($this->hasNext()) {

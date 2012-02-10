@@ -48,6 +48,7 @@ if(LOCAL)
 	define('REPORTGRID_QUERY_API', 'http://api.reportgrid.com/js/reportgrid-query.js');
 	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg-charts.css');
 	define('REPORTGRID_CORE_API', 'http://api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
+	define('SAMPLE_CSS', 'http://api.reportgrid.com/services/viz/samples/samples/css/sample.css');
 }
 
 function categories()

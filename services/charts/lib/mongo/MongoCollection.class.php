@@ -64,7 +64,7 @@ class mongo_MongoCollection {
 		} else {
 			$r = $this->c->find(php_Lib::associativeArrayOfObject($criteria), php_Lib::associativeArrayOfObject($fields));
 		}
-		return _hx_deref(new mongo_MongoCursor($r))->toArray();
+		return new mongo_MongoCursor($r);
 	}
 	public function drop() {
 		$this->c->drop();

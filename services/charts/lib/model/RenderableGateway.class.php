@@ -20,6 +20,9 @@ class model_RenderableGateway {
 		}
 		return new model_Renderable($o->html, model_RenderableGateway::unserialize($o->config), Date::fromTime($o->createdOn), Date::fromTime($o->lastUsage), $o->usages);
 	}
+	public function topByUsage($limit) {
+		return $this->coll->find(_hx_anonymous(array()), null)->limit($limit)->toArray();
+	}
 	public function huse($uid) {
 		$data = $this->coll->findOne(_hx_anonymous(array("uid" => $uid)), null);
 		$data->lastUsage = Date::now()->getTime();

@@ -72,6 +72,11 @@ h1, h2, h3
 	padding: 0.5em 0;
 }
 
+dl
+{
+	margin: 5px 0;
+}
+
 dt
 {
 	float: left;
@@ -92,6 +97,24 @@ dd
 	padding: 5px 10px 2px;
 }
 
+.tag
+{
+	background-color: #eee;
+	min-height: 1em;
+/*	float: left; */
+	margin-bottom: 3px;
+	font-weight: bold;
+	padding: 5px 10px 2px;
+}
+
+.params
+{
+	background-color: #eee;
+	padding: 2px 0px 0px;
+	font-family: monospace;
+	font-size: 90%;
+}
+
 div.error
 {
 	background-color: #AA0000;
@@ -99,4 +122,17 @@ div.error
 	font-weight: bold;
 	padding: 5px 10px;
 	border: 2px solid #660000;
+}
+
+ul.bullet, ul.bullet ul
+{
+	list-style: square;
+	padding: 0 0 0 25px;
+	margin: 5px 0;
+}
+
+ul.bullet li
+{
+	margin: 0 0 5px 0;
+	clear: left;
 }

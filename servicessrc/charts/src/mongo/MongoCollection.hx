@@ -101,14 +101,14 @@ class MongoCollection
 			return r.objectOfAssociativeArray();
 	}
 
-	public function find(criteria : Dynamic, ?fields : Dynamic<Bool>) : Array<Dynamic>
+	public function find(criteria : Dynamic, ?fields : Dynamic<Bool>)
 	{
 		var r;
 		if(null == fields)
 			r = c.find(Lib.associativeArrayOfObject(criteria));
 		else
 			r = c.find(Lib.associativeArrayOfObject(criteria), Lib.associativeArrayOfObject(fields));
-		return new MongoCursor(r).toArray();
+		return new MongoCursor(r);
 	}
 
 	public inline function drop()

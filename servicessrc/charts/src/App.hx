@@ -4,6 +4,9 @@ import thx.util.Imports;
 import ufront.web.AppConfiguration;
 import ufront.web.mvc.MvcApplication;
 import ufront.web.routing.RouteCollection;
+import ufront.web.routing.HttpMethodConstraint;
+import ufront.web.routing.IRouteConstraint;
+import ufront.web.routing.ValuesConstraint;
 import mongo.Mongo;
 import mongo.MongoDB;
 import mongo.MongoCollection;
@@ -60,41 +63,43 @@ class App
 			controller : "uploadForm", action : "display"
 		});
 
-		routes.addRoute('/up.html', {
-			controller : "uploadAPI", action : "upload", outputformat : 'html'
-		});
+		routes.addRoute('/up.{outputformat}', {
+				controller : "uploadAPI", action : "upload"
+			},
+			[
+				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint),
+				new HttpMethodConstraint("POST")
+			]
+		);
 
-		routes.addRoute('/up.json', {
-			controller : "uploadAPI", action : "upload", outputformat : 'json'
-		});
-
-		routes.addRoute('/up/url.html', {
-			controller : "uploadAPI", action : "uploadFromUrl", outputformat : 'html'
-		});
-
-		routes.addRoute('/up/url.json', {
-			controller : "uploadAPI", action : "uploadFromUrl", outputformat : 'json'
-		});
+		routes.addRoute('/up/url.{outputformat}', {
+				controller : "uploadAPI", action : "uploadFromUrl"
+			},
+			[
+				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint)
+			]
+		);
 
 		routes.addRoute('/down/{uid}.{ext}', {
 			controller : "downloadAPI", action : "download"
 		});
 
 // this should run only on localhost
-		routes.addRoute('/info', {
+		routes.addRoute('/status/info', {
 			controller : "setup", action : "info"
 		});
-		routes.addRoute('/statusdb', {
+		routes.addRoute('/status/db', {
 			controller : "setup", action : "mongodb"
 		});
+		routes.addRoute('/status/renderables', {
+			controller : "setup", action : "topRenderables"
+		});
+
 		routes.addRoute('/setup/collections/create', {
 			controller : "setup", action : "createCollections"
 		});
 		routes.addRoute('/setup/collections/drop', {
 			controller : "setup", action : "dropCollections"
-		});
-		routes.addRoute('/setup/cache/drop', {
-			controller : "setup", action : "dropCache"
 		});
 		routes.addRoute('/setup/renderables/drop', {
 			controller : "setup", action : "dropRenderables"

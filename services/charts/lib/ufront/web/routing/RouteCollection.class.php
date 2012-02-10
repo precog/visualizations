@@ -20,7 +20,10 @@ class ufront_web_routing_RouteCollection {
 		$r->setRoutes($this);
 		return $this;
 	}
-	public function addRoute($uri, $defaults, $constraints) {
+	public function addRoute($uri, $defaults, $constraint, $constraints) {
+		if(null !== $constraint) {
+			$constraints = new _hx_array(array($constraint));
+		}
 		return $this->add(new ufront_web_routing_Route($uri, new ufront_web_mvc_MvcRouteHandler(), ((null === $defaults) ? null : DynamicsT::toHash($defaults)), $constraints));
 	}
 	public function iterator() {

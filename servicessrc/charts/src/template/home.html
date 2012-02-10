@@ -1,10 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Instructions</title>
+  <title>Rendering Service</title>
   <link rel="stylesheet" type="text/css" href="@baseurl@url.base('css/style.css')">
 </head>
 <body>
-<h1>Server Side Rendering Instructions</h1>
+<h1>Rendering Service</h1>
+<h2>Upload Options</h2>
+<ul class="bullet">
+  <li>Upload using form: <a href="@url.route({controller : "uploadForm", action : "display"})" class="tag">@baseurl@url.route({controller : "uploadForm", action : "display"})</a></li>
+  <li>Upload using a POST to these pages <span class="params">(parameters: html (string), ?config (ini or json string)</span>:
+  	<dl>
+      <dt>HTML output:</dt>
+      <dd>@baseurl@url.route({controller : "uploadAPI", action : "upload", outputformat : 'html'})</dd>
+      <dt>JSON output:</dt>
+      <dd>@baseurl@url.route({controller : "uploadAPI", action : "upload", outputformat : 'json'})</dd>
+  	</dl>
+  </li>
+  <li>Upload using a GET/POST to these pages <span class="params">(parameters: urlhtml (path to a html resource), ?urlconfig (path to a ini or json resource)</span>:
+  	<dl>
+      <dt>HTML output:</dt>
+      <dd>@baseurl@url.route({
+      	controller : "uploadAPI", action : "uploadFromUrl", outputformat : 'html',
+      	urlhtml : "http://example.com/chart.hml"
+      })</dd>
+      <dt>JSON output:</dt>
+      <dd>@baseurl@url.route({
+      	controller : "uploadAPI", action : "uploadFromUrl", outputformat : 'json',
+      	urlhtml : "http://example.com/chart.hml"
+      })</dd>
+  	</dl>
+  </li>
+</ul>
+
+
+<h2>Download Options</h2>
+<dl class="bullet">
+@{ var uid = "2h9hohl53go4"; }
+@for(ext in ['html', 'pdf', 'png', 'jpg'])
+{
+  @{ var p = baseurl + url.route({ controller : "downloadAPI", action : "download", uid : uid, ext : ext}); }
+  <dt>@ext.toUpperCase()</dt>
+  <dd><a href="@p" class="tag">@p</a></dd>
+}
+</dl>
+
+<h2>Status</h2>
+<ul class="bullet">
+  <li><a href="@url.route({ controller : 'setup', action : 'mongodb' })">DB</a></li>
+  <li><a href="@url.route({ controller : "setup", action : "topRenderables" })">Renderables</a></li>
+</ul>
+
+
+<h2>Setup</h2>
+<ul class="bullet">
+  <li><a href="@url.route({ controller : 'setup', action : 'createCollections' })">Create Collections</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'dropCollections' })">Drop Collections</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'dropCache' })">Drop Cache</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'dropRenderables' })">Drop Renderables</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'info' })">PHP Info</a></li>
+</ul>
+
+
 </body>
 </html>

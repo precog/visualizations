@@ -52,6 +52,15 @@ class RenderableGateway
 		);
 	}
 
+	public function topByUsage(limit : Int)
+	{
+		return coll
+			.find({})
+//			.sort({ usages : -1 })
+			.limit(limit)
+			.toArray();
+	}
+
 	public function use(uid : String)
 	{
 		// mongo update query

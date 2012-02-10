@@ -1,7 +1,7 @@
 package mongo;
 
 import mongo._Mongo;
-using php.Lib;
+import php.Lib; using php.Lib;
 
 class MongoCursor
 {
@@ -12,6 +12,19 @@ class MongoCursor
 	}
 	public function getNext() return c.getNext().objectOfAssociativeArray()
 	public function hasNext() : Bool return c.hasNext()
+
+	public function sort(fields : Dynamic<Int>)
+	{
+		c.sort(Lib.associativeArrayOfObject(fields));
+		return this;
+	}
+
+	public function limit(num : Int)
+	{
+		c.limit(num);
+		return this;
+	}
+
 	public function toArray()
 	{
 		var r = [];

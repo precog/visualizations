@@ -123,6 +123,14 @@ class SetupController extends Controller
 		return new ContentResult(new template.MongoDBStatus().execute(content));
 	}
 
+	public function topRenderables()
+	{
+		var dbname  = App.MONGO_DB_NAME,
+			db      = mongo.selectDB(dbname),
+			gate = new model.RenderableGateway(db.selectCollection(App.RENDERABLES_COLLECTION));
+		return Dynamics.string(gate.topByUsage(10));
+	}
+
 	public function info()
 	{
 		return collectPhpInfo();

@@ -17,20 +17,18 @@ class App {
 		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_5"), 'execute'));
 		ufront_web_mvc_DependencyResolver::$current = new ufront_external_mvc_ThxDependencyResolver($locator);
 		$config = new ufront_web_AppConfiguration("controller", true, "rg/services/viz/charts/", "logs/logs.txt"); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
-		$routes->addRoute("/", _hx_anonymous(array("controller" => "home", "action" => "index")), null);
-		$routes->addRoute("/up/form", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null);
-		$routes->addRoute("/up.html", _hx_anonymous(array("controller" => "uploadAPI", "action" => "upload", "outputformat" => "html")), null);
-		$routes->addRoute("/up.json", _hx_anonymous(array("controller" => "uploadAPI", "action" => "upload", "outputformat" => "json")), null);
-		$routes->addRoute("/up/url.html", _hx_anonymous(array("controller" => "uploadAPI", "action" => "uploadFromUrl", "outputformat" => "html")), null);
-		$routes->addRoute("/up/url.json", _hx_anonymous(array("controller" => "uploadAPI", "action" => "uploadFromUrl", "outputformat" => "json")), null);
-		$routes->addRoute("/down/{uid}.{ext}", _hx_anonymous(array("controller" => "downloadAPI", "action" => "download")), null);
-		$routes->addRoute("/info", _hx_anonymous(array("controller" => "setup", "action" => "info")), null);
-		$routes->addRoute("/statusdb", _hx_anonymous(array("controller" => "setup", "action" => "mongodb")), null);
-		$routes->addRoute("/setup/collections/create", _hx_anonymous(array("controller" => "setup", "action" => "createCollections")), null);
-		$routes->addRoute("/setup/collections/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCollections")), null);
-		$routes->addRoute("/setup/cache/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCache")), null);
-		$routes->addRoute("/setup/renderables/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropRenderables")), null);
-		$routes->addRoute("/setup/cache/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCache")), null);
+		$routes->addRoute("/", _hx_anonymous(array("controller" => "home", "action" => "index")), null, null);
+		$routes->addRoute("/up/form", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null, null);
+		$routes->addRoute("/up.{outputformat}", _hx_anonymous(array("controller" => "uploadAPI", "action" => "upload")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null), new ufront_web_routing_HttpMethodConstraint("POST", null))));
+		$routes->addRoute("/up/url.{outputformat}", _hx_anonymous(array("controller" => "uploadAPI", "action" => "uploadFromUrl")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null))));
+		$routes->addRoute("/down/{uid}.{ext}", _hx_anonymous(array("controller" => "downloadAPI", "action" => "download")), null, null);
+		$routes->addRoute("/status/info", _hx_anonymous(array("controller" => "setup", "action" => "info")), null, null);
+		$routes->addRoute("/status/db", _hx_anonymous(array("controller" => "setup", "action" => "mongodb")), null, null);
+		$routes->addRoute("/status/renderables", _hx_anonymous(array("controller" => "setup", "action" => "topRenderables")), null, null);
+		$routes->addRoute("/setup/collections/create", _hx_anonymous(array("controller" => "setup", "action" => "createCollections")), null, null);
+		$routes->addRoute("/setup/collections/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCollections")), null, null);
+		$routes->addRoute("/setup/renderables/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropRenderables")), null, null);
+		$routes->addRoute("/setup/cache/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCache")), null, null);
 		$app->execute();
 	}
 	function __toString() { return 'App'; }
