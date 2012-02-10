@@ -129,7 +129,20 @@ class VisualizationSankey extends VisualizationSvg
 
 
 		// convert layers
-		var layers = map.layers.map(function(layer : Array<String>, _) return layer.map(function(id, _) return graph.nodes.getById(id).id));
+		var layers = map.layers.map(function(layer : Array<String>, _) return layer.map(function(id, _) {
+			var n = graph.nodes.getById(id);
+			if(null == n)
+			{
+				n = graph.nodes.create({
+					id : id,
+					weight : 0.0,
+					extrain : 0.0,
+					extraout : 0.0,
+					dp : { id : id }
+				});
+			}
+			return n.id;
+		}));
 		return new GraphLayout(graph, layers);
 	}
 

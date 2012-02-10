@@ -33,8 +33,7 @@ ReportGrid.sankey("#chart", {
 			parent_id : 'tail',
 			count : 'count'
 		})
-		.retrieve()
-		.audit(function(d) { console.log(d); }),
+		.retrieve(),
 	options : 
 	{
 //		label : 
@@ -50,7 +49,10 @@ ReportGrid.sankey("#chart", {
 		imagespacing : 1,
 //		imagepath : imagePath,
 //		click : nodeClick,
-//		layoutmap : layoutmap
+		layoutmap : {
+			layers : [["967"], ["666", "#1", "968", "970", "#2"], ["971", "969", "966"]],
+			dummies : [["967", "#1", "971"], ["967", "#2", "966"]]
+		}
 	}
 });
 

@@ -1457,7 +1457,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.1.6811"};
+	r.info.charts = { version : "1.3.1.6826"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -5033,7 +5033,7 @@ rg.svg.chart.GradientEffects.canParse = function(d) {
 	return (function($this) {
 		var $r;
 		switch(parts[0]) {
-		case "gradient":case "noeffect":
+		case "gradient":case "noeffect":case "none":case "flat":
 			$r = true;
 			break;
 		default:
@@ -8480,7 +8480,9 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		}
 		var layers = map.layers.map(function(layer,_) {
 			return layer.map(function(id,_1) {
-				return graph.nodes.getById(id).id;
+				var n = graph.nodes.getById(id);
+				if(null == n) n = graph.nodes.create({ id : id, weight : 0.0, extrain : 0.0, extraout : 0.0, dp : { id : id}});
+				return n.id;
 			});
 		});
 		return new rg.graph.GraphLayout(graph,layers);
@@ -12766,7 +12768,7 @@ rg.html.widget.Tooltip.prototype = {
 			this.container.style("left").string(-this.anchordistance - width + "px");
 			break;
 		default:
-			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 148, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
+			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 147, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
 		}
 		switch(type) {
 		case "top":case "topleft":case "topright":
