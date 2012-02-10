@@ -13,7 +13,12 @@ class MongoDBStatus extends Template<{
 	},
 	renderables : {
 		name    : String,
-		existed : Bool,
+		exists : Bool,
+		count   : Int
+	},
+	cache : {
+		name    : String,
+		exists : Bool,
 		count   : Int
 	}
 }>

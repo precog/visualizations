@@ -7,6 +7,7 @@ class model_ConfigRendering {
 		$this->image = new model_ConfigImage();
 		$this->wk = new model_ConfigWKHtml();
 	}}
+	public $cacheExpirationTime;
 	public $pdf;
 	public $image;
 	public $wk;
@@ -22,6 +23,7 @@ class model_ConfigRendering {
 	}
 	static function create($options) {
 		$config = new model_ConfigRendering();
+		$config->cacheExpirationTime = $options->cacheExpires;
 		return $config;
 	}
 	function __toString() { return 'model.ConfigRendering'; }

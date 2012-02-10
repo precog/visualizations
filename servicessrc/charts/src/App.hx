@@ -1,3 +1,4 @@
+import model.CacheGateway;
 import model.RenderableGateway;
 import thx.util.Imports;
 import ufront.web.AppConfiguration;
@@ -11,6 +12,7 @@ class App
 {
 	public static inline var MONGO_DB_NAME = "chartsrenderer1";
 	public static inline var RENDERABLES_COLLECTION = "renderables";
+	public static inline var CACHE_COLLECTION = "cache";
 	public static inline var BASE_URL = "http://localhost";
 
 	static function main()
@@ -33,12 +35,20 @@ class App
 		locator.memoize(RenderableGateway, function() {
 			return new RenderableGateway(locator.get(MongoDB).selectCollection(RENDERABLES_COLLECTION));
 		});
+		locator.memoize(CacheGateway, function() {
+			return new CacheGateway(locator.get(MongoDB).selectCollection(CACHE_COLLECTION));
+		});
 
 		ufront.web.mvc.DependencyResolver.current = new ufront.external.mvc.ThxDependencyResolver(locator);
 
 		Imports.pack("controller", true);
 
-		var config = new AppConfiguration("controller", true, "rg/services/viz/charts/"),
+		var config = new AppConfiguration(
+				"controller",
+				true, // mod rewrite
+				"rg/services/viz/charts/",
+				"logs/logs.txt"
+			),
 			routes = new RouteCollection(),
 			app    = new MvcApplication(config, routes);
 
@@ -76,6 +86,21 @@ class App
 		});
 		routes.addRoute('/statusdb', {
 			controller : "setup", action : "mongodb"
+		});
+		routes.addRoute('/setup/collections/create', {
+			controller : "setup", action : "createCollections"
+		});
+		routes.addRoute('/setup/collections/drop', {
+			controller : "setup", action : "dropCollections"
+		});
+		routes.addRoute('/setup/cache/drop', {
+			controller : "setup", action : "dropCache"
+		});
+		routes.addRoute('/setup/renderables/drop', {
+			controller : "setup", action : "dropRenderables"
+		});
+		routes.addRoute('/setup/cache/drop', {
+			controller : "setup", action : "dropCache"
 		});
 
 		app.execute();

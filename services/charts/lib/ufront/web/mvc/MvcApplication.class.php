@@ -4,7 +4,7 @@ class ufront_web_mvc_MvcApplication extends ufront_web_HttpApplication {
 	public function __construct($configuration, $routes, $httpContext) {
 		if(!php_Boot::$skip_constructor) {
 		if($configuration === null) {
-			$configuration = new ufront_web_AppConfiguration(null, null, null);
+			$configuration = new ufront_web_AppConfiguration(null, null, null, null);
 		}
 		if($httpContext === null) {
 			$httpContext = ufront_web_HttpContext::createWebContext(null, null, null);
@@ -37,7 +37,16 @@ class ufront_web_mvc_MvcApplication extends ufront_web_HttpApplication {
 			}
 		}
 		$this->modules->add(new ufront_web_module_ErrorModule());
-		$this->modules->add(new ufront_web_module_TraceModule());
+		$tracemod = null;
+		if(null !== $configuration->logFile) {
+			$comp = new ufront_web_module_TraceCompositeModule(null);
+			$comp->add(new ufront_web_module_TraceToBrowserModule());
+			$comp->add(new ufront_web_module_TraceToFileModule($configuration->logFile));
+			$tracemod = $comp;
+		} else {
+			$this->modules->add($tracemod = new ufront_web_module_TraceToBrowserModule());
+		}
+		haxe_Log::$trace = (isset($tracemod->trace) ? $tracemod->trace: array($tracemod, "trace"));
 	}}
 	public $routeModule;
 	public function __call($m, $a) {

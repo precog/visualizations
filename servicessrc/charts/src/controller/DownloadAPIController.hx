@@ -1,5 +1,6 @@
 package controller;
 
+import model.CacheGateway;
 import model.RenderableGateway;
 import model.WKHtmlToImage;
 import model.WKHtmlToPdf;
@@ -8,12 +9,14 @@ import template.DownloadError;
 
 class DownloadAPIController extends Controller
 {
+	var cache : CacheGateway;
 	var renderables : RenderableGateway;
 	var topdf : WKHtmlToPdf;
 	var toimage : WKHtmlToImage;
-	public function new(renderables : RenderableGateway, topdf : WKHtmlToPdf, toimage : WKHtmlToImage)
+	public function new(cache : CacheGateway, renderables : RenderableGateway, topdf : WKHtmlToPdf, toimage : WKHtmlToImage)
 	{
 		super();
+		this.cache = cache;
 		this.renderables = renderables;
 		this.topdf = topdf;
 		this.toimage = toimage;
@@ -25,9 +28,15 @@ class DownloadAPIController extends Controller
 		if(null == renderable)
 			return error(Std.format("uid '$uid' doesn't exist"), ext);
 
-// TRIGGERS ERROR: "$set" used as key of ass array
 		renderables.use(uid);
-		return renderHtml(renderable.html, ext);
+		var cached = cache.load(uid, ext, []);
+		if(null == cached)
+		{
+			var content = renderHtml(renderable.html, ext);
+			cached = cache.insert(uid, ext, [], content, Date.now().getTime() + renderable.config.cacheExpirationTime);
+		}
+		setHeaders(ext, cached.content.bin.length);
+		return cached.content.bin;
 	}
 
 	function error(msg : String, ext : String)

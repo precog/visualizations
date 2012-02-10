@@ -8,5 +8,5 @@ class WKHtmlToPdf extends WKHtml
 		super(binpath);
 	}
 
-	override function commandOptions() return []
+	override function commandOptions() return super.commandOptions().concat([])
 }

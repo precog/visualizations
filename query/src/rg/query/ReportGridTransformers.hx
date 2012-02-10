@@ -288,13 +288,11 @@ class ReportGridTransformers
 		return result;
 	}
 
-	public static function propertySummary(value : Float, params : { type : String, ?where : Dynamic }, keep : Array<String>) : Array<{ }>
+	public static function propertySummary(value : Array<Dynamic>, params : { type : String, ?where : Dynamic }, keep : Array<String>) : Array<{ }>
 	{
 		var o = { };
 		_keep(params, o, keep);
-		if(null != params.where)
-			Objects.copyTo(params.where, o);
-		Reflect.setField(o, params.type, value);
+		Reflect.setField(o, params.type, value[0][1]);
 		return [o];
 	}
 

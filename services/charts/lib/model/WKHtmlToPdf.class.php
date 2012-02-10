@@ -6,7 +6,7 @@ class model_WKHtmlToPdf extends model_WKHtml {
 		parent::__construct($binpath);
 	}}
 	public function commandOptions() {
-		return new _hx_array(array());
+		return parent::commandOptions()->concat(new _hx_array(array()));
 	}
 	function __toString() { return 'model.WKHtmlToPdf'; }
 }

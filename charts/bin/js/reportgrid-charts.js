@@ -1451,7 +1451,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.1.6817"};
+	r.info.charts = { version : "1.3.1.6818"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -27771,7 +27771,7 @@ thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
 thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
 rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
-rg.RGConst.BASE_URL_GEOJSON = "/rg/vis/geo/json/";
+rg.RGConst.BASE_URL_GEOJSON = "http://localhost/rg/vis/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "/rg/services/viz/renderer/";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 rg.util.Properties.TIME_TOKEN = "time:";

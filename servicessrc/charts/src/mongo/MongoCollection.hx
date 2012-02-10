@@ -67,6 +67,14 @@ class MongoCollection
 			return c.insert(Lib.associativeArrayOfObject(data));
 	}
 
+	public function remove(criteria : Dynamic, ?options : { justOne : Bool, safe : Bool, fsync : Bool, timeout : Int })
+	{
+		if(null != options)
+			return c.remove(Lib.associativeArrayOfObject(criteria), Lib.associativeArrayOfObject(options));
+		else
+			return c.remove(Lib.associativeArrayOfObject(criteria));
+	}
+
 	public function update(criteria : Dynamic, newob : Dynamic, ?options : { upsert : Bool, multiple : Bool, safe : Bool, fsync : Bool, timeout : Int })
 	{
 		if(null != options)
@@ -91,6 +99,16 @@ class MongoCollection
 			return null;
 		else
 			return r.objectOfAssociativeArray();
+	}
+
+	public function find(criteria : Dynamic, ?fields : Dynamic<Bool>) : Array<Dynamic>
+	{
+		var r;
+		if(null == fields)
+			r = c.find(Lib.associativeArrayOfObject(criteria));
+		else
+			r = c.find(Lib.associativeArrayOfObject(criteria), Lib.associativeArrayOfObject(fields));
+		return new MongoCursor(r).toArray();
 	}
 
 	public inline function drop()

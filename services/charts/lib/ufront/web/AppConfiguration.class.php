@@ -1,7 +1,7 @@
 <?php
 
 class ufront_web_AppConfiguration {
-	public function __construct($controllerPackage, $modRewrite, $basePath) {
+	public function __construct($controllerPackage, $modRewrite, $basePath, $logFile) {
 		if(!php_Boot::$skip_constructor) {
 		if($basePath === null) {
 			$basePath = "/";
@@ -10,11 +10,13 @@ class ufront_web_AppConfiguration {
 		$this->basePath = $basePath;
 		$this->controllerPackages = new _hx_array(array((($controllerPackage === null) ? "" : $controllerPackage)));
 		$this->attributePackages = new _hx_array(array("ufront.web.mvc.attributes"));
+		$this->logFile = $logFile;
 	}}
 	public $modRewrite;
 	public $controllerPackages;
 	public $attributePackages;
 	public $basePath;
+	public $logFile;
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);

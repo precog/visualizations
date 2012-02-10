@@ -19,25 +19,32 @@ class model_WKHtml {
 		$args->push($path);
 		$args->push($out);
 		if(!$this->execute($args)) {
-			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 41, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
+			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 40, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
 		}
 		$result = php_io_File::getContent($out);
 		@unlink($out);
 		return $result;
 	}
 	public function execute($args) {
-		$r = php_Sys::command($this->cmd, $args);
+		$process = new php_io_Process($this->cmd, $args);
+		haxe_Log::trace("CMD " . $this->cmd . " " . $args->join(" "), _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 50, "className" => "model.WKHtml", "methodName" => "execute")));
+		$process->close();
+		$r = $process->exitCode();
+		$err = $process->stderr->readAll(null)->toString();
+		$out = $process->stdout->readAll(null)->toString();
 		return $r === 0;
 	}
 	public function commandOptions() {
-		return new _hx_array(array());
+		$args = new _hx_array(array());
+		$args->push("--disable-local-file-access");
+		return $args;
 	}
 	public function getFormat() {
 		return $this->format;
 	}
 	public function setFormat($f) {
 		if(!Arrays::exists($this->allowedFormats, $f, null)) {
-			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 60, "className" => "model.WKHtml", "methodName" => "setFormat"))));
+			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 76, "className" => "model.WKHtml", "methodName" => "setFormat"))));
 		}
 		return $this->format = $f;
 	}

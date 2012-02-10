@@ -3653,8 +3653,7 @@ rg.query.ReportGridTransformers.eventSeries = function(values,params,keep) {
 rg.query.ReportGridTransformers.propertySummary = function(value,params,keep) {
 	var o = { };
 	rg.query.ReportGridTransformers._keep(params,o,keep);
-	if(null != params.where) Objects.copyTo(params.where,o);
-	o[params.type] = value;
+	o[params.type] = value[0][1];
 	return [o];
 }
 rg.query.ReportGridTransformers.propertySummarySeries = function(values,params,keep) {
@@ -3860,7 +3859,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.1235"};
+	r.info.query = { version : "1.0.0.1242"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);

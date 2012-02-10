@@ -1,0 +1,1 @@
+2012-02-09 15:53:14:model.WKHtml.execute(50) "CMD /usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage --disable-local-file-access /tmp/WK_4f344e5ab8209.html /tmp/WK_4f344e5abb151.jpg"

@@ -2,10 +2,6 @@ package mongo;
 
 @:native('Mongo') extern class _Mongo
 {
-	static var VERSION : String;
-	static var DEFAULT_HOST : String;
-	static var DEFAULT_PORT : Int;
-
 //	static function getPoolSize() : Int;
 //	static function setPoolSize(size : Int) : Bool;
 
@@ -76,9 +72,6 @@ package mongo;
 
 @:native('MongoCollection') extern class _MongoCollection
 {
-	static var ASCENDING : Int;
-	static var DESCENDING : Int;
-
 	var db : _MongoDB;
 	var w : Int;
 	var wtimeout : Int;
@@ -180,4 +173,12 @@ package mongo;
 @:native('MongoGridFS') extern class _MongoGridFS
 {
 	
+}
+
+@:native('MongoBinData') extern class _MongoBinData
+{
+	@:overload(function(data : String) : Void{})
+	function new(data : String, type : Int) : Void;
+	var type : Int;
+	var bin : String;
 }

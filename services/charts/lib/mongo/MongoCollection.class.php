@@ -30,6 +30,13 @@ class mongo_MongoCollection {
 			return $this->c->insert(php_Lib::associativeArrayOfObject($data));
 		}
 	}
+	public function remove($criteria, $options) {
+		if(null !== $options) {
+			return $this->c->remove(php_Lib::associativeArrayOfObject($criteria), php_Lib::associativeArrayOfObject($options));
+		} else {
+			return $this->c->remove(php_Lib::associativeArrayOfObject($criteria));
+		}
+	}
 	public function update($criteria, $newob, $options) {
 		if(null !== $options) {
 			return $this->c->update(php_Lib::associativeArrayOfObject($criteria), php_Lib::associativeArrayOfObject($newob), php_Lib::associativeArrayOfObject($options));
@@ -49,6 +56,15 @@ class mongo_MongoCollection {
 		} else {
 			return php_Lib::objectOfAssociativeArray($r);
 		}
+	}
+	public function find($criteria, $fields) {
+		$r = null;
+		if(null === $fields) {
+			$r = $this->c->find(php_Lib::associativeArrayOfObject($criteria));
+		} else {
+			$r = $this->c->find(php_Lib::associativeArrayOfObject($criteria), php_Lib::associativeArrayOfObject($fields));
+		}
+		return _hx_deref(new mongo_MongoCursor($r))->toArray();
 	}
 	public function drop() {
 		$this->c->drop();

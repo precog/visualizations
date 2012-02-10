@@ -107,7 +107,7 @@ class template_MongoDBStatus extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</dd>\x0A    <dt>existed:</dt>\x0A    <dd>";
+				$x = "</dd>\x0A    <dt>exists:</dt>\x0A    <dd>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -118,7 +118,7 @@ class template_MongoDBStatus extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = $__context__->renderables->existed;
+				$x = $__context__->renderables->exists;
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -141,6 +141,72 @@ class template_MongoDBStatus extends erazor_macro_Template {
 			}
 			{
 				$x = $__context__->renderables->count;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</dd>\x0A  </dl>\x0A  <h2>Cache</h2>\x0A  <dl>\x0A    <dt>collection name:</dt>\x0A    <dd>";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->cache->name;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</dd>\x0A    <dt>exists:</dt>\x0A    <dd>";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->cache->exists;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</dd>\x0A    <dt>cached values:</dt>\x0A    <dd>";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->cache->count;
 				if(is_null($x)) {
 					$x = "null";
 				} else {

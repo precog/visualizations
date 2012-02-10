@@ -29,8 +29,7 @@ class WKHtml
 			out  = tmp(format);
 
 
-//args.push('--javascript-delay');
-//args.push('10000');
+//args.push('--javascript-delay'); args.push('10000');
 
 
 		args.push(path);
@@ -47,11 +46,28 @@ class WKHtml
 
 	function execute(args : Array<String>) : Bool
 	{
-		var r = thx.sys.Sys.command(cmd, args);
+		var process = new thx.sys.io.Process(cmd, args);
+		trace("CMD " + cmd + " " + args.join(" "));
+//		var r = thx.sys.Sys.command(cmd, args);
+		process.close();
+		var r = process.exitCode();
+		var err = process.stderr.readAll().toString();
+//		trace("ERROR: " + err);
+		var out = process.stdout.readAll().toString();
+//		trace("OUT: " + out);
 		return r == 0;
 	}
 
-	function commandOptions() return []
+	function commandOptions()
+	{
+		var args = [];
+		
+		args.push("--disable-local-file-access");
+//		args.push('--javascript-delay'); args.push('10000');
+//		args.push("--disable-smart-width");
+
+		return args;
+	}
 
 	function getFormat() return format
 	function setFormat(f : String)
