@@ -12,7 +12,8 @@ class HomeController extends Controller
     {
         return new ContentResult(new template.Home().execute({
         	baseurl : App.BASE_URL,
-        	url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext)
+        	url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
+            sampleuid : model.Sample.uid
         }));
     }
 }

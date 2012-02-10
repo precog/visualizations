@@ -23,6 +23,9 @@ class model_Renderable {
 		}
 		return $this->uid;
 	}
+	public function canRenderTo($format) {
+		return Arrays::exists($this->config->allowedFormats, $format, null);
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);

@@ -28,7 +28,7 @@ class ufront_web_module_TraceToFileModule implements ufront_web_module_ITraceMod
 	static $REMOVENL;
 	static function format($msg, $pos) {
 		$msg = ufront_web_module_TraceToFileModule::$REMOVENL->replace($msg, "\\n");
-		return "" . Date::now() . ":" . $pos->className . "." . $pos->methodName . "(" . $pos->lineNumber . ") " . Dynamics::string($msg);
+		return "" . Date::now() . ": " . $pos->className . "." . $pos->methodName . "(" . $pos->lineNumber . ") " . Dynamics::string($msg);
 	}
 	function __toString() { return 'ufront.web.module.TraceToFileModule'; }
 }

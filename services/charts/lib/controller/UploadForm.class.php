@@ -31,14 +31,14 @@ class controller_UploadForm extends ufront_web_mvc_Controller {
 				}
 			}
 			if(!$haserrors) {
-				$controller = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.UploadAPIController"));
+				$controller = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.RenderableAPIController"));
 				$controller->controllerContext = $this->controllerContext;
 				return $controller->upload($html, $config, "html");
 			}
 		} else {
 			if(null === $html && null === $config) {
-				$ob->html = "<?DOCTYPE html>\x0A<html>\x0A<head>\x0A<title>Viz</title>\x0A<script src=\"http://api.reportgrid.com/js/reportgrid-core.js?tokenId=\$tokenId\"></script>\x0A<script src=\"http://api.reportgrid.com/js/reportgrid-charts.js\"></script>\x0A<script src=\"http://api.reportgrid.com/js/reportgrid-query.js\"></script>\x0A<link type=\"text/css\" href=\"http://api.reportgrid.com/css/rg-charts.css\" rel=\"stylesheet\">\x0A</head>\x0A<body>\x0A<div id=\"chart\"></div>\x0A<script>\x0AReportGrid.pieChart(\"#chart\", {\x0A  data : [{browser:\"chrome\",count:100},{browser:\"firefox\",count:80}],\x0A  axes : [\"browser\",\"count\"],\x0A  options : {\x0A  \x09effect : \"noeffect\"\x0A  }\x0A});\x0A</script>\x0A</body>\x0A</html>";
-				$ob->config = "cache=2 days\x0Aparameters=tokenId\x0A[defaults]\x0AtokenId=1234567890";
+				$ob->html = model_Sample::$html;
+				$ob->config = model_Sample::$config;
 			}
 		}
 		return new ufront_web_mvc_ContentResult(_hx_deref(new template_FormUpload())->execute($ob), null);

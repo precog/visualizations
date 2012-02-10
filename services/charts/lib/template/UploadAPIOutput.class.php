@@ -8,7 +8,7 @@ class template_UploadAPIOutput extends erazor_macro_Template {
 		$__b__ = new StringBuf();
 		{
 			{
-				$x = "<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Upload API Response</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"";
+				$x = "<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Visualization Info</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -41,7 +41,7 @@ class template_UploadAPIOutput extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "\">\x0A</head>\x0A<body>\x0A<h1>Upload API Response</h1>\x0A";
+				$x = "\">\x0A</head>\x0A<body>\x0A<h1>Visualization Info</h1>\x0A<dl>\x0A<dt>uid</dt>\x0A<dd>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -51,79 +51,19 @@ class template_UploadAPIOutput extends erazor_macro_Template {
 				}
 				$__b__->b .= $x;
 			}
-			if(null !== $__context__->error) {
-				{
-					$x = "\x0A  <div class=\"error\">";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
+			{
+				$x = $__context__->data->uid;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
 					}
-					$__b__->b .= $x;
 				}
-				{
-					$x = $__context__->error;
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				{
-					$x = "</div>\x0A";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				null;
-			} else {
-				{
-					$x = "\x0A  <h2>New Template Rendering Generated</h2>\x0A  <dl>\x0A    <dt>uid</dt>\x0A    <dd>";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				{
-					$x = $__context__->info->uid;
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				{
-					$x = "</dd>\x0A  </dl>\x0A";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				null;
+				$__b__->b .= $x;
 			}
 			{
-				$x = "\x0A</body>\x0A</html>";
+				$x = "</dd>\x0A</dl>\x0A</body>\x0A</html>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {

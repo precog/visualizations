@@ -7,7 +7,14 @@ class model_CacheGateway {
 	}}
 	public $coll;
 	public function key($id, $format, $params) {
-		return "" . $id . "." . $format . "?" . Iterators::map($params->iterator(), array(new _hx_lambda(array(&$format, &$id, &$params), "model_CacheGateway_0"), 'execute'))->join("&");
+		$ps = new _hx_array(array());
+		if(null == $params) throw new HException('null iterable');
+		$»it = $params->keys();
+		while($»it->hasNext()) {
+			$field = $»it->next();
+			$ps->push(rawurlencode($field) . "=" . rawurlencode("" . Reflect::field($params, $field)));
+		}
+		return "" . $id . "." . $format . (model_CacheGateway_0($this, $format, $id, $params, $ps));
 	}
 	public function exists($id, $format, $params) {
 		$uid = $this->key($id, $format, $params);
@@ -15,12 +22,14 @@ class model_CacheGateway {
 	}
 	public function insert($id, $format, $params, $content, $expiresOn) {
 		$uid = $this->key($id, $format, $params);
+		haxe_Log::trace("INSERT " . $uid, _hx_anonymous(array("fileName" => "CacheGateway.hx", "lineNumber" => 38, "className" => "model.CacheGateway", "methodName" => "insert")));
 		$ob = _hx_anonymous(array("uid" => $uid, "content" => new MongoBinData($content, 2), "expiresOn" => $expiresOn));
 		$r = $this->coll->insert($ob, null);
 		return $ob;
 	}
 	public function load($id, $format, $params) {
 		$uid = $this->key($id, $format, $params);
+		haxe_Log::trace("LOAD " . $uid, _hx_anonymous(array("fileName" => "CacheGateway.hx", "lineNumber" => 52, "className" => "model.CacheGateway", "methodName" => "load")));
 		$o = $this->coll->findOne(_hx_anonymous(array("uid" => $uid)), null);
 		if(null === $o) {
 			return null;
@@ -59,8 +68,10 @@ class model_CacheGateway {
 	}
 	function __toString() { return 'model.CacheGateway'; }
 }
-function model_CacheGateway_0(&$format, &$id, &$params, $d, $_) {
-	{
-		return rawurlencode(Std::string($d));
+function model_CacheGateway_0(&$»this, &$format, &$id, &$params, &$ps) {
+	if($ps->length === 0) {
+		return "";
+	} else {
+		return "?" . $ps->join("&");
 	}
 }

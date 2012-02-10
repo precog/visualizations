@@ -3,6 +3,7 @@ package model;
 using Arrays;
 import mongo.MongoBinData;
 import mongo.MongoCollection;
+import thx.collection.HashList;
 
 class CacheGateway
 {
@@ -12,20 +13,29 @@ class CacheGateway
 		this.coll = coll;
 	}
 
-	function key(id : String, format : String, params : Array<Dynamic>)
+	function key(id : String, format : String, params : HashList<String>)
 	{
-		return Std.format("$id.$format?${params.map(function(d, _) return StringTools.urlEncode(Std.string(d))).join('&')}");
+		var ps = [];
+		for(field in params.keys())
+		{
+			ps.push(
+				StringTools.urlEncode(field)
+				+ "="
+				+ StringTools.urlEncode(""+Reflect.field(params, field)));
+		}
+		return Std.format("$id.$format${ps.length == 0 ? '' : '?' + ps.join('&') }");
 	}
 
-	public function exists(id : String, format : String, params : Array<Dynamic>)
+	public function exists(id : String, format : String, params : HashList<String>)
 	{
 		var uid = key(id, format, params);
 		return null != coll.findOne({ uid : uid }, {});
 	}
 
-	public function insert(id : String, format : String, params : Array<Dynamic>, content : String, expiresOn : Float)
+	public function insert(id : String, format : String, params : HashList<String>, content : String, expiresOn : Float)
 	{
 		var uid = key(id, format, params);
+		trace("INSERT " + uid);
 		var ob = {
 			uid       : uid,
 			content   : MongoBinData.createByteArray(content),
@@ -36,9 +46,10 @@ class CacheGateway
 		return ob;
 	}
 
-	public function load(id : String, format : String, params : Array<Dynamic>)
+	public function load(id : String, format : String, params : HashList<String>)
 	{
 		var uid = key(id, format, params);
+		trace("LOAD " + uid);
 		// load from mongo
 		var o : {
 			uid       : String,
@@ -50,7 +61,7 @@ class CacheGateway
 		return o;
 	}
 
-	public function remove(id : String, format : String, params : Array<Dynamic>)
+	public function remove(id : String, format : String, params : HashList<String>)
 	{
 		var uid = key(id, format, params);
 		// load from mongo
@@ -69,7 +80,7 @@ class CacheGateway
 		return coll.remove({ expiresOn : { "$lt" : now }});
 	}
 
-	public function loadContent(id : String, format : String, params : Array<Dynamic>)
+	public function loadContent(id : String, format : String, params : HashList<String>)
 	{
 		var uid = key(id, format, params);
 		// load from mongo

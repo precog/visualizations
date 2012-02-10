@@ -39,39 +39,15 @@ class UploadForm extends Controller
 			}
 			if(!haserrors)
 			{
-				var controller = ufront.web.mvc.DependencyResolver.current.getService(controller.UploadAPIController);
+				var controller = ufront.web.mvc.DependencyResolver.current.getService(controller.RenderableAPIController);
 				controller.controllerContext = this.controllerContext;
 				return controller.upload(html, config, 'html');
 			}
 		} else {
 			if(null == html && null == config)
 			{
-				ob.html = '<?DOCTYPE html>
-<html>
-<head>
-<title>Viz</title>
-<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=$tokenId"></script>
-<script src="http://api.reportgrid.com/js/reportgrid-charts.js"></script>
-<script src="http://api.reportgrid.com/js/reportgrid-query.js"></script>
-<link type="text/css" href="http://api.reportgrid.com/css/rg-charts.css" rel="stylesheet">
-</head>
-<body>
-<div id="chart"></div>
-<script>
-ReportGrid.pieChart("#chart", {
-  data : [{browser:"chrome",count:100},{browser:"firefox",count:80}],
-  axes : ["browser","count"],
-  options : {
-  	effect : "noeffect"
-  }
-});
-</script>
-</body>
-</html>';
-				ob.config = 'cache=2 days
-parameters=tokenId
-[defaults]
-tokenId=1234567890';
+				ob.html   = model.Sample.html;
+				ob.config = model.Sample.config;
 			}
 		}
 		return new ContentResult(new template.FormUpload().execute(ob));

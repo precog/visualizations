@@ -1,10 +1,13 @@
 package model;
 
 import model.Renderable;
+import mongo._Mongo;
+import mongo.MongoBinData;
 import mongo.MongoCollection;
 
 class RenderableGateway
 {
+	static var DELETE_IF_NOT_USED_FOR = thx.date.Milli.parse("366 days");
 	var coll : MongoCollection;
 	public function new(coll : MongoCollection)
 	{
@@ -36,7 +39,7 @@ class RenderableGateway
 		var o : {
 			uid       : String,
 			html      : String,
-			config    : String,
+			config    : _MongoBinData,
 			createdOn : Float,
 			lastUsage : Float,
 			usages    : Int
@@ -55,32 +58,35 @@ class RenderableGateway
 	public function topByUsage(limit : Int)
 	{
 		return coll
-			.find({})
-//			.sort({ usages : -1 })
+			.find({}, { uid : true, createdOn : true, lastUsage : true, usages : true })
+			.sort({ usages : -1 })
 			.limit(limit)
 			.toArray();
 	}
 
 	public function use(uid : String)
 	{
-		// mongo update query
-		var data : {
-			lastUsage : Float,
-			usages : Int
-		} = coll.findOne({ uid : uid });
-		data.lastUsage = Date.now().getTime();
-		data.usages++;
-		coll.update({ uid : uid }, { '$set' : data });
-		return data;
+		coll.update({ uid : uid }, {
+			'$set' : { lastUsage : Date.now().getTime() },
+			'$inc' : { usages : 1 }
+		});
 	}
 
-	static function serialize(o : Dynamic) : String
+	public function removeOldAndUnused(?age : Float)
 	{
-		return php.Lib.serialize(o);
+		if(null == age)
+			age = DELETE_IF_NOT_USED_FOR;
+		var exp = Date.now().getTime() - age;
+		return coll.remove({ lastUsage : { "$lt" : exp }});
 	}
 
-	static function unserialize(s : String) : Dynamic
+	static function serialize(o : Dynamic)
 	{
-		return php.Lib.unserialize(s);
+		return MongoBinData.createByteArray(php.Lib.serialize(o));
+	}
+
+	static function unserialize(s : _MongoBinData) : Dynamic
+	{
+		return php.Lib.unserialize(s.bin);
 	}
 }

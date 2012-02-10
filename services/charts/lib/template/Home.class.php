@@ -118,7 +118,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadAPI", "action" => "upload", "outputformat" => "html")));
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "upload", "outputformat" => "html")));
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -151,7 +151,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadAPI", "action" => "upload", "outputformat" => "json")));
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "upload", "outputformat" => "json")));
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -184,7 +184,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadAPI", "action" => "uploadFromUrl", "outputformat" => "html", "urlhtml" => "http://example.com/chart.hml")));
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "uploadFromUrl", "outputformat" => "html", "urlhtml" => "http://example.com/chart.hml")));
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -217,7 +217,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadAPI", "action" => "uploadFromUrl", "outputformat" => "json", "urlhtml" => "http://example.com/chart.hml")));
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "uploadFromUrl", "outputformat" => "json", "urlhtml" => "http://example.com/chart.hml")));
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -228,7 +228,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</dd>\x0A  \x09</dl>\x0A  </li>\x0A</ul>\x0A\x0A\x0A<h2>Download Options</h2>\x0A<dl class=\"bullet\">\x0A";
+				$x = "</dd>\x0A  \x09</dl>\x0A  </li>\x0A</ul>\x0A\x0A\x0A<h2>Download</h2>\x0A<dl class=\"bullet\">\x0A";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -238,7 +238,7 @@ class template_Home extends erazor_macro_Template {
 				}
 				$__b__->b .= $x;
 			}
-			$uid = "2h9hohl53go4";
+			$uid = $__context__->sampleuid;
 			{
 				$x = "\x0A";
 				if(is_null($x)) {
@@ -251,7 +251,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$_g = 0; $_g1 = new _hx_array(array("html", "pdf", "png", "jpg"));
+				$_g = 0; $_g1 = new _hx_array(array("html", "json"));
 				while($_g < $_g1->length) {
 					$ext = $_g1[$_g];
 					++$_g;
@@ -267,7 +267,7 @@ class template_Home extends erazor_macro_Template {
 						$__b__->b .= $x;
 						unset($x);
 					}
-					$p = $__context__->baseurl . $__context__->url->route(_hx_anonymous(array("controller" => "downloadAPI", "action" => "download", "uid" => $uid, "ext" => $ext)));
+					$p = $__context__->baseurl . $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "display", "uid" => $uid, "outputformat" => $ext)));
 					{
 						$x = "\x0A  <dt>";
 						if(is_null($x)) {
@@ -293,7 +293,7 @@ class template_Home extends erazor_macro_Template {
 						unset($x);
 					}
 					{
-						$x = "</dt>\x0A  <dd><a href=\"";
+						$x = " Information:</dt>\x0A  <dd><a href=\"";
 						if(is_null($x)) {
 							$x = "null";
 						} else {
@@ -317,7 +317,7 @@ class template_Home extends erazor_macro_Template {
 						unset($x);
 					}
 					{
-						$x = "\" class=\"tag\">";
+						$x = "\">";
 						if(is_null($x)) {
 							$x = "null";
 						} else {
@@ -401,7 +401,51 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "\">Renderables</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+				$x = "\">Renderables</a></li>\x0A</ul>\x0A\x0A<h2>Maintenance</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeCache")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\">Purge Cache</a></li>\x0A  <li><a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeRenderables")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\">Purge Renderables</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {

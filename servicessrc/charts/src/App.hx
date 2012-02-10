@@ -64,7 +64,7 @@ class App
 		});
 
 		routes.addRoute('/up.{outputformat}', {
-				controller : "uploadAPI", action : "upload"
+				controller : "renderableAPI", action : "upload"
 			},
 			[
 				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint),
@@ -73,7 +73,14 @@ class App
 		);
 
 		routes.addRoute('/up/url.{outputformat}', {
-				controller : "uploadAPI", action : "uploadFromUrl"
+				controller : "renderableAPI", action : "uploadFromUrl"
+			},
+			[
+				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint)
+			]
+		);
+		routes.addRoute('/up/info/{uid}.{outputformat}', {
+				controller : "renderableAPI", action : "display"
 			},
 			[
 				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint)
@@ -93,6 +100,12 @@ class App
 		});
 		routes.addRoute('/status/renderables', {
 			controller : "setup", action : "topRenderables"
+		});
+		routes.addRoute('/maintenance/purge/renderables', {
+			controller : "setup", action : "purgeRenderables"
+		});
+		routes.addRoute('/maintenance/purge/cache', {
+			controller : "setup", action : "purgeCache"
 		});
 
 		routes.addRoute('/setup/collections/create', {

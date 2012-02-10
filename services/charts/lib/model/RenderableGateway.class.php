@@ -21,14 +21,17 @@ class model_RenderableGateway {
 		return new model_Renderable($o->html, model_RenderableGateway::unserialize($o->config), Date::fromTime($o->createdOn), Date::fromTime($o->lastUsage), $o->usages);
 	}
 	public function topByUsage($limit) {
-		return $this->coll->find(_hx_anonymous(array()), null)->limit($limit)->toArray();
+		return $this->coll->find(_hx_anonymous(array()), _hx_anonymous(array("uid" => true, "createdOn" => true, "lastUsage" => true, "usages" => true)))->sort(_hx_anonymous(array("usages" => -1)))->limit($limit)->toArray();
 	}
 	public function huse($uid) {
-		$data = $this->coll->findOne(_hx_anonymous(array("uid" => $uid)), null);
-		$data->lastUsage = Date::now()->getTime();
-		$data->usages++;
-		$this->coll->update(_hx_anonymous(array("uid" => $uid)), _hx_anonymous(array("\$set" => $data)), null);
-		return $data;
+		$this->coll->update(_hx_anonymous(array("uid" => $uid)), _hx_anonymous(array("\$set" => _hx_anonymous(array("lastUsage" => Date::now()->getTime())), "\$inc" => _hx_anonymous(array("usages" => 1)))), null);
+	}
+	public function removeOldAndUnused($age) {
+		if(null === $age) {
+			$age = model_RenderableGateway::$DELETE_IF_NOT_USED_FOR;
+		}
+		$exp = Date::now()->getTime() - $age;
+		return $this->coll->remove(_hx_anonymous(array("lastUsage" => _hx_anonymous(array("\$lt" => $exp)))), null);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -40,11 +43,13 @@ class model_RenderableGateway {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $DELETE_IF_NOT_USED_FOR;
 	static function serialize($o) {
-		return php_Lib::serialize($o);
+		return new MongoBinData(php_Lib::serialize($o), 2);
 	}
 	static function unserialize($s) {
-		return php_Lib::unserialize($s);
+		return php_Lib::unserialize($s->bin);
 	}
 	function __toString() { return 'model.RenderableGateway'; }
 }
+model_RenderableGateway::$DELETE_IF_NOT_USED_FOR = thx_date_Milli::parse("366 days");

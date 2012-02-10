@@ -1,5 +1,7 @@
 package model;
 
+using Arrays;
+
 class Renderable
 {
 	static inline var SEED = "][4p5.,vsd";
@@ -27,6 +29,11 @@ class Renderable
 			uid = hash(s);
 		}
 		return uid;
+	}
+
+	public function canRenderTo(format : String)
+	{
+		return config.allowedFormats.exists(format);
 	}
 
 	static function hash(s : String) : String

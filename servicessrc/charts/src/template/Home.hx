@@ -7,7 +7,8 @@ import ufront.web.mvc.view.UrlHelper;
 //@:template("<h1>hello world: @title</h1>")
 class Home extends Template<{
 	baseurl : String,
-	url : UrlHelperInst
+	url : UrlHelperInst,
+	sampleuid : String
 }>
 {
 	

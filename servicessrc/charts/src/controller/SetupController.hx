@@ -1,5 +1,8 @@
 package controller;
 
+import model.CacheGateway;
+import model.RenderableGateway;
+import ufront.web.mvc.ActionResult;
 import ufront.web.mvc.Controller;
 import ufront.web.mvc.ContentResult;
 import mongo.Mongo;
@@ -43,6 +46,20 @@ class SetupController extends Controller
 		var db = mongo.selectDB(App.MONGO_DB_NAME),
 			collection = db.selectCollection(collection);
 		collection.drop();
+	}
+
+	function cacheCollection()
+	{
+		var dbname = App.MONGO_DB_NAME,
+			db     = mongo.selectDB(dbname);
+		return db.selectCollection(App.CACHE_COLLECTION);
+	}
+
+	function renderableCollection()
+	{
+		var dbname = App.MONGO_DB_NAME,
+			db     = mongo.selectDB(dbname);
+		return db.selectCollection(App.RENDERABLES_COLLECTION);
 	}
 
 	public function createCollections()
@@ -123,12 +140,40 @@ class SetupController extends Controller
 		return new ContentResult(new template.MongoDBStatus().execute(content));
 	}
 
-	public function topRenderables()
+	public function topRenderables(top = 10)
 	{
-		var dbname  = App.MONGO_DB_NAME,
-			db      = mongo.selectDB(dbname),
-			gate = new model.RenderableGateway(db.selectCollection(App.RENDERABLES_COLLECTION));
-		return Dynamics.string(gate.topByUsage(10));
+		var gate    = new RenderableGateway(renderableCollection()),
+			list    = gate.topByUsage(top),
+			content = {
+	        	baseurl     : App.BASE_URL,
+				url         : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
+				top         : top,
+				renderables : list
+			};
+		return new ContentResult(new template.RenderablesInfo().execute(content));
+	}
+
+	public function purge()
+	{
+		var gate = new CacheGateway(cacheCollection());
+		gate.removeExpired();
+		var gate = new RenderableGateway(renderableCollection());
+		gate.removeOldAndUnused();
+		return redirectToStatus();
+	}
+
+	public function purgeCache()
+	{
+		var gate = new CacheGateway(cacheCollection()),
+			purged = gate.removeExpired();
+		return redirectToStatus();
+	}
+
+	public function purgeRenderables()
+	{
+		var gate = new RenderableGateway(renderableCollection()),
+			purged = gate.removeOldAndUnused();
+		return redirectToStatus();
 	}
 
 	public function info()
