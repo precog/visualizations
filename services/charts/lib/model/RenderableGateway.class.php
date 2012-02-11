@@ -10,7 +10,7 @@ class model_RenderableGateway {
 		return null !== $this->coll->findOne(_hx_anonymous(array("uid" => $uid)), _hx_anonymous(array()));
 	}
 	public function insert($r) {
-		$ob = _hx_anonymous(array("uid" => $r->getUid(), "config" => model_RenderableGateway::serialize($r->config), "createdOn" => $r->createdOn->getTime(), "html" => $r->html, "lastUsage" => $r->lastUsage->getTime(), "usages" => $r->usages));
+		$ob = _hx_anonymous(array("uid" => $r->getUid(), "config" => model_RenderableGateway::serialize($r->config), "createdOn" => $r->createdOn->getTime(), "html" => $r->html, "lastUsage" => $r->lastUsage->getTime(), "usages" => $r->usages, "expiresOn" => ((null === $r->config->expiresOn) ? null : $r->config->expiresOn->getTime())));
 		$this->coll->insert($ob, null);
 	}
 	public function load($uid) {
@@ -25,6 +25,9 @@ class model_RenderableGateway {
 	}
 	public function huse($uid) {
 		$this->coll->update(_hx_anonymous(array("uid" => $uid)), _hx_anonymous(array("\$set" => _hx_anonymous(array("lastUsage" => Date::now()->getTime())), "\$inc" => _hx_anonymous(array("usages" => 1)))), null);
+	}
+	public function removeExpired() {
+		return $this->coll->remove(_hx_anonymous(array("expiresOn" => _hx_anonymous(array("\$lt" => Date::now()->getTime())))), null);
 	}
 	public function removeOldAndUnused($age) {
 		if(null === $age) {

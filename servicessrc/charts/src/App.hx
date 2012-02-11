@@ -17,9 +17,13 @@ class App
 	public static inline var RENDERABLES_COLLECTION = "renderables";
 	public static inline var CACHE_COLLECTION = "cache";
 	public static inline var BASE_URL = "http://localhost";
+	public static inline var RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css";
+	public static var version(default, null) : String;
 
 	static function main()
 	{
+		App.version = thx.util.MacroVersion.fullVersion();
+
 		var wkhtmltopdfbin   = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf",
 			wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		var locator = new thx.util.TypeServiceLocator();
@@ -101,11 +105,17 @@ class App
 		routes.addRoute('/status/renderables', {
 			controller : "setup", action : "topRenderables"
 		});
-		routes.addRoute('/maintenance/purge/renderables', {
+		routes.addRoute('/maintenance/renderables/purge/unused', {
 			controller : "setup", action : "purgeRenderables"
 		});
-		routes.addRoute('/maintenance/purge/cache', {
+		routes.addRoute('/maintenance/renderables/purge/expired', {
+			controller : "setup", action : "purgeExpiredRenderables"
+		});
+		routes.addRoute('/maintenance/cache/purge', {
 			controller : "setup", action : "purgeCache"
+		});
+		routes.addRoute('/maintenance/cache/clear', {
+			controller : "setup", action : "clearCache"
 		});
 
 		routes.addRoute('/setup/collections/create', {

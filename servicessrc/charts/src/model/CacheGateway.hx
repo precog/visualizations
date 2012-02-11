@@ -64,8 +64,12 @@ class CacheGateway
 	public function remove(id : String, format : String, params : HashList<String>)
 	{
 		var uid = key(id, format, params);
-		// load from mongo
 		return coll.remove({ uid : uid });
+	}
+
+	public function removeAll()
+	{
+		return coll.remove({ });
 	}
 
 	public function expired()

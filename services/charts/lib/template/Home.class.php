@@ -8,7 +8,29 @@ class template_Home extends erazor_macro_Template {
 		$__b__ = new StringBuf();
 		{
 			{
-				$x = "<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Rendering Service</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"";
+				$x = "<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Rendering Service (v.";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->version;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = ")</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -41,7 +63,29 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "\">\x0A</head>\x0A<body>\x0A<h1>Rendering Service</h1>\x0A<h2>Upload Options</h2>\x0A<ul class=\"bullet\">\x0A  <li>Upload using form: <a href=\"";
+				$x = "\">\x0A</head>\x0A<body>\x0A<h1>Rendering Service (v.";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->version;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = ")</h1>\x0A<h2>Upload Options</h2>\x0A<ul class=\"bullet\">\x0A  <li>Upload using form: <a href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -434,6 +478,28 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "clearCache")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\">Clear Cache</a></li>\x0A  <li><a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
 				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeRenderables")));
 				if(is_null($x)) {
 					$x = "null";
@@ -445,7 +511,29 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "\">Purge Renderables</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+				$x = "\">Purge Unused Renderables</a></li>\x0A  <li><a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeExpiredRenderables")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\">Purge Expired Renderables</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {

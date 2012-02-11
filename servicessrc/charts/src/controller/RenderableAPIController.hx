@@ -70,10 +70,7 @@ class RenderableAPIController extends BaseController
 				params = tryParseJson(config);
 			if(null == params)
 				return error("unable to parse the config argument: '{0}', it should be either a valid INI or JSON string", config);
-			trace(cobj);
-			trace(params);
 			cobj = ConfigObjects.overrideValues(cobj, params);
-			trace(cobj);
 		}
 		var renderable = new Renderable(html, ConfigRendering.create(cobj));
 		if(!renderables.exists(renderable.uid))
@@ -97,30 +94,34 @@ class RenderableAPIController extends BaseController
 	}
 
 	static var DEARRAY = ~/\[\d+\]$/;
+	static function arrayizee(o : Dynamic)
+	{
+		for(field in Reflect.fields(o))
+		{
+			var value = Reflect.field(o, field);
+			if(Types.isAnonymous(value))
+				arrayizee(value);
+
+			if(DEARRAY.match(field))
+			{
+				var f = field.substr(0, field.indexOf("["));
+				var values = Reflect.field(o, f);
+				if(null == values)
+				{
+					Reflect.setField(o, f, [value]);
+				} else {
+					values.push(value);
+				}
+				Reflect.deleteField(o, field);
+			}
+		}
+	}
 	function tryParseIni(s : String)
 	{
 		try
 		{
 			var ini = thx.ini.Ini.decode(s);
-			if(null != ini.params)
-			{
-				for(field in Reflect.fields(ini.params))
-				{
-					if(DEARRAY.match(field))
-					{
-						var f = field.substr(0, field.indexOf("[")),
-							v = Reflect.field(ini.params, field);
-						var values = Reflect.field(ini.params, f);
-						if(null == values)
-						{
-							Reflect.setField(ini.params, f, [v]);
-						} else {
-							values.push(v);
-						}
-						Reflect.deleteField(ini.params, field);
-					}
-				}
-			}
+			arrayizee(ini);
 			return ini;
 		} catch(e : Dynamic) {
 			return null;
@@ -149,6 +150,7 @@ class RenderableAPIController extends BaseController
 			createdOn : r.createdOn,
 			cacheExpirationTime : r.config.cacheExpirationTime,
 			formats : r.config.allowedFormats,
+			preserveTimeAfterLastUsage : model.RenderableGateway.DELETE_IF_NOT_USED_FOR,
 			service : {}
 		};
 		for(format in content.formats)

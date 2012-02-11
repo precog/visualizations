@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Rendering Service</title>
+  <title>Rendering Service (v.@version)</title>
   <link rel="stylesheet" type="text/css" href="@baseurl@url.base('css/style.css')">
 </head>
 <body>
-<h1>Rendering Service</h1>
+<h1>Rendering Service (v.@version)</h1>
 <h2>Upload Options</h2>
 <ul class="bullet">
   <li>Upload using form: <a href="@url.route({controller : "uploadForm", action : "display"})" class="tag">@baseurl@url.route({controller : "uploadForm", action : "display"})</a></li>
@@ -54,7 +54,9 @@
 <h2>Maintenance</h2>
 <ul class="bullet">
   <li><a href="@url.route({ controller : 'setup', action : 'purgeCache' })">Purge Cache</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'purgeRenderables' })">Purge Renderables</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'clearCache' })">Clear Cache</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'purgeRenderables' })">Purge Unused Renderables</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'purgeExpiredRenderables' })">Purge Expired Renderables</a></li>
 </ul>
 
 

@@ -1,6 +1,7 @@
 package controller;
 
 import model.CacheGateway;
+import model.ConfigRendering;
 import model.ConfigTemplate;
 import model.RenderableGateway;
 import model.WKHtmlToImage;
@@ -42,7 +43,7 @@ class DownloadAPIController extends Controller
 			} catch(e : Dynamic) {
 				return error(""+e, ext);
 			}
-			var content = renderHtml(html, ext);
+			var content = renderHtml(html, renderable.config, ext);
 			cached = cache.insert(uid, ext, params, content, Date.now().getTime() + renderable.config.cacheExpirationTime);
 		}
 
@@ -61,8 +62,11 @@ class DownloadAPIController extends Controller
 		for(param in config.replaceables())
 		{
 			value = requestParams.get(param);
-			if(null != value)
-				params.set(param, value);
+			if(null == value)
+				value = config.getDefault(param);
+			if(null == value)
+				throw new thx.error.Error("the parameter '{0}' is mandatory", [value]);
+			params.set(param, value);
 		}
 		return params;
 	}
@@ -72,17 +76,8 @@ class DownloadAPIController extends Controller
 		for(param in config.replaceables())
 		{
 			var value = params.get(param);
-			if(null != value)
-			{
-				if(!config.isValid(param, value))
-					throw new thx.error.Error("invalid value '{0}' for the parameter '{1}'", [value, param]);
-				html = StringTools.replace(html, '$'+param, ""+value);
-				continue;
-			}
-			value = config.getDefault(param);
-			if(null == value)
-				throw new thx.error.Error("the parameter '{0}' is mandatory", [value]);
-
+			if(!config.isValid(param, value))
+				throw new thx.error.Error("invalid value '{0}' for the parameter '{1}'", [value, param]);
 			html = StringTools.replace(html, '$'+param, ""+value);
 		}
 		return html;
@@ -90,24 +85,33 @@ class DownloadAPIController extends Controller
 
 	function error(msg : String, ext : String)
 	{
+		trace(Std.format("ERROR: $msg (.$ext)"));
 		var ext = ext.toLowerCase(),
 			content = new Error().execute({
         		baseurl : App.BASE_URL,
 				url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 				data : { error : msg }
 			});
-		return renderHtml(content, ext);
+		return renderHtml(content, null, ext);
 	}
 
-	function renderHtml(html : String, ext : String)
+	function renderHtml(html : String, config : ConfigRendering, ext : String)
 	{
 		var result;
 		switch (ext) {
-			case 'pdf':
+			case 'pdf', 'ps':
 				topdf.format = ext;
+				if(null != config)
+				{
+					topdf.wkconfig = config.wk;
+				}
 				result = topdf.render(html);
-			case 'png', 'jpg':
+			case 'png', 'jpg', 'bmp', 'tif', 'svg':
 				toimage.format = ext;
+				if(null != config)
+				{
+					toimage.wkconfig = config.wk;
+				}
 				result = toimage.render(html);
 			default: // html
 				result = html;
@@ -122,13 +126,18 @@ class DownloadAPIController extends Controller
 		switch (ext) {
 			case 'pdf':
 				response.contentType = 'application/pdf';
-
+			case 'ps':
+				response.contentType = 'application/postscript';
 			case 'png':
 				response.contentType = 'image/png';
-
+			case 'svg':
+				response.contentType = 'image/svg+xml';
 			case 'jpeg', 'jpg':
 				response.contentType = 'image/jpeg';
-
+			case 'bmp':
+				response.contentType = 'image/bmp';
+			case 'tif', 'tiff':
+				response.contentType = 'image/tiff';
 			default: // html
 		}
 		response.setHeader("Content-Length", "" + len);

@@ -7,6 +7,8 @@ using Arrays;
 class WKHtml
 {
 	var cmd : String;
+	var _wkconfig : ConfigWKHtml;
+	public var wkconfig(getWKConfig, setWKConfig) : ConfigWKHtml;
 	public var format(getFormat, setFormat) : String;
 	public var allowedFormats(default, null) : Array<String>;
 	function new(cmd : String)
@@ -37,6 +39,8 @@ class WKHtml
 
 		if(!execute(args))
 		{
+			trace("ERROR: " + err);
+			trace("CMD " + cmd + " " + args.join(" "));
 			throw new Error("unable to render the result");
 		}
 		var result = thx.sys.io.File.getContent(out);
@@ -44,14 +48,14 @@ class WKHtml
 		return result;
 	}
 
+	var err : String;
 	function execute(args : Array<String>) : Bool
 	{
 		var process = new thx.sys.io.Process(cmd, args);
-		trace("CMD " + cmd + " " + args.join(" "));
 //		var r = thx.sys.Sys.command(cmd, args);
 		process.close();
 		var r = process.exitCode();
-		var err = process.stderr.readAll().toString();
+		err = process.stderr.readAll().toString();
 //		trace("ERROR: " + err);
 		var out = process.stdout.readAll().toString();
 //		trace("OUT: " + out);
@@ -61,10 +65,16 @@ class WKHtml
 	function commandOptions()
 	{
 		var args = [];
-		
-		args.push("--disable-local-file-access");
-//		args.push('--javascript-delay'); args.push('10000');
-//		args.push("--disable-smart-width");
+
+		args.push('--disable-local-file-access');
+		args.push('--javascript-delay'); args.push('1000');
+		args.push('--user-style-sheet'); args.push(App.RESET_CSS);
+
+		var cfg = wkconfig;
+		if(null != cfg.zoom)
+		{
+			args.push("--zoom"); args.push(""+cfg.zoom);
+		}
 
 		return args;
 	}
@@ -75,6 +85,20 @@ class WKHtml
 		if(!allowedFormats.exists(f))
 			throw new Error("invalid format {0}, you can use any of: {1}", [f, allowedFormats]);
 		return format = f;
+	}
+
+	function getWKConfig()
+	{
+		if(null == _wkconfig)
+		{
+			_wkconfig = new ConfigWKHtml();
+		}
+		return _wkconfig;
+	}
+
+	function setWKConfig(c : model.ConfigWKHtml)
+	{
+		return _wkconfig = c;
 	}
 
 	static function tmp(ext : String) : String

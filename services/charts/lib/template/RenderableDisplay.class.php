@@ -85,7 +85,89 @@ class template_RenderableDisplay extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</dd>\x0A</dl>\x0A<h2>Cache</h2>\x0A<dl>\x0A  <dt>cache expires after:</dt>\x0A  <dd>";
+				$x = "</dd>\x0A</dl>\x0A<h2>Duration</h2>\x0A<dl>\x0A  <dt>will be erased on:</dt>\x0A";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			if(null === $__context__->data->expiresOn) {
+				{
+					$x = "\x0A  <dd>will be erased after not being used for ";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = thx_date_Milli::toString($__context__->data->preserveTimeAfterLastUsage, false);
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "</dd>\x0A";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				null;
+			} else {
+				{
+					$x = "\x0A  <dd>";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->data->expiresOn;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "</dd>\x0A";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				null;
+			}
+			{
+				$x = "\x0A</dl>\x0A<h2>Cache</h2>\x0A<dl>\x0A  <dt>cache expires after:</dt>\x0A  <dd>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -96,7 +178,7 @@ class template_RenderableDisplay extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = thx_date_Milli::toString($__context__->data->cacheExpirationTime, true);
+				$x = thx_date_Milli::toString($__context__->data->cacheExpirationTime, false);
 				if(is_null($x)) {
 					$x = "null";
 				} else {

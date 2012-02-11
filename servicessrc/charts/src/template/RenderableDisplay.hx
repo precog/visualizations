@@ -14,12 +14,18 @@ class RenderableDisplay extends Template<{
 typedef RenderableInfo = {
 	uid   : String,
 	createdOn : Date,
+	expiresOn : Null<Date>,
 	cacheExpirationTime : Float,
 	formats : Array<String>,
+	preserveTimeAfterLastUsage : Float,
 	service : {
 		?pdf  : String,
+		?ps   : String,
 		?png  : String,
 		?jpg  : String,
-		?html : String
+		?html : String,
+		?svg  : String,
+		?bmp  : String,
+		?tif  : String
 	}
 }

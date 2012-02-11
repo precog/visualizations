@@ -6,7 +6,10 @@ class App {
 	static $RENDERABLES_COLLECTION = "renderables";
 	static $CACHE_COLLECTION = "cache";
 	static $BASE_URL = "http://localhost";
+	static $RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css";
+	static $version;
 	static function main() {
+		App::$version = "0.1.0.121";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeServiceLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
@@ -26,8 +29,10 @@ class App {
 		$routes->addRoute("/status/info", _hx_anonymous(array("controller" => "setup", "action" => "info")), null, null);
 		$routes->addRoute("/status/db", _hx_anonymous(array("controller" => "setup", "action" => "mongodb")), null, null);
 		$routes->addRoute("/status/renderables", _hx_anonymous(array("controller" => "setup", "action" => "topRenderables")), null, null);
-		$routes->addRoute("/maintenance/purge/renderables", _hx_anonymous(array("controller" => "setup", "action" => "purgeRenderables")), null, null);
-		$routes->addRoute("/maintenance/purge/cache", _hx_anonymous(array("controller" => "setup", "action" => "purgeCache")), null, null);
+		$routes->addRoute("/maintenance/renderables/purge/unused", _hx_anonymous(array("controller" => "setup", "action" => "purgeRenderables")), null, null);
+		$routes->addRoute("/maintenance/renderables/purge/expired", _hx_anonymous(array("controller" => "setup", "action" => "purgeExpiredRenderables")), null, null);
+		$routes->addRoute("/maintenance/cache/purge", _hx_anonymous(array("controller" => "setup", "action" => "purgeCache")), null, null);
+		$routes->addRoute("/maintenance/cache/clear", _hx_anonymous(array("controller" => "setup", "action" => "clearCache")), null, null);
 		$routes->addRoute("/setup/collections/create", _hx_anonymous(array("controller" => "setup", "action" => "createCollections")), null, null);
 		$routes->addRoute("/setup/collections/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCollections")), null, null);
 		$routes->addRoute("/setup/renderables/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropRenderables")), null, null);

@@ -8,7 +8,8 @@ import ufront.web.mvc.view.UrlHelper;
 class Home extends Template<{
 	baseurl : String,
 	url : UrlHelperInst,
-	sampleuid : String
+	sampleuid : String,
+	version : String
 }>
 {
 	

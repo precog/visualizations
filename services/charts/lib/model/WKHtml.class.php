@@ -6,6 +6,8 @@ class model_WKHtml {
 		$this->cmd = $cmd;
 	}}
 	public $cmd;
+	public $_wkconfig;
+	public $wkconfig;
 	public $format;
 	public $allowedFormats;
 	public function render($content) {
@@ -19,24 +21,35 @@ class model_WKHtml {
 		$args->push($path);
 		$args->push($out);
 		if(!$this->execute($args)) {
-			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 40, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
+			haxe_Log::trace("ERROR: " . $this->err, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 42, "className" => "model.WKHtml", "methodName" => "renderUrl")));
+			haxe_Log::trace("CMD " . $this->cmd . " " . $args->join(" "), _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 43, "className" => "model.WKHtml", "methodName" => "renderUrl")));
+			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 44, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
 		}
 		$result = php_io_File::getContent($out);
 		@unlink($out);
 		return $result;
 	}
+	public $err;
 	public function execute($args) {
 		$process = new php_io_Process($this->cmd, $args);
-		haxe_Log::trace("CMD " . $this->cmd . " " . $args->join(" "), _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 50, "className" => "model.WKHtml", "methodName" => "execute")));
 		$process->close();
 		$r = $process->exitCode();
-		$err = $process->stderr->readAll(null)->toString();
+		$this->err = $process->stderr->readAll(null)->toString();
 		$out = $process->stdout->readAll(null)->toString();
 		return $r === 0;
 	}
 	public function commandOptions() {
 		$args = new _hx_array(array());
 		$args->push("--disable-local-file-access");
+		$args->push("--javascript-delay");
+		$args->push("1000");
+		$args->push("--user-style-sheet");
+		$args->push("/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css");
+		$cfg = $this->getWKConfig();
+		if(null !== $cfg->zoom) {
+			$args->push("--zoom");
+			$args->push("" . $cfg->zoom);
+		}
 		return $args;
 	}
 	public function getFormat() {
@@ -44,9 +57,18 @@ class model_WKHtml {
 	}
 	public function setFormat($f) {
 		if(!Arrays::exists($this->allowedFormats, $f, null)) {
-			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 76, "className" => "model.WKHtml", "methodName" => "setFormat"))));
+			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 86, "className" => "model.WKHtml", "methodName" => "setFormat"))));
 		}
 		return $this->format = $f;
+	}
+	public function getWKConfig() {
+		if(null === $this->_wkconfig) {
+			$this->_wkconfig = new model_ConfigWKHtml();
+		}
+		return $this->_wkconfig;
+	}
+	public function setWKConfig($c) {
+		return $this->_wkconfig = $c;
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

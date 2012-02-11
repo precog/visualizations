@@ -169,10 +169,24 @@ class SetupController extends Controller
 		return redirectToStatus();
 	}
 
+	public function clearCache()
+	{
+		var gate = new CacheGateway(cacheCollection()),
+			purged = gate.removeAll();
+		return redirectToStatus();
+	}
+
 	public function purgeRenderables()
 	{
 		var gate = new RenderableGateway(renderableCollection()),
 			purged = gate.removeOldAndUnused();
+		return redirectToStatus();
+	}
+
+	public function purgeExpiredRenderables()
+	{
+		var gate = new RenderableGateway(renderableCollection()),
+			purged = gate.removeExpired();
 		return redirectToStatus();
 	}
 

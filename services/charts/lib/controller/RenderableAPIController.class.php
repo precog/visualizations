@@ -36,10 +36,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 			if(null === $params) {
 				return $this->error("unable to parse the config argument: '{0}', it should be either a valid INI or JSON string", $config);
 			}
-			haxe_Log::trace($cobj, _hx_anonymous(array("fileName" => "RenderableAPIController.hx", "lineNumber" => 73, "className" => "controller.RenderableAPIController", "methodName" => "upload")));
-			haxe_Log::trace($params, _hx_anonymous(array("fileName" => "RenderableAPIController.hx", "lineNumber" => 74, "className" => "controller.RenderableAPIController", "methodName" => "upload")));
 			$cobj = model_ConfigObjects::overrideValues($cobj, $params);
-			haxe_Log::trace($cobj, _hx_anonymous(array("fileName" => "RenderableAPIController.hx", "lineNumber" => 76, "className" => "controller.RenderableAPIController", "methodName" => "upload")));
 		}
 		$renderable = new model_Renderable($html, model_ConfigRendering::create($cobj), null, null, null);
 		if(!$this->renderables->exists($renderable->getUid())) {
@@ -57,25 +54,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 	public function tryParseIni($s) {
 		try {
 			$ini = thx_ini_Ini::decode($s);
-			if(null !== _hx_field($ini, "params")) {
-				$_g = 0; $_g1 = Reflect::fields($ini->params);
-				while($_g < $_g1->length) {
-					$field = $_g1[$_g];
-					++$_g;
-					if(controller_RenderableAPIController::$DEARRAY->match($field)) {
-						$f = _hx_substr($field, 0, _hx_index_of($field, "[", null)); $v = Reflect::field($ini->params, $field);
-						$values = Reflect::field($ini->params, $f);
-						if(null === $values) {
-							$ini->params->{$f} = new _hx_array(array($v));
-						} else {
-							$values->push($v);
-						}
-						Reflect::deleteField($ini->params, $field);
-						unset($values,$v,$f);
-					}
-					unset($field);
-				}
-			}
+			controller_RenderableAPIController::arrayizee($ini);
 			return $ini;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
@@ -100,7 +79,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 		return _hx_index_of(strtolower($html), "reportgrid", null) >= 0;
 	}
 	public function success($r, $format) {
-		$content = _hx_anonymous(array("uid" => $r->getUid(), "createdOn" => $r->createdOn, "cacheExpirationTime" => $r->config->cacheExpirationTime, "formats" => $r->config->allowedFormats, "service" => _hx_anonymous(array())));
+		$content = _hx_anonymous(array("uid" => $r->getUid(), "createdOn" => $r->createdOn, "cacheExpirationTime" => $r->config->cacheExpirationTime, "formats" => $r->config->allowedFormats, "preserveTimeAfterLastUsage" => model_RenderableGateway::$DELETE_IF_NOT_USED_FOR, "service" => _hx_anonymous(array())));
 		{
 			$_g = 0; $_g1 = $content->formats;
 			while($_g < $_g1->length) {
@@ -125,8 +104,31 @@ class controller_RenderableAPIController extends controller_BaseController {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	static $__rtti = "<class path=\"controller.RenderableAPIController\" params=\"\">\x0A\x09<extends path=\"controller.BaseController\"/>\x0A\x09<DEARRAY line=\"99\" static=\"1\"><c path=\"EReg\"/></DEARRAY>\x0A\x09<renderables><c path=\"model.RenderableGateway\"/></renderables>\x0A\x09<uploadFromUrl public=\"1\" set=\"method\" line=\"35\"><f a=\"urlhtml:?urlconfig:outputformat\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></uploadFromUrl>\x0A\x09<upload public=\"1\" set=\"method\" line=\"61\"><f a=\"html:?config:outputformat\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></upload>\x0A\x09<display public=\"1\" set=\"method\" line=\"91\"><f a=\"uid:outputformat\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></display>\x0A\x09<tryParseIni set=\"method\" line=\"100\"><f a=\"s\">\x0A\x09<c path=\"String\"/>\x0A\x09<a><params set=\"null\"><unknown/></params></a>\x0A</f></tryParseIni>\x0A\x09<tryParseJson set=\"method\" line=\"130\"><f a=\"s\">\x0A\x09<c path=\"String\"/>\x0A\x09<a><params set=\"null\"><unknown/></params></a>\x0A</f></tryParseJson>\x0A\x09<validateHtml set=\"method\" line=\"140\"><f a=\"html\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Bool\"/>\x0A</f></validateHtml>\x0A\x09<success set=\"method\" line=\"145\"><f a=\"r:format\">\x0A\x09<c path=\"model.Renderable\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></success>\x0A\x09<serviceUrl set=\"method\" line=\"161\"><f a=\"uid:format\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A</f></serviceUrl>\x0A\x09<new public=\"1\" set=\"method\" line=\"29\"><f a=\"renderables\">\x0A\x09<c path=\"model.RenderableGateway\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></new>\x0A</class>";
+	static $__rtti = "<class path=\"controller.RenderableAPIController\" params=\"\">\x0A\x09<extends path=\"controller.BaseController\"/>\x0A\x09<DEARRAY line=\"96\" static=\"1\"><c path=\"EReg\"/></DEARRAY>\x0A\x09<arrayizee set=\"method\" line=\"97\" static=\"1\"><f a=\"o\">\x0A\x09<d/>\x0A\x09<e path=\"Void\"/>\x0A</f></arrayizee>\x0A\x09<renderables><c path=\"model.RenderableGateway\"/></renderables>\x0A\x09<uploadFromUrl public=\"1\" set=\"method\" line=\"35\"><f a=\"urlhtml:?urlconfig:outputformat\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></uploadFromUrl>\x0A\x09<upload public=\"1\" set=\"method\" line=\"61\"><f a=\"html:?config:outputformat\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></upload>\x0A\x09<display public=\"1\" set=\"method\" line=\"88\"><f a=\"uid:outputformat\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></display>\x0A\x09<tryParseIni set=\"method\" line=\"119\"><f a=\"s\">\x0A\x09<c path=\"String\"/>\x0A\x09<unknown/>\x0A</f></tryParseIni>\x0A\x09<tryParseJson set=\"method\" line=\"131\"><f a=\"s\">\x0A\x09<c path=\"String\"/>\x0A\x09<unknown/>\x0A</f></tryParseJson>\x0A\x09<validateHtml set=\"method\" line=\"141\"><f a=\"html\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Bool\"/>\x0A</f></validateHtml>\x0A\x09<success set=\"method\" line=\"146\"><f a=\"r:format\">\x0A\x09<c path=\"model.Renderable\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></success>\x0A\x09<serviceUrl set=\"method\" line=\"163\"><f a=\"uid:format\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A</f></serviceUrl>\x0A\x09<new public=\"1\" set=\"method\" line=\"29\"><f a=\"renderables\">\x0A\x09<c path=\"model.RenderableGateway\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></new>\x0A</class>";
 	static $DEARRAY;
+	static function arrayizee($o) {
+		$_g = 0; $_g1 = Reflect::fields($o);
+		while($_g < $_g1->length) {
+			$field = $_g1[$_g];
+			++$_g;
+			$value = Reflect::field($o, $field);
+			if(Reflect::isObject($value) && null === Type::getClass($value)) {
+				controller_RenderableAPIController::arrayizee($value);
+			}
+			if(controller_RenderableAPIController::$DEARRAY->match($field)) {
+				$f = _hx_substr($field, 0, _hx_index_of($field, "[", null));
+				$values = Reflect::field($o, $f);
+				if(null === $values) {
+					$o->{$f} = new _hx_array(array($value));
+				} else {
+					$values->push($value);
+				}
+				Reflect::deleteField($o, $field);
+				unset($values,$f);
+			}
+			unset($value,$field);
+		}
+	}
 	function __toString() { return 'controller.RenderableAPIController'; }
 }
 controller_RenderableAPIController::$DEARRAY = new EReg("\\[\\d+\\]\$", "");

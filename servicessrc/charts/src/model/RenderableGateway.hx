@@ -7,7 +7,7 @@ import mongo.MongoCollection;
 
 class RenderableGateway
 {
-	static var DELETE_IF_NOT_USED_FOR = thx.date.Milli.parse("366 days");
+	public static var DELETE_IF_NOT_USED_FOR = thx.date.Milli.parse("366 days");
 	var coll : MongoCollection;
 	public function new(coll : MongoCollection)
 	{
@@ -27,7 +27,8 @@ class RenderableGateway
 			createdOn : r.createdOn.getTime(),
 			html      : r.html,
 			lastUsage : r.lastUsage.getTime(),
-			usages    : r.usages
+			usages    : r.usages,
+			expiresOn : null == r.config.expiresOn ? null : r.config.expiresOn.getTime()
 		};
 		// store in mongo
 		coll.insert(ob);
@@ -42,7 +43,8 @@ class RenderableGateway
 			config    : _MongoBinData,
 			createdOn : Float,
 			lastUsage : Float,
-			usages    : Int
+			usages    : Int,
+			expiresOn : Null<Float>
 		} = coll.findOne({ uid : uid });
 		if(null == o)
 			return null;
@@ -70,6 +72,11 @@ class RenderableGateway
 			'$set' : { lastUsage : Date.now().getTime() },
 			'$inc' : { usages : 1 }
 		});
+	}
+
+	public function removeExpired()
+	{
+		return coll.remove({ expiresOn : { "$lt" : Date.now().getTime() }});
 	}
 
 	public function removeOldAndUnused(?age : Float)

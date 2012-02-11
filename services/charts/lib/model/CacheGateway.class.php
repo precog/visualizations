@@ -40,6 +40,9 @@ class model_CacheGateway {
 		$uid = $this->key($id, $format, $params);
 		return $this->coll->remove(_hx_anonymous(array("uid" => $uid)), null);
 	}
+	public function removeAll() {
+		return $this->coll->remove(_hx_anonymous(array()), null);
+	}
 	public function expired() {
 		$now = Date::now()->getTime();
 		return $this->coll->find(_hx_anonymous(array("expiresOn" => _hx_anonymous(array("\$lt" => $now)))), _hx_anonymous(array("uid" => true)));

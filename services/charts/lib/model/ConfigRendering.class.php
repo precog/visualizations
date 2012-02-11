@@ -10,6 +10,7 @@ class model_ConfigRendering {
 		$this->allowedFormats;
 	}}
 	public $allowedFormats;
+	public $expiresOn;
 	public $cacheExpirationTime;
 	public $pdf;
 	public $image;
@@ -28,7 +29,41 @@ class model_ConfigRendering {
 	static function create($options) {
 		$config = new model_ConfigRendering();
 		$config->cacheExpirationTime = $options->cacheExpires;
+		$config->expiresOn = ((null === $options->expiresOn) ? null : Date::fromTime($options->expiresOn));
 		$config->allowedFormats = $options->allowedFormats;
+		$config->wk->zoom = $options->zoom;
+		$config->pdf->dpi = $options->dpi;
+		$config->pdf->grayscale = $options->grayscale;
+		$config->pdf->imageDpi = $options->imageDpi;
+		$config->pdf->imageQuality = $options->imageQuality;
+		$config->pdf->lowQuality = $options->lowQuality;
+		$config->pdf->marginTop = $options->marginTop;
+		$config->pdf->marginBottom = $options->marginBottom;
+		$config->pdf->marginLeft = $options->marginLeft;
+		$config->pdf->marginRight = $options->marginRight;
+		$config->pdf->portrait = $options->portrait;
+		$config->pdf->pageHeight = $options->pageHeight;
+		$config->pdf->pageSize = $options->pageSize;
+		$config->pdf->pageWidth = $options->pageWidth;
+		$config->pdf->title = $options->title;
+		$config->pdf->usePrintMediaType = $options->usePrintMediaType;
+		$config->pdf->disableSmartShrinking = $options->disableSmartShrinking;
+		$config->pdf->footerCenter = $options->footerCenter;
+		$config->pdf->footerLeft = $options->footerLeft;
+		$config->pdf->footerRight = $options->footerRight;
+		$config->pdf->footerFontName = $options->footerFontName;
+		$config->pdf->footerFontSize = $options->footerFontSize;
+		$config->pdf->footerHtml = $options->footerHtml;
+		$config->pdf->footerSpacing = $options->footerSpacing;
+		$config->pdf->footerLine = $options->footerLine;
+		$config->pdf->headerCenter = $options->headerCenter;
+		$config->pdf->headerLeft = $options->headerLeft;
+		$config->pdf->headerRight = $options->headerRight;
+		$config->pdf->headerFontName = $options->headerFontName;
+		$config->pdf->headerFontSize = $options->headerFontSize;
+		$config->pdf->headerHtml = $options->headerHtml;
+		$config->pdf->headerSpacing = $options->headerSpacing;
+		$config->pdf->headerLine = $options->headerLine;
 		{
 			$_g = 0; $_g1 = Reflect::fields($options->params);
 			while($_g < $_g1->length) {
