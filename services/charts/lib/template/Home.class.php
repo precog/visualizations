@@ -85,7 +85,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = ")</h1>\x0A<h2>Upload Options</h2>\x0A<ul class=\"bullet\">\x0A  <li>Upload using form: <a href=\"";
+				$x = ")</h1>\x0A<h2>Upload Options</h2>\x0A<h3>HTML/Config</h3>\x0A<ul class=\"bullet\">\x0A  <li>Upload using a form: <a href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -140,7 +140,62 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</a></li>\x0A  <li>Upload using a POST to these pages <span class=\"params\">(parameters: html (string), ?config (ini or json string)</span>:\x0A  \x09<dl>\x0A      <dt>HTML output:</dt>\x0A      <dd>";
+				$x = "</a></li>\x0A  <li>Upload using fa orm and display result: <a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadForm", "action" => "display", "displayFormat" => "png")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\" class=\"tag\">";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->baseurl;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadForm", "action" => "display", "displayFormat" => "png")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</a></li>\x0A  <li>Upload making a POST call to these services <span class=\"params\">(parameters: html (string), ?config (ini or json string)</span>:\x0A    <dl>\x0A      <dt>HTML output:</dt>\x0A      <dd>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -206,7 +261,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</dd>\x0A  \x09</dl>\x0A  </li>\x0A  <li>Upload using a GET/POST to these pages <span class=\"params\">(parameters: urlhtml (path to a html resource), ?urlconfig (path to a ini or json resource)</span>:\x0A  \x09<dl>\x0A      <dt>HTML output:</dt>\x0A      <dd>";
+				$x = "</dd>\x0A    </dl>\x0A  </li>\x0A  <li>Upload making a GET/POST call to these service <span class=\"params\">(parameters: urlhtml (path to a html resource), ?urlconfig (path to a ini or json resource)</span>:\x0A    <dl>\x0A      <dt>HTML output:</dt>\x0A      <dd>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -272,7 +327,174 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</dd>\x0A  \x09</dl>\x0A  </li>\x0A</ul>\x0A\x0A\x0A<h2>Download</h2>\x0A<dl class=\"bullet\">\x0A";
+				$x = "</dd>\x0A    </dl>\x0A  </li>\x0A</ul>\x0A<h3>GIST</h3>\x0A<ul class=\"bullet\">\x0A  <li>Upload GIST using a form: <a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadForm", "action" => "gist")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\" class=\"tag\">";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->baseurl;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->url->route(_hx_anonymous(array("controller" => "uploadForm", "action" => "gist")));
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</a></li>\x0A  <li>Upload from GIST using these services:\x0A    <dl>\x0A      <dt>HTML output:</dt>\x0A";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			$path = $__context__->baseurl . $__context__->url->route(_hx_anonymous(array("controller" => "gistUpload", "action" => "importGist", "gistid" => "1732325", "outputformat" => "html")));
+			{
+				$x = "\x0A      <dd><a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $path;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\">";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $path;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</a></dd>\x0A      <dt>JSON output:</dt>\x0A";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			$path1 = $__context__->baseurl . $__context__->url->route(_hx_anonymous(array("controller" => "gistUpload", "action" => "importGist", "gistid" => "1732325", "outputformat" => "json")));
+			{
+				$x = "\x0A      <dd><a href=\"";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $path1;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "\">";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $path1;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</a></dd>\x0A    </dl>\x0A  </li>\x0A</ul>\x0A\x0A\x0A<h2>Download</h2>\x0A<dl class=\"bullet\">\x0A";
 				if(is_null($x)) {
 					$x = "null";
 				} else {

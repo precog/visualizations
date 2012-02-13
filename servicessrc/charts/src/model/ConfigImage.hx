@@ -17,4 +17,14 @@ class ConfigImage
 		disableSmartWidth = false;
 		transparent = false;
 	}
+
+	public function toString()
+	{
+		var pairs = [];
+		for(field in Reflect.fields(this))
+		{
+			pairs.push(field + ":" + Reflect.field(this, field));
+		}
+		return Std.format("ConfigImage ${pairs.join(', ')}");
+	}
 }

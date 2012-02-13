@@ -2,7 +2,7 @@ package model;
 
 class Sample
 {
-	public static var uid    = '1jg88nskpqtc';
+	public static var uid    = '1jukiqh43go0';
 	public static var config = 'cache=2 days
 [params]
 viz[0]=pieChart

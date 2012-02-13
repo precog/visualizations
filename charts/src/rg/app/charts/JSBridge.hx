@@ -51,7 +51,8 @@ class JSBridge
 #end
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid");
 		// init app
-		var app = new App();
+		var globalNotifier = new hxevents.Notifier(),
+			app = new App(globalNotifier);
 
 		// define bridge function
 		r.chart = function(el : Dynamic, options : Dynamic, type : String)
@@ -134,6 +135,12 @@ class JSBridge
 		r.info = null != r.info ? r.info : { };
 		r.info.charts = {
 			version : thx.util.MacroVersion.fullVersion()
+		};
+
+		r.charts = {
+			onReady : function(handler : Void -> Void) {
+				globalNotifier.add(handler);
+			}
 		};
 	}
 

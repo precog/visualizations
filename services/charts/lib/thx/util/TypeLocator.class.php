@@ -1,14 +1,14 @@
 <?php
 
-class thx_util_TypeServiceLocator {
+class thx_util_TypeLocator {
 	public function __construct() {
-		if(!isset($this->unbinded)) $this->unbinded = array(new _hx_lambda(array(&$this), "thx_util_TypeServiceLocator_0"), 'execute');
+		if(!isset($this->unbinded)) $this->unbinded = array(new _hx_lambda(array(&$this), "thx_util_TypeLocator_0"), 'execute');
 		if(!php_Boot::$skip_constructor) {
 		$this->_binders = new Hash();
 	}}
 	public $_binders;
 	public function instance($cls, $o) {
-		return $this->bind($cls, array(new _hx_lambda(array(&$cls, &$o), "thx_util_TypeServiceLocator_1"), 'execute'));
+		return $this->bind($cls, array(new _hx_lambda(array(&$cls, &$o), "thx_util_TypeLocator_1"), 'execute'));
 	}
 	public function bind($cls, $f) {
 		$this->_binders->set(Type::getClassName($cls), $f);
@@ -16,7 +16,7 @@ class thx_util_TypeServiceLocator {
 	}
 	public function memoize($cls, $f) {
 		$r = null;
-		return $this->bind($cls, array(new _hx_lambda(array(&$cls, &$f, &$r), "thx_util_TypeServiceLocator_2"), 'execute'));
+		return $this->bind($cls, array(new _hx_lambda(array(&$cls, &$f, &$r), "thx_util_TypeLocator_2"), 'execute'));
 	}
 	public function unbinded($cls) { return call_user_func_array($this->unbinded, array($cls)); }
 	public $unbinded = null;
@@ -38,19 +38,19 @@ class thx_util_TypeServiceLocator {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	function __toString() { return 'thx.util.TypeServiceLocator'; }
+	function __toString() { return 'thx.util.TypeLocator'; }
 }
-function thx_util_TypeServiceLocator_0(&$»this, $cls) {
+function thx_util_TypeLocator_0(&$»this, $cls) {
 	{
 		return null;
 	}
 }
-function thx_util_TypeServiceLocator_1(&$cls, &$o) {
+function thx_util_TypeLocator_1(&$cls, &$o) {
 	{
 		return $o;
 	}
 }
-function thx_util_TypeServiceLocator_2(&$cls, &$f, &$r) {
+function thx_util_TypeLocator_2(&$cls, &$f, &$r) {
 	{
 		if(null === $r) {
 			$r = call_user_func($f);

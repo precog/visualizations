@@ -21,7 +21,7 @@ class model_ConfigTemplate {
 		if(null === $values) {
 			return true;
 		}
-		return $values->exists($value);
+		return Arrays::exists($values, $value, null);
 	}
 	public function setDefault($name, $value) {
 		$this->defaults->set($name, $value);

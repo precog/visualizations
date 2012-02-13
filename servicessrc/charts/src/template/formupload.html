@@ -6,7 +6,12 @@
 </head>
 <body>
 <h1>Upload Form</h1>
-<form method="post" action="@url.route({ controller : 'uploadForm', action : 'display' })" class="formupload">
+@{
+  var action = null != displayFormat
+    ? url.route({ controller : 'uploadForm', action : 'display', displayFormat : displayFormat })
+    : url.route({ controller : 'uploadForm', action : 'display' });
+}
+<form method="post" action="@action" class="formupload">
   <ul>
     <li>
       <label for="html">HTML</label>

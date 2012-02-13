@@ -15,6 +15,19 @@ class model_ConfigImage {
 	public $quality;
 	public $disableSmartWidth;
 	public $transparent;
+	public function toString() {
+		$pairs = new _hx_array(array());
+		{
+			$_g = 0; $_g1 = Reflect::fields($this);
+			while($_g < $_g1->length) {
+				$field = $_g1[$_g];
+				++$_g;
+				$pairs->push($field . ":" . Reflect::field($this, $field));
+				unset($field);
+			}
+		}
+		return "ConfigImage " . $pairs->join(", ");
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -25,5 +38,5 @@ class model_ConfigImage {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	function __toString() { return 'model.ConfigImage'; }
+	function __toString() { return $this->toString(); }
 }

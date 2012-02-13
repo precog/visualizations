@@ -64,6 +64,15 @@ class model_ConfigRendering {
 		$config->pdf->headerHtml = $options->headerHtml;
 		$config->pdf->headerSpacing = $options->headerSpacing;
 		$config->pdf->headerLine = $options->headerLine;
+		$config->image->x = $options->x;
+		$config->image->y = $options->y;
+		$config->image->width = $options->width;
+		$config->image->height = $options->height;
+		$config->image->screenWidth = $options->screenWidth;
+		$config->image->screenHeight = $options->screenHeight;
+		$config->image->quality = $options->quality;
+		$config->image->disableSmartWidth = $options->disableSmartWidth;
+		$config->image->transparent = $options->transparent;
 		{
 			$_g = 0; $_g1 = Reflect::fields($options->params);
 			while($_g < $_g1->length) {

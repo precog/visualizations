@@ -6,14 +6,15 @@ import ufront.web.mvc.ForwardResult;
 
 class UploadForm extends Controller
 {
-	public function display(?html : String, ?config : String) : Dynamic
+	public function display(?html : String, ?config : String, displayFormat : String = null) : Dynamic
 	{
 		var ob = {
         	baseurl : App.BASE_URL,
 			url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 			html : html,
 			config : config,
-			errors : new Hash()
+			errors : new Hash(),
+			displayFormat : displayFormat
 		};
 		if(this.controllerContext.request.httpMethod == "POST")
 		{
@@ -41,7 +42,12 @@ class UploadForm extends Controller
 			{
 				var controller = ufront.web.mvc.DependencyResolver.current.getService(controller.RenderableAPIController);
 				controller.controllerContext = this.controllerContext;
-				return controller.upload(html, config, 'html');
+				if(null != displayFormat)
+				{
+					return controller.uploadAndDisplay(html, config, displayFormat);
+				} else {
+					return controller.upload(html, config, 'html');
+				}
 			}
 		} else {
 			if(null == html && null == config)
@@ -51,5 +57,41 @@ class UploadForm extends Controller
 			}
 		}
 		return new ContentResult(new template.FormUpload().execute(ob));
+	}
+
+	var lastError : String;
+	public function gist(?gistid : String)
+	{
+		var id = validateGist(gistid);
+		if(null != id)
+		{
+			var controller = ufront.web.mvc.DependencyResolver.current.getService(controller.GistUploadController);
+			controller.controllerContext = this.controllerContext;
+			return controller.importGist(id, "html");
+		} else {
+			var ob = {
+	        	baseurl : App.BASE_URL,
+	        	error : lastError,
+				url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
+				gistid : gistid
+			};
+			return new ContentResult(new template.GistUpload().execute(ob));
+		}
+	}
+
+	function validateGist(id : String)
+	{
+		if(null == id || id == '')
+			return null;
+		if(id.substr(0, 8) == 'https://' || id.substr(0, 7) == 'http://')
+			id = id.split("/").pop();
+		var des = controller.GistUploadController.getGistDescription(id);
+		if(null != des.error)
+		{
+			lastError = des.error;
+			return null;
+		}
+		else
+			return id;
 	}
 }

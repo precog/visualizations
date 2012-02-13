@@ -7,8 +7,8 @@ using Arrays;
 class WKHtml
 {
 	var cmd : String;
-	var _wkconfig : ConfigWKHtml;
-	public var wkconfig(getWKConfig, setWKConfig) : ConfigWKHtml;
+	var _wkConfig : ConfigWKHtml;
+	public var wkConfig(getWKConfig, setWKConfig) : ConfigWKHtml;
 	public var format(getFormat, setFormat) : String;
 	public var allowedFormats(default, null) : Array<String>;
 	function new(cmd : String)
@@ -18,7 +18,8 @@ class WKHtml
 
 	public function render(content : String) : String
 	{
-		var t = tmp('html');
+		var ext = content.indexOf('-//W3C//DTD XHTML 1.0') >= 0 ? 'xhtml' : 'html';
+		var t = tmp(ext);
 		thx.sys.io.File.putContent(t, content);
 		var r = renderUrl(t);
 //		thx.sys.FileSystem.deleteFile(t);
@@ -31,7 +32,7 @@ class WKHtml
 			out  = tmp(format);
 
 
-//args.push('--javascript-delay'); args.push('10000');
+		args.push('--javascript-delay'); args.push('5000');
 
 
 		args.push(path);
@@ -67,10 +68,11 @@ class WKHtml
 		var args = [];
 
 		args.push('--disable-local-file-access');
-		args.push('--javascript-delay'); args.push('1000');
+		args.push('--javascript-delay'); args.push('30000');
 		args.push('--user-style-sheet'); args.push(App.RESET_CSS);
+		args.push('--run-script'); args.push(App.PRINT_JS);
 
-		var cfg = wkconfig;
+		var cfg = wkConfig;
 		if(null != cfg.zoom)
 		{
 			args.push("--zoom"); args.push(""+cfg.zoom);
@@ -89,16 +91,16 @@ class WKHtml
 
 	function getWKConfig()
 	{
-		if(null == _wkconfig)
+		if(null == _wkConfig)
 		{
-			_wkconfig = new ConfigWKHtml();
+			_wkConfig = new ConfigWKHtml();
 		}
-		return _wkconfig;
+		return _wkConfig;
 	}
 
 	function setWKConfig(c : model.ConfigWKHtml)
 	{
-		return _wkconfig = c;
+		return _wkConfig = c;
 	}
 
 	static function tmp(ext : String) : String

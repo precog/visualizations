@@ -519,14 +519,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "src/rg/data/source/DataSourceReportGridGraph.hx",
-			"settings":
-			{
-				"buffer_size": 3619,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -620,6 +612,7 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/DataSourceReportGridGraph.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/flixmaster/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/demo/flixmaster/simple.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/bin/pivottable.html",
@@ -686,7 +679,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/view/svg/chart/Sankey.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/info/InfoSankey.hx",
 		"/Users/francoponticelli/Projects/reportgrid/website/demo/sankey.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/data/source/DataSourceReportGridGraph.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/src/rg/controller/visualization/VisualizationSankey.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/version",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/visualizations/CHANGES.txt",
@@ -923,34 +915,6 @@
 		{
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "src/rg/data/source/DataSourceReportGridGraph.hx",
-					"settings":
-					{
-						"buffer_size": 3619,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2733,
-								2738
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],

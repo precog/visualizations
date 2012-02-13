@@ -108,7 +108,7 @@ $(document).ready(function(){
 			$.get('http://localhost/rg/services/viz/charts/up/url.json', {
 				urlhtml: url
 			}, function(data){
-				$('#samplevisualization iframe').attr('src', data.info[format]);
+				$('#samplevisualization iframe').attr('src', data.service[format]);
 			});
 		};
 	}
@@ -116,6 +116,7 @@ $(document).ready(function(){
 	$("#pdf").click(formathandler('pdf'));
 	$("#png").click(formathandler('png'));
 	$("#jpg").click(formathandler('jpg'));
+	$("#svg").click(formathandler('svg'));
 	$("#html").click(formathandler('html'));
 
 	function src() {
@@ -132,6 +133,7 @@ $(document).ready(function(){
 			<a href="#details" class="export" id="png">PNG</a>
 			<a href="#details" class="export" id="jpg">JPG</a>
 			<a href="#details" class="export" id="html">HTML</a>
+			<a href="#details" class="export" id="svg">SVG</a>
 		</h1>
 		<h1>Categories:</h1>
 		<ul id="samplecategories"></ul>

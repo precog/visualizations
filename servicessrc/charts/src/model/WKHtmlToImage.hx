@@ -66,7 +66,6 @@ class WKHtmlToImage extends WKHtml
 		{
 			args.push("--transparent");
 		}
-
 		return super.commandOptions().concat(args);
 	}
 }

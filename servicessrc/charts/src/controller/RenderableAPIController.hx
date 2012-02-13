@@ -1,5 +1,6 @@
 package controller;
 
+import thx.error.Error;
 import model.ConfigObject;
 import model.Renderable;
 import model.ConfigRendering;
@@ -15,17 +16,6 @@ import ufront.web.mvc.view.UrlHelper;
 class RenderableAPIController extends BaseController
 {
 	var renderables : RenderableGateway;
-/*
-	public var urlHelper(getUrlHelper, null) : UrlHelperInst;
-	function getUrlHelper()
-	{
-		if(null == urlHelper)
-		{
-			urlHelper = new UrlHelperInst(controllerContext.requestContext);
-		}
-		return urlHelper;
-	}
-*/
 	public function new(renderables : RenderableGateway)
 	{
 		super();
@@ -60,22 +50,12 @@ class RenderableAPIController extends BaseController
 
 	public function upload(html : String, ?config : String, outputformat : String)
 	{
-		if(!validateHtml(html))
-			return error("invalid content for HTML", outputformat);
-		var cobj = ConfigObjects.createDefault();
-		if(null != config && ('' != (config = StringTools.trim(config))))
+		var renderable;
+		try
 		{
-			var params = tryParseIni(config);
-			if(null == params)
-				params = tryParseJson(config);
-			if(null == params)
-				return error("unable to parse the config argument: '{0}', it should be either a valid INI or JSON string", config);
-			cobj = ConfigObjects.overrideValues(cobj, params);
-		}
-		var renderable = new Renderable(html, ConfigRendering.create(cobj));
-		if(!renderables.exists(renderable.uid))
-		{
-			renderables.insert(renderable);
+			renderable = makeRenderable(html, config);
+		} catch(e : Dynamic) {
+			return error(""+e, outputformat);
 		}
 		return new ForwardResult({
 			controller : "renderableAPI",
@@ -83,6 +63,49 @@ class RenderableAPIController extends BaseController
 			uid : renderable.uid,
 			outputformat : outputformat
 		});
+	}
+
+	public function uploadAndDisplay(html : String, ?config : String, ext : String, ?forceDownload = false)
+	{
+		var renderable;
+		try
+		{
+			renderable = makeRenderable(html, config);
+		} catch(e : Dynamic) {
+			return error(""+e, ext);
+		}
+		return new ForwardResult({
+			controller : "downloadAPI",
+			action : "download",
+			uid : renderable.uid,
+			ext : ext,
+			forceDownload : forceDownload == true ? 'true' : 'false'
+		});
+	}
+
+	function makeRenderable(html : String, ?config : String)
+	{
+		if(!validateHtml(html))
+		{
+			trace("INVALID HTML: " + html);
+			throw new Error("invalid content for HTML");
+		}
+		var cobj = ConfigObjects.createDefault();
+		if(null != config && ('' != (config = StringTools.trim(config))))
+		{
+			var params = tryParseIni(config);
+			if(null == params)
+				params = tryParseJson(config);
+			if(null == params)
+				throw new Error("unable to parse the config argument: '{0}', it should be either a valid INI or JSON string", [config]);
+			cobj = ConfigObjects.overrideValues(cobj, params);
+		}
+		var renderable = new Renderable(html, ConfigRendering.create(cobj));
+		if(!renderables.exists(renderable.uid))
+		{
+			renderables.insert(renderable);
+		}
+		return renderable;
 	}
 
 	public function display(uid : String, outputformat : String)
@@ -134,13 +157,15 @@ class RenderableAPIController extends BaseController
 		{
 			return thx.json.Json.decode(s);
 		} catch(e : Dynamic) {
+			trace(e);
 			return null;
 		}
 	}
 
 	function validateHtml(html : String)
 	{
-		return html.toLowerCase().indexOf("reportgrid") >= 0;
+		html = html.toLowerCase();
+		return html.indexOf("reportgrid") >= 0 || html.indexOf('svg') >= 0;
 	}
 
 	function success(r : Renderable, format : String)
@@ -148,6 +173,7 @@ class RenderableAPIController extends BaseController
 		var content = {
 			uid : r.uid,
 			createdOn : r.createdOn,
+			expiresOn : r.config.expiresOn,
 			cacheExpirationTime : r.config.cacheExpirationTime,
 			formats : r.config.allowedFormats,
 			preserveTimeAfterLastUsage : model.RenderableGateway.DELETE_IF_NOT_USED_FOR,

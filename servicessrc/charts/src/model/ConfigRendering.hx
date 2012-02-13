@@ -2,13 +2,14 @@ package model;
 
 class ConfigRendering
 {
-	public static function create(?options : model.ConfigObject) : ConfigRendering
+	public static function create(options : model.ConfigObject) : ConfigRendering
 	{
 		var config = new ConfigRendering();
 		config.cacheExpirationTime = options.cacheExpires;
 		config.expiresOn = null == options.expiresOn ? null : Date.fromTime(options.expiresOn);
 		config.allowedFormats = options.allowedFormats;
 		config.wk.zoom = options.zoom;
+
 		// pdf
 		config.pdf.dpi						= options.dpi;
 		config.pdf.grayscale				= options.grayscale;
@@ -45,6 +46,16 @@ class ConfigRendering
 		config.pdf.headerSpacing			= options.headerSpacing;
 		config.pdf.headerLine				= options.headerLine;
 
+		// image
+		config.image.x						= options.x;
+		config.image.y						= options.y;
+		config.image.width					= options.width;
+		config.image.height					= options.height;
+		config.image.screenWidth			= options.screenWidth;
+		config.image.screenHeight			= options.screenHeight;
+		config.image.quality				= options.quality;
+		config.image.disableSmartWidth		= options.disableSmartWidth;
+		config.image.transparent			= options.transparent;
 		// template
 		for(param in Reflect.fields(options.params))
 		{

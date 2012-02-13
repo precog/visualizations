@@ -6,8 +6,10 @@ import model.ConfigTemplate;
 import model.RenderableGateway;
 import model.WKHtmlToImage;
 import model.WKHtmlToPdf;
+import model.Renderable;
 import thx.collection.HashList;
 import ufront.web.mvc.Controller;
+import ufront.web.mvc.ContentResult;
 import template.Error;
 
 class DownloadAPIController extends Controller
@@ -25,11 +27,15 @@ class DownloadAPIController extends Controller
 		this.toimage = toimage;
 	}
 
-	public function download(uid : String, ext : String)
+	public function download(uid : String, ext : String, forceDownload = false)
 	{
 		var renderable = renderables.load(uid);
 		if(null == renderable)
 			return error(Std.format("uid '$uid' doesn't exist"), ext);
+
+
+		return renderRenderable(renderable, ext, forceDownload);
+		/*
 		if(!renderable.canRenderTo(ext))
 			return error(Std.format("this visualization cannot be rendered to '$ext'"), ext);
 
@@ -51,6 +57,33 @@ class DownloadAPIController extends Controller
 
 		// log usage
 		renderables.use(uid);
+		return cached.content.bin;
+		*/
+	}
+
+	public function renderRenderable(renderable : Renderable, ext : String, forceDownload : Bool)
+	{
+		if(!renderable.canRenderTo(ext))
+			return error(Std.format("this visualization cannot be rendered to '$ext'"), ext);
+
+		var params = getParams(renderable.config.template),
+			cached = cache.load(renderable.uid, ext, params);
+		if(null == cached)
+		{
+			var html;
+			try {
+				html = processHtml(renderable.html, params, renderable.config.template);
+			} catch(e : Dynamic) {
+				return error(""+e, ext);
+			}
+			var content = renderHtml(html, renderable.config, ext);
+			cached = cache.insert(renderable.uid, ext, params, content, Date.now().getTime() + renderable.config.cacheExpirationTime);
+		}
+
+		setHeaders(ext, cached.content.bin.length, forceDownload);
+
+		// log usage
+		renderables.use(renderable.uid);
 		return cached.content.bin;
 	}
 
@@ -103,24 +136,26 @@ class DownloadAPIController extends Controller
 				topdf.format = ext;
 				if(null != config)
 				{
-					topdf.wkconfig = config.wk;
+					topdf.wkConfig = config.wk;
+					topdf.pdfConfig = config.pdf;
 				}
 				result = topdf.render(html);
 			case 'png', 'jpg', 'bmp', 'tif', 'svg':
 				toimage.format = ext;
 				if(null != config)
 				{
-					toimage.wkconfig = config.wk;
+					toimage.wkConfig = config.wk;
+					toimage.imageConfig = config.image;
 				}
 				result = toimage.render(html);
 			default: // html
 				result = html;
 		}
-		setHeaders(ext, result.length);
+		setHeaders(ext, result.length, false);
 		return result;
 	}
 
-	function setHeaders(ext : String, len : Int)
+	function setHeaders(ext : String, len : Int, forceDownload : Bool)
 	{
 		var response = controllerContext.response;
 		switch (ext) {
@@ -140,6 +175,14 @@ class DownloadAPIController extends Controller
 				response.contentType = 'image/tiff';
 			default: // html
 		}
+
+		if(forceDownload)
+		{
+			response.setHeader("Content-Description", "File Transfer");
+			response.setHeader("Content-Disposition", Std.format("attachment; filename=visualization.$ext"));
+			response.setHeader("Content-Transfer-Encoding", "binary");
+		}
+
 		response.setHeader("Content-Length", "" + len);
 	}
 }

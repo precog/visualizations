@@ -18,6 +18,7 @@ class App
 	public static inline var CACHE_COLLECTION = "cache";
 	public static inline var BASE_URL = "http://localhost";
 	public static inline var RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css";
+	public static inline var PRINT_JS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js";
 	public static var version(default, null) : String;
 
 	static function main()
@@ -26,7 +27,7 @@ class App
 
 		var wkhtmltopdfbin   = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf",
 			wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
-		var locator = new thx.util.TypeServiceLocator();
+		var locator = new thx.util.TypeLocator();
 		locator.memoize(model.WKHtmlToImage, function() {
 			return new model.WKHtmlToImage(wkhtmltoimagebin);
 		});
@@ -63,8 +64,12 @@ class App
 			controller : "home", action : "index"
 		});
 
-		routes.addRoute('/up/form', {
+		routes.addRoute('/up/form/html', {
 			controller : "uploadForm", action : "display"
+		});
+
+		routes.addRoute('/up/form/gist', {
+			controller : "uploadForm", action : "gist"
 		});
 
 		routes.addRoute('/up.{outputformat}', {
@@ -76,6 +81,22 @@ class App
 			]
 		);
 
+		routes.addRoute('/upandsee.{outputformat}', {
+				controller : "renderableAPI", action : "uploadAndDisplay"
+			},
+			[
+				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint),
+				new HttpMethodConstraint("POST")
+			]
+		);
+
+		routes.addRoute('/up/gist/{gistid}.{outputformat}', {
+				controller : "gistUpload", action : "importGist"
+			},
+			[
+				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint)
+			]
+		);
 		routes.addRoute('/up/url.{outputformat}', {
 				controller : "renderableAPI", action : "uploadFromUrl"
 			},

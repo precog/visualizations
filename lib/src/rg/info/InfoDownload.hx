@@ -12,16 +12,15 @@ import rg.RGConst;
 
 class InfoDownload
 {
-	public var handler : (String -> String -> (String -> Bool) -> (String -> Void) -> Void) -> Void;
+	public var handler : (String -> String -> (Dynamic -> Bool) -> (String -> Void) -> Void) -> Void;
 	public var service : String;
-	public var background : Null<String>;
 	public var position : Null<DownloaderPosition>;
 	public var formats : Array<String>;
 
 	public function new()
 	{
 		service = RGConst.SERVICE_RENDERING_STATIC;
-		formats = ['png', 'jpg', 'pdf'];
+		formats = ['pdf', 'png', 'jpg', 'svg'];
 	}
 
 	public static function filters()
@@ -32,10 +31,6 @@ class InfoDownload
 			filter : null
 		}, {
 			field : "service",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "background",
 			validator : function(v) return Std.is(v, String),
 			filter : null
 		}, {

@@ -12,7 +12,7 @@ class model_CacheGateway {
 		$»it = $params->keys();
 		while($»it->hasNext()) {
 			$field = $»it->next();
-			$ps->push(rawurlencode($field) . "=" . rawurlencode("" . Reflect::field($params, $field)));
+			$ps->push(rawurlencode($field) . "=" . rawurlencode($params->get($field)));
 		}
 		return "" . $id . "." . $format . (model_CacheGateway_0($this, $format, $id, $params, $ps));
 	}
@@ -22,14 +22,12 @@ class model_CacheGateway {
 	}
 	public function insert($id, $format, $params, $content, $expiresOn) {
 		$uid = $this->key($id, $format, $params);
-		haxe_Log::trace("INSERT " . $uid, _hx_anonymous(array("fileName" => "CacheGateway.hx", "lineNumber" => 38, "className" => "model.CacheGateway", "methodName" => "insert")));
 		$ob = _hx_anonymous(array("uid" => $uid, "content" => new MongoBinData($content, 2), "expiresOn" => $expiresOn));
 		$r = $this->coll->insert($ob, null);
 		return $ob;
 	}
 	public function load($id, $format, $params) {
 		$uid = $this->key($id, $format, $params);
-		haxe_Log::trace("LOAD " . $uid, _hx_anonymous(array("fileName" => "CacheGateway.hx", "lineNumber" => 52, "className" => "model.CacheGateway", "methodName" => "load")));
 		$o = $this->coll->findOne(_hx_anonymous(array("uid" => $uid)), null);
 		if(null === $o) {
 			return null;

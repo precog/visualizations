@@ -1,6 +1,6 @@
 <?php
 
-class template_FormUpload extends erazor_macro_Template {
+class template_GistUpload extends erazor_macro_Template {
 	public function __construct() { if(!php_Boot::$skip_constructor) {
 		parent::__construct();
 	}}
@@ -8,7 +8,7 @@ class template_FormUpload extends erazor_macro_Template {
 		$__b__ = new StringBuf();
 		{
 			{
-				$x = "<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Upload Rendering Template</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"";
+				$x = "<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Upload GIST</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -51,7 +51,7 @@ class template_FormUpload extends erazor_macro_Template {
 				}
 				$__b__->b .= $x;
 			}
-			$action = ((null !== $__context__->displayFormat) ? $__context__->url->route(_hx_anonymous(array("controller" => "uploadForm", "action" => "display", "displayFormat" => $__context__->displayFormat))) : $__context__->url->route(_hx_anonymous(array("controller" => "uploadForm", "action" => "display"))));
+			$action = $__context__->url->route(_hx_anonymous(array("controller" => "uploadForm", "action" => "gist")));
 			{
 				$x = "\x0A<form method=\"post\" action=\"";
 				if(is_null($x)) {
@@ -75,7 +75,7 @@ class template_FormUpload extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "\" class=\"formupload\">\x0A  <ul>\x0A    <li>\x0A      <label for=\"html\">HTML</label>\x0A      <br>\x0A      <textarea name=\"html\">";
+				$x = "\" class=\"formupload\">\x0A  <ul>\x0A    <li>\x0A      <label for=\"gistid\">GIST ID or URL</label>\x0A      <br>\x0A      <input type=\"text\" name=\"gistid\" value=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -86,7 +86,7 @@ class template_FormUpload extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = template_FormUpload_0($this, $__b__, $__context__, $action);
+				$x = template_GistUpload_0($this, $__b__, $__context__, $action);
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -97,7 +97,7 @@ class template_FormUpload extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</textarea>\x0A      ";
+				$x = "\"/>\x0A      ";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -107,9 +107,9 @@ class template_FormUpload extends erazor_macro_Template {
 				}
 				$__b__->b .= $x;
 			}
-			if($__context__->errors->exists("html")) {
+			if(null !== $__context__->error) {
 				{
-					$x = "\x0A\x09    <div class=\"error\">";
+					$x = "\x0A\x09    <div class=\"error\">The GIST ID or URL is wrong: ";
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -120,76 +120,7 @@ class template_FormUpload extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
-					$x = $__context__->errors->get("html");
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				{
-					$x = "</div>\x0A      ";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				null;
-			}
-			{
-				$x = "\x0A    </li>\x0A    <li>\x0A      <label for=\"config\">CONFIG (INI format)</label>\x0A      <br>\x0A      <textarea name=\"config\">";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = template_FormUpload_1($this, $__b__, $__context__, $action);
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "</textarea>\x0A      ";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			if($__context__->errors->exists("config")) {
-				{
-					$x = "\x0A\x09    <div class=\"error\">";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
-				{
-					$x = $__context__->errors->get("config");
+					$x = $__context__->error;
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -226,19 +157,12 @@ class template_FormUpload extends erazor_macro_Template {
 		}
 		return $__b__->b;
 	}
-	function __toString() { return 'template.FormUpload'; }
+	function __toString() { return 'template.GistUpload'; }
 }
-function template_FormUpload_0(&$»this, &$__b__, &$__context__, &$action) {
-	if(null === $__context__->html) {
+function template_GistUpload_0(&$»this, &$__b__, &$__context__, &$action) {
+	if(null === $__context__->gistid) {
 		return "";
 	} else {
-		return $__context__->html;
-	}
-}
-function template_FormUpload_1(&$»this, &$__b__, &$__context__, &$action) {
-	if(null === $__context__->config) {
-		return "";
-	} else {
-		return $__context__->config;
+		return $__context__->gistid;
 	}
 }

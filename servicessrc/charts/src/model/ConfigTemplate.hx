@@ -6,7 +6,7 @@ using Arrays;
 class ConfigTemplate
 {
 	var params : Set<String>;
-	var allowedValues : Hash<Dynamic>;
+	var allowedValues : Hash<Array<Dynamic>>;
 	var defaults : Hash<Dynamic>;
 	public function new()
 	{

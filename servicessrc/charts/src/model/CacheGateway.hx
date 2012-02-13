@@ -21,7 +21,7 @@ class CacheGateway
 			ps.push(
 				StringTools.urlEncode(field)
 				+ "="
-				+ StringTools.urlEncode(""+Reflect.field(params, field)));
+				+ StringTools.urlEncode(params.get(field)));
 		}
 		return Std.format("$id.$format${ps.length == 0 ? '' : '?' + ps.join('&') }");
 	}
@@ -35,7 +35,6 @@ class CacheGateway
 	public function insert(id : String, format : String, params : HashList<String>, content : String, expiresOn : Float)
 	{
 		var uid = key(id, format, params);
-		trace("INSERT " + uid);
 		var ob = {
 			uid       : uid,
 			content   : MongoBinData.createByteArray(content),
@@ -49,7 +48,6 @@ class CacheGateway
 	public function load(id : String, format : String, params : HashList<String>)
 	{
 		var uid = key(id, format, params);
-		trace("LOAD " + uid);
 		// load from mongo
 		var o : {
 			uid       : String,

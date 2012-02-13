@@ -17,6 +17,7 @@ import rg.info.InfoTrack;
 import rg.info.InfoVisualizationOption;
 import rg.info.InfoVisualizationType;
 import rg.interactive.Downloader;
+import rg.interactive.RGDownloader;
 import rg.visualization.Visualization;
 import rg.data.DataLoader;
 import rg.data.DataPoint;
@@ -35,19 +36,24 @@ using Arrays;
 class App
 {
 	static var lastid = 0;
+	static var chartsCounter = 0;
+	static var chartsLoaded = 0;
 	static function nextid()
 	{
 		return ":RGVIZ-" + (++lastid);
 	}
 
 	var layouts : Hash<Layout>;
-	public function new()
+	var globalNotifier : hxevents.Notifier;
+	public function new(notifier : hxevents.Notifier)
 	{
 		this.layouts = new Hash();
+		this.globalNotifier = notifier;
 	}
 
 	public function visualization(el : Selection, jsoptions : Dynamic)
 	{
+		chartsCounter++;
 		var node = el.node(),
 			id = node.id;
 		if (null == id)
@@ -96,8 +102,9 @@ class App
 		var download = new InfoDownload().feed(jsoptions.options.download);
 		if(!supportsSvg())
 		{
+/*
 			// IMAGE RENDERING FOR DEVICES
-			var downloader = new Downloader(visualization.container, download.service, download.background);
+			var downloader = new RGDownloader(visualization.container, download.service);
 			visualization.addReadyOnce(function() {
 				downloader.download("png", "#ffffff", function(url : String) {
 					visualization.container.selectAll("*").remove();
@@ -106,9 +113,10 @@ class App
 					return false;
 				}, null);
 			});
+*/
 		} else if (null != download.position || null != download.handler)
 		{
-			var downloader = new Downloader(visualization.container, download.service, download.background);
+			var downloader = new RGDownloader(visualization.container, download.service/*, download.background*/);
 
 			if (null != download.handler)
 				visualization.addReadyOnce(function() {
@@ -133,6 +141,15 @@ class App
 				visualization.setVerticalOffset(logoHeight);
 			});
 		}
+
+		visualization.addReadyOnce(function()
+		{
+			chartsLoaded++;
+			if(chartsLoaded == chartsCounter)
+			{
+				globalNotifier.dispatch();
+			}
+		});
 		return visualization;
 	}
 

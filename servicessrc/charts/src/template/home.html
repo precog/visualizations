@@ -7,29 +7,45 @@
 <body>
 <h1>Rendering Service (v.@version)</h1>
 <h2>Upload Options</h2>
+<h3>HTML/Config</h3>
 <ul class="bullet">
-  <li>Upload using form: <a href="@url.route({controller : "uploadForm", action : "display"})" class="tag">@baseurl@url.route({controller : "uploadForm", action : "display"})</a></li>
-  <li>Upload using a POST to these pages <span class="params">(parameters: html (string), ?config (ini or json string)</span>:
-  	<dl>
+  <li>Upload using a form: <a href="@url.route({controller : "uploadForm", action : "display"})" class="tag">@baseurl@url.route({controller : "uploadForm", action : "display"})</a></li>
+  <li>Upload using fa orm and display result: <a href="@url.route({controller : "uploadForm", action : "display", displayFormat : 'png' })" class="tag">@baseurl@url.route({controller : "uploadForm", action : "display", displayFormat : 'png' })</a></li>
+  <li>Upload making a POST call to these services <span class="params">(parameters: html (string), ?config (ini or json string)</span>:
+    <dl>
       <dt>HTML output:</dt>
       <dd>@baseurl@url.route({controller : "renderableAPI", action : "upload", outputformat : 'html'})</dd>
       <dt>JSON output:</dt>
       <dd>@baseurl@url.route({controller : "renderableAPI", action : "upload", outputformat : 'json'})</dd>
-  	</dl>
+    </dl>
   </li>
-  <li>Upload using a GET/POST to these pages <span class="params">(parameters: urlhtml (path to a html resource), ?urlconfig (path to a ini or json resource)</span>:
-  	<dl>
+  <li>Upload making a GET/POST call to these service <span class="params">(parameters: urlhtml (path to a html resource), ?urlconfig (path to a ini or json resource)</span>:
+    <dl>
       <dt>HTML output:</dt>
       <dd>@baseurl@url.route({
-      	controller : "renderableAPI", action : "uploadFromUrl", outputformat : 'html',
-      	urlhtml : "http://example.com/chart.hml"
+        controller : "renderableAPI", action : "uploadFromUrl", outputformat : 'html',
+        urlhtml : "http://example.com/chart.hml"
       })</dd>
       <dt>JSON output:</dt>
       <dd>@baseurl@url.route({
-      	controller : "renderableAPI", action : "uploadFromUrl", outputformat : 'json',
-      	urlhtml : "http://example.com/chart.hml"
+        controller : "renderableAPI", action : "uploadFromUrl", outputformat : 'json',
+        urlhtml : "http://example.com/chart.hml"
       })</dd>
-  	</dl>
+    </dl>
+  </li>
+</ul>
+<h3>GIST</h3>
+<ul class="bullet">
+  <li>Upload GIST using a form: <a href="@url.route({controller : "uploadForm", action : "gist"})" class="tag">@baseurl@url.route({controller : "uploadForm", action : "gist"})</a></li>
+  <li>Upload from GIST using these services:
+    <dl>
+      <dt>HTML output:</dt>
+@{ var path = baseurl+url.route({controller : "gistUpload", action : "importGist", gistid : '1732325', outputformat : 'html'}); }
+      <dd><a href="@path">@path</a></dd>
+      <dt>JSON output:</dt>
+@{ var path = baseurl+url.route({controller : "gistUpload", action : "importGist", gistid : '1732325', outputformat : 'json'}); }
+      <dd><a href="@path">@path</a></dd>
+    </dl>
   </li>
 </ul>
 

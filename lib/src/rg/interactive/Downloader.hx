@@ -56,7 +56,6 @@ class Downloader
 				trace(e);
 			};
 		http.onData = callback(complete, success, error);
-		var buf = [];
 		for (field in Reflect.fields(ob))
 			http.setParameter(field, Reflect.field(ob, field));
 		http.request(true);
