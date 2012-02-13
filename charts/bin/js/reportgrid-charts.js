@@ -1380,7 +1380,7 @@ rg.app.charts.JSBridge.main = function() {
 	if(msiev >= 0 && msiev < 9) return;
 	if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
-	var app = new rg.app.charts.App();
+	var globalNotifier = new hxevents.Notifier(), app = new rg.app.charts.App(globalNotifier);
 	r.chart = function(el,options,type) {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
@@ -1451,11 +1451,14 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.1.6827"};
+	r.info.charts = { version : "1.3.1.6925"};
+	r.charts = { onReady : function(handler) {
+		globalNotifier.add(handler);
+	}};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 145, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 152, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -4527,6 +4530,21 @@ thx.js.BaseSelection.prototype = {
 		}
 		return this.createSelection(subgroups);
 	}
+	,mapNode: function(f) {
+		var results = [];
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			var i = -1;
+			var $it0 = group.nodes.iterator();
+			while( $it0.hasNext() ) {
+				var node = $it0.next();
+				if(null != node) results.push(f(node,++i));
+			}
+		}
+		return results;
+	}
 	,onNode: function(type,listener,capture) {
 		if(capture == null) capture = false;
 		var i = type.indexOf("."), typo = i < 0?type:type.substr(0,i);
@@ -4561,7 +4579,7 @@ thx.js.BaseSelection.prototype = {
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 634, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 652, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -9618,6 +9636,83 @@ Iterables.isIterable = function(v) {
 Iterables.prototype = {
 	__class__: Iterables
 }
+if(!rg.interactive) rg.interactive = {}
+rg.interactive.RGDownloader = $hxClasses["rg.interactive.RGDownloader"] = function(container,serviceurl) {
+	this.container = container;
+	this.serviceUrl = serviceurl;
+	this.tokenId = rg.util.RG.getTokenId();
+}
+rg.interactive.RGDownloader.__name__ = ["rg","interactive","RGDownloader"];
+rg.interactive.RGDownloader.getClassName = function(container) {
+	var name = container.attr("class").get();
+	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
+	return "" == name?null:name;
+}
+rg.interactive.RGDownloader.appendArgument = function(url,name,value) {
+	var sep = url.indexOf("?") >= 0?"&":"?";
+	return url + sep + name + "=" + StringTools.urlEncode(value);
+}
+rg.interactive.RGDownloader.prototype = {
+	serviceUrl: null
+	,container: null
+	,format: null
+	,tokenId: null
+	,download: function(format,backgroundcolor,success,error) {
+		if(!Arrays.exists(rg.interactive.RGDownloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "RGDownloader.hx", lineNumber : 28, className : "rg.interactive.RGDownloader", methodName : "download"});
+		this.format = format;
+		var http = new haxe.Http(this.serviceUrl);
+		if(null != error) http.onError = error; else http.onError = function(e) {
+			haxe.Log.trace(e,{ fileName : "RGDownloader.hx", lineNumber : 35, className : "rg.interactive.RGDownloader", methodName : "download"});
+		};
+		http.onData = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(this.complete.$bind(this),success,error);
+		http.setParameter("html",this.html());
+		http.setParameter("config",this.config());
+		http.request(true);
+	}
+	,findCssSources: function() {
+		return thx.js.Dom.selectAll("link").filterNode(function(n,_) {
+			return "stylesheet" == n.rel;
+		}).mapNode(function(n,_) {
+			return n.href;
+		});
+	}
+	,extractSvg: function(s) {
+		var start = new EReg("<svg",""), end = new EReg("</svg>","");
+		start.match(s);
+		s = start.matchedRight();
+		end.match(s);
+		return "<svg" + end.matchedLeft() + "</svg>";
+	}
+	,html: function() {
+		var css = this.findCssSources(), classes = this.container.attr("class").get(), svg = this.extractSvg(this.container.html().get());
+		var html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n<title></title>\n" + (css.map(function(href,_) {
+			return "<link href=\"" + href + "\" rel=\"stylesheet\" type=\"text/css\" />";
+		}).join("\n") + "\n</head>\n<body>\n<div class=\"" + classes + "\">" + svg + "</div>\n</body>\n</html>");
+		return html;
+	}
+	,config: function() {
+		var svg = this.container.select("svg"), width = svg.attr("width").getFloat(), height = svg.attr("height").getFloat();
+		var config = "\"cache\":\"1d\",\"duration\":\"1d\",\"width\":" + width + ",\"height\":" + height + ",\"formats\":[\"" + rg.interactive.RGDownloader.ALLOWED_FORMATS.join("\",\"") + "\"]";
+		if(null != this.tokenId) config += ",\"params\":{\"tokenId\":true}";
+		return "{" + config + "}";
+	}
+	,complete: function(success,error,content) {
+		var ob = thx.json.Json.decode(content);
+		if(null != ob.error) {
+			if(null != error) error(ob.error);
+		} else if(success(ob)) {
+			var url = Reflect.field(ob.service,this.format);
+			if(null != this.tokenId) url = rg.interactive.RGDownloader.appendArgument(url,"tokenId",this.tokenId);
+			url = rg.interactive.RGDownloader.appendArgument(url,"forceDownload","true");
+			js.Lib.window.location.href = url;
+		}
+	}
+	,__class__: rg.interactive.RGDownloader
+}
 js.Boot = $hxClasses["js.Boot"] = function() { }
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__unhtml = function(s) {
@@ -11128,6 +11223,135 @@ Strings.compare = function(a,b) {
 Strings.prototype = {
 	__class__: Strings
 }
+thx.js.HostType = $hxClasses["thx.js.HostType"] = { __ename__ : ["thx","js","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
+thx.js.HostType.UnknownServer = ["UnknownServer",0];
+thx.js.HostType.UnknownServer.toString = $estr;
+thx.js.HostType.UnknownServer.__enum__ = thx.js.HostType;
+thx.js.HostType.NodeJs = ["NodeJs",1];
+thx.js.HostType.NodeJs.toString = $estr;
+thx.js.HostType.NodeJs.__enum__ = thx.js.HostType;
+thx.js.HostType.IE = function(version) { var $x = ["IE",2,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Firefox = function(version) { var $x = ["Firefox",3,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Safari = function(version) { var $x = ["Safari",4,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Chrome = function(version) { var $x = ["Chrome",5,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Opera = function(version) { var $x = ["Opera",6,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Unknown = function(what) { var $x = ["Unknown",7,what]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.EnvironmentType = $hxClasses["thx.js.EnvironmentType"] = { __ename__ : ["thx","js","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
+thx.js.EnvironmentType.Mobile = ["Mobile",0];
+thx.js.EnvironmentType.Mobile.toString = $estr;
+thx.js.EnvironmentType.Mobile.__enum__ = thx.js.EnvironmentType;
+thx.js.EnvironmentType.Desktop = ["Desktop",1];
+thx.js.EnvironmentType.Desktop.toString = $estr;
+thx.js.EnvironmentType.Desktop.__enum__ = thx.js.EnvironmentType;
+thx.js.EnvironmentType.Server = ["Server",2];
+thx.js.EnvironmentType.Server.toString = $estr;
+thx.js.EnvironmentType.Server.__enum__ = thx.js.EnvironmentType;
+thx.js.EnvironmentType.UnknownEnvironment = ["UnknownEnvironment",3];
+thx.js.EnvironmentType.UnknownEnvironment.toString = $estr;
+thx.js.EnvironmentType.UnknownEnvironment.__enum__ = thx.js.EnvironmentType;
+thx.js.OSType = $hxClasses["thx.js.OSType"] = { __ename__ : ["thx","js","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
+thx.js.OSType.Windows = function(version) { var $x = ["Windows",0,version]; $x.__enum__ = thx.js.OSType; $x.toString = $estr; return $x; }
+thx.js.OSType.IOs = ["IOs",1];
+thx.js.OSType.IOs.toString = $estr;
+thx.js.OSType.IOs.__enum__ = thx.js.OSType;
+thx.js.OSType.Android = ["Android",2];
+thx.js.OSType.Android.toString = $estr;
+thx.js.OSType.Android.__enum__ = thx.js.OSType;
+thx.js.OSType.Mac = ["Mac",3];
+thx.js.OSType.Mac.toString = $estr;
+thx.js.OSType.Mac.__enum__ = thx.js.OSType;
+thx.js.OSType.Linux = ["Linux",4];
+thx.js.OSType.Linux.toString = $estr;
+thx.js.OSType.Linux.__enum__ = thx.js.OSType;
+thx.js.OSType.UnknownOs = ["UnknownOs",5];
+thx.js.OSType.UnknownOs.toString = $estr;
+thx.js.OSType.UnknownOs.__enum__ = thx.js.OSType;
+thx.js.ClientHost = $hxClasses["thx.js.ClientHost"] = function() { }
+thx.js.ClientHost.__name__ = ["thx","js","ClientHost"];
+thx.js.ClientHost.host = null;
+thx.js.ClientHost.environment = null;
+thx.js.ClientHost.os = null;
+thx.js.ClientHost.isIE = function() {
+	return (function($this) {
+		var $r;
+		switch( (thx.js.ClientHost.host)[1] ) {
+		case 2:
+			$r = true;
+			break;
+		default:
+			$r = false;
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.hostVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (thx.js.ClientHost.host);
+		switch( $e[1] ) {
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.hostString = function() {
+	return (function($this) {
+		var $r;
+		switch( (thx.js.ClientHost.host)[1] ) {
+		case 0:
+			$r = "unknown_server";
+			break;
+		case 7:
+			$r = "unknown";
+			break;
+		case 1:
+			$r = "nodejs";
+			break;
+		default:
+			$r = thx.js.ClientHost.host[0];
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.osString = function() {
+	return thx.js.ClientHost.os[0];
+}
+thx.js.ClientHost.osVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (thx.js.ClientHost.os);
+		switch( $e[1] ) {
+		case 0:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.environmentString = function() {
+	return thx.js.ClientHost.environment[0];
+}
+thx.js.ClientHost.userAgent = function() {
+	return "" + navigator.userAgent;
+}
+thx.js.ClientHost.hasNavigator = function() {
+	return typeof navigator !== 'undefined';
+}
+thx.js.ClientHost.prototype = {
+	__class__: thx.js.ClientHost
+}
 thx.json.JsonDecoder = $hxClasses["thx.json.JsonDecoder"] = function(handler,tabsize) {
 	if(tabsize == null) tabsize = 4;
 	this.handler = handler;
@@ -11397,135 +11621,6 @@ thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamErro
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
-thx.js.HostType = $hxClasses["thx.js.HostType"] = { __ename__ : ["thx","js","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
-thx.js.HostType.UnknownServer = ["UnknownServer",0];
-thx.js.HostType.UnknownServer.toString = $estr;
-thx.js.HostType.UnknownServer.__enum__ = thx.js.HostType;
-thx.js.HostType.NodeJs = ["NodeJs",1];
-thx.js.HostType.NodeJs.toString = $estr;
-thx.js.HostType.NodeJs.__enum__ = thx.js.HostType;
-thx.js.HostType.IE = function(version) { var $x = ["IE",2,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Firefox = function(version) { var $x = ["Firefox",3,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Safari = function(version) { var $x = ["Safari",4,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Chrome = function(version) { var $x = ["Chrome",5,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Opera = function(version) { var $x = ["Opera",6,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Unknown = function(what) { var $x = ["Unknown",7,what]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.EnvironmentType = $hxClasses["thx.js.EnvironmentType"] = { __ename__ : ["thx","js","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
-thx.js.EnvironmentType.Mobile = ["Mobile",0];
-thx.js.EnvironmentType.Mobile.toString = $estr;
-thx.js.EnvironmentType.Mobile.__enum__ = thx.js.EnvironmentType;
-thx.js.EnvironmentType.Desktop = ["Desktop",1];
-thx.js.EnvironmentType.Desktop.toString = $estr;
-thx.js.EnvironmentType.Desktop.__enum__ = thx.js.EnvironmentType;
-thx.js.EnvironmentType.Server = ["Server",2];
-thx.js.EnvironmentType.Server.toString = $estr;
-thx.js.EnvironmentType.Server.__enum__ = thx.js.EnvironmentType;
-thx.js.EnvironmentType.UnknownEnvironment = ["UnknownEnvironment",3];
-thx.js.EnvironmentType.UnknownEnvironment.toString = $estr;
-thx.js.EnvironmentType.UnknownEnvironment.__enum__ = thx.js.EnvironmentType;
-thx.js.OSType = $hxClasses["thx.js.OSType"] = { __ename__ : ["thx","js","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
-thx.js.OSType.Windows = function(version) { var $x = ["Windows",0,version]; $x.__enum__ = thx.js.OSType; $x.toString = $estr; return $x; }
-thx.js.OSType.IOs = ["IOs",1];
-thx.js.OSType.IOs.toString = $estr;
-thx.js.OSType.IOs.__enum__ = thx.js.OSType;
-thx.js.OSType.Android = ["Android",2];
-thx.js.OSType.Android.toString = $estr;
-thx.js.OSType.Android.__enum__ = thx.js.OSType;
-thx.js.OSType.Mac = ["Mac",3];
-thx.js.OSType.Mac.toString = $estr;
-thx.js.OSType.Mac.__enum__ = thx.js.OSType;
-thx.js.OSType.Linux = ["Linux",4];
-thx.js.OSType.Linux.toString = $estr;
-thx.js.OSType.Linux.__enum__ = thx.js.OSType;
-thx.js.OSType.UnknownOs = ["UnknownOs",5];
-thx.js.OSType.UnknownOs.toString = $estr;
-thx.js.OSType.UnknownOs.__enum__ = thx.js.OSType;
-thx.js.ClientHost = $hxClasses["thx.js.ClientHost"] = function() { }
-thx.js.ClientHost.__name__ = ["thx","js","ClientHost"];
-thx.js.ClientHost.host = null;
-thx.js.ClientHost.environment = null;
-thx.js.ClientHost.os = null;
-thx.js.ClientHost.isIE = function() {
-	return (function($this) {
-		var $r;
-		switch( (thx.js.ClientHost.host)[1] ) {
-		case 2:
-			$r = true;
-			break;
-		default:
-			$r = false;
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.hostVersion = function() {
-	return (function($this) {
-		var $r;
-		var $e = (thx.js.ClientHost.host);
-		switch( $e[1] ) {
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-			var v = $e[2];
-			$r = v;
-			break;
-		default:
-			$r = null;
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.hostString = function() {
-	return (function($this) {
-		var $r;
-		switch( (thx.js.ClientHost.host)[1] ) {
-		case 0:
-			$r = "unknown_server";
-			break;
-		case 7:
-			$r = "unknown";
-			break;
-		case 1:
-			$r = "nodejs";
-			break;
-		default:
-			$r = thx.js.ClientHost.host[0];
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.osString = function() {
-	return thx.js.ClientHost.os[0];
-}
-thx.js.ClientHost.osVersion = function() {
-	return (function($this) {
-		var $r;
-		var $e = (thx.js.ClientHost.os);
-		switch( $e[1] ) {
-		case 0:
-			var v = $e[2];
-			$r = v;
-			break;
-		default:
-			$r = null;
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.environmentString = function() {
-	return thx.js.ClientHost.environment[0];
-}
-thx.js.ClientHost.userAgent = function() {
-	return "" + navigator.userAgent;
-}
-thx.js.ClientHost.hasNavigator = function() {
-	return typeof navigator !== 'undefined';
-}
-thx.js.ClientHost.prototype = {
-	__class__: thx.js.ClientHost
-}
 rg.info.InfoMap = $hxClasses["rg.info.InfoMap"] = function() {
 	this.property = "location";
 	this.type = "geojson";
@@ -12870,7 +12965,7 @@ rg.RGConst.prototype = {
 rg.util.RG = $hxClasses["rg.util.RG"] = function() { }
 rg.util.RG.__name__ = ["rg","util","RG"];
 rg.util.RG.getTokenId = function() {
-	return "chart" + haxe.Md5.encode("chart");
+	if(ReportGrid.$) return Strings.rtrim(Strings.ltrim(ReportGrid.$.Config.tokenId,"\""),"\""); else return null;
 }
 rg.util.RG.prototype = {
 	__class__: rg.util.RG
@@ -18555,15 +18650,13 @@ rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
 });
 rg.info.InfoDownload = $hxClasses["rg.info.InfoDownload"] = function() {
 	this.service = rg.RGConst.SERVICE_RENDERING_STATIC;
-	this.formats = ["png","jpg","pdf"];
+	this.formats = ["pdf","png","jpg","svg"];
 }
 rg.info.InfoDownload.__name__ = ["rg","info","InfoDownload"];
 rg.info.InfoDownload.filters = function() {
 	return [{ field : "handler", validator : function(v) {
 		return Reflect.isFunction(v);
 	}, filter : null},{ field : "service", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "background", validator : function(v) {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "formats", validator : function(v) {
 		return Std["is"](v,Array);
@@ -18576,7 +18669,6 @@ rg.info.InfoDownload.filters = function() {
 rg.info.InfoDownload.prototype = {
 	handler: null
 	,service: null
-	,background: null
 	,position: null
 	,formats: null
 	,__class__: rg.info.InfoDownload
@@ -21730,7 +21822,6 @@ thx.svg.Line.prototype = {
 	}
 	,__class__: thx.svg.Line
 }
-if(!rg.interactive) rg.interactive = {}
 rg.interactive.Downloader = $hxClasses["rg.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
 	this.container = container;
 	this.serviceUrl = serviceurl;
@@ -21762,7 +21853,6 @@ rg.interactive.Downloader.prototype = {
 				return f(a1,a2,a3);
 			};
 		})(this.complete.$bind(this),success,error);
-		var buf = [];
 		var _g = 0, _g1 = Reflect.fields(ob);
 		while(_g < _g1.length) {
 			var field = _g1[_g];
@@ -22347,8 +22437,9 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,__class__: rg.svg.chart.FunnelChart
 });
-rg.app.charts.App = $hxClasses["rg.app.charts.App"] = function() {
+rg.app.charts.App = $hxClasses["rg.app.charts.App"] = function(notifier) {
 	this.layouts = new Hash();
+	this.globalNotifier = notifier;
 }
 rg.app.charts.App.__name__ = ["rg","app","charts","App"];
 rg.app.charts.App.nextid = function() {
@@ -22359,7 +22450,10 @@ rg.app.charts.App.supportsSvg = function() {
 }
 rg.app.charts.App.prototype = {
 	layouts: null
+	,globalNotifier: null
 	,visualization: function(el,jsoptions) {
+		var me = this;
+		rg.app.charts.App.chartsCounter++;
 		var node = el.node(), id = node.id;
 		if(null == id) node.id = id = rg.app.charts.App.nextid();
 		var params = rg.info.Info.feed(new rg.info.InfoVisualizationOption(),jsoptions), loader = new rg.data.DataLoader(rg.info.Info.feed(new rg.info.InfoDataSource(),jsoptions).loader), variables = new rg.factory.FactoryVariable().createVariables(params.variables), general = rg.info.Info.feed(new rg.info.InfoGeneral(),params.options), infoviz = rg.info.Info.feed(new rg.info.InfoVisualizationType(),params.options);
@@ -22395,16 +22489,8 @@ rg.app.charts.App.prototype = {
 		var brandPadding = 0, logoHeight = 29;
 		var download = rg.info.Info.feed(new rg.info.InfoDownload(),jsoptions.options.download);
 		if(!rg.app.charts.App.supportsSvg()) {
-			var downloader = new rg.interactive.Downloader(visualization.container,download.service,download.background);
-			visualization.addReadyOnce(function() {
-				downloader.download("png","#ffffff",function(url) {
-					visualization.container.selectAll("*").remove();
-					visualization.container.append("img").attr("src").string(url);
-					return false;
-				},null);
-			});
 		} else if(null != download.position || null != download.handler) {
-			var downloader = new rg.interactive.Downloader(visualization.container,download.service,download.background);
+			var downloader = new rg.interactive.RGDownloader(visualization.container,download.service);
 			if(null != download.handler) visualization.addReadyOnce(function() {
 				download.handler(downloader.download.$bind(downloader));
 			}); else visualization.addReadyOnce(function() {
@@ -22415,6 +22501,10 @@ rg.app.charts.App.prototype = {
 		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
 			var widget = new rg.html.widget.Logo(visualization.container,brandPadding);
 			visualization.setVerticalOffset(logoHeight);
+		});
+		visualization.addReadyOnce(function() {
+			rg.app.charts.App.chartsLoaded++;
+			if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) me.globalNotifier.dispatch();
 		});
 		return visualization;
 	}
@@ -27752,6 +27842,7 @@ rg.visualization.Visualizations.html = ["pivottable","leaderboard"];
 rg.visualization.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
 rg.visualization.Visualizations.visualizations = rg.visualization.Visualizations.svg.concat(rg.visualization.Visualizations.html);
 rg.visualization.Visualizations.layouts = ["simple","cartesian","x"];
+rg.interactive.RGDownloader.ALLOWED_FORMATS = ["pdf","ps","png","jpg","svg"];
 Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
 Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
 Strings._reReduceWS = new EReg("\\s+","");
@@ -27774,7 +27865,7 @@ thx.js.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
 rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
 rg.RGConst.BASE_URL_GEOJSON = "http://localhost/rg/vis/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "/rg/services/viz/renderer/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://localhost/rg/services/viz/charts/up.json";
 rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
 rg.util.Properties.TIME_TOKEN = "time:";
 DateTools.WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -27822,6 +27913,8 @@ thx.xml.Namespace.prefix = (function() {
 	return h;
 })();
 rg.app.charts.App.lastid = 0;
+rg.app.charts.App.chartsCounter = 0;
+rg.app.charts.App.chartsLoaded = 0;
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
 math.IEEE754.bias = 1024;
