@@ -22,17 +22,24 @@ class RGDownloader
 		this.tokenId = rg.util.RG.getTokenId();
 	}
 
+	function url(ext : String)
+	{
+		return StringTools.replace(serviceUrl, '{ext}', ext);
+	}
+
 	public function download(format : String, backgroundcolor : Null<String>, success : Dynamic -> Bool, error : String -> Void)
 	{
 		if (!Arrays.exists(ALLOWED_FORMATS, format))
 			throw new Error("The download format '{0}' is not correct", [format]);
 
 		this.format = format;
-		var http = new Http(serviceUrl);
+		var http = new Http(url(format));
+		http.setHeader("Accept", "application/json");
 		if(null != error)
 			http.onError = error;
 		else
 			http.onError = function(e) { trace(e); };
+
 		http.onData = callback(complete, success, error);
 		http.setParameter('html', html());
 		http.setParameter('config', config());

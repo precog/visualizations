@@ -105,7 +105,7 @@ $(document).ready(function(){
 		{
 			var url = src();
 			console.log(url);
-			$.get('http://localhost/rg/services/viz/charts/up/url.json', {
+			$.getJSON('http://localhost/rg/services/viz/charts/up/url.json', {
 				urlhtml: url
 			}, function(data){
 				$('#samplevisualization iframe').attr('src', data.service[format]);

@@ -1451,7 +1451,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.1.6925"};
+	r.info.charts = { version : "1.3.1.6941"};
 	r.charts = { onReady : function(handler) {
 		globalNotifier.add(handler);
 	}};
@@ -9657,12 +9657,16 @@ rg.interactive.RGDownloader.prototype = {
 	,container: null
 	,format: null
 	,tokenId: null
+	,url: function(ext) {
+		return StringTools.replace(this.serviceUrl,"{ext}",ext);
+	}
 	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.interactive.RGDownloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "RGDownloader.hx", lineNumber : 28, className : "rg.interactive.RGDownloader", methodName : "download"});
+		if(!Arrays.exists(rg.interactive.RGDownloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "RGDownloader.hx", lineNumber : 33, className : "rg.interactive.RGDownloader", methodName : "download"});
 		this.format = format;
-		var http = new haxe.Http(this.serviceUrl);
+		var http = new haxe.Http(this.url(format));
+		http.setHeader("Accept","application/json");
 		if(null != error) http.onError = error; else http.onError = function(e) {
-			haxe.Log.trace(e,{ fileName : "RGDownloader.hx", lineNumber : 35, className : "rg.interactive.RGDownloader", methodName : "download"});
+			haxe.Log.trace(e,{ fileName : "RGDownloader.hx", lineNumber : 41, className : "rg.interactive.RGDownloader", methodName : "download"});
 		};
 		http.onData = (function(f,a1,a2) {
 			return function(a3) {

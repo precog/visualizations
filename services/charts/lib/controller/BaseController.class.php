@@ -24,7 +24,7 @@ class controller_BaseController extends ufront_web_mvc_Controller {
 			return new ufront_web_mvc_ContentResult($template->execute($content), null);
 		}break;
 		case "json":{
-			return new ufront_web_mvc_JsonResult($data);
+			return ufront_web_mvc_JsonPResult::auto($data, $this->controllerContext->request->getQuery()->get("callback"));
 		}break;
 		default:{
 			controller_BaseController_0($this, $data, $format, $templateClass);

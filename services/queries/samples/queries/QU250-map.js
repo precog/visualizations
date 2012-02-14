@@ -7,6 +7,6 @@ ReportGrid.query
 	.map(function(d) {
 		var ob = {};
 		for(var key in d)
-			ob[key.toUpperCase()] = d[key].toLowerCase();
+			ob[key.toUpperCase()] = d[key];
 		return ob;
 	})

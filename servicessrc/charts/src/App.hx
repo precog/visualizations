@@ -81,12 +81,11 @@ class App
 			]
 		);
 
-		routes.addRoute('/upandsee.{outputformat}', {
+		routes.addRoute('/upandsee.{ext}', {
 				controller : "renderableAPI", action : "uploadAndDisplay"
 			},
 			[
-				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint),
-				new HttpMethodConstraint("POST")
+				cast(new HttpMethodConstraint("POST"), IRouteConstraint)
 			]
 		);
 

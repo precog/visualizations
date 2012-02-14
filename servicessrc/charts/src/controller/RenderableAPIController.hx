@@ -7,7 +7,7 @@ import model.ConfigRendering;
 import template.RenderableDisplay;
 import ufront.web.mvc.ActionResult;
 import ufront.web.mvc.ContentResult;
-import ufront.web.mvc.ForwardResult;
+import ufront.web.mvc.RedirectResult;
 import ufront.web.mvc.JsonResult;
 
 import model.RenderableGateway;
@@ -57,15 +57,24 @@ class RenderableAPIController extends BaseController
 		} catch(e : Dynamic) {
 			return error(""+e, outputformat);
 		}
-		return new ForwardResult({
+		return success(renderable, outputformat);
+/*
+		return redirect({
 			controller : "renderableAPI",
 			action : "display",
 			uid : renderable.uid,
 			outputformat : outputformat
 		});
+*/
 	}
 
-	public function uploadAndDisplay(html : String, ?config : String, ext : String, ?forceDownload = false)
+	function redirect(params : Dynamic)
+	{
+		var url = new UrlHelperInst(controllerContext.requestContext).route(params);
+		return new RedirectResult(App.BASE_URL + url, false);
+	}
+
+	public function uploadAndDisplay(html : String, ?config : String, ext : String, ?forceDownload = false) : Dynamic
 	{
 		var renderable;
 		try
@@ -74,7 +83,14 @@ class RenderableAPIController extends BaseController
 		} catch(e : Dynamic) {
 			return error(""+e, ext);
 		}
-		return new ForwardResult({
+/*
+		var controller = ufront.web.mvc.DependencyResolver.current.getService(controller.DownloadAPIController);
+		controller.controllerContext = this.controllerContext;
+
+		return controller.renderRenderable(renderable, ext, forceDownload);
+*/
+
+		return redirect({
 			controller : "downloadAPI",
 			action : "download",
 			uid : renderable.uid,

@@ -4,7 +4,7 @@ import erazor.macro.Template;
 import ufront.web.mvc.Controller;
 import ufront.web.mvc.ActionResult;
 import ufront.web.mvc.ContentResult;
-import ufront.web.mvc.JsonResult;
+import ufront.web.mvc.JsonPResult;
 import ufront.web.mvc.view.UrlHelper;
 
 class BaseController extends Controller
@@ -37,7 +37,7 @@ class BaseController extends Controller
 				};
 				return new ContentResult(untyped template.execute(content));
 			case "json":
-				return new JsonResult(data);
+				return JsonPResult.auto(data, controllerContext.request.query.get("callback"));
 			default:
 				return throw new thx.error.Error("invalid format '{0}'", [format]);
 		}

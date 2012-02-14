@@ -2,7 +2,6 @@ package controller;
 import ufront.web.mvc.ContentResult;
 import ufront.web.mvc.Controller;
 import ufront.web.mvc.ActionResult;
-import ufront.web.mvc.ForwardResult;
 
 class UploadForm extends Controller
 {

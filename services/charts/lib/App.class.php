@@ -10,7 +10,7 @@ class App {
 	static $PRINT_JS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js";
 	static $version;
 	static function main() {
-		App::$version = "1.0.2.273";
+		App::$version = "1.0.2.299";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
@@ -25,7 +25,7 @@ class App {
 		$routes->addRoute("/up/form/html", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null, null);
 		$routes->addRoute("/up/form/gist", _hx_anonymous(array("controller" => "uploadForm", "action" => "gist")), null, null);
 		$routes->addRoute("/up.{outputformat}", _hx_anonymous(array("controller" => "renderableAPI", "action" => "upload")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null), new ufront_web_routing_HttpMethodConstraint("POST", null))));
-		$routes->addRoute("/upandsee.{outputformat}", _hx_anonymous(array("controller" => "renderableAPI", "action" => "uploadAndDisplay")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null), new ufront_web_routing_HttpMethodConstraint("POST", null))));
+		$routes->addRoute("/upandsee.{ext}", _hx_anonymous(array("controller" => "renderableAPI", "action" => "uploadAndDisplay")), null, new _hx_array(array(new ufront_web_routing_HttpMethodConstraint("POST", null))));
 		$routes->addRoute("/up/gist/{gistid}.{outputformat}", _hx_anonymous(array("controller" => "gistUpload", "action" => "importGist")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null))));
 		$routes->addRoute("/up/url.{outputformat}", _hx_anonymous(array("controller" => "renderableAPI", "action" => "uploadFromUrl")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null))));
 		$routes->addRoute("/up/info/{uid}.{outputformat}", _hx_anonymous(array("controller" => "renderableAPI", "action" => "display")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null))));

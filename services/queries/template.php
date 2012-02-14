@@ -137,6 +137,17 @@ function data()
 }
 <?php
 }
+if(isset($info['load']) && isset($info['query']))
+{
+?>
+
+
+function data()
+{
+    return <?php echo detab(indent($info['load'])); ?>;
+}
+<?php
+}
 ?>
 
 </script>
