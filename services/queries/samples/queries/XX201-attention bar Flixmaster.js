@@ -28,9 +28,7 @@ ReportGrid.barChart(
 		load : ReportGrid.query
 			.data(attentionValues(analytics.percent_bin_map[dp.id]))
 			.map(function(v) {
-				return {
-					value : v
-				};
+				return { value : v };
 			})
 			.count({
 				path : analytics.path,

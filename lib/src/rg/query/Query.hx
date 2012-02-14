@@ -8,7 +8,7 @@ class Query extends BaseQuery<Query>
 	public static function create()
 	{
 		var start = new Query(),
-			query = start._createQuery(function(data : Array<Dynamic>, handler : Array<Dynamic> -> Void) { handler(data); }, start);
+			query = start._createQuery(function(data : Array<Array<Dynamic>>, handler : Array<Array<Dynamic>> -> Void) { handler(data); }, start);
 		start._next = query;
 		return query;
 	}
@@ -26,15 +26,15 @@ class Query extends BaseQuery<Query>
 	public static function executeHandler(instance : BaseQuery<Dynamic>, handler : Array<Dynamic> -> Void)
 	{
 		var current : BaseQuery<Dynamic> = instance._next;
-		function execute(results : Array<Dynamic>)
+		function execute(result : Array<Array<Dynamic>>)
 		{
 			if(null == current._next)
 			{
-				handler(results);
+				handler(result.flatten());
 				return;
 			}
 			current = current._next;
-			current._async(results, execute);
+			current._async(result, execute);
 		}
 		execute([]);
 	}
@@ -45,10 +45,10 @@ class BaseQuery<This>
 {
 	var _first : BaseQuery<This>;
 	var _next : BaseQuery<This>;
-	var _async : Async;
-	var _store : Hash<Array<Dynamic>>;
+	var _async : AsyncStack;
+	var _store : Hash<Array<Array<Dynamic>>>;
 
-	public function new(async : Async, first : BaseQuery<This>)
+	public function new(async : AsyncStack, first : BaseQuery<This>)
 	{
 		this._async = async;
 		this._first = first;
@@ -57,17 +57,27 @@ class BaseQuery<This>
 
 	public function load(handler : (Array<Dynamic> -> Void) -> Void)
 	{
-		return asyncAll(function(_, h) handler(h));
+		return asyncStack(function(stack, h) {
+			handler(function(data) {
+				stack.push(data);
+				h(stack);
+			});
+		});
 	}
 
 	public function data(values : Array<Dynamic>)
 	{
-		return asyncAll(function(_, h) h(values));
+		if(!Std.is(values, Array))
+			values = [values];
+		return asyncStack(function(stack, h) {
+			stack.push(values);
+			h(stack);
+		});
 	}
 
-	public function cross(values : Array<Dynamic>)
+	public function cross()
 	{
-		return transform(Transformers.cross(values));
+		return transformStack(Transformers.crossStack);
 	}
 
 	public function map(handler : Dynamic -> ?Int -> Dynamic)
@@ -109,41 +119,73 @@ class BaseQuery<This>
 
 	public function transform(t : Transformer)
 	{
-		return asyncAll(asyncTransform(t));
+		return asyncStack(asyncTransform(t));
 	}
 
-	public function asyncAll(d : Async)
+	public function transformStack(t : StackTransformer)
 	{
-		var query = _createQuery(d, this._first);
+		return asyncStack(asyncTransformStack(t));
+	}
+
+	public function asyncStack(f : AsyncStack)
+	{
+		var query = _createQuery(f, this._first);
 		this._next = query;
 		return _this(query);
 	}
 
-	public function asyncEach(f : Dynamic -> (Array<Dynamic> -> Void) -> Void)
+	public function asyncAll(f : Async)
 	{
-		return asyncAll(function(data : Array<Dynamic>, handler : Array<Dynamic> -> Void) {
-			var tot = data.length,
-				pos = 0,
-				results = [];
+		return asyncStack(function(data : Array<Array<Dynamic>>, handler : Array<Array<Dynamic>> -> Void) {
+			var tot    = data.length,
+				pos    = 0,
+				result = [];
 			function complete(i : Int, r : Array<Dynamic>)
 			{
-				// preserve the order of the operations
-				results[i] = r;
+				result[i] = r;
 				if(++pos == tot)
 				{
-					handler(Arrays.flatten(results));
+					handler(result);
+//					handler(result.flatten());
 				}
 			}
-			for(i in 0...tot)
+			for(i in 0...data.length)
 			{
 				f(data[i], callback(complete, i));
 			}
 		});
 	}
 
-	public function addField(name : String, f : Dynamic)
+	public function asyncEach(f : Dynamic -> (Array<Dynamic> -> Void) -> Void)
+	{
+		return asyncAll(function(data : Array<Dynamic>, handler : Array<Dynamic> -> Void) {
+			var tot    = data.length,
+				pos    = 0,
+				result = [];
+			function complete(i : Int, r : Array<Dynamic>)
+			{
+				// preserve the order of the operations
+				result[i] = r;
+				if(++pos == tot)
+				{
+					handler(result.flatten());
+				}
+			}
+			for(i in 0...data.length)
+			{
+				f(data[i], callback(complete, i));
+			}
+		});
+	}
+
+	public function setField(name : String, f : Dynamic)
 	{
 		return transform(Transformers.setField(name, f));
+	}
+
+	public function setFields(o : Dynamic)
+	{
+		return transform(Transformers.setFields(o));
 	}
 
 	public function addIndex(?name : String)
@@ -224,11 +266,125 @@ class BaseQuery<This>
 		return transform(Transformers.uniquef(f));
 	}
 
+	public function reduce(reducef : Dynamic -> Dynamic -> Int -> Dynamic, startf : Dynamic -> Dynamic)
+	{
+		return transform(function(data : Array<Dynamic>) {
+			return [Arrays.reduce(data.slice(1), reducef, startf(data[0]))];
+		});
+	}
+
+	// stack operations
+
+	public function merge()
+	{
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			return [data.flatten()];
+		}));
+	}
+
+	public function discard(?howmany : Int)
+	{
+		if(null == howmany) howmany = 1;
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			for(i in 0...howmany)
+				data.pop();
+			return data;
+		}));
+	}
+
+	public function keep(?howmany : Int)
+	{
+		if(null == howmany) howmany = 1;
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			return data.slice(0, howmany);
+		}));
+	}
+
+	public function split(f : Dynamic -> String)
+	{
+		if(Std.is(f, String))
+		{
+			var name : String = cast f;
+			f = function(o) {
+				return Reflect.field(o, name);
+			}
+		}
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			var result = [];
+			for(arr in data)
+			{
+				result = result.concat(Transformers.split(arr, f));
+			}
+			return result;
+		}));
+	}
+
+	public function stackOperation(operationf : Dynamic -> Dynamic -> Void, ?matchingf : Dynamic -> Dynamic -> Bool)
+	{
+		return stackTraverse(function(data : Array<Dynamic>) {
+			for(i in 0...data.length-1)
+				operationf(data[i], data[i+1]);
+		}, matchingf);
+	}
+
+	public function stackTraverse(traversef : Array<Dynamic> -> Void, ?matchingf : Dynamic -> Dynamic -> Bool)
+	{
+		var t = Transformers.rotate(matchingf);
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			var result = t(data);
+			for(arr in result)
+				traversef(arr);
+			return data;
+		}));
+	}
+
+	public function stackRotate(?matchingf : Dynamic -> Dynamic -> Bool)
+	{
+		var t = Transformers.rotate(matchingf);
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			return t(data);
+		}));
+	}
+
+	public function stackReverse()
+	{
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			data.reverse();
+			return data;
+		}));
+	}
+/*
+	public function stackReduce(startf : Dynamic -> Dynamic, reducef : Dynamic -> Dynamic -> Dynamic, matchingf : Dynamic -> Dynamic -> Bool)
+	{
+		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+			var result = [],
+				da = data[0];
+			for(i in 0...da.length)
+			{
+				var a = da[i],
+					s = startf(a);
+				for(j in 1...data.length)
+				{
+					var db = data[j];
+					for(k in 0...db.length)
+					{
+						var b = db[k];
+						if(matchingf(a, b))
+							s = reducef(s, b);
+					}
+				}
+				result.push(s);
+			}
+			return result;
+		}));
+	}
+*/
+/*
 	public function accumulate(groupby : String, on : String, forproperty : String, atproperty : String)
 	{
 		var map = new Hash();
 		var q = sortFields([groupby, on]);
-		return _query(q).transform(function(data : Array<Dynamic>){
+		return _query(q).transform(function(data : Array<Array<Dynamic>>){
 			var v : Float, f : String;
 			data.each(function(dp, _) {
 				v = map.get(f = "" + Reflect.field(dp, on));
@@ -239,12 +395,12 @@ class BaseQuery<This>
 			return data;
 		});
 	}
-
+*/
 	public function store(?name : String)
 	{
 		if(null == name)
 			name = "";
-		return transform(function(arr : Array<Dynamic>) {
+		return transformStack(function(arr : Array<Array<Dynamic>>) {
 			_first._store.set(name, arr.copy());
 			return arr;
 		});
@@ -254,14 +410,16 @@ class BaseQuery<This>
 	{
 		if(null == name)
 			name = "";
-		return transform(function(arr : Array<Dynamic>) {
+		return transformStack(function(arr : Array<Array<Dynamic>>) {
 			return arr.concat(_first._store.get(name));
 		});
 	}
 
 	public function clear()
 	{
-		return data([]);
+		return transformStack(function(_) {
+			return [];
+		});
 	}
 
 	public function execute(handler : Array<Dynamic> -> Void)
@@ -271,14 +429,24 @@ class BaseQuery<This>
 
 	inline function _query(t : This) : BaseQuery<This> return cast t
 
-	function _createQuery(async : Async, first : BaseQuery<This>) : BaseQuery<This>
+	function _createQuery(async : AsyncStack, first : BaseQuery<This>) : BaseQuery<This>
 	{
 		return new BaseQuery(async, first);
 	}
 
-	static function asyncTransform(t : Transformer) : Async
+	static function asyncTransform(t : Transformer) : AsyncStack
 	{
-		return function(data : Array<Dynamic>, handler : Array<Dynamic> -> Void)
+		return function(data : Array<Array<Dynamic>>, handler : Array<Array<Dynamic>> -> Void)
+		{
+			for(i in 0...data.length)
+				data[i] = t(data[i]);
+			handler(data);
+		}
+	}
+
+	static function asyncTransformStack(t : StackTransformer) : AsyncStack
+	{
+		return function(data : Array<Array<Dynamic>>, handler : Array<Array<Dynamic>> -> Void)
 		{
 			handler(t(data));
 		}
@@ -289,6 +457,8 @@ class BaseQuery<This>
 	inline function _this(q) : This return cast q
 }
 
+typedef StackTransformer = Array<Array<Dynamic>> -> Array<Array<Dynamic>>;
 typedef Transformer = Array<Dynamic> -> Array<Dynamic>;
 
+typedef AsyncStack = Array<Array<Dynamic>> -> (Array<Array<Dynamic>> -> Void) -> Void;
 typedef Async = Array<Dynamic> -> (Array<Dynamic> -> Void) -> Void;

@@ -9,7 +9,6 @@ ReportGrid.query
 		periodicity : "hour",
 		start : "10 hours ago"
 	})
-	.accumulate('gender', 'time:hour', 'count', 'y0')
 
 //** VIZ
 ReportGrid.streamGraph("#chart", {

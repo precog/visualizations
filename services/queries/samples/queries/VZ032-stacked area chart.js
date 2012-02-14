@@ -9,7 +9,12 @@ ReportGrid.query
 		periodicity : "hour",
 		start : "1 day ago"
 	})
-	.accumulate('gender', 'time:hour', 'count', 'y0')
+	.split("gender")
+	.stackOperation(function(a, b) {
+		if(null == a.y0)
+			a.y0 = 0;
+		b.y0 = a.y0 + a.count;
+	}, 'time:hour')
 
 //** VIZ
 ReportGrid.lineChart("#chart", {

@@ -3,9 +3,7 @@ ReportGrid.query
 	.intersect({
 		path : "/test/clipmaster/t4/",
 		event : "impression",
-		properties : [{
-			property : 'clip'
-		}]
+		properties : ['clip']
 	})
 	.renameFields({
 		clip : "id",
@@ -15,11 +13,7 @@ ReportGrid.query
 		.intersect({
 			path : "/test/clipmaster/t4/",
 			event : "impression",
-			properties : [{
-				property : 'clip'
-			}, {
-				property : 'parent'
-			}]
+			properties : ['clip', 'parent']
 		})
 		.renameFields({
 			clip   : "head",

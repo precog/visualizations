@@ -18,11 +18,20 @@ ReportGrid.lineChart("#osestime", {
             periodicity : "day",
             start : start,
             end : end
-        }),
+        })
+ 		.split("os")
+ 		.stackOperation(function(a ,b) {
+ 			if(null == a.y0) a.y0 = 0;
+ 			b.y0 = a.y0 + a.count;
+ 		}, "time:day")
+ 		.stackReverse(),
     options : {
         segmenton : "os",
         displayrules : function(type) { return type == "count" },
-        interpolation : "monotone"
+        interpolation : "monotone",
+		displayarea : true,
+		y0property : "y0",
+		effect : "none"
     }
 });
 
@@ -38,11 +47,20 @@ ReportGrid.lineChart("#browserstime", {
             periodicity : "day",
             start : start,
             end : end
-        }),
+        })
+ 		.split("browser")
+ 		.stackOperation(function(a ,b) {
+ 			if(null == a.y0) a.y0 = 0;
+ 			b.y0 = a.y0 + a.count;
+ 		}, "time:day")
+ 		.stackReverse(),
     options : {
         segmenton : "browser",
         displayrules : function(type) { return type == "count" },
-        interpolation : "monotone"
+        interpolation : "monotone",
+		displayarea : true,
+		y0property : "y0",
+		effect : "none"
     }
 });
 

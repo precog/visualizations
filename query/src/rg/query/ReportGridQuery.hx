@@ -30,8 +30,7 @@ class ReportGridQuery extends ReportGridBaseQuery<ReportGridQuery>
 class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery<This>
 {
 	public var executor : IExecutorReportGrid;
-
-	public function new(async : Async, first : BaseQuery<This>)
+	public function new(async : AsyncStack, first : BaseQuery<This>)
 	{
 		super(async, first);
 	}
@@ -456,20 +455,23 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	{
 		return function(data : Dynamic)
 		{
-			handler(transformer(data, params, keep));
+			var result = transformer(data, params, keep);
+			handler(result);
 		};
 	}
 
 	inline static function _prefixProperty(p : String) return (p.substr(0, 1) == '.' ? '' : '.') + p
 
-	inline function _crossp(p : Dynamic)
+	inline function _crossp(p : Dynamic) : This
 	{
-		return cross(_params(p));
+
+		return data(_params(p)).cross();
+//		return cross(_params(p));
 	}
 
 	inline function _params(p : Dynamic) : Array<Dynamic> return null == p ? [{}] : (Std.is(p, Array) ? p : [p])
 
-	override function _createQuery(async : Async, first : BaseQuery<This>) : BaseQuery<This>
+	override function _createQuery(async : AsyncStack, first : BaseQuery<This>) : BaseQuery<This>
 	{
 		var query = new ReportGridBaseQuery(async, first);
 		query.executor = executor;

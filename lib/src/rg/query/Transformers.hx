@@ -4,24 +4,55 @@ using Arrays;
 
 class Transformers
 {
-	public static function cross(values : Array<Dynamic>)
+	public static function crossStack(data : Array<Array<Dynamic>>)
 	{
-		if(!Std.is(values, Array))
-			values = [values];
-		return function(data : Array<Dynamic>)
+		if(data.length <= 1)
+			return data;
+		var src = data.shift();
+		while(data.length > 0)
 		{
-			if(data.length == 0)
-				return values;
-			var results = [];
-			for(item in data)
+			var values = data.shift(),
+				results = [];
+			for(item in src)
 			{
 				for(value in values)
 				{
 					results.push(Objects.copyTo(value, Objects.copyTo(item, {})));
 				}
 			}
-			return results;
+			src = results;
 		}
+		return [src];
+/*
+		var results = [];
+		for(item in data)
+		{
+			for(value in values)
+			{
+				results.push(Objects.copyTo(value, Objects.copyTo(item, {})));
+			}
+		}
+		return results;
+*/
+	}
+
+	public static function split(data : Array<Dynamic>, f : Dynamic -> String) : Array<Array<Dynamic>>
+	{
+		var map     = new Hash(),
+			result  = [];
+		data.each(function(dp, _) {
+			var name = f(dp),
+				pos  = map.get(name);
+			if(null == pos)
+			{
+				pos = result.length;
+				map.set(name, pos);
+				result.push([]);
+			}
+			result[pos].push(dp);
+		});
+
+		return result;
 	}
 
 	public static function map(handler : Dynamic -> ?Int -> Dynamic)
@@ -79,9 +110,37 @@ class Transformers
 			var value = o;
 			o = function(obj, index) return value;
 		}
-		function handler(d : Dynamic, i : Int)
+		function handler(d : Dynamic, _)
 		{
-			Reflect.setField(d, name, o(d, i));
+			Reflect.setField(d, name, o(Reflect.field(d, name), d));
+		}
+		return function(data : Array<Dynamic>)
+		{
+			data.each(handler);
+			return data;
+		}
+	}
+
+	public static function setFields(o : Dynamic)
+	{
+		var fields = Reflect.fields(o),
+			fs = [];
+		for(field in fields)
+		{
+			var f = Reflect.field(o, field);
+			if(!Reflect.isFunction(f))
+				fs.push(callback(function(value : Dynamic, d : Dynamic, _) {
+					return value;
+				}, f));
+			else
+				fs.push(f);
+		}
+		function handler(d : Dynamic, _)
+		{
+			for(j in 0...fields.length)
+			{
+				Reflect.setField(d, fields[j], fs[j](Reflect.field(d, fields[j]), _));
+			}
 		}
 		return function(data : Array<Dynamic>)
 		{
@@ -133,5 +192,39 @@ class Transformers
 			}
 			return arr;
 		};
+	}
+
+	public static function rotate(?matchingf : Dynamic -> Dynamic -> Bool){
+		if(Std.is(matchingf, String))
+		{
+			var field : String = cast matchingf;
+			matchingf = function(a, b) return Reflect.field(a, field) == Reflect.field(b, field);
+		}
+		var m = null == matchingf ? function(_, _, i, k) return i == k : function(a, b, _, _) return matchingf(a, b);
+		return function(data : Array<Array<Dynamic>>)
+		{
+			var traversed = [],
+				da = data[0];
+			for(i in 0...da.length)
+			{
+				var a = da[i],
+					traversal = [a];
+				for(j in 1...data.length)
+				{
+					var db = data[j];
+					for(k in 0...db.length)
+					{
+						var b = db[k];
+						if(m(a, b, i, k))
+						{
+							traversal.push(b);
+							break;
+						}
+					}
+				}
+				traversed.push(traversal);
+			}
+			return traversed;
+		}
 	}
 }

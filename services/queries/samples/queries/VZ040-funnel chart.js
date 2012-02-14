@@ -1,6 +1,6 @@
 //** QUERY
 ReportGrid.query
-	.cross([{ event : "impression" }, { event : "click" }, { event : "conversion" }])
+	.data([{ event : "impression" }, { event : "click" }, { event : "conversion" }])
 	.count({ path : pathvalue })
 
 //** VIZ
