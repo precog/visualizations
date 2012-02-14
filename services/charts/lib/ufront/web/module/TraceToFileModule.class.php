@@ -3,17 +3,28 @@
 class ufront_web_module_TraceToFileModule implements ufront_web_module_ITraceModule{
 	public function __construct($path) {
 		if(!php_Boot::$skip_constructor) {
-		$this->file = php_io_File::append($path, null);
+		$this->path = $path;
 	}}
 	public $file;
+	public $path;
 	public function init($application) {
 	}
 	public function trace($msg, $pos) {
-		$this->file->writeString(ufront_web_module_TraceToFileModule::format($msg, $pos) . "\x0A");
+		$this->getFile()->writeString(ufront_web_module_TraceToFileModule::format($msg, $pos) . "\x0A");
 	}
 	public function dispose() {
+		$this->path = null;
+		if(null === $this->file) {
+			return;
+		}
 		$this->file->close();
 		$this->file = null;
+	}
+	public function getFile() {
+		if(null === $this->file) {
+			$this->file = php_io_File::append($this->path, null);
+		}
+		return $this->file;
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

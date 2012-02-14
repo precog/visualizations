@@ -10,7 +10,7 @@ class App {
 	static $PRINT_JS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js";
 	static $version;
 	static function main() {
-		App::$version = "1.0.2.299";
+		App::$version = "1.0.2.301";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
