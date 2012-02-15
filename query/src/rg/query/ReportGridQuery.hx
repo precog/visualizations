@@ -274,10 +274,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 // TODO timerange?
 // TODO tag?
-	public function histogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?keep : Array<String>)
+	public function histogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			if(null != params.top)
@@ -289,6 +289,8 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			{
 				options.bottom = params.bottom;
 			}
+			if(null != params.where)
+				options.where = _where(params.event, params.where);
 			executor.histogram(
 				params.path,
 				options,
