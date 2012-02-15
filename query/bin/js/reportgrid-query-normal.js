@@ -4007,7 +4007,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.2.0.1408"};
+	r.info.query = { version : "1.2.0.1409"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);

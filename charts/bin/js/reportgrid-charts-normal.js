@@ -1556,7 +1556,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.1.7059"};
+	r.info.charts = { version : "1.4.1.7060"};
 	r.charts = { onReady : function(handler) {
 		globalNotifier.add(handler);
 	}};
