@@ -108,11 +108,11 @@ class Transformers
 		if(!Reflect.isFunction(o))
 		{
 			var value = o;
-			o = function(obj, index) return value;
+			o = function(obj, value, index) return value;
 		}
-		function handler(d : Dynamic, _)
+		function handler(obj : Dynamic, i : Int)
 		{
-			Reflect.setField(d, name, o(Reflect.field(d, name), d));
+			Reflect.setField(obj, name, o(obj, Reflect.field(obj, name), i));
 		}
 		return function(data : Array<Dynamic>)
 		{
@@ -129,17 +129,17 @@ class Transformers
 		{
 			var f = Reflect.field(o, field);
 			if(!Reflect.isFunction(f))
-				fs.push(callback(function(value : Dynamic, d : Dynamic, _) {
-					return value;
+				fs.push(callback(function(v : Dynamic, obj : Dynamic, value : Dynamic, i : Int) {
+					return v;
 				}, f));
 			else
 				fs.push(f);
 		}
-		function handler(d : Dynamic, _)
+		function handler(obj : Dynamic, i : Int)
 		{
 			for(j in 0...fields.length)
 			{
-				Reflect.setField(d, fields[j], fs[j](Reflect.field(d, fields[j]), _));
+				Reflect.setField(obj, fields[j], fs[j](obj, Reflect.field(obj, fields[j]), i));
 			}
 		}
 		return function(data : Array<Dynamic>)

@@ -2,9 +2,11 @@
 impressions
 
 //** QUERY
+var year = (new Date()).getFullYear();
 ReportGrid.query
 	.data(data())
-	.setField({
-		gender : "sex",
-		age    : "years"
+	.setFields({
+		group  : "A",
+		age    : function(ob, value, i) { return value + 1; },
+		year   : function(ob, value, i) { return year - ob.age; }
 	})

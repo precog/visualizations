@@ -2,7 +2,6 @@ package rg.query;
 
 using Arrays;
 
-@:keep
 class Query extends BaseQuery<Query>
 {
 	public static function create()
@@ -18,7 +17,7 @@ class Query extends BaseQuery<Query>
 		super(null, this);
 	}
 
-	override public function execute(handler : Array<Dynamic> -> Void)
+	override public function execute(handler : Array<Dynamic> -> Void) : Void
 	{
 		executeHandler(this, handler);
 	}
@@ -40,7 +39,6 @@ class Query extends BaseQuery<Query>
 	}
 }
 
-@:keep
 class BaseQuery<This>
 {
 	var _first : BaseQuery<This>;
@@ -83,12 +81,6 @@ class BaseQuery<This>
 	public function map(handler : Dynamic -> ?Int -> Dynamic)
 	{
 		return transform(Transformers.map(handler));
-	}
-
-	public function mapValue(name : String, f : Dynamic -> ?Int -> Dynamic)
-	{
-		var fun = function(d, i) return f(Reflect.field(d, name), i);
-		return transform(Transformers.setField(name, fun));
 	}
 
 	public function audit(f : Array<Dynamic> -> Void)
@@ -188,10 +180,11 @@ class BaseQuery<This>
 		return transform(Transformers.setFields(o));
 	}
 
-	public function addIndex(?name : String)
+	public function addIndex(?name : String, ?start : Int)
 	{
 		if(null == name) name = "index";
-		return transform(Transformers.setField(name, function(_, i) return i));
+		if(null == start) start = 0;
+		return transform(Transformers.setField(name, function(_, _, i) return start + i));
 	}
 
 	public function filter(f : Dynamic -> Bool)
@@ -266,7 +259,7 @@ class BaseQuery<This>
 		return transform(Transformers.uniquef(f));
 	}
 
-	public function reduce(reducef : Dynamic -> Dynamic -> Int -> Dynamic, startf : Dynamic -> Dynamic)
+	public function reduce(startf : Dynamic -> Dynamic, reducef : Dynamic -> Dynamic -> Int -> Dynamic)
 	{
 		return transform(function(data : Array<Dynamic>) {
 			return [Arrays.reduce(data.slice(1), reducef, startf(data[0]))];
