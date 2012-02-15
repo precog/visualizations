@@ -1,0 +1,12 @@
+-php ../../services/charts
+-cp src
+-main App
+-lib ufront
+-cp /User/francoponticelli/ufront/src
+-lib erazor
+-lib hscript
+-D erazor
+-D haxe_209
+--no-traces
+-D release
+#-lib thx

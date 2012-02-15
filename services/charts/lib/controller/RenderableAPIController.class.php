@@ -58,7 +58,6 @@ class controller_RenderableAPIController extends controller_BaseController {
 	}
 	public function makeRenderable($html, $config) {
 		if(!$this->validateHtml($html)) {
-			haxe_Log::trace("INVALID HTML: " . $html, _hx_anonymous(array("fileName" => "RenderableAPIController.hx", "lineNumber" => 106, "className" => "controller.RenderableAPIController", "methodName" => "makeRenderable")));
 			throw new HException(new thx_error_Error("invalid content for HTML", null, null, _hx_anonymous(array("fileName" => "RenderableAPIController.hx", "lineNumber" => 107, "className" => "controller.RenderableAPIController", "methodName" => "makeRenderable"))));
 		}
 		$cobj = model_ConfigObjects::createDefault();
@@ -105,7 +104,6 @@ class controller_RenderableAPIController extends controller_BaseController {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
 			{
-				haxe_Log::trace($e, _hx_anonymous(array("fileName" => "RenderableAPIController.hx", "lineNumber" => 176, "className" => "controller.RenderableAPIController", "methodName" => "tryParseJson")));
 				return null;
 			}
 		}

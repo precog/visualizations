@@ -1,4 +1,3 @@
-#RewriteEngine On
 #RewriteBase /rg/services/viz/charts/
 
 # this gets rid of index.php

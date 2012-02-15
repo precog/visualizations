@@ -5,16 +5,16 @@ class App {
 	static $MONGO_DB_NAME = "chartsrenderer1";
 	static $RENDERABLES_COLLECTION = "renderables";
 	static $CACHE_COLLECTION = "cache";
-	static $HOST;
-	static $BASE_PATH = "/rg/services/viz/charts/";
+	static $HOST = "http://api.reportgrid.com";
+	static $BASE_PATH = "/services/viz/charts/";
 	static $RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css";
 	static $PRINT_JS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js";
 	static $version;
 	static function baseUrl() {
-		return "http://" . $_SERVER["HTTP_HOST"];
+		return "http://api.reportgrid.com";
 	}
 	static function main() {
-		App::$version = "1.0.2.327";
+		App::$version = "1.0.2.328";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
@@ -24,7 +24,7 @@ class App {
 		$locator->memoize(_hx_qtype("model.RenderableGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_4"), 'execute'));
 		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_5"), 'execute'));
 		ufront_web_mvc_DependencyResolver::$current = new ufront_external_mvc_ThxDependencyResolver($locator);
-		$config = new ufront_web_AppConfiguration("controller", true, "/rg/services/viz/charts/", "logs/logs.txt"); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
+		$config = new ufront_web_AppConfiguration("controller", true, "/services/viz/charts/", "logs/logs.txt"); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
 		$routes->addRoute("/", _hx_anonymous(array("controller" => "home", "action" => "index")), null, null);
 		$routes->addRoute("/up/form/html", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null, null);
 		$routes->addRoute("/up/form/gist", _hx_anonymous(array("controller" => "uploadForm", "action" => "gist")), null, null);
@@ -49,7 +49,6 @@ class App {
 	}
 	function __toString() { return 'App'; }
 }
-App::$HOST = "http://" . $_SERVER["HTTP_HOST"];
 function App_0(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
 	{
 		return new model_WKHtmlToImage($wkhtmltoimagebin);

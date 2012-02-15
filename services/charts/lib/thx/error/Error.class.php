@@ -24,7 +24,6 @@ class thx_error_Error extends thx_util_Message {
 			$e = $_ex_;
 			{
 				$ps = $this->pos->className . "." . $this->pos->methodName . "(" . $this->pos->lineNumber . ")";
-				haxe_Log::trace("wrong parameters passed for pattern '" . $this->message . "' at " . $ps, _hx_anonymous(array("fileName" => "Error.hx", "lineNumber" => 42, "className" => "thx.error.Error", "methodName" => "toString")));
 				return "";
 			}
 		}

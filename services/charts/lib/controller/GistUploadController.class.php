@@ -17,7 +17,6 @@ class controller_GistUploadController extends controller_BaseController {
 					$field = $_g1[$_g];
 					++$_g;
 					$file = Reflect::field($gist->data->files, $field);
-					haxe_Log::trace($file, _hx_anonymous(array("fileName" => "GistUploadController.hx", "lineNumber" => 25, "className" => "controller.GistUploadController", "methodName" => "importGist")));
 					switch(_hx_string_call($file->language, "toLowerCase", array())) {
 					case "html":case "htm":{
 						if(null === $html) {
