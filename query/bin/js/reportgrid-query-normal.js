@@ -1884,12 +1884,12 @@ rg.query.Transformers.filterValue = function(name,o) {
 rg.query.Transformers.setField = function(name,o) {
 	if(!Reflect.isFunction(o)) {
 		var value = o;
-		o = function(obj,index) {
-			return value;
+		o = function(obj,value1,index) {
+			return value1;
 		};
 	}
-	var handler = function(d,_) {
-		d[name] = o(Reflect.field(d,name),d);
+	var handler = function(obj,i) {
+		obj[name] = o(obj,Reflect.field(obj,name),i);
 	};
 	return function(data) {
 		data.forEach(handler);
@@ -1904,18 +1904,18 @@ rg.query.Transformers.setFields = function(o) {
 		++_g;
 		var f = Reflect.field(o,field);
 		if(!Reflect.isFunction(f)) fs.push((function(f1,a1) {
-			return function(a2,a3) {
-				return f1(a1,a2,a3);
+			return function(a2,a3,a4) {
+				return f1(a1,a2,a3,a4);
 			};
-		})(function(value,d,_) {
-			return value;
+		})(function(v,obj,value,i) {
+			return v;
 		},f)); else fs.push(f);
 	}
-	var handler = function(d,_) {
+	var handler = function(obj,i) {
 		var _g1 = 0, _g = fields.length;
 		while(_g1 < _g) {
 			var j = _g1++;
-			d[fields[j]] = fs[j](Reflect.field(d,fields[j]),_);
+			obj[fields[j]] = fs[j](obj,Reflect.field(obj,fields[j]),i);
 		}
 	};
 	return function(data) {
@@ -2155,12 +2155,6 @@ rg.query.BaseQuery.prototype = {
 	,map: function(handler) {
 		return this.transform(rg.query.Transformers.map(handler));
 	}
-	,mapValue: function(name,f) {
-		var fun = function(d,i) {
-			return f(Reflect.field(d,name),i);
-		};
-		return this.transform(rg.query.Transformers.setField(name,fun));
-	}
 	,audit: function(f) {
 		return this.transform(function(d) {
 			f(d);
@@ -2235,10 +2229,11 @@ rg.query.BaseQuery.prototype = {
 	,setFields: function(o) {
 		return this.transform(rg.query.Transformers.setFields(o));
 	}
-	,addIndex: function(name) {
+	,addIndex: function(name,start) {
 		if(null == name) name = "index";
-		return this.transform(rg.query.Transformers.setField(name,function(_,i) {
-			return i;
+		if(null == start) start = 0;
+		return this.transform(rg.query.Transformers.setField(name,function(_,_1,i) {
+			return start + i;
 		}));
 	}
 	,filter: function(f) {
@@ -2290,7 +2285,7 @@ rg.query.BaseQuery.prototype = {
 		if(null == f) f = Dynamics.same;
 		return this.transform(rg.query.Transformers.uniquef(f));
 	}
-	,reduce: function(reducef,startf) {
+	,reduce: function(startf,reducef) {
 		return this.transform(function(data) {
 			return [data.slice(1).reduce(reducef,startf(data[0]))];
 		});
@@ -4011,7 +4006,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.1391"};
+	r.info.query = { version : "1.0.0.1400"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
