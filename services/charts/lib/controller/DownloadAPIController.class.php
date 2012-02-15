@@ -84,7 +84,7 @@ class controller_DownloadAPIController extends ufront_web_mvc_Controller {
 	}
 	public function error($msg, $ext) {
 		haxe_Log::trace("ERROR: " . $msg . " (." . $ext . ")", _hx_anonymous(array("fileName" => "DownloadAPIController.hx", "lineNumber" => 121, "className" => "controller.DownloadAPIController", "methodName" => "error")));
-		$ext1 = strtolower($ext); $content = _hx_deref(new template_Error())->execute(_hx_anonymous(array("baseurl" => "http://localhost", "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "data" => _hx_anonymous(array("error" => $msg)))));
+		$ext1 = strtolower($ext); $content = _hx_deref(new template_Error())->execute(_hx_anonymous(array("baseurl" => App::baseUrl(), "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "data" => _hx_anonymous(array("error" => $msg)))));
 		return $this->renderHtml($content, null, $ext1);
 	}
 	public function renderHtml($html, $config, $ext) {

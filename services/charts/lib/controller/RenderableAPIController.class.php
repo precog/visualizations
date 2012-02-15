@@ -38,7 +38,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 	}
 	public function redirect($params) {
 		$url = _hx_deref(new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext))->route($params);
-		return new ufront_web_mvc_RedirectResult("http://localhost" . $url, false);
+		return new ufront_web_mvc_RedirectResult(App::baseUrl() . $url, false);
 	}
 	public function uploadAndDisplay($html, $config, $ext, $forceDownload) {
 		if($forceDownload === null) {
@@ -115,7 +115,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 		return _hx_index_of($html, "reportgrid", null) >= 0 || _hx_index_of($html, "svg", null) >= 0;
 	}
 	public function success($r, $format) {
-		$content = _hx_anonymous(array("uid" => $r->getUid(), "createdOn" => $r->createdOn, "expiresOn" => $r->config->expiresOn, "cacheExpirationTime" => $r->config->cacheExpirationTime, "formats" => $r->config->allowedFormats, "preserveTimeAfterLastUsage" => model_RenderableGateway::$DELETE_IF_NOT_USED_FOR, "service" => _hx_anonymous(array())));
+		$content = _hx_anonymous(array("uid" => $r->getUid(), "createdOn" => $r->createdOn, "expiresOn" => Date::now()->getTime() + $r->config->duration, "cacheExpirationTime" => $r->config->cacheExpirationTime, "formats" => $r->config->allowedFormats, "preserveTimeAfterLastUsage" => model_RenderableGateway::$DELETE_IF_NOT_USED_FOR, "service" => _hx_anonymous(array())));
 		{
 			$_g = 0; $_g1 = $content->formats;
 			while($_g < $_g1->length) {
@@ -128,7 +128,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 		return $this->output($content, $format, _hx_qtype("template.RenderableDisplay"));
 	}
 	public function serviceUrl($uid, $format) {
-		return "http://localhost" . $this->getUrlHelper()->route(_hx_anonymous(array("controller" => "downloadAPI", "action" => "download", "uid" => $uid, "ext" => $format)));
+		return App::baseUrl() . $this->getUrlHelper()->route(_hx_anonymous(array("controller" => "downloadAPI", "action" => "download", "uid" => $uid, "ext" => $format)));
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

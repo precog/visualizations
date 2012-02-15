@@ -31,7 +31,7 @@ class BaseController extends Controller
 			case "html":
 				var template : Template<{ url : ufront.web.mvc.view.UrlHelperInst, data : T, baseurl : String }> = Type.createInstance(templateClass, []);
 				var content = {
-					baseurl : App.BASE_URL,
+					baseurl : App.baseUrl(),
 					url : urlHelper,
 					data : data
 				};

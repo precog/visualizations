@@ -119,7 +119,7 @@ class SetupController extends Controller
 
 		// number of renderables
 		var content = {
-        	baseurl : App.BASE_URL,
+        	baseurl : App.baseUrl(),
 			url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 			db : {
 				name : dbname,
@@ -145,7 +145,7 @@ class SetupController extends Controller
 		var gate    = new RenderableGateway(renderableCollection()),
 			list    = gate.topByUsage(top),
 			content = {
-	        	baseurl     : App.BASE_URL,
+	        	baseurl     : App.baseUrl(),
 				url         : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 				top         : top,
 				renderables : list

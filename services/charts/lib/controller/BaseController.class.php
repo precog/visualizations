@@ -20,7 +20,7 @@ class controller_BaseController extends ufront_web_mvc_Controller {
 		switch($format) {
 		case "html":{
 			$template = Type::createInstance($templateClass, new _hx_array(array()));
-			$content = _hx_anonymous(array("baseurl" => "http://localhost", "url" => $this->getUrlHelper(), "data" => $data));
+			$content = _hx_anonymous(array("baseurl" => App::baseUrl(), "url" => $this->getUrlHelper(), "data" => $data));
 			return new ufront_web_mvc_ContentResult($template->execute($content), null);
 		}break;
 		case "json":{

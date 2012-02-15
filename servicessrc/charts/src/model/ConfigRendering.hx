@@ -6,7 +6,7 @@ class ConfigRendering
 	{
 		var config = new ConfigRendering();
 		config.cacheExpirationTime = options.cacheExpires;
-		config.expiresOn = null == options.expiresOn ? null : Date.fromTime(options.expiresOn);
+		config.duration = null == options.duration ? null : options.duration;
 		config.allowedFormats = options.allowedFormats;
 		config.wk.zoom = options.zoom;
 
@@ -71,7 +71,7 @@ class ConfigRendering
 	}
 
 	public var allowedFormats : Array<String>;
-	public var expiresOn : Null<Date>;
+	public var duration : Null<Float>;
 	public var cacheExpirationTime : Float;
 
 	public var pdf : ConfigPdf;

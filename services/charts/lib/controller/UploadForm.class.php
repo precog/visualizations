@@ -6,7 +6,7 @@ class controller_UploadForm extends ufront_web_mvc_Controller {
 		parent::__construct();
 	}}
 	public function display($html, $config, $displayFormat) {
-		$ob = _hx_anonymous(array("baseurl" => "http://localhost", "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "html" => $html, "config" => $config, "errors" => new Hash(), "displayFormat" => $displayFormat));
+		$ob = _hx_anonymous(array("baseurl" => App::baseUrl(), "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "html" => $html, "config" => $config, "errors" => new Hash(), "displayFormat" => $displayFormat));
 		if($this->controllerContext->request->getHttpMethod() === "POST") {
 			$haserrors = false;
 			if(null === $html || "" === ($html = trim($html))) {
@@ -56,7 +56,7 @@ class controller_UploadForm extends ufront_web_mvc_Controller {
 			$controller->controllerContext = $this->controllerContext;
 			return $controller->importGist($id, "html");
 		} else {
-			$ob = _hx_anonymous(array("baseurl" => "http://localhost", "error" => $this->lastError, "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "gistid" => $gistid));
+			$ob = _hx_anonymous(array("baseurl" => App::baseUrl(), "error" => $this->lastError, "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "gistid" => $gistid));
 			return new ufront_web_mvc_ContentResult(_hx_deref(new template_GistUpload())->execute($ob), null);
 		}
 	}

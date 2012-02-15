@@ -10,7 +10,7 @@ class model_RenderableGateway {
 		return null !== $this->coll->findOne(_hx_anonymous(array("uid" => $uid)), _hx_anonymous(array()));
 	}
 	public function insert($r) {
-		$ob = _hx_anonymous(array("uid" => $r->getUid(), "config" => model_RenderableGateway::serialize($r->config), "createdOn" => $r->createdOn->getTime(), "html" => $r->html, "lastUsage" => $r->lastUsage->getTime(), "usages" => $r->usages, "expiresOn" => ((null === $r->config->expiresOn) ? null : $r->config->expiresOn->getTime())));
+		$ob = _hx_anonymous(array("uid" => $r->getUid(), "config" => model_RenderableGateway::serialize($r->config), "createdOn" => $r->createdOn->getTime(), "html" => $r->html, "lastUsage" => $r->lastUsage->getTime(), "usages" => $r->usages, "expiresOn" => model_RenderableGateway_0($this, $r)));
 		$this->coll->insert($ob, null);
 	}
 	public function load($uid) {
@@ -56,3 +56,10 @@ class model_RenderableGateway {
 	function __toString() { return 'model.RenderableGateway'; }
 }
 model_RenderableGateway::$DELETE_IF_NOT_USED_FOR = thx_date_Milli::parse("366 days");
+function model_RenderableGateway_0(&$»this, &$r) {
+	if(null === $r->config->duration) {
+		return null;
+	} else {
+		return Date::now()->getTime() + $r->config->duration;
+	}
+}

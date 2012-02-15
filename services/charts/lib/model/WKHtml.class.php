@@ -62,7 +62,7 @@ class model_WKHtml {
 	}
 	public function setFormat($f) {
 		if(!Arrays::exists($this->allowedFormats, $f, null)) {
-			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 88, "className" => "model.WKHtml", "methodName" => "setFormat"))));
+			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 91, "className" => "model.WKHtml", "methodName" => "setFormat"))));
 		}
 		return $this->format = $f;
 	}

@@ -7,7 +7,7 @@ using Arrays;
 
 typedef ConfigObject = {
 	cacheExpires			: Float,
-	expiresOn				: Null<Float>,
+	duration				: Null<Float>,
 	allowedFormats			: Array<String>,
 	params					: Dynamic,
 	defaults				: Dynamic,
@@ -66,7 +66,7 @@ class ConfigObjects
 	{
 		return {
 			cacheExpires			: 30 * 60 * 24 * 1000.0,
-			expiresOn				: null,
+			duration				: null,
 			allowedFormats			: ['pdf', 'png', 'jpg', 'svg'],
 			params					: {},
 			defaults				: {},
@@ -128,12 +128,12 @@ class ConfigObjects
 			{
 				if(e <= 0)
 					throw new Error("invalid negative value for duration: {0}", [e]);
-				config.expiresOn = Date.now().getTime() + e;
+				config.duration = e;
 			} else if(Std.is(e, String)) {
 				var v = Milli.parse(e);
 				if(v <= 0)
 					throw new Error("invalid expression for duration: {0}", [e]);
-				config.expiresOn = Date.now().getTime() + v;
+				config.duration = v;
 			} else {
 				throw new Error("invalid value type for duration: {0}", [e]);
 			}

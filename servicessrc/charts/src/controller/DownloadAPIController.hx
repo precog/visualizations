@@ -121,7 +121,7 @@ class DownloadAPIController extends Controller
 		trace(Std.format("ERROR: $msg (.$ext)"));
 		var ext = ext.toLowerCase(),
 			content = new Error().execute({
-        		baseurl : App.BASE_URL,
+        		baseurl : App.baseUrl(),
 				url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 				data : { error : msg }
 			});

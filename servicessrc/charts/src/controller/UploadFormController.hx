@@ -8,7 +8,7 @@ class UploadForm extends Controller
 	public function display(?html : String, ?config : String, displayFormat : String = null) : Dynamic
 	{
 		var ob = {
-        	baseurl : App.BASE_URL,
+        	baseurl : App.baseUrl(),
 			url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 			html : html,
 			config : config,
@@ -69,7 +69,7 @@ class UploadForm extends Controller
 			return controller.importGist(id, "html");
 		} else {
 			var ob = {
-	        	baseurl : App.BASE_URL,
+	        	baseurl : App.baseUrl(),
 	        	error : lastError,
 				url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 				gistid : gistid

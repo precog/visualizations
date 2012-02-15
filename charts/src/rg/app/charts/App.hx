@@ -13,10 +13,9 @@ import rg.info.InfoDomType;
 import rg.info.InfoDownload;
 import rg.info.InfoGeneral;
 import rg.info.InfoLayout;
-import rg.info.InfoTrack;
 import rg.info.InfoVisualizationOption;
 import rg.info.InfoVisualizationType;
-import rg.interactive.Downloader;
+import rg.interactive.RGLegacyRenderer;
 import rg.interactive.RGDownloader;
 import rg.visualization.Visualization;
 import rg.data.DataLoader;
@@ -63,45 +62,55 @@ class App
 			loader    = new DataLoader(new InfoDataSource().feed(jsoptions).loader),
 			variables = new FactoryVariable().createVariables(params.variables),
 			general   = new InfoGeneral().feed(params.options),
-			infoviz   = new InfoVisualizationType().feed(params.options);
+			infoviz   = new InfoVisualizationType().feed(params.options),
+			uselegacy = !supportsSvg();
 
 		var visualization : Visualization = null;
 		params.options.marginheight = 29;
 		var ivariables : Array<rg.data.VariableIndependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableIndependent));
 		var dvariables : Array<rg.data.VariableDependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableDependent));
 
-		switch(new InfoDomType().feed(params.options).kind)
-		{
-			case Svg:
-				var layout = getLayout(id, params.options, el, infoviz.replace);
-				visualization = new FactorySvgVisualization().create(infoviz.type, layout, params.options);
-			case Html:
-				if (infoviz.replace)
-					el.selectAll("*").remove();
-				visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
-		}
-
-		visualization.setVariables(variables, ivariables, dvariables);
-		visualization.init();
-		if (null != general.ready)
-			visualization.addReady(general.ready);
-
 		loader.onLoad.addOnce(function(data) {
 			new IndependentVariableProcessor().process(data, ivariables);
 			new DependentVariableProcessor().process(data, dvariables);
 		});
 
-		loader.onLoad.addOnce(function(datapoints : Array<DataPoint>) {
-			visualization.feedData(datapoints);
-		});
-		loader.load();
+		if(!uselegacy)
+		{
+			switch(new InfoDomType().feed(params.options).kind)
+			{
+				case Svg:
+					var layout = getLayout(id, params.options, el, infoviz.replace);
+					visualization = new FactorySvgVisualization().create(infoviz.type, layout, params.options);
+				case Html:
+					if (infoviz.replace)
+						el.selectAll("*").remove();
+					visualization = new FactoryHtmlVisualization().create(infoviz.type, el, params.options);
+			}
+
+			visualization.setVariables(variables, ivariables, dvariables);
+			visualization.init();
+
+			if (null != general.ready)
+				visualization.addReady(general.ready);
+
+			loader.onLoad.addOnce(function(datapoints : Array<DataPoint>) {
+				visualization.feedData(datapoints);
+			});
+		}
+
 
 		var brandPadding = 0,
 			logoHeight = 29;
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
-		if(!supportsSvg())
+		if(uselegacy)
 		{
+			var legacy = new RGLegacyRenderer(el, download.legacyservice);
+			loader.onLoad.addOnce(function(data) {
+				jsoptions.datapoints = data;
+				legacy.display(jsoptions);
+			});
 /*
 			// IMAGE RENDERING FOR DEVICES
 			var downloader = new RGDownloader(visualization.container, download.service);
@@ -114,7 +123,11 @@ class App
 				}, null);
 			});
 */
-		} else if (null != download.position || null != download.handler)
+		}
+
+		loader.load();
+
+		if(!uselegacy && (null != download.position || null != download.handler))
 		{
 			var downloader = new RGDownloader(visualization.container, download.service/*, download.background*/);
 
@@ -133,23 +146,26 @@ class App
 			}
 		}
 
-		if(!jsoptions.options.a)
+		if(!uselegacy)
 		{
+			if(!jsoptions.options.a)
+			{
+				visualization.addReadyOnce(function()
+				{
+					var widget = new Logo(visualization.container, brandPadding);
+					visualization.setVerticalOffset(logoHeight);
+				});
+			}
+
 			visualization.addReadyOnce(function()
 			{
-				var widget = new Logo(visualization.container, brandPadding);
-				visualization.setVerticalOffset(logoHeight);
+				chartsLoaded++;
+				if(chartsLoaded == chartsCounter)
+				{
+					globalNotifier.dispatch();
+				}
 			});
 		}
-
-		visualization.addReadyOnce(function()
-		{
-			chartsLoaded++;
-			if(chartsLoaded == chartsCounter)
-			{
-				globalNotifier.dispatch();
-			}
-		});
 		return visualization;
 	}
 
@@ -171,6 +187,8 @@ class App
 
 	public static function supportsSvg() : Bool
 	{
+//		return "Gecko" != untyped js.Lib.window.navigator.product;
+		return !(~/Firefox/).match(js.Lib.window.navigator.userAgent);
 		return untyped __js__("!!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect");
 	}
 }

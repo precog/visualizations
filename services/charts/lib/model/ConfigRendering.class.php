@@ -10,7 +10,7 @@ class model_ConfigRendering {
 		$this->allowedFormats;
 	}}
 	public $allowedFormats;
-	public $expiresOn;
+	public $duration;
 	public $cacheExpirationTime;
 	public $pdf;
 	public $image;
@@ -29,7 +29,7 @@ class model_ConfigRendering {
 	static function create($options) {
 		$config = new model_ConfigRendering();
 		$config->cacheExpirationTime = $options->cacheExpires;
-		$config->expiresOn = ((null === $options->expiresOn) ? null : Date::fromTime($options->expiresOn));
+		$config->duration = model_ConfigRendering_0($config, $options);
 		$config->allowedFormats = $options->allowedFormats;
 		$config->wk->zoom = $options->zoom;
 		$config->pdf->dpi = $options->dpi;
@@ -96,4 +96,11 @@ class model_ConfigRendering {
 		return $config;
 	}
 	function __toString() { return 'model.ConfigRendering'; }
+}
+function model_ConfigRendering_0(&$config, &$options) {
+	if(null === $options->duration) {
+		return null;
+	} else {
+		return $options->duration;
+	}
 }

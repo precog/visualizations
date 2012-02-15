@@ -4,7 +4,7 @@ class model_ConfigObjects {
 	public function __construct(){}
 	static $FORMATS;
 	static function createDefault() {
-		return _hx_anonymous(array("cacheExpires" => 43200000., "expiresOn" => null, "allowedFormats" => new _hx_array(array("pdf", "png", "jpg", "svg")), "params" => _hx_anonymous(array()), "defaults" => _hx_anonymous(array()), "zoom" => 1.0, "dpi" => null, "grayscale" => false, "imageDpi" => null, "imageQuality" => null, "lowQuality" => false, "marginTop" => null, "marginBottom" => null, "marginLeft" => null, "marginRight" => null, "portrait" => true, "pageHeight" => null, "pageSize" => null, "pageWidth" => null, "title" => null, "usePrintMediaType" => false, "disableSmartShrinking" => false, "footerCenter" => null, "footerLeft" => null, "footerRight" => null, "footerFontName" => null, "footerFontSize" => null, "footerHtml" => null, "footerSpacing" => null, "footerLine" => false, "headerCenter" => null, "headerLeft" => null, "headerRight" => null, "headerFontName" => null, "headerFontSize" => null, "headerHtml" => null, "headerSpacing" => null, "headerLine" => false, "x" => null, "y" => null, "width" => null, "height" => null, "screenWidth" => null, "screenHeight" => null, "quality" => null, "disableSmartWidth" => false, "transparent" => false));
+		return _hx_anonymous(array("cacheExpires" => 43200000., "duration" => null, "allowedFormats" => new _hx_array(array("pdf", "png", "jpg", "svg")), "params" => _hx_anonymous(array()), "defaults" => _hx_anonymous(array()), "zoom" => 1.0, "dpi" => null, "grayscale" => false, "imageDpi" => null, "imageQuality" => null, "lowQuality" => false, "marginTop" => null, "marginBottom" => null, "marginLeft" => null, "marginRight" => null, "portrait" => true, "pageHeight" => null, "pageSize" => null, "pageWidth" => null, "title" => null, "usePrintMediaType" => false, "disableSmartShrinking" => false, "footerCenter" => null, "footerLeft" => null, "footerRight" => null, "footerFontName" => null, "footerFontSize" => null, "footerHtml" => null, "footerSpacing" => null, "footerLine" => false, "headerCenter" => null, "headerLeft" => null, "headerRight" => null, "headerFontName" => null, "headerFontSize" => null, "headerHtml" => null, "headerSpacing" => null, "headerLine" => false, "x" => null, "y" => null, "width" => null, "height" => null, "screenWidth" => null, "screenHeight" => null, "quality" => null, "disableSmartWidth" => false, "transparent" => false));
 	}
 	static function overrideValues($config, $over) {
 		if(null !== _hx_field($over, "duration")) {
@@ -13,14 +13,14 @@ class model_ConfigObjects {
 				if($e <= 0) {
 					throw new HException(new thx_error_Error("invalid negative value for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 130, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 				}
-				$config->expiresOn = Date::now()->getTime() + $e;
+				$config->duration = $e;
 			} else {
 				if(Std::is($e, _hx_qtype("String"))) {
 					$v = thx_date_Milli::parse($e);
 					if($v <= 0) {
 						throw new HException(new thx_error_Error("invalid expression for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 135, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 					}
-					$config->expiresOn = Date::now()->getTime() + $v;
+					$config->duration = $v;
 				} else {
 					throw new HException(new thx_error_Error("invalid value type for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 138, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 				}

@@ -54,11 +54,14 @@ class WKHtml
 	{
 		var process = new thx.sys.io.Process(cmd, args);
 //		var r = thx.sys.Sys.command(cmd, args);
+//		var id = process.getPid();
 		process.close();
 		var r = process.exitCode();
+//		trace(id);
 		err = process.stderr.readAll().toString();
 //		trace("ERROR: " + err);
 		var out = process.stdout.readAll().toString();
+
 //		trace("OUT: " + out);
 		return r == 0;
 	}

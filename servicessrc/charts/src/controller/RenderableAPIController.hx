@@ -71,7 +71,7 @@ class RenderableAPIController extends BaseController
 	function redirect(params : Dynamic)
 	{
 		var url = new UrlHelperInst(controllerContext.requestContext).route(params);
-		return new RedirectResult(App.BASE_URL + url, false);
+		return new RedirectResult(App.baseUrl() + url, false);
 	}
 
 	public function uploadAndDisplay(html : String, ?config : String, ext : String, ?forceDownload = false) : Dynamic
@@ -189,7 +189,7 @@ class RenderableAPIController extends BaseController
 		var content = {
 			uid : r.uid,
 			createdOn : r.createdOn,
-			expiresOn : r.config.expiresOn,
+			expiresOn : Date.now().getTime() + r.config.duration,
 			cacheExpirationTime : r.config.cacheExpirationTime,
 			formats : r.config.allowedFormats,
 			preserveTimeAfterLastUsage : model.RenderableGateway.DELETE_IF_NOT_USED_FOR,
@@ -204,7 +204,7 @@ class RenderableAPIController extends BaseController
 
 	function serviceUrl(uid : String, format : String)
 	{
-		return App.BASE_URL + urlHelper.route({
+		return App.baseUrl() + urlHelper.route({
 			controller : "downloadAPI",
 			action : 'download',
 			uid : uid,

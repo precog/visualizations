@@ -28,7 +28,7 @@ class RenderableGateway
 			html      : r.html,
 			lastUsage : r.lastUsage.getTime(),
 			usages    : r.usages,
-			expiresOn : null == r.config.expiresOn ? null : r.config.expiresOn.getTime()
+			expiresOn : null == r.config.duration ? null : Date.now().getTime() + r.config.duration
 		};
 		// store in mongo
 		coll.insert(ob);

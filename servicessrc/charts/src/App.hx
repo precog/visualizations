@@ -16,10 +16,18 @@ class App
 	public static inline var MONGO_DB_NAME = "chartsrenderer1";
 	public static inline var RENDERABLES_COLLECTION = "renderables";
 	public static inline var CACHE_COLLECTION = "cache";
-	public static inline var BASE_URL = "http://localhost";
+#if release
+	public static inline var HOST = "http://api.reportgrid.com";
+	public static inline var BASE_PATH = "/services/viz/charts/";
+#else
+	public static inline var HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
+	public static inline var BASE_PATH = "/rg/services/viz/charts/";
+#end
 	public static inline var RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css";
 	public static inline var PRINT_JS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js";
 	public static var version(default, null) : String;
+
+	public static function baseUrl() return HOST
 
 	static function main()
 	{
@@ -54,7 +62,7 @@ class App
 		var config = new AppConfiguration(
 				"controller",
 				true, // mod rewrite
-				"rg/services/viz/charts/",
+				BASE_PATH,
 				"logs/logs.txt"
 			),
 			routes = new RouteCollection(),

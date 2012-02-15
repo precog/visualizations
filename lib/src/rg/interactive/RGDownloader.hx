@@ -44,34 +44,6 @@ class RGDownloader
 		http.setParameter('html', html());
 		http.setParameter('config', config());
 		http.request(true);
-
-/*
-		var ob : Dynamic = {
-			tokenId : RG.getTokenId(),
-			css : RGCss.cssSources(),
-			id : container.attr("id").get(),
-			format : format,
-			xml : container.node().innerHTML,
-			element : container.node().nodeName.toLowerCase()
-		};
-		var bg = null == backgroundcolor ? defaultBackgroundColor : backgroundcolor;
-		if (null != bg)
-			ob.backgroundcolor = bg;
-		var cls = getClassName(container);
-		if (null != cls)
-			ob.className = cls;
-		var http = new Http(serviceUrl);
-		if(null != error)
-			http.onError = error;
-		else
-			http.onError = function(e) {
-				trace(e);
-			};
-		http.onData = callback(complete, success, error);
-		for (field in Reflect.fields(ob))
-			http.setParameter(field, Reflect.field(ob, field));
-		http.request(true);
-*/
 	}
 
 	function findCssSources() : Array<String>
@@ -98,21 +70,25 @@ class RGDownloader
 		var css     = findCssSources(),
 			classes = container.attr("class").get(),
 			svg     = extractSvg(container.html().get());
+		if(null == classes)
+			classes = "rg";
+		else
+			classes += " rg";
 		var html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 '
 +
-(Arrays.map(css, function(href, _) {
+(null == css ? '' : Arrays.map(css, function(href, _) {
 	return Std.format('<link href="$href" rel="stylesheet" type="text/css" />');
-}).join("\n")
+}).join("\n"))
 + '
 </head>
 <body>
 <div class="'+classes+'">'+svg+'</div>
 </body>
-</html>');
+</html>';
 		return html;
 	}
 

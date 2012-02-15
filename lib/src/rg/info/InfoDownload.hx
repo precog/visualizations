@@ -14,12 +14,14 @@ class InfoDownload
 {
 	public var handler : (String -> String -> (Dynamic -> Bool) -> (String -> Void) -> Void) -> Void;
 	public var service : String;
+	public var legacyservice : String;
 	public var position : Null<DownloaderPosition>;
 	public var formats : Array<String>;
 
 	public function new()
 	{
 		service = RGConst.SERVICE_RENDERING_STATIC;
+		legacyservice = RGConst.LEGACY_RENDERING_STATIC;
 		formats = ['pdf', 'png', 'jpg', 'svg'];
 	}
 
@@ -31,6 +33,10 @@ class InfoDownload
 			filter : null
 		}, {
 			field : "service",
+			validator : function(v) return Std.is(v, String),
+			filter : null
+		}, {
+			field : "legacyservice",
 			validator : function(v) return Std.is(v, String),
 			filter : null
 		}, {

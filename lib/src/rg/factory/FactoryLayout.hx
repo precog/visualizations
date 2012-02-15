@@ -20,6 +20,19 @@ class FactoryLayout
 
 	public function create(info : InfoLayout, heightmargin : Int, container : Selection)
 	{
+		var size = size(container, info, heightmargin);
+		var layoutName = info.layout;
+		if (null == layoutName)
+			layoutName = Visualizations.layoutDefault.get(info.type);
+		if (null == layoutName)
+			throw new Error("unable to find a suitable layout for '{0}'", info.type);
+		var layout = Visualizations.instantiateLayout(layoutName, size.width, size.height, container);
+		layout.feedOptions(info);
+		return layout;
+	}
+
+	public static function size(container : Selection, info : InfoLayout, heightmargin : Int)
+	{
 		var v,
 			width = null == info.width
 				? ((v = container.node().clientWidth) > LIMIT_WIDTH ? v : DEFAULT_WIDTH)
@@ -27,13 +40,9 @@ class FactoryLayout
 			height = (null == info.height
 				? ((v = container.node().clientHeight) > LIMIT_HEIGHT ? v : DEFAULT_HEIGHT)
 				: info.height) - heightmargin;
-		var layoutName = info.layout;
-		if (null == layoutName)
-			layoutName = Visualizations.layoutDefault.get(info.type);
-		if (null == layoutName)
-			throw new Error("unable to find a suitable layout for '{0}'", info.type);
-		var layout = Visualizations.instantiateLayout(layoutName, width, height, container);
-		layout.feedOptions(info);
-		return layout;
+		return {
+			width  : width,
+			height : height
+		}
 	}
 }

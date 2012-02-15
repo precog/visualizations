@@ -61,14 +61,14 @@ class controller_SetupController extends ufront_web_mvc_Controller {
 		if(php_Lib::objectOfAssociativeArray($cacheCollection->c->validate())->ok < 1) {
 			$cacheExists = false;
 		}
-		$content = _hx_anonymous(array("baseurl" => "http://localhost", "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "db" => _hx_anonymous(array("name" => $dbname, "collections" => $cacheCollections)), "renderables" => _hx_anonymous(array("name" => $renderablesCollectionName, "exists" => $renderablesExists, "count" => (($renderablesExists) ? $renderableCollection->c->count() : -1))), "cache" => _hx_anonymous(array("name" => $cacheCollectionName, "exists" => $cacheExists, "count" => (($cacheExists) ? $cacheCollection->c->count() : -1)))));
+		$content = _hx_anonymous(array("baseurl" => App::baseUrl(), "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "db" => _hx_anonymous(array("name" => $dbname, "collections" => $cacheCollections)), "renderables" => _hx_anonymous(array("name" => $renderablesCollectionName, "exists" => $renderablesExists, "count" => (($renderablesExists) ? $renderableCollection->c->count() : -1))), "cache" => _hx_anonymous(array("name" => $cacheCollectionName, "exists" => $cacheExists, "count" => (($cacheExists) ? $cacheCollection->c->count() : -1)))));
 		return new ufront_web_mvc_ContentResult(_hx_deref(new template_MongoDBStatus())->execute($content), null);
 	}
 	public function topRenderables($top) {
 		if($top === null) {
 			$top = 10;
 		}
-		$gate = new model_RenderableGateway($this->renderableCollection()); $list = $gate->topByUsage($top); $content = _hx_anonymous(array("baseurl" => "http://localhost", "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "top" => $top, "renderables" => $list));
+		$gate = new model_RenderableGateway($this->renderableCollection()); $list = $gate->topByUsage($top); $content = _hx_anonymous(array("baseurl" => App::baseUrl(), "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "top" => $top, "renderables" => $list));
 		return new ufront_web_mvc_ContentResult(_hx_deref(new template_RenderablesInfo())->execute($content), null);
 	}
 	public function purge() {
