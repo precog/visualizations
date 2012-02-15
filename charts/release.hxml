@@ -7,5 +7,6 @@
 -main rg.app.charts.JSBridge
 -D release
 #-D reportgridapi
+-D js_shims
 --no-traces
 -cmd ./deploy.sh

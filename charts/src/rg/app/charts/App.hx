@@ -187,8 +187,7 @@ class App
 
 	public static function supportsSvg() : Bool
 	{
-//		return "Gecko" != untyped js.Lib.window.navigator.product;
-		return !(~/Firefox/).match(js.Lib.window.navigator.userAgent);
+//		return !(~/Firefox/).match(js.Lib.window.navigator.userAgent);
 		return untyped __js__("!!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect");
 	}
 }

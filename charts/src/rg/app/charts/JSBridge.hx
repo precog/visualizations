@@ -42,14 +42,15 @@ class JSBridge
 	static function main()
 	{
 		// check for IE8 or older and return
-		var msiev = getInternetExplorerVersion();
-		if(msiev >= 0 && msiev < 9)
-			return;
+//		var msiev = getInternetExplorerVersion();
+//		if(msiev >= 0 && msiev < 9)
+//			return;
 
 #if !release
 		if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
 #end
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid");
+trace(r);
 		// init app
 		var globalNotifier = new hxevents.Notifier(),
 			app = new App(globalNotifier);
@@ -88,7 +89,7 @@ class JSBridge
 		r.sankey       = function(el, options) return r.chart(el, options, "sankey");
 		r.scatterGraph = function(el, options) return r.chart(el, options, "scattergraph");
 		r.streamGraph  = function(el, options) return r.chart(el, options, "streamgraph");
-
+trace(r);
 		// utility functions
 		r.parseQueryParameters = rg.util.Urls.parseQueryParameters;
 		r.findScript           = rg.util.Js.findScript;

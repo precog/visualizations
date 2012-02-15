@@ -6,6 +6,6 @@
 -main rg.app.query.JSBridge
 #--dead-code-elimination
 #--cache cache/haxecompiler-cache
-#-D js_shims
+-D js_shims
 #--times
 #-debug

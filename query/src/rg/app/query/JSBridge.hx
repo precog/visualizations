@@ -40,8 +40,8 @@ class JSBridge
 			storage = BrowserStorage.sessionStorage()
 		else
 			storage = new MemoryStorage();
-
-		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid"),
+trace(untyped __js__("ReportGrid"));
+		var r : Dynamic = untyped __js__("(!ReportGrid) ? (ReportGrid = {}) : ReportGrid"),
 			timeout = 120,
 			executor : IExecutorReportGrid = new ReportGridExecutorCache(r, storage, timeout);
 		r.query = createQuery(executor);

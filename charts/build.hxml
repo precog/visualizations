@@ -7,6 +7,6 @@
 -main rg.app.charts.JSBridge
 #--dead-code-elimination
 #--cache cache/haxecompiler-cache
-#-D js_shims
+-D js_shims
 #--times
 #-debug

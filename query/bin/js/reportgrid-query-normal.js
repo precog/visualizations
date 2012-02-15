@@ -2465,7 +2465,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 451, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 453, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
@@ -2631,6 +2631,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
 				options.top = params.top;
 			} else if(null != params.bottom) options.bottom = params.bottom;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
 			me.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,params,keep,handler));
 		});
 	}
@@ -3994,7 +3995,7 @@ rg.app.query.JSBridge.createQuery = function(executor) {
 rg.app.query.JSBridge.main = function() {
 	var storage;
 	if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
-	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
+	var r = (!ReportGrid) ? (ReportGrid = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
 	r.query = rg.app.query.JSBridge.createQuery(executor);
 	r.date = { range : function(a,b,p) {
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
@@ -4006,7 +4007,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.0.0.1400"};
+	r.info.query = { version : "1.2.0.1408"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -6992,6 +6993,61 @@ thx.cultures.EnUS.getCulture();
 	};
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+if (!('indexOf' in Array.prototype)) {
+    Array.prototype.indexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= 0;
+        if (i<0) i+= this.length;
+        if (i<0) i= 0;
+        for (var n= this.length; i<n; i++)
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('lastIndexOf' in Array.prototype)) {
+    Array.prototype.lastIndexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= this.length-1;
+        if (i<0) i+= this.length;
+        if (i>this.length-1) i= this.length-1;
+        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('forEach' in Array.prototype)) {
+    Array.prototype.forEach= function(action, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                action.call(that, this[i], i, this);
+    };
+}
+if (!('map' in Array.prototype)) {
+    Array.prototype.map= function(mapper, that /*opt*/) {
+        var other= new Array(this.length);
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                other[i]= mapper.call(that, this[i], i, this);
+        return other;
+    };
+}
+if (!('filter' in Array.prototype)) {
+    Array.prototype.filter= function(filter, that /*opt*/) {
+        var other= [], v;
+        for (var i=0, n= this.length; i<n; i++)
+            if (i in this && filter.call(that, v= this[i], i, this))
+                other.push(v);
+        return other;
+    };
+}
+if (!('every' in Array.prototype)) {
+    Array.prototype.every= function(tester, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this && !tester.call(that, this[i], i, this))
+                return false;
+        return true;
+    };
+}
 {
 	String.prototype.__class__ = $hxClasses["String"] = String;
 	String.__name__ = ["String"];

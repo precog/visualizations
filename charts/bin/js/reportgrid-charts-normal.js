@@ -500,6 +500,16 @@ rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(async,first) {
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.asyncTransform = function(t) {
 	return function(data,handler) {
+		var _g1 = 0, _g = data.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			data[i] = t(data[i]);
+		}
+		handler(data);
+	};
+}
+rg.query.BaseQuery.asyncTransformStack = function(t) {
+	return function(data,handler) {
 		handler(t(data));
 	};
 }
@@ -509,26 +519,25 @@ rg.query.BaseQuery.prototype = {
 	,_async: null
 	,_store: null
 	,load: function(handler) {
-		return this.asyncAll(function(_,h) {
-			handler(h);
+		return this.asyncStack(function(stack,h) {
+			handler(function(data) {
+				stack.push(data);
+				h(stack);
+			});
 		});
 	}
 	,data: function(values) {
-		return this.asyncAll(function(_,h) {
-			h(values);
+		if(!Std["is"](values,Array)) values = [values];
+		return this.asyncStack(function(stack,h) {
+			stack.push(values);
+			h(stack);
 		});
 	}
-	,cross: function(values) {
-		return this.transform(rg.query.Transformers.cross(values));
+	,cross: function() {
+		return this.transformStack(rg.query.Transformers.crossStack);
 	}
 	,map: function(handler) {
 		return this.transform(rg.query.Transformers.map(handler));
-	}
-	,mapValue: function(name,f) {
-		var fun = function(d,i) {
-			return f(Reflect.field(d,name),i);
-		};
-		return this.transform(rg.query.Transformers.setField(name,fun));
 	}
 	,audit: function(f) {
 		return this.transform(function(d) {
@@ -552,23 +561,26 @@ rg.query.BaseQuery.prototype = {
 		});
 	}
 	,transform: function(t) {
-		return this.asyncAll(rg.query.BaseQuery.asyncTransform(t));
+		return this.asyncStack(rg.query.BaseQuery.asyncTransform(t));
 	}
-	,asyncAll: function(d) {
-		var query = this._createQuery(d,this._first);
+	,transformStack: function(t) {
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(t));
+	}
+	,asyncStack: function(f) {
+		var query = this._createQuery(f,this._first);
 		this._next = query;
 		return query;
 	}
-	,asyncEach: function(f) {
-		return this.asyncAll(function(data,handler) {
-			var tot = data.length, pos = 0, results = [];
+	,asyncAll: function(f) {
+		return this.asyncStack(function(data,handler) {
+			var tot = data.length, pos = 0, result = [];
 			var complete = function(i,r) {
-				results[i] = r;
-				if(++pos == tot) handler(Arrays.flatten(results));
+				result[i] = r;
+				if(++pos == tot) handler(result);
 			};
-			var _g = 0;
-			while(_g < tot) {
-				var i = _g++;
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
 				f(data[i],(function(f1,a1) {
 					return function(a2) {
 						return f1(a1,a2);
@@ -577,13 +589,35 @@ rg.query.BaseQuery.prototype = {
 			}
 		});
 	}
-	,addField: function(name,f) {
+	,asyncEach: function(f) {
+		return this.asyncAll(function(data,handler) {
+			var tot = data.length, pos = 0, result = [];
+			var complete = function(i,r) {
+				result[i] = r;
+				if(++pos == tot) handler(Arrays.flatten(result));
+			};
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				f(data[i],(function(f1,a1) {
+					return function(a2) {
+						return f1(a1,a2);
+					};
+				})(complete,i));
+			}
+		});
+	}
+	,setField: function(name,f) {
 		return this.transform(rg.query.Transformers.setField(name,f));
 	}
-	,addIndex: function(name) {
+	,setFields: function(o) {
+		return this.transform(rg.query.Transformers.setFields(o));
+	}
+	,addIndex: function(name,start) {
 		if(null == name) name = "index";
-		return this.transform(rg.query.Transformers.setField(name,function(_,i) {
-			return i;
+		if(null == start) start = 0;
+		return this.transform(rg.query.Transformers.setField(name,function(_,_1,i) {
+			return start + i;
 		}));
 	}
 	,filter: function(f) {
@@ -635,24 +669,89 @@ rg.query.BaseQuery.prototype = {
 		if(null == f) f = Dynamics.same;
 		return this.transform(rg.query.Transformers.uniquef(f));
 	}
-	,accumulate: function(groupby,on,forproperty,atproperty) {
-		var map = new Hash();
-		var q = this.sortFields([groupby,on]);
-		return q.transform(function(data) {
-			var v, f;
-			data.forEach(function(dp,_) {
-				v = map.get(f = "" + Reflect.field(dp,on));
-				if(null == v) v = 0.0;
-				dp[atproperty] = v;
-				map.set(f,v + Reflect.field(dp,forproperty));
-			});
-			return data;
+	,reduce: function(startf,reducef) {
+		return this.transform(function(data) {
+			return [data.slice(1).reduce(reducef,startf(data[0]))];
 		});
+	}
+	,merge: function() {
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			return [Arrays.flatten(data)];
+		}));
+	}
+	,discard: function(howmany) {
+		if(null == howmany) howmany = 1;
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			var _g = 0;
+			while(_g < howmany) {
+				var i = _g++;
+				data.pop();
+			}
+			return data;
+		}));
+	}
+	,keep: function(howmany) {
+		if(null == howmany) howmany = 1;
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			return data.slice(0,howmany);
+		}));
+	}
+	,split: function(f) {
+		if(Std["is"](f,String)) {
+			var name = f;
+			f = function(o) {
+				return Reflect.field(o,name);
+			};
+		}
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			var result = [];
+			var _g = 0;
+			while(_g < data.length) {
+				var arr = data[_g];
+				++_g;
+				result = result.concat(rg.query.Transformers.split(arr,f));
+			}
+			return result;
+		}));
+	}
+	,stackOperation: function(operationf,matchingf) {
+		return this.stackTraverse(function(data) {
+			var _g1 = 0, _g = data.length - 1;
+			while(_g1 < _g) {
+				var i = _g1++;
+				operationf(data[i],data[i + 1]);
+			}
+		},matchingf);
+	}
+	,stackTraverse: function(traversef,matchingf) {
+		var t = rg.query.Transformers.rotate(matchingf);
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			var result = t(data);
+			var _g = 0;
+			while(_g < result.length) {
+				var arr = result[_g];
+				++_g;
+				traversef(arr);
+			}
+			return data;
+		}));
+	}
+	,stackRotate: function(matchingf) {
+		var t = rg.query.Transformers.rotate(matchingf);
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			return t(data);
+		}));
+	}
+	,stackReverse: function() {
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			data.reverse();
+			return data;
+		}));
 	}
 	,store: function(name) {
 		var me = this;
 		if(null == name) name = "";
-		return this.transform(function(arr) {
+		return this.transformStack(function(arr) {
 			me._first._store.set(name,arr.copy());
 			return arr;
 		});
@@ -660,12 +759,14 @@ rg.query.BaseQuery.prototype = {
 	,retrieve: function(name) {
 		var me = this;
 		if(null == name) name = "";
-		return this.transform(function(arr) {
+		return this.transformStack(function(arr) {
 			return arr.concat(me._first._store.get(name));
 		});
 	}
 	,clear: function() {
-		return this.data([]);
+		return this.transformStack(function(_) {
+			return [];
+		});
 	}
 	,execute: function(handler) {
 		this._first.execute(handler);
@@ -700,13 +801,13 @@ rg.query.Query.executeHandler = function(instance,handler) {
 	var execute = (function($this) {
 		var $r;
 		var execute = null;
-		execute = function(results) {
+		execute = function(result) {
 			if(null == current._next) {
-				handler(results);
+				handler(Arrays.flatten(result));
 				return;
 			}
 			current = current._next;
-			current._async(results,execute);
+			current._async(result,execute);
 		};
 		$r = execute;
 		return $r;
@@ -1373,11 +1474,9 @@ rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
 	return rv;
 }
 rg.app.charts.JSBridge.main = function() {
-	var msiev = rg.app.charts.JSBridge.getInternetExplorerVersion();
-	if(msiev >= 0 && msiev < 9) return;
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
-	var app = new rg.app.charts.App();
-	r.viz = function(el,options,type) {
+	var globalNotifier = new hxevents.Notifier(), app = new rg.app.charts.App(globalNotifier);
+	r.chart = function(el,options,type) {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
 		rg.app.charts.MVPOptions.complete(copt,function(opt) {
@@ -1395,37 +1494,37 @@ rg.app.charts.JSBridge.main = function() {
 		});
 	};
 	r.barChart = function(el,options) {
-		return r.viz(el,options,"barchart");
+		return r.chart(el,options,"barchart");
 	};
 	r.funnelChart = function(el,options) {
-		return r.viz(el,options,"funnelchart");
+		return r.chart(el,options,"funnelchart");
 	};
 	r.geo = function(el,options) {
-		return r.viz(el,options,"geo");
+		return r.chart(el,options,"geo");
 	};
 	r.heatGrid = function(el,options) {
-		return r.viz(el,options,"heatgrid");
+		return r.chart(el,options,"heatgrid");
 	};
 	r.leaderBoard = function(el,options) {
-		return r.viz(el,options,"leaderboard");
+		return r.chart(el,options,"leaderboard");
 	};
 	r.lineChart = function(el,options) {
-		return r.viz(el,options,"linechart");
+		return r.chart(el,options,"linechart");
 	};
 	r.pieChart = function(el,options) {
-		return r.viz(el,options,"piechart");
+		return r.chart(el,options,"piechart");
 	};
 	r.pivotTable = function(el,options) {
-		return r.viz(el,options,"pivottable");
+		return r.chart(el,options,"pivottable");
 	};
 	r.sankey = function(el,options) {
-		return r.viz(el,options,"sankey");
+		return r.chart(el,options,"sankey");
 	};
 	r.scatterGraph = function(el,options) {
-		return r.viz(el,options,"scattergraph");
+		return r.chart(el,options,"scattergraph");
 	};
 	r.streamGraph = function(el,options) {
-		return r.viz(el,options,"streamgraph");
+		return r.chart(el,options,"streamgraph");
 	};
 	r.parseQueryParameters = rg.util.Urls.parseQueryParameters;
 	r.findScript = rg.util.Js.findScript;
@@ -1457,11 +1556,14 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.3.1.6826"};
+	r.info.charts = { version : "1.4.1.7059"};
+	r.charts = { onReady : function(handler) {
+		globalNotifier.add(handler);
+	}};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 145, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 153, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -2246,6 +2348,104 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 	}
 	,__class__: rg.visualization.VisualizationLineChart
 });
+if(!rg.interactive) rg.interactive = {}
+rg.interactive.RGLegacyRenderer = $hxClasses["rg.interactive.RGLegacyRenderer"] = function(container,serviceurl) {
+	this.container = container;
+	this.serviceUrl = serviceurl;
+	this.tokenId = rg.util.RG.getTokenId();
+}
+rg.interactive.RGLegacyRenderer.__name__ = ["rg","interactive","RGLegacyRenderer"];
+rg.interactive.RGLegacyRenderer.removeFunctions = function(o) {
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var f = Reflect.field(o,field);
+		if(Reflect.isFunction(f)) Reflect.deleteField(o,field); else if(Reflect.isObject(o) && null == Type.getClass(o)) rg.interactive.RGLegacyRenderer.removeFunctions(f);
+	}
+}
+rg.interactive.RGLegacyRenderer.removeEmpties = function(o) {
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var f = Reflect.field(o,field);
+		if(Reflect.isObject(f) && null == Type.getClass(f)) {
+			rg.interactive.RGLegacyRenderer.removeEmpties(f);
+			if(Reflect.fields(f).length == 0) Reflect.deleteField(o,field);
+		} else if(null == f) Reflect.deleteField(o,field);
+	}
+}
+rg.interactive.RGLegacyRenderer.prototype = {
+	serviceUrl: null
+	,container: null
+	,tokenId: null
+	,url: function() {
+		return StringTools.replace(this.serviceUrl,"{ext}",rg.interactive.RGLegacyRenderer.FORMAT);
+	}
+	,display: function(params) {
+		this.normalizeParams(params);
+		var id = this.container.attr("id").get(), width = params.options.width, height = params.options.height, iframe = this.createIframe(width,height);
+		if(null == id) id = "rgchart";
+		var u = this.url();
+		var h = this.html(id,params);
+		var c = this.config(width,height);
+		var content = "<form method=\"post\" action=\"" + u + "\" name=\"VIZ\"><textarea name=\"html\">" + h + "</textarea><textarea name=\"config\">" + c + "</textarea><script type=\"text/javascript\">\n  document.VIZ.submit();\n</script>\n</form>";
+		this.writeToIframe(iframe.node(),content);
+	}
+	,createIframe: function(width,height) {
+		var id = "rgiframe" + ++rg.interactive.RGLegacyRenderer.nextframeid;
+		return this.container.append("iframe").attr("name").string(id).attr("id").string(id).attr("frameborder")["float"](0).attr("width")["float"](width).attr("height")["float"](height).attr("marginwidth")["float"](0).attr("marginheight")["float"](0).attr("scrolling").string("auto").style("overflow").string("hidden").style("border").string("0").style("margin").string("0").style("padding").string("0").attr("src").string("about:blank");
+	}
+	,writeToIframe: function(iframe,content) {
+		var iframeDoc = null;
+		if(iframe.contentDocument) iframeDoc = iframe.contentDocument; else if(iframe.contentWindow) iframeDoc = iframe.contentWindow.document; else if(null != js.Lib.window.frames[iframe.name]) iframeDoc = js.Lib.window.frames[iframe.name].document;
+		if(iframeDoc) {
+			iframeDoc.open();
+			iframeDoc.write("<html><head><title></title></head><body style=\"display:none\">" + content + "</body></html>");
+			iframeDoc.close();
+		}
+	}
+	,normalizeParams: function(params) {
+		if(null == params.options) params.options = { };
+		var size = rg.factory.FactoryLayout.size(this.container,params.options,0);
+		params.options.width = size.width;
+		params.options.height = size.height;
+		rg.interactive.RGLegacyRenderer.removeFunctions(params.options);
+		rg.interactive.RGLegacyRenderer.removeEmpties(params);
+		Reflect.deleteField(params,"load");
+	}
+	,findJsSources: function() {
+		var re = new EReg("reportgrid-[^.]+\\.js","");
+		return thx.js.Dom.selectAll("script").filterNode(function(n,_) {
+			return re.match(n.src);
+		}).mapNode(function(n,_) {
+			return n.src;
+		});
+	}
+	,findCssSources: function() {
+		return thx.js.Dom.selectAll("link").filterNode(function(n,_) {
+			return "stylesheet" == n.rel;
+		}).mapNode(function(n,_) {
+			return n.href;
+		});
+	}
+	,html: function(id,params) {
+		var p = thx.json.Json.encode(params), scripts = this.findJsSources(), css = this.findCssSources(), classes = this.container.attr("class").get();
+		if(null == classes) classes = "rg"; else classes += " rg";
+		var h = "<!DOCTYPE html>\n<html>\n<head>\n<title></title>\n" + (null == scripts?"":scripts.map(function(src,_) {
+			return "<script src=\"" + src + "\" type=\"\"text/javascript\"></script>";
+		}).join("\n")) + (null == css?"":css.map(function(href,_) {
+			return "<link href=\"" + href + "\" rel=\"stylesheet\" type=\"text/css\" />";
+		}).join("\n")) + "\n</head>\n<body>\n<div id=\"" + id + "\" class=\"" + classes + "\" style=\"margin:0\"></div>\n<script type=\"text/javascript\">\nReportGrid.chart(\"#" + id + "\", " + p + ");\n</script>\n</body>\n</html>";
+		return h;
+	}
+	,config: function(width,height) {
+		var c = "\"cache\":\"1d\",\"duration\":\"1d\",\"width\":" + width + ",\"height\":" + height + ",\"formats\":[\"" + rg.interactive.RGLegacyRenderer.FORMAT + "\"]";
+		return "{" + c + "}";
+	}
+	,__class__: rg.interactive.RGLegacyRenderer
+}
 var IntHash = $hxClasses["IntHash"] = function() {
 	this.h = {}
 	if(this.h.__proto__ != null) {
@@ -3335,14 +3535,14 @@ chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
 });
 rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
-rg.query.Transformers.cross = function(values) {
-	if(!Std["is"](values,Array)) values = [values];
-	return function(data) {
-		if(data.length == 0) return values;
-		var results = [];
+rg.query.Transformers.crossStack = function(data) {
+	if(data.length <= 1) return data;
+	var src = data.shift();
+	while(data.length > 0) {
+		var values = data.shift(), results = [];
 		var _g = 0;
-		while(_g < data.length) {
-			var item = data[_g];
+		while(_g < src.length) {
+			var item = src[_g];
 			++_g;
 			var _g1 = 0;
 			while(_g1 < values.length) {
@@ -3351,8 +3551,22 @@ rg.query.Transformers.cross = function(values) {
 				results.push(Objects.copyTo(value,Objects.copyTo(item,{ })));
 			}
 		}
-		return results;
-	};
+		src = results;
+	}
+	return [src];
+}
+rg.query.Transformers.split = function(data,f) {
+	var map = new Hash(), result = [];
+	data.forEach(function(dp,_) {
+		var name = f(dp), pos = map.get(name);
+		if(null == pos) {
+			pos = result.length;
+			map.set(name,pos);
+			result.push([]);
+		}
+		result[pos].push(dp);
+	});
+	return result;
 }
 rg.query.Transformers.map = function(handler) {
 	return function(data) {
@@ -3405,12 +3619,39 @@ rg.query.Transformers.filterValue = function(name,o) {
 rg.query.Transformers.setField = function(name,o) {
 	if(!Reflect.isFunction(o)) {
 		var value = o;
-		o = function(obj,index) {
-			return value;
+		o = function(obj,value1,index) {
+			return value1;
 		};
 	}
-	var handler = function(d,i) {
-		d[name] = o(d,i);
+	var handler = function(obj,i) {
+		obj[name] = o(obj,Reflect.field(obj,name),i);
+	};
+	return function(data) {
+		data.forEach(handler);
+		return data;
+	};
+}
+rg.query.Transformers.setFields = function(o) {
+	var fields = Reflect.fields(o), fs = [];
+	var _g = 0;
+	while(_g < fields.length) {
+		var field = fields[_g];
+		++_g;
+		var f = Reflect.field(o,field);
+		if(!Reflect.isFunction(f)) fs.push((function(f1,a1) {
+			return function(a2,a3,a4) {
+				return f1(a1,a2,a3,a4);
+			};
+		})(function(v,obj,value,i) {
+			return v;
+		},f)); else fs.push(f);
+	}
+	var handler = function(obj,i) {
+		var _g1 = 0, _g = fields.length;
+		while(_g1 < _g) {
+			var j = _g1++;
+			obj[fields[j]] = fs[j](obj,Reflect.field(obj,fields[j]),i);
+		}
 	};
 	return function(data) {
 		data.forEach(handler);
@@ -3451,6 +3692,43 @@ rg.query.Transformers.uniquef = function(fun) {
 			i++;
 		}
 		return arr;
+	};
+}
+rg.query.Transformers.rotate = function(matchingf) {
+	if(Std["is"](matchingf,String)) {
+		var field = matchingf;
+		matchingf = function(a,b) {
+			return Reflect.field(a,field) == Reflect.field(b,field);
+		};
+	}
+	var m = null == matchingf?function(_,_1,i,k) {
+		return i == k;
+	}:function(a,b,_,_1) {
+		return matchingf(a,b);
+	};
+	return function(data) {
+		var traversed = [], da = data[0];
+		var _g1 = 0, _g = da.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var a = da[i], traversal = [a];
+			var _g3 = 1, _g2 = data.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var db = data[j];
+				var _g5 = 0, _g4 = db.length;
+				while(_g5 < _g4) {
+					var k = _g5++;
+					var b = db[k];
+					if(m(a,b,i,k)) {
+						traversal.push(b);
+						break;
+					}
+				}
+			}
+			traversed.push(traversal);
+		}
+		return traversed;
 	};
 }
 rg.query.Transformers.prototype = {
@@ -4326,11 +4604,21 @@ thx.js.BaseSelection.isChild = function(parent,child) {
 	}
 	return false;
 }
-thx.js.BaseSelection.addEvent = function(node,typo,handler,capture) {
-	node.addEventListener(typo,handler,capture);
+thx.js.BaseSelection.addEvent = function(target,typo,handler,capture) {
+	if(target.addEventListener != null) thx.js.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
+		target1.addEventListener(typo1,handler1,capture1);
+	}; else if(target.attachEvent != null) thx.js.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
+		target1.attachEvent(typo1,handler1);
+	};
+	thx.js.BaseSelection.addEvent(target,typo,handler,capture);
 }
-thx.js.BaseSelection.removeEvent = function(node,typo,type,capture) {
-	node.removeEventListener(typo,Reflect.field(node,"__on" + type),capture);
+thx.js.BaseSelection.removeEvent = function(target,typo,type,capture) {
+	if(target.removeEventListener != null) thx.js.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
+		target1.removeEventListener(typo1,Reflect.field(target1,"__on" + type1),false);
+	}; else if(target.attachEvent != null) thx.js.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
+		target1.detachEvent(typo1,Reflect.field(target1,"__on" + type1));
+	};
+	thx.js.BaseSelection.removeEvent(target,typo,type,capture);
 }
 thx.js.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
 	var n = group.nodes.length, m = groupData.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
@@ -4533,6 +4821,21 @@ thx.js.BaseSelection.prototype = {
 		}
 		return this.createSelection(subgroups);
 	}
+	,mapNode: function(f) {
+		var results = [];
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			var i = -1;
+			var $it0 = group.nodes.iterator();
+			while( $it0.hasNext() ) {
+				var node = $it0.next();
+				if(null != node) results.push(f(node,++i));
+			}
+		}
+		return results;
+	}
 	,onNode: function(type,listener,capture) {
 		if(capture == null) capture = false;
 		var i = type.indexOf("."), typo = i < 0?type:type.substr(0,i);
@@ -4555,19 +4858,19 @@ thx.js.BaseSelection.prototype = {
 				thx.js.Dom.event = o;
 			};
 			if(null != Reflect.field(n,"__on" + type)) {
-				n.removeEventListener(typo,Reflect.field(n,"__on" + type),capture);
+				thx.js.BaseSelection.removeEvent(n,typo,type,capture);
 				Reflect.deleteField(n,"__on" + type);
 			}
 			if(null != listener) {
 				n["__on" + type] = l;
-				n.addEventListener(typo,l,capture);
+				thx.js.BaseSelection.addEvent(n,typo,l,capture);
 			}
 		});
 	}
 	,createSelection: function(groups) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 634, className : "thx.js.BaseSelection", methodName : "createSelection"});
+			throw new thx.error.AbstractMethod({ fileName : "Selection.hx", lineNumber : 652, className : "thx.js.BaseSelection", methodName : "createSelection"});
 			return $r;
 		}(this));
 	}
@@ -9592,6 +9895,87 @@ Iterables.isIterable = function(v) {
 Iterables.prototype = {
 	__class__: Iterables
 }
+rg.interactive.RGDownloader = $hxClasses["rg.interactive.RGDownloader"] = function(container,serviceurl) {
+	this.container = container;
+	this.serviceUrl = serviceurl;
+	this.tokenId = rg.util.RG.getTokenId();
+}
+rg.interactive.RGDownloader.__name__ = ["rg","interactive","RGDownloader"];
+rg.interactive.RGDownloader.getClassName = function(container) {
+	var name = container.attr("class").get();
+	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
+	return "" == name?null:name;
+}
+rg.interactive.RGDownloader.appendArgument = function(url,name,value) {
+	var sep = url.indexOf("?") >= 0?"&":"?";
+	return url + sep + name + "=" + StringTools.urlEncode(value);
+}
+rg.interactive.RGDownloader.prototype = {
+	serviceUrl: null
+	,container: null
+	,format: null
+	,tokenId: null
+	,url: function(ext) {
+		return StringTools.replace(this.serviceUrl,"{ext}",ext);
+	}
+	,download: function(format,backgroundcolor,success,error) {
+		if(!Arrays.exists(rg.interactive.RGDownloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "RGDownloader.hx", lineNumber : 33, className : "rg.interactive.RGDownloader", methodName : "download"});
+		this.format = format;
+		var http = new haxe.Http(this.url(format));
+		http.setHeader("Accept","application/json");
+		if(null != error) http.onError = error; else http.onError = function(e) {
+			null;
+		};
+		http.onData = (function(f,a1,a2) {
+			return function(a3) {
+				return f(a1,a2,a3);
+			};
+		})(this.complete.$bind(this),success,error);
+		http.setParameter("html",this.html());
+		http.setParameter("config",this.config());
+		http.request(true);
+	}
+	,findCssSources: function() {
+		return thx.js.Dom.selectAll("link").filterNode(function(n,_) {
+			return "stylesheet" == n.rel;
+		}).mapNode(function(n,_) {
+			return n.href;
+		});
+	}
+	,extractSvg: function(s) {
+		var start = new EReg("<svg",""), end = new EReg("</svg>","");
+		start.match(s);
+		s = start.matchedRight();
+		end.match(s);
+		return "<svg" + end.matchedLeft() + "</svg>";
+	}
+	,html: function() {
+		var css = this.findCssSources(), classes = this.container.attr("class").get(), svg = this.extractSvg(this.container.html().get());
+		if(null == classes) classes = "rg"; else classes += " rg";
+		var html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n<title></title>\n" + (null == css?"":css.map(function(href,_) {
+			return "<link href=\"" + href + "\" rel=\"stylesheet\" type=\"text/css\" />";
+		}).join("\n")) + "\n</head>\n<body>\n<div class=\"" + classes + "\">" + svg + "</div>\n</body>\n</html>";
+		return html;
+	}
+	,config: function() {
+		var svg = this.container.select("svg"), width = svg.attr("width").getFloat(), height = svg.attr("height").getFloat();
+		var config = "\"cache\":\"1d\",\"duration\":\"1d\",\"width\":" + width + ",\"height\":" + height + ",\"formats\":[\"" + rg.interactive.RGDownloader.ALLOWED_FORMATS.join("\",\"") + "\"]";
+		if(null != this.tokenId) config += ",\"params\":{\"tokenId\":true}";
+		return "{" + config + "}";
+	}
+	,complete: function(success,error,content) {
+		var ob = thx.json.Json.decode(content);
+		if(null != ob.error) {
+			if(null != error) error(ob.error);
+		} else if(success(ob)) {
+			var url = Reflect.field(ob.service,this.format);
+			if(null != this.tokenId) url = rg.interactive.RGDownloader.appendArgument(url,"tokenId",this.tokenId);
+			url = rg.interactive.RGDownloader.appendArgument(url,"forceDownload","true");
+			js.Lib.window.location.href = url;
+		}
+	}
+	,__class__: rg.interactive.RGDownloader
+}
 js.Boot = $hxClasses["js.Boot"] = function() { }
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__unhtml = function(s) {
@@ -10376,9 +10760,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 	,floatTweenNodef: function(tween,priority) {
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,Std.parseFloat(window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(d,i,Std.parseFloat(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,"" + f(t),null == priority?"":priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -10394,9 +10778,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,window.getComputedStyle(d,null).getPropertyValue(name));
+			var f = tween(d,i,thx.js.AccessStyle.getComputedStyleValue(d,name));
 			return function(t) {
-				d.style.setProperty(name,f(t),null == priority?"":priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -10412,9 +10796,9 @@ thx.js.AccessTweenStyle.prototype = $extend(thx.js.AccessTween.prototype,{
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(d,i,thx.color.Colors.parse(window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(d,i,thx.color.Colors.parse(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,f(t).toRgbString(),null == priority?"":priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -10437,9 +10821,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(Reflect.field(d,"__data__"),i,Std.parseFloat(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,"" + f(t),null == priority?"":priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -10454,9 +10838,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,window.getComputedStyle(d,null).getPropertyValue(name));
+			var f = tween(Reflect.field(d,"__data__"),i,thx.js.AccessStyle.getComputedStyleValue(d,name));
 			return function(t) {
-				d.style.setProperty(name,f(t),null == priority?"":priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -10471,9 +10855,9 @@ thx.js.AccessDataTweenStyle.prototype = $extend(thx.js.AccessTweenStyle.prototyp
 		if(null == priority) priority = null;
 		var name = this.name;
 		var styleTween = function(d,i) {
-			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(window.getComputedStyle(d,null).getPropertyValue(name)));
+			var f = tween(Reflect.field(d,"__data__"),i,thx.color.Colors.parse(thx.js.AccessStyle.getComputedStyleValue(d,name)));
 			return function(t) {
-				d.style.setProperty(name,f(t).toRgbString(),null == priority?"":priority);
+				thx.js.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
 			};
 		};
 		this.tweens.set("style." + name,styleTween);
@@ -11098,6 +11482,135 @@ Strings.compare = function(a,b) {
 Strings.prototype = {
 	__class__: Strings
 }
+thx.js.HostType = $hxClasses["thx.js.HostType"] = { __ename__ : ["thx","js","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
+thx.js.HostType.UnknownServer = ["UnknownServer",0];
+thx.js.HostType.UnknownServer.toString = $estr;
+thx.js.HostType.UnknownServer.__enum__ = thx.js.HostType;
+thx.js.HostType.NodeJs = ["NodeJs",1];
+thx.js.HostType.NodeJs.toString = $estr;
+thx.js.HostType.NodeJs.__enum__ = thx.js.HostType;
+thx.js.HostType.IE = function(version) { var $x = ["IE",2,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Firefox = function(version) { var $x = ["Firefox",3,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Safari = function(version) { var $x = ["Safari",4,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Chrome = function(version) { var $x = ["Chrome",5,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Opera = function(version) { var $x = ["Opera",6,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.HostType.Unknown = function(what) { var $x = ["Unknown",7,what]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
+thx.js.EnvironmentType = $hxClasses["thx.js.EnvironmentType"] = { __ename__ : ["thx","js","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
+thx.js.EnvironmentType.Mobile = ["Mobile",0];
+thx.js.EnvironmentType.Mobile.toString = $estr;
+thx.js.EnvironmentType.Mobile.__enum__ = thx.js.EnvironmentType;
+thx.js.EnvironmentType.Desktop = ["Desktop",1];
+thx.js.EnvironmentType.Desktop.toString = $estr;
+thx.js.EnvironmentType.Desktop.__enum__ = thx.js.EnvironmentType;
+thx.js.EnvironmentType.Server = ["Server",2];
+thx.js.EnvironmentType.Server.toString = $estr;
+thx.js.EnvironmentType.Server.__enum__ = thx.js.EnvironmentType;
+thx.js.EnvironmentType.UnknownEnvironment = ["UnknownEnvironment",3];
+thx.js.EnvironmentType.UnknownEnvironment.toString = $estr;
+thx.js.EnvironmentType.UnknownEnvironment.__enum__ = thx.js.EnvironmentType;
+thx.js.OSType = $hxClasses["thx.js.OSType"] = { __ename__ : ["thx","js","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
+thx.js.OSType.Windows = function(version) { var $x = ["Windows",0,version]; $x.__enum__ = thx.js.OSType; $x.toString = $estr; return $x; }
+thx.js.OSType.IOs = ["IOs",1];
+thx.js.OSType.IOs.toString = $estr;
+thx.js.OSType.IOs.__enum__ = thx.js.OSType;
+thx.js.OSType.Android = ["Android",2];
+thx.js.OSType.Android.toString = $estr;
+thx.js.OSType.Android.__enum__ = thx.js.OSType;
+thx.js.OSType.Mac = ["Mac",3];
+thx.js.OSType.Mac.toString = $estr;
+thx.js.OSType.Mac.__enum__ = thx.js.OSType;
+thx.js.OSType.Linux = ["Linux",4];
+thx.js.OSType.Linux.toString = $estr;
+thx.js.OSType.Linux.__enum__ = thx.js.OSType;
+thx.js.OSType.UnknownOs = ["UnknownOs",5];
+thx.js.OSType.UnknownOs.toString = $estr;
+thx.js.OSType.UnknownOs.__enum__ = thx.js.OSType;
+thx.js.ClientHost = $hxClasses["thx.js.ClientHost"] = function() { }
+thx.js.ClientHost.__name__ = ["thx","js","ClientHost"];
+thx.js.ClientHost.host = null;
+thx.js.ClientHost.environment = null;
+thx.js.ClientHost.os = null;
+thx.js.ClientHost.isIE = function() {
+	return (function($this) {
+		var $r;
+		switch( (thx.js.ClientHost.host)[1] ) {
+		case 2:
+			$r = true;
+			break;
+		default:
+			$r = false;
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.hostVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (thx.js.ClientHost.host);
+		switch( $e[1] ) {
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.hostString = function() {
+	return (function($this) {
+		var $r;
+		switch( (thx.js.ClientHost.host)[1] ) {
+		case 0:
+			$r = "unknown_server";
+			break;
+		case 7:
+			$r = "unknown";
+			break;
+		case 1:
+			$r = "nodejs";
+			break;
+		default:
+			$r = thx.js.ClientHost.host[0];
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.osString = function() {
+	return thx.js.ClientHost.os[0];
+}
+thx.js.ClientHost.osVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (thx.js.ClientHost.os);
+		switch( $e[1] ) {
+		case 0:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+thx.js.ClientHost.environmentString = function() {
+	return thx.js.ClientHost.environment[0];
+}
+thx.js.ClientHost.userAgent = function() {
+	return "" + navigator.userAgent;
+}
+thx.js.ClientHost.hasNavigator = function() {
+	return typeof navigator !== 'undefined';
+}
+thx.js.ClientHost.prototype = {
+	__class__: thx.js.ClientHost
+}
 thx.json.JsonDecoder = $hxClasses["thx.json.JsonDecoder"] = function(handler,tabsize) {
 	if(tabsize == null) tabsize = 4;
 	this.handler = handler;
@@ -11367,135 +11880,6 @@ thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamErro
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
-thx.js.HostType = $hxClasses["thx.js.HostType"] = { __ename__ : ["thx","js","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
-thx.js.HostType.UnknownServer = ["UnknownServer",0];
-thx.js.HostType.UnknownServer.toString = $estr;
-thx.js.HostType.UnknownServer.__enum__ = thx.js.HostType;
-thx.js.HostType.NodeJs = ["NodeJs",1];
-thx.js.HostType.NodeJs.toString = $estr;
-thx.js.HostType.NodeJs.__enum__ = thx.js.HostType;
-thx.js.HostType.IE = function(version) { var $x = ["IE",2,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Firefox = function(version) { var $x = ["Firefox",3,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Safari = function(version) { var $x = ["Safari",4,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Chrome = function(version) { var $x = ["Chrome",5,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Opera = function(version) { var $x = ["Opera",6,version]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.HostType.Unknown = function(what) { var $x = ["Unknown",7,what]; $x.__enum__ = thx.js.HostType; $x.toString = $estr; return $x; }
-thx.js.EnvironmentType = $hxClasses["thx.js.EnvironmentType"] = { __ename__ : ["thx","js","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
-thx.js.EnvironmentType.Mobile = ["Mobile",0];
-thx.js.EnvironmentType.Mobile.toString = $estr;
-thx.js.EnvironmentType.Mobile.__enum__ = thx.js.EnvironmentType;
-thx.js.EnvironmentType.Desktop = ["Desktop",1];
-thx.js.EnvironmentType.Desktop.toString = $estr;
-thx.js.EnvironmentType.Desktop.__enum__ = thx.js.EnvironmentType;
-thx.js.EnvironmentType.Server = ["Server",2];
-thx.js.EnvironmentType.Server.toString = $estr;
-thx.js.EnvironmentType.Server.__enum__ = thx.js.EnvironmentType;
-thx.js.EnvironmentType.UnknownEnvironment = ["UnknownEnvironment",3];
-thx.js.EnvironmentType.UnknownEnvironment.toString = $estr;
-thx.js.EnvironmentType.UnknownEnvironment.__enum__ = thx.js.EnvironmentType;
-thx.js.OSType = $hxClasses["thx.js.OSType"] = { __ename__ : ["thx","js","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
-thx.js.OSType.Windows = function(version) { var $x = ["Windows",0,version]; $x.__enum__ = thx.js.OSType; $x.toString = $estr; return $x; }
-thx.js.OSType.IOs = ["IOs",1];
-thx.js.OSType.IOs.toString = $estr;
-thx.js.OSType.IOs.__enum__ = thx.js.OSType;
-thx.js.OSType.Android = ["Android",2];
-thx.js.OSType.Android.toString = $estr;
-thx.js.OSType.Android.__enum__ = thx.js.OSType;
-thx.js.OSType.Mac = ["Mac",3];
-thx.js.OSType.Mac.toString = $estr;
-thx.js.OSType.Mac.__enum__ = thx.js.OSType;
-thx.js.OSType.Linux = ["Linux",4];
-thx.js.OSType.Linux.toString = $estr;
-thx.js.OSType.Linux.__enum__ = thx.js.OSType;
-thx.js.OSType.UnknownOs = ["UnknownOs",5];
-thx.js.OSType.UnknownOs.toString = $estr;
-thx.js.OSType.UnknownOs.__enum__ = thx.js.OSType;
-thx.js.ClientHost = $hxClasses["thx.js.ClientHost"] = function() { }
-thx.js.ClientHost.__name__ = ["thx","js","ClientHost"];
-thx.js.ClientHost.host = null;
-thx.js.ClientHost.environment = null;
-thx.js.ClientHost.os = null;
-thx.js.ClientHost.isIE = function() {
-	return (function($this) {
-		var $r;
-		switch( (thx.js.ClientHost.host)[1] ) {
-		case 2:
-			$r = true;
-			break;
-		default:
-			$r = false;
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.hostVersion = function() {
-	return (function($this) {
-		var $r;
-		var $e = (thx.js.ClientHost.host);
-		switch( $e[1] ) {
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-			var v = $e[2];
-			$r = v;
-			break;
-		default:
-			$r = null;
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.hostString = function() {
-	return (function($this) {
-		var $r;
-		switch( (thx.js.ClientHost.host)[1] ) {
-		case 0:
-			$r = "unknown_server";
-			break;
-		case 7:
-			$r = "unknown";
-			break;
-		case 1:
-			$r = "nodejs";
-			break;
-		default:
-			$r = thx.js.ClientHost.host[0];
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.osString = function() {
-	return thx.js.ClientHost.os[0];
-}
-thx.js.ClientHost.osVersion = function() {
-	return (function($this) {
-		var $r;
-		var $e = (thx.js.ClientHost.os);
-		switch( $e[1] ) {
-		case 0:
-			var v = $e[2];
-			$r = v;
-			break;
-		default:
-			$r = null;
-		}
-		return $r;
-	}(this));
-}
-thx.js.ClientHost.environmentString = function() {
-	return thx.js.ClientHost.environment[0];
-}
-thx.js.ClientHost.userAgent = function() {
-	return "" + navigator.userAgent;
-}
-thx.js.ClientHost.hasNavigator = function() {
-	return typeof navigator !== 'undefined';
-}
-thx.js.ClientHost.prototype = {
-	__class__: thx.js.ClientHost
-}
 rg.info.InfoMap = $hxClasses["rg.info.InfoMap"] = function() {
 	this.property = "location";
 	this.type = "geojson";
@@ -12455,13 +12839,17 @@ rg.util.RGStrings.prototype = {
 rg.factory.FactoryLayout = $hxClasses["rg.factory.FactoryLayout"] = function() {
 }
 rg.factory.FactoryLayout.__name__ = ["rg","factory","FactoryLayout"];
+rg.factory.FactoryLayout.size = function(container,info,heightmargin) {
+	var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
+	return { width : width, height : height};
+}
 rg.factory.FactoryLayout.prototype = {
 	create: function(info,heightmargin,container) {
-		var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
+		var size = rg.factory.FactoryLayout.size(container,info,heightmargin);
 		var layoutName = info.layout;
 		if(null == layoutName) layoutName = rg.visualization.Visualizations.layoutDefault.get(info.type);
-		if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 34, className : "rg.factory.FactoryLayout", methodName : "create"});
-		var layout = rg.visualization.Visualizations.instantiateLayout(layoutName,width,height,container);
+		if(null == layoutName) throw new thx.error.Error("unable to find a suitable layout for '{0}'",null,info.type,{ fileName : "FactoryLayout.hx", lineNumber : 28, className : "rg.factory.FactoryLayout", methodName : "create"});
+		var layout = rg.visualization.Visualizations.instantiateLayout(layoutName,size.width,size.height,container);
 		layout.feedOptions(info);
 		return layout;
 	}
@@ -12832,18 +13220,18 @@ rg.graph.TwoCycleRemover.prototype = {
 	}
 	,__class__: rg.graph.TwoCycleRemover
 }
+rg.util.RG = $hxClasses["rg.util.RG"] = function() { }
+rg.util.RG.__name__ = ["rg","util","RG"];
+rg.util.RG.getTokenId = function() {
+	if(ReportGrid.$) return Strings.rtrim(Strings.ltrim(ReportGrid.$.Config.tokenId,"\""),"\""); else return null;
+}
+rg.util.RG.prototype = {
+	__class__: rg.util.RG
+}
 rg.RGConst = $hxClasses["rg.RGConst"] = function() { }
 rg.RGConst.__name__ = ["rg","RGConst"];
 rg.RGConst.prototype = {
 	__class__: rg.RGConst
-}
-rg.util.RG = $hxClasses["rg.util.RG"] = function() { }
-rg.util.RG.__name__ = ["rg","util","RG"];
-rg.util.RG.getTokenId = function() {
-	return "chart" + haxe.Md5.encode("chart");
-}
-rg.util.RG.prototype = {
-	__class__: rg.util.RG
 }
 rg.axis.AxisNumeric = $hxClasses["rg.axis.AxisNumeric"] = function() {
 }
@@ -18525,7 +18913,8 @@ rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
 });
 rg.info.InfoDownload = $hxClasses["rg.info.InfoDownload"] = function() {
 	this.service = rg.RGConst.SERVICE_RENDERING_STATIC;
-	this.formats = ["png","jpg","pdf"];
+	this.legacyservice = rg.RGConst.LEGACY_RENDERING_STATIC;
+	this.formats = ["pdf","png","jpg","svg"];
 }
 rg.info.InfoDownload.__name__ = ["rg","info","InfoDownload"];
 rg.info.InfoDownload.filters = function() {
@@ -18533,7 +18922,7 @@ rg.info.InfoDownload.filters = function() {
 		return Reflect.isFunction(v);
 	}, filter : null},{ field : "service", validator : function(v) {
 		return Std["is"](v,String);
-	}, filter : null},{ field : "background", validator : function(v) {
+	}, filter : null},{ field : "legacyservice", validator : function(v) {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "formats", validator : function(v) {
 		return Std["is"](v,Array);
@@ -18546,7 +18935,7 @@ rg.info.InfoDownload.filters = function() {
 rg.info.InfoDownload.prototype = {
 	handler: null
 	,service: null
-	,background: null
+	,legacyservice: null
 	,position: null
 	,formats: null
 	,__class__: rg.info.InfoDownload
@@ -19208,31 +19597,6 @@ rg.info.InfoHeatGrid.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 	,colorScaleMode: null
 	,__class__: rg.info.InfoHeatGrid
 });
-rg.info.InfoTrack = $hxClasses["rg.info.InfoTrack"] = function() {
-	this.enabled = false;
-	this.token = rg.RGConst.TRACKING_TOKEN;
-	this.paths = ["/","/{hash}/"];
-	this.hash = null;
-}
-rg.info.InfoTrack.__name__ = ["rg","info","InfoTrack"];
-rg.info.InfoTrack.filters = function() {
-	return [{ field : "enabled", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "token", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "paths", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "hash", validator : function(v) {
-		return v == null || Std["is"](v,String);
-	}, filter : null}];
-}
-rg.info.InfoTrack.prototype = {
-	enabled: null
-	,token: null
-	,paths: null
-	,hash: null
-	,__class__: rg.info.InfoTrack
-}
 math.BigInteger = $hxClasses["math.BigInteger"] = function() {
 	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
 	if(math.BigInteger.BI_RM.length == 0) throw "BI_RM not initialized";
@@ -21251,14 +21615,38 @@ thx.js.AccessStyle = $hxClasses["thx.js.AccessStyle"] = function(name,selection)
 	this.name = name;
 }
 thx.js.AccessStyle.__name__ = ["thx","js","AccessStyle"];
+thx.js.AccessStyle._getPropertyName = function(key) {
+	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Lib.document.body.cssFloat == null?"styleFloat":"cssFloat";
+	if(key.indexOf("-") >= 0) key = Strings.ucwords(key);
+	return key;
+}
 thx.js.AccessStyle.getComputedStyleValue = function(node,key) {
-	return window.getComputedStyle(node,null).getPropertyValue(key);
+	if('getComputedStyle' in window) thx.js.AccessStyle.getComputedStyleValue = function(node1,key1) {
+		return js.Lib.window.getComputedStyle(node1,null).getPropertyValue(key1);
+	}; else thx.js.AccessStyle.getComputedStyleValue = function(node1,key1) {
+		var style = node1.currentStyle;
+		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
+		if(null == Reflect.field(style,key1)) return ""; else return Reflect.field(style,key1);
+	};
+	return thx.js.AccessStyle.getComputedStyleValue(node,key);
 }
 thx.js.AccessStyle.setStyleProperty = function(node,key,value,priority) {
-	node.style.setProperty(key,value,null == priority?"":priority);
+	if('setProperty' in node.style) thx.js.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
+		node1.style.setProperty(key1,value1,priority1 == null?"":priority1);
+	}; else thx.js.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
+		var style = node1.style;
+		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
+		if(null != priority1 && "" != priority1) style.cssText += ";" + Strings.dasherize(key1) + ":" + value1 + "!important;"; else style[key1] = value1;
+	};
 }
 thx.js.AccessStyle.removeStyleProperty = function(node,key) {
-	node.style.removeProperty(key);
+	if('removeProperty' in node.style) thx.js.AccessStyle.removeStyleProperty = function(node1,key1) {
+		node1.style.removeProperty(key1,value);
+	}; else thx.js.AccessStyle.removeStyleProperty = function(node1,key1) {
+		var style = node1.style;
+		if(null == Reflect.field(style,key1)) key1 = thx.js.AccessStyle._getPropertyName(key1);
+		Reflect.deleteField(style,key1);
+	};
 }
 thx.js.AccessStyle.__super__ = thx.js.Access;
 thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
@@ -21266,7 +21654,7 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 	,get: function() {
 		var me = this;
 		return this.selection.firstNode(function(node) {
-			return window.getComputedStyle(node,null).getPropertyValue(me.name);
+			return thx.js.AccessStyle.getComputedStyleValue(node,me.name);
 		});
 	}
 	,getFloat: function() {
@@ -21276,21 +21664,21 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 	,remove: function() {
 		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.removeProperty(me.name);
+			thx.js.AccessStyle.removeStyleProperty(node,me.name);
 		});
 		return this.selection;
 	}
 	,string: function(v,priority) {
 		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(me.name,v,null == priority?"":priority);
+			thx.js.AccessStyle.setStyleProperty(node,me.name,v,priority);
 		});
 		return this.selection;
 	}
 	,'float': function(v,priority) {
 		var me = this;
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(me.name,v,null == priority?"":priority);
+			thx.js.AccessStyle.setStyleProperty(node,me.name,v,priority);
 		});
 		return this.selection;
 	}
@@ -21298,7 +21686,7 @@ thx.js.AccessStyle.prototype = $extend(thx.js.Access.prototype,{
 		var me = this;
 		var s = v.toRgbString();
 		this.selection.eachNode(function(node,i) {
-			node.style.setProperty(me.name,s,null == priority?"":priority);
+			thx.js.AccessStyle.setStyleProperty(node,me.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -21314,7 +21702,7 @@ thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,s,null == priority?"":priority);
+			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -21322,7 +21710,7 @@ thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,"" + s,null == priority?"":priority);
+			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,"" + s,priority);
 		});
 		return this.selection;
 	}
@@ -21330,7 +21718,7 @@ thx.js.AccessDataStyle.prototype = $extend(thx.js.AccessStyle.prototype,{
 		var me = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__data__"),i);
-			if(s == null) node.style.removeProperty(me.name); else node.style.setProperty(me.name,"" + s.toRgbString(),null == priority?"":priority);
+			if(s == null) thx.js.AccessStyle.removeStyleProperty(node,me.name); else thx.js.AccessStyle.setStyleProperty(node,me.name,"" + s.toRgbString(),priority);
 		});
 		return this.selection;
 	}
@@ -21699,54 +22087,6 @@ thx.svg.Line.prototype = {
 		return this;
 	}
 	,__class__: thx.svg.Line
-}
-if(!rg.interactive) rg.interactive = {}
-rg.interactive.Downloader = $hxClasses["rg.interactive.Downloader"] = function(container,serviceurl,backgroundcolor) {
-	this.container = container;
-	this.serviceUrl = serviceurl;
-	this.defaultBackgroundColor = backgroundcolor;
-}
-rg.interactive.Downloader.__name__ = ["rg","interactive","Downloader"];
-rg.interactive.Downloader.getClassName = function(container) {
-	var name = container.attr("class").get();
-	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
-	return "" == name?null:name;
-}
-rg.interactive.Downloader.prototype = {
-	serviceUrl: null
-	,defaultBackgroundColor: null
-	,container: null
-	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.interactive.Downloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "Downloader.hx", lineNumber : 36, className : "rg.interactive.Downloader", methodName : "download"});
-		var ob = { tokenId : rg.util.RG.getTokenId(), css : rg.svg.util.RGCss.cssSources(), id : this.container.attr("id").get(), format : format, xml : this.container.node().innerHTML, element : this.container.node().nodeName.toLowerCase()};
-		var bg = null == backgroundcolor?this.defaultBackgroundColor:backgroundcolor;
-		if(null != bg) ob.backgroundcolor = bg;
-		var cls = rg.interactive.Downloader.getClassName(this.container);
-		if(null != cls) ob.className = cls;
-		var http = new haxe.Http(this.serviceUrl);
-		if(null != error) http.onError = error; else http.onError = function(e) {
-			null;
-		};
-		http.onData = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
-			};
-		})(this.complete.$bind(this),success,error);
-		var buf = [];
-		var _g = 0, _g1 = Reflect.fields(ob);
-		while(_g < _g1.length) {
-			var field = _g1[_g];
-			++_g;
-			http.setParameter(field,Reflect.field(ob,field));
-		}
-		http.request(true);
-	}
-	,complete: function(success,error,content) {
-		if(content.substr(0,rg.interactive.Downloader.ERROR_PREFIX.length) == rg.interactive.Downloader.ERROR_PREFIX) {
-			if(null != error) error(content.substr(rg.interactive.Downloader.ERROR_PREFIX.length));
-		} else if(null == success || success(content)) js.Lib.window.location.href = content;
-	}
-	,__class__: rg.interactive.Downloader
 }
 rg.svg.panel.Space = $hxClasses["rg.svg.panel.Space"] = function(width,height,domcontainer) {
 	this.panel = new rg.frame.StackItem(rg.frame.FrameLayout.Fill(0,0));
@@ -22317,8 +22657,9 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,__class__: rg.svg.chart.FunnelChart
 });
-rg.app.charts.App = $hxClasses["rg.app.charts.App"] = function() {
+rg.app.charts.App = $hxClasses["rg.app.charts.App"] = function(notifier) {
 	this.layouts = new Hash();
+	this.globalNotifier = notifier;
 }
 rg.app.charts.App.__name__ = ["rg","app","charts","App"];
 rg.app.charts.App.nextid = function() {
@@ -22329,10 +22670,13 @@ rg.app.charts.App.supportsSvg = function() {
 }
 rg.app.charts.App.prototype = {
 	layouts: null
+	,globalNotifier: null
 	,visualization: function(el,jsoptions) {
+		var me = this;
+		rg.app.charts.App.chartsCounter++;
 		var node = el.node(), id = node.id;
 		if(null == id) node.id = id = rg.app.charts.App.nextid();
-		var params = rg.info.Info.feed(new rg.info.InfoVisualizationOption(),jsoptions), loader = new rg.data.DataLoader(rg.info.Info.feed(new rg.info.InfoDataSource(),jsoptions).loader), variables = new rg.factory.FactoryVariable().createVariables(params.variables), general = rg.info.Info.feed(new rg.info.InfoGeneral(),params.options), infoviz = rg.info.Info.feed(new rg.info.InfoVisualizationType(),params.options);
+		var params = rg.info.Info.feed(new rg.info.InfoVisualizationOption(),jsoptions), loader = new rg.data.DataLoader(rg.info.Info.feed(new rg.info.InfoDataSource(),jsoptions).loader), variables = new rg.factory.FactoryVariable().createVariables(params.variables), general = rg.info.Info.feed(new rg.info.InfoGeneral(),params.options), infoviz = rg.info.Info.feed(new rg.info.InfoVisualizationType(),params.options), uselegacy = !rg.app.charts.App.supportsSvg();
 		var visualization = null;
 		params.options.marginheight = 29;
 		var ivariables = Arrays.filter(variables,function(v) {
@@ -22341,40 +22685,40 @@ rg.app.charts.App.prototype = {
 		var dvariables = Arrays.filter(variables,function(v) {
 			return Std["is"](v,rg.data.VariableDependent);
 		});
-		switch( (rg.info.Info.feed(new rg.info.InfoDomType(),params.options).kind)[1] ) {
-		case 1:
-			var layout = this.getLayout(id,params.options,el,infoviz.replace);
-			visualization = new rg.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
-			break;
-		case 0:
-			if(infoviz.replace) el.selectAll("*").remove();
-			visualization = new rg.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
-			break;
-		}
-		visualization.setVariables(variables,ivariables,dvariables);
-		visualization.init();
-		if(null != general.ready) visualization.addReady(general.ready);
 		loader.onLoad.addOnce(function(data) {
 			new rg.data.IndependentVariableProcessor().process(data,ivariables);
 			new rg.data.DependentVariableProcessor().process(data,dvariables);
 		});
-		loader.onLoad.addOnce(function(datapoints) {
-			visualization.feedData(datapoints);
-		});
-		loader.load();
+		if(!uselegacy) {
+			switch( (rg.info.Info.feed(new rg.info.InfoDomType(),params.options).kind)[1] ) {
+			case 1:
+				var layout = this.getLayout(id,params.options,el,infoviz.replace);
+				visualization = new rg.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
+				break;
+			case 0:
+				if(infoviz.replace) el.selectAll("*").remove();
+				visualization = new rg.factory.FactoryHtmlVisualization().create(infoviz.type,el,params.options);
+				break;
+			}
+			visualization.setVariables(variables,ivariables,dvariables);
+			visualization.init();
+			if(null != general.ready) visualization.addReady(general.ready);
+			loader.onLoad.addOnce(function(datapoints) {
+				visualization.feedData(datapoints);
+			});
+		}
 		var brandPadding = 0, logoHeight = 29;
 		var download = rg.info.Info.feed(new rg.info.InfoDownload(),jsoptions.options.download);
-		if(!rg.app.charts.App.supportsSvg()) {
-			var downloader = new rg.interactive.Downloader(visualization.container,download.service,download.background);
-			visualization.addReadyOnce(function() {
-				downloader.download("png","#ffffff",function(url) {
-					visualization.container.selectAll("*").remove();
-					visualization.container.append("img").attr("src").string(url);
-					return false;
-				},null);
+		if(uselegacy) {
+			var legacy = new rg.interactive.RGLegacyRenderer(el,download.legacyservice);
+			loader.onLoad.addOnce(function(data) {
+				jsoptions.datapoints = data;
+				legacy.display(jsoptions);
 			});
-		} else if(null != download.position || null != download.handler) {
-			var downloader = new rg.interactive.Downloader(visualization.container,download.service,download.background);
+		}
+		loader.load();
+		if(!uselegacy && (null != download.position || null != download.handler)) {
+			var downloader = new rg.interactive.RGDownloader(visualization.container,download.service);
 			if(null != download.handler) visualization.addReadyOnce(function() {
 				download.handler(downloader.download.$bind(downloader));
 			}); else visualization.addReadyOnce(function() {
@@ -22382,10 +22726,16 @@ rg.app.charts.App.prototype = {
 				brandPadding = 24;
 			});
 		}
-		if(!jsoptions.options.a) visualization.addReadyOnce(function() {
-			var widget = new rg.html.widget.Logo(visualization.container,brandPadding);
-			visualization.setVerticalOffset(logoHeight);
-		});
+		if(!uselegacy) {
+			if(!jsoptions.options.a) visualization.addReadyOnce(function() {
+				var widget = new rg.html.widget.Logo(visualization.container,brandPadding);
+				visualization.setVerticalOffset(logoHeight);
+			});
+			visualization.addReadyOnce(function() {
+				rg.app.charts.App.chartsLoaded++;
+				if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) me.globalNotifier.dispatch();
+			});
+		}
 		return visualization;
 	}
 	,getLayout: function(id,options,container,replace) {
@@ -26136,6 +26486,61 @@ rg.svg.util.SymbolCache.cache = new rg.svg.util.SymbolCache();
 		return $r;
 	}(this));
 }
+if (!('indexOf' in Array.prototype)) {
+    Array.prototype.indexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= 0;
+        if (i<0) i+= this.length;
+        if (i<0) i= 0;
+        for (var n= this.length; i<n; i++)
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('lastIndexOf' in Array.prototype)) {
+    Array.prototype.lastIndexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= this.length-1;
+        if (i<0) i+= this.length;
+        if (i>this.length-1) i= this.length-1;
+        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('forEach' in Array.prototype)) {
+    Array.prototype.forEach= function(action, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                action.call(that, this[i], i, this);
+    };
+}
+if (!('map' in Array.prototype)) {
+    Array.prototype.map= function(mapper, that /*opt*/) {
+        var other= new Array(this.length);
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                other[i]= mapper.call(that, this[i], i, this);
+        return other;
+    };
+}
+if (!('filter' in Array.prototype)) {
+    Array.prototype.filter= function(filter, that /*opt*/) {
+        var other= [], v;
+        for (var i=0, n= this.length; i<n; i++)
+            if (i in this && filter.call(that, v= this[i], i, this))
+                other.push(v);
+        return other;
+    };
+}
+if (!('every' in Array.prototype)) {
+    Array.prototype.every= function(tester, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this && !tester.call(that, this[i], i, this))
+                return false;
+        return true;
+    };
+}
 js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
 	try {
 		return new ActiveXObject("Msxml2.XMLHTTP");
@@ -27640,6 +28045,8 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 rg.graph.Graphs.id = 0;
 Ints._reparse = new EReg("^([+-])?\\d+$","");
+rg.interactive.RGLegacyRenderer.FORMAT = "png";
+rg.interactive.RGLegacyRenderer.nextframeid = 0;
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
@@ -27722,6 +28129,7 @@ rg.visualization.Visualizations.html = ["pivottable","leaderboard"];
 rg.visualization.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
 rg.visualization.Visualizations.visualizations = rg.visualization.Visualizations.svg.concat(rg.visualization.Visualizations.html);
 rg.visualization.Visualizations.layouts = ["simple","cartesian","x"];
+rg.interactive.RGDownloader.ALLOWED_FORMATS = ["pdf","ps","png","jpg","svg"];
 Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
 Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
 Strings._reReduceWS = new EReg("\\s+","");
@@ -27745,7 +28153,7 @@ rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
 rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
 rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/renderer/";
-rg.RGConst.TRACKING_TOKEN = "SUPERFAKETOKEN";
+rg.RGConst.LEGACY_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
 rg.util.Properties.TIME_TOKEN = "time:";
 DateTools.WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 DateTools.WEEKDAYS_ABBREV = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -27780,8 +28188,6 @@ rg.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 thx.js.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 thx.js.BaseTransition._id = 0;
 thx.js.BaseTransition._inheritid = 0;
-rg.interactive.Downloader.ALLOWED_FORMATS = ["png","pdf","jpg"];
-rg.interactive.Downloader.ERROR_PREFIX = "ERROR:";
 thx.xml.Namespace.prefix = (function() {
 	var h = new Hash();
 	h.set("svg","http://www.w3.org/2000/svg");
@@ -27792,6 +28198,8 @@ thx.xml.Namespace.prefix = (function() {
 	return h;
 })();
 rg.app.charts.App.lastid = 0;
+rg.app.charts.App.chartsCounter = 0;
+rg.app.charts.App.chartsLoaded = 0;
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
 math.IEEE754.bias = 1024;

@@ -58,7 +58,11 @@ class RGLegacyRenderer
 			.attr("height").float(height)
 			.attr("marginwidth").float(0)
 			.attr("marginheight").float(0)
-			.attr("scrolling").string("no")
+			.attr("scrolling").string("auto")
+			.style("overflow").string("hidden")
+			.style("border").string("0")
+			.style("margin").string("0")
+			.style("padding").string("0")
 			.attr("src").string("about:blank");
 	}
 
