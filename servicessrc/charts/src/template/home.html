@@ -70,30 +70,30 @@
 {
 <h2>Status</h2>
 <ul class="bullet">
-  <li><a href="@url.route({ controller : 'setup', action : 'mongodb', auth : auth })">DB</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'topRenderables', auth : auth })">Renderables</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'mongodb', auth : auth })">DB</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'topRenderables', auth : auth })">Renderables</a></li>
 </ul>
 
 <h2>Maintenance</h2>
 <ul class="bullet">
-  <li><a href="@url.route({ controller : 'setup', action : 'purgeCache', auth : auth })">Purge Cache</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'clearCache', auth : auth })">Clear Cache</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'purgeRenderables', auth : auth })">Purge Unused Renderables</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'purgeExpiredRenderables', auth : auth })">Purge Expired Renderables</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'purgeCache', auth : auth })">Purge Cache</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'clearCache', auth : auth })">Clear Cache</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'purgeRenderables', auth : auth })">Purge Unused Renderables</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'purgeExpiredRenderables', auth : auth })">Purge Expired Renderables</a></li>
 
-  <li><a href="@url.route({ controller : 'setup', action : 'displayLogs', auth : auth, format : "json" })">Logs (json)</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'displayLogs', auth : auth, format : "html" })">Logs (html)</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'clearLogs', auth : auth })">Clear Logs</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'displayLogs', auth : auth, format : "json" })">Logs (json)</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'displayLogs', auth : auth, format : "html" })">Logs (html)</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'clearLogs', auth : auth })">Clear Logs</a></li>
 </ul>
 
 
 <h2>Setup</h2>
 <ul class="bullet">
-  <li><a href="@url.route({ controller : 'setup', action : 'createCollections', auth : auth })">Create Collections</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'dropCollections', auth : auth })">Drop Collections</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'dropCache', auth : auth })">Drop Cache</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'dropRenderables', auth : auth })">Drop Renderables</a></li>
-  <li><a href="@url.route({ controller : 'setup', action : 'info', auth : auth })">PHP Info</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'createCollections', auth : auth })">Create Collections</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'dropCollections', auth : auth })">Drop Collections</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'dropCache', auth : auth })">Drop Cache</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'dropRenderables', auth : auth })">Drop Renderables</a></li>
+  <li><a href="@baseurl@url.route({ controller : 'setup', action : 'info', auth : auth })">PHP Info</a></li>
 </ul>
 }
 

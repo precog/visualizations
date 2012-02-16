@@ -711,6 +711,17 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
+					$x = $__context__->baseurl;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
 					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "mongodb", "auth" => $__context__->auth)));
 					if(is_null($x)) {
 						$x = "null";
@@ -723,6 +734,17 @@ class template_Home extends erazor_macro_Template {
 				}
 				{
 					$x = "\">DB</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->baseurl;
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -755,6 +777,17 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
+					$x = $__context__->baseurl;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
 					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeCache", "auth" => $__context__->auth)));
 					if(is_null($x)) {
 						$x = "null";
@@ -767,6 +800,17 @@ class template_Home extends erazor_macro_Template {
 				}
 				{
 					$x = "\">Purge Cache</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->baseurl;
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -799,6 +843,17 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
+					$x = $__context__->baseurl;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
 					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeRenderables", "auth" => $__context__->auth)));
 					if(is_null($x)) {
 						$x = "null";
@@ -811,6 +866,17 @@ class template_Home extends erazor_macro_Template {
 				}
 				{
 					$x = "\">Purge Unused Renderables</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->baseurl;
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -843,6 +909,17 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
+					$x = $__context__->baseurl;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
 					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "displayLogs", "auth" => $__context__->auth, "format" => "json")));
 					if(is_null($x)) {
 						$x = "null";
@@ -855,6 +932,17 @@ class template_Home extends erazor_macro_Template {
 				}
 				{
 					$x = "\">Logs (json)</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->baseurl;
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -887,6 +975,17 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
+					$x = $__context__->baseurl;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
 					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "clearLogs", "auth" => $__context__->auth)));
 					if(is_null($x)) {
 						$x = "null";
@@ -899,6 +998,17 @@ class template_Home extends erazor_macro_Template {
 				}
 				{
 					$x = "\">Clear Logs</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->baseurl;
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -931,6 +1041,17 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
+					$x = $__context__->baseurl;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
 					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropCollections", "auth" => $__context__->auth)));
 					if(is_null($x)) {
 						$x = "null";
@@ -943,6 +1064,17 @@ class template_Home extends erazor_macro_Template {
 				}
 				{
 					$x = "\">Drop Collections</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->baseurl;
 					if(is_null($x)) {
 						$x = "null";
 					} else {
@@ -975,6 +1107,17 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
+					$x = $__context__->baseurl;
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
 					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropRenderables", "auth" => $__context__->auth)));
 					if(is_null($x)) {
 						$x = "null";
@@ -987,6 +1130,17 @@ class template_Home extends erazor_macro_Template {
 				}
 				{
 					$x = "\">Drop Renderables</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->baseurl;
 					if(is_null($x)) {
 						$x = "null";
 					} else {

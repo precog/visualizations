@@ -19,7 +19,7 @@ class App {
 		return "http://" . $_SERVER["HTTP_HOST"] . "";
 	}
 	static function main() {
-		App::$version = "1.0.3.489";
+		App::$version = "1.0.3.490";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
