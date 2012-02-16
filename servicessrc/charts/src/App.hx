@@ -75,7 +75,7 @@ class App
 				true, // mod rewrite
 				BASE_PATH,
 #if release
-				true // disable browser trace
+				false //true // disable browser trace
 #else
 				false
 #end
