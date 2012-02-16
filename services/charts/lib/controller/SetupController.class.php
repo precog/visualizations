@@ -57,23 +57,27 @@ class controller_SetupController extends controller_BaseController {
 	}
 	public function createCollections($auth) {
 		$this->authorize($auth);
-		$dbname = "chartsrenderer1"; $db = new mongo_MongoDB($this->mongo->m->selectDB($dbname)); $cacheCollections = new _hx_array($db->db->listCollections()); $renderablesCollectionName = "renderables"; $cacheCollectionName = "cache"; $configCollectionName = "config";
-		$renderableCollection = new mongo_MongoCollection($db->db->selectCollection($renderablesCollectionName));
+		$dbname = "chartsrenderer1"; $db = new mongo_MongoDB($this->mongo->m->selectDB($dbname)); $cacheCollections = new _hx_array($db->db->listCollections());
+		$renderableCollection = new mongo_MongoCollection($db->db->selectCollection("renderables"));
 		if(php_Lib::objectOfAssociativeArray($renderableCollection->c->validate())->ok < 1) {
-			$renderableCollection = new mongo_MongoCollection($db->db->createCollection($renderablesCollectionName));
+			$renderableCollection = new mongo_MongoCollection($db->db->createCollection("renderables"));
 			$renderableCollection->ensureIndexOn("uid", _hx_anonymous(array("unique" => true)));
 			$renderableCollection->ensureIndexOn("lastUsage", null);
 		}
-		$cacheCollection = new mongo_MongoCollection($db->db->selectCollection($cacheCollectionName));
+		$cacheCollection = new mongo_MongoCollection($db->db->selectCollection("cache"));
 		if(php_Lib::objectOfAssociativeArray($cacheCollection->c->validate())->ok < 1) {
-			$cacheCollection = new mongo_MongoCollection($db->db->createCollection($cacheCollectionName));
+			$cacheCollection = new mongo_MongoCollection($db->db->createCollection("cache"));
 			$cacheCollection->ensureIndexOn("uid", _hx_anonymous(array("unique" => true)));
 			$cacheCollection->ensureIndexOn("expiresOn", null);
 		}
-		$configCollection = new mongo_MongoCollection($db->db->selectCollection($configCollectionName));
-		if(php_Lib::objectOfAssociativeArray($cacheCollection->c->validate())->ok < 1) {
-			$configCollection = new mongo_MongoCollection($db->db->createCollection($configCollectionName));
+		$configCollection = new mongo_MongoCollection($db->db->selectCollection("config"));
+		if(php_Lib::objectOfAssociativeArray($configCollection->c->validate())->ok < 1) {
+			$configCollection = new mongo_MongoCollection($db->db->createCollection("config"));
 			$configCollection->ensureIndexOn("name", _hx_anonymous(array("unique" => true)));
+		}
+		$logsCollection = new mongo_MongoCollection($db->db->selectCollection("log"));
+		if(php_Lib::objectOfAssociativeArray($logsCollection->c->validate())->ok < 1) {
+			$logsCollection = new mongo_MongoCollection($db->db->createCollection("log"));
 		}
 		$controller = new controller_RenderableAPIController(new model_RenderableGateway($renderableCollection));
 		$renderable = $controller->makeRenderable(model_Sample::$html, model_Sample::$config);
@@ -83,20 +87,24 @@ class controller_SetupController extends controller_BaseController {
 	}
 	public function mongodb($auth) {
 		$this->authorize($auth);
-		$dbname = "chartsrenderer1"; $db = new mongo_MongoDB($this->mongo->m->selectDB($dbname)); $cacheCollections = new _hx_array($db->db->listCollections()); $renderablesCollectionName = "renderables"; $cacheCollectionName = "cache"; $logCollectionName = "log"; $renderablesExists = true; $cacheExists = true; $logExists = true;
-		$renderableCollection = new mongo_MongoCollection($db->db->selectCollection($renderablesCollectionName));
+		$dbname = "chartsrenderer1"; $db = new mongo_MongoDB($this->mongo->m->selectDB($dbname)); $cacheCollections = new _hx_array($db->db->listCollections()); $renderablesExists = true; $cacheExists = true; $configExists = true; $logExists = true;
+		$renderableCollection = new mongo_MongoCollection($db->db->selectCollection("renderables"));
 		if(php_Lib::objectOfAssociativeArray($renderableCollection->c->validate())->ok < 1) {
 			$renderablesExists = false;
 		}
-		$cacheCollection = new mongo_MongoCollection($db->db->selectCollection($cacheCollectionName));
+		$cacheCollection = new mongo_MongoCollection($db->db->selectCollection("cache"));
 		if(php_Lib::objectOfAssociativeArray($cacheCollection->c->validate())->ok < 1) {
 			$cacheExists = false;
 		}
-		$logCollection = new mongo_MongoCollection($db->db->selectCollection($logCollectionName));
+		$configCollection = new mongo_MongoCollection($db->db->selectCollection("config"));
+		if(php_Lib::objectOfAssociativeArray($configCollection->c->validate())->ok < 1) {
+			$configExists = false;
+		}
+		$logCollection = new mongo_MongoCollection($db->db->selectCollection("log"));
 		if(php_Lib::objectOfAssociativeArray($logCollection->c->validate())->ok < 1) {
 			$logExists = false;
 		}
-		$content = _hx_anonymous(array("baseurl" => App::baseUrl(), "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "db" => _hx_anonymous(array("name" => $dbname, "collections" => $cacheCollections)), "renderables" => _hx_anonymous(array("name" => $renderablesCollectionName, "exists" => $renderablesExists, "count" => (($renderablesExists) ? $renderableCollection->c->count() : -1))), "cache" => _hx_anonymous(array("name" => $cacheCollectionName, "exists" => $cacheExists, "count" => (($cacheExists) ? $cacheCollection->c->count() : -1))), "logs" => _hx_anonymous(array("name" => $logCollectionName, "exists" => $logExists, "count" => (($logExists) ? $logCollection->c->count() : -1)))));
+		$content = _hx_anonymous(array("baseurl" => App::baseUrl(), "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "db" => _hx_anonymous(array("name" => $dbname, "collections" => $cacheCollections)), "renderables" => _hx_anonymous(array("name" => "renderables", "exists" => $renderablesExists, "count" => (($renderablesExists) ? $renderableCollection->c->count() : -1))), "cache" => _hx_anonymous(array("name" => "cache", "exists" => $cacheExists, "count" => (($cacheExists) ? $cacheCollection->c->count() : -1))), "config" => _hx_anonymous(array("name" => "config", "exists" => $configExists, "count" => (($configExists) ? $configCollection->c->count() : -1))), "logs" => _hx_anonymous(array("name" => "log", "exists" => $logExists, "count" => (($logExists) ? $logCollection->c->count() : -1)))));
 		return new ufront_web_mvc_ContentResult(_hx_deref(new template_MongoDBStatus())->execute($content), null);
 	}
 	public function topRenderables($auth, $top) {
@@ -153,6 +161,6 @@ class controller_SetupController extends controller_BaseController {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	static $__rtti = "<class path=\"controller.SetupController\" params=\"\">\x0A\x09<extends path=\"controller.BaseController\"/>\x0A\x09<mongo><c path=\"mongo.Mongo\"/></mongo>\x0A\x09<dropRenderables public=\"1\" set=\"method\" line=\"23\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropRenderables>\x0A\x09<authorize set=\"method\" line=\"30\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></authorize>\x0A\x09<dropCache public=\"1\" set=\"method\" line=\"36\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCache>\x0A\x09<dropCollections public=\"1\" set=\"method\" line=\"43\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCollections>\x0A\x09<displayLogs public=\"1\" set=\"method\" line=\"51\"><f a=\"auth:format\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></displayLogs>\x0A\x09<clearLogs public=\"1\" set=\"method\" line=\"59\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearLogs>\x0A\x09<redirectToStatus set=\"method\" line=\"68\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></redirectToStatus>\x0A\x09<dropCollection set=\"method\" line=\"74\"><f a=\"collection\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></dropCollection>\x0A\x09<cacheCollection set=\"method\" line=\"81\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></cacheCollection>\x0A\x09<renderableCollection set=\"method\" line=\"88\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></renderableCollection>\x0A\x09<createCollections public=\"1\" set=\"method\" line=\"95\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></createCollections>\x0A\x09<mongodb public=\"1\" set=\"method\" line=\"142\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></mongodb>\x0A\x09<topRenderables public=\"1\" set=\"method\" line=\"205\"><f a=\"auth:?top\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"Int\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></topRenderables>\x0A\x09<purge public=\"1\" set=\"method\" line=\"219\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purge>\x0A\x09<purgeCache public=\"1\" set=\"method\" line=\"229\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeCache>\x0A\x09<clearCache public=\"1\" set=\"method\" line=\"237\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearCache>\x0A\x09<purgeRenderables public=\"1\" set=\"method\" line=\"245\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeRenderables>\x0A\x09<purgeExpiredRenderables public=\"1\" set=\"method\" line=\"253\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeExpiredRenderables>\x0A\x09<info public=\"1\" set=\"method\" line=\"261\"><f a=\"\"><c path=\"String\"/></f></info>\x0A\x09<collectPhpInfo set=\"method\" line=\"266\"><f a=\"\"><c path=\"String\"/></f></collectPhpInfo>\x0A\x09<new public=\"1\" set=\"method\" line=\"17\"><f a=\"mongo\">\x0A\x09<c path=\"mongo.Mongo\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></new>\x0A</class>";
+	static $__rtti = "<class path=\"controller.SetupController\" params=\"\">\x0A\x09<extends path=\"controller.BaseController\"/>\x0A\x09<mongo><c path=\"mongo.Mongo\"/></mongo>\x0A\x09<dropRenderables public=\"1\" set=\"method\" line=\"23\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropRenderables>\x0A\x09<authorize set=\"method\" line=\"30\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></authorize>\x0A\x09<dropCache public=\"1\" set=\"method\" line=\"36\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCache>\x0A\x09<dropCollections public=\"1\" set=\"method\" line=\"43\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCollections>\x0A\x09<displayLogs public=\"1\" set=\"method\" line=\"51\"><f a=\"auth:format\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></displayLogs>\x0A\x09<clearLogs public=\"1\" set=\"method\" line=\"59\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearLogs>\x0A\x09<redirectToStatus set=\"method\" line=\"68\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></redirectToStatus>\x0A\x09<dropCollection set=\"method\" line=\"74\"><f a=\"collection\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></dropCollection>\x0A\x09<cacheCollection set=\"method\" line=\"81\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></cacheCollection>\x0A\x09<renderableCollection set=\"method\" line=\"88\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></renderableCollection>\x0A\x09<createCollections public=\"1\" set=\"method\" line=\"95\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></createCollections>\x0A\x09<mongodb public=\"1\" set=\"method\" line=\"146\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></mongodb>\x0A\x09<topRenderables public=\"1\" set=\"method\" line=\"219\"><f a=\"auth:?top\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"Int\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></topRenderables>\x0A\x09<purge public=\"1\" set=\"method\" line=\"233\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purge>\x0A\x09<purgeCache public=\"1\" set=\"method\" line=\"243\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeCache>\x0A\x09<clearCache public=\"1\" set=\"method\" line=\"251\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearCache>\x0A\x09<purgeRenderables public=\"1\" set=\"method\" line=\"259\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeRenderables>\x0A\x09<purgeExpiredRenderables public=\"1\" set=\"method\" line=\"267\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeExpiredRenderables>\x0A\x09<info public=\"1\" set=\"method\" line=\"275\"><f a=\"\"><c path=\"String\"/></f></info>\x0A\x09<collectPhpInfo set=\"method\" line=\"280\"><f a=\"\"><c path=\"String\"/></f></collectPhpInfo>\x0A\x09<new public=\"1\" set=\"method\" line=\"17\"><f a=\"mongo\">\x0A\x09<c path=\"mongo.Mongo\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></new>\x0A</class>";
 	function __toString() { return 'controller.SetupController'; }
 }

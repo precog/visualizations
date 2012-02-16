@@ -217,7 +217,73 @@ class template_MongoDBStatus extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</dd>\x0A  </dl>\x0A  <h2>Logs</h2>\x0A  <dl>\x0A    <dt>collection name:</dt>\x0A    <dd>";
+				$x = "</dd>\x0A  </dl>\x0A  <h2>Config</h2>\x0A  <dl>\x0A    <dt>collection name:</dt>\x0A    <dd>";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->config->name;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</dd>\x0A    <dt>exists:</dt>\x0A    <dd>";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->config->exists;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</dd>\x0A    <dt>config parameters count:</dt>\x0A    <dd>";
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = $__context__->config->count;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
+				$x = "</dd>\x0A  </dl>  <h2>Logs</h2>\x0A  <dl>\x0A    <dt>collection name:</dt>\x0A    <dd>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {

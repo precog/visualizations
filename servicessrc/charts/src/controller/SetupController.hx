@@ -98,35 +98,39 @@ class SetupController extends BaseController
 		// ensure DB
 		var dbname  = App.MONGO_DB_NAME,
 			db      = mongo.selectDB(dbname),
-			cacheCollections = db.listCollections(),
-			renderablesCollectionName = App.RENDERABLES_COLLECTION,
-			cacheCollectionName = App.CACHE_COLLECTION,
-			configCollectionName = App.CONFIG_COLLECTION;
+			cacheCollections = db.listCollections();
 
 		// ensure Renderable Collection
-		var renderableCollection = db.selectCollection(renderablesCollectionName);
+		var renderableCollection = db.selectCollection(App.RENDERABLES_COLLECTION);
 		if(renderableCollection.validate().ok < 1)
 		{
-			renderableCollection = db.createCollection(renderablesCollectionName);
+			renderableCollection = db.createCollection(App.RENDERABLES_COLLECTION);
 			renderableCollection.ensureIndexOn("uid", { unique : true });
 			renderableCollection.ensureIndexOn("lastUsage");
 		}
 
 		// ensure Cache Collection
-		var cacheCollection = db.selectCollection(cacheCollectionName);
+		var cacheCollection = db.selectCollection(App.CACHE_COLLECTION);
 		if(cacheCollection.validate().ok < 1)
 		{
-			cacheCollection = db.createCollection(cacheCollectionName);
+			cacheCollection = db.createCollection(App.CACHE_COLLECTION);
 			cacheCollection.ensureIndexOn("uid", { unique : true });
 			cacheCollection.ensureIndexOn("expiresOn");
 		}
 
 		// ensure Config Collection
-		var configCollection = db.selectCollection(configCollectionName);
-		if(cacheCollection.validate().ok < 1)
+		var configCollection = db.selectCollection(App.CONFIG_COLLECTION);
+		if(configCollection.validate().ok < 1)
 		{
-			configCollection = db.createCollection(configCollectionName);
+			configCollection = db.createCollection(App.CONFIG_COLLECTION);
 			configCollection.ensureIndexOn("name", { unique : true });
+		}
+
+		// ensure Log Collection
+		var logsCollection = db.selectCollection(App.LOG_COLLECTION);
+		if(logsCollection.validate().ok < 1)
+		{
+			logsCollection = db.createCollection(App.LOG_COLLECTION);
 		}
 
 		// add sample
@@ -146,29 +150,34 @@ class SetupController extends BaseController
 		var dbname  = App.MONGO_DB_NAME,
 			db      = mongo.selectDB(dbname),
 			cacheCollections = db.listCollections(),
-			renderablesCollectionName = App.RENDERABLES_COLLECTION,
-			cacheCollectionName = App.CACHE_COLLECTION,
-			logCollectionName = App.LOG_COLLECTION,
 			renderablesExists = true,
 			cacheExists = true,
+			configExists = true,
 			logExists = true;
 
 		// ensure Renderable Collection
-		var renderableCollection = db.selectCollection(renderablesCollectionName);
+		var renderableCollection = db.selectCollection(App.RENDERABLES_COLLECTION);
 		if(renderableCollection.validate().ok < 1)
 		{
 			renderablesExists = false;
 		}
 
 		// ensure Cache Collection
-		var cacheCollection = db.selectCollection(cacheCollectionName);
+		var cacheCollection = db.selectCollection(App.CACHE_COLLECTION);
 		if(cacheCollection.validate().ok < 1)
 		{
 			cacheExists = false;
 		}
 
+		// ensure Config Collection
+		var configCollection = db.selectCollection(App.CONFIG_COLLECTION);
+		if(configCollection.validate().ok < 1)
+		{
+			configExists = false;
+		}
+
 		// ensure Logs Collection
-		var logCollection = db.selectCollection(logCollectionName);
+		var logCollection = db.selectCollection(App.LOG_COLLECTION);
 		if(logCollection.validate().ok < 1)
 		{
 			logExists = false;
@@ -183,17 +192,22 @@ class SetupController extends BaseController
 				collections : cacheCollections
 			},
 			renderables : {
-				name    : renderablesCollectionName,
+				name    : App.RENDERABLES_COLLECTION,
 				exists : renderablesExists,
 				count   : renderablesExists ? renderableCollection.count() : -1
 			},
 			cache : {
-				name    : cacheCollectionName,
+				name    : App.CACHE_COLLECTION,
 				exists : cacheExists,
 				count   : cacheExists ? cacheCollection.count() : -1
 			},
+			config : {
+				name    : App.CONFIG_COLLECTION,
+				exists : configExists,
+				count   : configExists ? configCollection.count() : -1
+			},
 			logs : {
-				name    : logCollectionName,
+				name    : App.LOG_COLLECTION,
 				exists : logExists,
 				count   : logExists ? logCollection.count() : -1
 			}

@@ -21,6 +21,11 @@ class MongoDBStatus extends Template<{
 		exists : Bool,
 		count   : Int
 	},
+	config : {
+		name    : String,
+		exists : Bool,
+		count   : Int
+	},
 	logs : {
 		name    : String,
 		exists : Bool,
