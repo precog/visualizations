@@ -64,6 +64,17 @@ class template_FormUpload extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
+				$x = $__context__->baseurl;
+				if(is_null($x)) {
+					$x = "null";
+				} else {
+					if(is_bool($x)) {
+						$x = (($x) ? "true" : "false");
+					}
+				}
+				$__b__->b .= $x;
+			}
+			{
 				$x = $action;
 				if(is_null($x)) {
 					$x = "null";
