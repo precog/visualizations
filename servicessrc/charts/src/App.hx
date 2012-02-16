@@ -25,7 +25,7 @@ class App
 //	public static inline var HOST = "http://api.reportgrid.com";
 	public static inline var JS_PATH = HOST + "/js/";
 	public static inline var CSS_PATH = HOST + "/css/";
-	public static inline var BASE_PATH = "/services/viz/charts/";
+	public static inline var BASE_PATH = "/charts/";
 	public static inline var RESET_CSS = "./css/reset.css";
 #else
 	public static inline var HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
@@ -187,14 +187,15 @@ class App
 			controller : "setup", action : "dropCache"
 		});
 
-
+/*
 		php.Lib.print("<pre>");
 		php.Lib.println(app.request.uri);
 		php.Lib.println(HOST);
 		php.Lib.println(BASE_PATH);
 
 		untyped __call__("phpinfo");
-//		app.execute();
+*/
+		app.execute();
 	}
 
 	static function serverName() : String

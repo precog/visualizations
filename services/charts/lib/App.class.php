@@ -11,14 +11,14 @@ class App {
 	static $HOST;
 	static $JS_PATH;
 	static $CSS_PATH;
-	static $BASE_PATH = "/services/viz/charts/";
+	static $BASE_PATH = "/charts/";
 	static $RESET_CSS = "./css/reset.css";
 	static $version;
 	static function baseUrl() {
 		return "http://" . $_SERVER["HTTP_HOST"];
 	}
 	static function main() {
-		App::$version = "1.0.3.485";
+		App::$version = "1.0.3.486";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
@@ -29,7 +29,7 @@ class App {
 		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_5"), 'execute'));
 		$locator->memoize(_hx_qtype("model.ConfigGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_6"), 'execute'));
 		ufront_web_mvc_DependencyResolver::$current = new ufront_external_mvc_ThxDependencyResolver($locator);
-		$config = new ufront_web_AppConfiguration("controller", true, "/services/viz/charts/", null, false); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
+		$config = new ufront_web_AppConfiguration("controller", true, "/charts/", null, false); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
 		$app->modules->add(new util_TraceToMongo("chartsrenderer1", "log", App::serverName()));
 		$routes->addRoute("/", _hx_anonymous(array("controller" => "home", "action" => "index")), null, null);
 		$routes->addRoute("/up/form/html", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null, null);
@@ -54,11 +54,7 @@ class App {
 		$routes->addRoute("/setup/collections/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCollections")), null, null);
 		$routes->addRoute("/setup/renderables/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropRenderables")), null, null);
 		$routes->addRoute("/setup/cache/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCache")), null, null);
-		php_Lib::hprint("<pre>");
-		php_Lib::println($app->getRequest()->getUri());
-		php_Lib::println("http://" . $_SERVER["HTTP_HOST"]);
-		php_Lib::println("/services/viz/charts/");
-		phpinfo();
+		$app->execute();
 	}
 	static function serverName() {
 		return trim(`hostname -f`);
