@@ -45,6 +45,8 @@ class SetupController extends BaseController
 		authorize(auth);
 		dropCollection(App.RENDERABLES_COLLECTION);
 		dropCollection(App.CACHE_COLLECTION);
+		dropCollection(App.CONFIG_COLLECTION);
+		dropCollection(App.LOG_COLLECTION);
 		return redirectToStatus(auth);
 	}
 
