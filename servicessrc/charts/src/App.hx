@@ -187,7 +187,14 @@ class App
 			controller : "setup", action : "dropCache"
 		});
 
-		app.execute();
+
+		php.Lib.print("<pre>");
+		php.Lib.println(app.request.uri);
+		php.Lib.println(HOST);
+		php.Lib.println(BASE_PATH);
+
+		untyped __call__("phpinfo");
+//		app.execute();
 	}
 
 	static function serverName() : String
