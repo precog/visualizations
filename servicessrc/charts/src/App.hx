@@ -21,22 +21,24 @@ class App
 	public static inline var CONFIG_COLLECTION = "config";
 	public static inline var LOG_COLLECTION = "log";
 #if release
-	public static inline var HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST") + '/services/viz';
+	public static inline var SERVER_HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
+	public static inline var BASE_HOST = SERVER_HOST + '/services/viz';
 //	public static inline var HOST = "http://api.reportgrid.com";
-	public static inline var JS_PATH = HOST + "/js/";
-	public static inline var CSS_PATH = HOST + "/css/";
+	public static inline var JS_PATH = SERVER_HOST + "/js/";
+	public static inline var CSS_PATH = SERVER_HOST + "/css/";
 	public static inline var BASE_PATH = "/charts/";
 	public static inline var RESET_CSS = "./css/reset.css";
 #else
-	public static inline var HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
-	public static inline var JS_PATH = HOST + "/rg/charts/js/";
-	public static inline var CSS_PATH = HOST + "/rg/charts/css/";
+	public static inline var SERVER_HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
+	public static inline var BASE_HOST = SERVER_HOST + '';
+	public static inline var JS_PATH = SERVER_HOST + "/rg/charts/js/";
+	public static inline var CSS_PATH = SERVER_HOST + "/rg/charts/css/";
 	public static inline var BASE_PATH = "/rg/services/viz/charts/";
 	public static inline var RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css";
 #end
 	public static var version(default, null) : String;
 
-	public static function baseUrl() return HOST
+	public static function baseUrl() return BASE_HOST
 
 	static function main()
 	{

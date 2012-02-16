@@ -8,17 +8,18 @@ class App {
 	static $CACHE_COLLECTION = "cache";
 	static $CONFIG_COLLECTION = "config";
 	static $LOG_COLLECTION = "log";
-	static $HOST;
+	static $SERVER_HOST;
+	static $BASE_HOST;
 	static $JS_PATH;
 	static $CSS_PATH;
 	static $BASE_PATH = "/charts/";
 	static $RESET_CSS = "./css/reset.css";
 	static $version;
 	static function baseUrl() {
-		return "http://" . $_SERVER["HTTP_HOST"];
+		return "http://" . $_SERVER["HTTP_HOST"] . "/services/viz";
 	}
 	static function main() {
-		App::$version = "1.0.3.486";
+		App::$version = "1.0.3.488";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
@@ -61,7 +62,8 @@ class App {
 	}
 	function __toString() { return 'App'; }
 }
-App::$HOST = "http://" . $_SERVER["HTTP_HOST"];
+App::$SERVER_HOST = "http://" . $_SERVER["HTTP_HOST"];
+App::$BASE_HOST = "http://" . $_SERVER["HTTP_HOST"] . "/services/viz";
 App::$JS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/js/";
 App::$CSS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/css/";
 function App_0(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
