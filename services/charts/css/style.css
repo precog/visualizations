@@ -124,6 +124,15 @@ div.error
 	border: 2px solid #660000;
 }
 
+div.message
+{
+	background-color: #0000AA;
+	color: #fff;
+	font-weight: bold;
+	padding: 5px 10px;
+	border: 2px solid #000066;
+}
+
 ul.bullet, ul.bullet ul
 {
 	list-style: square;
