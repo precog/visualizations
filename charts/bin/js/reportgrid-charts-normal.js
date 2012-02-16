@@ -1475,7 +1475,15 @@ rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
 }
 rg.app.charts.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
-	var globalNotifier = new hxevents.Notifier(), app = new rg.app.charts.App(globalNotifier);
+	var globalNotifier = new hxevents.Notifier();
+	var globalReady = false;
+	globalNotifier.addOnce(function() {
+		globalReady = true;
+	});
+	r.charts = { ready : function(handler) {
+		if(globalReady) handler(); else globalNotifier.add(handler);
+	}};
+	var app = new rg.app.charts.App(globalNotifier);
 	r.chart = function(el,options,type) {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
@@ -1556,14 +1564,11 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.1.7060"};
-	r.charts = { onReady : function(handler) {
-		globalNotifier.add(handler);
-	}};
+	r.info.charts = { version : "1.4.1.7084"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 153, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 165, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -22716,7 +22721,6 @@ rg.app.charts.App.prototype = {
 				legacy.display(jsoptions);
 			});
 		}
-		loader.load();
 		if(!uselegacy && (null != download.position || null != download.handler)) {
 			var downloader = new rg.interactive.RGDownloader(visualization.container,download.service);
 			if(null != download.handler) visualization.addReadyOnce(function() {
@@ -22736,6 +22740,7 @@ rg.app.charts.App.prototype = {
 				if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) me.globalNotifier.dispatch();
 			});
 		}
+		haxe.Timer.delay(loader.load.$bind(loader),0);
 		return visualization;
 	}
 	,getLayout: function(id,options,container,replace) {
@@ -28045,7 +28050,7 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 rg.graph.Graphs.id = 0;
 Ints._reparse = new EReg("^([+-])?\\d+$","");
-rg.interactive.RGLegacyRenderer.FORMAT = "png";
+rg.interactive.RGLegacyRenderer.FORMAT = "jpg";
 rg.interactive.RGLegacyRenderer.nextframeid = 0;
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
