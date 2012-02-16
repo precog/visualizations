@@ -28,6 +28,9 @@ class App
 	public static inline var CSS_PATH = SERVER_HOST + "/css/";
 	public static inline var BASE_PATH = "/charts/";
 	public static inline var RESET_CSS = "./css/reset.css";
+
+	public static inline var WKPDF = "/bin/wkhtmltopdf";
+	public static inline var WKIMAGE = "/bin/wkhtmltoimage";
 #else
 	public static inline var SERVER_HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
 	public static inline var BASE_HOST = SERVER_HOST + '';
@@ -35,6 +38,9 @@ class App
 	public static inline var CSS_PATH = SERVER_HOST + "/rg/charts/css/";
 	public static inline var BASE_PATH = "/rg/services/viz/charts/";
 	public static inline var RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css";
+
+	public static inline var WKPDF = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf";
+	public static inline var WKIMAGE = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 #end
 	public static var version(default, null) : String;
 
@@ -44,14 +50,12 @@ class App
 	{
 		App.version = thx.util.MacroVersion.fullVersion();
 
-		var wkhtmltopdfbin   = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf",
-			wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		var locator = new thx.util.TypeLocator();
 		locator.memoize(model.WKHtmlToImage, function() {
-			return new model.WKHtmlToImage(wkhtmltoimagebin);
+			return new model.WKHtmlToImage(WKIMAGE);
 		});
 		locator.memoize(model.WKHtmlToPdf, function() {
-			return new model.WKHtmlToPdf(wkhtmltopdfbin);
+			return new model.WKHtmlToPdf(WKPDF);
 		});
 		locator.memoize(Mongo, function() {
 			return new Mongo();

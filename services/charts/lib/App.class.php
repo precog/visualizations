@@ -14,21 +14,22 @@ class App {
 	static $CSS_PATH;
 	static $BASE_PATH = "/charts/";
 	static $RESET_CSS = "./css/reset.css";
+	static $WKPDF = "/bin/wkhtmltopdf";
+	static $WKIMAGE = "/bin/wkhtmltoimage";
 	static $version;
 	static function baseUrl() {
 		return "http://" . $_SERVER["HTTP_HOST"] . "/services/viz";
 	}
 	static function main() {
-		App::$version = "1.0.3.498";
-		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
+		App::$version = "1.0.3.504";
 		$locator = new thx_util_TypeLocator();
-		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
-		$locator->memoize(_hx_qtype("model.WKHtmlToPdf"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_1"), 'execute'));
-		$locator->memoize(_hx_qtype("mongo.Mongo"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_2"), 'execute'));
-		$locator->memoize(_hx_qtype("mongo.MongoDB"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_3"), 'execute'));
-		$locator->memoize(_hx_qtype("model.RenderableGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_4"), 'execute'));
-		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_5"), 'execute'));
-		$locator->memoize(_hx_qtype("model.ConfigGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_6"), 'execute'));
+		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator), "App_0"), 'execute'));
+		$locator->memoize(_hx_qtype("model.WKHtmlToPdf"), array(new _hx_lambda(array(&$locator), "App_1"), 'execute'));
+		$locator->memoize(_hx_qtype("mongo.Mongo"), array(new _hx_lambda(array(&$locator), "App_2"), 'execute'));
+		$locator->memoize(_hx_qtype("mongo.MongoDB"), array(new _hx_lambda(array(&$locator), "App_3"), 'execute'));
+		$locator->memoize(_hx_qtype("model.RenderableGateway"), array(new _hx_lambda(array(&$locator), "App_4"), 'execute'));
+		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator), "App_5"), 'execute'));
+		$locator->memoize(_hx_qtype("model.ConfigGateway"), array(new _hx_lambda(array(&$locator), "App_6"), 'execute'));
 		ufront_web_mvc_DependencyResolver::$current = new ufront_external_mvc_ThxDependencyResolver($locator);
 		$config = new ufront_web_AppConfiguration("controller", true, "/charts/", null, true); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
 		$app->modules->add(new util_TraceToMongo("chartsrenderer1", "log", App::serverName()));
@@ -66,37 +67,37 @@ App::$SERVER_HOST = "http://" . $_SERVER["HTTP_HOST"];
 App::$BASE_HOST = "http://" . $_SERVER["HTTP_HOST"] . "/services/viz";
 App::$JS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/js/";
 App::$CSS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/css/";
-function App_0(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+function App_0(&$locator) {
 	{
-		return new model_WKHtmlToImage($wkhtmltoimagebin);
+		return new model_WKHtmlToImage("/bin/wkhtmltoimage");
 	}
 }
-function App_1(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+function App_1(&$locator) {
 	{
-		return new model_WKHtmlToPdf($wkhtmltopdfbin);
+		return new model_WKHtmlToPdf("/bin/wkhtmltopdf");
 	}
 }
-function App_2(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+function App_2(&$locator) {
 	{
 		return new mongo_Mongo();
 	}
 }
-function App_3(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+function App_3(&$locator) {
 	{
 		return new mongo_MongoDB($locator->get(_hx_qtype("mongo.Mongo"))->m->selectDB("chartsrenderer1"));
 	}
 }
-function App_4(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+function App_4(&$locator) {
 	{
 		return new model_RenderableGateway(new mongo_MongoCollection($locator->get(_hx_qtype("mongo.MongoDB"))->db->selectCollection("renderables")));
 	}
 }
-function App_5(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+function App_5(&$locator) {
 	{
 		return new model_CacheGateway(new mongo_MongoCollection($locator->get(_hx_qtype("mongo.MongoDB"))->db->selectCollection("cache")));
 	}
 }
-function App_6(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+function App_6(&$locator) {
 	{
 		return new model_ConfigGateway(new mongo_MongoCollection($locator->get(_hx_qtype("mongo.MongoDB"))->db->selectCollection("config")));
 	}

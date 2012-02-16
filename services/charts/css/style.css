@@ -174,7 +174,7 @@ ol.logs li
 	color: #999;
 }
 
-.logs .message
+.logs .msg
 {
 	font-family: monospace;
 	white-space: pre;

@@ -214,7 +214,7 @@ class template_Logs extends erazor_macro_Template {
 							unset($x);
 						}
 						{
-							$x = ")</div>\x0A\x09    <div class=\"message\">";
+							$x = ")</div>\x0A\x09    <div class=\"msg\">";
 							if(is_null($x)) {
 								$x = "null";
 							} else {
