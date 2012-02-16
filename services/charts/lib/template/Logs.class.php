@@ -51,182 +51,220 @@ class template_Logs extends erazor_macro_Template {
 				}
 				$__b__->b .= $x;
 			}
-			{
-				$_g = 0; $_g1 = $__context__->data;
-				while($_g < $_g1->length) {
-					$log = $_g1[$_g];
-					++$_g;
-					{
-						$x = "\x0A  <li>\x0A    <div class=\"loc\">";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
+			if($__context__->data->length === 0) {
+				{
+					$x = "\x0A\x09<div class=\"message\">no logs are available</div>\x0A";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
 						}
-						$__b__->b .= $x;
-						unset($x);
 					}
-					{
-						$x = Date::fromTime($log->time)->toString();
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = " on ";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = $log->server;
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = "</div>\x0A    <div class=\"info\">";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = template_Logs_0($this, $__b__, $__context__, $_g, $_g1, $log);
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = $log->pos->className;
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = ".";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = $log->pos->methodName;
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = "(";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = $log->pos->lineNumber;
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = ")</div>\x0A    <div class=\"message\">";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = StringTools::htmlEscape($log->msg);
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = "</div>\x0A  </li>\x0A";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					null;
-					unset($log);
+					$__b__->b .= $x;
 				}
+				null;
+			} else {
+				{
+					$x = "\x0A\x09";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$_g = 0; $_g1 = $__context__->data;
+					while($_g < $_g1->length) {
+						$log = $_g1[$_g];
+						++$_g;
+						{
+							$x = "\x0A\x09  <li>\x0A\x09    <div class=\"loc\">";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = Date::fromTime($log->time)->toString();
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = " on ";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $log->server;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = "</div>\x0A\x09    <div class=\"info\">";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = template_Logs_0($this, $__b__, $__context__, $_g, $_g1, $log);
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $log->pos->className;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = ".";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $log->pos->methodName;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = "(";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $log->pos->lineNumber;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = ")</div>\x0A\x09    <div class=\"message\">";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = StringTools::htmlEscape($log->msg);
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = "</div>\x0A\x09  </li>\x0A\x09";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						null;
+						unset($log);
+					}
+				}
+				{
+					$x = "\x0A";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				null;
 			}
 			{
 				$x = "\x0A</ol>\x0A</body>\x0A</html>";

@@ -7,13 +7,18 @@
 <body>
 <h1>Logs</h1>
 <ol class="logs">
-@for(log in data)
+@if(data.length == 0)
 {
-  <li>
-    <div class="loc">@Date.fromTime(log.time).toString() on @log.server</div>
-    <div class="info">@(log.pos.fileName.split('.').shift() == log.pos.className.split('.').pop() ? "" : log.pos.fileName + ": ")@(log.pos.className).@(log.pos.methodName)(@log.pos.lineNumber)</div>
-    <div class="message">@StringTools.htmlEscape(log.msg)</div>
-  </li>
+	<div class="message">no logs are available</div>
+} else {
+	@for(log in data)
+	{
+	  <li>
+	    <div class="loc">@Date.fromTime(log.time).toString() on @log.server</div>
+	    <div class="info">@(log.pos.fileName.split('.').shift() == log.pos.className.split('.').pop() ? "" : log.pos.fileName + ": ")@(log.pos.className).@(log.pos.methodName)(@log.pos.lineNumber)</div>
+	    <div class="message">@StringTools.htmlEscape(log.msg)</div>
+	  </li>
+	}
 }
 </ol>
 </body>
