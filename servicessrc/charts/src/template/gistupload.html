@@ -9,7 +9,7 @@
 @{
   var action = url.route({ controller : 'uploadForm', action : 'gist' });
 }
-<form method="post" action="@action" class="formupload">
+<form method="post" action="@baseurl@action" class="formupload">
   <ul>
     <li>
       <label for="gistid">GIST ID or URL</label>
