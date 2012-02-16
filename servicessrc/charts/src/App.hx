@@ -21,7 +21,8 @@ class App
 	public static inline var CONFIG_COLLECTION = "config";
 	public static inline var LOG_COLLECTION = "log";
 #if release
-	public static inline var HOST = "http://api.reportgrid.com";
+	public static inline var HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
+//	public static inline var HOST = "http://api.reportgrid.com";
 	public static inline var JS_PATH = HOST + "/js/";
 	public static inline var CSS_PATH = HOST + "/css/";
 	public static inline var BASE_PATH = "/services/viz/charts/";
