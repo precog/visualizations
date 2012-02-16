@@ -4,8 +4,10 @@ import model.CacheGateway;
 import model.LogGateway;
 import model.RenderableGateway;
 import ufront.web.mvc.ActionResult;
+import ufront.web.mvc.RedirectResult;
 import ufront.web.mvc.Controller;
 import ufront.web.mvc.ContentResult;
+import ufront.web.mvc.view.UrlHelper;
 import mongo.Mongo;
 
 class SetupController extends BaseController
@@ -65,7 +67,8 @@ class SetupController extends BaseController
 
 	function redirectToStatus(auth : String)
 	{
-		return new ufront.web.mvc.ForwardResult({ controller : "setup", action : "mongodb", auth : auth });
+		var url = new UrlHelperInst(controllerContext.requestContext).route({ controller : "setup", action : "mongodb", auth : auth });
+		return new RedirectResult(App.baseUrl() + url, false);
 	}
 
 	function dropCollection(collection : String)
