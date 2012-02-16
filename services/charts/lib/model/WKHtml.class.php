@@ -15,7 +15,6 @@ class model_WKHtml {
 		$t = model_WKHtml::tmp($ext);
 		php_io_File::putContent($t, $content);
 		$r = $this->renderUrl($t);
-		@unlink($t);
 		return $r;
 	}
 	public function renderUrl($path) {
@@ -26,6 +25,7 @@ class model_WKHtml {
 			haxe_Log::trace(model_WKHtml::cmdToString($this->cmd, $args) . "\x0A" . $this->err, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 42, "className" => "model.WKHtml", "methodName" => "renderUrl")));
 			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 43, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
 		}
+		haxe_Log::trace("CMD " . model_WKHtml::cmdToString($this->cmd, $args), _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 47, "className" => "model.WKHtml", "methodName" => "renderUrl")));
 		$result = php_io_File::getContent($out);
 		@unlink($out);
 		return $result;
@@ -45,7 +45,7 @@ class model_WKHtml {
 		$args->push("--javascript-delay");
 		$args->push("" . model_WKHtml::$JS_DELAY);
 		$args->push("--user-style-sheet");
-		$args->push("./css/reset.css");
+		$args->push("/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css");
 		$args->push("--run-script");
 		$args->push(model_WKHtml::finalscript());
 		$cfg = $this->getWKConfig();

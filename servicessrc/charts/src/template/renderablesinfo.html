@@ -13,7 +13,7 @@
 	<dl>
 	@for(item in renderables)
 	{
-	  <dt>@item.uid</dt>
+	  <dt><a href="@baseurl@url.route({ controller : "renderableAPI", action : "display", uid : item.uid, outputformat : "html" })">@item.uid</a></dt>
 	  <dd>@item.usages, created on: @Date.fromTime(item.createdOn) @if(item.createdOn != item.lastUsage){, last usage on: @Date.fromTime(item.lastUsage)}</dd>
 	}
 	</dl>

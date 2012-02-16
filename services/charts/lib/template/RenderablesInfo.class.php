@@ -104,7 +104,43 @@ class template_RenderablesInfo extends erazor_macro_Template {
 						$item = $_g1[$_g];
 						++$_g;
 						{
-							$x = "\x0A\x09  <dt>";
+							$x = "\x0A\x09  <dt><a href=\"";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $__context__->baseurl;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "display", "uid" => $item->uid, "outputformat" => "html")));
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = "\">";
 							if(is_null($x)) {
 								$x = "null";
 							} else {
@@ -128,7 +164,7 @@ class template_RenderablesInfo extends erazor_macro_Template {
 							unset($x);
 						}
 						{
-							$x = "</dt>\x0A\x09  <dd>";
+							$x = "</a></dt>\x0A\x09  <dd>";
 							if(is_null($x)) {
 								$x = "null";
 							} else {
