@@ -17,28 +17,37 @@ class SetupController extends Controller
 		this.mongo = mongo;
 	}
 
-	public function dropRenderables()
+	public function dropRenderables(auth : String)
 	{
+		authorize(auth);
 		dropCollection(App.RENDERABLES_COLLECTION);
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
-	public function dropCache()
+	function authorize(auth : String)
 	{
+		if(auth != App.AUTH)
+			throw new ufront.web.error.UnauthorizedError();
+	}
+
+	public function dropCache(auth : String)
+	{
+		authorize(auth);
 		dropCollection(App.CACHE_COLLECTION);
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
-	public function dropCollections()
+	public function dropCollections(auth : String)
 	{
+		authorize(auth);
 		dropCollection(App.RENDERABLES_COLLECTION);
 		dropCollection(App.CACHE_COLLECTION);
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
-	function redirectToStatus()
+	function redirectToStatus(auth : String)
 	{
-		return new ufront.web.mvc.ForwardResult({ controller : "setup", action : "mongodb" });
+		return new ufront.web.mvc.ForwardResult({ controller : "setup", action : "mongodb", auth : auth });
 	}
 
 	function dropCollection(collection : String)
@@ -62,14 +71,16 @@ class SetupController extends Controller
 		return db.selectCollection(App.RENDERABLES_COLLECTION);
 	}
 
-	public function createCollections()
+	public function createCollections(auth : String)
 	{
+		authorize(auth);
 		// ensure DB
 		var dbname  = App.MONGO_DB_NAME,
 			db      = mongo.selectDB(dbname),
 			cacheCollections = db.listCollections(),
 			renderablesCollectionName = App.RENDERABLES_COLLECTION,
-			cacheCollectionName = App.CACHE_COLLECTION;
+			cacheCollectionName = App.CACHE_COLLECTION,
+			configCollectionName = App.CONFIG_COLLECTION;
 
 		// ensure Renderable Collection
 		var renderableCollection = db.selectCollection(renderablesCollectionName);
@@ -85,15 +96,31 @@ class SetupController extends Controller
 		if(cacheCollection.validate().ok < 1)
 		{
 			cacheCollection = db.createCollection(cacheCollectionName);
-			renderableCollection.ensureIndexOn("uid", { unique : true });
+			cacheCollection.ensureIndexOn("uid", { unique : true });
 			cacheCollection.ensureIndexOn("expiresOn");
 		}
 
-		return new ufront.web.mvc.ForwardResult({ controller : "setup", action : "mongodb" });
+		// ensure Config Collection
+		var configCollection = db.selectCollection(configCollectionName);
+		if(cacheCollection.validate().ok < 1)
+		{
+			configCollection = db.createCollection(configCollectionName);
+			configCollection.ensureIndexOn("name", { unique : true });
+		}
+
+		// add sample
+		var controller = new RenderableAPIController(new model.RenderableGateway(renderableCollection));
+		var renderable = controller.makeRenderable(model.Sample.html, model.Sample.config);
+
+		var config = new model.ConfigGateway(configCollection);
+		config.setSampleUID(renderable.uid);
+
+		return redirectToStatus(auth);
 	}
 
-	public function mongodb()
+	public function mongodb(auth : String)
 	{
+		authorize(auth);
 		// ensure DB
 		var dbname  = App.MONGO_DB_NAME,
 			db      = mongo.selectDB(dbname),
@@ -140,8 +167,9 @@ class SetupController extends Controller
 		return new ContentResult(new template.MongoDBStatus().execute(content));
 	}
 
-	public function topRenderables(top = 10)
+	public function topRenderables(auth : String, top = 10)
 	{
+		authorize(auth);
 		var gate    = new RenderableGateway(renderableCollection()),
 			list    = gate.topByUsage(top),
 			content = {
@@ -153,41 +181,46 @@ class SetupController extends Controller
 		return new ContentResult(new template.RenderablesInfo().execute(content));
 	}
 
-	public function purge()
+	public function purge(auth : String)
 	{
+		authorize(auth);
 		var gate = new CacheGateway(cacheCollection());
 		gate.removeExpired();
 		var gate = new RenderableGateway(renderableCollection());
 		gate.removeOldAndUnused();
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
-	public function purgeCache()
+	public function purgeCache(auth : String)
 	{
+		authorize(auth);
 		var gate = new CacheGateway(cacheCollection()),
 			purged = gate.removeExpired();
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
-	public function clearCache()
+	public function clearCache(auth : String)
 	{
+		authorize(auth);
 		var gate = new CacheGateway(cacheCollection()),
 			purged = gate.removeAll();
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
-	public function purgeRenderables()
+	public function purgeRenderables(auth : String)
 	{
+		authorize(auth);
 		var gate = new RenderableGateway(renderableCollection()),
 			purged = gate.removeOldAndUnused();
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
-	public function purgeExpiredRenderables()
+	public function purgeExpiredRenderables(auth : String)
 	{
+		authorize(auth);
 		var gate = new RenderableGateway(renderableCollection()),
 			purged = gate.removeExpired();
-		return redirectToStatus();
+		return redirectToStatus(auth);
 	}
 
 	public function info()

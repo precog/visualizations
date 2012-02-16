@@ -6,6 +6,7 @@ using Arrays;
 
 class WKHtml
 {
+	public static var JS_DELAY = 30000;
 	var cmd : String;
 	var _wkConfig : ConfigWKHtml;
 	public var wkConfig(getWKConfig, setWKConfig) : ConfigWKHtml;
@@ -31,19 +32,18 @@ class WKHtml
 		var args = commandOptions(),
 			out  = tmp(format);
 
-
-		args.push('--javascript-delay'); args.push('5000');
-
-
 		args.push(path);
 		args.push(out);
 
 		if(!execute(args))
 		{
 			trace("ERROR: " + err);
-			trace("CMD " + cmd + " " + args.join(" "));
+			trace("CMD " + cmdToString(cmd, args));
 			throw new Error("unable to render the result");
 		}
+
+
+//trace("CMD " + cmdToString(cmd, args));
 		var result = thx.sys.io.File.getContent(out);
 		thx.sys.FileSystem.deleteFile(out);
 		return result;
@@ -52,14 +52,16 @@ class WKHtml
 	var err : String;
 	function execute(args : Array<String>) : Bool
 	{
-		var process = new thx.sys.io.Process(cmd, args);
+		var process = new thx.sys.io.Process(cmd, args.map(function(arg, _) {
+			return  StringTools.replace(arg, '"', '\\"');
+		}));
 //		var r = thx.sys.Sys.command(cmd, args);
 //		var id = process.getPid();
 		process.close();
 		var r = process.exitCode();
 //		trace(id);
 		err = process.stderr.readAll().toString();
-//		trace("ERROR: " + err);
+//		trace("PROC: " + err);
 		var out = process.stdout.readAll().toString();
 
 //		trace("OUT: " + out);
@@ -71,9 +73,10 @@ class WKHtml
 		var args = [];
 
 		args.push('--disable-local-file-access');
-		args.push('--javascript-delay'); args.push('30000');
+		args.push('--javascript-delay'); args.push(''+JS_DELAY);
 		args.push('--user-style-sheet'); args.push(App.RESET_CSS);
-		args.push('--run-script'); args.push(App.PRINT_JS);
+		args.push('--run-script'); args.push(finalscript());
+//args.push('--debug-javascript');
 
 		var cfg = wkConfig;
 		if(null != cfg.zoom)
@@ -82,6 +85,14 @@ class WKHtml
 		}
 
 		return args;
+	}
+
+	static function cmdToString(cmd : String, args : Array<String>)
+	{
+		args = args.map(function(arg, _) {
+			return '"' + StringTools.replace(arg, '"', '\\"') + '"';
+		});
+		return cmd + (args.length > 0 ? " " : "") + args.join(" ");
 	}
 
 	function getFormat() return format
@@ -120,5 +131,20 @@ class WKHtml
 	{
 		var id = untyped __call__('uniqid', 'WK_');
 		return '/tmp/' + id + '.' + ext;
+	}
+
+	static function finalscript()
+	{
+		var script = '(function(){
+if(ReportGrid && ReportGrid.charts && ReportGrid.charts.ready)
+{
+	ReportGrid.charts.ready(function() {
+		window.print();
+	});
+} else {
+	setTimeout(window.print, 250);
+}
+})()';
+		return (~/\s+/mg).replace(script, " ");
 	}
 }

@@ -533,7 +533,7 @@ class template_Home extends erazor_macro_Template {
 						$__b__->b .= $x;
 						unset($x);
 					}
-					$p = $__context__->baseurl . $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "display", "uid" => $uid, "outputformat" => $ext)));
+					$p = $__context__->baseurl . $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "display", "uid" => ((null === $uid) ? "uid" : $uid), "outputformat" => $ext)));
 					{
 						$x = "\x0A  <dt>";
 						if(is_null($x)) {
@@ -559,7 +559,7 @@ class template_Home extends erazor_macro_Template {
 						unset($x);
 					}
 					{
-						$x = " Information:</dt>\x0A  <dd><a href=\"";
+						$x = " Information:</dt>\x0A  ";
 						if(is_null($x)) {
 							$x = "null";
 						} else {
@@ -570,44 +570,109 @@ class template_Home extends erazor_macro_Template {
 						$__b__->b .= $x;
 						unset($x);
 					}
-					{
-						$x = $p;
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
+					if(null === $uid) {
+						{
+							$x = "\x0A    <dd>";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
 							}
+							$__b__->b .= $x;
+							unset($x);
 						}
-						$__b__->b .= $x;
-						unset($x);
+						{
+							$x = $p;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = "</dd>\x0A  ";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						null;
+					} else {
+						{
+							$x = "\x0A    <dd><a href=\"";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $p;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = "\">";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = $p;
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						{
+							$x = "</a></dd>\x0A  ";
+							if(is_null($x)) {
+								$x = "null";
+							} else {
+								if(is_bool($x)) {
+									$x = (($x) ? "true" : "false");
+								}
+							}
+							$__b__->b .= $x;
+							unset($x);
+						}
+						null;
 					}
 					{
-						$x = "\">";
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = $p;
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$__b__->b .= $x;
-						unset($x);
-					}
-					{
-						$x = "</a></dd>\x0A";
+						$x = "\x0A";
 						if(is_null($x)) {
 							$x = "null";
 						} else {
@@ -623,7 +688,7 @@ class template_Home extends erazor_macro_Template {
 				}
 			}
 			{
-				$x = "\x0A</dl>\x0A\x0A<h2>Status</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+				$x = "\x0A</dl>\x0A\x0A";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
@@ -633,239 +698,264 @@ class template_Home extends erazor_macro_Template {
 				}
 				$__b__->b .= $x;
 			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "mongodb")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
+			if($__context__->authorized) {
+				{
+					$x = "\x0A<h2>Status</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
 					}
+					$__b__->b .= $x;
 				}
-				$__b__->b .= $x;
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "mongodb", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">DB</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "topRenderables", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Renderables</a></li>\x0A</ul>\x0A\x0A<h2>Maintenance</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeCache", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Purge Cache</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "clearCache", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Clear Cache</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeRenderables", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Purge Unused Renderables</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeExpiredRenderables", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Purge Expired Renderables</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "createCollections", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Create Collections</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropCollections", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Drop Collections</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropCache", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Drop Cache</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropRenderables", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Drop Renderables</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "info", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">PHP Info</a></li>\x0A</ul>\x0A";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				null;
 			}
 			{
-				$x = "\">DB</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "topRenderables")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Renderables</a></li>\x0A</ul>\x0A\x0A<h2>Maintenance</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeCache")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Purge Cache</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "clearCache")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Clear Cache</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeRenderables")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Purge Unused Renderables</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "purgeExpiredRenderables")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Purge Expired Renderables</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "createCollections")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Create Collections</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropCollections")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Drop Collections</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropCache")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Drop Cache</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "dropRenderables")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">Drop Renderables</a></li>\x0A  <li><a href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "info")));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">PHP Info</a></li>\x0A</ul>\x0A\x0A\x0A</body>\x0A</html>";
+				$x = "\x0A\x0A\x0A</body>\x0A</html>";
 				if(is_null($x)) {
 					$x = "null";
 				} else {

@@ -1,20 +1,25 @@
 package controller;
+import model.ConfigGateway;
 import ufront.web.mvc.Controller;
 import ufront.web.mvc.ContentResult;
 
 class HomeController extends Controller
 {
-	public function new()
+    var config : ConfigGateway;
+	public function new(config : ConfigGateway)
 	{
 		super();
+        this.config = config;
 	}
-    public function index()
+    public function index(?auth : String)
     {
         return new ContentResult(new template.Home().execute({
         	baseurl : App.baseUrl(),
         	url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
-            sampleuid : model.Sample.uid,
-            version : App.version
+            sampleuid : config.getSampleUID(),
+            version : App.version,
+            authorized : App.AUTH == auth,
+            auth : auth
         }));
     }
 }

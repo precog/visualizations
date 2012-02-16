@@ -19,12 +19,10 @@ class model_WKHtml {
 	}
 	public function renderUrl($path) {
 		$args = $this->commandOptions(); $out = model_WKHtml::tmp($this->getFormat());
-		$args->push("--javascript-delay");
-		$args->push("5000");
 		$args->push($path);
 		$args->push($out);
 		if(!$this->execute($args)) {
-			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 45, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
+			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 42, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
 		}
 		$result = php_io_File::getContent($out);
 		@unlink($out);
@@ -32,7 +30,7 @@ class model_WKHtml {
 	}
 	public $err;
 	public function execute($args) {
-		$process = new php_io_Process($this->cmd, $args);
+		$process = new php_io_Process($this->cmd, Iterators::map($args->iterator(), array(new _hx_lambda(array(&$args), "model_WKHtml_0"), 'execute')));
 		$process->close();
 		$r = $process->exitCode();
 		$this->err = $process->stderr->readAll(null)->toString();
@@ -43,11 +41,11 @@ class model_WKHtml {
 		$args = new _hx_array(array());
 		$args->push("--disable-local-file-access");
 		$args->push("--javascript-delay");
-		$args->push("30000");
+		$args->push("" . model_WKHtml::$JS_DELAY);
 		$args->push("--user-style-sheet");
-		$args->push("/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css");
+		$args->push("./css/reset.css");
 		$args->push("--run-script");
-		$args->push("/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js");
+		$args->push(model_WKHtml::finalscript());
 		$cfg = $this->getWKConfig();
 		if(null !== $cfg->zoom) {
 			$args->push("--zoom");
@@ -60,7 +58,7 @@ class model_WKHtml {
 	}
 	public function setFormat($f) {
 		if(!Arrays::exists($this->allowedFormats, $f, null)) {
-			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 91, "className" => "model.WKHtml", "methodName" => "setFormat"))));
+			throw new HException(new thx_error_Error("invalid format {0}, you can use any of: {1}", new _hx_array(array($f, $this->allowedFormats)), null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 102, "className" => "model.WKHtml", "methodName" => "setFormat"))));
 		}
 		return $this->format = $f;
 	}
@@ -83,6 +81,11 @@ class model_WKHtml {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $JS_DELAY = 30000;
+	static function cmdToString($cmd, $args) {
+		$args = Iterators::map($args->iterator(), array(new _hx_lambda(array(&$args, &$cmd), "model_WKHtml_1"), 'execute'));
+		return $cmd . ((($args->length > 0) ? " " : "")) . $args->join(" ");
+	}
 	static function tmp($ext) {
 		$uid = null;
 		do {
@@ -94,5 +97,19 @@ class model_WKHtml {
 		$id = uniqid("WK_");
 		return "/tmp/" . $id . "." . $ext;
 	}
+	static function finalscript() {
+		$script = "(function(){\x0Aif(ReportGrid && ReportGrid.charts && ReportGrid.charts.ready)\x0A{\x0A\x09ReportGrid.charts.ready(function() {\x0A\x09\x09window.print();\x0A\x09});\x0A} else {\x0A\x09setTimeout(window.print, 250);\x0A}\x0A})()";
+		return _hx_deref(new EReg("\\s+", "mg"))->replace($script, " ");
+	}
 	function __toString() { return 'model.WKHtml'; }
+}
+function model_WKHtml_0(&$args, $arg, $_) {
+	{
+		return str_replace("\"", "\\\"", $arg);
+	}
+}
+function model_WKHtml_1(&$args, &$cmd, $arg, $_) {
+	{
+		return "\"" . str_replace("\"", "\\\"", $arg) . "\"";
+	}
 }

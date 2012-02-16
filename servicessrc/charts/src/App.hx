@@ -1,5 +1,6 @@
 import model.CacheGateway;
 import model.RenderableGateway;
+import model.ConfigGateway;
 import thx.util.Imports;
 import ufront.web.AppConfiguration;
 import ufront.web.mvc.MvcApplication;
@@ -13,18 +14,24 @@ import mongo.MongoCollection;
 
 class App
 {
+	public static inline var AUTH = "6kdsbgv46272";
 	public static inline var MONGO_DB_NAME = "chartsrenderer1";
 	public static inline var RENDERABLES_COLLECTION = "renderables";
 	public static inline var CACHE_COLLECTION = "cache";
+	public static inline var CONFIG_COLLECTION = "config";
 #if release
 	public static inline var HOST = "http://api.reportgrid.com";
+	public static inline var JS_PATH = HOST + "/js/";
+	public static inline var CSS_PATH = HOST + "/css/";
 	public static inline var BASE_PATH = "/services/viz/charts/";
+	public static inline var RESET_CSS = "./css/reset.css";
 #else
 	public static inline var HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
+	public static inline var JS_PATH = HOST + "/rg/charts/js/";
+	public static inline var CSS_PATH = HOST + "/rg/charts/css/";
 	public static inline var BASE_PATH = "/rg/services/viz/charts/";
+	public static inline var RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css";
 #end
-	public static inline var RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css";
-	public static inline var PRINT_JS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js";
 	public static var version(default, null) : String;
 
 	public static function baseUrl() return HOST
@@ -54,6 +61,9 @@ class App
 		locator.memoize(CacheGateway, function() {
 			return new CacheGateway(locator.get(MongoDB).selectCollection(CACHE_COLLECTION));
 		});
+		locator.memoize(ConfigGateway, function() {
+			return new ConfigGateway(locator.get(MongoDB).selectCollection(CONFIG_COLLECTION));
+		});
 
 		ufront.web.mvc.DependencyResolver.current = new ufront.external.mvc.ThxDependencyResolver(locator);
 
@@ -62,8 +72,10 @@ class App
 		var config = new AppConfiguration(
 				"controller",
 				true, // mod rewrite
-				BASE_PATH,
-				"logs/logs.txt"
+				BASE_PATH
+#if !release
+				, "logs/logs.txt"
+#end
 			),
 			routes = new RouteCollection(),
 			app    = new MvcApplication(config, routes);

@@ -9,7 +9,9 @@ class Home extends Template<{
 	baseurl : String,
 	url : UrlHelperInst,
 	sampleuid : String,
-	version : String
+	version : String,
+	authorized : Bool,
+	auth : String
 }>
 {
 	

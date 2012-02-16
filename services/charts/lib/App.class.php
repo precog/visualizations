@@ -2,19 +2,22 @@
 
 class App {
 	public function __construct(){}
+	static $AUTH = "6kdsbgv46272";
 	static $MONGO_DB_NAME = "chartsrenderer1";
 	static $RENDERABLES_COLLECTION = "renderables";
 	static $CACHE_COLLECTION = "cache";
+	static $CONFIG_COLLECTION = "config";
 	static $HOST = "http://api.reportgrid.com";
+	static $JS_PATH;
+	static $CSS_PATH;
 	static $BASE_PATH = "/services/viz/charts/";
-	static $RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/css/reset.css";
-	static $PRINT_JS = "/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/www/js/print.js";
+	static $RESET_CSS = "./css/reset.css";
 	static $version;
 	static function baseUrl() {
 		return "http://api.reportgrid.com";
 	}
 	static function main() {
-		App::$version = "1.0.2.328";
+		App::$version = "1.0.2.384";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
@@ -23,8 +26,9 @@ class App {
 		$locator->memoize(_hx_qtype("mongo.MongoDB"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_3"), 'execute'));
 		$locator->memoize(_hx_qtype("model.RenderableGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_4"), 'execute'));
 		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_5"), 'execute'));
+		$locator->memoize(_hx_qtype("model.ConfigGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_6"), 'execute'));
 		ufront_web_mvc_DependencyResolver::$current = new ufront_external_mvc_ThxDependencyResolver($locator);
-		$config = new ufront_web_AppConfiguration("controller", true, "/services/viz/charts/", "logs/logs.txt"); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
+		$config = new ufront_web_AppConfiguration("controller", true, "/services/viz/charts/", null); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
 		$routes->addRoute("/", _hx_anonymous(array("controller" => "home", "action" => "index")), null, null);
 		$routes->addRoute("/up/form/html", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null, null);
 		$routes->addRoute("/up/form/gist", _hx_anonymous(array("controller" => "uploadForm", "action" => "gist")), null, null);
@@ -49,6 +53,8 @@ class App {
 	}
 	function __toString() { return 'App'; }
 }
+App::$JS_PATH = "http://api.reportgrid.com" . "/js/";
+App::$CSS_PATH = "http://api.reportgrid.com" . "/css/";
 function App_0(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
 	{
 		return new model_WKHtmlToImage($wkhtmltoimagebin);
@@ -77,5 +83,10 @@ function App_4(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
 function App_5(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
 	{
 		return new model_CacheGateway(new mongo_MongoCollection($locator->get(_hx_qtype("mongo.MongoDB"))->db->selectCollection("cache")));
+	}
+}
+function App_6(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
+	{
+		return new model_ConfigGateway(new mongo_MongoCollection($locator->get(_hx_qtype("mongo.MongoDB"))->db->selectCollection("config")));
 	}
 }

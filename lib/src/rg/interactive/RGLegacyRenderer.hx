@@ -4,7 +4,7 @@ import thx.js.Selection;
 
 class RGLegacyRenderer
 {
-	static var FORMAT = 'png';
+	static var FORMAT = 'jpg';
 
 	var serviceUrl : String;
 	var container : Selection;

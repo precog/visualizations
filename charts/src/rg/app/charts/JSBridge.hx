@@ -50,10 +50,28 @@ class JSBridge
 		if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
 #end
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid");
-trace(r);
+
 		// init app
-		var globalNotifier = new hxevents.Notifier(),
-			app = new App(globalNotifier);
+		var globalNotifier = new hxevents.Notifier();
+		var globalReady = false;
+
+		globalNotifier.addOnce(function() {
+			globalReady = true;
+		});
+
+		r.charts = {
+			ready : function(handler : Void -> Void) {
+				trace("registering handler");
+				if(globalReady)
+					handler();
+				else
+					globalNotifier.add(handler);
+			}
+		};
+
+		var app = new App(globalNotifier);
+
+
 
 		// define bridge function
 		r.chart = function(el : Dynamic, options : Dynamic, type : String)
@@ -89,7 +107,7 @@ trace(r);
 		r.sankey       = function(el, options) return r.chart(el, options, "sankey");
 		r.scatterGraph = function(el, options) return r.chart(el, options, "scattergraph");
 		r.streamGraph  = function(el, options) return r.chart(el, options, "streamgraph");
-trace(r);
+
 		// utility functions
 		r.parseQueryParameters = rg.util.Urls.parseQueryParameters;
 		r.findScript           = rg.util.Js.findScript;
@@ -136,12 +154,6 @@ trace(r);
 		r.info = null != r.info ? r.info : { };
 		r.info.charts = {
 			version : thx.util.MacroVersion.fullVersion()
-		};
-
-		r.charts = {
-			onReady : function(handler : Void -> Void) {
-				globalNotifier.add(handler);
-			}
 		};
 	}
 

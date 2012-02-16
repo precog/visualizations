@@ -125,8 +125,6 @@ class App
 */
 		}
 
-		loader.load();
-
 		if(!uselegacy && (null != download.position || null != download.handler))
 		{
 			var downloader = new RGDownloader(visualization.container, download.service/*, download.background*/);
@@ -166,6 +164,12 @@ class App
 				}
 			});
 		}
+
+//		visualization.addReadyOnce(function()
+//		{
+			haxe.Timer.delay(loader.load, 0);
+//		});
+
 		return visualization;
 	}
 

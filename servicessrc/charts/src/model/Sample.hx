@@ -2,7 +2,6 @@ package model;
 
 class Sample
 {
-	public static var uid    = '1jukiqh43go0';
 	public static var config = 'cache=2 days
 [params]
 viz[0]=pieChart
@@ -13,20 +12,15 @@ viz=pieChart';
 <html>
 <head>
 <title>Viz</title>
-<script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=$tokenId"></script>
-<script src="http://api.reportgrid.com/js/reportgrid-charts.js"></script>
-<script src="http://api.reportgrid.com/js/reportgrid-query.js"></script>
-<link type="text/css" href="http://api.reportgrid.com/css/rg-charts.css" rel="stylesheet">
+<script src="'+App.JS_PATH+'reportgrid-charts.js"></script>
+<link type="text/css" href="'+App.CSS_PATH+'rg-charts.css" rel="stylesheet">
 </head>
 <body>
 <div id="chart"></div>
 <script>
 ReportGrid.$viz("#chart", {
   data : [{browser:"chrome",count:100},{browser:"firefox",count:80}],
-  axes : ["browser","count"],
-  options : {
-  	effect : "noeffect"
-  }
+  axes : ["browser","count"]
 });
 </script>
 </body>

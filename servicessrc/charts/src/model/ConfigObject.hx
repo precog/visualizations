@@ -67,7 +67,11 @@ class ConfigObjects
 		return {
 			cacheExpires			: 30 * 60 * 24 * 1000.0,
 			duration				: null,
+#if release
 			allowedFormats			: ['pdf', 'png', 'jpg', 'svg'],
+#else
+			allowedFormats			: ['pdf', 'ps', 'png', 'jpg', 'bmp', 'tif', 'svg', 'html'],
+#end
 			params					: {},
 			defaults				: {},
 			zoom					: 1.0,

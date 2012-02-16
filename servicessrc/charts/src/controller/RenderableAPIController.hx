@@ -99,7 +99,7 @@ class RenderableAPIController extends BaseController
 		});
 	}
 
-	function makeRenderable(html : String, ?config : String)
+	public function makeRenderable(html : String, ?config : String)
 	{
 		if(!validateHtml(html))
 		{
