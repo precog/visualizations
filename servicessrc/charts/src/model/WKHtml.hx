@@ -23,7 +23,9 @@ class WKHtml
 		var t = tmp(ext);
 		thx.sys.io.File.putContent(t, content);
 		var r = renderUrl(t);
-//		thx.sys.FileSystem.deleteFile(t);
+#if release
+		thx.sys.FileSystem.deleteFile(t);
+#end
 		return r;
 	}
 
@@ -42,8 +44,9 @@ class WKHtml
 			throw new Error("unable to render the result");
 		}
 
-
-//trace("CMD " + cmdToString(cmd, args));
+#if !release
+		trace("CMD " + cmdToString(cmd, args));
+#end
 		var result = thx.sys.io.File.getContent(out);
 		thx.sys.FileSystem.deleteFile(out);
 		return result;

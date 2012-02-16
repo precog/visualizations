@@ -7,6 +7,5 @@
 -lib hscript
 -D erazor
 -D haxe_209
---no-traces
 -D release
 #-lib thx

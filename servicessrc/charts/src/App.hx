@@ -19,6 +19,7 @@ class App
 	public static inline var RENDERABLES_COLLECTION = "renderables";
 	public static inline var CACHE_COLLECTION = "cache";
 	public static inline var CONFIG_COLLECTION = "config";
+	public static inline var LOG_COLLECTION = "log";
 #if release
 	public static inline var HOST = "http://api.reportgrid.com";
 	public static inline var JS_PATH = HOST + "/js/";
@@ -72,13 +73,17 @@ class App
 		var config = new AppConfiguration(
 				"controller",
 				true, // mod rewrite
-				BASE_PATH
-#if !release
-				, "logs/logs.txt"
+				BASE_PATH,
+#if release
+				true // disable browser trace
+#else
+				false
 #end
 			),
 			routes = new RouteCollection(),
 			app    = new MvcApplication(config, routes);
+
+		app.modules.add(new util.TraceToMongo(MONGO_DB_NAME, LOG_COLLECTION, "SERVERNAME"));
 
 		routes.addRoute('/', {
 			controller : "home", action : "index"
