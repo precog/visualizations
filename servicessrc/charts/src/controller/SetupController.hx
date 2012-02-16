@@ -1,13 +1,14 @@
 package controller;
 
 import model.CacheGateway;
+import model.LogGateway;
 import model.RenderableGateway;
 import ufront.web.mvc.ActionResult;
 import ufront.web.mvc.Controller;
 import ufront.web.mvc.ContentResult;
 import mongo.Mongo;
 
-class SetupController extends Controller
+class SetupController extends BaseController
 {
 
 	var mongo : Mongo;
@@ -42,6 +43,23 @@ class SetupController extends Controller
 		authorize(auth);
 		dropCollection(App.RENDERABLES_COLLECTION);
 		dropCollection(App.CACHE_COLLECTION);
+		return redirectToStatus(auth);
+	}
+
+	public function displayLogs(auth : String, format : String)
+	{
+		authorize(auth);
+		var db = mongo.selectDB(App.MONGO_DB_NAME),
+			gate = new LogGateway(db.selectCollection(App.LOG_COLLECTION));
+		return output(gate.list(), format, template.Logs);
+	}
+
+	public function clearLogs(auth : String)
+	{
+		authorize(auth);
+		var db = mongo.selectDB(App.MONGO_DB_NAME),
+			gate = new LogGateway(db.selectCollection(App.LOG_COLLECTION));
+		gate.clear();
 		return redirectToStatus(auth);
 	}
 
@@ -127,8 +145,10 @@ class SetupController extends Controller
 			cacheCollections = db.listCollections(),
 			renderablesCollectionName = App.RENDERABLES_COLLECTION,
 			cacheCollectionName = App.CACHE_COLLECTION,
+			logCollectionName = App.LOG_COLLECTION,
 			renderablesExists = true,
-			cacheExists = true;
+			cacheExists = true,
+			logExists = true;
 
 		// ensure Renderable Collection
 		var renderableCollection = db.selectCollection(renderablesCollectionName);
@@ -142,6 +162,13 @@ class SetupController extends Controller
 		if(cacheCollection.validate().ok < 1)
 		{
 			cacheExists = false;
+		}
+
+		// ensure Logs Collection
+		var logCollection = db.selectCollection(logCollectionName);
+		if(logCollection.validate().ok < 1)
+		{
+			logExists = false;
 		}
 
 		// number of renderables
@@ -161,6 +188,11 @@ class SetupController extends Controller
 				name    : cacheCollectionName,
 				exists : cacheExists,
 				count   : cacheExists ? cacheCollection.count() : -1
+			},
+			logs : {
+				name    : logCollectionName,
+				exists : logExists,
+				count   : logExists ? logCollection.count() : -1
 			}
 		};
 

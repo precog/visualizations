@@ -832,7 +832,73 @@ class template_Home extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
-					$x = "\">Purge Expired Renderables</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
+					$x = "\">Purge Expired Renderables</a></li>\x0A\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "displayLogs", "auth" => $__context__->auth, "format" => "json")));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Logs (json)</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "displayLogs", "auth" => $__context__->auth, "format" => "html")));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Logs (html)</a></li>\x0A  <li><a href=\"";
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = $__context__->url->route(_hx_anonymous(array("controller" => "setup", "action" => "clearLogs", "auth" => $__context__->auth)));
+					if(is_null($x)) {
+						$x = "null";
+					} else {
+						if(is_bool($x)) {
+							$x = (($x) ? "true" : "false");
+						}
+					}
+					$__b__->b .= $x;
+				}
+				{
+					$x = "\">Clear Logs</a></li>\x0A</ul>\x0A\x0A\x0A<h2>Setup</h2>\x0A<ul class=\"bullet\">\x0A  <li><a href=\"";
 					if(is_null($x)) {
 						$x = "null";
 					} else {

@@ -80,6 +80,10 @@
   <li><a href="@url.route({ controller : 'setup', action : 'clearCache', auth : auth })">Clear Cache</a></li>
   <li><a href="@url.route({ controller : 'setup', action : 'purgeRenderables', auth : auth })">Purge Unused Renderables</a></li>
   <li><a href="@url.route({ controller : 'setup', action : 'purgeExpiredRenderables', auth : auth })">Purge Expired Renderables</a></li>
+
+  <li><a href="@url.route({ controller : 'setup', action : 'displayLogs', auth : auth, format : "json" })">Logs (json)</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'displayLogs', auth : auth, format : "html" })">Logs (html)</a></li>
+  <li><a href="@url.route({ controller : 'setup', action : 'clearLogs', auth : auth })">Clear Logs</a></li>
 </ul>
 
 

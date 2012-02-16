@@ -7,17 +7,18 @@ class App {
 	static $RENDERABLES_COLLECTION = "renderables";
 	static $CACHE_COLLECTION = "cache";
 	static $CONFIG_COLLECTION = "config";
-	static $HOST = "http://api.reportgrid.com";
+	static $LOG_COLLECTION = "log";
+	static $HOST;
 	static $JS_PATH;
 	static $CSS_PATH;
-	static $BASE_PATH = "/services/viz/charts/";
-	static $RESET_CSS = "./css/reset.css";
+	static $BASE_PATH = "/rg/services/viz/charts/";
+	static $RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css";
 	static $version;
 	static function baseUrl() {
-		return "http://api.reportgrid.com";
+		return "http://" . $_SERVER["HTTP_HOST"];
 	}
 	static function main() {
-		App::$version = "1.0.2.384";
+		App::$version = "1.0.3.461";
 		$wkhtmltopdfbin = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf"; $wkhtmltoimagebin = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_0"), 'execute'));
@@ -28,7 +29,8 @@ class App {
 		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_5"), 'execute'));
 		$locator->memoize(_hx_qtype("model.ConfigGateway"), array(new _hx_lambda(array(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin), "App_6"), 'execute'));
 		ufront_web_mvc_DependencyResolver::$current = new ufront_external_mvc_ThxDependencyResolver($locator);
-		$config = new ufront_web_AppConfiguration("controller", true, "/services/viz/charts/", null); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
+		$config = new ufront_web_AppConfiguration("controller", true, "/rg/services/viz/charts/", null, false); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
+		$app->modules->add(new util_TraceToMongo("chartsrenderer1", "log", App::serverName()));
 		$routes->addRoute("/", _hx_anonymous(array("controller" => "home", "action" => "index")), null, null);
 		$routes->addRoute("/up/form/html", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null, null);
 		$routes->addRoute("/up/form/gist", _hx_anonymous(array("controller" => "uploadForm", "action" => "gist")), null, null);
@@ -45,16 +47,23 @@ class App {
 		$routes->addRoute("/maintenance/renderables/purge/expired", _hx_anonymous(array("controller" => "setup", "action" => "purgeExpiredRenderables")), null, null);
 		$routes->addRoute("/maintenance/cache/purge", _hx_anonymous(array("controller" => "setup", "action" => "purgeCache")), null, null);
 		$routes->addRoute("/maintenance/cache/clear", _hx_anonymous(array("controller" => "setup", "action" => "clearCache")), null, null);
+		$routes->addRoute("/maintenance/logs/clear", _hx_anonymous(array("controller" => "setup", "action" => "clearLogs")), null, null);
+		$routes->addRoute("/maintenance/logs.json", _hx_anonymous(array("controller" => "setup", "action" => "displayLogs", "format" => "json")), null, null);
+		$routes->addRoute("/maintenance/logs.html", _hx_anonymous(array("controller" => "setup", "action" => "displayLogs", "format" => "html")), null, null);
 		$routes->addRoute("/setup/collections/create", _hx_anonymous(array("controller" => "setup", "action" => "createCollections")), null, null);
 		$routes->addRoute("/setup/collections/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCollections")), null, null);
 		$routes->addRoute("/setup/renderables/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropRenderables")), null, null);
 		$routes->addRoute("/setup/cache/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCache")), null, null);
 		$app->execute();
 	}
+	static function serverName() {
+		return trim(`hostname -f`);
+	}
 	function __toString() { return 'App'; }
 }
-App::$JS_PATH = "http://api.reportgrid.com" . "/js/";
-App::$CSS_PATH = "http://api.reportgrid.com" . "/css/";
+App::$HOST = "http://" . $_SERVER["HTTP_HOST"];
+App::$JS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/rg/charts/js/";
+App::$CSS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/rg/charts/css/";
 function App_0(&$locator, &$wkhtmltoimagebin, &$wkhtmltopdfbin) {
 	{
 		return new model_WKHtmlToImage($wkhtmltoimagebin);

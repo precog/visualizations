@@ -15,6 +15,10 @@ class ufront_web_module_TraceToBrowserModule implements ufront_web_module_ITrace
 	public function dispose() {
 	}
 	public function _sendContent($application) {
+		if($application->getResponse()->getContentType() !== "text/html") {
+			$this->messages = new _hx_array(array());
+			return;
+		}
 		$results = new _hx_array(array());
 		{
 			$_g = 0; $_g1 = $this->messages;

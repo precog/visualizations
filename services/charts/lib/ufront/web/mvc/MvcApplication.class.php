@@ -3,8 +3,9 @@
 class ufront_web_mvc_MvcApplication extends ufront_web_HttpApplication {
 	public function __construct($configuration, $routes, $httpContext) {
 		if(!php_Boot::$skip_constructor) {
+		$me = $this;
 		if($configuration === null) {
-			$configuration = new ufront_web_AppConfiguration(null, null, null, null);
+			$configuration = new ufront_web_AppConfiguration(null, null, null, null, null);
 		}
 		if($httpContext === null) {
 			$httpContext = ufront_web_HttpContext::createWebContext(null, null, null);
@@ -37,16 +38,14 @@ class ufront_web_mvc_MvcApplication extends ufront_web_HttpApplication {
 			}
 		}
 		$this->modules->add(new ufront_web_module_ErrorModule());
-		$tracemod = null;
-		if(null !== $configuration->logFile) {
-			$comp = new ufront_web_module_TraceCompositeModule(null);
-			$comp->add(new ufront_web_module_TraceToBrowserModule());
-			$comp->add(new ufront_web_module_TraceToFileModule($configuration->logFile));
-			$tracemod = $comp;
-		} else {
-			$this->modules->add($tracemod = new ufront_web_module_TraceToBrowserModule());
+		if(!$configuration->disableBrowserTrace) {
+			$this->modules->add(new ufront_web_module_TraceToBrowserModule());
 		}
-		haxe_Log::$trace = (isset($tracemod->trace) ? $tracemod->trace: array($tracemod, "trace"));
+		if(null !== $configuration->logFile) {
+			$this->modules->add(new ufront_web_module_TraceToFileModule($configuration->logFile));
+		}
+		$old = haxe_Log::$trace;
+		haxe_Log::$trace = array(new _hx_lambda(array(&$configuration, &$httpContext, &$me, &$old, &$routes), "ufront_web_mvc_MvcApplication_0"), 'execute');
 	}}
 	public $routeModule;
 	public function __call($m, $a) {
@@ -63,3 +62,22 @@ class ufront_web_mvc_MvcApplication extends ufront_web_HttpApplication {
 	function __toString() { return 'ufront.web.mvc.MvcApplication'; }
 }
 ufront_web_mvc_MvcApplication::$defaultRoutes = new _hx_array(array(new ufront_web_routing_Route("/", new ufront_web_mvc_MvcRouteHandler(), DynamicsT::toHash(_hx_anonymous(array("controller" => "home", "action" => "index"))), null), new ufront_web_routing_Route("/{controller}/{action}/{?id}", new ufront_web_mvc_MvcRouteHandler(), null, null)));
+function ufront_web_mvc_MvcApplication_0(&$configuration, &$httpContext, &$me, &$old, &$routes, $msg, $pos) {
+	{
+		$found = false;
+		if(null == $me->modules) throw new HException('null iterable');
+		$»it = $me->modules->iterator();
+		while($»it->hasNext()) {
+			$module = $»it->next();
+			$tracer = Types::has($module, _hx_qtype("ufront.web.module.ITraceModule"));
+			if(null !== $tracer) {
+				$found = true;
+				$tracer->trace($msg, $pos);
+			}
+			unset($tracer);
+		}
+		if(!$found) {
+			call_user_func_array($old, array($msg, $pos));
+		}
+	}
+}

@@ -83,7 +83,7 @@ class App
 			routes = new RouteCollection(),
 			app    = new MvcApplication(config, routes);
 
-		app.modules.add(new util.TraceToMongo(MONGO_DB_NAME, LOG_COLLECTION, "SERVERNAME"));
+		app.modules.add(new util.TraceToMongo(MONGO_DB_NAME, LOG_COLLECTION, serverName()));
 
 		routes.addRoute('/', {
 			controller : "home", action : "index"
@@ -163,6 +163,16 @@ class App
 			controller : "setup", action : "clearCache"
 		});
 
+		routes.addRoute('/maintenance/logs/clear', {
+			controller : "setup", action : "clearLogs"
+		});
+		routes.addRoute('/maintenance/logs.json', {
+			controller : "setup", action : "displayLogs", format : "json"
+		});
+		routes.addRoute('/maintenance/logs.html', {
+			controller : "setup", action : "displayLogs", format : "html"
+		});
+
 		routes.addRoute('/setup/collections/create', {
 			controller : "setup", action : "createCollections"
 		});
@@ -177,5 +187,10 @@ class App
 		});
 
 		app.execute();
+	}
+
+	static function serverName() : String
+	{
+		return untyped __php__("trim(`hostname -f`)");
 	}
 }

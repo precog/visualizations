@@ -136,3 +136,40 @@ ul.bullet li
 	margin: 0 0 5px 0;
 	clear: left;
 }
+
+ol.logs
+{
+	padding: 0 0 0 25px;
+}
+
+ol.logs li
+{
+	padding: 0 0 0 5px;
+	margin: 10px 0;
+	clear: left;
+}
+
+.logs div
+{
+	margin-bottom: 2px;
+}
+
+.logs .loc
+{
+	font-size: 73%;
+}
+
+.logs .info
+{
+	font-size: 73%;
+	color: #999;
+}
+
+.logs .message
+{
+	font-family: monospace;
+	white-space: pre;
+	background-color: #eee;
+	padding: 5px 20px;
+	overflow: auto;
+}

@@ -1,8 +1,11 @@
 <?php
 
 class ufront_web_AppConfiguration {
-	public function __construct($controllerPackage, $modRewrite, $basePath, $logFile) {
+	public function __construct($controllerPackage, $modRewrite, $basePath, $logFile, $disableBrowserTrace) {
 		if(!php_Boot::$skip_constructor) {
+		if($disableBrowserTrace === null) {
+			$disableBrowserTrace = false;
+		}
 		if($basePath === null) {
 			$basePath = "/";
 		}
@@ -11,12 +14,14 @@ class ufront_web_AppConfiguration {
 		$this->controllerPackages = new _hx_array(array((($controllerPackage === null) ? "" : $controllerPackage)));
 		$this->attributePackages = new _hx_array(array("ufront.web.mvc.attributes"));
 		$this->logFile = $logFile;
+		$this->disableBrowserTrace = $disableBrowserTrace;
 	}}
 	public $modRewrite;
 	public $controllerPackages;
 	public $attributePackages;
 	public $basePath;
 	public $logFile;
+	public $disableBrowserTrace;
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);

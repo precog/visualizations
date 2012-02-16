@@ -22,7 +22,6 @@ class GistUploadController extends BaseController
 			for(field in Reflect.fields(gist.data.files))
 			{
 				var file = Reflect.field(gist.data.files, field);
-				trace(file);
 				switch(file.language.toLowerCase())
 				{
 					case 'html', 'htm':

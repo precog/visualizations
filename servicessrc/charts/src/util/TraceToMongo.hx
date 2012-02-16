@@ -25,9 +25,15 @@ class TraceToMongo implements ITraceModule
 	}
 	public function trace(msg : Dynamic, ?pos : PosInfos) : Void
 	{
+		var p ={
+			fileName   : pos.fileName,
+			className  : pos.className,
+			methodName : pos.methodName,
+			lineNumber : pos.lineNumber,
+		}
 		coll.insert({
-			msg : msg,
-			pos : pos,
+			msg : Dynamics.string(msg),
+			pos : p,
 			time : Date.now().getTime(),
 			server : servername
 		});
