@@ -140,7 +140,7 @@ class template_Home extends erazor_macro_Template {
 				$__b__->b .= $x;
 			}
 			{
-				$x = "</a></li>\x0A  <li>Upload using fa orm and display result: <a href=\"";
+				$x = "</a></li>\x0A  <li>Upload using a form and display result: <a href=\"";
 				if(is_null($x)) {
 					$x = "null";
 				} else {
