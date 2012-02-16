@@ -143,7 +143,7 @@ class template_RenderableDisplay extends erazor_macro_Template {
 					$__b__->b .= $x;
 				}
 				{
-					$x = $__context__->data->expiresOn;
+					$x = $__context__->data->expiresOn->toString();
 					if(is_null($x)) {
 						$x = "null";
 					} else {

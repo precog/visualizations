@@ -115,7 +115,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 		return _hx_index_of($html, "reportgrid", null) >= 0 || _hx_index_of($html, "svg", null) >= 0;
 	}
 	public function success($r, $format) {
-		$content = _hx_anonymous(array("uid" => $r->getUid(), "createdOn" => $r->createdOn, "expiresOn" => Date::now()->getTime() + $r->config->duration, "cacheExpirationTime" => $r->config->cacheExpirationTime, "formats" => $r->config->allowedFormats, "preserveTimeAfterLastUsage" => model_RenderableGateway::$DELETE_IF_NOT_USED_FOR, "service" => _hx_anonymous(array())));
+		$content = _hx_anonymous(array("uid" => $r->getUid(), "createdOn" => $r->createdOn, "expiresOn" => ((null === $r->config->duration) ? null : Date::fromTime($r->createdOn->getTime() + $r->config->duration)), "cacheExpirationTime" => $r->config->cacheExpirationTime, "formats" => $r->config->allowedFormats, "preserveTimeAfterLastUsage" => model_RenderableGateway::$DELETE_IF_NOT_USED_FOR, "service" => _hx_anonymous(array())));
 		{
 			$_g = 0; $_g1 = $content->formats;
 			while($_g < $_g1->length) {

@@ -39,7 +39,7 @@ class WKHtml
 
 		if(!execute(args))
 		{
-			trace("CMD " + cmdToString(cmd, args)+"\nERROR: " + err);
+			trace(cmdToString(cmd, args)+"\n" + err);
 			throw new Error("unable to render the result");
 		}
 

@@ -23,7 +23,7 @@ class model_WKHtml {
 		$args->push($path);
 		$args->push($out);
 		if(!$this->execute($args)) {
-			haxe_Log::trace("CMD " . model_WKHtml::cmdToString($this->cmd, $args) . "\x0AERROR: " . $this->err, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 42, "className" => "model.WKHtml", "methodName" => "renderUrl")));
+			haxe_Log::trace(model_WKHtml::cmdToString($this->cmd, $args) . "\x0A" . $this->err, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 42, "className" => "model.WKHtml", "methodName" => "renderUrl")));
 			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 43, "className" => "model.WKHtml", "methodName" => "renderUrl"))));
 		}
 		$result = php_io_File::getContent($out);

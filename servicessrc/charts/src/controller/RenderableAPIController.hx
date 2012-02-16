@@ -189,7 +189,7 @@ class RenderableAPIController extends BaseController
 		var content = {
 			uid : r.uid,
 			createdOn : r.createdOn,
-			expiresOn : Date.now().getTime() + r.config.duration,
+			expiresOn : null == r.config.duration ? null : Date.fromTime(r.createdOn.getTime() + r.config.duration),
 			cacheExpirationTime : r.config.cacheExpirationTime,
 			formats : r.config.allowedFormats,
 			preserveTimeAfterLastUsage : model.RenderableGateway.DELETE_IF_NOT_USED_FOR,
