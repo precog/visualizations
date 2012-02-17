@@ -40,13 +40,15 @@ class WKHtml
 		args.push(path);
 		args.push(out);
 
+		var ok = true;
 		if(!execute(args))
 		{
+			ok = false;
 			trace(cmdToString(cmd, args)+"\n" + err);
 //			throw new Error("unable to render the result");
 		}
 
-		if(null == err)
+		if(ok)
 		{
 			var result = thx.sys.io.File.getContent(out);
 			thx.sys.FileSystem.deleteFile(out);
