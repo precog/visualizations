@@ -29,8 +29,8 @@ class App
 	public static inline var BASE_PATH = "/charts/";
 	public static inline var RESET_CSS = "./css/reset.css";
 
-	public static inline var WKPDF = "/bin/wkhtmltopdf";
-	public static inline var WKIMAGE = "/bin/wkhtmltoimage";
+	public static inline var WKPDF = "DISPLAY=:0  /bin/wkhtmltopdf";
+	public static inline var WKIMAGE = "DISPLAY=:0  /bin/wkhtmltoimage";
 #else
 	public static inline var SERVER_HOST = "http://" + untyped __var__("_SERVER", "HTTP_HOST");
 	public static inline var BASE_HOST = SERVER_HOST + '';

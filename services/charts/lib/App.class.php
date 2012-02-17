@@ -14,14 +14,14 @@ class App {
 	static $CSS_PATH;
 	static $BASE_PATH = "/charts/";
 	static $RESET_CSS = "./css/reset.css";
-	static $WKPDF = "/bin/wkhtmltopdf";
-	static $WKIMAGE = "/bin/wkhtmltoimage";
+	static $WKPDF = "DISPLAY=:0  /bin/wkhtmltopdf";
+	static $WKIMAGE = "DISPLAY=:0  /bin/wkhtmltoimage";
 	static $version;
 	static function baseUrl() {
 		return "http://" . $_SERVER["HTTP_HOST"] . "/services/viz";
 	}
 	static function main() {
-		App::$version = "1.0.3.537";
+		App::$version = "1.0.3.539";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator), "App_0"), 'execute'));
 		$locator->memoize(_hx_qtype("model.WKHtmlToPdf"), array(new _hx_lambda(array(&$locator), "App_1"), 'execute'));
@@ -68,12 +68,12 @@ App::$JS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/js/";
 App::$CSS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/css/";
 function App_0(&$locator) {
 	{
-		return new model_WKHtmlToImage("/bin/wkhtmltoimage");
+		return new model_WKHtmlToImage("DISPLAY=:0  /bin/wkhtmltoimage");
 	}
 }
 function App_1(&$locator) {
 	{
-		return new model_WKHtmlToPdf("/bin/wkhtmltopdf");
+		return new model_WKHtmlToPdf("DISPLAY=:0  /bin/wkhtmltopdf");
 	}
 }
 function App_2(&$locator) {
