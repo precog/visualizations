@@ -81,6 +81,9 @@ class WKHtml
 	{
 		var args = [];
 
+#if release
+		args.push('--use-xserver');
+#end
 		args.push('--disable-local-file-access');
 		args.push('--javascript-delay'); args.push(''+JS_DELAY);
 		args.push('--user-style-sheet'); args.push(App.RESET_CSS);
