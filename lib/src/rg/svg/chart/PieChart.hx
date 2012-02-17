@@ -235,46 +235,48 @@ class PieChart extends Chart
 
 	function applyGradient(n, i : Int)
 	{
-		var gn = Dom.selectNodeData(n),
-			dp = Access.getData(n),
-			id = dp.id;
-		if (g.select("defs").select("#rg_pie_gradient_" + id).empty())
-		{
-			var slice = gn.select("path.slice"),
-				shape = arcNormal.shape(Access.getData(n)),
-				t = gn.append("svg:path").attr("d").string(shape),
-				box : { x : Float, y : Float, width : Float, height : Float } = try { untyped t.node().getBBox(); } catch (e : Dynamic) { { x : 0.0, y : 0.0, width : 0.0, height : 0.0 }; };
-			t.remove();
-			var color = RGColors.parse(slice.style("fill").get(), "#cccccc"),
-				scolor = RGColors.applyLightness(Hsl.toHsl(color), gradientLightness);
+		haxe.Timer.delay(function() {
+			var gn = Dom.selectNodeData(n),
+				dp = Access.getData(n),
+				id = dp.id;
+			if (g.select("defs").select("#rg_pie_gradient_" + id).empty())
+			{
+				var slice = gn.select("path.slice"),
+					shape = arcNormal.shape(Access.getData(n)),
+					t = gn.append("svg:path").attr("d").string(shape),
+					box : { x : Float, y : Float, width : Float, height : Float } = try { untyped t.node().getBBox(); } catch (e : Dynamic) { { x : 0.0, y : 0.0, width : 0.0, height : 0.0 }; };
+				t.remove();
+				var color = RGColors.parse(slice.style("fill").get(), "#cccccc"),
+					scolor = RGColors.applyLightness(Hsl.toHsl(color), gradientLightness);
 
-			var ratio = box.width / box.height,
-				cx = -box.x * 100 / box.width / ratio,
-				cy = -box.y * 100 / box.height / ratio;
+				var ratio = box.width / box.height,
+					cx = -box.x * 100 / box.width / ratio,
+					cy = -box.y * 100 / box.height / ratio;
 
-			var r = 100 * (box.width > box.height
-				? Math.min(1, radius * outerRadius / box.width)
-				: Math.max(1, radius * outerRadius / box.width));
+				var r = 100 * (box.width > box.height
+					? Math.min(1, radius * outerRadius / box.width)
+					: Math.max(1, radius * outerRadius / box.width));
 
-			var stops = g.select("defs")
-				.append("svg:radialGradient")
-				.attr("id").string("rg_pie_gradient_" + id)
-				.attr("cx").string(cx * ratio + "%")
-				.attr("cy").string(cy + "%")
-				.attr("gradientTransform").string("scale(1 "+ratio+")")
-				.attr("r").string(r+"%")
-			;
-			stops.append("svg:stop")
-				.attr("offset").string((100*innerRadius)+"%")
-				.attr("stop-color").string(color.toRgbString())
-				.attr("stop-opacity").float(1);
-			stops.append("svg:stop")
-				.attr("offset").string("100%")
-				.attr("stop-color").string(scolor.toRgbString())
-				.attr("stop-opacity").float(1);
-		}
-		gn.select("path.slice")
-			.attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
+				var stops = g.select("defs")
+					.append("svg:radialGradient")
+					.attr("id").string("rg_pie_gradient_" + id)
+					.attr("cx").string(cx * ratio + "%")
+					.attr("cy").string(cy + "%")
+					.attr("gradientTransform").string("scale(1 "+ratio+")")
+					.attr("r").string(r+"%")
+				;
+				stops.append("svg:stop")
+					.attr("offset").string((100*innerRadius)+"%")
+					.attr("stop-color").string(color.toRgbString())
+					.attr("stop-opacity").float(1);
+				stops.append("svg:stop")
+					.attr("offset").string("100%")
+					.attr("stop-color").string(scolor.toRgbString())
+					.attr("stop-opacity").float(1);
+			}
+			gn.select("path.slice")
+				.attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
+		}, 15);
 	}
 
 	function fadein(n, i : Int)

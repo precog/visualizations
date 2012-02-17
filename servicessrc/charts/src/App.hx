@@ -173,12 +173,13 @@ class App
 		routes.addRoute('/maintenance/logs/clear', {
 			controller : "setup", action : "clearLogs"
 		});
-		routes.addRoute('/maintenance/logs.json', {
-			controller : "setup", action : "displayLogs", format : "json"
-		});
-		routes.addRoute('/maintenance/logs.html', {
-			controller : "setup", action : "displayLogs", format : "html"
-		});
+		routes.addRoute('/maintenance/logs.{format}', {
+				controller : "setup", action : "displayLogs"
+			},
+			[
+				cast(new ValuesConstraint("outputformat", ["json", "html"]), IRouteConstraint)
+			]
+		);
 
 		routes.addRoute('/setup/collections/create', {
 			controller : "setup", action : "createCollections"

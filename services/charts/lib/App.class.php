@@ -12,16 +12,16 @@ class App {
 	static $BASE_HOST;
 	static $JS_PATH;
 	static $CSS_PATH;
-	static $BASE_PATH = "/charts/";
-	static $RESET_CSS = "./css/reset.css";
-	static $WKPDF = "/bin/wkhtmltopdf";
-	static $WKIMAGE = "/bin/wkhtmltoimage";
+	static $BASE_PATH = "/rg/services/viz/charts/";
+	static $RESET_CSS = "/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css";
+	static $WKPDF = "/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf";
+	static $WKIMAGE = "/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage";
 	static $version;
 	static function baseUrl() {
-		return "http://" . $_SERVER["HTTP_HOST"] . "/services/viz";
+		return "http://" . $_SERVER["HTTP_HOST"] . "";
 	}
 	static function main() {
-		App::$version = "1.0.3.526";
+		App::$version = "1.0.3.528";
 		$locator = new thx_util_TypeLocator();
 		$locator->memoize(_hx_qtype("model.WKHtmlToImage"), array(new _hx_lambda(array(&$locator), "App_0"), 'execute'));
 		$locator->memoize(_hx_qtype("model.WKHtmlToPdf"), array(new _hx_lambda(array(&$locator), "App_1"), 'execute'));
@@ -31,7 +31,7 @@ class App {
 		$locator->memoize(_hx_qtype("model.CacheGateway"), array(new _hx_lambda(array(&$locator), "App_5"), 'execute'));
 		$locator->memoize(_hx_qtype("model.ConfigGateway"), array(new _hx_lambda(array(&$locator), "App_6"), 'execute'));
 		ufront_web_mvc_DependencyResolver::$current = new ufront_external_mvc_ThxDependencyResolver($locator);
-		$config = new ufront_web_AppConfiguration("controller", true, "/charts/", null, true); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
+		$config = new ufront_web_AppConfiguration("controller", true, "/rg/services/viz/charts/", null, false); $routes = new ufront_web_routing_RouteCollection(null); $app = new ufront_web_mvc_MvcApplication($config, $routes, null);
 		$app->modules->add(new util_TraceToMongo("chartsrenderer1", "log", App::serverName()));
 		$routes->addRoute("/", _hx_anonymous(array("controller" => "home", "action" => "index")), null, null);
 		$routes->addRoute("/up/form/html", _hx_anonymous(array("controller" => "uploadForm", "action" => "display")), null, null);
@@ -50,8 +50,7 @@ class App {
 		$routes->addRoute("/maintenance/cache/purge", _hx_anonymous(array("controller" => "setup", "action" => "purgeCache")), null, null);
 		$routes->addRoute("/maintenance/cache/clear", _hx_anonymous(array("controller" => "setup", "action" => "clearCache")), null, null);
 		$routes->addRoute("/maintenance/logs/clear", _hx_anonymous(array("controller" => "setup", "action" => "clearLogs")), null, null);
-		$routes->addRoute("/maintenance/logs.json", _hx_anonymous(array("controller" => "setup", "action" => "displayLogs", "format" => "json")), null, null);
-		$routes->addRoute("/maintenance/logs.html", _hx_anonymous(array("controller" => "setup", "action" => "displayLogs", "format" => "html")), null, null);
+		$routes->addRoute("/maintenance/logs.{format}", _hx_anonymous(array("controller" => "setup", "action" => "displayLogs")), null, new _hx_array(array(new ufront_web_routing_ValuesConstraint("outputformat", new _hx_array(array("json", "html")), null, null))));
 		$routes->addRoute("/setup/collections/create", _hx_anonymous(array("controller" => "setup", "action" => "createCollections")), null, null);
 		$routes->addRoute("/setup/collections/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropCollections")), null, null);
 		$routes->addRoute("/setup/renderables/drop", _hx_anonymous(array("controller" => "setup", "action" => "dropRenderables")), null, null);
@@ -64,17 +63,17 @@ class App {
 	function __toString() { return 'App'; }
 }
 App::$SERVER_HOST = "http://" . $_SERVER["HTTP_HOST"];
-App::$BASE_HOST = "http://" . $_SERVER["HTTP_HOST"] . "/services/viz";
-App::$JS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/js/";
-App::$CSS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/css/";
+App::$BASE_HOST = "http://" . $_SERVER["HTTP_HOST"] . "";
+App::$JS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/rg/charts/js/";
+App::$CSS_PATH = "http://" . $_SERVER["HTTP_HOST"] . "/rg/charts/css/";
 function App_0(&$locator) {
 	{
-		return new model_WKHtmlToImage("/bin/wkhtmltoimage");
+		return new model_WKHtmlToImage("/usr/lib/wkhtmltoimage.app/Contents/MacOS/wkhtmltoimage");
 	}
 }
 function App_1(&$locator) {
 	{
-		return new model_WKHtmlToPdf("/bin/wkhtmltopdf");
+		return new model_WKHtmlToPdf("/usr/lib/wkhtmltopdf.app/Contents/MacOS/wkhtmltopdf");
 	}
 }
 function App_2(&$locator) {
