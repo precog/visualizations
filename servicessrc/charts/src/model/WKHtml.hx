@@ -22,10 +22,13 @@ class WKHtml
 		var ext = content.indexOf('-//W3C//DTD XHTML 1.0') >= 0 ? 'xhtml' : 'html';
 		var t = tmp(ext);
 		thx.sys.io.File.putContent(t, content);
+		err = null;
 		var r = renderUrl(t);
 #if release
 		thx.sys.FileSystem.deleteFile(t);
 #end
+		if(null == r)
+			throw new Error("unable to render the result");
 		return r;
 	}
 
@@ -40,15 +43,19 @@ class WKHtml
 		if(!execute(args))
 		{
 			trace(cmdToString(cmd, args)+"\n" + err);
-			throw new Error("unable to render the result");
+//			throw new Error("unable to render the result");
 		}
 
-#if !release
-		trace("CMD " + cmdToString(cmd, args));
-#end
-		var result = thx.sys.io.File.getContent(out);
-		thx.sys.FileSystem.deleteFile(out);
-		return result;
+		if(null == err)
+		{
+			var result = thx.sys.io.File.getContent(out);
+			thx.sys.FileSystem.deleteFile(out);
+			return result;
+		} else {
+			if(thx.sys.FileSystem.exists(out))
+				thx.sys.FileSystem.deleteFile(out);
+			return null;
+		}
 	}
 
 	var err : String;
