@@ -40,6 +40,11 @@ class Sankey extends Chart
 	public var imagePath : DataPoint -> String;
 	public var clickEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> Void;
 
+	public var nodeClass : DataPoint -> Stats<Dynamic> -> String;
+	public var edgeClass : DataPoint -> Stats<Dynamic> -> String;
+	public var displayEntry : DataPoint -> Stats<Dynamic> -> Bool;
+	public var displayExit : DataPoint -> Stats<Dynamic> -> Bool;
+
 	var layout : GraphLayout<NodeData, Dynamic>;
 	var maxweight : Float;
 	var availableheight : Float;
@@ -48,8 +53,8 @@ class Sankey extends Chart
 	var layerstarty : Array<Float>;
 
 	var styleNode : String;
-	var styleExtraIn : String;
-	var styleExtraOut : String;
+	var styleentry : String;
+	var styleexit : String;
 	var styleEdgeBackward : String;
 	var styleEdgeForward : String;
 	var dependentVariable : VariableDependent<Dynamic>;
@@ -75,8 +80,8 @@ class Sankey extends Chart
 		labelNodeSpacing = 4;
 
 		styleNode = "0"; // 4
-		styleExtraIn = "4";
-		styleExtraOut = "6";
+		styleentry = "4";
+		styleexit = "6";
 		styleEdgeBackward = "3";
 		styleEdgeForward = "0";
 	}
@@ -93,8 +98,10 @@ class Sankey extends Chart
 		// - must be dummy
 		// - must be directed right to left
 		var nodes = Iterables.filter(layout.graph.nodes, function(node) return isdummy(node)).filter(function(node) {
-			var edge = node.positives().next(),
-				cellhead = layout.cell(edge.head),
+			var edge = node.positives().next();
+			if(null == edge)
+				return false;
+			var cellhead = layout.cell(edge.head),
 				celltail = layout.cell(edge.tail);
 			return celltail.layer > cellhead.layer;
 		});
@@ -117,8 +124,6 @@ class Sankey extends Chart
 
 		redraw();
 	}
-
-	
 
 	function redraw()
 	{
@@ -179,7 +184,7 @@ class Sankey extends Chart
 		padBefore = 0.0;
 		for(node in layout.layer(0))
 		{
-			var extra = Math.min(nheight(node.data.extrain), extraWidth);
+			var extra = Math.min(nheight(node.data.entry), extraWidth);
 			for(edge in node.negatives())
 			{
 				var tail = edge.tail,
@@ -196,11 +201,11 @@ class Sankey extends Chart
 		padAfter = 0.0;
 		for(node in layout.layer(layout.length-1))
 		{
-			var extra = Math.min(nheight(node.data.extraout), extraWidth);
+			var extra = Math.min(nheight(node.data.exit), extraWidth);
 			for(edge in node.positives())
 			{
 				var head = edge.head,
-					childweight = hafter(edge.id, node.positives()) + nheight(edge.weight) + Math.min(nheight(node.data.extraout), extraWidth);
+					childweight = hafter(edge.id, node.positives()) + nheight(edge.weight) + Math.min(nheight(node.data.exit), extraWidth);
 				if(childweight > extra)
 					extra = childweight;
 			}
@@ -235,12 +240,12 @@ class Sankey extends Chart
 				return;
 			var weight = nheight(edge.weight),
 				hook   = new HookConnectorArea(edgescontainer, "fill fill-"+styleEdgeBackward, "stroke stroke-"+styleEdgeBackward),
-				before = hafter(edge.id, edge.tail.positives()) + Math.min(extraWidth, nheight(edge.tail.data.extraout)),
+				before = hafter(edge.id, edge.tail.positives()) + Math.min(extraWidth, nheight(edge.tail.data.exit)),
 				after  = hafter(edge.id, edge.head.negatives()),
 				x1 = layerWidth / 2 + xlayer(celltail.layer),
 				x2 = - layerWidth / 2 + xlayer(cellhead.layer),
 				y1 = ynode(edge.tail) + ydiagonal(edge.id, edge.tail.positives()),
-				y2 = nheight(edge.head.data.extrain) + ynode(edge.head) + ydiagonal(edge.id, edge.head.negatives());
+				y2 = nheight(edge.head.data.entry) + ynode(edge.head) + ydiagonal(edge.id, edge.head.negatives());
 			addToMap(edge.id, "edge", hook.g);
 			hook.update(
 				x1,
@@ -253,6 +258,12 @@ class Sankey extends Chart
 				after
 			);
 			hook.g.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, backedgesy + weight / 2, edge));
+			if(null != edgeClass)
+			{
+				var cls = edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight }, dependentVariable.stats);
+				if(null != cls)
+					hook.addClass(cls);
+			}
 			RGColors.storeColorForSelection(hook.g, "fill", hook.area.style("fill").get());
 			if(null != clickEdge)
 			{
@@ -278,7 +289,7 @@ class Sankey extends Chart
 //				Iterators.array(tail.positives()).order(function(a, b){
 //					return Floats.compare(b.weight, a.weight);
 //				}).iterator()),
-				y2 = ynode(head) + nheight(head.data.extrain) + ydiagonal(edge.id, head.negatives()),
+				y2 = ynode(head) + nheight(head.data.entry) + ydiagonal(edge.id, head.negatives()),
 				weight = nheight(edge.weight),
 				diagonal = new DiagonalArea(edgescontainer, "fill fill-"+styleEdgeForward, "stroke stroke-"+styleEdgeForward);
 			diagonal.update(
@@ -291,6 +302,12 @@ class Sankey extends Chart
 				weight,
 				weight
 			);
+			if(null != edgeClass)
+			{
+				var cls = edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight }, dependentVariable.stats);
+				if(null != cls)
+					diagonal.addClass(cls);
+			}
 			addToMap(edge.id, "edge", diagonal.g);
 			diagonal.g.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, (y1 + y2 + weight) / 2, edge));
 			RGColors.storeColorForSelection(diagonal.g, "fill", diagonal.area.style("fill").get());
@@ -300,13 +317,13 @@ class Sankey extends Chart
 			}
 		});
 
-		// fall-off
+		// exit
 		function normMin(v : Float) return Math.max(0, Math.min(v - 3, extraRadius));
 		layout.each(function(cell, node) {
-			if(node.data.extraout <= 0 || extraWidth <= 0)
+			if(node.data.exit <= 0 || extraWidth <= 0 || (null != displayExit && !displayExit(node.data, dependentVariable.stats)))
 				return;
-			var elbow = new ElbowArea(edgescontainer, "fill fill-"+styleExtraOut, "stroke stroke-"+styleExtraOut),
-				extra = nheight(node.data.extraout),
+			var elbow = new ElbowArea(edgescontainer, "fill fill-"+styleexit, "stroke stroke-"+styleexit),
+				extra = nheight(node.data.exit),
 				x = layerWidth / 2 + xlayer(cell.layer),
 				y = ynode(node) + ydiagonal(null, node.positives()),
 				minr = normMin(extra);
@@ -324,7 +341,7 @@ class Sankey extends Chart
 			if(null != labelEdge)
 			{
 				var label,
-					text = labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.extraout }, dependentVariable.stats),
+					text = labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.exit }, dependentVariable.stats),
 					nodeSpacing = 0;
 
 				label = new Label(edgescontainer, true, true, false);
@@ -340,21 +357,27 @@ class Sankey extends Chart
 					label.destroy();
 				}
 			}
-			elbow.g.onNode("mouseover", callback(onmouseoverextraout, x + minr + (-minr + Math.min(extraWidth, extra)) / 2, ynode(node) + hnode(node) + minr + extraHeight, node));
+			elbow.g.onNode("mouseover", callback(onmouseoverexit, x + minr + (-minr + Math.min(extraWidth, extra)) / 2, ynode(node) + hnode(node) + minr + extraHeight, node));
+			if(null != edgeClass)
+			{
+				var cls = edgeClass({ head : null, tail : node.data, edgeweight : node.data.exit }, dependentVariable.stats);
+				if(null != cls)
+					elbow.addClass(cls);
+			}
 			RGColors.storeColorForSelection(elbow.g, "fill", elbow.area.style("fill").get());
 			if(null != clickEdge)
 			{
 				elbow.g.onNode("click", callback(edgeClickWithNode, node, true));
 			}
-			addToMap(node.id, "extraout", elbow.g);
+			addToMap(node.id, "exit", elbow.g);
 		});
 
-		// extra-in
+		// entry
 		layout.each(function(cell, node) {
-			if(node.data.extrain <= 0 || extraWidth <= 0)
+			if(node.data.entry <= 0 || extraWidth <= 0 || (null != displayEntry && !displayEntry(node.data, dependentVariable.stats)))
 				return;
-			var elbow = new ElbowArea(edgescontainer, "fill fill-"+styleExtraIn, "stroke stroke-"+styleExtraIn),
-				extra = nheight(node.data.extrain),
+			var elbow = new ElbowArea(edgescontainer, "fill fill-"+styleentry, "stroke stroke-"+styleentry),
+				extra = nheight(node.data.entry),
 				minr = normMin(extra),
 				x = - layerWidth / 2 + xlayer(cell.layer);
 			elbow.update(
@@ -371,7 +394,7 @@ class Sankey extends Chart
 			if(null != labelEdge)
 			{
 				var label,
-					text = labelEdge({ head : null, tail : node, nodeweight : node.data.weight, edgeweight : node.data.extrain }, dependentVariable.stats),
+					text = labelEdge({ tail : null, head : node, nodeweight : node.data.weight, edgeweight : node.data.entry }, dependentVariable.stats),
 					nodeSpacing = 0;
 
 				label = new Label(edgescontainer, true, true, false);
@@ -387,16 +410,22 @@ class Sankey extends Chart
 					label.destroy();
 				}
 			}
-			elbow.g.onNode("mouseover", callback(onmouseoverextrain,
+			elbow.g.onNode("mouseover", callback(onmouseoverentry,
 				x  - minr + (minr - Math.min(extraWidth, extra)) / 2,
 				ynode(node) - minr - extraHeight,
 				node));
+			if(null != edgeClass)
+			{
+				var cls = edgeClass({ head : node.data, tail : null, edgeweight : node.data.entry }, dependentVariable.stats);
+				if(null != cls)
+					elbow.addClass(cls);
+			}
 			RGColors.storeColorForSelection(elbow.g, "fill", elbow.area.style("fill").get());
 			if(null != clickEdge)
 			{
 				elbow.g.onNode("click", callback(edgeClickWithNode, node, false));
 			}
-			addToMap(node.id, "extrain", elbow.g);
+			addToMap(node.id, "entry", elbow.g);
 		});
 
 		// edge labels
@@ -461,8 +490,15 @@ class Sankey extends Chart
 				.attr("y").float(0)
 				.attr("width").float(Math.round(layerWidth))
 				.attr("height").floatf(hnode);
+
 			cont.each(function(node, _) {
 				addToMap(node.id, "node", Selection.current);
+				if(null != nodeClass)
+				{
+					var cls = nodeClass(node.data, dependentVariable.stats);
+					if(null != cls)
+						Selection.current.classed().add(cls);
+				}
 			});
 			RGColors.storeColorForSelection(cast cont, "fill", rect.style("fill").get());
 
@@ -597,18 +633,18 @@ class Sankey extends Chart
 			maphi.set(key, mapelements.get(key).classed().add("over"));
 		}
 
-		function hiextrain(id : Int)
+		function hientry(id : Int)
 		{
-			var key = "extrain:"+id,
+			var key = "entry:"+id,
 				extra = mapelements.get(key);
 			if(null == extra)
 				return;
 			maphi.set(key, extra.classed().add("over"));
 		}
 
-		function hiextraout(id : Int)
+		function hiexit(id : Int)
 		{
-			var key = "extraout:"+id,
+			var key = "exit:"+id,
 				extra = mapelements.get(key);
 			if(null == extra)
 				return;
@@ -634,7 +670,7 @@ class Sankey extends Chart
 			if(ishi(node.id, "node"))
 				return;
 			hielement(node.id, "node");
-			hiextraout(node.id);
+			hiexit(node.id);
 			for(edge in node.positives())
 				hiedgep(edge);
 		}
@@ -656,7 +692,7 @@ class Sankey extends Chart
 			if(ishi(node.id, "node"))
 				return;
 			hielement(node.id, "node");
-			hiextrain(node.id);
+			hientry(node.id);
 		}
 
 		if(type == "edge")
@@ -667,7 +703,7 @@ class Sankey extends Chart
 		{
 			hinodep(layout.graph.nodes.get(id));
 			hinoden(layout.graph.nodes.get(id));
-			hiextrain(id);
+			hientry(id);
 		}
 		// descend
 
@@ -695,7 +731,7 @@ class Sankey extends Chart
 		return {
 			tail : out ? node.data.dp : null,
 			head : out ? null : node.data.dp,
-			edgeweight : out ? node.data.extraout : node.data.extrain,
+			edgeweight : out ? node.data.exit : node.data.entry,
 			nodeweight : node.data.weight
 		};
 	}
@@ -777,7 +813,7 @@ class Sankey extends Chart
 		}
 	}
 
-	function onmouseoverextrain(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function onmouseoverentry(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
 	{
 		highlight(node.id, "node");
 		if(null == labelEdgeOver)
@@ -793,7 +829,7 @@ class Sankey extends Chart
 		}
 	}
 
-	function onmouseoverextraout(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function onmouseoverexit(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
 	{
 		highlight(node.id, "node");
 		if(null == labelEdgeOver)
@@ -811,6 +847,8 @@ class Sankey extends Chart
 
 	function nheight(v : Float)
 	{
+		if(0 == v)
+			return 0;
 		return Math.round(v / maxweight * availableheight);
 	}
 
@@ -886,6 +924,6 @@ typedef NodeData =
 	dp       : DataPoint,
 	id       : String,
 	weight   : Float,
-	extrain  : Float,
-	extraout : Float
+	entry    : Float,
+	exit     : Float
 }

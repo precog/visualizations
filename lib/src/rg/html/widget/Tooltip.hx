@@ -5,6 +5,13 @@ import thx.js.Selection;
 
 class Tooltip
 {
+	public static var instance(getInstance, null) : Tooltip;
+	static function getInstance()
+	{
+		if(null == instance)
+			instance = new Tooltip();
+		return instance;
+	}
 	static inline var DEFAULT_DISTANCE = 0;
 	static inline var DEFAULT_ANCHOR = "bottomright";
 	var tooltip : Selection;

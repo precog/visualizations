@@ -19,6 +19,11 @@ class DiagonalArea
 		after    = g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder ? "" : " " + classborder));
 	}
 
+	public function addClass(cls : String)
+	{
+		g.classed().add(cls);
+	}
+
 	public function update(x1 : Float, y1 : Float, x2 : Float, y2 : Float, sw : Float, ew : Float)
 	{
 

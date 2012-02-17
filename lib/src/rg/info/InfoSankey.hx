@@ -32,6 +32,11 @@ class InfoSankey
 	public var clickEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> Void;
 	public var layoutmethod : String;
 
+	public var nodeclass : Null<DataPoint -> Stats<Dynamic> -> String>;
+	public var edgeclass : Null<DataPoint -> Stats<Dynamic> -> String>;
+	public var displayentry : Null<DataPoint -> Stats<Dynamic> -> Bool>;
+	public var displayexit : Null<DataPoint -> Stats<Dynamic> -> Bool>;
+
 	public function new()
 	{
 		label = new InfoLabelSankey();
@@ -158,6 +163,34 @@ class InfoSankey
 				field : "layoutmethod",
 				validator : function(v) return Std.is(v, String),
 				filter : null
+			}, {
+				field : "nodeclass",
+				validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+				filter : function(v) return [{
+					field : "nodeclass",
+					value : Std.is(v, String) ? function(_,_) return v : cast v
+				}]
+			}, {
+				field : "edgeclass",
+				validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+				filter : function(v) return [{
+					field : "edgeclass",
+					value : Std.is(v, String) ? function(_,_) return v : cast v
+				}]
+			}, {
+				field : "displayentry",
+				validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+				filter : function(v) return [{
+					field : "displayentry",
+					value : Std.is(v, String) ? function(_,_) return v : cast v
+				}]
+			}, {
+				field : "displayexit",
+				validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+				filter : function(v) return [{
+					field : "displayexit",
+					value : Std.is(v, String) ? function(_,_) return v : cast v
+				}]
 			}];
 	}
 }

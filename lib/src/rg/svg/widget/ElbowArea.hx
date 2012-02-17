@@ -16,6 +16,11 @@ class ElbowArea
 		inner = g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder ? "" : " " + classborder));
 	}
 
+	public function addClass(cls : String)
+	{
+		g.classed().add(cls);
+	}
+
 	public function update(orientation : Orientation, weight : Float, x : Float, y : Float, minradius = 3.0, maxradius = 16.0, before = 0.0, after = 10.0)
 	{
 //		before = before < 0 ? 0 : before;

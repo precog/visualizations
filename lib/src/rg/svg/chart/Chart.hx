@@ -49,7 +49,7 @@ class Chart extends Layer
 	{
 		if (null != labelDataPointOver)
 		{
-			tooltip = new Tooltip();
+			tooltip = Tooltip.instance;
 		}
 		resize();
 	}

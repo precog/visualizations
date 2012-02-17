@@ -24,6 +24,11 @@ class Panel
 		_layers = [];
 	}
 
+	public function toString()
+	{
+		return Type.getClassName(Type.getClass(this)).split('.').pop();
+	}
+
 	function addLayer(layer : Layer)
 	{
 		_layers.remove(layer);

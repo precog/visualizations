@@ -21,6 +21,11 @@ class HookConnectorArea
 		lower = g.append("svg:path").attr("class").string("hook-stroke lower" + (null == classborder ? "" : " " + classborder));
 	}
 
+	public function addClass(cls : String)
+	{
+		g.classed().add(cls);
+	}
+
 	public function update(x1 : Float, y1 : Float, x2 : Float, y2 : Float, weight : Float, yreference : Float, before : Float, after : Float)
 	{
 		var min = Math.min(5, weight),

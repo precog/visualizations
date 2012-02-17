@@ -40,7 +40,7 @@ class JSBridge
 			storage = BrowserStorage.sessionStorage()
 		else
 			storage = new MemoryStorage();
-trace(untyped __js__("ReportGrid"));
+
 		var r : Dynamic = untyped __js__("(!ReportGrid) ? (ReportGrid = {}) : ReportGrid"),
 			timeout = 120,
 			executor : IExecutorReportGrid = new ReportGridExecutorCache(r, storage, timeout);

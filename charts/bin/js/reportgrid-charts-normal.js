@@ -1564,7 +1564,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.1.7098"};
+	r.info.charts = { version : "1.4.2.7180"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -2533,7 +2533,7 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		this.panely = coords.y;
 	}
 	,init: function() {
-		if(null != this.labelDataPointOver) this.tooltip = new rg.html.widget.Tooltip();
+		if(null != this.labelDataPointOver) this.tooltip = rg.html.widget.Tooltip.getInstance();
 		this.resize();
 	}
 	,setVerticalChartOffset: function(offset) {
@@ -8699,7 +8699,7 @@ rg.visualization.VisualizationSankey.defaultNodef = function(nodef) {
 	if(nodef == null) {
 		var dummynodeid = 0;
 		return function(edge) {
-			return { id : "#" + ++dummynodeid, weight : edge.weight, extrain : 0.0, extraout : 0.0};
+			return { id : "#" + ++dummynodeid, weight : edge.weight, entry : 0.0, exit : 0.0};
 		};
 	} else return nodef;
 }
@@ -8762,11 +8762,22 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		this.chart.imagePath = this.info.imagePath;
 		this.chart.click = this.info.click;
 		this.chart.clickEdge = this.info.clickEdge;
+		this.chart.nodeClass = this.info.nodeclass;
+		this.chart.edgeClass = this.info.edgeclass;
+		this.chart.displayEntry = this.info.displayentry;
+		this.chart.displayExit = this.info.displayexit;
 		this.chart.init();
 		this.chart.data(layout);
 	}
 	,layoutDataWithMap: function(data,map,idf,weightf,edgesf) {
 		var graph = this.createGraph(data,idf,weightf,edgesf);
+		var layers = map.layers.map(function(layer,_) {
+			return layer.map(function(id,_1) {
+				var n = graph.nodes.getById(id);
+				if(null == n) n = graph.nodes.create({ id : id, weight : 0.0, entry : 0.0, exit : 0.0, dp : { id : id}});
+				return n.id;
+			});
+		});
 		var _g = 0, _g1 = map.dummies;
 		while(_g < _g1.length) {
 			var path = _g1[_g];
@@ -8775,7 +8786,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 			var _g3 = 1, _g2 = path.length - 1;
 			while(_g3 < _g2) {
 				var i = _g3++;
-				var id = path[i], d = { id : id, weight : weight, extrain : 0.0, extraout : 0.0, dp : null};
+				var id = path[i], d = { id : id, weight : weight, entry : 0.0, exit : 0.0, dp : null};
 				npath.push(graph.nodes.create(d));
 			}
 			npath.push(head);
@@ -8786,14 +8797,14 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 			}
 			if(null != edge) edge.graph.edges._remove(edge);
 		}
-		var layers = map.layers.map(function(layer,_) {
+		var layers1 = map.layers.map(function(layer,_) {
 			return layer.map(function(id,_1) {
 				var n = graph.nodes.getById(id);
-				if(null == n) n = graph.nodes.create({ id : id, weight : 0.0, extrain : 0.0, extraout : 0.0, dp : { id : id}});
+				if(null == n) n = graph.nodes.create({ id : id, weight : 0.0, entry : 0.0, exit : 0.0, dp : { id : id}});
 				return n.id;
 			});
 		});
-		return new rg.graph.GraphLayout(graph,layers);
+		return new rg.graph.GraphLayout(graph,layers1);
 	}
 	,createGraph: function(data,idf,weightf,edgesf) {
 		idf = rg.visualization.VisualizationSankey.defaultIdf(idf);
@@ -8805,7 +8816,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		while(_g < nodes.length) {
 			var dp = nodes[_g];
 			++_g;
-			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), extrain : 0.0, extraout : 0.0});
+			graph.nodes.create({ dp : dp, id : idf(dp), weight : weightf(dp), entry : 0.0, exit : 0.0});
 		}
 		var _g = 0;
 		while(_g < edges.length) {
@@ -8819,8 +8830,8 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 			var node = $it0.next();
 			var win = node.negativeWeight(), wout = node.positiveWeight();
 			if(node.data.weight == 0) node.data.weight = win;
-			node.data.extrain = Math.max(0,node.data.weight - win);
-			node.data.extraout = Math.max(0,node.data.weight - wout);
+			node.data.entry = Math.max(0,node.data.weight - win);
+			node.data.exit = Math.max(0,node.data.weight - wout);
 		}
 		return graph;
 	}
@@ -10629,7 +10640,7 @@ rg.svg.panel.Panels.absolutePos = function(panel) {
 		p = p.parent;
 	}
 	var node = rg.svg.panel.Panels.htmlContainer(panel);
-	var pos = rg.util.Js.findPosition(node);
+	var pos = node != null?rg.util.Js.findPosition(node):{ x : 0, y : 0};
 	pos.x += x;
 	pos.y += y;
 	return pos;
@@ -10638,7 +10649,7 @@ rg.svg.panel.Panels.htmlContainer = function(panel) {
 	var node = panel.g.node();
 	do {
 	} while(null != Reflect.field(node = node.ownerSVGElement,"ownerSVGElement"));
-	return node.parentNode;
+	return null == node?null:node.parentNode;
 }
 rg.svg.panel.Panels.boundingBox = function(panel,ancestor) {
 	var p = panel, x = 0, y = 0;
@@ -13098,6 +13109,12 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.anchordistance = 0;
 }
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
+rg.html.widget.Tooltip.__properties__ = {get_instance:"getInstance"}
+rg.html.widget.Tooltip.instance = null;
+rg.html.widget.Tooltip.getInstance = function() {
+	if(null == rg.html.widget.Tooltip.instance) rg.html.widget.Tooltip.instance = new rg.html.widget.Tooltip();
+	return rg.html.widget.Tooltip.instance;
+}
 rg.html.widget.Tooltip.prototype = {
 	tooltip: null
 	,_anchor: null
@@ -13161,7 +13178,7 @@ rg.html.widget.Tooltip.prototype = {
 			this.container.style("left").string(-this.anchordistance - width + "px");
 			break;
 		default:
-			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 147, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
+			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 154, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
 		}
 		switch(type) {
 		case "top":case "topleft":case "topright":
@@ -13967,6 +13984,9 @@ rg.svg.widget.HookConnectorArea.prototype = {
 	,area: null
 	,upper: null
 	,lower: null
+	,addClass: function(cls) {
+		this.g.classed().add(cls);
+	}
 	,update: function(x1,y1,x2,y2,weight,yreference,before,after) {
 		var min = Math.min(5,weight), upperp = this.createPath(x1,y1,x2,y2,y1 > yreference?yreference:yreference + weight,before + weight,after + weight,weight,weight), lowerp = this.createPath(x2,y2 + weight,x1,y1 + weight,y1 > yreference?yreference - weight:yreference,-after,-before,-min,min);
 		this.upper.attr("d").string(upperp);
@@ -15733,8 +15753,8 @@ rg.svg.chart.Sankey = $hxClasses["rg.svg.chart.Sankey"] = function(panel) {
 	this.imageSpacing = 0;
 	this.labelNodeSpacing = 4;
 	this.styleNode = "0";
-	this.styleExtraIn = "4";
-	this.styleExtraOut = "6";
+	this.styleentry = "4";
+	this.styleexit = "6";
 	this.styleEdgeBackward = "3";
 	this.styleEdgeForward = "0";
 }
@@ -15757,6 +15777,10 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,labelNode: null
 	,imagePath: null
 	,clickEdge: null
+	,nodeClass: null
+	,edgeClass: null
+	,displayEntry: null
+	,displayExit: null
 	,layout: null
 	,maxweight: null
 	,availableheight: null
@@ -15764,8 +15788,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,padAfter: null
 	,layerstarty: null
 	,styleNode: null
-	,styleExtraIn: null
-	,styleExtraOut: null
+	,styleentry: null
+	,styleexit: null
 	,styleEdgeBackward: null
 	,styleEdgeForward: null
 	,dependentVariable: null
@@ -15780,7 +15804,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var nodes = Arrays.filter(Iterators.filter(this.layout.graph.nodes.iterator(),function(node) {
 			return me.isdummy(node);
 		}),function(node) {
-			var edge = node.graph.edges.positives(node).next(), cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			var edge = node.graph.edges.positives(node).next();
+			if(null == edge) return false;
+			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
 			return celltail.layer > cellhead.layer;
 		});
 		var layers = this.layout.layers();
@@ -15852,7 +15878,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		while(_g < _g1.length) {
 			var node = _g1[_g];
 			++_g;
-			var extra = Math.min(this.nheight(node.data.extrain),this.extraWidth);
+			var extra = Math.min(this.nheight(node.data.entry),this.extraWidth);
 			var $it1 = node.graph.edges.negatives(node);
 			while( $it1.hasNext() ) {
 				var edge = $it1.next();
@@ -15867,11 +15893,11 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		while(_g < _g1.length) {
 			var node = _g1[_g];
 			++_g;
-			var extra = Math.min(this.nheight(node.data.extraout),this.extraWidth);
+			var extra = Math.min(this.nheight(node.data.exit),this.extraWidth);
 			var $it2 = node.graph.edges.positives(node);
 			while( $it2.hasNext() ) {
 				var edge = $it2.next();
-				var head = edge.head, childweight = this.hafter(edge.id,node.graph.edges.positives(node)) + this.nheight(edge.weight) + Math.min(this.nheight(node.data.extraout),this.extraWidth);
+				var head = edge.head, childweight = this.hafter(edge.id,node.graph.edges.positives(node)) + this.nheight(edge.weight) + Math.min(this.nheight(node.data.exit),this.extraWidth);
 				if(childweight > extra) extra = childweight;
 			}
 			if(extra > this.padAfter) this.padAfter = extra;
@@ -15887,7 +15913,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			if(edge.weight <= 0) return;
 			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
 			if(cellhead.layer > celltail.layer) return;
-			var weight = me.nheight(edge.weight), hook = new rg.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.extraWidth,me.nheight(edge.tail.data.extraout)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.extrain) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
+			var weight = me.nheight(edge.weight), hook = new rg.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.extraWidth,me.nheight(edge.tail.data.exit)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.entry) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
 			me.addToMap(edge.id,"edge",hook.g);
 			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
 			hook.g.onNode("mouseover",(function(f,a1,a2,a3) {
@@ -15895,6 +15921,10 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					return f(a1,a2,a3,a4,a5);
 				};
 			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy + weight / 2,edge));
+			if(null != me.edgeClass) {
+				var cls = me.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},me.dependentVariable.stats);
+				if(null != cls) hook.addClass(cls);
+			}
 			rg.util.RGColors.storeColorForSelection(hook.g,"fill",hook.area.style("fill").get());
 			if(null != me.clickEdge) hook.g.onNode("click",(function(f,a1) {
 				return function(a2,a3) {
@@ -15907,8 +15937,12 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			if(edge.weight <= 0) return;
 			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail);
 			if(cellhead.layer <= celltail.layer) return;
-			var x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.extrain) + me.ydiagonal(edge.id,head.graph.edges.negatives(head)), weight = me.nheight(edge.weight), diagonal = new rg.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
+			var x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.entry) + me.ydiagonal(edge.id,head.graph.edges.negatives(head)), weight = me.nheight(edge.weight), diagonal = new rg.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
 			diagonal.update(x1,y1,x2,y2,weight,weight);
+			if(null != me.edgeClass) {
+				var cls = me.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},me.dependentVariable.stats);
+				if(null != cls) diagonal.addClass(cls);
+			}
 			me.addToMap(edge.id,"edge",diagonal.g);
 			diagonal.g.onNode("mouseover",(function(f,a1,a2,a3) {
 				return function(a4,a5) {
@@ -15926,11 +15960,11 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			return Math.max(0,Math.min(v - 3,me.extraRadius));
 		};
 		this.layout.each(function(cell,node) {
-			if(node.data.extraout <= 0 || me.extraWidth <= 0) return;
-			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraOut,"stroke stroke-" + me.styleExtraOut), extra = me.nheight(node.data.extraout), x = me.layerWidth / 2 + me.xlayer(cell.layer), y = me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
+			if(node.data.exit <= 0 || me.extraWidth <= 0 || null != me.displayExit && !me.displayExit(node.data,me.dependentVariable.stats)) return;
+			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleexit,"stroke stroke-" + me.styleexit), extra = me.nheight(node.data.exit), x = me.layerWidth / 2 + me.xlayer(cell.layer), y = me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
 			elbow.update(rg.svg.widget.Orientation.RightBottom,extra,x,y + extra,minr,me.extraWidth,0,me.extraHeight);
 			if(null != me.labelEdge) {
-				var label, text = me.labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.extraout},me.dependentVariable.stats), nodeSpacing = 0;
+				var label, text = me.labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.exit},me.dependentVariable.stats), nodeSpacing = 0;
 				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 				label.addClass("edge");
 				label.place(x,y + extra / 2,0);
@@ -15942,21 +15976,25 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				return function(a4,a5) {
 					return f(a1,a2,a3,a4,a5);
 				};
-			})(me.onmouseoverextraout.$bind(me),x + minr + (-minr + Math.min(me.extraWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.extraHeight,node));
+			})(me.onmouseoverexit.$bind(me),x + minr + (-minr + Math.min(me.extraWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.extraHeight,node));
+			if(null != me.edgeClass) {
+				var cls = me.edgeClass({ head : null, tail : node.data, edgeweight : node.data.exit},me.dependentVariable.stats);
+				if(null != cls) elbow.addClass(cls);
+			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
 			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
 				return function(a3,a4) {
 					return f(a1,a2,a3,a4);
 				};
 			})(me.edgeClickWithNode.$bind(me),node,true));
-			me.addToMap(node.id,"extraout",elbow.g);
+			me.addToMap(node.id,"exit",elbow.g);
 		});
 		this.layout.each(function(cell,node) {
-			if(node.data.extrain <= 0 || me.extraWidth <= 0) return;
-			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleExtraIn,"stroke stroke-" + me.styleExtraIn), extra = me.nheight(node.data.extrain), minr = normMin(extra), x = -me.layerWidth / 2 + me.xlayer(cell.layer);
+			if(node.data.entry <= 0 || me.extraWidth <= 0 || null != me.displayEntry && !me.displayEntry(node.data,me.dependentVariable.stats)) return;
+			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleentry,"stroke stroke-" + me.styleentry), extra = me.nheight(node.data.entry), minr = normMin(extra), x = -me.layerWidth / 2 + me.xlayer(cell.layer);
 			elbow.update(rg.svg.widget.Orientation.LeftTop,extra,x,me.ynode(node),minr,me.extraWidth,0,me.extraHeight);
 			if(null != me.labelEdge) {
-				var label, text = me.labelEdge({ head : null, tail : node, nodeweight : node.data.weight, edgeweight : node.data.extrain},me.dependentVariable.stats), nodeSpacing = 0;
+				var label, text = me.labelEdge({ tail : null, head : node, nodeweight : node.data.weight, edgeweight : node.data.entry},me.dependentVariable.stats), nodeSpacing = 0;
 				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 				label.addClass("edge");
 				label.place(x,me.ynode(node) + extra / 2,0);
@@ -15968,14 +16006,18 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				return function(a4,a5) {
 					return f(a1,a2,a3,a4,a5);
 				};
-			})(me.onmouseoverextrain.$bind(me),x - minr + (minr - Math.min(me.extraWidth,extra)) / 2,me.ynode(node) - minr - me.extraHeight,node));
+			})(me.onmouseoverentry.$bind(me),x - minr + (minr - Math.min(me.extraWidth,extra)) / 2,me.ynode(node) - minr - me.extraHeight,node));
+			if(null != me.edgeClass) {
+				var cls = me.edgeClass({ head : node.data, tail : null, edgeweight : node.data.entry},me.dependentVariable.stats);
+				if(null != cls) elbow.addClass(cls);
+			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
 			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
 				return function(a3,a4) {
 					return f(a1,a2,a3,a4);
 				};
 			})(me.edgeClickWithNode.$bind(me),node,false));
-			me.addToMap(node.id,"extrain",elbow.g);
+			me.addToMap(node.id,"entry",elbow.g);
 		});
 		if(null != this.labelEdge) edges.forEach(function(edge,_) {
 			if(edge.weight <= 0) return;
@@ -16004,6 +16046,10 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this));
 			cont.each(function(node,_) {
 				me.addToMap(node.id,"node",thx.js.Dom.selectNode(thx.js.Group.current));
+				if(null != me.nodeClass) {
+					var cls = me.nodeClass(node.data,me.dependentVariable.stats);
+					if(null != cls) thx.js.Dom.selectNode(thx.js.Group.current).classed().add(cls);
+				}
 			});
 			rg.util.RGColors.storeColorForSelection(cont,"fill",rect.style("fill").get());
 			cont.append("svg:line").attr("class").stringf(function(n,_) {
@@ -16091,13 +16137,13 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var key = type1 + ":" + id1;
 			me.maphi.set(key,me.mapelements.get(key).classed().add("over"));
 		};
-		var hiextrain = function(id1) {
-			var key = "extrain:" + id1, extra = me.mapelements.get(key);
+		var hientry = function(id1) {
+			var key = "entry:" + id1, extra = me.mapelements.get(key);
 			if(null == extra) return;
 			me.maphi.set(key,extra.classed().add("over"));
 		};
-		var hiextraout = function(id1) {
-			var key = "extraout:" + id1, extra = me.mapelements.get(key);
+		var hiexit = function(id1) {
+			var key = "exit:" + id1, extra = me.mapelements.get(key);
 			if(null == extra) return;
 			me.maphi.set(key,extra.classed().add("over"));
 		};
@@ -16112,7 +16158,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		hinodep = function(node) {
 			if(ishi(node.id,"node")) return;
 			hielement(node.id,"node");
-			hiextraout(node.id);
+			hiexit(node.id);
 			var $it1 = node.graph.edges.positives(node);
 			while( $it1.hasNext() ) {
 				var edge = $it1.next();
@@ -16132,7 +16178,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			}
 			if(ishi(node.id,"node")) return;
 			hielement(node.id,"node");
-			hiextrain(node.id);
+			hientry(node.id);
 		};
 		if(type == "edge") {
 			hiedgep(this.layout.graph.edges.get(id));
@@ -16140,7 +16186,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		} else if(type == "node") {
 			hinodep(this.layout.graph.nodes.get(id));
 			hinoden(this.layout.graph.nodes.get(id));
-			hiextrain(id);
+			hientry(id);
 		}
 	}
 	,edgeData: function(edge) {
@@ -16150,7 +16196,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		return { head : head.data.dp, tail : tail.data.dp, edgeweight : edge.weight, nodeweight : tail.data.weight};
 	}
 	,edgeDataWithNode: function(node,out) {
-		return { tail : out?node.data.dp:null, head : out?null:node.data.dp, edgeweight : out?node.data.extraout:node.data.extrain, nodeweight : node.data.weight};
+		return { tail : out?node.data.dp:null, head : out?null:node.data.dp, edgeweight : out?node.data.exit:node.data.entry, nodeweight : node.data.weight};
 	}
 	,nodeclick: function(node,el,i) {
 		this.click(node.data.dp,this.dependentVariable.stats);
@@ -16196,7 +16242,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
 	}
-	,onmouseoverextrain: function(x,y,node,el,i) {
+	,onmouseoverentry: function(x,y,node,el,i) {
 		this.highlight(node.id,"node");
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,false),this.dependentVariable.stats);
@@ -16206,7 +16252,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.moveTooltip(x,y,rg.util.RGColors.extractColor(el));
 		}
 	}
-	,onmouseoverextraout: function(x,y,node,el,i) {
+	,onmouseoverexit: function(x,y,node,el,i) {
 		this.highlight(node.id,"node");
 		if(null == this.labelEdgeOver) return;
 		var text = this.labelEdgeOver(this.edgeDataWithNode(node,true),this.dependentVariable.stats);
@@ -16217,6 +16263,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		}
 	}
 	,nheight: function(v) {
+		if(0 == v) return 0;
 		return Math.round(v / this.maxweight * this.availableheight);
 	}
 	,ydiagonal: function(id,edges) {
@@ -16277,6 +16324,9 @@ rg.svg.panel.Panel.prototype = {
 	,g: null
 	,parent: null
 	,_layers: null
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)).split(".").pop();
+	}
 	,addLayer: function(layer) {
 		this._layers.remove(layer);
 		this._layers.push(layer);
@@ -18340,7 +18390,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,init: function() {
 		rg.svg.chart.Chart.prototype.init.call(this);
-		if(null == this.tooltip) this.tooltip = new rg.html.widget.Tooltip();
+		if(null == this.tooltip) this.tooltip = rg.html.widget.Tooltip.getInstance();
 		this.g.classed().add("geo");
 	}
 	,addMap: function(map,field) {
@@ -19445,6 +19495,9 @@ rg.svg.widget.DiagonalArea.prototype = {
 	,area: null
 	,before: null
 	,after: null
+	,addClass: function(cls) {
+		this.g.classed().add(cls);
+	}
 	,update: function(x1,y1,x2,y2,sw,ew) {
 		var top = this.diagonal.diagonal([y1,x1,y2,x2]), bottom = this.diagonal.diagonal([y2 + ew,x2,y1 + sw,x1]);
 		var path = top + "L" + bottom.substr(1) + "z";
@@ -20962,7 +21015,31 @@ rg.info.InfoSankey.filters = function() {
 		return [{ field : "layoutmap", value : v}];
 	}},{ field : "layoutmethod", validator : function(v) {
 		return Std["is"](v,String);
-	}, filter : null}];
+	}, filter : null},{ field : "nodeclass", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "nodeclass", value : Std["is"](v,String)?function(_,_1) {
+			return v;
+		}:v}];
+	}},{ field : "edgeclass", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "edgeclass", value : Std["is"](v,String)?function(_,_1) {
+			return v;
+		}:v}];
+	}},{ field : "displayentry", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "displayentry", value : Std["is"](v,String)?function(_,_1) {
+			return v;
+		}:v}];
+	}},{ field : "displayexit", validator : function(v) {
+		return Std["is"](v,String) || Reflect.isFunction(v);
+	}, filter : function(v) {
+		return [{ field : "displayexit", value : Std["is"](v,String)?function(_,_1) {
+			return v;
+		}:v}];
+	}}];
 }
 rg.info.InfoSankey.prototype = {
 	label: null
@@ -20985,6 +21062,10 @@ rg.info.InfoSankey.prototype = {
 	,click: null
 	,clickEdge: null
 	,layoutmethod: null
+	,nodeclass: null
+	,edgeclass: null
+	,displayentry: null
+	,displayexit: null
 	,__class__: rg.info.InfoSankey
 }
 rg.html.widget.DownloaderPositions = $hxClasses["rg.html.widget.DownloaderPositions"] = function() { }
@@ -25873,6 +25954,9 @@ rg.svg.widget.ElbowArea.prototype = {
 	,area: null
 	,outer: null
 	,inner: null
+	,addClass: function(cls) {
+		this.g.classed().add(cls);
+	}
 	,update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
 		if(after == null) after = 10.0;
 		if(before == null) before = 0.0;

@@ -42,7 +42,7 @@ class VisualizationSankey extends VisualizationSvg
 
 	override function feedData(data : Array<DataPoint>)
 	{
-//		trace(data);
+//trace(data);
 		chart.setVariables(independentVariables, dependentVariables, data);
 		if (null != title)
 		{
@@ -88,6 +88,11 @@ class VisualizationSankey extends VisualizationSvg
 		chart.click = info.click;
 		chart.clickEdge = info.clickEdge;
 
+		chart.nodeClass = info.nodeclass;
+		chart.edgeClass = info.edgeclass;
+		chart.displayEntry = info.displayentry;
+		chart.displayExit  = info.displayexit;
+
 		chart.init();
 		chart.data(layout);
 	}
@@ -95,6 +100,20 @@ class VisualizationSankey extends VisualizationSvg
 	function layoutDataWithMap(data : Array<DataPoint>, map : { layers : Array<Array<String>>, dummies : Array<Array<String>> }, ?idf : NodeData -> String, ?weightf : DataPoint -> Float, ?edgesf : DataPoint -> Array<{ head : String, tail : String, weight : Float}>)
 	{
 		var graph = createGraph(data, idf, weightf, edgesf);
+		var layers = map.layers.map(function(layer : Array<String>, _) return layer.map(function(id, _) {
+			var n = graph.nodes.getById(id);
+			if(null == n)
+			{
+				n = graph.nodes.create({
+					id : id,
+					weight : 0.0,
+					entry : 0.0,
+					exit : 0.0,
+					dp : { id : id }
+				});
+			}
+			return n.id;
+		}));
 
 		for(path in map.dummies)
 		{
@@ -111,8 +130,8 @@ class VisualizationSankey extends VisualizationSvg
 					d = {
 						id : id,
 						weight : weight,
-						extrain : 0.0,
-						extraout : 0.0,
+						entry : 0.0,
+						exit : 0.0,
 						dp : null
 					};
 				npath.push(graph.nodes.create(d));
@@ -127,7 +146,6 @@ class VisualizationSankey extends VisualizationSvg
 				edge.remove();
 		}
 
-
 		// convert layers
 		var layers = map.layers.map(function(layer : Array<String>, _) return layer.map(function(id, _) {
 			var n = graph.nodes.getById(id);
@@ -136,13 +154,14 @@ class VisualizationSankey extends VisualizationSvg
 				n = graph.nodes.create({
 					id : id,
 					weight : 0.0,
-					extrain : 0.0,
-					extraout : 0.0,
+					entry : 0.0,
+					exit : 0.0,
 					dp : { id : id }
 				});
 			}
 			return n.id;
 		}));
+
 		return new GraphLayout(graph, layers);
 	}
 
@@ -162,8 +181,8 @@ class VisualizationSankey extends VisualizationSvg
 				dp       : dp,
 				id       : idf(dp),
 				weight   : weightf(dp),
-				extrain  : 0.0,
-				extraout : 0.0
+				entry  : 0.0,
+				exit : 0.0
 			});
 		}
 
@@ -182,8 +201,8 @@ class VisualizationSankey extends VisualizationSvg
 			{
 				node.data.weight = win;
 			}
-			node.data.extrain  = Math.max(0, node.data.weight - win);
-			node.data.extraout = Math.max(0, node.data.weight - wout);
+			node.data.entry  = Math.max(0, node.data.weight - win);
+			node.data.exit = Math.max(0, node.data.weight - wout);
 		}
 
 		return graph;
@@ -283,8 +302,8 @@ class VisualizationSankey extends VisualizationSvg
 				return {
 					id : "#" + (++dummynodeid),
 					weight : edge.weight,
-					extrain : 0.0,
-					extraout : 0.0
+					entry : 0.0,
+					exit : 0.0
 				};
 			};
 		} else

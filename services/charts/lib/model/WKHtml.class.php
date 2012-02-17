@@ -16,7 +16,6 @@ class model_WKHtml {
 		php_io_File::putContent($t, $content);
 		$this->err = null;
 		$r = $this->renderUrl($t);
-		@unlink($t);
 		if(null === $r) {
 			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 31, "className" => "model.WKHtml", "methodName" => "render"))));
 		}
@@ -53,12 +52,11 @@ class model_WKHtml {
 	}
 	public function commandOptions() {
 		$args = new _hx_array(array());
-		$args->push("--use-xserver");
 		$args->push("--disable-local-file-access");
 		$args->push("--javascript-delay");
 		$args->push("" . model_WKHtml::$JS_DELAY);
 		$args->push("--user-style-sheet");
-		$args->push("./css/reset.css");
+		$args->push("/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css");
 		$args->push("--run-script");
 		$args->push(model_WKHtml::finalscript());
 		$cfg = $this->getWKConfig();

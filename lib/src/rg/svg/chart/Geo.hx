@@ -241,7 +241,7 @@ class Geo extends Chart
 		super.init();
 		if (null == tooltip)
 		{
-			tooltip = new Tooltip();
+			tooltip = Tooltip.instance;
 		}
 
 		g.classed().add("geo");

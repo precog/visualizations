@@ -1,357 +1,7205 @@
-var $_,$hxClasses=$hxClasses||{},$estr=function(){return js.Boot.__string_rec(this,"")};function $extend(a,b){function c(){}c.prototype=a;var e=new c,f;for(f in b)e[f]=b[f];return e}var rg=rg||{};if(!rg.data)rg.data={};if(!rg.data.reportgrid)rg.data.reportgrid={};rg.data.reportgrid.IExecutorReportGrid=$hxClasses["rg.data.reportgrid.IExecutorReportGrid"]=function(){};rg.data.reportgrid.IExecutorReportGrid.__name__=["rg","data","reportgrid","IExecutorReportGrid"];
-rg.data.reportgrid.IExecutorReportGrid.prototype={children:null,propertyCount:null,propertySeries:null,propertyMeans:null,propertyStandardDeviations:null,propertyValues:null,propertyValueCount:null,propertyValueSeries:null,searchCount:null,searchSeries:null,intersect:null,histogram:null,propertiesHistogram:null,__class__:rg.data.reportgrid.IExecutorReportGrid};var Types=$hxClasses.Types=function(){};Types.__name__=["Types"];Types.className=function(a){return Type.getClassName(Type.getClass(a)).split(".").pop()};
-Types.fullName=function(a){return Type.getClassName(Type.getClass(a))};Types.typeName=function(a){var b,a=Type["typeof"](a);switch(a[1]){case 0:b="null";break;case 1:b="Int";break;case 2:b="Float";break;case 3:b="Bool";break;case 5:b="function";break;case 6:b=Type.getClassName(a[2]);break;case 7:b=Type.getEnumName(a[2]);break;case 4:b="Object";break;case 8:b="Unknown"}return b};Types.hasSuperClass=function(a,b){for(;null!=a;){if(a==b)return!0;a=Type.getSuperClass(a)}return!1};
-Types.isAnonymous=function(a){return Reflect.isObject(a)&&null==Type.getClass(a)};Types.as=function(a,b){return Std.is(a,b)?a:null};Types.ifIs=function(a,b,c){Std.is(a,b)&&c(a);return a};Types.of=function(a,b){return Std.is(b,a)?b:null};Types.sameType=function(a,b){if(null==a&&null==b)return!0;if(null==a||null==b)return!1;var c=Type["typeof"](b);switch(c[1]){case 6:return Std.is(a,c[2]);case 7:return Std.is(a,c[2]);default:return Type["typeof"](a)==c}};
-Types.isPrimitive=function(a){var b,a=Type["typeof"](a);switch(a[1]){case 0:case 1:case 2:case 3:b=!0;break;case 5:case 7:case 4:case 8:b=!1;break;case 6:b="String"==Type.getClassName(a[2])}return b};Types.prototype={__class__:Types};var thx=thx||{};if(!thx.culture)thx.culture={};thx.culture.Info=$hxClasses["thx.culture.Info"]=function(){};thx.culture.Info.__name__=["thx","culture","Info"];
-thx.culture.Info.prototype={name:null,"native":null,english:null,iso2:null,iso3:null,pluralRule:null,toString:function(){return this["native"]+" ("+this.english+")"},__class__:thx.culture.Info};thx.culture.Culture=$hxClasses["thx.culture.Culture"]=function(){};thx.culture.Culture.__name__=["thx","culture","Culture"];thx.culture.Culture.__properties__={set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"};thx.culture.Culture.cultures=null;
-thx.culture.Culture.getCultures=function(){if(null==thx.culture.Culture.cultures)thx.culture.Culture.cultures=new Hash;return thx.culture.Culture.cultures};thx.culture.Culture.get=function(a){return thx.culture.Culture.getCultures().get(a.toLowerCase())};thx.culture.Culture.names=function(){return thx.culture.Culture.getCultures().keys()};thx.culture.Culture.exists=function(a){return thx.culture.Culture.getCultures().exists(a.toLowerCase())};thx.culture.Culture._defaultCulture=null;
-thx.culture.Culture.defaultCulture=null;thx.culture.Culture.getDefaultCulture=function(){return null==thx.culture.Culture._defaultCulture?thx.cultures.EnUS.getCulture():thx.culture.Culture._defaultCulture};thx.culture.Culture.setDefaultCulture=function(a){return thx.culture.Culture._defaultCulture=a};
-thx.culture.Culture.add=function(a){if(null==thx.culture.Culture._defaultCulture)thx.culture.Culture._defaultCulture=a;var b=a.name.toLowerCase();thx.culture.Culture.getCultures().exists(b)||thx.culture.Culture.getCultures().set(b,a)};thx.culture.Culture.loadAll=function(){};thx.culture.Culture.__super__=thx.culture.Info;
-thx.culture.Culture.prototype=$extend(thx.culture.Info.prototype,{language:null,date:null,englishCurrency:null,nativeCurrency:null,currencySymbol:null,currencyIso:null,englishRegion:null,nativeRegion:null,isMetric:null,digits:null,signNeg:null,signPos:null,symbolNaN:null,symbolPercent:null,symbolPermille:null,symbolNegInf:null,symbolPosInf:null,number:null,currency:null,percent:null,__class__:thx.culture.Culture});thx.culture.Language=$hxClasses["thx.culture.Language"]=function(){};
-thx.culture.Language.__name__=["thx","culture","Language"];thx.culture.Language.__properties__={get_languages:"getLanguages"};thx.culture.Language.languages=null;thx.culture.Language.getLanguages=function(){if(null==thx.culture.Language.languages)thx.culture.Language.languages=new Hash;return thx.culture.Language.languages};thx.culture.Language.get=function(a){return thx.culture.Language.getLanguages().get(a.toLowerCase())};thx.culture.Language.names=function(){return thx.culture.Language.getLanguages().keys()};
-thx.culture.Language.add=function(a){thx.culture.Language.getLanguages().exists(a.iso2)||thx.culture.Language.getLanguages().set(a.iso2,a)};thx.culture.Language.__super__=thx.culture.Info;thx.culture.Language.prototype=$extend(thx.culture.Info.prototype,{__class__:thx.culture.Language});var Hash=$hxClasses.Hash=function(){this.h={};if(null!=this.h.__proto__)this.h.__proto__=null,delete this.h.__proto__};Hash.__name__=["Hash"];
-Hash.prototype={h:null,set:function(a,b){this.h["$"+a]=b},get:function(a){return this.h["$"+a]},exists:function(a){try{return a="$"+a,this.hasOwnProperty.call(this.h,a)}catch(b){for(var c in this.h)if(c==a)return!0;return!1}},remove:function(a){if(!this.exists(a))return!1;delete this.h["$"+a];return!0},keys:function(){var a=[],b;for(b in this.h)a.push(b.substr(1));return a.iterator()},iterator:function(){return{ref:this.h,it:this.keys(),hasNext:function(){return this.it.hasNext()},next:function(){return this.ref["$"+
-this.it.next()]}}},toString:function(){var a=new StringBuf;a.b[a.b.length]="{";for(var b=this.keys();b.hasNext();){var c=b.next();a.b[a.b.length]=null==c?"null":c;a.b[a.b.length]=" => ";a.add(Std.string(this.get(c)));b.hasNext()&&(a.b[a.b.length]=", ")}a.b[a.b.length]="}";return a.b.join("")},__class__:Hash};if(!thx.languages)thx.languages={};
-thx.languages.En=$hxClasses["thx.languages.En"]=function(){this.name="en";this.english="English";this["native"]="English";this.iso2="en";this.iso3="eng";this.pluralRule=1;thx.culture.Language.add(this)};thx.languages.En.__name__=["thx","languages","En"];thx.languages.En.__properties__={get_language:"getLanguage"};thx.languages.En.language=null;thx.languages.En.getLanguage=function(){if(null==thx.languages.En.language)thx.languages.En.language=new thx.languages.En;return thx.languages.En.language};
-thx.languages.En.__super__=thx.culture.Language;thx.languages.En.prototype=$extend(thx.culture.Language.prototype,{__class__:thx.languages.En});if(!thx.culture.core)thx.culture.core={};
-thx.culture.core.DateTimeInfo=$hxClasses["thx.culture.core.DateTimeInfo"]=function(a,b,c,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,u,t){this.months=a;this.abbrMonths=b;this.days=c;this.abbrDays=e;this.shortDays=f;this.am=g;this.pm=h;this.separatorDate=i;this.separatorTime=j;this.firstWeekDay=k;this.patternYearMonth=l;this.patternMonthDay=m;this.patternDate=n;this.patternDateShort=o;this.patternDateRfc=p;this.patternDateTime=q;this.patternUniversal=r;this.patternSortable=s;this.patternTime=u;this.patternTimeShort=
-t};thx.culture.core.DateTimeInfo.__name__=["thx","culture","core","DateTimeInfo"];thx.culture.core.DateTimeInfo.prototype={months:null,abbrMonths:null,days:null,abbrDays:null,shortDays:null,am:null,pm:null,separatorDate:null,separatorTime:null,firstWeekDay:null,patternYearMonth:null,patternMonthDay:null,patternDate:null,patternDateShort:null,patternDateRfc:null,patternDateTime:null,patternUniversal:null,patternSortable:null,patternTime:null,patternTimeShort:null,__class__:thx.culture.core.DateTimeInfo};
-thx.culture.core.NumberInfo=$hxClasses["thx.culture.core.NumberInfo"]=function(a,b,c,e,f,g){this.decimals=a;this.decimalsSeparator=b;this.groups=c;this.groupsSeparator=e;this.patternNegative=f;this.patternPositive=g};thx.culture.core.NumberInfo.__name__=["thx","culture","core","NumberInfo"];thx.culture.core.NumberInfo.prototype={decimals:null,decimalsSeparator:null,groups:null,groupsSeparator:null,patternNegative:null,patternPositive:null,__class__:thx.culture.core.NumberInfo};
-if(!thx.cultures)thx.cultures={};
-thx.cultures.EnUS=$hxClasses["thx.cultures.EnUS"]=function(){this.language=thx.languages.En.getLanguage();this.name="en-US";this.english="English (United States)";this["native"]="English (United States)";this.date=new thx.culture.core.DateTimeInfo("January,February,March,April,May,June,July,August,September,October,November,December,".split(","),"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec,".split(","),"Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday".split(","),"Sun,Mon,Tue,Wed,Thu,Fri,Sat".split(","),
-"Su,Mo,Tu,We,Th,Fr,Sa".split(","),"AM","PM","/",":",0,"%B, %Y","%B %d","%A, %B %d, %Y","%f/%e/%Y","%a, %d %b %Y %H:%M:%S GMT","%A, %B %d, %Y %l:%M:%S %p","%Y-%m-%d %H:%M:%SZ","%Y-%m-%dT%H:%M:%S","%l:%M:%S %p","%l:%M %p");this.symbolNaN="NaN";this.symbolPercent="%";this.symbolPermille="\u2030";this.signNeg="-";this.signPos="+";this.symbolNegInf="-Infinity";this.symbolPosInf="Infinity";this.number=new thx.culture.core.NumberInfo(2,".",[3],",","-n","n");this.currency=new thx.culture.core.NumberInfo(2,
-".",[3],",","($n)","$n");this.percent=new thx.culture.core.NumberInfo(2,".",[3],",","-n %","n %");this.pluralRule=1;this.nativeCurrency=this.englishCurrency="US Dollar";this.currencySymbol="$";this.currencyIso="USD";this.nativeRegion=this.englishRegion="United States";this.iso2="US";this.iso3="USA";this.isMetric=!1;thx.culture.Culture.add(this)};thx.cultures.EnUS.__name__=["thx","cultures","EnUS"];thx.cultures.EnUS.__properties__={get_culture:"getCulture"};thx.cultures.EnUS.culture=null;
-thx.cultures.EnUS.getCulture=function(){if(null==thx.cultures.EnUS.culture)thx.cultures.EnUS.culture=new thx.cultures.EnUS;return thx.cultures.EnUS.culture};thx.cultures.EnUS.__super__=thx.culture.Culture;thx.cultures.EnUS.prototype=$extend(thx.culture.Culture.prototype,{__class__:thx.cultures.EnUS});var List=$hxClasses.List=function(){this.length=0};List.__name__=["List"];
-List.prototype={h:null,q:null,length:null,add:function(a){a=[a];null==this.h?this.h=a:this.q[1]=a;this.q=a;this.length++},push:function(a){this.h=a=[a,this.h];if(null==this.q)this.q=a;this.length++},first:function(){return null==this.h?null:this.h[0]},last:function(){return null==this.q?null:this.q[0]},pop:function(){if(null==this.h)return null;var a=this.h[0];this.h=this.h[1];if(null==this.h)this.q=null;this.length--;return a},isEmpty:function(){return null==this.h},clear:function(){this.q=this.h=
-null;this.length=0},remove:function(a){for(var b=null,c=this.h;null!=c;){if(c[0]==a){null==b?this.h=c[1]:b[1]=c[1];if(this.q==c)this.q=b;this.length--;return!0}b=c;c=c[1]}return!1},iterator:function(){return{h:this.h,hasNext:function(){return null!=this.h},next:function(){if(null==this.h)return null;var a=this.h[0];this.h=this.h[1];return a}}},toString:function(){var a=new StringBuf,b=!0,c=this.h;for(a.b[a.b.length]="{";null!=c;)b?b=!1:a.b[a.b.length]=", ",a.add(Std.string(c[0])),c=c[1];a.b[a.b.length]=
-"}";return a.b.join("")},join:function(a){for(var b=new StringBuf,c=!0,e=this.h;null!=e;)c?c=!1:b.b[b.b.length]=null==a?"null":a,b.add(e[0]),e=e[1];return b.b.join("")},filter:function(a){for(var b=new List,c=this.h;null!=c;){var e=c[0],c=c[1];a(e)&&b.add(e)}return b},map:function(a){for(var b=new List,c=this.h;null!=c;){var e=c[0],c=c[1];b.add(a(e))}return b},__class__:List};if(!thx.json)thx.json={};
-thx.json.JsonDecoder=$hxClasses["thx.json.JsonDecoder"]=function(a,b){null==b&&(b=4);this.handler=a;this.tabsize=b};thx.json.JsonDecoder.__name__=["thx","json","JsonDecoder"];
-thx.json.JsonDecoder.prototype={col:null,line:null,tabsize:null,src:null,"char":null,pos:null,handler:null,decode:function(a){this.line=this.col=0;this.src=a;this["char"]=null;this.pos=0;this.ignoreWhiteSpace();this.handler.start();try{this.parse()}catch(b){if(js.Boot.__instanceof(b,thx.json._JsonDecoder.StreamError))this.error("unexpected end of stream");else throw b;}this.ignoreWhiteSpace();this.pos<this.src.length&&this.error("the stream contains unrecognized characters at its end");this.handler.end()},
-ignoreWhiteSpace:function(){for(;this.pos<this.src.length;){var a=this.readChar();switch(a){case " ":this.col++;break;case "\n":this.col=0;this.line++;break;case "\r":break;case "\t":this.col+=this.tabsize;break;default:this["char"]=a;return}}},parse:function(){var a=this.readChar();switch(a){case "{":return this.col++,this.ignoreWhiteSpace(),this.parseObject();case "[":return this.col++,this.ignoreWhiteSpace(),this.parseArray();case '"':return this["char"]=a,this.parseString();default:return this["char"]=
-a,this.parseValue()}},readChar:function(){if(null==this["char"]){if(this.pos==this.src.length)throw thx.json._JsonDecoder.StreamError.Eof;return this.src.charAt(this.pos++)}var a=this["char"];this["char"]=null;return a},expect:function(a){return(null==this["char"]?this.src.substr(this.pos,a.length):this["char"]+this.src.substr(this.pos,a.length-1))==a?(null==this["char"]?this.pos+=a.length:(this.pos+=a.length-1,this["char"]=null),!0):!1},parseObject:function(){var a=!0;for(this.handler.startObject();;){this.ignoreWhiteSpace();
-if(this.expect("}"))break;else a?a=!1:this.expect(",")?this.ignoreWhiteSpace():this.error("expected ','");var b=this._parseString();this.ignoreWhiteSpace();this.expect(":")||this.error("expected ':'");this.ignoreWhiteSpace();this.handler.startField(b);this.parse();this.handler.endField()}this.handler.endObject()},parseArray:function(){this.ignoreWhiteSpace();var a=!0;for(this.handler.startArray();;){this.ignoreWhiteSpace();if(this.expect("]"))break;else a?a=!1:this.expect(",")?this.ignoreWhiteSpace():
-this.error("expected ','");this.handler.startItem();this.parse();this.handler.endItem()}this.handler.endArray()},parseValue:function(){if(this.expect("true"))this.handler.bool(!0);else if(this.expect("false"))this.handler.bool(!1);else if(this.expect("null"))this.handler["null"]();else this.parseFloat()},parseString:function(){this.handler.string(this._parseString())},_parseString:function(){this.expect('"')||this.error("expected double quote");var a="",b=!1;try{for(;;){var c=this.readChar();this.col++;
-if(b){switch(c){case '"':a+='"';break;case "\\":a+="\\";break;case "/":a+="/";break;case "b":a+=String.fromCharCode(8);break;case "f":a+=String.fromCharCode(12);break;case "n":a+="\n";break;case "r":a+="\r";break;case "t":a+="\t";break;case "u":a+=String.fromCharCode(this.parseHexa());break;default:this.error("unexpected char "+c)}b=!1}else switch(c){case "\\":b=!0;break;case '"':throw"__break__";default:a+=c}}}catch(e){if("__break__"!=e)throw e;}return a},parseHexa:function(){for(var a=[],b=0;4>
-b;){b++;var c=this.readChar(),e=c.toLowerCase().charCodeAt(0);48<=e&&57>=e||97<=e&&102>=e||this.error("invalid hexadecimal value "+c);a.push(c)}this.handler["int"](Std.parseInt("0x"+a.join("")));return Std.parseInt("0x"+a.join(""))},parseFloat:function(){var a="";this.expect("-")&&(a="-");if(this.expect("0"))a+="0";else{var b=this.readChar(),c=b.charCodeAt(0);(49>c||57<c)&&this.error("expected digit between 1 and 9");a+=b;this.col++}try{a+=this.parseDigits()}catch(e){if(js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError)){this.handler["int"](Std.parseInt(a));
-return}throw e;}try{if(this.expect("."))a+="."+this.parseDigits(1);else{this.handler["int"](Std.parseInt(a));return}if(this.expect("e")||this.expect("E"))a+="e",this.expect("+")||this.expect("-")&&(a+="-"),a+=this.parseDigits(1)}catch(f){if(js.Boot.__instanceof(f,thx.json._JsonDecoder.StreamError)){this.handler["float"](Std.parseFloat(a));return}throw f;}this.handler["float"](Std.parseFloat(a))},parseDigits:function(a){null==a&&(a=0);for(var b="";;){var c=null;try{c=this.readChar()}catch(e){if(js.Boot.__instanceof(e,
-thx.json._JsonDecoder.StreamError))return b.length<a&&this.error("expected digit"),b;throw e;}var f=c.charCodeAt(0);if(48>f||57<f)return b.length<a&&this.error("expected digit"),this.col+=b.length,this["char"]=c,b;b+=c}return null},error:function(a){var b=this.pos==this.src.length?"":"\nrest: "+(null!=this["char"]?this["char"]:"")+this.src.substr(this.pos)+"...";throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,a,b],null,{fileName:"JsonDecoder.hx",lineNumber:358,className:"thx.json.JsonDecoder",
-methodName:"error"});},__class__:thx.json.JsonDecoder};if(!thx.json._JsonDecoder)thx.json._JsonDecoder={};thx.json._JsonDecoder.StreamError=$hxClasses["thx.json._JsonDecoder.StreamError"]={__ename__:["thx","json","_JsonDecoder","StreamError"],__constructs__:["Eof"]};thx.json._JsonDecoder.StreamError.Eof=["Eof",0];thx.json._JsonDecoder.StreamError.Eof.toString=$estr;thx.json._JsonDecoder.StreamError.Eof.__enum__=thx.json._JsonDecoder.StreamError;
-rg.data.reportgrid.ReportGridExecutorCache=$hxClasses["rg.data.reportgrid.ReportGridExecutorCache"]=function(a,b,c){this.executor=a;this.storage=b;this.queue=new Hash;this.timeout=c;this.cleanOld()};rg.data.reportgrid.ReportGridExecutorCache.__name__=["rg","data","reportgrid","ReportGridExecutorCache"];rg.data.reportgrid.ReportGridExecutorCache.__interfaces__=[rg.data.reportgrid.IExecutorReportGrid];
-rg.data.reportgrid.ReportGridExecutorCache.prototype={timeout:null,executor:null,storage:null,queue:null,children:function(a,b,c,e){this.execute("children",a,b,c,e)},propertyCount:function(a,b,c,e){this.execute("propertyCount",a,b,c,e)},propertySeries:function(a,b,c,e){this.execute("propertySeries",a,b,c,e)},propertyMeans:function(a,b,c,e){this.execute("propertyMeans",a,b,c,e)},propertyStandardDeviations:function(a,b,c,e){this.execute("propertyStandardDeviations",a,b,c,e)},propertyValues:function(a,
-b,c,e){this.execute("propertyValues",a,b,c,e)},propertyValueCount:function(a,b,c,e){this.execute("propertyValueCount",a,b,c,e)},propertyValueSeries:function(a,b,c,e){this.execute("propertyValueSeries",a,b,c,e)},searchCount:function(a,b,c,e){this.execute("searchCount",a,b,c,e)},searchSeries:function(a,b,c,e){this.execute("searchSeries",a,b,c,e)},intersect:function(a,b,c,e){this.execute("intersect",a,b,c,e)},histogram:function(a,b,c,e){this.execute("histogram",a,b,c,e)},propertiesHistogram:function(a,
-b,c,e){this.execute("propertiesHistogram",a,b,c,e)},setCacheTimeout:function(a){this.timeout=a},execute:function(a,b,c,e,f){this.normalizePeriod(c);var g=this.uidquery(a,b,c),h=this.cacheGet(g);null!=h?e(h):(h=this.getQueue(g),null!=h?h.push(e):Reflect.field(this.executor,a)(b,c,this.storageSuccess(g,e),f))},normalizePeriod:function(a){var b=a.periodicity;null==b&&null!=a.start&&null!=a.end&&(b=rg.util.Periodicity.defaultPeriodicity(a.end-a.start));if(null!=b){if(null!=a.start)a.start=Dates.snap(a.start,
-b,-1);if(null!=a.end)a.end=Dates.snap(a.end,b,-1)}},storageSuccess:function(a,b){var c=this;this.queue.set(a,[]);return function(e){0<c.timeout&&(c.cacheSet(a,e),c.delayedCleanup(a));b(e);var f=c.queue.get(a);if(null!=f)for(var g=0;g<f.length;){var h=f[g];++g;h(e)}c.queue.remove(a)}},clearValueIfOld:function(a){var b=rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX+a,c=this.storage.get(b);null!=c&&c<Date.now().getTime()-1E3*this.timeout&&(this.storage.remove(b),this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX+
-a))},delayedCleanup:function(a){var b=this;haxe.Timer.delay(function(){b.cacheRemove(a)},1E3*this.timeout)},cacheSet:function(a,b){this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX+a,Date.now().getTime());this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX+a,b)},cacheGet:function(a){this.clearValueIfOld(a);var b=this.storage.get(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX+a);null!=b&&this.delayedCleanup(a);return b},cacheRemove:function(a){this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX+
-a);this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX+a)},ids:function(){var a=rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX.length;return Iterators.filter(this.storage.keys(),function(b){return b.substr(0,a)==rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX}).map(function(b){return b.substr(a)})},cleanOld:function(){for(var a=0,b=this.ids();a<b.length;){var c=b[a];++a;this.clearValueIfOld(c)}},getQueue:function(a){return 0>this.timeout?null:this.queue.get(a)},
-idDate:function(a){return rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX+a},idValue:function(a){return rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX+a},uidquery:function(a,b,c){a=a+":"+b+":"+thx.json.Json.encode(c);return haxe.Md5.encode(a)},__class__:rg.data.reportgrid.ReportGridExecutorCache};var Iterables=$hxClasses.Iterables=function(){};Iterables.__name__=["Iterables"];Iterables.count=function(a){return Iterators.count(a.iterator())};
-Iterables.indexOf=function(a,b,c){return Iterators.indexOf(a.iterator(),b,c)};Iterables.contains=function(a,b,c){return Iterators.contains(a.iterator(),b,c)};Iterables.array=function(a){return Iterators.array(a.iterator())};Iterables.join=function(a,b){null==b&&(b=", ");return Iterators.array(a.iterator()).join(b)};Iterables.map=function(a,b){return Iterators.map(a.iterator(),b)};Iterables.each=function(a,b){return Iterators.each(a.iterator(),b)};
-Iterables.filter=function(a,b){return Iterators.filter(a.iterator(),b)};Iterables.reduce=function(a,b,c){return Iterators.reduce(a.iterator(),b,c)};Iterables.random=function(a){return Arrays.random(Iterators.array(a.iterator()))};Iterables.any=function(a,b){return Iterators.any(a.iterator(),b)};Iterables.all=function(a,b){return Iterators.all(a.iterator(),b)};Iterables.last=function(a){return Iterators.last(a.iterator())};Iterables.lastf=function(a,b){return Iterators.lastf(a.iterator(),b)};
-Iterables.first=function(a){return a.iterator().next()};Iterables.firstf=function(a,b){return Iterators.firstf(a.iterator(),b)};Iterables.order=function(a,b){return Arrays.order(Iterators.array(a.iterator()),b)};Iterables.isIterable=function(a){var b=Reflect.isObject(a)&&null==Type.getClass(a)?Reflect.fields(a):Type.getInstanceFields(Type.getClass(a));return!Lambda.has(b,"iterator")?!1:Reflect.isFunction(Reflect.field(a,"iterator"))};Iterables.prototype={__class__:Iterables};
-if(!thx.data)thx.data={};thx.data.IDataHandler=$hxClasses["thx.data.IDataHandler"]=function(){};thx.data.IDataHandler.__name__=["thx","data","IDataHandler"];thx.data.IDataHandler.prototype={start:null,end:null,startObject:null,startField:null,endField:null,endObject:null,startArray:null,startItem:null,endItem:null,endArray:null,date:null,string:null,"int":null,"float":null,"null":null,bool:null,comment:null,__class__:thx.data.IDataHandler};if(!thx.math)thx.math={};
-thx.math.Random=$hxClasses["thx.math.Random"]=function(a){null==a&&(a=1);this.seed=a};thx.math.Random.__name__=["thx","math","Random"];thx.math.Random.prototype={seed:null,"int":function(){return(this.seed=16807*this.seed%2147483647)&1073741823},"float":function(){return((this.seed=16807*this.seed%2147483647)&1073741823)/1073741823},__class__:thx.math.Random};var EReg=$hxClasses.EReg=function(a,b){b=b.split("u").join("");this.r=RegExp(a,b)};EReg.__name__=["EReg"];
-EReg.prototype={r:null,match:function(a){this.r.m=this.r.exec(a);this.r.s=a;return null!=this.r.m},matched:function(a){if(null!=this.r.m&&0<=a&&a<this.r.m.length)a=this.r.m[a];else throw"EReg::matched";return a},matchedLeft:function(){if(null==this.r.m)throw"No string matched";return this.r.s.substr(0,this.r.m.index)},matchedRight:function(){if(null==this.r.m)throw"No string matched";var a=this.r.m.index+this.r.m[0].length;return this.r.s.substr(a,this.r.s.length-a)},matchedPos:function(){if(null==
-this.r.m)throw"No string matched";return{pos:this.r.m.index,len:this.r.m[0].length}},split:function(a){return a.replace(this.r,"#__delim__#").split("#__delim__#")},replace:function(a,b){return a.replace(this.r,b)},customReplace:function(a,b){for(var c=new StringBuf;this.match(a);){c.add(this.matchedLeft());c.add(b(this));a=this.matchedRight()}c.b[c.b.length]=null==a?"null":a;return c.b.join("")},__class__:EReg};var Ints=$hxClasses.Ints=function(){};Ints.__name__=["Ints"];
-Ints.range=function(a,b,c){null==c&&(c=1);null==b&&(b=a,a=0);if((b-a)/c==Math.POSITIVE_INFINITY)throw new thx.error.Error("infinite range",null,null,{fileName:"Ints.hx",lineNumber:19,className:"Ints",methodName:"range"});var e=[],f=-1,g;if(0>c)for(;(g=a+c*++f)>b;)e.push(g);else for(;(g=a+c*++f)<b;)e.push(g);return e};Ints.sign=function(a){return 0>a?-1:1};Ints.abs=function(a){return 0>a?-a:a};Ints.min=function(a,b){return a<b?a:b};Ints.max=function(a,b){return a>b?a:b};
-Ints.wrap=function(a,b,c){return Math.round(Floats.wrap(a,b,c))};Ints.clamp=function(a,b,c){return a<b?b:a>c?c:a};Ints.clampSym=function(a,b){return a<-b?-b:a>b?b:a};Ints.interpolate=function(a,b,c,e){null==c&&(c=100);null==b&&(b=0);if(null==e)e=thx.math.Equations.linear;return Math.round(b+e(a)*(c-b))};Ints.interpolatef=function(a,b,c){null==b&&(b=1);null==a&&(a=0);if(null==c)c=thx.math.Equations.linear;var e=b-a;return function(b){return Math.round(a+c(b)*e)}};
-Ints.format=function(a,b,c,e){return Ints.formatf(b,c,e)(a)};Ints.formatf=function(a,b,c){return Floats.formatf(null,thx.culture.FormatParams.params(a,b,"I"),c)};Ints.canParse=function(a){return Ints._reparse.match(a)};Ints.parse=function(a){"+"==a.substr(0,1)&&(a=a.substr(1));return Std.parseInt(a)};Ints.compare=function(a,b){return a-b};Ints.prototype={__class__:Ints};var Dynamics=$hxClasses.Dynamics=function(){};Dynamics.__name__=["Dynamics"];
-Dynamics.format=function(a,b,c,e,f){return Dynamics.formatf(b,c,e,f)(a)};
-Dynamics.formatf=function(a,b,c,e){null==c&&(c="null");return function(f){var g=Type["typeof"](f);switch(g[1]){case 0:return c;case 1:return Ints.format(f,a,b,e);case 2:return Floats.format(f,a,b,e);case 3:return Bools.format(f,a,b,e);case 6:return g=g[2],g==String?Strings.formatOne(f,a,b,e):g==Array?Arrays.format(f,a,b,e):g==Date?Dates.format(f,a,b,e):Objects.format(f,a,b,e);case 4:return Objects.format(f,a,b,e);case 5:return"function()";default:throw new thx.error.Error("Unsupported type format: {0}",
-null,Type["typeof"](f),{fileName:"Dynamics.hx",lineNumber:44,className:"Dynamics",methodName:"formatf"});}}};Dynamics.interpolate=function(a,b,c,e){return Dynamics.interpolatef(b,c,e)(a)};
-Dynamics.interpolatef=function(a,b,c){var e=Type["typeof"](a),f=Type["typeof"](b);if((!Std.is(a,Float)&&!Std.is(a,Int)||!Std.is(b,Float)&&!Std.is(b,Int))&&!Type.enumEq(e,f))throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{fileName:"Dynamics.hx",lineNumber:59,className:"Dynamics",methodName:"interpolatef"});switch(e[1]){case 0:return function(){return null};case 1:return Std.is(b,Int)?Ints.interpolatef(a,b,c):Floats.interpolatef(a,b,c);case 2:return Floats.interpolatef(a,
-b,c);case 3:return Bools.interpolatef(a,b,c);case 4:return Objects.interpolatef(a,b,c);case 6:switch(e=Type.getClassName(e[2]),e){case "String":return Strings.interpolatef(a,b,c);case "Date":return Dates.interpolatef(a,b,c);default:throw new thx.error.Error("cannot interpolate on instances of {0}",null,e,{fileName:"Dynamics.hx",lineNumber:77,className:"Dynamics",methodName:"interpolatef"});}default:throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{fileName:"Dynamics.hx",
-lineNumber:79,className:"Dynamics",methodName:"interpolatef"});}};
-Dynamics.string=function(a){var b=Type["typeof"](a);switch(b[1]){case 0:return"null";case 1:return Ints.format(a);case 2:return Floats.format(a);case 3:return Bools.format(a);case 4:for(var b=Reflect.fields(a),c=[],e=0;e<b.length;){var f=b[e];++e;c.push(f+" : "+Dynamics.string(Reflect.field(a,f)))}return"{"+c.join(", ")+"}";case 6:switch(Type.getClassName(b[2])){case "Array":return Arrays.string(a);case "String":return 0>a.indexOf('"')?'"'+a+'"':0>a.indexOf("'")?"'"+a+"'":'"'+StringTools.replace(a,
-'"','\\"')+'"';case "Date":return Dates.format(a);default:return Std.string(a)}case 7:return Enums.string(a);case 8:return"<unknown>";case 5:return"<function>"}};
-Dynamics.compare=function(a,b){if(!Types.sameType(a,b))throw new thx.error.Error("cannot compare 2 different types",null,null,{fileName:"Dynamics.hx",lineNumber:131,className:"Dynamics",methodName:"compare"});if(null==a&&null==b)return 0;if(null==a)return-1;if(null==b)return 1;var c=Type["typeof"](a);switch(c[1]){case 1:return a-b;case 2:return a<b?-1:a>b?1:0;case 3:return a==b?0:a?-1:1;case 4:return Objects.compare(a,b);case 6:switch(Type.getClassName(c[2])){case "Array":return Arrays.compare(a,
-b);case "String":return Strings.compare(a,b);case "Date":return Floats.compare(a.getTime(),b.getTime());default:return Strings.compare(Std.string(a),Std.string(b))}case 7:return Enums.compare(a,b);default:return 0}};
-Dynamics.comparef=function(a){a=Type["typeof"](a);switch(a[1]){case 1:return Ints.compare;case 2:return Floats.compare;case 3:return Bools.compare;case 4:return Objects.compare;case 6:switch(Type.getClassName(a[2])){case "Array":return Arrays.compare;case "String":return Strings.compare;case "Date":return Dates.compare;default:return function(a,c){return Strings.compare(Std.string(a),Std.string(c))}}case 7:return Enums.compare;default:return Dynamics.compare}};
-Dynamics.clone=function(a,b){null==b&&(b=!1);var c=Type["typeof"](a);switch(c[1]){case 0:return null;case 1:case 2:case 3:case 7:case 8:case 5:return a;case 4:var e={};Objects.copyTo(a,e);return e;case 6:switch(c=c[2],Type.getClassName(c)){case "Array":e=[];for(c=0;c<a.length;){var f=a[c];++c;e.push(Dynamics.clone(f))}return e;case "String":case "Date":return a;default:if(b){e=Type.createEmptyInstance(c);c=0;for(f=Reflect.fields(a);c<f.length;){var g=f[c];++c;e[g]=Dynamics.clone(Reflect.field(a,g))}return e}return a}}};
-Dynamics.same=function(a,b){var c=Types.typeName(a),e=Types.typeName(b);if(c!=e)return!1;c=Type["typeof"](a);switch(c[1]){case 2:return Floats.equals(a,b);case 0:case 1:case 3:return a==b;case 5:return Reflect.compareMethods(a,b);case 6:c=Type.getClassName(c[2]);e=Type.getClassName(Type.getClass(b));if(c!=e||Std.is(a,String)&&a!=b)return!1;if(Std.is(a,Array)){var e=a,f=b;if(e.length!=f.length)return!1;for(var g=0,c=e.length;g<c;){var h=g++;if(!Dynamics.same(e[h],f[h]))return!1}return!0}if(Std.is(a,
-Date))return a.getTime()==b.getTime();if(Std.is(a,Hash)||Std.is(a,IntHash)){e=Iterators.array(a.keys());c=Iterators.array(b.keys());if(e.length!=c.length)return!1;for(c=0;c<e.length;)if(g=e[c],++c,!b.exists(g)||!Dynamics.same(a.get(g),b.get(g)))return!1;return!0}c=!1;if((c=Iterators.isIterator(a))||Iterables.isIterable(a)){e=c?Iterators.array(a):Iterators.array(a.iterator());f=c?Iterators.array(b):Iterators.array(b.iterator());if(e.length!=f.length)return!1;g=0;for(c=e.length;g<c;)if(h=g++,!Dynamics.same(e[h],
-f[h]))return!1;return!0}h=Type.getInstanceFields(Type.getClass(a));for(c=0;c<h.length;)if(g=h[c],++c,e=Reflect.field(a,g),!Reflect.isFunction(e)&&(f=Reflect.field(b,g),!Dynamics.same(e,f)))return!1;return!0;case 7:c=Type.getEnumName(c[2]);e=Type.getEnumName(Type.getEnum(b));if(c!=e||a[1]!=b[1])return!1;e=a.slice(2);f=b.slice(2);g=0;for(c=e.length;g<c;)if(h=g++,!Dynamics.same(e[h],f[h]))return!1;return!0;case 4:for(var h=Reflect.fields(a),i=Reflect.fields(b),c=0;c<h.length;){g=h[c];++c;i.remove(g);
-if(!Reflect.hasField(b,g))return!1;e=Reflect.field(a,g);if(!Reflect.isFunction(e)&&(f=Reflect.field(b,g),!Dynamics.same(e,f)))return!1}if(0<i.length)return!1;if((c=Iterators.isIterator(a))||Iterables.isIterable(a)){if(c&&!Iterators.isIterator(b)||!c&&!Iterables.isIterable(b))return!1;e=c?Iterators.array(a):Iterators.array(a.iterator());f=c?Iterators.array(b):Iterators.array(b.iterator());if(e.length!=f.length)return!1;g=0;for(c=e.length;g<c;)if(h=g++,!Dynamics.same(e[h],f[h]))return!1}return!0;case 8:throw"Unable to compare two unknown types";
-}throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{fileName:"Dynamics.hx",lineNumber:371,className:"Dynamics",methodName:"same"});};Dynamics.number=function(a){return Number(a)};Dynamics.prototype={__class__:Dynamics};var Iterators=$hxClasses.Iterators=function(){};Iterators.__name__=["Iterators"];Iterators.count=function(a){for(var b=0;a.hasNext();)a.next(),b++;return b};
-Iterators.indexOf=function(a,b,c){null==c&&(c=function(a){return b==a});for(var e=0;a.hasNext();){var f=a.next();if(c(f))return e;e++}return-1};Iterators.contains=function(a,b,c){for(null==c&&(c=function(a){return b==a});a.hasNext();){var e=a.next();if(c(e))return!0}return!1};Iterators.array=function(a){for(var b=[];a.hasNext();){var c=a.next();b.push(c)}return b};Iterators.join=function(a,b){null==b&&(b=", ");return Iterators.array(a).join(b)};
-Iterators.map=function(a,b){for(var c=[],e=0;a.hasNext();){var f=a.next();c.push(b(f,e++))}return c};Iterators.each=function(a,b){for(var c=0;a.hasNext();){var e=a.next();b(e,c++)}};Iterators.filter=function(a,b){for(var c=[];a.hasNext();){var e=a.next();b(e)&&c.push(e)}return c};Iterators.reduce=function(a,b,c){for(var e=0;a.hasNext();)var f=a.next(),c=b(c,f,e++);return c};Iterators.random=function(a){return Arrays.random(Iterators.array(a))};
-Iterators.any=function(a,b){for(;a.hasNext();){var c=a.next();if(b(c))return!0}return!1};Iterators.all=function(a,b){for(;a.hasNext();){var c=a.next();if(!b(c))return!1}return!0};Iterators.last=function(a){for(var b=null;a.hasNext();)b=a.next();return b};Iterators.lastf=function(a,b){var c=Iterators.array(a);c.reverse();return Arrays.lastf(c,b)};Iterators.first=function(a){return a.next()};Iterators.firstf=function(a,b){for(;a.hasNext();){var c=a.next();if(b(c))return c}return null};
-Iterators.order=function(a,b){return Arrays.order(Iterators.array(a),b)};Iterators.isIterator=function(a){var b=Reflect.isObject(a)&&null==Type.getClass(a)?Reflect.fields(a):Type.getInstanceFields(Type.getClass(a));return!Lambda.has(b,"next")||!Lambda.has(b,"hasNext")?!1:Reflect.isFunction(Reflect.field(a,"next"))&&Reflect.isFunction(Reflect.field(a,"hasNext"))};Iterators.prototype={__class__:Iterators};thx.json.Json=$hxClasses["thx.json.Json"]=function(){};thx.json.Json.__name__=["thx","json","Json"];
-thx.json.Json.nativeEncoder=null;thx.json.Json.nativeDecoder=null;thx.json.Json.encode=function(a){if(null!=thx.json.Json.nativeEncoder)return thx.json.Json.nativeEncoder(a);var b=new thx.json.JsonEncoder;(new thx.data.ValueEncoder(b)).encode(a);return b.encodedString};thx.json.Json.decode=function(a){if(null!=thx.json.Json.nativeDecoder)return thx.json.Json.nativeDecoder(a);var b=new thx.data.ValueHandler;(new thx.json.JsonDecoder(b)).decode(a);return b.value};thx.json.Json.prototype={__class__:thx.json.Json};
-thx.culture.FormatParams=$hxClasses["thx.culture.FormatParams"]=function(){};thx.culture.FormatParams.__name__=["thx","culture","FormatParams"];thx.culture.FormatParams.cleanQuotes=function(a){if(1>=a.length)return a;var b=a.substr(0,1);return('"'==b||"'"==b)&&a.substr(-1)==b?a.substr(1,a.length-2):a};
-thx.culture.FormatParams.params=function(a,b,c){if(null!=b&&null!=a)return[a].concat(b);if((null==b||0==b.length)&&null==a)return[c];return null==b||0==b.length?(a=a.split(":"),[a[0]].concat(1==a.length?[]:a[1].split(",").map(function(a,b){return 0==b?a:thx.culture.FormatParams.cleanQuotes(a)}))):b};thx.culture.FormatParams.prototype={__class__:thx.culture.FormatParams};var Reflect=$hxClasses.Reflect=function(){};Reflect.__name__=["Reflect"];
-Reflect.hasField=function(a,b){if(null!=a.hasOwnProperty)return a.hasOwnProperty(b);for(var c=Reflect.fields(a).iterator();c.hasNext();)if(c.next()==b)return!0;return!1};Reflect.field=function(a,b){var c=null;try{c=a[b]}catch(e){}return c};Reflect.setField=function(a,b,c){a[b]=c};Reflect.getProperty=function(a,b){var c;return null==a?null:a.__properties__&&(c=a.__properties__["get_"+b])?a[c]():a[b]};
-Reflect.setProperty=function(a,b,c){var e;if(a.__properties__&&(e=a.__properties__["set_"+b]))a[e](c);else a[b]=c};Reflect.callMethod=function(a,b,c){return b.apply(a,c)};Reflect.fields=function(a){if(null==a)return[];var b=[];if(a.hasOwnProperty)for(var c in a)a.hasOwnProperty(c)&&b.push(c);else{var e;try{e=a.__proto__}catch(f){e=null}if(null!=e)a.__proto__=null;for(c in a)"__proto__"!=c&&b.push(c);if(null!=e)a.__proto__=e}return b};
-Reflect.isFunction=function(a){return"function"==typeof a&&null==a.__name__};Reflect.compare=function(a,b){return a==b?0:a>b?1:-1};Reflect.compareMethods=function(a,b){return a==b?!0:!Reflect.isFunction(a)||!Reflect.isFunction(b)?!1:a.scope==b.scope&&a.method==b.method&&null!=a.method};Reflect.isObject=function(a){if(null==a)return!1;var b=typeof a;return"string"==b||"object"==b&&!a.__enum__||"function"==b&&null!=a.__name__};
-Reflect.deleteField=function(a,b){if(!Reflect.hasField(a,b))return!1;delete a[b];return!0};Reflect.copy=function(a){for(var b={},c=0,e=Reflect.fields(a);c<e.length;){var f=e[c];++c;b[f]=Reflect.field(a,f)}return b};Reflect.makeVarArgs=function(a){return function(){for(var b=[],c=0,e=arguments.length;c<e;){var f=c++;b.push(arguments[f])}return a(b)}};Reflect.prototype={__class__:Reflect};if(!thx.util)thx.util={};thx.util.MacroVersion=$hxClasses["thx.util.MacroVersion"]=function(){};
-thx.util.MacroVersion.__name__=["thx","util","MacroVersion"];thx.util.MacroVersion.prototype={__class__:thx.util.MacroVersion};if(!rg.query)rg.query={};rg.query.Transformers=$hxClasses["rg.query.Transformers"]=function(){};rg.query.Transformers.__name__=["rg","query","Transformers"];
-rg.query.Transformers.crossStack=function(a){if(1>=a.length)return a;for(var b=a.shift();0<a.length;){for(var c=a.shift(),e=[],f=0;f<b.length;){var g=b[f];++f;for(var h=0;h<c.length;){var i=c[h];++h;e.push(Objects.copyTo(i,Objects.copyTo(g,{})))}}b=e}return[b]};rg.query.Transformers.split=function(a,b){var c=new Hash,e=[];a.forEach(function(a){var g=b(a),h=c.get(g);if(null==h)h=e.length,c.set(g,h),e.push([]);e[h].push(a)});return e};rg.query.Transformers.map=function(a){return function(b){return b.map(a)}};
-rg.query.Transformers.filter=function(a){return function(b){return Arrays.filter(b,a)}};rg.query.Transformers.filterValues=function(a){var b=Objects.entries(a);b.forEach(function(a){if(!Reflect.isFunction(a.value)){var b=a.value;a.value=function(a){return a==b}}});var c=function(a){for(var c=0;c<b.length;){var g=b[c];++c;if(!g.value(Reflect.field(a,g.key)))return!1}return!0};return function(a){return Arrays.filter(a,c)}};
-rg.query.Transformers.filterValue=function(a,b){if(!Reflect.isFunction(b))var c=b,b=function(a){return a==c};var e=function(c){return!b(Reflect.field(c,a))?!1:!0};return function(a){return Arrays.filter(a,e)}};rg.query.Transformers.setField=function(a,b){Reflect.isFunction(b)||(b=function(a,b){return b});var c=function(c,f){c[a]=b(c,Reflect.field(c,a),f)};return function(a){a.forEach(c);return a}};
-rg.query.Transformers.setFields=function(a){for(var b=Reflect.fields(a),c=[],e=0;e<b.length;){var f=b[e];++e;f=Reflect.field(a,f);Reflect.isFunction(f)?c.push(f):c.push(function(a,b){return function(c,e,f){return a(b,c,e,f)}}(function(a){return a},f))}var g=function(a,e){for(var f=0,g=b.length;f<g;){var l=f++;a[b[l]]=c[l](a,Reflect.field(a,b[l]),e)}};return function(a){a.forEach(g);return a}};rg.query.Transformers.sort=function(a){return function(b){b.sort(null==a?Dynamics.compare:a);return b}};
-rg.query.Transformers.limit=function(a,b){return function(c){return a>=c.length?[]:c.slice(a,a+b>c.length?c.length:a+b)}};rg.query.Transformers.reverse=function(a){a.reverse();return a};rg.query.Transformers.uniquef=function(a){return function(b){for(var c=0,e;c<b.length-1;){var f=b[c];for(e=b.length-1;e>c;)a(f,b[e])&&b.splice(e,1),e--;c++}return b}};
-rg.query.Transformers.rotate=function(a){if(Std.is(a,String))var b=a,a=function(a,c){return Reflect.field(a,b)==Reflect.field(c,b)};var c=null==a?function(a,b,c,h){return c==h}:function(b,c){return a(b,c)};return function(a){for(var b=[],g=a[0],h=0,i=g.length;h<i;){for(var j=h++,k=g[j],l=[k],m=1,n=a.length;m<n;)for(var o=m++,o=a[o],p=0,q=o.length;p<q;){var r=p++,s=o[r];if(c(k,s,j,r)){l.push(s);break}}b.push(l)}return b}};rg.query.Transformers.prototype={__class__:rg.query.Transformers};
-thx.data.ValueEncoder=$hxClasses["thx.data.ValueEncoder"]=function(a){this.handler=a};thx.data.ValueEncoder.__name__=["thx","data","ValueEncoder"];
-thx.data.ValueEncoder.prototype={handler:null,encode:function(a){this.handler.start();this.encodeValue(a);this.handler.end()},encodeValue:function(a){var b=Type["typeof"](a);switch(b[1]){case 0:this.handler["null"]();break;case 1:this.handler["int"](a);break;case 2:this.handler["float"](a);break;case 3:this.handler.bool(a);break;case 4:this.encodeObject(a);break;case 5:throw new thx.error.Error("unable to encode TFunction type",null,null,{fileName:"ValueEncoder.hx",lineNumber:39,className:"thx.data.ValueEncoder",
-methodName:"encodeValue"});case 6:b=b[2];if(Std.is(a,String))this.handler.string(a);else if(Std.is(a,Array))this.encodeArray(a);else if(Std.is(a,Date))this.handler.date(a);else if(Std.is(a,Hash))this.encodeHash(a);else if(Std.is(a,List))this.encodeList(a);else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(b),{fileName:"ValueEncoder.hx",lineNumber:53,className:"thx.data.ValueEncoder",methodName:"encodeValue"});break;case 7:throw new thx.error.Error("unable to encode TEnum type '{0}'",
-null,Type.getEnumName(b[2]),{fileName:"ValueEncoder.hx",lineNumber:55,className:"thx.data.ValueEncoder",methodName:"encodeValue"});case 8:throw new thx.error.Error("unable to encode TUnknown type",null,null,{fileName:"ValueEncoder.hx",lineNumber:57,className:"thx.data.ValueEncoder",methodName:"encodeValue"});}},encodeObject:function(a){this.handler.startObject();for(var b=0,c=Reflect.fields(a);b<c.length;){var e=c[b];++b;this.handler.startField(e);this.encodeValue(Reflect.field(a,e));this.handler.endField()}this.handler.endObject()},
-encodeHash:function(a){this.handler.startObject();for(var b=a.keys();b.hasNext();){var c=b.next();this.handler.startField(c);this.encodeValue(a.get(c));this.handler.endField()}this.handler.endObject()},encodeList:function(a){this.handler.startArray();for(a=a.iterator();a.hasNext();){var b=a.next();this.handler.startItem();this.encodeValue(b);this.handler.endItem()}this.handler.endArray()},encodeArray:function(a){this.handler.startArray();for(var b=0;b<a.length;){var c=a[b];++b;this.handler.startItem();
-this.encodeValue(c);this.handler.endItem()}this.handler.endArray()},__class__:thx.data.ValueEncoder};var IntIter=$hxClasses.IntIter=function(a,b){this.min=a;this.max=b};IntIter.__name__=["IntIter"];IntIter.prototype={min:null,max:null,hasNext:function(){return this.min<this.max},next:function(){return this.min++},__class__:IntIter};rg.query.BaseQuery=$hxClasses["rg.query.BaseQuery"]=function(a,b){this._async=a;this._first=b;this._store=new Hash};rg.query.BaseQuery.__name__=["rg","query","BaseQuery"];
-rg.query.BaseQuery.asyncTransform=function(a){return function(b,c){for(var e=0,f=b.length;e<f;){var g=e++;b[g]=a(b[g])}c(b)}};rg.query.BaseQuery.asyncTransformStack=function(a){return function(b,c){c(a(b))}};
-rg.query.BaseQuery.prototype={_first:null,_next:null,_async:null,_store:null,load:function(a){return this.asyncStack(function(b,c){a(function(a){b.push(a);c(b)})})},data:function(a){Std.is(a,Array)||(a=[a]);return this.asyncStack(function(b,c){b.push(a);c(b)})},cross:function(){return this.transformStack(rg.query.Transformers.crossStack)},map:function(a){return this.transform(rg.query.Transformers.map(a))},audit:function(a){return this.transform(function(b){a(b);return b})},renameFields:function(a){var b=
-Reflect.fields(a).map(function(b){return{src:b,dst:Reflect.field(a,b)}});return this.map(function(a){for(var e={},f=0;f<b.length;){var g=b[f];++f;e[g.dst]=Reflect.field(a,g.src)}return e})},transform:function(a){return this.asyncStack(rg.query.BaseQuery.asyncTransform(a))},transformStack:function(a){return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(a))},asyncStack:function(a){return this._next=a=this._createQuery(a,this._first)},asyncAll:function(a){return this.asyncStack(function(b,c){for(var e=
-b.length,f=0,g=[],h=function(a,b){g[a]=b;++f==e&&c(g)},i=0,j=b.length;i<j;){var k=i++;a(b[k],function(a,b){return function(c){return a(b,c)}}(h,k))}})},asyncEach:function(a){return this.asyncAll(function(b,c){for(var e=b.length,f=0,g=[],h=function(a,b){g[a]=b;++f==e&&c(Arrays.flatten(g))},i=0,j=b.length;i<j;){var k=i++;a(b[k],function(a,b){return function(c){return a(b,c)}}(h,k))}})},setField:function(a,b){return this.transform(rg.query.Transformers.setField(a,b))},setFields:function(a){return this.transform(rg.query.Transformers.setFields(a))},
-addIndex:function(a,b){null==a&&(a="index");null==b&&(b=0);return this.transform(rg.query.Transformers.setField(a,function(a,e,f){return b+f}))},filter:function(a){return this.transform(rg.query.Transformers.filter(a))},filterValues:function(a){return this.transform(rg.query.Transformers.filterValues(a))},filterValue:function(a,b){return this.transform(rg.query.Transformers.filterValue(a,b))},sort:function(a){return this.transform(rg.query.Transformers.sort(a))},sortField:function(a,b){return this.sortFields([a],
-[b])},sortFields:function(a,b){var c;for(c=null==b?Ints.range(0,a.length).map(function(){return!1}):Std.is(b,Array)?b:Ints.range(0,a.length).map(function(){return b});c.length<a.length;)c.push(!1);return this.sort(function(b,f){for(var g,h=0,i=a.length;h<i;){var j=h++;g=a[j];g=(c[j]?-1:1)*Dynamics.compare(Reflect.field(b,g),Reflect.field(f,g));if(0!=g)return g}return 0})},limit:function(a,b){null==b&&(b=a,a=0);return this.transform(rg.query.Transformers.limit(a,b))},reverse:function(){return this.transform(rg.query.Transformers.reverse)},
-unique:function(a){if(null==a)a=Dynamics.same;return this.transform(rg.query.Transformers.uniquef(a))},reduce:function(a,b){return this.transform(function(c){return[c.slice(1).reduce(b,a(c[0]))]})},merge:function(){return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(a){return[Arrays.flatten(a)]}))},discard:function(a){null==a&&(a=1);return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(b){for(var c=0;c<a;)c++,b.pop();return b}))},keep:function(a){null==a&&(a=1);
-return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(b){return b.slice(0,a)}))},split:function(a){if(Std.is(a,String))var b=a,a=function(a){return Reflect.field(a,b)};return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(b){for(var e=[],f=0;f<b.length;){var g=b[f];++f;e=e.concat(rg.query.Transformers.split(g,a))}return e}))},stackOperation:function(a,b){return this.stackTraverse(function(b){for(var e=0,f=b.length-1;e<f;){var g=e++;a(b[g],b[g+1])}},b)},stackTraverse:function(a,
-b){var c=rg.query.Transformers.rotate(b);return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(b){for(var f=c(b),g=0;g<f.length;){var h=f[g];++g;a(h)}return b}))},stackRotate:function(a){var b=rg.query.Transformers.rotate(a);return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(a){return b(a)}))},stackReverse:function(){return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(a){a.reverse();return a}))},store:function(a){var b=this;null==a&&(a="");return this.transformStack(function(c){b._first._store.set(a,
-c.copy());return c})},retrieve:function(a){var b=this;null==a&&(a="");return this.transformStack(function(c){return c.concat(b._first._store.get(a))})},clear:function(){return this.transformStack(function(){return[]})},execute:function(a){this._first.execute(a)},_query:function(a){return a},_createQuery:function(a,b){return new rg.query.BaseQuery(a,b)},toString:function(){return Type.getClassName(Type.getClass(this)).split(".").pop()+(" [next: "+(null!=this._next)+", async: "+(null!=this._async)+
-"]")},_this:function(a){return a},__class__:rg.query.BaseQuery};rg.query.ReportGridBaseQuery=$hxClasses["rg.query.ReportGridBaseQuery"]=function(a,b){rg.query.BaseQuery.call(this,a,b)};rg.query.ReportGridBaseQuery.__name__=["rg","query","ReportGridBaseQuery"];rg.query.ReportGridBaseQuery._defaultOptions=function(a,b){null==b&&(b={});if(null!=a.tag)b.tag=a.tag,b[a.tag]=Reflect.field(a,a.tag);if(null==a.start)return b;b.start=a.start;b.end=a.end;return b};
-rg.query.ReportGridBaseQuery._defaultSeriesOptions=function(a,b){b=rg.query.ReportGridBaseQuery._defaultOptions(a,b);b.periodicity=a.periodicity;if(null!=a.timezone)b.timeZone=a.timezone;if(null!=a.groupby)b.groupBy=a.groupby;return b};
-rg.query.ReportGridBaseQuery._ensureOptionalTimeParams=function(a){if(!(null==a.start&&null==a.end)&&(null==a.start?(a.end=rg.query.ReportGridBaseQuery._date(a.end),a.start=a.end-864E5):null==a.end?(a.start=rg.query.ReportGridBaseQuery._date(a.start),a.end=rg.query.ReportGridBaseQuery._date("now")):(a.start=rg.query.ReportGridBaseQuery._date(a.start),a.end=rg.query.ReportGridBaseQuery._date(a.end)),a.start>a.end)){var b=a.end;a.end=a.start;a.start=b}};
-rg.query.ReportGridBaseQuery._ensureTimeParams=function(a){a.start=rg.query.ReportGridBaseQuery._date(null==a.start?"24 hours ago":a.start);a.end=rg.query.ReportGridBaseQuery._date(null==a.end?"now":a.end);if(a.start>a.end){var b=a.end;a.end=a.start;a.start=b}a.periodicity=null==a.periodicity?rg.util.Periodicity.defaultPeriodicity(a.end-a.start):a.periodicity};
-rg.query.ReportGridBaseQuery._date=function(a){if(Std.is(a,Date))return a.getTime();if(Std.is(a,String))return thx.date.DateParser.parse(a).getTime();if(Std.is(a,Float))return a;rg.query.ReportGridBaseQuery._error("invalid date format for "+a);return null};rg.query.ReportGridBaseQuery._where=function(a,b){var c={};Objects.each(b,function(b,f){c[a+(("."==b.substr(0,1)?"":".")+b)]=f});return c};
-rg.query.ReportGridBaseQuery._error=function(a){throw new thx.error.Error(a,null,null,{fileName:"ReportGridQuery.hx",lineNumber:453,className:"rg.query.ReportGridBaseQuery",methodName:"_error"});};rg.query.ReportGridBaseQuery._complete=function(a,b,c,e){return function(f){f=a(f,b,c);e(f)}};rg.query.ReportGridBaseQuery._prefixProperty=function(a){return("."==a.substr(0,1)?"":".")+a};rg.query.ReportGridBaseQuery.__super__=rg.query.BaseQuery;
-rg.query.ReportGridBaseQuery.prototype=$extend(rg.query.BaseQuery.prototype,{executor:null,paths:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){c.executor.children(a.parent,{type:"path"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenPath,a,b,f))})},events:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,
-f){c.executor.children(a.path,{type:"property"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenEvent,a,b,f))})},properties:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){c.executor.children(a.path,{property:a.event},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenProperty,a,b,f))})},values:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?
-[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(a);var g=rg.query.ReportGridBaseQuery._defaultOptions(a,{property:a.event+rg.query.ReportGridBaseQuery._prefixProperty(a.property)});c.executor.propertyValues(a.path,g,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,a,b,f))})},count:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==
-a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(a);var g=rg.query.ReportGridBaseQuery._defaultOptions(a);null!=a.where?(null!=a.property?rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"):null!=a.value&&rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query"),g.where=rg.query.ReportGridBaseQuery._where(a.event,
-a.where),c.executor.searchCount(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,a,b,f))):null!=a.property?(null==a.value&&rg.query.ReportGridBaseQuery._error("can't count on a property"),g.property=a.event+rg.query.ReportGridBaseQuery._prefixProperty(a.property),g.value=a.value,c.executor.propertyValueCount(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.propertyValueCountTag:
-rg.query.ReportGridTransformers.propertyValueCount,a,b,f))):(g.property=a.event,c.executor.propertyCount(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,a,b,f)))})},summary:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){if(null==a.type)a.type="mean";var g={property:a.event+rg.query.ReportGridBaseQuery._prefixProperty(a.property),
-periodicity:"eternity"};switch(a.type.toLowerCase()){case "mean":c.executor.propertyMeans(a.path,g,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,a,b,f));break;case "standarddeviation":c.executor.propertyStandardDeviations(a.path,g,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,a,b,f));break;default:rg.query.ReportGridBaseQuery._error("invalid summary type: '"+a.type+"'")}})},summarySeries:function(a,b){var c=this,b=null==
-b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){if(null==a.type)a.type="mean";rg.query.ReportGridBaseQuery._ensureTimeParams(a);var g=rg.query.ReportGridBaseQuery._defaultSeriesOptions(a);g.property=a.event+rg.query.ReportGridBaseQuery._prefixProperty(a.property);var h=null!=a.tag?rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy:rg.query.ReportGridTransformers.propertySummarySeries;switch(a.type.toLowerCase()){case "mean":c.executor.propertyMeans(a.path,
-g,rg.query.ReportGridBaseQuery._complete(h,a,b,f));break;case "standarddeviation":c.executor.propertyStandardDeviations(a.path,g,rg.query.ReportGridBaseQuery._complete(h,a,b,f));break;default:rg.query.ReportGridBaseQuery._error("invalid summary type: '"+a.type+"'")}})},intersect:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(a);var g=rg.query.ReportGridBaseQuery._defaultOptions(a,
-{periodicity:"eternity"}),h=[];g.properties=h;for(var i=0,j=a.properties.length;i<j;){var k=i++,l=a.properties[k];Std.is(l,String)&&(l=a.properties[k]={property:l});k={property:a.event+rg.query.ReportGridBaseQuery._prefixProperty(l.property)};if(null!=l.top)null!=l.bottom&&rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property"),k.order="descending",k.limit=l.top;else if(null!=l.bottom)k.order="ascending",k.limit=l.bottom;h.push(k)}c.executor.intersect(a.path,
-g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.intersectTag:rg.query.ReportGridTransformers.intersect,a,b,f))})},intersectSeries:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){rg.query.ReportGridBaseQuery._ensureTimeParams(a);var g=rg.query.ReportGridBaseQuery._defaultSeriesOptions(a),h=[];g.properties=h;for(var i=0,j=a.properties.length;i<j;){var k=i++,l=a.properties[k];
-Std.is(l,String)&&(l=a.properties[k]={property:l});k={property:a.event+rg.query.ReportGridBaseQuery._prefixProperty(l.property)};if(null!=l.top)null!=l.bottom&&rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property"),k.order="descending",k.limit=l.top;else if(null!=l.bottom)k.order="ascending",k.limit=l.bottom;h.push(k)}c.executor.intersect(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.intersectSeriesTag:rg.query.ReportGridTransformers.intersectSeries,
-a,b,f))})},histogram:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(a);var g=rg.query.ReportGridBaseQuery._defaultOptions(a,{property:a.event+rg.query.ReportGridBaseQuery._prefixProperty(a.property)});if(null!=a.top)null!=a.bottom&&rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query"),g.top=a.top;else if(null!=
-a.bottom)g.bottom=a.bottom;if(null!=a.where)g.where=rg.query.ReportGridBaseQuery._where(a.event,a.where);c.executor.histogram(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,a,b,f))})},propertiesHistogram:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(a);
-var g=rg.query.ReportGridBaseQuery._defaultOptions(a,{property:a.event+rg.query.ReportGridBaseQuery._prefixProperty(a.property)});c.executor.propertiesHistogram(a.path,g,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,a,b,f))})},series:function(a,b){var c=this,b=null==b?[]:Std.is(b,String)?[b]:b;return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross().asyncEach(function(a,f){rg.query.ReportGridBaseQuery._ensureTimeParams(a);var g=rg.query.ReportGridBaseQuery._defaultSeriesOptions(a);
-null!=a.where?(null!=a.property?rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"):null!=a.value&&rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query"),g.where=rg.query.ReportGridBaseQuery._where(a.event,a.where),c.executor.searchSeries(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,
-a,b,f))):null!=a.property?(null==a.value&&rg.query.ReportGridBaseQuery._error("can't count on a property"),g.property=a.event+rg.query.ReportGridBaseQuery._prefixProperty(a.property),g.value=a.value,c.executor.propertyValueSeries(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=a.tag?rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy:rg.query.ReportGridTransformers.propertyValueSeries,a,b,f))):(g.property=a.event,c.executor.propertySeries(a.path,g,rg.query.ReportGridBaseQuery._complete(null!=
-a.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,a,b,f)))})},_crossp:function(a){return this.data(null==a?[{}]:Std.is(a,Array)?a:[a]).cross()},_params:function(a){return null==a?[{}]:Std.is(a,Array)?a:[a]},_createQuery:function(a,b){var c=new rg.query.ReportGridBaseQuery(a,b);c.executor=this.executor;return c},_normalizeKeep:function(a){return null==a?[]:Std.is(a,String)?[a]:a},__class__:rg.query.ReportGridBaseQuery});
-rg.query.ReportGridQuery=$hxClasses["rg.query.ReportGridQuery"]=function(a){rg.query.ReportGridBaseQuery.call(this,null,this);this.executor=a};rg.query.ReportGridQuery.__name__=["rg","query","ReportGridQuery"];rg.query.ReportGridQuery.create=function(a){var a=new rg.query.ReportGridQuery(a),b=a._createQuery(null,a);return a._next=b};rg.query.ReportGridQuery.__super__=rg.query.ReportGridBaseQuery;
-rg.query.ReportGridQuery.prototype=$extend(rg.query.ReportGridBaseQuery.prototype,{execute:function(a){rg.query.Query.executeHandler(this,a)},__class__:rg.query.ReportGridQuery});var Dates=$hxClasses.Dates=function(){};Dates.__name__=["Dates"];Dates.format=function(a,b,c,e){return Dates.formatf(b,c,e)(a)};
-Dates.formatf=function(a,b,c){b=thx.culture.FormatParams.params(a,b,"D");a=b.shift();switch(a){case "D":return function(a){return thx.culture.FormatDate.date(a,c)};case "DS":return function(a){return thx.culture.FormatDate.dateShort(a,c)};case "DST":return function(a){return thx.culture.FormatDate.dateShort(a,c)+" "+thx.culture.FormatDate.time(a,c)};case "DSTS":return function(a){return thx.culture.FormatDate.dateShort(a,c)+" "+thx.culture.FormatDate.timeShort(a,c)};case "DTS":return function(a){return thx.culture.FormatDate.date(a,
-c)+" "+thx.culture.FormatDate.timeShort(a,c)};case "Y":return function(a){return thx.culture.FormatDate.year(a,c)};case "YM":return function(a){return thx.culture.FormatDate.yearMonth(a,c)};case "M":return function(a){return thx.culture.FormatDate.month(a,c)};case "MN":return function(a){return thx.culture.FormatDate.monthName(a,c)};case "MS":return function(a){return thx.culture.FormatDate.monthNameShort(a,c)};case "MD":return function(a){return thx.culture.FormatDate.monthDay(a,c)};case "WD":return function(a){return thx.culture.FormatDate.weekDay(a,
-c)};case "WDN":return function(a){return thx.culture.FormatDate.weekDayName(a,c)};case "WDS":return function(a){return thx.culture.FormatDate.weekDayNameShort(a,c)};case "R":return function(a){return thx.culture.FormatDate.dateRfc(a,c)};case "DT":return function(a){return thx.culture.FormatDate.dateTime(a,c)};case "U":return function(a){return thx.culture.FormatDate.universal(a,c)};case "S":return function(a){return thx.culture.FormatDate.sortable(a,c)};case "T":return function(a){return thx.culture.FormatDate.time(a,
-c)};case "TS":return function(a){return thx.culture.FormatDate.timeShort(a,c)};case "C":var e=b[0];return null==e?function(a){return thx.culture.FormatDate.date(a,c)}:function(a){return thx.culture.FormatDate.format(e,a,c,null!=b[1]?"true"==b[1]:!0)};default:throw new thx.error.Error("Unsupported date format: {0}",null,a,{fileName:"Dates.hx",lineNumber:71,className:"Dates",methodName:"formatf"});}};Dates.interpolate=function(a,b,c,e){return Dates.interpolatef(b,c,e)(a)};
-Dates.interpolatef=function(a,b,c){var e=Floats.interpolatef(a.getTime(),b.getTime(),c);return function(a){return Date.fromTime(e(a))}};
-Dates.snap=function(a,b,c){null==c&&(c=0);if(0>c)switch(b){case "second":return 1E3*Math.floor(a/1E3);case "minute":return 6E4*Math.floor(a/6E4);case "hour":return 36E5*Math.floor(a/36E5);case "day":return 864E5*Math.floor(a/864E5);case "week":return 6048E5*Math.floor(a/6048E5);case "month":return b=Date.fromTime(a),(new Date(b.getFullYear(),b.getMonth(),1,0,0,0)).getTime();case "year":return b=Date.fromTime(a),(new Date(b.getFullYear(),0,1,0,0,0)).getTime();case "eternity":return 0;default:throw new thx.error.Error("unknown period '{0}'",
-null,b,{fileName:"Dates.hx",lineNumber:111,className:"Dates",methodName:"snap"});}else if(0<c)switch(b){case "second":return 1E3*Math.ceil(a/1E3);case "minute":return 6E4*Math.ceil(a/6E4);case "hour":return 36E5*Math.ceil(a/36E5);case "day":return 864E5*Math.ceil(a/864E5);case "week":return 6048E5*Math.ceil(a/6048E5);case "month":return b=Date.fromTime(a),(new Date(b.getFullYear(),b.getMonth()+1,1,0,0,0)).getTime();case "year":return b=Date.fromTime(a),(new Date(b.getFullYear()+1,0,1,0,0,0)).getTime();
-case "eternity":return 0;default:throw new thx.error.Error("unknown period '{0}'",null,b,{fileName:"Dates.hx",lineNumber:136,className:"Dates",methodName:"snap"});}else switch(b){case "second":return 1E3*Math.round(a/1E3);case "minute":return 6E4*Math.round(a/6E4);case "hour":return 36E5*Math.round(a/36E5);case "day":return 864E5*Math.round(a/864E5);case "week":return 6048E5*Math.round(a/6048E5);case "month":return b=Date.fromTime(a),a=b.getDate()>Math.round(DateTools.getMonthDays(b)/2)?1:0,(new Date(b.getFullYear(),
-b.getMonth()+a,1,0,0,0)).getTime();case "year":return b=Date.fromTime(a),a=a>(new Date(b.getFullYear(),6,2,0,0,0)).getTime()?1:0,(new Date(b.getFullYear()+a,0,1,0,0,0)).getTime();case "eternity":return 0;default:throw new thx.error.Error("unknown period '{0}'",null,b,{fileName:"Dates.hx",lineNumber:162,className:"Dates",methodName:"snap"});}};
-Dates.snapToWeekDay=function(a,b){var c=Date.fromTime(a).getDay(),e=0;switch(b.toLowerCase()){case "sunday":e=0;break;case "monday":e=1;break;case "tuesday":e=2;break;case "wednesday":e=3;break;case "thursday":e=4;break;case "friday":e=5;break;case "saturday":e=6;break;default:throw new thx.error.Error("unknown week day '{0}'",null,b,{fileName:"Dates.hx",lineNumber:188,className:"Dates",methodName:"snapToWeekDay"});}return a-864E5*((c-e)%7)};Dates.canParse=function(a){return Dates._reparse.match(a)};
-Dates.parse=function(a){var a=a.split("."),b=Date.fromString(StringTools.replace(a[0],"T"," "));1<a.length&&(b=Date.fromTime(b.getTime()+Std.parseInt(a[1])));return b};Dates.compare=function(a,b){return Floats.compare(a.getTime(),b.getTime())};Dates.prototype={__class__:Dates};if(!thx.date)thx.date={};thx.date.DateParser=$hxClasses["thx.date.DateParser"]=function(){};thx.date.DateParser.__name__=["thx","date","DateParser"];
-thx.date.DateParser.parse=function(a,b){var c=thx.date.DateParser.parseTime(a),e;null==b&&(b=Date.now());var a=StringTools.replace(a,c.matched,""),f=0,g=0,h=0,i=null!=c.matched;if(thx.date.DateParser.dateexp.match(a))if(i=!0,a=StringTools.replace(a,thx.date.DateParser.dateexp.matched(0),""),null!=(e=thx.date.DateParser.dateexp.matched(1)))h=Std.parseInt(thx.date.DateParser.dateexp.matched(2)),g=thx.date.DateParser.months.indexOf(e.toLowerCase()),f=null!=(e=thx.date.DateParser.dateexp.matched(3))?
-thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(4)))h=Std.parseInt(thx.date.DateParser.dateexp.matched(5)),g=thx.date.DateParser.shortmonths.indexOf(e.toLowerCase()),f=null!=(e=thx.date.DateParser.dateexp.matched(6))?thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(8)))g=thx.date.DateParser.months.indexOf(e.toLowerCase()),h=null!=(e=thx.date.DateParser.dateexp.matched(7))?
-Std.parseInt(e):1,f=null!=(e=thx.date.DateParser.dateexp.matched(9))?thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(11)))g=thx.date.DateParser.shortmonths.indexOf(e.toLowerCase()),h=null!=(e=thx.date.DateParser.dateexp.matched(10))?Std.parseInt(e):1,f=null!=(e=thx.date.DateParser.dateexp.matched(12))?thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(14)))g=thx.date.DateParser.months.indexOf(e.toLowerCase()),
-h=null!=(e=thx.date.DateParser.dateexp.matched(13))?Std.parseInt(e):1,f=null!=(e=thx.date.DateParser.dateexp.matched(15))?thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(17)))g=thx.date.DateParser.shortmonths.indexOf(e.toLowerCase()),h=null!=(e=thx.date.DateParser.dateexp.matched(16))?Std.parseInt(e):1,f=null!=(e=thx.date.DateParser.dateexp.matched(18))?thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(19)))h=
-Std.parseInt(thx.date.DateParser.dateexp.matched(20)),g=Std.parseInt(e)-1,f=null!=(e=thx.date.DateParser.dateexp.matched(21))?thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(23)))h=Std.parseInt(thx.date.DateParser.dateexp.matched(22)),g=Std.parseInt(e)-1,f=null!=(e=thx.date.DateParser.dateexp.matched(24))?thx.date.DateParser.fixyear(Std.parseInt(e)):b.getFullYear();else if(null!=(e=thx.date.DateParser.dateexp.matched(25)))f=thx.date.DateParser.fixyear(Std.parseInt(e)),
-h=Std.parseInt(thx.date.DateParser.dateexp.matched(27)),g=Std.parseInt(thx.date.DateParser.dateexp.matched(26))-1;else{if(null!=(e=thx.date.DateParser.dateexp.matched(28)))f=b.getFullYear(),h=Std.parseInt(e),g=b.getMonth()}else if(thx.date.DateParser.absdateexp.match(a)){i=!0;a=StringTools.replace(a,thx.date.DateParser.absdateexp.matched(0),"");f=b.getFullYear();g=b.getMonth();h=b.getDate();if(null!=(e=thx.date.DateParser.absdateexp.matched(1)))switch(e.toLowerCase()){case "now":case "this second":if(null==
-c.matched)c.hour=b.getHours(),c.minute=b.getMinutes(),c.second=b.getSeconds();break;case "tomorrow":h+=1;break;case "yesterday":h-=1}else if(null!=(e=thx.date.DateParser.absdateexp.matched(3)))var j=thx.date.DateParser.absdateexp.matched(2),k=thx.date.DateParser.months.indexOf(e.toLowerCase()),f=k==g?f+(thx.date.DateParser.last(j)?-1:thx.date.DateParser.next(j)?1:0):k>g?f+(thx.date.DateParser.last(j)?-1:0):f+(thx.date.DateParser.next(j)?1:0),g=k,h=1;else if(null!=(e=thx.date.DateParser.absdateexp.matched(5)))var j=
-thx.date.DateParser.absdateexp.matched(4),k=thx.date.DateParser.days.indexOf(e.toLowerCase()),l=b.getDay(),h=k==l?h+(thx.date.DateParser.last(j)?-7:thx.date.DateParser.next(j)?7:0):k>l?h+(k-l+(thx.date.DateParser.last(j)?-7:0)):h+(k-l+(thx.date.DateParser.next(j)?7:0));else if(null!=(e=thx.date.DateParser.absdateexp.matched(7)))j=thx.date.DateParser.absdateexp.matched(6),k=thx.date.DateParser.shortmonths.indexOf(e.toLowerCase()),f=k==g?f+(thx.date.DateParser.last(j)?-1:thx.date.DateParser.next(j)?
-1:0):k>g?f+(thx.date.DateParser.last(j)?-1:0):f+(thx.date.DateParser.next(j)?1:0),g=k,h=1;else if(null!=(e=thx.date.DateParser.absdateexp.matched(9)))j=thx.date.DateParser.absdateexp.matched(8),k=thx.date.DateParser.shortdays.indexOf(e.toLowerCase()),l=b.getDay(),h=k==l?h+(thx.date.DateParser.last(j)?-7:thx.date.DateParser.next(j)?7:0):k>l?h+(k-l+(thx.date.DateParser.last(j)?-7:0)):h+(k-l+(thx.date.DateParser.next(j)?7:0));if(null==c.matched)c.matched="x"}else f=b.getFullYear(),g=b.getMonth(),h=b.getDate();
-for(;thx.date.DateParser.relexp.match(a);){i=!0;a=StringTools.replace(a,thx.date.DateParser.relexp.matched(0),"");j=thx.date.DateParser.relexp.matched(1);if(null!=j)k=null!=(e=thx.date.DateParser.relexp.matched(2))?Std.parseInt(e):1,l=thx.date.DateParser.relexp.matched(3);else{l=thx.date.DateParser.relexp.matched(5);if(null==l)break;k=null!=(e=thx.date.DateParser.relexp.matched(4))?Std.parseInt(e):1;j=null!=(e=thx.date.DateParser.relexp.matched(6))?e:"after"}j=j.toLowerCase();switch(j){case "minus":case "-":case "before":case "ago":k=
--k}switch(j){case "ago":case "in":if(null==c.matched)c.hour=b.getHours(),c.minute=b.getMinutes(),c.second=b.getSeconds(),c.matched="x"}switch(l.toLowerCase()){case "second":case "seconds":c.second+=k;break;case "minute":case "minutes":c.minute+=k;break;case "hour":case "hours":c.hour+=k;break;case "day":case "days":h+=k;break;case "week":case "weeks":h+=7*k;break;case "month":case "months":g+=k;break;case "year":case "years":f+=k}}if(!i)throw new thx.error.Error("no date information found in the string '{0}'",
-null,a,{fileName:"DateParser.hx",lineNumber:338,className:"thx.date.DateParser",methodName:"parse"});return Date.fromTime((new Date(f,g,h,c.hour,c.minute,c.second)).getTime()+c.millis)};
-thx.date.DateParser.parseTime=function(a){var b={hour:0,minute:0,second:0,millis:0,matched:null};if(!thx.date.DateParser.timeexp.match(a))return b;b.matched=thx.date.DateParser.timeexp.matched(0);var c;if(null!=(c=thx.date.DateParser.timeexp.matched(1)))b.hour=Std.parseInt(c)+thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(3)),b.minute=Std.parseInt(thx.date.DateParser.timeexp.matched(2));else if(null!=(c=thx.date.DateParser.timeexp.matched(4))){b.hour=Std.parseInt(c);b.minute=Std.parseInt(thx.date.DateParser.timeexp.matched(5));
-if(null!=(c=thx.date.DateParser.timeexp.matched(6)))b.second=Std.parseInt(c);if(null!=(c=thx.date.DateParser.timeexp.matched(7)))b.millis=Std.parseFloat(c)/1E3}else if(null!=(c=thx.date.DateParser.timeexp.matched(8)))b.hour=Std.parseInt(c)+thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(10)),b.minute=Std.parseInt(thx.date.DateParser.timeexp.matched(9));else if(null!=(c=thx.date.DateParser.timeexp.matched(11)))b.hour=Std.parseInt(c)+thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(12));
-else if(null!=(c=thx.date.DateParser.timeexp.matched(13)))switch(c.toLowerCase()){case "evening":b.hour=17;break;case "morning":b.hour=8;break;case "afternoon":b.hour=14;break;case "sunsrise":case "dawn":b.hour=6;break;case "sunset":case "dusk":b.hour=19;break;case "noon":case "midday":case "mid-day":b.hour=12;break;case "mid-night":case "midnight":b.hour=23,b.minute=59,b.second=59,b.millis=0.999}else throw new thx.error.Error("failed to parse time for '{0}'",null,a,{fileName:"DateParser.hx",lineNumber:405,
-className:"thx.date.DateParser",methodName:"parseTime"});return b};thx.date.DateParser.fixyear=function(a){return 70>a?2E3+a:100>a?1900+a:a};thx.date.DateParser.last=function(a){return null==a?!1:"last"==a.toLowerCase()};thx.date.DateParser.next=function(a){return null==a?!0:"next"==a.toLowerCase()};thx.date.DateParser.plusPm=function(a){if(null==a)a=0;else switch(a.toLowerCase()){case "pm":case "evening":case "afternoon":a=12;break;default:a=0}return a};thx.date.DateParser.prototype={__class__:thx.date.DateParser};
-var ValueType=$hxClasses.ValueType={__ename__:["ValueType"],__constructs__:"TNull,TInt,TFloat,TBool,TObject,TFunction,TClass,TEnum,TUnknown".split(",")};ValueType.TNull=["TNull",0];ValueType.TNull.toString=$estr;ValueType.TNull.__enum__=ValueType;ValueType.TInt=["TInt",1];ValueType.TInt.toString=$estr;ValueType.TInt.__enum__=ValueType;ValueType.TFloat=["TFloat",2];ValueType.TFloat.toString=$estr;ValueType.TFloat.__enum__=ValueType;ValueType.TBool=["TBool",3];ValueType.TBool.toString=$estr;
-ValueType.TBool.__enum__=ValueType;ValueType.TObject=["TObject",4];ValueType.TObject.toString=$estr;ValueType.TObject.__enum__=ValueType;ValueType.TFunction=["TFunction",5];ValueType.TFunction.toString=$estr;ValueType.TFunction.__enum__=ValueType;ValueType.TClass=function(a){a=["TClass",6,a];a.__enum__=ValueType;a.toString=$estr;return a};ValueType.TEnum=function(a){a=["TEnum",7,a];a.__enum__=ValueType;a.toString=$estr;return a};ValueType.TUnknown=["TUnknown",8];ValueType.TUnknown.toString=$estr;
-ValueType.TUnknown.__enum__=ValueType;var Type=$hxClasses.Type=function(){};Type.__name__=["Type"];Type.getClass=function(a){return null==a||null!=a.__enum__?null:a.__class__};Type.getEnum=function(a){return null==a?null:a.__enum__};Type.getSuperClass=function(a){return a.__super__};Type.getClassName=function(a){return a.__name__.join(".")};Type.getEnumName=function(a){return a.__ename__.join(".")};Type.resolveClass=function(a){a=$hxClasses[a];return null==a||null==a.__name__?null:a};
-Type.resolveEnum=function(a){a=$hxClasses[a];return null==a||null==a.__ename__?null:a};Type.createInstance=function(a,b){if(3>=b.length)return new a(b[0],b[1],b[2]);if(8<b.length)throw"Too many arguments";return new a(b[0],b[1],b[2],b[3],b[4],b[5],b[6],b[7])};Type.createEmptyInstance=function(a){function b(){}b.prototype=a.prototype;return new b};
-Type.createEnum=function(a,b,c){var e=Reflect.field(a,b);if(null==e)throw"No such constructor "+b;if(Reflect.isFunction(e)){if(null==c)throw"Constructor "+b+" need parameters";return e.apply(a,c)}if(null!=c&&0!=c.length)throw"Constructor "+b+" does not need parameters";return e};Type.createEnumIndex=function(a,b,c){var e=a.__constructs__[b];if(null==e)throw b+" is not a valid enum constructor index";return Type.createEnum(a,e,c)};
-Type.getInstanceFields=function(a){var b=[],c;for(c in a.prototype)b.push(c);b.remove("__class__");b.remove("__properties__");return b};Type.getClassFields=function(a){a=Reflect.fields(a);a.remove("__name__");a.remove("__interfaces__");a.remove("__properties__");a.remove("__super__");a.remove("prototype");return a};Type.getEnumConstructs=function(a){return a.__constructs__.copy()};
-Type["typeof"]=function(a){switch(typeof a){case "boolean":return ValueType.TBool;case "string":return ValueType.TClass(String);case "number":return Math.ceil(a)==a%2147483648?ValueType.TInt:ValueType.TFloat;case "object":if(null==a)return ValueType.TNull;var b=a.__enum__;if(null!=b)return ValueType.TEnum(b);a=a.__class__;return null!=a?ValueType.TClass(a):ValueType.TObject;case "function":return null!=a.__name__?ValueType.TObject:ValueType.TFunction;case "undefined":return ValueType.TNull;default:return ValueType.TUnknown}};
-Type.enumEq=function(a,b){if(a==b)return!0;try{if(a[0]!=b[0])return!1;for(var c=2,e=a.length;c<e;){var f=c++;if(!Type.enumEq(a[f],b[f]))return!1}var g=a.__enum__;if(g!=b.__enum__||null==g)return!1}catch(h){return!1}return!0};Type.enumConstructor=function(a){return a[0]};Type.enumParameters=function(a){return a.slice(2)};Type.enumIndex=function(a){return a[1]};Type.allEnums=function(a){for(var b=[],c=a.__constructs__,e=0;e<c.length;){var f=c[e];++e;f=Reflect.field(a,f);Reflect.isFunction(f)||b.push(f)}return b};
-Type.prototype={__class__:Type};thx.util.Message=$hxClasses["thx.util.Message"]=function(a,b,c){this.message=a;this.params=null==b?[]:b;null!=c&&this.params.push(c)};thx.util.Message.__name__=["thx","util","Message"];
-thx.util.Message.prototype={message:null,params:null,toString:function(){return Strings.format(this.message,this.params)},translatef:function(a){return Strings.format(a(this.message),this.params)},translate:function(a,b){null==b&&(b=a.getDomain());var c=thx.culture.Culture.get(b);return 1==this.params.length&&Std.is(this.params[0],Int)?Strings.format(a.__(null,this.message,this.params[0],b),this.params,null,c):Strings.format(a._(this.message,b),this.params,null,c)},__class__:thx.util.Message};
-var Enums=$hxClasses.Enums=function(){};Enums.__name__=["Enums"];Enums.string=function(a){for(var b=a[0],c=[],e=0,a=a.slice(2);e<a.length;){var f=a[e];++e;c.push(Dynamics.string(f))}return b+(0==c.length?"":"("+c.join(", ")+")")};Enums.compare=function(a,b){var c;return 0!=(c=a[1]-b[1])?c:Arrays.compare(a.slice(2),b.slice(2))};Enums.prototype={__class__:Enums};var js=js||{};js.Boot=$hxClasses["js.Boot"]=function(){};js.Boot.__name__=["js","Boot"];js.Boot.__unhtml=function(a){return a.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;")};
-js.Boot.__trace=function(a,b){var c=null!=b?b.fileName+":"+b.lineNumber+": ":"",c=c+js.Boot.__string_rec(a,""),e=document.getElementById("haxe:trace");null!=e?e.innerHTML+=js.Boot.__unhtml(c)+"<br/>":"undefined"!=typeof console&&null!=console.log&&console.log(c)};js.Boot.__clear_trace=function(){var a=document.getElementById("haxe:trace");if(null!=a)a.innerHTML=""};
-js.Boot.__string_rec=function(a,b){if(null==a)return"null";if(5<=b.length)return"<...>";var c=typeof a;if("function"==c&&(null!=a.__name__||null!=a.__ename__))c="object";switch(c){case "object":if(a instanceof Array){if(null!=a.__enum__){if(2==a.length)return a[0];for(var c=a[0]+"(",b=b+"\t",e=2,f=a.length;e<f;)var g=e++,c=2!=g?c+(","+js.Boot.__string_rec(a[g],b)):c+js.Boot.__string_rec(a[g],b);return c+")"}e=a.length;c="[";b+="\t";for(f=0;f<e;)g=f++,c+=(0<g?",":"")+js.Boot.__string_rec(a[g],b);return c+
-"]"}try{f=a.toString}catch(h){return"???"}if(null!=f&&f!=Object.toString&&(c=a.toString(),"[object Object]"!=c))return c;f=null;c="{\n";b+="\t";e=null!=a.hasOwnProperty;for(f in a)if(!e||a.hasOwnProperty(f))"prototype"==f||"__class__"==f||"__super__"==f||"__interfaces__"==f||"__properties__"==f||(2!=c.length&&(c+=", \n"),c+=b+f+" : "+js.Boot.__string_rec(a[f],b));b=b.substring(1);return c+("\n"+b+"}");case "function":return"<function>";case "string":return a;default:return""+a}};
-js.Boot.__interfLoop=function(a,b){if(null==a)return!1;if(a==b)return!0;var c=a.__interfaces__;if(null!=c)for(var e=0,f=c.length;e<f;){var g=e++,g=c[g];if(g==b||js.Boot.__interfLoop(g,b))return!0}return js.Boot.__interfLoop(a.__super__,b)};
-js.Boot.__instanceof=function(a,b){try{if(a instanceof b)return b==Array?null==a.__enum__:!0;if(js.Boot.__interfLoop(a.__class__,b))return!0}catch(c){if(null==b)return!1}switch(b){case Int:return Math.ceil(a%2147483648)===a;case Float:return"number"==typeof a;case Bool:return!0===a||!1===a;case String:return"string"==typeof a;case Dynamic:return!0;default:return null==a?!1:a.__enum__==b||b==Class&&null!=a.__name__||b==Enum&&null!=a.__ename__}};
-js.Boot.__init=function(){js.Lib.isIE="undefined"!=typeof document&&null!=document.all&&"undefined"!=typeof window&&null==window.opera;js.Lib.isOpera="undefined"!=typeof window&&null!=window.opera;Array.prototype.copy=Array.prototype.slice;Array.prototype.insert=function(a,c){this.splice(a,0,c)};Array.prototype.remove=Array.prototype.indexOf?function(a){a=this.indexOf(a);if(-1==a)return!1;this.splice(a,1);return!0}:function(a){for(var c=0,e=this.length;c<e;){if(this[c]==a)return this.splice(c,1),
-!0;c++}return!1};Array.prototype.iterator=function(){return{cur:0,arr:this,hasNext:function(){return this.cur<this.arr.length},next:function(){return this.arr[this.cur++]}}};if(null==String.prototype.cca)String.prototype.cca=String.prototype.charCodeAt;String.prototype.charCodeAt=function(a){a=this.cca(a);return a!=a?void 0:a};var a=String.prototype.substr;String.prototype.substr=function(b,c){if(null!=b&&0!=b&&null!=c&&0>c)return"";if(null==c)c=this.length;0>b?(b=this.length+b,0>b&&(b=0)):0>c&&(c=
-this.length+c-b);return a.apply(this,[b,c])};Function.prototype.$bind=function(a){var c=function(){return c.method.apply(c.scope,arguments)};c.scope=a;c.method=this;return c}};js.Boot.prototype={__class__:js.Boot};var haxe=haxe||{};haxe.Timer=$hxClasses["haxe.Timer"]=function(a){var b=haxe_timers;this.id=b.length;b[this.id]=this;this.timerId=window.setInterval("haxe_timers["+this.id+"].run();",a)};haxe.Timer.__name__=["haxe","Timer"];
-haxe.Timer.delay=function(a,b){var c=new haxe.Timer(b);c.run=function(){c.stop();a()};return c};haxe.Timer.measure=function(a,b){var c=haxe.Timer.stamp(),e=a();haxe.Log.trace(haxe.Timer.stamp()-c+"s",b);return e};haxe.Timer.stamp=function(){return Date.now().getTime()/1E3};
-haxe.Timer.prototype={id:null,timerId:null,stop:function(){if(null!=this.id){window.clearInterval(this.timerId);var a=haxe_timers;a[this.id]=null;if(100<this.id&&this.id==a.length-1){for(var b=this.id-1;0<=b&&null==a[b];)b--;a.slice(0,b+1)}this.id=null}},run:function(){},__class__:haxe.Timer};if(!thx.translation)thx.translation={};thx.translation.ITranslation=$hxClasses["thx.translation.ITranslation"]=function(){};thx.translation.ITranslation.__name__=["thx","translation","ITranslation"];
-thx.translation.ITranslation.prototype={domain:null,_:null,__:null,__class__:thx.translation.ITranslation,__properties__:{set_domain:"setDomain",get_domain:"getDomain"}};rg.query.ReportGridTransformers=$hxClasses["rg.query.ReportGridTransformers"]=function(){};rg.query.ReportGridTransformers.__name__=["rg","query","ReportGridTransformers"];
-rg.query.ReportGridTransformers.childrenPath=function(a,b,c){var e=b.parent,f="/"==e?"":e;return a.map(function(a){a={parent:e,path:f+"/"+a};rg.query.ReportGridTransformers._keep(b,a,c);return a})};rg.query.ReportGridTransformers.childrenEvent=function(a,b,c){var e=b.path;return a.map(function(a){a={path:e,event:a.substr(1)};rg.query.ReportGridTransformers._keep(b,a,c);return a})};
-rg.query.ReportGridTransformers.childrenProperty=function(a,b,c){var e=b.path,f=b.event;return a.map(function(a){a={path:e,event:f,property:a.substr(1)};rg.query.ReportGridTransformers._keep(b,a,c);return a})};rg.query.ReportGridTransformers.propertyValues=function(a,b,c){var e=b.path,f=b.event,g=b.property;return a.map(function(a){a={path:e,event:f,property:g,value:a};rg.query.ReportGridTransformers._keep(b,a,c);return a})};
-rg.query.ReportGridTransformers.histogram=function(a,b,c){var e=b.property;return a.map(function(a){var g={count:a[1]};rg.query.ReportGridTransformers._keep(b,g,c);g[e]=a[0];return g})};rg.query.ReportGridTransformers.histogramTag=function(a,b,c){var e=b.tag,f=b.property;return Arrays.flatten(Objects.map(a,function(a,h){return h.map(function(h){var j={count:h[1]};rg.query.ReportGridTransformers._keep(b,j,c);j[e]=Strings.rtrim(Strings.ltrim(a,"/"),"/");j[f]=h[0];return j})}))};
-rg.query.ReportGridTransformers.propertiesHistogram=function(a,b,c){var e=b.property;return a.map(function(a){var g={count:a[1]};rg.query.ReportGridTransformers._keep(b,g,c);g[e]=Strings.ltrim(a[0],".");return g})};rg.query.ReportGridTransformers.intersect=function(a,b,c){for(var e=b.properties,f=[],g=0,a=Objects.flatten(a);g<a.length;){var h=a[g];++g;var i={count:h.value};rg.query.ReportGridTransformers._keep(b,i,c);for(var j=0,k=e.length;j<k;){var l=j++;i[e[l].property]=thx.json.Json.decode(h.fields[l])}f.push(i)}return f};
-rg.query.ReportGridTransformers.intersectTag=function(a,b,c){var e=b.tag,f=b.properties,g=[];Objects.each(a,function(a,i){for(var j=0,k=Objects.flatten(i);j<k.length;){var l=k[j];++j;var m={count:l.value};rg.query.ReportGridTransformers._keep(b,m,c);m[e]=Strings.rtrim(Strings.ltrim(a,"/"),"/");for(var n=0,o=f.length;n<o;){var p=n++;m[f[p].property]=thx.json.Json.decode(l.fields[p])}g.push(m)}});return g};
-rg.query.ReportGridTransformers.intersectSeries=function(a,b,c){for(var e=b.properties,f=b.periodicity,g=b.timezone,h=b.groupby,i=[],j=0,a=Objects.flatten(a);j<a.length;){var k=a[j];++j;for(var l=k.value,m=0;m<l.length;){var n=l[m];++m;var o={count:n[1]};rg.query.ReportGridTransformers._keep(b,o,c);rg.query.ReportGridTransformers._injectTime(o,n[0],f,g,h);for(var n=0,p=e.length;n<p;){var q=n++;o[e[q].property]=thx.json.Json.decode(k.fields[q])}i.push(o)}}return i};
-rg.query.ReportGridTransformers.intersectSeriesTag=function(a,b,c){var e=b.properties,f=b.periodicity,g=b.tag,h=b.timezone,i=b.groupby,j=[];Objects.each(a,function(a,l){for(var m=0,n=Objects.flatten(l);m<n.length;){var o=n[m];++m;for(var p=o.value,q=0;q<p.length;){var r=p[q];++q;var s={count:r[1]};rg.query.ReportGridTransformers._keep(b,s,c);rg.query.ReportGridTransformers._injectTime(s,r[0],f,h,i);s[g]=Strings.rtrim(Strings.ltrim(a,"/"),"/");for(var r=0,u=e.length;r<u;){var t=r++;s[e[t].property]=
-thx.json.Json.decode(o.fields[t])}j.push(s)}}});return j};rg.query.ReportGridTransformers.eventCount=function(a,b,c){a={event:b.event,count:a};rg.query.ReportGridTransformers._keep(b,a,c);null!=b.where&&Objects.copyTo(b.where,a);return[a]};
-rg.query.ReportGridTransformers.eventCountTag=function(a,b,c){var e=b.event,f=b.tag;return Objects.map(a,function(a,h){var i={event:e,count:h};rg.query.ReportGridTransformers._keep(b,i,c);i[f]=Strings.rtrim(Strings.ltrim(a,"/"),"/");null!=b.where&&Objects.copyTo(b.where,i);return i})};
-rg.query.ReportGridTransformers.eventSeriesTagGroupedBy=function(a,b,c){var e=b.event,f=b.periodicity,g=b.where,h=b.groupby,i=b.tag;return Arrays.flatten(Objects.map(a,function(a,k){for(var l=[],m=0;m<k.length;){var n=k[m];++m;var o={event:e,count:n[1]};rg.query.ReportGridTransformers._keep(b,o,c);o[i]=Strings.rtrim(Strings.ltrim(a,"/"),"/");rg.query.ReportGridTransformers._injectTime(o,n[0],f,null,h);null!=g&&Objects.copyTo(g,o);l.push(o)}return l}))};
-rg.query.ReportGridTransformers.eventSeries=function(a,b,c){for(var e=b.event,f=b.periodicity,g=b.where,h=b.timezone,i=b.groupby,j=[],k=0;k<a.length;){var l=a[k];++k;var m={event:e,count:l[1]};rg.query.ReportGridTransformers._keep(b,m,c);rg.query.ReportGridTransformers._injectTime(m,l[0],f,h,i);null!=g&&Objects.copyTo(g,m);j.push(m)}return j};rg.query.ReportGridTransformers.propertySummary=function(a,b,c){var e={};rg.query.ReportGridTransformers._keep(b,e,c);e[b.type]=a[0][1];return[e]};
-rg.query.ReportGridTransformers.propertySummarySeries=function(a,b,c){for(var e=b.periodicity,f=b.type,g=b.timezone,h=b.groupby,i=[],j=0;j<a.length;){var k=a[j];++j;var l={};rg.query.ReportGridTransformers._keep(b,l,c);rg.query.ReportGridTransformers._injectTime(l,k[0],e,g,h);l[f]=k[1];i.push(l)}return i};
-rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy=function(a,b,c){var e=b.periodicity,f=b.type,g=b.groupby,h=b.tag;return Arrays.flatten(Objects.map(a,function(a,j){for(var k=[],l=0;l<j.length;){var m=j[l];++l;var n={};rg.query.ReportGridTransformers._keep(b,n,c);n[h]=Strings.rtrim(Strings.ltrim(a,"/"),"/");n[f]=m[1];rg.query.ReportGridTransformers._injectTime(n,m[0],e,null,g);k.push(n)}return k}))};
-rg.query.ReportGridTransformers.propertyValueCount=function(a,b,c){a={count:a};rg.query.ReportGridTransformers._keep(b,a,c);a[b.property]=b.value;return[a]};rg.query.ReportGridTransformers.propertyValueCountTag=function(a,b,c){var e=b.property,f=b.value,g=b.tag;return Objects.map(a,function(a,i){var j={count:i};rg.query.ReportGridTransformers._keep(b,j,c);j[e]=f;j[g]=Strings.rtrim(Strings.ltrim(a,"/"),"/");return j})};
-rg.query.ReportGridTransformers.propertyValueSeries=function(a,b,c){for(var e=b.property,f=b.periodicity,g=b.value,h=b.timezone,i=b.groupby,j=[],k=0;k<a.length;){var l=a[k];++k;var m={count:l[1]};rg.query.ReportGridTransformers._keep(b,m,c);m[e]=g;rg.query.ReportGridTransformers._injectTime(m,l[0],f,h,i);j.push(m)}return j};
-rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy=function(a,b,c){var e=b.property,f=b.value,g=b.periodicity,h=b.groupby,i=b.tag;return Arrays.flatten(Objects.map(a,function(j,k){for(var l=[],m=0;m<k.length;){var n=k[m];++m;var o={count:n[1]};rg.query.ReportGridTransformers._keep(b,o,c);a[e]=f;o[i]=Strings.rtrim(Strings.ltrim(j,"/"),"/");rg.query.ReportGridTransformers._injectTime(o,n[0],g,null,h);l.push(o)}return l}))};
-rg.query.ReportGridTransformers._keep=function(a,b,c){for(var e=0;e<c.length;){var f=c[e];++e;Reflect.hasField(b,f)||(b[f]=Reflect.field(a,f))}};rg.query.ReportGridTransformers._injectTime=function(a,b,c,e,f){null!=f?(a[c]=Reflect.field(b,c),a.groupby=f):null!=e?(a["time:"+c]=rg.query.ReportGridTransformers._parseTimeTZ(b.datetime),a.timezone=e):a["time:"+c]=b.timestamp};
-rg.query.ReportGridTransformers._parseTimeTZ=function(a){var b=1,c=a.indexOf("+");0>c&&(b=-1,c=a.indexOf("-"));var e=Date.fromString(StringTools.replace(StringTools.replace(a.substr(0,c),"T"," "),".000","")),a=thx.date.DateParser.parseTime(a.substr(c+1));return e.getTime()+b*(36E5*a.hour+6E4*a.minute+1E3*a.second+a.millis)};rg.query.ReportGridTransformers._trimPrefix=function(a){return a.substr(1)};rg.query.ReportGridTransformers.prototype={__class__:rg.query.ReportGridTransformers};
-var IntHash=$hxClasses.IntHash=function(){this.h={};if(null!=this.h.__proto__)this.h.__proto__=null,delete this.h.__proto__};IntHash.__name__=["IntHash"];
-IntHash.prototype={h:null,set:function(a,b){this.h[a]=b},get:function(a){return this.h[a]},exists:function(a){return null!=this.h[a]},remove:function(a){if(null==this.h[a])return!1;delete this.h[a];return!0},keys:function(){var a=[];for(x in this.h)a.push(x);return a.iterator()},iterator:function(){return{ref:this.h,it:this.keys(),hasNext:function(){return this.it.hasNext()},next:function(){return this.ref[this.it.next()]}}},toString:function(){var a=new StringBuf;a.b[a.b.length]="{";for(var b=this.keys();b.hasNext();){var c=
-b.next();a.b[a.b.length]=null==c?"null":c;a.b[a.b.length]=" => ";a.add(Std.string(this.get(c)));b.hasNext()&&(a.b[a.b.length]=", ")}a.b[a.b.length]="}";return a.b.join("")},__class__:IntHash};if(!rg.app)rg.app={};if(!rg.app.query)rg.app.query={};rg.app.query.JSBridge=$hxClasses["rg.app.query.JSBridge"]=function(){};rg.app.query.JSBridge.__name__=["rg","app","query","JSBridge"];
-rg.app.query.JSBridge.createQuery=function(a){for(var b=rg.query.ReportGridQuery.create(a),c={},e=0,f=Type.getInstanceFields(Type.getClass(b));e<f.length;){var g=[f[e]];++e;"_"!=g[0].substr(0,1)&&Reflect.isFunction(Reflect.field(b,g[0]))&&(c[g[0]]=function(b){return function(){var c=rg.query.ReportGridQuery.create(a);return Reflect.field(c,b[0]).apply(c,arguments)}}(g))}return c};
-rg.app.query.JSBridge.main=function(){var a;a=rg.storage.BrowserStorage.hasSessionStorage()?rg.storage.BrowserStorage.sessionStorage():new rg.storage.MemoryStorage;var b=!ReportGrid?ReportGrid={}:ReportGrid,c=120,e=new rg.data.reportgrid.ReportGridExecutorCache(b,a,c);b.query=rg.app.query.JSBridge.createQuery(e);b.date={range:function(a,b,c){Std.is(a,String)&&(a=thx.date.DateParser.parse(a));null==a&&(a=rg.util.Periodicity.defaultRange(c)[0]);Std.is(a,Date)&&(a=a.getTime());Std.is(b,String)&&(b=thx.date.DateParser.parse(b));
-null==b&&(b=rg.util.Periodicity.defaultRange(c)[1]);Std.is(b,Date)&&(b=b.getTime());return rg.util.Periodicity.range(a,b,c)},parse:thx.date.DateParser.parse,snap:Dates.snap};b.info=null!=b.info?b.info:{};b.info.query={version:"1.2.0.1409"};var f=new thx.math.Random(666);b.math={setRandomSeed:function(a){f=new thx.math.Random(a)},random:function(){return((f.seed=16807*f.seed%2147483647)&1073741823)/1073741823}};b.cache={executor:e,disable:function(){if(null==e||Std.is(e,rg.data.reportgrid.ReportGridExecutorCache))b.cache.executor=
-e=b,b.query=rg.app.query.JSBridge.createQuery(e)},enable:function(){if(null==e||!Std.is(e,rg.data.reportgrid.ReportGridExecutorCache))b.cache.executor=e=new rg.data.reportgrid.ReportGridExecutorCache(b,a,c),b.query=rg.app.query.JSBridge.createQuery(e)},setTimeout:function(a){e=null;c=a;b.cache.enable()},memoryStorage:function(){e=null;a=new rg.storage.MemoryStorage;b.cache.enable()},sessionStorage:function(){e=null;a=rg.storage.BrowserStorage.hasSessionStorage()?rg.storage.BrowserStorage.sessionStorage():
-new rg.storage.MemoryStorage;b.cache.enable()},localStorage:function(){e=null;a=rg.storage.BrowserStorage.hasLocalStorage()?rg.storage.BrowserStorage.localStorage():rg.storage.BrowserStorage.hasSessionStorage()?rg.storage.BrowserStorage.sessionStorage():new rg.storage.MemoryStorage;b.cache.enable()}}};rg.app.query.JSBridge.opt=function(a){return null==a?{}:Objects.clone(a)};rg.app.query.JSBridge.prototype={__class__:rg.app.query.JSBridge};var Strings=$hxClasses.Strings=function(){};
-Strings.__name__=["Strings"];Strings.format=function(a,b,c,e){null==c&&(c="null");return null==b||0==b.length?a:Strings.formatf(a,c,e)(b)};
-Strings.formatf=function(a,b,c){null==b&&(b="null");for(var e=[];;){if(!Strings._reFormat.match(a)){e.push(function(){return function(){return a}}());break}var f=Std.parseInt(Strings._reFormat.matched(1)),g=Strings._reFormat.matched(2);""==g&&(g=null);for(var h=null,i=[],j=3;20>j;){h=j++;h=Strings._reFormat.matched(h);if(null==h||""==h)break;i.push(thx.culture.FormatParams.cleanQuotes(h))}j=[Strings._reFormat.matchedLeft()];e.push(function(a){return function(){return a[0]}}(j));g=[Dynamics.formatf(g,
-i,b,c)];e.push(function(){return function(a,b){return function(){return function(c){return a(b,c)}}()}}()(function(a){return function(b,c){return a[0](c[b])}}(g),f));a=Strings._reFormat.matchedRight()}return function(a){null==a&&(a=[]);return e.map(function(b){return b(a)}).join("")}};Strings.formatOne=function(a,b,c,e){return Strings.formatOnef(b,c,e)(a)};
-Strings.formatOnef=function(a,b){var b=thx.culture.FormatParams.params(a,b,"S"),c=b.shift();switch(c){case "S":return function(a){return a};case "T":var e=1>b.length?20:Std.parseInt(b[0]);return Strings.ellipsisf(e,2>b.length?"...":b[1]);case "PR":var e=1>b.length?10:Std.parseInt(b[0]),f=2>b.length?" ":b[1];return function(a){return StringTools.rpad(a,f,e)};case "PL":return e=1>b.length?10:Std.parseInt(b[0]),f=2>b.length?" ":b[1],function(a){return StringTools.lpad(a,f,e)};default:throw"Unsupported string format: "+
-c;}};Strings.upTo=function(a,b){var c=a.indexOf(b);return 0>c?a:a.substr(0,c)};Strings.startFrom=function(a,b){var c=a.indexOf(b);return 0>c?a:a.substr(c+b.length)};Strings.rtrim=function(a,b){for(var c=a.length;0<c;){var e=a.substr(c-1,1);if(0>b.indexOf(e))break;c--}return a.substr(0,c)};Strings.ltrim=function(a,b){for(var c=0;c<a.length;){var e=a.substr(c,1);if(0>b.indexOf(e))break;c++}return a.substr(c)};Strings.trim=function(a,b){return Strings.rtrim(Strings.ltrim(a,b),b)};
-Strings.collapse=function(a){return Strings._reCollapse.replace(StringTools.trim(a)," ")};Strings.ucfirst=function(a){return null==a?null:a.charAt(0).toUpperCase()+a.substr(1)};Strings.lcfirst=function(a){return null==a?null:a.charAt(0).toLowerCase()+a.substr(1)};Strings.empty=function(a){return null==a||""==a};Strings.isAlphaNum=function(a){return null==a?!1:Strings.__alphaNumPattern.match(a)};Strings.digitsOnly=function(a){return null==a?!1:Strings.__digitsPattern.match(a)};
-Strings.ucwords=function(a){return Strings.__ucwordsPattern.customReplace(null==a?null:a.charAt(0).toUpperCase()+a.substr(1),Strings.__upperMatch)};Strings.ucwordsws=function(a){return Strings.__ucwordswsPattern.customReplace(null==a?null:a.charAt(0).toUpperCase()+a.substr(1),Strings.__upperMatch)};Strings.__upperMatch=function(a){return a.matched(0).toUpperCase()};Strings.humanize=function(a){return StringTools.replace(Strings.underscore(a),"_"," ")};
-Strings.capitalize=function(a){return a.substr(0,1).toUpperCase()+a.substr(1)};Strings.succ=function(a){return a.substr(0,-1)+String.fromCharCode(a.substr(-1).charCodeAt(0)+1)};Strings.underscore=function(a){a=(new EReg("::","g")).replace(a,"/");a=(new EReg("([A-Z]+)([A-Z][a-z])","g")).replace(a,"$1_$2");a=(new EReg("([a-z\\d])([A-Z])","g")).replace(a,"$1_$2");a=(new EReg("-","g")).replace(a,"_");return a.toLowerCase()};Strings.dasherize=function(a){return StringTools.replace(a,"_","-")};
-Strings.repeat=function(a,b){for(var c=[],e=0;e<b;)e++,c.push(a);return c.join("")};Strings.wrapColumns=function(a,b,c,e){null==e&&(e="\n");null==c&&(c="");null==b&&(b=78);for(var a=Strings._reSplitWC.split(a),f=[],g=0;g<a.length;){var h=a[g];++g;f.push(Strings._wrapColumns(StringTools.trim(Strings._reReduceWS.replace(h," ")),b,c,e))}return f.join(e)};
-Strings._wrapColumns=function(a,b,c,e){for(var f=[],g=0,h=a.length,i=c.length,b=b-i;;){if(g+b>=h-i){f.push(a.substr(g));break}for(var j=0;!StringTools.isSpace(a,g+b-j)&&j<b;)j++;if(j==b){for(j=0;!StringTools.isSpace(a,g+b+j)&&g+b+j<h;)j++;f.push(a.substr(g,b+j));g+=b+j+1}else f.push(a.substr(g,b-j)),g+=b-j+1}return c+f.join(e+c)};Strings.stripTags=function(a){return Strings._reStripTags.replace(a,"")};Strings.interpolate=function(a,b,c,e){return Strings.interpolatef(b,c,e)(a)};
-Strings.interpolatef=function(a,b,c){var e=function(a,b,c){for(;Strings._reInterpolateNumber.match(a);)a=Strings._reInterpolateNumber.matchedLeft(),Strings.empty(a)||(b.push(a),c.push(null)),b.push(null),c.push(Std.parseFloat(Strings._reInterpolateNumber.matched(0))),a=Strings._reInterpolateNumber.matchedRight();Strings.empty(a)||(b.push(a),c.push(null))},f=[],g=[],h=[],i=[];e(a,f,g);e(b,h,i);for(var j=[],a=0,b=Ints.min(f.length,h.length);a<b&&!(f[a]!=h[a]);){null==f[a]?g[a]==i[a]?(e=[""+g[a]],j.push(function(a){return function(){return a[0]}}(e))):
-(e=[Floats.interpolatef(g[a],i[a],c)],j.push(function(a){return function(b){return""+a[0](b)}}(e))):(e=[f[a]],j.push(function(a){return function(){return a[0]}}(e)));a++}for(var k="";a<h.length;)k=null!=h[a]?k+h[a]:k+i[a],a++;""!=k&&j.push(function(){return k});return function(a){return j.map(function(b){return b(a)}).join("")}};Strings.interpolateChars=function(a,b,c,e){return Strings.interpolateCharsf(b,c,e)(a)};
-Strings.interpolateCharsf=function(a,b){for(var c=a.split(""),e=b.split("");c.length>e.length;)e.insert(0," ");for(;e.length>c.length;)c.insert(0," ");for(var f=[],g=0,h=c.length;g<h;){var i=g++;f[i]=Strings.interpolateCharf(c[i],e[i])}return function(a){for(var b=[],c=0,e=f.length;c<e;){var g=c++;b[g]=f[g](a)}return StringTools.trim(b.join(""))}};Strings.interpolateChar=function(a,b,c,e){return Strings.interpolateCharf(b,c,e)(a)};
-Strings.interpolateCharf=function(a,b,c){(new EReg("^\\d","")).match(b)&&" "==a&&(a="0");var e=new EReg("^[^a-zA-Z0-9]","");e.match(b)&&" "==a&&(a=e.matched(0));var a=a.charCodeAt(0),b=b.charCodeAt(0),f=Ints.interpolatef(a,b,c);return function(a){return String.fromCharCode(f(a))}};Strings.ellipsis=function(a,b,c){null==c&&(c="...");null==b&&(b=20);return a.length>b?a.substr(0,Ints.max(c.length,b-c.length))+c:a};
-Strings.ellipsisf=function(a,b){null==b&&(b="...");null==a&&(a=20);return function(c){return c.length>a?c.substr(0,Ints.max(b.length,a-b.length))+b:c}};Strings.compare=function(a,b){return a<b?-1:a>b?1:0};Strings.prototype={__class__:Strings};var StringBuf=$hxClasses.StringBuf=function(){this.b=[]};StringBuf.__name__=["StringBuf"];
-StringBuf.prototype={add:function(a){this.b[this.b.length]=null==a?"null":a},addSub:function(a,b,c){this.b[this.b.length]=a.substr(b,c)},addChar:function(a){this.b[this.b.length]=String.fromCharCode(a)},toString:function(){return this.b.join("")},b:null,__class__:StringBuf};if(!rg.util)rg.util={};rg.util.Periodicity=$hxClasses["rg.util.Periodicity"]=function(){};rg.util.Periodicity.__name__=["rg","util","Periodicity"];
-rg.util.Periodicity.defaultPeriodicity=function(a){return null==a||0==a?"eternity":216E5>=a?"minute":1728E5>=a?"hour":5184E6>=a?"day":62208E6>=a?"month":"year"};
-rg.util.Periodicity.defaultRange=function(a){var b;switch(a){case "eternity":b=[0,0];break;case "minute":b=rg.util.Periodicity.parsePair("6 hours ago","now");break;case "hour":b=rg.util.Periodicity.parsePair("2 days ago","now");break;case "day":b=rg.util.Periodicity.parsePair("14 days ago","today");break;case "month":b=rg.util.Periodicity.parsePair("6 months ago","today");break;case "year":b=rg.util.Periodicity.parsePair("6 years ago","today")}return b};
-rg.util.Periodicity.isValid=function(a){return Arrays.exists(rg.util.Periodicity.validPeriods,a)};rg.util.Periodicity.calculateBetween=function(a,b,c){null==c&&(c=2);if(null==a||null==b)return"eternity";a=Math.abs(b.getTime()-a.getTime());return a>=DateTools.days(365*c)?"year":a>=DateTools.days(30*c)?"month":a>=DateTools.days(7*c)?"week":a>=DateTools.days(c)?"day":a>=DateTools.hours(c)?"hour":"minute"};
-rg.util.Periodicity.unitsBetween=function(a,b,c){var e;switch(c){case "eternity":e=1;break;case "minute":e=Math.floor((b-a)/6E4);break;case "hour":e=Math.floor((b-a)/36E5);break;case "day":e=Math.floor((b-a)/864E5);break;case "week":e=Math.floor((b-a)/6048E5);break;case "month":c=Date.fromTime(a);e=Date.fromTime(b);b=c.getFullYear();a=e.getFullYear();c=c.getMonth();e=e.getMonth();e=12*(a-b)+(e-c);break;case "year":e=Math.floor(rg.util.Periodicity.unitsBetween(a,b,"month")/12)}return e};
-rg.util.Periodicity.units=function(a,b){var c=rg.util.Periodicity.unitsBetween(0,a,b),e;switch(b){case "hour":e=1;break;default:e=0}return c+e};
-rg.util.Periodicity.range=function(a,b,c){var e=1E3;switch(c){case "eternity":return[0];case "minute":e=6E4;break;case "hour":e=36E5;break;case "day":e=864E5;break;case "week":e=6048E5;break;case "month":for(var c=rg.util.Periodicity.dateUtc(a),e=rg.util.Periodicity.dateUtc(b),b=c.getFullYear(),a=e.getFullYear(),c=c.getMonth(),e=e.getMonth(),f=[];b<a||b==a&&c<=e;)f.push((new Date(b,c,1,0,0,0)).getTime()),c++,11<c&&(c=0,b++);return f;case "year":return Ints.range(rg.util.Periodicity.dateUtc(a).getFullYear(),
-rg.util.Periodicity.dateUtc(b).getFullYear()+1,1).map(function(a){return(new Date(a,0,1,0,0,0)).getTime()})}return Floats.range(a,b+e,e)};
-rg.util.Periodicity.next=function(a,b,c){null==c&&(c=1);null==b&&(b=Date.now().getTime());return 0==c?b:function(e){var f;switch(a){case "eternity":f=b;break;case "minute":f=b+6E4*c;break;case "hour":f=b+36E5*c;break;case "day":f=b+864E5*c;break;case "week":f=b+6048E5*c;break;case "month":f=function(){var a=Date.fromTime(b),e=a.getFullYear(),f=a.getMonth()+c;return(new Date(e,f,a.getDay(),a.getHours(),a.getMinutes(),a.getSeconds())).getTime()}(e);break;case "year":f=function(){var a=Date.fromTime(b);
-return(new Date(a.getFullYear()+c,a.getMonth(),a.getDay(),a.getHours(),a.getMinutes(),a.getSeconds())).getTime()}(e)}return f}(this)};rg.util.Periodicity.minForPeriodicityInSeries=function(a,b){return Arrays.floatMin(a,function(a){return Arrays.floatMin(Reflect.fields(Reflect.field(a,b)),function(a){return Std.parseFloat(a)})})};rg.util.Periodicity.maxForPeriodicityInSeries=function(a,b){return Arrays.floatMax(a,function(a){return Arrays.floatMax(Reflect.fields(Reflect.field(a,b)),function(a){return Std.parseFloat(a)})})};
-rg.util.Periodicity.formatf=function(a){return function(){var b;switch(a){case "eternity":b=function(){return"all time"};break;case "minute":case "hour":b=function(a){return thx.culture.FormatDate.timeShort(Date.fromTime(a))};break;case "day":case "week":b=function(a){return thx.culture.FormatDate.dateShort(Date.fromTime(a))};break;case "month":b=function(a){return thx.culture.FormatDate.yearMonth(Date.fromTime(a))};break;case "year":b=function(a){return thx.culture.FormatDate.year(Date.fromTime(a))}}return b}(this)};
-rg.util.Periodicity.format=function(a,b){switch(a){case "eternity":return"all time";case "minute":return thx.culture.FormatDate.timeShort(Date.fromTime(b));case "hour":return thx.culture.FormatDate.hourShort(Date.fromTime(b));case "day":case "week":return thx.culture.FormatDate.dateShort(Date.fromTime(b));case "month":return thx.culture.FormatDate.yearMonth(Date.fromTime(b));case "year":return thx.culture.FormatDate.year(Date.fromTime(b));default:return a+": "+b}};
-rg.util.Periodicity.smartFormat=function(a,b){switch(a){case "eternity":return"all time";case "minute":return rg.util.Periodicity.firstInSeries("hour",b)?thx.culture.FormatDate.timeShort(Date.fromTime(b)):thx.culture.FormatDate.format("%i",Date.fromTime(b));case "hour":return rg.util.Periodicity.firstInSeries("day",b)?thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(b)):thx.culture.FormatDate.hourShort(Date.fromTime(b));case "day":return rg.util.Periodicity.firstInSeries("month",
-b)?thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(b)):thx.culture.FormatDate.format("%e",rg.util.Periodicity.dateUtc(b));case "week":var c=rg.util.Periodicity.dateUtc(b);return 7>=c.getDate()?thx.culture.FormatDate.format("%b %e",c):thx.culture.FormatDate.format("%e",c);case "month":return rg.util.Periodicity.firstInSeries("year",b)?thx.culture.FormatDate.year(rg.util.Periodicity.dateUtc(b)):thx.culture.FormatDate.format("%b",rg.util.Periodicity.dateUtc(b));case "year":return thx.culture.FormatDate.year(rg.util.Periodicity.dateUtc(b));
-default:return a+": "+Date.fromTime(b)}};
-rg.util.Periodicity.firstInSeries=function(a,b){return function(c){switch(a){case "eternity":c=0==b;break;case "minute":c=0==b%6E4;break;case "hour":c=0==b%36E5;break;case "day":c=function(){var a=Date.fromTime(b);return 0==a.getHours()&&0==a.getMinutes()&&0==a.getSeconds()}(c);break;case "week":c=0==Date.fromTime(b).getDay();break;case "month":c=1==Date.fromTime(b).getDate();break;case "year":c=function(){var a=Date.fromTime(b);return 1==a.getDate()&&0==a.getMonth()}(c);break;default:c=!1}return c}(this)};
-rg.util.Periodicity.nextPeriodicity=function(a){switch(a){case "minute":a="hour";break;case "hour":a="day";break;case "day":case "week":a="month";break;case "month":a="year";break;default:a="year"}return a};rg.util.Periodicity.prevPeriodicity=function(a){switch(a){case "minute":a="hour";break;case "hour":a="minute";break;case "day":a="hour";break;case "week":case "month":a="day";break;default:a="minute"}return a};
-rg.util.Periodicity.parsePair=function(a,b){return[thx.date.DateParser.parse(a).getTime(),thx.date.DateParser.parse(b).getTime()]};rg.util.Periodicity.timezoneOffset=function(a){return a.getTimezoneOffset()};rg.util.Periodicity.dateUtc=function(a){var b=Date.fromTime(a).getTimezoneOffset();0>b&&(b=0);return Date.fromTime(a+6E4*b)};rg.util.Periodicity.isValidGroupBy=function(a){return Arrays.exists(rg.util.Periodicity.validGroupValues,a)};rg.util.Periodicity.prototype={__class__:rg.util.Periodicity};
-if(!rg.storage)rg.storage={};rg.storage.IStorage=$hxClasses["rg.storage.IStorage"]=function(){};rg.storage.IStorage.__name__=["rg","storage","IStorage"];rg.storage.IStorage.prototype={keys:null,set:null,get:null,remove:null,clear:null,__class__:rg.storage.IStorage};rg.storage.BrowserStorage=$hxClasses["rg.storage.BrowserStorage"]=function(a,b){this.storage=a;this.kind=b};rg.storage.BrowserStorage.__name__=["rg","storage","BrowserStorage"];rg.storage.BrowserStorage.__interfaces__=[rg.storage.IStorage];
-rg.storage.BrowserStorage.hasSessionStorage=function(){return null!=sessionStorage};rg.storage.BrowserStorage.sessionStorage=function(){return new rg.storage.BrowserStorage(sessionStorage,"sessionStorage")};rg.storage.BrowserStorage.hasLocalStorage=function(){return null!=localStorage};rg.storage.BrowserStorage.localStorage=function(){return new rg.storage.BrowserStorage(localStorage,"localStorage")};
-rg.storage.BrowserStorage.prototype={storage:null,kind:null,set:function(a,b){this.storage.setItem(a,thx.json.Json.encode(b))},get:function(a){a=this.storage.getItem(a);return null==a?a:thx.json.Json.decode(a)},clear:function(){this.storage.clear()},remove:function(a){this.storage.removeItem(a)},keys:function(){for(var a=[],b=0,c=this.storage.length;b<c;){var e=b++;a.push(this.storage.key(e))}return a.iterator()},toString:function(){return"BrowserStorage["+this.kind+"]"},__class__:rg.storage.BrowserStorage};
-if(!thx.error)thx.error={};thx.error.Error=$hxClasses["thx.error.Error"]=function(a,b,c,e){thx.util.Message.call(this,a,b,c);this.pos=e};thx.error.Error.__name__=["thx","error","Error"];thx.error.Error.__super__=thx.util.Message;
-thx.error.Error.prototype=$extend(thx.util.Message.prototype,{pos:null,inner:null,setInner:function(a){this.inner=a;return this},toStringError:function(a){return Strings.format(null==a?thx.error.Error.errorPositionPattern:a,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams])+this.toString()},toString:function(){try{return Strings.format(this.message,this.params)}catch(a){return""}},__class__:thx.error.Error});var Lambda=$hxClasses.Lambda=function(){};
-Lambda.__name__=["Lambda"];Lambda.array=function(a){for(var b=[],a=a.iterator();a.hasNext();){var c=a.next();b.push(c)}return b};Lambda.list=function(a){for(var b=new List,a=a.iterator();a.hasNext();){var c=a.next();b.add(c)}return b};Lambda.map=function(a,b){for(var c=new List,e=a.iterator();e.hasNext();){var f=e.next();c.add(b(f))}return c};Lambda.mapi=function(a,b){for(var c=new List,e=0,f=a.iterator();f.hasNext();){var g=f.next();c.add(b(e++,g))}return c};
-Lambda.has=function(a,b,c){if(null==c)for(c=a.iterator();c.hasNext();){if(a=c.next(),a==b)return!0}else for(var e=a.iterator();e.hasNext();)if(a=e.next(),c(a,b))return!0;return!1};Lambda.exists=function(a,b){for(var c=a.iterator();c.hasNext();){var e=c.next();if(b(e))return!0}return!1};Lambda.foreach=function(a,b){for(var c=a.iterator();c.hasNext();){var e=c.next();if(!b(e))return!1}return!0};Lambda.iter=function(a,b){for(var c=a.iterator();c.hasNext();){var e=c.next();b(e)}};
-Lambda.filter=function(a,b){for(var c=new List,e=a.iterator();e.hasNext();){var f=e.next();b(f)&&c.add(f)}return c};Lambda.fold=function(a,b,c){for(a=a.iterator();a.hasNext();)var e=a.next(),c=b(e,c);return c};Lambda.count=function(a,b){var c=0;if(null==b)for(var e=a.iterator();e.hasNext();)e.next(),c++;else for(e=a.iterator();e.hasNext();){var f=e.next();b(f)&&c++}return c};Lambda.empty=function(a){return!a.iterator().hasNext()};
-Lambda.indexOf=function(a,b){for(var c=0,e=a.iterator();e.hasNext();){var f=e.next();if(b==f)return c;c++}return-1};Lambda.concat=function(a,b){for(var c=new List,e=a.iterator();e.hasNext();){var f=e.next();c.add(f)}for(e=b.iterator();e.hasNext();)f=e.next(),c.add(f);return c};Lambda.prototype={__class__:Lambda};thx.culture.FormatDate=$hxClasses["thx.culture.FormatDate"]=function(){};thx.culture.FormatDate.__name__=["thx","culture","FormatDate"];
-thx.culture.FormatDate.format=function(a,b,c,e){null==e&&(e=!0);null==c&&(c=thx.culture.Culture.getDefaultCulture());for(var f=0,g=a.length,h=new StringBuf,i=c.date;f<g;){var j=a.charAt(f);if("%"!=j)h.b[h.b.length]=null==j?"null":j;else switch(f++,j=a.charAt(f),j){case "a":h.add(i.abbrDays[b.getDay()]);break;case "A":h.add(i.days[b.getDay()]);break;case "b":case "h":h.add(i.abbrMonths[b.getMonth()]);break;case "B":h.add(i.months[b.getMonth()]);break;case "c":h.add(thx.culture.FormatDate.dateTime(b,
-c));break;case "C":h.add(thx.culture.FormatNumber.digits(""+Math.floor(b.getFullYear()/100),c));break;case "d":h.add(thx.culture.FormatNumber.digits(StringTools.lpad(""+b.getDate(),"0",2),c));break;case "D":h.add(thx.culture.FormatDate.format("%m/%d/%y",b,c));break;case "e":h.add(thx.culture.FormatNumber.digits(e?StringTools.lpad(""+b.getDate()," ",2):""+b.getDate(),c));break;case "f":h.add(thx.culture.FormatNumber.digits(e?StringTools.lpad(""+(b.getMonth()+1)," ",2):""+(b.getMonth()+1),c));break;
-case "G":throw"Not Implemented Yet";case "g":throw"Not Implemented Yet";case "H":h.add(thx.culture.FormatNumber.digits(StringTools.lpad(""+b.getHours(),"0",2),c));break;case "i":h.add(thx.culture.FormatNumber.digits(e?StringTools.lpad(""+b.getMinutes()," ",2):""+b.getMinutes(),c));break;case "I":h.add(thx.culture.FormatNumber.digits(StringTools.lpad(""+thx.culture.FormatDate.getMHours(b),"0",2),c));break;case "j":throw"Not Implemented Yet";case "k":h.add(thx.culture.FormatNumber.digits(e?StringTools.lpad(""+
-b.getHours()," ",2):""+b.getHours(),c));break;case "l":h.add(thx.culture.FormatNumber.digits(e?StringTools.lpad(""+thx.culture.FormatDate.getMHours(b)," ",2):""+thx.culture.FormatDate.getMHours(b),c));break;case "m":h.add(thx.culture.FormatNumber.digits(StringTools.lpad(""+(b.getMonth()+1),"0",2),c));break;case "M":h.add(thx.culture.FormatNumber.digits(StringTools.lpad(""+b.getMinutes(),"0",2),c));break;case "n":h.b[h.b.length]="\n";break;case "p":h.add(11<b.getHours()?i.pm:i.am);break;case "P":h.add((11<
-b.getHours()?i.pm:i.am).toLowerCase());break;case "q":h.add(thx.culture.FormatNumber.digits(e?StringTools.lpad(""+b.getSeconds()," ",2):""+b.getSeconds(),c));break;case "r":h.add(thx.culture.FormatDate.format("%I:%M:%S %p",b,c));break;case "R":h.add(thx.culture.FormatDate.format("%H:%M",b,c));break;case "s":h.add(""+Std["int"](b.getTime()/1E3));break;case "S":h.add(thx.culture.FormatNumber.digits(StringTools.lpad(""+b.getSeconds(),"0",2),c));break;case "t":h.b[h.b.length]="\t";break;case "T":h.add(thx.culture.FormatDate.format("%H:%M:%S",
-b,c));break;case "u":j=b.getDay();h.add(thx.culture.FormatNumber.digits(0==j?"7":""+j,c));break;case "U":throw"Not Implemented Yet";case "V":throw"Not Implemented Yet";case "w":h.add(thx.culture.FormatNumber.digits(""+b.getDay(),c));break;case "W":throw"Not Implemented Yet";case "x":h.add(thx.culture.FormatDate.date(b,c));break;case "X":h.add(thx.culture.FormatDate.time(b,c));break;case "y":h.add(thx.culture.FormatNumber.digits((""+b.getFullYear()).substr(-2),c));break;case "Y":h.add(thx.culture.FormatNumber.digits(""+
-b.getFullYear(),c));break;case "z":h.b[h.b.length]="+0000";break;case "Z":h.b[h.b.length]="GMT";break;case "%":h.b[h.b.length]="%";break;default:h.add("%"+j)}f++}return h.b.join("")};thx.culture.FormatDate.getMHours=function(a){a=a.getHours();return 12<a?a-12:a};thx.culture.FormatDate.yearMonth=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternYearMonth,a,b,!1)};
-thx.culture.FormatDate.monthDay=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternMonthDay,a,b,!1)};thx.culture.FormatDate.date=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternDate,a,b,!1)};thx.culture.FormatDate.dateShort=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternDateShort,a,b,!1)};
-thx.culture.FormatDate.dateRfc=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternDateRfc,a,b,!1)};thx.culture.FormatDate.dateTime=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternDateTime,a,b,!1)};thx.culture.FormatDate.universal=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternUniversal,a,b,!1)};
-thx.culture.FormatDate.sortable=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternSortable,a,b,!1)};thx.culture.FormatDate.time=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternTime,a,b,!1)};thx.culture.FormatDate.timeShort=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatDate.format(b.date.patternTimeShort,a,b,!1)};
-thx.culture.FormatDate.hourShort=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return null==b.date.am?thx.culture.FormatDate.format("%H",a,b,!1):thx.culture.FormatDate.format("%l %p",a,b,!1)};thx.culture.FormatDate.year=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.digits(""+a.getFullYear(),b)};
-thx.culture.FormatDate.month=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.digits(""+(a.getMonth()+1),b)};thx.culture.FormatDate.monthName=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return b.date.abbrMonths[a.getMonth()]};thx.culture.FormatDate.monthNameShort=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return b.date.months[a.getMonth()]};
-thx.culture.FormatDate.weekDay=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.digits(""+(a.getDay()+b.date.firstWeekDay),b)};thx.culture.FormatDate.weekDayName=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return b.date.abbrDays[a.getDay()]};thx.culture.FormatDate.weekDayNameShort=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return b.date.days[a.getDay()]};thx.culture.FormatDate.prototype={__class__:thx.culture.FormatDate};
-var Bools=$hxClasses.Bools=function(){};Bools.__name__=["Bools"];Bools.format=function(a,b,c,e){return Bools.formatf(b,c,e)(a)};Bools.formatf=function(a,b){var b=thx.culture.FormatParams.params(a,b,"B"),c=b.shift();switch(c){case "B":return function(a){return a?"true":"false"};case "N":return function(a){return a?"1":"0"};case "R":if(2!=b.length)throw"bool format R requires 2 parameters";return function(a){return a?b[0]:b[1]};default:throw"Unsupported bool format: "+c;}};
-Bools.interpolate=function(a,b,c,e){return Bools.interpolatef(b,c,e)(a)};Bools.interpolatef=function(a,b,c){if(a==b)return function(){return a};var e=Floats.interpolatef(0,1,c);return function(c){return 0.5>e(c)?a:b}};Bools.canParse=function(a){a=a.toLowerCase();return"true"==a||"false"==a};Bools.parse=function(a){return"true"==a.toLowerCase()};Bools.compare=function(a,b){return a==b?0:a?-1:1};Bools.prototype={__class__:Bools};thx.culture.FormatNumber=$hxClasses["thx.culture.FormatNumber"]=function(){};
-thx.culture.FormatNumber.__name__=["thx","culture","FormatNumber"];thx.culture.FormatNumber.decimal=function(a,b,c){null==c&&(c=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.crunch(a,b,c.percent,c.number.patternNegative,c.number.patternPositive,c,null,null)};thx.culture.FormatNumber.percent=function(a,b,c){null==c&&(c=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.crunch(a,b,c.percent,c.percent.patternNegative,c.percent.patternPositive,c,"%",c.symbolPercent)};
-thx.culture.FormatNumber.permille=function(a,b,c){null==c&&(c=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.crunch(a,b,c.percent,c.percent.patternNegative,c.percent.patternPositive,c,"%",c.symbolPermille)};thx.culture.FormatNumber.currency=function(a,b,c,e){null==e&&(e=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.crunch(a,c,e.currency,e.currency.patternNegative,e.currency.patternPositive,e,"$",null==b?e.currencySymbol:b)};
-thx.culture.FormatNumber["int"]=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.decimal(a,0,b)};thx.culture.FormatNumber.digits=function(a,b){null==b&&(b=thx.culture.Culture.getDefaultCulture());return thx.culture.FormatNumber.processDigits(a,b.digits)};
-thx.culture.FormatNumber.crunch=function(a,b,c,e,f,g,h,i){if(Math.isNaN(a))return g.symbolNaN;if(!Math.isFinite(a))return a==Math.NEGATIVE_INFINITY?g.symbolNegInf:g.symbolPosInf;b=thx.culture.FormatNumber.value(a,c,null==b?c.decimals:0>b?0:b,g.digits);return null!=h?StringTools.replace(StringTools.replace(0>a?e:f,"n",b),h,i):StringTools.replace(0>a?e:f,"n",b)};
-thx.culture.FormatNumber.processDigits=function(a,b){if(null==b)return a;for(var c=[],e=0,f=a.length;e<f;){var g=e++;c.push(b[Std.parseInt(a.substr(g,1))])}return c.join("")};
-thx.culture.FormatNumber.value=function(a,b,c,e){var f=""+Math.abs(a),g=f.indexOf("E");if(0<g){var a=Std.parseInt(f.substr(g+1)),h=!0;0>a&&(h=!1,a=-a);f=StringTools.replace(f.substr(0,g),".","");f=h?StringTools.rpad(f,"0",a+1):"0"+StringTools.rpad(".","0",a)+f}a=f.split(".");h=a[0];f=[];for(g=0;!(0==h.length);){var i=b.groups[g];if(h.length<=i){f.unshift(thx.culture.FormatNumber.processDigits(h,e));break}f.unshift(thx.culture.FormatNumber.processDigits(h.substr(-i),e));h=h.substr(0,-i);g<b.groups.length-
-1&&g++}h=f.join(b.groupsSeparator);return 0<c?(c=1==a.length?StringTools.lpad("","0",c):a[1].length>c?a[1].substr(0,c):StringTools.rpad(a[1],"0",c),h+b.decimalsSeparator+thx.culture.FormatNumber.processDigits(c,e)):h};thx.culture.FormatNumber.prototype={__class__:thx.culture.FormatNumber};var Arrays=$hxClasses.Arrays=function(){};Arrays.__name__=["Arrays"];Arrays.addIf=function(a,b,c){null!=b?b&&a.push(c):null!=c&&a.push(c);return a};Arrays.add=function(a,b){a.push(b);return a};
-Arrays["delete"]=function(a,b){a.remove(b);return a};Arrays.removef=function(a,b){for(var c=-1,e=0,f=a.length;e<f;){var g=e++;if(b(a[g])){c=g;break}}if(0>c)return!1;a.splice(c,1);return!0};Arrays.deletef=function(a,b){Arrays.removef(a,b);return a};Arrays.filter=function(a,b){for(var c=[],e=0;e<a.length;){var f=a[e];++e;b(f)&&c.push(f)}return c};
-Arrays.min=function(a,b){if(0==a.length)return null;if(null==b)for(var c=a[0],e=0,f=Dynamics.comparef(c),g=1,h=a.length;g<h;){var i=g++;0<f(c,a[i])&&(c=a[e=i])}else{c=b(a[0]);e=0;g=1;for(h=a.length;g<h;)if(i=g++,c>(f=b(a[i])))c=f,e=i}return a[e]};Arrays.floatMin=function(a,b){if(0==a.length)return Math.NaN;for(var c=b(a[0]),e,f=1,g=a.length;f<g;)if(e=f++,c>(e=b(a[e])))c=e;return c};
-Arrays.bounds=function(a,b){if(0==a.length)return null;if(null==b)for(var c=a[0],e=0,f=a[0],g=0,h=1,i=a.length;h<i;){var j=h++,k=Dynamics.comparef(c);0<k(c,a[j])&&(c=a[e=j]);0>k(f,a[j])&&(f=a[g=j])}else{c=b(a[0]);e=0;k=b(a[0]);g=0;h=1;for(i=a.length;h<i;)if(j=h++,c>(f=b(a[j])))c=f,e=j;h=1;for(i=a.length;h<i;)if(j=h++,k<(c=b(a[j])))k=c,g=j}return[a[e],a[g]]};
-Arrays.boundsFloat=function(a,b){if(0==a.length)return null;for(var c=b(a[0]),e,f=b(a[0]),g=1,h=a.length;g<h;){var i=g++;if(c>(e=b(a[i])))c=e;if(f<(e=b(a[i])))f=e}return[c,f]};Arrays.max=function(a,b){if(0==a.length)return null;if(null==b)for(var c=a[0],e=0,f=Dynamics.comparef(c),g=1,h=a.length;g<h;){var i=g++;0>f(c,a[i])&&(c=a[e=i])}else{c=b(a[0]);e=0;g=1;for(h=a.length;g<h;)if(i=g++,c<(f=b(a[i])))c=f,e=i}return a[e]};
-Arrays.floatMax=function(a,b){if(0==a.length)return Math.NaN;for(var c=b(a[0]),e,f=1,g=a.length;f<g;)if(e=f++,c<(e=b(a[e])))c=e;return c};Arrays.flatten=function(a){for(var b=[],c=0;c<a.length;){var e=a[c];++c;b=b.concat(e)}return b};Arrays.map=function(a,b){return a.map(b)};Arrays.reduce=function(a,b,c){return a.reduce(b,c)};Arrays.order=function(a,b){a.sort(null==b?Dynamics.compare:b);return a};
-Arrays.orderMultiple=function(a,b,c){var e=!0,f;for(c.remove(a);e;)for(var e=!1,g=0,h=a.length-1;g<h;){var i=g++;if(0<b(a[i],a[i+1])){e=!0;f=a[i];a[i]=a[i+1];a[i+1]=f;for(var j=0;j<c.length;){var k=c[j];++j;f=k[i];k[i]=k[i+1];k[i+1]=f}}}};Arrays.split=function(a,b){null==b&&(b=function(a){return null==a});for(var c=[],e=[],f,g=0,h=a.length;g<h;){var i=g++;b(f=a[i],i)?e=[]:(0==e.length&&c.push(e),e.push(f))}return c};
-Arrays.exists=function(a,b,c){if(null!=c)for(var e=0;e<a.length;){var f=a[e];++e;if(c(f))return!0}else for(e=0;e<a.length;)if(f=a[e],++e,f==b)return!0;return!1};
-Arrays.format=function(a,b,c,e){c=thx.culture.FormatParams.params(b,c,"J");b=c.shift();switch(b){case "J":if(0==a.length)return null==c[1]?"[]":c[1];var b=null==c[2]?", ":c[2],f=null==c[3]?null:""==c[3]?null:Std.parseInt(c[3]);if(null!=f&&f<a.length){var g=null==c[4]?" ...":c[4];return a.copy().splice(0,f).map(function(a){return Dynamics.format(a,c[0],null,null,e)}).join(b)+g}return a.map(function(a){return Dynamics.format(a,c[0],null,null,e)}).join(b);case "C":return Ints.format(a.length,"I",[],
-e);default:throw"Unsupported array format: "+b;}};
-Arrays.formatf=function(a,b,c){b=thx.culture.FormatParams.params(a,b,"J");a=b.shift();switch(a){case "J":return function(a){if(0==a.length)return null==b[1]?"[]":b[1];var e=null==b[2]?", ":b[2],h=null==b[3]?null:""==b[3]?null:Std.parseInt(b[3]);if(null!=h&&h<a.length){var i=null==b[4]?" ...":b[4];return a.copy().splice(0,h).map(function(a){return Dynamics.format(a,b[0],null,null,c)}).join(e)+i}return a.map(function(a){return Dynamics.format(a,b[0],null,null,c)}).join(e)};case "C":var e=Ints.formatf("I",
-[],c);return function(a){return e(a.length)};default:throw"Unsupported array format: "+a;}};Arrays.interpolate=function(a,b,c,e){return Arrays.interpolatef(b,c,e)(a)};Arrays.interpolatef=function(a,b,c){for(var e=[],f=0,g=Ints.min(a.length,b.length);f<g;){if(a[f]==b[f]){var h=[b[f]];e.push(function(a){return function(){return a[0]}}(h))}else e.push(Floats.interpolatef(a[f],b[f],c));f++}for(;f<b.length;)h=[b[f]],e.push(function(a){return function(){return a[0]}}(h)),f++;return function(a){return e.map(function(b){return b(a)})}};
-Arrays.interpolateStrings=function(a,b,c,e){return Arrays.interpolateStringsf(b,c,e)(a)};Arrays.interpolateStringsf=function(a,b,c){for(var e=[],f=0,g=Ints.min(a.length,b.length);f<g;){if(a[f]==b[f]){var h=[b[f]];e.push(function(a){return function(){return a[0]}}(h))}else e.push(Strings.interpolatef(a[f],b[f],c));f++}for(;f<b.length;)h=[b[f]],e.push(function(a){return function(){return a[0]}}(h)),f++;return function(a){return e.map(function(b){return b(a)})}};
-Arrays.interpolateInts=function(a,b,c,e){return Arrays.interpolateIntsf(b,c,e)(a)};Arrays.interpolateIntsf=function(a,b,c){for(var e=[],f=0,g=Ints.min(a.length,b.length);f<g;){if(a[f]==b[f]){var h=[b[f]];e.push(function(a){return function(){return a[0]}}(h))}else e.push(Ints.interpolatef(a[f],b[f],c));f++}for(;f<b.length;)h=[b[f]],e.push(function(a){return function(){return a[0]}}(h)),f++;return function(a){return e.map(function(b){return b(a)})}};Arrays.indexOf=function(a,b){return a.indexOf(b)};
-Arrays.every=function(a,b){return a.every(b)};Arrays.each=function(a,b){a.forEach(b)};Arrays.any=function(a,b){return Iterators.any(a.iterator(),b)};Arrays.all=function(a,b){return Iterators.all(a.iterator(),b)};Arrays.random=function(a){return a[Std.random(a.length)]};Arrays.string=function(a){return"["+a.map(function(a){return Dynamics.string(a)}).join(", ")+"]"};Arrays.last=function(a){return a[a.length-1]};Arrays.lastf=function(a,b){for(var c=a.length;0<=--c;)if(b(a[c]))return a[c];return null};
-Arrays.first=function(a){return a[0]};Arrays.firstf=function(a,b){for(var c=0;c<a.length;){var e=a[c];++c;if(b(e))return e}return null};Arrays.bisect=function(a,b,c,e){null==c&&(c=0);return Arrays.bisectRight(a,b,c,e)};Arrays.bisectRight=function(a,b,c,e){null==c&&(c=0);if(null==e)e=a.length;for(;c<e;){var f=c+e>>1;b<a[f]?e=f:c=f+1}return c};Arrays.bisectLeft=function(a,b,c,e){null==c&&(c=0);if(null==e)e=a.length;for(;c<e;){var f=c+e>>1;a[f]<b?c=f+1:e=f}return c};
-Arrays.nearest=function(a,b,c){for(var e=[],f=0,g=a.length;f<g;){var h=f++;e.push({i:h,v:Math.abs(c(a[h])-b)})}e.sort(function(a,b){return Floats.compare(a.v,b.v)});return a[e[0].i]};Arrays.compare=function(a,b){var c;if(0!=(c=a.length-b.length))return c;for(var e=0,f=a.length;e<f;)if(c=e++,0!=(c=Dynamics.compare(a[c],b[c])))return c;return 0};
-Arrays.product=function(a){if(0==a.length)return[];for(var a=a.copy(),b=[],c,e=0,f=a[0];e<f.length;){var g=f[e];++e;b.push([g])}f=1;for(e=a.length;f<e;){var h=f++;c=[];for(var i=0;i<b.length;){var j=b[i];++i;for(var k=0,l=a[h];k<l.length;)g=l[k],++k,c.push(j.copy().concat([g]))}b=c}return b};Arrays.rotate=function(a){if(0==a.length)return[];for(var b=[],c=0,e=a[0].length;c<e;){var f=c++;b[f]=[]}c=0;for(e=a.length;c<e;)for(var g=c++,h=0,i=a[0].length;h<i;)f=h++,b[f][g]=a[g][f];return b};
-Arrays.shuffle=function(a){for(var b=Ints.range(a.length),c=[];0<b.length;){var e=Std.random(b.length),f=b[e];b.splice(e,1);c.push(a[f])}return c};Arrays.prototype={__class__:Arrays};haxe.Log=$hxClasses["haxe.Log"]=function(){};haxe.Log.__name__=["haxe","Log"];haxe.Log.trace=function(a,b){js.Boot.__trace(a,b)};haxe.Log.clear=function(){js.Boot.__clear_trace()};haxe.Log.prototype={__class__:haxe.Log};var DateTools=$hxClasses.DateTools=function(){};DateTools.__name__=["DateTools"];
-DateTools.__format_get=function(a,b){return function(c){switch(b){case "%":c="%";break;case "C":c=StringTools.lpad(Std.string(Std["int"](a.getFullYear()/100)),"0",2);break;case "d":c=StringTools.lpad(Std.string(a.getDate()),"0",2);break;case "D":c=DateTools.__format(a,"%m/%d/%y");break;case "e":c=Std.string(a.getDate());break;case "H":case "k":c=StringTools.lpad(Std.string(a.getHours()),"H"==b?"0":" ",2);break;case "I":case "l":c=function(){var c=a.getHours()%12;return StringTools.lpad(Std.string(0==
-c?12:c),"I"==b?"0":" ",2)}(c);break;case "m":c=StringTools.lpad(Std.string(a.getMonth()+1),"0",2);break;case "M":c=StringTools.lpad(Std.string(a.getMinutes()),"0",2);break;case "n":c="\n";break;case "p":c=11<a.getHours()?"PM":"AM";break;case "r":c=DateTools.__format(a,"%I:%M:%S %p");break;case "R":c=DateTools.__format(a,"%H:%M");break;case "s":c=Std.string(Std["int"](a.getTime()/1E3));break;case "S":c=StringTools.lpad(Std.string(a.getSeconds()),"0",2);break;case "t":c="\t";break;case "T":c=DateTools.__format(a,
-"%H:%M:%S");break;case "u":c=function(){var b=a.getDay();return 0==b?"7":Std.string(b)}(c);break;case "w":c=Std.string(a.getDay());break;case "y":c=StringTools.lpad(Std.string(a.getFullYear()%100),"0",2);break;case "Y":c=Std.string(a.getFullYear());break;default:throw"Date.format %"+b+"- not implemented yet.";}return c}(this)};
-DateTools.__format=function(a,b){for(var c=new StringBuf,e=0;;){var f=b.indexOf("%",e);if(0>f)break;c.b[c.b.length]=b.substr(e,f-e);c.add(DateTools.__format_get(a,b.substr(f+1,1)));e=f+2}c.b[c.b.length]=b.substr(e,b.length-e);return c.b.join("")};DateTools.format=function(a,b){return DateTools.__format(a,b)};DateTools.delta=function(a,b){return Date.fromTime(a.getTime()+b)};
-DateTools.getMonthDays=function(a){var b=a.getMonth(),a=a.getFullYear();return 1!=b?DateTools.DAYS_OF_MONTH[b]:0==a%4&&0!=a%100||0==a%400?29:28};DateTools.seconds=function(a){return 1E3*a};DateTools.minutes=function(a){return 6E4*a};DateTools.hours=function(a){return 36E5*a};DateTools.days=function(a){return 864E5*a};DateTools.parse=function(a){var b=a/1E3,c=b/60,e=c/60;return{ms:a%1E3,seconds:Std["int"](b%60),minutes:Std["int"](c%60),hours:Std["int"](e%24),days:Std["int"](e/24)}};
-DateTools.make=function(a){return a.ms+1E3*(a.seconds+60*(a.minutes+60*(a.hours+24*a.days)))};DateTools.prototype={__class__:DateTools};var Objects=$hxClasses.Objects=function(){};Objects.__name__=["Objects"];Objects.field=function(a,b,c){return Reflect.hasField(a,b)?Reflect.field(a,b):c};Objects.keys=function(a){return Reflect.fields(a)};Objects.values=function(a){for(var b=[],c=0,e=Reflect.fields(a);c<e.length;){var f=e[c];++c;b.push(Reflect.field(a,f))}return b};
-Objects.entries=function(a){for(var b=[],c=0,e=Reflect.fields(a);c<e.length;){var f=e[c];++c;b.push({key:f,value:Reflect.field(a,f)})}return b};Objects.each=function(a,b){for(var c=0,e=Reflect.fields(a);c<e.length;){var f=e[c];++c;b(f,Reflect.field(a,f))}};Objects.map=function(a,b){for(var c=[],e=0,f=Reflect.fields(a);e<f.length;){var g=f[e];++e;c.push(b(g,Reflect.field(a,g)))}return c};Objects["with"]=function(a,b){b(a);return a};
-Objects.toHash=function(a){var b=new Hash;return Objects.copyToHash(a,b)};Objects.copyToHash=function(a,b){for(var c=0,e=Reflect.fields(a);c<e.length;){var f=e[c];++c;b.set(f,Reflect.field(a,f))}return b};Objects.interpolate=function(a,b,c,e){return Objects.interpolatef(b,c,e)(a)};
-Objects.interpolatef=function(a,b){for(var c={},e={},f=Reflect.fields(a),g=0;g<f.length;){var h=f[g];++g;if(Reflect.hasField(b,h)){var i=Reflect.field(a,h);c[h]=Dynamics.interpolatef(i,Reflect.field(b,h))}else e[h]=Reflect.field(a,h)}f=Reflect.fields(b);for(g=0;g<f.length;)h=f[g],++g,Reflect.hasField(a,h)||(e[h]=Reflect.field(b,h));return function(a){for(var b=0,f=Reflect.fields(c);b<f.length;){var g=f[b];++b;e[g]=Reflect.field(c,g).apply(c,[a])}return e}};
-Objects.copyTo=function(a,b){for(var c=0,e=Reflect.fields(a);c<e.length;){var f=e[c];++c;var g=Dynamics.clone(Reflect.field(a,f)),h=Reflect.field(b,f);Reflect.isObject(g)&&null==Type.getClass(g)&&Reflect.isObject(h)&&null==Type.getClass(h)?Objects.copyTo(g,h):b[f]=g}return b};Objects.clone=function(a){return Objects.copyTo(a,{})};
-Objects.mergef=function(a,b,c){for(var e=0,f=Reflect.fields(b);e<f.length;){var g=f[e];++e;var h=Reflect.field(b,g);if(Reflect.hasField(a,g)){var i=Reflect.field(a,g);a[g]=c(g,i,h)}else a[g]=h}};Objects.merge=function(a,b){Objects.mergef(a,b,function(a,b,f){return f})};
-Objects._flatten=function(a,b,c,e,f){for(var g=0,h=Reflect.fields(a);g<h.length;){var i=h[g];++g;var j=Objects.clone(b),k=Reflect.field(a,i);j.fields.push(i);Reflect.isObject(k)&&null==Type.getClass(k)&&(0==e||f+1<e)?Objects._flatten(k,j,c,e,f+1):(j.value=k,c.push(j))}};
-Objects.flatten=function(a,b){null==b&&(b=0);for(var c=[],e=0,f=Reflect.fields(a);e<f.length;){var g=f[e];++e;var h=Reflect.field(a,g);Reflect.isObject(h)&&null==Type.getClass(h)&&1!=b?Objects._flatten(h,{fields:[g],value:null},c,b,1):c.push({fields:[g],value:h})}return c};Objects.compare=function(a,b){var c,e;if(0!=(c=Arrays.compare(e=Reflect.fields(a),Reflect.fields(b))))return c;for(var f=0;f<e.length;)if(c=e[f],++f,0!=(c=Dynamics.compare(Reflect.field(a,c),Reflect.field(b,c))))return c;return 0};
-Objects.addFields=function(a,b,c){for(var e=0,f=b.length;e<f;){var g=e++;Objects.addField(a,b[g],c[g])}return a};Objects.addField=function(a,b,c){a[b]=c;return a};Objects.format=function(a,b,c,e){return Objects.formatf(b,c,e)(a)};
-Objects.formatf=function(a,b,c){b=thx.culture.FormatParams.params(a,b,"R");a=b.shift();switch(a){case "O":return function(a){return Std.string(a)};case "R":return function(a){for(var b=[],g=0,h=Reflect.fields(a);g<h.length;){var i=h[g];++g;b.push(i+":"+Dynamics.format(Reflect.field(a,i),null,null,null,c))}return"{"+b.join(",")+"}"};default:throw new thx.error.Error("Unsupported number format: {0}",null,a,{fileName:"Objects.hx",lineNumber:242,className:"Objects",methodName:"formatf"});}};
-Objects.prototype={__class__:Objects};rg.query.Query=$hxClasses["rg.query.Query"]=function(){rg.query.BaseQuery.call(this,null,this)};rg.query.Query.__name__=["rg","query","Query"];rg.query.Query.create=function(){var a=new rg.query.Query,b=a._createQuery(function(a,b){b(a)},a);return a._next=b};rg.query.Query.executeHandler=function(a,b){var c=a._next;(function(){var a=null;return a=function(f){null==c._next?b(Arrays.flatten(f)):(c=c._next,c._async(f,a))}})(this)([])};rg.query.Query.__super__=rg.query.BaseQuery;
-rg.query.Query.prototype=$extend(rg.query.BaseQuery.prototype,{execute:function(a){rg.query.Query.executeHandler(this,a)},__class__:rg.query.Query});thx.json.JsonEncoder=$hxClasses["thx.json.JsonEncoder"]=function(){};thx.json.JsonEncoder.__name__=["thx","json","JsonEncoder"];thx.json.JsonEncoder.__interfaces__=[thx.data.IDataHandler];
-thx.json.JsonEncoder.prototype={encodedString:null,buf:null,lvl:null,count:null,start:function(){this.lvl=0;this.buf=new StringBuf;this.encodedString=null;this.count=[]},end:function(){this.encodedString=this.buf.b.join("");this.buf=null},startObject:function(){this.buf.add("{");this.count.push(0)},startField:function(a){0<this.count[this.count.length-1]++&&this.buf.add(",");this.buf.add(this.quote(a)+":")},endField:function(){},endObject:function(){this.buf.add("}");this.count.pop()},startArray:function(){this.buf.add("[");
-this.count.push(0)},startItem:function(){0<this.count[this.count.length-1]++&&this.buf.add(",")},endItem:function(){},endArray:function(){this.buf.add("]");this.count.pop()},date:function(a){this.buf.add(a.getTime())},string:function(a){this.buf.add(this.quote(a))},"int":function(a){this.buf.add(a)},"float":function(a){this.buf.add(a)},"null":function(){this.buf.add("null")},bool:function(a){this.buf.add(a?"true":"false")},comment:function(){},quote:function(a){return'"'+(new EReg(".","")).customReplace((new EReg("(\n)",
-"g")).replace((new EReg('("|\\\\)',"g")).replace(a,"\\$1"),"\\n"),function(a){a=a.matched(0).charCodeAt(0);return 32<=a&&127>=a?String.fromCharCode(a):"\\u"+StringTools.hex(a,4)})+'"'},__class__:thx.json.JsonEncoder};var Floats=$hxClasses.Floats=function(){};Floats.__name__=["Floats"];Floats.normalize=function(a){return 0>a?0:1<a?1:a};Floats.clamp=function(a,b,c){return a<b?b:a>c?c:a};Floats.clampSym=function(a,b){return a<-b?-b:a>b?b:a};
-Floats.range=function(a,b,c){null==c&&(c=1);null==b&&(b=a,a=0);if((b-a)/c==Math.POSITIVE_INFINITY)throw new thx.error.Error("infinite range",null,null,{fileName:"Floats.hx",lineNumber:50,className:"Floats",methodName:"range"});var e=[],f=-1,g;if(0>c)for(;(g=a+c*++f)>b;)e.push(g);else for(;(g=a+c*++f)<b;)e.push(g);return e};Floats.sign=function(a){return 0>a?-1:1};Floats.abs=function(a){return 0>a?-a:a};Floats.min=function(a,b){return a<b?a:b};Floats.max=function(a,b){return a>b?a:b};
-Floats.wrap=function(a,b,c){c=c-b+1;a<b&&(a+=c*((b-a)/c+1));return b+(a-b)%c};Floats.circularWrap=function(a,b){a%=b;0>a&&(a+=b);return a};Floats.interpolate=function(a,b,c,e){null==c&&(c=1);null==b&&(b=0);if(null==e)e=thx.math.Equations.linear;return b+e(a)*(c-b)};Floats.interpolatef=function(a,b,c){null==b&&(b=1);null==a&&(a=0);if(null==c)c=thx.math.Equations.linear;var e=b-a;return function(b){return a+c(b)*e}};
-Floats.interpolateClampf=function(a,b,c){if(null==c)c=thx.math.Equations.linear;return function(e,f){var g=f-e;return function(f){return e+c(Floats.clamp(f,a,b))*g}}};Floats.format=function(a,b,c,e){return Floats.formatf(b,c,e)(a)};
-Floats.formatf=function(a,b,c){var b=thx.culture.FormatParams.params(a,b,"D"),a=b.shift(),e=0<b.length?Std.parseInt(b[0]):null;switch(a){case "D":return function(a){return thx.culture.FormatNumber.decimal(a,e,c)};case "I":return function(a){return thx.culture.FormatNumber["int"](a,c)};case "C":var f=1<b.length?b[1]:null;return function(a){return thx.culture.FormatNumber.currency(a,f,e,c)};case "P":return function(a){return thx.culture.FormatNumber.percent(a,e,c)};case "M":return function(a){return thx.culture.FormatNumber.permille(a,
-e,c)};default:throw new thx.error.Error("Unsupported number format: {0}",null,a,{fileName:"Floats.hx",lineNumber:145,className:"Floats",methodName:"formatf"});}};Floats.canParse=function(a){return Floats._reparse.match(a)};Floats.parse=function(a){"+"==a.substr(0,1)&&(a=a.substr(1));return Std.parseFloat(a)};Floats.compare=function(a,b){return a<b?-1:a>b?1:0};Floats.isNumeric=function(a){return Std.is(a,Float)||Std.is(a,Int)};
-Floats.equals=function(a,b,c){null==c&&(c=1.0E-5);return Math.isNaN(a)?Math.isNaN(b):Math.isNaN(b)?!1:!Math.isFinite(a)&&!Math.isFinite(b)?0<a==0<b:Math.abs(b-a)<c};Floats.uninterpolatef=function(a,b){b=1/(b-a);return function(c){return(c-a)*b}};Floats.uninterpolateClampf=function(a,b){b=1/(b-a);return function(c){return Floats.clamp((c-a)*b,0,1)}};Floats.round=function(a,b){null==b&&(b=2);a*=Math.pow(10,b);return Math.round(a)/Math.pow(10,b)};Floats.prototype={__class__:Floats};
-var Std=$hxClasses.Std=function(){};Std.__name__=["Std"];Std.is=function(a,b){return js.Boot.__instanceof(a,b)};Std.string=function(a){return js.Boot.__string_rec(a,"")};Std["int"]=function(a){return 0>a?Math.ceil(a):Math.floor(a)};Std.parseInt=function(a){var b=parseInt(a,10);0==b&&120==a.charCodeAt(1)&&(b=parseInt(a));return isNaN(b)?null:b};Std.parseFloat=function(a){return parseFloat(a)};Std.random=function(a){return Math.floor(Math.random()*a)};Std.prototype={__class__:Std};
-haxe.Md5=$hxClasses["haxe.Md5"]=function(){};haxe.Md5.__name__=["haxe","Md5"];haxe.Md5.encode=function(a){return(new haxe.Md5).doEncode(a)};
-haxe.Md5.prototype={bitOR:function(a,b){return(a>>>1|b>>>1)<<1|a&1|b&1},bitXOR:function(a,b){return(a>>>1^b>>>1)<<1|a&1^b&1},bitAND:function(a,b){return(a>>>1&b>>>1)<<1|a&1&b&1},addme:function(a,b){var c=(a&65535)+(b&65535);return(a>>16)+(b>>16)+(c>>16)<<16|c&65535},rhex:function(a){for(var b="",c=0;4>c;)var e=c++,b=b+("0123456789abcdef".charAt(a>>8*e+4&15)+"0123456789abcdef".charAt(a>>8*e&15));return b},str2blks:function(a){for(var b=(a.length+8>>6)+1,c=[],e=0,f=16*b;e<f;){var g=e++;c[g]=0}for(g=
-0;g<a.length;)c[g>>2]|=a.charCodeAt(g)<<8*((8*a.length+g)%4),g++;c[g>>2]|=128<<8*((8*a.length+g)%4);a=8*a.length;b=16*b-2;c[b]=a&255;c[b]|=(a>>>8&255)<<8;c[b]|=(a>>>16&255)<<16;c[b]|=(a>>>24&255)<<24;return c},rol:function(a,b){return a<<b|a>>>32-b},cmn:function(a,b,c,e,f,g){return this.addme(this.rol(this.addme(this.addme(b,a),this.addme(e,g)),f),c)},ff:function(a,b,c,e,f,g,h){return this.cmn(this.bitOR(this.bitAND(b,c),this.bitAND(~b,e)),a,b,f,g,h)},gg:function(a,b,c,e,f,g,h){return this.cmn(this.bitOR(this.bitAND(b,
-e),this.bitAND(c,~e)),a,b,f,g,h)},hh:function(a,b,c,e,f,g,h){return this.cmn(this.bitXOR(this.bitXOR(b,c),e),a,b,f,g,h)},ii:function(a,b,c,e,f,g,h){return this.cmn(this.bitXOR(c,this.bitOR(b,~e)),a,b,f,g,h)},doEncode:function(a){for(var a=this.str2blks(a),b=1732584193,c=-271733879,e=-1732584194,f=271733878,g=0;g<a.length;)var h=b,i=c,j=e,k=f,b=this.ff(b,c,e,f,a[g],7,-680876936),f=this.ff(f,b,c,e,a[g+1],12,-389564586),e=this.ff(e,f,b,c,a[g+2],17,606105819),c=this.ff(c,e,f,b,a[g+3],22,-1044525330),
-b=this.ff(b,c,e,f,a[g+4],7,-176418897),f=this.ff(f,b,c,e,a[g+5],12,1200080426),e=this.ff(e,f,b,c,a[g+6],17,-1473231341),c=this.ff(c,e,f,b,a[g+7],22,-45705983),b=this.ff(b,c,e,f,a[g+8],7,1770035416),f=this.ff(f,b,c,e,a[g+9],12,-1958414417),e=this.ff(e,f,b,c,a[g+10],17,-42063),c=this.ff(c,e,f,b,a[g+11],22,-1990404162),b=this.ff(b,c,e,f,a[g+12],7,1804603682),f=this.ff(f,b,c,e,a[g+13],12,-40341101),e=this.ff(e,f,b,c,a[g+14],17,-1502002290),c=this.ff(c,e,f,b,a[g+15],22,1236535329),b=this.gg(b,c,e,f,a[g+
-1],5,-165796510),f=this.gg(f,b,c,e,a[g+6],9,-1069501632),e=this.gg(e,f,b,c,a[g+11],14,643717713),c=this.gg(c,e,f,b,a[g],20,-373897302),b=this.gg(b,c,e,f,a[g+5],5,-701558691),f=this.gg(f,b,c,e,a[g+10],9,38016083),e=this.gg(e,f,b,c,a[g+15],14,-660478335),c=this.gg(c,e,f,b,a[g+4],20,-405537848),b=this.gg(b,c,e,f,a[g+9],5,568446438),f=this.gg(f,b,c,e,a[g+14],9,-1019803690),e=this.gg(e,f,b,c,a[g+3],14,-187363961),c=this.gg(c,e,f,b,a[g+8],20,1163531501),b=this.gg(b,c,e,f,a[g+13],5,-1444681467),f=this.gg(f,
-b,c,e,a[g+2],9,-51403784),e=this.gg(e,f,b,c,a[g+7],14,1735328473),c=this.gg(c,e,f,b,a[g+12],20,-1926607734),b=this.hh(b,c,e,f,a[g+5],4,-378558),f=this.hh(f,b,c,e,a[g+8],11,-2022574463),e=this.hh(e,f,b,c,a[g+11],16,1839030562),c=this.hh(c,e,f,b,a[g+14],23,-35309556),b=this.hh(b,c,e,f,a[g+1],4,-1530992060),f=this.hh(f,b,c,e,a[g+4],11,1272893353),e=this.hh(e,f,b,c,a[g+7],16,-155497632),c=this.hh(c,e,f,b,a[g+10],23,-1094730640),b=this.hh(b,c,e,f,a[g+13],4,681279174),f=this.hh(f,b,c,e,a[g],11,-358537222),
-e=this.hh(e,f,b,c,a[g+3],16,-722521979),c=this.hh(c,e,f,b,a[g+6],23,76029189),b=this.hh(b,c,e,f,a[g+9],4,-640364487),f=this.hh(f,b,c,e,a[g+12],11,-421815835),e=this.hh(e,f,b,c,a[g+15],16,530742520),c=this.hh(c,e,f,b,a[g+2],23,-995338651),b=this.ii(b,c,e,f,a[g],6,-198630844),f=this.ii(f,b,c,e,a[g+7],10,1126891415),e=this.ii(e,f,b,c,a[g+14],15,-1416354905),c=this.ii(c,e,f,b,a[g+5],21,-57434055),b=this.ii(b,c,e,f,a[g+12],6,1700485571),f=this.ii(f,b,c,e,a[g+3],10,-1894986606),e=this.ii(e,f,b,c,a[g+10],
-15,-1051523),c=this.ii(c,e,f,b,a[g+1],21,-2054922799),b=this.ii(b,c,e,f,a[g+8],6,1873313359),f=this.ii(f,b,c,e,a[g+15],10,-30611744),e=this.ii(e,f,b,c,a[g+6],15,-1560198380),c=this.ii(c,e,f,b,a[g+13],21,1309151649),b=this.ii(b,c,e,f,a[g+4],6,-145523070),f=this.ii(f,b,c,e,a[g+11],10,-1120210379),e=this.ii(e,f,b,c,a[g+2],15,718787259),c=this.ii(c,e,f,b,a[g+9],21,-343485551),b=this.addme(b,h),c=this.addme(c,i),e=this.addme(e,j),f=this.addme(f,k),g=g+16;return this.rhex(b)+this.rhex(c)+this.rhex(e)+this.rhex(f)},
-__class__:haxe.Md5};thx.data.ValueHandler=$hxClasses["thx.data.ValueHandler"]=function(){};thx.data.ValueHandler.__name__=["thx","data","ValueHandler"];thx.data.ValueHandler.__interfaces__=[thx.data.IDataHandler];
-thx.data.ValueHandler.prototype={value:null,_stack:null,_names:null,start:function(){this._stack=[];this._names=[]},end:function(){this.value=this._stack.pop()},startObject:function(){this._stack.push({})},endObject:function(){},startField:function(a){this._names.push(a)},endField:function(){var a=this._stack.pop();Arrays.last(this._stack)[this._names.pop()]=a},startArray:function(){this._stack.push([])},endArray:function(){},startItem:function(){},endItem:function(){var a=this._stack.pop();Arrays.last(this._stack).push(a)},
-date:function(a){this._stack.push(a)},string:function(a){this._stack.push(a)},"int":function(a){this._stack.push(a)},"float":function(a){this._stack.push(a)},"null":function(){this._stack.push(null)},bool:function(a){this._stack.push(a)},comment:function(){},__class__:thx.data.ValueHandler};thx.math.Equations=$hxClasses["thx.math.Equations"]=function(){};thx.math.Equations.__name__=["thx","math","Equations"];thx.math.Equations.linear=function(a){return a};
-thx.math.Equations.polynomial=function(a,b){return Math.pow(a,b)};thx.math.Equations.quadratic=function(a){return thx.math.Equations.polynomial(a,2)};thx.math.Equations.cubic=function(a){return thx.math.Equations.polynomial(a,3)};thx.math.Equations.sin=function(a){return 1-Math.cos(a*Math.PI/2)};thx.math.Equations.exponential=function(a){return 0!=a?Math.pow(2,10*(a-1))-0.0010:0};thx.math.Equations.circle=function(a){return 1-Math.sqrt(1-a*a)};
-thx.math.Equations.elastic=function(a,b,c){var e;null==c&&(c=0.45);null==b?(b=1,e=c/4):e=c/(2*Math.PI)/Math.asin(1/b);return 1+b*Math.pow(2,10*-a)*Math.sin(2*(a-e)*Math.PI/c)};thx.math.Equations.elasticf=function(a,b){var c;null==b&&(b=0.45);null==a?(a=1,c=b/4):c=b/(2*Math.PI)/Math.asin(1/a);return function(e){return 1+a*Math.pow(2,10*-e)*Math.sin(2*(e-c)*Math.PI/b)}};thx.math.Equations.back=function(a,b){null==b&&(b=1.70158);return a*a*((b+1)*a-b)};
-thx.math.Equations.backf=function(a){null==a&&(a=1.70158);return function(b){return b*b*((a+1)*b-a)}};thx.math.Equations.bounce=function(a){return a<1/2.75?7.5625*a*a:a<2/2.75?7.5625*(a-=1.5/2.75)*a+0.75:a<2.5/2.75?7.5625*(a-=2.25/2.75)*a+0.9375:7.5625*(a-=2.625/2.75)*a+0.984375};thx.math.Equations.polynomialf=function(a){return function(b){thx.math.Equations.polynomial(b,a)}};thx.math.Equations.prototype={__class__:thx.math.Equations};js.Lib=$hxClasses["js.Lib"]=function(){};
-js.Lib.__name__=["js","Lib"];js.Lib.isIE=null;js.Lib.isOpera=null;js.Lib.document=null;js.Lib.window=null;js.Lib.alert=function(a){alert(js.Boot.__string_rec(a,""))};js.Lib.eval=function(a){return eval(a)};js.Lib.setErrorHandler=function(a){js.Lib.onerror=a};js.Lib.prototype={__class__:js.Lib};rg.storage.MemoryStorage=$hxClasses["rg.storage.MemoryStorage"]=function(){this.storage=new Hash};rg.storage.MemoryStorage.__name__=["rg","storage","MemoryStorage"];rg.storage.MemoryStorage.__interfaces__=[rg.storage.IStorage];
-rg.storage.MemoryStorage.prototype={storage:null,set:function(a,b){this.storage.set(a,b)},get:function(a){return this.storage.get(a)},clear:function(){this.storage=new Hash},remove:function(a){this.storage.remove(a)},keys:function(){return this.storage.keys()},toString:function(){return"MemoryStorage"},__class__:rg.storage.MemoryStorage};var StringTools=$hxClasses.StringTools=function(){};StringTools.__name__=["StringTools"];StringTools.urlEncode=function(a){return encodeURIComponent(a)};
-StringTools.urlDecode=function(a){return decodeURIComponent(a.split("+").join(" "))};StringTools.htmlEscape=function(a){return a.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;")};StringTools.htmlUnescape=function(a){return a.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&")};StringTools.startsWith=function(a,b){return a.length>=b.length&&a.substr(0,b.length)==b};
-StringTools.endsWith=function(a,b){var c=b.length,e=a.length;return e>=c&&a.substr(e-c,c)==b};StringTools.isSpace=function(a,b){var c=a.charCodeAt(b);return 9<=c&&13>=c||32==c};StringTools.ltrim=function(a){for(var b=a.length,c=0;c<b&&StringTools.isSpace(a,c);)c++;return 0<c?a.substr(c,b-c):a};StringTools.rtrim=function(a){for(var b=a.length,c=0;c<b&&StringTools.isSpace(a,b-c-1);)c++;return 0<c?a.substr(0,b-c):a};StringTools.trim=function(a){return StringTools.ltrim(StringTools.rtrim(a))};
-StringTools.rpad=function(a,b,c){for(var e=a.length,f=b.length;e<c;)c-e<f?(a+=b.substr(0,c-e),e=c):(a+=b,e+=f);return a};StringTools.lpad=function(a,b,c){var e="",f=a.length;if(f>=c)return a;for(var g=b.length;f<c;)c-f<g?(e+=b.substr(0,c-f),f=c):(e+=b,f+=g);return e+a};StringTools.replace=function(a,b,c){return a.split(b).join(c)};StringTools.hex=function(a,b){var c="";do c="0123456789ABCDEF".charAt(a&15)+c,a>>>=4;while(0<a);if(null!=b)for(;c.length<b;)c="0"+c;return c};
-StringTools.fastCodeAt=function(a,b){return a.cca(b)};StringTools.isEOF=function(a){return a!=a};StringTools.prototype={__class__:StringTools};js.Boot.__res={};js.Boot.__init();thx.languages.En.getLanguage();thx.cultures.EnUS.getCulture();var JSON;if(null!=JSON)thx.json.Json.nativeDecoder=JSON.parse,thx.json.Json.nativeEncoder=JSON.stringify;Math.__name__=["Math"];Math.NaN=Number.NaN;Math.NEGATIVE_INFINITY=Number.NEGATIVE_INFINITY;Math.POSITIVE_INFINITY=Number.POSITIVE_INFINITY;$hxClasses.Math=Math;
-Math.isFinite=function(a){return isFinite(a)};Math.isNaN=function(a){return isNaN(a)};"undefined"==typeof haxe_timers&&(haxe_timers=[]);if(!("indexOf"in Array.prototype))Array.prototype.indexOf=function(a,b){void 0===b&&(b=0);0>b&&(b+=this.length);0>b&&(b=0);for(var c=this.length;b<c;b++)if(b in this&&this[b]===a)return b;return-1};
-if(!("lastIndexOf"in Array.prototype))Array.prototype.lastIndexOf=function(a,b){void 0===b&&(b=this.length-1);0>b&&(b+=this.length);b>this.length-1&&(b=this.length-1);for(b++;0<b--;)if(b in this&&this[b]===a)return b;return-1};if(!("forEach"in Array.prototype))Array.prototype.forEach=function(a,b){for(var c=0,e=this.length;c<e;c++)c in this&&a.call(b,this[c],c,this)};
-if(!("map"in Array.prototype))Array.prototype.map=function(a,b){for(var c=Array(this.length),e=0,f=this.length;e<f;e++)e in this&&(c[e]=a.call(b,this[e],e,this));return c};if(!("filter"in Array.prototype))Array.prototype.filter=function(a,b){for(var c=[],e,f=0,g=this.length;f<g;f++)f in this&&a.call(b,e=this[f],f,this)&&c.push(e);return c};if(!("every"in Array.prototype))Array.prototype.every=function(a,b){for(var c=0,e=this.length;c<e;c++)if(c in this&&!a.call(b,this[c],c,this))return!1;return!0};
-String.prototype.__class__=$hxClasses.String=String;String.__name__=["String"];Array.prototype.__class__=$hxClasses.Array=Array;Array.__name__=["Array"];Int=$hxClasses.Int={__name__:["Int"]};Dynamic=$hxClasses.Dynamic={__name__:["Dynamic"]};Float=$hxClasses.Float=Number;Float.__name__=["Float"];Bool=$hxClasses.Bool={__ename__:["Bool"]};Class=$hxClasses.Class={__name__:["Class"]};Enum={};Void=$hxClasses.Void={__ename__:["Void"]};js.Lib.document=document;js.Lib.window=window;
-onerror=function(a,b,c){var e=js.Lib.onerror;return null==e?!1:e(a,[b+":"+c])};var d=Date;d.now=function(){return new Date};d.fromTime=function(a){var b=new Date;b.setTime(a);return b};
-d.fromString=function(a){switch(a.length){case 8:var a=a.split(":"),b=new Date;b.setTime(0);b.setUTCHours(a[0]);b.setUTCMinutes(a[1]);b.setUTCSeconds(a[2]);return b;case 10:return a=a.split("-"),new Date(a[0],a[1]-1,a[2],0,0,0);case 19:return a=a.split(" "),b=a[0].split("-"),a=a[1].split(":"),new Date(b[0],b[1]-1,b[2],a[0],a[1],a[2]);default:throw"Invalid date format : "+a;}};
-d.prototype.toString=function(){var a=this.getMonth()+1,b=this.getDate(),c=this.getHours(),e=this.getMinutes(),f=this.getSeconds();return this.getFullYear()+"-"+(10>a?"0"+a:""+a)+"-"+(10>b?"0"+b:""+b)+" "+(10>c?"0"+c:""+c)+":"+(10>e?"0"+e:""+e)+":"+(10>f?"0"+f:""+f)};d.prototype.__class__=$hxClasses.Date=d;d.__name__=["Date"];rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX="D:";rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX="V:";Ints._reparse=new EReg("^([+-])?\\d+$","");
-Dates._reparse=new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");thx.date.DateParser.daynumeric="0?[1-9]|[1-2][0-9]|3[0-1]";thx.date.DateParser.months=thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(a){return a.toLowerCase()});thx.date.DateParser.shortmonths=thx.cultures.EnUS.getCulture().date.abbrMonths.slice(0,-1).map(function(a){return a.toLowerCase()});thx.date.DateParser.days=thx.cultures.EnUS.getCulture().date.days.map(function(a){return a.toLowerCase()});
-thx.date.DateParser.shortdays=thx.cultures.EnUS.getCulture().date.abbrDays.map(function(a){return a.toLowerCase()});thx.date.DateParser.sfullmonths=thx.date.DateParser.months.join("|");thx.date.DateParser.sshortmonths=thx.date.DateParser.shortmonths.join("|");thx.date.DateParser.sfulldays=thx.date.DateParser.days.join("|");thx.date.DateParser.sshortdays=thx.date.DateParser.shortdays.join("|");thx.date.DateParser.day="(0?[0-9]|[1-2][0-9]|3[0-1])(?:st|nd|rd|th)?";thx.date.DateParser.month="(?:0?[1-9]|1[0-2])";
-thx.date.DateParser.hour="(?:0?[0-9]|1[0-9]|2[0-3])";thx.date.DateParser.hhour="(?:0[0-9]|1[0-2])";thx.date.DateParser.hohour="(?:0?[0-9]|1[0-2])";thx.date.DateParser.fminsec="(?:0[0-9]|[1-5][0-9])";thx.date.DateParser.minsec="(?:0?[0-9]|[1-5][0-9])";thx.date.DateParser.ampm="(?:(?:in\\s+the\\s+)?(am|pm|evening|morning|afternoon))";thx.date.DateParser.daypart="(?:(?:in\\s+the\\s+)?(evening|morning|afternoon|sunsrise|sunset|dawn|dusk|noon|mid-day|midday|mid-night|midnight))";
-thx.date.DateParser.period="minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years|second|seconds";
-thx.date.DateParser.dateexp=new EReg("(?:(?:\\b("+thx.date.DateParser.sfullmonths+")\\s+"+thx.date.DateParser.day+"(?:\\s*,\\s*(\\d{2,4}))?\\b)|(?:\\b("+thx.date.DateParser.sshortmonths+")\\s+"+thx.date.DateParser.day+"(?:\\s*,?\\s*(\\d{2,4}))?\\b)|(?:\\b"+thx.date.DateParser.day+"\\s+("+thx.date.DateParser.sfullmonths+")(?:\\s+(\\d{2,4}))?\\b)|(?:\\b"+thx.date.DateParser.day+"\\s+("+thx.date.DateParser.sshortmonths+")(?:\\s+(\\d{2,4}))?\\b)|(?:\\b(?:"+thx.date.DateParser.day+"\\s+)?("+thx.date.DateParser.sfullmonths+
-")\\s+(\\d{2,4})\\b)|(?:\\b(?:"+thx.date.DateParser.day+"\\s+)?("+thx.date.DateParser.sshortmonths+")\\s+(\\d{2,4})\\b)|(?:\\b("+thx.date.DateParser.month+")/"+thx.date.DateParser.day+"(?:/(\\d{2,4}))?\\b)|(?:\\b"+thx.date.DateParser.day+"/("+thx.date.DateParser.month+")(?:/(\\d{2,4}))?\\b)|(?:\\b(\\d{2,4})-("+thx.date.DateParser.month+")-"+thx.date.DateParser.day+"\\b)|(?:^\\s*"+thx.date.DateParser.day+"\\s*$))","i");
-thx.date.DateParser.absdateexp=new EReg("(?:(?:\\b(today|now|this\\s+second|tomorrow|yesterday)\\b)|(?:\\b(?:(next|last|this)\\s+)?("+thx.date.DateParser.sfullmonths+")\\b)|(?:\\b(?:(next|last|this)\\s+)?("+thx.date.DateParser.sfulldays+")\\b)|(?:\\b(?:(next|last|this)\\s+)?("+thx.date.DateParser.sshortmonths+")\\b)|(?:\\b(?:(next|last|this)\\s+)?("+thx.date.DateParser.sshortdays+")\\b))","i");
-thx.date.DateParser.relexp=new EReg("(?:(?:\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+("+thx.date.DateParser.period+")\\b)|(?:\\b(\\d+)?\\s+("+thx.date.DateParser.period+")\\s+(from|before|hence|after|ago)?\\b))","i");
-thx.date.DateParser.timeexp=new EReg("(?:\\bat\\s+)?(?:(?:\\b("+thx.date.DateParser.hohour+"):("+thx.date.DateParser.minsec+")\\s*"+thx.date.DateParser.ampm+"\\b)|(?:\\b("+thx.date.DateParser.hour+"):("+thx.date.DateParser.minsec+")(?:[:]("+thx.date.DateParser.minsec+")(?:\\.(\\d+))?)?\\b)|(?:(?:^|\\s+)("+thx.date.DateParser.hhour+")("+thx.date.DateParser.fminsec+")\\s*"+thx.date.DateParser.ampm+"?(?:\\s+|$))|(?:\\b("+thx.date.DateParser.hohour+")\\s*"+thx.date.DateParser.ampm+"\\b)|(?:\\b"+thx.date.DateParser.daypart+
-"\\b))","i");Strings._re=new EReg("[{](\\d+)(?::[^}]*)?[}]","m");Strings._reSplitWC=new EReg("(\r\n|\n\r|\n|\r)","g");Strings._reReduceWS=new EReg("\\s+","");Strings._reStripTags=new EReg("(<[a-z]+[^>/]*/?>|</[a-z]+>)","i");Strings._reFormat=new EReg("{(\\d+)(?::([a-zA-Z]+))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?}","m");Strings._reCollapse=new EReg("\\s+","g");Strings.__ucwordsPattern=new EReg("[^a-zA-Z]([a-z])","");
-Strings.__ucwordswsPattern=new EReg("\\s([a-z])","");Strings.__alphaNumPattern=new EReg("^[a-z0-9]+$","i");Strings.__digitsPattern=new EReg("^[0-9]+$","");Strings._reInterpolateNumber=new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");rg.util.Periodicity.validPeriods="minute,hour,day,week,month,year,eternity".split(",");rg.util.Periodicity.validGroupValues=["hour","day","week","month","year"];thx.error.Error.errorPositionPattern="{0}.{1}({2}): ";
-DateTools.DAYS_OF_MONTH=[31,28,31,30,31,30,31,31,30,31,30,31];Floats._reparse=new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");js.Lib.onerror=null;rg.app.query.JSBridge.main();
+var $_, $hxClasses = $hxClasses || {}, $estr = function() { return js.Boot.__string_rec(this,''); }
+function $extend(from, fields) {
+	function inherit() {}; inherit.prototype = from; var proto = new inherit();
+	for (var name in fields) proto[name] = fields[name];
+	return proto;
+}
+var rg = rg || {}
+if(!rg.data) rg.data = {}
+if(!rg.data.reportgrid) rg.data.reportgrid = {}
+rg.data.reportgrid.IExecutorReportGrid = $hxClasses["rg.data.reportgrid.IExecutorReportGrid"] = function() { }
+rg.data.reportgrid.IExecutorReportGrid.__name__ = ["rg","data","reportgrid","IExecutorReportGrid"];
+rg.data.reportgrid.IExecutorReportGrid.prototype = {
+	children: null
+	,propertyCount: null
+	,propertySeries: null
+	,propertyMeans: null
+	,propertyStandardDeviations: null
+	,propertyValues: null
+	,propertyValueCount: null
+	,propertyValueSeries: null
+	,searchCount: null
+	,searchSeries: null
+	,intersect: null
+	,histogram: null
+	,propertiesHistogram: null
+	,__class__: rg.data.reportgrid.IExecutorReportGrid
+}
+var Types = $hxClasses["Types"] = function() { }
+Types.__name__ = ["Types"];
+Types.className = function(o) {
+	return Type.getClassName(Type.getClass(o)).split(".").pop();
+}
+Types.fullName = function(o) {
+	return Type.getClassName(Type.getClass(o));
+}
+Types.typeName = function(o) {
+	return (function($this) {
+		var $r;
+		var $e = (Type["typeof"](o));
+		switch( $e[1] ) {
+		case 0:
+			$r = "null";
+			break;
+		case 1:
+			$r = "Int";
+			break;
+		case 2:
+			$r = "Float";
+			break;
+		case 3:
+			$r = "Bool";
+			break;
+		case 5:
+			$r = "function";
+			break;
+		case 6:
+			var c = $e[2];
+			$r = Type.getClassName(c);
+			break;
+		case 7:
+			var e = $e[2];
+			$r = Type.getEnumName(e);
+			break;
+		case 4:
+			$r = "Object";
+			break;
+		case 8:
+			$r = "Unknown";
+			break;
+		}
+		return $r;
+	}(this));
+}
+Types.hasSuperClass = function(type,sup) {
+	while(null != type) {
+		if(type == sup) return true;
+		type = Type.getSuperClass(type);
+	}
+	return false;
+}
+Types.isAnonymous = function(v) {
+	return Reflect.isObject(v) && null == Type.getClass(v);
+}
+Types["as"] = function(value,type) {
+	return Std["is"](value,type)?value:null;
+}
+Types.ifIs = function(value,type,handler) {
+	if(Std["is"](value,type)) handler(value);
+	return value;
+}
+Types.of = function(type,value) {
+	return Std["is"](value,type)?value:null;
+}
+Types.sameType = function(a,b) {
+	if(null == a && b == null) return true;
+	if(null == a || b == null) return false;
+	var tb = Type["typeof"](b);
+	var $e = (tb);
+	switch( $e[1] ) {
+	case 6:
+		var c = $e[2];
+		return Std["is"](a,c);
+	case 7:
+		var e = $e[2];
+		return Std["is"](a,e);
+	default:
+		return Type["typeof"](a) == tb;
+	}
+}
+Types.isPrimitive = function(v) {
+	return (function($this) {
+		var $r;
+		var $e = (Type["typeof"](v));
+		switch( $e[1] ) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			$r = true;
+			break;
+		case 5:
+		case 7:
+		case 4:
+		case 8:
+			$r = false;
+			break;
+		case 6:
+			var c = $e[2];
+			$r = Type.getClassName(c) == "String";
+			break;
+		}
+		return $r;
+	}(this));
+}
+Types.prototype = {
+	__class__: Types
+}
+var thx = thx || {}
+if(!thx.culture) thx.culture = {}
+thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
+thx.culture.Info.__name__ = ["thx","culture","Info"];
+thx.culture.Info.prototype = {
+	name: null
+	,'native': null
+	,english: null
+	,iso2: null
+	,iso3: null
+	,pluralRule: null
+	,toString: function() {
+		return this["native"] + " (" + this.english + ")";
+	}
+	,__class__: thx.culture.Info
+}
+thx.culture.Culture = $hxClasses["thx.culture.Culture"] = function() { }
+thx.culture.Culture.__name__ = ["thx","culture","Culture"];
+thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
+thx.culture.Culture.cultures = null;
+thx.culture.Culture.getCultures = function() {
+	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
+	return thx.culture.Culture.cultures;
+}
+thx.culture.Culture.get = function(name) {
+	return thx.culture.Culture.getCultures().get(name.toLowerCase());
+}
+thx.culture.Culture.names = function() {
+	return thx.culture.Culture.getCultures().keys();
+}
+thx.culture.Culture.exists = function(culture) {
+	return thx.culture.Culture.getCultures().exists(culture.toLowerCase());
+}
+thx.culture.Culture._defaultCulture = null;
+thx.culture.Culture.defaultCulture = null;
+thx.culture.Culture.getDefaultCulture = function() {
+	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
+}
+thx.culture.Culture.setDefaultCulture = function(culture) {
+	return thx.culture.Culture._defaultCulture = culture;
+}
+thx.culture.Culture.add = function(culture) {
+	if(null == thx.culture.Culture._defaultCulture) thx.culture.Culture._defaultCulture = culture;
+	var name = culture.name.toLowerCase();
+	if(!thx.culture.Culture.getCultures().exists(name)) thx.culture.Culture.getCultures().set(name,culture);
+}
+thx.culture.Culture.loadAll = function() {
+}
+thx.culture.Culture.__super__ = thx.culture.Info;
+thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
+	language: null
+	,date: null
+	,englishCurrency: null
+	,nativeCurrency: null
+	,currencySymbol: null
+	,currencyIso: null
+	,englishRegion: null
+	,nativeRegion: null
+	,isMetric: null
+	,digits: null
+	,signNeg: null
+	,signPos: null
+	,symbolNaN: null
+	,symbolPercent: null
+	,symbolPermille: null
+	,symbolNegInf: null
+	,symbolPosInf: null
+	,number: null
+	,currency: null
+	,percent: null
+	,__class__: thx.culture.Culture
+});
+thx.culture.Language = $hxClasses["thx.culture.Language"] = function() { }
+thx.culture.Language.__name__ = ["thx","culture","Language"];
+thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
+thx.culture.Language.languages = null;
+thx.culture.Language.getLanguages = function() {
+	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
+	return thx.culture.Language.languages;
+}
+thx.culture.Language.get = function(name) {
+	return thx.culture.Language.getLanguages().get(name.toLowerCase());
+}
+thx.culture.Language.names = function() {
+	return thx.culture.Language.getLanguages().keys();
+}
+thx.culture.Language.add = function(language) {
+	if(!thx.culture.Language.getLanguages().exists(language.iso2)) thx.culture.Language.getLanguages().set(language.iso2,language);
+}
+thx.culture.Language.__super__ = thx.culture.Info;
+thx.culture.Language.prototype = $extend(thx.culture.Info.prototype,{
+	__class__: thx.culture.Language
+});
+var Hash = $hxClasses["Hash"] = function() {
+	this.h = {}
+	if(this.h.__proto__ != null) {
+		this.h.__proto__ = null;
+		delete(this.h.__proto__);
+	}
+}
+Hash.__name__ = ["Hash"];
+Hash.prototype = {
+	h: null
+	,set: function(key,value) {
+		this.h["$" + key] = value;
+	}
+	,get: function(key) {
+		return this.h["$" + key];
+	}
+	,exists: function(key) {
+		try {
+			key = "$" + key;
+			return this.hasOwnProperty.call(this.h,key);
+		} catch( e ) {
+			for(var i in this.h) if( i == key ) return true;
+			return false;
+		}
+	}
+	,remove: function(key) {
+		if(!this.exists(key)) return false;
+		delete(this.h["$" + key]);
+		return true;
+	}
+	,keys: function() {
+		var a = new Array();
+		for(var i in this.h) a.push(i.substr(1));
+		return a.iterator();
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref["$" + i];
+		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b[s.b.length] = "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b[s.b.length] = i == null?"null":i;
+			s.b[s.b.length] = " => ";
+			s.add(Std.string(this.get(i)));
+			if(it.hasNext()) s.b[s.b.length] = ", ";
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
+	}
+	,__class__: Hash
+}
+if(!thx.languages) thx.languages = {}
+thx.languages.En = $hxClasses["thx.languages.En"] = function() {
+	this.name = "en";
+	this.english = "English";
+	this["native"] = "English";
+	this.iso2 = "en";
+	this.iso3 = "eng";
+	this.pluralRule = 1;
+	thx.culture.Language.add(this);
+}
+thx.languages.En.__name__ = ["thx","languages","En"];
+thx.languages.En.__properties__ = {get_language:"getLanguage"}
+thx.languages.En.language = null;
+thx.languages.En.getLanguage = function() {
+	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
+	return thx.languages.En.language;
+}
+thx.languages.En.__super__ = thx.culture.Language;
+thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
+	__class__: thx.languages.En
+});
+if(!thx.culture.core) thx.culture.core = {}
+thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
+	this.months = months;
+	this.abbrMonths = abbrMonths;
+	this.days = days;
+	this.abbrDays = abbrDays;
+	this.shortDays = shortDays;
+	this.am = am;
+	this.pm = pm;
+	this.separatorDate = separatorDate;
+	this.separatorTime = separatorTime;
+	this.firstWeekDay = firstWeekDay;
+	this.patternYearMonth = patternYearMonth;
+	this.patternMonthDay = patternMonthDay;
+	this.patternDate = patternDate;
+	this.patternDateShort = patternDateShort;
+	this.patternDateRfc = patternDateRfc;
+	this.patternDateTime = patternDateTime;
+	this.patternUniversal = patternUniversal;
+	this.patternSortable = patternSortable;
+	this.patternTime = patternTime;
+	this.patternTimeShort = patternTimeShort;
+}
+thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
+thx.culture.core.DateTimeInfo.prototype = {
+	months: null
+	,abbrMonths: null
+	,days: null
+	,abbrDays: null
+	,shortDays: null
+	,am: null
+	,pm: null
+	,separatorDate: null
+	,separatorTime: null
+	,firstWeekDay: null
+	,patternYearMonth: null
+	,patternMonthDay: null
+	,patternDate: null
+	,patternDateShort: null
+	,patternDateRfc: null
+	,patternDateTime: null
+	,patternUniversal: null
+	,patternSortable: null
+	,patternTime: null
+	,patternTimeShort: null
+	,__class__: thx.culture.core.DateTimeInfo
+}
+thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
+	this.decimals = decimals;
+	this.decimalsSeparator = decimalsSeparator;
+	this.groups = groups;
+	this.groupsSeparator = groupsSeparator;
+	this.patternNegative = patternNegative;
+	this.patternPositive = patternPositive;
+}
+thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
+thx.culture.core.NumberInfo.prototype = {
+	decimals: null
+	,decimalsSeparator: null
+	,groups: null
+	,groupsSeparator: null
+	,patternNegative: null
+	,patternPositive: null
+	,__class__: thx.culture.core.NumberInfo
+}
+if(!thx.cultures) thx.cultures = {}
+thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
+	this.language = thx.languages.En.getLanguage();
+	this.name = "en-US";
+	this.english = "English (United States)";
+	this["native"] = "English (United States)";
+	this.date = new thx.culture.core.DateTimeInfo(["January","February","March","April","May","June","July","August","September","October","November","December",""],["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],["Su","Mo","Tu","We","Th","Fr","Sa"],"AM","PM","/",":",0,"%B, %Y","%B %d","%A, %B %d, %Y","%f/%e/%Y","%a, %d %b %Y %H:%M:%S GMT","%A, %B %d, %Y %l:%M:%S %p","%Y-%m-%d %H:%M:%SZ","%Y-%m-%dT%H:%M:%S","%l:%M:%S %p","%l:%M %p");
+	this.symbolNaN = "NaN";
+	this.symbolPercent = "%";
+	this.symbolPermille = "‰";
+	this.signNeg = "-";
+	this.signPos = "+";
+	this.symbolNegInf = "-Infinity";
+	this.symbolPosInf = "Infinity";
+	this.number = new thx.culture.core.NumberInfo(2,".",[3],",","-n","n");
+	this.currency = new thx.culture.core.NumberInfo(2,".",[3],",","($n)","$n");
+	this.percent = new thx.culture.core.NumberInfo(2,".",[3],",","-n %","n %");
+	this.pluralRule = 1;
+	this.englishCurrency = "US Dollar";
+	this.nativeCurrency = "US Dollar";
+	this.currencySymbol = "$";
+	this.currencyIso = "USD";
+	this.englishRegion = "United States";
+	this.nativeRegion = "United States";
+	this.iso2 = "US";
+	this.iso3 = "USA";
+	this.isMetric = false;
+	thx.culture.Culture.add(this);
+}
+thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
+thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
+thx.cultures.EnUS.culture = null;
+thx.cultures.EnUS.getCulture = function() {
+	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
+	return thx.cultures.EnUS.culture;
+}
+thx.cultures.EnUS.__super__ = thx.culture.Culture;
+thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
+	__class__: thx.cultures.EnUS
+});
+var List = $hxClasses["List"] = function() {
+	this.length = 0;
+}
+List.__name__ = ["List"];
+List.prototype = {
+	h: null
+	,q: null
+	,length: null
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,first: function() {
+		return this.h == null?null:this.h[0];
+	}
+	,last: function() {
+		return this.q == null?null:this.q[0];
+	}
+	,pop: function() {
+		if(this.h == null) return null;
+		var x = this.h[0];
+		this.h = this.h[1];
+		if(this.h == null) this.q = null;
+		this.length--;
+		return x;
+	}
+	,isEmpty: function() {
+		return this.h == null;
+	}
+	,clear: function() {
+		this.h = null;
+		this.q = null;
+		this.length = 0;
+	}
+	,remove: function(v) {
+		var prev = null;
+		var l = this.h;
+		while(l != null) {
+			if(l[0] == v) {
+				if(prev == null) this.h = l[1]; else prev[1] = l[1];
+				if(this.q == l) this.q = prev;
+				this.length--;
+				return true;
+			}
+			prev = l;
+			l = l[1];
+		}
+		return false;
+	}
+	,iterator: function() {
+		return { h : this.h, hasNext : function() {
+			return this.h != null;
+		}, next : function() {
+			if(this.h == null) return null;
+			var x = this.h[0];
+			this.h = this.h[1];
+			return x;
+		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		s.b[s.b.length] = "{";
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = ", ";
+			s.add(Std.string(l[0]));
+			l = l[1];
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
+	}
+	,join: function(sep) {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = sep == null?"null":sep;
+			s.add(l[0]);
+			l = l[1];
+		}
+		return s.b.join("");
+	}
+	,filter: function(f) {
+		var l2 = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			if(f(v)) l2.add(v);
+		}
+		return l2;
+	}
+	,map: function(f) {
+		var b = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			b.add(f(v));
+		}
+		return b;
+	}
+	,__class__: List
+}
+if(!thx.json) thx.json = {}
+thx.json.JsonDecoder = $hxClasses["thx.json.JsonDecoder"] = function(handler,tabsize) {
+	if(tabsize == null) tabsize = 4;
+	this.handler = handler;
+	this.tabsize = tabsize;
+}
+thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
+thx.json.JsonDecoder.prototype = {
+	col: null
+	,line: null
+	,tabsize: null
+	,src: null
+	,'char': null
+	,pos: null
+	,handler: null
+	,decode: function(s) {
+		this.col = 0;
+		this.line = 0;
+		this.src = s;
+		this["char"] = null;
+		this.pos = 0;
+		this.ignoreWhiteSpace();
+		var p = null;
+		this.handler.start();
+		try {
+			p = this.parse();
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
+				this.error("unexpected end of stream");
+			} else throw(e);
+		}
+		this.ignoreWhiteSpace();
+		if(this.pos < this.src.length) this.error("the stream contains unrecognized characters at its end");
+		this.handler.end();
+	}
+	,ignoreWhiteSpace: function() {
+		while(this.pos < this.src.length) {
+			var c = this.readChar();
+			switch(c) {
+			case " ":
+				this.col++;
+				break;
+			case "\n":
+				this.col = 0;
+				this.line++;
+				break;
+			case "\r":
+				break;
+			case "\t":
+				this.col += this.tabsize;
+				break;
+			default:
+				this["char"] = c;
+				return;
+			}
+		}
+	}
+	,parse: function() {
+		var c = this.readChar();
+		switch(c) {
+		case "{":
+			this.col++;
+			this.ignoreWhiteSpace();
+			return this.parseObject();
+		case "[":
+			this.col++;
+			this.ignoreWhiteSpace();
+			return this.parseArray();
+		case "\"":
+			this["char"] = c;
+			return this.parseString();
+		default:
+			this["char"] = c;
+			return this.parseValue();
+		}
+	}
+	,readChar: function() {
+		if(null == this["char"]) {
+			if(this.pos == this.src.length) throw thx.json._JsonDecoder.StreamError.Eof;
+			return this.src.charAt(this.pos++);
+		} else {
+			var c = this["char"];
+			this["char"] = null;
+			return c;
+		}
+	}
+	,expect: function(word) {
+		var test = null == this["char"]?this.src.substr(this.pos,word.length):this["char"] + this.src.substr(this.pos,word.length - 1);
+		if(test == word) {
+			if(null == this["char"]) this.pos += word.length; else {
+				this.pos += word.length - 1;
+				this["char"] = null;
+			}
+			return true;
+		} else return false;
+	}
+	,parseObject: function() {
+		var first = true;
+		this.handler.startObject();
+		while(true) {
+			this.ignoreWhiteSpace();
+			if(this.expect("}")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
+			var k = this._parseString();
+			this.ignoreWhiteSpace();
+			if(!this.expect(":")) this.error("expected ':'");
+			this.ignoreWhiteSpace();
+			this.handler.startField(k);
+			this.parse();
+			this.handler.endField();
+		}
+		this.handler.endObject();
+	}
+	,parseArray: function() {
+		this.ignoreWhiteSpace();
+		var first = true;
+		this.handler.startArray();
+		while(true) {
+			this.ignoreWhiteSpace();
+			if(this.expect("]")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
+			this.handler.startItem();
+			this.parse();
+			this.handler.endItem();
+		}
+		this.handler.endArray();
+	}
+	,parseValue: function() {
+		if(this.expect("true")) this.handler.bool(true); else if(this.expect("false")) this.handler.bool(false); else if(this.expect("null")) this.handler["null"](); else this.parseFloat();
+	}
+	,parseString: function() {
+		this.handler.string(this._parseString());
+	}
+	,_parseString: function() {
+		if(!this.expect("\"")) this.error("expected double quote");
+		var buf = "";
+		var esc = false;
+		try {
+			while(true) {
+				var c = this.readChar();
+				this.col++;
+				if(esc) {
+					switch(c) {
+					case "\"":
+						buf += "\"";
+						break;
+					case "\\":
+						buf += "\\";
+						break;
+					case "/":
+						buf += "/";
+						break;
+					case "b":
+						buf += String.fromCharCode(8);
+						break;
+					case "f":
+						buf += String.fromCharCode(12);
+						break;
+					case "n":
+						buf += "\n";
+						break;
+					case "r":
+						buf += "\r";
+						break;
+					case "t":
+						buf += "\t";
+						break;
+					case "u":
+						buf += String.fromCharCode(this.parseHexa());
+						break;
+					default:
+						this.error("unexpected char " + c);
+					}
+					esc = false;
+				} else switch(c) {
+				case "\\":
+					esc = true;
+					break;
+				case "\"":
+					throw "__break__";
+					break;
+				default:
+					buf += c;
+				}
+			}
+		} catch( e ) { if( e != "__break__" ) throw e; }
+		return buf;
+	}
+	,parseHexa: function() {
+		var v = [];
+		var _g = 0;
+		while(_g < 4) {
+			var i = _g++;
+			var c = this.readChar();
+			var i1 = c.toLowerCase().charCodeAt(0);
+			if(!(i1 >= 48 && i1 <= 57 || i1 >= 97 && i1 <= 102)) this.error("invalid hexadecimal value " + c);
+			v.push(c);
+		}
+		this.handler["int"](Std.parseInt("0x" + v.join("")));
+		return Std.parseInt("0x" + v.join(""));
+	}
+	,parseFloat: function() {
+		var v = "";
+		if(this.expect("-")) v = "-";
+		if(this.expect("0")) v += "0"; else {
+			var c = this.readChar();
+			var i = c.charCodeAt(0);
+			if(i < 49 || i > 57) this.error("expected digit between 1 and 9");
+			v += c;
+			this.col++;
+		}
+		try {
+			v += this.parseDigits();
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
+				this.handler["int"](Std.parseInt(v));
+				return;
+			} else throw(e);
+		}
+		try {
+			if(this.expect(".")) v += "." + this.parseDigits(1); else {
+				this.handler["int"](Std.parseInt(v));
+				return;
+			}
+			if(this.expect("e") || this.expect("E")) {
+				v += "e";
+				if(this.expect("+")) {
+				} else if(this.expect("-")) v += "-";
+				v += this.parseDigits(1);
+			}
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
+				this.handler["float"](Std.parseFloat(v));
+				return;
+			} else throw(e);
+		}
+		this.handler["float"](Std.parseFloat(v));
+	}
+	,parseDigits: function(atleast) {
+		if(atleast == null) atleast = 0;
+		var buf = "";
+		while(true) {
+			var c = null;
+			try {
+				c = this.readChar();
+			} catch( e ) {
+				if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
+					if(buf.length < atleast) this.error("expected digit");
+					return buf;
+				} else throw(e);
+			}
+			var i = c.charCodeAt(0);
+			if(i < 48 || i > 57) {
+				if(buf.length < atleast) this.error("expected digit");
+				this.col += buf.length;
+				this["char"] = c;
+				return buf;
+			} else buf += c;
+		}
+		return null;
+	}
+	,error: function(msg) {
+		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + this.src.substr(this.pos) + "...";
+		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 358, className : "thx.json.JsonDecoder", methodName : "error"});
+	}
+	,__class__: thx.json.JsonDecoder
+}
+if(!thx.json._JsonDecoder) thx.json._JsonDecoder = {}
+thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamError"] = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
+thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
+thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
+thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
+rg.data.reportgrid.ReportGridExecutorCache = $hxClasses["rg.data.reportgrid.ReportGridExecutorCache"] = function(executor,storage,timeout) {
+	this.executor = executor;
+	this.storage = storage;
+	this.queue = new Hash();
+	this.timeout = timeout;
+	this.cleanOld();
+}
+rg.data.reportgrid.ReportGridExecutorCache.__name__ = ["rg","data","reportgrid","ReportGridExecutorCache"];
+rg.data.reportgrid.ReportGridExecutorCache.__interfaces__ = [rg.data.reportgrid.IExecutorReportGrid];
+rg.data.reportgrid.ReportGridExecutorCache.prototype = {
+	timeout: null
+	,executor: null
+	,storage: null
+	,queue: null
+	,children: function(path,options,success,error) {
+		this.execute("children",path,options,success,error);
+	}
+	,propertyCount: function(path,options,success,error) {
+		this.execute("propertyCount",path,options,success,error);
+	}
+	,propertySeries: function(path,options,success,error) {
+		this.execute("propertySeries",path,options,success,error);
+	}
+	,propertyMeans: function(path,options,success,error) {
+		this.execute("propertyMeans",path,options,success,error);
+	}
+	,propertyStandardDeviations: function(path,options,success,error) {
+		this.execute("propertyStandardDeviations",path,options,success,error);
+	}
+	,propertyValues: function(path,options,success,error) {
+		this.execute("propertyValues",path,options,success,error);
+	}
+	,propertyValueCount: function(path,options,success,error) {
+		this.execute("propertyValueCount",path,options,success,error);
+	}
+	,propertyValueSeries: function(path,options,success,error) {
+		this.execute("propertyValueSeries",path,options,success,error);
+	}
+	,searchCount: function(path,options,success,error) {
+		this.execute("searchCount",path,options,success,error);
+	}
+	,searchSeries: function(path,options,success,error) {
+		this.execute("searchSeries",path,options,success,error);
+	}
+	,intersect: function(path,options,success,error) {
+		this.execute("intersect",path,options,success,error);
+	}
+	,histogram: function(path,options,success,error) {
+		this.execute("histogram",path,options,success,error);
+	}
+	,propertiesHistogram: function(path,options,success,error) {
+		this.execute("propertiesHistogram",path,options,success,error);
+	}
+	,setCacheTimeout: function(t) {
+		this.timeout = t;
+	}
+	,execute: function(name,path,options,success,error) {
+		this.normalizePeriod(options);
+		var id = this.uidquery(name,path,options), val = this.cacheGet(id);
+		if(null != val) {
+			success(val);
+			return;
+		}
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else (Reflect.field(this.executor,name))(path,options,this.storageSuccess(id,success),error);
+	}
+	,normalizePeriod: function(options) {
+		var periodicity = options.periodicity;
+		if(null == periodicity && options.start != null && options.end != null) periodicity = rg.util.Periodicity.defaultPeriodicity(options.end - options.start);
+		if(null == periodicity) return;
+		if(null != options.start) options.start = Dates.snap(options.start,periodicity,-1);
+		if(null != options.end) options.end = Dates.snap(options.end,periodicity,-1);
+	}
+	,storageSuccess: function(id,success) {
+		var me = this;
+		this.queue.set(id,[]);
+		return function(r) {
+			if(me.timeout > 0) {
+				me.cacheSet(id,r);
+				me.delayedCleanup(id);
+			}
+			success(r);
+			var q = me.queue.get(id);
+			if(null != q) {
+				var _g = 0;
+				while(_g < q.length) {
+					var item = q[_g];
+					++_g;
+					item(r);
+				}
+			}
+			me.queue.remove(id);
+		};
+	}
+	,clearValueIfOld: function(id) {
+		var idd = rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id;
+		var v = this.storage.get(idd);
+		if(null == v) return;
+		if(v < Date.now().getTime() - this.timeout * 1000) {
+			this.storage.remove(idd);
+			this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+		}
+	}
+	,delayedCleanup: function(id) {
+		var me = this;
+		haxe.Timer.delay(function() {
+			me.cacheRemove(id);
+		},this.timeout * 1000);
+	}
+	,cacheSet: function(id,value) {
+		this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id,Date.now().getTime());
+		this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id,value);
+	}
+	,cacheGet: function(id) {
+		this.clearValueIfOld(id);
+		var v = this.storage.get(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+		if(null != v) this.delayedCleanup(id);
+		return v;
+	}
+	,cacheRemove: function(id) {
+		this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id);
+		this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+	}
+	,ids: function() {
+		var len = rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX.length;
+		return Iterators.filter(this.storage.keys(),function(cid) {
+			return cid.substr(0,len) == rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX;
+		}).map(function(cid,_) {
+			return cid.substr(len);
+		});
+	}
+	,cleanOld: function() {
+		var _g = 0, _g1 = this.ids();
+		while(_g < _g1.length) {
+			var id = _g1[_g];
+			++_g;
+			this.clearValueIfOld(id);
+		}
+	}
+	,getQueue: function(id) {
+		if(this.timeout < 0) return null;
+		return this.queue.get(id);
+	}
+	,idDate: function(id) {
+		return rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id;
+	}
+	,idValue: function(id) {
+		return rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id;
+	}
+	,uidquery: function(method,path,options) {
+		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
+		return haxe.Md5.encode(s);
+	}
+	,__class__: rg.data.reportgrid.ReportGridExecutorCache
+}
+var Iterables = $hxClasses["Iterables"] = function() { }
+Iterables.__name__ = ["Iterables"];
+Iterables.count = function(it) {
+	return Iterators.count(it.iterator());
+}
+Iterables.indexOf = function(it,v,f) {
+	return Iterators.indexOf(it.iterator(),v,f);
+}
+Iterables.contains = function(it,v,f) {
+	return Iterators.contains(it.iterator(),v,f);
+}
+Iterables.array = function(it) {
+	return Iterators.array(it.iterator());
+}
+Iterables.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it.iterator()).join(glue);
+}
+Iterables.map = function(it,f) {
+	return Iterators.map(it.iterator(),f);
+}
+Iterables.each = function(it,f) {
+	return Iterators.each(it.iterator(),f);
+}
+Iterables.filter = function(it,f) {
+	return Iterators.filter(it.iterator(),f);
+}
+Iterables.reduce = function(it,f,initialValue) {
+	return Iterators.reduce(it.iterator(),f,initialValue);
+}
+Iterables.random = function(it) {
+	return Arrays.random(Iterators.array(it.iterator()));
+}
+Iterables.any = function(it,f) {
+	return Iterators.any(it.iterator(),f);
+}
+Iterables.all = function(it,f) {
+	return Iterators.all(it.iterator(),f);
+}
+Iterables.last = function(it) {
+	return Iterators.last(it.iterator());
+}
+Iterables.lastf = function(it,f) {
+	return Iterators.lastf(it.iterator(),f);
+}
+Iterables.first = function(it) {
+	return it.iterator().next();
+}
+Iterables.firstf = function(it,f) {
+	return Iterators.firstf(it.iterator(),f);
+}
+Iterables.order = function(it,f) {
+	return Arrays.order(Iterators.array(it.iterator()),f);
+}
+Iterables.isIterable = function(v) {
+	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
+	if(!Lambda.has(fields,"iterator")) return false;
+	return Reflect.isFunction(Reflect.field(v,"iterator"));
+}
+Iterables.prototype = {
+	__class__: Iterables
+}
+if(!thx.data) thx.data = {}
+thx.data.IDataHandler = $hxClasses["thx.data.IDataHandler"] = function() { }
+thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
+thx.data.IDataHandler.prototype = {
+	start: null
+	,end: null
+	,startObject: null
+	,startField: null
+	,endField: null
+	,endObject: null
+	,startArray: null
+	,startItem: null
+	,endItem: null
+	,endArray: null
+	,date: null
+	,string: null
+	,'int': null
+	,'float': null
+	,'null': null
+	,bool: null
+	,comment: null
+	,__class__: thx.data.IDataHandler
+}
+if(!thx.math) thx.math = {}
+thx.math.Random = $hxClasses["thx.math.Random"] = function(seed) {
+	if(seed == null) seed = 1;
+	this.seed = seed;
+}
+thx.math.Random.__name__ = ["thx","math","Random"];
+thx.math.Random.prototype = {
+	seed: null
+	,'int': function() {
+		return (this.seed = this.seed * 16807 % 2147483647) & 1073741823;
+	}
+	,'float': function() {
+		return ((this.seed = this.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
+	}
+	,__class__: thx.math.Random
+}
+var EReg = $hxClasses["EReg"] = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+}
+EReg.__name__ = ["EReg"];
+EReg.prototype = {
+	r: null
+	,match: function(s) {
+		this.r.m = this.r.exec(s);
+		this.r.s = s;
+		return this.r.m != null;
+	}
+	,matched: function(n) {
+		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
+			var $r;
+			throw "EReg::matched";
+			return $r;
+		}(this));
+	}
+	,matchedLeft: function() {
+		if(this.r.m == null) throw "No string matched";
+		return this.r.s.substr(0,this.r.m.index);
+	}
+	,matchedRight: function() {
+		if(this.r.m == null) throw "No string matched";
+		var sz = this.r.m.index + this.r.m[0].length;
+		return this.r.s.substr(sz,this.r.s.length - sz);
+	}
+	,matchedPos: function() {
+		if(this.r.m == null) throw "No string matched";
+		return { pos : this.r.m.index, len : this.r.m[0].length};
+	}
+	,split: function(s) {
+		var d = "#__delim__#";
+		return s.replace(this.r,d).split(d);
+	}
+	,replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,customReplace: function(s,f) {
+		var buf = new StringBuf();
+		while(true) {
+			if(!this.match(s)) break;
+			buf.add(this.matchedLeft());
+			buf.add(f(this));
+			s = this.matchedRight();
+		}
+		buf.b[buf.b.length] = s == null?"null":s;
+		return buf.b.join("");
+	}
+	,__class__: EReg
+}
+var Ints = $hxClasses["Ints"] = function() { }
+Ints.__name__ = ["Ints"];
+Ints.range = function(start,stop,step) {
+	if(step == null) step = 1;
+	if(null == stop) {
+		stop = start;
+		start = 0;
+	}
+	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 19, className : "Ints", methodName : "range"});
+	var range = [], i = -1, j;
+	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	return range;
+}
+Ints.sign = function(v) {
+	return v < 0?-1:1;
+}
+Ints.abs = function(a) {
+	return a < 0?-a:a;
+}
+Ints.min = function(a,b) {
+	return a < b?a:b;
+}
+Ints.max = function(a,b) {
+	return a > b?a:b;
+}
+Ints.wrap = function(v,min,max) {
+	return Math.round(Floats.wrap(v,min,max));
+}
+Ints.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Ints.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
+Ints.interpolate = function(f,min,max,equation) {
+	if(max == null) max = 100.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return Math.round(min + equation(f) * (max - min));
+}
+Ints.interpolatef = function(min,max,equation) {
+	if(max == null) max = 1.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = max - min;
+	return function(f) {
+		return Math.round(min + equation(f) * d);
+	};
+}
+Ints.format = function(v,param,params,culture) {
+	return (Ints.formatf(param,params,culture))(v);
+}
+Ints.formatf = function(param,params,culture) {
+	return Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
+}
+Ints.canParse = function(s) {
+	return Ints._reparse.match(s);
+}
+Ints.parse = function(s) {
+	if(s.substr(0,1) == "+") s = s.substr(1);
+	return Std.parseInt(s);
+}
+Ints.compare = function(a,b) {
+	return a - b;
+}
+Ints.prototype = {
+	__class__: Ints
+}
+var Dynamics = $hxClasses["Dynamics"] = function() { }
+Dynamics.__name__ = ["Dynamics"];
+Dynamics.format = function(v,param,params,nullstring,culture) {
+	return (Dynamics.formatf(param,params,nullstring,culture))(v);
+}
+Dynamics.formatf = function(param,params,nullstring,culture) {
+	if(nullstring == null) nullstring = "null";
+	return function(v) {
+		var $e = (Type["typeof"](v));
+		switch( $e[1] ) {
+		case 0:
+			return nullstring;
+		case 1:
+			return Ints.format(v,param,params,culture);
+		case 2:
+			return Floats.format(v,param,params,culture);
+		case 3:
+			return Bools.format(v,param,params,culture);
+		case 6:
+			var c = $e[2];
+			if(c == String) return Strings.formatOne(v,param,params,culture); else if(c == Array) return Arrays.format(v,param,params,culture); else if(c == Date) return Dates.format(v,param,params,culture); else return Objects.format(v,param,params,culture);
+			break;
+		case 4:
+			return Objects.format(v,param,params,culture);
+		case 5:
+			return "function()";
+		default:
+			return (function($this) {
+				var $r;
+				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 44, className : "Dynamics", methodName : "formatf"});
+				return $r;
+			}(this));
+		}
+	};
+}
+Dynamics.interpolate = function(v,a,b,equation) {
+	return (Dynamics.interpolatef(a,b,equation))(v);
+}
+Dynamics.interpolatef = function(a,b,equation) {
+	var ta = Type["typeof"](a);
+	var tb = Type["typeof"](b);
+	if(!((Std["is"](a,Float) || Std["is"](a,Int)) && (Std["is"](b,Float) || Std["is"](b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 59, className : "Dynamics", methodName : "interpolatef"});
+	var $e = (ta);
+	switch( $e[1] ) {
+	case 0:
+		return function(_) {
+			return null;
+		};
+	case 1:
+		if(Std["is"](b,Int)) return Ints.interpolatef(a,b,equation); else return Floats.interpolatef(a,b,equation);
+		break;
+	case 2:
+		return Floats.interpolatef(a,b,equation);
+	case 3:
+		return Bools.interpolatef(a,b,equation);
+	case 4:
+		return Objects.interpolatef(a,b,equation);
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "String":
+			return Strings.interpolatef(a,b,equation);
+		case "Date":
+			return Dates.interpolatef(a,b,equation);
+		default:
+			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 77, className : "Dynamics", methodName : "interpolatef"});
+		}
+		break;
+	default:
+		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 79, className : "Dynamics", methodName : "interpolatef"});
+	}
+}
+Dynamics.string = function(v) {
+	var $e = (Type["typeof"](v));
+	switch( $e[1] ) {
+	case 0:
+		return "null";
+	case 1:
+		return Ints.format(v);
+	case 2:
+		return Floats.format(v);
+	case 3:
+		return Bools.format(v);
+	case 4:
+		var keys = Reflect.fields(v);
+		var result = [];
+		var _g = 0;
+		while(_g < keys.length) {
+			var key = keys[_g];
+			++_g;
+			result.push(key + " : " + Dynamics.string(Reflect.field(v,key)));
+		}
+		return "{" + result.join(", ") + "}";
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "Array":
+			return Arrays.string(v);
+		case "String":
+			var s = v;
+			if(s.indexOf("\"") < 0) return "\"" + s + "\""; else if(s.indexOf("'") < 0) return "'" + s + "'"; else return "\"" + StringTools.replace(s,"\"","\\\"") + "\"";
+			break;
+		case "Date":
+			return Dates.format(v);
+		default:
+			return Std.string(v);
+		}
+		break;
+	case 7:
+		var e = $e[2];
+		return Enums.string(v);
+	case 8:
+		return "<unknown>";
+	case 5:
+		return "<function>";
+	}
+}
+Dynamics.compare = function(a,b) {
+	if(!Types.sameType(a,b)) throw new thx.error.Error("cannot compare 2 different types",null,null,{ fileName : "Dynamics.hx", lineNumber : 131, className : "Dynamics", methodName : "compare"});
+	if(null == a && null == b) return 0;
+	if(null == a) return -1;
+	if(null == b) return 1;
+	var $e = (Type["typeof"](a));
+	switch( $e[1] ) {
+	case 1:
+		return a - b;
+	case 2:
+		return a < b?-1:a > b?1:0;
+	case 3:
+		return a == b?0:a?-1:1;
+	case 4:
+		return Objects.compare(a,b);
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "Array":
+			return Arrays.compare(a,b);
+		case "String":
+			return Strings.compare(a,b);
+		case "Date":
+			return Floats.compare(a.getTime(),b.getTime());
+		default:
+			return Strings.compare(Std.string(a),Std.string(b));
+		}
+		break;
+	case 7:
+		var e = $e[2];
+		return Enums.compare(a,b);
+	default:
+		return 0;
+	}
+}
+Dynamics.comparef = function(sample) {
+	var $e = (Type["typeof"](sample));
+	switch( $e[1] ) {
+	case 1:
+		return Ints.compare;
+	case 2:
+		return Floats.compare;
+	case 3:
+		return Bools.compare;
+	case 4:
+		return Objects.compare;
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "Array":
+			return Arrays.compare;
+		case "String":
+			return Strings.compare;
+		case "Date":
+			return Dates.compare;
+		default:
+			return function(a,b) {
+				return Strings.compare(Std.string(a),Std.string(b));
+			};
+		}
+		break;
+	case 7:
+		var e = $e[2];
+		return Enums.compare;
+	default:
+		return Dynamics.compare;
+	}
+}
+Dynamics.clone = function(v,cloneInstances) {
+	if(cloneInstances == null) cloneInstances = false;
+	var $e = (Type["typeof"](v));
+	switch( $e[1] ) {
+	case 0:
+		return null;
+	case 1:
+	case 2:
+	case 3:
+	case 7:
+	case 8:
+	case 5:
+		return v;
+	case 4:
+		var o = { };
+		Objects.copyTo(v,o);
+		return o;
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "Array":
+			var src = v, a = [];
+			var _g = 0;
+			while(_g < src.length) {
+				var i = src[_g];
+				++_g;
+				a.push(Dynamics.clone(i));
+			}
+			return a;
+		case "String":case "Date":
+			return v;
+		default:
+			if(cloneInstances) {
+				var o = Type.createEmptyInstance(c);
+				var _g = 0, _g1 = Reflect.fields(v);
+				while(_g < _g1.length) {
+					var field = _g1[_g];
+					++_g;
+					o[field] = Dynamics.clone(Reflect.field(v,field));
+				}
+				return o;
+			} else return v;
+		}
+		break;
+	}
+}
+Dynamics.same = function(a,b) {
+	var ta = Types.typeName(a), tb = Types.typeName(b);
+	if(ta != tb) return false;
+	var $e = (Type["typeof"](a));
+	switch( $e[1] ) {
+	case 2:
+		return Floats.equals(a,b);
+	case 0:
+	case 1:
+	case 3:
+		return a == b;
+	case 5:
+		return Reflect.compareMethods(a,b);
+	case 6:
+		var c = $e[2];
+		var ca = Type.getClassName(c), cb = Type.getClassName(Type.getClass(b));
+		if(ca != cb) return false;
+		if(Std["is"](a,String) && a != b) return false;
+		if(Std["is"](a,Array)) {
+			var aa = a, ab = b;
+			if(aa.length != ab.length) return false;
+			var _g1 = 0, _g = aa.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				if(!Dynamics.same(aa[i],ab[i])) return false;
+			}
+			return true;
+		}
+		if(Std["is"](a,Date)) return a.getTime() == b.getTime();
+		if(Std["is"](a,Hash) || Std["is"](a,IntHash)) {
+			var ha = a, hb = b;
+			var ka = Iterators.array(ha.keys()), kb = Iterators.array(hb.keys());
+			if(ka.length != kb.length) return false;
+			var _g = 0;
+			while(_g < ka.length) {
+				var key = ka[_g];
+				++_g;
+				if(!hb.exists(key) || !Dynamics.same(ha.get(key),hb.get(key))) return false;
+			}
+			return true;
+		}
+		var t = false;
+		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
+			var va = t?Iterators.array(a):Iterators.array(a.iterator()), vb = t?Iterators.array(b):Iterators.array(b.iterator());
+			if(va.length != vb.length) return false;
+			var _g1 = 0, _g = va.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				if(!Dynamics.same(va[i],vb[i])) return false;
+			}
+			return true;
+		}
+		var fields = Type.getInstanceFields(Type.getClass(a));
+		var _g = 0;
+		while(_g < fields.length) {
+			var field = fields[_g];
+			++_g;
+			var va = Reflect.field(a,field);
+			if(Reflect.isFunction(va)) continue;
+			var vb = Reflect.field(b,field);
+			if(!Dynamics.same(va,vb)) return false;
+		}
+		return true;
+	case 7:
+		var e = $e[2];
+		var ea = Type.getEnumName(e), eb = Type.getEnumName(Type.getEnum(b));
+		if(ea != eb) return false;
+		if(a[1] != b[1]) return false;
+		var pa = a.slice(2), pb = b.slice(2);
+		var _g1 = 0, _g = pa.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(!Dynamics.same(pa[i],pb[i])) return false;
+		}
+		return true;
+	case 4:
+		var fa = Reflect.fields(a), fb = Reflect.fields(b);
+		var _g = 0;
+		while(_g < fa.length) {
+			var field = fa[_g];
+			++_g;
+			fb.remove(field);
+			if(!Reflect.hasField(b,field)) return false;
+			var va = Reflect.field(a,field);
+			if(Reflect.isFunction(va)) continue;
+			var vb = Reflect.field(b,field);
+			if(!Dynamics.same(va,vb)) return false;
+		}
+		if(fb.length > 0) return false;
+		var t = false;
+		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
+			if(t && !Iterators.isIterator(b)) return false;
+			if(!t && !Iterables.isIterable(b)) return false;
+			var aa = t?Iterators.array(a):Iterators.array(a.iterator());
+			var ab = t?Iterators.array(b):Iterators.array(b.iterator());
+			if(aa.length != ab.length) return false;
+			var _g1 = 0, _g = aa.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				if(!Dynamics.same(aa[i],ab[i])) return false;
+			}
+			return true;
+		}
+		return true;
+	case 8:
+		return (function($this) {
+			var $r;
+			throw "Unable to compare two unknown types";
+			return $r;
+		}(this));
+	}
+	return (function($this) {
+		var $r;
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 371, className : "Dynamics", methodName : "same"});
+		return $r;
+	}(this));
+}
+Dynamics.number = function(v) {
+	return Number(v);
+}
+Dynamics.prototype = {
+	__class__: Dynamics
+}
+var Iterators = $hxClasses["Iterators"] = function() { }
+Iterators.__name__ = ["Iterators"];
+Iterators.count = function(it) {
+	var i = 0;
+	while( it.hasNext() ) {
+		var _ = it.next();
+		i++;
+	}
+	return i;
+}
+Iterators.indexOf = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return c; else c++;
+	}
+	return -1;
+}
+Iterators.contains = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return true;
+	}
+	return false;
+}
+Iterators.array = function(it) {
+	var result = [];
+	while( it.hasNext() ) {
+		var v = it.next();
+		result.push(v);
+	}
+	return result;
+}
+Iterators.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it).join(glue);
+}
+Iterators.map = function(it,f) {
+	var result = [], i = 0;
+	while( it.hasNext() ) {
+		var v = it.next();
+		result.push(f(v,i++));
+	}
+	return result;
+}
+Iterators.each = function(it,f) {
+	var i = 0;
+	while( it.hasNext() ) {
+		var o = it.next();
+		f(o,i++);
+	}
+}
+Iterators.filter = function(it,f) {
+	var result = [];
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) result.push(i);
+	}
+	return result;
+}
+Iterators.reduce = function(it,f,initialValue) {
+	var accumulator = initialValue, i = 0;
+	while( it.hasNext() ) {
+		var o = it.next();
+		accumulator = f(accumulator,o,i++);
+	}
+	return accumulator;
+}
+Iterators.random = function(it) {
+	return Arrays.random(Iterators.array(it));
+}
+Iterators.any = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(f(v)) return true;
+	}
+	return false;
+}
+Iterators.all = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(!f(v)) return false;
+	}
+	return true;
+}
+Iterators.last = function(it) {
+	var o = null;
+	while(it.hasNext()) o = it.next();
+	return o;
+}
+Iterators.lastf = function(it,f) {
+	var rev = Iterators.array(it);
+	rev.reverse();
+	return Arrays.lastf(rev,f);
+}
+Iterators.first = function(it) {
+	return it.next();
+}
+Iterators.firstf = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(f(v)) return v;
+	}
+	return null;
+}
+Iterators.order = function(it,f) {
+	return Arrays.order(Iterators.array(it),f);
+}
+Iterators.isIterator = function(v) {
+	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
+	if(!Lambda.has(fields,"next") || !Lambda.has(fields,"hasNext")) return false;
+	return Reflect.isFunction(Reflect.field(v,"next")) && Reflect.isFunction(Reflect.field(v,"hasNext"));
+}
+Iterators.prototype = {
+	__class__: Iterators
+}
+thx.json.Json = $hxClasses["thx.json.Json"] = function() { }
+thx.json.Json.__name__ = ["thx","json","Json"];
+thx.json.Json.nativeEncoder = null;
+thx.json.Json.nativeDecoder = null;
+thx.json.Json.encode = function(value) {
+	if(null != thx.json.Json.nativeEncoder) return thx.json.Json.nativeEncoder(value);
+	var handler = new thx.json.JsonEncoder();
+	new thx.data.ValueEncoder(handler).encode(value);
+	return handler.encodedString;
+}
+thx.json.Json.decode = function(value) {
+	if(null != thx.json.Json.nativeDecoder) return thx.json.Json.nativeDecoder(value);
+	var handler = new thx.data.ValueHandler();
+	var r = new thx.json.JsonDecoder(handler).decode(value);
+	return handler.value;
+}
+thx.json.Json.prototype = {
+	__class__: thx.json.Json
+}
+thx.culture.FormatParams = $hxClasses["thx.culture.FormatParams"] = function() { }
+thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
+thx.culture.FormatParams.cleanQuotes = function(p) {
+	if(p.length <= 1) return p;
+	var f = p.substr(0,1);
+	if(("\"" == f || "'" == f) && p.substr(-1) == f) return p.substr(1,p.length - 2); else return p;
+}
+thx.culture.FormatParams.params = function(p,ps,alt) {
+	if(null != ps && null != p) return [p].concat(ps);
+	if((null == ps || ps.length == 0) && null == p) return [alt];
+	if(null == ps || ps.length == 0) {
+		var parts = p.split(":");
+		return [parts[0]].concat(parts.length == 1?[]:parts[1].split(",").map(function(s,i) {
+			if(0 == i) return s; else return thx.culture.FormatParams.cleanQuotes(s);
+		}));
+	}
+	return ps;
+}
+thx.culture.FormatParams.prototype = {
+	__class__: thx.culture.FormatParams
+}
+var Reflect = $hxClasses["Reflect"] = function() { }
+Reflect.__name__ = ["Reflect"];
+Reflect.hasField = function(o,field) {
+	if(o.hasOwnProperty != null) return o.hasOwnProperty(field);
+	var arr = Reflect.fields(o);
+	var $it0 = arr.iterator();
+	while( $it0.hasNext() ) {
+		var t = $it0.next();
+		if(t == field) return true;
+	}
+	return false;
+}
+Reflect.field = function(o,field) {
+	var v = null;
+	try {
+		v = o[field];
+	} catch( e ) {
+	}
+	return v;
+}
+Reflect.setField = function(o,field,value) {
+	o[field] = value;
+}
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
+}
+Reflect.setProperty = function(o,field,value) {
+	var tmp;
+	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
+}
+Reflect.callMethod = function(o,func,args) {
+	return func.apply(o,args);
+}
+Reflect.fields = function(o) {
+	if(o == null) return new Array();
+	var a = new Array();
+	if(o.hasOwnProperty) {
+		for(var i in o) if( o.hasOwnProperty(i) ) a.push(i);
+	} else {
+		var t;
+		try {
+			t = o.__proto__;
+		} catch( e ) {
+			t = null;
+		}
+		if(t != null) o.__proto__ = null;
+		for(var i in o) if( i != "__proto__" ) a.push(i);
+		if(t != null) o.__proto__ = t;
+	}
+	return a;
+}
+Reflect.isFunction = function(f) {
+	return typeof(f) == "function" && f.__name__ == null;
+}
+Reflect.compare = function(a,b) {
+	return a == b?0:a > b?1:-1;
+}
+Reflect.compareMethods = function(f1,f2) {
+	if(f1 == f2) return true;
+	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
+	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
+}
+Reflect.isObject = function(v) {
+	if(v == null) return false;
+	var t = typeof(v);
+	return t == "string" || t == "object" && !v.__enum__ || t == "function" && v.__name__ != null;
+}
+Reflect.deleteField = function(o,f) {
+	if(!Reflect.hasField(o,f)) return false;
+	delete(o[f]);
+	return true;
+}
+Reflect.copy = function(o) {
+	var o2 = { };
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var f = _g1[_g];
+		++_g;
+		o2[f] = Reflect.field(o,f);
+	}
+	return o2;
+}
+Reflect.makeVarArgs = function(f) {
+	return function() {
+		var a = new Array();
+		var _g1 = 0, _g = arguments.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			a.push(arguments[i]);
+		}
+		return f(a);
+	};
+}
+Reflect.prototype = {
+	__class__: Reflect
+}
+if(!thx.util) thx.util = {}
+thx.util.MacroVersion = $hxClasses["thx.util.MacroVersion"] = function() { }
+thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
+thx.util.MacroVersion.prototype = {
+	__class__: thx.util.MacroVersion
+}
+if(!rg.query) rg.query = {}
+rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
+rg.query.Transformers.__name__ = ["rg","query","Transformers"];
+rg.query.Transformers.crossStack = function(data) {
+	if(data.length <= 1) return data;
+	var src = data.shift();
+	while(data.length > 0) {
+		var values = data.shift(), results = [];
+		var _g = 0;
+		while(_g < src.length) {
+			var item = src[_g];
+			++_g;
+			var _g1 = 0;
+			while(_g1 < values.length) {
+				var value = values[_g1];
+				++_g1;
+				results.push(Objects.copyTo(value,Objects.copyTo(item,{ })));
+			}
+		}
+		src = results;
+	}
+	return [src];
+}
+rg.query.Transformers.split = function(data,f) {
+	var map = new Hash(), result = [];
+	data.forEach(function(dp,_) {
+		var name = f(dp), pos = map.get(name);
+		if(null == pos) {
+			pos = result.length;
+			map.set(name,pos);
+			result.push([]);
+		}
+		result[pos].push(dp);
+	});
+	return result;
+}
+rg.query.Transformers.map = function(handler) {
+	return function(data) {
+		return data.map(handler);
+	};
+}
+rg.query.Transformers.filter = function(handler) {
+	return function(data) {
+		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.filterValues = function(o) {
+	var entries = Objects.entries(o);
+	entries.forEach(function(entry,_) {
+		if(!Reflect.isFunction(entry.value)) {
+			var test = entry.value;
+			entry.value = function(v) {
+				return v == test;
+			};
+		}
+	});
+	var handler = function(d) {
+		var _g = 0;
+		while(_g < entries.length) {
+			var entry = entries[_g];
+			++_g;
+			if(!entry.value(Reflect.field(d,entry.key))) return false;
+		}
+		return true;
+	};
+	return function(data) {
+		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.filterValue = function(name,o) {
+	if(!Reflect.isFunction(o)) {
+		var test = o;
+		o = function(v) {
+			return v == test;
+		};
+	}
+	var handler = function(d) {
+		if(!o(Reflect.field(d,name))) return false;
+		return true;
+	};
+	return function(data) {
+		return Arrays.filter(data,handler);
+	};
+}
+rg.query.Transformers.setField = function(name,o) {
+	if(!Reflect.isFunction(o)) {
+		var value = o;
+		o = function(obj,value1,index) {
+			return value1;
+		};
+	}
+	var handler = function(obj,i) {
+		obj[name] = o(obj,Reflect.field(obj,name),i);
+	};
+	return function(data) {
+		data.forEach(handler);
+		return data;
+	};
+}
+rg.query.Transformers.setFields = function(o) {
+	var fields = Reflect.fields(o), fs = [];
+	var _g = 0;
+	while(_g < fields.length) {
+		var field = fields[_g];
+		++_g;
+		var f = Reflect.field(o,field);
+		if(!Reflect.isFunction(f)) fs.push((function(f1,a1) {
+			return function(a2,a3,a4) {
+				return f1(a1,a2,a3,a4);
+			};
+		})(function(v,obj,value,i) {
+			return v;
+		},f)); else fs.push(f);
+	}
+	var handler = function(obj,i) {
+		var _g1 = 0, _g = fields.length;
+		while(_g1 < _g) {
+			var j = _g1++;
+			obj[fields[j]] = fs[j](obj,Reflect.field(obj,fields[j]),i);
+		}
+	};
+	return function(data) {
+		data.forEach(handler);
+		return data;
+	};
+}
+rg.query.Transformers.sort = function(handler) {
+	return function(data) {
+		return (function($this) {
+			var $r;
+			data.sort(null == handler?Dynamics.compare:handler);
+			$r = data;
+			return $r;
+		}(this));
+	};
+}
+rg.query.Transformers.limit = function(offset,count) {
+	return function(data) {
+		if(offset >= data.length) return [];
+		var end = offset + count > data.length?data.length:offset + count;
+		return data.slice(offset,end);
+	};
+}
+rg.query.Transformers.reverse = function(arr) {
+	arr.reverse();
+	return arr;
+}
+rg.query.Transformers.uniquef = function(fun) {
+	return function(arr) {
+		var i = 0, j;
+		while(i < arr.length - 1) {
+			var cur = arr[i];
+			j = arr.length - 1;
+			while(j > i) {
+				if(fun(cur,arr[j])) arr.splice(j,1);
+				j--;
+			}
+			i++;
+		}
+		return arr;
+	};
+}
+rg.query.Transformers.rotate = function(matchingf) {
+	if(Std["is"](matchingf,String)) {
+		var field = matchingf;
+		matchingf = function(a,b) {
+			return Reflect.field(a,field) == Reflect.field(b,field);
+		};
+	}
+	var m = null == matchingf?function(_,_1,i,k) {
+		return i == k;
+	}:function(a,b,_,_1) {
+		return matchingf(a,b);
+	};
+	return function(data) {
+		var traversed = [], da = data[0];
+		var _g1 = 0, _g = da.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var a = da[i], traversal = [a];
+			var _g3 = 1, _g2 = data.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var db = data[j];
+				var _g5 = 0, _g4 = db.length;
+				while(_g5 < _g4) {
+					var k = _g5++;
+					var b = db[k];
+					if(m(a,b,i,k)) {
+						traversal.push(b);
+						break;
+					}
+				}
+			}
+			traversed.push(traversal);
+		}
+		return traversed;
+	};
+}
+rg.query.Transformers.prototype = {
+	__class__: rg.query.Transformers
+}
+thx.data.ValueEncoder = $hxClasses["thx.data.ValueEncoder"] = function(handler) {
+	this.handler = handler;
+}
+thx.data.ValueEncoder.__name__ = ["thx","data","ValueEncoder"];
+thx.data.ValueEncoder.prototype = {
+	handler: null
+	,encode: function(o) {
+		this.handler.start();
+		this.encodeValue(o);
+		this.handler.end();
+	}
+	,encodeValue: function(o) {
+		var $e = (Type["typeof"](o));
+		switch( $e[1] ) {
+		case 0:
+			this.handler["null"]();
+			break;
+		case 1:
+			this.handler["int"](o);
+			break;
+		case 2:
+			this.handler["float"](o);
+			break;
+		case 3:
+			this.handler.bool(o);
+			break;
+		case 4:
+			this.encodeObject(o);
+			break;
+		case 5:
+			throw new thx.error.Error("unable to encode TFunction type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 39, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			break;
+		case 6:
+			var c = $e[2];
+			if(Std["is"](o,String)) this.handler.string(o); else if(Std["is"](o,Array)) this.encodeArray(o); else if(Std["is"](o,Date)) this.handler.date(o); else if(Std["is"](o,Hash)) this.encodeHash(o); else if(Std["is"](o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			break;
+		case 7:
+			var e = $e[2];
+			throw new thx.error.Error("unable to encode TEnum type '{0}'",null,Type.getEnumName(e),{ fileName : "ValueEncoder.hx", lineNumber : 55, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			break;
+		case 8:
+			throw new thx.error.Error("unable to encode TUnknown type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 57, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			break;
+		}
+	}
+	,encodeObject: function(o) {
+		this.handler.startObject();
+		var _g = 0, _g1 = Reflect.fields(o);
+		while(_g < _g1.length) {
+			var key = _g1[_g];
+			++_g;
+			this.handler.startField(key);
+			this.encodeValue(Reflect.field(o,key));
+			this.handler.endField();
+		}
+		this.handler.endObject();
+	}
+	,encodeHash: function(o) {
+		this.handler.startObject();
+		var $it0 = o.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			this.handler.startField(key);
+			this.encodeValue(o.get(key));
+			this.handler.endField();
+		}
+		this.handler.endObject();
+	}
+	,encodeList: function(list) {
+		this.handler.startArray();
+		var $it0 = list.iterator();
+		while( $it0.hasNext() ) {
+			var item = $it0.next();
+			this.handler.startItem();
+			this.encodeValue(item);
+			this.handler.endItem();
+		}
+		this.handler.endArray();
+	}
+	,encodeArray: function(a) {
+		this.handler.startArray();
+		var _g = 0;
+		while(_g < a.length) {
+			var item = a[_g];
+			++_g;
+			this.handler.startItem();
+			this.encodeValue(item);
+			this.handler.endItem();
+		}
+		this.handler.endArray();
+	}
+	,__class__: thx.data.ValueEncoder
+}
+var IntIter = $hxClasses["IntIter"] = function(min,max) {
+	this.min = min;
+	this.max = max;
+}
+IntIter.__name__ = ["IntIter"];
+IntIter.prototype = {
+	min: null
+	,max: null
+	,hasNext: function() {
+		return this.min < this.max;
+	}
+	,next: function() {
+		return this.min++;
+	}
+	,__class__: IntIter
+}
+rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(async,first) {
+	this._async = async;
+	this._first = first;
+	this._store = new Hash();
+}
+rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
+rg.query.BaseQuery.asyncTransform = function(t) {
+	return function(data,handler) {
+		var _g1 = 0, _g = data.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			data[i] = t(data[i]);
+		}
+		handler(data);
+	};
+}
+rg.query.BaseQuery.asyncTransformStack = function(t) {
+	return function(data,handler) {
+		handler(t(data));
+	};
+}
+rg.query.BaseQuery.prototype = {
+	_first: null
+	,_next: null
+	,_async: null
+	,_store: null
+	,load: function(handler) {
+		return this.asyncStack(function(stack,h) {
+			handler(function(data) {
+				stack.push(data);
+				h(stack);
+			});
+		});
+	}
+	,data: function(values) {
+		if(!Std["is"](values,Array)) values = [values];
+		return this.asyncStack(function(stack,h) {
+			stack.push(values);
+			h(stack);
+		});
+	}
+	,cross: function() {
+		return this.transformStack(rg.query.Transformers.crossStack);
+	}
+	,map: function(handler) {
+		return this.transform(rg.query.Transformers.map(handler));
+	}
+	,audit: function(f) {
+		return this.transform(function(d) {
+			f(d);
+			return d;
+		});
+	}
+	,renameFields: function(o) {
+		var pairs = Reflect.fields(o).map(function(d,_) {
+			return { src : d, dst : Reflect.field(o,d)};
+		});
+		return this.map(function(src,_) {
+			var out = { };
+			var _g = 0;
+			while(_g < pairs.length) {
+				var pair = pairs[_g];
+				++_g;
+				out[pair.dst] = Reflect.field(src,pair.src);
+			}
+			return out;
+		});
+	}
+	,transform: function(t) {
+		return this.asyncStack(rg.query.BaseQuery.asyncTransform(t));
+	}
+	,transformStack: function(t) {
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(t));
+	}
+	,asyncStack: function(f) {
+		var query = this._createQuery(f,this._first);
+		this._next = query;
+		return query;
+	}
+	,asyncAll: function(f) {
+		return this.asyncStack(function(data,handler) {
+			var tot = data.length, pos = 0, result = [];
+			var complete = function(i,r) {
+				result[i] = r;
+				if(++pos == tot) handler(result);
+			};
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				f(data[i],(function(f1,a1) {
+					return function(a2) {
+						return f1(a1,a2);
+					};
+				})(complete,i));
+			}
+		});
+	}
+	,asyncEach: function(f) {
+		return this.asyncAll(function(data,handler) {
+			var tot = data.length, pos = 0, result = [];
+			var complete = function(i,r) {
+				result[i] = r;
+				if(++pos == tot) handler(Arrays.flatten(result));
+			};
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				f(data[i],(function(f1,a1) {
+					return function(a2) {
+						return f1(a1,a2);
+					};
+				})(complete,i));
+			}
+		});
+	}
+	,setField: function(name,f) {
+		return this.transform(rg.query.Transformers.setField(name,f));
+	}
+	,setFields: function(o) {
+		return this.transform(rg.query.Transformers.setFields(o));
+	}
+	,addIndex: function(name,start) {
+		if(null == name) name = "index";
+		if(null == start) start = 0;
+		return this.transform(rg.query.Transformers.setField(name,function(_,_1,i) {
+			return start + i;
+		}));
+	}
+	,filter: function(f) {
+		return this.transform(rg.query.Transformers.filter(f));
+	}
+	,filterValues: function(f) {
+		return this.transform(rg.query.Transformers.filterValues(f));
+	}
+	,filterValue: function(name,f) {
+		return this.transform(rg.query.Transformers.filterValue(name,f));
+	}
+	,sort: function(f) {
+		return this.transform(rg.query.Transformers.sort(f));
+	}
+	,sortField: function(field,reverse) {
+		return this.sortFields([field],[reverse]);
+	}
+	,sortFields: function(fields,reverse) {
+		var rarr;
+		if(null == reverse) rarr = Ints.range(0,fields.length).map(function(_,_1) {
+			return false;
+		}); else if(!Std["is"](reverse,Array)) rarr = Ints.range(0,fields.length).map(function(_,_1) {
+			return reverse;
+		}); else rarr = reverse;
+		while(rarr.length < fields.length) rarr.push(false);
+		return this.sort(function(a,b) {
+			var r, field;
+			var _g1 = 0, _g = fields.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				field = fields[i];
+				r = (rarr[i]?-1:1) * Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field));
+				if(r != 0) return r;
+			}
+			return 0;
+		});
+	}
+	,limit: function(offset,count) {
+		if(null == count) {
+			count = offset;
+			offset = 0;
+		}
+		return this.transform(rg.query.Transformers.limit(offset,count));
+	}
+	,reverse: function() {
+		return this.transform(rg.query.Transformers.reverse);
+	}
+	,unique: function(f) {
+		if(null == f) f = Dynamics.same;
+		return this.transform(rg.query.Transformers.uniquef(f));
+	}
+	,reduce: function(startf,reducef) {
+		return this.transform(function(data) {
+			return [data.slice(1).reduce(reducef,startf(data[0]))];
+		});
+	}
+	,merge: function() {
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			return [Arrays.flatten(data)];
+		}));
+	}
+	,discard: function(howmany) {
+		if(null == howmany) howmany = 1;
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			var _g = 0;
+			while(_g < howmany) {
+				var i = _g++;
+				data.pop();
+			}
+			return data;
+		}));
+	}
+	,keep: function(howmany) {
+		if(null == howmany) howmany = 1;
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			return data.slice(0,howmany);
+		}));
+	}
+	,split: function(f) {
+		if(Std["is"](f,String)) {
+			var name = f;
+			f = function(o) {
+				return Reflect.field(o,name);
+			};
+		}
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			var result = [];
+			var _g = 0;
+			while(_g < data.length) {
+				var arr = data[_g];
+				++_g;
+				result = result.concat(rg.query.Transformers.split(arr,f));
+			}
+			return result;
+		}));
+	}
+	,stackOperation: function(operationf,matchingf) {
+		return this.stackTraverse(function(data) {
+			var _g1 = 0, _g = data.length - 1;
+			while(_g1 < _g) {
+				var i = _g1++;
+				operationf(data[i],data[i + 1]);
+			}
+		},matchingf);
+	}
+	,stackTraverse: function(traversef,matchingf) {
+		var t = rg.query.Transformers.rotate(matchingf);
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			var result = t(data);
+			var _g = 0;
+			while(_g < result.length) {
+				var arr = result[_g];
+				++_g;
+				traversef(arr);
+			}
+			return data;
+		}));
+	}
+	,stackRotate: function(matchingf) {
+		var t = rg.query.Transformers.rotate(matchingf);
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			return t(data);
+		}));
+	}
+	,stackReverse: function() {
+		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+			data.reverse();
+			return data;
+		}));
+	}
+	,store: function(name) {
+		var me = this;
+		if(null == name) name = "";
+		return this.transformStack(function(arr) {
+			me._first._store.set(name,arr.copy());
+			return arr;
+		});
+	}
+	,retrieve: function(name) {
+		var me = this;
+		if(null == name) name = "";
+		return this.transformStack(function(arr) {
+			return arr.concat(me._first._store.get(name));
+		});
+	}
+	,clear: function() {
+		return this.transformStack(function(_) {
+			return [];
+		});
+	}
+	,execute: function(handler) {
+		this._first.execute(handler);
+	}
+	,_query: function(t) {
+		return t;
+	}
+	,_createQuery: function(async,first) {
+		return new rg.query.BaseQuery(async,first);
+	}
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + (null != this._next) + ", async: " + (null != this._async) + "]");
+	}
+	,_this: function(q) {
+		return q;
+	}
+	,__class__: rg.query.BaseQuery
+}
+rg.query.ReportGridBaseQuery = $hxClasses["rg.query.ReportGridBaseQuery"] = function(async,first) {
+	rg.query.BaseQuery.call(this,async,first);
+}
+rg.query.ReportGridBaseQuery.__name__ = ["rg","query","ReportGridBaseQuery"];
+rg.query.ReportGridBaseQuery._defaultOptions = function(params,options) {
+	if(null == options) options = { };
+	if(null != params.tag) {
+		options.tag = params.tag;
+		options[params.tag] = Reflect.field(params,params.tag);
+	}
+	if(null == params.start) return options;
+	options.start = params.start;
+	options.end = params.end;
+	return options;
+}
+rg.query.ReportGridBaseQuery._defaultSeriesOptions = function(params,options) {
+	options = rg.query.ReportGridBaseQuery._defaultOptions(params,options);
+	options.periodicity = params.periodicity;
+	if(null != params.timezone) options.timeZone = params.timezone;
+	if(null != params.groupby) options.groupBy = params.groupby;
+	return options;
+}
+rg.query.ReportGridBaseQuery._ensureOptionalTimeParams = function(params) {
+	if(null == params.start && null == params.end) return;
+	if(null == params.start) {
+		params.end = rg.query.ReportGridBaseQuery._date(params.end);
+		params.start = params.end - 86400000;
+	} else if(null == params.end) {
+		params.start = rg.query.ReportGridBaseQuery._date(params.start);
+		params.end = rg.query.ReportGridBaseQuery._date("now");
+	} else {
+		params.start = rg.query.ReportGridBaseQuery._date(params.start);
+		params.end = rg.query.ReportGridBaseQuery._date(params.end);
+	}
+	if(params.start > params.end) {
+		var t = params.end;
+		params.end = params.start;
+		params.start = t;
+	}
+}
+rg.query.ReportGridBaseQuery._ensureTimeParams = function(params) {
+	params.start = rg.query.ReportGridBaseQuery._date(null == params.start?"24 hours ago":params.start);
+	params.end = rg.query.ReportGridBaseQuery._date(null == params.end?"now":params.end);
+	if(params.start > params.end) {
+		var t = params.end;
+		params.end = params.start;
+		params.start = t;
+	}
+	params.periodicity = params.periodicity == null?rg.util.Periodicity.defaultPeriodicity(params.end - params.start):params.periodicity;
+}
+rg.query.ReportGridBaseQuery._date = function(v) {
+	if(Std["is"](v,Date)) return v.getTime(); else if(Std["is"](v,String)) return thx.date.DateParser.parse(v).getTime(); else if(Std["is"](v,Float)) return v; else {
+		rg.query.ReportGridBaseQuery._error("invalid date format for " + v);
+		return null;
+	}
+}
+rg.query.ReportGridBaseQuery._where = function(event,where) {
+	var ob = { };
+	Objects.each(where,function(key,value) {
+		ob[event + ((key.substr(0,1) == "."?"":".") + key)] = value;
+	});
+	return ob;
+}
+rg.query.ReportGridBaseQuery._error = function(s) {
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 453, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+}
+rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
+	return function(data) {
+		var result = transformer(data,params,keep);
+		handler(result);
+	};
+}
+rg.query.ReportGridBaseQuery._prefixProperty = function(p) {
+	return (p.substr(0,1) == "."?"":".") + p;
+}
+rg.query.ReportGridBaseQuery.__super__ = rg.query.BaseQuery;
+rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
+	executor: null
+	,paths: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			me.executor.children(params.parent,{ type : "path"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenPath,params,keep,handler));
+		});
+	}
+	,events: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			me.executor.children(params.path,{ type : "property"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenEvent,params,keep,handler));
+		});
+	}
+	,properties: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			me.executor.children(params.path,{ property : params.event},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenProperty,params,keep,handler));
+		});
+	}
+	,values: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
+			me.executor.propertyValues(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,params,keep,handler));
+		});
+	}
+	,count: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
+			if(null != params.where) {
+				if(null != params.property) rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"); else if(null != params.value) rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query");
+				options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
+				me.executor.searchCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
+			} else if(null != params.property) {
+				if(null == params.value) rg.query.ReportGridBaseQuery._error("can't count on a property");
+				options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
+				options.value = params.value;
+				me.executor.propertyValueCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueCountTag:rg.query.ReportGridTransformers.propertyValueCount,params,keep,handler));
+			} else {
+				options.property = params.event;
+				me.executor.propertyCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
+			}
+		});
+	}
+	,summary: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			if(null == params.type) params.type = "mean";
+			var options = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property), periodicity : "eternity"};
+			switch(params.type.toLowerCase()) {
+			case "mean":
+				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				break;
+			case "standarddeviation":
+				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				break;
+			default:
+				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
+			}
+		});
+	}
+	,summarySeries: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			if(null == params.type) params.type = "mean";
+			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
+			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
+			var tranform = null != params.tag?rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy:rg.query.ReportGridTransformers.propertySummarySeries;
+			switch(params.type.toLowerCase()) {
+			case "mean":
+				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				break;
+			case "standarddeviation":
+				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				break;
+			default:
+				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
+			}
+		});
+	}
+	,intersect: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ periodicity : "eternity"}), properties = [];
+			options.properties = properties;
+			var _g1 = 0, _g = params.properties.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var item = params.properties[i];
+				if(Std["is"](item,String)) item = params.properties[i] = { property : item};
+				var o = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(item.property)};
+				if(null != item.top) {
+					if(null != item.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property");
+					o.order = "descending";
+					o.limit = item.top;
+				} else if(null != item.bottom) {
+					o.order = "ascending";
+					o.limit = item.bottom;
+				}
+				properties.push(o);
+			}
+			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectTag:rg.query.ReportGridTransformers.intersect,params,keep,handler));
+		});
+	}
+	,intersectSeries: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params), properties = [];
+			options.properties = properties;
+			var _g1 = 0, _g = params.properties.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var item = params.properties[i];
+				if(Std["is"](item,String)) item = params.properties[i] = { property : item};
+				var o = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(item.property)};
+				if(null != item.top) {
+					if(null != item.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property");
+					o.order = "descending";
+					o.limit = item.top;
+				} else if(null != item.bottom) {
+					o.order = "ascending";
+					o.limit = item.bottom;
+				}
+				properties.push(o);
+			}
+			me.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectSeriesTag:rg.query.ReportGridTransformers.intersectSeries,params,keep,handler));
+		});
+	}
+	,histogram: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
+			if(null != params.top) {
+				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
+				options.top = params.top;
+			} else if(null != params.bottom) options.bottom = params.bottom;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
+			me.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,params,keep,handler));
+		});
+	}
+	,propertiesHistogram: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
+			me.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,keep,handler));
+		});
+	}
+	,series: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
+			if(null != params.where) {
+				if(null != params.property) rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"); else if(null != params.value) rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query");
+				options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
+				me.executor.searchSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
+			} else if(null != params.property) {
+				if(null == params.value) rg.query.ReportGridBaseQuery._error("can't count on a property");
+				options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
+				options.value = params.value;
+				me.executor.propertyValueSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy:rg.query.ReportGridTransformers.propertyValueSeries,params,keep,handler));
+			} else {
+				options.property = params.event;
+				me.executor.propertySeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
+			}
+		});
+	}
+	,_crossp: function(p) {
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).cross();
+	}
+	,_params: function(p) {
+		return null == p?[{ }]:Std["is"](p,Array)?p:[p];
+	}
+	,_createQuery: function(async,first) {
+		var query = new rg.query.ReportGridBaseQuery(async,first);
+		query.executor = this.executor;
+		return query;
+	}
+	,_normalizeKeep: function(k) {
+		return null == k?[]:Std["is"](k,String)?[k]:k;
+	}
+	,__class__: rg.query.ReportGridBaseQuery
+});
+rg.query.ReportGridQuery = $hxClasses["rg.query.ReportGridQuery"] = function(executor) {
+	rg.query.ReportGridBaseQuery.call(this,null,this);
+	this.executor = executor;
+}
+rg.query.ReportGridQuery.__name__ = ["rg","query","ReportGridQuery"];
+rg.query.ReportGridQuery.create = function(executor) {
+	var start = new rg.query.ReportGridQuery(executor), query = start._createQuery(null,start);
+	start._next = query;
+	return query;
+}
+rg.query.ReportGridQuery.__super__ = rg.query.ReportGridBaseQuery;
+rg.query.ReportGridQuery.prototype = $extend(rg.query.ReportGridBaseQuery.prototype,{
+	execute: function(handler) {
+		rg.query.Query.executeHandler(this,handler);
+	}
+	,__class__: rg.query.ReportGridQuery
+});
+var Dates = $hxClasses["Dates"] = function() { }
+Dates.__name__ = ["Dates"];
+Dates.format = function(d,param,params,culture) {
+	return (Dates.formatf(param,params,culture))(d);
+}
+Dates.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"D");
+	var format = params.shift();
+	switch(format) {
+	case "D":
+		return function(d) {
+			return thx.culture.FormatDate.date(d,culture);
+		};
+	case "DS":
+		return function(d) {
+			return thx.culture.FormatDate.dateShort(d,culture);
+		};
+	case "DST":
+		return function(d) {
+			return thx.culture.FormatDate.dateShort(d,culture) + " " + thx.culture.FormatDate.time(d,culture);
+		};
+	case "DSTS":
+		return function(d) {
+			return thx.culture.FormatDate.dateShort(d,culture) + " " + thx.culture.FormatDate.timeShort(d,culture);
+		};
+	case "DTS":
+		return function(d) {
+			return thx.culture.FormatDate.date(d,culture) + " " + thx.culture.FormatDate.timeShort(d,culture);
+		};
+	case "Y":
+		return function(d) {
+			return thx.culture.FormatDate.year(d,culture);
+		};
+	case "YM":
+		return function(d) {
+			return thx.culture.FormatDate.yearMonth(d,culture);
+		};
+	case "M":
+		return function(d) {
+			return thx.culture.FormatDate.month(d,culture);
+		};
+	case "MN":
+		return function(d) {
+			return thx.culture.FormatDate.monthName(d,culture);
+		};
+	case "MS":
+		return function(d) {
+			return thx.culture.FormatDate.monthNameShort(d,culture);
+		};
+	case "MD":
+		return function(d) {
+			return thx.culture.FormatDate.monthDay(d,culture);
+		};
+	case "WD":
+		return function(d) {
+			return thx.culture.FormatDate.weekDay(d,culture);
+		};
+	case "WDN":
+		return function(d) {
+			return thx.culture.FormatDate.weekDayName(d,culture);
+		};
+	case "WDS":
+		return function(d) {
+			return thx.culture.FormatDate.weekDayNameShort(d,culture);
+		};
+	case "R":
+		return function(d) {
+			return thx.culture.FormatDate.dateRfc(d,culture);
+		};
+	case "DT":
+		return function(d) {
+			return thx.culture.FormatDate.dateTime(d,culture);
+		};
+	case "U":
+		return function(d) {
+			return thx.culture.FormatDate.universal(d,culture);
+		};
+	case "S":
+		return function(d) {
+			return thx.culture.FormatDate.sortable(d,culture);
+		};
+	case "T":
+		return function(d) {
+			return thx.culture.FormatDate.time(d,culture);
+		};
+	case "TS":
+		return function(d) {
+			return thx.culture.FormatDate.timeShort(d,culture);
+		};
+	case "C":
+		var f = params[0];
+		if(null == f) return function(d) {
+			return thx.culture.FormatDate.date(d,culture);
+		}; else return function(d) {
+			return thx.culture.FormatDate.format(f,d,culture,params[1] != null?params[1] == "true":true);
+		};
+		break;
+	default:
+		throw new thx.error.Error("Unsupported date format: {0}",null,format,{ fileName : "Dates.hx", lineNumber : 71, className : "Dates", methodName : "formatf"});
+	}
+}
+Dates.interpolate = function(f,a,b,equation) {
+	return (Dates.interpolatef(a,b,equation))(f);
+}
+Dates.interpolatef = function(a,b,equation) {
+	var f = Floats.interpolatef(a.getTime(),b.getTime(),equation);
+	return function(v) {
+		return Date.fromTime(f(v));
+	};
+}
+Dates.snap = function(time,period,mode) {
+	if(mode == null) mode = 0;
+	if(mode < 0) switch(period) {
+	case "second":
+		return Math.floor(time / 1000.0) * 1000.0;
+	case "minute":
+		return Math.floor(time / 60000.0) * 60000.0;
+	case "hour":
+		return Math.floor(time / 3600000.0) * 3600000.0;
+	case "day":
+		return Math.floor(time / 86400000.) * 86400000.;
+	case "week":
+		return Math.floor(time / 604800000.) * 604800000.;
+	case "month":
+		var d = Date.fromTime(time);
+		return new Date(d.getFullYear(),d.getMonth(),1,0,0,0).getTime();
+	case "year":
+		var d = Date.fromTime(time);
+		return new Date(d.getFullYear(),0,1,0,0,0).getTime();
+	case "eternity":
+		return 0;
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 111, className : "Dates", methodName : "snap"});
+			return $r;
+		}(this));
+	} else if(mode > 0) switch(period) {
+	case "second":
+		return Math.ceil(time / 1000.0) * 1000.0;
+	case "minute":
+		return Math.ceil(time / 60000.0) * 60000.0;
+	case "hour":
+		return Math.ceil(time / 3600000.0) * 3600000.0;
+	case "day":
+		return Math.ceil(time / 86400000.) * 86400000.;
+	case "week":
+		return Math.ceil(time / 604800000.) * 604800000.;
+	case "month":
+		var d = Date.fromTime(time);
+		return new Date(d.getFullYear(),d.getMonth() + 1,1,0,0,0).getTime();
+	case "year":
+		var d = Date.fromTime(time);
+		return new Date(d.getFullYear() + 1,0,1,0,0,0).getTime();
+	case "eternity":
+		return 0;
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 136, className : "Dates", methodName : "snap"});
+			return $r;
+		}(this));
+	} else switch(period) {
+	case "second":
+		return Math.round(time / 1000.0) * 1000.0;
+	case "minute":
+		return Math.round(time / 60000.0) * 60000.0;
+	case "hour":
+		return Math.round(time / 3600000.0) * 3600000.0;
+	case "day":
+		return Math.round(time / 86400000.) * 86400000.;
+	case "week":
+		return Math.round(time / 604800000.) * 604800000.;
+	case "month":
+		var d = Date.fromTime(time), mod = d.getDate() > Math.round(DateTools.getMonthDays(d) / 2)?1:0;
+		return new Date(d.getFullYear(),d.getMonth() + mod,1,0,0,0).getTime();
+	case "year":
+		var d = Date.fromTime(time), mod = time > new Date(d.getFullYear(),6,2,0,0,0).getTime()?1:0;
+		return new Date(d.getFullYear() + mod,0,1,0,0,0).getTime();
+	case "eternity":
+		return 0;
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 162, className : "Dates", methodName : "snap"});
+			return $r;
+		}(this));
+	}
+}
+Dates.snapToWeekDay = function(time,day) {
+	var d = Date.fromTime(time).getDay();
+	var s = 0;
+	switch(day.toLowerCase()) {
+	case "sunday":
+		s = 0;
+		break;
+	case "monday":
+		s = 1;
+		break;
+	case "tuesday":
+		s = 2;
+		break;
+	case "wednesday":
+		s = 3;
+		break;
+	case "thursday":
+		s = 4;
+		break;
+	case "friday":
+		s = 5;
+		break;
+	case "saturday":
+		s = 6;
+		break;
+	default:
+		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 188, className : "Dates", methodName : "snapToWeekDay"});
+	}
+	return time - (d - s) % 7 * 24 * 60 * 60 * 1000;
+}
+Dates.canParse = function(s) {
+	return Dates._reparse.match(s);
+}
+Dates.parse = function(s) {
+	var parts = s.split(".");
+	var date = Date.fromString(StringTools.replace(parts[0],"T"," "));
+	if(parts.length > 1) date = Date.fromTime(date.getTime() + Std.parseInt(parts[1]));
+	return date;
+}
+Dates.compare = function(a,b) {
+	return Floats.compare(a.getTime(),b.getTime());
+}
+Dates.prototype = {
+	__class__: Dates
+}
+if(!thx.date) thx.date = {}
+thx.date.DateParser = $hxClasses["thx.date.DateParser"] = function() { }
+thx.date.DateParser.__name__ = ["thx","date","DateParser"];
+thx.date.DateParser.parse = function(s,d) {
+	var time = thx.date.DateParser.parseTime(s), v;
+	if(null == d) d = Date.now();
+	s = StringTools.replace(s,time.matched,"");
+	var year = 0, month = 0, day = 0, found = null != time.matched;
+	if(thx.date.DateParser.dateexp.match(s)) {
+		found = true;
+		s = StringTools.replace(s,thx.date.DateParser.dateexp.matched(0),"");
+		if(null != (v = thx.date.DateParser.dateexp.matched(1))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(2));
+			month = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			year = null != (v = thx.date.DateParser.dateexp.matched(3))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(4))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(5));
+			month = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			year = null != (v = thx.date.DateParser.dateexp.matched(6))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(8))) {
+			month = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(7))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(9))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(11))) {
+			month = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(10))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(12))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(14))) {
+			month = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(13))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(15))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(17))) {
+			month = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			day = null != (v = thx.date.DateParser.dateexp.matched(16))?Std.parseInt(v):1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(18))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(19))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(20));
+			month = Std.parseInt(v) - 1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(21))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(23))) {
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(22));
+			month = Std.parseInt(v) - 1;
+			year = null != (v = thx.date.DateParser.dateexp.matched(24))?thx.date.DateParser.fixyear(Std.parseInt(v)):d.getFullYear();
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(25))) {
+			year = thx.date.DateParser.fixyear(Std.parseInt(v));
+			day = Std.parseInt(thx.date.DateParser.dateexp.matched(27));
+			month = Std.parseInt(thx.date.DateParser.dateexp.matched(26)) - 1;
+		} else if(null != (v = thx.date.DateParser.dateexp.matched(28))) {
+			year = d.getFullYear();
+			day = Std.parseInt(v);
+			month = d.getMonth();
+		}
+	} else if(thx.date.DateParser.absdateexp.match(s)) {
+		found = true;
+		s = StringTools.replace(s,thx.date.DateParser.absdateexp.matched(0),"");
+		year = d.getFullYear();
+		month = d.getMonth();
+		day = d.getDate();
+		if(null != (v = thx.date.DateParser.absdateexp.matched(1))) switch(v.toLowerCase()) {
+		case "now":case "this second":
+			if(null == time.matched) {
+				time.hour = d.getHours();
+				time.minute = d.getMinutes();
+				time.second = d.getSeconds();
+			}
+			break;
+		case "tomorrow":
+			day += 1;
+			break;
+		case "yesterday":
+			day -= 1;
+			break;
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(3))) {
+			var t = thx.date.DateParser.absdateexp.matched(2), v1 = thx.date.DateParser.months.indexOf(v.toLowerCase());
+			if(v1 == month) year += thx.date.DateParser.last(t)?-1:thx.date.DateParser.next(t)?1:0; else if(v1 > month) year += thx.date.DateParser.last(t)?-1:0; else year += thx.date.DateParser.next(t)?1:0;
+			month = v1;
+			day = 1;
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(5))) {
+			var t = thx.date.DateParser.absdateexp.matched(4), v1 = thx.date.DateParser.days.indexOf(v.toLowerCase());
+			var wd = d.getDay();
+			if(v1 == wd) day += thx.date.DateParser.last(t)?-7:thx.date.DateParser.next(t)?7:0; else if(v1 > wd) day += v1 - wd + (thx.date.DateParser.last(t)?-7:0); else day += v1 - wd + (thx.date.DateParser.next(t)?7:0);
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(7))) {
+			var t = thx.date.DateParser.absdateexp.matched(6), v1 = thx.date.DateParser.shortmonths.indexOf(v.toLowerCase());
+			if(v1 == month) year += thx.date.DateParser.last(t)?-1:thx.date.DateParser.next(t)?1:0; else if(v1 > month) year += thx.date.DateParser.last(t)?-1:0; else year += thx.date.DateParser.next(t)?1:0;
+			month = v1;
+			day = 1;
+		} else if(null != (v = thx.date.DateParser.absdateexp.matched(9))) {
+			var t = thx.date.DateParser.absdateexp.matched(8), v1 = thx.date.DateParser.shortdays.indexOf(v.toLowerCase());
+			var wd = d.getDay();
+			if(v1 == wd) day += thx.date.DateParser.last(t)?-7:thx.date.DateParser.next(t)?7:0; else if(v1 > wd) day += v1 - wd + (thx.date.DateParser.last(t)?-7:0); else day += v1 - wd + (thx.date.DateParser.next(t)?7:0);
+		}
+		if(null == time.matched) time.matched = "x";
+	} else {
+		year = d.getFullYear();
+		month = d.getMonth();
+		day = d.getDate();
+	}
+	while(thx.date.DateParser.relexp.match(s)) {
+		found = true;
+		s = StringTools.replace(s,thx.date.DateParser.relexp.matched(0),"");
+		var dir = thx.date.DateParser.relexp.matched(1), qt, period;
+		if(null != dir) {
+			qt = null != (v = thx.date.DateParser.relexp.matched(2))?Std.parseInt(v):1;
+			period = thx.date.DateParser.relexp.matched(3);
+		} else {
+			period = thx.date.DateParser.relexp.matched(5);
+			if(null == period) break;
+			qt = null != (v = thx.date.DateParser.relexp.matched(4))?Std.parseInt(v):1;
+			dir = null != (v = thx.date.DateParser.relexp.matched(6))?v:"after";
+		}
+		dir = dir.toLowerCase();
+		switch(dir) {
+		case "plus":case "+":case "from":case "hence":case "after":
+			break;
+		case "minus":case "-":case "before":case "ago":
+			qt = -qt;
+			break;
+		}
+		switch(dir) {
+		case "ago":case "in":
+			if(null == time.matched) {
+				time.hour = d.getHours();
+				time.minute = d.getMinutes();
+				time.second = d.getSeconds();
+				time.matched = "x";
+			}
+			break;
+		}
+		switch(period.toLowerCase()) {
+		case "second":case "seconds":
+			time.second += qt;
+			break;
+		case "minute":case "minutes":
+			time.minute += qt;
+			break;
+		case "hour":case "hours":
+			time.hour += qt;
+			break;
+		case "day":case "days":
+			day += qt;
+			break;
+		case "week":case "weeks":
+			day += qt * 7;
+			break;
+		case "month":case "months":
+			month += qt;
+			break;
+		case "year":case "years":
+			year += qt;
+			break;
+		}
+	}
+	if(!found) throw new thx.error.Error("no date information found in the string '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 338, className : "thx.date.DateParser", methodName : "parse"});
+	return Date.fromTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
+}
+thx.date.DateParser.parseTime = function(s) {
+	var result = { hour : 0, minute : 0, second : 0, millis : 0.0, matched : null};
+	if(!thx.date.DateParser.timeexp.match(s)) return result;
+	result.matched = thx.date.DateParser.timeexp.matched(0);
+	var v;
+	if(null != (v = thx.date.DateParser.timeexp.matched(1))) {
+		result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(3));
+		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(2));
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(4))) {
+		result.hour = Std.parseInt(v);
+		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(5));
+		if(null != (v = thx.date.DateParser.timeexp.matched(6))) result.second = Std.parseInt(v);
+		if(null != (v = thx.date.DateParser.timeexp.matched(7))) result.millis = Std.parseFloat(v) / 1000;
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(8))) {
+		result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(10));
+		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(9));
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(11))) result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(12)); else if(null != (v = thx.date.DateParser.timeexp.matched(13))) switch(v.toLowerCase()) {
+	case "evening":
+		result.hour = 17;
+		break;
+	case "morning":
+		result.hour = 8;
+		break;
+	case "afternoon":
+		result.hour = 14;
+		break;
+	case "sunsrise":case "dawn":
+		result.hour = 6;
+		break;
+	case "sunset":case "dusk":
+		result.hour = 19;
+		break;
+	case "noon":case "midday":case "mid-day":
+		result.hour = 12;
+		break;
+	case "mid-night":case "midnight":
+		result.hour = 23;
+		result.minute = 59;
+		result.second = 59;
+		result.millis = 0.999;
+		break;
+	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 405, className : "thx.date.DateParser", methodName : "parseTime"});
+	return result;
+}
+thx.date.DateParser.fixyear = function(y) {
+	if(y < 70) return 2000 + y; else if(y < 100) return 1900 + y; else return y;
+}
+thx.date.DateParser.last = function(s) {
+	if(null == s) return false; else return "last" == s.toLowerCase();
+}
+thx.date.DateParser.next = function(s) {
+	if(null == s) return true; else return "next" == s.toLowerCase();
+}
+thx.date.DateParser.plusPm = function(s) {
+	if(null == s) return 0; else return (function($this) {
+		var $r;
+		switch(s.toLowerCase()) {
+		case "pm":case "evening":case "afternoon":
+			$r = 12;
+			break;
+		default:
+			$r = 0;
+		}
+		return $r;
+	}(this));
+}
+thx.date.DateParser.prototype = {
+	__class__: thx.date.DateParser
+}
+var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
+ValueType.TNull = ["TNull",0];
+ValueType.TNull.toString = $estr;
+ValueType.TNull.__enum__ = ValueType;
+ValueType.TInt = ["TInt",1];
+ValueType.TInt.toString = $estr;
+ValueType.TInt.__enum__ = ValueType;
+ValueType.TFloat = ["TFloat",2];
+ValueType.TFloat.toString = $estr;
+ValueType.TFloat.__enum__ = ValueType;
+ValueType.TBool = ["TBool",3];
+ValueType.TBool.toString = $estr;
+ValueType.TBool.__enum__ = ValueType;
+ValueType.TObject = ["TObject",4];
+ValueType.TObject.toString = $estr;
+ValueType.TObject.__enum__ = ValueType;
+ValueType.TFunction = ["TFunction",5];
+ValueType.TFunction.toString = $estr;
+ValueType.TFunction.__enum__ = ValueType;
+ValueType.TClass = function(c) { var $x = ["TClass",6,c]; $x.__enum__ = ValueType; $x.toString = $estr; return $x; }
+ValueType.TEnum = function(e) { var $x = ["TEnum",7,e]; $x.__enum__ = ValueType; $x.toString = $estr; return $x; }
+ValueType.TUnknown = ["TUnknown",8];
+ValueType.TUnknown.toString = $estr;
+ValueType.TUnknown.__enum__ = ValueType;
+var Type = $hxClasses["Type"] = function() { }
+Type.__name__ = ["Type"];
+Type.getClass = function(o) {
+	if(o == null) return null;
+	if(o.__enum__ != null) return null;
+	return o.__class__;
+}
+Type.getEnum = function(o) {
+	if(o == null) return null;
+	return o.__enum__;
+}
+Type.getSuperClass = function(c) {
+	return c.__super__;
+}
+Type.getClassName = function(c) {
+	var a = c.__name__;
+	return a.join(".");
+}
+Type.getEnumName = function(e) {
+	var a = e.__ename__;
+	return a.join(".");
+}
+Type.resolveClass = function(name) {
+	var cl = $hxClasses[name];
+	if(cl == null || cl.__name__ == null) return null;
+	return cl;
+}
+Type.resolveEnum = function(name) {
+	var e = $hxClasses[name];
+	if(e == null || e.__ename__ == null) return null;
+	return e;
+}
+Type.createInstance = function(cl,args) {
+	if(args.length <= 3) return new cl(args[0],args[1],args[2]);
+	if(args.length > 8) throw "Too many arguments";
+	return new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+}
+Type.createEmptyInstance = function(cl) {
+	function empty() {}; empty.prototype = cl.prototype;
+	return new empty();
+}
+Type.createEnum = function(e,constr,params) {
+	var f = Reflect.field(e,constr);
+	if(f == null) throw "No such constructor " + constr;
+	if(Reflect.isFunction(f)) {
+		if(params == null) throw "Constructor " + constr + " need parameters";
+		return f.apply(e,params);
+	}
+	if(params != null && params.length != 0) throw "Constructor " + constr + " does not need parameters";
+	return f;
+}
+Type.createEnumIndex = function(e,index,params) {
+	var c = e.__constructs__[index];
+	if(c == null) throw index + " is not a valid enum constructor index";
+	return Type.createEnum(e,c,params);
+}
+Type.getInstanceFields = function(c) {
+	var a = [];
+	for(var i in c.prototype) a.push(i);
+	a.remove("__class__");
+	a.remove("__properties__");
+	return a;
+}
+Type.getClassFields = function(c) {
+	var a = Reflect.fields(c);
+	a.remove("__name__");
+	a.remove("__interfaces__");
+	a.remove("__properties__");
+	a.remove("__super__");
+	a.remove("prototype");
+	return a;
+}
+Type.getEnumConstructs = function(e) {
+	var a = e.__constructs__;
+	return a.copy();
+}
+Type["typeof"] = function(v) {
+	switch(typeof(v)) {
+	case "boolean":
+		return ValueType.TBool;
+	case "string":
+		return ValueType.TClass(String);
+	case "number":
+		if(Math.ceil(v) == v % 2147483648.0) return ValueType.TInt;
+		return ValueType.TFloat;
+	case "object":
+		if(v == null) return ValueType.TNull;
+		var e = v.__enum__;
+		if(e != null) return ValueType.TEnum(e);
+		var c = v.__class__;
+		if(c != null) return ValueType.TClass(c);
+		return ValueType.TObject;
+	case "function":
+		if(v.__name__ != null) return ValueType.TObject;
+		return ValueType.TFunction;
+	case "undefined":
+		return ValueType.TNull;
+	default:
+		return ValueType.TUnknown;
+	}
+}
+Type.enumEq = function(a,b) {
+	if(a == b) return true;
+	try {
+		if(a[0] != b[0]) return false;
+		var _g1 = 2, _g = a.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(!Type.enumEq(a[i],b[i])) return false;
+		}
+		var e = a.__enum__;
+		if(e != b.__enum__ || e == null) return false;
+	} catch( e ) {
+		return false;
+	}
+	return true;
+}
+Type.enumConstructor = function(e) {
+	return e[0];
+}
+Type.enumParameters = function(e) {
+	return e.slice(2);
+}
+Type.enumIndex = function(e) {
+	return e[1];
+}
+Type.allEnums = function(e) {
+	var all = [];
+	var cst = e.__constructs__;
+	var _g = 0;
+	while(_g < cst.length) {
+		var c = cst[_g];
+		++_g;
+		var v = Reflect.field(e,c);
+		if(!Reflect.isFunction(v)) all.push(v);
+	}
+	return all;
+}
+Type.prototype = {
+	__class__: Type
+}
+thx.util.Message = $hxClasses["thx.util.Message"] = function(message,params,param) {
+	this.message = message;
+	if(null == params) this.params = []; else this.params = params;
+	if(null != param) this.params.push(param);
+}
+thx.util.Message.__name__ = ["thx","util","Message"];
+thx.util.Message.prototype = {
+	message: null
+	,params: null
+	,toString: function() {
+		return Strings.format(this.message,this.params);
+	}
+	,translatef: function(translator) {
+		return Strings.format(translator(this.message),this.params);
+	}
+	,translate: function(translator,domain) {
+		if(null == domain) domain = translator.getDomain();
+		var culture = thx.culture.Culture.get(domain);
+		if(this.params.length == 1 && Std["is"](this.params[0],Int)) return Strings.format(translator.__(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator._(this.message,domain),this.params,null,culture);
+	}
+	,__class__: thx.util.Message
+}
+var Enums = $hxClasses["Enums"] = function() { }
+Enums.__name__ = ["Enums"];
+Enums.string = function(e) {
+	var cons = e[0];
+	var params = [];
+	var _g = 0, _g1 = e.slice(2);
+	while(_g < _g1.length) {
+		var param = _g1[_g];
+		++_g;
+		params.push(Dynamics.string(param));
+	}
+	return cons + (params.length == 0?"":"(" + params.join(", ") + ")");
+}
+Enums.compare = function(a,b) {
+	var v;
+	if((v = a[1] - b[1]) != 0) return v;
+	return Arrays.compare(a.slice(2),b.slice(2));
+}
+Enums.prototype = {
+	__class__: Enums
+}
+var js = js || {}
+js.Boot = $hxClasses["js.Boot"] = function() { }
+js.Boot.__name__ = ["js","Boot"];
+js.Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+js.Boot.__trace = function(v,i) {
+	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
+	msg += js.Boot.__string_rec(v,"");
+	var d = document.getElementById("haxe:trace");
+	if(d != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
+}
+js.Boot.__clear_trace = function() {
+	var d = document.getElementById("haxe:trace");
+	if(d != null) d.innerHTML = "";
+}
+js.Boot.__string_rec = function(o,s) {
+	if(o == null) return "null";
+	if(s.length >= 5) return "<...>";
+	var t = typeof(o);
+	if(t == "function" && (o.__name__ != null || o.__ename__ != null)) t = "object";
+	switch(t) {
+	case "object":
+		if(o instanceof Array) {
+			if(o.__enum__ != null) {
+				if(o.length == 2) return o[0];
+				var str = o[0] + "(";
+				s += "\t";
+				var _g1 = 2, _g = o.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
+				}
+				return str + ")";
+			}
+			var l = o.length;
+			var i;
+			var str = "[";
+			s += "\t";
+			var _g = 0;
+			while(_g < l) {
+				var i1 = _g++;
+				str += (i1 > 0?",":"") + js.Boot.__string_rec(o[i1],s);
+			}
+			str += "]";
+			return str;
+		}
+		var tostr;
+		try {
+			tostr = o.toString;
+		} catch( e ) {
+			return "???";
+		}
+		if(tostr != null && tostr != Object.toString) {
+			var s2 = o.toString();
+			if(s2 != "[object Object]") return s2;
+		}
+		var k = null;
+		var str = "{\n";
+		s += "\t";
+		var hasp = o.hasOwnProperty != null;
+		for( var k in o ) { ;
+		if(hasp && !o.hasOwnProperty(k)) {
+			continue;
+		}
+		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
+			continue;
+		}
+		if(str.length != 2) str += ", \n";
+		str += s + k + " : " + js.Boot.__string_rec(o[k],s);
+		}
+		s = s.substring(1);
+		str += "\n" + s + "}";
+		return str;
+	case "function":
+		return "<function>";
+	case "string":
+		return o;
+	default:
+		return String(o);
+	}
+}
+js.Boot.__interfLoop = function(cc,cl) {
+	if(cc == null) return false;
+	if(cc == cl) return true;
+	var intf = cc.__interfaces__;
+	if(intf != null) {
+		var _g1 = 0, _g = intf.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var i1 = intf[i];
+			if(i1 == cl || js.Boot.__interfLoop(i1,cl)) return true;
+		}
+	}
+	return js.Boot.__interfLoop(cc.__super__,cl);
+}
+js.Boot.__instanceof = function(o,cl) {
+	try {
+		if(o instanceof cl) {
+			if(cl == Array) return o.__enum__ == null;
+			return true;
+		}
+		if(js.Boot.__interfLoop(o.__class__,cl)) return true;
+	} catch( e ) {
+		if(cl == null) return false;
+	}
+	switch(cl) {
+	case Int:
+		return Math.ceil(o%2147483648.0) === o;
+	case Float:
+		return typeof(o) == "number";
+	case Bool:
+		return o === true || o === false;
+	case String:
+		return typeof(o) == "string";
+	case Dynamic:
+		return true;
+	default:
+		if(o == null) return false;
+		return o.__enum__ == cl || cl == Class && o.__name__ != null || cl == Enum && o.__ename__ != null;
+	}
+}
+js.Boot.__init = function() {
+	js.Lib.isIE = typeof document!='undefined' && document.all != null && typeof window!='undefined' && window.opera == null;
+	js.Lib.isOpera = typeof window!='undefined' && window.opera != null;
+	Array.prototype.copy = Array.prototype.slice;
+	Array.prototype.insert = function(i,x) {
+		this.splice(i,0,x);
+	};
+	Array.prototype.remove = Array.prototype.indexOf?function(obj) {
+		var idx = this.indexOf(obj);
+		if(idx == -1) return false;
+		this.splice(idx,1);
+		return true;
+	}:function(obj) {
+		var i = 0;
+		var l = this.length;
+		while(i < l) {
+			if(this[i] == obj) {
+				this.splice(i,1);
+				return true;
+			}
+			i++;
+		}
+		return false;
+	};
+	Array.prototype.iterator = function() {
+		return { cur : 0, arr : this, hasNext : function() {
+			return this.cur < this.arr.length;
+		}, next : function() {
+			return this.arr[this.cur++];
+		}};
+	};
+	if(String.prototype.cca == null) String.prototype.cca = String.prototype.charCodeAt;
+	String.prototype.charCodeAt = function(i) {
+		var x = this.cca(i);
+		if(x != x) return undefined;
+		return x;
+	};
+	var oldsub = String.prototype.substr;
+	String.prototype.substr = function(pos,len) {
+		if(pos != null && pos != 0 && len != null && len < 0) return "";
+		if(len == null) len = this.length;
+		if(pos < 0) {
+			pos = this.length + pos;
+			if(pos < 0) pos = 0;
+		} else if(len < 0) len = this.length + len - pos;
+		return oldsub.apply(this,[pos,len]);
+	};
+	Function.prototype["$bind"] = function(o) {
+		var f = function() {
+			return f.method.apply(f.scope,arguments);
+		};
+		f.scope = o;
+		f.method = this;
+		return f;
+	};
+}
+js.Boot.prototype = {
+	__class__: js.Boot
+}
+var haxe = haxe || {}
+haxe.Firebug = $hxClasses["haxe.Firebug"] = function() { }
+haxe.Firebug.__name__ = ["haxe","Firebug"];
+haxe.Firebug.detect = function() {
+	try {
+		return console != null && console.error != null;
+	} catch( e ) {
+		return false;
+	}
+}
+haxe.Firebug.redirectTraces = function() {
+	haxe.Log.trace = haxe.Firebug.trace;
+	js.Lib.setErrorHandler(haxe.Firebug.onError);
+}
+haxe.Firebug.onError = function(err,stack) {
+	var buf = err + "\n";
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		buf += "Called from " + s + "\n";
+	}
+	haxe.Firebug.trace(buf,null);
+	return true;
+}
+haxe.Firebug.trace = function(v,inf) {
+	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
+	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
+	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
+}
+haxe.Firebug.prototype = {
+	__class__: haxe.Firebug
+}
+haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
+	var arr = haxe_timers;
+	this.id = arr.length;
+	arr[this.id] = this;
+	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
+}
+haxe.Timer.__name__ = ["haxe","Timer"];
+haxe.Timer.delay = function(f,time_ms) {
+	var t = new haxe.Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+}
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
+}
+haxe.Timer.prototype = {
+	id: null
+	,timerId: null
+	,stop: function() {
+		if(this.id == null) return;
+		window.clearInterval(this.timerId);
+		var arr = haxe_timers;
+		arr[this.id] = null;
+		if(this.id > 100 && this.id == arr.length - 1) {
+			var p = this.id - 1;
+			while(p >= 0 && arr[p] == null) p--;
+			arr = arr.slice(0,p + 1);
+		}
+		this.id = null;
+	}
+	,run: function() {
+	}
+	,__class__: haxe.Timer
+}
+if(!thx.translation) thx.translation = {}
+thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
+thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
+thx.translation.ITranslation.prototype = {
+	domain: null
+	,_: null
+	,__: null
+	,__class__: thx.translation.ITranslation
+	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
+}
+rg.query.ReportGridTransformers = $hxClasses["rg.query.ReportGridTransformers"] = function() { }
+rg.query.ReportGridTransformers.__name__ = ["rg","query","ReportGridTransformers"];
+rg.query.ReportGridTransformers.childrenPath = function(arr,params,keep) {
+	var parent = params.parent, prefix = parent == "/"?"":parent;
+	return arr.map(function(path,_) {
+		var o = { parent : parent, path : prefix + "/" + path};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.childrenEvent = function(arr,params,keep) {
+	var path = params.path;
+	return arr.map(function(event,_) {
+		var o = { path : path, event : event.substr(1)};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.childrenProperty = function(arr,params,keep) {
+	var path = params.path, event = params.event;
+	return arr.map(function(property,_) {
+		var o = { path : path, event : event, property : property.substr(1)};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.propertyValues = function(arr,params,keep) {
+	var path = params.path, event = params.event, property = params.property;
+	return arr.map(function(value,_) {
+		var o = { path : path, event : event, property : property, value : value};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.histogram = function(arr,params,keep) {
+	var property = params.property;
+	return arr.map(function(value,_) {
+		var o = { count : value[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[property] = value[0];
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.histogramTag = function(counts,params,keep) {
+	var tag = params.tag, property = params.property;
+	return Arrays.flatten(Objects.map(counts,function(key,value) {
+		return value.map(function(item,_) {
+			var o = { count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
+			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+			o[property] = item[0];
+			return o;
+		});
+	}));
+}
+rg.query.ReportGridTransformers.propertiesHistogram = function(arr,params,keep) {
+	var property = params.property;
+	return arr.map(function(value,_) {
+		var o = { count : value[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[property] = Strings.ltrim(value[0],".");
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.intersect = function(ob,params,keep) {
+	var properties = params.properties, result = [];
+	var _g = 0, _g1 = Objects.flatten(ob);
+	while(_g < _g1.length) {
+		var pair = _g1[_g];
+		++_g;
+		var o = { count : pair.value};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		var _g3 = 0, _g2 = properties.length;
+		while(_g3 < _g2) {
+			var i = _g3++;
+			o[properties[i].property] = thx.json.Json.decode(pair.fields[i]);
+		}
+		result.push(o);
+	}
+	return result;
+}
+rg.query.ReportGridTransformers.intersectTag = function(ob,params,keep) {
+	var tag = params.tag, properties = params.properties, result = [];
+	Objects.each(ob,function(key,value) {
+		var _g = 0, _g1 = Objects.flatten(value);
+		while(_g < _g1.length) {
+			var pair = _g1[_g];
+			++_g;
+			var o = { count : pair.value};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
+			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+			var _g3 = 0, _g2 = properties.length;
+			while(_g3 < _g2) {
+				var i = _g3++;
+				o[properties[i].property] = thx.json.Json.decode(pair.fields[i]);
+			}
+			result.push(o);
+		}
+	});
+	return result;
+}
+rg.query.ReportGridTransformers.intersectSeries = function(ob,params,keep) {
+	var properties = params.properties, periodicity = params.periodicity, timezone = params.timezone, groupby = params.groupby, result = [];
+	var _g = 0, _g1 = Objects.flatten(ob);
+	while(_g < _g1.length) {
+		var pair = _g1[_g];
+		++_g;
+		var values = pair.value;
+		var _g2 = 0;
+		while(_g2 < values.length) {
+			var item = values[_g2];
+			++_g2;
+			var o = { count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
+			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
+			var _g4 = 0, _g3 = properties.length;
+			while(_g4 < _g3) {
+				var i = _g4++;
+				o[properties[i].property] = thx.json.Json.decode(pair.fields[i]);
+			}
+			result.push(o);
+		}
+	}
+	return result;
+}
+rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params,keep) {
+	var properties = params.properties, periodicity = params.periodicity, tag = params.tag, timezone = params.timezone, groupby = params.groupby, result = [];
+	Objects.each(ob,function(key,value) {
+		var _g = 0, _g1 = Objects.flatten(value);
+		while(_g < _g1.length) {
+			var pair = _g1[_g];
+			++_g;
+			var values = pair.value;
+			var _g2 = 0;
+			while(_g2 < values.length) {
+				var item = values[_g2];
+				++_g2;
+				var o = { count : item[1]};
+				rg.query.ReportGridTransformers._keep(params,o,keep);
+				rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
+				o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+				var _g4 = 0, _g3 = properties.length;
+				while(_g4 < _g3) {
+					var i = _g4++;
+					o[properties[i].property] = thx.json.Json.decode(pair.fields[i]);
+				}
+				result.push(o);
+			}
+		}
+	});
+	return result;
+}
+rg.query.ReportGridTransformers.eventCount = function(count,params,keep) {
+	var o = { event : params.event, count : count};
+	rg.query.ReportGridTransformers._keep(params,o,keep);
+	if(null != params.where) Objects.copyTo(params.where,o);
+	return [o];
+}
+rg.query.ReportGridTransformers.eventCountTag = function(counts,params,keep) {
+	var event = params.event, tag = params.tag;
+	return Objects.map(counts,function(key,count) {
+		var o = { event : event, count : count};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+		if(null != params.where) Objects.copyTo(params.where,o);
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.eventSeriesTagGroupedBy = function(ob,params,keep) {
+	var event = params.event, periodicity = params.periodicity, where = params.where, groupby = params.groupby, tag = params.tag;
+	return Arrays.flatten(Objects.map(ob,function(key,values) {
+		var result = [];
+		var _g = 0;
+		while(_g < values.length) {
+			var item = values[_g];
+			++_g;
+			var o = { event : event, count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
+			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
+			if(null != where) Objects.copyTo(where,o);
+			result.push(o);
+		}
+		return result;
+	}));
+}
+rg.query.ReportGridTransformers.eventSeries = function(values,params,keep) {
+	var event = params.event, periodicity = params.periodicity, where = params.where, timezone = params.timezone, groupby = params.groupby, result = [];
+	var _g = 0;
+	while(_g < values.length) {
+		var item = values[_g];
+		++_g;
+		var o = { event : event, count : item[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
+		if(null != where) Objects.copyTo(where,o);
+		result.push(o);
+	}
+	return result;
+}
+rg.query.ReportGridTransformers.propertySummary = function(value,params,keep) {
+	var o = { };
+	rg.query.ReportGridTransformers._keep(params,o,keep);
+	o[params.type] = value[0][1];
+	return [o];
+}
+rg.query.ReportGridTransformers.propertySummarySeries = function(values,params,keep) {
+	var periodicity = params.periodicity, type = params.type, timezone = params.timezone, groupby = params.groupby, result = [];
+	var _g = 0;
+	while(_g < values.length) {
+		var item = values[_g];
+		++_g;
+		var o = { };
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
+		o[type] = item[1];
+		result.push(o);
+	}
+	return result;
+}
+rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy = function(ob,params,keep) {
+	var periodicity = params.periodicity, type = params.type, groupby = params.groupby, tag = params.tag;
+	return Arrays.flatten(Objects.map(ob,function(key,values) {
+		var result = [];
+		var _g = 0;
+		while(_g < values.length) {
+			var item = values[_g];
+			++_g;
+			var o = { };
+			rg.query.ReportGridTransformers._keep(params,o,keep);
+			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+			o[type] = item[1];
+			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
+			result.push(o);
+		}
+		return result;
+	}));
+}
+rg.query.ReportGridTransformers.propertyValueCount = function(count,params,keep) {
+	var o = { count : count};
+	rg.query.ReportGridTransformers._keep(params,o,keep);
+	o[params.property] = params.value;
+	return [o];
+}
+rg.query.ReportGridTransformers.propertyValueCountTag = function(counts,params,keep) {
+	var property = params.property, value = params.value, tag = params.tag;
+	return Objects.map(counts,function(key,count) {
+		var o = { count : count};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[property] = value;
+		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.propertyValueSeries = function(values,params,keep) {
+	var property = params.property, periodicity = params.periodicity, value = params.value, timezone = params.timezone, groupby = params.groupby, result = [];
+	var _g = 0;
+	while(_g < values.length) {
+		var item = values[_g];
+		++_g;
+		var o = { count : item[1]};
+		rg.query.ReportGridTransformers._keep(params,o,keep);
+		o[property] = value;
+		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
+		result.push(o);
+	}
+	return result;
+}
+rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy = function(ob,params,keep) {
+	var property = params.property, value = params.value, periodicity = params.periodicity, groupby = params.groupby, tag = params.tag;
+	return Arrays.flatten(Objects.map(ob,function(key,values) {
+		var result = [];
+		var _g = 0;
+		while(_g < values.length) {
+			var item = values[_g];
+			++_g;
+			var o = { count : item[1]};
+			rg.query.ReportGridTransformers._keep(params,o,keep);
+			ob[property] = value;
+			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
+			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
+			result.push(o);
+		}
+		return result;
+	}));
+}
+rg.query.ReportGridTransformers._keep = function(src,dst,tokeep) {
+	var _g = 0;
+	while(_g < tokeep.length) {
+		var k = tokeep[_g];
+		++_g;
+		if(Reflect.hasField(dst,k)) continue;
+		dst[k] = Reflect.field(src,k);
+	}
+}
+rg.query.ReportGridTransformers._injectTime = function(o,value,periodicity,timezone,groupby) {
+	if(null != groupby) {
+		o[periodicity] = Reflect.field(value,periodicity);
+		o["groupby"] = groupby;
+	} else if(null != timezone) {
+		o["time:" + periodicity] = rg.query.ReportGridTransformers._parseTimeTZ(value.datetime);
+		o["timezone"] = timezone;
+	} else o["time:" + periodicity] = value.timestamp;
+}
+rg.query.ReportGridTransformers._parseTimeTZ = function(s) {
+	var sign = 1, pos = s.indexOf("+");
+	if(pos < 0) {
+		sign = -1;
+		pos = s.indexOf("-");
+	}
+	var d = Date.fromString(StringTools.replace(StringTools.replace(s.substr(0,pos),"T"," "),".000","")), t = thx.date.DateParser.parseTime(s.substr(pos + 1));
+	return d.getTime() + sign * (t.hour * 60 * 60 * 1000 + t.minute * 60 * 1000 + t.second * 1000 + t.millis);
+}
+rg.query.ReportGridTransformers._trimPrefix = function(v) {
+	return v.substr(1);
+}
+rg.query.ReportGridTransformers.prototype = {
+	__class__: rg.query.ReportGridTransformers
+}
+var IntHash = $hxClasses["IntHash"] = function() {
+	this.h = {}
+	if(this.h.__proto__ != null) {
+		this.h.__proto__ = null;
+		delete(this.h.__proto__);
+	}
+}
+IntHash.__name__ = ["IntHash"];
+IntHash.prototype = {
+	h: null
+	,set: function(key,value) {
+		this.h[key] = value;
+	}
+	,get: function(key) {
+		return this.h[key];
+	}
+	,exists: function(key) {
+		return this.h[key] != null;
+	}
+	,remove: function(key) {
+		if(this.h[key] == null) return false;
+		delete(this.h[key]);
+		return true;
+	}
+	,keys: function() {
+		var a = new Array();
+		for( x in this.h ) a.push(x);
+		return a.iterator();
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref[i];
+		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b[s.b.length] = "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b[s.b.length] = i == null?"null":i;
+			s.b[s.b.length] = " => ";
+			s.add(Std.string(this.get(i)));
+			if(it.hasNext()) s.b[s.b.length] = ", ";
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
+	}
+	,__class__: IntHash
+}
+if(!rg.app) rg.app = {}
+if(!rg.app.query) rg.app.query = {}
+rg.app.query.JSBridge = $hxClasses["rg.app.query.JSBridge"] = function() { }
+rg.app.query.JSBridge.__name__ = ["rg","app","query","JSBridge"];
+rg.app.query.JSBridge.createQuery = function(executor) {
+	var inst = rg.query.ReportGridQuery.create(executor);
+	var query = { };
+	var _g = 0, _g1 = Type.getInstanceFields(Type.getClass(inst));
+	while(_g < _g1.length) {
+		var field = [_g1[_g]];
+		++_g;
+		if(field[0].substr(0,1) == "_" || !Reflect.isFunction(Reflect.field(inst,field[0]))) continue;
+		query[field[0]] = (function(field) {
+			return function() {
+				var ob = rg.query.ReportGridQuery.create(executor), f = Reflect.field(ob,field[0]);
+				return f.apply(ob,arguments);
+			};
+		})(field);
+	}
+	return query;
+}
+rg.app.query.JSBridge.main = function() {
+	if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
+	var storage;
+	if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
+	var r = (!ReportGrid) ? (ReportGrid = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
+	r.query = rg.app.query.JSBridge.createQuery(executor);
+	r.date = { range : function(a,b,p) {
+		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
+		if(null == a) a = rg.util.Periodicity.defaultRange(p)[0];
+		if(Std["is"](a,Date)) a = a.getTime();
+		if(Std["is"](b,String)) b = thx.date.DateParser.parse(b);
+		if(null == b) b = rg.util.Periodicity.defaultRange(p)[1];
+		if(Std["is"](b,Date)) b = b.getTime();
+		return rg.util.Periodicity.range(a,b,p);
+	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
+	r.info = null != r.info?r.info:{ };
+	r.info.query = { version : "1.2.0.1425"};
+	var rand = new thx.math.Random(666);
+	r.math = { setRandomSeed : function(s) {
+		rand = new thx.math.Random(s);
+	}, random : function() {
+		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
+	}};
+	r.cache = { executor : executor, disable : function() {
+		if(null == executor || Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
+			r.cache.executor = executor = r;
+			r.query = rg.app.query.JSBridge.createQuery(executor);
+		}
+	}, enable : function() {
+		if(null == executor || !Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
+			r.cache.executor = executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
+			r.query = rg.app.query.JSBridge.createQuery(executor);
+		}
+	}, setTimeout : function(t) {
+		executor = null;
+		timeout = t;
+		r.cache.enable();
+	}, memoryStorage : function() {
+		executor = null;
+		storage = new rg.storage.MemoryStorage();
+		r.cache.enable();
+	}, sessionStorage : function() {
+		executor = null;
+		if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
+		r.cache.enable();
+	}, localStorage : function() {
+		executor = null;
+		if(rg.storage.BrowserStorage.hasLocalStorage()) storage = rg.storage.BrowserStorage.localStorage(); else if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
+		r.cache.enable();
+	}};
+}
+rg.app.query.JSBridge.opt = function(ob) {
+	return null == ob?{ }:Objects.clone(ob);
+}
+rg.app.query.JSBridge.prototype = {
+	__class__: rg.app.query.JSBridge
+}
+var StringBuf = $hxClasses["StringBuf"] = function() {
+	this.b = new Array();
+}
+StringBuf.__name__ = ["StringBuf"];
+StringBuf.prototype = {
+	add: function(x) {
+		this.b[this.b.length] = x == null?"null":x;
+	}
+	,addSub: function(s,pos,len) {
+		this.b[this.b.length] = s.substr(pos,len);
+	}
+	,addChar: function(c) {
+		this.b[this.b.length] = String.fromCharCode(c);
+	}
+	,toString: function() {
+		return this.b.join("");
+	}
+	,b: null
+	,__class__: StringBuf
+}
+var Strings = $hxClasses["Strings"] = function() { }
+Strings.__name__ = ["Strings"];
+Strings.format = function(pattern,values,nullstring,culture) {
+	if(nullstring == null) nullstring = "null";
+	if(null == values || 0 == values.length) return pattern;
+	return (Strings.formatf(pattern,nullstring,culture))(values);
+}
+Strings.formatf = function(pattern,nullstring,culture) {
+	if(nullstring == null) nullstring = "null";
+	var buf = [];
+	while(true) {
+		if(!Strings._reFormat.match(pattern)) {
+			buf.push((function() {
+				return function(_) {
+					return pattern;
+				};
+			})());
+			break;
+		}
+		var pos = Std.parseInt(Strings._reFormat.matched(1));
+		var format = Strings._reFormat.matched(2);
+		if(format == "") format = null;
+		var p = null;
+		var params = [];
+		var _g = 3;
+		while(_g < 20) {
+			var i = _g++;
+			p = Strings._reFormat.matched(i);
+			if(p == null || p == "") break;
+			params.push(thx.culture.FormatParams.cleanQuotes(p));
+		}
+		var left = [Strings._reFormat.matchedLeft()];
+		buf.push((function(left) {
+			return function(_) {
+				return left[0];
+			};
+		})(left));
+		var df = [Dynamics.formatf(format,params,nullstring,culture)];
+		buf.push(((function() {
+			return function(f,a1) {
+				return (function() {
+					return function(a2) {
+						return f(a1,a2);
+					};
+				})();
+			};
+		})())((function(df) {
+			return function(i,v) {
+				return df[0](v[i]);
+			};
+		})(df),pos));
+		pattern = Strings._reFormat.matchedRight();
+	}
+	return function(values) {
+		if(null == values) values = [];
+		return buf.map(function(df,_) {
+			return df(values);
+		}).join("");
+	};
+}
+Strings.formatOne = function(v,param,params,culture) {
+	return (Strings.formatOnef(param,params,culture))(v);
+}
+Strings.formatOnef = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"S");
+	var format = params.shift();
+	switch(format) {
+	case "S":
+		return function(v) {
+			return v;
+		};
+	case "T":
+		var len = params.length < 1?20:Std.parseInt(params[0]);
+		var ellipsis = params.length < 2?"...":params[1];
+		return Strings.ellipsisf(len,ellipsis);
+	case "PR":
+		var len = params.length < 1?10:Std.parseInt(params[0]);
+		var pad = params.length < 2?" ":params[1];
+		return function(v) {
+			return StringTools.rpad(v,pad,len);
+		};
+	case "PL":
+		var len = params.length < 1?10:Std.parseInt(params[0]);
+		var pad = params.length < 2?" ":params[1];
+		return function(v) {
+			return StringTools.lpad(v,pad,len);
+		};
+	default:
+		return (function($this) {
+			var $r;
+			throw "Unsupported string format: " + format;
+			return $r;
+		}(this));
+	}
+}
+Strings.upTo = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return value.substr(0,pos);
+}
+Strings.startFrom = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return value.substr(pos + searchFor.length);
+}
+Strings.rtrim = function(value,charlist) {
+	var len = value.length;
+	while(len > 0) {
+		var c = value.substr(len - 1,1);
+		if(charlist.indexOf(c) < 0) break;
+		len--;
+	}
+	return value.substr(0,len);
+}
+Strings.ltrim = function(value,charlist) {
+	var start = 0;
+	while(start < value.length) {
+		var c = value.substr(start,1);
+		if(charlist.indexOf(c) < 0) break;
+		start++;
+	}
+	return value.substr(start);
+}
+Strings.trim = function(value,charlist) {
+	return Strings.rtrim(Strings.ltrim(value,charlist),charlist);
+}
+Strings.collapse = function(value) {
+	return Strings._reCollapse.replace(StringTools.trim(value)," ");
+}
+Strings.ucfirst = function(value) {
+	return value == null?null:value.charAt(0).toUpperCase() + value.substr(1);
+}
+Strings.lcfirst = function(value) {
+	return value == null?null:value.charAt(0).toLowerCase() + value.substr(1);
+}
+Strings.empty = function(value) {
+	return value == null || value == "";
+}
+Strings.isAlphaNum = function(value) {
+	return value == null?false:Strings.__alphaNumPattern.match(value);
+}
+Strings.digitsOnly = function(value) {
+	return value == null?false:Strings.__digitsPattern.match(value);
+}
+Strings.ucwords = function(value) {
+	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+}
+Strings.ucwordsws = function(value) {
+	return Strings.__ucwordswsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+}
+Strings.__upperMatch = function(re) {
+	return re.matched(0).toUpperCase();
+}
+Strings.humanize = function(s) {
+	return StringTools.replace(Strings.underscore(s),"_"," ");
+}
+Strings.capitalize = function(s) {
+	return s.substr(0,1).toUpperCase() + s.substr(1);
+}
+Strings.succ = function(s) {
+	return s.substr(0,-1) + String.fromCharCode(s.substr(-1).charCodeAt(0) + 1);
+}
+Strings.underscore = function(s) {
+	s = new EReg("::","g").replace(s,"/");
+	s = new EReg("([A-Z]+)([A-Z][a-z])","g").replace(s,"$1_$2");
+	s = new EReg("([a-z\\d])([A-Z])","g").replace(s,"$1_$2");
+	s = new EReg("-","g").replace(s,"_");
+	return s.toLowerCase();
+}
+Strings.dasherize = function(s) {
+	return StringTools.replace(s,"_","-");
+}
+Strings.repeat = function(s,times) {
+	var b = [];
+	var _g = 0;
+	while(_g < times) {
+		var i = _g++;
+		b.push(s);
+	}
+	return b.join("");
+}
+Strings.wrapColumns = function(s,columns,indent,newline) {
+	if(newline == null) newline = "\n";
+	if(indent == null) indent = "";
+	if(columns == null) columns = 78;
+	var parts = Strings._reSplitWC.split(s);
+	var result = [];
+	var _g = 0;
+	while(_g < parts.length) {
+		var part = parts[_g];
+		++_g;
+		result.push(Strings._wrapColumns(StringTools.trim(Strings._reReduceWS.replace(part," ")),columns,indent,newline));
+	}
+	return result.join(newline);
+}
+Strings._wrapColumns = function(s,columns,indent,newline) {
+	var parts = [];
+	var pos = 0;
+	var len = s.length;
+	var ilen = indent.length;
+	columns -= ilen;
+	while(true) {
+		if(pos + columns >= len - ilen) {
+			parts.push(s.substr(pos));
+			break;
+		}
+		var i = 0;
+		while(!StringTools.isSpace(s,pos + columns - i) && i < columns) i++;
+		if(i == columns) {
+			i = 0;
+			while(!StringTools.isSpace(s,pos + columns + i) && pos + columns + i < len) i++;
+			parts.push(s.substr(pos,columns + i));
+			pos += columns + i + 1;
+		} else {
+			parts.push(s.substr(pos,columns - i));
+			pos += columns - i + 1;
+		}
+	}
+	return indent + parts.join(newline + indent);
+}
+Strings.stripTags = function(s) {
+	return Strings._reStripTags.replace(s,"");
+}
+Strings.interpolate = function(v,a,b,equation) {
+	return (Strings.interpolatef(a,b,equation))(v);
+}
+Strings.interpolatef = function(a,b,equation) {
+	var extract = function(value,s,f) {
+		while(Strings._reInterpolateNumber.match(value)) {
+			var left = Strings._reInterpolateNumber.matchedLeft();
+			if(!Strings.empty(left)) {
+				s.push(left);
+				f.push(null);
+			}
+			s.push(null);
+			f.push(Std.parseFloat(Strings._reInterpolateNumber.matched(0)));
+			value = Strings._reInterpolateNumber.matchedRight();
+		}
+		if(!Strings.empty(value)) {
+			s.push(value);
+			f.push(null);
+		}
+	};
+	var sa = [], fa = [], sb = [], fb = [];
+	extract(a,sa,fa);
+	extract(b,sb,fb);
+	var functions = [], i = 0;
+	var min = Ints.min(sa.length,sb.length);
+	while(i < min) {
+		if(sa[i] != sb[i]) break;
+		if(null == sa[i]) {
+			if(fa[i] == fb[i]) {
+				var s = ["" + fa[i]];
+				functions.push((function(s) {
+					return function(_) {
+						return s[0];
+					};
+				})(s));
+			} else {
+				var f = [Floats.interpolatef(fa[i],fb[i],equation)];
+				functions.push((function(f) {
+					return function(t) {
+						return "" + f[0](t);
+					};
+				})(f));
+			}
+		} else {
+			var s = [sa[i]];
+			functions.push((function(s) {
+				return function(_) {
+					return s[0];
+				};
+			})(s));
+		}
+		i++;
+	}
+	var rest = "";
+	while(i < sb.length) {
+		if(null != sb[i]) rest += sb[i]; else rest += fb[i];
+		i++;
+	}
+	if("" != rest) functions.push(function(_) {
+		return rest;
+	});
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		}).join("");
+	};
+}
+Strings.interpolateChars = function(v,a,b,equation) {
+	return (Strings.interpolateCharsf(a,b,equation))(v);
+}
+Strings.interpolateCharsf = function(a,b,equation) {
+	var aa = a.split(""), ab = b.split("");
+	while(aa.length > ab.length) ab.insert(0," ");
+	while(ab.length > aa.length) aa.insert(0," ");
+	var ai = [];
+	var _g1 = 0, _g = aa.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		ai[i] = Strings.interpolateCharf(aa[i],ab[i]);
+	}
+	return function(v) {
+		var r = [];
+		var _g1 = 0, _g = ai.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r[i] = ai[i](v);
+		}
+		return StringTools.trim(r.join(""));
+	};
+}
+Strings.interpolateChar = function(v,a,b,equation) {
+	return (Strings.interpolateCharf(a,b,equation))(v);
+}
+Strings.interpolateCharf = function(a,b,equation) {
+	if(new EReg("^\\d","").match(b) && a == " ") a = "0";
+	var r = new EReg("^[^a-zA-Z0-9]","");
+	if(r.match(b) && a == " ") a = r.matched(0);
+	var ca = a.charCodeAt(0), cb = b.charCodeAt(0), i = Ints.interpolatef(ca,cb,equation);
+	return function(v) {
+		return String.fromCharCode(i(v));
+	};
+}
+Strings.ellipsis = function(s,maxlen,symbol) {
+	if(symbol == null) symbol = "...";
+	if(maxlen == null) maxlen = 20;
+	if(s.length > maxlen) return s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+}
+Strings.ellipsisf = function(maxlen,symbol) {
+	if(symbol == null) symbol = "...";
+	if(maxlen == null) maxlen = 20;
+	return function(s) {
+		if(s.length > maxlen) return s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+	};
+}
+Strings.compare = function(a,b) {
+	return a < b?-1:a > b?1:0;
+}
+Strings.prototype = {
+	__class__: Strings
+}
+if(!rg.util) rg.util = {}
+rg.util.Periodicity = $hxClasses["rg.util.Periodicity"] = function() { }
+rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
+rg.util.Periodicity.defaultPeriodicity = function(span) {
+	if(null == span || 0 == span) return "eternity";
+	if(span <= 21600000) return "minute"; else if(span <= 172800000) return "hour"; else if(span <= 5184000 * 1000) return "day"; else if(span <= 62208000 * 1000) return "month"; else return "year";
+}
+rg.util.Periodicity.defaultRange = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = [0.0,0.0];
+			break;
+		case "minute":
+			$r = rg.util.Periodicity.parsePair("6 hours ago","now");
+			break;
+		case "hour":
+			$r = rg.util.Periodicity.parsePair("2 days ago","now");
+			break;
+		case "day":
+			$r = rg.util.Periodicity.parsePair("14 days ago","today");
+			break;
+		case "month":
+			$r = rg.util.Periodicity.parsePair("6 months ago","today");
+			break;
+		case "year":
+			$r = rg.util.Periodicity.parsePair("6 years ago","today");
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.isValid = function(v) {
+	return Arrays.exists(rg.util.Periodicity.validPeriods,v);
+}
+rg.util.Periodicity.calculateBetween = function(a,b,disc) {
+	if(disc == null) disc = 2;
+	if(null == a || null == b) return "eternity";
+	var delta = Math.abs(b.getTime() - a.getTime());
+	if(delta >= DateTools.days(365 * disc)) return "year"; else if(delta >= DateTools.days(30 * disc)) return "month"; else if(delta >= DateTools.days(7 * disc)) return "week"; else if(delta >= DateTools.days(disc)) return "day"; else if(delta >= DateTools.hours(disc)) return "hour"; else return "minute";
+}
+rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = 1;
+			break;
+		case "minute":
+			$r = Math.floor((end - start) / 60000);
+			break;
+		case "hour":
+			$r = Math.floor((end - start) / 3600000);
+			break;
+		case "day":
+			$r = Math.floor((end - start) / 86400000);
+			break;
+		case "week":
+			$r = Math.floor((end - start) / 604800000);
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var s = Date.fromTime(start), e = Date.fromTime(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
+				$r = (ey - sy) * 12 + (em - sm);
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = Math.floor(rg.util.Periodicity.unitsBetween(start,end,"month") / 12);
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.units = function(value,periodicity) {
+	return rg.util.Periodicity.unitsBetween(0,value,periodicity) + (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "hour":
+			$r = 1;
+			break;
+		default:
+			$r = 0;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.range = function(start,end,periodicity) {
+	var step = 1000;
+	switch(periodicity) {
+	case "eternity":
+		return [0.0];
+	case "minute":
+		step = 60000;
+		break;
+	case "hour":
+		step = 3600000;
+		break;
+	case "day":
+		step = 86400000;
+		break;
+	case "week":
+		step = 604800000;
+		break;
+	case "month":
+		var s = rg.util.Periodicity.dateUtc(start), e = rg.util.Periodicity.dateUtc(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
+		var result = [];
+		while(sy < ey || sy == ey && sm <= em) {
+			result.push(new Date(sy,sm,1,0,0,0).getTime());
+			sm++;
+			if(sm > 11) {
+				sm = 0;
+				sy++;
+			}
+		}
+		return result;
+	case "year":
+		return Ints.range(rg.util.Periodicity.dateUtc(start).getFullYear(),rg.util.Periodicity.dateUtc(end).getFullYear() + 1,1).map(function(d,i) {
+			return new Date(d,0,1,0,0,0).getTime();
+		});
+	}
+	return Floats.range(start,end + step,step);
+}
+rg.util.Periodicity.next = function(periodicity,date,step) {
+	if(step == null) step = 1;
+	if(null == date) date = Date.now().getTime();
+	if(0 == step) return date;
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = date;
+			break;
+		case "minute":
+			$r = date + 60000 * step;
+			break;
+		case "hour":
+			$r = date + 3600000 * step;
+			break;
+		case "day":
+			$r = date + 86400000 * step;
+			break;
+		case "week":
+			$r = date + 604800000 * step;
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(date), y = d.getFullYear(), m = d.getMonth() + step;
+				$r = new Date(y,m,d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(date);
+				$r = new Date(d.getFullYear() + step,d.getMonth(),d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMin(arr,function(d) {
+		return Arrays.floatMin(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMax(arr,function(d) {
+		return Arrays.floatMax(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.formatf = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = function(_) {
+				return "all time";
+			};
+			break;
+		case "minute":case "hour":
+			$r = function(v) {
+				return thx.culture.FormatDate.timeShort(Date.fromTime(v));
+			};
+			break;
+		case "day":case "week":
+			$r = function(v) {
+				return thx.culture.FormatDate.dateShort(Date.fromTime(v));
+			};
+			break;
+		case "month":
+			$r = function(v) {
+				return thx.culture.FormatDate.yearMonth(Date.fromTime(v));
+			};
+			break;
+		case "year":
+			$r = function(v) {
+				return thx.culture.FormatDate.year(Date.fromTime(v));
+			};
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.format = function(periodicity,v) {
+	switch(periodicity) {
+	case "eternity":
+		return "all time";
+	case "minute":
+		return thx.culture.FormatDate.timeShort(Date.fromTime(v));
+	case "hour":
+		return thx.culture.FormatDate.hourShort(Date.fromTime(v));
+	case "day":case "week":
+		return thx.culture.FormatDate.dateShort(Date.fromTime(v));
+	case "month":
+		return thx.culture.FormatDate.yearMonth(Date.fromTime(v));
+	case "year":
+		return thx.culture.FormatDate.year(Date.fromTime(v));
+	default:
+		return periodicity + ": " + v;
+	}
+}
+rg.util.Periodicity.smartFormat = function(periodicity,v) {
+	switch(periodicity) {
+	case "eternity":
+		return "all time";
+	case "minute":
+		if(rg.util.Periodicity.firstInSeries("hour",v)) return thx.culture.FormatDate.timeShort(Date.fromTime(v)); else return thx.culture.FormatDate.format("%i",Date.fromTime(v));
+		break;
+	case "hour":
+		if(rg.util.Periodicity.firstInSeries("day",v)) return thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.hourShort(Date.fromTime(v));
+		break;
+	case "day":
+		if(rg.util.Periodicity.firstInSeries("month",v)) return thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.format("%e",rg.util.Periodicity.dateUtc(v));
+		break;
+	case "week":
+		var d = rg.util.Periodicity.dateUtc(v);
+		if(d.getDate() <= 7) return thx.culture.FormatDate.format("%b %e",d); else return thx.culture.FormatDate.format("%e",d);
+		break;
+	case "month":
+		if(rg.util.Periodicity.firstInSeries("year",v)) return thx.culture.FormatDate.year(rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.format("%b",rg.util.Periodicity.dateUtc(v));
+		break;
+	case "year":
+		return thx.culture.FormatDate.year(rg.util.Periodicity.dateUtc(v));
+	default:
+		return periodicity + ": " + Date.fromTime(v);
+	}
+}
+rg.util.Periodicity.firstInSeries = function(periodicity,v) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = 0 == v;
+			break;
+		case "minute":
+			$r = 0 == v % 60000;
+			break;
+		case "hour":
+			$r = 0 == v % 3600000;
+			break;
+		case "day":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(v);
+				$r = 0 == d.getHours() && 0 == d.getMinutes() && 0 == d.getSeconds();
+				return $r;
+			}($this));
+			break;
+		case "week":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(v);
+				$r = 0 == d.getDay();
+				return $r;
+			}($this));
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(v);
+				$r = 1 == d.getDate();
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(v);
+				$r = 1 == d.getDate() && 0 == d.getMonth();
+				return $r;
+			}($this));
+			break;
+		default:
+			$r = false;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.nextPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "day";
+			break;
+		case "day":case "week":
+			$r = "month";
+			break;
+		case "month":
+			$r = "year";
+			break;
+		default:
+			$r = "year";
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.prevPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "minute";
+			break;
+		case "day":
+			$r = "hour";
+			break;
+		case "week":case "month":
+			$r = "day";
+			break;
+		default:
+			$r = "minute";
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.parsePair = function(start,end) {
+	return [thx.date.DateParser.parse(start).getTime(),thx.date.DateParser.parse(end).getTime()];
+}
+rg.util.Periodicity.timezoneOffset = function(d) {
+	return d.getTimezoneOffset();
+}
+rg.util.Periodicity.dateUtc = function(v) {
+	var d = Date.fromTime(v), offset = d.getTimezoneOffset();
+	if(offset < 0) offset = 0;
+	return Date.fromTime(v + 60000 * offset);
+}
+rg.util.Periodicity.isValidGroupBy = function(value) {
+	return Arrays.exists(rg.util.Periodicity.validGroupValues,value);
+}
+rg.util.Periodicity.prototype = {
+	__class__: rg.util.Periodicity
+}
+if(!rg.storage) rg.storage = {}
+rg.storage.IStorage = $hxClasses["rg.storage.IStorage"] = function() { }
+rg.storage.IStorage.__name__ = ["rg","storage","IStorage"];
+rg.storage.IStorage.prototype = {
+	keys: null
+	,set: null
+	,get: null
+	,remove: null
+	,clear: null
+	,__class__: rg.storage.IStorage
+}
+rg.storage.BrowserStorage = $hxClasses["rg.storage.BrowserStorage"] = function(api,kind) {
+	this.storage = api;
+	this.kind = kind;
+}
+rg.storage.BrowserStorage.__name__ = ["rg","storage","BrowserStorage"];
+rg.storage.BrowserStorage.__interfaces__ = [rg.storage.IStorage];
+rg.storage.BrowserStorage.hasSessionStorage = function() {
+	return null != sessionStorage;
+}
+rg.storage.BrowserStorage.sessionStorage = function() {
+	return new rg.storage.BrowserStorage(sessionStorage,"sessionStorage");
+}
+rg.storage.BrowserStorage.hasLocalStorage = function() {
+	return null != localStorage;
+}
+rg.storage.BrowserStorage.localStorage = function() {
+	return new rg.storage.BrowserStorage(localStorage,"localStorage");
+}
+rg.storage.BrowserStorage.prototype = {
+	storage: null
+	,kind: null
+	,set: function(name,value) {
+		this.storage.setItem(name,thx.json.Json.encode(value));
+	}
+	,get: function(name) {
+		var v = this.storage.getItem(name);
+		if(null == v) return v; else return thx.json.Json.decode(v);
+	}
+	,clear: function() {
+		this.storage.clear();
+	}
+	,remove: function(name) {
+		this.storage.removeItem(name);
+	}
+	,keys: function() {
+		var keys = [];
+		var _g1 = 0, _g = this.storage.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			keys.push(this.storage.key(i));
+		}
+		return keys.iterator();
+	}
+	,toString: function() {
+		return "BrowserStorage[" + this.kind + "]";
+	}
+	,__class__: rg.storage.BrowserStorage
+}
+if(!thx.error) thx.error = {}
+thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
+	thx.util.Message.call(this,message,params,param);
+	this.pos = pos;
+}
+thx.error.Error.__name__ = ["thx","error","Error"];
+thx.error.Error.__super__ = thx.util.Message;
+thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
+	pos: null
+	,inner: null
+	,setInner: function(inner) {
+		this.inner = inner;
+		return this;
+	}
+	,toStringError: function(pattern) {
+		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
+		return prefix + this.toString();
+	}
+	,toString: function() {
+		try {
+			return Strings.format(this.message,this.params);
+		} catch( e ) {
+			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
+			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 42, className : "thx.error.Error", methodName : "toString"});
+			return "";
+		}
+	}
+	,__class__: thx.error.Error
+});
+var Lambda = $hxClasses["Lambda"] = function() { }
+Lambda.__name__ = ["Lambda"];
+Lambda.array = function(it) {
+	var a = new Array();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+}
+Lambda.list = function(it) {
+	var l = new List();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		l.add(i);
+	}
+	return l;
+}
+Lambda.map = function(it,f) {
+	var l = new List();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(x));
+	}
+	return l;
+}
+Lambda.mapi = function(it,f) {
+	var l = new List();
+	var i = 0;
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(i++,x));
+	}
+	return l;
+}
+Lambda.has = function(it,elt,cmp) {
+	if(cmp == null) {
+		var $it0 = it.iterator();
+		while( $it0.hasNext() ) {
+			var x = $it0.next();
+			if(x == elt) return true;
+		}
+	} else {
+		var $it1 = it.iterator();
+		while( $it1.hasNext() ) {
+			var x = $it1.next();
+			if(cmp(x,elt)) return true;
+		}
+	}
+	return false;
+}
+Lambda.exists = function(it,f) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return true;
+	}
+	return false;
+}
+Lambda.foreach = function(it,f) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(!f(x)) return false;
+	}
+	return true;
+}
+Lambda.iter = function(it,f) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		f(x);
+	}
+}
+Lambda.filter = function(it,f) {
+	var l = new List();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) l.add(x);
+	}
+	return l;
+}
+Lambda.fold = function(it,f,first) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		first = f(x,first);
+	}
+	return first;
+}
+Lambda.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		var $it0 = it.iterator();
+		while( $it0.hasNext() ) {
+			var _ = $it0.next();
+			n++;
+		}
+	} else {
+		var $it1 = it.iterator();
+		while( $it1.hasNext() ) {
+			var x = $it1.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+}
+Lambda.empty = function(it) {
+	return !it.iterator().hasNext();
+}
+Lambda.indexOf = function(it,v) {
+	var i = 0;
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var v2 = $it0.next();
+		if(v == v2) return i;
+		i++;
+	}
+	return -1;
+}
+Lambda.concat = function(a,b) {
+	var l = new List();
+	var $it0 = a.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(x);
+	}
+	var $it1 = b.iterator();
+	while( $it1.hasNext() ) {
+		var x = $it1.next();
+		l.add(x);
+	}
+	return l;
+}
+Lambda.prototype = {
+	__class__: Lambda
+}
+thx.culture.FormatDate = $hxClasses["thx.culture.FormatDate"] = function() { }
+thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
+thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
+	if(leadingspace == null) leadingspace = true;
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	var pos = 0;
+	var len = pattern.length;
+	var buf = new StringBuf();
+	var info = culture.date;
+	while(pos < len) {
+		var c = pattern.charAt(pos);
+		if(c != "%") {
+			buf.b[buf.b.length] = c == null?"null":c;
+			pos++;
+			continue;
+		}
+		pos++;
+		c = pattern.charAt(pos);
+		switch(c) {
+		case "a":
+			buf.add(info.abbrDays[date.getDay()]);
+			break;
+		case "A":
+			buf.add(info.days[date.getDay()]);
+			break;
+		case "b":case "h":
+			buf.add(info.abbrMonths[date.getMonth()]);
+			break;
+		case "B":
+			buf.add(info.months[date.getMonth()]);
+			break;
+		case "c":
+			buf.add(thx.culture.FormatDate.dateTime(date,culture));
+			break;
+		case "C":
+			buf.add(thx.culture.FormatNumber.digits("" + Math.floor(date.getFullYear() / 100),culture));
+			break;
+		case "d":
+			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getDate(),"0",2),culture));
+			break;
+		case "D":
+			buf.add(thx.culture.FormatDate.format("%m/%d/%y",date,culture));
+			break;
+		case "e":
+			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getDate()," ",2):"" + date.getDate(),culture));
+			break;
+		case "f":
+			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + (date.getMonth() + 1)," ",2):"" + (date.getMonth() + 1),culture));
+			break;
+		case "G":
+			throw "Not Implemented Yet";
+			break;
+		case "g":
+			throw "Not Implemented Yet";
+			break;
+		case "H":
+			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getHours(),"0",2),culture));
+			break;
+		case "i":
+			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getMinutes()," ",2):"" + date.getMinutes(),culture));
+			break;
+		case "I":
+			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + thx.culture.FormatDate.getMHours(date),"0",2),culture));
+			break;
+		case "j":
+			throw "Not Implemented Yet";
+			break;
+		case "k":
+			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getHours()," ",2):"" + date.getHours(),culture));
+			break;
+		case "l":
+			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + thx.culture.FormatDate.getMHours(date)," ",2):"" + thx.culture.FormatDate.getMHours(date),culture));
+			break;
+		case "m":
+			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + (date.getMonth() + 1),"0",2),culture));
+			break;
+		case "M":
+			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getMinutes(),"0",2),culture));
+			break;
+		case "n":
+			buf.b[buf.b.length] = "\n";
+			break;
+		case "p":
+			buf.add(date.getHours() > 11?info.pm:info.am);
+			break;
+		case "P":
+			buf.add((date.getHours() > 11?info.pm:info.am).toLowerCase());
+			break;
+		case "q":
+			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getSeconds()," ",2):"" + date.getSeconds(),culture));
+			break;
+		case "r":
+			buf.add(thx.culture.FormatDate.format("%I:%M:%S %p",date,culture));
+			break;
+		case "R":
+			buf.add(thx.culture.FormatDate.format("%H:%M",date,culture));
+			break;
+		case "s":
+			buf.add("" + Std["int"](date.getTime() / 1000));
+			break;
+		case "S":
+			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getSeconds(),"0",2),culture));
+			break;
+		case "t":
+			buf.b[buf.b.length] = "\t";
+			break;
+		case "T":
+			buf.add(thx.culture.FormatDate.format("%H:%M:%S",date,culture));
+			break;
+		case "u":
+			var d = date.getDay();
+			buf.add(thx.culture.FormatNumber.digits(d == 0?"7":"" + d,culture));
+			break;
+		case "U":
+			throw "Not Implemented Yet";
+			break;
+		case "V":
+			throw "Not Implemented Yet";
+			break;
+		case "w":
+			buf.add(thx.culture.FormatNumber.digits("" + date.getDay(),culture));
+			break;
+		case "W":
+			throw "Not Implemented Yet";
+			break;
+		case "x":
+			buf.add(thx.culture.FormatDate.date(date,culture));
+			break;
+		case "X":
+			buf.add(thx.culture.FormatDate.time(date,culture));
+			break;
+		case "y":
+			buf.add(thx.culture.FormatNumber.digits(("" + date.getFullYear()).substr(-2),culture));
+			break;
+		case "Y":
+			buf.add(thx.culture.FormatNumber.digits("" + date.getFullYear(),culture));
+			break;
+		case "z":
+			buf.b[buf.b.length] = "+0000";
+			break;
+		case "Z":
+			buf.b[buf.b.length] = "GMT";
+			break;
+		case "%":
+			buf.b[buf.b.length] = "%";
+			break;
+		default:
+			buf.add("%" + c);
+		}
+		pos++;
+	}
+	return buf.b.join("");
+}
+thx.culture.FormatDate.getMHours = function(date) {
+	var v = date.getHours();
+	return v > 12?v - 12:v;
+}
+thx.culture.FormatDate.yearMonth = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternYearMonth,date,culture,false);
+}
+thx.culture.FormatDate.monthDay = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternMonthDay,date,culture,false);
+}
+thx.culture.FormatDate.date = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternDate,date,culture,false);
+}
+thx.culture.FormatDate.dateShort = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternDateShort,date,culture,false);
+}
+thx.culture.FormatDate.dateRfc = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternDateRfc,date,culture,false);
+}
+thx.culture.FormatDate.dateTime = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternDateTime,date,culture,false);
+}
+thx.culture.FormatDate.universal = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternUniversal,date,culture,false);
+}
+thx.culture.FormatDate.sortable = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternSortable,date,culture,false);
+}
+thx.culture.FormatDate.time = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternTime,date,culture,false);
+}
+thx.culture.FormatDate.timeShort = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatDate.format(culture.date.patternTimeShort,date,culture,false);
+}
+thx.culture.FormatDate.hourShort = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture.date.am) return thx.culture.FormatDate.format("%H",date,culture,false); else return thx.culture.FormatDate.format("%l %p",date,culture,false);
+}
+thx.culture.FormatDate.year = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.digits("" + date.getFullYear(),culture);
+}
+thx.culture.FormatDate.month = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.digits("" + (date.getMonth() + 1),culture);
+}
+thx.culture.FormatDate.monthName = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return culture.date.abbrMonths[date.getMonth()];
+}
+thx.culture.FormatDate.monthNameShort = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return culture.date.months[date.getMonth()];
+}
+thx.culture.FormatDate.weekDay = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.digits("" + (date.getDay() + culture.date.firstWeekDay),culture);
+}
+thx.culture.FormatDate.weekDayName = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return culture.date.abbrDays[date.getDay()];
+}
+thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return culture.date.days[date.getDay()];
+}
+thx.culture.FormatDate.prototype = {
+	__class__: thx.culture.FormatDate
+}
+var Bools = $hxClasses["Bools"] = function() { }
+Bools.__name__ = ["Bools"];
+Bools.format = function(v,param,params,culture) {
+	return (Bools.formatf(param,params,culture))(v);
+}
+Bools.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"B");
+	var format = params.shift();
+	switch(format) {
+	case "B":
+		return function(v) {
+			return v?"true":"false";
+		};
+	case "N":
+		return function(v) {
+			return v?"1":"0";
+		};
+	case "R":
+		if(params.length != 2) throw "bool format R requires 2 parameters";
+		return function(v) {
+			return v?params[0]:params[1];
+		};
+	default:
+		throw "Unsupported bool format: " + format;
+	}
+}
+Bools.interpolate = function(v,a,b,equation) {
+	return (Bools.interpolatef(a,b,equation))(v);
+}
+Bools.interpolatef = function(a,b,equation) {
+	if(a == b) return function(_) {
+		return a;
+	}; else {
+		var f = Floats.interpolatef(0,1,equation);
+		return function(v) {
+			return f(v) < 0.5?a:b;
+		};
+	}
+}
+Bools.canParse = function(s) {
+	s = s.toLowerCase();
+	return s == "true" || s == "false";
+}
+Bools.parse = function(s) {
+	return s.toLowerCase() == "true";
+}
+Bools.compare = function(a,b) {
+	return a == b?0:a?-1:1;
+}
+Bools.prototype = {
+	__class__: Bools
+}
+thx.culture.FormatNumber = $hxClasses["thx.culture.FormatNumber"] = function() { }
+thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
+thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.number.patternNegative,culture.number.patternPositive,culture,null,null);
+}
+thx.culture.FormatNumber.percent = function(v,decimals,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPercent);
+}
+thx.culture.FormatNumber.permille = function(v,decimals,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPermille);
+}
+thx.culture.FormatNumber.currency = function(v,symbol,decimals,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.crunch(v,decimals,culture.currency,culture.currency.patternNegative,culture.currency.patternPositive,culture,"$",symbol == null?culture.currencySymbol:symbol);
+}
+thx.culture.FormatNumber["int"] = function(v,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.decimal(v,0,culture);
+}
+thx.culture.FormatNumber.digits = function(v,culture) {
+	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	return thx.culture.FormatNumber.processDigits(v,culture.digits);
+}
+thx.culture.FormatNumber.crunch = function(v,decimals,info,negative,positive,culture,symbol,replace) {
+	if(Math.isNaN(v)) return culture.symbolNaN; else if(!Math.isFinite(v)) return v == Math.NEGATIVE_INFINITY?culture.symbolNegInf:culture.symbolPosInf;
+	var fv = thx.culture.FormatNumber.value(v,info,decimals == null?info.decimals:decimals < 0?0:decimals,culture.digits);
+	if(symbol != null) return StringTools.replace(StringTools.replace(v < 0?negative:positive,"n",fv),symbol,replace); else return StringTools.replace(v < 0?negative:positive,"n",fv);
+}
+thx.culture.FormatNumber.processDigits = function(s,digits) {
+	if(digits == null) return s;
+	var o = [];
+	var _g1 = 0, _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		o.push(digits[Std.parseInt(s.substr(i,1))]);
+	}
+	return o.join("");
+}
+thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
+	var fv = "" + Math.abs(v);
+	var pos = fv.indexOf("E");
+	if(pos > 0) {
+		var e = Std.parseInt(fv.substr(pos + 1));
+		var ispos = true;
+		if(e < 0) {
+			ispos = false;
+			e = -e;
+		}
+		var s = StringTools.replace(fv.substr(0,pos),".","");
+		if(ispos) fv = StringTools.rpad(s,"0",e + 1); else fv = "0" + StringTools.rpad(".","0",e) + s;
+	}
+	var parts = fv.split(".");
+	var temp = parts[0];
+	var intparts = [];
+	var group = 0;
+	while(true) {
+		if(temp.length == 0) break;
+		var len = info.groups[group];
+		if(temp.length <= len) {
+			intparts.unshift(thx.culture.FormatNumber.processDigits(temp,digits));
+			break;
+		}
+		intparts.unshift(thx.culture.FormatNumber.processDigits(temp.substr(-len),digits));
+		temp = temp.substr(0,-len);
+		if(group < info.groups.length - 1) group++;
+	}
+	var intpart = intparts.join(info.groupsSeparator);
+	if(decimals > 0) {
+		var decpart = parts.length == 1?StringTools.lpad("","0",decimals):parts[1].length > decimals?parts[1].substr(0,decimals):StringTools.rpad(parts[1],"0",decimals);
+		return intpart + info.decimalsSeparator + thx.culture.FormatNumber.processDigits(decpart,digits);
+	} else return intpart;
+}
+thx.culture.FormatNumber.prototype = {
+	__class__: thx.culture.FormatNumber
+}
+var Arrays = $hxClasses["Arrays"] = function() { }
+Arrays.__name__ = ["Arrays"];
+Arrays.addIf = function(arr,condition,value) {
+	if(null != condition) {
+		if(condition) arr.push(value);
+	} else if(null != value) arr.push(value);
+	return arr;
+}
+Arrays.add = function(arr,value) {
+	arr.push(value);
+	return arr;
+}
+Arrays["delete"] = function(arr,value) {
+	arr.remove(value);
+	return arr;
+}
+Arrays.removef = function(arr,f) {
+	var index = -1;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(f(arr[i])) {
+			index = i;
+			break;
+		}
+	}
+	if(index < 0) return false;
+	arr.splice(index,1);
+	return true;
+}
+Arrays.deletef = function(arr,f) {
+	Arrays.removef(arr,f);
+	return arr;
+}
+Arrays.filter = function(arr,f) {
+	var result = [];
+	var _g = 0;
+	while(_g < arr.length) {
+		var i = arr[_g];
+		++_g;
+		if(f(i)) result.push(i);
+	}
+	return result;
+}
+Arrays.min = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var comp = Dynamics.comparef(a);
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(comp(a,arr[i]) > 0) a = arr[p = i];
+		}
+		return arr[p];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a > (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		return arr[p];
+	}
+}
+Arrays.floatMin = function(arr,f) {
+	if(arr.length == 0) return Math.NaN;
+	var a = f(arr[0]), b;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+	}
+	return a;
+}
+Arrays.bounds = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var b = arr[0], q = 0;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var comp = Dynamics.comparef(a);
+			if(comp(a,arr[i]) > 0) a = arr[p = i];
+			if(comp(b,arr[i]) < 0) b = arr[q = i];
+		}
+		return [arr[p],arr[q]];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var c = f(arr[0]), q = 0, d;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a > (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(c < (d = f(arr[i]))) {
+				c = d;
+				q = i;
+			}
+		}
+		return [arr[p],arr[q]];
+	}
+}
+Arrays.boundsFloat = function(arr,f) {
+	if(arr.length == 0) return null;
+	var a = f(arr[0]), b;
+	var c = f(arr[0]), d;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+		if(c < (d = f(arr[i]))) c = d;
+	}
+	return [a,c];
+}
+Arrays.max = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var comp = Dynamics.comparef(a);
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(comp(a,arr[i]) < 0) a = arr[p = i];
+		}
+		return arr[p];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a < (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		return arr[p];
+	}
+}
+Arrays.floatMax = function(arr,f) {
+	if(arr.length == 0) return Math.NaN;
+	var a = f(arr[0]), b;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a < (b = f(arr[i]))) a = b;
+	}
+	return a;
+}
+Arrays.flatten = function(arr) {
+	var r = [];
+	var _g = 0;
+	while(_g < arr.length) {
+		var v = arr[_g];
+		++_g;
+		r = r.concat(v);
+	}
+	return r;
+}
+Arrays.map = function(arr,f) {
+	return arr.map(f);
+}
+Arrays.reduce = function(arr,f,initialValue) {
+	return arr.reduce(f,initialValue);
+}
+Arrays.order = function(arr,f) {
+	arr.sort(null == f?Dynamics.compare:f);
+	return arr;
+}
+Arrays.orderMultiple = function(arr,f,rest) {
+	var swap = true, t;
+	rest.remove(arr);
+	while(swap) {
+		swap = false;
+		var _g1 = 0, _g = arr.length - 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(f(arr[i],arr[i + 1]) > 0) {
+				swap = true;
+				t = arr[i];
+				arr[i] = arr[i + 1];
+				arr[i + 1] = t;
+				var _g2 = 0;
+				while(_g2 < rest.length) {
+					var a = rest[_g2];
+					++_g2;
+					t = a[i];
+					a[i] = a[i + 1];
+					a[i + 1] = t;
+				}
+			}
+		}
+	}
+}
+Arrays.split = function(arr,f) {
+	if(null == f) f = function(v,_) {
+		return v == null;
+	};
+	var arrays = [], i = -1, values = [], value;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i1 = _g1++;
+		if(f(value = arr[i1],i1)) values = []; else {
+			if(values.length == 0) arrays.push(values);
+			values.push(value);
+		}
+	}
+	return arrays;
+}
+Arrays.exists = function(arr,value,f) {
+	if(null != f) {
+		var _g = 0;
+		while(_g < arr.length) {
+			var v = arr[_g];
+			++_g;
+			if(f(v)) return true;
+		}
+	} else {
+		var _g = 0;
+		while(_g < arr.length) {
+			var v = arr[_g];
+			++_g;
+			if(v == value) return true;
+		}
+	}
+	return false;
+}
+Arrays.format = function(v,param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"J");
+	var format = params.shift();
+	switch(format) {
+	case "J":
+		if(v.length == 0) {
+			var empty = null == params[1]?"[]":params[1];
+			return empty;
+		}
+		var sep = null == params[2]?", ":params[2];
+		var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
+		if(null != max && max < v.length) {
+			var elipsis = null == params[4]?" ...":params[4];
+			return v.copy().splice(0,max).map(function(d,i) {
+				return Dynamics.format(d,params[0],null,null,culture);
+			}).join(sep) + elipsis;
+		} else return v.map(function(d,i) {
+			return Dynamics.format(d,params[0],null,null,culture);
+		}).join(sep);
+		break;
+	case "C":
+		return Ints.format(v.length,"I",[],culture);
+	default:
+		throw "Unsupported array format: " + format;
+	}
+}
+Arrays.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"J");
+	var format = params.shift();
+	switch(format) {
+	case "J":
+		return function(v) {
+			if(v.length == 0) {
+				var empty = null == params[1]?"[]":params[1];
+				return empty;
+			}
+			var sep = null == params[2]?", ":params[2];
+			var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
+			if(null != max && max < v.length) {
+				var elipsis = null == params[4]?" ...":params[4];
+				return v.copy().splice(0,max).map(function(d,i) {
+					return Dynamics.format(d,params[0],null,null,culture);
+				}).join(sep) + elipsis;
+			} else return v.map(function(d,i) {
+				return Dynamics.format(d,params[0],null,null,culture);
+			}).join(sep);
+		};
+	case "C":
+		var f = Ints.formatf("I",[],culture);
+		return function(v) {
+			return f(v.length);
+		};
+	default:
+		throw "Unsupported array format: " + format;
+	}
+}
+Arrays.interpolate = function(v,a,b,equation) {
+	return (Arrays.interpolatef(a,b,equation))(v);
+}
+Arrays.interpolatef = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Floats.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateStrings = function(v,a,b,equation) {
+	return (Arrays.interpolateStringsf(a,b,equation))(v);
+}
+Arrays.interpolateStringsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Strings.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateInts = function(v,a,b,equation) {
+	return (Arrays.interpolateIntsf(a,b,equation))(v);
+}
+Arrays.interpolateIntsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Ints.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.indexOf = function(arr,el) {
+	return arr.indexOf(el);
+}
+Arrays.every = function(arr,f) {
+	return arr.every(f);
+}
+Arrays.each = function(arr,f) {
+	arr.forEach(f);
+}
+Arrays.any = function(arr,f) {
+	return Iterators.any(arr.iterator(),f);
+}
+Arrays.all = function(arr,f) {
+	return Iterators.all(arr.iterator(),f);
+}
+Arrays.random = function(arr) {
+	return arr[Std.random(arr.length)];
+}
+Arrays.string = function(arr) {
+	return "[" + arr.map(function(v,_) {
+		return Dynamics.string(v);
+	}).join(", ") + "]";
+}
+Arrays.last = function(arr) {
+	return arr[arr.length - 1];
+}
+Arrays.lastf = function(arr,f) {
+	var i = arr.length;
+	while(--i >= 0) if(f(arr[i])) return arr[i];
+	return null;
+}
+Arrays.first = function(arr) {
+	return arr[0];
+}
+Arrays.firstf = function(arr,f) {
+	var _g = 0;
+	while(_g < arr.length) {
+		var v = arr[_g];
+		++_g;
+		if(f(v)) return v;
+	}
+	return null;
+}
+Arrays.bisect = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	return Arrays.bisectRight(a,x,lo,hi);
+}
+Arrays.bisectRight = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(x < a[mid]) hi = mid; else lo = mid + 1;
+	}
+	return lo;
+}
+Arrays.bisectLeft = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(a[mid] < x) lo = mid + 1; else hi = mid;
+	}
+	return lo;
+}
+Arrays.nearest = function(a,x,f) {
+	var delta = [];
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		delta.push({ i : i, v : Math.abs(f(a[i]) - x)});
+	}
+	delta.sort(function(a1,b) {
+		return Floats.compare(a1.v,b.v);
+	});
+	return a[delta[0].i];
+}
+Arrays.compare = function(a,b) {
+	var v;
+	if((v = a.length - b.length) != 0) return v;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if((v = Dynamics.compare(a[i],b[i])) != 0) return v;
+	}
+	return 0;
+}
+Arrays.product = function(a) {
+	if(a.length == 0) return [];
+	var arr = a.copy(), result = [], temp;
+	var _g = 0, _g1 = arr[0];
+	while(_g < _g1.length) {
+		var value = _g1[_g];
+		++_g;
+		result.push([value]);
+	}
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		temp = [];
+		var _g2 = 0;
+		while(_g2 < result.length) {
+			var acc = result[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = arr[i];
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				temp.push(acc.copy().concat([value]));
+			}
+		}
+		result = temp;
+	}
+	return result;
+}
+Arrays.rotate = function(a) {
+	if(a.length == 0) return [];
+	var result = [];
+	var _g1 = 0, _g = a[0].length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		result[i] = [];
+	}
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		var _g3 = 0, _g2 = a[0].length;
+		while(_g3 < _g2) {
+			var i = _g3++;
+			result[i][j] = a[j][i];
+		}
+	}
+	return result;
+}
+Arrays.shuffle = function(a) {
+	var t = Ints.range(a.length), arr = [];
+	while(t.length > 0) {
+		var pos = Std.random(t.length), index = t[pos];
+		t.splice(pos,1);
+		arr.push(a[index]);
+	}
+	return arr;
+}
+Arrays.prototype = {
+	__class__: Arrays
+}
+var DateTools = $hxClasses["DateTools"] = function() { }
+DateTools.__name__ = ["DateTools"];
+DateTools.__format_get = function(d,e) {
+	return (function($this) {
+		var $r;
+		switch(e) {
+		case "%":
+			$r = "%";
+			break;
+		case "C":
+			$r = StringTools.lpad(Std.string(Std["int"](d.getFullYear() / 100)),"0",2);
+			break;
+		case "d":
+			$r = StringTools.lpad(Std.string(d.getDate()),"0",2);
+			break;
+		case "D":
+			$r = DateTools.__format(d,"%m/%d/%y");
+			break;
+		case "e":
+			$r = Std.string(d.getDate());
+			break;
+		case "H":case "k":
+			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+			break;
+		case "I":case "l":
+			$r = (function($this) {
+				var $r;
+				var hour = d.getHours() % 12;
+				$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+				return $r;
+			}($this));
+			break;
+		case "m":
+			$r = StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
+			break;
+		case "M":
+			$r = StringTools.lpad(Std.string(d.getMinutes()),"0",2);
+			break;
+		case "n":
+			$r = "\n";
+			break;
+		case "p":
+			$r = d.getHours() > 11?"PM":"AM";
+			break;
+		case "r":
+			$r = DateTools.__format(d,"%I:%M:%S %p");
+			break;
+		case "R":
+			$r = DateTools.__format(d,"%H:%M");
+			break;
+		case "s":
+			$r = Std.string(Std["int"](d.getTime() / 1000));
+			break;
+		case "S":
+			$r = StringTools.lpad(Std.string(d.getSeconds()),"0",2);
+			break;
+		case "t":
+			$r = "\t";
+			break;
+		case "T":
+			$r = DateTools.__format(d,"%H:%M:%S");
+			break;
+		case "u":
+			$r = (function($this) {
+				var $r;
+				var t = d.getDay();
+				$r = t == 0?"7":Std.string(t);
+				return $r;
+			}($this));
+			break;
+		case "w":
+			$r = Std.string(d.getDay());
+			break;
+		case "y":
+			$r = StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
+			break;
+		case "Y":
+			$r = Std.string(d.getFullYear());
+			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "Date.format %" + e + "- not implemented yet.";
+				return $r;
+			}($this));
+		}
+		return $r;
+	}(this));
+}
+DateTools.__format = function(d,f) {
+	var r = new StringBuf();
+	var p = 0;
+	while(true) {
+		var np = f.indexOf("%",p);
+		if(np < 0) break;
+		r.b[r.b.length] = f.substr(p,np - p);
+		r.add(DateTools.__format_get(d,f.substr(np + 1,1)));
+		p = np + 2;
+	}
+	r.b[r.b.length] = f.substr(p,f.length - p);
+	return r.b.join("");
+}
+DateTools.format = function(d,f) {
+	return DateTools.__format(d,f);
+}
+DateTools.delta = function(d,t) {
+	return Date.fromTime(d.getTime() + t);
+}
+DateTools.getMonthDays = function(d) {
+	var month = d.getMonth();
+	var year = d.getFullYear();
+	if(month != 1) return DateTools.DAYS_OF_MONTH[month];
+	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+	return isB?29:28;
+}
+DateTools.seconds = function(n) {
+	return n * 1000.0;
+}
+DateTools.minutes = function(n) {
+	return n * 60.0 * 1000.0;
+}
+DateTools.hours = function(n) {
+	return n * 60.0 * 60.0 * 1000.0;
+}
+DateTools.days = function(n) {
+	return n * 24.0 * 60.0 * 60.0 * 1000.0;
+}
+DateTools.parse = function(t) {
+	var s = t / 1000;
+	var m = s / 60;
+	var h = m / 60;
+	return { ms : t % 1000, seconds : Std["int"](s % 60), minutes : Std["int"](m % 60), hours : Std["int"](h % 24), days : Std["int"](h / 24)};
+}
+DateTools.make = function(o) {
+	return o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
+}
+DateTools.prototype = {
+	__class__: DateTools
+}
+haxe.Log = $hxClasses["haxe.Log"] = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
+haxe.Log.clear = function() {
+	js.Boot.__clear_trace();
+}
+haxe.Log.prototype = {
+	__class__: haxe.Log
+}
+var Objects = $hxClasses["Objects"] = function() { }
+Objects.__name__ = ["Objects"];
+Objects.field = function(o,fieldname,alt) {
+	return Reflect.hasField(o,fieldname)?Reflect.field(o,fieldname):alt;
+}
+Objects.keys = function(o) {
+	return Reflect.fields(o);
+}
+Objects.values = function(o) {
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		arr.push(Reflect.field(o,key));
+	}
+	return arr;
+}
+Objects.entries = function(o) {
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		arr.push({ key : key, value : Reflect.field(o,key)});
+	}
+	return arr;
+}
+Objects.each = function(o,handler) {
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		handler(key,Reflect.field(o,key));
+	}
+}
+Objects.map = function(o,handler) {
+	var results = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		results.push(handler(key,Reflect.field(o,key)));
+	}
+	return results;
+}
+Objects["with"] = function(ob,f) {
+	f(ob);
+	return ob;
+}
+Objects.toHash = function(ob) {
+	var hash = new Hash();
+	return Objects.copyToHash(ob,hash);
+}
+Objects.copyToHash = function(ob,hash) {
+	var _g = 0, _g1 = Reflect.fields(ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		hash.set(field,Reflect.field(ob,field));
+	}
+	return hash;
+}
+Objects.interpolate = function(v,a,b,equation) {
+	return (Objects.interpolatef(a,b,equation))(v);
+}
+Objects.interpolatef = function(a,b,equation) {
+	var i = { }, c = { }, keys = Reflect.fields(a);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(Reflect.hasField(b,key)) {
+			var va = Reflect.field(a,key);
+			i[key] = Dynamics.interpolatef(va,Reflect.field(b,key));
+		} else c[key] = Reflect.field(a,key);
+	}
+	keys = Reflect.fields(b);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(!Reflect.hasField(a,key)) c[key] = Reflect.field(b,key);
+	}
+	return function(t) {
+		var _g = 0, _g1 = Reflect.fields(i);
+		while(_g < _g1.length) {
+			var k = _g1[_g];
+			++_g;
+			c[k] = Reflect.field(i,k).apply(i,[t]);
+		}
+		return c;
+	};
+}
+Objects.copyTo = function(src,dst) {
+	var _g = 0, _g1 = Reflect.fields(src);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var sv = Dynamics.clone(Reflect.field(src,field));
+		var dv = Reflect.field(dst,field);
+		if(Reflect.isObject(sv) && null == Type.getClass(sv) && (Reflect.isObject(dv) && null == Type.getClass(dv))) Objects.copyTo(sv,dv); else dst[field] = sv;
+	}
+	return dst;
+}
+Objects.clone = function(src) {
+	var dst = { };
+	return Objects.copyTo(src,dst);
+}
+Objects.mergef = function(ob,new_ob,f) {
+	var _g = 0, _g1 = Reflect.fields(new_ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var new_val = Reflect.field(new_ob,field);
+		if(Reflect.hasField(ob,field)) {
+			var old_val = Reflect.field(ob,field);
+			ob[field] = f(field,old_val,new_val);
+		} else ob[field] = new_val;
+	}
+}
+Objects.merge = function(ob,new_ob) {
+	Objects.mergef(ob,new_ob,function(key,old_v,new_v) {
+		return new_v;
+	});
+}
+Objects._flatten = function(src,cum,arr,levels,level) {
+	var _g = 0, _g1 = Reflect.fields(src);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var clone = Objects.clone(cum);
+		var v = Reflect.field(src,field);
+		clone.fields.push(field);
+		if(Reflect.isObject(v) && null == Type.getClass(v) && (levels == 0 || level + 1 < levels)) Objects._flatten(v,clone,arr,levels,level + 1); else {
+			clone.value = v;
+			arr.push(clone);
+		}
+	}
+}
+Objects.flatten = function(src,levels) {
+	if(levels == null) levels = 0;
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(src);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var v = Reflect.field(src,field);
+		if(Reflect.isObject(v) && null == Type.getClass(v) && levels != 1) {
+			var item = { fields : [field], value : null};
+			Objects._flatten(v,item,arr,levels,1);
+		} else arr.push({ fields : [field], value : v});
+	}
+	return arr;
+}
+Objects.compare = function(a,b) {
+	var v, fields;
+	if((v = Arrays.compare(fields = Reflect.fields(a),Reflect.fields(b))) != 0) return v;
+	var _g = 0;
+	while(_g < fields.length) {
+		var field = fields[_g];
+		++_g;
+		if((v = Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field))) != 0) return v;
+	}
+	return 0;
+}
+Objects.addFields = function(o,fields,values) {
+	var _g1 = 0, _g = fields.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		Objects.addField(o,fields[i],values[i]);
+	}
+	return o;
+}
+Objects.addField = function(o,field,value) {
+	o[field] = value;
+	return o;
+}
+Objects.format = function(v,param,params,culture) {
+	return (Objects.formatf(param,params,culture))(v);
+}
+Objects.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"R");
+	var format = params.shift();
+	switch(format) {
+	case "O":
+		return function(v) {
+			return Std.string(v);
+		};
+	case "R":
+		return function(v) {
+			var buf = [];
+			var _g = 0, _g1 = Reflect.fields(v);
+			while(_g < _g1.length) {
+				var field = _g1[_g];
+				++_g;
+				buf.push(field + ":" + Dynamics.format(Reflect.field(v,field),null,null,null,culture));
+			}
+			return "{" + buf.join(",") + "}";
+		};
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 242, className : "Objects", methodName : "formatf"});
+			return $r;
+		}(this));
+	}
+}
+Objects.prototype = {
+	__class__: Objects
+}
+rg.query.Query = $hxClasses["rg.query.Query"] = function() {
+	rg.query.BaseQuery.call(this,null,this);
+}
+rg.query.Query.__name__ = ["rg","query","Query"];
+rg.query.Query.create = function() {
+	var start = new rg.query.Query(), query = start._createQuery(function(data,handler) {
+		handler(data);
+	},start);
+	start._next = query;
+	return query;
+}
+rg.query.Query.executeHandler = function(instance,handler) {
+	var current = instance._next;
+	var execute = (function($this) {
+		var $r;
+		var execute = null;
+		execute = function(result) {
+			if(null == current._next) {
+				handler(Arrays.flatten(result));
+				return;
+			}
+			current = current._next;
+			current._async(result,execute);
+		};
+		$r = execute;
+		return $r;
+	}(this));
+	execute([]);
+}
+rg.query.Query.__super__ = rg.query.BaseQuery;
+rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
+	execute: function(handler) {
+		rg.query.Query.executeHandler(this,handler);
+	}
+	,__class__: rg.query.Query
+});
+thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
+}
+thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
+thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
+thx.json.JsonEncoder.prototype = {
+	encodedString: null
+	,buf: null
+	,lvl: null
+	,count: null
+	,start: function() {
+		this.lvl = 0;
+		this.buf = new StringBuf();
+		this.encodedString = null;
+		this.count = [];
+	}
+	,end: function() {
+		this.encodedString = this.buf.b.join("");
+		this.buf = null;
+	}
+	,startObject: function() {
+		this.buf.add("{");
+		this.count.push(0);
+	}
+	,startField: function(name) {
+		if(this.count[this.count.length - 1]++ > 0) this.buf.add(",");
+		this.buf.add(this.quote(name) + ":");
+	}
+	,endField: function() {
+	}
+	,endObject: function() {
+		this.buf.add("}");
+		this.count.pop();
+	}
+	,startArray: function() {
+		this.buf.add("[");
+		this.count.push(0);
+	}
+	,startItem: function() {
+		if(this.count[this.count.length - 1]++ > 0) this.buf.add(",");
+	}
+	,endItem: function() {
+	}
+	,endArray: function() {
+		this.buf.add("]");
+		this.count.pop();
+	}
+	,date: function(d) {
+		this.buf.add(d.getTime());
+	}
+	,string: function(s) {
+		this.buf.add(this.quote(s));
+	}
+	,'int': function(i) {
+		this.buf.add(i);
+	}
+	,'float': function(f) {
+		this.buf.add(f);
+	}
+	,'null': function() {
+		this.buf.add("null");
+	}
+	,bool: function(b) {
+		this.buf.add(b?"true":"false");
+	}
+	,comment: function(s) {
+	}
+	,quote: function(s) {
+		return "\"" + new EReg(".","").customReplace(new EReg("(\n)","g").replace(new EReg("(\"|\\\\)","g").replace(s,"\\$1"),"\\n"),function(r) {
+			var c = r.matched(0).charCodeAt(0);
+			return c >= 32 && c <= 127?String.fromCharCode(c):"\\u" + StringTools.hex(c,4);
+		}) + "\"";
+	}
+	,__class__: thx.json.JsonEncoder
+}
+var Floats = $hxClasses["Floats"] = function() { }
+Floats.__name__ = ["Floats"];
+Floats.normalize = function(v) {
+	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
+}
+Floats.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Floats.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
+Floats.range = function(start,stop,step) {
+	if(step == null) step = 1.0;
+	if(null == stop) {
+		stop = start;
+		start = 0.0;
+	}
+	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 50, className : "Floats", methodName : "range"});
+	var range = [], i = -1.0, j;
+	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	return range;
+}
+Floats.sign = function(v) {
+	return v < 0?-1:1;
+}
+Floats.abs = function(a) {
+	return a < 0?-a:a;
+}
+Floats.min = function(a,b) {
+	return a < b?a:b;
+}
+Floats.max = function(a,b) {
+	return a > b?a:b;
+}
+Floats.wrap = function(v,min,max) {
+	var range = max - min + 1;
+	if(v < min) v += range * ((min - v) / range + 1);
+	return min + (v - min) % range;
+}
+Floats.circularWrap = function(v,max) {
+	v = v % max;
+	if(v < 0) v += max;
+	return v;
+}
+Floats.interpolate = function(f,a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return a + equation(f) * (b - a);
+}
+Floats.interpolatef = function(a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = b - a;
+	return function(f) {
+		return a + equation(f) * d;
+	};
+}
+Floats.interpolateClampf = function(min,max,equation) {
+	if(null == equation) equation = thx.math.Equations.linear;
+	return function(a,b) {
+		var d = b - a;
+		return function(f) {
+			return a + equation(Floats.clamp(f,min,max)) * d;
+		};
+	};
+}
+Floats.format = function(v,param,params,culture) {
+	return (Floats.formatf(param,params,culture))(v);
+}
+Floats.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"D");
+	var format = params.shift();
+	var decimals = params.length > 0?Std.parseInt(params[0]):null;
+	switch(format) {
+	case "D":
+		return function(v) {
+			return thx.culture.FormatNumber.decimal(v,decimals,culture);
+		};
+	case "I":
+		return function(v) {
+			return thx.culture.FormatNumber["int"](v,culture);
+		};
+	case "C":
+		var s = params.length > 1?params[1]:null;
+		return function(v) {
+			return thx.culture.FormatNumber.currency(v,s,decimals,culture);
+		};
+	case "P":
+		return function(v) {
+			return thx.culture.FormatNumber.percent(v,decimals,culture);
+		};
+	case "M":
+		return function(v) {
+			return thx.culture.FormatNumber.permille(v,decimals,culture);
+		};
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 145, className : "Floats", methodName : "formatf"});
+			return $r;
+		}(this));
+	}
+}
+Floats.canParse = function(s) {
+	return Floats._reparse.match(s);
+}
+Floats.parse = function(s) {
+	if(s.substr(0,1) == "+") s = s.substr(1);
+	return Std.parseFloat(s);
+}
+Floats.compare = function(a,b) {
+	return a < b?-1:a > b?1:0;
+}
+Floats.isNumeric = function(v) {
+	return Std["is"](v,Float) || Std["is"](v,Int);
+}
+Floats.equals = function(a,b,approx) {
+	if(approx == null) approx = 1e-5;
+	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
+	return Math.abs(b - a) < approx;
+}
+Floats.uninterpolatef = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return (x - a) * b;
+	};
+}
+Floats.uninterpolateClampf = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return Floats.clamp((x - a) * b,0.0,1.0);
+	};
+}
+Floats.round = function(number,precision) {
+	if(precision == null) precision = 2;
+	number *= Math.pow(10,precision);
+	return Math.round(number) / Math.pow(10,precision);
+}
+Floats.prototype = {
+	__class__: Floats
+}
+var Std = $hxClasses["Std"] = function() { }
+Std.__name__ = ["Std"];
+Std["is"] = function(v,t) {
+	return js.Boot.__instanceof(v,t);
+}
+Std.string = function(s) {
+	return js.Boot.__string_rec(s,"");
+}
+Std["int"] = function(x) {
+	if(x < 0) return Math.ceil(x);
+	return Math.floor(x);
+}
+Std.parseInt = function(x) {
+	var v = parseInt(x,10);
+	if(v == 0 && x.charCodeAt(1) == 120) v = parseInt(x);
+	if(isNaN(v)) return null;
+	return v;
+}
+Std.parseFloat = function(x) {
+	return parseFloat(x);
+}
+Std.random = function(x) {
+	return Math.floor(Math.random() * x);
+}
+Std.prototype = {
+	__class__: Std
+}
+haxe.Md5 = $hxClasses["haxe.Md5"] = function() {
+}
+haxe.Md5.__name__ = ["haxe","Md5"];
+haxe.Md5.encode = function(s) {
+	return new haxe.Md5().doEncode(s);
+}
+haxe.Md5.prototype = {
+	bitOR: function(a,b) {
+		var lsb = a & 1 | b & 1;
+		var msb31 = a >>> 1 | b >>> 1;
+		return msb31 << 1 | lsb;
+	}
+	,bitXOR: function(a,b) {
+		var lsb = a & 1 ^ b & 1;
+		var msb31 = a >>> 1 ^ b >>> 1;
+		return msb31 << 1 | lsb;
+	}
+	,bitAND: function(a,b) {
+		var lsb = a & 1 & (b & 1);
+		var msb31 = a >>> 1 & b >>> 1;
+		return msb31 << 1 | lsb;
+	}
+	,addme: function(x,y) {
+		var lsw = (x & 65535) + (y & 65535);
+		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+		return msw << 16 | lsw & 65535;
+	}
+	,rhex: function(num) {
+		var str = "";
+		var hex_chr = "0123456789abcdef";
+		var _g = 0;
+		while(_g < 4) {
+			var j = _g++;
+			str += hex_chr.charAt(num >> j * 8 + 4 & 15) + hex_chr.charAt(num >> j * 8 & 15);
+		}
+		return str;
+	}
+	,str2blks: function(str) {
+		var nblk = (str.length + 8 >> 6) + 1;
+		var blks = new Array();
+		var _g1 = 0, _g = nblk * 16;
+		while(_g1 < _g) {
+			var i = _g1++;
+			blks[i] = 0;
+		}
+		var i = 0;
+		while(i < str.length) {
+			blks[i >> 2] |= str.charCodeAt(i) << (str.length * 8 + i) % 4 * 8;
+			i++;
+		}
+		blks[i >> 2] |= 128 << (str.length * 8 + i) % 4 * 8;
+		var l = str.length * 8;
+		var k = nblk * 16 - 2;
+		blks[k] = l & 255;
+		blks[k] |= (l >>> 8 & 255) << 8;
+		blks[k] |= (l >>> 16 & 255) << 16;
+		blks[k] |= (l >>> 24 & 255) << 24;
+		return blks;
+	}
+	,rol: function(num,cnt) {
+		return num << cnt | num >>> 32 - cnt;
+	}
+	,cmn: function(q,a,b,x,s,t) {
+		return this.addme(this.rol(this.addme(this.addme(a,q),this.addme(x,t)),s),b);
+	}
+	,ff: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitOR(this.bitAND(b,c),this.bitAND(~b,d)),a,b,x,s,t);
+	}
+	,gg: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitOR(this.bitAND(b,d),this.bitAND(c,~d)),a,b,x,s,t);
+	}
+	,hh: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitXOR(this.bitXOR(b,c),d),a,b,x,s,t);
+	}
+	,ii: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitXOR(c,this.bitOR(b,~d)),a,b,x,s,t);
+	}
+	,doEncode: function(str) {
+		var x = this.str2blks(str);
+		var a = 1732584193;
+		var b = -271733879;
+		var c = -1732584194;
+		var d = 271733878;
+		var step;
+		var i = 0;
+		while(i < x.length) {
+			var olda = a;
+			var oldb = b;
+			var oldc = c;
+			var oldd = d;
+			step = 0;
+			a = this.ff(a,b,c,d,x[i],7,-680876936);
+			d = this.ff(d,a,b,c,x[i + 1],12,-389564586);
+			c = this.ff(c,d,a,b,x[i + 2],17,606105819);
+			b = this.ff(b,c,d,a,x[i + 3],22,-1044525330);
+			a = this.ff(a,b,c,d,x[i + 4],7,-176418897);
+			d = this.ff(d,a,b,c,x[i + 5],12,1200080426);
+			c = this.ff(c,d,a,b,x[i + 6],17,-1473231341);
+			b = this.ff(b,c,d,a,x[i + 7],22,-45705983);
+			a = this.ff(a,b,c,d,x[i + 8],7,1770035416);
+			d = this.ff(d,a,b,c,x[i + 9],12,-1958414417);
+			c = this.ff(c,d,a,b,x[i + 10],17,-42063);
+			b = this.ff(b,c,d,a,x[i + 11],22,-1990404162);
+			a = this.ff(a,b,c,d,x[i + 12],7,1804603682);
+			d = this.ff(d,a,b,c,x[i + 13],12,-40341101);
+			c = this.ff(c,d,a,b,x[i + 14],17,-1502002290);
+			b = this.ff(b,c,d,a,x[i + 15],22,1236535329);
+			a = this.gg(a,b,c,d,x[i + 1],5,-165796510);
+			d = this.gg(d,a,b,c,x[i + 6],9,-1069501632);
+			c = this.gg(c,d,a,b,x[i + 11],14,643717713);
+			b = this.gg(b,c,d,a,x[i],20,-373897302);
+			a = this.gg(a,b,c,d,x[i + 5],5,-701558691);
+			d = this.gg(d,a,b,c,x[i + 10],9,38016083);
+			c = this.gg(c,d,a,b,x[i + 15],14,-660478335);
+			b = this.gg(b,c,d,a,x[i + 4],20,-405537848);
+			a = this.gg(a,b,c,d,x[i + 9],5,568446438);
+			d = this.gg(d,a,b,c,x[i + 14],9,-1019803690);
+			c = this.gg(c,d,a,b,x[i + 3],14,-187363961);
+			b = this.gg(b,c,d,a,x[i + 8],20,1163531501);
+			a = this.gg(a,b,c,d,x[i + 13],5,-1444681467);
+			d = this.gg(d,a,b,c,x[i + 2],9,-51403784);
+			c = this.gg(c,d,a,b,x[i + 7],14,1735328473);
+			b = this.gg(b,c,d,a,x[i + 12],20,-1926607734);
+			a = this.hh(a,b,c,d,x[i + 5],4,-378558);
+			d = this.hh(d,a,b,c,x[i + 8],11,-2022574463);
+			c = this.hh(c,d,a,b,x[i + 11],16,1839030562);
+			b = this.hh(b,c,d,a,x[i + 14],23,-35309556);
+			a = this.hh(a,b,c,d,x[i + 1],4,-1530992060);
+			d = this.hh(d,a,b,c,x[i + 4],11,1272893353);
+			c = this.hh(c,d,a,b,x[i + 7],16,-155497632);
+			b = this.hh(b,c,d,a,x[i + 10],23,-1094730640);
+			a = this.hh(a,b,c,d,x[i + 13],4,681279174);
+			d = this.hh(d,a,b,c,x[i],11,-358537222);
+			c = this.hh(c,d,a,b,x[i + 3],16,-722521979);
+			b = this.hh(b,c,d,a,x[i + 6],23,76029189);
+			a = this.hh(a,b,c,d,x[i + 9],4,-640364487);
+			d = this.hh(d,a,b,c,x[i + 12],11,-421815835);
+			c = this.hh(c,d,a,b,x[i + 15],16,530742520);
+			b = this.hh(b,c,d,a,x[i + 2],23,-995338651);
+			a = this.ii(a,b,c,d,x[i],6,-198630844);
+			d = this.ii(d,a,b,c,x[i + 7],10,1126891415);
+			c = this.ii(c,d,a,b,x[i + 14],15,-1416354905);
+			b = this.ii(b,c,d,a,x[i + 5],21,-57434055);
+			a = this.ii(a,b,c,d,x[i + 12],6,1700485571);
+			d = this.ii(d,a,b,c,x[i + 3],10,-1894986606);
+			c = this.ii(c,d,a,b,x[i + 10],15,-1051523);
+			b = this.ii(b,c,d,a,x[i + 1],21,-2054922799);
+			a = this.ii(a,b,c,d,x[i + 8],6,1873313359);
+			d = this.ii(d,a,b,c,x[i + 15],10,-30611744);
+			c = this.ii(c,d,a,b,x[i + 6],15,-1560198380);
+			b = this.ii(b,c,d,a,x[i + 13],21,1309151649);
+			a = this.ii(a,b,c,d,x[i + 4],6,-145523070);
+			d = this.ii(d,a,b,c,x[i + 11],10,-1120210379);
+			c = this.ii(c,d,a,b,x[i + 2],15,718787259);
+			b = this.ii(b,c,d,a,x[i + 9],21,-343485551);
+			a = this.addme(a,olda);
+			b = this.addme(b,oldb);
+			c = this.addme(c,oldc);
+			d = this.addme(d,oldd);
+			i += 16;
+		}
+		return this.rhex(a) + this.rhex(b) + this.rhex(c) + this.rhex(d);
+	}
+	,__class__: haxe.Md5
+}
+thx.data.ValueHandler = $hxClasses["thx.data.ValueHandler"] = function() {
+}
+thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
+thx.data.ValueHandler.__interfaces__ = [thx.data.IDataHandler];
+thx.data.ValueHandler.prototype = {
+	value: null
+	,_stack: null
+	,_names: null
+	,start: function() {
+		this._stack = [];
+		this._names = [];
+	}
+	,end: function() {
+		this.value = this._stack.pop();
+	}
+	,startObject: function() {
+		this._stack.push({ });
+	}
+	,endObject: function() {
+	}
+	,startField: function(name) {
+		this._names.push(name);
+	}
+	,endField: function() {
+		var value = this._stack.pop();
+		var last = Arrays.last(this._stack);
+		last[this._names.pop()] = value;
+	}
+	,startArray: function() {
+		this._stack.push([]);
+	}
+	,endArray: function() {
+	}
+	,startItem: function() {
+	}
+	,endItem: function() {
+		var value = this._stack.pop();
+		var last = Arrays.last(this._stack);
+		last.push(value);
+	}
+	,date: function(d) {
+		this._stack.push(d);
+	}
+	,string: function(s) {
+		this._stack.push(s);
+	}
+	,'int': function(i) {
+		this._stack.push(i);
+	}
+	,'float': function(f) {
+		this._stack.push(f);
+	}
+	,'null': function() {
+		this._stack.push(null);
+	}
+	,bool: function(b) {
+		this._stack.push(b);
+	}
+	,comment: function(s) {
+	}
+	,__class__: thx.data.ValueHandler
+}
+thx.math.Equations = $hxClasses["thx.math.Equations"] = function() { }
+thx.math.Equations.__name__ = ["thx","math","Equations"];
+thx.math.Equations.linear = function(v) {
+	return v;
+}
+thx.math.Equations.polynomial = function(t,e) {
+	return Math.pow(t,e);
+}
+thx.math.Equations.quadratic = function(t) {
+	return thx.math.Equations.polynomial(t,2);
+}
+thx.math.Equations.cubic = function(t) {
+	return thx.math.Equations.polynomial(t,3);
+}
+thx.math.Equations.sin = function(t) {
+	return 1 - Math.cos(t * Math.PI / 2);
+}
+thx.math.Equations.exponential = function(t) {
+	return t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
+}
+thx.math.Equations.circle = function(t) {
+	return 1 - Math.sqrt(1 - t * t);
+}
+thx.math.Equations.elastic = function(t,a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+}
+thx.math.Equations.elasticf = function(a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return function(t) {
+		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+	};
+}
+thx.math.Equations.back = function(t,s) {
+	if(null == s) s = 1.70158;
+	return t * t * ((s + 1) * t - s);
+}
+thx.math.Equations.backf = function(s) {
+	if(null == s) s = 1.70158;
+	return function(t) {
+		return t * t * ((s + 1) * t - s);
+	};
+}
+thx.math.Equations.bounce = function(t) {
+	return t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
+}
+thx.math.Equations.polynomialf = function(e) {
+	return function(t) {
+		thx.math.Equations.polynomial(t,e);
+	};
+}
+thx.math.Equations.prototype = {
+	__class__: thx.math.Equations
+}
+js.Lib = $hxClasses["js.Lib"] = function() { }
+js.Lib.__name__ = ["js","Lib"];
+js.Lib.isIE = null;
+js.Lib.isOpera = null;
+js.Lib.document = null;
+js.Lib.window = null;
+js.Lib.alert = function(v) {
+	alert(js.Boot.__string_rec(v,""));
+}
+js.Lib.eval = function(code) {
+	return eval(code);
+}
+js.Lib.setErrorHandler = function(f) {
+	js.Lib.onerror = f;
+}
+js.Lib.prototype = {
+	__class__: js.Lib
+}
+rg.storage.MemoryStorage = $hxClasses["rg.storage.MemoryStorage"] = function() {
+	this.storage = new Hash();
+}
+rg.storage.MemoryStorage.__name__ = ["rg","storage","MemoryStorage"];
+rg.storage.MemoryStorage.__interfaces__ = [rg.storage.IStorage];
+rg.storage.MemoryStorage.prototype = {
+	storage: null
+	,set: function(name,value) {
+		this.storage.set(name,value);
+	}
+	,get: function(name) {
+		return this.storage.get(name);
+	}
+	,clear: function() {
+		this.storage = new Hash();
+	}
+	,remove: function(name) {
+		this.storage.remove(name);
+	}
+	,keys: function() {
+		return this.storage.keys();
+	}
+	,toString: function() {
+		return "MemoryStorage";
+	}
+	,__class__: rg.storage.MemoryStorage
+}
+var StringTools = $hxClasses["StringTools"] = function() { }
+StringTools.__name__ = ["StringTools"];
+StringTools.urlEncode = function(s) {
+	return encodeURIComponent(s);
+}
+StringTools.urlDecode = function(s) {
+	return decodeURIComponent(s.split("+").join(" "));
+}
+StringTools.htmlEscape = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+StringTools.htmlUnescape = function(s) {
+	return s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
+}
+StringTools.startsWith = function(s,start) {
+	return s.length >= start.length && s.substr(0,start.length) == start;
+}
+StringTools.endsWith = function(s,end) {
+	var elen = end.length;
+	var slen = s.length;
+	return slen >= elen && s.substr(slen - elen,elen) == end;
+}
+StringTools.isSpace = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	return c >= 9 && c <= 13 || c == 32;
+}
+StringTools.ltrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,r)) r++;
+	if(r > 0) return s.substr(r,l - r); else return s;
+}
+StringTools.rtrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
+	if(r > 0) return s.substr(0,l - r); else return s;
+}
+StringTools.trim = function(s) {
+	return StringTools.ltrim(StringTools.rtrim(s));
+}
+StringTools.rpad = function(s,c,l) {
+	var sl = s.length;
+	var cl = c.length;
+	while(sl < l) if(l - sl < cl) {
+		s += c.substr(0,l - sl);
+		sl = l;
+	} else {
+		s += c;
+		sl += cl;
+	}
+	return s;
+}
+StringTools.lpad = function(s,c,l) {
+	var ns = "";
+	var sl = s.length;
+	if(sl >= l) return s;
+	var cl = c.length;
+	while(sl < l) if(l - sl < cl) {
+		ns += c.substr(0,l - sl);
+		sl = l;
+	} else {
+		ns += c;
+		sl += cl;
+	}
+	return ns + s;
+}
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
+}
+StringTools.hex = function(n,digits) {
+	var s = "";
+	var hexChars = "0123456789ABCDEF";
+	do {
+		s = hexChars.charAt(n & 15) + s;
+		n >>>= 4;
+	} while(n > 0);
+	if(digits != null) while(s.length < digits) s = "0" + s;
+	return s;
+}
+StringTools.fastCodeAt = function(s,index) {
+	return s.cca(index);
+}
+StringTools.isEOF = function(c) {
+	return c != c;
+}
+StringTools.prototype = {
+	__class__: StringTools
+}
+js.Boot.__res = {}
+js.Boot.__init();
+thx.languages.En.getLanguage();
+thx.cultures.EnUS.getCulture();
+{
+	var JSON;
+	if(null != (JSON = JSON)) {
+		thx.json.Json.nativeDecoder = JSON.parse;
+		thx.json.Json.nativeEncoder = JSON.stringify;
+	}
+}
+{
+	Math.__name__ = ["Math"];
+	Math.NaN = Number["NaN"];
+	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
+	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
+	$hxClasses["Math"] = Math;
+	Math.isFinite = function(i) {
+		return isFinite(i);
+	};
+	Math.isNaN = function(i) {
+		return isNaN(i);
+	};
+}
+if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+if (!('indexOf' in Array.prototype)) {
+    Array.prototype.indexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= 0;
+        if (i<0) i+= this.length;
+        if (i<0) i= 0;
+        for (var n= this.length; i<n; i++)
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('lastIndexOf' in Array.prototype)) {
+    Array.prototype.lastIndexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= this.length-1;
+        if (i<0) i+= this.length;
+        if (i>this.length-1) i= this.length-1;
+        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}
+if (!('forEach' in Array.prototype)) {
+    Array.prototype.forEach= function(action, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                action.call(that, this[i], i, this);
+    };
+}
+if (!('map' in Array.prototype)) {
+    Array.prototype.map= function(mapper, that /*opt*/) {
+        var other= new Array(this.length);
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                other[i]= mapper.call(that, this[i], i, this);
+        return other;
+    };
+}
+if (!('filter' in Array.prototype)) {
+    Array.prototype.filter= function(filter, that /*opt*/) {
+        var other= [], v;
+        for (var i=0, n= this.length; i<n; i++)
+            if (i in this && filter.call(that, v= this[i], i, this))
+                other.push(v);
+        return other;
+    };
+}
+if (!('every' in Array.prototype)) {
+    Array.prototype.every= function(tester, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this && !tester.call(that, this[i], i, this))
+                return false;
+        return true;
+    };
+}
+{
+	String.prototype.__class__ = $hxClasses["String"] = String;
+	String.__name__ = ["String"];
+	Array.prototype.__class__ = $hxClasses["Array"] = Array;
+	Array.__name__ = ["Array"];
+	Int = $hxClasses["Int"] = { __name__ : ["Int"]};
+	Dynamic = $hxClasses["Dynamic"] = { __name__ : ["Dynamic"]};
+	Float = $hxClasses["Float"] = Number;
+	Float.__name__ = ["Float"];
+	Bool = $hxClasses["Bool"] = { __ename__ : ["Bool"]};
+	Class = $hxClasses["Class"] = { __name__ : ["Class"]};
+	Enum = { };
+	Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
+}
+{
+	js.Lib.document = document;
+	js.Lib.window = window;
+	onerror = function(msg,url,line) {
+		var f = js.Lib.onerror;
+		if( f == null )
+			return false;
+		return f(msg,[url+":"+line]);
+	}
+}
+{
+	var d = Date;
+	d.now = function() {
+		return new Date();
+	};
+	d.fromTime = function(t) {
+		var d1 = new Date();
+		d1["setTime"](t);
+		return d1;
+	};
+	d.fromString = function(s) {
+		switch(s.length) {
+		case 8:
+			var k = s.split(":");
+			var d1 = new Date();
+			d1["setTime"](0);
+			d1["setUTCHours"](k[0]);
+			d1["setUTCMinutes"](k[1]);
+			d1["setUTCSeconds"](k[2]);
+			return d1;
+		case 10:
+			var k = s.split("-");
+			return new Date(k[0],k[1] - 1,k[2],0,0,0);
+		case 19:
+			var k = s.split(" ");
+			var y = k[0].split("-");
+			var t = k[1].split(":");
+			return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
+		default:
+			throw "Invalid date format : " + s;
+		}
+	};
+	d.prototype["toString"] = function() {
+		var date = this;
+		var m = date.getMonth() + 1;
+		var d1 = date.getDate();
+		var h = date.getHours();
+		var mi = date.getMinutes();
+		var s = date.getSeconds();
+		return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d1 < 10?"0" + d1:"" + d1) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
+	};
+	d.prototype.__class__ = $hxClasses["Date"] = d;
+	d.__name__ = ["Date"];
+}
+rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX = "D:";
+rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX = "V:";
+Ints._reparse = new EReg("^([+-])?\\d+$","");
+Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
+thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
+thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
+	return d.toLowerCase();
+});
+thx.date.DateParser.shortmonths = thx.cultures.EnUS.getCulture().date.abbrMonths.slice(0,-1).map(function(d,i) {
+	return d.toLowerCase();
+});
+thx.date.DateParser.days = thx.cultures.EnUS.getCulture().date.days.map(function(d,i) {
+	return d.toLowerCase();
+});
+thx.date.DateParser.shortdays = thx.cultures.EnUS.getCulture().date.abbrDays.map(function(d,i) {
+	return d.toLowerCase();
+});
+thx.date.DateParser.sfullmonths = thx.date.DateParser.months.join("|");
+thx.date.DateParser.sshortmonths = thx.date.DateParser.shortmonths.join("|");
+thx.date.DateParser.sfulldays = thx.date.DateParser.days.join("|");
+thx.date.DateParser.sshortdays = thx.date.DateParser.shortdays.join("|");
+thx.date.DateParser.day = "(0?[0-9]|[1-2][0-9]|3[0-1])(?:st|nd|rd|th)?";
+thx.date.DateParser.month = "(?:0?[1-9]|1[0-2])";
+thx.date.DateParser.hour = "(?:0?[0-9]|1[0-9]|2[0-3])";
+thx.date.DateParser.hhour = "(?:0[0-9]|1[0-2])";
+thx.date.DateParser.hohour = "(?:0?[0-9]|1[0-2])";
+thx.date.DateParser.fminsec = "(?:0[0-9]|[1-5][0-9])";
+thx.date.DateParser.minsec = "(?:0?[0-9]|[1-5][0-9])";
+thx.date.DateParser.ampm = "(?:(?:in\\s+the\\s+)?(am|pm|evening|morning|afternoon))";
+thx.date.DateParser.daypart = "(?:(?:in\\s+the\\s+)?(evening|morning|afternoon|sunsrise|sunset|dawn|dusk|noon|mid-day|midday|mid-night|midnight))";
+thx.date.DateParser.period = "minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years|second|seconds";
+thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.sfullmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.sshortmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,?\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sfullmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sshortmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.month + ")/" + thx.date.DateParser.day + "(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "/(" + thx.date.DateParser.month + ")(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b(\\d{2,4})-(" + thx.date.DateParser.month + ")-" + thx.date.DateParser.day + "\\b" + ")|(?:" + "^\\s*" + thx.date.DateParser.day + "\\s*$" + "))","i");
+thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
+thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
+thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
+Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
+Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
+Strings._reReduceWS = new EReg("\\s+","");
+Strings._reStripTags = new EReg("(<[a-z]+[^>/]*/?>|</[a-z]+>)","i");
+Strings._reFormat = new EReg("{(\\d+)(?::([a-zA-Z]+))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?}","m");
+Strings._reCollapse = new EReg("\\s+","g");
+Strings.__ucwordsPattern = new EReg("[^a-zA-Z]([a-z])","");
+Strings.__ucwordswsPattern = new EReg("\\s([a-z])","");
+Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
+Strings.__digitsPattern = new EReg("^[0-9]+$","");
+Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
+rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
+rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
+thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
+DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
+js.Lib.onerror = null;
+rg.app.query.JSBridge.main()

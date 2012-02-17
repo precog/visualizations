@@ -31,7 +31,7 @@ class Panels
 		}
 		var node = htmlContainer(panel);
 
-		var pos = rg.util.Js.findPosition(node);
+		var pos = node != null ? rg.util.Js.findPosition(node) : { x : 0, y : 0 };
 
 		pos.x += x;
 		pos.y += y;
@@ -42,7 +42,7 @@ class Panels
 	{
 		var node = panel.g.node();
 		do { } while(null != Reflect.field(node = untyped node.ownerSVGElement, "ownerSVGElement"));
-		return node.parentNode;
+		return null == node ? null : node.parentNode;
 	}
 
 	public static function boundingBox(panel : Panel, ?ancestor : Panel)
