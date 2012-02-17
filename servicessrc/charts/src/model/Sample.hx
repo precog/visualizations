@@ -14,15 +14,18 @@ viz=pieChart';
 <title>Viz</title>
 <script src="'+App.JS_PATH+'reportgrid-charts.js"></script>
 <link type="text/css" href="'+App.CSS_PATH+'rg-charts.css" rel="stylesheet">
-</head>
-<body>
-<div id="chart"></div>
-<script>
-ReportGrid.$viz("#chart", {
-  data : [{browser:"chrome",count:100},{browser:"firefox",count:80}],
-  axes : ["browser","count"]
-});
+<script type="text/javascript">
+function render()
+{
+  ReportGrid.$viz("#chart", {
+    data : [{browser:"chrome",count:100},{browser:"firefox",count:80}],
+    axes : ["browser","count"]
+  });
+}
 </script>
+</head>
+<body onload="render()">
+<div id="chart"></div>
 </body>
 </html>';
 }

@@ -163,7 +163,7 @@ class RGLegacyRenderer
 		else
 			classes += " rg";
 		var h = '<!DOCTYPE html>
-<html>
+<html onload="__RG__render()">
 <head>
 <title></title>
 '
@@ -176,12 +176,15 @@ class RGLegacyRenderer
 	return Std.format('<link href="$href" rel="stylesheet" type="text/css" />');
 }).join("\n"))
 + '
+<script type="text/javascript">
+function __RG__render()
+{
+ReportGrid.chart("#'+id+'", '+p+');
+}
+</script>
 </head>
 <body>
 <div id="'+id+'" class="'+classes+'" style="margin:0"></div>
-<script type="text/javascript">
-ReportGrid.chart("#'+id+'", '+p+');
-</script>
 </body>
 </html>';
 		return h;

@@ -235,7 +235,7 @@ class PieChart extends Chart
 
 	function applyGradient(n, i : Int)
 	{
-		haxe.Timer.delay(function() {
+//		haxe.Timer.delay(function() {
 			var gn = Dom.selectNodeData(n),
 				dp = Access.getData(n),
 				id = dp.id;
@@ -276,7 +276,7 @@ class PieChart extends Chart
 			}
 			gn.select("path.slice")
 				.attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
-		}, 15);
+//		}, 150);
 	}
 
 	function fadein(n, i : Int)

@@ -1564,7 +1564,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.1.7090"};
+	r.info.charts = { version : "1.4.1.7098"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -2438,11 +2438,11 @@ rg.interactive.RGLegacyRenderer.prototype = {
 	,html: function(id,params) {
 		var p = thx.json.Json.encode(params), scripts = this.findJsSources(), css = this.findCssSources(), classes = this.container.attr("class").get();
 		if(null == classes) classes = "rg"; else classes += " rg";
-		var h = "<!DOCTYPE html>\n<html>\n<head>\n<title></title>\n" + (null == scripts?"":scripts.map(function(src,_) {
+		var h = "<!DOCTYPE html>\n<html onload=\"__RG__render()\">\n<head>\n<title></title>\n" + (null == scripts?"":scripts.map(function(src,_) {
 			return "<script src=\"" + src + "\" type=\"\"text/javascript\"></script>";
 		}).join("\n")) + (null == css?"":css.map(function(href,_) {
 			return "<link href=\"" + href + "\" rel=\"stylesheet\" type=\"text/css\" />";
-		}).join("\n")) + "\n</head>\n<body>\n<div id=\"" + id + "\" class=\"" + classes + "\" style=\"margin:0\"></div>\n<script type=\"text/javascript\">\nReportGrid.chart(\"#" + id + "\", " + p + ");\n</script>\n</body>\n</html>";
+		}).join("\n")) + "\n<script type=\"text/javascript\">\nfunction __RG__render()\n{\nReportGrid.chart(\"#" + id + "\", " + p + ");\n}\n</script>\n</head>\n<body>\n<div id=\"" + id + "\" class=\"" + classes + "\" style=\"margin:0\"></div>\n</body>\n</html>";
 		return h;
 	}
 	,config: function(width,height) {
@@ -19189,29 +19189,26 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		this.labels.set(d.id,label);
 	}
 	,applyGradient: function(n,i) {
-		var me = this;
-		haxe.Timer.delay(function() {
-			var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
-			if(me.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
-				var slice = gn.select("path.slice"), shape = me.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = (function($this) {
-					var $r;
-					try {
-						$r = t.node().getBBox();
-					} catch( e ) {
-						$r = { x : 0.0, y : 0.0, width : 0.0, height : 0.0};
-					}
-					return $r;
-				}(this));
-				t.remove();
-				var color = rg.util.RGColors.parse(slice.style("fill").get(),"#cccccc"), scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),me.gradientLightness);
-				var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
-				var r = 100 * (box.width > box.height?Math.min(1,me.radius * me.outerRadius / box.width):Math.max(1,me.radius * me.outerRadius / box.width));
-				var stops = me.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
-				stops.append("svg:stop").attr("offset").string(100 * me.innerRadius + "%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
-				stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(scolor.toRgbString()).attr("stop-opacity")["float"](1);
-			}
-			gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
-		},15);
+		var gn = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), id = dp.id;
+		if(this.g.select("defs").select("#rg_pie_gradient_" + id).empty()) {
+			var slice = gn.select("path.slice"), shape = this.arcNormal.shape(Reflect.field(n,"__data__")), t = gn.append("svg:path").attr("d").string(shape), box = (function($this) {
+				var $r;
+				try {
+					$r = t.node().getBBox();
+				} catch( e ) {
+					$r = { x : 0.0, y : 0.0, width : 0.0, height : 0.0};
+				}
+				return $r;
+			}(this));
+			t.remove();
+			var color = rg.util.RGColors.parse(slice.style("fill").get(),"#cccccc"), scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness);
+			var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
+			var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
+			var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
+			stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+			stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(scolor.toRgbString()).attr("stop-opacity")["float"](1);
+		}
+		gn.select("path.slice").attr("style").string("fill:url(#rg_pie_gradient_" + id + ")");
 	}
 	,fadein: function(n,i) {
 		var gn = thx.js.Dom.selectNodeData(n), shape = this.arcNormal.shape(Reflect.field(n,"__data__"));
