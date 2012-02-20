@@ -61,7 +61,6 @@ class JSBridge
 
 		r.charts = {
 			ready : function(handler : Void -> Void) {
-				trace("registering handler");
 				if(globalReady)
 					handler();
 				else

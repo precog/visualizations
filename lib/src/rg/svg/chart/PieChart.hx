@@ -259,6 +259,7 @@ class PieChart extends Chart
 
 				var stops = g.select("defs")
 					.append("svg:radialGradient")
+					.attr("gradientUnits").string("objectBoundingBox")
 					.attr("id").string("rg_pie_gradient_" + id)
 					.attr("cx").string(cx * ratio + "%")
 					.attr("cy").string(cy + "%")

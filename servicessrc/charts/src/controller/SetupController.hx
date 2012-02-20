@@ -24,7 +24,7 @@ class SetupController extends BaseController
 	{
 		authorize(auth);
 		dropCollection(App.RENDERABLES_COLLECTION);
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	function authorize(auth : String)
@@ -37,7 +37,7 @@ class SetupController extends BaseController
 	{
 		authorize(auth);
 		dropCollection(App.CACHE_COLLECTION);
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function dropCollections(auth : String)
@@ -47,7 +47,7 @@ class SetupController extends BaseController
 		dropCollection(App.CACHE_COLLECTION);
 		dropCollection(App.CONFIG_COLLECTION);
 		dropCollection(App.LOG_COLLECTION);
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function displayLogs(auth : String, format : String)
@@ -64,12 +64,12 @@ class SetupController extends BaseController
 		var db = mongo.selectDB(App.MONGO_DB_NAME),
 			gate = new LogGateway(db.selectCollection(App.LOG_COLLECTION));
 		gate.clear();
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
-	function redirectToStatus(auth : String)
+	function redirectToHome(auth : String)
 	{
-		var url = new UrlHelperInst(controllerContext.requestContext).route({ controller : "setup", action : "mongodb", auth : auth });
+		var url = new UrlHelperInst(controllerContext.requestContext).route({ controller : "home", action : "index", auth : auth });
 		return new RedirectResult(App.baseUrl() + url, false);
 	}
 
@@ -142,7 +142,7 @@ class SetupController extends BaseController
 		var config = new model.ConfigGateway(configCollection);
 		config.setSampleUID(renderable.uid);
 
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function mongodb(auth : String)
@@ -239,7 +239,7 @@ class SetupController extends BaseController
 		gate.removeExpired();
 		var gate = new RenderableGateway(renderableCollection());
 		gate.removeOldAndUnused();
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function purgeCache(auth : String)
@@ -247,7 +247,7 @@ class SetupController extends BaseController
 		authorize(auth);
 		var gate = new CacheGateway(cacheCollection()),
 			purged = gate.removeExpired();
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function clearCache(auth : String)
@@ -255,7 +255,7 @@ class SetupController extends BaseController
 		authorize(auth);
 		var gate = new CacheGateway(cacheCollection()),
 			purged = gate.removeAll();
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function purgeRenderables(auth : String)
@@ -263,7 +263,7 @@ class SetupController extends BaseController
 		authorize(auth);
 		var gate = new RenderableGateway(renderableCollection()),
 			purged = gate.removeOldAndUnused();
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function purgeExpiredRenderables(auth : String)
@@ -271,7 +271,7 @@ class SetupController extends BaseController
 		authorize(auth);
 		var gate = new RenderableGateway(renderableCollection()),
 			purged = gate.removeExpired();
-		return redirectToStatus(auth);
+		return redirectToHome(auth);
 	}
 
 	public function info()

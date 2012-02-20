@@ -194,6 +194,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 
 			var gradient = defs
 				.append("svg:linearGradient")
+				.attr("gradientUnits").string("objectBoundingBox")
 				.attr("id").string(id)
 				.attr("x1").string("0%")
 				.attr("x2").string("0%")
@@ -222,6 +223,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 
 		var gradient = defs
 			.append("svg:linearGradient")
+			.attr("gradientUnits").string("objectBoundingBox")
 			.attr("class").string("x")
 			.attr("id").string(id)
 			.attr("x1").string("0%")

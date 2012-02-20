@@ -6,7 +6,11 @@ using Arrays;
 
 class WKHtml
 {
+#if release
 	public static var JS_DELAY = 30000;
+#else
+	public static var JS_DELAY = 5000;
+#end
 	var cmd : String;
 	var _wkConfig : ConfigWKHtml;
 	public var wkConfig(getWKConfig, setWKConfig) : ConfigWKHtml;
@@ -19,7 +23,7 @@ class WKHtml
 
 	public function render(content : String) : String
 	{
-		var ext = content.indexOf('-//W3C//DTD XHTML 1.0') >= 0 ? 'xhtml' : 'html';
+		var ext = content.indexOf("-//W3C//DTD XHTML 1.0") >= 0 ? "xhtml" : "html";
 		var t = tmp(ext);
 		thx.sys.io.File.putContent(t, content);
 		err = null;
@@ -30,6 +34,11 @@ class WKHtml
 		if(null == r)
 			throw new Error("unable to render the result");
 		return r;
+	}
+
+	public function modify(content : String)
+	{
+		return content;
 	}
 
 	public function renderUrl(path : String) : String
@@ -44,15 +53,16 @@ class WKHtml
 		if(!execute(args))
 		{
 			ok = false;
-			trace(cmdToString(cmd, args)+"\n" + err);
-//			throw new Error("unable to render the result");
+			trace(cmdToString(cmd, args)+"\n" + cleanErr(err));
+		} else if(#if release false #else true #end) {
+			trace(cmdToString(cmd, args)+"\n" + cleanErr(err));
 		}
 
 		if(ok)
 		{
 			var result = thx.sys.io.File.getContent(out);
 			thx.sys.FileSystem.deleteFile(out);
-			return result;
+			return modify(result);
 		} else {
 			if(thx.sys.FileSystem.exists(out))
 				thx.sys.FileSystem.deleteFile(out);
@@ -60,11 +70,20 @@ class WKHtml
 		}
 	}
 
+	function cleanErr(err : String)
+	{
+		return (~/(\n\r|\n|\r)/gm).split(err).map(function(line, _) {
+			return StringTools.trim(line);
+		}).filter(function(line) {
+			return line != "" && !(line.substr(0, 1) == "[" && line.substr(line.length-1, 1) == "%");
+		}).join("\n");
+	}
+
 	var err : String;
 	function execute(args : Array<String>) : Bool
 	{
 		var process = new thx.sys.io.Process(cmd, args.map(function(arg, _) {
-			return  StringTools.replace(arg, '"', '\\"');
+			return StringTools.replace(arg, '"', '\\"');
 		}));
 //		var r = thx.sys.Sys.command(cmd, args);
 //		var id = process.getPid();
@@ -84,16 +103,20 @@ class WKHtml
 		var args = [];
 
 #if release
-		args.push('--use-xserver');
+		args.push("--use-xserver");
+#else
+		args.push("--debug-javascript");
 #end
-		args.push('--disable-local-file-access');
-		args.push('--javascript-delay'); args.push(''+JS_DELAY);
-		args.push('--user-style-sheet'); args.push(App.RESET_CSS);
-		args.push('--run-script'); args.push(finalscript());
-//args.push('--debug-javascript');
+		args.push("--disable-local-file-access");
+		args.push("--javascript-delay"); args.push(""+JS_DELAY);
+		args.push("--user-style-sheet"); args.push(App.RESET_CSS);
+		args.push("--run-script"); args.push(finalscript());
+
+//		args.push("--images");
+//args.push("--debug-javascript");
 
 		var cfg = wkConfig;
-		if(null != cfg.zoom)
+		if(null != cfg.zoom && cfg.zoom != 1)
 		{
 			args.push("--zoom"); args.push(""+cfg.zoom);
 		}
@@ -104,7 +127,7 @@ class WKHtml
 	static function cmdToString(cmd : String, args : Array<String>)
 	{
 		args = args.map(function(arg, _) {
-			return '"' + StringTools.replace(arg, '"', '\\"') + '"';
+			return Floats.canParse(arg) || arg.substr(0, 1) == "-" ? arg : "'" + StringTools.replace(arg, "'", '"') + "'";
 		});
 		return cmd + (args.length > 0 ? " " : "") + args.join(" ");
 	}
@@ -143,22 +166,55 @@ class WKHtml
 
 	static function tmpuid(ext : String)
 	{
-		var id = untyped __call__('uniqid', 'WK_');
-		return '/tmp/' + id + '.' + ext;
+		var id = untyped __call__("uniqid", "WK_");
+		return "/tmp/" + id + "." + ext;
 	}
 
 	static function finalscript()
 	{
 		var script = '(function(){
-if(ReportGrid && ReportGrid.charts && ReportGrid.charts.ready)
+function log(s)
 {
-	ReportGrid.charts.ready(function() {
+	if("undefined" != typeof console)
+	{
+		console.log(s);
+	} else {
+		var el = document.createElement("div");
+		el.innerHTML = s;
+		document.body.appendChild(el);
+	}
+}
+
+function rgcomplete()
+{
+	var images = document.getElementsByTagName("img");
+	for(var i = 0; i < images.length; i++)
+	{
+		var image = images[i];
+		if(!image.complete)
+		{
+			setTimeout(rgcomplete, 50);
+			return;
+		}
+	}
+	/* if contains "image" elements allow for extra 500ms */
+	if(document.getElementsByTagName("image").length > 0)
+		setTimeout(window.print, 500);
+	else
 		window.print();
-	});
+}
+if("undefined" != typeof ReportGrid && "undefined" != typeof ReportGrid.charts && "undefined" != typeof ReportGrid.charts.ready)
+{
+	ReportGrid.charts.ready(rgcomplete);
 } else {
 	setTimeout(window.print, 250);
 }
 })()';
-		return (~/\s+/mg).replace(script, " ");
+		return minifyJs(script);
+	}
+
+	public static function minifyJs(js : String)
+	{
+		return (~/\s+/mg).replace(js, " ");
 	}
 }

@@ -13,7 +13,7 @@ class RGConst
 	public static var SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/renderer/";
 	public static var LEGACY_RENDERING_STATIC  = "http://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
 #else
-	static var HOST = js.Lib.window.location.host;
+	static var HOST = "" == js.Lib.window.location.host ? "localhost" : js.Lib.window.location.host;
 	public static var BASE_URL_GEOJSON = "http://"+HOST+"/rg/vis/geo/json/";
 	public static var SERVICE_RENDERING_STATIC = "http://"+HOST+"/rg/services/viz/charts/up.json";
 	public static var LEGACY_RENDERING_STATIC  = "http://"+HOST+"/rg/services/viz/charts/upandsee.{ext}";

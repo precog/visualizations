@@ -106,9 +106,7 @@ class Leadeboard
 		var choice = list.selectAll("li").data(dps, id);
 
 		// enter
-		var enterli = choice.enter().append("li")
-			//	.attr("class").stringf(function(_, i) return i % 2 == 0 ? "fill-0" : "")
-			;
+		var enterli = choice.enter().append("li");
 		// title
 		enterli.attr("title").stringf(lTitle);
 
@@ -143,8 +141,6 @@ class Leadeboard
 				.text().stringf(lValue);
 		}
 
-//		enterlabels.append("div").attr("class").string("clear");
-
 		enterli.append("div").attr("class").string("clear");
 
 		// bar
@@ -161,10 +157,6 @@ class Leadeboard
 			enterli.append("div").attr("class").string("clear");
 		}
 
-//				.attr("class").stringf(function(_, i) return (displayGradient ? "" : "nogradient ") + "stroke-" + i)
-
-//		if (displayGradient)
-//			enterli.style("background-size").stringf(backgroundSize);
 		if (null != click)
 			enterli.on("click.user", onClick);
 		if (animated)
@@ -174,16 +166,6 @@ class Leadeboard
 			enterli.style("opacity").float(1);
 		}
 
-		// update
-/*
-		var update = choice.update()
-			.select("li")
-				.text().stringf(lDataPoint)
-				.attr("title").stringf(lTitle)
-		;
-*/
-//		if (displayGradient)
-//			update.style("background-size").stringf(backgroundSize);
 		// exit
 		if (animated)
 		{

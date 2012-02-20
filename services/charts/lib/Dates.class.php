@@ -219,7 +219,7 @@ class Dates {
 			$s = 6;
 		}break;
 		default:{
-			throw new HException(new thx_error_Error("unknown week day '{0}'", null, $day, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 188, "className" => "Dates", "methodName" => "snapToWeekDay"))));
+			throw new HException(new thx_error_Error("unknown week day '{0}'", null, $day, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 190, "className" => "Dates", "methodName" => "snapToWeekDay"))));
 		}break;
 		}
 		return $time - ($d - $s) % 7 * 24 * 60 * 60 * 1000;
@@ -358,13 +358,13 @@ function Dates_22(&$a, &$b, &$equation, &$f, $v) {
 	}
 }
 function Dates_23(&$mode, &$period, &$time) {
-	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 111, "className" => "Dates", "methodName" => "snap"))));
+	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 113, "className" => "Dates", "methodName" => "snap"))));
 }
 function Dates_24(&$mode, &$period, &$time) {
-	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 136, "className" => "Dates", "methodName" => "snap"))));
+	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 138, "className" => "Dates", "methodName" => "snap"))));
 }
 function Dates_25(&$mode, &$period, &$time) {
-	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 162, "className" => "Dates", "methodName" => "snap"))));
+	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 164, "className" => "Dates", "methodName" => "snap"))));
 }
 function Dates_26(&$a, &$b) {
 	{

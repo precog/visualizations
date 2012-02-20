@@ -111,23 +111,11 @@ class App
 				jsoptions.datapoints = data;
 				legacy.display(jsoptions);
 			});
-/*
-			// IMAGE RENDERING FOR DEVICES
-			var downloader = new RGDownloader(visualization.container, download.service);
-			visualization.addReadyOnce(function() {
-				downloader.download("png", "#ffffff", function(url : String) {
-					visualization.container.selectAll("*").remove();
-					visualization.container.append("img")
-						.attr("src").string(url);
-					return false;
-				}, null);
-			});
-*/
 		}
 
 		if(!uselegacy && (null != download.position || null != download.handler))
 		{
-			var downloader = new RGDownloader(visualization.container, download.service/*, download.background*/);
+			var downloader = new RGDownloader(visualization.container, download.service);
 
 			if (null != download.handler)
 				visualization.addReadyOnce(function() {

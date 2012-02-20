@@ -10,7 +10,7 @@ class controller_SetupController extends controller_BaseController {
 	public function dropRenderables($auth) {
 		$this->authorize($auth);
 		$this->dropCollection("renderables");
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function authorize($auth) {
 		if($auth !== "6kdsbgv46272") {
@@ -20,7 +20,7 @@ class controller_SetupController extends controller_BaseController {
 	public function dropCache($auth) {
 		$this->authorize($auth);
 		$this->dropCollection("cache");
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function dropCollections($auth) {
 		$this->authorize($auth);
@@ -28,7 +28,7 @@ class controller_SetupController extends controller_BaseController {
 		$this->dropCollection("cache");
 		$this->dropCollection("config");
 		$this->dropCollection("log");
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function displayLogs($auth, $format) {
 		$this->authorize($auth);
@@ -39,10 +39,10 @@ class controller_SetupController extends controller_BaseController {
 		$this->authorize($auth);
 		$db = new mongo_MongoDB($this->mongo->m->selectDB("chartsrenderer1")); $gate = new model_LogGateway(new mongo_MongoCollection($db->db->selectCollection("log")));
 		$gate->clear();
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
-	public function redirectToStatus($auth) {
-		$url = _hx_deref(new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext))->route(_hx_anonymous(array("controller" => "setup", "action" => "mongodb", "auth" => $auth)));
+	public function redirectToHome($auth) {
+		$url = _hx_deref(new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext))->route(_hx_anonymous(array("controller" => "home", "action" => "index", "auth" => $auth)));
 		return new ufront_web_mvc_RedirectResult(App::baseUrl() . $url, false);
 	}
 	public function dropCollection($collection) {
@@ -85,7 +85,7 @@ class controller_SetupController extends controller_BaseController {
 		$renderable = $controller->makeRenderable(model_Sample::$html, model_Sample::$config);
 		$config = new model_ConfigGateway($configCollection);
 		$config->setSampleUID($renderable->getUid());
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function mongodb($auth) {
 		$this->authorize($auth);
@@ -123,27 +123,27 @@ class controller_SetupController extends controller_BaseController {
 		$gate->removeExpired();
 		$gate1 = new model_RenderableGateway($this->renderableCollection());
 		$gate1->removeOldAndUnused(null);
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function purgeCache($auth) {
 		$this->authorize($auth);
 		$gate = new model_CacheGateway($this->cacheCollection()); $purged = $gate->removeExpired();
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function clearCache($auth) {
 		$this->authorize($auth);
 		$gate = new model_CacheGateway($this->cacheCollection()); $purged = $gate->removeAll();
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function purgeRenderables($auth) {
 		$this->authorize($auth);
 		$gate = new model_RenderableGateway($this->renderableCollection()); $purged = $gate->removeOldAndUnused(null);
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function purgeExpiredRenderables($auth) {
 		$this->authorize($auth);
 		$gate = new model_RenderableGateway($this->renderableCollection()); $purged = $gate->removeExpired();
-		return $this->redirectToStatus($auth);
+		return $this->redirectToHome($auth);
 	}
 	public function info() {
 		return $this->collectPhpInfo();
@@ -163,6 +163,6 @@ class controller_SetupController extends controller_BaseController {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	static $__rtti = "<class path=\"controller.SetupController\" params=\"\">\x0A\x09<extends path=\"controller.BaseController\"/>\x0A\x09<mongo><c path=\"mongo.Mongo\"/></mongo>\x0A\x09<dropRenderables public=\"1\" set=\"method\" line=\"23\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropRenderables>\x0A\x09<authorize set=\"method\" line=\"30\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></authorize>\x0A\x09<dropCache public=\"1\" set=\"method\" line=\"36\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCache>\x0A\x09<dropCollections public=\"1\" set=\"method\" line=\"43\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCollections>\x0A\x09<displayLogs public=\"1\" set=\"method\" line=\"53\"><f a=\"auth:format\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></displayLogs>\x0A\x09<clearLogs public=\"1\" set=\"method\" line=\"61\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearLogs>\x0A\x09<redirectToStatus set=\"method\" line=\"70\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></redirectToStatus>\x0A\x09<dropCollection set=\"method\" line=\"76\"><f a=\"collection\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></dropCollection>\x0A\x09<cacheCollection set=\"method\" line=\"83\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></cacheCollection>\x0A\x09<renderableCollection set=\"method\" line=\"90\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></renderableCollection>\x0A\x09<createCollections public=\"1\" set=\"method\" line=\"97\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></createCollections>\x0A\x09<mongodb public=\"1\" set=\"method\" line=\"148\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></mongodb>\x0A\x09<topRenderables public=\"1\" set=\"method\" line=\"221\"><f a=\"auth:?top\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"Int\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></topRenderables>\x0A\x09<purge public=\"1\" set=\"method\" line=\"235\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purge>\x0A\x09<purgeCache public=\"1\" set=\"method\" line=\"245\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeCache>\x0A\x09<clearCache public=\"1\" set=\"method\" line=\"253\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearCache>\x0A\x09<purgeRenderables public=\"1\" set=\"method\" line=\"261\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeRenderables>\x0A\x09<purgeExpiredRenderables public=\"1\" set=\"method\" line=\"269\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeExpiredRenderables>\x0A\x09<info public=\"1\" set=\"method\" line=\"277\"><f a=\"\"><c path=\"String\"/></f></info>\x0A\x09<collectPhpInfo set=\"method\" line=\"282\"><f a=\"\"><c path=\"String\"/></f></collectPhpInfo>\x0A\x09<new public=\"1\" set=\"method\" line=\"17\"><f a=\"mongo\">\x0A\x09<c path=\"mongo.Mongo\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></new>\x0A</class>";
+	static $__rtti = "<class path=\"controller.SetupController\" params=\"\">\x0A\x09<extends path=\"controller.BaseController\"/>\x0A\x09<mongo><c path=\"mongo.Mongo\"/></mongo>\x0A\x09<dropRenderables public=\"1\" set=\"method\" line=\"23\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropRenderables>\x0A\x09<authorize set=\"method\" line=\"30\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></authorize>\x0A\x09<dropCache public=\"1\" set=\"method\" line=\"36\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCache>\x0A\x09<dropCollections public=\"1\" set=\"method\" line=\"43\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></dropCollections>\x0A\x09<displayLogs public=\"1\" set=\"method\" line=\"53\"><f a=\"auth:format\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></displayLogs>\x0A\x09<clearLogs public=\"1\" set=\"method\" line=\"61\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearLogs>\x0A\x09<redirectToHome set=\"method\" line=\"70\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></redirectToHome>\x0A\x09<dropCollection set=\"method\" line=\"76\"><f a=\"collection\">\x0A\x09<c path=\"String\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></dropCollection>\x0A\x09<cacheCollection set=\"method\" line=\"83\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></cacheCollection>\x0A\x09<renderableCollection set=\"method\" line=\"90\"><f a=\"\"><c path=\"mongo.MongoCollection\"/></f></renderableCollection>\x0A\x09<createCollections public=\"1\" set=\"method\" line=\"97\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></createCollections>\x0A\x09<mongodb public=\"1\" set=\"method\" line=\"148\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></mongodb>\x0A\x09<topRenderables public=\"1\" set=\"method\" line=\"221\"><f a=\"auth:?top\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"Int\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></topRenderables>\x0A\x09<purge public=\"1\" set=\"method\" line=\"235\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purge>\x0A\x09<purgeCache public=\"1\" set=\"method\" line=\"245\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeCache>\x0A\x09<clearCache public=\"1\" set=\"method\" line=\"253\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></clearCache>\x0A\x09<purgeRenderables public=\"1\" set=\"method\" line=\"261\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeRenderables>\x0A\x09<purgeExpiredRenderables public=\"1\" set=\"method\" line=\"269\"><f a=\"auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.RedirectResult\"/>\x0A</f></purgeExpiredRenderables>\x0A\x09<info public=\"1\" set=\"method\" line=\"277\"><f a=\"\"><c path=\"String\"/></f></info>\x0A\x09<collectPhpInfo set=\"method\" line=\"282\"><f a=\"\"><c path=\"String\"/></f></collectPhpInfo>\x0A\x09<new public=\"1\" set=\"method\" line=\"17\"><f a=\"mongo\">\x0A\x09<c path=\"mongo.Mongo\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></new>\x0A</class>";
 	function __toString() { return 'controller.SetupController'; }
 }

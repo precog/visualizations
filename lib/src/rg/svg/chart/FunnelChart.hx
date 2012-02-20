@@ -297,6 +297,7 @@ class FunnelChart extends Chart
 		var color = RGColors.parse(d.style("fill").get(), "#cccccc"),
 			stops = defs
 			.append("svg:radialGradient")
+			.attr("gradientUnits").string("objectBoundingBox")
 			.attr("id").string("rg_funnel_int_gradient_0")
 			.attr("cx").string("50%")
 			.attr("fx").string("75%")
@@ -328,6 +329,7 @@ class FunnelChart extends Chart
 
 		var stops = defs
 			.append("svg:radialGradient")
+			.attr("gradientUnits").string("objectBoundingBox")
 			.attr("id").string(id)
 			.attr("cx").string("50%")
 			.attr("cy").string("0%")

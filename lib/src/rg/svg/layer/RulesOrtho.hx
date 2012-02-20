@@ -126,6 +126,30 @@ class RulesOrtho extends Layer
 					.attr("x2").floatf(x2)
 					.attr("y2").floatf(y2)
 					.attr("class").stringf(tickClass);
+/*
+
+			enter.filter(function(d, i) return d.major)
+			.each(function(d, i) {
+				g.append("svg:line")
+					.attr("x1").float(x1(d,i))
+					.attr("y1").float(y1(d,i))
+					.attr("x2").float(x2(d,i))
+					.attr("y2").float(y2(d,i))
+					.style("stroke").string("black")
+					.style("stroke-width").string("2")
+//					.attr("class").stringf(tickClass)
+				;
+			});
+
+			enter.filter(function(d, i) return d.major)
+				.append("svg:path")
+					.attr("d").stringf(function(d, i){
+						return "M" + x1(d, i) + "," + y1(d, i) + "L" + x2(d, i) + "," + y2(d, i);
+					})
+					.style("stroke").string("red")
+					.style("stroke-width").string("2")
+				;
+*/
 		}
 
 		rule.update()

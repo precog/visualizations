@@ -100,6 +100,7 @@ class RGLegacyRenderer
 
 		// remove dangerous stuff
 		Reflect.deleteField(params, "load");
+		Reflect.deleteField(params.options, "download");
 	}
 
 	static function removeFunctions(o : Dynamic)

@@ -116,6 +116,17 @@ class Periodicity
 				step = 60 * 60000;
 			case "day":
 				step = 24 * 60 * 60000;
+/*
+				var s = Dates.snap(start, "day"), // dateUtc(start).getTime(),
+					e = Dates.snap(end, "day"); // dateUtc(end).getTime();
+				var result = [];
+				while(s <= e)
+				{
+					result.push(s);
+					s = Dates.snap(s+24*60*60*1000, "day");
+				}
+				return result;
+*/
 			case "week":
 				step = 7 * 24 * 60 * 60000;
 			case "month":

@@ -281,19 +281,20 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 			var gradient = defs
 				.append("svg:linearGradient")
+				.attr("gradientUnits").string("objectBoundingBox")
 				.attr("id").string(id)
-				.attr("x1").string("0%")
-				.attr("x2").string("0%")
-				.attr("y1").string("100%")
-				.attr("y2").string("0%")
+				.attr("x1").float(0)
+				.attr("x2").float(0)
+				.attr("y1").float(1)
+				.attr("y2").float(0)
 				.attr("spreadMethod").string("pad")
 			;
 			gradient.append("svg:stop")
-				.attr("offset").string("0%")
+				.attr("offset").float(0)
 				.attr("stop-color").string(scolor)
 				.attr("stop-opacity").float(1);
 			gradient.append("svg:stop")
-				.attr("offset").string("100%")
+				.attr("offset").float(1)
 				.attr("stop-color").string(color.toRgbString())
 				.attr("stop-opacity").float(1);
 		}
