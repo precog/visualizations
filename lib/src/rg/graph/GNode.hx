@@ -123,6 +123,16 @@ class GNode<TNodeData, TEdgeData> extends GraphElement<TNodeData, TNodeData, TEd
 		return friendEdges().negatives(this);
 	}
 
+	inline public function sortPositives(sortf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int)
+	{
+		friendEdges().sortPositives(this, sortf);
+	}
+
+	inline public function sortNegatives(sortf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int)
+	{
+		friendEdges().sortNegatives(this, sortf);
+	}
+
 	inline public function edgeCount()
 	{
 		return friendEdges().edgeCount(this);

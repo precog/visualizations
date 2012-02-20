@@ -82,6 +82,28 @@ class GraphEdges<TNodeData, TEdgeData> extends GraphCollection<TNodeData, TEdgeD
 		return _edges(node.id, edgesn).iterator();
 	}
 
+	function sortPositives(node : GNode<TNodeData, TEdgeData>, sortf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int)
+	{
+		_sort(node, sortf, edgesp);
+	}
+
+	function sortNegatives(node : GNode<TNodeData, TEdgeData>, sortf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int)
+	{
+		_sort(node, sortf, edgesn);
+	}
+
+	function _sort(node : GNode<TNodeData, TEdgeData>, sortf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int, collection : IntHash<Array<Int>>)
+	{
+		var arr = collection.get(node.id);
+		if(null == arr)
+			return;
+		arr.sort(function(ida : Int, idb : Int) {
+			var ea = graph.edges.get(ida),
+				eb = graph.edges.get(idb);
+			return sortf(ea, eb);
+		});
+	}
+
 	function edges(node : GNode<TNodeData, TEdgeData>) : Iterator<GEdge<TNodeData, TEdgeData>>
 	{
 		return _edges(node.id, edgesp).concat(_edges(node.id, edgesn)).iterator();
@@ -178,6 +200,8 @@ typedef FriendGraphEdges<TNodeData, TEdgeData> =
 //	private function unlink(node : GNode<TNodeData, TEdgeData>) : Void;
 	private function positives(node : GNode<TNodeData, TEdgeData>) : Iterator<GEdge<TNodeData, TEdgeData>>;
 	private function negatives(node : GNode<TNodeData, TEdgeData>) : Iterator<GEdge<TNodeData, TEdgeData>>;
+	private function sortPositives(node : GNode<TNodeData, TEdgeData>, sortf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int) : Void;
+	private function sortNegatives(node : GNode<TNodeData, TEdgeData>, sortf : GEdge<TNodeData, TEdgeData> -> GEdge<TNodeData, TEdgeData> -> Int) : Void;
 	private function edges(node : GNode<TNodeData, TEdgeData>) : Iterator<GEdge<TNodeData, TEdgeData>>;
 	private function positiveCount(node : GNode<TNodeData, TEdgeData>) : Int;
 	private function negativeCount(node : GNode<TNodeData, TEdgeData>) : Int;

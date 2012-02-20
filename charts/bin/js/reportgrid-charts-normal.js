@@ -1564,7 +1564,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.2.7260"};
+	r.info.charts = { version : "1.4.2.7289"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -7918,6 +7918,21 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 	,negatives: function(node) {
 		return this._edges(node.id,this.edgesn).iterator();
 	}
+	,sortPositives: function(node,sortf) {
+		this._sort(node,sortf,this.edgesp);
+	}
+	,sortNegatives: function(node,sortf) {
+		this._sort(node,sortf,this.edgesn);
+	}
+	,_sort: function(node,sortf,collection) {
+		var me = this;
+		var arr = collection.get(node.id);
+		if(null == arr) return;
+		arr.sort(function(ida,idb) {
+			var ea = me.graph.edges.get(ida), eb = me.graph.edges.get(idb);
+			return sortf(ea,eb);
+		});
+	}
 	,edges: function(node) {
 		return this._edges(node.id,this.edgesp).concat(this._edges(node.id,this.edgesn)).iterator();
 	}
@@ -7942,11 +7957,11 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		});
 	}
 	,unlinkPositives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 121, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 143, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
 		this._unlink(node,this.edgesp);
 	}
 	,unlinkNegatives: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 128, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 150, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
 		this._unlink(node,this.edgesn);
 	}
 	,_unlink: function(node,connections) {
@@ -15934,6 +15949,14 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			})(me.edgeClickWithEdge.$bind(me),edge));
 			backedgesy += weight + me.backEdgeSpacing;
 		});
+		Iterators.each(this.layout.graph.nodes.iterator(),function(node,_) {
+			node.graph.edges.sortPositives(node,function(a,b) {
+				return me.layout.cell(a.head).position - me.layout.cell(b.head).position;
+			});
+			node.graph.edges.sortNegatives(node,function(a,b) {
+				return me.layout.cell(a.tail).position - me.layout.cell(b.tail).position;
+			});
+		});
 		edges.forEach(function(edge,_) {
 			if(edge.weight <= 0) return;
 			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail);
@@ -18098,6 +18121,12 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 	}
 	,negatives: function() {
 		return this.graph.edges.negatives(this);
+	}
+	,sortPositives: function(sortf) {
+		this.graph.edges.sortPositives(this,sortf);
+	}
+	,sortNegatives: function(sortf) {
+		this.graph.edges.sortNegatives(this,sortf);
 	}
 	,edgeCount: function() {
 		return this.graph.edges.edgeCount(this);

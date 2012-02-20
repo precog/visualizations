@@ -16,6 +16,7 @@ import rg.graph.GNode;
 import rg.axis.Stats;
 import rg.util.RGColors;
 using Arrays;
+using Iterables;
 
 // TODO wire labels
 
@@ -274,6 +275,14 @@ class Sankey extends Chart
 
 // TODO edges must be ordered at the node level
 		// forward edges
+		layout.graph.nodes.each(function(node, _) {
+			node.sortPositives(function(a, b) {
+				return layout.cell(a.head).position - layout.cell(b.head).position;
+			});
+			node.sortNegatives(function(a, b) {
+				return layout.cell(a.tail).position - layout.cell(b.tail).position;
+			});
+		});
 		edges.each(function(edge, _) {
 			if(edge.weight <= 0)
 				return;
