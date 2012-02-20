@@ -70,6 +70,14 @@ class SetupController extends BaseController
 	function redirectToHome(auth : String)
 	{
 		var url = new UrlHelperInst(controllerContext.requestContext).route({ controller : "home", action : "index", auth : auth });
+		if(url.indexOf('?') > 0)
+		{
+			var parts = url.split('?');
+			parts[0] += '/';
+			url = parts.join('?');
+		} else {
+			url += '/';
+		}
 		return new RedirectResult(App.baseUrl() + url, false);
 	}
 
