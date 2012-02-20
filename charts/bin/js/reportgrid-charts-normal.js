@@ -1564,11 +1564,11 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.2.7180"};
+	r.info.charts = { version : "1.4.2.7260"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 165, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 164, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -2419,6 +2419,7 @@ rg.interactive.RGLegacyRenderer.prototype = {
 		rg.interactive.RGLegacyRenderer.removeFunctions(params.options);
 		rg.interactive.RGLegacyRenderer.removeEmpties(params);
 		Reflect.deleteField(params,"load");
+		Reflect.deleteField(params.options,"download");
 	}
 	,findJsSources: function() {
 		var re = new EReg("reportgrid-[^.]+\\.js","");
@@ -2732,9 +2733,9 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		var ng = thx.js.Dom.selectNodeData(n), dp = Reflect.field(n,"__data__"), scolor = ng.style("fill").get(), color = rg.util.RGColors.parse(scolor,"#ccc"), id = "rg_bar_gradient_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
 			var scolor1 = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
-			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
-			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor1).attr("stop-opacity")["float"](1);
-			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
+			var gradient = this.defs.append("svg:linearGradient").attr("gradientUnits").string("objectBoundingBox").attr("id").string(id).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](1).attr("y2")["float"](0).attr("spreadMethod").string("pad");
+			gradient.append("svg:stop").attr("offset")["float"](0).attr("stop-color").string(scolor1).attr("stop-opacity")["float"](1);
+			gradient.append("svg:stop").attr("offset")["float"](1).attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
 		}
 		ng.attr("style").string("fill:url(#" + id + ")");
 	}
@@ -3068,7 +3069,7 @@ Dates.snap = function(time,period,mode) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 111, className : "Dates", methodName : "snap"});
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 113, className : "Dates", methodName : "snap"});
 			return $r;
 		}(this));
 	} else if(mode > 0) switch(period) {
@@ -3093,7 +3094,7 @@ Dates.snap = function(time,period,mode) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 136, className : "Dates", methodName : "snap"});
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 138, className : "Dates", methodName : "snap"});
 			return $r;
 		}(this));
 	} else switch(period) {
@@ -3118,7 +3119,7 @@ Dates.snap = function(time,period,mode) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 162, className : "Dates", methodName : "snap"});
+			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 164, className : "Dates", methodName : "snap"});
 			return $r;
 		}(this));
 	}
@@ -3149,7 +3150,7 @@ Dates.snapToWeekDay = function(time,day) {
 		s = 6;
 		break;
 	default:
-		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 188, className : "Dates", methodName : "snapToWeekDay"});
+		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 190, className : "Dates", methodName : "snapToWeekDay"});
 	}
 	return time - (d - s) % 7 * 24 * 60 * 60 * 1000;
 }
@@ -14908,7 +14909,7 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc"), id = "rg_stream_gradient_h_" + color.hex("");
 		if(this.defs.select("#" + id).empty()) {
 			var scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString();
-			var gradient = this.defs.append("svg:linearGradient").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
+			var gradient = this.defs.append("svg:linearGradient").attr("gradientUnits").string("objectBoundingBox").attr("id").string(id).attr("x1").string("0%").attr("x2").string("0%").attr("y1").string("100%").attr("y2").string("0%").attr("spreadMethod").string("pad");
 			gradient.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(scolor).attr("stop-opacity")["float"](1);
 			gradient.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
 		}
@@ -14916,7 +14917,7 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 	}
 	,applyGradientH: function(d,i) {
 		var gn = thx.js.Dom.selectNode(thx.js.Group.current), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(gn.style("fill").get(),"#cccccc")), id = "rg_stream_gradient_v_" + rg.svg.chart.StreamGraph.vid++;
-		var gradient = this.defs.append("svg:linearGradient").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
+		var gradient = this.defs.append("svg:linearGradient").attr("gradientUnits").string("objectBoundingBox").attr("class").string("x").attr("id").string(id).attr("x1").string("0%").attr("x2").string("100%").attr("y1").string("0%").attr("y2").string("0%");
 		var bx = d[0].coord.x, ax = d[d.length - 1].coord.x, span = ax - bx, percent = function(x) {
 			return Math.round((x - bx) / span * 10000) / 100;
 		}, max = Arrays.floatMax(d,function(d1) {
@@ -18168,8 +18169,7 @@ rg.axis.AxisTime.prototype = {
 		return rg.util.Periodicity.range(start,end,this.periodicity);
 	}
 	,scale: function(start,end,v) {
-		var values = this.range(start,end);
-		return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,values.indexOf(v),values.length);
+		return (v - start) / (end - start);
 	}
 	,setScaleDistribution: function(v) {
 		return this.scaleDistribution = v;
@@ -19254,7 +19254,7 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var color = rg.util.RGColors.parse(slice.style("fill").get(),"#cccccc"), scolor = rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness);
 			var ratio = box.width / box.height, cx = -box.x * 100 / box.width / ratio, cy = -box.y * 100 / box.height / ratio;
 			var r = 100 * (box.width > box.height?Math.min(1,this.radius * this.outerRadius / box.width):Math.max(1,this.radius * this.outerRadius / box.width));
-			var stops = this.g.select("defs").append("svg:radialGradient").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
+			var stops = this.g.select("defs").append("svg:radialGradient").attr("gradientUnits").string("objectBoundingBox").attr("id").string("rg_pie_gradient_" + id).attr("cx").string(cx * ratio + "%").attr("cy").string(cy + "%").attr("gradientTransform").string("scale(1 " + ratio + ")").attr("r").string(r + "%");
 			stops.append("svg:stop").attr("offset").string(100 * this.innerRadius + "%").attr("stop-color").string(color.toRgbString()).attr("stop-opacity")["float"](1);
 			stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(scolor.toRgbString()).attr("stop-opacity")["float"](1);
 		}
@@ -22726,14 +22726,14 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		this.defs = this.g.classed().add("funnel-chart").append("svg:defs");
 	}
 	,internalGradient: function(d) {
-		var color = rg.util.RGColors.parse(d.style("fill").get(),"#cccccc"), stops = this.defs.append("svg:radialGradient").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
+		var color = rg.util.RGColors.parse(d.style("fill").get(),"#cccccc"), stops = this.defs.append("svg:radialGradient").attr("gradientUnits").string("objectBoundingBox").attr("id").string("rg_funnel_int_gradient_0").attr("cx").string("50%").attr("fx").string("75%").attr("cy").string("20%").attr("r").string(Math.round(75) + "%");
 		stops.append("svg:stop").attr("offset").string("0%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),this.gradientLightness).toRgbString());
 		stops.append("svg:stop").attr("offset").string("100%").attr("stop-color").string(rg.util.RGColors.applyLightness(thx.color.Hsl.toHsl(color),-this.gradientLightness).toRgbString());
 		d.attr("style").string("fill:url(#rg_funnel_int_gradient_0)");
 	}
 	,externalGradient: function(n,i) {
 		var g = thx.js.Dom.selectNode(n), d = g.select("path"), color = thx.color.Hsl.toHsl(rg.util.RGColors.parse(d.style("fill").get(),"#cccccc")), vn = this.next(i), vc = this.dpvalue(this.dps[i]), ratio = Math.round(vn / vc * 100) / 100, id = "rg_funnel_ext_gradient_" + color.hex("#") + "-" + ratio;
-		var stops = this.defs.append("svg:radialGradient").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
+		var stops = this.defs.append("svg:radialGradient").attr("gradientUnits").string("objectBoundingBox").attr("id").string(id).attr("cx").string("50%").attr("cy").string("0%").attr("r").string("110%");
 		var top = color.hex("#");
 		stops.append("svg:stop").attr("offset").string("10%").attr("stop-color").string(top);
 		var ratio1 = 1 - (vc < vn?vc / vn:vn / vc), middlecolor = rg.util.RGColors.applyLightness(color,ratio1,this.gradientLightness * (vc >= vn?1:-1)).hex("#");
