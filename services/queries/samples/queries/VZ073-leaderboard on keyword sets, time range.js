@@ -13,7 +13,7 @@ ReportGrid.query
 		dp.keywords = keywords.join(", ");
 		return dp;
 	})
-	.sortField("count")
+	.sortValue("count")
 	.reverse()
 
 //** VIZ

@@ -55,7 +55,7 @@ class BaseQuery<This>
 
 	public function load(handler : (Array<Dynamic> -> Void) -> Void)
 	{
-		return asyncStack(function(stack, h) {
+		return stackAsync(function(stack, h) {
 			handler(function(data) {
 				stack.push(data);
 				h(stack);
@@ -67,15 +67,15 @@ class BaseQuery<This>
 	{
 		if(!Std.is(values, Array))
 			values = [values];
-		return asyncStack(function(stack, h) {
+		return stackAsync(function(stack, h) {
 			stack.push(values);
 			h(stack);
 		});
 	}
 
-	public function cross()
+	public function stackCross()
 	{
-		return transformStack(Transformers.crossStack);
+		return stackTransform(Transformers.crossStack);
 	}
 
 	public function map(handler : Dynamic -> ?Int -> Dynamic)
@@ -111,15 +111,15 @@ class BaseQuery<This>
 
 	public function transform(t : Transformer)
 	{
-		return asyncStack(asyncTransform(t));
+		return stackAsync(asyncTransform(t));
 	}
 
-	public function transformStack(t : StackTransformer)
+	public function stackTransform(t : StackTransformer)
 	{
-		return asyncStack(asyncTransformStack(t));
+		return stackAsync(stackAsyncTransform(t));
 	}
 
-	public function asyncStack(f : AsyncStack)
+	public function stackAsync(f : AsyncStack)
 	{
 		var query = _createQuery(f, this._first);
 		this._next = query;
@@ -128,7 +128,7 @@ class BaseQuery<This>
 
 	public function asyncAll(f : Async)
 	{
-		return asyncStack(function(data : Array<Array<Dynamic>>, handler : Array<Array<Dynamic>> -> Void) {
+		return stackAsync(function(data : Array<Array<Dynamic>>, handler : Array<Array<Dynamic>> -> Void) {
 			var tot    = data.length,
 				pos    = 0,
 				result = [];
@@ -170,21 +170,39 @@ class BaseQuery<This>
 		});
 	}
 
-	public function setField(name : String, f : Dynamic)
+	public function setValue(name : String, f : Dynamic)
 	{
 		return transform(Transformers.setField(name, f));
 	}
 
-	public function setFields(o : Dynamic)
+	public function setValues(o : Dynamic)
 	{
 		return transform(Transformers.setFields(o));
+	}
+
+	public function mapValue(name : String, f : Dynamic)
+	{
+		return transform(Transformers.mapField(name, f));
+	}
+
+	public function mapValues(o : Dynamic)
+	{
+		return transform(Transformers.mapFields(o));
 	}
 
 	public function addIndex(?name : String, ?start : Int)
 	{
 		if(null == name) name = "index";
 		if(null == start) start = 0;
-		return transform(Transformers.setField(name, function(_, _, i) return start + i));
+		return fold(
+			function(_, _) return start,
+			function(index, dp, result)
+			{
+				trace(index);
+				Reflect.setField(dp, name, index);
+				result.push(dp);
+				return ++index;
+			});
 	}
 
 	public function filter(f : Dynamic -> Bool)
@@ -208,28 +226,28 @@ class BaseQuery<This>
 		return transform(Transformers.sort(f));
 	}
 
-	public function sortField(field : String, ?reverse : Bool)
+	public function sortValue(field : String, ?ascending : Bool)
 	{
-		return sortFields([field], [reverse]);
+		var o = {};
+		Reflect.setField(o, field, null == ascending ? true : ascending);
+		return sortValues(o);
 	}
 
-	public function sortFields(fields : Array<String>, ?reverse : Dynamic)
+	public function sortValues(o : Dynamic)
 	{
-		var rarr : Array<Bool>;
-		if(null == reverse)
-			rarr = Ints.range(0, fields.length).map(function(_, _) return false);
-		else if(!Std.is(reverse, Array))
-			rarr = Ints.range(0, fields.length).map(function(_, _) return reverse);
-		else
-			rarr = reverse;
-		while(rarr.length < fields.length)
-			rarr.push(false);
+		var fields = [],
+			orders = [];
+		for(key in Reflect.fields(o))
+		{
+			fields.push(key);
+			orders.push(Reflect.field(o, key) != false);
+		}
 		return sort(function(a, b) {
 			var r, field;
 			for(i in 0...fields.length)
 			{
 				field = fields[i];
-				r = (rarr[i] ? -1 : 1) * Dynamics.compare(Reflect.field(a, field), Reflect.field(b, field));
+				r = (orders[i] ? 1 : -1) * Dynamics.compare(Reflect.field(a, field), Reflect.field(b, field));
 				if(r != 0)
 					return r;
 			}
@@ -259,36 +277,41 @@ class BaseQuery<This>
 		return transform(Transformers.uniquef(f));
 	}
 
-	public function reduce(startf : Dynamic -> Dynamic, reducef : Dynamic -> Dynamic -> Int -> Dynamic)
+	public function fold(startf : Array<Dynamic> -> Array<Dynamic> -> Dynamic, reducef : Dynamic -> Dynamic -> Array<Dynamic> -> Dynamic)
 	{
 		return transform(function(data : Array<Dynamic>) {
-			return [Arrays.reduce(data.slice(1), reducef, startf(data[0]))];
+			var result = [],
+				acc    = Reflect.isFunction(startf) ? startf(data, result) : startf;
+			Arrays.each(data, function(dp, _) {
+				acc = reducef(acc, dp, result);
+			});
+			return result;
 		});
 	}
 
 	// stack operations
 
-	public function merge()
+	public function stackMerge()
 	{
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			return [data.flatten()];
 		}));
 	}
 
-	public function discard(?howmany : Int)
+	public function stackDiscard(?howmany : Int)
 	{
 		if(null == howmany) howmany = 1;
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			for(i in 0...howmany)
 				data.pop();
 			return data;
 		}));
 	}
 
-	public function keep(?howmany : Int)
+	public function stackKeep(?howmany : Int)
 	{
 		if(null == howmany) howmany = 1;
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			return data.slice(0, howmany);
 		}));
 	}
@@ -302,7 +325,7 @@ class BaseQuery<This>
 				return Reflect.field(o, name);
 			}
 		}
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			var result = [];
 			for(arr in data)
 			{
@@ -311,7 +334,7 @@ class BaseQuery<This>
 			return result;
 		}));
 	}
-
+/*
 	public function stackOperation(operationf : Dynamic -> Dynamic -> Void, ?matchingf : Dynamic -> Dynamic -> Bool)
 	{
 		return stackTraverse(function(data : Array<Dynamic>) {
@@ -323,25 +346,25 @@ class BaseQuery<This>
 	public function stackTraverse(traversef : Array<Dynamic> -> Void, ?matchingf : Dynamic -> Dynamic -> Bool)
 	{
 		var t = Transformers.rotate(matchingf);
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			var result = t(data);
 			for(arr in result)
 				traversef(arr);
 			return data;
 		}));
 	}
-
+*/
 	public function stackRotate(?matchingf : Dynamic -> Dynamic -> Bool)
 	{
 		var t = Transformers.rotate(matchingf);
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			return t(data);
 		}));
 	}
 
 	public function stackReverse()
 	{
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			data.reverse();
 			return data;
 		}));
@@ -349,7 +372,7 @@ class BaseQuery<This>
 /*
 	public function stackReduce(startf : Dynamic -> Dynamic, reducef : Dynamic -> Dynamic -> Dynamic, matchingf : Dynamic -> Dynamic -> Bool)
 	{
-		return asyncStack(asyncTransformStack(function(data : Array<Array<Dynamic>>){
+		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
 			var result = [],
 				da = data[0];
 			for(i in 0...da.length)
@@ -389,28 +412,28 @@ class BaseQuery<This>
 		});
 	}
 */
-	public function store(?name : String)
+	public function stackStore(?name : String)
 	{
 		if(null == name)
 			name = "";
-		return transformStack(function(arr : Array<Array<Dynamic>>) {
+		return stackTransform(function(arr : Array<Array<Dynamic>>) {
 			_first._store.set(name, arr.copy());
 			return arr;
 		});
 	}
 
-	public function retrieve(?name : String)
+	public function stackRetrieve(?name : String)
 	{
 		if(null == name)
 			name = "";
-		return transformStack(function(arr : Array<Array<Dynamic>>) {
+		return stackTransform(function(arr : Array<Array<Dynamic>>) {
 			return arr.concat(_first._store.get(name));
 		});
 	}
 
-	public function clear()
+	public function stackClear()
 	{
-		return transformStack(function(_) {
+		return stackTransform(function(_) {
 			return [];
 		});
 	}
@@ -437,7 +460,7 @@ class BaseQuery<This>
 		}
 	}
 
-	static function asyncTransformStack(t : StackTransformer) : AsyncStack
+	static function stackAsyncTransform(t : StackTransformer) : AsyncStack
 	{
 		return function(data : Array<Array<Dynamic>>, handler : Array<Array<Dynamic>> -> Void)
 		{

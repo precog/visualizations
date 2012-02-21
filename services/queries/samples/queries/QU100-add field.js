@@ -5,8 +5,7 @@ impressions
 var year = (new Date()).getFullYear();
 ReportGrid.query
 	.data(data())
-	.setFields({
+	.setValues({
 		group  : "A",
-		age    : function(ob, value, i) { return value + 1; },
-		year   : function(ob, value, i) { return year - ob.age; }
+		year   : function(ob) { return year - ob.age; }
 	})

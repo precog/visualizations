@@ -5,11 +5,13 @@ impressions
 ReportGrid.query
 	.data(data())
 	.split("age")
-	.reduce(function(start) {
-		return { count : start.count, age : start.age };
-	}, function(cum, other){
-		cum.count += other.count;
+	.fold(function(dps, result) {
+		var o = { count : 0, age : dps[0].age };
+		result.push(o);
+		return o;
+	}, function(cum, dp, result){
+		cum.count += dp.count;
 		return cum;
 	})
-	.merge()
-	.sortField("age")
+	.stackMerge()
+	.sortValue("age")

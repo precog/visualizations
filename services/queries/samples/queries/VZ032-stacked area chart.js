@@ -10,11 +10,12 @@ ReportGrid.query
 		start : "1 day ago"
 	})
 	.split("gender")
-	.stackOperation(function(a, b) {
-		if(null == a.y0)
-			a.y0 = 0;
-		b.y0 = a.y0 + a.count;
-	}, 'time:hour')
+	.stackRotate('time:hour')
+	.fold(0, function(acc, dp, result) {
+		dp.y0 = acc;
+		result.push(dp);
+		return acc+dp.count;
+	})
 
 //** VIZ
 ReportGrid.lineChart("#chart", {

@@ -4,4 +4,7 @@ persons
 //** QUERY
 ReportGrid.query
 	.data(data())
-	.sortFields(["officecenterdist", "name"], true)
+	.sortValues({
+		officecenterdist : false,
+		name : true
+	})

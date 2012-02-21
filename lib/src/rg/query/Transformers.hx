@@ -108,15 +108,33 @@ class Transformers
 		if(!Reflect.isFunction(o))
 		{
 			var value = o;
-			o = function(obj, value, index) return value;
+			o = function(obj) return value;
 		}
-		function handler(obj : Dynamic, i : Int)
+		function handler(obj : Dynamic)
 		{
-			Reflect.setField(obj, name, o(obj, Reflect.field(obj, name), i));
+			Reflect.setField(obj, name, o(obj));
 		}
 		return function(data : Array<Dynamic>)
 		{
-			data.each(handler);
+			data.each(function(d, _) handler(d));
+			return data;
+		}
+	}
+
+	public static function mapField(name : String, o : Dynamic)
+	{
+		if(!Reflect.isFunction(o))
+		{
+			var value = o;
+			o = function(obj) return value;
+		}
+		function handler(obj : Dynamic)
+		{
+			Reflect.setField(obj, name, o(Reflect.field(obj, name)));
+		}
+		return function(data : Array<Dynamic>)
+		{
+			data.each(function(d, _) handler(d));
 			return data;
 		}
 	}
@@ -129,22 +147,50 @@ class Transformers
 		{
 			var f = Reflect.field(o, field);
 			if(!Reflect.isFunction(f))
-				fs.push(callback(function(v : Dynamic, obj : Dynamic, value : Dynamic, i : Int) {
+				fs.push(callback(function(v : Dynamic, obj : Dynamic) {
 					return v;
 				}, f));
 			else
 				fs.push(f);
 		}
-		function handler(obj : Dynamic, i : Int)
+		function handler(obj : Dynamic)
 		{
 			for(j in 0...fields.length)
 			{
-				Reflect.setField(obj, fields[j], fs[j](obj, Reflect.field(obj, fields[j]), i));
+				Reflect.setField(obj, fields[j], fs[j](obj));
 			}
 		}
 		return function(data : Array<Dynamic>)
 		{
-			data.each(handler);
+			data.each(function(d, _) handler(d));
+			return data;
+		}
+	}
+
+	public static function mapFields(o : Dynamic)
+	{
+		var fields = Reflect.fields(o),
+			fs = [];
+		for(field in fields)
+		{
+			var f = Reflect.field(o, field);
+			if(!Reflect.isFunction(f))
+				fs.push(callback(function(v : Dynamic, obj : Dynamic) {
+					return v;
+				}, f));
+			else
+				fs.push(f);
+		}
+		function handler(obj : Dynamic)
+		{
+			for(j in 0...fields.length)
+			{
+				Reflect.setField(obj, fields[j], fs[j](Reflect.field(obj, fields[j])));
+			}
+		}
+		return function(data : Array<Dynamic>)
+		{
+			data.each(function(d, _) handler(d));
 			return data;
 		}
 	}

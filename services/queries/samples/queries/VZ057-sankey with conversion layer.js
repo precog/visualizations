@@ -9,7 +9,8 @@ ReportGrid.query
 		clip : "id",
 		count : "impressions"
 	})
-	.store().clear()
+	.stackStore()
+	.stackClear()
 		.intersect({
 			path : "/test/clipmaster/t4/",
 			event : "impression",
@@ -20,7 +21,7 @@ ReportGrid.query
 			parent : "tail",
 			count  : "impressions"
 		})
-	.retrieve()
+	.stackRetrieve()
 
 //** VIZ
 // clip_07 is a conversion node

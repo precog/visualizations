@@ -5,8 +5,7 @@ ReportGrid.query
 		path : pathvalue,
 		property : "keywords"
 	})
-	.sortField("count")
-	.reverse()
+	.sortValue("count", false)
 
 //** VIZ
 ReportGrid.leaderBoard("#chart", {

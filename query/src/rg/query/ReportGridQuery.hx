@@ -467,7 +467,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	inline function _crossp(p : Dynamic) : This
 	{
 
-		return data(_params(p)).cross();
+		return data(_params(p)).stackCross();
 //		return cross(_params(p));
 	}
 

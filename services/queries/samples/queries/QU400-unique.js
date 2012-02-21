@@ -4,9 +4,12 @@ impressions
 //** QUERY
 ReportGrid.query
 	.data(data())
-	.renameFields({
-		gender : "sex",
-		age    : "years"
+	.renameFields({ // removes extra fields
+		gender : "gender",
+		age    : "age"
 	})
 	.unique()
-	.sortFields(["sex", "years"])
+	.sortValues({
+		gender : true,
+		age : true
+	})

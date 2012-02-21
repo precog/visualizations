@@ -5,10 +5,15 @@ impressions
 ReportGrid.query
 	.data(data())
 	.split("gender")
-	.stack(function(a, b, i) {
-		if(i == 0)
-			a.y0 = 0;
-		b.y0 = a.count;
-	}, function(a, b) {
-		return a.age == b.age;
+	.stackRotate("age")
+	.renameFields({
+		count : "count",
+		gender : "gender",
+		browser : "browser"
 	})
+	.fold(0, function(acc, dp, result) {
+		dp.y0 = acc;
+		result.push(dp);
+		return dp.count;
+	})
+

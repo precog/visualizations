@@ -5,23 +5,24 @@ ReportGrid.query
 		event : "impression",
 		periodicity : "hour"
 	})
-	.store("params")
+	.stackStore("params")
 	.series({
 		start : "2 days ago midnight",
 		end : "yesterday midnight"
 	})
-	.setFields({
+	.mapValues({
 		'time:hour' : function(v) { return v + 24 * 60 * 60000; },
 		"group" : "yesterday"
 	})
-	.store("yesterday").clear()
-	.retrieve("params")
+	.stackStore("yesterday")
+	.stackClear()
+	.stackRetrieve("params")
 	.series({
 		start : "yesterday midnight",
 		end : "midnight"
 	})
-	.setField("group", "today")
-	.retrieve("yesterday")
+	.setValue("group", "today")
+	.stackRetrieve("yesterday")
 
 //** VIZ
 ReportGrid.lineChart("#chart", {

@@ -5,4 +5,4 @@ impressions
 ReportGrid.query
 	.data(data())
 	.split("gender")
-	.discard()
+	.stackDiscard()

@@ -1,28 +1,7 @@
 //** QUERY
 ReportGrid.query
 	.data([])
-/*	.intersect({
-		path : "/test/clipmaster/t4/",
-		event : "impression",
-		properties : ['clip']
-	})
-	.renameFields({
-		clip : "id",
-		count : "impressions"
-	})
-	.store().clear()
-		.intersect({
-			path : "/test/clipmaster/t4/",
-			event : "impression",
-			properties : ['clip', 'parent']
-		})
-		.renameFields({
-			clip   : "head",
-			parent : "tail",
-			count  : "impressions"
-		})
-	.retrieve()
-*/
+
 //** VIZ
 ReportGrid.sankey("#chart", {
 	axes : ["impressions"],

@@ -11,8 +11,7 @@ ReportGrid.query
 		dp.keywords = keywords.join(", ");
 		return dp;
 	})
-	.sortField("count")
-	.reverse()
+	.sortValue("count", false)
 
 //** VIZ
 ReportGrid.leaderBoard("#chart", {

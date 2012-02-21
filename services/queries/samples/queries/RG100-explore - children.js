@@ -5,4 +5,8 @@ ReportGrid.query
 	.paths()
 	.events()
 	.properties()
-	.sortFields(["path", "event", "property"])
+	.sortValues({
+		path : true,
+		event : true,
+		property : true
+	})
