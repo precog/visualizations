@@ -39,9 +39,14 @@ class BrowserStorage implements IStorage
 		return keys.iterator();
 	}
 
-	public static function hasSessionStorage()
+	public static function hasSessionStorage() : Bool
 	{
-		return null != untyped __js__("sessionStorage");
+		try
+		{
+			return untyped __js__("'undefined' != typeof window.sessionStorage");
+		} catch(e : Dynamic) {
+			return false;
+		}
 	}
 
 	public static function sessionStorage()
@@ -49,9 +54,14 @@ class BrowserStorage implements IStorage
 		return new BrowserStorage(untyped __js__("sessionStorage"), "sessionStorage");
 	}
 
-	public static function hasLocalStorage()
+	public static function hasLocalStorage() : Bool
 	{
-		return null != untyped __js__("localStorage");
+		try
+		{
+			return untyped __js__("'undefined' != typeof window.localStorage");
+		} catch(e : Dynamic) {
+			return false;
+		}
 	}
 
 	public static function localStorage()

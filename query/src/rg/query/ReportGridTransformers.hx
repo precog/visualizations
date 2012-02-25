@@ -65,7 +65,7 @@ class ReportGridTransformers
 		});
 	}
 
-	public static function histogram(arr : Array<Array<Dynamic>>, params : { property : String }, keep : Array<String>) : Array<{ count : Int }>
+	public static function histogram(arr : Array<Array<Dynamic>>, params : { property : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var property = params.property;
 		return arr.map(function(value : Array<Dynamic>, _) {
@@ -73,12 +73,14 @@ class ReportGridTransformers
 				count : value[1]
 			};
 			_keep(params, o, keep);
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			Reflect.setField(o, property, value[0]);
 			return o;
 		});
 	}
 
-	public static function histogramTag(counts : Dynamic, params : { property : String, tag : String }, keep : Array<String>) : Array<{ count : Int }>
+	public static function histogramTag(counts : Dynamic, params : { property : String, tag : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var tag      = params.tag,
 			property = params.property;
@@ -88,6 +90,8 @@ class ReportGridTransformers
 					count : item[1]
 				};
 				_keep(params, o, keep);
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 				Reflect.setField(o, tag, Strings.trim(key, "/"));
 				Reflect.setField(o, property, item[0]);
 				return o;
@@ -95,7 +99,7 @@ class ReportGridTransformers
 		}).flatten();
 	}
 
-	public static function propertiesHistogram(arr : Array<Array<Dynamic>>, params : { property : String }, keep : Array<String>) : Array<{ count : Int }>
+	public static function propertiesHistogram(arr : Array<Array<Dynamic>>, params : { property : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var property = params.property;
 		return arr.map(function(value : Array<Dynamic>, _) {
@@ -103,6 +107,8 @@ class ReportGridTransformers
 				count :    value[1]
 			};
 			_keep(params, o, keep);
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			Reflect.setField(o, property, Strings.ltrim(value[0], '.'));
 			return o;
 		});

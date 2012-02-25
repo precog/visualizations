@@ -2,9 +2,6 @@
 
 class ufront_web_mvc_view_XHtmlHelper extends ufront_web_mvc_view_HtmlHelper {
 	public function __construct($name, $urlHelper) { if(!php_Boot::$skip_constructor) {
-		if($name === null) {
-			$name = "Html";
-		}
 		parent::__construct($name,$urlHelper);
 	}}
 	public function register($data) {

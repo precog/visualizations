@@ -2,6 +2,16 @@
 
 class Hashes {
 	public function __construct(){}
+	static function entries($h) {
+		$arr = new _hx_array(array());
+		if(null == $h) throw new HException('null iterable');
+		$»it = $h->keys();
+		while($»it->hasNext()) {
+			$key = $»it->next();
+			$arr->push(_hx_anonymous(array("key" => $key, "value" => $h->get($key))));
+		}
+		return $arr;
+	}
 	static function toDynamic($hash) {
 		$o = _hx_anonymous(array());
 		if(null == $hash) throw new HException('null iterable');

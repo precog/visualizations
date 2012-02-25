@@ -673,6 +673,32 @@ class Arrays {
 		}
 		return $arr;
 	}
+	static function scanf($arr, $weightf, $incremental) {
+		if($incremental === null) {
+			$incremental = true;
+		}
+		$tot = 0.0; $weights = new _hx_array(array());
+		if($incremental) {
+			$_g1 = 0; $_g = $arr->length;
+			while($_g1 < $_g) {
+				$i = $_g1++;
+				$weights[$i] = $tot += call_user_func_array($weightf, array($arr[$i], $i));
+				unset($i);
+			}
+		} else {
+			{
+				$_g1 = 0; $_g = $arr->length;
+				while($_g1 < $_g) {
+					$i = $_g1++;
+					$weights[$i] = call_user_func_array($weightf, array($arr[$i], $i));
+					unset($i);
+				}
+			}
+			$tot = $weights[$weights->length - 1];
+		}
+		$scan = Arrays_23($arr, $incremental, $tot, $weightf, $weights);
+		return array(new _hx_lambda(array(&$arr, &$incremental, &$scan, &$tot, &$weightf, &$weights), "Arrays_24"), 'execute');
+	}
 	function __toString() { return 'Arrays'; }
 }
 function Arrays_0(&$arr, &$f) {
@@ -721,16 +747,16 @@ function Arrays_6(&$culture, &$format, &$max, &$param, &$params, &$sep, &$v, $d,
 function Arrays_7(&$culture, &$format, &$param, &$params, $v) {
 	{
 		if($v->length === 0) {
-			$empty = Arrays_23($culture, $format, $param, $params, $v);
+			$empty = Arrays_25($culture, $format, $param, $params, $v);
 			return $empty;
 		}
-		$sep = Arrays_24($culture, $format, $param, $params, $v);
+		$sep = Arrays_26($culture, $format, $param, $params, $v);
 		$max = (($params[3] === null) ? null : (("" === $params[3]) ? null : Std::parseInt($params[3])));
 		if(null !== $max && $max < $v->length) {
-			$elipsis = Arrays_25($culture, $format, $max, $param, $params, $sep, $v);
-			return Iterators::map($v->copy()->splice(0, $max)->iterator(), array(new _hx_lambda(array(&$culture, &$elipsis, &$format, &$max, &$param, &$params, &$sep, &$v), "Arrays_26"), 'execute'))->join($sep) . $elipsis;
+			$elipsis = Arrays_27($culture, $format, $max, $param, $params, $sep, $v);
+			return Iterators::map($v->copy()->splice(0, $max)->iterator(), array(new _hx_lambda(array(&$culture, &$elipsis, &$format, &$max, &$param, &$params, &$sep, &$v), "Arrays_28"), 'execute'))->join($sep) . $elipsis;
 		} else {
-			return Iterators::map($v->iterator(), array(new _hx_lambda(array(&$culture, &$format, &$max, &$param, &$params, &$sep, &$v), "Arrays_27"), 'execute'))->join($sep);
+			return Iterators::map($v->iterator(), array(new _hx_lambda(array(&$culture, &$format, &$max, &$param, &$params, &$sep, &$v), "Arrays_29"), 'execute'))->join($sep);
 		}
 	}
 }
@@ -762,7 +788,7 @@ function Arrays_11(&$a, &$b, &$equation, &$functions, &$i, &$min, &$v, $_) {
 }
 function Arrays_12(&$a, &$b, &$equation, &$functions, &$i, &$min, $t) {
 	{
-		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t), "Arrays_28"), 'execute'));
+		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t), "Arrays_30"), 'execute'));
 	}
 }
 function Arrays_13(&$a, &$b, &$equation, &$functions, &$i) {
@@ -788,7 +814,7 @@ function Arrays_15(&$a, &$b, &$equation, &$functions, &$i, &$min, &$v, $_) {
 }
 function Arrays_16(&$a, &$b, &$equation, &$functions, &$i, &$min, $t) {
 	{
-		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t), "Arrays_29"), 'execute'));
+		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t), "Arrays_31"), 'execute'));
 	}
 }
 function Arrays_17(&$a, &$b, &$equation, &$functions, &$i) {
@@ -814,7 +840,7 @@ function Arrays_19(&$a, &$b, &$equation, &$functions, &$i, &$min, &$v, $_) {
 }
 function Arrays_20(&$a, &$b, &$equation, &$functions, &$i, &$min, $t) {
 	{
-		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t), "Arrays_30"), 'execute'));
+		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t), "Arrays_32"), 'execute'));
 	}
 }
 function Arrays_21(&$arr, $v, $_) {
@@ -824,48 +850,53 @@ function Arrays_21(&$arr, $v, $_) {
 }
 function Arrays_22(&$a, &$delta, &$f, &$x, $a1, $b) {
 	{
-		return Arrays_31($a, $a1, $b, $delta, $f, $x);
+		return Arrays_33($a, $a1, $b, $delta, $f, $x);
 	}
 }
-function Arrays_23(&$culture, &$format, &$param, &$params, &$v) {
+function Arrays_23(&$arr, &$incremental, &$tot, &$weightf, &$weights) {
+	{
+		$scan = null;
+		$scan = array(new _hx_lambda(array(&$arr, &$incremental, &$scan, &$tot, &$weightf, &$weights), "Arrays_34"), 'execute');
+		return $scan;
+	}
+}
+function Arrays_24(&$arr, &$incremental, &$scan, &$tot, &$weightf, &$weights, $v) {
+	{
+		if($v < 0 || $v > $tot) {
+			return null;
+		}
+		return call_user_func_array($scan, array($v, 0, $weights->length - 1));
+	}
+}
+function Arrays_25(&$culture, &$format, &$param, &$params, &$v) {
 	if(null === $params[1]) {
 		return "[]";
 	} else {
 		return $params[1];
 	}
 }
-function Arrays_24(&$culture, &$format, &$param, &$params, &$v) {
+function Arrays_26(&$culture, &$format, &$param, &$params, &$v) {
 	if(null === $params[2]) {
 		return ", ";
 	} else {
 		return $params[2];
 	}
 }
-function Arrays_25(&$culture, &$format, &$max, &$param, &$params, &$sep, &$v) {
+function Arrays_27(&$culture, &$format, &$max, &$param, &$params, &$sep, &$v) {
 	if(null === $params[4]) {
 		return " ...";
 	} else {
 		return $params[4];
 	}
 }
-function Arrays_26(&$culture, &$elipsis, &$format, &$max, &$param, &$params, &$sep, &$v, $d, $i) {
+function Arrays_28(&$culture, &$elipsis, &$format, &$max, &$param, &$params, &$sep, &$v, $d, $i) {
 	{
 		return Dynamics::format($d, $params[0], null, null, $culture);
 	}
 }
-function Arrays_27(&$culture, &$format, &$max, &$param, &$params, &$sep, &$v, $d, $i) {
+function Arrays_29(&$culture, &$format, &$max, &$param, &$params, &$sep, &$v, $d, $i) {
 	{
 		return Dynamics::format($d, $params[0], null, null, $culture);
-	}
-}
-function Arrays_28(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t, $f, $_) {
-	{
-		return call_user_func_array($f, array($t));
-	}
-}
-function Arrays_29(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t, $f, $_) {
-	{
-		return call_user_func_array($f, array($t));
 	}
 }
 function Arrays_30(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t, $f, $_) {
@@ -873,7 +904,17 @@ function Arrays_30(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t, $f, $_) {
 		return call_user_func_array($f, array($t));
 	}
 }
-function Arrays_31(&$a, &$a1, &$b, &$delta, &$f, &$x) {
+function Arrays_31(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t, $f, $_) {
+	{
+		return call_user_func_array($f, array($t));
+	}
+}
+function Arrays_32(&$a, &$b, &$equation, &$functions, &$i, &$min, &$t, $f, $_) {
+	{
+		return call_user_func_array($f, array($t));
+	}
+}
+function Arrays_33(&$a, &$a1, &$b, &$delta, &$f, &$x) {
 	{
 		$a2 = $a1->v; $b1 = $b->v;
 		if($a2 < $b1) {
@@ -886,5 +927,18 @@ function Arrays_31(&$a, &$a1, &$b, &$delta, &$f, &$x) {
 			}
 		}
 		unset($b1,$a2);
+	}
+}
+function Arrays_34(&$arr, &$incremental, &$scan, &$tot, &$weightf, &$weights, $v, $start, $end) {
+	{
+		if($start === $end) {
+			return $arr[$start];
+		}
+		$mid = Math::floor(($end - $start) / 2) + $start; $value = $weights[$mid];
+		if($v < $value) {
+			return call_user_func_array($scan, array($v, $start, $mid));
+		} else {
+			return call_user_func_array($scan, array($v, $mid + 1, $end));
+		}
 	}
 }

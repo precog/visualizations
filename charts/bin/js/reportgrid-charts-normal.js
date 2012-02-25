@@ -508,7 +508,7 @@ rg.query.BaseQuery.asyncTransform = function(t) {
 		handler(data);
 	};
 }
-rg.query.BaseQuery.asyncTransformStack = function(t) {
+rg.query.BaseQuery.stackAsyncTransform = function(t) {
 	return function(data,handler) {
 		handler(t(data));
 	};
@@ -519,7 +519,7 @@ rg.query.BaseQuery.prototype = {
 	,_async: null
 	,_store: null
 	,load: function(handler) {
-		return this.asyncStack(function(stack,h) {
+		return this.stackAsync(function(stack,h) {
 			handler(function(data) {
 				stack.push(data);
 				h(stack);
@@ -528,13 +528,13 @@ rg.query.BaseQuery.prototype = {
 	}
 	,data: function(values) {
 		if(!Std["is"](values,Array)) values = [values];
-		return this.asyncStack(function(stack,h) {
+		return this.stackAsync(function(stack,h) {
 			stack.push(values);
 			h(stack);
 		});
 	}
-	,cross: function() {
-		return this.transformStack(rg.query.Transformers.crossStack);
+	,stackCross: function() {
+		return this.stackTransform(rg.query.Transformers.crossStack);
 	}
 	,map: function(handler) {
 		return this.transform(rg.query.Transformers.map(handler));
@@ -561,18 +561,18 @@ rg.query.BaseQuery.prototype = {
 		});
 	}
 	,transform: function(t) {
-		return this.asyncStack(rg.query.BaseQuery.asyncTransform(t));
+		return this.stackAsync(rg.query.BaseQuery.asyncTransform(t));
 	}
-	,transformStack: function(t) {
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(t));
+	,stackTransform: function(t) {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(t));
 	}
-	,asyncStack: function(f) {
+	,stackAsync: function(f) {
 		var query = this._createQuery(f,this._first);
 		this._next = query;
 		return query;
 	}
 	,asyncAll: function(f) {
-		return this.asyncStack(function(data,handler) {
+		return this.stackAsync(function(data,handler) {
 			var tot = data.length, pos = 0, result = [];
 			var complete = function(i,r) {
 				result[i] = r;
@@ -607,18 +607,28 @@ rg.query.BaseQuery.prototype = {
 			}
 		});
 	}
-	,setField: function(name,f) {
+	,setValue: function(name,f) {
 		return this.transform(rg.query.Transformers.setField(name,f));
 	}
-	,setFields: function(o) {
+	,setValues: function(o) {
 		return this.transform(rg.query.Transformers.setFields(o));
+	}
+	,mapValue: function(name,f) {
+		return this.transform(rg.query.Transformers.mapField(name,f));
+	}
+	,mapValues: function(o) {
+		return this.transform(rg.query.Transformers.mapFields(o));
 	}
 	,addIndex: function(name,start) {
 		if(null == name) name = "index";
 		if(null == start) start = 0;
-		return this.transform(rg.query.Transformers.setField(name,function(_,_1,i) {
-			return start + i;
-		}));
+		return this.fold(function(_,_1) {
+			return start;
+		},function(index,dp,result) {
+			dp[name] = index;
+			result.push(dp);
+			return ++index;
+		});
 	}
 	,filter: function(f) {
 		return this.transform(rg.query.Transformers.filter(f));
@@ -632,24 +642,27 @@ rg.query.BaseQuery.prototype = {
 	,sort: function(f) {
 		return this.transform(rg.query.Transformers.sort(f));
 	}
-	,sortField: function(field,reverse) {
-		return this.sortFields([field],[reverse]);
+	,sortValue: function(field,ascending) {
+		var o = { };
+		o[field] = null == ascending?true:ascending;
+		return this.sortValues(o);
 	}
-	,sortFields: function(fields,reverse) {
-		var rarr;
-		if(null == reverse) rarr = Ints.range(0,fields.length).map(function(_,_1) {
-			return false;
-		}); else if(!Std["is"](reverse,Array)) rarr = Ints.range(0,fields.length).map(function(_,_1) {
-			return reverse;
-		}); else rarr = reverse;
-		while(rarr.length < fields.length) rarr.push(false);
+	,sortValues: function(o) {
+		var fields = [], orders = [];
+		var _g = 0, _g1 = Reflect.fields(o);
+		while(_g < _g1.length) {
+			var key = _g1[_g];
+			++_g;
+			fields.push(key);
+			orders.push(Reflect.field(o,key) != false);
+		}
 		return this.sort(function(a,b) {
 			var r, field;
 			var _g1 = 0, _g = fields.length;
 			while(_g1 < _g) {
 				var i = _g1++;
 				field = fields[i];
-				r = (rarr[i]?-1:1) * Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field));
+				r = (orders[i]?1:-1) * Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field));
 				if(r != 0) return r;
 			}
 			return 0;
@@ -669,19 +682,23 @@ rg.query.BaseQuery.prototype = {
 		if(null == f) f = Dynamics.same;
 		return this.transform(rg.query.Transformers.uniquef(f));
 	}
-	,reduce: function(startf,reducef) {
+	,fold: function(startf,reducef) {
 		return this.transform(function(data) {
-			return [data.slice(1).reduce(reducef,startf(data[0]))];
+			var result = [], acc = Reflect.isFunction(startf)?startf(data,result):startf;
+			data.forEach(function(dp,_) {
+				acc = reducef(acc,dp,result);
+			});
+			return result;
 		});
 	}
-	,merge: function() {
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+	,stackMerge: function() {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
 			return [Arrays.flatten(data)];
 		}));
 	}
-	,discard: function(howmany) {
+	,stackDiscard: function(howmany) {
 		if(null == howmany) howmany = 1;
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
 			var _g = 0;
 			while(_g < howmany) {
 				var i = _g++;
@@ -690,9 +707,9 @@ rg.query.BaseQuery.prototype = {
 			return data;
 		}));
 	}
-	,keep: function(howmany) {
+	,stackKeep: function(howmany) {
 		if(null == howmany) howmany = 1;
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
 			return data.slice(0,howmany);
 		}));
 	}
@@ -703,7 +720,7 @@ rg.query.BaseQuery.prototype = {
 				return Reflect.field(o,name);
 			};
 		}
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
 			var result = [];
 			var _g = 0;
 			while(_g < data.length) {
@@ -714,57 +731,35 @@ rg.query.BaseQuery.prototype = {
 			return result;
 		}));
 	}
-	,stackOperation: function(operationf,matchingf) {
-		return this.stackTraverse(function(data) {
-			var _g1 = 0, _g = data.length - 1;
-			while(_g1 < _g) {
-				var i = _g1++;
-				operationf(data[i],data[i + 1]);
-			}
-		},matchingf);
-	}
-	,stackTraverse: function(traversef,matchingf) {
-		var t = rg.query.Transformers.rotate(matchingf);
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
-			var result = t(data);
-			var _g = 0;
-			while(_g < result.length) {
-				var arr = result[_g];
-				++_g;
-				traversef(arr);
-			}
-			return data;
-		}));
-	}
 	,stackRotate: function(matchingf) {
 		var t = rg.query.Transformers.rotate(matchingf);
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
 			return t(data);
 		}));
 	}
 	,stackReverse: function() {
-		return this.asyncStack(rg.query.BaseQuery.asyncTransformStack(function(data) {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
 			data.reverse();
 			return data;
 		}));
 	}
-	,store: function(name) {
+	,stackStore: function(name) {
 		var me = this;
 		if(null == name) name = "";
-		return this.transformStack(function(arr) {
+		return this.stackTransform(function(arr) {
 			me._first._store.set(name,arr.copy());
 			return arr;
 		});
 	}
-	,retrieve: function(name) {
+	,stackRetrieve: function(name) {
 		var me = this;
 		if(null == name) name = "";
-		return this.transformStack(function(arr) {
+		return this.stackTransform(function(arr) {
 			return arr.concat(me._first._store.get(name));
 		});
 	}
-	,clear: function() {
-		return this.transformStack(function(_) {
+	,stackClear: function() {
+		return this.stackTransform(function(_) {
 			return [];
 		});
 	}
@@ -1540,8 +1535,8 @@ rg.app.charts.JSBridge.main = function() {
 	r.compare = Dynamics.compare;
 	r.dump = Dynamics.string;
 	var scache = rg.svg.util.SymbolCache.cache;
-	r.symbol = function(type) {
-		return scache.get(type);
+	r.symbol = function(type,size) {
+		return scache.get(type,null == size?100:size);
 	};
 	r.date = { range : function(a,b,p) {
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
@@ -1564,7 +1559,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.2.7289"};
+	r.info.charts = { version : "1.4.2.7299"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?thx.js.Dom.select(el):thx.js.Dom.selectNode(el);
@@ -3625,15 +3620,34 @@ rg.query.Transformers.filterValue = function(name,o) {
 rg.query.Transformers.setField = function(name,o) {
 	if(!Reflect.isFunction(o)) {
 		var value = o;
-		o = function(obj,value1,index) {
-			return value1;
+		o = function(obj) {
+			return value;
 		};
 	}
-	var handler = function(obj,i) {
-		obj[name] = o(obj,Reflect.field(obj,name),i);
+	var handler = function(obj) {
+		obj[name] = o(obj);
 	};
 	return function(data) {
-		data.forEach(handler);
+		data.forEach(function(d,_) {
+			handler(d);
+		});
+		return data;
+	};
+}
+rg.query.Transformers.mapField = function(name,o) {
+	if(!Reflect.isFunction(o)) {
+		var value = o;
+		o = function(obj) {
+			return value;
+		};
+	}
+	var handler = function(obj) {
+		obj[name] = o(Reflect.field(obj,name));
+	};
+	return function(data) {
+		data.forEach(function(d,_) {
+			handler(d);
+		});
 		return data;
 	};
 }
@@ -3645,22 +3659,53 @@ rg.query.Transformers.setFields = function(o) {
 		++_g;
 		var f = Reflect.field(o,field);
 		if(!Reflect.isFunction(f)) fs.push((function(f1,a1) {
-			return function(a2,a3,a4) {
-				return f1(a1,a2,a3,a4);
+			return function(a2) {
+				return f1(a1,a2);
 			};
-		})(function(v,obj,value,i) {
+		})(function(v,obj) {
 			return v;
 		},f)); else fs.push(f);
 	}
-	var handler = function(obj,i) {
+	var handler = function(obj) {
 		var _g1 = 0, _g = fields.length;
 		while(_g1 < _g) {
 			var j = _g1++;
-			obj[fields[j]] = fs[j](obj,Reflect.field(obj,fields[j]),i);
+			obj[fields[j]] = fs[j](obj);
 		}
 	};
 	return function(data) {
-		data.forEach(handler);
+		data.forEach(function(d,_) {
+			handler(d);
+		});
+		return data;
+	};
+}
+rg.query.Transformers.mapFields = function(o) {
+	var fields = Reflect.fields(o), fs = [];
+	var _g = 0;
+	while(_g < fields.length) {
+		var field = fields[_g];
+		++_g;
+		var f = Reflect.field(o,field);
+		if(!Reflect.isFunction(f)) fs.push((function(f1,a1) {
+			return function(a2) {
+				return f1(a1,a2);
+			};
+		})(function(v,obj) {
+			return v;
+		},f)); else fs.push(f);
+	}
+	var handler = function(obj) {
+		var _g1 = 0, _g = fields.length;
+		while(_g1 < _g) {
+			var j = _g1++;
+			obj[fields[j]] = fs[j](Reflect.field(obj,fields[j]));
+		}
+	};
+	return function(data) {
+		data.forEach(function(d,_) {
+			handler(d);
+		});
 		return data;
 	};
 }
@@ -17428,6 +17473,39 @@ Arrays.shuffle = function(a) {
 	}
 	return arr;
 }
+Arrays.scanf = function(arr,weightf,incremental) {
+	if(incremental == null) incremental = true;
+	var tot = 0.0, weights = [];
+	if(incremental) {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = tot += weightf(arr[i],i);
+		}
+	} else {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = weightf(arr[i],i);
+		}
+		tot = weights[weights.length - 1];
+	}
+	var scan = (function($this) {
+		var $r;
+		var scan = null;
+		scan = function(v,start,end) {
+			if(start == end) return arr[start];
+			var mid = Math.floor((end - start) / 2) + start, value = weights[mid];
+			if(v < value) return scan(v,start,mid); else return scan(v,mid + 1,end);
+		};
+		$r = scan;
+		return $r;
+	}(this));
+	return function(v) {
+		if(v < 0 || v > tot) return null;
+		return scan(v,0,weights.length - 1);
+	};
+}
 Arrays.prototype = {
 	__class__: Arrays
 }
@@ -23191,6 +23269,15 @@ Reflect.prototype = {
 }
 var Hashes = $hxClasses["Hashes"] = function() { }
 Hashes.__name__ = ["Hashes"];
+Hashes.entries = function(h) {
+	var arr = [];
+	var $it0 = h.keys();
+	while( $it0.hasNext() ) {
+		var key = $it0.next();
+		arr.push({ key : key, value : h.get(key)});
+	}
+	return arr;
+}
 Hashes.toDynamic = function(hash) {
 	var o = { };
 	var $it0 = hash.keys();
@@ -28231,6 +28318,7 @@ thx.math.Const.HALF_PI = 1.570796326794896619;
 thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
+thx.math.Const.E = 2.71828182845904523536;
 rg.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
 rg.layout.LayoutCartesian.ALT_RIGHT = 20;
 rg.layout.LayoutCartesian.ALT_LEFT = 20;

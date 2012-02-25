@@ -114,7 +114,7 @@ class JSBridge
 		r.compare              = Dynamics.compare;
 		r.dump                 = Dynamics.string;
 		var scache             = SymbolCache.cache;
-		r.symbol               = function(type) return scache.get(type);
+		r.symbol               = function(type, size) return scache.get(type, null == size ? 100 : size);
 		r.date                 = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))

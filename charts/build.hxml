@@ -6,7 +6,6 @@
 -js bin/js/reportgrid-charts.js
 -main rg.app.charts.JSBridge
 #--dead-code-elimination
-#--cache haxecompiler-cache
 -D js_shims
-#--times
+#--connect 8888
 #-debug
