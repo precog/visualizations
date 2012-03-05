@@ -5,7 +5,7 @@
 
 package rg.svg.layer;
 import rg.svg.panel.Layer;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.layout.Anchor;
 import rg.svg.panel.Panel;
 import rg.svg.widget.Label;

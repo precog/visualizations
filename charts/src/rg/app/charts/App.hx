@@ -28,7 +28,7 @@ import rg.html.widget.DownloaderMenu;
 import rg.html.widget.Logo;
 import rg.layout.Layout;
 import thx.error.Error;
-import thx.js.Selection;
+import dhx.Selection;
 using rg.info.Info;
 using Arrays;
 

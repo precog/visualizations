@@ -14,7 +14,7 @@ import thx.geo.Albers;
 import thx.geo.IProjection;
 import thx.geo.Mercator;
 import thx.geo.Azimuthal;
-import thx.js.Selection;
+import dhx.Selection;
 import thx.json.GeoJson;
 import thx.svg.PathGeoJson;
 import thx.json.Json;
@@ -172,7 +172,7 @@ class Map
 		onReady.dispatch();
 	}
 //	var currentNode : js.Dom.HtmlDom;
-	function onMouseOver(dp : DataPoint, n, ?_) 
+	function onMouseOver(dp : DataPoint, n, ?_)
 	{
 //		currentNode = n;
 		handlerDataPointOver(n, dp, labelDataPointOver);

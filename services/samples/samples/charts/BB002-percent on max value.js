@@ -4,7 +4,7 @@ english-speakers
 //** VIZ
 ReportGrid.leaderBoard("#chart", {
 	axes : ["country", "count"],
-	datapoints : data(),
+	data : data(),
 	options : {
 		usemax : true
 	}

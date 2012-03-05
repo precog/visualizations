@@ -8,7 +8,7 @@ import rg.data.DataPoint;
 import rg.axis.Stats;
 using rg.info.Info;
 
-class InfoCartesianChart
+@:keep class InfoCartesianChart
 {
 	public var animation : InfoAnimation;
 	public var click : DataPoint -> Stats<Dynamic> -> Void;

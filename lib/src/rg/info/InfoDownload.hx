@@ -10,7 +10,7 @@ import rg.html.widget.DownloaderPosition;
 import rg.html.widget.DownloaderPositions;
 import rg.RGConst;
 
-class InfoDownload
+@:keep class InfoDownload
 {
 	public var handler : (String -> String -> (Dynamic -> Bool) -> (String -> Void) -> Void) -> Void;
 	public var service : String;

@@ -8,12 +8,12 @@ package rg.layout;
 import rg.info.InfoLayout;
 import rg.svg.panel.Panel;
 import rg.svg.panel.Container;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.frame.FrameLayout;
 import rg.layout.Anchor;
 import rg.frame.Orientation;
 
-class LayoutX extends Layout
+@:keep class LayoutX extends Layout
 {
 
 	static inline var ALT_RIGHT  = 20;

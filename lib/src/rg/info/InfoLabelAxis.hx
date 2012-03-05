@@ -8,7 +8,7 @@ import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.axis.Stats;
 
-class InfoLabelAxis extends InfoLabel
+@:keep class InfoLabelAxis extends InfoLabel
 {
 	public var axis : String -> String;
 //	public var axisvalue : Dynamic -> String -> String;

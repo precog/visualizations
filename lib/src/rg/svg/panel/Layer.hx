@@ -6,7 +6,7 @@
 package rg.svg.panel;
 
 import rg.frame.Frame;
-import thx.js.Selection;
+import dhx.Selection;
 using Arrays;
 
 class Layer

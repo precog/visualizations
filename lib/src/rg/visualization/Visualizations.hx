@@ -6,7 +6,7 @@
 package rg.visualization;
 
 import thx.error.Error;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.layout.Layout;
 
 class Visualizations

@@ -6,7 +6,7 @@
 package rg.info;
 import rg.visualization.Visualizations;
 
-class InfoDomType
+@:keep class InfoDomType
 {
 	public var kind : DomKind;
 	public function new() { }

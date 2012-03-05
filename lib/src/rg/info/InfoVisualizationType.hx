@@ -7,7 +7,7 @@ package rg.info;
 
 import rg.visualization.Visualizations;
 
-class InfoVisualizationType
+@:keep class InfoVisualizationType
 {
 	public var replace : Bool;
 	public var type : Null<String>;

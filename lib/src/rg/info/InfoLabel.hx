@@ -9,7 +9,7 @@ import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.axis.IAxis;
 
-class InfoLabel
+@:keep class InfoLabel
 {
 	public var title : Array<Variable<Dynamic, IAxis<Dynamic>>> -> Array<DataPoint> -> String;
 	public var datapoint : DataPoint -> Stats<Dynamic> -> String;

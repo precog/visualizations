@@ -16,7 +16,7 @@ import rg.RGConst;
 using rg.info.Info;
 using Arrays;
 
-class InfoMap
+@:keep class InfoMap
 {
 	public var url : String;
 	public var type : String;

@@ -8,7 +8,7 @@ import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.axis.Stats;
 
-class InfoLabelPivotTable extends InfoLabelAxis
+@:keep class InfoLabelPivotTable extends InfoLabelAxis
 {
 	public var total : Float -> Stats<Dynamic> -> String;
 	public var totalover : Float -> Stats<Dynamic> -> String;

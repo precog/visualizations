@@ -7,7 +7,7 @@ package rg.info;
 import rg.factory.FactoryAxis;
 using rg.info.Info;
 
-class InfoVisualizationOption
+@:keep class InfoVisualizationOption
 {
 	public var variables : Array<InfoVariable>;
 	public var options : Dynamic;

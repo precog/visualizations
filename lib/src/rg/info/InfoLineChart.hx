@@ -12,7 +12,7 @@ import rg.svg.chart.LineEffect;
 import rg.svg.chart.LineEffects;
 using rg.info.Info;
 
-class InfoLineChart extends InfoCartesianChart
+@:keep class InfoLineChart extends InfoCartesianChart
 {
 	public var effect : LineEffect;
 	public var interpolation : LineInterpolator;

@@ -1,6 +1,6 @@
 package rg.interactive;
 
-import thx.js.Selection;
+import dhx.Selection;
 
 class RGLegacyRenderer
 {
@@ -137,7 +137,7 @@ class RGLegacyRenderer
 	function findJsSources() : Array<String>
 	{
 		var re  = ~/reportgrid-[^.]+\.js/;
-		return thx.js.Dom.selectAll("script").filterNode(function(n, _) {
+		return dhx.Dom.selectAll("script").filterNode(function(n, _) {
 			return  re.match(untyped n.src);
 		}).mapNode(function(n, _) {
 			return untyped n.src;
@@ -146,7 +146,7 @@ class RGLegacyRenderer
 
 	function findCssSources() : Array<String>
 	{
-		return thx.js.Dom.selectAll("link").filterNode(function(n, _) {
+		return dhx.Dom.selectAll("link").filterNode(function(n, _) {
 			return "stylesheet" == untyped n.rel;
 		}).mapNode(function(n, _) {
 			return untyped n.href;

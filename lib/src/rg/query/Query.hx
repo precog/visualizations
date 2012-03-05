@@ -2,7 +2,7 @@ package rg.query;
 
 using Arrays;
 
-class Query extends BaseQuery<Query>
+@:keep class Query extends BaseQuery<Query>
 {
 	public static function create()
 	{
@@ -39,7 +39,7 @@ class Query extends BaseQuery<Query>
 	}
 }
 
-class BaseQuery<This>
+@:keep class BaseQuery<This>
 {
 	var _first : BaseQuery<This>;
 	var _next : BaseQuery<This>;
@@ -71,11 +71,6 @@ class BaseQuery<This>
 			stack.push(values);
 			h(stack);
 		});
-	}
-
-	public function stackCross()
-	{
-		return stackTransform(Transformers.crossStack);
 	}
 
 	public function map(handler : Dynamic -> ?Int -> Dynamic)
@@ -114,6 +109,11 @@ class BaseQuery<This>
 		return stackAsync(asyncTransform(t));
 	}
 
+	public function stackCross()
+	{
+		return stackTransform(Transformers.crossStack);
+	}
+
 	public function stackTransform(t : StackTransformer)
 	{
 		return stackAsync(stackAsyncTransform(t));
@@ -138,7 +138,6 @@ class BaseQuery<This>
 				if(++pos == tot)
 				{
 					handler(result);
-//					handler(result.flatten());
 				}
 			}
 			for(i in 0...data.length)
@@ -334,26 +333,7 @@ class BaseQuery<This>
 			return result;
 		}));
 	}
-/*
-	public function stackOperation(operationf : Dynamic -> Dynamic -> Void, ?matchingf : Dynamic -> Dynamic -> Bool)
-	{
-		return stackTraverse(function(data : Array<Dynamic>) {
-			for(i in 0...data.length-1)
-				operationf(data[i], data[i+1]);
-		}, matchingf);
-	}
 
-	public function stackTraverse(traversef : Array<Dynamic> -> Void, ?matchingf : Dynamic -> Dynamic -> Bool)
-	{
-		var t = Transformers.rotate(matchingf);
-		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
-			var result = t(data);
-			for(arr in result)
-				traversef(arr);
-			return data;
-		}));
-	}
-*/
 	public function stackRotate(?matchingf : Dynamic -> Dynamic -> Bool)
 	{
 		var t = Transformers.rotate(matchingf);
@@ -369,49 +349,7 @@ class BaseQuery<This>
 			return data;
 		}));
 	}
-/*
-	public function stackReduce(startf : Dynamic -> Dynamic, reducef : Dynamic -> Dynamic -> Dynamic, matchingf : Dynamic -> Dynamic -> Bool)
-	{
-		return stackAsync(stackAsyncTransform(function(data : Array<Array<Dynamic>>){
-			var result = [],
-				da = data[0];
-			for(i in 0...da.length)
-			{
-				var a = da[i],
-					s = startf(a);
-				for(j in 1...data.length)
-				{
-					var db = data[j];
-					for(k in 0...db.length)
-					{
-						var b = db[k];
-						if(matchingf(a, b))
-							s = reducef(s, b);
-					}
-				}
-				result.push(s);
-			}
-			return result;
-		}));
-	}
-*/
-/*
-	public function accumulate(groupby : String, on : String, forproperty : String, atproperty : String)
-	{
-		var map = new Hash();
-		var q = sortFields([groupby, on]);
-		return _query(q).transform(function(data : Array<Array<Dynamic>>){
-			var v : Float, f : String;
-			data.each(function(dp, _) {
-				v = map.get(f = "" + Reflect.field(dp, on));
-				if(null == v) v = 0.0;
-				Reflect.setField(dp, atproperty, v);
-				map.set(f, v + Reflect.field(dp, forproperty));
-			});
-			return data;
-		});
-	}
-*/
+
 	public function stackStore(?name : String)
 	{
 		if(null == name)

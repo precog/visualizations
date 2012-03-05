@@ -4,7 +4,7 @@ import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.data.DataPoint;
 import thx.color.NamedColors;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.svg.widget.Label;
 import rg.svg.widget.GridAnchor;
 import rg.svg.widget.DiagonalArea;

@@ -9,7 +9,7 @@ import rg.axis.Stats;
 import rg.svg.util.SymbolCache;
 using rg.info.Info;
 
-class InfoScatterGraph extends InfoCartesianChart
+@:keep class InfoScatterGraph extends InfoCartesianChart
 {
 	public var symbol : DataPoint -> Stats<Dynamic> -> String;
 	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;

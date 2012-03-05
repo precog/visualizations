@@ -12,7 +12,7 @@ import thx.error.Error;
 using rg.info.Info;
 using Arrays;
 
-class InfoPieChart
+@:keep class InfoPieChart
 {
 	public var labelradius : Float;
 	public var labelorientation : LabelOrientation;

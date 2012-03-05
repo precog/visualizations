@@ -10,7 +10,7 @@ import rg.axis.Stats;
 using rg.info.Info;
 using Arrays;
 
-class InfoGeo
+@:keep class InfoGeo
 {
 	public var map : Array<InfoMap>;
 	public var label : InfoLabel;

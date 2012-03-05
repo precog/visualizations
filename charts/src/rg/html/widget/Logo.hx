@@ -1,8 +1,8 @@
 package rg.html.widget;
 
 import haxe.Timer;
-import thx.js.Dom;
-import thx.js.Selection;
+import dhx.Dom;
+import dhx.Selection;
 import js.Dom;
 
 class Logo

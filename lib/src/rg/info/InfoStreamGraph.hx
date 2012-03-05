@@ -12,7 +12,7 @@ import rg.data.DataPoint;
 import rg.axis.Stats;
 using rg.info.Info;
 
-class InfoStreamGraph extends InfoCartesianChart
+@:keep class InfoStreamGraph extends InfoCartesianChart
 {
 	public var interpolation : LineInterpolator;
 	public var effect : StreamEffect;

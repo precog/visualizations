@@ -16,12 +16,12 @@ import rg.data.VariableDependent;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import thx.svg.Area;
-import thx.js.Dom;
-import thx.js.Selection;
+import dhx.Dom;
+import dhx.Selection;
 import thx.color.Hsl;
 import thx.color.Rgb;
-import thx.js.Svg;
-import thx.js.Access;
+import dhx.Svg;
+import dhx.Access;
 import rg.util.RGColors;
 using Arrays;
 

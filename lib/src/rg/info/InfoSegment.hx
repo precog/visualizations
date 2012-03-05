@@ -6,7 +6,7 @@
 package rg.info;
 import rg.data.DataPoint;
 
-class InfoSegment
+@:keep class InfoSegment
 {
 	public var on : String;
 	public var transform : Null<Array<DataPoint> -> Array<DataPoint>>;

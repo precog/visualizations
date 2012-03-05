@@ -9,7 +9,7 @@ import rg.util.Periodicity;
 import rg.util.Properties;
 import rg.util.RGStrings;
 import thx.date.DateParser;
-import thx.js.Dom;
+import dhx.Dom;
 import thx.error.Error;
 import thx.math.Random;
 import rg.app.charts.MVPOptions;
@@ -156,7 +156,7 @@ class JSBridge
 		};
 	}
 
-	// make sure a thx.js.Selection is passed
+	// make sure a dhx.Selection is passed
 	static function select(el : Dynamic)
 	{
 		var s = if (Std.is(el, String)) Dom.select(el) else Dom.selectNode(el);

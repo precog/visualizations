@@ -1,6 +1,6 @@
 package rg.svg.widget;
 
-import thx.js.Selection;
+import dhx.Selection;
 import thx.svg.Diagonal;
 
 class DiagonalArea

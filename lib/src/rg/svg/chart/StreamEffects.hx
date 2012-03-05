@@ -5,7 +5,7 @@
 
 package rg.svg.chart;
 
-class StreamEffects 
+class StreamEffects
 {
 	static function getLightness(p : String, alt : Float)
 	{
@@ -14,8 +14,8 @@ class StreamEffects
 		else
 			return Std.parseFloat(p);
 	}
-	
-	public static function parse(s : String) : StreamEffect 
+
+	public static function parse(s : String) : StreamEffect
 	{
 		var parts = s.toLowerCase().split(":");
 		switch(parts.shift())

@@ -40,10 +40,10 @@ class RGColors
 		untyped n.__rgcolor__ = color;
 	}
 
-	public static function storeColorForSelection(n : thx.js.Selection, style = "fill", ?color : String)
+	public static function storeColorForSelection(n : dhx.Selection, style = "fill", ?color : String)
 	{
 		n.eachNode(function(n, _) {
-			var c = (null == color) ? thx.js.Selection.current.style(style).get() : color;
+			var c = (null == color) ? dhx.Selection.current.style(style).get() : color;
 			RGColors.storeColor(n, c);
 		});
 	}

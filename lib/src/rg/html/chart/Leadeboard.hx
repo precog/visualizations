@@ -9,11 +9,11 @@ import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.util.Properties;
 import thx.culture.FormatNumber;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.data.DataPoint;
 import rg.util.DataPoints;
 import thx.math.Equations;
-import thx.js.Dom;
+import dhx.Dom;
 import hxevents.Notifier;
 using Arrays;
 

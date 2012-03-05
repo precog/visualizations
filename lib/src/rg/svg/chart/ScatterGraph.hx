@@ -4,19 +4,19 @@
  */
 
 package rg.svg.chart;
-import thx.js.Dom;
+import dhx.Dom;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.svg.panel.Panel;
 import rg.data.DataPoint;
 import thx.color.Colors;
 import thx.color.Hsl;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.util.DataPoints;
 import thx.svg.Line;
 import rg.axis.Stats;
 import thx.svg.LineInterpolator;
-import thx.js.Access;
+import dhx.Access;
 import thx.svg.Area;
 import rg.svg.widget.Label;
 using Arrays;
@@ -125,7 +125,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 				var f = this.labelDataPoint;
 				enter.eachNode(function(n, i) {
 					var dp = Access.getData(n),
-						label = new Label(thx.js.Dom.selectNode(n), true, true, true);
+						label = new Label(dhx.Dom.selectNode(n), true, true, true);
 					label.text = f(dp, stats);
 				});
 			}
@@ -160,7 +160,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 			tooltip.hide();
 		else
 		{
-			var sel = thx.js.Dom.selectNode(n),
+			var sel = dhx.Dom.selectNode(n),
 				coords = Coords.fromTransform(sel.attr("transform").get());
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(coords[0], coords[1], null /* COLOR */);

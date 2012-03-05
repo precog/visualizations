@@ -5,7 +5,7 @@
 
 package rg.info;
 
-class InfoPadding
+@:keep class InfoPadding
 {
 	public var top : Null<Int>;
 	public var bottom : Null<Int>;

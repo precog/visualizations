@@ -4,7 +4,7 @@
  */
 
 package rg.visualization;
-import thx.js.Selection;
+import dhx.Selection;
 
 class VisualizationHtml extends Visualization
 {

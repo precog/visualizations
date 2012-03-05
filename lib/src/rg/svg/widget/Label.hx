@@ -4,7 +4,7 @@
  */
 
 package rg.svg.widget;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.svg.widget.LabelOrientation;
 import rg.svg.widget.GridAnchor;
 using Arrays;
@@ -157,7 +157,7 @@ class Label
 				h = untyped n.getExtentOfChar("A").height;
 			} catch(e : Dynamic)
 			{
-				h = thx.js.Dom.selectNode(n).style("height").getFloat();
+				h = dhx.Dom.selectNode(n).style("height").getFloat();
 			}
 		}
 		var w;
@@ -165,7 +165,7 @@ class Label
 			w = untyped n.getComputedTextLength();
 		} catch(e : Dynamic)
 		{
-			w = thx.js.Dom.selectNode(n).style("width").getFloat();
+			w = dhx.Dom.selectNode(n).style("width").getFloat();
 		}
 		return {
 			width : w,

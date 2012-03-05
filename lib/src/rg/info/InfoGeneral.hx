@@ -7,7 +7,7 @@ package rg.info;
 
 using rg.info.Info;
 
-class InfoGeneral
+@:keep class InfoGeneral
 {
 	public var ready : Void -> Void;
 	public function new() { }

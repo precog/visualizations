@@ -5,8 +5,8 @@
 
 package rg.svg.widget;
 import js.Dom;
-import thx.js.Selection;
-import thx.js.Timer;
+import dhx.Selection;
+import dhx.Timer;
 import thx.math.Equations;
 import thx.math.Ease;
 import thx.math.EaseMode;
@@ -45,7 +45,7 @@ class Balloon
 			var parent = container.node();
 			while (null != parent && parent.nodeName != "svg")
 				parent = parent.parentNode;
-			this.container = null == parent ? container : thx.js.Dom.selectNode(parent);
+			this.container = null == parent ? container : dhx.Dom.selectNode(parent);
 		} else
 			this.container = container;
 		visible = true;

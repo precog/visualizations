@@ -8,7 +8,7 @@ import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.axis.Stats;
 
-class InfoLabelFunnel extends InfoLabel
+@:keep class InfoLabelFunnel extends InfoLabel
 {
 	public var arrow : DataPoint -> Stats<Dynamic> -> String;
 

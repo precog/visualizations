@@ -10,7 +10,7 @@ import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
 using rg.info.Info;
 
-class InfoFunnelChart
+@:keep class InfoFunnelChart
 {
 	public var animation : InfoAnimation;
 	public var label : InfoLabelFunnel;

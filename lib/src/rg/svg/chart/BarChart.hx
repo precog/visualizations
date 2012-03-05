@@ -7,14 +7,14 @@ package rg.svg.chart;
 
 import rg.axis.ScaleDistribution;
 import rg.util.RGColors;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.data.DataPoint;
 import rg.util.DataPoints;
-import thx.js.Access;
+import dhx.Access;
 import rg.svg.panel.Panel;
 import rg.util.DataPoints;
 import rg.axis.IAxisDiscrete;
-import thx.js.Dom;
+import dhx.Dom;
 import thx.color.Hsl;
 import thx.color.Colors;
 import rg.util.RGColors;
@@ -258,7 +258,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			tooltip.hide();
 		else
 		{
-			var sel = thx.js.Dom.selectNode(n),
+			var sel = dhx.Dom.selectNode(n),
 				x = sel.attr("x").getFloat(),
 				y = sel.attr("y").getFloat(),
 				w = sel.attr("width").getFloat();

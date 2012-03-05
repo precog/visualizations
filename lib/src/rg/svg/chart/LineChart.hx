@@ -4,7 +4,7 @@
  */
 
 package rg.svg.chart;
-import thx.js.Dom;
+import dhx.Dom;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.data.Variable;
@@ -13,12 +13,12 @@ import rg.svg.panel.Panel;
 import rg.data.DataPoint;
 import rg.util.RGColors;
 import thx.color.Hsl;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.util.DataPoints;
 import thx.svg.Line;
 import rg.axis.Stats;
 import thx.svg.LineInterpolator;
-import thx.js.Access;
+import dhx.Access;
 import thx.svg.Area;
 import rg.svg.widget.Label;
 using Arrays;
@@ -291,7 +291,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				var f = this.labelDataPoint;
 				gsymbol.eachNode(function(n, i) {
 					var dp = Access.getData(n),
-						label = new Label(thx.js.Dom.selectNode(n), true, false, false);
+						label = new Label(dhx.Dom.selectNode(n), true, false, false);
 					label.text = f(dp, stats);
 //					label.orientation = LabelOrientation.Aligned;
 //					label.place(3, 3, -30);
@@ -331,7 +331,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			tooltip.hide();
 		else
 		{
-			var sel = thx.js.Dom.selectNode(p),
+			var sel = dhx.Dom.selectNode(p),
 				coords = Coords.fromTransform(sel.attr("transform").get());
 
 //			for (j in 0...segments.length)

@@ -5,8 +5,8 @@
 
 package rg.html.widget;
 import js.Lib;
-import thx.js.Dom;
-import thx.js.Selection;
+import dhx.Dom;
+import dhx.Selection;
 
 class DownloaderMenu
 {

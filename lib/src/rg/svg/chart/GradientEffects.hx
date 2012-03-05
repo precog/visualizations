@@ -5,7 +5,7 @@
 
 package rg.svg.chart;
 
-class GradientEffects
+@:keep class GradientEffects
 {
 	public static function canParse(d : Dynamic)
 	{

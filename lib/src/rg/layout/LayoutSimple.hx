@@ -4,13 +4,13 @@
  */
 
 package rg.layout;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.frame.FrameLayout;
 import rg.layout.Anchor;
 import rg.info.InfoLayout;
 import rg.svg.panel.Panel;
 
-class LayoutSimple extends Layout
+@:keep class LayoutSimple extends Layout
 {
 	var main : Panel;
 	var titleOnTop : Bool;

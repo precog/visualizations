@@ -9,7 +9,7 @@ import rg.layout.Anchor;
 import rg.svg.panel.Layer;
 import rg.svg.panel.Panel;
 import rg.axis.ITickmark;
-import thx.js.Dom;
+import dhx.Dom;
 import rg.svg.widget.Label;
 import rg.svg.widget.LabelOrientation;
 import rg.svg.widget.GridAnchor;

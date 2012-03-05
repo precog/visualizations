@@ -11,7 +11,7 @@ import thx.color.NamedColors;
 import rg.util.RGColors;
 using rg.info.Info;
 
-class InfoHeatGrid extends InfoCartesianChart
+@:keep class InfoHeatGrid extends InfoCartesianChart
 {
 	public var contour : Bool;
 	public var colorScaleMode : ColorScaleMode;

@@ -4,7 +4,7 @@ import js.Lib;
 import js.Dom;
 import haxe.Http;
 import thx.error.Error;
-import thx.js.Selection;
+import dhx.Selection;
 
 class RGDownloader
 {
@@ -48,7 +48,7 @@ class RGDownloader
 
 	function findCssSources() : Array<String>
 	{
-		return thx.js.Dom.selectAll("link").filterNode(function(n, _) {
+		return dhx.Dom.selectAll("link").filterNode(function(n, _) {
 			return "stylesheet" == untyped n.rel;
 		}).mapNode(function(n, _) {
 			return untyped n.href;
@@ -127,7 +127,7 @@ class RGDownloader
 				url = appendArgument(url, "tokenId", tokenId);
 			}
 			url = appendArgument(url, "forceDownload", "true");
-//			thx.js.Dom.select("body").append("img").attr("src").string(url);
+//			dhx.Dom.select("body").append("img").attr("src").string(url);
 			Lib.window.location.href = url;
 		}
 		/*

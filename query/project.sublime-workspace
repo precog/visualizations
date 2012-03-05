@@ -4,6 +4,54 @@
 		"selected_items":
 		[
 			[
+				"backgr",
+				"background	background-color: transparent"
+			],
+			[
+				"edit",
+				"editor"
+			],
+			[
+				"node",
+				"nodechart"
+			],
+			[
+				"con",
+				"convmap"
+			],
+			[
+				"clip_",
+				"clip_07"
+			],
+			[
+				"conv",
+				"conv_2"
+			],
+			[
+				"redu",
+				"reduce"
+			],
+			[
+				"tra",
+				"traversed"
+			],
+			[
+				"re",
+				"reduce(...) : reduce.TOut"
+			],
+			[
+				"b",
+				"browser"
+			],
+			[
+				"start",
+				"startf"
+			],
+			[
+				"ma",
+				"matchingf"
+			],
+			[
 				"fi",
 				"field(...) : Dynamic"
 			],
@@ -168,10 +216,6 @@
 				"log"
 			],
 			[
-				"ma",
-				"math"
-			],
-			[
 				"de",
 				"deleteField(...) : Bool"
 			],
@@ -222,14 +266,6 @@
 			[
 				"Arra",
 				"Arrays"
-			],
-			[
-				"tra",
-				"transform"
-			],
-			[
-				"re",
-				"reverse"
 			],
 			[
 				"so",
@@ -478,42 +514,6 @@
 			[
 				"function",
 				"WeakFunctionClosure [flash9.events]"
-			],
-			[
-				"style",
-				"style"
-			],
-			[
-				"ap",
-				"append"
-			],
-			[
-				"strin",
-				"stringf"
-			],
-			[
-				"te",
-				"text"
-			],
-			[
-				"stri",
-				"string"
-			],
-			[
-				"at",
-				"attr"
-			],
-			[
-				"appen",
-				"append"
-			],
-			[
-				"opt",
-				"options"
-			],
-			[
-				"Has",
-				"Hash [class]"
 			]
 		]
 	},
@@ -523,31 +523,7 @@
 			"file": "bin/service/index.php",
 			"settings":
 			{
-				"buffer_size": 5213,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX100-SE os and browser.js",
-			"settings":
-			{
-				"buffer_size": 1284,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/rg/data/reportgrid/ReportGridExecutorCache.hx",
-			"settings":
-			{
-				"buffer_size": 6425,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/rg/app/query/JSBridge.hx",
-			"settings":
-			{
-				"buffer_size": 3458,
+				"buffer_size": 5290,
 				"line_ending": "Unix"
 			}
 		},
@@ -555,7 +531,34 @@
 			"file": "bin/service/template.php",
 			"settings":
 			{
-				"buffer_size": 2884,
+				"buffer_size": 3392,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/PR001-simple.js",
+			"settings":
+			{
+				"buffer_size": 804,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "",
+			"file": "/Users/francoponticelli/Desktop/precog.html",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
+			"settings":
+			{
+				"buffer_size": 9207,
 				"line_ending": "Unix"
 			}
 		}
@@ -672,35 +675,120 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/js/console.js",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/css/innerpage.css",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/developer-center.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/add-ons.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/js/default.js",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/contact-us.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/index-2.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/jobs.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/about.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/add-on-partner.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/blog.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/dev-partner.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/developer-center-addons.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/how-it-works.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/innerpagetemplate.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/news-and-events.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/pricing.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/success-stories.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/under-construction.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/webinar.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/why-precog copy.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/js/ace/mode-quirrel-uncompressed.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/app/query/JSBridge.hx",
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/js/ace/mode-sql-uncompressed.js",
+		"/Users/francoponticelli/Projects/extern/ace/build/src/mode-quirrel.js",
+		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/js/_std/Reflect.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/storage/BrowserStorage.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridTransformers.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridQuery.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/template.php",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU005-load.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ500-pie chart with drill down in tooltip.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Transformers.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU520-stack.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ032-stacked area chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/data/track courses.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/index.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ032-stacked area chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ055-sankey with node values.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ056-sankey with map and no values.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ057-sankey with conversion layer.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ060-sankey with node values and filter.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ071-leaderboard on keywords.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ072-FAILING leaderboard on keyword sets.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ073-leaderboard on keyword sets, time range.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ080-pivot table.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ100-heatmap.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG100-explore - children.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU540-reduce.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG640-histogram - object property.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ022-line chart, compare days.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU520-stack.js",
+		"/Users/francoponticelli/Projects/thx/src/Arrays.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU100-add field.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU150-cross.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU355-sort field.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU360-sort fields.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU365-sort fields reverses.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU400-unique.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU405-unique function.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU450-store.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU455-store with names.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU460-store increment with names.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU500-split.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/js/reportgrid-query.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ056-sankey with map and no values.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX202-Flixmaster histogram where.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/build.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/website/demo/queries/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU270-rename fields.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU105-add index.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ057-sankey with conversion layer.js",
+		"/Users/francoponticelli/Desktop/flixmaster sample.html",
+		"/Users/francoponticelli/Documents/poly/index.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/samples/samples/data/iris.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/data/random impression.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/charts/version",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLabel.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/info/InfoLabelSankey.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/release.hxml",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/version",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU500-split.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ040-funnel chart.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ070-leaderboard.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ090-stream graph.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/XX100-SE os and browser.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/XX201-attention bar Flixmaster.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG606-histogram - where.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU540-stackReduce.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU250-map.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG606-histogram - where.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX201-attention bar Flixmaster.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX200-SK Flixmaster.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/ReportGridExecutorCache.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX100-SE os and browser.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/RG.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU005-load.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ500-pie chart with drill down in tooltip.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/XX001-options.js",
 		"/Users/francoponticelli/Desktop/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/renderer/index.php",
 		"/etc/php.ini",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/index.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/index.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG560-intersect series - FAILING groupby, tag.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG540-intersect series - FAILING multi-properties, tag.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG410-intersect - time range.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU010-store increment with names.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU010-store with names.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU010-store.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ055-sankey with node values.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ060-sankey with node values and filter.js",
 		"/Users/francoponticelli/Projects/reportgrid/website/charts/js/default.js",
-		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/js/default.js",
-		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/css/innerpage.css",
 		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/how-it-works-ip.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridQuery.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/app/query/JSBridge.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/storage/IStorage.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/storage/MemoryStorage.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/storage/BrowserStorage.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/ReportGridExecutorCache.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/data/impressions.json",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU010-map value.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU005-load.js",
@@ -714,102 +802,20 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/data/impressions.json",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU010-map.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU010-add field.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/data/persons.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/data/names.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU000-data.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ100-heatmap.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ080-pivot table.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ073-leaderboard on keyword sets, time range.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ072-FAILING leaderboard on keyword sets.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ071-leaderboard on keywords.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU315-count series - event, timezone.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU100-explore - children.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/js/reportgrid-query-normal.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ050-sankey.js",
-		"/Users/francoponticelli/Projects/thx/src/Objects.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/js/reportgrid-query.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/TR010-track impressions for today.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU540-intersect series - FAILING multi-properties, tag.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ500-pie chart with drill down in tooltip.js",
-		"/Users/francoponticelli/Desktop/query notes.txt",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/ReportGridExecutorMemoryCache.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/cache/MemoryCache.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/cache/StorageCache.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/cache/ICache.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Periodicity.hx",
-		"/Users/francoponticelli/Projects/thx/src/Dates.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridTransformers.hx",
-		"/Users/francoponticelli/Projects/reportgrid/client-libraries/js/src/v1/reportgrid-core.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/project.sublime-workspace",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU350-count series - FAILING search, tag.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU355-count series - FAILING search, tag, groupby.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU298-count - FAILING search, time range, tag.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU295-count - FAILING search, tag.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU640-histogram - FAILING object property.js",
-		"/Users/francoponticelli/Projects/reportgrid/website/demo/queries/index.html",
-		"/Users/francoponticelli/Projects/thx/src/thx/date/DateParser.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/TR015-track impressions for yesterday.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/data/random impression.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ090-stream graph.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ073-leaderboard on keyword sets, time range.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/deploy.sh",
-		"/Users/francoponticelli/Projects/thx/src/DynamicsT.hx",
-		"/Users/francoponticelli/Projects/thx/src/Bools.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/release.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ072-leaderboard on keyword sets.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/project.sublime-project",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU635-histogram - FAILING time range, tag, top 3.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU640-histogram - FAILING object property.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU680-histogram - object property.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU610-histogram - time range.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ090-stream graph.js",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/LineInterpolators.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU680-histogram - object property.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU640-histogram - object property, time range.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU645-histogram - object property, time range.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU650-properties histogram - simple.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU655-properties histogram - FAILING time range.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU660-properties histogram - FAILING top 3.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU665-properties histogram - FAILING tag.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU670-properties histogram - FAILING tag, time range.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU700-summary - FAILING mean.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU750-summary - FAILING standard deviation.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU810-summary series - mean.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU820-summary series - mean, tag.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU830-summary series - mean, timezone.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU840-summary series - mean, groupby.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU845-summary series - mean, tag, groupby.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU850-summary series - standard deviation.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ001-simple query.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ002-pie chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ020-line chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ021-segmented line chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ022-line chart, compare days.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ030-bar chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ031-segmented bar chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ032-stacked area chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ040-funnel chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ040-geo chart.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ070-leaderboard.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ071-leaderboard on keywords.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ072-leaderboard on keyword sets.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ080-pivot table.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/VZ100-heatmap.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX001-options.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/data/random impression.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/TR000-no track.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU110-explore - values.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/QU115-explore - values, time range.js"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/data/persons.json"
 	],
 	"find":
 	{
-		"height": 33.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
 		"height": 0.0,
 		"where_history":
 		[
+			"/Users/francoponticelli/Projects/reportgrid/visualizations,*.js",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations,*.hx",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations/query,*.hx",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/query",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/,*.hx",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/",
@@ -840,9 +846,53 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"setFiel",
+			"/rg/charts",
+			"QUIRREL",
+			"quirrel",
+			"QUIRREL",
+			"console",
+			"ace",
+			"woopra",
+			"mono_industrial",
+			"console",
+			"sql_highlight_rules",
+			"SqlHighlightRules",
+			"console",
+			"editor",
+			"fold",
+			"Field",
+			"asyncTransformStack",
+			"transformStack",
+			"asyncStack",
+			"stack",
+			"transform",
+			"rarr",
+			"transformStack",
+			"render",
+			"0.4s",
+			"console",
+			"where",
+			"reduce",
+			"f",
+			"addField",
+			"yestarday",
+			"trace",
+			"each",
+			"results",
+			"Async",
+			"asyncAll",
+			"Array<Arr",
+			"_cross",
+			"reduce",
+			"Array<Dynamic>",
+			"load",
+			"_where",
+			"977",
+			"analytics",
 			".create",
 			"data",
 			"query",
@@ -926,51 +976,7 @@
 			"(start/end?)",
 			"where",
 			"propertyName",
-			"values",
-			"ReportGrid",
-			"analytics.path",
-			"path",
-			"events",
-			"click",
-			"str_re",
-			"source",
-			"source.rgquery",
-			"	",
-			"viz_categories",
-			"categories",
-			"SAMPLES_CHARTS_DIR",
-			"delete",
-			"['height']",
-			"['width']",
-			"Array",
-			"Node",
-			"select",
-			"undefi",
-			",",
-			"__data__",
-			"_selectAll",
-			"createSele",
-			"selectAl",
-			"bindJoin",
-			"trace",
-			"if",
-			"ttext",
-			"getBB",
-			"trace",
-			"onload",
-			"class",
-			"trace",
-			"js_shims",
-			"getLayout",
-			"space",
-			"new Space",
-			"svg:svg",
-			"Array.pro",
-			"font-s",
-			"stream",
-			"download",
-			"attr(\"fill\")",
-			"fill"
+			"values"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -978,6 +984,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"Array<Array<Dynamic>>",
 			"pathvalue",
 			"reportgrid",
 			", \"",
@@ -1044,15 +1051,15 @@
 					"file": "bin/service/index.php",
 					"settings":
 					{
-						"buffer_size": 5213,
+						"buffer_size": 5290,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4512,
-								4525
+								1124,
+								1124
 							]
 						],
 						"settings":
@@ -1068,100 +1075,18 @@
 				},
 				{
 					"buffer": 1,
-					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX100-SE os and browser.js",
-					"settings":
-					{
-						"buffer_size": 1284,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1282,
-								1282
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 91.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "src/rg/data/reportgrid/ReportGridExecutorCache.hx",
-					"settings":
-					{
-						"buffer_size": 6425,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3715,
-								3715
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1396.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "src/rg/app/query/JSBridge.hx",
-					"settings":
-					{
-						"buffer_size": 3458,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								349,
-								349
-							]
-						],
-						"settings":
-						{
-							"haxe-build-id": 0,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
 					"file": "bin/service/template.php",
 					"settings":
 					{
-						"buffer_size": 2884,
+						"buffer_size": 3392,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								848,
-								848
+								294,
+								294
 							]
 						],
 						"settings":
@@ -1171,7 +1096,90 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 54.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/PR001-simple.js",
+					"settings":
+					{
+						"buffer_size": 804,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								644,
+								644
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Users/francoponticelli/Desktop/precog.html",
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
+					"settings":
+					{
+						"buffer_size": 9207,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3859,
+								8075
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5908.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1210,10 +1218,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 100.0
-	},
 	"replace":
 	{
 		"height": 62.0
@@ -1225,12 +1229,48 @@
 		"selected_items":
 		[
 			[
+				"quer",
+				"lib/src/rg/query/Query.hx"
+			],
+			[
+				"query",
+				"lib/src/rg/query/Query.hx"
+			],
+			[
+				"arrays",
+				"thx/src/Arrays.hx"
+			],
+			[
+				"infol",
+				"lib/src/rg/info/InfoLabel.hx"
+			],
+			[
+				"infola",
+				"lib/src/rg/info/InfoLabel.hx"
+			],
+			[
+				"infos",
+				"lib/src/rg/info/InfoSankey.hx"
+			],
+			[
+				"js",
+				"query/src/rg/app/query/JSBridge.hx"
+			],
+			[
 				"trans",
 				"lib/src/rg/query/Transformers.hx"
 			],
 			[
 				"tra",
 				"lib/src/rg/query/Transformers.hx"
+			],
+			[
+				"tran",
+				"lib/src/rg/query/Transformers.hx"
+			],
+			[
+				"que",
+				"lib/src/rg/query/Query.hx"
 			],
 			[
 				"dynamics",
@@ -1271,10 +1311,6 @@
 			[
 				"ob",
 				"thx/src/Objects.hx"
-			],
-			[
-				"query",
-				"lib/src/rg/query/Query.hx"
 			],
 			[
 				"lan",
@@ -1703,38 +1739,6 @@
 			[
 				"projectionmode",
 				"visualizations/doc/types/thx/geo/ProjectionMode.html"
-			],
-			[
-				"c",
-				"visualizations/CHANGES.txt"
-			],
-			[
-				"map",
-				"visualizations/src/rg/view/svg/widget/Map.hx"
-			],
-			[
-				"visualizationg",
-				"visualizations/src/rg/controller/visualization/VisualizationGeo.hx"
-			],
-			[
-				"geo",
-				"visualizations/src/rg/view/svg/chart/Geo.hx"
-			],
-			[
-				"testqy",
-				"visualizations/test/rg/data/source/rgquery/TestQueryParser.hx"
-			],
-			[
-				"testfac",
-				"visualizations/test/rg/controller/factory/TestFactoryDataSource.hx"
-			],
-			[
-				"graphe",
-				"visualizations/src/rg/layout/GraphEdges.hx"
-			],
-			[
-				"mo",
-				"visualizations/test/rg/data/source/rgquery/MockRGExecutor.hx"
 			]
 		],
 		"width": 0.0
@@ -1755,6 +1759,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 265.0,
+	"side_bar_width": 289.0,
 	"status_bar_visible": true
 }

@@ -1,7 +1,7 @@
 package rg.html.widget;
 
 import js.Dom;
-import thx.js.Selection;
+import dhx.Selection;
 
 class Tooltip
 {
@@ -28,7 +28,7 @@ class Tooltip
 	{
 		visible = false;
 		el = null == el ? js.Lib.document.body : el;
-		tooltip = thx.js.Dom.selectNode(el).append("div")
+		tooltip = dhx.Dom.selectNode(el).append("div")
 			.style("display").string("none")
 			.style("position").string("absolute")
 			.style("opacity").float(0)

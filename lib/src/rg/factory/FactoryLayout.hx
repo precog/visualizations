@@ -7,7 +7,7 @@ package rg.factory;
 import rg.info.InfoLayout;
 import rg.visualization.Visualizations;
 import thx.error.Error;
-import thx.js.Selection;
+import dhx.Selection;
 
 class FactoryLayout
 {

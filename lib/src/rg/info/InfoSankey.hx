@@ -9,7 +9,7 @@ import rg.data.DataPoint;
 import rg.axis.Stats;
 using rg.info.Info;
 
-class InfoSankey
+@:keep class InfoSankey
 {
 	public var label : InfoLabelSankey;
 	public var idproperty : String;
@@ -179,17 +179,17 @@ class InfoSankey
 				}]
 			}, {
 				field : "displayentry",
-				validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+				validator : function(v) return Std.is(v, Bool) || Reflect.isFunction(v),
 				filter : function(v) return [{
 					field : "displayentry",
-					value : Std.is(v, String) ? function(_,_) return v : cast v
+					value : Std.is(v, Bool) ? function(_,_) return v : cast v
 				}]
 			}, {
 				field : "displayexit",
-				validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
+				validator : function(v) return Std.is(v, Bool) || Reflect.isFunction(v),
 				filter : function(v) return [{
 					field : "displayexit",
-					value : Std.is(v, String) ? function(_,_) return v : cast v
+					value : Std.is(v, Bool) ? function(_,_) return v : cast v
 				}]
 			}];
 	}

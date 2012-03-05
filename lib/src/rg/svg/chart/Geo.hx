@@ -17,7 +17,7 @@ import thx.color.Colors;
 import thx.color.NamedColors;
 import thx.color.Rgb;
 import thx.color.Hsl;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.html.widget.Tooltip;
 import rg.svg.chart.ColorScaleMode;
 import rg.svg.util.RGCss;

@@ -7,7 +7,7 @@ package rg.info;
 import rg.data.DataPoint;
 import thx.error.Error;
 
-class InfoDataSource
+@:keep class InfoDataSource
 {
 	public var loader : (Array<DataPoint> -> Void) -> Void;
 

@@ -1,6 +1,6 @@
 package rg.svg.widget;
 
-import thx.js.Selection;
+import dhx.Selection;
 
 class ElbowArea
 {
@@ -23,11 +23,12 @@ class ElbowArea
 
 	public function update(orientation : Orientation, weight : Float, x : Float, y : Float, minradius = 3.0, maxradius = 16.0, before = 0.0, after = 10.0)
 	{
-//		before = before < 0 ? 0 : before;
-//		after  = after < 0 ? 0 : after;
+		if(weight == 0)
+			return;
 		var dinner = "",
 			douter = "",
 			rad = weight < 0 ? Math.max(maxradius, weight) : Math.min(maxradius, weight);
+
 		switch(orientation)
 		{
 			case RightBottom:
@@ -40,12 +41,6 @@ class ElbowArea
 			case LeftTop:
 				update(RightBottom, -weight, x, y, -minradius, -maxradius, -before, -after);
 				return;
-				dinner =
-					"M"+(before+x+minradius)+","+(y+minradius+after)+
-					"L"+(before+x+minradius)+","+(y+minradius)+
-					"A"+minradius+","+minradius+" 0 0,0 "+(before+x)+","+y+
-					"L"+x+","+y;
-				douter = "M"+x+","+(y+weight)+"L"+(-before+x)+","+(y+weight)+"A"+rad+","+rad+" 0 0,1 "+(-before+x-rad)+","+(y+weight-rad)+"L"+(-before+x-rad)+","+(y-after-minradius);
 			case BottomRight:
 
 			case BottomLeft:

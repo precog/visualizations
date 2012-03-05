@@ -4,10 +4,17 @@
 <meta http-equiv="X-UA-Compatible" content="chrome=IE8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $info['title'] ?></title>
-<script src="<?php echo $CORE_API; ?>"></script>
+<?php
+    if(strpos(@$info['viz'].@$info['code'].@$info['query'], 'quirrel') === false)
+    {
+?>
+<script src="<?php echo $CORE_API; ?>" type="text/javascript"></script>
+<?php
+    }
+?>
 <?php if(isset($info['viz'])) { ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $CSS_API; ?>"/>
-<script src="<?php echo $VIZ_API; ?>"></script>
+<script src="<?php echo $VIZ_API; ?>" type="text/javascript"></script>
 <style>
 #chart {
     width: 600px;
@@ -15,7 +22,15 @@
 }
 </style>
 <?php } ?>
-<script src="<?php echo $QUERY_API; ?>"></script>
+<script src="<?php echo $QUERY_API; ?>" type="text/javascript"></script>
+<?php
+    if(strpos(@$info['viz'].@$info['code'].@$info['query'], 'quirrel') !== false)
+    {
+?>
+<script src="<?php echo $PRECOG_API; ?>" type="text/javascript"></script>
+<?php
+    }
+?>
 <?php
 if(@$info['style'])
 {

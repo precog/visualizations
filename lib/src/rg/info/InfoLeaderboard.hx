@@ -8,7 +8,7 @@ import rg.data.DataPoint;
 import thx.math.Equations;
 using rg.info.Info;
 
-class InfoLeaderboard
+@:keep class InfoLeaderboard
 {
 	public var animation : InfoAnimation;
 	public var label : InfoLabelLeaderboard;

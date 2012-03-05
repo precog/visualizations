@@ -8,7 +8,7 @@ import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.axis.Stats;
 
-class InfoLabelSankey extends InfoLabel
+@:keep class InfoLabelSankey extends InfoLabel
 {
 	public var edge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
 	public var edgeover : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;

@@ -5,7 +5,7 @@
 
 package rg.svg.panel;
 import rg.frame.StackItem;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.frame.FrameLayout;
 import rg.frame.Orientation;
 import rg.frame.Frame;

@@ -11,7 +11,7 @@ import rg.axis.ScaleDistribution;
 import rg.axis.Stats;
 using Arrays;
 
-class InfoVariable extends Info
+@:keep class InfoVariable extends Info
 {
 	public var type : Null<String>;
 	public var min : Null<Dynamic>;

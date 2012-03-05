@@ -11,7 +11,7 @@ import rg.data.DataPoint;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import hxevents.Notifier;
-import thx.js.Selection;
+import dhx.Selection;
 using Arrays;
 
 class Visualization

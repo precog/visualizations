@@ -7,7 +7,7 @@ package rg.info;
 
 import thx.math.Equations;
 
-class InfoAnimation
+@:keep class InfoAnimation
 {
 	public var animated : Bool;
 	public var duration : Int;

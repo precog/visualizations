@@ -7,7 +7,7 @@ package rg.info;
 import thx.error.AbstractMethod;
 import thx.error.Error;
 
-class Info 
+@:keep class Info
 {
 	public static function feed<T>(info : T, ob : { }) : T
 	{
@@ -20,7 +20,7 @@ class Info
 			Objects.copyTo(ob, info);
 			return info;
 		}
-		
+
 		var filters : Array<FieldFilter> = Reflect.callMethod(cl, method, []),
 			value : Dynamic;
 		for (filter in filters)

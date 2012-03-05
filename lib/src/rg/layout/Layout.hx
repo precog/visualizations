@@ -8,7 +8,7 @@ import rg.info.InfoLayout;
 import rg.info.InfoPadding;
 import rg.svg.panel.Panel;
 import rg.svg.panel.Space;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.frame.StackItem;
 import rg.frame.FrameLayout;
 

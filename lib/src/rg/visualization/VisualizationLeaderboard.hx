@@ -6,7 +6,7 @@
 package rg.visualization;
 import rg.info.InfoLeaderboard;
 import rg.html.chart.Leadeboard;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.data.DataPoint;
 
 class VisualizationLeaderboard extends VisualizationHtml

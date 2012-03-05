@@ -8,7 +8,7 @@ import rg.visualization.VisualizationHtml;
 import rg.visualization.VisualizationLeaderboard;
 import rg.visualization.VisualizationPivotTable;
 import thx.error.NotImplemented;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.info.InfoPivotTable;
 import rg.info.InfoLeaderboard;
 import thx.error.Error;

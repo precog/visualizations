@@ -6,19 +6,19 @@
 package rg.svg.util;
 import thx.svg.Symbol;
 
-class SymbolCache 
+class SymbolCache
 {
 	static inline var DEFAULT_SYMBOL = "circle";
 	public static var cache(default, null) : SymbolCache;
-	
+
 	var c : Hash<String>;
 	var r : Int;
-	public function new() 
+	public function new()
 	{
 		c = new Hash();
 		r = 0;
 	}
-	
+
 	public function get(type : String, size = 100)
 	{
 #if debug
@@ -33,7 +33,7 @@ class SymbolCache
 		}
 		return s;
 	}
-	
+
 	public function stats()
 	{
 		return {
@@ -43,7 +43,7 @@ class SymbolCache
 #end
 		};
 	}
-	
+
 	static function __init__()
 	{
 		cache = new SymbolCache();

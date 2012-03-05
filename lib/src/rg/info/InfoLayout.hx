@@ -8,7 +8,7 @@ import rg.layout.ScalePattern;
 import rg.visualization.Visualizations;
 using rg.info.Info;
 
-class InfoLayout
+@:keep class InfoLayout
 {
 	public var layout : Null<String>;
 	public var width  : Null<Int>;

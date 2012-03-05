@@ -5,6 +5,55 @@ function $extend(from, fields) {
 	return proto;
 }
 var thx = thx || {}
+if(!thx.collection) thx.collection = {}
+thx.collection.Set = $hxClasses["thx.collection.Set"] = function() {
+	this._v = [];
+	this.length = 0;
+};
+thx.collection.Set.__name__ = ["thx","collection","Set"];
+thx.collection.Set.ofArray = function(arr) {
+	var set = new thx.collection.Set();
+	var _g = 0;
+	while(_g < arr.length) {
+		var item = arr[_g];
+		++_g;
+		set.add(item);
+	}
+	return set;
+}
+thx.collection.Set.prototype = {
+	length: null
+	,_v: null
+	,add: function(v) {
+		this._v.remove(v);
+		this._v.push(v);
+		this.length = this._v.length;
+	}
+	,remove: function(v) {
+		var t = this._v.remove(v);
+		this.length = this._v.length;
+		return t;
+	}
+	,exists: function(v) {
+		var _g = 0, _g1 = this._v;
+		while(_g < _g1.length) {
+			var t = _g1[_g];
+			++_g;
+			if(t == v) return true;
+		}
+		return false;
+	}
+	,iterator: function() {
+		return this._v.iterator();
+	}
+	,array: function() {
+		return this._v.copy();
+	}
+	,toString: function() {
+		return "{" + this._v.join(", ") + "}";
+	}
+	,__class__: thx.collection.Set
+}
 if(!thx.util) thx.util = {}
 thx.util.Message = $hxClasses["thx.util.Message"] = function(message,params,param) {
 	this.message = message;
@@ -13,8 +62,18 @@ thx.util.Message = $hxClasses["thx.util.Message"] = function(message,params,para
 };
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
-	toString: function() {
+	message: null
+	,params: null
+	,toString: function() {
 		return Strings.format(this.message,this.params);
+	}
+	,translatef: function(translator) {
+		return Strings.format(translator(this.message),this.params);
+	}
+	,translate: function(translator,domain) {
+		if(null == domain) domain = translator.getDomain();
+		var culture = thx.culture.Culture.get(domain);
+		if(this.params.length == 1 && Std["is"](this.params[0],Int)) return Strings.format(translator.__(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator._(this.message,domain),this.params,null,culture);
 	}
 	,__class__: thx.util.Message
 }
@@ -26,11 +85,22 @@ thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,
 thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
 thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
-	toString: function() {
+	pos: null
+	,inner: null
+	,setInner: function(inner) {
+		this.inner = inner;
+		return this;
+	}
+	,toStringError: function(pattern) {
+		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
+		return prefix + this.toString();
+	}
+	,toString: function() {
 		try {
 			return Strings.format(this.message,this.params);
 		} catch( e ) {
 			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
+			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 42, className : "thx.error.Error", methodName : "toString"});
 			return "";
 		}
 	}
@@ -61,11 +131,20 @@ rg.svg.panel.Layer.prototype = {
 	panel: null
 	,frame: null
 	,g: null
+	,width: null
+	,height: null
+	,customClass: null
 	,addClass: function(name) {
 		var me = this;
 		name.split(" ").forEach(function(d,i) {
 			me.g.classed().add(d);
 		});
+	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
+	}
+	,toggleClass: function(name) {
+		this.g.classed().toggle(name);
 	}
 	,_resize: function() {
 		this.width = this.frame.width;
@@ -85,6 +164,7 @@ rg.svg.panel.Layer.prototype = {
 		return this.customClass = v;
 	}
 	,__class__: rg.svg.panel.Layer
+	,__properties__: {set_customClass:"setCustomClass"}
 }
 if(!rg.svg.layer) rg.svg.layer = {}
 rg.svg.layer.TickmarksOrtho = $hxClasses["rg.svg.layer.TickmarksOrtho"] = function(panel,anchor) {
@@ -104,7 +184,8 @@ rg.svg.layer.TickmarksOrtho = $hxClasses["rg.svg.layer.TickmarksOrtho"] = functi
 rg.svg.layer.TickmarksOrtho.__name__ = ["rg","svg","layer","TickmarksOrtho"];
 rg.svg.layer.TickmarksOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
-	displayMinor: null
+	anchor: null
+	,displayMinor: null
 	,displayMajor: null
 	,displayLabel: null
 	,displayAnchorLine: null
@@ -116,12 +197,15 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,labelOrientation: null
 	,labelAnchor: null
 	,labelAngle: null
+	,desiredSize: null
 	,tickLabel: null
 	,translate: null
 	,x1: null
 	,y1: null
 	,x2: null
 	,y2: null
+	,x: null
+	,y: null
 	,axis: null
 	,min: null
 	,max: null
@@ -542,6 +626,7 @@ rg.query.BaseQuery.prototype = {
 		return this.fold(function(_,_1) {
 			return start;
 		},function(index,dp,result) {
+			haxe.Log.trace(index,{ fileName : "Query.hx", lineNumber : 200, className : "rg.query.BaseQuery", methodName : "addIndex"});
 			dp[name] = index;
 			result.push(dp);
 			return ++index;
@@ -738,7 +823,11 @@ if(!chx.crypt) chx.crypt = {}
 chx.crypt.IBlockCipher = $hxClasses["chx.crypt.IBlockCipher"] = function() { }
 chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
 chx.crypt.IBlockCipher.prototype = {
-	__class__: chx.crypt.IBlockCipher
+	blockSize: null
+	,encryptBlock: null
+	,decryptBlock: null
+	,__class__: chx.crypt.IBlockCipher
+	,__properties__: {get_blockSize:"__getBlockSize"}
 }
 chx.crypt.RSAEncrypt = $hxClasses["chx.crypt.RSAEncrypt"] = function(nHex,eHex) {
 	this.init();
@@ -749,6 +838,7 @@ chx.crypt.RSAEncrypt.__interfaces__ = [chx.crypt.IBlockCipher];
 chx.crypt.RSAEncrypt.prototype = {
 	n: null
 	,e: null
+	,blockSize: null
 	,init: function() {
 		this.n = null;
 		this.e = 0;
@@ -756,6 +846,9 @@ chx.crypt.RSAEncrypt.prototype = {
 	,decryptBlock: function(enc) {
 		throw "Not a private key";
 		return null;
+	}
+	,encrypt: function(buf) {
+		return this.doBufferEncrypt(buf,this.doPublic.$bind(this),new chx.crypt.PadPkcs1Type2(this.__getBlockSize()));
 	}
 	,encryptBlock: function(block) {
 		var bsize = this.__getBlockSize();
@@ -783,6 +876,10 @@ chx.crypt.RSAEncrypt.prototype = {
 		}
 		return biRes;
 	}
+	,encyptText: function(text,separator) {
+		if(separator == null) separator = ":";
+		return BytesUtil.toHex(this.encrypt(Bytes.ofString(text)),":");
+	}
 	,setPublic: function(nHex,eHex) {
 		this.init();
 		if(nHex == null || nHex.length == 0) throw new chx.lang.NullPointerException("nHex not set: " + nHex);
@@ -796,6 +893,22 @@ chx.crypt.RSAEncrypt.prototype = {
 	}
 	,verify: function(data) {
 		return this.doBufferDecrypt(data,this.doPublic.$bind(this),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
+	}
+	,doBufferEncrypt: function(src,f,pf) {
+		var bs = this.__getBlockSize();
+		var ts = bs - 11;
+		var idx = 0;
+		var msg = new BytesBuffer();
+		while(idx < src.length) {
+			if(idx + ts > src.length) ts = src.length - idx;
+			var m = math.BigInteger.ofBytes(pf.pad(src.sub(idx,ts)),true);
+			var c = f(m);
+			var h = c.toBytesUnsigned();
+			if((h.length & 1) != 0) msg.b.push(0);
+			msg.add(h);
+			idx += ts;
+		}
+		return msg.getBytes();
 	}
 	,doBufferDecrypt: function(src,f,pf) {
 		var bs = this.__getBlockSize();
@@ -829,10 +942,43 @@ chx.crypt.RSAEncrypt.prototype = {
 		return sb.b.join("");
 	}
 	,__class__: chx.crypt.RSAEncrypt
+	,__properties__: {get_blockSize:"__getBlockSize"}
 }
-chx.crypt.RSA = $hxClasses["chx.crypt.RSA"] = function() { }
+chx.crypt.RSA = $hxClasses["chx.crypt.RSA"] = function(nHex,eHex,dHex) {
+	chx.crypt.RSAEncrypt.call(this,null,null);
+	this.init();
+	if(nHex != null) this.setPrivate(nHex,eHex,dHex);
+};
 chx.crypt.RSA.__name__ = ["chx","crypt","RSA"];
 chx.crypt.RSA.__interfaces__ = [chx.crypt.IBlockCipher];
+chx.crypt.RSA.generate = function(B,E) {
+	var rng = new math.prng.Random();
+	var key = new chx.crypt.RSA();
+	var qs = B >> 1;
+	key.e = Std.parseInt(StringTools.startsWith(E,"0x")?E:"0x" + E);
+	var ee = math.BigInteger.ofInt(key.e);
+	while(true) {
+		key.p = math.BigInteger.randomPrime(B - qs,ee,10,true,rng);
+		key.q = math.BigInteger.randomPrime(qs,ee,10,true,rng);
+		if(key.p.compare(key.q) <= 0) {
+			var t = key.p;
+			key.p = key.q;
+			key.q = t;
+		}
+		var p1 = key.p.sub(math.BigInteger.getONE());
+		var q1 = key.q.sub(math.BigInteger.getONE());
+		var phi = p1.mul(q1);
+		if(phi.gcd(ee).compare(math.BigInteger.getONE()) == 0) {
+			key.n = key.p.mul(key.q);
+			key.d = ee.modInverse(phi);
+			key.dmp1 = key.d.mod(p1);
+			key.dmq1 = key.d.mod(q1);
+			key.coeff = key.q.modInverse(key.p);
+			break;
+		}
+	}
+	return key;
+}
 chx.crypt.RSA.__super__ = chx.crypt.RSAEncrypt;
 chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 	d: null
@@ -849,6 +995,9 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 		this.dmp1 = null;
 		this.dmq1 = null;
 		this.coeff = null;
+	}
+	,decrypt: function(buf) {
+		return this.doBufferDecrypt(buf,this.doPrivate.$bind(this),new chx.crypt.PadPkcs1Type2(this.__getBlockSize()));
 	}
 	,decryptBlock: function(enc) {
 		var c = math.BigInteger.ofBytes(enc,true);
@@ -875,6 +1024,42 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 		}
 		return ba;
 	}
+	,decryptText: function(hexString) {
+		return this.decrypt(BytesUtil.ofHex(BytesUtil.cleanHexFormat(hexString)));
+	}
+	,sign: function(content) {
+		return this.doBufferEncrypt(content,this.doPrivate.$bind(this),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
+	}
+	,setPrivate: function(N,E,D) {
+		this.init();
+		chx.crypt.RSAEncrypt.prototype.setPublic.call(this,N,E);
+		if(D != null && D.length > 0) {
+			var s = BytesUtil.cleanHexFormat(D);
+			this.d = math.BigInteger.ofString(s,16);
+		} else throw "Invalid RSA private key";
+	}
+	,setPrivateEx: function(N,E,D,P,Q,DP,DQ,C) {
+		this.init();
+		this.setPrivate(N,E,D);
+		if(P != null && Q != null) {
+			this.p = math.BigInteger.ofString(BytesUtil.cleanHexFormat(P),16);
+			this.q = math.BigInteger.ofString(BytesUtil.cleanHexFormat(Q),16);
+			this.dmp1 = null;
+			this.dmq1 = null;
+			this.coeff = null;
+			if(DP != null) this.dmp1 = math.BigInteger.ofString(BytesUtil.cleanHexFormat(DP),16);
+			if(DQ != null) this.dmq1 = math.BigInteger.ofString(BytesUtil.cleanHexFormat(DQ),16);
+			if(C != null) this.coeff = math.BigInteger.ofString(BytesUtil.cleanHexFormat(C),16);
+			this.recalcCRT();
+		} else throw "Invalid RSA private key ex";
+	}
+	,recalcCRT: function() {
+		if(this.p != null && this.q != null) {
+			if(this.dmp1 == null) this.dmp1 = this.d.mod(this.p.sub(math.BigInteger.getONE()));
+			if(this.dmq1 == null) this.dmq1 = this.d.mod(this.q.sub(math.BigInteger.getONE()));
+			if(this.coeff == null) this.coeff = this.q.modInverse(this.p);
+		}
+	}
 	,doPrivate: function(x) {
 		if(this.p == null || this.q == null) return x.modPow(this.d,this.n);
 		var xp = x.mod(this.p).modPow(this.dmp1,this.p);
@@ -899,6 +1084,94 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 if(!rg.graph) rg.graph = {}
 rg.graph.Graphs = $hxClasses["rg.graph.Graphs"] = function() { }
 rg.graph.Graphs.__name__ = ["rg","graph","Graphs"];
+rg.graph.Graphs.crossings = function(a,b) {
+	var map = new Hash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i].vertex,i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = a[i];
+		var _g2 = 0, _g3 = n1.edgesp;
+		while(_g2 < _g3.length) {
+			var dst1 = _g3[_g2];
+			++_g2;
+			var p1 = map.get(dst1);
+			if(null == p1) continue;
+			var _g5 = i + 1, _g4 = a.length;
+			while(_g5 < _g4) {
+				var j = _g5++;
+				var n2 = a[j];
+				var _g6 = 0, _g7 = n2.edgesp;
+				while(_g6 < _g7.length) {
+					var dst2 = _g7[_g6];
+					++_g6;
+					var p2 = map.get(dst2);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+rg.graph.Graphs.layoutCrossings = function(a) {
+	var tot = 0;
+	var _g1 = 0, _g = a.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		tot += rg.graph.Graphs.crossings(a[i],a[i + 1]);
+	}
+	return tot;
+}
+rg.graph.Graphs.toMap = function(layout) {
+	var map = new Hash();
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			map.set(layout[i][j].vertex,layout[i][j]);
+		}
+	}
+	return map;
+}
+rg.graph.Graphs.toVertices = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			result.push(layout[i][j].vertex);
+		}
+	}
+	return result;
+}
+rg.graph.Graphs.toEdges = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			var v = layout[i][j].vertex;
+			var _g4 = 0, _g5 = layout[i][j].edgesp;
+			while(_g4 < _g5.length) {
+				var c = _g5[_g4];
+				++_g4;
+				result.push({ a : v, b : c});
+			}
+		}
+	}
+	return result;
+}
 rg.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 	var n = null, l = 0;
 	var $it0 = graph.iterator();
@@ -912,6 +1185,131 @@ rg.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 	}
 	return n;
 }
+rg.graph.Graphs.isSink = function(node) {
+	return node.edgesp.length == 0 && node.edgesn.length > 0;
+}
+rg.graph.Graphs.isSource = function(node) {
+	return node.edgesn.length == 0 && node.edgesp.length == 0;
+}
+rg.graph.Graphs.findSink = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findSource = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
+	}
+	return null;
+}
+rg.graph.Graphs.findAllIsolated = function(graph) {
+	var isolated = [];
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
+	}
+	return isolated;
+}
+rg.graph.Graphs.addConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,b,a);
+	if(null != path && path.every(function(v,i) {
+		return i == 0 || i == path.length - 1 || rg.graph.Graphs.isDummy(v);
+	})) {
+		path.reverse();
+		rg.graph.Graphs.addConnections(graph,path);
+	} else rg.graph.Graphs.addConnections(graph,[a,b]);
+}
+rg.graph.Graphs.addConnections = function(graph,arr) {
+	var _g1 = 0, _g = arr.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a = arr[i], b = arr[i + 1];
+		graph.get(a).edgesp.push(b);
+		graph.get(b).edgesp.push(a);
+	}
+}
+rg.graph.Graphs.reverseConnection = function(graph,a,b) {
+	var path = rg.graph.Graphs.findPath(graph,a,b);
+	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 168, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 169, className : "rg.graph.Graphs", methodName : "reverseConnection"});
+	if(null == path) return false;
+	var _g1 = 0, _g = path.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
+		na.edgesp.remove(b1);
+		na.edgesn.push(b1);
+		nb.edgesn.remove(a1);
+		nb.edgesp.push(a1);
+	}
+	return true;
+}
+rg.graph.Graphs.findPath = function(graph,a,b) {
+	var traveled = new thx.collection.Set(), paths = [], t, r;
+	var traverse = (function($this) {
+		var $r;
+		var traverse = null;
+		traverse = function(path,n) {
+			var totraverse = [];
+			var _g = 0, _g1 = n.edgesn;
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				if(parent == a) return path.concat([a]); else if(rg.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,a2) {
+					return function() {
+						return f(a1,a2);
+					};
+				})(traverse,path.concat([parent]),t));
+			}
+			var _g = 0;
+			while(_g < totraverse.length) {
+				var t1 = totraverse[_g];
+				++_g;
+				if(null != (r = t1())) return r;
+			}
+			return null;
+		};
+		$r = traverse;
+		return $r;
+	}(this));
+	var p = traverse([b],graph.get(b));
+	if(null == p) return null;
+	p.reverse();
+	return p;
+}
+rg.graph.Graphs.isDummy = function(v) {
+	return v.substr(0,1) == "#";
+}
+rg.graph.Graphs.createDummy = function(a,b,lvl) {
+	return "#" + ++rg.graph.Graphs.id;
+}
+rg.graph.Graphs.removeNode = function(graph,node) {
+	graph.remove(node.vertex);
+}
+rg.graph.Graphs.addNode = function(graph,node) {
+	graph.set(node.vertex,node);
+}
+rg.graph.Graphs.clone = function(graph) {
+	var o = new Hash();
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		rg.graph.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.copy(), edgesp : node.edgesp.copy()});
+	}
+	return o;
+}
+rg.graph.Graphs.empty = function(graph) {
+	return Hashes.count(graph) == 0;
+}
+rg.graph.Graphs.count = function(graph) {
+	return Hashes.count(graph);
+}
 rg.graph.Graphs.prototype = {
 	__class__: rg.graph.Graphs
 }
@@ -923,7 +1321,17 @@ rg.app.charts.JSBridge.log = function(msg) {
 	var c = (window.console && window.console.warn) || alert;
 	c(msg);
 }
+rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
+	var rv = -1.0;
+	if(js.Lib.window.navigator.appName == "Microsoft Internet Explorer") {
+		var ua = js.Lib.window.navigator.userAgent;
+		var re = new EReg("MSIE ([0-9]{1,}[\\.0-9]{0,})","");
+		if(re.match(ua) != null) rv = Std.parseFloat(re.matched(1));
+	}
+	return rv;
+}
 rg.app.charts.JSBridge.main = function() {
+	if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
 	var r = (typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid;
 	var globalNotifier = new hxevents.Notifier();
 	var globalReady = false;
@@ -938,17 +1346,7 @@ rg.app.charts.JSBridge.main = function() {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
 		rg.app.charts.MVPOptions.complete(copt,function(opt) {
-			try {
-				app.visualization(rg.app.charts.JSBridge.select(el),opt);
-			} catch( $e0 ) {
-				if( js.Boot.__instanceof($e0,thx.error.Error) ) {
-					var e = $e0;
-					rg.app.charts.JSBridge.log(e.toString());
-				} else {
-				var e = $e0;
-				rg.app.charts.JSBridge.log(Std.string(e));
-				}
-			}
+			app.visualization(rg.app.charts.JSBridge.select(el),opt);
 		});
 	};
 	r.barChart = function(el,options) {
@@ -1014,7 +1412,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.3.7353"};
+	r.info.charts = { version : "1.4.2.7327"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -1033,13 +1431,529 @@ rg.app.charts.JSBridge.chartopt = function(ob,viz) {
 rg.app.charts.JSBridge.prototype = {
 	__class__: rg.app.charts.JSBridge
 }
+var Hash = $hxClasses["Hash"] = function() {
+	this.h = {}
+	if(this.h.__proto__ != null) {
+		this.h.__proto__ = null;
+		delete(this.h.__proto__);
+	}
+};
+Hash.__name__ = ["Hash"];
+Hash.prototype = {
+	h: null
+	,set: function(key,value) {
+		this.h["$" + key] = value;
+	}
+	,get: function(key) {
+		return this.h["$" + key];
+	}
+	,exists: function(key) {
+		try {
+			key = "$" + key;
+			return this.hasOwnProperty.call(this.h,key);
+		} catch( e ) {
+			for(var i in this.h) if( i == key ) return true;
+			return false;
+		}
+	}
+	,remove: function(key) {
+		if(!this.exists(key)) return false;
+		delete(this.h["$" + key]);
+		return true;
+	}
+	,keys: function() {
+		var a = new Array();
+		for(var i in this.h) a.push(i.substr(1));
+		return a.iterator();
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref["$" + i];
+		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b[s.b.length] = "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b[s.b.length] = i == null?"null":i;
+			s.b[s.b.length] = " => ";
+			s.add(Std.string(this.get(i)));
+			if(it.hasNext()) s.b[s.b.length] = ", ";
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
+	}
+	,__class__: Hash
+}
+if(!thx.color) thx.color = {}
+thx.color.Rgb = $hxClasses["thx.color.Rgb"] = function(r,g,b) {
+	this.red = Ints.clamp(r,0,255);
+	this.green = Ints.clamp(g,0,255);
+	this.blue = Ints.clamp(b,0,255);
+};
+thx.color.Rgb.__name__ = ["thx","color","Rgb"];
+thx.color.Rgb.fromFloats = function(r,g,b) {
+	return new thx.color.Rgb(Ints.interpolate(r,0,255,null),Ints.interpolate(g,0,255,null),Ints.interpolate(b,0,255,null));
+}
+thx.color.Rgb.fromInt = function(v) {
+	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
+}
+thx.color.Rgb.equals = function(a,b) {
+	return a.red == b.red && a.green == b.green && a.blue == b.blue;
+}
+thx.color.Rgb.darker = function(color,t,equation) {
+	return new thx.color.Rgb(Ints.interpolate(t,color.red,0,equation),Ints.interpolate(t,color.green,0,equation),Ints.interpolate(t,color.blue,0,equation));
+}
+thx.color.Rgb.lighter = function(color,t,equation) {
+	return new thx.color.Rgb(Ints.interpolate(t,color.red,255,equation),Ints.interpolate(t,color.green,255,equation),Ints.interpolate(t,color.blue,255,equation));
+}
+thx.color.Rgb.interpolate = function(a,b,t,equation) {
+	return new thx.color.Rgb(Ints.interpolate(t,a.red,b.red,equation),Ints.interpolate(t,a.green,b.green,equation),Ints.interpolate(t,a.blue,b.blue,equation));
+}
+thx.color.Rgb.interpolatef = function(a,b,equation) {
+	var r = Ints.interpolatef(a.red,b.red,equation), g = Ints.interpolatef(a.green,b.green,equation), b1 = Ints.interpolatef(a.blue,b.blue,equation);
+	return function(t) {
+		return new thx.color.Rgb(r(t),g(t),b1(t));
+	};
+}
+thx.color.Rgb.contrast = function(c) {
+	var nc = thx.color.Hsl.toHsl(c);
+	if(nc.lightness < .5) return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness + 0.5); else return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness - 0.5);
+}
+thx.color.Rgb.contrastBW = function(c) {
+	var g = thx.color.Grey.toGrey(c);
+	var nc = thx.color.Hsl.toHsl(c);
+	if(g.grey < .5) return new thx.color.Hsl(nc.hue,nc.saturation,1.0); else return new thx.color.Hsl(nc.hue,nc.saturation,0);
+}
+thx.color.Rgb.interpolateBrightness = function(t,equation) {
+	return (thx.color.Rgb.interpolateBrightnessf(equation))(t);
+}
+thx.color.Rgb.interpolateBrightnessf = function(equation) {
+	var i = Ints.interpolatef(0,255,equation);
+	return function(t) {
+		var g = i(t);
+		return new thx.color.Rgb(g,g,g);
+	};
+}
+thx.color.Rgb.interpolateHeat = function(t,middle,equation) {
+	return (thx.color.Rgb.interpolateHeatf(middle,equation))(t);
+}
+thx.color.Rgb.interpolateHeatf = function(middle,equation) {
+	return thx.color.Rgb.interpolateStepsf([new thx.color.Rgb(0,0,0),null != middle?middle:new thx.color.Rgb(255,127,0),new thx.color.Rgb(255,255,255)],equation);
+}
+thx.color.Rgb.interpolateRainbow = function(t,equation) {
+	return (thx.color.Rgb.interpolateRainbowf(equation))(t);
+}
+thx.color.Rgb.interpolateRainbowf = function(equation) {
+	return thx.color.Rgb.interpolateStepsf([new thx.color.Rgb(0,0,255),new thx.color.Rgb(0,255,255),new thx.color.Rgb(0,255,0),new thx.color.Rgb(255,255,0),new thx.color.Rgb(255,0,0)],equation);
+}
+thx.color.Rgb.interpolateStepsf = function(steps,equation) {
+	if(steps.length <= 0) return (function($this) {
+		var $r;
+		throw new thx.error.Error("invalid number of steps",null,null,{ fileName : "Rgb.hx", lineNumber : 164, className : "thx.color.Rgb", methodName : "interpolateStepsf"});
+		return $r;
+	}(this)); else if(steps.length == 1) return function(t) {
+		return steps[0];
+	}; else if(steps.length == 2) return thx.color.Rgb.interpolatef(steps[0],steps[1],equation);
+	var len = steps.length - 1, step = 1 / len, f = [];
+	var _g = 0;
+	while(_g < len) {
+		var i = _g++;
+		f[i] = thx.color.Rgb.interpolatef(steps[i],steps[i + 1]);
+	}
+	return function(t) {
+		if(t < 0) t = 0; else if(t > 1) t = 1;
+		var pos = t == 1?len - 1:Math.floor(t / step);
+		return f[pos](len * (t - pos * step));
+	};
+}
+thx.color.Rgb.prototype = {
+	blue: null
+	,green: null
+	,red: null
+	,'int': function() {
+		return (this.red & 255) << 16 | (this.green & 255) << 8 | this.blue & 255;
+	}
+	,hex: function(prefix) {
+		if(prefix == null) prefix = "";
+		return prefix + StringTools.hex(this.red,2) + StringTools.hex(this.green,2) + StringTools.hex(this.blue,2);
+	}
+	,toCss: function() {
+		return this.hex("#");
+	}
+	,toRgbString: function() {
+		return "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
+	}
+	,toString: function() {
+		return this.toRgbString();
+	}
+	,__class__: thx.color.Rgb
+}
+var EReg = $hxClasses["EReg"] = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+};
+EReg.__name__ = ["EReg"];
+EReg.prototype = {
+	r: null
+	,match: function(s) {
+		this.r.m = this.r.exec(s);
+		this.r.s = s;
+		this.r.l = RegExp.leftContext;
+		this.r.r = RegExp.rightContext;
+		return this.r.m != null;
+	}
+	,matched: function(n) {
+		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
+			var $r;
+			throw "EReg::matched";
+			return $r;
+		}(this));
+	}
+	,matchedLeft: function() {
+		if(this.r.m == null) throw "No string matched";
+		if(this.r.l == null) return this.r.s.substr(0,this.r.m.index);
+		return this.r.l;
+	}
+	,matchedRight: function() {
+		if(this.r.m == null) throw "No string matched";
+		if(this.r.r == null) {
+			var sz = this.r.m.index + this.r.m[0].length;
+			return this.r.s.substr(sz,this.r.s.length - sz);
+		}
+		return this.r.r;
+	}
+	,matchedPos: function() {
+		if(this.r.m == null) throw "No string matched";
+		return { pos : this.r.m.index, len : this.r.m[0].length};
+	}
+	,split: function(s) {
+		var d = "#__delim__#";
+		return s.replace(this.r,d).split(d);
+	}
+	,replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,customReplace: function(s,f) {
+		var buf = new StringBuf();
+		while(true) {
+			if(!this.match(s)) break;
+			buf.add(this.matchedLeft());
+			buf.add(f(this));
+			s = this.matchedRight();
+		}
+		buf.b[buf.b.length] = s == null?"null":s;
+		return buf.b.join("");
+	}
+	,__class__: EReg
+}
+var Ints = $hxClasses["Ints"] = function() { }
+Ints.__name__ = ["Ints"];
+Ints.range = function(start,stop,step) {
+	if(step == null) step = 1;
+	if(null == stop) {
+		stop = start;
+		start = 0;
+	}
+	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 19, className : "Ints", methodName : "range"});
+	var range = [], i = -1, j;
+	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	return range;
+}
+Ints.sign = function(v) {
+	return v < 0?-1:1;
+}
+Ints.abs = function(a) {
+	return a < 0?-a:a;
+}
+Ints.min = function(a,b) {
+	return a < b?a:b;
+}
+Ints.max = function(a,b) {
+	return a > b?a:b;
+}
+Ints.wrap = function(v,min,max) {
+	return Math.round(Floats.wrap(v,min,max));
+}
+Ints.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Ints.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
+Ints.interpolate = function(f,min,max,equation) {
+	if(max == null) max = 100.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return Math.round(min + equation(f) * (max - min));
+}
+Ints.interpolatef = function(min,max,equation) {
+	if(max == null) max = 1.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = max - min;
+	return function(f) {
+		return Math.round(min + equation(f) * d);
+	};
+}
+Ints.format = function(v,param,params,culture) {
+	return (Ints.formatf(param,params,culture))(v);
+}
+Ints.formatf = function(param,params,culture) {
+	return Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
+}
+Ints.canParse = function(s) {
+	return Ints._reparse.match(s);
+}
+Ints.parse = function(s) {
+	if(s.substr(0,1) == "+") s = s.substr(1);
+	return Std.parseInt(s);
+}
+Ints.compare = function(a,b) {
+	return a - b;
+}
+Ints.prototype = {
+	__class__: Ints
+}
+thx.color.NamedColors = $hxClasses["thx.color.NamedColors"] = function() { }
+thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
+thx.color.NamedColors.aliceblue = null;
+thx.color.NamedColors.antiquewhite = null;
+thx.color.NamedColors.aqua = null;
+thx.color.NamedColors.aquamarine = null;
+thx.color.NamedColors.azure = null;
+thx.color.NamedColors.beige = null;
+thx.color.NamedColors.bisque = null;
+thx.color.NamedColors.black = null;
+thx.color.NamedColors.blanchedalmond = null;
+thx.color.NamedColors.blue = null;
+thx.color.NamedColors.blueviolet = null;
+thx.color.NamedColors.brown = null;
+thx.color.NamedColors.burlywood = null;
+thx.color.NamedColors.cadetblue = null;
+thx.color.NamedColors.chartreuse = null;
+thx.color.NamedColors.chocolate = null;
+thx.color.NamedColors.coral = null;
+thx.color.NamedColors.cornflowerblue = null;
+thx.color.NamedColors.cornsilk = null;
+thx.color.NamedColors.crimson = null;
+thx.color.NamedColors.cyan = null;
+thx.color.NamedColors.darkblue = null;
+thx.color.NamedColors.darkcyan = null;
+thx.color.NamedColors.darkgoldenrod = null;
+thx.color.NamedColors.darkgray = null;
+thx.color.NamedColors.darkgreen = null;
+thx.color.NamedColors.darkgrey = null;
+thx.color.NamedColors.darkkhaki = null;
+thx.color.NamedColors.darkmagenta = null;
+thx.color.NamedColors.darkolivegreen = null;
+thx.color.NamedColors.darkorange = null;
+thx.color.NamedColors.darkorchid = null;
+thx.color.NamedColors.darkred = null;
+thx.color.NamedColors.darksalmon = null;
+thx.color.NamedColors.darkseagreen = null;
+thx.color.NamedColors.darkslateblue = null;
+thx.color.NamedColors.darkslategray = null;
+thx.color.NamedColors.darkslategrey = null;
+thx.color.NamedColors.darkturquoise = null;
+thx.color.NamedColors.darkviolet = null;
+thx.color.NamedColors.deeppink = null;
+thx.color.NamedColors.deepskyblue = null;
+thx.color.NamedColors.dimgray = null;
+thx.color.NamedColors.dimgrey = null;
+thx.color.NamedColors.dodgerblue = null;
+thx.color.NamedColors.firebrick = null;
+thx.color.NamedColors.floralwhite = null;
+thx.color.NamedColors.forestgreen = null;
+thx.color.NamedColors.fuchsia = null;
+thx.color.NamedColors.gainsboro = null;
+thx.color.NamedColors.ghostwhite = null;
+thx.color.NamedColors.gold = null;
+thx.color.NamedColors.goldenrod = null;
+thx.color.NamedColors.gray = null;
+thx.color.NamedColors.green = null;
+thx.color.NamedColors.greenyellow = null;
+thx.color.NamedColors.grey = null;
+thx.color.NamedColors.honeydew = null;
+thx.color.NamedColors.hotpink = null;
+thx.color.NamedColors.indianred = null;
+thx.color.NamedColors.indigo = null;
+thx.color.NamedColors.ivory = null;
+thx.color.NamedColors.khaki = null;
+thx.color.NamedColors.lavender = null;
+thx.color.NamedColors.lavenderblush = null;
+thx.color.NamedColors.lawngreen = null;
+thx.color.NamedColors.lemonchiffon = null;
+thx.color.NamedColors.lightblue = null;
+thx.color.NamedColors.lightcoral = null;
+thx.color.NamedColors.lightcyan = null;
+thx.color.NamedColors.lightgoldenrodyellow = null;
+thx.color.NamedColors.lightgray = null;
+thx.color.NamedColors.lightgreen = null;
+thx.color.NamedColors.lightgrey = null;
+thx.color.NamedColors.lightpink = null;
+thx.color.NamedColors.lightsalmon = null;
+thx.color.NamedColors.lightseagreen = null;
+thx.color.NamedColors.lightskyblue = null;
+thx.color.NamedColors.lightslategray = null;
+thx.color.NamedColors.lightslategrey = null;
+thx.color.NamedColors.lightsteelblue = null;
+thx.color.NamedColors.lightyellow = null;
+thx.color.NamedColors.lime = null;
+thx.color.NamedColors.limegreen = null;
+thx.color.NamedColors.linen = null;
+thx.color.NamedColors.magenta = null;
+thx.color.NamedColors.maroon = null;
+thx.color.NamedColors.mediumaquamarine = null;
+thx.color.NamedColors.mediumblue = null;
+thx.color.NamedColors.mediumorchid = null;
+thx.color.NamedColors.mediumpurple = null;
+thx.color.NamedColors.mediumseagreen = null;
+thx.color.NamedColors.mediumslateblue = null;
+thx.color.NamedColors.mediumspringgreen = null;
+thx.color.NamedColors.mediumturquoise = null;
+thx.color.NamedColors.mediumvioletred = null;
+thx.color.NamedColors.midnightblue = null;
+thx.color.NamedColors.mintcream = null;
+thx.color.NamedColors.mistyrose = null;
+thx.color.NamedColors.moccasin = null;
+thx.color.NamedColors.navajowhite = null;
+thx.color.NamedColors.navy = null;
+thx.color.NamedColors.oldlace = null;
+thx.color.NamedColors.olive = null;
+thx.color.NamedColors.olivedrab = null;
+thx.color.NamedColors.orange = null;
+thx.color.NamedColors.orangered = null;
+thx.color.NamedColors.orchid = null;
+thx.color.NamedColors.palegoldenrod = null;
+thx.color.NamedColors.palegreen = null;
+thx.color.NamedColors.paleturquoise = null;
+thx.color.NamedColors.palevioletred = null;
+thx.color.NamedColors.papayawhip = null;
+thx.color.NamedColors.peachpuff = null;
+thx.color.NamedColors.peru = null;
+thx.color.NamedColors.pink = null;
+thx.color.NamedColors.plum = null;
+thx.color.NamedColors.powderblue = null;
+thx.color.NamedColors.purple = null;
+thx.color.NamedColors.red = null;
+thx.color.NamedColors.rosybrown = null;
+thx.color.NamedColors.royalblue = null;
+thx.color.NamedColors.saddlebrown = null;
+thx.color.NamedColors.salmon = null;
+thx.color.NamedColors.sandybrown = null;
+thx.color.NamedColors.seagreen = null;
+thx.color.NamedColors.seashell = null;
+thx.color.NamedColors.sienna = null;
+thx.color.NamedColors.silver = null;
+thx.color.NamedColors.skyblue = null;
+thx.color.NamedColors.slateblue = null;
+thx.color.NamedColors.slategray = null;
+thx.color.NamedColors.slategrey = null;
+thx.color.NamedColors.snow = null;
+thx.color.NamedColors.springgreen = null;
+thx.color.NamedColors.steelblue = null;
+thx.color.NamedColors.tan = null;
+thx.color.NamedColors.teal = null;
+thx.color.NamedColors.thistle = null;
+thx.color.NamedColors.tomato = null;
+thx.color.NamedColors.turquoise = null;
+thx.color.NamedColors.violet = null;
+thx.color.NamedColors.wheat = null;
+thx.color.NamedColors.white = null;
+thx.color.NamedColors.whitesmoke = null;
+thx.color.NamedColors.yellow = null;
+thx.color.NamedColors.yellowgreen = null;
+thx.color.NamedColors.byName = null;
+thx.color.NamedColors.prototype = {
+	__class__: thx.color.NamedColors
+}
+var math = math || {}
+if(!math.prng) math.prng = {}
+math.prng.Random = $hxClasses["math.prng.Random"] = function(backend) {
+	this.createState(backend);
+	this.initialized = false;
+};
+math.prng.Random.__name__ = ["math","prng","Random"];
+math.prng.Random.prototype = {
+	state: null
+	,pool: null
+	,pptr: null
+	,initialized: null
+	,next: function() {
+		if(this.initialized == false) {
+			this.createState();
+			this.state.init(this.pool);
+			var _g1 = 0, _g = this.pool.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.pool[i] = 0;
+			}
+			this.pptr = 0;
+			this.pool = new Array();
+			this.initialized = true;
+		}
+		return this.state.next();
+	}
+	,nextBytes: function(bytes,pos,len) {
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			bytes.b[pos + i] = this.next() & 255;
+		}
+	}
+	,nextBytesStream: function(out,count) {
+		var _g = 0;
+		while(_g < count) {
+			var i = _g++;
+			out.writeUInt8(this.next());
+		}
+	}
+	,seedInt: function(x) {
+		this.pool[this.pptr++] ^= x & 255;
+		this.pool[this.pptr++] ^= x >> 8 & 255;
+		this.pool[this.pptr++] ^= x >> 16 & 255;
+		this.pool[this.pptr++] ^= x >> 24 & 255;
+		if(this.pptr >= this.state.size) this.pptr -= this.state.size;
+	}
+	,seedTime: function() {
+		var dt = Date.now().getTime();
+		var m = dt * 1000 | 0;
+		this.seedInt(m);
+	}
+	,createState: function(backend) {
+		if(backend == null) this.state = new math.prng.ArcFour(); else this.state = backend;
+		if(this.pool == null) {
+			this.pool = new Array();
+			this.pptr = 0;
+			var t;
+			while(this.pptr < this.state.size) {
+				t = Math.floor(65536 * Math.random());
+				this.pool[this.pptr++] = t >>> 8;
+				this.pool[this.pptr++] = t & 255;
+			}
+			this.pptr = 0;
+			this.seedTime();
+		}
+	}
+	,__class__: math.prng.Random
+}
 if(!rg.visualization) rg.visualization = {}
 rg.visualization.Visualization = $hxClasses["rg.visualization.Visualization"] = function(container) {
 	this.container = container;
 };
 rg.visualization.Visualization.__name__ = ["rg","visualization","Visualization"];
 rg.visualization.Visualization.prototype = {
-	ready: null
+	independentVariables: null
+	,dependentVariables: null
+	,variables: null
+	,container: null
+	,ready: null
 	,hasRendered: null
 	,setVariables: function(variables,independentVariables,dependentVariables) {
 		var me = this;
@@ -1056,7 +1970,7 @@ rg.visualization.Visualization.prototype = {
 		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 43, className : "rg.visualization.Visualization", methodName : "init"});
 	}
 	,feedData: function(data) {
-		null;
+		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 48, className : "rg.visualization.Visualization", methodName : "feedData"});
 	}
 	,setVerticalOffset: function(offset) {
 	}
@@ -1070,6 +1984,9 @@ rg.visualization.Visualization.prototype = {
 		this.ready.add(handler);
 		if(this.hasRendered) handler();
 	}
+	,removeReady: function(handler) {
+		this.ready.remove(handler);
+	}
 	,__class__: rg.visualization.Visualization
 }
 rg.visualization.VisualizationSvg = $hxClasses["rg.visualization.VisualizationSvg"] = function(layout) {
@@ -1079,7 +1996,9 @@ rg.visualization.VisualizationSvg = $hxClasses["rg.visualization.VisualizationSv
 rg.visualization.VisualizationSvg.__name__ = ["rg","visualization","VisualizationSvg"];
 rg.visualization.VisualizationSvg.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualization.prototype,{
-	setVerticalOffset: function(offset) {
+	baseChart: null
+	,layout: null
+	,setVerticalOffset: function(offset) {
 		this.baseChart.setVerticalChartOffset(offset);
 	}
 	,__class__: rg.visualization.VisualizationSvg
@@ -1397,6 +2316,9 @@ IntHash.prototype = {
 	,get: function(key) {
 		return this.h[key];
 	}
+	,exists: function(key) {
+		return this.h[key] != null;
+	}
 	,remove: function(key) {
 		if(this.h[key] == null) return false;
 		delete(this.h[key]);
@@ -1414,6 +2336,20 @@ IntHash.prototype = {
 			var i = this.it.next();
 			return this.ref[i];
 		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b[s.b.length] = "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b[s.b.length] = i == null?"null":i;
+			s.b[s.b.length] = " => ";
+			s.add(Std.string(this.get(i)));
+			if(it.hasNext()) s.b[s.b.length] = ", ";
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
 	}
 	,__class__: IntHash
 }
@@ -1435,6 +2371,7 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,click: null
 	,labelDataPoint: null
 	,labelDataPointOver: null
+	,ready: null
 	,verticalChartOffset: null
 	,panelx: null
 	,panely: null
@@ -1495,6 +2432,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	stacked: null
 	,chart: null
 	,defs: null
+	,dps: null
 	,gradientLightness: null
 	,displayGradient: null
 	,padding: null
@@ -1660,6 +2598,9 @@ chx.lang.FatalException.__name__ = ["chx","lang","FatalException"];
 chx.lang.FatalException.prototype = {
 	message: null
 	,cause: null
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)) + "(" + (this.message == null?"":this.message + ")");
+	}
 	,__class__: chx.lang.FatalException
 }
 rg.graph.OneCycleRemover = $hxClasses["rg.graph.OneCycleRemover"] = function() {
@@ -1702,15 +2643,36 @@ if(!thx.culture) thx.culture = {}
 thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
 thx.culture.Info.prototype = {
-	__class__: thx.culture.Info
+	name: null
+	,'native': null
+	,english: null
+	,iso2: null
+	,iso3: null
+	,pluralRule: null
+	,toString: function() {
+		return this["native"] + " (" + this.english + ")";
+	}
+	,__class__: thx.culture.Info
 }
 thx.culture.Culture = $hxClasses["thx.culture.Culture"] = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
+thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
+thx.culture.Culture.cultures = null;
 thx.culture.Culture.getCultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
 	return thx.culture.Culture.cultures;
 }
+thx.culture.Culture.get = function(name) {
+	return thx.culture.Culture.getCultures().get(name.toLowerCase());
+}
+thx.culture.Culture.names = function() {
+	return thx.culture.Culture.getCultures().keys();
+}
+thx.culture.Culture.exists = function(culture) {
+	return thx.culture.Culture.getCultures().exists(culture.toLowerCase());
+}
 thx.culture.Culture._defaultCulture = null;
+thx.culture.Culture.defaultCulture = null;
 thx.culture.Culture.getDefaultCulture = function() {
 	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
 }
@@ -1722,9 +2684,31 @@ thx.culture.Culture.add = function(culture) {
 	var name = culture.name.toLowerCase();
 	if(!thx.culture.Culture.getCultures().exists(name)) thx.culture.Culture.getCultures().set(name,culture);
 }
+thx.culture.Culture.loadAll = function() {
+}
 thx.culture.Culture.__super__ = thx.culture.Info;
 thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
-	__class__: thx.culture.Culture
+	language: null
+	,date: null
+	,englishCurrency: null
+	,nativeCurrency: null
+	,currencySymbol: null
+	,currencyIso: null
+	,englishRegion: null
+	,nativeRegion: null
+	,isMetric: null
+	,digits: null
+	,signNeg: null
+	,signPos: null
+	,symbolNaN: null
+	,symbolPercent: null
+	,symbolPermille: null
+	,symbolNegInf: null
+	,symbolPosInf: null
+	,number: null
+	,currency: null
+	,percent: null
+	,__class__: thx.culture.Culture
 });
 if(!rg.layout) rg.layout = {}
 rg.layout.Layout = $hxClasses["rg.layout.Layout"] = function(width,height,container) {
@@ -1735,7 +2719,10 @@ rg.layout.Layout = $hxClasses["rg.layout.Layout"] = function(width,height,contai
 rg.layout.Layout.__name__ = ["rg","layout","Layout"];
 rg.layout.Layout.prototype = {
 	mainPanelName: null
+	,width: null
+	,height: null
 	,space: null
+	,container: null
 	,getContext: function(name) {
 		return null;
 	}
@@ -1795,56 +2782,6 @@ rg.layout.Layout.prototype = {
 	,adjustPadding: function() {
 	}
 	,__class__: rg.layout.Layout
-}
-var EReg = $hxClasses["EReg"] = function(r,opt) {
-	opt = opt.split("u").join("");
-	this.r = new RegExp(r,opt);
-};
-EReg.__name__ = ["EReg"];
-EReg.prototype = {
-	r: null
-	,match: function(s) {
-		this.r.m = this.r.exec(s);
-		this.r.s = s;
-		this.r.l = RegExp.leftContext;
-		this.r.r = RegExp.rightContext;
-		return this.r.m != null;
-	}
-	,matched: function(n) {
-		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
-			var $r;
-			throw "EReg::matched";
-			return $r;
-		}(this));
-	}
-	,matchedLeft: function() {
-		if(this.r.m == null) throw "No string matched";
-		if(this.r.l == null) return this.r.s.substr(0,this.r.m.index);
-		return this.r.l;
-	}
-	,matchedRight: function() {
-		if(this.r.m == null) throw "No string matched";
-		if(this.r.r == null) {
-			var sz = this.r.m.index + this.r.m[0].length;
-			return this.r.s.substr(sz,this.r.s.length - sz);
-		}
-		return this.r.r;
-	}
-	,replace: function(s,by) {
-		return s.replace(this.r,by);
-	}
-	,customReplace: function(s,f) {
-		var buf = new StringBuf();
-		while(true) {
-			if(!this.match(s)) break;
-			buf.add(this.matchedLeft());
-			buf.add(f(this));
-			s = this.matchedRight();
-		}
-		buf.b[buf.b.length] = s == null?"null":s;
-		return buf.b.join("");
-	}
-	,__class__: EReg
 }
 var Dates = $hxClasses["Dates"] = function() { }
 Dates.__name__ = ["Dates"];
@@ -2084,7 +3021,9 @@ if(!thx.geo) thx.geo = {}
 thx.geo.IProjection = $hxClasses["thx.geo.IProjection"] = function() { }
 thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
 thx.geo.IProjection.prototype = {
-	__class__: thx.geo.IProjection
+	project: null
+	,invert: null
+	,__class__: thx.geo.IProjection
 }
 thx.geo.Albers = $hxClasses["thx.geo.Albers"] = function() {
 	this._origin = [-98.0,38];
@@ -2096,7 +3035,11 @@ thx.geo.Albers = $hxClasses["thx.geo.Albers"] = function() {
 thx.geo.Albers.__name__ = ["thx","geo","Albers"];
 thx.geo.Albers.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Albers.prototype = {
-	lng0: null
+	origin: null
+	,parallels: null
+	,translate: null
+	,scale: null
+	,lng0: null
 	,n: null
 	,C: null
 	,p0: null
@@ -2150,6 +3093,7 @@ thx.geo.Albers.prototype = {
 		return this._scale;
 	}
 	,__class__: thx.geo.Albers
+	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate",set_parallels:"setParallels",get_parallels:"getParallels",set_origin:"setOrigin",get_origin:"getOrigin"}
 }
 if(!rg.info) rg.info = {}
 rg.info.InfoFunnelChart = $hxClasses["rg.info.InfoFunnelChart"] = function() {
@@ -2222,11 +3166,21 @@ chx.lang.IOException.__super__ = chx.lang.Exception;
 chx.lang.IOException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.IOException
 });
+chx.lang.BlockedException = $hxClasses["chx.lang.BlockedException"] = function(msg,cause) {
+	chx.lang.IOException.call(this,msg,cause);
+};
+chx.lang.BlockedException.__name__ = ["chx","lang","BlockedException"];
+chx.lang.BlockedException.__super__ = chx.lang.IOException;
+chx.lang.BlockedException.prototype = $extend(chx.lang.IOException.prototype,{
+	__class__: chx.lang.BlockedException
+});
 if(!chx.io) chx.io = {}
 chx.io.Output = $hxClasses["chx.io.Output"] = function() { }
 chx.io.Output.__name__ = ["chx","io","Output"];
 chx.io.Output.prototype = {
-	writeByte: function(c) {
+	bigEndian: null
+	,lock: null
+	,writeByte: function(c) {
 		return (function($this) {
 			var $r;
 			throw new chx.lang.FatalException("Not implemented");
@@ -2244,13 +3198,178 @@ chx.io.Output.prototype = {
 		}
 		return len;
 	}
+	,flush: function() {
+		return this;
+	}
+	,close: function() {
+	}
 	,setBigEndian: function(b) {
 		this.bigEndian = b;
 		return b;
 	}
+	,write: function(b) {
+		var l = b.length;
+		var p = 0;
+		while(l > 0) {
+			var k = this.writeBytes(b,p,l);
+			if(k == 0) throw new chx.lang.BlockedException();
+			p += k;
+			l -= k;
+		}
+		return this;
+	}
+	,writeFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.writeBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+		return this;
+	}
+	,writeFloat: function(x) {
+		this.write(math.IEEE754.floatToBytes(x,this.bigEndian));
+		return this;
+	}
+	,writeDouble: function(x) {
+		this.write(math.IEEE754.doubleToBytes(x,this.bigEndian));
+		return this;
+	}
+	,writeInt8: function(x) {
+		if(x < -128 || x >= 128) throw new chx.lang.OverflowException();
+		this.writeByte(x & 255);
+		return this;
+	}
+	,writeUInt8: function(x) {
+		return this.writeByte(x);
+	}
+	,writeInt16: function(x) {
+		if(x < -32768 || x >= 32768) throw new chx.lang.OverflowException();
+		this.writeUInt16(x & 65535);
+		return this;
+	}
+	,writeUInt16: function(x) {
+		if(x < 0 || x >= 65536) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >> 8);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8);
+		}
+		return this;
+	}
+	,writeInt24: function(x) {
+		if(x < -8388608 || x >= 8388608) throw new chx.lang.OverflowException();
+		this.writeUInt24(x & 16777215);
+		return this;
+	}
+	,writeUInt24: function(x) {
+		if(x < 0 || x >= 16777216) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >> 16);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16);
+		}
+		return this;
+	}
+	,writeInt31: function(x) {
+		if(x < -1073741824 || x >= 1073741824) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >>> 24);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >>> 24);
+		}
+		return this;
+	}
+	,writeUInt30: function(x) {
+		if(x < 0 || x >= 1073741824) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >>> 24);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >>> 24);
+		}
+		return this;
+	}
+	,writeInt32: function(x) {
+		if(this.bigEndian) {
+			this.writeByte(haxe.Int32.toInt(x >>> 24));
+			this.writeByte(haxe.Int32.toInt(x >>> 16) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 8) & 255);
+			this.writeByte(haxe.Int32.toInt(x & (255 | 0)));
+		} else {
+			this.writeByte(haxe.Int32.toInt(x & (255 | 0)));
+			this.writeByte(haxe.Int32.toInt(x >>> 8) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 16) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 24));
+		}
+		return this;
+	}
+	,prepare: function(nbytes) {
+		return this;
+	}
+	,writeInput: function(i,bufsize) {
+		if(bufsize == null) bufsize = 4096;
+		var buf = Bytes.alloc(bufsize);
+		try {
+			while(true) {
+				var len = i.readBytes(buf,0,bufsize);
+				if(len == 0) throw new chx.lang.BlockedException();
+				var p = 0;
+				while(len > 0) {
+					var k = this.writeBytes(buf,p,len);
+					if(k == 0) throw new chx.lang.BlockedException();
+					p += k;
+					len -= k;
+				}
+			}
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+			} else throw(e);
+		}
+		return this;
+	}
+	,writeString: function(s) {
+		var b = Bytes.ofString(s);
+		this.writeFullBytes(b,0,b.length);
+		return this;
+	}
+	,writeUTF: function(s) {
+		if(s.length > 65535) throw new chx.lang.OverflowException();
+		this.writeUInt16(s.length);
+		this.writeString(s);
+		return this;
+	}
+	,printf: function(format,args,prependLength) {
+		if(prependLength == null) prependLength = false;
+		var s = chx.text.Sprintf.format(format,args);
+		if(prependLength) this.writeUTF(s); else this.writeString(s);
+		return this;
+	}
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this));
+	}
 	,__class__: chx.io.Output
+	,__properties__: {set_bigEndian:"setBigEndian"}
 }
-chx.io.BytesOutput = $hxClasses["chx.io.BytesOutput"] = function() { }
+chx.io.BytesOutput = $hxClasses["chx.io.BytesOutput"] = function() {
+	this.b = new BytesBuffer();
+};
 chx.io.BytesOutput.__name__ = ["chx","io","BytesOutput"];
 chx.io.BytesOutput.__super__ = chx.io.Output;
 chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
@@ -2262,6 +3381,9 @@ chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
 	,writeBytes: function(buf,pos,len) {
 		this.b.addBytes(buf,pos,len);
 		return len;
+	}
+	,getBytes: function() {
+		return this.b.getBytes();
 	}
 	,__class__: chx.io.BytesOutput
 });
@@ -2549,6 +3671,7 @@ rg.svg.chart.HeatGrid.__name__ = ["rg","svg","chart","HeatGrid"];
 rg.svg.chart.HeatGrid.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
 	useContour: null
+	,colorMode: null
 	,dps: null
 	,variableDependent: null
 	,setVariables: function(variables,variableIndependents,variableDependents,data) {
@@ -2567,6 +3690,13 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,data: function(dps) {
 		this.dps = dps;
 		this.redraw();
+	}
+	,value: function(dp) {
+		var v = Reflect.field(dp,this.variableDependent.type);
+		return this.scale(v);
+	}
+	,scale: function(v) {
+		return this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),v);
 	}
 	,xrange: null
 	,yrange: null
@@ -2594,6 +3724,19 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		this.ready.dispatch();
 	}
 	,drawContour: function() {
+	}
+	,createGridMap: function(grid) {
+		var map = new Hash();
+		var _g1 = 0, _g = this.rows;
+		while(_g1 < _g) {
+			var r = _g1++;
+			var _g3 = 0, _g2 = this.cols;
+			while(_g3 < _g2) {
+				var c = _g3++;
+				if(grid(c,r)) map.set(r + "-" + c,[r,c]);
+			}
+		}
+		return map;
 	}
 	,currentNode: null
 	,drawSquares: function() {
@@ -2690,6 +3833,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		return v;
 	}
 	,__class__: rg.svg.chart.HeatGrid
+	,__properties__: $extend(rg.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 rg.info.InfoPadding = $hxClasses["rg.info.InfoPadding"] = function() {
 };
@@ -2712,6 +3856,24 @@ rg.info.InfoPadding.prototype = {
 	,right: null
 	,__class__: rg.info.InfoPadding
 }
+var DynamicsT = $hxClasses["DynamicsT"] = function() { }
+DynamicsT.__name__ = ["DynamicsT"];
+DynamicsT.toHash = function(ob) {
+	var hash = new Hash();
+	return DynamicsT.copyToHash(ob,hash);
+}
+DynamicsT.copyToHash = function(ob,hash) {
+	var _g = 0, _g1 = Reflect.fields(ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		hash.set(field,Reflect.field(ob,field));
+	}
+	return hash;
+}
+DynamicsT.prototype = {
+	__class__: DynamicsT
+}
 if(!rg.factory) rg.factory = {}
 rg.factory.FactoryHtmlVisualization = $hxClasses["rg.factory.FactoryHtmlVisualization"] = function() {
 };
@@ -2733,6 +3895,300 @@ rg.factory.FactoryHtmlVisualization.prototype = {
 		return null;
 	}
 	,__class__: rg.factory.FactoryHtmlVisualization
+}
+thx.color.Hsl = $hxClasses["thx.color.Hsl"] = function(h,s,l) {
+	this.hue = h = Floats.circularWrap(h,360);
+	this.saturation = s = Floats.normalize(s);
+	this.lightness = l = Floats.normalize(l);
+	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
+};
+thx.color.Hsl.__name__ = ["thx","color","Hsl"];
+thx.color.Hsl._c = function(d,s,l) {
+	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
+	var m1 = 2 * l - m2;
+	d = Floats.circularWrap(d,360);
+	if(d < 60) return m1 + (m2 - m1) * d / 60; else if(d < 180) return m2; else if(d < 240) return m1 + (m2 - m1) * (240 - d) / 60; else return m1;
+}
+thx.color.Hsl.toHsl = function(c) {
+	var r = c.red / 255.0;
+	var g = c.green / 255.0, b = c.blue / 255.0, min = Floats.min(r < g?r:g,b), max = Floats.max(r > g?r:g,b), delta = max - min, h, s, l = (max + min) / 2;
+	if(delta == 0.0) s = h = 0.0; else {
+		s = l < 0.5?delta / (max + min):delta / (2 - max - min);
+		if(r == max) h = (g - b) / delta + (g < b?6:0); else if(g == max) h = (b - r) / delta + 2; else h = (r - g) / delta + 4;
+		h *= 60;
+	}
+	return new thx.color.Hsl(h,s,l);
+}
+thx.color.Hsl.equals = function(a,b) {
+	return a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
+}
+thx.color.Hsl.darker = function(color,t,equation) {
+	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,0,equation));
+}
+thx.color.Hsl.lighter = function(color,t,equation) {
+	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,1,equation));
+}
+thx.color.Hsl.interpolate = function(a,b,t,equation) {
+	return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+}
+thx.color.Hsl.interpolatef = function(a,b,equation) {
+	return function(t) {
+		return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
+	};
+}
+thx.color.Hsl.__super__ = thx.color.Rgb;
+thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
+	hue: null
+	,saturation: null
+	,lightness: null
+	,toHslString: function() {
+		return "hsl(" + this.hue + "," + this.saturation * 100 + "%," + this.lightness * 100 + "%)";
+	}
+	,__class__: thx.color.Hsl
+});
+var Floats = $hxClasses["Floats"] = function() { }
+Floats.__name__ = ["Floats"];
+Floats.normalize = function(v) {
+	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
+}
+Floats.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Floats.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
+Floats.range = function(start,stop,step) {
+	if(step == null) step = 1.0;
+	if(null == stop) {
+		stop = start;
+		start = 0.0;
+	}
+	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 50, className : "Floats", methodName : "range"});
+	var range = [], i = -1.0, j;
+	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	return range;
+}
+Floats.sign = function(v) {
+	return v < 0?-1:1;
+}
+Floats.abs = function(a) {
+	return a < 0?-a:a;
+}
+Floats.min = function(a,b) {
+	return a < b?a:b;
+}
+Floats.max = function(a,b) {
+	return a > b?a:b;
+}
+Floats.wrap = function(v,min,max) {
+	var range = max - min + 1;
+	if(v < min) v += range * ((min - v) / range + 1);
+	return min + (v - min) % range;
+}
+Floats.circularWrap = function(v,max) {
+	v = v % max;
+	if(v < 0) v += max;
+	return v;
+}
+Floats.interpolate = function(f,a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return a + equation(f) * (b - a);
+}
+Floats.interpolatef = function(a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = b - a;
+	return function(f) {
+		return a + equation(f) * d;
+	};
+}
+Floats.interpolateClampf = function(min,max,equation) {
+	if(null == equation) equation = thx.math.Equations.linear;
+	return function(a,b) {
+		var d = b - a;
+		return function(f) {
+			return a + equation(Floats.clamp(f,min,max)) * d;
+		};
+	};
+}
+Floats.format = function(v,param,params,culture) {
+	return (Floats.formatf(param,params,culture))(v);
+}
+Floats.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"D");
+	var format = params.shift();
+	var decimals = params.length > 0?Std.parseInt(params[0]):null;
+	switch(format) {
+	case "D":
+		return function(v) {
+			return thx.culture.FormatNumber.decimal(v,decimals,culture);
+		};
+	case "I":
+		return function(v) {
+			return thx.culture.FormatNumber["int"](v,culture);
+		};
+	case "C":
+		var s = params.length > 1?params[1]:null;
+		return function(v) {
+			return thx.culture.FormatNumber.currency(v,s,decimals,culture);
+		};
+	case "P":
+		return function(v) {
+			return thx.culture.FormatNumber.percent(v,decimals,culture);
+		};
+	case "M":
+		return function(v) {
+			return thx.culture.FormatNumber.permille(v,decimals,culture);
+		};
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 145, className : "Floats", methodName : "formatf"});
+			return $r;
+		}(this));
+	}
+}
+Floats.canParse = function(s) {
+	return Floats._reparse.match(s);
+}
+Floats.parse = function(s) {
+	if(s.substr(0,1) == "+") s = s.substr(1);
+	return Std.parseFloat(s);
+}
+Floats.compare = function(a,b) {
+	return a < b?-1:a > b?1:0;
+}
+Floats.isNumeric = function(v) {
+	return Std["is"](v,Float) || Std["is"](v,Int);
+}
+Floats.equals = function(a,b,approx) {
+	if(approx == null) approx = 1e-5;
+	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
+	return Math.abs(b - a) < approx;
+}
+Floats.uninterpolatef = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return (x - a) * b;
+	};
+}
+Floats.uninterpolateClampf = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return Floats.clamp((x - a) * b,0.0,1.0);
+	};
+}
+Floats.round = function(number,precision) {
+	if(precision == null) precision = 2;
+	number *= Math.pow(10,precision);
+	return Math.round(number) / Math.pow(10,precision);
+}
+Floats.prototype = {
+	__class__: Floats
+}
+thx.math.Equations = $hxClasses["thx.math.Equations"] = function() { }
+thx.math.Equations.__name__ = ["thx","math","Equations"];
+thx.math.Equations.linear = function(v) {
+	return v;
+}
+thx.math.Equations.polynomial = function(t,e) {
+	return Math.pow(t,e);
+}
+thx.math.Equations.quadratic = function(t) {
+	return thx.math.Equations.polynomial(t,2);
+}
+thx.math.Equations.cubic = function(t) {
+	return thx.math.Equations.polynomial(t,3);
+}
+thx.math.Equations.sin = function(t) {
+	return 1 - Math.cos(t * Math.PI / 2);
+}
+thx.math.Equations.exponential = function(t) {
+	return t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
+}
+thx.math.Equations.circle = function(t) {
+	return 1 - Math.sqrt(1 - t * t);
+}
+thx.math.Equations.elastic = function(t,a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+}
+thx.math.Equations.elasticf = function(a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return function(t) {
+		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+	};
+}
+thx.math.Equations.back = function(t,s) {
+	if(null == s) s = 1.70158;
+	return t * t * ((s + 1) * t - s);
+}
+thx.math.Equations.backf = function(s) {
+	if(null == s) s = 1.70158;
+	return function(t) {
+		return t * t * ((s + 1) * t - s);
+	};
+}
+thx.math.Equations.bounce = function(t) {
+	return t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
+}
+thx.math.Equations.polynomialf = function(e) {
+	return function(t) {
+		thx.math.Equations.polynomial(t,e);
+	};
+}
+thx.math.Equations.prototype = {
+	__class__: thx.math.Equations
+}
+if(!thx.math.scale) thx.math.scale = {}
+thx.math.scale.Linears = $hxClasses["thx.math.scale.Linears"] = function() { }
+thx.math.scale.Linears.__name__ = ["thx","math","scale","Linears"];
+thx.math.scale.Linears.forString = function() {
+	return new thx.math.scale.LinearT().interpolatef(Strings.interpolatef);
+}
+thx.math.scale.Linears.forHsl = function() {
+	return new thx.math.scale.LinearT().interpolatef(thx.color.Hsl.interpolatef);
+}
+thx.math.scale.Linears.forHslString = function() {
+	return new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		if(Strings.empty(a) || Strings.empty(b)) return function(_) {
+			return "";
+		};
+		var ca = thx.color.Hsl.toHsl(thx.color.Colors.parse(a)), cb = thx.color.Hsl.toHsl(thx.color.Colors.parse(b)), i = thx.color.Hsl.interpolatef(ca,cb,f);
+		return function(t) {
+			return i(t).toHslString();
+		};
+	});
+}
+thx.math.scale.Linears.forRgb = function() {
+	return new thx.math.scale.LinearT().interpolatef(thx.color.Rgb.interpolatef);
+}
+thx.math.scale.Linears.forRgbString = function() {
+	return new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		if(Strings.empty(a) || Strings.empty(b)) return function(_) {
+			return "";
+		};
+		var ca = thx.color.Colors.parse(a), cb = thx.color.Colors.parse(b), i = thx.color.Rgb.interpolatef(ca,cb,f);
+		return function(t) {
+			return i(t).toRgbString();
+		};
+	});
+}
+thx.math.scale.Linears.prototype = {
+	__class__: thx.math.scale.Linears
 }
 rg.svg.chart.StreamEffects = $hxClasses["rg.svg.chart.StreamEffects"] = function() { }
 rg.svg.chart.StreamEffects.__name__ = ["rg","svg","chart","StreamEffects"];
@@ -2893,6 +4349,9 @@ Std.parseInt = function(x) {
 Std.parseFloat = function(x) {
 	return parseFloat(x);
 }
+Std.random = function(x) {
+	return Math.floor(Math.random() * x);
+}
 Std.prototype = {
 	__class__: Std
 }
@@ -2960,9 +4419,17 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 });
 thx.culture.Language = $hxClasses["thx.culture.Language"] = function() { }
 thx.culture.Language.__name__ = ["thx","culture","Language"];
+thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
+thx.culture.Language.languages = null;
 thx.culture.Language.getLanguages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
 	return thx.culture.Language.languages;
+}
+thx.culture.Language.get = function(name) {
+	return thx.culture.Language.getLanguages().get(name.toLowerCase());
+}
+thx.culture.Language.names = function() {
+	return thx.culture.Language.getLanguages().keys();
 }
 thx.culture.Language.add = function(language) {
 	if(!thx.culture.Language.getLanguages().exists(language.iso2)) thx.culture.Language.getLanguages().set(language.iso2,language);
@@ -3215,6 +4682,229 @@ rg.svg.chart.GradientEffects.parse = function(s) {
 rg.svg.chart.GradientEffects.prototype = {
 	__class__: rg.svg.chart.GradientEffects
 }
+if(!chx.text) chx.text = {}
+chx.text.Sprintf = $hxClasses["chx.text.Sprintf"] = function() { }
+chx.text.Sprintf.__name__ = ["chx","text","Sprintf"];
+chx.text.Sprintf.format = function(format,args) {
+	if(format == null) return "";
+	if(args == null) args = [];
+	var destString = "";
+	var argIndex = 0;
+	var formatIndex = 0;
+	var percentIndex = 0;
+	var ch = 0;
+	var value = null;
+	var length = 0;
+	var precision = 0;
+	var properties = 0;
+	var fieldCount = 0;
+	var fieldOutcome;
+	while(formatIndex < format.length) {
+		percentIndex = format.indexOf("%",formatIndex);
+		if(percentIndex == -1) {
+			destString += format.substr(formatIndex);
+			formatIndex = format.length;
+		} else {
+			destString += format.substr(formatIndex,percentIndex - formatIndex);
+			fieldOutcome = "** sprintf: invalid format at " + argIndex + " **";
+			length = properties = fieldCount = 0;
+			precision = -1;
+			formatIndex = percentIndex + 1;
+			value = args[argIndex++];
+			while(Std["is"](fieldOutcome,String) && formatIndex < format.length) {
+				ch = format.charCodeAt(formatIndex++);
+				switch(ch) {
+				case 35:
+					if(fieldCount == 0) properties |= 16; else fieldOutcome = "** sprintf: \"#\" came too late **";
+					break;
+				case 45:
+					if(fieldCount == 0) properties |= 2; else fieldOutcome = "** sprintf: \"-\" came too late **";
+					break;
+				case 43:
+					if(fieldCount == 0) properties |= 4; else fieldOutcome = "** sprintf: \"+\" came too late **";
+					break;
+				case 32:
+					if(fieldCount == 0) properties |= 8; else fieldOutcome = "** sprintf: \" \" came too late **";
+					break;
+				case 46:
+					if(fieldCount < 2) {
+						fieldCount = 2;
+						precision = 0;
+					} else fieldOutcome = "** sprintf: \".\" came too late **";
+					break;
+				case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 100:case 105:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatD(value,properties,length,precision);
+					break;
+				case 111:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatO(value,properties,length,precision);
+					break;
+				case 120:case 88:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatX(value,properties,length,precision,ch == 88);
+					break;
+				case 101:case 69:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatE(value,properties,length,precision,ch == 69);
+					break;
+				case 102:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatF(value,properties,length,precision);
+					break;
+				case 103:case 71:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatG(value,properties,length,precision,ch == 71);
+					break;
+				case 99:case 67:case 115:case 83:
+					if(ch == 99 || ch == 67) precision = 1;
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatS(value,properties,length,precision);
+					break;
+				case 37:
+					fieldOutcome = true;
+					destString += "%";
+					argIndex--;
+					break;
+				default:
+					fieldOutcome = "** sprintf: " + Std.string(ch - 48) + " not supported **";
+				}
+			}
+			if(fieldOutcome != true) {
+				if(chx.text.Sprintf.DEBUG) destString += fieldOutcome;
+				if(chx.text.Sprintf.TRACE) haxe.Log.trace(fieldOutcome,{ fileName : "Sprintf.hx", lineNumber : 243, className : "chx.text.Sprintf", methodName : "format"});
+			}
+		}
+	}
+	return destString;
+}
+chx.text.Sprintf.finish = function(output,value,properties,length,precision,prefix) {
+	if(prefix == null) prefix = "";
+	if(prefix == null) prefix = "";
+	if(value < 0) prefix = "-" + prefix; else if((properties & 4) != 0) prefix = "+" + prefix; else if((properties & 8) != 0) prefix = " " + prefix;
+	if(length == 0 && precision > -1) {
+		length = precision;
+		properties |= 1;
+	}
+	while(output.length + prefix.length < length) if((properties & 2) != 0) output = output + " "; else if((properties & 1) != 0) output = "0" + output; else prefix = " " + prefix;
+	return prefix + output;
+}
+chx.text.Sprintf.number = function(v) {
+	if(v == null) return 0.;
+	if(Std["is"](v,String)) {
+		if(v == "") return 0.0;
+		return Std.parseFloat(v);
+	}
+	if(Std["is"](v,Float)) {
+		if(Math.isNaN(v)) return v;
+		return v;
+	}
+	if(Std["is"](v,Int)) return v * 1.0;
+	if(Std["is"](v,Bool)) return v?1.0:0.0;
+	return Math.NaN;
+}
+chx.text.Sprintf.formatD = function(value,properties,length,precision) {
+	var output = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 || value != 0) output = Std.string(Math.floor(Math.abs(value)));
+	while(output.length < precision) output = "0" + output;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision);
+}
+chx.text.Sprintf.formatO = function(value,properties,length,precision) {
+	var output = "";
+	var prefix = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 && value != 0) output = value.toString(8);
+	if((properties & 16) != 0) prefix = "0";
+	while(output.length < precision) output = "0" + output;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,prefix);
+}
+chx.text.Sprintf.formatX = function(value,properties,length,precision,upper) {
+	var output = "";
+	var prefix = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 && value != 0) output = value.toString(16);
+	if((properties & 16) != 0) prefix = "0x";
+	while(output.length < precision) output = "0" + output;
+	if(upper) {
+		prefix = prefix.toUpperCase();
+		output = output.toUpperCase();
+	} else output = output.toLowerCase();
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,prefix);
+}
+chx.text.Sprintf.formatE = function(value,properties,length,precision,upper) {
+	var output = "";
+	var expCount = 0;
+	value = chx.text.Sprintf.number(value);
+	if(Math.abs(value) > 1) while(Math.abs(value) > 10) {
+		value /= 10;
+		expCount++;
+	} else while(Math.abs(value) < 1) {
+		value *= 10;
+		expCount--;
+	}
+	var expCountStr = chx.text.Sprintf.format("%c%+.2d",[upper?"E":"e",expCount]);
+	if((properties & 2) != 0) {
+		output = chx.text.Sprintf.formatF(value,properties,1,precision) + expCountStr;
+		while(output.length < length) output += " ";
+	} else output = chx.text.Sprintf.formatF(value,properties,Math.max(length - expCountStr.length,0) | 0,precision) + expCount;
+	return output;
+}
+chx.text.Sprintf.formatF = function(value,properties,length,precision) {
+	var output = "";
+	var intPortion = "";
+	var decPortion = "";
+	if(precision == -1) precision = 6;
+	var valStr = Std.string(value);
+	if(valStr.indexOf(".") == -1) {
+		intPortion = Std.string(Math.abs(chx.text.Sprintf.number(valStr)));
+		decPortion = "0";
+	} else {
+		intPortion = Std.string(Math.abs(chx.text.Sprintf.number(valStr.substr(0,valStr.indexOf(".")))));
+		decPortion = valStr.substr(valStr.indexOf(".") + 1);
+	}
+	if(chx.text.Sprintf.number(decPortion) == 0) {
+		decPortion = "";
+		while(decPortion.length < precision) decPortion += "0";
+	} else {
+		if(decPortion.length > precision) {
+			var dec = Math.round(Math.pow(10,precision) * chx.text.Sprintf.number("0." + decPortion));
+			if(Std.string(dec).length > precision && dec != 0) {
+				decPortion = "0";
+				intPortion = Std.string((Math.abs(chx.text.Sprintf.number(intPortion)) + 1) * (chx.text.Sprintf.number(intPortion) >= 0?1:-1));
+			} else decPortion = Std.string(dec);
+		}
+		if(decPortion.length < precision) {
+			decPortion = new String(decPortion);
+			while(decPortion.length < precision) decPortion += "0";
+		}
+	}
+	if(precision == 0) {
+		output = intPortion;
+		if((properties & 16) != 0) output += ".";
+	} else output = intPortion + "." + decPortion;
+	return chx.text.Sprintf.finish(output,Std.parseFloat(valStr),properties,length,precision,"");
+}
+chx.text.Sprintf.formatG = function(value,properties,length,precision,upper) {
+	var out1 = chx.text.Sprintf.formatE(value,properties,1,precision,upper);
+	var out2 = chx.text.Sprintf.formatF(value,properties,1,precision);
+	if(out1.length < out2.length) return chx.text.Sprintf.formatE(value,properties,length,precision,upper); else return chx.text.Sprintf.formatF(value,properties,length,precision);
+}
+chx.text.Sprintf.formatS = function(value,properties,length,precision) {
+	var output = Std.string(value);
+	if(precision > 0 && precision < output.length) output = output.substr(0,precision);
+	properties &= -30;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,"");
+}
+chx.text.Sprintf.prototype = {
+	__class__: chx.text.Sprintf
+}
 thx.culture.FormatParams = $hxClasses["thx.culture.FormatParams"] = function() { }
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
@@ -3242,7 +4932,11 @@ rg.frame.Frame = $hxClasses["rg.frame.Frame"] = function() {
 };
 rg.frame.Frame.__name__ = ["rg","frame","Frame"];
 rg.frame.Frame.prototype = {
-	change: function() {
+	x: null
+	,y: null
+	,width: null
+	,height: null
+	,change: function() {
 	}
 	,setLayout: function(x,y,width,height) {
 		if(this.x == x && this.y == y && this.width == width && this.height == height) return;
@@ -3251,6 +4945,9 @@ rg.frame.Frame.prototype = {
 		this.width = width;
 		this.height = height;
 		this.change();
+	}
+	,toString: function() {
+		return "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
 	}
 	,__class__: rg.frame.Frame
 }
@@ -3261,7 +4958,9 @@ rg.frame.StackItem = $hxClasses["rg.frame.StackItem"] = function(disposition) {
 rg.frame.StackItem.__name__ = ["rg","frame","StackItem"];
 rg.frame.StackItem.__super__ = rg.frame.Frame;
 rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
-	setParent: function(v) {
+	disposition: null
+	,parent: null
+	,setParent: function(v) {
 		if(null != this.parent) this.parent.removeChild(this);
 		return this.parent = v;
 	}
@@ -3271,6 +4970,7 @@ rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
 		return v;
 	}
 	,__class__: rg.frame.StackItem
+	,__properties__: {set_disposition:"setDisposition"}
 });
 rg.svg.chart.ColorScaleMode = $hxClasses["rg.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
 rg.svg.chart.ColorScaleMode.FromCssInterpolation = function(steps) { var $x = ["FromCssInterpolation",0,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
@@ -3408,19 +5108,31 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 rg.axis.IAxis = $hxClasses["rg.axis.IAxis"] = function() { }
 rg.axis.IAxis.__name__ = ["rg","axis","IAxis"];
 rg.axis.IAxis.prototype = {
-	__class__: rg.axis.IAxis
+	scale: null
+	,ticks: null
+	,max: null
+	,min: null
+	,createStats: null
+	,__class__: rg.axis.IAxis
 }
 rg.axis.IAxisDiscrete = $hxClasses["rg.axis.IAxisDiscrete"] = function() { }
 rg.axis.IAxisDiscrete.__name__ = ["rg","axis","IAxisDiscrete"];
 rg.axis.IAxisDiscrete.__interfaces__ = [rg.axis.IAxis];
 rg.axis.IAxisDiscrete.prototype = {
-	__class__: rg.axis.IAxisDiscrete
+	scaleDistribution: null
+	,range: null
+	,__class__: rg.axis.IAxisDiscrete
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.IAxisOrdinal = $hxClasses["rg.axis.IAxisOrdinal"] = function() { }
 rg.axis.IAxisOrdinal.__name__ = ["rg","axis","IAxisOrdinal"];
 rg.axis.IAxisOrdinal.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.IAxisOrdinal.prototype = {
-	__class__: rg.axis.IAxisOrdinal
+	first: null
+	,last: null
+	,allTicks: null
+	,values: null
+	,__class__: rg.axis.IAxisOrdinal
 }
 rg.axis.AxisOrdinal = $hxClasses["rg.axis.AxisOrdinal"] = function() {
 	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFit);
@@ -3428,7 +5140,8 @@ rg.axis.AxisOrdinal = $hxClasses["rg.axis.AxisOrdinal"] = function() {
 rg.axis.AxisOrdinal.__name__ = ["rg","axis","AxisOrdinal"];
 rg.axis.AxisOrdinal.__interfaces__ = [rg.axis.IAxisOrdinal];
 rg.axis.AxisOrdinal.prototype = {
-	toTickmark: function(start,end,value) {
+	scaleDistribution: null
+	,toTickmark: function(start,end,value) {
 		var r = this.range(start,end);
 		return new rg.axis.TickmarkOrdinal(r.indexOf(value),r,null,this.scaleDistribution);
 	}
@@ -3483,6 +5196,7 @@ rg.axis.AxisOrdinal.prototype = {
 		return new rg.axis.Stats(type);
 	}
 	,__class__: rg.axis.AxisOrdinal
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.AxisOrdinalFixedValues = $hxClasses["rg.axis.AxisOrdinalFixedValues"] = function(arr) {
 	rg.axis.AxisOrdinal.call(this);
@@ -3533,7 +5247,8 @@ rg.axis.AxisGroupByTime.defaultMax = function(periodicity) {
 }
 rg.axis.AxisGroupByTime.__super__ = rg.axis.AxisOrdinalFixedValues;
 rg.axis.AxisGroupByTime.prototype = $extend(rg.axis.AxisOrdinalFixedValues.prototype,{
-	__class__: rg.axis.AxisGroupByTime
+	groupBy: null
+	,__class__: rg.axis.AxisGroupByTime
 });
 chx.lang.NullPointerException = $hxClasses["chx.lang.NullPointerException"] = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
@@ -3633,7 +5348,18 @@ rg.svg.widget.Label = $hxClasses["rg.svg.widget.Label"] = function(container,don
 };
 rg.svg.widget.Label.__name__ = ["rg","svg","widget","Label"];
 rg.svg.widget.Label.prototype = {
-	g: null
+	text: null
+	,orientation: null
+	,anchor: null
+	,x: null
+	,y: null
+	,angle: null
+	,dontFlip: null
+	,shadowOffsetX: null
+	,shadowOffsetY: null
+	,shadow: null
+	,outline: null
+	,g: null
 	,gshadow: null
 	,gtext: null
 	,gshadowrot: null
@@ -3642,6 +5368,9 @@ rg.svg.widget.Label.prototype = {
 	,tshadow: null
 	,addClass: function(name) {
 		this.g.classed().add(name);
+	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
 	}
 	,getSize: function() {
 		try {
@@ -3837,6 +5566,7 @@ rg.svg.widget.Label.prototype = {
 		this.g.remove();
 	}
 	,__class__: rg.svg.widget.Label
+	,__properties__: {set_anchor:"setAnchor",set_orientation:"setOrientation",set_text:"setText"}
 }
 if(!thx.culture.core) thx.culture.core = {}
 thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
@@ -3863,52 +5593,27 @@ thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = fu
 };
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype = {
-	__class__: thx.culture.core.DateTimeInfo
-}
-var Hash = $hxClasses["Hash"] = function() {
-	this.h = {}
-	if(this.h.__proto__ != null) {
-		this.h.__proto__ = null;
-		delete(this.h.__proto__);
-	}
-};
-Hash.__name__ = ["Hash"];
-Hash.prototype = {
-	h: null
-	,set: function(key,value) {
-		this.h["$" + key] = value;
-	}
-	,get: function(key) {
-		return this.h["$" + key];
-	}
-	,exists: function(key) {
-		try {
-			key = "$" + key;
-			return this.hasOwnProperty.call(this.h,key);
-		} catch( e ) {
-			for(var i in this.h) if( i == key ) return true;
-			return false;
-		}
-	}
-	,remove: function(key) {
-		if(!this.exists(key)) return false;
-		delete(this.h["$" + key]);
-		return true;
-	}
-	,keys: function() {
-		var a = new Array();
-		for(var i in this.h) a.push(i.substr(1));
-		return a.iterator();
-	}
-	,iterator: function() {
-		return { ref : this.h, it : this.keys(), hasNext : function() {
-			return this.it.hasNext();
-		}, next : function() {
-			var i = this.it.next();
-			return this.ref["$" + i];
-		}};
-	}
-	,__class__: Hash
+	months: null
+	,abbrMonths: null
+	,days: null
+	,abbrDays: null
+	,shortDays: null
+	,am: null
+	,pm: null
+	,separatorDate: null
+	,separatorTime: null
+	,firstWeekDay: null
+	,patternYearMonth: null
+	,patternMonthDay: null
+	,patternDate: null
+	,patternDateShort: null
+	,patternDateRfc: null
+	,patternDateTime: null
+	,patternUniversal: null
+	,patternSortable: null
+	,patternTime: null
+	,patternTimeShort: null
+	,__class__: thx.culture.core.DateTimeInfo
 }
 var dhx = dhx || {}
 dhx.AccessTween = $hxClasses["dhx.AccessTween"] = function(transition,tweens) {
@@ -3919,6 +5624,16 @@ dhx.AccessTween.__name__ = ["dhx","AccessTween"];
 dhx.AccessTween.prototype = {
 	transition: null
 	,tweens: null
+	,transitionColorTween: function(value) {
+		return function(d,i,a) {
+			return thx.color.Rgb.interpolatef(a,value);
+		};
+	}
+	,transitionColorTweenf: function(f) {
+		return function(d,i,a) {
+			return thx.color.Rgb.interpolatef(a,f(d,i));
+		};
+	}
 	,transitionStringTween: function(value) {
 		return function(d,i,a) {
 			return Strings.interpolatef(a,value);
@@ -3929,9 +5644,24 @@ dhx.AccessTween.prototype = {
 			return Strings.interpolatef(a,f(d,i));
 		};
 	}
+	,transitionCharsTween: function(value) {
+		return function(d,i,a) {
+			return Strings.interpolateCharsf(a,value);
+		};
+	}
+	,transitionCharsTweenf: function(f) {
+		return function(d,i,a) {
+			return Strings.interpolateCharsf(a,f(d,i));
+		};
+	}
 	,transitionFloatTween: function(value) {
 		return function(d,i,a) {
 			return Floats.interpolatef(a,value);
+		};
+	}
+	,transitionFloatTweenf: function(f) {
+		return function(d,i,a) {
+			return Floats.interpolatef(a,f(d,i));
 		};
 	}
 	,_that: function() {
@@ -3944,6 +5674,9 @@ hxevents.Dispatcher = $hxClasses["hxevents.Dispatcher"] = function() {
 	this.handlers = new Array();
 };
 hxevents.Dispatcher.__name__ = ["hxevents","Dispatcher"];
+hxevents.Dispatcher.stop = function() {
+	throw hxevents.EventException.StopPropagation;
+}
 hxevents.Dispatcher.prototype = {
 	handlers: null
 	,add: function(h) {
@@ -3968,6 +5701,9 @@ hxevents.Dispatcher.prototype = {
 		}
 		return null;
 	}
+	,clear: function() {
+		this.handlers = new Array();
+	}
 	,dispatch: function(e) {
 		try {
 			var list = this.handlers.copy();
@@ -3982,6 +5718,25 @@ hxevents.Dispatcher.prototype = {
 			if( js.Boot.__instanceof(exc,hxevents.EventException) ) {
 				return false;
 			} else throw(exc);
+		}
+	}
+	,dispatchAndAutomate: function(e) {
+		this.dispatch(e);
+		this.handlers = [];
+		this.add = function(h) {
+			h(e);
+			return h;
+		};
+	}
+	,has: function(h) {
+		if(null == h) return this.handlers.length > 0; else {
+			var _g = 0, _g1 = this.handlers;
+			while(_g < _g1.length) {
+				var handler = _g1[_g];
+				++_g;
+				if(h == handler) return true;
+			}
+			return false;
 		}
 	}
 	,__class__: hxevents.Dispatcher
@@ -4019,6 +5774,10 @@ rg.util.RGColors.prototype = {
 }
 rg.util.Periodicity = $hxClasses["rg.util.Periodicity"] = function() { }
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
+rg.util.Periodicity.defaultPeriodicity = function(span) {
+	if(null == span || 0 == span) return "eternity";
+	if(span <= 21600000) return "minute"; else if(span <= 172800000) return "hour"; else if(span <= 5184000 * 1000) return "day"; else if(span <= 62208000 * 1000) return "month"; else return "year";
+}
 rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
 		var $r;
@@ -4044,6 +5803,15 @@ rg.util.Periodicity.defaultRange = function(periodicity) {
 		}
 		return $r;
 	}(this));
+}
+rg.util.Periodicity.isValid = function(v) {
+	return Arrays.exists(rg.util.Periodicity.validPeriods,v);
+}
+rg.util.Periodicity.calculateBetween = function(a,b,disc) {
+	if(disc == null) disc = 2;
+	if(null == a || null == b) return "eternity";
+	var delta = Math.abs(b.getTime() - a.getTime());
+	if(delta >= DateTools.days(365 * disc)) return "year"; else if(delta >= DateTools.days(30 * disc)) return "month"; else if(delta >= DateTools.days(7 * disc)) return "week"; else if(delta >= DateTools.days(disc)) return "day"; else if(delta >= DateTools.hours(disc)) return "hour"; else return "minute";
 }
 rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 	return (function($this) {
@@ -4127,6 +5895,95 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		});
 	}
 	return Floats.range(start,end + step,step);
+}
+rg.util.Periodicity.next = function(periodicity,date,step) {
+	if(step == null) step = 1;
+	if(null == date) date = Date.now().getTime();
+	if(0 == step) return date;
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = date;
+			break;
+		case "minute":
+			$r = date + 60000 * step;
+			break;
+		case "hour":
+			$r = date + 3600000 * step;
+			break;
+		case "day":
+			$r = date + 86400000 * step;
+			break;
+		case "week":
+			$r = date + 604800000 * step;
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(date), y = d.getFullYear(), m = d.getMonth() + step;
+				$r = new Date(y,m,d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = (function($this) {
+				var $r;
+				var d = Date.fromTime(date);
+				$r = new Date(d.getFullYear() + step,d.getMonth(),d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMin(arr,function(d) {
+		return Arrays.floatMin(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMax(arr,function(d) {
+		return Arrays.floatMax(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.formatf = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = function(_) {
+				return "all time";
+			};
+			break;
+		case "minute":case "hour":
+			$r = function(v) {
+				return thx.culture.FormatDate.timeShort(Date.fromTime(v));
+			};
+			break;
+		case "day":case "week":
+			$r = function(v) {
+				return thx.culture.FormatDate.dateShort(Date.fromTime(v));
+			};
+			break;
+		case "month":
+			$r = function(v) {
+				return thx.culture.FormatDate.yearMonth(Date.fromTime(v));
+			};
+			break;
+		case "year":
+			$r = function(v) {
+				return thx.culture.FormatDate.year(Date.fromTime(v));
+			};
+			break;
+		}
+		return $r;
+	}(this));
 }
 rg.util.Periodicity.format = function(periodicity,v) {
 	switch(periodicity) {
@@ -4223,6 +6080,50 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 		return $r;
 	}(this));
 }
+rg.util.Periodicity.nextPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "day";
+			break;
+		case "day":case "week":
+			$r = "month";
+			break;
+		case "month":
+			$r = "year";
+			break;
+		default:
+			$r = "year";
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.prevPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "minute";
+			break;
+		case "day":
+			$r = "hour";
+			break;
+		case "week":case "month":
+			$r = "day";
+			break;
+		default:
+			$r = "minute";
+		}
+		return $r;
+	}(this));
+}
 rg.util.Periodicity.parsePair = function(start,end) {
 	return [thx.date.DateParser.parse(start).getTime(),thx.date.DateParser.parse(end).getTime()];
 }
@@ -4239,6 +6140,39 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 }
 rg.util.Periodicity.prototype = {
 	__class__: rg.util.Periodicity
+}
+var haxe = haxe || {}
+haxe.Firebug = $hxClasses["haxe.Firebug"] = function() { }
+haxe.Firebug.__name__ = ["haxe","Firebug"];
+haxe.Firebug.detect = function() {
+	try {
+		return console != null && console.error != null;
+	} catch( e ) {
+		return false;
+	}
+}
+haxe.Firebug.redirectTraces = function() {
+	haxe.Log.trace = haxe.Firebug.trace;
+	js.Lib.setErrorHandler(haxe.Firebug.onError);
+}
+haxe.Firebug.onError = function(err,stack) {
+	var buf = err + "\n";
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		buf += "Called from " + s + "\n";
+	}
+	haxe.Firebug.trace(buf,null);
+	return true;
+}
+haxe.Firebug.trace = function(v,inf) {
+	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
+	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
+	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
+}
+haxe.Firebug.prototype = {
+	__class__: haxe.Firebug
 }
 rg.visualization.VisualizationStreamGraph = $hxClasses["rg.visualization.VisualizationStreamGraph"] = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
@@ -4296,6 +6230,8 @@ thx.languages.En = $hxClasses["thx.languages.En"] = function() {
 	thx.culture.Language.add(this);
 };
 thx.languages.En.__name__ = ["thx","languages","En"];
+thx.languages.En.__properties__ = {get_language:"getLanguage"}
+thx.languages.En.language = null;
 thx.languages.En.getLanguage = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
 	return thx.languages.En.language;
@@ -4314,7 +6250,13 @@ thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = functi
 };
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype = {
-	__class__: thx.culture.core.NumberInfo
+	decimals: null
+	,decimalsSeparator: null
+	,groups: null
+	,groupsSeparator: null
+	,patternNegative: null
+	,patternPositive: null
+	,__class__: thx.culture.core.NumberInfo
 }
 if(!thx.cultures) thx.cultures = {}
 thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
@@ -4346,6 +6288,8 @@ thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
 	thx.culture.Culture.add(this);
 };
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
+thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
+thx.cultures.EnUS.culture = null;
 thx.cultures.EnUS.getCulture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
 	return thx.cultures.EnUS.culture;
@@ -4578,6 +6522,79 @@ thx.date.DateParser.plusPm = function(s) {
 thx.date.DateParser.prototype = {
 	__class__: thx.date.DateParser
 }
+haxe.Int32 = $hxClasses["haxe.Int32"] = function() { }
+haxe.Int32.__name__ = ["haxe","Int32"];
+haxe.Int32.make = function(a,b) {
+	return a << 16 | b;
+}
+haxe.Int32.ofInt = function(x) {
+	return x | 0;
+}
+haxe.Int32.clamp = function(x) {
+	return x | 0;
+}
+haxe.Int32.toInt = function(x) {
+	if((x >> 30 & 1) != x >>> 31) throw "Overflow " + x;
+	return x;
+}
+haxe.Int32.toNativeInt = function(x) {
+	return x;
+}
+haxe.Int32.add = function(a,b) {
+	return a + b | 0;
+}
+haxe.Int32.sub = function(a,b) {
+	return a - b | 0;
+}
+haxe.Int32.mul = function(a,b) {
+	return a * b | 0;
+}
+haxe.Int32.div = function(a,b) {
+	return a / b | 0;
+}
+haxe.Int32.mod = function(a,b) {
+	return a % b;
+}
+haxe.Int32.shl = function(a,b) {
+	return a << b;
+}
+haxe.Int32.shr = function(a,b) {
+	return a >> b;
+}
+haxe.Int32.ushr = function(a,b) {
+	return a >>> b;
+}
+haxe.Int32.and = function(a,b) {
+	return a & b;
+}
+haxe.Int32.or = function(a,b) {
+	return a | b;
+}
+haxe.Int32.xor = function(a,b) {
+	return a ^ b;
+}
+haxe.Int32.neg = function(a) {
+	return -a;
+}
+haxe.Int32.isNeg = function(a) {
+	return a < 0;
+}
+haxe.Int32.isZero = function(a) {
+	return a == 0;
+}
+haxe.Int32.complement = function(a) {
+	return ~a;
+}
+haxe.Int32.compare = function(a,b) {
+	return a - b;
+}
+haxe.Int32.ucompare = function(a,b) {
+	if(a < 0) return b < 0?~b - ~a:1;
+	return b < 0?-1:a - b;
+}
+haxe.Int32.prototype = {
+	__class__: haxe.Int32
+}
 rg.visualization.VisualizationHeatGrid = $hxClasses["rg.visualization.VisualizationHeatGrid"] = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
@@ -4649,6 +6666,10 @@ rg.util.Jsonp.get = function(path,success,failure,query,headers) {
 	var api = rg.util.Jsonp.get_api;
 	api(path,{ success : success, failure : failure},query,headers);
 }
+rg.util.Jsonp.post = function(path,content,success,failure,query,headers) {
+	var api = rg.util.Jsonp.post_api;
+	api(path,content,{ success : success, failure : failure},query,headers);
+}
 rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) {
 	if(null == query) query = { };
 	path = rg.util.Urls.addQueryParameters(path,query);
@@ -4677,6 +6698,9 @@ rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) 
 }
 rg.util.Jsonp.get_api = function(path,actions,query,headers) {
 	rg.util.Jsonp.request_api("GET",path,null,actions,query,headers);
+}
+rg.util.Jsonp.post_api = function(path,content,actions,query,headers) {
+	rg.util.Jsonp.request_api("POST",path,content,actions,query,headers);
 }
 rg.util.Jsonp.prototype = {
 	__class__: rg.util.Jsonp
@@ -4747,6 +6771,16 @@ rg.html.widget.DownloaderMenu.prototype = {
 	}
 	,__class__: rg.html.widget.DownloaderMenu
 }
+if(!thx.translation) thx.translation = {}
+thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
+thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
+thx.translation.ITranslation.prototype = {
+	domain: null
+	,_: null
+	,__: null
+	,__class__: thx.translation.ITranslation
+	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
+}
 rg.info.InfoVisualizationType = $hxClasses["rg.info.InfoVisualizationType"] = function() {
 	this.replace = true;
 };
@@ -4764,6 +6798,67 @@ rg.info.InfoVisualizationType.prototype = {
 	replace: null
 	,type: null
 	,__class__: rg.info.InfoVisualizationType
+}
+math.prng.IPrng = $hxClasses["math.prng.IPrng"] = function() { }
+math.prng.IPrng.__name__ = ["math","prng","IPrng"];
+math.prng.IPrng.prototype = {
+	size: null
+	,init: null
+	,next: null
+	,toString: null
+	,__class__: math.prng.IPrng
+}
+math.prng.ArcFour = $hxClasses["math.prng.ArcFour"] = function() {
+	this.i = 0;
+	this.j = 0;
+	this.S = new Array();
+	this.setSize(256);
+};
+math.prng.ArcFour.__name__ = ["math","prng","ArcFour"];
+math.prng.ArcFour.__interfaces__ = [math.prng.IPrng];
+math.prng.ArcFour.prototype = {
+	i: null
+	,j: null
+	,S: null
+	,size: null
+	,init: function(key) {
+		var t;
+		var _g = 0;
+		while(_g < 256) {
+			var x = _g++;
+			this.S[x] = x;
+		}
+		this.j = 0;
+		var _g = 0;
+		while(_g < 256) {
+			var i = _g++;
+			this.j = this.j + this.S[i] + key[i % key.length] & 255;
+			t = this.S[i];
+			this.S[i] = this.j;
+			this.S[this.j] = t;
+		}
+		this.i = 0;
+		this.j = 0;
+	}
+	,next: function() {
+		if(this.S.length == 0) throw "not initialized";
+		var t;
+		this.i = this.i + 1 & 255;
+		this.j = this.j + this.S[this.i] & 255;
+		t = this.S[this.i];
+		this.S[this.i] = this.S[this.j];
+		this.S[this.j] = t;
+		return this.S[t + this.S[this.i] & 255];
+	}
+	,setSize: function(v) {
+		if(v % 4 != 0 || v < 32) throw "invalid size";
+		this.size = v;
+		return v;
+	}
+	,toString: function() {
+		return "ArcFour";
+	}
+	,__class__: math.prng.ArcFour
 }
 rg.graph.GraphLayout = $hxClasses["rg.graph.GraphLayout"] = function(graph,layers) {
 	this.graph = graph;
@@ -4809,7 +6904,9 @@ rg.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
 	return c;
 }
 rg.graph.GraphLayout.prototype = {
-	_layers: null
+	graph: null
+	,length: null
+	,_layers: null
 	,_cell: null
 	,_map: null
 	,friendCell: null
@@ -4875,11 +6972,19 @@ rg.graph.GraphLayout.prototype = {
 		}
 		return tot;
 	}
+	,maxCells: function() {
+		return Arrays.floatMax(this._layers,function(arr) {
+			return arr.length;
+		}) | 0;
+	}
 	,_nodeRemove: function(node) {
 		var c = this.cell(node);
 		this._layers[c.layer].splice(c.position,1);
 		if(this._layers[c.layer].length == 0) this._layers.splice(c.layer,1);
 		this._updateMap();
+	}
+	,toString: function() {
+		return "GraphLayout (" + this.graph + ", layers: " + this._layers.length + ", crossings : " + this.crossings() + ")";
 	}
 	,__class__: rg.graph.GraphLayout
 }
@@ -4957,7 +7062,12 @@ dhx.AccessText = $hxClasses["dhx.AccessText"] = function(selection) {
 dhx.AccessText.__name__ = ["dhx","AccessText"];
 dhx.AccessText.__super__ = dhx.Access;
 dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
-	string: function(v) {
+	get: function() {
+		return this.selection.firstNode(function(node) {
+			return node.textContent;
+		});
+	}
+	,string: function(v) {
 		this.clear();
 		this.selection.eachNode(function(node,_) {
 			node.textContent = v;
@@ -4967,6 +7077,29 @@ dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
 	,clear: function() {
 		this.selection.eachNode(function(node,i) {
 			node.textContent = "";
+		});
+		return this.selection;
+	}
+	,'float': function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,_) {
+			node.textContent = "" + v;
+		});
+		return this.selection;
+	}
+	,stringNodef: function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,i) {
+			var x = v(node,i);
+			if(null != x) node.textContent = x;
+		});
+		return this.selection;
+	}
+	,floatNodef: function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,i) {
+			var x = v(node,i);
+			if(null != x) node.textContent = "" + x;
 		});
 		return this.selection;
 	}
@@ -4985,6 +7118,19 @@ dhx.AccessDataText.prototype = $extend(dhx.AccessText.prototype,{
 			if(null != x) node.textContent = x;
 		});
 		return this.selection;
+	}
+	,floatf: function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,i) {
+			var x = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null != x) node.textContent = "" + x;
+		});
+		return this.selection;
+	}
+	,data: function() {
+		return this.stringf(function(d,_) {
+			return "" + d;
+		});
 	}
 	,__class__: dhx.AccessDataText
 });
@@ -5019,13 +7165,22 @@ thx.svg.Diagonal.prototype = {
 		var p2 = p.map(this._projection);
 		return "M" + p2[0][0] + "," + p2[0][1] + "C" + p2[1][0] + "," + p2[1][1] + " " + p2[2][0] + "," + p2[2][1] + " " + p2[3][0] + "," + p2[3][1];
 	}
+	,getSource: function() {
+		return this._source;
+	}
 	,sourcef: function(x) {
 		this._source = x;
 		return this;
 	}
+	,getTarget: function() {
+		return this._target;
+	}
 	,targetf: function(x) {
 		this._target = x;
 		return this;
+	}
+	,getProjection: function() {
+		return this._projection;
 	}
 	,projection: function(x) {
 		this._projection = x;
@@ -5056,12 +7211,16 @@ dhx.NSQualifier.prototype = {
 	,local: null
 	,__class__: dhx.NSQualifier
 }
-var math = math || {}
 if(!math.reduction) math.reduction = {}
 math.reduction.ModularReduction = $hxClasses["math.reduction.ModularReduction"] = function() { }
 math.reduction.ModularReduction.__name__ = ["math","reduction","ModularReduction"];
 math.reduction.ModularReduction.prototype = {
-	__class__: math.reduction.ModularReduction
+	convert: null
+	,revert: null
+	,reduce: null
+	,mulTo: null
+	,sqrTo: null
+	,__class__: math.reduction.ModularReduction
 }
 math.reduction.Classic = $hxClasses["math.reduction.Classic"] = function(m) {
 	this.m = m;
@@ -5114,16 +7273,22 @@ rg.graph.GraphCollection = $hxClasses["rg.graph.GraphCollection"] = function(gra
 };
 rg.graph.GraphCollection.__name__ = ["rg","graph","GraphCollection"];
 rg.graph.GraphCollection.prototype = {
-	graph: null
+	onRemove: null
+	,onCreate: null
+	,graph: null
 	,collection: null
 	,nextid: null
 	,idf: null
 	,_map: null
+	,length: null
 	,getById: function(id) {
 		return this._map.get(id);
 	}
 	,get: function(id) {
 		return this.collection.get(id);
+	}
+	,has: function(item) {
+		return item.graph == this.graph && this.collection.exists(item.id);
 	}
 	,get_length: function() {
 		return IntHashes.count(this.collection);
@@ -5145,6 +7310,7 @@ rg.graph.GraphCollection.prototype = {
 		}).join(", ");
 	}
 	,__class__: rg.graph.GraphCollection
+	,__properties__: {get_length:"get_length"}
 }
 rg.graph.GraphEdges = $hxClasses["rg.graph.GraphEdges"] = function(graph,edgeidf) {
 	rg.graph.GraphCollection.call(this,graph,edgeidf);
@@ -5242,6 +7408,14 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 			return me.get(eid);
 		});
 	}
+	,unlinkPositives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 143, className : "rg.graph.GraphEdges", methodName : "unlinkPositives"});
+		this._unlink(node,this.edgesp);
+	}
+	,unlinkNegatives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 150, className : "rg.graph.GraphEdges", methodName : "unlinkNegatives"});
+		this._unlink(node,this.edgesn);
+	}
 	,_unlink: function(node,connections) {
 		var ids = connections.get(node.id);
 		if(null == ids) return;
@@ -5255,6 +7429,15 @@ rg.graph.GraphEdges.prototype = $extend(rg.graph.GraphCollection.prototype,{
 			this._remove(edge);
 		}
 		connections.remove(node.id);
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
 	}
 	,connections: function(id,connections) {
 		var c = connections.get(id);
@@ -5283,6 +7466,11 @@ rg.svg.chart.StreamEffect.NoEffect.toString = $estr;
 rg.svg.chart.StreamEffect.NoEffect.__enum__ = rg.svg.chart.StreamEffect;
 rg.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
+thx.util.MacroVersion = $hxClasses["thx.util.MacroVersion"] = function() { }
+thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
+thx.util.MacroVersion.prototype = {
+	__class__: thx.util.MacroVersion
+}
 chx.lang.EofException = $hxClasses["chx.lang.EofException"] = function(msg,cause) {
 	chx.lang.IOException.call(this,msg,cause);
 };
@@ -5328,7 +7516,18 @@ rg.svg.widget.Balloon = $hxClasses["rg.svg.widget.Balloon"] = function(container
 };
 rg.svg.widget.Balloon.__name__ = ["rg","svg","widget","Balloon"];
 rg.svg.widget.Balloon.prototype = {
-	minwidth: null
+	text: null
+	,x: null
+	,y: null
+	,boxWidth: null
+	,boxHeight: null
+	,visible: null
+	,lineHeight: null
+	,roundedCorner: null
+	,paddingHorizontal: null
+	,paddingVertical: null
+	,preferredSide: null
+	,minwidth: null
 	,labels: null
 	,container: null
 	,balloon: null
@@ -5339,6 +7538,13 @@ rg.svg.widget.Balloon.prototype = {
 	,ease: null
 	,connectorShapeV: null
 	,connectorShapeH: null
+	,boundingBox: null
+	,addClass: function(name) {
+		this.frame.select("path.bg").classed().add(name);
+	}
+	,removeClass: function(name) {
+		this.frame.select("path.bg").classed().remove(name);
+	}
 	,createLabel: function(i) {
 		var label = new rg.svg.widget.Label(this.labelsContainer,true,false,false);
 		label.addClass("line-" + i);
@@ -5375,6 +7581,11 @@ rg.svg.widget.Balloon.prototype = {
 		this.lineHeight = v;
 		this.redraw();
 		return v;
+	}
+	,setPadding: function(h,v) {
+		this.paddingHorizontal = h;
+		this.paddingVertical = v;
+		this.redraw();
 	}
 	,setRoundedCorner: function(v) {
 		this.roundedCorner = v;
@@ -5639,6 +7850,24 @@ rg.svg.widget.Balloon.prototype = {
 		this.frame.attr("transform").string("translate(" + tx + ", " + ty + ")").selectAll("path").attr("d").string(rg.svg.widget.BalloonShape.shape(this.boxWidth,this.boxHeight,this.roundedCorner,this.roundedCorner,side,offset));
 		if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(coords):this.connectorShapeH.diagonal(coords));
 	}
+	,show: function(animate) {
+		if(this.visible) return;
+		this.visible = true;
+		this.balloon.style("display").string("block");
+		if(animate) this.balloon.transition().attr("opacity")["float"](1); else this.balloon.attr("opacity")["float"](1);
+	}
+	,hide: function(animate) {
+		if(animate == null) animate = false;
+		var me = this;
+		if(!this.visible) return;
+		this.visible = false;
+		if(animate) this.balloon.transition().attr("opacity")["float"](0).endNode(function(_,_1) {
+			me.balloon.style("display").string("none");
+		}); else {
+			this.balloon.attr("opacity")["float"](0);
+			this.balloon.style("display").string("none");
+		}
+	}
 	,redraw: function() {
 		var me = this;
 		if(null == this.text || this.text.length == 0) return;
@@ -5665,6 +7894,7 @@ rg.svg.widget.Balloon.prototype = {
 		bg.transition().ease(this.ease).delay(null,this.duration);
 	}
 	,__class__: rg.svg.widget.Balloon
+	,__properties__: {set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox",set_preferredSide:"setPreferredSide",set_roundedCorner:"setRoundedCorner",set_lineHeight:"setLineHeight",set_text:"setText"}
 }
 rg.frame.Stack = $hxClasses["rg.frame.Stack"] = function(width,height,orientation) {
 	this.orientation = null == orientation?rg.frame.Orientation.Vertical:orientation;
@@ -5675,6 +7905,10 @@ rg.frame.Stack = $hxClasses["rg.frame.Stack"] = function(width,height,orientatio
 rg.frame.Stack.__name__ = ["rg","frame","Stack"];
 rg.frame.Stack.prototype = {
 	children: null
+	,width: null
+	,height: null
+	,orientation: null
+	,length: null
 	,moreSpaceRequired: function(size) {
 	}
 	,insertItem: function(pos,child) {
@@ -5715,6 +7949,9 @@ rg.frame.Stack.prototype = {
 		f.setParent(null);
 		this.reflow();
 		return true;
+	}
+	,iterator: function() {
+		return this.children.iterator();
 	}
 	,reflow: function() {
 		var available = (function($this) {
@@ -5862,7 +8099,11 @@ rg.frame.Stack.prototype = {
 		this.reflow();
 		return this;
 	}
+	,toString: function() {
+		return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
+	}
 	,__class__: rg.frame.Stack
+	,__properties__: {get_length:"getLength"}
 }
 var BytesBuffer = $hxClasses["BytesBuffer"] = function() {
 	this.b = new Array();
@@ -5900,13 +8141,18 @@ BytesBuffer.prototype = {
 	,writeByte: function(b) {
 		this.b.push(b);
 	}
+	,writeBytes: function(src,pos,len) {
+		this.addBytes(src,pos,len);
+	}
 	,__class__: BytesBuffer
 }
-if(!thx.math.scale) thx.math.scale = {}
 thx.math.scale.IScale = $hxClasses["thx.math.scale.IScale"] = function() { }
 thx.math.scale.IScale.__name__ = ["thx","math","scale","IScale"];
 thx.math.scale.IScale.prototype = {
-	__class__: thx.math.scale.IScale
+	scale: null
+	,getDomain: null
+	,getRange: null
+	,__class__: thx.math.scale.IScale
 }
 rg.visualization.VisualizationSankey = $hxClasses["rg.visualization.VisualizationSankey"] = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
@@ -6127,112 +8373,80 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 	}
 	,__class__: rg.visualization.VisualizationSankey
 });
-var Floats = $hxClasses["Floats"] = function() { }
-Floats.__name__ = ["Floats"];
-Floats.normalize = function(v) {
-	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
-}
-Floats.range = function(start,stop,step) {
-	if(step == null) step = 1.0;
-	if(null == stop) {
-		stop = start;
-		start = 0.0;
+dhx.AccessProperty = $hxClasses["dhx.AccessProperty"] = function(name,selection) {
+	dhx.Access.call(this,selection);
+	this.name = name;
+};
+dhx.AccessProperty.__name__ = ["dhx","AccessProperty"];
+dhx.AccessProperty.__super__ = dhx.Access;
+dhx.AccessProperty.prototype = $extend(dhx.Access.prototype,{
+	name: null
+	,get: function() {
+		var n = this.name;
+		return this.selection.firstNode(function(node) {
+			return Reflect.field(node,n);
+		});
 	}
-	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 50, className : "Floats", methodName : "range"});
-	var range = [], i = -1.0, j;
-	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
-	return range;
-}
-Floats.min = function(a,b) {
-	return a < b?a:b;
-}
-Floats.max = function(a,b) {
-	return a > b?a:b;
-}
-Floats.circularWrap = function(v,max) {
-	v = v % max;
-	if(v < 0) v += max;
-	return v;
-}
-Floats.interpolate = function(f,a,b,equation) {
-	if(b == null) b = 1.0;
-	if(a == null) a = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	return a + equation(f) * (b - a);
-}
-Floats.interpolatef = function(a,b,equation) {
-	if(b == null) b = 1.0;
-	if(a == null) a = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	var d = b - a;
-	return function(f) {
-		return a + equation(f) * d;
-	};
-}
-Floats.format = function(v,param,params,culture) {
-	return (Floats.formatf(param,params,culture))(v);
-}
-Floats.formatf = function(param,params,culture) {
-	params = thx.culture.FormatParams.params(param,params,"D");
-	var format = params.shift();
-	var decimals = params.length > 0?Std.parseInt(params[0]):null;
-	switch(format) {
-	case "D":
-		return function(v) {
-			return thx.culture.FormatNumber.decimal(v,decimals,culture);
-		};
-	case "I":
-		return function(v) {
-			return thx.culture.FormatNumber["int"](v,culture);
-		};
-	case "C":
-		var s = params.length > 1?params[1]:null;
-		return function(v) {
-			return thx.culture.FormatNumber.currency(v,s,decimals,culture);
-		};
-	case "P":
-		return function(v) {
-			return thx.culture.FormatNumber.percent(v,decimals,culture);
-		};
-	case "M":
-		return function(v) {
-			return thx.culture.FormatNumber.permille(v,decimals,culture);
-		};
-	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 145, className : "Floats", methodName : "formatf"});
-			return $r;
-		}(this));
+	,remove: function() {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			Reflect.deleteField(node,n);
+		});
+		return this.selection;
 	}
-}
-Floats.parse = function(s) {
-	if(s.substr(0,1) == "+") s = s.substr(1);
-	return Std.parseFloat(s);
-}
-Floats.compare = function(a,b) {
-	return a < b?-1:a > b?1:0;
-}
-Floats.equals = function(a,b,approx) {
-	if(approx == null) approx = 1e-5;
-	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
-	return Math.abs(b - a) < approx;
-}
-Floats.uninterpolatef = function(a,b) {
-	b = 1 / (b - a);
-	return function(x) {
-		return (x - a) * b;
-	};
-}
-Floats.prototype = {
-	__class__: Floats
-}
+	,string: function(v) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			node[n] = v;
+		});
+		return this.selection;
+	}
+	,'float': function(v) {
+		var s = "" + v;
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			node[n] = s;
+		});
+		return this.selection;
+	}
+	,__class__: dhx.AccessProperty
+});
+dhx.AccessDataProperty = $hxClasses["dhx.AccessDataProperty"] = function(name,selection) {
+	dhx.AccessProperty.call(this,name,selection);
+};
+dhx.AccessDataProperty.__name__ = ["dhx","AccessDataProperty"];
+dhx.AccessDataProperty.__super__ = dhx.AccessProperty;
+dhx.AccessDataProperty.prototype = $extend(dhx.AccessProperty.prototype,{
+	stringf: function(v) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null == s) Reflect.deleteField(node,n); else node[n] = s;
+		});
+		return this.selection;
+	}
+	,floatf: function(v) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null == s) Reflect.deleteField(node,n); else node[n] = "" + s;
+		});
+		return this.selection;
+	}
+	,data: function() {
+		return this.stringf(function(d,_) {
+			return "" + d;
+		});
+	}
+	,__class__: dhx.AccessDataProperty
+});
 if(!rg.svg.util) rg.svg.util = {}
 rg.svg.util.SymbolCache = $hxClasses["rg.svg.util.SymbolCache"] = function() {
 	this.c = new Hash();
 	this.r = 0;
 };
 rg.svg.util.SymbolCache.__name__ = ["rg","svg","util","SymbolCache"];
+rg.svg.util.SymbolCache.cache = null;
 rg.svg.util.SymbolCache.prototype = {
 	c: null
 	,r: null
@@ -6244,6 +8458,9 @@ rg.svg.util.SymbolCache.prototype = {
 			this.c.set(k,s);
 		}
 		return s;
+	}
+	,stats: function() {
+		return { cachedSymbols : Iterators.array(this.c.iterator()).length};
 	}
 	,__class__: rg.svg.util.SymbolCache
 }
@@ -6396,6 +8613,9 @@ dhx.OSType.UnknownOs.toString = $estr;
 dhx.OSType.UnknownOs.__enum__ = dhx.OSType;
 dhx.ClientHost = $hxClasses["dhx.ClientHost"] = function() { }
 dhx.ClientHost.__name__ = ["dhx","ClientHost"];
+dhx.ClientHost.host = null;
+dhx.ClientHost.environment = null;
+dhx.ClientHost.os = null;
 dhx.ClientHost.isIE = function() {
 	return (function($this) {
 		var $r;
@@ -6408,6 +8628,65 @@ dhx.ClientHost.isIE = function() {
 		}
 		return $r;
 	}(this));
+}
+dhx.ClientHost.hostVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (dhx.ClientHost.host);
+		switch( $e[1] ) {
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+dhx.ClientHost.hostString = function() {
+	return (function($this) {
+		var $r;
+		switch( (dhx.ClientHost.host)[1] ) {
+		case 0:
+			$r = "unknown_server";
+			break;
+		case 7:
+			$r = "unknown";
+			break;
+		case 1:
+			$r = "nodejs";
+			break;
+		default:
+			$r = dhx.ClientHost.host[0];
+		}
+		return $r;
+	}(this));
+}
+dhx.ClientHost.osString = function() {
+	return dhx.ClientHost.os[0];
+}
+dhx.ClientHost.osVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (dhx.ClientHost.os);
+		switch( $e[1] ) {
+		case 0:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+dhx.ClientHost.environmentString = function() {
+	return dhx.ClientHost.environment[0];
 }
 dhx.ClientHost.userAgent = function() {
 	return "" + navigator.userAgent;
@@ -6839,7 +9118,9 @@ rg.visualization.Visualizations.prototype = {
 chx.io.Input = $hxClasses["chx.io.Input"] = function() { }
 chx.io.Input.__name__ = ["chx","io","Input"];
 chx.io.Input.prototype = {
-	readByte: function() {
+	bytesAvailable: null
+	,bigEndian: null
+	,readByte: function() {
 		return (function($this) {
 			var $r;
 			throw new chx.lang.FatalException("Not implemented");
@@ -6857,6 +9138,163 @@ chx.io.Input.prototype = {
 		}
 		return len;
 	}
+	,isEof: function() {
+		return (function($this) {
+			var $r;
+			throw new chx.lang.UnsupportedException("Not implemented for this input type");
+			return $r;
+		}(this));
+	}
+	,close: function() {
+	}
+	,readAll: function(bufsize) {
+		if(bufsize == null) bufsize = 16384;
+		var buf = Bytes.alloc(bufsize);
+		var total = new BytesBuffer();
+		try {
+			while(true) {
+				var len = this.readBytes(buf,0,bufsize);
+				if(len == 0) throw new chx.lang.BlockedException();
+				total.addBytes(buf,0,len);
+			}
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+			} else throw(e);
+		}
+		return total.getBytes();
+	}
+	,readFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.readBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+	}
+	,read: function(nbytes) {
+		var s = Bytes.alloc(nbytes);
+		var p = 0;
+		while(nbytes > 0) {
+			var k = this.readBytes(s,p,nbytes);
+			if(k == 0) throw new chx.lang.BlockedException();
+			p += k;
+			nbytes -= k;
+		}
+		return s;
+	}
+	,readUntil: function(end) {
+		var buf = new StringBuf();
+		var last;
+		while((last = this.readByte()) != end) buf.b[buf.b.length] = String.fromCharCode(last);
+		return buf.b.join("");
+	}
+	,readLine: function() {
+		var buf = new StringBuf();
+		var last;
+		var s;
+		try {
+			while((last = this.readByte()) != 10) buf.b[buf.b.length] = String.fromCharCode(last);
+			s = buf.b.join("");
+			if(s.charCodeAt(s.length - 1) == 13) s = s.substr(0,-1);
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+				s = buf.b.join("");
+				if(s.length == 0) throw e;
+			} else throw(e);
+		}
+		return s;
+	}
+	,readFloat: function() {
+		return math.IEEE754.bytesToFloat(this.read(4),this.bigEndian);
+	}
+	,readDouble: function() {
+		return math.IEEE754.bytesToFloat(this.read(8),this.bigEndian);
+	}
+	,readInt8: function() {
+		var n = this.readByte();
+		if(n >= 128) return n - 256;
+		return n;
+	}
+	,readUInt8: function() {
+		return this.readByte();
+	}
+	,readInt16: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var n = this.bigEndian?ch2 | ch1 << 8:ch1 | ch2 << 8;
+		if((n & 32768) != 0) return n - 65536;
+		return n;
+	}
+	,readUInt16: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		return this.bigEndian?ch2 | ch1 << 8:ch1 | ch2 << 8;
+	}
+	,readInt24: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var n = this.bigEndian?ch3 | ch2 << 8 | ch1 << 16:ch1 | ch2 << 8 | ch3 << 16;
+		if((n & 8388608) != 0) return n - 16777216;
+		return n;
+	}
+	,readUInt24: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		return this.bigEndian?ch3 | ch2 << 8 | ch1 << 16:ch1 | ch2 << 8 | ch3 << 16;
+	}
+	,readInt31: function() {
+		var ch1, ch2, ch3, ch4;
+		if(this.bigEndian) {
+			ch4 = this.readByte();
+			ch3 = this.readByte();
+			ch2 = this.readByte();
+			ch1 = this.readByte();
+		} else {
+			ch1 = this.readByte();
+			ch2 = this.readByte();
+			ch3 = this.readByte();
+			ch4 = this.readByte();
+		}
+		if((ch4 & 128) == 0 != ((ch4 & 64) == 0)) throw new chx.lang.OverflowException();
+		return ch1 | ch2 << 8 | ch3 << 16 | ch4 << 24;
+	}
+	,readUInt30: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var ch4 = this.readByte();
+		if((this.bigEndian?ch1:ch4) >= 64) throw new chx.lang.OverflowException();
+		return this.bigEndian?ch4 | ch3 << 8 | ch2 << 16 | ch1 << 24:ch1 | ch2 << 8 | ch3 << 16 | ch4 << 24;
+	}
+	,readInt32: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var ch4 = this.readByte();
+		return this.bigEndian?(ch1 << 8 | ch2) << 16 | (ch3 << 8 | ch4):(ch4 << 8 | ch3) << 16 | (ch2 << 8 | ch1);
+	}
+	,readString: function(len) {
+		var b = Bytes.alloc(len);
+		this.readFullBytes(b,0,len);
+		return b.toString();
+	}
+	,readUTF: function() {
+		var len = this.readUInt16();
+		return this.readString(len);
+	}
+	,readMultiByteString: function(len,charset) {
+		var cset = charset.toLowerCase();
+		switch(cset) {
+		case "latin1":
+			break;
+		case "us-ascii":
+			break;
+		default:
+			throw new chx.lang.UnsupportedException(cset + " not supported");
+		}
+		return this.readString(len);
+	}
 	,__getBytesAvailable: function() {
 		return (function($this) {
 			var $r;
@@ -6869,14 +9307,31 @@ chx.io.Input.prototype = {
 		return b;
 	}
 	,__class__: chx.io.Input
+	,__properties__: {set_bigEndian:"__setEndian",get_bytesAvailable:"__getBytesAvailable"}
 }
-chx.io.BytesInput = $hxClasses["chx.io.BytesInput"] = function() { }
+chx.io.BytesInput = $hxClasses["chx.io.BytesInput"] = function(b,pos,len) {
+	if(pos == null) pos = 0;
+	if(len == null) len = b.length - pos;
+	if(pos < 0 || len < 0 || pos + len > b.length) throw new chx.lang.OutsideBoundsException();
+	this.b = b.b;
+	this.pos = pos;
+	this.len = len;
+	this.__setEndian(false);
+};
 chx.io.BytesInput.__name__ = ["chx","io","BytesInput"];
 chx.io.BytesInput.__super__ = chx.io.Input;
 chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
-	b: null
+	position: null
+	,b: null
 	,pos: null
 	,len: null
+	,getBytesCopy: function() {
+		var orig = this.getPosition();
+		var rv = null;
+		rv = Bytes.ofData(this.b.slice(0,this.b.length));
+		this.setPosition(orig);
+		return rv;
+	}
 	,readByte: function() {
 		if(this.len == 0) throw new chx.lang.EofException();
 		this.len--;
@@ -6900,6 +9355,14 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 	,__getBytesAvailable: function() {
 		return this.len >= 0?this.len:0;
 	}
+	,peek: function(pos) {
+		if(pos == null) pos = this.getPosition();
+		var orig = this.getPosition();
+		this.setPosition(pos);
+		var d = this.readByte();
+		this.setPosition(orig);
+		return d;
+	}
 	,setPosition: function(p) {
 		this.len = this.len + (this.getPosition() - p);
 		this.pos = p;
@@ -6909,6 +9372,7 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 		return this.pos;
 	}
 	,__class__: chx.io.BytesInput
+	,__properties__: $extend(chx.io.Input.prototype.__properties__,{set_position:"setPosition",get_position:"getPosition"})
 });
 var StringTools = $hxClasses["StringTools"] = function() { }
 StringTools.__name__ = ["StringTools"];
@@ -6918,8 +9382,19 @@ StringTools.urlEncode = function(s) {
 StringTools.urlDecode = function(s) {
 	return decodeURIComponent(s.split("+").join(" "));
 }
+StringTools.htmlEscape = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+StringTools.htmlUnescape = function(s) {
+	return s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
+}
 StringTools.startsWith = function(s,start) {
 	return s.length >= start.length && s.substr(0,start.length) == start;
+}
+StringTools.endsWith = function(s,end) {
+	var elen = end.length;
+	var slen = s.length;
+	return slen >= elen && s.substr(slen - elen,elen) == end;
 }
 StringTools.isSpace = function(s,pos) {
 	var c = s.charCodeAt(pos);
@@ -6982,6 +9457,22 @@ StringTools.hex = function(n,digits) {
 StringTools.fastCodeAt = function(s,index) {
 	return s.cca(index);
 }
+StringTools.isEOF = function(c) {
+	return c != c;
+}
+StringTools.replaceRecurse = function(s,sub,by) {
+	if(sub.length == 0) return StringTools.replace(s,sub,by);
+	if(by.indexOf(sub) >= 0) throw "Infinite recursion";
+	var ns = s.toString();
+	var olen = 0;
+	var nlen = ns.length;
+	while(olen != nlen) {
+		olen = ns.length;
+		StringTools.replace(ns,sub,by);
+		nlen = ns.length;
+	}
+	return ns;
+}
 StringTools.stripWhite = function(s) {
 	var l = s.length;
 	var i = 0;
@@ -6992,6 +9483,33 @@ StringTools.stripWhite = function(s) {
 	}
 	return sb.b.join("");
 }
+StringTools.isNum = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	return c >= 48 && c <= 57;
+}
+StringTools.isAlpha = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	return c >= 65 && c <= 90 || c >= 97 && c <= 122;
+}
+StringTools.num = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	if(c > 0) {
+		c -= 48;
+		if(c < 0 || c > 9) return null;
+		return c;
+	}
+	return null;
+}
+StringTools.splitLines = function(str) {
+	var ret = str.split("\n");
+	var _g1 = 0, _g = ret.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var l = ret[i];
+		if(l.substr(-1,1) == "\r") ret[i] = l.substr(0,-1);
+	}
+	return ret;
+}
 StringTools.prototype = {
 	__class__: StringTools
 }
@@ -7000,8 +9518,18 @@ Iterables.__name__ = ["Iterables"];
 Iterables.count = function(it) {
 	return Iterators.count(it.iterator());
 }
+Iterables.indexOf = function(it,v,f) {
+	return Iterators.indexOf(it.iterator(),v,f);
+}
+Iterables.contains = function(it,v,f) {
+	return Iterators.contains(it.iterator(),v,f);
+}
 Iterables.array = function(it) {
 	return Iterators.array(it.iterator());
+}
+Iterables.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it.iterator()).join(glue);
 }
 Iterables.map = function(it,f) {
 	return Iterators.map(it.iterator(),f);
@@ -7011,6 +9539,27 @@ Iterables.each = function(it,f) {
 }
 Iterables.filter = function(it,f) {
 	return Iterators.filter(it.iterator(),f);
+}
+Iterables.reduce = function(it,f,initialValue) {
+	return Iterators.reduce(it.iterator(),f,initialValue);
+}
+Iterables.random = function(it) {
+	return Arrays.random(Iterators.array(it.iterator()));
+}
+Iterables.any = function(it,f) {
+	return Iterators.any(it.iterator(),f);
+}
+Iterables.all = function(it,f) {
+	return Iterators.all(it.iterator(),f);
+}
+Iterables.last = function(it) {
+	return Iterators.last(it.iterator());
+}
+Iterables.lastf = function(it,f) {
+	return Iterators.lastf(it.iterator(),f);
+}
+Iterables.first = function(it) {
+	return it.iterator().next();
 }
 Iterables.firstf = function(it,f) {
 	return Iterators.firstf(it.iterator(),f);
@@ -7043,6 +9592,18 @@ dhx.AccessHtml.prototype = $extend(dhx.Access.prototype,{
 		});
 		return this.selection;
 	}
+	,clear: function() {
+		this.selection.eachNode(function(node,i) {
+			node.innerHTML = "";
+		});
+		return this.selection;
+	}
+	,'float': function(v) {
+		this.selection.eachNode(function(node,i) {
+			node.innerHTML = "" + v;
+		});
+		return this.selection;
+	}
 	,__class__: dhx.AccessHtml
 });
 dhx.AccessDataHtml = $hxClasses["dhx.AccessDataHtml"] = function(selection) {
@@ -7059,6 +9620,18 @@ dhx.AccessDataHtml.prototype = $extend(dhx.AccessHtml.prototype,{
 		});
 		return this.selection;
 	}
+	,floatf: function(v) {
+		this.selection.eachNode(function(node,i) {
+			var f = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null == f) node.innerHTML = ""; else node.innerHTML = "" + f;
+		});
+		return this.selection;
+	}
+	,data: function() {
+		return this.stringf(function(d,_) {
+			return "" + d;
+		});
+	}
 	,__class__: dhx.AccessDataHtml
 });
 rg.interactive.RGDownloader = $hxClasses["rg.interactive.RGDownloader"] = function(container,serviceurl) {
@@ -7067,6 +9640,11 @@ rg.interactive.RGDownloader = $hxClasses["rg.interactive.RGDownloader"] = functi
 	this.tokenId = rg.util.RG.getTokenId();
 };
 rg.interactive.RGDownloader.__name__ = ["rg","interactive","RGDownloader"];
+rg.interactive.RGDownloader.getClassName = function(container) {
+	var name = container.attr("class").get();
+	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
+	return "" == name?null:name;
+}
 rg.interactive.RGDownloader.appendArgument = function(url,name,value) {
 	var sep = url.indexOf("?") >= 0?"&":"?";
 	return url + sep + name + "=" + StringTools.urlEncode(value);
@@ -7085,7 +9663,7 @@ rg.interactive.RGDownloader.prototype = {
 		var http = new haxe.Http(this.url(format));
 		http.setHeader("Accept","application/json");
 		if(null != error) http.onError = error; else http.onError = function(e) {
-			null;
+			haxe.Log.trace(e,{ fileName : "RGDownloader.hx", lineNumber : 41, className : "rg.interactive.RGDownloader", methodName : "download"});
 		};
 		http.onData = (function(f,a1,a2) {
 			return function(a3) {
@@ -7140,6 +9718,19 @@ rg.interactive.RGDownloader.prototype = {
 var js = js || {}
 js.Boot = $hxClasses["js.Boot"] = function() { }
 js.Boot.__name__ = ["js","Boot"];
+js.Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+js.Boot.__trace = function(v,i) {
+	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
+	msg += js.Boot.__string_rec(v,"");
+	var d = document.getElementById("haxe:trace");
+	if(d != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
+}
+js.Boot.__clear_trace = function() {
+	var d = document.getElementById("haxe:trace");
+	if(d != null) d.innerHTML = "";
+}
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
@@ -7344,6 +9935,44 @@ Dynamics.formatf = function(param,params,nullstring,culture) {
 			}(this));
 		}
 	};
+}
+Dynamics.interpolate = function(v,a,b,equation) {
+	return (Dynamics.interpolatef(a,b,equation))(v);
+}
+Dynamics.interpolatef = function(a,b,equation) {
+	var ta = Type["typeof"](a);
+	var tb = Type["typeof"](b);
+	if(!((Std["is"](a,Float) || Std["is"](a,Int)) && (Std["is"](b,Float) || Std["is"](b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 59, className : "Dynamics", methodName : "interpolatef"});
+	var $e = (ta);
+	switch( $e[1] ) {
+	case 0:
+		return function(_) {
+			return null;
+		};
+	case 1:
+		if(Std["is"](b,Int)) return Ints.interpolatef(a,b,equation); else return Floats.interpolatef(a,b,equation);
+		break;
+	case 2:
+		return Floats.interpolatef(a,b,equation);
+	case 3:
+		return Bools.interpolatef(a,b,equation);
+	case 4:
+		return Objects.interpolatef(a,b,equation);
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "String":
+			return Strings.interpolatef(a,b,equation);
+		case "Date":
+			return Dates.interpolatef(a,b,equation);
+		default:
+			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 77, className : "Dynamics", methodName : "interpolatef"});
+		}
+		break;
+	default:
+		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 79, className : "Dynamics", methodName : "interpolatef"});
+	}
 }
 Dynamics.string = function(v) {
 	var $e = (Type["typeof"](v));
@@ -7675,6 +10304,9 @@ dhx.Group.prototype = {
 	,push: function(node) {
 		this.nodes.push(node);
 	}
+	,sort: function(comparator) {
+		this.nodes.sort(comparator);
+	}
 	,__class__: dhx.Group
 }
 rg.svg.chart.LineEffect = $hxClasses["rg.svg.chart.LineEffect"] = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
@@ -7691,6 +10323,9 @@ dhx.AccessTweenStyle.__name__ = ["dhx","AccessTweenStyle"];
 dhx.AccessTweenStyle.__super__ = dhx.AccessTween;
 dhx.AccessTweenStyle.prototype = $extend(dhx.AccessTween.prototype,{
 	name: null
+	,floatNodef: function(f,priority) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(f),priority);
+	}
 	,'float': function(value,priority) {
 		return this.floatTweenNodef(this.transitionFloatTween(value),priority);
 	}
@@ -7705,10 +10340,114 @@ dhx.AccessTweenStyle.prototype = $extend(dhx.AccessTween.prototype,{
 		this.tweens.set("style." + name,styleTween);
 		return this.transition;
 	}
+	,stringNodef: function(f,priority) {
+		return this.stringTweenNodef(this.transitionStringTweenf(f),priority);
+	}
+	,string: function(value,priority) {
+		return this.stringTweenNodef(this.transitionStringTween(value),priority);
+	}
+	,stringTweenNodef: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(d,i,dhx.AccessStyle.getComputedStyleValue(d,name));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,colorNodef: function(f,priority) {
+		return this.colorTweenNodef(this.transitionColorTweenf(f),priority);
+	}
+	,color: function(value,priority) {
+		return this.colorTweenNodef(this.transitionColorTween(thx.color.Colors.parse(value)),priority);
+	}
+	,colorTweenNodef: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(d,i,thx.color.Colors.parse(dhx.AccessStyle.getComputedStyleValue(d,name)));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
 	,__class__: dhx.AccessTweenStyle
+});
+dhx.AccessDataTweenStyle = $hxClasses["dhx.AccessDataTweenStyle"] = function(name,transition,tweens) {
+	dhx.AccessTweenStyle.call(this,name,transition,tweens);
+};
+dhx.AccessDataTweenStyle.__name__ = ["dhx","AccessDataTweenStyle"];
+dhx.AccessDataTweenStyle.__super__ = dhx.AccessTweenStyle;
+dhx.AccessDataTweenStyle.prototype = $extend(dhx.AccessTweenStyle.prototype,{
+	floatf: function(f,priority) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}),priority);
+	}
+	,floatTweenf: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(Reflect.field(d,"__dhx_data__"),i,Std.parseFloat(dhx.AccessStyle.getComputedStyleValue(d,name)));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,stringf: function(f,priority) {
+		return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}),priority);
+	}
+	,stringTweenf: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(Reflect.field(d,"__dhx_data__"),i,dhx.AccessStyle.getComputedStyleValue(d,name));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,colorf: function(f,priority) {
+		return this.colorTweenNodef(this.transitionColorTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}),priority);
+	}
+	,colorTweenf: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(Reflect.field(d,"__dhx_data__"),i,thx.color.Colors.parse(dhx.AccessStyle.getComputedStyleValue(d,name)));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,__class__: dhx.AccessDataTweenStyle
 });
 rg.svg.panel.Panels = $hxClasses["rg.svg.panel.Panels"] = function() { }
 rg.svg.panel.Panels.__name__ = ["rg","svg","panel","Panels"];
+rg.svg.panel.Panels.rootSize = function(panel) {
+	var p = panel.parent;
+	while(p != null) {
+		var t = p;
+		p = panel.parent;
+		panel = t;
+	}
+	return { width : panel.frame.width, height : panel.frame.height};
+}
 rg.svg.panel.Panels.absolutePos = function(panel) {
 	var p = panel, x = 0, y = 0;
 	while(null != p) {
@@ -7729,12 +10468,39 @@ rg.svg.panel.Panels.htmlContainer = function(panel) {
 	} while(null != Reflect.field(node = node.ownerSVGElement,"ownerSVGElement"));
 	return null == node?null:node.parentNode;
 }
+rg.svg.panel.Panels.boundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		p = p.parent;
+	}
+	return { x : x, y : y, width : panel.frame.width, height : panel.frame.height};
+}
+rg.svg.panel.Panels.ancestorBoundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0, w = 0, h = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		w = p.frame.width;
+		h = p.frame.height;
+		p = p.parent;
+	}
+	return { x : -x, y : -y, width : w, height : h};
+}
 rg.svg.panel.Panels.prototype = {
 	__class__: rg.svg.panel.Panels
 }
 rg.svg.util.RGCss = $hxClasses["rg.svg.util.RGCss"] = function() { }
 rg.svg.util.RGCss.__name__ = ["rg","svg","util","RGCss"];
 rg.svg.util.RGCss.cache = null;
+rg.svg.util.RGCss.cssSources = function() {
+	var sources = [];
+	dhx.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
+		sources.push(n.href);
+	});
+	return sources;
+}
 rg.svg.util.RGCss.colorsInCss = function() {
 	if(null != rg.svg.util.RGCss.cache) return rg.svg.util.RGCss.cache;
 	var container = dhx.Dom.select("body").append("svg:svg").attr("class").string("rg"), first = rg.svg.util.RGCss.createBlock(container,0).style("fill").get();
@@ -7798,6 +10564,15 @@ dhx.Timer.step = function() {
 		dhx.Timer.interval = 1;
 		window.requestAnimationFrame(dhx.Timer._step);
 	}
+}
+dhx.Timer.flush = function() {
+	var elapsed, now = Date.now().getTime(), t1 = dhx.Timer.queue;
+	while(null != t1) {
+		elapsed = now - t1.then;
+		if(t1.delay == 0) t1.flush = t1.f(elapsed);
+		t1 = t1.next;
+	}
+	dhx.Timer._flush();
 }
 dhx.Timer._flush = function() {
 	var t0 = null, t1 = dhx.Timer.queue, then = Math.POSITIVE_INFINITY;
@@ -7913,7 +10688,11 @@ rg.info.Info.feed = function(info,ob) {
 		var filter = filters[_g];
 		++_g;
 		if(Reflect.hasField(ob,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 34, className : "rg.info.Info", methodName : "feed"});
+			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) {
+				haxe.Log.trace(value,{ fileName : "Info.hx", lineNumber : 32, className : "rg.info.Info", methodName : "feed"});
+				haxe.Log.trace(filter.field,{ fileName : "Info.hx", lineNumber : 33, className : "rg.info.Info", methodName : "feed"});
+				throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 34, className : "rg.info.Info", methodName : "feed"});
+			}
 			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
 			var _g1 = 0;
 			while(_g1 < items.length) {
@@ -8181,6 +10960,14 @@ Strings.formatOnef = function(param,params,culture) {
 		}(this));
 	}
 }
+Strings.upTo = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return value.substr(0,pos);
+}
+Strings.startFrom = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return value.substr(pos + searchFor.length);
+}
 Strings.rtrim = function(value,charlist) {
 	var len = value.length;
 	while(len > 0) {
@@ -8214,14 +11001,29 @@ Strings.lcfirst = function(value) {
 Strings.empty = function(value) {
 	return value == null || value == "";
 }
+Strings.isAlphaNum = function(value) {
+	return value == null?false:Strings.__alphaNumPattern.match(value);
+}
+Strings.digitsOnly = function(value) {
+	return value == null?false:Strings.__digitsPattern.match(value);
+}
 Strings.ucwords = function(value) {
 	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+}
+Strings.ucwordsws = function(value) {
+	return Strings.__ucwordswsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
 }
 Strings.__upperMatch = function(re) {
 	return re.matched(0).toUpperCase();
 }
 Strings.humanize = function(s) {
 	return StringTools.replace(Strings.underscore(s),"_"," ");
+}
+Strings.capitalize = function(s) {
+	return s.substr(0,1).toUpperCase() + s.substr(1);
+}
+Strings.succ = function(s) {
+	return s.substr(0,-1) + String.fromCharCode(s.substr(-1).charCodeAt(0) + 1);
 }
 Strings.underscore = function(s) {
 	s = new EReg("::","g").replace(s,"/");
@@ -8232,6 +11034,60 @@ Strings.underscore = function(s) {
 }
 Strings.dasherize = function(s) {
 	return StringTools.replace(s,"_","-");
+}
+Strings.repeat = function(s,times) {
+	var b = [];
+	var _g = 0;
+	while(_g < times) {
+		var i = _g++;
+		b.push(s);
+	}
+	return b.join("");
+}
+Strings.wrapColumns = function(s,columns,indent,newline) {
+	if(newline == null) newline = "\n";
+	if(indent == null) indent = "";
+	if(columns == null) columns = 78;
+	var parts = Strings._reSplitWC.split(s);
+	var result = [];
+	var _g = 0;
+	while(_g < parts.length) {
+		var part = parts[_g];
+		++_g;
+		result.push(Strings._wrapColumns(StringTools.trim(Strings._reReduceWS.replace(part," ")),columns,indent,newline));
+	}
+	return result.join(newline);
+}
+Strings._wrapColumns = function(s,columns,indent,newline) {
+	var parts = [];
+	var pos = 0;
+	var len = s.length;
+	var ilen = indent.length;
+	columns -= ilen;
+	while(true) {
+		if(pos + columns >= len - ilen) {
+			parts.push(s.substr(pos));
+			break;
+		}
+		var i = 0;
+		while(!StringTools.isSpace(s,pos + columns - i) && i < columns) i++;
+		if(i == columns) {
+			i = 0;
+			while(!StringTools.isSpace(s,pos + columns + i) && pos + columns + i < len) i++;
+			parts.push(s.substr(pos,columns + i));
+			pos += columns + i + 1;
+		} else {
+			parts.push(s.substr(pos,columns - i));
+			pos += columns - i + 1;
+		}
+	}
+	return indent + parts.join(newline + indent);
+}
+Strings.stripTags = function(s) {
+	return Strings._reStripTags.replace(s,"");
+}
+Strings.interpolate = function(v,a,b,equation) {
+	return (Strings.interpolatef(a,b,equation))(v);
 }
 Strings.interpolatef = function(a,b,equation) {
 	var extract = function(value,s,f) {
@@ -8296,6 +11152,46 @@ Strings.interpolatef = function(a,b,equation) {
 			return f(t);
 		}).join("");
 	};
+}
+Strings.interpolateChars = function(v,a,b,equation) {
+	return (Strings.interpolateCharsf(a,b,equation))(v);
+}
+Strings.interpolateCharsf = function(a,b,equation) {
+	var aa = a.split(""), ab = b.split("");
+	while(aa.length > ab.length) ab.insert(0," ");
+	while(ab.length > aa.length) aa.insert(0," ");
+	var ai = [];
+	var _g1 = 0, _g = aa.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		ai[i] = Strings.interpolateCharf(aa[i],ab[i]);
+	}
+	return function(v) {
+		var r = [];
+		var _g1 = 0, _g = ai.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r[i] = ai[i](v);
+		}
+		return StringTools.trim(r.join(""));
+	};
+}
+Strings.interpolateChar = function(v,a,b,equation) {
+	return (Strings.interpolateCharf(a,b,equation))(v);
+}
+Strings.interpolateCharf = function(a,b,equation) {
+	if(new EReg("^\\d","").match(b) && a == " ") a = "0";
+	var r = new EReg("^[^a-zA-Z0-9]","");
+	if(r.match(b) && a == " ") a = r.matched(0);
+	var ca = a.charCodeAt(0), cb = b.charCodeAt(0), i = Ints.interpolatef(ca,cb,equation);
+	return function(v) {
+		return String.fromCharCode(i(v));
+	};
+}
+Strings.ellipsis = function(s,maxlen,symbol) {
+	if(symbol == null) symbol = "...";
+	if(maxlen == null) maxlen = 20;
+	if(s.length > maxlen) return s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
 }
 Strings.ellipsisf = function(maxlen,symbol) {
 	if(symbol == null) symbol = "...";
@@ -8682,7 +11578,9 @@ rg.info.InfoMap.prototype = {
 dhx.ISelectorEngine = $hxClasses["dhx.ISelectorEngine"] = function() { }
 dhx.ISelectorEngine.__name__ = ["dhx","ISelectorEngine"];
 dhx.ISelectorEngine.prototype = {
-	__class__: dhx.ISelectorEngine
+	select: null
+	,selectAll: null
+	,__class__: dhx.ISelectorEngine
 }
 dhx.SizzleEngine = $hxClasses["dhx.SizzleEngine"] = function() {
 };
@@ -8691,6 +11589,9 @@ dhx.SizzleEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.SizzleEngine.prototype = {
 	select: function(selector,node) {
 		return dhx.Sizzle.select(selector,node)[0];
+	}
+	,selectNode: function(n,p) {
+		return dhx.Sizzle.select(n,p)[0];
 	}
 	,selectAll: function(selector,node) {
 		return dhx.Sizzle.uniqueSort(dhx.Sizzle.select(selector,node));
@@ -8709,8 +11610,14 @@ rg.graph.Graph.friendEdges = function(friend) {
 	return friend;
 }
 rg.graph.Graph.prototype = {
-	empty: function() {
+	nodes: null
+	,edges: null
+	,empty: function() {
 		return Iterators.count(this.nodes.iterator()) == 0;
+	}
+	,clear: function() {
+		this.edges.clear();
+		this.nodes.clear();
 	}
 	,clone: function() {
 		var g = new rg.graph.Graph();
@@ -8728,6 +11635,11 @@ rg.graph.Graph.prototype = {
 			return n.isSink();
 		});
 	}
+	,findSources: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
 	,findSource: function() {
 		return Iterators.firstf(this.nodes.iterator(),function(n) {
 			return n.isSource();
@@ -8737,6 +11649,94 @@ rg.graph.Graph.prototype = {
 		return Iterators.filter(this.nodes.iterator(),function(n) {
 			return n.isIsolated();
 		});
+	}
+	,findIsolated: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,paths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.edges(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.other(n);
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,path: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.paths(a,b),weighted);
+	}
+	,directedPaths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse = null;
+			traverse = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.positives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.head;
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f,a1,a2) {
+						return function() {
+							return f(a1,a2);
+						};
+					})(traverse,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,directedPath: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.directedPaths(a,b),weighted);
+	}
+	,pickPath: function(paths,weighted) {
+		if(paths.length == 0) return null;
+		if(weighted) return Arrays.min(paths,function(arr) {
+			return arr.reduce(function(acc,edge,_) {
+				return acc + edge.weight;
+			},0);
+		}); else return Arrays.min(paths,function(arr) {
+			return arr.length;
+		});
+	}
+	,toString: function() {
+		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
 	}
 	,__class__: rg.graph.Graph
 }
@@ -8832,21 +11832,85 @@ math.reduction.Montgomery.prototype = {
 	}
 	,__class__: math.reduction.Montgomery
 }
-thx.math.scale.NumericScale = $hxClasses["thx.math.scale.NumericScale"] = function() { }
+thx.math.scale.NumericScale = $hxClasses["thx.math.scale.NumericScale"] = function() {
+	this._domain = [0.0,1.0];
+	this._range = [0.0,1.0];
+	this.f = Floats.interpolatef;
+	this._clamp = false;
+	this.rescale();
+};
 thx.math.scale.NumericScale.__name__ = ["thx","math","scale","NumericScale"];
 thx.math.scale.NumericScale.__interfaces__ = [thx.math.scale.IScale];
+thx.math.scale.NumericScale.scaleBilinear = function(domain,range,uninterpolate,interpolate) {
+	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
+	return function(x) {
+		return i(u(x));
+	};
+}
+thx.math.scale.NumericScale.scalePolylinear = function(domain,range,uninterpolate,interpolate) {
+	var u = [], i = [];
+	var _g1 = 1, _g = domain.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		u.push(uninterpolate(domain[j - 1],domain[j]));
+		i.push(interpolate(range[j - 1],range[j],null));
+	}
+	return function(x) {
+		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
+		return i[j](u[j](x));
+	};
+}
 thx.math.scale.NumericScale.prototype = {
 	_domain: null
 	,_range: null
+	,f: null
+	,_clamp: null
 	,_output: null
+	,_input: null
+	,rescale: function() {
+		var linear = this._domain.length == 2?thx.math.scale.NumericScale.scaleBilinear:thx.math.scale.NumericScale.scalePolylinear, uninterpolate = this._clamp?Floats.uninterpolateClampf:Floats.uninterpolatef;
+		this._output = linear(this._domain,this._range,uninterpolate,this.f);
+		this._input = linear(this._range,this._domain,uninterpolate,Floats.interpolatef);
+		return this;
+	}
 	,scale: function(x,_) {
 		return this._output(x);
+	}
+	,invert: function(y,_) {
+		return this._input(y);
 	}
 	,getDomain: function() {
 		return this._domain;
 	}
+	,domain: function(d) {
+		this._domain = d;
+		return this.rescale();
+	}
 	,getRange: function() {
 		return this._range;
+	}
+	,range: function(r) {
+		this._range = r;
+		return this.rescale();
+	}
+	,rangeRound: function(r) {
+		this.range(r);
+		this.interpolatef(Ints.interpolatef);
+		return this;
+	}
+	,getInterpolate: function() {
+		return this.f;
+	}
+	,interpolatef: function(x) {
+		this.f = x;
+		return this.rescale();
+	}
+	,getClamp: function() {
+		return this._clamp;
+	}
+	,clamp: function(v) {
+		this._clamp = v;
+		return this.rescale();
 	}
 	,ticks: function() {
 		return (function($this) {
@@ -8862,13 +11926,35 @@ thx.math.scale.NumericScale.prototype = {
 			return $r;
 		}(this));
 	}
+	,transform: function(scale,t,a,b) {
+		var range = this.getRange().map(function(v,_) {
+			return (v - t) / scale;
+		});
+		this.domain([a,b]);
+		var r = range.map(this.invert.$bind(this));
+		this.domain(r);
+		return this;
+	}
+	,_this: function() {
+		return this;
+	}
 	,__class__: thx.math.scale.NumericScale
 }
-thx.math.scale.Linear = $hxClasses["thx.math.scale.Linear"] = function() { }
+thx.math.scale.Linear = $hxClasses["thx.math.scale.Linear"] = function() {
+	thx.math.scale.NumericScale.call(this);
+	this.m = 10;
+};
 thx.math.scale.Linear.__name__ = ["thx","math","scale","Linear"];
 thx.math.scale.Linear.__super__ = thx.math.scale.NumericScale;
 thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,{
 	m: null
+	,getModulo: function() {
+		return this.m;
+	}
+	,modulo: function(m) {
+		this.m = m;
+		return this;
+	}
 	,tickRange: function() {
 		var start = Arrays.min(this._domain), stop = Arrays.max(this._domain), span = stop - start, step = Math.pow(10,Math.floor(Math.log(span / this.m) / 2.302585092994046)), err = this.m / (span / step);
 		if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
@@ -8935,6 +12021,13 @@ dhx.AccessStyle.prototype = $extend(dhx.Access.prototype,{
 		var v = this.get();
 		if(dhx.AccessStyle.refloat.match(v)) return Std.parseFloat(dhx.AccessStyle.refloat.matched(1)); else return Math.NaN;
 	}
+	,remove: function() {
+		var me = this;
+		this.selection.eachNode(function(node,i) {
+			dhx.AccessStyle.removeStyleProperty(node,me.name);
+		});
+		return this.selection;
+	}
 	,string: function(v,priority) {
 		var me = this;
 		this.selection.eachNode(function(node,i) {
@@ -8972,6 +12065,27 @@ dhx.AccessDataStyle.prototype = $extend(dhx.AccessStyle.prototype,{
 			if(s == null) dhx.AccessStyle.removeStyleProperty(node,me.name); else dhx.AccessStyle.setStyleProperty(node,me.name,s,priority);
 		});
 		return this.selection;
+	}
+	,floatf: function(v,priority) {
+		var me = this;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(s == null) dhx.AccessStyle.removeStyleProperty(node,me.name); else dhx.AccessStyle.setStyleProperty(node,me.name,"" + s,priority);
+		});
+		return this.selection;
+	}
+	,colorf: function(v,priority) {
+		var me = this;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(s == null) dhx.AccessStyle.removeStyleProperty(node,me.name); else dhx.AccessStyle.setStyleProperty(node,me.name,"" + s.toRgbString(),priority);
+		});
+		return this.selection;
+	}
+	,data: function() {
+		return this.stringf(function(d,_) {
+			return "" + d;
+		});
 	}
 	,__class__: dhx.AccessDataStyle
 });
@@ -9014,7 +12128,12 @@ rg.factory.FactoryVariableIndependent.prototype = {
 rg.axis.ITickmark = $hxClasses["rg.axis.ITickmark"] = function() { }
 rg.axis.ITickmark.__name__ = ["rg","axis","ITickmark"];
 rg.axis.ITickmark.prototype = {
-	__class__: rg.axis.ITickmark
+	delta: null
+	,major: null
+	,value: null
+	,label: null
+	,__class__: rg.axis.ITickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.axis.Tickmark = $hxClasses["rg.axis.Tickmark"] = function(value,major,delta) {
 	this.value = value;
@@ -9024,7 +12143,11 @@ rg.axis.Tickmark = $hxClasses["rg.axis.Tickmark"] = function(value,major,delta) 
 rg.axis.Tickmark.__name__ = ["rg","axis","Tickmark"];
 rg.axis.Tickmark.__interfaces__ = [rg.axis.ITickmark];
 rg.axis.Tickmark.prototype = {
-	getDelta: function() {
+	delta: null
+	,major: null
+	,value: null
+	,label: null
+	,getDelta: function() {
 		return this.delta;
 	}
 	,getMajor: function() {
@@ -9036,7 +12159,11 @@ rg.axis.Tickmark.prototype = {
 	,getLabel: function() {
 		return rg.util.RGStrings.humanize(this.getValue());
 	}
+	,toString: function() {
+		return rg.axis.Tickmarks.string(this);
+	}
 	,__class__: rg.axis.Tickmark
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.util.DataPoints = $hxClasses["rg.util.DataPoints"] = function() { }
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
@@ -9141,6 +12268,17 @@ thx.svg.Arc = $hxClasses["thx.svg.Arc"] = function() {
 	};
 };
 thx.svg.Arc.__name__ = ["thx","svg","Arc"];
+thx.svg.Arc.fromObject = function() {
+	return new thx.svg.Arc().innerRadiusf(function(d,_) {
+		return d.innerRadius;
+	}).outerRadiusf(function(d,_) {
+		return d.outerRadius;
+	}).startAnglef(function(d,_) {
+		return d.startAngle;
+	}).endAnglef(function(d,_) {
+		return d.endAngle;
+	});
+}
 thx.svg.Arc.fromAngleObject = function() {
 	return new thx.svg.Arc().startAnglef(function(d,_) {
 		return d.startAngle;
@@ -9153,6 +12291,9 @@ thx.svg.Arc.prototype = {
 	,_r1: null
 	,_a0: null
 	,_a1: null
+	,getInnerRadius: function() {
+		return this._r0;
+	}
 	,innerRadius: function(v) {
 		return this.innerRadiusf(function(_,_1) {
 			return v;
@@ -9161,6 +12302,9 @@ thx.svg.Arc.prototype = {
 	,innerRadiusf: function(v) {
 		this._r0 = v;
 		return this;
+	}
+	,getOuterRadius: function() {
+		return this._r1;
 	}
 	,outerRadius: function(v) {
 		return this.outerRadiusf(function(_,_1) {
@@ -9171,9 +12315,25 @@ thx.svg.Arc.prototype = {
 		this._r1 = v;
 		return this;
 	}
+	,getStartAngle: function() {
+		return this._a0;
+	}
+	,startAngle: function(v) {
+		return this.startAnglef(function(_,_1) {
+			return v;
+		});
+	}
 	,startAnglef: function(v) {
 		this._a0 = v;
 		return this;
+	}
+	,getEndAngle: function() {
+		return this._a1;
+	}
+	,endAngle: function(v) {
+		return this.endAnglef(function(_,_1) {
+			return v;
+		});
 	}
 	,endAnglef: function(v) {
 		this._a1 = v;
@@ -9182,6 +12342,10 @@ thx.svg.Arc.prototype = {
 	,shape: function(d,i) {
 		var a0 = this._a0(d,i) + thx.svg.LineInternals.arcOffset, a1 = this._a1(d,i) + thx.svg.LineInternals.arcOffset, da = a1 - a0, df = da < Math.PI?"0":"1", c0 = Math.cos(a0), s0 = Math.sin(a0), c1 = Math.cos(a1), s1 = Math.sin(a1), r0 = this._r0(d,i), r1 = this._r1(d,i);
 		return da >= thx.svg.LineInternals.arcMax?r0 != 0?"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "M0," + r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + -r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + r0 + "Z":"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "Z":r0 != 0?"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L" + r0 * c1 + "," + r0 * s1 + "A" + r0 + "," + r0 + " 0 " + df + ",0 " + r0 * c0 + "," + r0 * s0 + "Z":"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L0,0" + "Z";
+	}
+	,centroid: function(d,i) {
+		var r = (this._r0(d,i) + this._r1(d,i)) / 2, a = (this._a0(d,i) + this._a1(d,i)) / 2 + thx.svg.LineInternals.arcOffset;
+		return [Math.cos(a) * r,Math.sin(a) * r];
 	}
 	,__class__: thx.svg.Arc
 }
@@ -9269,10 +12433,63 @@ rg.info.InfoLineChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 	,segment: null
 	,__class__: rg.info.InfoLineChart
 });
-var List = $hxClasses["List"] = function() { }
+var List = $hxClasses["List"] = function() {
+	this.length = 0;
+};
 List.__name__ = ["List"];
 List.prototype = {
 	h: null
+	,q: null
+	,length: null
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,first: function() {
+		return this.h == null?null:this.h[0];
+	}
+	,last: function() {
+		return this.q == null?null:this.q[0];
+	}
+	,pop: function() {
+		if(this.h == null) return null;
+		var x = this.h[0];
+		this.h = this.h[1];
+		if(this.h == null) this.q = null;
+		this.length--;
+		return x;
+	}
+	,isEmpty: function() {
+		return this.h == null;
+	}
+	,clear: function() {
+		this.h = null;
+		this.q = null;
+		this.length = 0;
+	}
+	,remove: function(v) {
+		var prev = null;
+		var l = this.h;
+		while(l != null) {
+			if(l[0] == v) {
+				if(prev == null) this.h = l[1]; else prev[1] = l[1];
+				if(this.q == l) this.q = prev;
+				this.length--;
+				return true;
+			}
+			prev = l;
+			l = l[1];
+		}
+		return false;
+	}
 	,iterator: function() {
 		return { h : this.h, hasNext : function() {
 			return this.h != null;
@@ -9282,6 +12499,50 @@ List.prototype = {
 			this.h = this.h[1];
 			return x;
 		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		s.b[s.b.length] = "{";
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = ", ";
+			s.add(Std.string(l[0]));
+			l = l[1];
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
+	}
+	,join: function(sep) {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = sep == null?"null":sep;
+			s.add(l[0]);
+			l = l[1];
+		}
+		return s.b.join("");
+	}
+	,filter: function(f) {
+		var l2 = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			if(f(v)) l2.add(v);
+		}
+		return l2;
+	}
+	,map: function(f) {
+		var b = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			b.add(f(v));
+		}
+		return b;
 	}
 	,__class__: List
 }
@@ -9326,7 +12587,21 @@ dhx.AccessClassed.getRe = function(name) {
 }
 dhx.AccessClassed.__super__ = dhx.Access;
 dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
-	remove: function(name) {
+	toggle: function(name) {
+		if(this.exists(name)) this.remove(name); else this.add(name);
+		return this.selection;
+	}
+	,exists: function(name) {
+		return this.selection.firstNode(function(node) {
+			var list = node.classList;
+			if(null != list) return list.contains(name);
+			var cls = node.className;
+			var re = new EReg("(^|\\s+)" + dhx.AccessClassed.escapeERegChars(name) + "(\\s+|$)","g");
+			var bv = cls.baseVal;
+			return re.match(null != bv?bv:cls);
+		});
+	}
+	,remove: function(name) {
 		this.selection.eachNode((function(f,a1) {
 			return function(a2,a3) {
 				return f(a1,a2,a3);
@@ -9366,6 +12641,20 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 			if(clsb) cls.baseVal = clsv; else node.className = clsv;
 		}
 	}
+	,get: function() {
+		var node = this.selection.node(), list = node.classList;
+		if(null != list) {
+			var result = [];
+			var _g1 = 0, _g = list.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				result.push(list.item(i));
+			}
+			return result.join(" ");
+		}
+		var cls = node.className, clsb = null != cls.baseVal;
+		if(clsb) return cls.baseVal; else return cls;
+	}
 	,__class__: dhx.AccessClassed
 });
 dhx.AccessDataClassed = $hxClasses["dhx.AccessDataClassed"] = function(selection) {
@@ -9374,7 +12663,23 @@ dhx.AccessDataClassed = $hxClasses["dhx.AccessDataClassed"] = function(selection
 dhx.AccessDataClassed.__name__ = ["dhx","AccessDataClassed"];
 dhx.AccessDataClassed.__super__ = dhx.AccessClassed;
 dhx.AccessDataClassed.prototype = $extend(dhx.AccessClassed.prototype,{
-	__class__: dhx.AccessDataClassed
+	removef: function(v) {
+		var f = this._remove.$bind(this);
+		this.selection.eachNode(function(node,i) {
+			var c = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null != c) f(c,node,i);
+		});
+		return this.selection;
+	}
+	,addf: function(v) {
+		var f = this._add.$bind(this);
+		this.selection.eachNode(function(node,i) {
+			var c = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null != c) f(c,node,i);
+		});
+		return this.selection;
+	}
+	,__class__: dhx.AccessDataClassed
 });
 rg.factory.FactoryLayout = $hxClasses["rg.factory.FactoryLayout"] = function() {
 };
@@ -9395,10 +12700,93 @@ rg.factory.FactoryLayout.prototype = {
 	}
 	,__class__: rg.factory.FactoryLayout
 }
+if(!thx.geom) thx.geom = {}
+thx.geom.Contour = $hxClasses["thx.geom.Contour"] = function() { }
+thx.geom.Contour.__name__ = ["thx","geom","Contour"];
+thx.geom.Contour.contourStart = function(grid) {
+	var x = 0, y = 0;
+	while(true) {
+		if(grid(x,y)) return [x,y];
+		if(x == 0) {
+			x = y + 1;
+			y = 0;
+		} else {
+			x = x - 1;
+			y = y + 1;
+		}
+	}
+	return null;
+}
+thx.geom.Contour.contour = function(grid,start) {
+	var s = null == start?thx.geom.Contour.contourStart(grid):start, c = [], x = s[0], y = s[1], dx = 0, dy = 0, pdx = null, pdy = null, i = 0;
+	do {
+		i = 0;
+		if(grid(x - 1,y - 1)) i += 1;
+		if(grid(x,y - 1)) i += 2;
+		if(grid(x - 1,y)) i += 4;
+		if(grid(x,y)) i += 8;
+		if(i == 6) {
+			dx = pdy == -1?-1:1;
+			dy = 0;
+		} else if(i == 9) {
+			dx = 0;
+			dy = pdx == 1?-1:1;
+		} else {
+			dx = thx.geom.Contour.contourDx[i];
+			dy = thx.geom.Contour.contourDy[i];
+		}
+		if(dx != pdx && dy != pdy) {
+			c.push([x,y]);
+			pdx = dx;
+			pdy = dy;
+		}
+		x += dx;
+		y += dy;
+	} while(s[0] != x || s[1] != y);
+	return c;
+}
+thx.geom.Contour.prototype = {
+	__class__: thx.geom.Contour
+}
+var IntIter = $hxClasses["IntIter"] = function(min,max) {
+	this.min = min;
+	this.max = max;
+};
+IntIter.__name__ = ["IntIter"];
+IntIter.prototype = {
+	min: null
+	,max: null
+	,hasNext: function() {
+		return this.min < this.max;
+	}
+	,next: function() {
+		return this.min++;
+	}
+	,__class__: IntIter
+}
 if(!chx.formats) chx.formats = {}
 chx.formats.Base64 = $hxClasses["chx.formats.Base64"] = function() { }
 chx.formats.Base64.__name__ = ["chx","formats","Base64"];
 chx.formats.Base64.enc = null;
+chx.formats.Base64.encode = function(bytes) {
+	var ext = (function($this) {
+		var $r;
+		switch(bytes.length % 3) {
+		case 1:
+			$r = "==";
+			break;
+		case 2:
+			$r = "=";
+			break;
+		case 0:
+			$r = "";
+			break;
+		}
+		return $r;
+	}(this));
+	if(chx.formats.Base64.enc == null) chx.formats.Base64.enc = new haxe.BaseCode(Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"));
+	return chx.formats.Base64.enc.encodeBytes(bytes).toString() + ext;
+}
 chx.formats.Base64.decode = function(s) {
 	s = StringTools.stripWhite(s);
 	s = StringTools.replace(s,"=","");
@@ -9422,7 +12810,9 @@ rg.layout.PanelContext = $hxClasses["rg.layout.PanelContext"] = function(panel,a
 };
 rg.layout.PanelContext.__name__ = ["rg","layout","PanelContext"];
 rg.layout.PanelContext.prototype = {
-	__class__: rg.layout.PanelContext
+	panel: null
+	,anchor: null
+	,__class__: rg.layout.PanelContext
 }
 js.Lib = $hxClasses["js.Lib"] = function() { }
 js.Lib.__name__ = ["js","Lib"];
@@ -9432,6 +12822,12 @@ js.Lib.document = null;
 js.Lib.window = null;
 js.Lib.alert = function(v) {
 	alert(js.Boot.__string_rec(v,""));
+}
+js.Lib.eval = function(code) {
+	return eval(code);
+}
+js.Lib.setErrorHandler = function(f) {
+	js.Lib.onerror = f;
 }
 js.Lib.prototype = {
 	__class__: js.Lib
@@ -9610,6 +13006,27 @@ dhx.BaseSelection.prototype = {
 		};
 		return this._select(null == qname?insertDom:insertNsDom);
 	}
+	,sortNode: function(comparator) {
+		var m = this.groups.length;
+		var _g = 0;
+		while(_g < m) {
+			var i = _g++;
+			var group = this.groups[i];
+			group.nodes.sort(comparator);
+			var n = group.nodes.length;
+			var prev = group.nodes[0];
+			var _g1 = 1;
+			while(_g1 < n) {
+				var j = _g1++;
+				var node = group.nodes[j];
+				if(null != node) {
+					if(null != prev) prev.parentNode.insertBefore(node,prev.nextSibling);
+					prev = node;
+				}
+			}
+		}
+		return this;
+	}
 	,firstNode: function(f) {
 		var _g = 0, _g1 = this.groups;
 		while(_g < _g1.length) {
@@ -9761,6 +13178,9 @@ dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 	,classed: function() {
 		return new dhx.AccessClassed(this);
 	}
+	,property: function(name) {
+		return new dhx.AccessProperty(name,this);
+	}
 	,style: function(name) {
 		return new dhx.AccessStyle(name,this);
 	}
@@ -9786,12 +13206,19 @@ dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 		}
 		return new dhx.DataChoice(update,enter,exit);
 	}
+	,selectAllData: function(selector) {
+		var selection = this.selectAll(selector);
+		return new dhx.ResumeSelection(selection.groups);
+	}
 	,__class__: dhx.UnboundSelection
 });
 dhx.Selection = $hxClasses["dhx.Selection"] = function(groups) {
 	dhx.UnboundSelection.call(this,groups);
 };
 dhx.Selection.__name__ = ["dhx","Selection"];
+dhx.Selection.__properties__ = {get_currentNode:"getCurrentNode",get_current:"getCurrent"}
+dhx.Selection.current = null;
+dhx.Selection.currentNode = null;
 dhx.Selection.create = function(groups) {
 	return new dhx.Selection(groups);
 }
@@ -9819,6 +13246,9 @@ dhx.Dom.selectAll = function(selector) {
 dhx.Dom.selectNode = function(node) {
 	return dhx.Selection.create([new dhx.Group([node])]);
 }
+dhx.Dom.selectNodes = function(nodes) {
+	return dhx.Selection.create([new dhx.Group(nodes)]);
+}
 dhx.Dom.selectNodeData = function(node) {
 	return dhx.ResumeSelection.create([new dhx.Group([node])]);
 }
@@ -9840,6 +13270,8 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.anchordistance = 0;
 };
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
+rg.html.widget.Tooltip.__properties__ = {get_instance:"getInstance"}
+rg.html.widget.Tooltip.instance = null;
 rg.html.widget.Tooltip.getInstance = function() {
 	if(null == rg.html.widget.Tooltip.instance) rg.html.widget.Tooltip.instance = new rg.html.widget.Tooltip();
 	return rg.html.widget.Tooltip.instance;
@@ -9852,6 +13284,7 @@ rg.html.widget.Tooltip.prototype = {
 	,content: null
 	,anchortype: null
 	,anchordistance: null
+	,visible: null
 	,html: function(value) {
 		this.content.node().innerHTML = value;
 		this.reanchor();
@@ -9940,11 +13373,33 @@ dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 	,classed: function() {
 		return new dhx.AccessDataClassed(this);
 	}
+	,property: function(name) {
+		return new dhx.AccessDataProperty(name,this);
+	}
 	,style: function(name) {
 		return new dhx.AccessDataStyle(name,this);
 	}
 	,transition: function() {
 		return new dhx.BoundTransition(this);
+	}
+	,data: function(d,join) {
+		var update = [], enter = [], exit = [];
+		if(null == join) {
+			var _g = 0, _g1 = this.groups;
+			while(_g < _g1.length) {
+				var group = _g1[_g];
+				++_g;
+				dhx.BaseSelection.bind(group,d,update,enter,exit);
+			}
+		} else {
+			var _g = 0, _g1 = this.groups;
+			while(_g < _g1.length) {
+				var group = _g1[_g];
+				++_g;
+				dhx.BaseSelection.bindJoin(join,group,d,update,enter,exit);
+			}
+		}
+		return new dhx.DataChoice(update,enter,exit);
 	}
 	,dataf: function(fd,join) {
 		if(null == join) {
@@ -9967,14 +13422,47 @@ dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 			return new dhx.DataChoice(update,enter,exit);
 		}
 	}
+	,selfData: function() {
+		return this.dataf(function(d,_) {
+			return d;
+		});
+	}
 	,each: function(f) {
 		return this.eachNode(function(n,i) {
 			f(Reflect.field(n,"__dhx_data__"),i);
 		});
 	}
+	,sort: function(comparator) {
+		return this.sortNode(function(a,b) {
+			return comparator(Reflect.field(a,"__dhx_data__"),Reflect.field(b,"__dhx_data__"));
+		});
+	}
 	,filter: function(f) {
 		return this.filterNode(function(n,i) {
 			return f(Reflect.field(n,"__dhx_data__"),i);
+		});
+	}
+	,map: function(f) {
+		var ngroups = [];
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			var ngroup = new dhx.Group([]);
+			var i = 0;
+			var $it0 = group.nodes.iterator();
+			while( $it0.hasNext() ) {
+				var node = $it0.next();
+				if(null != node) node["__dhx_data__"] = f(Reflect.field(node,"__dhx_data__"),i++);
+				ngroup.nodes.push(node);
+			}
+			ngroups.push(ngroup);
+		}
+		return this.createSelection(ngroups);
+	}
+	,first: function(f) {
+		return this.firstNode(function(n) {
+			return f(Reflect.field(n,"__dhx_data__"));
 		});
 	}
 	,on: function(type,listener,capture) {
@@ -10066,6 +13554,20 @@ dhx.PreEnterSelection.prototype = {
 		};
 		return this._select(null == qname?append:appendNS);
 	}
+	,insert: function(name,before,beforeSelector) {
+		var qname = dhx.Namespace.qualify(name);
+		var insertDom = function(node) {
+			var n = js.Lib.document.createElement(name), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
+			node.insertBefore(n,bf);
+			return n;
+		};
+		var insertNsDom = function(node) {
+			var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
+			node.insertBefore(n,bf);
+			return n;
+		};
+		return this._select(null == qname?insertDom:insertNsDom);
+	}
 	,createSelection: function(groups) {
 		return new dhx.EnterSelection(groups,this._choice);
 	}
@@ -10102,6 +13604,9 @@ dhx.EnterSelection.prototype = $extend(dhx.BoundSelection.prototype,{
 	,createSelection: function(groups) {
 		return new dhx.EnterSelection(groups,this._choice);
 	}
+	,exit: function() {
+		return this._choice.exit();
+	}
 	,update: function() {
 		return this._choice;
 	}
@@ -10117,6 +13622,9 @@ dhx.ExitSelection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	_choice: null
 	,createSelection: function(groups) {
 		return new dhx.ExitSelection(groups,this._choice);
+	}
+	,enter: function() {
+		return this._choice.enter();
 	}
 	,update: function() {
 		return this._choice;
@@ -10270,6 +13778,11 @@ rg.data.Variable.__name__ = ["rg","data","Variable"];
 rg.data.Variable.prototype = {
 	type: null
 	,scaleDistribution: null
+	,axis: null
+	,stats: null
+	,meta: null
+	,minf: null
+	,maxf: null
 	,setAxis: function(axis) {
 		this.axis = axis;
 		if(null != axis) this.stats = axis.createStats(this.type); else this.stats = null;
@@ -10301,6 +13814,7 @@ rg.data.Variable.prototype = {
 		return this.maxf;
 	}
 	,__class__: rg.data.Variable
+	,__properties__: {set_maxf:"setMaxF",get_maxf:"getMaxF",set_minf:"setMinF",get_minf:"getMinF"}
 }
 rg.data.VariableIndependent = $hxClasses["rg.data.VariableIndependent"] = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
@@ -10440,21 +13954,94 @@ rg.frame.Orientation.Vertical.__enum__ = rg.frame.Orientation;
 rg.frame.Orientation.Horizontal = ["Horizontal",1];
 rg.frame.Orientation.Horizontal.toString = $estr;
 rg.frame.Orientation.Horizontal.__enum__ = rg.frame.Orientation;
-thx.math.scale.LinearT = $hxClasses["thx.math.scale.LinearT"] = function() { }
+thx.math.scale.LinearT = $hxClasses["thx.math.scale.LinearT"] = function() {
+	this._domain = [0.0,1.0];
+	this._range = null;
+	this.f = thx.math.scale.LinearT._f;
+	this._clamp = false;
+	this.rescale();
+};
 thx.math.scale.LinearT.__name__ = ["thx","math","scale","LinearT"];
 thx.math.scale.LinearT.__interfaces__ = [thx.math.scale.IScale];
+thx.math.scale.LinearT._f = function(_,_1,_2) {
+	return function(_3) {
+		return null;
+	};
+}
+thx.math.scale.LinearT.scaleBilinear = function(domain,range,uninterpolate,interpolate) {
+	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
+	return function(x) {
+		return i(u(x));
+	};
+}
+thx.math.scale.LinearT.scalePolylinear = function(domain,range,uninterpolate,interpolate) {
+	var u = [], i = [];
+	var _g1 = 1, _g = domain.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		u.push(uninterpolate(domain[j - 1],domain[j]));
+		i.push(interpolate(range[j - 1],range[j],null));
+	}
+	return function(x) {
+		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
+		return i[j](u[j](x));
+	};
+}
 thx.math.scale.LinearT.prototype = {
 	_domain: null
 	,_range: null
+	,f: null
+	,_clamp: null
 	,_output: null
+	,rescale: function() {
+		if(null == this._range) return this;
+		var linear = this._domain.length == 2?thx.math.scale.LinearT.scaleBilinear:thx.math.scale.LinearT.scalePolylinear, uninterpolate = this._clamp?Floats.uninterpolateClampf:Floats.uninterpolatef;
+		this._output = linear(this._domain,this._range,uninterpolate,this.f);
+		return this;
+	}
 	,scale: function(x,_) {
 		return this._output(x);
 	}
 	,getDomain: function() {
 		return this._domain;
 	}
+	,domain: function(d) {
+		this._domain = d;
+		return this.rescale();
+	}
 	,getRange: function() {
 		return this._range;
+	}
+	,range: function(r) {
+		this._range = r;
+		return this.rescale();
+	}
+	,getInterpolate: function() {
+		return this.f;
+	}
+	,interpolatef: function(x) {
+		this.f = x;
+		return this.rescale();
+	}
+	,getClamp: function() {
+		return this._clamp;
+	}
+	,clamp: function(v) {
+		this._clamp = v;
+		return this.rescale();
+	}
+	,tickRange: function(m) {
+		var start = Math.min(this._domain[0],this._domain[1]), stop = Math.max(this._domain[0],this._domain[1]), span = stop - start, step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / (span / step);
+		if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= -75) step *= 2;
+		return { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
+	}
+	,ticks: function(m) {
+		var range = this.tickRange(m);
+		return Floats.range(range.start,range.stop,range.step);
+	}
+	,tickFormat: function(m) {
+		var n = Math.max(0,-Math.floor(Math.log(this.tickRange(m).step) / 2.302585092994046 + .01));
+		return Floats.formatf("D:" + n);
 	}
 	,__class__: thx.math.scale.LinearT
 }
@@ -10697,7 +14284,13 @@ rg.axis.Stats = $hxClasses["rg.axis.Stats"] = function(type,sortf) {
 };
 rg.axis.Stats.__name__ = ["rg","axis","Stats"];
 rg.axis.Stats.prototype = {
-	reset: function() {
+	min: null
+	,max: null
+	,count: null
+	,values: null
+	,sortf: null
+	,type: null
+	,reset: function() {
 		this.min = null;
 		this.max = null;
 		this.count = 0;
@@ -10824,7 +14417,9 @@ rg.svg.widget.HookConnectorArea.quarterTo = function(x,y,r) {
 	return "A" + Math.abs(r) + "," + Math.abs(r) + " 0 0," + (r < 0?0:1) + " " + x + "," + y;
 }
 rg.svg.widget.HookConnectorArea.prototype = {
-	upper: null
+	g: null
+	,area: null
+	,upper: null
 	,lower: null
 	,addClass: function(cls) {
 		this.g.classed().add(cls);
@@ -10848,8 +14443,136 @@ rg.svg.widget.HookConnectorArea.prototype = {
 		path += rg.svg.widget.HookConnectorArea.lineTo(x2,y2);
 		return path;
 	}
+	,createPath2: function(x1,y1,sr,x2,y2,yreference) {
+		var path = "M" + x1 + "," + y1;
+		if(yreference > y1) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x1 + sr) + "," + (y1 + sr);
+			path += "L" + (sr + x1) + "," + (yreference - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x1 + "," + yreference;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x1 + sr) + "," + (y1 - sr);
+			path += "L" + (sr + x1) + "," + (yreference + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x1 + "," + yreference;
+		}
+		path += "L" + x2 + "," + yreference;
+		if(yreference > y2) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x2 - sr) + "," + (yreference - sr);
+			path += "L" + (x2 - sr) + "," + (y2 + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x2 + "," + y2;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x2 - sr) + "," + (yreference + sr);
+			path += "L" + (x2 - sr) + "," + (y2 - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x2 + "," + y2;
+		}
+		return path;
+	}
 	,__class__: rg.svg.widget.HookConnectorArea
 }
+chx.crypt.IPad = $hxClasses["chx.crypt.IPad"] = function() { }
+chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
+chx.crypt.IPad.prototype = {
+	blockSize: null
+	,pad: null
+	,unpad: null
+	,isBlockPad: null
+	,calcNumBlocks: null
+	,blockOverhead: null
+	,getBytesReadPerBlock: null
+	,__class__: chx.crypt.IPad
+	,__properties__: {set_blockSize:"setBlockSize"}
+}
+chx.crypt.PadPkcs1Type1 = $hxClasses["chx.crypt.PadPkcs1Type1"] = function(size) {
+	this["blockSize"] = size;
+	this.setPadCount(8);
+	this.typeByte = 1;
+	this.setPadByte(255);
+};
+chx.crypt.PadPkcs1Type1.__name__ = ["chx","crypt","PadPkcs1Type1"];
+chx.crypt.PadPkcs1Type1.__interfaces__ = [chx.crypt.IPad];
+chx.crypt.PadPkcs1Type1.prototype = {
+	blockSize: null
+	,textSize: null
+	,padByte: null
+	,padCount: null
+	,typeByte: null
+	,getBytesReadPerBlock: function() {
+		return this.textSize;
+	}
+	,pad: function(s) {
+		if(s.length > this.textSize) throw "Unable to pad block: provided buffer is " + s.length + " max is " + this.textSize;
+		var sb = new BytesBuffer();
+		sb.b.push(0);
+		sb.b.push(this.typeByte);
+		var n = this.blockSize - s.length - 3;
+		while(n-- > 0) sb.b.push(this.getPadByte());
+		sb.b.push(0);
+		sb.add(s);
+		var rv = sb.getBytes();
+		return rv;
+	}
+	,unpad: function(s) {
+		var i = 0;
+		var sb = new BytesBuffer();
+		while(i < s.length) {
+			while(i < s.length && s.b[i] == 0) ++i;
+			if(s.length - i - 3 - this.padCount < 0) throw "Unexpected short message";
+			if(s.b[i] != this.typeByte) throw "Expected marker " + this.typeByte + " at position " + i + " [" + BytesUtil.hexDump(s) + "]";
+			if(++i >= s.length) return sb.getBytes();
+			while(i < s.length && s.b[i] != 0) ++i;
+			i++;
+			var n = 0;
+			while(i < s.length && n++ < this.textSize) sb.b.push(s.b[i++]);
+		}
+		return sb.getBytes();
+	}
+	,calcNumBlocks: function(len) {
+		return Math.ceil(len / this.textSize);
+	}
+	,isBlockPad: function() {
+		return true;
+	}
+	,blockOverhead: function() {
+		return 3 + this.padCount;
+	}
+	,setPadCount: function(x) {
+		if(x + 3 >= this.blockSize) throw "Internal padding size exceeds crypt block size";
+		this.padCount = x;
+		this.textSize = this.blockSize - 3 - this.padCount;
+		return x;
+	}
+	,setBlockSize: function(x) {
+		this.blockSize = x;
+		this.textSize = x - 3 - this.padCount;
+		if(this.textSize <= 0) throw "Block size " + x + " to small for Pkcs1 with padCount " + this.padCount;
+		return x;
+	}
+	,getPadByte: function() {
+		return this.padByte;
+	}
+	,setPadByte: function(x) {
+		this.padByte = x & 255;
+		return x;
+	}
+	,__class__: chx.crypt.PadPkcs1Type1
+	,__properties__: {set_padByte:"setPadByte",get_padByte:"getPadByte",set_blockSize:"setBlockSize"}
+}
+chx.crypt.PadPkcs1Type2 = $hxClasses["chx.crypt.PadPkcs1Type2"] = function(size) {
+	chx.crypt.PadPkcs1Type1.call(this,size);
+	this.typeByte = 2;
+	this.rng = new math.prng.Random();
+};
+chx.crypt.PadPkcs1Type2.__name__ = ["chx","crypt","PadPkcs1Type2"];
+chx.crypt.PadPkcs1Type2.__interfaces__ = [chx.crypt.IPad];
+chx.crypt.PadPkcs1Type2.__super__ = chx.crypt.PadPkcs1Type1;
+chx.crypt.PadPkcs1Type2.prototype = $extend(chx.crypt.PadPkcs1Type1.prototype,{
+	rng: null
+	,getPadByte: function() {
+		var x = 0;
+		while(x == 0) x = this.rng.next();
+		return x;
+	}
+	,__class__: chx.crypt.PadPkcs1Type2
+});
 rg.util.Properties = $hxClasses["rg.util.Properties"] = function() { }
 rg.util.Properties.__name__ = ["rg","util","Properties"];
 rg.util.Properties.isTime = function(s) {
@@ -10857,6 +14580,9 @@ rg.util.Properties.isTime = function(s) {
 }
 rg.util.Properties.periodicity = function(s) {
 	return s.substr(s.indexOf("time:") + "time:".length);
+}
+rg.util.Properties.timeProperty = function(periodicity) {
+	return "." + "time:" + periodicity;
 }
 rg.util.Properties.humanize = function(s) {
 	return rg.util.RGStrings.humanize(s);
@@ -10908,11 +14634,17 @@ rg.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
 rg.svg.widget.BalloonShape.prototype = {
 	__class__: rg.svg.widget.BalloonShape
 }
-if(!thx.geom) thx.geom = {}
 thx.geom.Polygon = $hxClasses["thx.geom.Polygon"] = function(coordinates) {
 	this.coordinates = coordinates;
 };
 thx.geom.Polygon.__name__ = ["thx","geom","Polygon"];
+thx.geom.Polygon.polygonInside = function(p,a,b) {
+	return (b[0] - a[0]) * (p[1] - a[1]) < (b[1] - a[1]) * (p[0] - a[0]);
+}
+thx.geom.Polygon.polygonIntersect = function(c,d,a,b) {
+	var x1 = c[0], x2 = d[0], x3 = a[0], x4 = b[0], y1 = c[1], y2 = d[1], y3 = a[1], y4 = b[1], x13 = x1 - x3, x21 = x2 - x1, x43 = x4 - x3, y13 = y1 - y3, y21 = y2 - y1, y43 = y4 - y3, ua = (x43 * y13 - y43 * x13) / (y43 * x21 - x43 * y21);
+	return [x1 + ua * x21,y1 + ua * y21];
+}
 thx.geom.Polygon.prototype = {
 	coordinates: null
 	,area: function() {
@@ -10939,16 +14671,183 @@ thx.geom.Polygon.prototype = {
 		}
 		return [x * k,y * k];
 	}
+	,clip: function(subject) {
+		var input, a = Arrays.last(this.coordinates), b, c, d, m;
+		var _g1 = 0, _g = this.coordinates.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			input = subject.copy();
+			subject = [];
+			b = this.coordinates[i];
+			c = input[(m = input.length) - 1];
+			var _g2 = 0;
+			while(_g2 < m) {
+				var j = _g2++;
+				d = input[j];
+				if(thx.geom.Polygon.polygonInside(d,a,b)) {
+					if(!thx.geom.Polygon.polygonInside(c,a,b)) subject.push(thx.geom.Polygon.polygonIntersect(c,d,a,b));
+					subject.push(d);
+				} else if(thx.geom.Polygon.polygonInside(c,a,b)) subject.push(thx.geom.Polygon.polygonIntersect(c,d,a,b));
+				c = d;
+			}
+			a = b;
+		}
+		return subject;
+	}
 	,__class__: thx.geom.Polygon
 }
 var DateTools = $hxClasses["DateTools"] = function() { }
 DateTools.__name__ = ["DateTools"];
+DateTools.__format_get = function(d,e) {
+	return (function($this) {
+		var $r;
+		switch(e) {
+		case "%":
+			$r = "%";
+			break;
+		case "a":
+			$r = DateTools.WEEKDAYS_ABBREV[d.getDay()];
+			break;
+		case "b":
+			$r = DateTools.MONTHS_ABBREV[d.getMonth()];
+			break;
+		case "C":
+			$r = StringTools.lpad(Std.string(d.getFullYear() / 100 | 0),"0",2);
+			break;
+		case "d":
+			$r = StringTools.lpad(Std.string(d.getDate()),"0",2);
+			break;
+		case "D":
+			$r = DateTools.__format(d,"%m/%d/%y");
+			break;
+		case "e":
+			$r = Std.string(d.getDate());
+			break;
+		case "H":case "k":
+			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+			break;
+		case "I":case "l":
+			$r = (function($this) {
+				var $r;
+				var hour = d.getHours() % 12;
+				$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+				return $r;
+			}($this));
+			break;
+		case "m":
+			$r = StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
+			break;
+		case "M":
+			$r = StringTools.lpad(Std.string(d.getMinutes()),"0",2);
+			break;
+		case "n":
+			$r = "\n";
+			break;
+		case "p":
+			$r = d.getHours() > 11?"PM":"AM";
+			break;
+		case "r":
+			$r = DateTools.__format(d,"%I:%M:%S %p");
+			break;
+		case "R":
+			$r = DateTools.__format(d,"%H:%M");
+			break;
+		case "s":
+			$r = Std.string(d.getTime() / 1000 | 0);
+			break;
+		case "S":
+			$r = StringTools.lpad(Std.string(d.getSeconds()),"0",2);
+			break;
+		case "t":
+			$r = "\t";
+			break;
+		case "T":
+			$r = DateTools.__format(d,"%H:%M:%S");
+			break;
+		case "u":
+			$r = (function($this) {
+				var $r;
+				var t = d.getDay();
+				$r = t == 0?"7":Std.string(t);
+				return $r;
+			}($this));
+			break;
+		case "w":
+			$r = Std.string(d.getDay());
+			break;
+		case "y":
+			$r = StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
+			break;
+		case "Y":
+			$r = Std.string(d.getFullYear());
+			break;
+		case "z":
+			$r = (function($this) {
+				var $r;
+				var o = d.getTimezoneOffset();
+				var i = Std.string(Math.abs(Math.floor(o / 60 * 100)) | 0);
+				var neg = o < 0?true:false;
+				var s = StringTools.lpad(i,"0",4);
+				$r = neg?"-" + s:"+" + s;
+				return $r;
+			}($this));
+			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "Date.format %" + e + "- not implemented yet.";
+				return $r;
+			}($this));
+		}
+		return $r;
+	}(this));
+}
+DateTools.__format = function(d,f) {
+	var r = new StringBuf();
+	var p = 0;
+	while(true) {
+		var np = f.indexOf("%",p);
+		if(np < 0) break;
+		r.b[r.b.length] = f.substr(p,np - p);
+		r.add(DateTools.__format_get(d,f.substr(np + 1,1)));
+		p = np + 2;
+	}
+	r.b[r.b.length] = f.substr(p,f.length - p);
+	return r.b.join("");
+}
+DateTools.format = function(d,f) {
+	return DateTools.__format(d,f);
+}
+DateTools.delta = function(d,t) {
+	return Date.fromTime(d.getTime() + t);
+}
 DateTools.getMonthDays = function(d) {
 	var month = d.getMonth();
 	var year = d.getFullYear();
 	if(month != 1) return DateTools.DAYS_OF_MONTH[month];
 	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
 	return isB?29:28;
+}
+DateTools.seconds = function(n) {
+	return n * 1000.0;
+}
+DateTools.minutes = function(n) {
+	return n * 60.0 * 1000.0;
+}
+DateTools.hours = function(n) {
+	return n * 60.0 * 60.0 * 1000.0;
+}
+DateTools.days = function(n) {
+	return n * 24.0 * 60.0 * 60.0 * 1000.0;
+}
+DateTools.parse = function(t) {
+	var s = t / 1000;
+	var m = s / 60;
+	var h = m / 60;
+	return { ms : t % 1000, seconds : s % 60 | 0, minutes : m % 60 | 0, hours : h % 24 | 0, days : h / 24 | 0};
+}
+DateTools.make = function(o) {
+	return o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
 }
 DateTools.prototype = {
 	__class__: DateTools
@@ -11031,6 +14930,44 @@ thx.geom.layout.Pie.prototype = {
 			return arcs[index[i1]];
 		});
 	}
+	,getStartAngle: function() {
+		return this._startAngle;
+	}
+	,startAngle: function(v) {
+		return this.startAnglef(function(_,_1) {
+			return v;
+		});
+	}
+	,startAnglef: function(v) {
+		this._startAngle = v;
+		return this;
+	}
+	,getEndAngle: function() {
+		return this._endAngle;
+	}
+	,endAngle: function(v) {
+		return this.endAnglef(function(_,_1) {
+			return v;
+		});
+	}
+	,endAnglef: function(v) {
+		this._endAngle = v;
+		return this;
+	}
+	,getSort: function() {
+		return this._sort;
+	}
+	,sort: function(v) {
+		this._sort = v;
+		return this;
+	}
+	,getValue: function() {
+		return this._value;
+	}
+	,valuef: function(v) {
+		this._value = v;
+		return this;
+	}
 	,__class__: thx.geom.layout.Pie
 }
 var Bools = $hxClasses["Bools"] = function() { }
@@ -11059,13 +14996,32 @@ Bools.formatf = function(param,params,culture) {
 		throw "Unsupported bool format: " + format;
 	}
 }
+Bools.interpolate = function(v,a,b,equation) {
+	return (Bools.interpolatef(a,b,equation))(v);
+}
+Bools.interpolatef = function(a,b,equation) {
+	if(a == b) return function(_) {
+		return a;
+	}; else {
+		var f = Floats.interpolatef(0,1,equation);
+		return function(v) {
+			return f(v) < 0.5?a:b;
+		};
+	}
+}
+Bools.canParse = function(s) {
+	s = s.toLowerCase();
+	return s == "true" || s == "false";
+}
+Bools.parse = function(s) {
+	return s.toLowerCase() == "true";
+}
 Bools.compare = function(a,b) {
 	return a == b?0:a?-1:1;
 }
 Bools.prototype = {
 	__class__: Bools
 }
-var haxe = haxe || {}
 haxe.Md5 = $hxClasses["haxe.Md5"] = function() {
 };
 haxe.Md5.__name__ = ["haxe","Md5"];
@@ -11416,6 +15372,9 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 });
 var IntHashes = $hxClasses["IntHashes"] = function() { }
 IntHashes.__name__ = ["IntHashes"];
+IntHashes.empty = function(hash) {
+	return IntHashes.count(hash) == 0;
+}
 IntHashes.count = function(hash) {
 	var i = 0;
 	var $it0 = hash.iterator();
@@ -11424,6 +15383,14 @@ IntHashes.count = function(hash) {
 		i++;
 	}
 	return i;
+}
+IntHashes.clear = function(hash) {
+	var _hash = hash;
+	_hash.h = {}
+	if(_hash.h.__proto__ != null) {
+		_hash.h.__proto__ = null;
+		delete(_hash.h.__proto__);
+	}
 }
 IntHashes.prototype = {
 	__class__: IntHashes
@@ -11501,6 +15468,20 @@ dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
 		var v = this.get();
 		if(dhx.AccessAttribute.refloat.match(v)) return Std.parseFloat(dhx.AccessAttribute.refloat.matched(1)); else return Math.NaN;
 	}
+	,remove: function() {
+		if(null == this.qname) {
+			var n = this.name;
+			this.selection.eachNode(function(node,i) {
+				node.removeAttribute(n);
+			});
+		} else {
+			var q = this.qname;
+			this.selection.eachNode(function(node,i) {
+				node.removeAttributeNS(q.space,q.local);
+			});
+		}
+		return this.selection;
+	}
 	,string: function(v) {
 		if(null == this.qname) {
 			var n = this.name;
@@ -11570,6 +15551,11 @@ dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
 		}
 		return this.selection;
 	}
+	,data: function() {
+		return this.stringf(function(d,_) {
+			return "" + d;
+		});
+	}
 	,__class__: dhx.AccessDataAttribute
 });
 thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
@@ -11579,7 +15565,9 @@ thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
 thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
 thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Mercator.prototype = {
-	project: function(coords) {
+	scale: null
+	,translate: null
+	,project: function(coords) {
 		var x = coords[0] / 360, y = -(Math.log(Math.tan(Math.PI / 4 + coords[1] * 0.01745329251994329577 / 2)) / 0.01745329251994329577) / 360;
 		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * Math.max(-.5,Math.min(.5,y)) + this.getTranslate()[1]];
 	}
@@ -11601,6 +15589,7 @@ thx.geo.Mercator.prototype = {
 		return translate;
 	}
 	,__class__: thx.geo.Mercator
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
 }
 thx.svg.PathGeoJson = $hxClasses["thx.svg.PathGeoJson"] = function() {
 	this.setPointRadius(4.5);
@@ -11613,8 +15602,87 @@ thx.svg.PathGeoJson.__name__ = ["thx","svg","PathGeoJson"];
 thx.svg.PathGeoJson.circle = function(r) {
 	return "m0," + r + "a" + r + "," + r + " 0 1,1 0," + -2 * r + "a" + r + "," + r + " 0 1,1 0," + 2 * r + "z";
 }
+thx.svg.PathGeoJson.bounds = function(d) {
+	var left = Math.POSITIVE_INFINITY, bottom = Math.POSITIVE_INFINITY, right = Math.NEGATIVE_INFINITY, top = Math.NEGATIVE_INFINITY;
+	thx.svg.PathGeoJson.applyBounds(d,function(x,y) {
+		if(x < left) left = x;
+		if(x > right) right = x;
+		if(y < bottom) bottom = y;
+		if(y > top) top = y;
+	});
+	return [[left,bottom],[right,top]];
+}
+thx.svg.PathGeoJson.applyBounds = function(d,f) {
+	switch(d.type) {
+	case "Feature":
+		thx.svg.PathGeoJson.applyBounds(d.geometry,f);
+		break;
+	case "FeatureCollection":
+		var _g = 0, _g1 = d.features;
+		while(_g < _g1.length) {
+			var feature = _g1[_g];
+			++_g;
+			thx.svg.PathGeoJson.applyBounds(feature.geometry,f);
+		}
+		break;
+	case "LineString":case "MultiPoint":
+		var coordinates = d.coordinates;
+		var _g = 0;
+		while(_g < coordinates.length) {
+			var coords = coordinates[_g];
+			++_g;
+			f(coords[0],coords[1]);
+		}
+		break;
+	case "MultiLineString":
+		var coordinates = d.coordinates;
+		var _g = 0;
+		while(_g < coordinates.length) {
+			var coords = coordinates[_g];
+			++_g;
+			var _g1 = 0;
+			while(_g1 < coords.length) {
+				var scoords = coords[_g1];
+				++_g1;
+				f(scoords[0],scoords[1]);
+			}
+		}
+		break;
+	case "MultiPolygon":
+		var coordinates = d.coordinates;
+		var _g = 0;
+		while(_g < coordinates.length) {
+			var coords = coordinates[_g];
+			++_g;
+			var _g1 = 0, _g2 = coords[0];
+			while(_g1 < _g2.length) {
+				var scoords = _g2[_g1];
+				++_g1;
+				f(scoords[0],scoords[1]);
+			}
+		}
+		break;
+	case "Point":
+		var coordinates = d.coordinates;
+		f(coordinates[0],coordinates[1]);
+		break;
+	case "Polygon":
+		var coordinates = d.coordinates;
+		var _g = 0, _g1 = coordinates[0];
+		while(_g < _g1.length) {
+			var coords = _g1[_g];
+			++_g;
+			f(coords[0],coords[1]);
+		}
+		break;
+	default:
+		throw new thx.error.Error("invalid geomtry type '{0}'",null,d.type,{ fileName : "PathGeoJson.hx", lineNumber : 113, className : "thx.svg.PathGeoJson", methodName : "applyBounds"});
+	}
+}
 thx.svg.PathGeoJson.prototype = {
-	pathCircle: null
+	pointRadius: null
+	,projection: null
+	,pathCircle: null
 	,pathTypes: null
 	,centroidTypes: null
 	,areaTypes: null
@@ -11623,6 +15691,9 @@ thx.svg.PathGeoJson.prototype = {
 	}
 	,centroid: function(d,_) {
 		return this.centroidTypes.centroid(d);
+	}
+	,area: function(d,_) {
+		return this.areaTypes.area(d);
 	}
 	,setPointRadius: function(r) {
 		this.pointRadius = r;
@@ -11633,6 +15704,7 @@ thx.svg.PathGeoJson.prototype = {
 		return this.projection = projection;
 	}
 	,__class__: thx.svg.PathGeoJson
+	,__properties__: {set_projection:"setProjection",set_pointRadius:"setPointRadius"}
 }
 thx.svg.PathTypes = $hxClasses["thx.svg.PathTypes"] = function(geo) {
 	this.geo = geo;
@@ -11905,11 +15977,15 @@ rg.svg.widget.Map.loadJsonAjax = function(url,handler) {
 	http.request(false);
 }
 rg.svg.widget.Map.prototype = {
-	click: null
+	className: null
+	,map: null
+	,onReady: null
+	,click: null
 	,labelDataPoint: null
 	,labelDataPointOver: null
 	,radius: null
 	,colorMode: null
+	,ready: null
 	,mapping: null
 	,projection: null
 	,g: null
@@ -11982,6 +16058,7 @@ rg.svg.widget.Map.prototype = {
 		return cls;
 	}
 	,__class__: rg.svg.widget.Map
+	,__properties__: {set_className:"setClassName"}
 }
 rg.visualization.VisualizationPivotTable = $hxClasses["rg.visualization.VisualizationPivotTable"] = function(container) {
 	rg.visualization.VisualizationHtml.call(this,container);
@@ -12172,9 +16249,15 @@ thx.geom.layout.Stack.prototype = {
 		}
 		return result;
 	}
+	,getOrder: function() {
+		return this._order;
+	}
 	,order: function(x) {
 		this._order = x;
 		return this;
+	}
+	,getOffset: function() {
+		return this._offset;
 	}
 	,offset: function(x) {
 		this._offset = x;
@@ -12792,7 +16875,13 @@ rg.svg.panel.Panel = $hxClasses["rg.svg.panel.Panel"] = function(frame) {
 };
 rg.svg.panel.Panel.__name__ = ["rg","svg","panel","Panel"];
 rg.svg.panel.Panel.prototype = {
-	_layers: null
+	frame: null
+	,g: null
+	,parent: null
+	,_layers: null
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)).split(".").pop();
+	}
 	,addLayer: function(layer) {
 		this._layers.remove(layer);
 		this._layers.push(layer);
@@ -12921,9 +17010,15 @@ rg.graph.GraphElement.friendDestroy = function(item) {
 	return item;
 }
 rg.graph.GraphElement.prototype = {
-	destroy: function() {
+	graph: null
+	,id: null
+	,data: null
+	,destroy: function() {
 		this.graph = null;
 		this.id = -1;
+	}
+	,destroyed: function() {
+		return null == this.graph;
 	}
 	,__class__: rg.graph.GraphElement
 }
@@ -12990,11 +17085,29 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 });
 var I32 = $hxClasses["I32"] = function() { }
 I32.__name__ = ["I32"];
+I32.B4 = function(v) {
+	return v >>> 24 & -1;
+}
+I32.B3 = function(v) {
+	return v >>> 16 & 255 & -1;
+}
+I32.B2 = function(v) {
+	return v >>> 8 & 255 & -1;
+}
+I32.B1 = function(v) {
+	return v & 255 & -1;
+}
 I32.abs = function(v) {
 	return Math.abs(v) | 0;
 }
 I32.add = function(a,b) {
 	return a + b;
+}
+I32.alphaFromArgb = function(v) {
+	return v >>> 24 & -1;
+}
+I32.and = function(a,b) {
+	return a & b;
 }
 I32.baseEncode = function(v,radix) {
 	if(radix < 2 || radix > 36) throw "radix out of range";
@@ -13010,205 +17123,178 @@ I32.baseEncode = function(v,radix) {
 	if(v < 0) return "-" + sb;
 	return sb;
 }
+I32.complement = function(v) {
+	return ~v;
+}
+I32.compare = function(a,b) {
+	return a - b;
+}
 I32.div = function(a,b) {
 	return a / b | 0;
+}
+I32.encodeBE = function(i) {
+	var sb = new BytesBuffer();
+	sb.b.push(i >>> 24 & -1);
+	sb.b.push(i >>> 16 & 255 & -1);
+	sb.b.push(i >>> 8 & 255 & -1);
+	sb.b.push(i & 255 & -1);
+	return sb.getBytes();
+}
+I32.encodeLE = function(i) {
+	var sb = new BytesBuffer();
+	sb.b.push(i & 255 & -1);
+	sb.b.push(i >>> 8 & 255 & -1);
+	sb.b.push(i >>> 16 & 255 & -1);
+	sb.b.push(i >>> 24 & -1);
+	return sb.getBytes();
+}
+I32.decodeBE = function(s,pos) {
+	if(pos == null) pos = 0;
+	var b0 = s.b[pos + 3];
+	var b1 = s.b[pos + 2];
+	var b2 = s.b[pos + 1];
+	var b3 = s.b[pos];
+	b1 = b1 << 8;
+	b2 = b2 << 16;
+	b3 = b3 << 24;
+	var a = b0 + b1;
+	a = a + b2;
+	a = a + b3;
+	return a;
+}
+I32.decodeLE = function(s,pos) {
+	if(pos == null) pos = 0;
+	var b0 = s.b[pos];
+	var b1 = s.b[pos + 1];
+	var b2 = s.b[pos + 2];
+	var b3 = s.b[pos + 3];
+	b1 = b1 << 8;
+	b2 = b2 << 16;
+	b3 = b3 << 24;
+	var a = b0 + b1;
+	a = a + b2;
+	a = a + b3;
+	return a;
 }
 I32.eq = function(a,b) {
 	return a == b;
 }
+I32.gt = function(a,b) {
+	return a > b;
+}
+I32.gteq = function(a,b) {
+	return a >= b;
+}
 I32.lt = function(a,b) {
 	return a < b;
+}
+I32.lteq = function(a,b) {
+	return a <= b;
+}
+I32.make = function(high,low) {
+	return (high << 16) + low;
+}
+I32.makeColor = function(alpha,rgb) {
+	return alpha << 24 | rgb & 16777215;
 }
 I32.mod = function(a,b) {
 	return a % b;
 }
+I32.mul = function(a,b) {
+	return a * b;
+}
+I32.neg = function(v) {
+	return -v;
+}
 I32.ofInt = function(v) {
 	return v;
+}
+I32.or = function(a,b) {
+	return a | b;
+}
+I32.packBE = function(l) {
+	var sb = new BytesBuffer();
+	var _g1 = 0, _g = l.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		sb.b.push(l[i] >>> 24 & -1);
+		sb.b.push(l[i] >>> 16 & 255 & -1);
+		sb.b.push(l[i] >>> 8 & 255 & -1);
+		sb.b.push(l[i] & 255 & -1);
+	}
+	return sb.getBytes();
+}
+I32.packLE = function(l) {
+	var sb = new BytesBuffer();
+	var _g1 = 0, _g = l.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		sb.b.push(l[i] & 255 & -1);
+		sb.b.push(l[i] >>> 8 & 255 & -1);
+		sb.b.push(l[i] >>> 16 & 255 & -1);
+		sb.b.push(l[i] >>> 24 & -1);
+	}
+	return sb.getBytes();
+}
+I32.rgbFromArgb = function(v) {
+	return v & 16777215;
 }
 I32.sub = function(a,b) {
 	return a - b;
 }
+I32.shl = function(v,bits) {
+	return v << bits;
+}
+I32.shr = function(v,bits) {
+	return v >> bits;
+}
+I32.toColor = function(v) {
+	return { alpha : v >>> 24 & -1, color : v & 16777215};
+}
+I32.toFloat = function(v) {
+	return v * 1.0;
+}
 I32.toInt = function(v) {
 	return v & -1;
 }
-I32.prototype = {
-	__class__: I32
-}
-if(!thx.color) thx.color = {}
-thx.color.Rgb = $hxClasses["thx.color.Rgb"] = function(r,g,b) {
-	this.red = Ints.clamp(r,0,255);
-	this.green = Ints.clamp(g,0,255);
-	this.blue = Ints.clamp(b,0,255);
-};
-thx.color.Rgb.__name__ = ["thx","color","Rgb"];
-thx.color.Rgb.fromInt = function(v) {
-	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
-}
-thx.color.Rgb.interpolatef = function(a,b,equation) {
-	var r = Ints.interpolatef(a.red,b.red,equation), g = Ints.interpolatef(a.green,b.green,equation), b1 = Ints.interpolatef(a.blue,b.blue,equation);
-	return function(t) {
-		return new thx.color.Rgb(r(t),g(t),b1(t));
-	};
-}
-thx.color.Rgb.contrastBW = function(c) {
-	var g = thx.color.Grey.toGrey(c);
-	var nc = thx.color.Hsl.toHsl(c);
-	if(g.grey < .5) return new thx.color.Hsl(nc.hue,nc.saturation,1.0); else return new thx.color.Hsl(nc.hue,nc.saturation,0);
-}
-thx.color.Rgb.interpolateStepsf = function(steps,equation) {
-	if(steps.length <= 0) return (function($this) {
-		var $r;
-		throw new thx.error.Error("invalid number of steps",null,null,{ fileName : "Rgb.hx", lineNumber : 164, className : "thx.color.Rgb", methodName : "interpolateStepsf"});
-		return $r;
-	}(this)); else if(steps.length == 1) return function(t) {
-		return steps[0];
-	}; else if(steps.length == 2) return thx.color.Rgb.interpolatef(steps[0],steps[1],equation);
-	var len = steps.length - 1, step = 1 / len, f = [];
-	var _g = 0;
-	while(_g < len) {
-		var i = _g++;
-		f[i] = thx.color.Rgb.interpolatef(steps[i],steps[i + 1]);
-	}
-	return function(t) {
-		if(t < 0) t = 0; else if(t > 1) t = 1;
-		var pos = t == 1?len - 1:Math.floor(t / step);
-		return f[pos](len * (t - pos * step));
-	};
-}
-thx.color.Rgb.prototype = {
-	hex: function(prefix) {
-		if(prefix == null) prefix = "";
-		return prefix + StringTools.hex(this.red,2) + StringTools.hex(this.green,2) + StringTools.hex(this.blue,2);
-	}
-	,toCss: function() {
-		return this.hex("#");
-	}
-	,toRgbString: function() {
-		return "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
-	}
-	,__class__: thx.color.Rgb
-}
-thx.color.Hsl = $hxClasses["thx.color.Hsl"] = function(h,s,l) {
-	this.hue = h = Floats.circularWrap(h,360);
-	this.saturation = s = Floats.normalize(s);
-	this.lightness = l = Floats.normalize(l);
-	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
-};
-thx.color.Hsl.__name__ = ["thx","color","Hsl"];
-thx.color.Hsl._c = function(d,s,l) {
-	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
-	var m1 = 2 * l - m2;
-	d = Floats.circularWrap(d,360);
-	if(d < 60) return m1 + (m2 - m1) * d / 60; else if(d < 180) return m2; else if(d < 240) return m1 + (m2 - m1) * (240 - d) / 60; else return m1;
-}
-thx.color.Hsl.toHsl = function(c) {
-	var r = c.red / 255.0;
-	var g = c.green / 255.0, b = c.blue / 255.0, min = Floats.min(r < g?r:g,b), max = Floats.max(r > g?r:g,b), delta = max - min, h, s, l = (max + min) / 2;
-	if(delta == 0.0) s = h = 0.0; else {
-		s = l < 0.5?delta / (max + min):delta / (2 - max - min);
-		if(r == max) h = (g - b) / delta + (g < b?6:0); else if(g == max) h = (b - r) / delta + 2; else h = (r - g) / delta + 4;
-		h *= 60;
-	}
-	return new thx.color.Hsl(h,s,l);
-}
-thx.color.Hsl.darker = function(color,t,equation) {
-	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,0,equation));
-}
-thx.color.Hsl.lighter = function(color,t,equation) {
-	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,1,equation));
-}
-thx.color.Hsl.interpolatef = function(a,b,equation) {
-	return function(t) {
-		return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
-	};
-}
-thx.color.Hsl.__super__ = thx.color.Rgb;
-thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
-	__class__: thx.color.Hsl
-});
-var Ints = $hxClasses["Ints"] = function() { }
-Ints.__name__ = ["Ints"];
-Ints.range = function(start,stop,step) {
-	if(step == null) step = 1;
-	if(null == stop) {
-		stop = start;
-		start = 0;
-	}
-	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Ints.hx", lineNumber : 19, className : "Ints", methodName : "range"});
-	var range = [], i = -1, j;
-	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
-	return range;
-}
-Ints.abs = function(a) {
-	return a < 0?-a:a;
-}
-Ints.min = function(a,b) {
-	return a < b?a:b;
-}
-Ints.max = function(a,b) {
-	return a > b?a:b;
-}
-Ints.clamp = function(v,min,max) {
-	if(v < min) return min; else if(v > max) return max; else return v;
-}
-Ints.interpolate = function(f,min,max,equation) {
-	if(max == null) max = 100.0;
-	if(min == null) min = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	return Math.round(min + equation(f) * (max - min));
-}
-Ints.interpolatef = function(min,max,equation) {
-	if(max == null) max = 1.0;
-	if(min == null) min = 0.0;
-	if(null == equation) equation = thx.math.Equations.linear;
-	var d = max - min;
-	return function(f) {
-		return Math.round(min + equation(f) * d);
-	};
-}
-Ints.format = function(v,param,params,culture) {
-	return (Ints.formatf(param,params,culture))(v);
-}
-Ints.formatf = function(param,params,culture) {
-	return Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
-}
-Ints.canParse = function(s) {
-	return Ints._reparse.match(s);
-}
-Ints.parse = function(s) {
-	if(s.substr(0,1) == "+") s = s.substr(1);
-	return Std.parseInt(s);
-}
-Ints.compare = function(a,b) {
-	return a - b;
-}
-Ints.prototype = {
-	__class__: Ints
-}
-thx.math.Equations = $hxClasses["thx.math.Equations"] = function() { }
-thx.math.Equations.__name__ = ["thx","math","Equations"];
-thx.math.Equations.linear = function(v) {
+I32.toNativeArray = function(v) {
 	return v;
 }
-thx.math.Equations.polynomial = function(t,e) {
-	return Math.pow(t,e);
+I32.unpackLE = function(s) {
+	if(s == null || s.length == 0) return new Array();
+	if(s.length % 4 != 0) throw "Buffer not multiple of 4 bytes";
+	var a = new Array();
+	var pos = 0;
+	var i = 0;
+	var len = s.length;
+	while(pos < len) {
+		a[i] = I32.decodeLE(s,pos);
+		pos += 4;
+		i++;
+	}
+	return a;
 }
-thx.math.Equations.cubic = function(t) {
-	return thx.math.Equations.polynomial(t,3);
+I32.unpackBE = function(s) {
+	if(s == null || s.length == 0) return new Array();
+	if(s.length % 4 != 0) throw "Buffer not multiple of 4 bytes";
+	var a = new Array();
+	var pos = 0;
+	var i = 0;
+	while(pos < s.length) {
+		a[i] = I32.decodeBE(s,pos);
+		pos += 4;
+		i++;
+	}
+	return a;
 }
-thx.math.Equations.elasticf = function(a,p) {
-	var s;
-	if(null == p) p = 0.45;
-	if(null == a) {
-		a = 1;
-		s = p / 4;
-	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
-	return function(t) {
-		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
-	};
+I32.ushr = function(v,bits) {
+	return v >>> bits;
 }
-thx.math.Equations.prototype = {
-	__class__: thx.math.Equations
+I32.xor = function(a,b) {
+	return a ^ b;
+}
+I32.prototype = {
+	__class__: I32
 }
 rg.info.InfoPivotTable = $hxClasses["rg.info.InfoPivotTable"] = function() {
 	this.label = new rg.info.InfoLabelPivotTable();
@@ -13294,6 +17380,9 @@ dhx.AccessTweenAttribute.__super__ = dhx.AccessTween;
 dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 	name: null
 	,qname: null
+	,stringNodef: function(f) {
+		return this.stringTweenNodef(this.transitionStringTweenf(f));
+	}
 	,string: function(value) {
 		return this.stringTweenNodef(this.transitionStringTween(value));
 	}
@@ -13313,6 +17402,9 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 		};
 		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
 		return this.transition;
+	}
+	,floatNodef: function(f) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(f));
 	}
 	,'float': function(value) {
 		return this.floatTweenNodef(this.transitionFloatTween(value));
@@ -13346,6 +17438,45 @@ dhx.AccessDataTweenAttribute.prototype = $extend(dhx.AccessTweenAttribute.protot
 		return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
 			return f(Reflect.field(n,"__dhx_data__"),i);
 		}));
+	}
+	,floatf: function(f) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}));
+	}
+	,stringTweenf: function(tween) {
+		var name = this.name;
+		var attrTween = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,n.getAttribute(name));
+			return function(t) {
+				n.setAttribute(name,f(t));
+			};
+		};
+		var attrTweenNS = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,n.getAttributeNS(name.space,name.local));
+			return function(t) {
+				n.setAttributeNS(name.space,name.local,f(t));
+			};
+		};
+		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+		return this.transition;
+	}
+	,floatTweenf: function(tween) {
+		var name = this.name;
+		var attrTween = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,Std.parseFloat(n.getAttribute(name)));
+			return function(t) {
+				n.setAttribute(name,"" + f(t));
+			};
+		};
+		var attrTweenNS = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,Std.parseFloat(n.getAttributeNS(name.space,name.local)));
+			return function(t) {
+				n.setAttributeNS(name.space,name.local,"" + f(t));
+			};
+		};
+		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+		return this.transition;
 	}
 	,__class__: dhx.AccessDataTweenAttribute
 });
@@ -13388,12 +17519,59 @@ rg.info.DomKind.Html.__enum__ = rg.info.DomKind;
 rg.info.DomKind.Svg = ["Svg",1];
 rg.info.DomKind.Svg.toString = $estr;
 rg.info.DomKind.Svg.__enum__ = rg.info.DomKind;
+if(!chx.vm) chx.vm = {}
+chx.vm.Lock = $hxClasses["chx.vm.Lock"] = function() {
+	this.lock = 1;
+};
+chx.vm.Lock.__name__ = ["chx","vm","Lock"];
+chx.vm.Lock.prototype = {
+	lock: null
+	,wait: function(waitMs) {
+		var checktime = true;
+		var limit = 0.0;
+		if(waitMs == null) checktime = false;
+		if(checktime) limit = Date.now().getTime() + waitMs;
+		while(this.lock > 0) if(checktime && Date.now().getTime() >= limit) return false;
+		this.lock++;
+		return true;
+	}
+	,release: function() {
+		this.lock--;
+	}
+	,__class__: chx.vm.Lock
+}
 var Arrays = $hxClasses["Arrays"] = function() { }
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
 	if(null != condition) {
 		if(condition) arr.push(value);
 	} else if(null != value) arr.push(value);
+	return arr;
+}
+Arrays.add = function(arr,value) {
+	arr.push(value);
+	return arr;
+}
+Arrays["delete"] = function(arr,value) {
+	arr.remove(value);
+	return arr;
+}
+Arrays.removef = function(arr,f) {
+	var index = -1;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(f(arr[i])) {
+			index = i;
+			break;
+		}
+	}
+	if(index < 0) return false;
+	arr.splice(index,1);
+	return true;
+}
+Arrays.deletef = function(arr,f) {
+	Arrays.removef(arr,f);
 	return arr;
 }
 Arrays.filter = function(arr,f) {
@@ -13429,6 +17607,63 @@ Arrays.min = function(arr,f) {
 		}
 		return arr[p];
 	}
+}
+Arrays.floatMin = function(arr,f) {
+	if(arr.length == 0) return Math.NaN;
+	var a = f(arr[0]), b;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+	}
+	return a;
+}
+Arrays.bounds = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var b = arr[0], q = 0;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var comp = Dynamics.comparef(a);
+			if(comp(a,arr[i]) > 0) a = arr[p = i];
+			if(comp(b,arr[i]) < 0) b = arr[q = i];
+		}
+		return [arr[p],arr[q]];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var c = f(arr[0]), q = 0, d;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a > (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(c < (d = f(arr[i]))) {
+				c = d;
+				q = i;
+			}
+		}
+		return [arr[p],arr[q]];
+	}
+}
+Arrays.boundsFloat = function(arr,f) {
+	if(arr.length == 0) return null;
+	var a = f(arr[0]), b;
+	var c = f(arr[0]), d;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+		if(c < (d = f(arr[i]))) c = d;
+	}
+	return [a,c];
 }
 Arrays.max = function(arr,f) {
 	if(arr.length == 0) return null;
@@ -13484,6 +17719,46 @@ Arrays.order = function(arr,f) {
 	arr.sort(null == f?Dynamics.compare:f);
 	return arr;
 }
+Arrays.orderMultiple = function(arr,f,rest) {
+	var swap = true, t;
+	rest.remove(arr);
+	while(swap) {
+		swap = false;
+		var _g1 = 0, _g = arr.length - 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(f(arr[i],arr[i + 1]) > 0) {
+				swap = true;
+				t = arr[i];
+				arr[i] = arr[i + 1];
+				arr[i + 1] = t;
+				var _g2 = 0;
+				while(_g2 < rest.length) {
+					var a = rest[_g2];
+					++_g2;
+					t = a[i];
+					a[i] = a[i + 1];
+					a[i + 1] = t;
+				}
+			}
+		}
+	}
+}
+Arrays.split = function(arr,f) {
+	if(null == f) f = function(v,_) {
+		return v == null;
+	};
+	var arrays = [], i = -1, values = [], value;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i1 = _g1++;
+		if(f(value = arr[i1],i1)) values = []; else {
+			if(values.length == 0) arrays.push(values);
+			values.push(value);
+		}
+	}
+	return arrays;
+}
 Arrays.exists = function(arr,value,f) {
 	if(null != f) {
 		var _g = 0;
@@ -13528,14 +17803,146 @@ Arrays.format = function(v,param,params,culture) {
 		throw "Unsupported array format: " + format;
 	}
 }
+Arrays.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"J");
+	var format = params.shift();
+	switch(format) {
+	case "J":
+		return function(v) {
+			if(v.length == 0) {
+				var empty = null == params[1]?"[]":params[1];
+				return empty;
+			}
+			var sep = null == params[2]?", ":params[2];
+			var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
+			if(null != max && max < v.length) {
+				var elipsis = null == params[4]?" ...":params[4];
+				return v.copy().splice(0,max).map(function(d,i) {
+					return Dynamics.format(d,params[0],null,null,culture);
+				}).join(sep) + elipsis;
+			} else return v.map(function(d,i) {
+				return Dynamics.format(d,params[0],null,null,culture);
+			}).join(sep);
+		};
+	case "C":
+		var f = Ints.formatf("I",[],culture);
+		return function(v) {
+			return f(v.length);
+		};
+	default:
+		throw "Unsupported array format: " + format;
+	}
+}
+Arrays.interpolate = function(v,a,b,equation) {
+	return (Arrays.interpolatef(a,b,equation))(v);
+}
+Arrays.interpolatef = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Floats.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateStrings = function(v,a,b,equation) {
+	return (Arrays.interpolateStringsf(a,b,equation))(v);
+}
+Arrays.interpolateStringsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Strings.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateInts = function(v,a,b,equation) {
+	return (Arrays.interpolateIntsf(a,b,equation))(v);
+}
+Arrays.interpolateIntsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Ints.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
 Arrays.indexOf = function(arr,el) {
 	return arr.indexOf(el);
+}
+Arrays.every = function(arr,f) {
+	return arr.every(f);
 }
 Arrays.each = function(arr,f) {
 	arr.forEach(f);
 }
+Arrays.any = function(arr,f) {
+	return Iterators.any(arr.iterator(),f);
+}
 Arrays.all = function(arr,f) {
 	return Iterators.all(arr.iterator(),f);
+}
+Arrays.random = function(arr) {
+	return arr[Std.random(arr.length)];
 }
 Arrays.string = function(arr) {
 	return "[" + arr.map(function(v,_) {
@@ -13544,6 +17951,11 @@ Arrays.string = function(arr) {
 }
 Arrays.last = function(arr) {
 	return arr[arr.length - 1];
+}
+Arrays.lastf = function(arr,f) {
+	var i = arr.length;
+	while(--i >= 0) if(f(arr[i])) return arr[i];
+	return null;
 }
 Arrays.first = function(arr) {
 	return arr[0];
@@ -13556,6 +17968,28 @@ Arrays.firstf = function(arr,f) {
 		if(f(v)) return v;
 	}
 	return null;
+}
+Arrays.bisect = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	return Arrays.bisectRight(a,x,lo,hi);
+}
+Arrays.bisectRight = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(x < a[mid]) hi = mid; else lo = mid + 1;
+	}
+	return lo;
+}
+Arrays.bisectLeft = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(a[mid] < x) lo = mid + 1; else hi = mid;
+	}
+	return lo;
 }
 Arrays.nearest = function(a,x,f) {
 	var delta = [];
@@ -13579,6 +18013,34 @@ Arrays.compare = function(a,b) {
 	}
 	return 0;
 }
+Arrays.product = function(a) {
+	if(a.length == 0) return [];
+	var arr = a.copy(), result = [], temp;
+	var _g = 0, _g1 = arr[0];
+	while(_g < _g1.length) {
+		var value = _g1[_g];
+		++_g;
+		result.push([value]);
+	}
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		temp = [];
+		var _g2 = 0;
+		while(_g2 < result.length) {
+			var acc = result[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = arr[i];
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				temp.push(acc.copy().concat([value]));
+			}
+		}
+		result = temp;
+	}
+	return result;
+}
 Arrays.rotate = function(a) {
 	if(a.length == 0) return [];
 	var result = [];
@@ -13597,6 +18059,48 @@ Arrays.rotate = function(a) {
 		}
 	}
 	return result;
+}
+Arrays.shuffle = function(a) {
+	var t = Ints.range(a.length), arr = [];
+	while(t.length > 0) {
+		var pos = Std.random(t.length), index = t[pos];
+		t.splice(pos,1);
+		arr.push(a[index]);
+	}
+	return arr;
+}
+Arrays.scanf = function(arr,weightf,incremental) {
+	if(incremental == null) incremental = true;
+	var tot = 0.0, weights = [];
+	if(incremental) {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = tot += weightf(arr[i],i);
+		}
+	} else {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = weightf(arr[i],i);
+		}
+		tot = weights[weights.length - 1];
+	}
+	var scan = (function($this) {
+		var $r;
+		var scan = null;
+		scan = function(v,start,end) {
+			if(start == end) return arr[start];
+			var mid = Math.floor((end - start) / 2) + start, value = weights[mid];
+			if(v < value) return scan(v,start,mid); else return scan(v,mid + 1,end);
+		};
+		$r = scan;
+		return $r;
+	}(this));
+	return function(v) {
+		if(v < 0 || v > tot) return null;
+		return scan(v,0,weights.length - 1);
+	};
 }
 Arrays.prototype = {
 	__class__: Arrays
@@ -13636,6 +18140,9 @@ rg.axis.Tickmarks.reduce = function(arr,max) {
 	var keep = arr.length / max, result = [], i = 0;
 	do result.push(arr[Math.round(keep * i++)]); while(max > result.length);
 	return result;
+}
+rg.axis.Tickmarks.string = function(tick) {
+	return Dynamics.string(tick.getValue()) + " (" + (tick.getMajor()?"Major":"minor") + ", " + Floats.format(tick.getDelta()) + ")";
 }
 rg.axis.Tickmarks.forFloat = function(start,end,value,major) {
 	return new rg.axis.Tickmark(value,major,(value - start) / (end - start));
@@ -13698,6 +18205,7 @@ rg.data.DataLoader = $hxClasses["rg.data.DataLoader"] = function(loader) {
 rg.data.DataLoader.__name__ = ["rg","data","DataLoader"];
 rg.data.DataLoader.prototype = {
 	loader: null
+	,onLoad: null
 	,load: function() {
 		var me = this;
 		this.loader(function(datapoints) {
@@ -13844,6 +18352,12 @@ rg.axis.ScaleDistribution.ScaleAfter.toString = $estr;
 rg.axis.ScaleDistribution.ScaleAfter.__enum__ = rg.axis.ScaleDistribution;
 var Types = $hxClasses["Types"] = function() { }
 Types.__name__ = ["Types"];
+Types.className = function(o) {
+	return Type.getClassName(Type.getClass(o)).split(".").pop();
+}
+Types.fullName = function(o) {
+	return Type.getClassName(Type.getClass(o));
+}
 Types.typeName = function(o) {
 	return (function($this) {
 		var $r;
@@ -13882,10 +18396,24 @@ Types.typeName = function(o) {
 		return $r;
 	}(this));
 }
+Types.hasSuperClass = function(type,sup) {
+	while(null != type) {
+		if(type == sup) return true;
+		type = Type.getSuperClass(type);
+	}
+	return false;
+}
 Types.isAnonymous = function(v) {
 	return Reflect.isObject(v) && null == Type.getClass(v);
 }
 Types["as"] = function(value,type) {
+	return Std["is"](value,type)?value:null;
+}
+Types.ifIs = function(value,type,handler) {
+	if(Std["is"](value,type)) handler(value);
+	return value;
+}
+Types.of = function(type,value) {
 	return Std["is"](value,type)?value:null;
 }
 Types.sameType = function(a,b) {
@@ -13947,6 +18475,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	,y0property: null
 	,linePathShape: null
 	,chart: null
+	,dps: null
 	,segment: null
 	,setVariables: function(variables,variableIndependents,variableDependents,data) {
 		rg.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
@@ -14199,6 +18728,14 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 	destroy: function() {
 		rg.graph.GraphElement.prototype.destroy.call(this);
 	}
+	,isConnectedTo: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 30, className : "rg.graph.GNode", methodName : "isConnectedTo"});
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == other.id;
+		}) || Iterators.contains(this.graph.edges.negatives(this),null,function(edge) {
+			return edge.tail.id == other.id;
+		});
+	}
 	,connectedBy: function(other) {
 		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 41, className : "rg.graph.GNode", methodName : "connectedBy"});
 		var edge = Iterators.firstf(this.graph.edges.positives(this),function(edge) {
@@ -14232,6 +18769,19 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 	,isIsolated: function() {
 		return !this.graph.edges.edges(this).hasNext();
 	}
+	,isSuccessorOf: function(predecessor) {
+		return predecessor.isPredecessorOf(this);
+	}
+	,isPredecessorOf: function(successor) {
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,successorBy: function(predecessor) {
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge) {
+			return edge.tail.id == predecessor.id;
+		});
+	}
 	,predecessorBy: function(successor) {
 		return Iterators.firstf(this.graph.edges.positives(this),function(edge) {
 			return edge.head.id == successor.id;
@@ -14252,6 +18802,9 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 	,sortNegatives: function(sortf) {
 		this.graph.edges.sortNegatives(this,sortf);
 	}
+	,edgeCount: function() {
+		return this.graph.edges.edgeCount(this);
+	}
 	,positiveCount: function() {
 		return this.graph.edges.positiveCount(this);
 	}
@@ -14267,6 +18820,9 @@ rg.graph.GNode.prototype = $extend(rg.graph.GraphElement.prototype,{
 	,friendEdges: function() {
 		return this.graph.edges;
 	}
+	,toString: function() {
+		return null == this.graph?"Node Destroyed":"Node (n." + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + this.data) + ")";
+	}
 	,__class__: rg.graph.GNode
 });
 rg.axis.AxisTime = $hxClasses["rg.axis.AxisTime"] = function(periodicity) {
@@ -14276,7 +18832,9 @@ rg.axis.AxisTime = $hxClasses["rg.axis.AxisTime"] = function(periodicity) {
 rg.axis.AxisTime.__name__ = ["rg","axis","AxisTime"];
 rg.axis.AxisTime.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.AxisTime.prototype = {
-	isMajor: function(units,value) {
+	periodicity: null
+	,scaleDistribution: null
+	,isMajor: function(units,value) {
 		switch(this.periodicity) {
 		case "day":
 			if(units <= 31) return true;
@@ -14329,6 +18887,7 @@ rg.axis.AxisTime.prototype = {
 		return new rg.axis.StatsNumeric(type);
 	}
 	,__class__: rg.axis.AxisTime
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.graph.GEdge = $hxClasses["rg.graph.GEdge"] = function(graph,id,tail,head,weight,data) {
 	rg.graph.GraphElement.call(this,graph,id,data);
@@ -14342,7 +18901,9 @@ rg.graph.GEdge.create = function(graph,id,tail,head,weight,data) {
 }
 rg.graph.GEdge.__super__ = rg.graph.GraphElement;
 rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
-	weight: null
+	tail: null
+	,head: null
+	,weight: null
 	,destroy: function() {
 		rg.graph.GraphElement.prototype.destroy.call(this);
 		this.tail = null;
@@ -14372,6 +18933,10 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 		result.push(last);
 		return result;
 	}
+	,other: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 64, className : "rg.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 70, className : "rg.graph.GEdge", methodName : "other"});
+	}
 	,invert: function() {
 		var inverted = this.graph.edges.create(this.head,this.tail,this.weight,this.data);
 		this.graph.edges._remove(this);
@@ -14382,6 +18947,9 @@ rg.graph.GEdge.prototype = $extend(rg.graph.GraphElement.prototype,{
 	}
 	,friendRemove: function() {
 		return this.graph.edges;
+	}
+	,toString: function() {
+		return null == this.graph?"Edge Destroyed":"Edge (n." + this.id + ", tail: n." + this.tail.id + ", head: n." + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + this.data) + ")";
 	}
 	,__class__: rg.graph.GEdge
 });
@@ -14395,7 +18963,9 @@ rg.svg.chart.Geo = $hxClasses["rg.svg.chart.Geo"] = function(panel) {
 rg.svg.chart.Geo.__name__ = ["rg","svg","chart","Geo"];
 rg.svg.chart.Geo.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
-	variableDependent: null
+	mapcontainer: null
+	,colorMode: null
+	,variableDependent: null
 	,dps: null
 	,queue: null
 	,setVariables: function(variableIndependents,variableDependents,data) {
@@ -14408,6 +18978,9 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,resize: function() {
 		rg.svg.chart.Chart.prototype.resize.call(this);
 		if(null != this.mapcontainer) this.mapcontainer.attr("transform").string("translate(" + this.width / 2 + "," + this.height / 2 + ")");
+	}
+	,dpvalue: function(dp) {
+		return Reflect.field(dp,this.variableDependent.type);
 	}
 	,drawmap: function(map,field) {
 		if(null == this.dps || 0 == this.dps.length) {
@@ -14531,6 +19104,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		})(this.drawmap.$bind(this),map,field));
 	}
 	,__class__: rg.svg.chart.Geo
+	,__properties__: $extend(rg.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 if(!thx.data) thx.data = {}
 thx.data.ValueEncoder = $hxClasses["thx.data.ValueEncoder"] = function(handler) {
@@ -14630,6 +19204,9 @@ hxevents.Notifier = $hxClasses["hxevents.Notifier"] = function() {
 	this.handlers = new Array();
 };
 hxevents.Notifier.__name__ = ["hxevents","Notifier"];
+hxevents.Notifier.stop = function() {
+	throw hxevents.EventException.StopPropagation;
+}
 hxevents.Notifier.prototype = {
 	handlers: null
 	,add: function(h) {
@@ -14654,6 +19231,9 @@ hxevents.Notifier.prototype = {
 		}
 		return null;
 	}
+	,clear: function() {
+		this.handlers = new Array();
+	}
 	,dispatch: function() {
 		try {
 			var list = this.handlers.copy();
@@ -14668,6 +19248,25 @@ hxevents.Notifier.prototype = {
 			if( js.Boot.__instanceof(exc,hxevents.EventException) ) {
 				return false;
 			} else throw(exc);
+		}
+	}
+	,dispatchAndAutomate: function() {
+		this.dispatch();
+		this.handlers = [];
+		this.add = function(h) {
+			h();
+			return h;
+		};
+	}
+	,has: function(h) {
+		if(null == h) return this.handlers.length > 0; else {
+			var _g = 0, _g1 = this.handlers;
+			while(_g < _g1.length) {
+				var handler = _g1[_g];
+				++_g;
+				if(h == handler) return true;
+			}
+			return false;
 		}
 	}
 	,__class__: hxevents.Notifier
@@ -14691,7 +19290,8 @@ rg.html.widget.Logo.position = function(el) {
 	return p;
 }
 rg.html.widget.Logo.prototype = {
-	container: null
+	chartContainer: null
+	,container: null
 	,frame: null
 	,anchor: null
 	,image: null
@@ -14895,6 +19495,56 @@ rg.factory.FactoryVariable.prototype = {
 			}
 		});
 	}
+	,createIndependents: function(info) {
+		var result = [], ordinal, discrete, ctx;
+		var _g = 0;
+		while(_g < info.length) {
+			var i = info[_g];
+			++_g;
+			var moveon = (function($this) {
+				var $r;
+				switch( (i.variableType)[1] ) {
+				case 1:
+					$r = false;
+					break;
+				case 0:
+					$r = true;
+					break;
+				default:
+					$r = true;
+				}
+				return $r;
+			}(this));
+			if(moveon) continue;
+			result.push(this.independentFactory.create(i));
+		}
+		return result;
+	}
+	,createDependents: function(info) {
+		var result = [], ordinal;
+		var _g = 0;
+		while(_g < info.length) {
+			var i = info[_g];
+			++_g;
+			var moveon = (function($this) {
+				var $r;
+				switch( (i.variableType)[1] ) {
+				case 2:
+					$r = false;
+					break;
+				case 0:
+					$r = false;
+					break;
+				default:
+					$r = true;
+				}
+				return $r;
+			}(this));
+			if(moveon) continue;
+			result.push(this.dependentFactory.create(i,null));
+		}
+		return result;
+	}
 	,__class__: rg.factory.FactoryVariable
 }
 rg.svg.chart.PieChart = $hxClasses["rg.svg.chart.PieChart"] = function(panel) {
@@ -15085,6 +19735,50 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,__class__: rg.svg.chart.PieChart
 });
+thx.color.Cmyk = $hxClasses["thx.color.Cmyk"] = function(cyan,magenta,yellow,black) {
+	thx.color.Rgb.call(this,Ints.interpolate(Floats.normalize(1 - cyan - black),0,255,null),Ints.interpolate(Floats.normalize(1 - magenta - black),0,255,null),Ints.interpolate(Floats.normalize(1 - yellow - black),0,255,null));
+	this.cyan = Floats.normalize(cyan);
+	this.magenta = Floats.normalize(magenta);
+	this.yellow = Floats.normalize(yellow);
+	this.black = Floats.normalize(black);
+};
+thx.color.Cmyk.__name__ = ["thx","color","Cmyk"];
+thx.color.Cmyk.toCmyk = function(rgb) {
+	var c = 0.0, y = 0.0, m = 0.0, k;
+	if(rgb.red + rgb.blue + rgb.green == 0) k = 1.0; else {
+		c = 1 - rgb.red / 255;
+		m = 1 - rgb.green / 255;
+		y = 1 - rgb.blue / 255;
+		k = Floats.min(c < m?c:m,y);
+		c = (c - k) / (1 - k);
+		m = (m - k) / (1 - k);
+		y = (y - k) / (1 - k);
+	}
+	return new thx.color.Cmyk(c,m,y,k);
+}
+thx.color.Cmyk.equals = function(a,b) {
+	return a.black == b.black && a.cyan == b.cyan && a.magenta == b.magenta && a.yellow == b.yellow;
+}
+thx.color.Cmyk.darker = function(color,t,equation) {
+	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,0,equation));
+}
+thx.color.Cmyk.lighter = function(color,t,equation) {
+	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,1,equation));
+}
+thx.color.Cmyk.interpolate = function(a,b,t,equation) {
+	return new thx.color.Cmyk(Floats.interpolate(t,a.cyan,b.cyan,equation),Floats.interpolate(t,a.magenta,b.magenta,equation),Floats.interpolate(t,a.yellow,b.yellow,equation),Floats.interpolate(t,a.black,b.black,equation));
+}
+thx.color.Cmyk.__super__ = thx.color.Rgb;
+thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
+	black: null
+	,cyan: null
+	,magenta: null
+	,yellow: null
+	,toCmykString: function() {
+		return "cmyk(" + this.cyan + "," + this.magenta + "," + this.yellow + "," + this.black + ")";
+	}
+	,__class__: thx.color.Cmyk
+});
 haxe.BaseCode = $hxClasses["haxe.BaseCode"] = function(base) {
 	var len = base.length;
 	var nbits = 1;
@@ -15094,10 +19788,40 @@ haxe.BaseCode = $hxClasses["haxe.BaseCode"] = function(base) {
 	this.nbits = nbits;
 };
 haxe.BaseCode.__name__ = ["haxe","BaseCode"];
+haxe.BaseCode.encode = function(s,base) {
+	var b = new haxe.BaseCode(Bytes.ofString(base));
+	return b.encodeString(s);
+}
+haxe.BaseCode.decode = function(s,base) {
+	var b = new haxe.BaseCode(Bytes.ofString(base));
+	return b.decodeString(s);
+}
 haxe.BaseCode.prototype = {
 	base: null
 	,nbits: null
 	,tbl: null
+	,encodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		var size = b.length * 8 / nbits | 0;
+		var out = Bytes.alloc(size + (b.length * 8 % nbits == 0?0:1));
+		var buf = 0;
+		var curbits = 0;
+		var mask = (1 << nbits) - 1;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < nbits) {
+				curbits += 8;
+				buf <<= 8;
+				buf |= b.b[pin++];
+			}
+			curbits -= nbits;
+			out.b[pout++] = base.b[buf >> curbits & mask] & 255;
+		}
+		if(curbits > 0) out.b[pout++] = base.b[buf << nbits - curbits & mask] & 255;
+		return out;
+	}
 	,initTable: function() {
 		var tbl = new Array();
 		var _g = 0;
@@ -15136,20 +19860,14 @@ haxe.BaseCode.prototype = {
 		}
 		return out;
 	}
+	,encodeString: function(s) {
+		return this.encodeBytes(Bytes.ofString(s)).toString();
+	}
+	,decodeString: function(s) {
+		return this.decodeBytes(Bytes.ofString(s)).toString();
+	}
 	,__class__: haxe.BaseCode
 }
-thx.color.Cmyk = $hxClasses["thx.color.Cmyk"] = function(cyan,magenta,yellow,black) {
-	thx.color.Rgb.call(this,Ints.interpolate(Floats.normalize(1 - cyan - black),0,255,null),Ints.interpolate(Floats.normalize(1 - magenta - black),0,255,null),Ints.interpolate(Floats.normalize(1 - yellow - black),0,255,null));
-	this.cyan = Floats.normalize(cyan);
-	this.magenta = Floats.normalize(magenta);
-	this.yellow = Floats.normalize(yellow);
-	this.black = Floats.normalize(black);
-};
-thx.color.Cmyk.__name__ = ["thx","color","Cmyk"];
-thx.color.Cmyk.__super__ = thx.color.Rgb;
-thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
-	__class__: thx.color.Cmyk
-});
 rg.factory.FactoryAxis = $hxClasses["rg.factory.FactoryAxis"] = function() {
 };
 rg.factory.FactoryAxis.__name__ = ["rg","factory","FactoryAxis"];
@@ -15199,7 +19917,9 @@ rg.svg.widget.DiagonalArea = $hxClasses["rg.svg.widget.DiagonalArea"] = function
 };
 rg.svg.widget.DiagonalArea.__name__ = ["rg","svg","widget","DiagonalArea"];
 rg.svg.widget.DiagonalArea.prototype = {
-	diagonal: null
+	g: null
+	,diagonal: null
+	,area: null
 	,before: null
 	,after: null
 	,addClass: function(cls) {
@@ -15217,7 +19937,24 @@ rg.svg.widget.DiagonalArea.prototype = {
 thx.data.IDataHandler = $hxClasses["thx.data.IDataHandler"] = function() { }
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
 thx.data.IDataHandler.prototype = {
-	__class__: thx.data.IDataHandler
+	start: null
+	,end: null
+	,startObject: null
+	,startField: null
+	,endField: null
+	,endObject: null
+	,startArray: null
+	,startItem: null
+	,endItem: null
+	,endArray: null
+	,date: null
+	,string: null
+	,'int': null
+	,'float': null
+	,'null': null
+	,bool: null
+	,comment: null
+	,__class__: thx.data.IDataHandler
 }
 thx.data.ValueHandler = $hxClasses["thx.data.ValueHandler"] = function() {
 };
@@ -15298,9 +20035,22 @@ thx.color.Grey.toGrey = function(rgb,luminance) {
 		return new thx.color.Grey(Math.sqrt(0.241 * Math.pow(rgb.red / 255,2) + 0.691 * Math.pow(rgb.green / 255,2) + 0.068 * Math.pow(rgb.blue / 255,2)));
 	}
 }
+thx.color.Grey.equals = function(a,b) {
+	return a.grey == b.grey;
+}
+thx.color.Grey.darker = function(color,t,equation) {
+	return new thx.color.Grey(Floats.interpolate(t,color.grey,0,equation));
+}
+thx.color.Grey.lighter = function(color,t,equation) {
+	return new thx.color.Grey(Floats.interpolate(t,color.grey,1,equation));
+}
+thx.color.Grey.interpolate = function(a,b,t,equation) {
+	return new thx.color.Grey(Floats.interpolate(t,a.grey,b.grey,equation));
+}
 thx.color.Grey.__super__ = thx.color.Rgb;
 thx.color.Grey.prototype = $extend(thx.color.Rgb.prototype,{
-	__class__: thx.color.Grey
+	grey: null
+	,__class__: thx.color.Grey
 });
 thx.color.PerceivedLuminance = $hxClasses["thx.color.PerceivedLuminance"] = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
 thx.color.PerceivedLuminance.Standard = ["Standard",0];
@@ -15352,6 +20102,7 @@ math.BigInteger = $hxClasses["math.BigInteger"] = function() {
 	}
 };
 math.BigInteger.__name__ = ["math","BigInteger"];
+math.BigInteger.__properties__ = {get_ONE:"getONE",get_ZERO:"getZERO"}
 math.BigInteger.DB = null;
 math.BigInteger.DM = null;
 math.BigInteger.DV = null;
@@ -15359,6 +20110,8 @@ math.BigInteger.BI_FP = null;
 math.BigInteger.FV = null;
 math.BigInteger.F1 = null;
 math.BigInteger.F2 = null;
+math.BigInteger.ZERO = null;
+math.BigInteger.ONE = null;
 math.BigInteger.BI_RM = null;
 math.BigInteger.BI_RC = null;
 math.BigInteger.lowprimes = null;
@@ -15470,6 +20223,11 @@ math.BigInteger.ofInt = function(x) {
 	i.fromInt(x);
 	return i;
 }
+math.BigInteger.ofInt32 = function(x) {
+	var i = math.BigInteger.nbi();
+	i.fromInt32(x);
+	return i;
+}
 math.BigInteger.ofBytes = function(r,unsigned,pos,len) {
 	if(pos == null) pos = 0;
 	if(len == null) len = r.length - pos;
@@ -15499,6 +20257,46 @@ math.BigInteger.ofBytes = function(r,unsigned,pos,len) {
 	bi.clamp();
 	return bi;
 }
+math.BigInteger.random = function(bits,rng) {
+	if(rng == null) rng = new math.prng.Random();
+	if(bits < 2) return math.BigInteger.ofInt(1);
+	var len = (bits >> 3) + 1;
+	var x = Bytes.alloc(len);
+	var t = bits & 7;
+	rng.nextBytes(x,0,len);
+	if(t > 0) {
+		var v = x.b[0];
+		v &= (1 << t) - 1;
+		x.b[0] = v & 255;
+	} else x.b[0] = 0;
+	return math.BigInteger.ofString(BytesUtil.hexDump(x,""),16);
+}
+math.BigInteger.randomPrime = function(bits,gcdExp,iterations,forceLength,rng) {
+	if(rng == null) rng = new math.prng.Random();
+	if(iterations < 1) iterations = 1;
+	while(true) {
+		var i = math.BigInteger.random(bits,rng);
+		if(forceLength) {
+			if(!i.testBit(bits - 1)) i.bitwiseTo(math.BigInteger.getONE().shl(bits - 1),math.BigInteger.op_or,i);
+		}
+		if(i.isEven()) i.dAddOffset(1,0);
+		i.primify(bits,1);
+		if(i.sub(math.BigInteger.getONE()).gcd(gcdExp).compare(math.BigInteger.getONE()) == 0 && i.isProbablePrime(iterations)) return i;
+	}
+	return null;
+}
+math.BigInteger.op_and = function(x,y) {
+	return x & y;
+}
+math.BigInteger.op_or = function(x,y) {
+	return x | y;
+}
+math.BigInteger.op_xor = function(x,y) {
+	return x ^ y;
+}
+math.BigInteger.op_andnot = function(x,y) {
+	return x & ~y;
+}
 math.BigInteger.nbits = function(x) {
 	var r = 1;
 	var t;
@@ -15524,18 +20322,63 @@ math.BigInteger.nbits = function(x) {
 	}
 	return r;
 }
+math.BigInteger.cbit = function(x) {
+	var r = 0;
+	while(x != 0) {
+		x &= x - 1;
+		++r;
+	}
+	return r;
+}
 math.BigInteger.intAt = function(s,i) {
 	var c = math.BigInteger.BI_RC[s.charCodeAt(i)];
 	if(c == null) return -1;
 	return c;
 }
+math.BigInteger.int2charCode = function(n) {
+	return math.BigInteger.BI_RM.charCodeAt(n);
+}
+math.BigInteger.lbit = function(x) {
+	if(x == 0) return -1;
+	var r = 0;
+	if((x & 65535) == 0) {
+		x >>= 16;
+		r += 16;
+	}
+	if((x & 255) == 0) {
+		x >>= 8;
+		r += 8;
+	}
+	if((x & 15) == 0) {
+		x >>= 4;
+		r += 4;
+	}
+	if((x & 3) == 0) {
+		x >>= 2;
+		r += 2;
+	}
+	if((x & 1) == 0) ++r;
+	return r;
+}
+math.BigInteger.dumpBi = function(r) {
+	var s = "sign: " + Std.string(r.sign);
+	s += " t: " + r.t;
+	s += Std.string(r.chunks);
+	return s;
+}
 math.BigInteger.prototype = {
-	am: null
+	t: null
+	,sign: null
+	,chunks: null
+	,am: null
 	,fromInt: function(x) {
 		this.t = 1;
 		this.chunks[0] = 0;
 		this.sign = x < 0?-1:0;
 		if(x > 0) this.chunks[0] = x; else if(x < -1) this.chunks[0] = x + math.BigInteger.DV; else this.t = 0;
+	}
+	,fromInt32: function(x) {
+		this.fromInt(x);
 	}
 	,toInt: function() {
 		if(this.sign < 0) {
@@ -15546,8 +20389,51 @@ math.BigInteger.prototype = {
 	,toInt32: function() {
 		return this.toInt();
 	}
+	,toString: function() {
+		return this.toRadix(10).toString();
+	}
 	,toHex: function() {
 		return this.toRadix(16).toString();
+	}
+	,toBytes: function() {
+		var i = this.t;
+		var r = new Array();
+		r[0] = this.sign;
+		var p = math.BigInteger.DB - i * math.BigInteger.DB % 8;
+		var d;
+		var k = 0;
+		if(i-- > 0) {
+			if(p < math.BigInteger.DB && (d = this.chunks[i] >> p) != (this.sign & math.BigInteger.DM) >> p) {
+				r[k] = d | this.sign << math.BigInteger.DB - p;
+				k++;
+			}
+			while(i >= 0) {
+				if(p < 8) {
+					d = (this.chunks[i] & (1 << p) - 1) << 8 - p;
+					--i;
+					d |= this.chunks[i] >> (p += math.BigInteger.DB - 8);
+				} else {
+					d = this.chunks[i] >> (p -= 8) & 255;
+					if(p <= 0) {
+						p += math.BigInteger.DB;
+						--i;
+					}
+				}
+				if((d & 128) != 0) d |= -256;
+				if(k == 0 && (this.sign & 128) != (d & 128)) ++k;
+				if(k > 0 || d != this.sign) {
+					r[k] = d;
+					k++;
+				}
+			}
+		}
+		var bb = new BytesBuffer();
+		var _g1 = 0, _g = r.length;
+		while(_g1 < _g) {
+			var i1 = _g1++;
+			bb.b.push(r[i1]);
+		}
+		return bb.getBytes();
 	}
 	,toBytesUnsigned: function() {
 		var bb = new BytesBuffer();
@@ -15626,14 +20512,91 @@ math.BigInteger.prototype = {
 		this.divRemTo(a,r,null);
 		return r;
 	}
+	,divideAndRemainder: function(a) {
+		var q = math.BigInteger.nbi();
+		var r = math.BigInteger.nbi();
+		this.divRemTo(a,q,r);
+		return [q,r];
+	}
+	,eq: function(a) {
+		return this.compare(a) == 0;
+	}
 	,isEven: function() {
 		return (this.t > 0?this.chunks[0] & 1:this.sign) == 0;
+	}
+	,max: function(a) {
+		return this.compare(a) > 0?this:a;
+	}
+	,min: function(a) {
+		return this.compare(a) < 0?this:a;
 	}
 	,mod: function(a) {
 		var r = math.BigInteger.nbi();
 		this.abs().divRemTo(a,null,r);
 		if(this.sign < 0 && r.compare(math.BigInteger.getZERO()) > 0) a.subTo(r,r);
 		return r;
+	}
+	,modInt: function(n) {
+		if(n <= 0) return 0;
+		var d = math.BigInteger.DV % n;
+		var r = this.sign < 0?n - 1:0;
+		if(this.t > 0) {
+			if(d == 0) r = this.chunks[0] % n; else {
+				var i = this.t - 1;
+				while(i >= 0) {
+					r = (d * r + this.chunks[i]) % n;
+					--i;
+				}
+			}
+		}
+		return r;
+	}
+	,modInverse: function(m) {
+		var ac = m.isEven();
+		if(this.isEven() && ac || m.sigNum() == 0) return math.BigInteger.getZERO();
+		var u = m.clone();
+		var v = this.clone();
+		var a = math.BigInteger.nbv(1);
+		var b = math.BigInteger.nbv(0);
+		var c = math.BigInteger.nbv(0);
+		var d = math.BigInteger.nbv(1);
+		while(u.sigNum() != 0) {
+			while(u.isEven()) {
+				u.rShiftTo(1,u);
+				if(ac) {
+					if(!a.isEven() || !b.isEven()) {
+						a.addTo(this,a);
+						b.subTo(m,b);
+					}
+					a.rShiftTo(1,a);
+				} else if(!b.isEven()) b.subTo(m,b);
+				b.rShiftTo(1,b);
+			}
+			while(v.isEven()) {
+				v.rShiftTo(1,v);
+				if(ac) {
+					if(!c.isEven() || !d.isEven()) {
+						c.addTo(this,c);
+						d.subTo(m,d);
+					}
+					c.rShiftTo(1,c);
+				} else if(!d.isEven()) d.subTo(m,d);
+				d.rShiftTo(1,d);
+			}
+			if(u.compare(v) >= 0) {
+				u.subTo(v,u);
+				if(ac) a.subTo(c,a);
+				b.subTo(d,b);
+			} else {
+				v.subTo(u,v);
+				if(ac) c.subTo(a,c);
+				d.subTo(b,d);
+			}
+		}
+		if(v.compare(math.BigInteger.getONE()) != 0) return math.BigInteger.getZERO();
+		if(d.compare(m) >= 0) return d.sub(m);
+		if(d.sigNum() < 0) d.addTo(m,d); else return d;
+		return d;
 	}
 	,modPow: function(e,m) {
 		var i = e.bitLength();
@@ -15723,14 +20686,98 @@ math.BigInteger.prototype = {
 		math.BigInteger.getZERO().subTo(this,r);
 		return r;
 	}
+	,pow: function(e) {
+		return this.exp(e,new math.reduction.Null());
+	}
+	,remainder: function(a) {
+		var r = math.BigInteger.nbi();
+		this.divRemTo(a,null,r);
+		return r;
+	}
 	,sub: function(a) {
 		var r = math.BigInteger.nbi();
 		this.subTo(a,r);
 		return r;
 	}
+	,and: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_and,r);
+		return r;
+	}
+	,andNot: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_andnot,r);
+		return r;
+	}
+	,bitCount: function() {
+		var r = 0, x = this.sign & math.BigInteger.DM;
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r += math.BigInteger.cbit(this.chunks[i] ^ x);
+		}
+		return r;
+	}
 	,bitLength: function() {
 		if(this.t <= 0) return 0;
 		return math.BigInteger.DB * (this.t - 1) + math.BigInteger.nbits(this.chunks[this.t - 1] ^ this.sign & math.BigInteger.DM);
+	}
+	,complement: function() {
+		return this.not();
+	}
+	,clearBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_andnot);
+	}
+	,flipBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_xor);
+	}
+	,getLowestSetBit: function() {
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.chunks[i] != 0) return i * math.BigInteger.DB + math.BigInteger.lbit(this.chunks[i]);
+		}
+		if(this.sign < 0) return this.t * math.BigInteger.DB;
+		return -1;
+	}
+	,not: function() {
+		var r = math.BigInteger.nbi();
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r.chunks[i] = math.BigInteger.DM & ~this.chunks[i];
+		}
+		r.t = this.t;
+		r.sign = ~this.sign;
+		return r;
+	}
+	,or: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_or,r);
+		return r;
+	}
+	,setBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_or);
+	}
+	,shl: function(n) {
+		var r = math.BigInteger.nbi();
+		if(n < 0) this.rShiftTo(-n,r); else this.lShiftTo(n,r);
+		return r;
+	}
+	,shr: function(n) {
+		var r = math.BigInteger.nbi();
+		if(n < 0) this.lShiftTo(-n,r); else this.rShiftTo(n,r);
+		return r;
+	}
+	,testBit: function(n) {
+		var j = Math.floor(n / math.BigInteger.DB);
+		if(j >= this.t) return this.sign != 0;
+		return (this.chunks[j] & 1 << n % math.BigInteger.DB) != 0;
+	}
+	,xor: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_xor,r);
+		return r;
 	}
 	,addTo: function(a,r) {
 		var i = 0;
@@ -15956,11 +21003,51 @@ math.BigInteger.prototype = {
 		var c = this.sign & math.BigInteger.DM;
 		while(this.t > 0 && this.chunks[this.t - 1] == c) --this.t;
 	}
+	,clone: function() {
+		var r = math.BigInteger.nbi();
+		this.copyTo(r);
+		return r;
+	}
+	,gcd: function(a) {
+		var x = this.sign < 0?this.neg():this.clone();
+		var y = a.sign < 0?a.neg():a.clone();
+		if(x.compare(y) < 0) {
+			var t = x;
+			x = y;
+			y = t;
+		}
+		var i = x.getLowestSetBit(), g = y.getLowestSetBit();
+		if(g < 0) return x;
+		if(i < g) g = i;
+		if(g > 0) {
+			x.rShiftTo(g,x);
+			y.rShiftTo(g,y);
+		}
+		while(x.sigNum() > 0) {
+			if((i = x.getLowestSetBit()) > 0) x.rShiftTo(i,x);
+			if((i = y.getLowestSetBit()) > 0) y.rShiftTo(i,y);
+			if(x.compare(y) >= 0) {
+				x.subTo(y,x);
+				x.rShiftTo(1,x);
+			} else {
+				y.subTo(x,y);
+				y.rShiftTo(1,y);
+			}
+		}
+		if(g > 0) y.lShiftTo(g,y);
+		return y;
+	}
 	,padTo: function(n) {
 		while(this.t < n) {
 			this.chunks[this.t] = 0;
 			this.t++;
 		}
+	}
+	,shortValue: function() {
+		return this.t == 0?this.sign:this.chunks[0] << 16 >> 16;
+	}
+	,byteValue: function() {
+		return this.t == 0?this.sign:this.chunks[0] << 24 >> 24;
 	}
 	,sigNum: function() {
 		if(this.sign < 0) return -1; else if(this.t <= 0 || this.t == 1 && this.chunks[0] <= 0) return 0; else return 1;
@@ -16016,6 +21103,77 @@ math.BigInteger.prototype = {
 		y = y * (2 - x * y % math.BigInteger.DV) % math.BigInteger.DV;
 		return y > 0?math.BigInteger.DV - y:-y;
 	}
+	,isProbablePrime: function(v) {
+		var i;
+		var x = this.abs();
+		if(x.t == 1 && x.chunks[0] <= math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1]) {
+			var _g1 = 0, _g = math.BigInteger.lowprimes.length;
+			while(_g1 < _g) {
+				var i1 = _g1++;
+				if(x.chunks[0] == math.BigInteger.lowprimes[i1]) return true;
+			}
+			return false;
+		}
+		if(x.isEven()) return false;
+		i = 1;
+		while(i < math.BigInteger.lowprimes.length) {
+			var m = math.BigInteger.lowprimes[i];
+			var j = i + 1;
+			while(j < math.BigInteger.lowprimes.length && m < math.BigInteger.lplim) {
+				m *= math.BigInteger.lowprimes[j];
+				j++;
+			}
+			m = x.modInt(m);
+			while(i < j) {
+				if(m % math.BigInteger.lowprimes[i] == 0) return false;
+				i++;
+			}
+		}
+		return x.millerRabin(v);
+	}
+	,primify: function(bits,ta) {
+		while(this.bitLength() > bits) this.subTo(math.BigInteger.getONE().shl(bits - 1),this);
+		while(!this.isProbablePrime(ta)) {
+			this.dAddOffset(2,0);
+			while(this.bitLength() > bits) this.subTo(math.BigInteger.getONE().shl(bits - 1),this);
+		}
+	}
+	,bitwiseTo: function(a,op,r) {
+		var f;
+		var m = Math.min(a.t,this.t) | 0;
+		var _g = 0;
+		while(_g < m) {
+			var i = _g++;
+			r.chunks[i] = op(this.chunks[i],a.chunks[i]);
+		}
+		if(a.t < this.t) {
+			f = a.sign & math.BigInteger.DM;
+			var _g1 = m, _g = this.t;
+			while(_g1 < _g) {
+				var i = _g1++;
+				r.chunks[i] = op(this.chunks[i],f);
+			}
+			r.t = this.t;
+		} else {
+			f = this.sign & math.BigInteger.DM;
+			var _g1 = m, _g = a.t;
+			while(_g1 < _g) {
+				var i = _g1++;
+				r.chunks[i] = op(f,a.chunks[i]);
+			}
+			r.t = a.t;
+		}
+		r.sign = op(this.sign,a.sign);
+		r.clamp();
+	}
+	,changeBit: function(n,op) {
+		var r = math.BigInteger.getONE().shl(n);
+		this.bitwiseTo(r,op,r);
+		return r;
+	}
+	,chunkSize: function(r) {
+		return Math.floor(0.6931471805599453 * math.BigInteger.DB / Math.log(r));
+	}
 	,dMultiply: function(n) {
 		this.chunks[this.t] = this.am(0,n - 1,this,0,0,this.t);
 		this.t++;
@@ -16037,6 +21195,30 @@ math.BigInteger.prototype = {
 			}
 		}
 		return z.revert(r);
+	}
+	,millerRabin: function(v) {
+		var n1 = this.sub(math.BigInteger.getONE());
+		var k = n1.getLowestSetBit();
+		if(k <= 0) return false;
+		var r = n1.shr(k);
+		v = v + 1 >> 1;
+		if(v > math.BigInteger.lowprimes.length) v = math.BigInteger.lowprimes.length;
+		var a = math.BigInteger.nbi();
+		var _g = 0;
+		while(_g < v) {
+			var i = _g++;
+			a.fromInt(math.BigInteger.lowprimes[i]);
+			var y = a.modPow(r,this);
+			if(y.compare(math.BigInteger.getONE()) != 0 && y.compare(n1) != 0) {
+				var j = 1;
+				while(j++ < k && y.compare(n1) != 0) {
+					y = y.modPowInt(2,this);
+					if(y.compare(math.BigInteger.getONE()) == 0) return false;
+				}
+				if(y.compare(n1) != 0) return false;
+			}
+		}
+		return true;
 	}
 	,lShiftTo: function(n,r) {
 		var bs = n % math.BigInteger.DB;
@@ -16370,6 +21552,17 @@ rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.V
 	}
 	,__class__: rg.visualization.VisualizationLeaderboard
 });
+haxe.Log = $hxClasses["haxe.Log"] = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
+haxe.Log.clear = function() {
+	js.Boot.__clear_trace();
+}
+haxe.Log.prototype = {
+	__class__: haxe.Log
+}
 if(!rg.html.chart) rg.html.chart = {}
 rg.html.chart.PivotTable = $hxClasses["rg.html.chart.PivotTable"] = function(container) {
 	this.ready = new hxevents.Notifier();
@@ -16388,6 +21581,7 @@ rg.html.chart.PivotTable.prototype = {
 	,displayHeatMap: null
 	,colorStart: null
 	,colorEnd: null
+	,ready: null
 	,columnVariables: null
 	,rowVariables: null
 	,cellVariable: null
@@ -16717,10 +21911,13 @@ thx.geo.AlbersUsa = $hxClasses["thx.geo.AlbersUsa"] = function() {
 thx.geo.AlbersUsa.__name__ = ["thx","geo","AlbersUsa"];
 thx.geo.AlbersUsa.__interfaces__ = [thx.geo.IProjection];
 thx.geo.AlbersUsa.prototype = {
-	lower48: null
+	translate: null
+	,scale: null
+	,lower48: null
 	,alaska: null
 	,hawaii: null
 	,puertoRico: null
+	,last: null
 	,project: function(coords) {
 		var lon = coords[0], lat = coords[1];
 		return (lat > 50?this.alaska:lon < -140?this.hawaii:lat < 21?this.puertoRico:this.lower48).project(coords);
@@ -16755,6 +21952,7 @@ thx.geo.AlbersUsa.prototype = {
 		return this.lower48.getTranslate();
 	}
 	,__class__: thx.geo.AlbersUsa
+	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
 rg.info.InfoGeneral = $hxClasses["rg.info.InfoGeneral"] = function() {
 };
@@ -16786,7 +21984,10 @@ rg.svg.layer.Title = $hxClasses["rg.svg.layer.Title"] = function(panel,text,anch
 rg.svg.layer.Title.__name__ = ["rg","svg","layer","Title"];
 rg.svg.layer.Title.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
-	label: null
+	text: null
+	,anchor: null
+	,padding: null
+	,label: null
 	,group: null
 	,idealHeight: function() {
 		var size = this.label.getSize();
@@ -16864,6 +22065,7 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return v;
 	}
 	,__class__: rg.svg.layer.Title
+	,__properties__: $extend(rg.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
 });
 rg.info.InfoVariable = $hxClasses["rg.info.InfoVariable"] = function() {
 	this.variableType = rg.info.VariableType.Unknown;
@@ -16921,6 +22123,14 @@ rg.info.VariableType.Independent.__enum__ = rg.info.VariableType;
 rg.info.VariableType.Dependent = ["Dependent",2];
 rg.info.VariableType.Dependent.toString = $estr;
 rg.info.VariableType.Dependent.__enum__ = rg.info.VariableType;
+chx.lang.OverflowException = $hxClasses["chx.lang.OverflowException"] = function(msg,cause) {
+	chx.lang.Exception.call(this,msg,cause);
+};
+chx.lang.OverflowException.__name__ = ["chx","lang","OverflowException"];
+chx.lang.OverflowException.__super__ = chx.lang.Exception;
+chx.lang.OverflowException.prototype = $extend(chx.lang.Exception.prototype,{
+	__class__: chx.lang.OverflowException
+});
 rg.svg.widget.GridAnchor = $hxClasses["rg.svg.widget.GridAnchor"] = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.svg.widget.GridAnchor.TopLeft.toString = $estr;
@@ -16995,6 +22205,20 @@ thx.svg.Line = $hxClasses["thx.svg.Line"] = function(x,y,interpolator) {
 	this._interpolator = interpolator;
 };
 thx.svg.Line.__name__ = ["thx","svg","Line"];
+thx.svg.Line.pointArray = function(interpolator) {
+	return new thx.svg.Line(function(d,_) {
+		return d[0];
+	},function(d,_) {
+		return d[1];
+	},interpolator);
+}
+thx.svg.Line.pointObject = function(interpolator) {
+	return new thx.svg.Line(function(d,_) {
+		return d.x;
+	},function(d,_) {
+		return d.y;
+	},interpolator);
+}
 thx.svg.Line.prototype = {
 	_x: null
 	,_y: null
@@ -17002,12 +22226,87 @@ thx.svg.Line.prototype = {
 	,shape: function(data,i) {
 		return data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y),this._interpolator);
 	}
+	,getInterpolator: function() {
+		return this._interpolator;
+	}
 	,interpolator: function(type) {
 		this._interpolator = type;
 		return this;
 	}
+	,getX: function() {
+		return this._x;
+	}
+	,x: function(v) {
+		this._x = v;
+		return this;
+	}
+	,getY: function() {
+		return this._y;
+	}
+	,y: function(v) {
+		this._y = v;
+		return this;
+	}
 	,__class__: thx.svg.Line
 }
+dhx.AccessTweenText = $hxClasses["dhx.AccessTweenText"] = function(transition,tweens) {
+	dhx.AccessTween.call(this,transition,tweens);
+};
+dhx.AccessTweenText.__name__ = ["dhx","AccessTweenText"];
+dhx.AccessTweenText.__super__ = dhx.AccessTween;
+dhx.AccessTweenText.prototype = $extend(dhx.AccessTween.prototype,{
+	stringNodef: function(f) {
+		return this.stringTweenNodef(this.transitionStringTweenf(f));
+	}
+	,string: function(value) {
+		return this.stringTweenNodef(this.transitionStringTween(value));
+	}
+	,stringTweenNodef: function(tween) {
+		var handler = function(d,i) {
+			var f = tween(d,i,d.textContent);
+			return function(t) {
+				d.textContent = f(t);
+			};
+		};
+		this.tweens.set("text",handler);
+		return this.transition;
+	}
+	,charsNodef: function(f) {
+		return this.stringTweenNodef(this.transitionCharsTweenf(f));
+	}
+	,chars: function(value) {
+		return this.stringTweenNodef(this.transitionCharsTween(value));
+	}
+	,__class__: dhx.AccessTweenText
+});
+dhx.AccessDataTweenText = $hxClasses["dhx.AccessDataTweenText"] = function(transition,tweens) {
+	dhx.AccessTweenText.call(this,transition,tweens);
+};
+dhx.AccessDataTweenText.__name__ = ["dhx","AccessDataTweenText"];
+dhx.AccessDataTweenText.__super__ = dhx.AccessTweenText;
+dhx.AccessDataTweenText.prototype = $extend(dhx.AccessTweenText.prototype,{
+	stringf: function(f) {
+		return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}));
+	}
+	,charsf: function(f) {
+		return this.stringTweenNodef(this.transitionCharsTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}));
+	}
+	,stringTweenf: function(tween) {
+		var handler = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,d.textContent);
+			return function(t) {
+				d.textContent = f(t);
+			};
+		};
+		this.tweens.set("text",handler);
+		return this.transition;
+	}
+	,__class__: dhx.AccessDataTweenText
+});
 rg.svg.panel.Space = $hxClasses["rg.svg.panel.Space"] = function(width,height,domcontainer) {
 	this.panel = new rg.frame.StackItem(rg.frame.FrameLayout.Fill(0,0));
 	rg.svg.panel.Container.call(this,this.panel,rg.frame.Orientation.Vertical);
@@ -17048,6 +22347,19 @@ haxe.Http = $hxClasses["haxe.Http"] = function(url) {
 	this.async = true;
 };
 haxe.Http.__name__ = ["haxe","Http"];
+haxe.Http.requestUrl = function(url) {
+	var h = new haxe.Http(url);
+	h.async = false;
+	var r = null;
+	h.onData = function(d) {
+		r = d;
+	};
+	h.onError = function(e) {
+		throw e;
+	};
+	h.request(false);
+	return r;
+}
 haxe.Http.prototype = {
 	url: null
 	,async: null
@@ -17059,6 +22371,9 @@ haxe.Http.prototype = {
 	}
 	,setParameter: function(param,value) {
 		this.params.set(param,value);
+	}
+	,setPostData: function(data) {
+		this.postData = data;
 	}
 	,request: function(post) {
 		var me = this;
@@ -17127,6 +22442,27 @@ haxe.Http.prototype = {
 	}
 	,__class__: haxe.Http
 }
+math.reduction.Null = $hxClasses["math.reduction.Null"] = function() {
+};
+math.reduction.Null.__name__ = ["math","reduction","Null"];
+math.reduction.Null.__interfaces__ = [math.reduction.ModularReduction];
+math.reduction.Null.prototype = {
+	convert: function(x) {
+		return x;
+	}
+	,revert: function(x) {
+		return x;
+	}
+	,mulTo: function(x,y,r) {
+		x.multiplyTo(y,r);
+	}
+	,sqrTo: function(x,r) {
+		x.squareTo(r);
+	}
+	,reduce: function(x) {
+	}
+	,__class__: math.reduction.Null
+}
 var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -17162,6 +22498,9 @@ Type.getEnum = function(o) {
 	if(o == null) return null;
 	return o.__enum__;
 }
+Type.getSuperClass = function(c) {
+	return c.__super__;
+}
 Type.getClassName = function(c) {
 	var a = c.__name__;
 	return a.join(".");
@@ -17169,6 +22508,16 @@ Type.getClassName = function(c) {
 Type.getEnumName = function(e) {
 	var a = e.__ename__;
 	return a.join(".");
+}
+Type.resolveClass = function(name) {
+	var cl = $hxClasses[name];
+	if(cl == null || cl.__name__ == null) return null;
+	return cl;
+}
+Type.resolveEnum = function(name) {
+	var e = $hxClasses[name];
+	if(e == null || e.__ename__ == null) return null;
+	return e;
 }
 Type.createInstance = function(cl,args) {
 	switch(args.length) {
@@ -17209,12 +22558,30 @@ Type.createEnum = function(e,constr,params) {
 	if(params != null && params.length != 0) throw "Constructor " + constr + " does not need parameters";
 	return f;
 }
+Type.createEnumIndex = function(e,index,params) {
+	var c = e.__constructs__[index];
+	if(c == null) throw index + " is not a valid enum constructor index";
+	return Type.createEnum(e,c,params);
+}
 Type.getInstanceFields = function(c) {
 	var a = [];
 	for(var i in c.prototype) a.push(i);
 	a.remove("__class__");
 	a.remove("__properties__");
 	return a;
+}
+Type.getClassFields = function(c) {
+	var a = Reflect.fields(c);
+	a.remove("__name__");
+	a.remove("__interfaces__");
+	a.remove("__properties__");
+	a.remove("__super__");
+	a.remove("prototype");
+	return a;
+}
+Type.getEnumConstructs = function(e) {
+	var a = e.__constructs__;
+	return a.copy();
 }
 Type["typeof"] = function(v) {
 	switch(typeof(v)) {
@@ -17266,6 +22633,18 @@ Type.enumParameters = function(e) {
 Type.enumIndex = function(e) {
 	return e[1];
 }
+Type.allEnums = function(e) {
+	var all = [];
+	var cst = e.__constructs__;
+	var _g = 0;
+	while(_g < cst.length) {
+		var c = cst[_g];
+		++_g;
+		var v = Reflect.field(e,c);
+		if(!Reflect.isFunction(v)) all.push(v);
+	}
+	return all;
+}
 Type.prototype = {
 	__class__: Type
 }
@@ -17287,19 +22666,27 @@ rg.axis.TickmarkOrdinal.prototype = {
 	pos: null
 	,values: null
 	,scaleDistribution: null
+	,delta: null
 	,getDelta: function() {
 		return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,this.pos,this.values.length);
 	}
+	,major: null
 	,getMajor: function() {
 		return this.major;
 	}
+	,value: null
 	,getValue: function() {
 		return this.values[this.pos];
 	}
+	,label: null
 	,getLabel: function() {
 		return rg.util.RGStrings.humanize(this.values[this.pos]);
 	}
+	,toString: function() {
+		return rg.axis.Tickmarks.string(this);
+	}
 	,__class__: rg.axis.TickmarkOrdinal
+	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.svg.chart.FunnelChart = $hxClasses["rg.svg.chart.FunnelChart"] = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
@@ -17602,7 +22989,8 @@ thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
 thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
 thx.json.JsonEncoder.prototype = {
-	buf: null
+	encodedString: null
+	,buf: null
 	,lvl: null
 	,count: null
 	,start: function() {
@@ -17677,6 +23065,42 @@ thx.svg.Area = $hxClasses["thx.svg.Area"] = function(x,y0,y1,interpolator) {
 	this._interpolator = interpolator;
 };
 thx.svg.Area.__name__ = ["thx","svg","Area"];
+thx.svg.Area.pointArray = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d[0];
+	},function(d,_) {
+		return d[1];
+	},function(d,_) {
+		return d[2];
+	},interpolator);
+}
+thx.svg.Area.pointObject = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d.x;
+	},function(d,_) {
+		return d.y0;
+	},function(d,_) {
+		return d.y1;
+	},interpolator);
+}
+thx.svg.Area.pointArray2 = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d[0];
+	},function(_,_1) {
+		return 0.0;
+	},function(d,_) {
+		return d[1];
+	},interpolator);
+}
+thx.svg.Area.pointObjectXY = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d.x;
+	},function(_,_1) {
+		return 0.0;
+	},function(d,_) {
+		return d.y;
+	},interpolator);
+}
 thx.svg.Area.prototype = {
 	_x: null
 	,_y0: null
@@ -17687,17 +23111,29 @@ thx.svg.Area.prototype = {
 		second.reverse();
 		return data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y1),this._interpolator) + "L" + thx.svg.LineInternals.interpolatePoints(second,this._interpolator) + "Z";
 	}
+	,getInterpolator: function() {
+		return this._interpolator;
+	}
 	,interpolator: function(type) {
 		this._interpolator = type;
 		return this;
+	}
+	,getX: function() {
+		return this._x;
 	}
 	,x: function(v) {
 		this._x = v;
 		return this;
 	}
+	,getY0: function() {
+		return this._y0;
+	}
 	,y0: function(v) {
 		this._y0 = v;
 		return this;
+	}
+	,getY1: function() {
+		return this._y1;
 	}
 	,y1: function(v) {
 		this._y1 = v;
@@ -17779,6 +23215,14 @@ Reflect.field = function(o,field) {
 Reflect.setField = function(o,field,value) {
 	o[field] = value;
 }
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
+}
+Reflect.setProperty = function(o,field,value) {
+	var tmp;
+	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
+}
 Reflect.callMethod = function(o,func,args) {
 	return func.apply(o,args);
 }
@@ -17803,6 +23247,9 @@ Reflect.fields = function(o) {
 Reflect.isFunction = function(f) {
 	return typeof(f) == "function" && f.__name__ == null;
 }
+Reflect.compare = function(a,b) {
+	return a == b?0:a > b?1:-1;
+}
 Reflect.compareMethods = function(f1,f2) {
 	if(f1 == f2) return true;
 	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
@@ -17818,8 +23265,116 @@ Reflect.deleteField = function(o,f) {
 	delete(o[f]);
 	return true;
 }
+Reflect.copy = function(o) {
+	var o2 = { };
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var f = _g1[_g];
+		++_g;
+		o2[f] = Reflect.field(o,f);
+	}
+	return o2;
+}
+Reflect.makeVarArgs = function(f) {
+	return function() {
+		var a = new Array();
+		var _g1 = 0, _g = arguments.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			a.push(arguments[i]);
+		}
+		return f(a);
+	};
+}
 Reflect.prototype = {
 	__class__: Reflect
+}
+var Hashes = $hxClasses["Hashes"] = function() { }
+Hashes.__name__ = ["Hashes"];
+Hashes.entries = function(h) {
+	var arr = [];
+	var $it0 = h.keys();
+	while( $it0.hasNext() ) {
+		var key = $it0.next();
+		arr.push({ key : key, value : h.get(key)});
+	}
+	return arr;
+}
+Hashes.toDynamic = function(hash) {
+	var o = { };
+	var $it0 = hash.keys();
+	while( $it0.hasNext() ) {
+		var key = $it0.next();
+		o[key] = hash.get(key);
+	}
+	return o;
+}
+Hashes.importObject = function(hash,ob) {
+	return DynamicsT.copyToHash(ob,hash);
+}
+Hashes.copyTo = function(from,to) {
+	var $it0 = from.keys();
+	while( $it0.hasNext() ) {
+		var k = $it0.next();
+		to.set(k,from.get(k));
+	}
+	return to;
+}
+Hashes.clone = function(src) {
+	var h = new Hash();
+	Hashes.copyTo(src,h);
+	return h;
+}
+Hashes.arrayOfKeys = function(hash) {
+	return Iterators.array(hash.keys());
+}
+Hashes.setOfKeys = function(hash) {
+	var set = new thx.collection.Set();
+	var $it0 = hash.keys();
+	while( $it0.hasNext() ) {
+		var k = $it0.next();
+		set.add(k);
+	}
+	return set;
+}
+Hashes.empty = function(hash) {
+	return Hashes.count(hash) == 0;
+}
+Hashes.count = function(hash) {
+	var i = 0;
+	var $it0 = hash.iterator();
+	while( $it0.hasNext() ) {
+		var _ = $it0.next();
+		i++;
+	}
+	return i;
+}
+Hashes.mergef = function(hash,new_hash,f) {
+	var $it0 = new_hash.keys();
+	while( $it0.hasNext() ) {
+		var k = $it0.next();
+		var new_val = new_hash.get(k);
+		if(hash.exists(k)) {
+			var old_val = hash.get(k);
+			hash.set(k,f(k,old_val,new_val));
+		} else hash.set(k,new_val);
+	}
+}
+Hashes.merge = function(hash,new_hash) {
+	Hashes.mergef(hash,new_hash,function(key,old_v,new_v) {
+		return new_v;
+	});
+}
+Hashes.clear = function(hash) {
+	var _hash = hash;
+	_hash.h = {}
+	if(_hash.h.__proto__ != null) {
+		_hash.h.__proto__ = null;
+		delete(_hash.h.__proto__);
+	}
+}
+Hashes.prototype = {
+	__class__: Hashes
 }
 rg.graph.EdgeSplitter = $hxClasses["rg.graph.EdgeSplitter"] = function() {
 };
@@ -17916,6 +23471,533 @@ rg.util.Decrypt.decrypt = function(s) {
 }
 rg.util.Decrypt.prototype = {
 	__class__: rg.util.Decrypt
+}
+if(!math._IEEE754) math._IEEE754 = {}
+math._IEEE754.Status = $hxClasses["math._IEEE754.Status"] = { __ename__ : ["math","_IEEE754","Status"], __constructs__ : ["Normal","Overflow","Underflow","Denormalized","Quiet","Signalling"] }
+math._IEEE754.Status.Normal = ["Normal",0];
+math._IEEE754.Status.Normal.toString = $estr;
+math._IEEE754.Status.Normal.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Overflow = ["Overflow",1];
+math._IEEE754.Status.Overflow.toString = $estr;
+math._IEEE754.Status.Overflow.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Underflow = ["Underflow",2];
+math._IEEE754.Status.Underflow.toString = $estr;
+math._IEEE754.Status.Underflow.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Denormalized = ["Denormalized",3];
+math._IEEE754.Status.Denormalized.toString = $estr;
+math._IEEE754.Status.Denormalized.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Quiet = ["Quiet",4];
+math._IEEE754.Status.Quiet.toString = $estr;
+math._IEEE754.Status.Quiet.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Signalling = ["Signalling",5];
+math._IEEE754.Status.Signalling.toString = $estr;
+math._IEEE754.Status.Signalling.__enum__ = math._IEEE754.Status;
+math.IEEE754 = $hxClasses["math.IEEE754"] = function(size) {
+	this.Size = size;
+	this.BinaryPower = 0;
+	this.StatCond = math._IEEE754.Status.Normal;
+	this.StatCond64 = math._IEEE754.Status.Normal;
+	if(this.Size == 32) {
+		this.ExpBias = 127;
+		this.MaxExp = 127;
+		this.MinExp = -126;
+		this.MinUnnormExp = -149;
+	} else {
+		this.Size = 64;
+		this.ExpBias = 1023;
+		this.MaxExp = 1023;
+		this.MinExp = -1022;
+		this.MinUnnormExp = -1074;
+	}
+};
+math.IEEE754.__name__ = ["math","IEEE754"];
+math.IEEE754.floatToBytes = function(v,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	var ieee = new math.IEEE754(32);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	return ieee.convert(v);
+}
+math.IEEE754.doubleToBytes = function(v,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	var ieee = new math.IEEE754(64);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	return ieee.convert(v);
+}
+math.IEEE754.bytesToFloat = function(b,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	if(b.length != 4 && b.length != 8) throw "Bytes must be 4 or 8 bytes long";
+	var size = b.length == 4?32:64;
+	var ieee = new math.IEEE754(size);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	if(!bigEndian) return ieee.bytesToBin(ieee.littleToBigEndian(b)); else return ieee.bytesToBin(b);
+}
+math.IEEE754.splitFloat = function(v) {
+	var rv = { integral : 0.0, decimal : 0.0};
+	var val = Std.string(v).toLowerCase();
+	var p = val.indexOf("e");
+	var exp = 0;
+	if(p >= 0) exp = Std.parseInt(val.substr(p + 1)); else {
+		p = val.indexOf(".");
+		if(p >= 0) {
+			rv.integral = Std.parseFloat(val.substr(0,p));
+			rv.decimal = Std.parseFloat("0." + val.substr(p + 1));
+		} else rv.integral = Std.parseFloat(val);
+		return rv;
+	}
+	var fp = val.substr(0,p);
+	p = fp.indexOf(".");
+	fp = StringTools.replace(fp,".","");
+	var dp = "0.";
+	if(exp > 0) {
+		p += exp;
+		if(p == fp.length) rv.integral = Std.parseFloat(fp); else if(p > fp.length) rv.integral = v; else {
+			rv.integral = Std.parseFloat(fp.substr(0,p));
+			rv.decimal = Std.parseFloat("0." + fp.substr(p + 1));
+		}
+	} else {
+		exp += p;
+		if(exp == 0) rv.decimal = Std.parseFloat("0." + fp); else if(exp < 0) rv.decimal = Std.parseFloat("0." + fp + "e" + Std.string(exp)); else {
+			rv.integral = Std.parseFloat(fp.substr(0,exp));
+			rv.decimal = Std.parseFloat("0." + fp.substr(exp));
+		}
+	}
+	return rv;
+}
+math.IEEE754.prototype = {
+	bigEndian: null
+	,input: null
+	,rounding: null
+	,Size: null
+	,BinaryPower: null
+	,BinVal: null
+	,ExpBias: null
+	,MaxExp: null
+	,MinExp: null
+	,MinUnnormExp: null
+	,Result: null
+	,StatCond: null
+	,StatCond64: null
+	,setEndian: function(b) {
+		this.bigEndian = b;
+		return b;
+	}
+	,initBuffers: function() {
+		this.BinVal = new Array();
+		var _g = 0;
+		while(_g < 2102) {
+			var i = _g++;
+			this.BinVal[i] = 0;
+		}
+		this.Result = new Array();
+		var _g1 = 0, _g = this.Size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.Result[i] = 0;
+		}
+	}
+	,littleToBigEndian: function(inbuf) {
+		var c = this.Size == 32?4:8;
+		var nb = Bytes.alloc(c);
+		var idx = c - 1;
+		var _g = 0;
+		while(_g < c) {
+			var i = _g++;
+			nb.b[idx] = inbuf.b[i] & 255;
+			idx--;
+		}
+		return nb;
+	}
+	,bufToEndian: function(inbuf) {
+		var rv = inbuf;
+		if(!this.bigEndian) rv = this.littleToBigEndian(rv);
+		return rv;
+	}
+	,infinity: function(negative) {
+		if(negative) {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(255);
+				bb.b.push(128);
+			} else {
+				bb.b.push(255);
+				bb.b.push(240);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		} else {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(127);
+				bb.b.push(128);
+			} else {
+				bb.b.push(127);
+				bb.b.push(240);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		}
+	}
+	,convert: function(v) {
+		this.input = v;
+		this.StatCond = math._IEEE754.Status.Normal;
+		this.StatCond64 = math._IEEE754.Status.Normal;
+		if(this.input == Math.POSITIVE_INFINITY) return this.infinity(false); else if(this.input == Math.NEGATIVE_INFINITY) return this.infinity(true); else if(Math.isNaN(this.input)) {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(255);
+				bb.b.push(192);
+			} else {
+				bb.b.push(255);
+				bb.b.push(248);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		}
+		this.BinaryPower = 0;
+		var binexpnt = 0;
+		this.initBuffers();
+		this.Result[0] = 0;
+		if(this.input < 0) this.Result[0] = 1;
+		var value = Math.abs(this.input);
+		var vp = math.IEEE754.splitFloat(value);
+		var intpart = vp.integral;
+		var decpart = vp.decimal;
+		var index1 = 1024;
+		while(intpart / 2.0 != 0.0 && index1 >= 0) {
+			var fip = intpart;
+			while(fip > 2147483647.0) fip /= 10.0;
+			var mod = (fip | 0) % 2;
+			this.BinVal[index1] = mod;
+			if(mod == 0) intpart = intpart / 2.0; else intpart = intpart / 2.0 - 0.5;
+			intpart = math.IEEE754.splitFloat(intpart * 10.0).integral / 10.0;
+			index1--;
+		}
+		index1 = 1025;
+		while(decpart > 0.0 && index1 < 2102) {
+			decpart *= 2;
+			if(decpart >= 1.0) {
+				this.BinVal[index1] = 1;
+				decpart--;
+				index1++;
+			} else {
+				this.BinVal[index1] = 0;
+				index1++;
+			}
+		}
+		index1 = 0;
+		while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+		this.BinaryPower = 1024 - index1;
+		if(this.BinaryPower < this.MinExp) this.BinaryPower = this.MinExp - 1;
+		return this.Convert2Bin();
+	}
+	,Convert2Bin: function() {
+		var power = this.BinaryPower;
+		var lastbit = 0;
+		var rounded = 0;
+		var binexpnt = 0;
+		var binexpnt2 = 0;
+		var index1 = 0;
+		var index2 = this.Size == 32?9:12;
+		var index3 = 0;
+		if(this.rounding && this.StatCond64 == math._IEEE754.Status.Normal) {
+			while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+			binexpnt = 1024 - index1;
+			if(binexpnt >= this.MinExp) index1++; else {
+				binexpnt = this.MinExp - 1;
+				index1 = 1024 - binexpnt;
+			}
+			lastbit = this.Size - 1 - index2 + index1;
+			if(this.BinVal[lastbit + 1] == 1) {
+				rounded = 0;
+				if(this.BinVal[lastbit] == 1) rounded = 1; else {
+					index3 = lastbit + 2;
+					while(rounded == 0 && index3 < 2102) {
+						rounded = this.BinVal[index3];
+						index3++;
+					}
+				}
+				index3 = lastbit;
+				while(rounded == 1 && index3 >= 0) {
+					if(this.BinVal[index3] == 0) {
+						this.BinVal[index3] = 1;
+						rounded = 0;
+					} else this.BinVal[index3] = 0;
+					index3--;
+				}
+			}
+			index1 = index1 - 2;
+			if(index1 < 0) index1 = 0;
+		}
+		while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+		binexpnt2 = 1024 - index1;
+		if(this.StatCond64 == math._IEEE754.Status.Normal) {
+			binexpnt = binexpnt2;
+			if(binexpnt >= this.MinExp && binexpnt <= this.MaxExp) index1++; else if(binexpnt < this.MinExp) {
+				if(binexpnt2 == -1078) this.StatCond = math._IEEE754.Status.Normal; else if(binexpnt2 < this.MinUnnormExp) this.StatCond = math._IEEE754.Status.Underflow; else this.StatCond = math._IEEE754.Status.Denormalized;
+				binexpnt = this.MinExp - 1;
+				index1 = 1024 - binexpnt;
+			}
+		} else {
+			binexpnt = power;
+			index1 = 1024 - binexpnt;
+			if(binexpnt > this.MaxExp) binexpnt = this.MaxExp + 1; else if(binexpnt < this.MinExp) binexpnt = this.MinExp - 1;
+		}
+		while(index2 < this.Size && index1 < 2102) {
+			this.Result[index2] = this.BinVal[index1];
+			index2++;
+			index1++;
+		}
+		if(binexpnt > this.MaxExp || this.StatCond64 != math._IEEE754.Status.Normal) {
+			if(this.StatCond64 == math._IEEE754.Status.Normal) return this.infinity(this.Result[0] == 1); else this.StatCond = this.StatCond64;
+		}
+		if(this.Size == 32) index1 = 8; else index1 = 11;
+		this.BinaryPower = binexpnt;
+		binexpnt += this.ExpBias;
+		var fbxp = binexpnt * 1.0;
+		while(fbxp / 2.0 != 0.0) {
+			var mod = (fbxp | 0) % 2;
+			this.Result[index1] = mod;
+			if(mod == 0) fbxp = fbxp / 2.0; else fbxp = fbxp / 2.0 - 0.5;
+			index1--;
+			fbxp = math.IEEE754.splitFloat(fbxp * 10.0).integral / 10.0;
+		}
+		binexpnt = fbxp | 0;
+		return this.toBytes();
+	}
+	,toBytes: function() {
+		var c = this.Size == 32?4:8;
+		var out = Bytes.alloc(c);
+		var index = 0;
+		var pos = 0;
+		while(index < this.Size) {
+			var temp = 0;
+			var v = 0;
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp += (Math.pow(2,3 - i) | 0) * this.Result[index + i];
+			}
+			v = temp << 4;
+			temp = 0;
+			index += 4;
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp += (Math.pow(2,3 - i) | 0) * this.Result[index + i];
+			}
+			v = v | temp;
+			out.b[pos++] = v & 255;
+			index += 4;
+		}
+		if(!this.bigEndian) {
+			var out2 = Bytes.alloc(c);
+			var idx = c - 1;
+			var _g = 0;
+			while(_g < c) {
+				var i = _g++;
+				out2.b[idx] = out.b[i] & 255;
+				idx--;
+			}
+			out = out2;
+		}
+		return out;
+	}
+	,bytesToBin: function(b) {
+		this.initBuffers();
+		var index1 = 0;
+		var p = 0;
+		var me = this;
+		var store = function(temp,idx) {
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp *= 2.0;
+				if(temp >= 1.0) {
+					me.Result[idx + i] = 1;
+					temp -= 1;
+				} else me.Result[idx + i] = 0;
+			}
+		};
+		while(index1 < this.Size) {
+			var nibble = (b.b[p] & 240) >> 4;
+			store(nibble / 16,index1);
+			index1 += 4;
+			var nibble1 = b.b[p] & 15;
+			store(nibble1 / 16,index1);
+			index1 += 4;
+			p++;
+		}
+		var binexpnt = 0;
+		var index2 = this.Size == 32?9:12;
+		var _g = 1;
+		while(_g < index2) {
+			var i = _g++;
+			binexpnt += this.Result[i] * Math.pow(2,index2 - i - 1) | 0;
+		}
+		binexpnt -= this.ExpBias;
+		this.BinaryPower = binexpnt;
+		index1 = 1024 - binexpnt;
+		if(binexpnt >= this.MinExp && binexpnt <= this.MaxExp) {
+			this.BinVal[index1] = 1;
+			index1++;
+		}
+		var index3 = index1;
+		var zeroFirst = false;
+		if(this.Result[index2] == 0) zeroFirst = true;
+		this.BinVal[index1] = this.Result[index2];
+		index2++;
+		index1++;
+		var zeroRest = true;
+		while(index2 < this.Size && index1 < 2102) {
+			if(this.Result[index2] == 1) zeroRest = false;
+			this.BinVal[index1] = this.Result[index2];
+			index2++;
+			index1++;
+		}
+		while(index3 < 2102 && this.BinVal[index3] != 1) index3++;
+		var binexpnt2 = 1024 - index3;
+		if(binexpnt < this.MinExp) {
+			if(binexpnt2 == -1078) this.StatCond = math._IEEE754.Status.Normal; else if(binexpnt2 < this.MinUnnormExp) this.StatCond = math._IEEE754.Status.Underflow; else this.StatCond = math._IEEE754.Status.Denormalized;
+		} else if(binexpnt > this.MaxExp) {
+			if(zeroFirst && zeroRest) {
+				this.StatCond = math._IEEE754.Status.Overflow;
+				if(this.Result[0] == 1) return Math.NEGATIVE_INFINITY; else return Math.POSITIVE_INFINITY;
+			} else if(!zeroFirst && zeroRest && this.Result[0] == 1) this.StatCond = math._IEEE754.Status.Quiet; else if(!zeroFirst) this.StatCond = math._IEEE754.Status.Quiet; else this.StatCond = math._IEEE754.Status.Signalling;
+			return Math.NaN;
+		}
+		return this.Convert2Dec();
+	}
+	,Convert2Dec: function() {
+		var LN10 = Math.log(10);
+		var s = this.Size == 32?9:12;
+		var dp = 0;
+		var val = 0.0;
+		if(this.BinaryPower < this.MinExp || this.BinaryPower > this.MaxExp) {
+			dp = 0;
+			val = 0;
+		} else {
+			dp = -1;
+			val = 1;
+		}
+		var _g1 = s, _g = this.Size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			val += (this.Result[i] | 0) * Math.pow(2,dp + s - i);
+		}
+		var decValue = val * Math.pow(2,this.BinaryPower);
+		if(this.Size == 32) {
+			s = 8;
+			if(val > 0) {
+				var power = Math.floor(Math.log(decValue) / LN10);
+				decValue += 0.5 * Math.pow(10,power - s + 1);
+				val += 5E-8;
+			}
+		} else s = 17;
+		if(this.Result[0] == 1) decValue = -decValue;
+		decValue = Std.parseFloat(this.numStrClipOff(Std.string(decValue),s));
+		return decValue;
+	}
+	,numStrClipOff: function(input,precision) {
+		var result = "";
+		var numerals = "0123456789";
+		var tempstr = input.toUpperCase();
+		var expstr = "";
+		var signstr = "";
+		var stop = 0;
+		var expnum = 0;
+		var locE = tempstr.indexOf("E");
+		if(locE != -1) {
+			stop = locE;
+			expstr = input.substr(locE + 1,input.length);
+			expnum = Std.parseInt(expstr);
+		} else {
+			stop = input.length;
+			expnum = 0;
+		}
+		if(input.indexOf(".") == -1) {
+			tempstr = input.substr(0,stop);
+			tempstr += ".";
+			if(input.length != stop) tempstr += input.substr(locE,input.length);
+			input = tempstr;
+			locE = locE + 1;
+			stop = stop + 1;
+		}
+		var locDP = input.indexOf(".");
+		var start = 0;
+		if(input.charAt(start) == "-") {
+			start++;
+			signstr = "-";
+		} else signstr = "";
+		var MSD = start;
+		var MSDfound = false;
+		while(MSD < stop && !MSDfound) {
+			var index = 1;
+			while(index < numerals.length) {
+				if(input.charAt(MSD) == numerals.charAt(index)) {
+					MSDfound = true;
+					break;
+				}
+				index++;
+			}
+			MSD++;
+		}
+		MSD--;
+		var expdelta = 0;
+		if(MSDfound) {
+			expdelta = locDP - MSD;
+			if(expdelta > 0) expdelta = expdelta - 1;
+			expnum = expnum + expdelta;
+			expstr = "e" + expnum;
+		} else MSD = start;
+		var digits = stop - MSD;
+		tempstr = input.substr(MSD,stop);
+		if(tempstr.indexOf(".") != -1) digits = digits - 1;
+		var number = digits;
+		if(precision < digits) number = precision;
+		tempstr = input.substr(MSD,MSD + number + 1);
+		if(MSD != start || tempstr.indexOf(".") == -1) {
+			result = signstr;
+			result += input.substr(MSD,MSD + 1);
+			result += ".";
+			result += input.substr(MSD + 1,MSD + number);
+			while(digits < precision) {
+				result += "0";
+				digits += 1;
+			}
+			result += expstr;
+		} else {
+			result = input.substr(0,start + number + 1);
+			while(digits < precision) {
+				result += "0";
+				digits += 1;
+			}
+			if(input.length != stop) result += input.substr(locE,input.length);
+		}
+		return result;
+	}
+	,__class__: math.IEEE754
+	,__properties__: {set_bigEndian:"setEndian"}
 }
 thx.math.Random = $hxClasses["thx.math.Random"] = function(seed) {
 	if(seed == null) seed = 1;
@@ -18033,10 +24115,23 @@ rg.graph.GraphNodes.prototype = $extend(rg.graph.GraphCollection.prototype,{
 		this.collectionCreate(n);
 		return n;
 	}
+	,remove: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "rg.graph.GraphNodes", methodName : "remove"});
+		this._remove(node);
+	}
 	,_remove: function(node) {
 		this.graph.edges.unlink(node);
 		this.collectionRemove(node);
 		node.destroy();
+	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).copy();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
 	}
 	,toString: function() {
 		return "GraphNodes (" + IntHashes.count(this.collection) + "): " + rg.graph.GraphCollection.prototype.toString.call(this);
@@ -18056,7 +24151,6 @@ rg.layout.Anchor.Left.__enum__ = rg.layout.Anchor;
 rg.layout.Anchor.Right = ["Right",3];
 rg.layout.Anchor.Right.toString = $estr;
 rg.layout.Anchor.Right.__enum__ = rg.layout.Anchor;
-if(!thx.collection) thx.collection = {}
 thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
 	this.length = 0;
 	this.__keys = [];
@@ -18064,15 +24158,72 @@ thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
 };
 thx.collection.HashList.__name__ = ["thx","collection","HashList"];
 thx.collection.HashList.prototype = {
-	set: function(key,value) {
+	length: null
+	,set: function(key,value) {
 		if(!this.__hash.exists(key)) {
 			this.__keys.push(key);
 			this.length++;
 		}
 		this.__hash.set(key,value);
 	}
+	,setAt: function(index,key,value) {
+		this.remove(key);
+		this.__keys.insert(index,key);
+		this.__hash.set(key,value);
+		this.length++;
+	}
 	,get: function(key) {
 		return this.__hash.get(key);
+	}
+	,getAt: function(index) {
+		return this.__hash.get(this.__keys[index]);
+	}
+	,indexOf: function(key) {
+		if(!this.__hash.exists(key)) return -1;
+		var _g1 = 0, _g = this.__keys.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.__keys[i] == key) return i;
+		}
+		return (function($this) {
+			var $r;
+			throw "this should never happen";
+			return $r;
+		}(this));
+	}
+	,exists: function(key) {
+		return this.__hash.exists(key);
+	}
+	,remove: function(key) {
+		var item = this.__hash.get(key);
+		if(item == null) return null;
+		this.__hash.remove(key);
+		this.__keys.remove(key);
+		this.length--;
+		return item;
+	}
+	,removeAt: function(index) {
+		var key = this.__keys[index];
+		if(key == null) return null;
+		var item = this.__hash.get(key);
+		this.__hash.remove(key);
+		this.__keys.remove(key);
+		this.length--;
+		return item;
+	}
+	,keyAt: function(index) {
+		return this.__keys[index];
+	}
+	,keys: function() {
+		return this.__keys.iterator();
+	}
+	,iterator: function() {
+		return this.array().iterator();
+	}
+	,clear: function() {
+		this.__hash = new Hash();
+		this.__keys = [];
+		this.length = 0;
 	}
 	,array: function() {
 		var values = [];
@@ -18083,6 +24234,20 @@ thx.collection.HashList.prototype = {
 			values.push(this.__hash.get(k));
 		}
 		return values;
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b[s.b.length] = "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b[s.b.length] = i == null?"null":i;
+			s.b[s.b.length] = " => ";
+			s.add(Std.string(this.get(i)));
+			if(it.hasNext()) s.b[s.b.length] = ", ";
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
 	}
 	,__keys: null
 	,__hash: null
@@ -18114,7 +24279,8 @@ rg.axis.TickmarkTime = $hxClasses["rg.axis.TickmarkTime"] = function(value,value
 rg.axis.TickmarkTime.__name__ = ["rg","axis","TickmarkTime"];
 rg.axis.TickmarkTime.__super__ = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
-	getLabel: function() {
+	periodicity: null
+	,getLabel: function() {
 		return rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
 	}
 	,__class__: rg.axis.TickmarkTime
@@ -18350,6 +24516,12 @@ StringBuf.prototype = {
 	add: function(x) {
 		this.b[this.b.length] = x == null?"null":x;
 	}
+	,addSub: function(s,pos,len) {
+		this.b[this.b.length] = s.substr(pos,len);
+	}
+	,addChar: function(c) {
+		this.b[this.b.length] = String.fromCharCode(c);
+	}
 	,toString: function() {
 		return this.b.join("");
 	}
@@ -18359,6 +24531,29 @@ StringBuf.prototype = {
 var BytesUtil = $hxClasses["BytesUtil"] = function() { }
 BytesUtil.__name__ = ["BytesUtil"];
 BytesUtil.EMPTY = null;
+BytesUtil.byteArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var i = a[_g];
+		++_g;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.byteToHex = function(b) {
+	b = b & 255;
+	return StringTools.hex(b,2).toLowerCase();
+}
+BytesUtil.byte32ToHex = function(b) {
+	var bs = b & 255 & -1;
+	return StringTools.hex(bs,2).toLowerCase();
+}
+BytesUtil.bytesToInt32LE = function(s) {
+	return I32.unpackLE(BytesUtil.nullPad(s,4));
+}
 BytesUtil.cleanHexFormat = function(hex) {
 	var e = StringTools.replace(hex,":","");
 	e = e.split("|").join("");
@@ -18368,8 +24563,94 @@ BytesUtil.cleanHexFormat = function(hex) {
 	if((e.length & 1) == 1) e = "0" + e;
 	return e.toLowerCase();
 }
+BytesUtil.encodeToBase = function(buf,base) {
+	var bc = new haxe.BaseCode(Bytes.ofString(base));
+	return bc.encodeBytes(buf);
+}
+BytesUtil.eq = function(a,b) {
+	if(a.length != b.length) return false;
+	var l = a.length;
+	var _g = 0;
+	while(_g < l) {
+		var i = _g++;
+		if(a.b[i] != b.b[i]) return false;
+	}
+	return true;
+}
 BytesUtil.hexDump = function(b,separator) {
 	return BytesUtil.toHex(b,separator);
+}
+BytesUtil.int32ToBytesLE = function(l) {
+	return I32.packLE(l);
+}
+BytesUtil.int32ArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var v = a[_g];
+		++_g;
+		var i = v & -1;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.intArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var i = a[_g];
+		++_g;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.nullBytes = function(len) {
+	var sb = Bytes.alloc(len);
+	var _g = 0;
+	while(_g < len) {
+		var i = _g++;
+		sb.b[i] = 0;
+	}
+	return sb;
+}
+BytesUtil.nullPad = function(s,chunkLen) {
+	var r = chunkLen - s.length % chunkLen;
+	if(r == chunkLen) return s;
+	var sb = new BytesBuffer();
+	sb.add(s);
+	var _g = 0;
+	while(_g < r) {
+		var x = _g++;
+		sb.b.push(0);
+	}
+	return sb.getBytes();
+}
+BytesUtil.ofIntArray = function(a) {
+	var b = new BytesBuffer();
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		b.b.push(BytesUtil.cleanValue(a[i]));
+	}
+	return b.getBytes();
+}
+BytesUtil.ofHex = function(hs) {
+	var s = BytesUtil.cleanHexFormat(hs);
+	var b = new BytesBuffer();
+	var l = s.length / 2 | 0;
+	var _g = 0;
+	while(_g < l) {
+		var x = _g++;
+		var ch = s.substr(x * 2,2);
+		var v = Std.parseInt("0x" + ch);
+		if(v > 255) throw "error";
+		b.b.push(v);
+	}
+	return b.getBytes();
 }
 BytesUtil.toHex = function(b,separator) {
 	if(separator == null) separator = " ";
@@ -18383,6 +24664,28 @@ BytesUtil.toHex = function(b,separator) {
 		sb.add(StringTools.hex(b.b[i],2).toLowerCase());
 	}
 	return StringTools.rtrim(sb.b.join(""));
+}
+BytesUtil.unNullPad = function(s) {
+	var p = s.length - 1;
+	while(p-- > 0) if(s.b[p] != 0) break;
+	if(p == 0 && s.b[0] == 0) {
+		var bb = new BytesBuffer();
+		return bb.getBytes();
+	}
+	p++;
+	var b = Bytes.alloc(p);
+	b.blit(0,s,0,p);
+	return b;
+}
+BytesUtil.cleanValue = function(v) {
+	var neg = false;
+	if(v < 0) {
+		if(v < -128) throw "not a byte";
+		neg = true;
+		v = v & 255 | 128;
+	}
+	if(v > 255) throw "not a byte";
+	return v;
 }
 BytesUtil.prototype = {
 	__class__: BytesUtil
@@ -18423,8 +24726,36 @@ Bytes.ofString = function(s) {
 	}
 	return new Bytes(a.length,a);
 }
+Bytes.ofStringData = function(s) {
+	var a = new Array();
+	var _g1 = 0, _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		a.push(s.charCodeAt(i));
+	}
+	return new Bytes(a.length,a);
+}
+Bytes.ofData = function(b) {
+	return new Bytes(b.length,b);
+}
+Bytes.ofHex = function(hs) {
+	var s = StringTools.stripWhite(hs);
+	s = StringTools.replaceRecurse(s,":","").toLowerCase();
+	if(StringTools.startsWith(s,"0x")) s = s.substr(2);
+	if((s.length & 1) == 1) s = "0" + s;
+	var b = new BytesBuffer();
+	var l = s.length / 2 | 0;
+	var _g = 0;
+	while(_g < l) {
+		var x = _g++;
+		var ch = s.substr(x * 2,2);
+		b.b.push(Std.parseInt("0x" + ch));
+	}
+	return b.getBytes();
+}
 Bytes.prototype = {
-	b: null
+	length: null
+	,b: null
 	,get: function(pos) {
 		return this.b[pos];
 	}
@@ -18457,6 +24788,17 @@ Bytes.prototype = {
 		if(pos < 0 || len < 0) throw new chx.lang.OutsideBoundsException();
 		return new Bytes(len,this.b.slice(pos,pos + len));
 	}
+	,compare: function(other) {
+		var b1 = this.b;
+		var b2 = other.b;
+		var len = this.length < other.length?this.length:other.length;
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			if(b1[i] != b2[i]) return b1[i] - b2[i];
+		}
+		return this.length - other.length;
+	}
 	,readString: function(pos,len) {
 		if(pos < 0 || len < 0 || pos + len > this.length) throw new chx.lang.OutsideBoundsException();
 		var s = "";
@@ -18486,6 +24828,24 @@ Bytes.prototype = {
 	,getData: function() {
 		return this.b;
 	}
+	,toHex: function(sep,pos,len) {
+		if(pos == null) pos = 0;
+		if(sep == null) sep = "";
+		if(len == null) len = this.length - pos;
+		var data = this.sub(pos,len);
+		var sb = new StringBuf();
+		var l = data.length;
+		var first = true;
+		var _g = 0;
+		while(_g < l) {
+			var i = _g++;
+			if(first) first = false; else sb.b[sb.b.length] = sep == null?"null":sep;
+			sb.add(StringTools.hex(this.b[i],2).toLowerCase());
+		}
+		var s = StringTools.rtrim(sb.b.join(""));
+		if(sep == "" && s.length % 2 != 0) s = "0" + s;
+		return s;
+	}
 	,__class__: Bytes
 }
 rg.svg.layer.RulesOrtho = $hxClasses["rg.svg.layer.RulesOrtho"] = function(panel,orientation) {
@@ -18499,7 +24859,8 @@ rg.svg.layer.RulesOrtho = $hxClasses["rg.svg.layer.RulesOrtho"] = function(panel
 rg.svg.layer.RulesOrtho.__name__ = ["rg","svg","layer","RulesOrtho"];
 rg.svg.layer.RulesOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
-	displayMinor: null
+	orientation: null
+	,displayMinor: null
 	,displayMajor: null
 	,displayAnchorLine: null
 	,translate: null
@@ -18507,6 +24868,8 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,y1: null
 	,x2: null
 	,y2: null
+	,x: null
+	,y: null
 	,axis: null
 	,min: null
 	,max: null
@@ -18636,6 +24999,28 @@ Iterators.count = function(it) {
 	}
 	return i;
 }
+Iterators.indexOf = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return c; else c++;
+	}
+	return -1;
+}
+Iterators.contains = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return true;
+	}
+	return false;
+}
 Iterators.array = function(it) {
 	var result = [];
 	while( it.hasNext() ) {
@@ -18643,6 +25028,10 @@ Iterators.array = function(it) {
 		result.push(v);
 	}
 	return result;
+}
+Iterators.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it).join(glue);
 }
 Iterators.map = function(it,f) {
 	var result = [], i = 0;
@@ -18667,12 +25056,43 @@ Iterators.filter = function(it,f) {
 	}
 	return result;
 }
+Iterators.reduce = function(it,f,initialValue) {
+	var accumulator = initialValue, i = 0;
+	while( it.hasNext() ) {
+		var o = it.next();
+		accumulator = f(accumulator,o,i++);
+	}
+	return accumulator;
+}
+Iterators.random = function(it) {
+	return Arrays.random(Iterators.array(it));
+}
+Iterators.any = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(f(v)) return true;
+	}
+	return false;
+}
 Iterators.all = function(it,f) {
 	while( it.hasNext() ) {
 		var v = it.next();
 		if(!f(v)) return false;
 	}
 	return true;
+}
+Iterators.last = function(it) {
+	var o = null;
+	while(it.hasNext()) o = it.next();
+	return o;
+}
+Iterators.lastf = function(it,f) {
+	var rev = Iterators.array(it);
+	rev.reverse();
+	return Arrays.lastf(rev,f);
+}
+Iterators.first = function(it) {
+	return it.next();
 }
 Iterators.firstf = function(it,f) {
 	while( it.hasNext() ) {
@@ -18749,7 +25169,11 @@ thx.geo.Azimuthal = $hxClasses["thx.geo.Azimuthal"] = function() {
 thx.geo.Azimuthal.__name__ = ["thx","geo","Azimuthal"];
 thx.geo.Azimuthal.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Azimuthal.prototype = {
-	x0: null
+	mode: null
+	,origin: null
+	,scale: null
+	,translate: null
+	,x0: null
 	,y0: null
 	,cy0: null
 	,sy0: null
@@ -18814,6 +25238,7 @@ thx.geo.Azimuthal.prototype = {
 		return this.mode;
 	}
 	,__class__: thx.geo.Azimuthal
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale",set_origin:"setOrigin",get_origin:"getOrigin",set_mode:"setMode",get_mode:"getMode"}
 }
 thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
 thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
@@ -18865,6 +25290,7 @@ rg.html.chart.Leadeboard.prototype = {
 	,sortDataPoint: null
 	,displayGradient: null
 	,useMax: null
+	,ready: null
 	,displayBar: null
 	,container: null
 	,list: null
@@ -18955,8 +25381,21 @@ rg.html.chart.Leadeboard.prototype = {
 }
 var Objects = $hxClasses["Objects"] = function() { }
 Objects.__name__ = ["Objects"];
+Objects.field = function(o,fieldname,alt) {
+	return Reflect.hasField(o,fieldname)?Reflect.field(o,fieldname):alt;
+}
 Objects.keys = function(o) {
 	return Reflect.fields(o);
+}
+Objects.values = function(o) {
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		arr.push(Reflect.field(o,key));
+	}
+	return arr;
 }
 Objects.entries = function(o) {
 	var arr = [];
@@ -18967,6 +25406,72 @@ Objects.entries = function(o) {
 		arr.push({ key : key, value : Reflect.field(o,key)});
 	}
 	return arr;
+}
+Objects.each = function(o,handler) {
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		handler(key,Reflect.field(o,key));
+	}
+}
+Objects.map = function(o,handler) {
+	var results = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		results.push(handler(key,Reflect.field(o,key)));
+	}
+	return results;
+}
+Objects["with"] = function(ob,f) {
+	f(ob);
+	return ob;
+}
+Objects.toHash = function(ob) {
+	var hash = new Hash();
+	return Objects.copyToHash(ob,hash);
+}
+Objects.copyToHash = function(ob,hash) {
+	var _g = 0, _g1 = Reflect.fields(ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		hash.set(field,Reflect.field(ob,field));
+	}
+	return hash;
+}
+Objects.interpolate = function(v,a,b,equation) {
+	return (Objects.interpolatef(a,b,equation))(v);
+}
+Objects.interpolatef = function(a,b,equation) {
+	var i = { }, c = { }, keys = Reflect.fields(a);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(Reflect.hasField(b,key)) {
+			var va = Reflect.field(a,key);
+			i[key] = Dynamics.interpolatef(va,Reflect.field(b,key));
+		} else c[key] = Reflect.field(a,key);
+	}
+	keys = Reflect.fields(b);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(!Reflect.hasField(a,key)) c[key] = Reflect.field(b,key);
+	}
+	return function(t) {
+		var _g = 0, _g1 = Reflect.fields(i);
+		while(_g < _g1.length) {
+			var k = _g1[_g];
+			++_g;
+			c[k] = Reflect.field(i,k).apply(i,[t]);
+		}
+		return c;
+	};
 }
 Objects.copyTo = function(src,dst) {
 	var _g = 0, _g1 = Reflect.fields(src);
@@ -18983,6 +25488,52 @@ Objects.clone = function(src) {
 	var dst = { };
 	return Objects.copyTo(src,dst);
 }
+Objects.mergef = function(ob,new_ob,f) {
+	var _g = 0, _g1 = Reflect.fields(new_ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var new_val = Reflect.field(new_ob,field);
+		if(Reflect.hasField(ob,field)) {
+			var old_val = Reflect.field(ob,field);
+			ob[field] = f(field,old_val,new_val);
+		} else ob[field] = new_val;
+	}
+}
+Objects.merge = function(ob,new_ob) {
+	Objects.mergef(ob,new_ob,function(key,old_v,new_v) {
+		return new_v;
+	});
+}
+Objects._flatten = function(src,cum,arr,levels,level) {
+	var _g = 0, _g1 = Reflect.fields(src);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var clone = Objects.clone(cum);
+		var v = Reflect.field(src,field);
+		clone.fields.push(field);
+		if(Reflect.isObject(v) && null == Type.getClass(v) && (levels == 0 || level + 1 < levels)) Objects._flatten(v,clone,arr,levels,level + 1); else {
+			clone.value = v;
+			arr.push(clone);
+		}
+	}
+}
+Objects.flatten = function(src,levels) {
+	if(levels == null) levels = 0;
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(src);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var v = Reflect.field(src,field);
+		if(Reflect.isObject(v) && null == Type.getClass(v) && levels != 1) {
+			var item = { fields : [field], value : null};
+			Objects._flatten(v,item,arr,levels,1);
+		} else arr.push({ fields : [field], value : v});
+	}
+	return arr;
+}
 Objects.compare = function(a,b) {
 	var v, fields;
 	if((v = Arrays.compare(fields = Reflect.fields(a),Reflect.fields(b))) != 0) return v;
@@ -18993,6 +25544,18 @@ Objects.compare = function(a,b) {
 		if((v = Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field))) != 0) return v;
 	}
 	return 0;
+}
+Objects.addFields = function(o,fields,values) {
+	var _g1 = 0, _g = fields.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		Objects.addField(o,fields[i],values[i]);
+	}
+	return o;
+}
+Objects.addField = function(o,field,value) {
+	o[field] = value;
+	return o;
 }
 Objects.format = function(v,param,params,culture) {
 	return (Objects.formatf(param,params,culture))(v);
@@ -19066,6 +25629,43 @@ rg.info.InfoGeo.prototype = {
 }
 var Lambda = $hxClasses["Lambda"] = function() { }
 Lambda.__name__ = ["Lambda"];
+Lambda.array = function(it) {
+	var a = new Array();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+}
+Lambda.list = function(it) {
+	var l = new List();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		l.add(i);
+	}
+	return l;
+}
+Lambda.map = function(it,f) {
+	var l = new List();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(x));
+	}
+	return l;
+}
+Lambda.mapi = function(it,f) {
+	var l = new List();
+	var i = 0;
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(i++,x));
+	}
+	return l;
+}
 Lambda.has = function(it,elt,cmp) {
 	if(cmp == null) {
 		var $it0 = it.iterator();
@@ -19082,14 +25682,109 @@ Lambda.has = function(it,elt,cmp) {
 	}
 	return false;
 }
+Lambda.exists = function(it,f) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return true;
+	}
+	return false;
+}
+Lambda.foreach = function(it,f) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(!f(x)) return false;
+	}
+	return true;
+}
+Lambda.iter = function(it,f) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		f(x);
+	}
+}
+Lambda.filter = function(it,f) {
+	var l = new List();
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) l.add(x);
+	}
+	return l;
+}
+Lambda.fold = function(it,f,first) {
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		first = f(x,first);
+	}
+	return first;
+}
+Lambda.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		var $it0 = it.iterator();
+		while( $it0.hasNext() ) {
+			var _ = $it0.next();
+			n++;
+		}
+	} else {
+		var $it1 = it.iterator();
+		while( $it1.hasNext() ) {
+			var x = $it1.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+}
+Lambda.empty = function(it) {
+	return !it.iterator().hasNext();
+}
+Lambda.indexOf = function(it,v) {
+	var i = 0;
+	var $it0 = it.iterator();
+	while( $it0.hasNext() ) {
+		var v2 = $it0.next();
+		if(v == v2) return i;
+		i++;
+	}
+	return -1;
+}
+Lambda.concat = function(a,b) {
+	var l = new List();
+	var $it0 = a.iterator();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(x);
+	}
+	var $it1 = b.iterator();
+	while( $it1.hasNext() ) {
+		var x = $it1.next();
+		l.add(x);
+	}
+	return l;
+}
 Lambda.prototype = {
 	__class__: Lambda
 }
 thx.color.Colors = $hxClasses["thx.color.Colors"] = function() { }
 thx.color.Colors.__name__ = ["thx","color","Colors"];
+thx.color.Colors.interpolatef = function(a,b,equation) {
+	var ca = thx.color.Colors.parse(a);
+	var cb = thx.color.Colors.parse(b);
+	var f = thx.color.Rgb.interpolatef(ca,cb,equation);
+	return function(v) {
+		return f(v).toString();
+	};
+}
+thx.color.Colors.interpolate = function(v,a,b,equation) {
+	return (thx.color.Colors.interpolatef(a,b,equation))(v);
+}
 thx.color.Colors.parse = function(s) {
 	if(!thx.color.Colors._reParse.match(s = StringTools.trim(s.toLowerCase()))) {
-		var v = Dynamic.byName.get(s);
+		var v = thx.color.NamedColors.byName.get(s);
 		if(null == v) {
 			if("transparent" == s) return thx.color.Rgb.fromInt(16777215); else return null;
 		} else return v;
@@ -19153,6 +25848,15 @@ haxe.Timer.delay = function(f,time_ms) {
 	};
 	return t;
 }
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
+}
 haxe.Timer.prototype = {
 	id: null
 	,timerId: null
@@ -19180,7 +25884,9 @@ rg.svg.widget.ElbowArea = $hxClasses["rg.svg.widget.ElbowArea"] = function(conta
 };
 rg.svg.widget.ElbowArea.__name__ = ["rg","svg","widget","ElbowArea"];
 rg.svg.widget.ElbowArea.prototype = {
-	outer: null
+	g: null
+	,area: null
+	,outer: null
 	,inner: null
 	,addClass: function(cls) {
 		this.g.classed().add(cls);
@@ -19273,82 +25979,6 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",10];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
-chx.crypt.IPad = $hxClasses["chx.crypt.IPad"] = function() { }
-chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
-chx.crypt.IPad.prototype = {
-	__class__: chx.crypt.IPad
-}
-chx.crypt.PadPkcs1Type1 = $hxClasses["chx.crypt.PadPkcs1Type1"] = function(size) {
-	this["blockSize"] = size;
-	this.setPadCount(8);
-	this.typeByte = 1;
-	this.setPadByte(255);
-};
-chx.crypt.PadPkcs1Type1.__name__ = ["chx","crypt","PadPkcs1Type1"];
-chx.crypt.PadPkcs1Type1.__interfaces__ = [chx.crypt.IPad];
-chx.crypt.PadPkcs1Type1.prototype = {
-	padCount: null
-	,typeByte: null
-	,getBytesReadPerBlock: function() {
-		return this.textSize;
-	}
-	,pad: function(s) {
-		if(s.length > this.textSize) throw "Unable to pad block: provided buffer is " + s.length + " max is " + this.textSize;
-		var sb = new BytesBuffer();
-		sb.b.push(0);
-		sb.b.push(this.typeByte);
-		var n = this.blockSize - s.length - 3;
-		while(n-- > 0) sb.b.push(this.getPadByte());
-		sb.b.push(0);
-		sb.add(s);
-		var rv = sb.getBytes();
-		return rv;
-	}
-	,unpad: function(s) {
-		var i = 0;
-		var sb = new BytesBuffer();
-		while(i < s.length) {
-			while(i < s.length && s.b[i] == 0) ++i;
-			if(s.length - i - 3 - this.padCount < 0) throw "Unexpected short message";
-			if(s.b[i] != this.typeByte) throw "Expected marker " + this.typeByte + " at position " + i + " [" + BytesUtil.hexDump(s) + "]";
-			if(++i >= s.length) return sb.getBytes();
-			while(i < s.length && s.b[i] != 0) ++i;
-			i++;
-			var n = 0;
-			while(i < s.length && n++ < this.textSize) sb.b.push(s.b[i++]);
-		}
-		return sb.getBytes();
-	}
-	,calcNumBlocks: function(len) {
-		return Math.ceil(len / this.textSize);
-	}
-	,isBlockPad: function() {
-		return true;
-	}
-	,blockOverhead: function() {
-		return 3 + this.padCount;
-	}
-	,setPadCount: function(x) {
-		if(x + 3 >= this.blockSize) throw "Internal padding size exceeds crypt block size";
-		this.padCount = x;
-		this.textSize = this.blockSize - 3 - this.padCount;
-		return x;
-	}
-	,setBlockSize: function(x) {
-		this.blockSize = x;
-		this.textSize = x - 3 - this.padCount;
-		if(this.textSize <= 0) throw "Block size " + x + " to small for Pkcs1 with padCount " + this.padCount;
-		return x;
-	}
-	,getPadByte: function() {
-		return this.padByte;
-	}
-	,setPadByte: function(x) {
-		this.padByte = x & 255;
-		return x;
-	}
-	,__class__: chx.crypt.PadPkcs1Type1
-}
 rg.svg.chart.ColorScaleModes = $hxClasses["rg.svg.chart.ColorScaleModes"] = function() { }
 rg.svg.chart.ColorScaleModes.__name__ = ["rg","svg","chart","ColorScaleModes"];
 rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
@@ -19559,8 +26189,20 @@ dhx.BaseTransition.prototype = {
 		});
 		return clear;
 	}
+	,startNode: function(f) {
+		this._start = f;
+		return this._this();
+	}
 	,endNode: function(f) {
 		this._end = f;
+		return this._this();
+	}
+	,stop: function() {
+		var k = -1, me = this;
+		this.selection.eachNode(function(n,i) {
+			me._stage[++k] = 2;
+			Reflect.deleteField(n,"__dhx_transition__");
+		});
 		return this._this();
 	}
 	,delay: function(f,v) {
@@ -19604,6 +26246,36 @@ dhx.BaseTransition.prototype = {
 		this._remove = v;
 		return this._this();
 	}
+	,select: function(selector) {
+		var k, t = this.createTransition(this.selection.select(selector));
+		t._ease = this._ease;
+		var delay = this._delay;
+		var duration = this._duration;
+		k = -1;
+		t.delay(function(d,i) {
+			return delay[++k];
+		});
+		k = -1;
+		t.delay(function(d,i) {
+			return duration[++k];
+		});
+		return t;
+	}
+	,selectAll: function(selector) {
+		var k, t = this.createTransition(this.selection.selectAll(selector));
+		t._ease = this._ease;
+		var delay = this._delay;
+		var duration = this._duration;
+		k = -1;
+		t.delay(function(d,i) {
+			return delay[i > 0?k:++k];
+		});
+		k = -1;
+		t.delay(function(d,i) {
+			return duration[i > 0?k:++k];
+		});
+		return t;
+	}
 	,createTransition: function(selection) {
 		return (function($this) {
 			var $r;
@@ -19622,8 +26294,14 @@ dhx.UnboundTransition = $hxClasses["dhx.UnboundTransition"] = function(selection
 dhx.UnboundTransition.__name__ = ["dhx","UnboundTransition"];
 dhx.UnboundTransition.__super__ = dhx.BaseTransition;
 dhx.UnboundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
-	style: function(name) {
+	text: function() {
+		return new dhx.AccessTweenText(this,this._tweens);
+	}
+	,style: function(name) {
 		return new dhx.AccessTweenStyle(name,this,this._tweens);
+	}
+	,attr: function(name) {
+		return new dhx.AccessTweenAttribute(name,this,this._tweens);
 	}
 	,createTransition: function(selection) {
 		return new dhx.UnboundTransition(selection);
@@ -19636,8 +26314,24 @@ dhx.BoundTransition = $hxClasses["dhx.BoundTransition"] = function(selection) {
 dhx.BoundTransition.__name__ = ["dhx","BoundTransition"];
 dhx.BoundTransition.__super__ = dhx.BaseTransition;
 dhx.BoundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
-	attr: function(name) {
+	text: function() {
+		return new dhx.AccessDataTweenText(this,this._tweens);
+	}
+	,style: function(name) {
+		return new dhx.AccessDataTweenStyle(name,this,this._tweens);
+	}
+	,attr: function(name) {
 		return new dhx.AccessDataTweenAttribute(name,this,this._tweens);
+	}
+	,start: function(f) {
+		return this.startNode(function(n,i) {
+			f(Reflect.field(n,"__dhx_data__"),i);
+		});
+	}
+	,end: function(f) {
+		return this.endNode(function(n,i) {
+			f(Reflect.field(n,"__dhx_data__"),i);
+		});
 	}
 	,createTransition: function(selection) {
 		return new dhx.BoundTransition(selection);
@@ -19646,6 +26340,267 @@ dhx.BoundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
 });
 js.Boot.__res = {}
 js.Boot.__init();
+{
+	thx.color.NamedColors.byName = new Hash();
+	thx.color.NamedColors.byName.set("aliceblue",thx.color.NamedColors.aliceblue = thx.color.Rgb.fromInt(15792383));
+	thx.color.NamedColors.byName.set("alice blue",thx.color.NamedColors.aliceblue);
+	thx.color.NamedColors.byName.set("antiquewhite",thx.color.NamedColors.antiquewhite = thx.color.Rgb.fromInt(16444375));
+	thx.color.NamedColors.byName.set("antique white",thx.color.NamedColors.antiquewhite);
+	thx.color.NamedColors.byName.set("aqua",thx.color.NamedColors.aqua = thx.color.Rgb.fromInt(65535));
+	thx.color.NamedColors.byName.set("aquamarine",thx.color.NamedColors.aquamarine = thx.color.Rgb.fromInt(8388564));
+	thx.color.NamedColors.byName.set("azure",thx.color.NamedColors.azure = thx.color.Rgb.fromInt(15794175));
+	thx.color.NamedColors.byName.set("beige",thx.color.NamedColors.beige = thx.color.Rgb.fromInt(16119260));
+	thx.color.NamedColors.byName.set("bisque",thx.color.NamedColors.bisque = thx.color.Rgb.fromInt(16770244));
+	thx.color.NamedColors.byName.set("black",thx.color.NamedColors.black = thx.color.Rgb.fromInt(0));
+	thx.color.NamedColors.byName.set("blanchedalmond",thx.color.NamedColors.blanchedalmond = thx.color.Rgb.fromInt(16772045));
+	thx.color.NamedColors.byName.set("blanched almond",thx.color.NamedColors.blanchedalmond);
+	thx.color.NamedColors.byName.set("blue",thx.color.NamedColors.blue = thx.color.Rgb.fromInt(255));
+	thx.color.NamedColors.byName.set("blueviolet",thx.color.NamedColors.blueviolet = thx.color.Rgb.fromInt(9055202));
+	thx.color.NamedColors.byName.set("blue violet",thx.color.NamedColors.blueviolet);
+	thx.color.NamedColors.byName.set("brown",thx.color.NamedColors.brown = thx.color.Rgb.fromInt(10824234));
+	thx.color.NamedColors.byName.set("burlywood",thx.color.NamedColors.burlywood = thx.color.Rgb.fromInt(14596231));
+	thx.color.NamedColors.byName.set("burly wood",thx.color.NamedColors.burlywood);
+	thx.color.NamedColors.byName.set("cadetblue",thx.color.NamedColors.cadetblue = thx.color.Rgb.fromInt(6266528));
+	thx.color.NamedColors.byName.set("cadet blue",thx.color.NamedColors.cadetblue);
+	thx.color.NamedColors.byName.set("chartreuse",thx.color.NamedColors.chartreuse = thx.color.Rgb.fromInt(8388352));
+	thx.color.NamedColors.byName.set("chart reuse",thx.color.NamedColors.chartreuse);
+	thx.color.NamedColors.byName.set("chocolate",thx.color.NamedColors.chocolate = thx.color.Rgb.fromInt(13789470));
+	thx.color.NamedColors.byName.set("coral",thx.color.NamedColors.coral = thx.color.Rgb.fromInt(16744272));
+	thx.color.NamedColors.byName.set("cornflowerblue",thx.color.NamedColors.cornflowerblue = thx.color.Rgb.fromInt(6591981));
+	thx.color.NamedColors.byName.set("corn flower blue",thx.color.NamedColors.cornflowerblue);
+	thx.color.NamedColors.byName.set("cornsilk",thx.color.NamedColors.cornsilk = thx.color.Rgb.fromInt(16775388));
+	thx.color.NamedColors.byName.set("corn silk",thx.color.NamedColors.cornsilk);
+	thx.color.NamedColors.byName.set("crimson",thx.color.NamedColors.crimson = thx.color.Rgb.fromInt(14423100));
+	thx.color.NamedColors.byName.set("cyan",thx.color.NamedColors.cyan = thx.color.Rgb.fromInt(65535));
+	thx.color.NamedColors.byName.set("darkblue",thx.color.NamedColors.darkblue = thx.color.Rgb.fromInt(139));
+	thx.color.NamedColors.byName.set("dark blue",thx.color.NamedColors.darkblue);
+	thx.color.NamedColors.byName.set("darkcyan",thx.color.NamedColors.darkcyan = thx.color.Rgb.fromInt(35723));
+	thx.color.NamedColors.byName.set("dark cyan",thx.color.NamedColors.darkcyan);
+	thx.color.NamedColors.byName.set("darkgoldenrod",thx.color.NamedColors.darkgoldenrod = thx.color.Rgb.fromInt(12092939));
+	thx.color.NamedColors.byName.set("dark golden rod",thx.color.NamedColors.darkgoldenrod);
+	thx.color.NamedColors.byName.set("darkgray",thx.color.NamedColors.darkgray = thx.color.NamedColors.darkgrey = thx.color.Rgb.fromInt(11119017));
+	thx.color.NamedColors.byName.set("dark gray",thx.color.NamedColors.darkgray);
+	thx.color.NamedColors.byName.set("darkgrey",thx.color.NamedColors.darkgrey);
+	thx.color.NamedColors.byName.set("dark grey",thx.color.NamedColors.darkgrey);
+	thx.color.NamedColors.byName.set("darkgreen",thx.color.NamedColors.darkgreen = thx.color.Rgb.fromInt(25600));
+	thx.color.NamedColors.byName.set("dark green",thx.color.NamedColors.darkgreen);
+	thx.color.NamedColors.byName.set("darkkhaki",thx.color.NamedColors.darkkhaki = thx.color.Rgb.fromInt(12433259));
+	thx.color.NamedColors.byName.set("dark khaki",thx.color.NamedColors.darkkhaki);
+	thx.color.NamedColors.byName.set("darkmagenta",thx.color.NamedColors.darkmagenta = thx.color.Rgb.fromInt(9109643));
+	thx.color.NamedColors.byName.set("dark magenta",thx.color.NamedColors.darkmagenta);
+	thx.color.NamedColors.byName.set("darkolivegreen",thx.color.NamedColors.darkolivegreen = thx.color.Rgb.fromInt(5597999));
+	thx.color.NamedColors.byName.set("dark olive green",thx.color.NamedColors.darkolivegreen);
+	thx.color.NamedColors.byName.set("darkorange",thx.color.NamedColors.darkorange = thx.color.Rgb.fromInt(16747520));
+	thx.color.NamedColors.byName.set("dark orange",thx.color.NamedColors.darkorange);
+	thx.color.NamedColors.byName.set("darkorchid",thx.color.NamedColors.darkorchid = thx.color.Rgb.fromInt(10040012));
+	thx.color.NamedColors.byName.set("dark orchid",thx.color.NamedColors.darkorchid);
+	thx.color.NamedColors.byName.set("darkred",thx.color.NamedColors.darkred = thx.color.Rgb.fromInt(9109504));
+	thx.color.NamedColors.byName.set("dark red",thx.color.NamedColors.darkred);
+	thx.color.NamedColors.byName.set("darksalmon",thx.color.NamedColors.darksalmon = thx.color.Rgb.fromInt(15308410));
+	thx.color.NamedColors.byName.set("dark salmon",thx.color.NamedColors.darksalmon);
+	thx.color.NamedColors.byName.set("darkseagreen",thx.color.NamedColors.darkseagreen = thx.color.Rgb.fromInt(9419919));
+	thx.color.NamedColors.byName.set("dark sea green",thx.color.NamedColors.darkseagreen);
+	thx.color.NamedColors.byName.set("darkslateblue",thx.color.NamedColors.darkslateblue = thx.color.Rgb.fromInt(4734347));
+	thx.color.NamedColors.byName.set("dark slate blue",thx.color.NamedColors.darkslateblue);
+	thx.color.NamedColors.byName.set("darkslategray",thx.color.NamedColors.darkslategray = thx.color.NamedColors.darkslategrey = thx.color.Rgb.fromInt(3100495));
+	thx.color.NamedColors.byName.set("dark slate gray",thx.color.NamedColors.darkslategray);
+	thx.color.NamedColors.byName.set("darkslategrey",thx.color.NamedColors.darkslategrey);
+	thx.color.NamedColors.byName.set("dark slate grey",thx.color.NamedColors.darkslategrey);
+	thx.color.NamedColors.byName.set("darkturquoise",thx.color.NamedColors.darkturquoise = thx.color.Rgb.fromInt(52945));
+	thx.color.NamedColors.byName.set("dark turquoise",thx.color.NamedColors.darkturquoise);
+	thx.color.NamedColors.byName.set("darkviolet",thx.color.NamedColors.darkviolet = thx.color.Rgb.fromInt(9699539));
+	thx.color.NamedColors.byName.set("dark violet",thx.color.NamedColors.darkviolet);
+	thx.color.NamedColors.byName.set("deeppink",thx.color.NamedColors.deeppink = thx.color.Rgb.fromInt(16716947));
+	thx.color.NamedColors.byName.set("deep pink",thx.color.NamedColors.deeppink);
+	thx.color.NamedColors.byName.set("deepskyblue",thx.color.NamedColors.deepskyblue = thx.color.Rgb.fromInt(49151));
+	thx.color.NamedColors.byName.set("deep sky blue",thx.color.NamedColors.deepskyblue);
+	thx.color.NamedColors.byName.set("dimgray",thx.color.NamedColors.dimgray = thx.color.NamedColors.dimgrey = thx.color.Rgb.fromInt(6908265));
+	thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
+	thx.color.NamedColors.byName.set("dimgrey",thx.color.NamedColors.dimgrey);
+	thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
+	thx.color.NamedColors.byName.set("dodgerblue",thx.color.NamedColors.dodgerblue = thx.color.Rgb.fromInt(2003199));
+	thx.color.NamedColors.byName.set("dodger blue",thx.color.NamedColors.dodgerblue);
+	thx.color.NamedColors.byName.set("firebrick",thx.color.NamedColors.firebrick = thx.color.Rgb.fromInt(11674146));
+	thx.color.NamedColors.byName.set("fire brick",thx.color.NamedColors.firebrick);
+	thx.color.NamedColors.byName.set("floralwhite",thx.color.NamedColors.floralwhite = thx.color.Rgb.fromInt(16775920));
+	thx.color.NamedColors.byName.set("floral white",thx.color.NamedColors.floralwhite);
+	thx.color.NamedColors.byName.set("forestgreen",thx.color.NamedColors.forestgreen = thx.color.Rgb.fromInt(2263842));
+	thx.color.NamedColors.byName.set("forest green",thx.color.NamedColors.forestgreen);
+	thx.color.NamedColors.byName.set("fuchsia",thx.color.NamedColors.fuchsia = thx.color.Rgb.fromInt(16711935));
+	thx.color.NamedColors.byName.set("gainsboro",thx.color.NamedColors.gainsboro = thx.color.Rgb.fromInt(14474460));
+	thx.color.NamedColors.byName.set("ghostwhite",thx.color.NamedColors.ghostwhite = thx.color.Rgb.fromInt(16316671));
+	thx.color.NamedColors.byName.set("ghost white",thx.color.NamedColors.ghostwhite);
+	thx.color.NamedColors.byName.set("gold",thx.color.NamedColors.gold = thx.color.Rgb.fromInt(16766720));
+	thx.color.NamedColors.byName.set("goldenrod",thx.color.NamedColors.goldenrod = thx.color.Rgb.fromInt(14329120));
+	thx.color.NamedColors.byName.set("golden rod",thx.color.NamedColors.goldenrod);
+	thx.color.NamedColors.byName.set("gray",thx.color.NamedColors.gray = thx.color.NamedColors.grey = thx.color.Rgb.fromInt(8421504));
+	thx.color.NamedColors.byName.set("grey",thx.color.NamedColors.grey);
+	thx.color.NamedColors.byName.set("green",thx.color.NamedColors.green = thx.color.Rgb.fromInt(32768));
+	thx.color.NamedColors.byName.set("greenyellow",thx.color.NamedColors.greenyellow = thx.color.Rgb.fromInt(11403055));
+	thx.color.NamedColors.byName.set("green yellow",thx.color.NamedColors.greenyellow);
+	thx.color.NamedColors.byName.set("honeydew",thx.color.NamedColors.honeydew = thx.color.Rgb.fromInt(15794160));
+	thx.color.NamedColors.byName.set("honey dew",thx.color.NamedColors.honeydew);
+	thx.color.NamedColors.byName.set("hotpink",thx.color.NamedColors.hotpink = thx.color.Rgb.fromInt(16738740));
+	thx.color.NamedColors.byName.set("hot pink",thx.color.NamedColors.hotpink);
+	thx.color.NamedColors.byName.set("indianred",thx.color.NamedColors.indianred = thx.color.Rgb.fromInt(13458524));
+	thx.color.NamedColors.byName.set("indian red",thx.color.NamedColors.indianred);
+	thx.color.NamedColors.byName.set("indigo",thx.color.NamedColors.indigo = thx.color.Rgb.fromInt(4915330));
+	thx.color.NamedColors.byName.set("ivory",thx.color.NamedColors.ivory = thx.color.Rgb.fromInt(16777200));
+	thx.color.NamedColors.byName.set("khaki",thx.color.NamedColors.khaki = thx.color.Rgb.fromInt(15787660));
+	thx.color.NamedColors.byName.set("lavender",thx.color.NamedColors.lavender = thx.color.Rgb.fromInt(15132410));
+	thx.color.NamedColors.byName.set("lavenderblush",thx.color.NamedColors.lavenderblush = thx.color.Rgb.fromInt(16773365));
+	thx.color.NamedColors.byName.set("lavender blush",thx.color.NamedColors.lavenderblush);
+	thx.color.NamedColors.byName.set("lawngreen",thx.color.NamedColors.lawngreen = thx.color.Rgb.fromInt(8190976));
+	thx.color.NamedColors.byName.set("lawn green",thx.color.NamedColors.lawngreen);
+	thx.color.NamedColors.byName.set("lemonchiffon",thx.color.NamedColors.lemonchiffon = thx.color.Rgb.fromInt(16775885));
+	thx.color.NamedColors.byName.set("lemon chiffon",thx.color.NamedColors.lemonchiffon);
+	thx.color.NamedColors.byName.set("lightblue",thx.color.NamedColors.lightblue = thx.color.Rgb.fromInt(11393254));
+	thx.color.NamedColors.byName.set("light blue",thx.color.NamedColors.lightblue);
+	thx.color.NamedColors.byName.set("lightcoral",thx.color.NamedColors.lightcoral = thx.color.Rgb.fromInt(15761536));
+	thx.color.NamedColors.byName.set("light coral",thx.color.NamedColors.lightcoral);
+	thx.color.NamedColors.byName.set("lightcyan",thx.color.NamedColors.lightcyan = thx.color.Rgb.fromInt(14745599));
+	thx.color.NamedColors.byName.set("light cyan",thx.color.NamedColors.lightcyan);
+	thx.color.NamedColors.byName.set("lightgoldenrodyellow",thx.color.NamedColors.lightgoldenrodyellow = thx.color.Rgb.fromInt(16448210));
+	thx.color.NamedColors.byName.set("light golden rod yellow",thx.color.NamedColors.lightgoldenrodyellow);
+	thx.color.NamedColors.byName.set("lightgray",thx.color.NamedColors.lightgray = thx.color.NamedColors.lightgrey = thx.color.Rgb.fromInt(13882323));
+	thx.color.NamedColors.byName.set("light gray",thx.color.NamedColors.lightgray);
+	thx.color.NamedColors.byName.set("lightgrey",thx.color.NamedColors.lightgrey);
+	thx.color.NamedColors.byName.set("light grey",thx.color.NamedColors.lightgrey);
+	thx.color.NamedColors.byName.set("lightgreen",thx.color.NamedColors.lightgreen = thx.color.Rgb.fromInt(9498256));
+	thx.color.NamedColors.byName.set("light green",thx.color.NamedColors.lightgreen);
+	thx.color.NamedColors.byName.set("lightpink",thx.color.NamedColors.lightpink = thx.color.Rgb.fromInt(16758465));
+	thx.color.NamedColors.byName.set("light pink",thx.color.NamedColors.lightpink);
+	thx.color.NamedColors.byName.set("lightsalmon",thx.color.NamedColors.lightsalmon = thx.color.Rgb.fromInt(16752762));
+	thx.color.NamedColors.byName.set("light salmon",thx.color.NamedColors.lightsalmon);
+	thx.color.NamedColors.byName.set("lightseagreen",thx.color.NamedColors.lightseagreen = thx.color.Rgb.fromInt(2142890));
+	thx.color.NamedColors.byName.set("light sea green",thx.color.NamedColors.lightseagreen);
+	thx.color.NamedColors.byName.set("lightskyblue",thx.color.NamedColors.lightskyblue = thx.color.Rgb.fromInt(8900346));
+	thx.color.NamedColors.byName.set("light sky blue",thx.color.NamedColors.lightskyblue);
+	thx.color.NamedColors.byName.set("lightslategray",thx.color.NamedColors.lightslategray = thx.color.NamedColors.lightslategrey = thx.color.Rgb.fromInt(7833753));
+	thx.color.NamedColors.byName.set("light slate gray",thx.color.NamedColors.lightslategray);
+	thx.color.NamedColors.byName.set("lightslategrey",thx.color.NamedColors.lightslategrey);
+	thx.color.NamedColors.byName.set("light slate grey",thx.color.NamedColors.lightslategrey);
+	thx.color.NamedColors.byName.set("lightsteelblue",thx.color.NamedColors.lightsteelblue = thx.color.Rgb.fromInt(11584734));
+	thx.color.NamedColors.byName.set("light steel blue",thx.color.NamedColors.lightsteelblue);
+	thx.color.NamedColors.byName.set("lightyellow",thx.color.NamedColors.lightyellow = thx.color.Rgb.fromInt(16777184));
+	thx.color.NamedColors.byName.set("light yellow",thx.color.NamedColors.lightyellow);
+	thx.color.NamedColors.byName.set("lime",thx.color.NamedColors.lime = thx.color.Rgb.fromInt(65280));
+	thx.color.NamedColors.byName.set("limegreen",thx.color.NamedColors.limegreen = thx.color.Rgb.fromInt(3329330));
+	thx.color.NamedColors.byName.set("lime green",thx.color.NamedColors.limegreen);
+	thx.color.NamedColors.byName.set("linen",thx.color.NamedColors.linen = thx.color.Rgb.fromInt(16445670));
+	thx.color.NamedColors.byName.set("magenta",thx.color.NamedColors.magenta = thx.color.Rgb.fromInt(16711935));
+	thx.color.NamedColors.byName.set("maroon",thx.color.NamedColors.maroon = thx.color.Rgb.fromInt(8388608));
+	thx.color.NamedColors.byName.set("mediumaquamarine",thx.color.NamedColors.mediumaquamarine = thx.color.Rgb.fromInt(6737322));
+	thx.color.NamedColors.byName.set("mediuma quamarine",thx.color.NamedColors.mediumaquamarine);
+	thx.color.NamedColors.byName.set("mediumblue",thx.color.NamedColors.mediumblue = thx.color.Rgb.fromInt(205));
+	thx.color.NamedColors.byName.set("medium blue",thx.color.NamedColors.mediumblue);
+	thx.color.NamedColors.byName.set("mediumorchid",thx.color.NamedColors.mediumorchid = thx.color.Rgb.fromInt(12211667));
+	thx.color.NamedColors.byName.set("medium orchid",thx.color.NamedColors.mediumorchid);
+	thx.color.NamedColors.byName.set("mediumpurple",thx.color.NamedColors.mediumpurple = thx.color.Rgb.fromInt(9662683));
+	thx.color.NamedColors.byName.set("medium purple",thx.color.NamedColors.mediumpurple);
+	thx.color.NamedColors.byName.set("mediumseagreen",thx.color.NamedColors.mediumseagreen = thx.color.Rgb.fromInt(3978097));
+	thx.color.NamedColors.byName.set("medium sea green",thx.color.NamedColors.mediumseagreen);
+	thx.color.NamedColors.byName.set("mediumslateblue",thx.color.NamedColors.mediumslateblue = thx.color.Rgb.fromInt(8087790));
+	thx.color.NamedColors.byName.set("medium slate blue",thx.color.NamedColors.mediumslateblue);
+	thx.color.NamedColors.byName.set("mediumspringgreen",thx.color.NamedColors.mediumspringgreen = thx.color.Rgb.fromInt(64154));
+	thx.color.NamedColors.byName.set("medium spring green",thx.color.NamedColors.mediumspringgreen);
+	thx.color.NamedColors.byName.set("mediumturquoise",thx.color.NamedColors.mediumturquoise = thx.color.Rgb.fromInt(4772300));
+	thx.color.NamedColors.byName.set("medium turquoise",thx.color.NamedColors.mediumturquoise);
+	thx.color.NamedColors.byName.set("mediumvioletred",thx.color.NamedColors.mediumvioletred = thx.color.Rgb.fromInt(13047173));
+	thx.color.NamedColors.byName.set("medium violet red",thx.color.NamedColors.mediumvioletred);
+	thx.color.NamedColors.byName.set("midnightblue",thx.color.NamedColors.midnightblue = thx.color.Rgb.fromInt(1644912));
+	thx.color.NamedColors.byName.set("midnight blue",thx.color.NamedColors.midnightblue);
+	thx.color.NamedColors.byName.set("mintcream",thx.color.NamedColors.mintcream = thx.color.Rgb.fromInt(16121850));
+	thx.color.NamedColors.byName.set("mint cream",thx.color.NamedColors.mintcream);
+	thx.color.NamedColors.byName.set("mistyrose",thx.color.NamedColors.mistyrose = thx.color.Rgb.fromInt(16770273));
+	thx.color.NamedColors.byName.set("misty rose",thx.color.NamedColors.mistyrose);
+	thx.color.NamedColors.byName.set("moccasin",thx.color.NamedColors.moccasin = thx.color.Rgb.fromInt(16770229));
+	thx.color.NamedColors.byName.set("navajowhite",thx.color.NamedColors.navajowhite = thx.color.Rgb.fromInt(16768685));
+	thx.color.NamedColors.byName.set("navajo white",thx.color.NamedColors.navajowhite);
+	thx.color.NamedColors.byName.set("navy",thx.color.NamedColors.navy = thx.color.Rgb.fromInt(128));
+	thx.color.NamedColors.byName.set("oldlace",thx.color.NamedColors.oldlace = thx.color.Rgb.fromInt(16643558));
+	thx.color.NamedColors.byName.set("old lace",thx.color.NamedColors.oldlace);
+	thx.color.NamedColors.byName.set("olive",thx.color.NamedColors.olive = thx.color.Rgb.fromInt(8421376));
+	thx.color.NamedColors.byName.set("olivedrab",thx.color.NamedColors.olivedrab = thx.color.Rgb.fromInt(7048739));
+	thx.color.NamedColors.byName.set("olive drab",thx.color.NamedColors.olivedrab);
+	thx.color.NamedColors.byName.set("orange",thx.color.NamedColors.orange = thx.color.Rgb.fromInt(16753920));
+	thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered = thx.color.Rgb.fromInt(16729344));
+	thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered);
+	thx.color.NamedColors.byName.set("orchid",thx.color.NamedColors.orchid = thx.color.Rgb.fromInt(14315734));
+	thx.color.NamedColors.byName.set("palegoldenrod",thx.color.NamedColors.palegoldenrod = thx.color.Rgb.fromInt(15657130));
+	thx.color.NamedColors.byName.set("pale golden rod",thx.color.NamedColors.palegoldenrod);
+	thx.color.NamedColors.byName.set("palegreen",thx.color.NamedColors.palegreen = thx.color.Rgb.fromInt(10025880));
+	thx.color.NamedColors.byName.set("pale green",thx.color.NamedColors.palegreen);
+	thx.color.NamedColors.byName.set("paleturquoise",thx.color.NamedColors.paleturquoise = thx.color.Rgb.fromInt(11529966));
+	thx.color.NamedColors.byName.set("pale turquoise",thx.color.NamedColors.paleturquoise);
+	thx.color.NamedColors.byName.set("palevioletred",thx.color.NamedColors.palevioletred = thx.color.Rgb.fromInt(14381203));
+	thx.color.NamedColors.byName.set("pale violet red",thx.color.NamedColors.palevioletred);
+	thx.color.NamedColors.byName.set("papayawhip",thx.color.NamedColors.papayawhip = thx.color.Rgb.fromInt(16773077));
+	thx.color.NamedColors.byName.set("papaya whip",thx.color.NamedColors.papayawhip);
+	thx.color.NamedColors.byName.set("peachpuff",thx.color.NamedColors.peachpuff = thx.color.Rgb.fromInt(16767673));
+	thx.color.NamedColors.byName.set("peach puff",thx.color.NamedColors.peachpuff);
+	thx.color.NamedColors.byName.set("peru",thx.color.NamedColors.peru = thx.color.Rgb.fromInt(13468991));
+	thx.color.NamedColors.byName.set("pink",thx.color.NamedColors.pink = thx.color.Rgb.fromInt(16761035));
+	thx.color.NamedColors.byName.set("plum",thx.color.NamedColors.plum = thx.color.Rgb.fromInt(14524637));
+	thx.color.NamedColors.byName.set("powderblue",thx.color.NamedColors.powderblue = thx.color.Rgb.fromInt(11591910));
+	thx.color.NamedColors.byName.set("powder blue",thx.color.NamedColors.powderblue);
+	thx.color.NamedColors.byName.set("purple",thx.color.NamedColors.purple = thx.color.Rgb.fromInt(8388736));
+	thx.color.NamedColors.byName.set("red",thx.color.NamedColors.red = thx.color.Rgb.fromInt(16711680));
+	thx.color.NamedColors.byName.set("rosybrown",thx.color.NamedColors.rosybrown = thx.color.Rgb.fromInt(12357519));
+	thx.color.NamedColors.byName.set("rosy brown",thx.color.NamedColors.rosybrown);
+	thx.color.NamedColors.byName.set("royalblue",thx.color.NamedColors.royalblue = thx.color.Rgb.fromInt(4286945));
+	thx.color.NamedColors.byName.set("royal blue",thx.color.NamedColors.royalblue);
+	thx.color.NamedColors.byName.set("saddlebrown",thx.color.NamedColors.saddlebrown = thx.color.Rgb.fromInt(9127187));
+	thx.color.NamedColors.byName.set("saddle brown",thx.color.NamedColors.saddlebrown);
+	thx.color.NamedColors.byName.set("salmon",thx.color.NamedColors.salmon = thx.color.Rgb.fromInt(16416882));
+	thx.color.NamedColors.byName.set("sandybrown",thx.color.NamedColors.sandybrown = thx.color.Rgb.fromInt(16032864));
+	thx.color.NamedColors.byName.set("sandy brown",thx.color.NamedColors.sandybrown);
+	thx.color.NamedColors.byName.set("seagreen",thx.color.NamedColors.seagreen = thx.color.Rgb.fromInt(3050327));
+	thx.color.NamedColors.byName.set("sea green",thx.color.NamedColors.seagreen);
+	thx.color.NamedColors.byName.set("seashell",thx.color.NamedColors.seashell = thx.color.Rgb.fromInt(16774638));
+	thx.color.NamedColors.byName.set("sea shell",thx.color.NamedColors.seashell);
+	thx.color.NamedColors.byName.set("sienna",thx.color.NamedColors.sienna = thx.color.Rgb.fromInt(10506797));
+	thx.color.NamedColors.byName.set("silver",thx.color.NamedColors.silver = thx.color.Rgb.fromInt(12632256));
+	thx.color.NamedColors.byName.set("skyblue",thx.color.NamedColors.skyblue = thx.color.Rgb.fromInt(8900331));
+	thx.color.NamedColors.byName.set("sky blue",thx.color.NamedColors.skyblue);
+	thx.color.NamedColors.byName.set("slateblue",thx.color.NamedColors.slateblue = thx.color.Rgb.fromInt(6970061));
+	thx.color.NamedColors.byName.set("slate blue",thx.color.NamedColors.slateblue);
+	thx.color.NamedColors.byName.set("slategray",thx.color.NamedColors.slategray = thx.color.NamedColors.slategrey = thx.color.Rgb.fromInt(7372944));
+	thx.color.NamedColors.byName.set("slate gray",thx.color.NamedColors.slategray);
+	thx.color.NamedColors.byName.set("slategrey",thx.color.NamedColors.slategrey);
+	thx.color.NamedColors.byName.set("slate grey",thx.color.NamedColors.slategrey);
+	thx.color.NamedColors.byName.set("snow",thx.color.NamedColors.snow = thx.color.Rgb.fromInt(16775930));
+	thx.color.NamedColors.byName.set("springgreen",thx.color.NamedColors.springgreen = thx.color.Rgb.fromInt(65407));
+	thx.color.NamedColors.byName.set("spring green",thx.color.NamedColors.springgreen);
+	thx.color.NamedColors.byName.set("steelblue",thx.color.NamedColors.steelblue = thx.color.Rgb.fromInt(4620980));
+	thx.color.NamedColors.byName.set("steel blue",thx.color.NamedColors.steelblue);
+	thx.color.NamedColors.byName.set("tan",thx.color.NamedColors.tan = thx.color.Rgb.fromInt(13808780));
+	thx.color.NamedColors.byName.set("teal",thx.color.NamedColors.teal = thx.color.Rgb.fromInt(32896));
+	thx.color.NamedColors.byName.set("thistle",thx.color.NamedColors.thistle = thx.color.Rgb.fromInt(14204888));
+	thx.color.NamedColors.byName.set("tomato",thx.color.NamedColors.tomato = thx.color.Rgb.fromInt(16737095));
+	thx.color.NamedColors.byName.set("turquoise",thx.color.NamedColors.turquoise = thx.color.Rgb.fromInt(4251856));
+	thx.color.NamedColors.byName.set("violet",thx.color.NamedColors.violet = thx.color.Rgb.fromInt(15631086));
+	thx.color.NamedColors.byName.set("wheat",thx.color.NamedColors.wheat = thx.color.Rgb.fromInt(16113331));
+	thx.color.NamedColors.byName.set("white",thx.color.NamedColors.white = thx.color.Rgb.fromInt(16777215));
+	thx.color.NamedColors.byName.set("whitesmoke",thx.color.NamedColors.whitesmoke = thx.color.Rgb.fromInt(16119285));
+	thx.color.NamedColors.byName.set("white smoke",thx.color.NamedColors.whitesmoke);
+	thx.color.NamedColors.byName.set("yellow",thx.color.NamedColors.yellow = thx.color.Rgb.fromInt(16776960));
+	thx.color.NamedColors.byName.set("yellowgreen",thx.color.NamedColors.yellowgreen = thx.color.Rgb.fromInt(10145074));
+	thx.color.NamedColors.byName.set("yellow green",thx.color.NamedColors.yellowgreen);
+}
+{
+	Math.__name__ = ["Math"];
+	Math.NaN = Number["NaN"];
+	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
+	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
+	$hxClasses["Math"] = Math;
+	Math.isFinite = function(i) {
+		return isFinite(i);
+	};
+	Math.isNaN = function(i) {
+		return isNaN(i);
+	};
+}
 {
 	String.prototype.__class__ = $hxClasses["String"] = String;
 	String.__name__ = ["String"];
@@ -21197,19 +28152,6 @@ window.Sizzle = Sizzle;
 		return f(msg,[url+":"+line]);
 	}
 }
-{
-	Math.__name__ = ["Math"];
-	Math.NaN = Number["NaN"];
-	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
-	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
-	$hxClasses["Math"] = Math;
-	Math.isFinite = function(i) {
-		return isFinite(i);
-	};
-	Math.isNaN = function(i) {
-		return isNaN(i);
-	};
-}
 if (!('indexOf' in Array.prototype)) {
     Array.prototype.indexOf= function(find, i /*opt*/) {
         if (i===undefined) i= 0;
@@ -21361,10 +28303,26 @@ js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject
 	BytesUtil.EMPTY = bb.getBytes();
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
+rg.graph.Graphs.id = 0;
+Ints._reparse = new EReg("^([+-])?\\d+$","");
 rg.interactive.RGLegacyRenderer.FORMAT = "jpg";
 rg.interactive.RGLegacyRenderer.nextframeid = 0;
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
+Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
+thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
+chx.text.Sprintf.kPAD_ZEROES = 1;
+chx.text.Sprintf.kLEFT_ALIGN = 2;
+chx.text.Sprintf.kSHOW_SIGN = 4;
+chx.text.Sprintf.kPAD_POS = 8;
+chx.text.Sprintf.kALT_FORM = 16;
+chx.text.Sprintf.kLONG_VALUE = 32;
+chx.text.Sprintf.kUSE_SEPARATOR = 64;
+chx.text.Sprintf.DEBUG = false;
+chx.text.Sprintf.TRACE = false;
+rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
+thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
 thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
 	return d.toLowerCase();
 });
@@ -21410,9 +28368,13 @@ dhx.Namespace.prefix = (function() {
 	return h;
 })();
 thx.math.Const.TWO_PI = 6.283185307179586477;
+thx.math.Const.PI = 3.141592653589793238;
+thx.math.Const.HALF_PI = 1.570796326794896619;
 thx.math.Const.TO_DEGREE = 57.29577951308232088;
 thx.math.Const.TO_RADIAN = 0.01745329251994329577;
 thx.math.Const.LN10 = 2.302585092994046;
+thx.math.Const.E = 2.71828182845904523536;
+rg.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
 rg.layout.LayoutCartesian.ALT_RIGHT = 20;
 rg.layout.LayoutCartesian.ALT_LEFT = 20;
 rg.layout.LayoutCartesian.ALT_TOP = 8;
@@ -21433,9 +28395,16 @@ dhx.Timer.timeout = 0;
 dhx.Timer.queue = null;
 dhx.Timer.interval = 0;
 dhx.Timer._step = dhx.Timer.step;
+Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
+Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
+Strings._reReduceWS = new EReg("\\s+","");
+Strings._reStripTags = new EReg("(<[a-z]+[^>/]*/?>|</[a-z]+>)","i");
 Strings._reFormat = new EReg("{(\\d+)(?::([a-zA-Z]+))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?}","m");
 Strings._reCollapse = new EReg("\\s+","g");
 Strings.__ucwordsPattern = new EReg("[^a-zA-Z]([a-z])","");
+Strings.__ucwordswsPattern = new EReg("\\s([a-z])","");
+Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
+Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 dhx.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
@@ -21444,6 +28413,9 @@ rg.factory.FactoryLayout.LIMIT_WIDTH = 10;
 rg.factory.FactoryLayout.LIMIT_HEIGHT = 10;
 rg.factory.FactoryLayout.DEFAULT_WIDTH = 400;
 rg.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
+thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
+thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
+js.Lib.onerror = null;
 dhx.Dom.doc = (function() {
 	var g = new dhx.Group([js.Lib.document]), gs = dhx.Selection.create([g]);
 	g.parentNode = gs.parentNode = js.Lib.document.documentElement;
@@ -21452,23 +28424,40 @@ dhx.Dom.doc = (function() {
 dhx.Dom.selectionEngine = new dhx.SizzleEngine();
 rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
 rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
-rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/renderer/";
-rg.RGConst.LEGACY_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
+rg.RGConst.HOST = "" == js.Lib.window.location.host?"localhost":js.Lib.window.location.host;
+rg.RGConst.BASE_URL_GEOJSON = "http://" + rg.RGConst.HOST + "/rg/vis/geo/json/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://" + rg.RGConst.HOST + "/rg/services/viz/charts/up.json";
+rg.RGConst.LEGACY_RENDERING_STATIC = "http://" + rg.RGConst.HOST + "/rg/services/viz/charts/upandsee.{ext}";
 rg.util.Properties.TIME_TOKEN = "time:";
+DateTools.WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+DateTools.WEEKDAYS_ABBREV = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+DateTools.MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+DateTools.MONTHS_ABBREV = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 rg.svg.chart.StreamGraph.vid = 0;
 dhx.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 I32.ZERO = 0;
-Ints._reparse = new EReg("^([+-])?\\d+$","");
+I32.ONE = 1;
+I32.BYTE_MASK = 255;
 rg.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
 rg.info.InfoPivotTable.defaultEndColor = new thx.color.Hsl(210,1,0.5);
 rg.axis.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
 rg.html.widget.Logo._id = 0;
 rg.html.widget.Logo.LOGO_WIDTH = 194;
 rg.html.widget.Logo.LOGO_HEIGHT = 29;
+Constants.DIGITS_BASE10 = "0123456789";
+Constants.DIGITS_HEXU = "0123456789ABCDEF";
+Constants.DIGITS_HEXL = "0123456789abcdef";
+Constants.DIGITS_OCTAL = "01234567";
 Constants.DIGITS_BN = "0123456789abcdefghijklmnopqrstuvwxyz";
 Constants.DIGITS_BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+Constants.PROTO_HTTP = "http://";
+Constants.PROTO_HTTPS = "http://";
+Constants.PROTO_FILE = "file://";
+Constants.PROTO_FTP = "ftp://";
+Constants.PROTO_RTMP = "rtmp://";
+math.BigInteger.MAX_RADIX = 36;
+math.BigInteger.MIN_RADIX = 2;
 rg.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.app.charts.App.lastid = 0;
@@ -21476,6 +28465,8 @@ rg.app.charts.App.chartsCounter = 0;
 rg.app.charts.App.chartsLoaded = 0;
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
+math.IEEE754.bias = 1024;
+math.IEEE754.cnst = 2102;
 dhx.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 thx.svg.LineInternals.arcOffset = -Math.PI / 2;
 thx.svg.LineInternals.arcMax = 2 * Math.PI - 1e-6;

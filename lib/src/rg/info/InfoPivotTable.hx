@@ -10,7 +10,7 @@ import thx.color.NamedColors;
 import rg.util.RGColors;
 using rg.info.Info;
 
-class InfoPivotTable
+@:keep class InfoPivotTable
 {
 	static var defaultStartColor = new Hsl(210, 1, 1);
 	static var defaultEndColor = new Hsl(210, 1, 0.5);

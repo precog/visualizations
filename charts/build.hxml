@@ -2,10 +2,12 @@
 -cp ../lib/src
 -cp ../../../extern/caffeine-hx/ext3/
 -lib thx
+-lib dhx
 -lib hxevents
 -js bin/js/reportgrid-charts.js
 -main rg.app.charts.JSBridge
-#--dead-code-elimination
 -D js_shims
+--dead-code-elimination
+--macro keep(["thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
 #--connect 8888
-#-debug
+-debug

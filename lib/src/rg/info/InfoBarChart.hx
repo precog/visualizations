@@ -7,7 +7,7 @@ package rg.info;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
 
-class InfoBarChart extends InfoCartesianChart
+@:keep class InfoBarChart extends InfoCartesianChart
 {
 	public var stacked : Bool;
 	public var effect : GradientEffect;

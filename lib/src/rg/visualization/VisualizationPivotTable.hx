@@ -7,7 +7,7 @@ package rg.visualization;
 import rg.info.InfoPivotTable;
 import rg.html.chart.PivotTable;
 import thx.error.NotImplemented;
-import thx.js.Selection;
+import dhx.Selection;
 import rg.data.DataPoint;
 
 // TODO wire color paramaters
