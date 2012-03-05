@@ -23,17 +23,6 @@ class Transformers
 			src = results;
 		}
 		return [src];
-/*
-		var results = [];
-		for(item in data)
-		{
-			for(value in values)
-			{
-				results.push(Objects.copyTo(value, Objects.copyTo(item, {})));
-			}
-		}
-		return results;
-*/
 	}
 
 	public static function split(data : Array<Dynamic>, f : Dynamic -> String) : Array<Array<Dynamic>>
