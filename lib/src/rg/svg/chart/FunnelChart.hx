@@ -178,16 +178,17 @@ class FunnelChart extends Chart
 
 		// calculate h
 		h = ((height - topheight - bottomheight) - (dps.length - 1) * padding) / dps.length;
-
 		top.attr("transform").string("translate(0," + (1 + topheight) + ")");
 
 		var section = g.selectAll("g.section").data(dps);
 		var enter = section.enter()
 			.append("svg:g")
 			.attr("class").string("section")
-			.attr("transform").stringf(function(d, i) return "translate(0,"
-			+ (topheight + i * (padding + h))
-			+ ")")
+			.attr("transform").stringf(function(d, i) {
+				return "translate(0,"
+				+ (topheight + i * (padding + h))
+				+ ")";
+			})
 		;
 
 		var funnel = enter
@@ -208,7 +209,6 @@ class FunnelChart extends Chart
 		});
 		if(displayGradient)
 			enter.eachNode(externalGradient);
-
 		var ga = g.selectAll("g.arrow")
 			.data(dps)
 			.enter()

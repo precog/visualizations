@@ -89,12 +89,12 @@ class Label
 
 	public function place(x : Float, y : Float, angle : Float)
 	{
-		this.x = x;
-		this.y = y;
+		this.x = Math.isNaN(x) ? 0.0 : x;
+		this.y = Math.isNaN(y) ? 0.0 : y;
 		this.angle = angle % 360;
 		if (this.angle < 0)
 			this.angle += 360;
-		g.attr("transform").string("translate(" + x + "," + y + ")");
+		g.attr("transform").string("translate(" + this.x + "," + this.y + ")");
 		switch(orientation)
 		{
 			case FixedAngle(a):
@@ -118,7 +118,9 @@ class Label
 		shadowOffsetX = x;
 		shadowOffsetY = y;
 		if (shadow)
+		{
 			gshadow.attr("transform").string("translate("+shadowOffsetX+","+shadowOffsetY+")");
+		}
 	}
 
 	function setText(v : String)

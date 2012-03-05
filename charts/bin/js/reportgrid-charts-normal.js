@@ -1014,7 +1014,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.3.7353"};
+	r.info.charts = { version : "1.4.3.7361"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -3651,11 +3651,11 @@ rg.svg.widget.Label.prototype = {
 		}
 	}
 	,place: function(x,y,angle) {
-		this.x = x;
-		this.y = y;
+		this.x = Math.isNaN(x)?0.0:x;
+		this.y = Math.isNaN(y)?0.0:y;
 		this.angle = angle % 360;
 		if(this.angle < 0) this.angle += 360;
-		this.g.attr("transform").string("translate(" + x + "," + y + ")");
+		this.g.attr("transform").string("translate(" + this.x + "," + this.y + ")");
 		var $e = (this.orientation);
 		switch( $e[1] ) {
 		case 0:
