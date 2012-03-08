@@ -30,7 +30,7 @@ class Transformers
 		var map     = new Hash(),
 			result  = [];
 		data.each(function(dp, _) {
-			var name = f(dp),
+			var name = "" + f(dp),
 				pos  = map.get(name);
 			if(null == pos)
 			{

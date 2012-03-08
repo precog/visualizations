@@ -239,6 +239,7 @@ class Geo extends Chart
 	override public function init()
 	{
 		super.init();
+		Tooltip.instance.hide();
 		if (null == tooltip)
 		{
 			tooltip = Tooltip.instance;

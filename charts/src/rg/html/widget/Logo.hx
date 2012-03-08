@@ -7,6 +7,21 @@ import js.Dom;
 
 class Logo
 {
+	static var registry = new Hash();
+	public static function createLogo(container : Selection, padright : Int)
+	{
+		var id   = container.attr("id").get(),
+			logo = registry.get(id);
+		trace(id);
+		if(null == logo)
+		{
+			registry.set(id, logo = new Logo(container, padright));
+		} else {
+			logo.live();
+		}
+		return logo;
+	}
+
 	public var chartContainer(default, null) : Selection;
 	static var _id = 0;
 	static inline var LOGO_WIDTH = 194;
@@ -18,7 +33,7 @@ class Logo
 	var id : Int;
 	var mapvalues : Hash<Dynamic>;
 	var padRight : Int;
-	public function new(container : Selection, padright : Int)
+	function new(container : Selection, padright : Int)
 	{
 		mapvalues = new Hash();
 		this.padRight = padright;

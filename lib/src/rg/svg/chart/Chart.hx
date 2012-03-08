@@ -47,6 +47,7 @@ class Chart extends Layer
 
 	public function init()
 	{
+		Tooltip.instance.hide();
 		if (null != labelDataPointOver)
 		{
 			tooltip = Tooltip.instance;

@@ -107,9 +107,9 @@ class PieChart extends Chart
 	{
 		var pv = variableDependent.type;
 		// filter out dp with zero values
-		dp = dp.filter(function(dp) {
-			return DataPoints.value(dp, pv) > 0;
-		});
+//		dp = dp.filter(function(dp) {
+//			return DataPoints.value(dp, pv) > 0;
+//		});
 
 		stats = variableDependent.stats;
 		// data
@@ -206,6 +206,10 @@ class PieChart extends Chart
 			-2.5 + Math.cos(a) * r,
 			-2.5 + Math.sin(a) * r,
 			Const.TO_DEGREE * a);
+		if(DataPoints.value(d.dp, stats.type) == 0)
+			label.hide();
+		else
+			label.show();
 	}
 
 	function appendLabel(dom, i : Int)
@@ -231,6 +235,8 @@ class PieChart extends Chart
 			-2.5 + Math.sin(a) * r,
 			Const.TO_DEGREE * a);
 		labels.set(d.id, label);
+		if(DataPoints.value(d.dp, stats.type) <= 0)
+			label.hide();
 	}
 
 	function applyGradient(n, i : Int)

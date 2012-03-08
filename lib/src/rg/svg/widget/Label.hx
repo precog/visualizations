@@ -22,6 +22,7 @@ class Label
 	public var shadowOffsetY(default, null) : Float;
 	public var shadow(default, null) : Bool;
 	public var outline(default, null) : Bool;
+	public var visible(default, null) : Bool;
 
 	var g : Selection;
 	var gshadow : Selection;
@@ -66,6 +67,26 @@ class Label
 		angle = 0;
 		orientation = FixedAngle(0);
 		anchor = Center;
+		visible = true;
+	}
+
+	public function show()
+	{
+		if(visible) return;
+		visible = true;
+		_toggleVisibility();
+	}
+
+	public function hide()
+	{
+		if(!visible) return;
+		visible = false;
+		_toggleVisibility();
+	}
+
+	function _toggleVisibility()
+	{
+		g.style("opacity").float(visible ? 1 : 0);
 	}
 
 	public function addClass(name : String)

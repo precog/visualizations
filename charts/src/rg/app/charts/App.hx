@@ -138,7 +138,7 @@ class App
 			{
 				visualization.addReadyOnce(function()
 				{
-					var widget = new Logo(visualization.container, brandPadding);
+					var widget = Logo.createLogo(visualization.container, brandPadding);
 					visualization.setVerticalOffset(logoHeight);
 				});
 			}
