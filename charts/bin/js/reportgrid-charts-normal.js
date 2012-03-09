@@ -5927,7 +5927,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.3.7384"};
+	r.info.charts = { version : "1.4.4.7396"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -6342,7 +6342,13 @@ rg.axis.AxisTime.prototype = {
 		return rg.util.Periodicity.range(start,end,this.periodicity);
 	}
 	,scale: function(start,end,v) {
-		return (v - start) / (end - start);
+		switch( (this.scaleDistribution)[1] ) {
+		case 1:
+			return (v - start) / (end - start);
+		default:
+			var values = this.range(start,end);
+			return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,values.indexOf(v),values.length);
+		}
 	}
 	,setScaleDistribution: function(v) {
 		return this.scaleDistribution = v;
@@ -8187,6 +8193,7 @@ rg.html.chart.Leadeboard = $hxClasses["rg.html.chart.Leadeboard"] = function(con
 	this._created = 0;
 	this.displayGradient = true;
 	this.useMax = false;
+	this.colorScale = false;
 };
 rg.html.chart.Leadeboard.__name__ = ["rg","html","chart","Leadeboard"];
 rg.html.chart.Leadeboard.prototype = {
@@ -8200,6 +8207,7 @@ rg.html.chart.Leadeboard.prototype = {
 	,sortDataPoint: null
 	,displayGradient: null
 	,useMax: null
+	,colorScale: null
 	,ready: null
 	,displayBar: null
 	,container: null
@@ -8245,17 +8253,22 @@ rg.html.chart.Leadeboard.prototype = {
 		var enterli = choice.enter().append("li");
 		enterli.attr("title").stringf(this.lTitle.$bind(this));
 		enterli.append("div").attr("class").stringf(function(_,i) {
-			return i % 2 == 0?"background fill-0":"background";
+			return i % 2 == 0?"rg_background fill-0":"rg_background";
 		});
-		var enterlabels = enterli.append("div").attr("class").string("labels");
-		if(null != this.labelRank.$bind(this)) enterlabels.append("div").attr("class").string("rank").text().stringf(this.lRank.$bind(this));
-		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("description color-0").text().stringf(this.lDataPoint.$bind(this));
-		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("value color-2").text().stringf(this.lValue.$bind(this));
+		var enterlabels = enterli.append("div").attr("class").string("rg_labels");
+		if(null != this.labelRank.$bind(this)) {
+			var rank = enterlabels.append("div").text().stringf(this.lRank.$bind(this));
+			if(this.colorScale) rank.attr("class").stringf(function(_,i) {
+				return "rg_rank fill fill-" + i;
+			}); else rank.attr("class").string("rg_rank");
+		}
+		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("rg_description color-0").text().stringf(this.lDataPoint.$bind(this));
+		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("rg_value color-2").text().stringf(this.lValue.$bind(this));
 		enterli.append("div").attr("class").string("clear");
 		if(this.displayBar) {
-			var barpadding = enterli.append("div").attr("class").string("barpadding"), enterbar = barpadding.append("div").attr("class").string("barcontainer");
-			enterbar.append("div").attr("class").string("barback fill-0");
-			enterbar.append("div").attr("class").string("bar fill-0").style("width").stringf(this.backgroundSize.$bind(this));
+			var barpadding = enterli.append("div").attr("class").string("rg_barpadding"), enterbar = barpadding.append("div").attr("class").string("rg_barcontainer");
+			enterbar.append("div").attr("class").string("rg_barback fill-0");
+			enterbar.append("div").attr("class").string("rg_bar fill-0").style("width").stringf(this.backgroundSize.$bind(this));
 			enterli.append("div").attr("class").string("clear");
 		}
 		if(null != this.click) enterli.on("click.user",this.onClick.$bind(this));
@@ -8965,9 +8978,9 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.tooltip = dhx.Dom.selectNode(el).append("div").style("display").string("none").style("position").string("absolute").style("opacity")["float"](0).style("left").string("0px").style("top").string("0px").attr("class").string("rg tooltip").style("z-index").string("1000000");
 	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute");
 	this.setAnchorClass("");
-	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("container");
-	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
-	this.content = this.container.append("div").attr("class").string("content");
+	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("rg_container");
+	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("rg_background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
+	this.content = this.container.append("div").attr("class").string("rg_content");
 	this.content.onNode("DOMSubtreeModified",this.resize.$bind(this));
 	this.anchortype = "bottomright";
 	this.anchordistance = 0;
@@ -9019,7 +9032,7 @@ rg.html.widget.Tooltip.prototype = {
 		this.reanchor();
 	}
 	,setAnchorClass: function(value) {
-		this._anchor.attr("class").string("anchor " + value);
+		this._anchor.attr("class").string("rg_anchor " + value);
 	}
 	,setAnchorColor: function(color) {
 		this._anchor.style("background-color").string(color);
@@ -9692,6 +9705,7 @@ rg.info.InfoLeaderboard = $hxClasses["rg.info.InfoLeaderboard"] = function() {
 	this.label = new rg.info.InfoLabelLeaderboard();
 	this.usemax = false;
 	this.displaybar = true;
+	this.colorscale = false;
 };
 rg.info.InfoLeaderboard.__name__ = ["rg","info","InfoLeaderboard"];
 rg.info.InfoLeaderboard.filters = function() {
@@ -9715,6 +9729,8 @@ rg.info.InfoLeaderboard.filters = function() {
 		return Std["is"](v,Bool);
 	}, filter : null},{ field : "usemax", validator : function(v) {
 		return Std["is"](v,Bool);
+	}, filter : null},{ field : "colorscale", validator : function(v) {
+		return Std["is"](v,Bool);
 	}, filter : null}];
 }
 rg.info.InfoLeaderboard.prototype = {
@@ -9724,6 +9740,7 @@ rg.info.InfoLeaderboard.prototype = {
 	,sortDataPoint: null
 	,usemax: null
 	,displaybar: null
+	,colorscale: null
 	,__class__: rg.info.InfoLeaderboard
 }
 rg.info.InfoLineChart = $hxClasses["rg.info.InfoLineChart"] = function() {
@@ -11065,6 +11082,13 @@ rg.query.BaseQuery.prototype = {
 			return d;
 		});
 	}
+	,console: function() {
+		return this.stackTransform(function(data) {
+			var API = console;
+			if(null != API) API.log(data);
+			return data;
+		});
+	}
 	,renameFields: function(o) {
 		var pairs = Reflect.fields(o).map(function(d,_) {
 			return { src : d, dst : Reflect.field(o,d)};
@@ -11272,6 +11296,23 @@ rg.query.BaseQuery.prototype = {
 		return this.stackTransform(function(arr) {
 			me._first._store.set(name,arr.copy());
 			return arr;
+		});
+	}
+	,stackSort: function(f) {
+		return this.stackTransform(function(arr) {
+			arr.sort(f);
+			return arr;
+		});
+	}
+	,stackSortValue: function(fieldName,ascending) {
+		if(null == ascending) ascending = true;
+		var sum = function(arr) {
+			return arr.reduce(function(value,item,_) {
+				return value + Reflect.field(item,fieldName);
+			},0);
+		};
+		return this.stackSort(function(a,b) {
+			return (ascending?1:-1) * (sum(a) - sum(b));
 		});
 	}
 	,stackRetrieve: function(name) {
@@ -16614,6 +16655,7 @@ rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.V
 		this.chart.animationEase = this.info.animation.ease;
 		this.chart.useMax = this.info.usemax;
 		this.chart.displayBar = this.info.displaybar;
+		this.chart.colorScale = this.info.colorscale;
 		if(null != this.info.click) this.chart.click = this.info.click;
 		if(null != this.info.sortDataPoint) this.chart.sortDataPoint = this.info.sortDataPoint;
 		this.chart.init();
