@@ -31,6 +31,7 @@ class Leadeboard
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var displayGradient : Bool;
 	public var useMax : Bool;
+	public var colorScale : Bool;
 	public var ready(default, null) : Notifier;
 
 	public var displayBar : Bool;
@@ -51,6 +52,7 @@ class Leadeboard
 		_created = 0;
 		displayGradient = true;
 		useMax = false;
+		colorScale = false;
 	}
 
 	public dynamic function labelDataPoint(dp : DataPoint, stats : StatsNumeric)
@@ -112,24 +114,27 @@ class Leadeboard
 
 		//background
 		enterli.append("div").attr("class").stringf(function(_, i) {
-			 return i % 2 == 0 ? "background fill-0" : "background";
+			 return i % 2 == 0 ? "rg_background fill-0" : "rg_background";
 		});
 
-		var enterlabels = enterli.append("div").attr("class").string("labels");
+		var enterlabels = enterli.append("div").attr("class").string("rg_labels");
 
 		// rank
 		if(null != labelRank)
 		{
-			enterlabels.append("div")
-				.attr("class").string("rank")
+			var rank = enterlabels.append("div")
 				.text().stringf(lRank);
+			if(colorScale)
+				rank.attr("class").stringf(function(_, i) return "rg_rank fill fill-"+i);
+			else
+				rank.attr("class").string("rg_rank");
 		}
 
 		// datapoint
 		if(null != labelDataPoint)
 		{
 			enterlabels.append("span")
-				.attr("class").string("description color-0")
+				.attr("class").string("rg_description color-0")
 				.text().stringf(lDataPoint);
 		}
 
@@ -137,7 +142,7 @@ class Leadeboard
 		if(null != labelValue)
 		{
 			enterlabels.append("span")
-				.attr("class").string("value color-2")
+				.attr("class").string("rg_value color-2")
 				.text().stringf(lValue);
 		}
 
@@ -146,13 +151,13 @@ class Leadeboard
 		// bar
 		if(displayBar)
 		{
-			var barpadding = enterli.append("div").attr("class").string("barpadding"),
+			var barpadding = enterli.append("div").attr("class").string("rg_barpadding"),
 				enterbar = barpadding.append("div")
-				.attr("class").string("barcontainer");
+				.attr("class").string("rg_barcontainer");
 			enterbar.append("div")
-				.attr("class").string("barback fill-0");
+				.attr("class").string("rg_barback fill-0");
 			enterbar.append("div")
-				.attr("class").string("bar fill-0")
+				.attr("class").string("rg_bar fill-0")
 				.style("width").stringf(backgroundSize);
 			enterli.append("div").attr("class").string("clear");
 		}

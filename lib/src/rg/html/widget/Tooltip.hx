@@ -45,7 +45,7 @@ class Tooltip
 
 		container = tooltip.append("div")
 			.style("position").string("relative")
-			.attr("class").string("container")
+			.attr("class").string("rg_container")
 		;
 
 		background = container.append("div")
@@ -53,14 +53,14 @@ class Tooltip
 			.style("display").string("block")
 			.append("div")
 				.style("z-index").string("-1")
-				.attr("class").string("background")
+				.attr("class").string("rg_background")
 				.style("position").string("absolute")
 				.style("left").string("0")
 				.style("right").string("0")
 				.style("top").string("0")
 				.style("bottom").string("0");
 		content = container.append("div")
-			.attr("class").string("content");
+			.attr("class").string("rg_content");
 		content
 			.onNode("DOMSubtreeModified", resize);
 
@@ -120,7 +120,7 @@ class Tooltip
 
 	public function setAnchorClass(value : String)
 	{
-		_anchor.attr("class").string("anchor "+value);
+		_anchor.attr("class").string("rg_anchor "+value);
 	}
 
 	public function setAnchorColor(color : Null<String>)

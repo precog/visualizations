@@ -86,6 +86,16 @@ using Arrays;
 		});
 	}
 
+	public function console()
+	{
+		return stackTransform(function(data) {
+			var API : { public function log(value : Dynamic) : Void; } = untyped __js__("console");
+			if(null != API)
+				API.log(data);
+			return data;
+		});
+	}
+
 	public function renameFields(o : Dynamic)
 	{
 		var pairs = Reflect.fields(o).map(function(d, _) {
@@ -197,7 +207,6 @@ using Arrays;
 			function(_, _) return start,
 			function(index, dp, result)
 			{
-				trace(index);
 				Reflect.setField(dp, name, index);
 				result.push(dp);
 				return ++index;
@@ -357,6 +366,29 @@ using Arrays;
 		return stackTransform(function(arr : Array<Array<Dynamic>>) {
 			_first._store.set(name, arr.copy());
 			return arr;
+		});
+	}
+
+	public function stackSort(f : Array<Dynamic> -> Array<Dynamic> -> Int)
+	{
+		return stackTransform(function(arr : Array<Array<Dynamic>>) {
+			arr.sort(f);
+			return arr;
+		});
+	}
+
+	public function stackSortValue(fieldName : String, ?ascending : Bool)
+	{
+		if(null == ascending)
+			ascending = true;
+		function sum(arr : Array<Dynamic>)
+		{
+			return Arrays.reduce(arr, function(value, item, _) {
+				return value + Reflect.field(item, fieldName);
+			}, 0);
+		}
+		return stackSort(function(a, b) {
+			return (ascending ? 1 : -1) * (sum(a) - sum(b));
 		});
 	}
 

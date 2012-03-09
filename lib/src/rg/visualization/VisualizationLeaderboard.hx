@@ -38,6 +38,7 @@ class VisualizationLeaderboard extends VisualizationHtml
 		chart.animationEase = info.animation.ease;
 		chart.useMax = info.usemax;
 		chart.displayBar = info.displaybar;
+		chart.colorScale = info.colorscale;
 
 		if (null != info.click)
 			chart.click = info.click;

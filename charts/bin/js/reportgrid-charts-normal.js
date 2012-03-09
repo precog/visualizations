@@ -5927,7 +5927,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.3.7382"};
+	r.info.charts = { version : "1.4.3.7384"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);

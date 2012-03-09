@@ -84,9 +84,13 @@ class AxisTime implements IAxisDiscrete<Float>
 
 	public function scale(start : Float, end : Float, v : Float)
 	{
-		return (v - start) / (end - start);
-//		var values = range(start, end);
-//		return ScaleDistributions.distribute(scaleDistribution, Arrays.indexOf(values, v), values.length);
+		switch (scaleDistribution) {
+			case ScaleDistribution.ScaleFill:
+				return (v - start) / (end - start);
+			default:
+				var values = range(start, end);
+				return ScaleDistributions.distribute(scaleDistribution, Arrays.indexOf(values, v), values.length);
+		}
 	}
 
 	function setScaleDistribution(v : ScaleDistribution)

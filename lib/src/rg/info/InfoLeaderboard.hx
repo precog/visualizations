@@ -16,6 +16,7 @@ using rg.info.Info;
 	public var sortDataPoint : DataPoint -> DataPoint -> Int;
 	public var usemax : Bool;
 	public var displaybar : Bool;
+	public var colorscale : Bool;
 
 	public function new()
 	{
@@ -23,6 +24,7 @@ using rg.info.Info;
 		label = new InfoLabelLeaderboard();
 		usemax = false;
 		displaybar = true;
+		colorscale = false;
 	}
 
 	public static function filters()
@@ -62,6 +64,10 @@ using rg.info.Info;
 			filter : null
 		}, {
 			field : "usemax",
+			validator : function(v) return Std.is(v, Bool),
+			filter : null
+		}, {
+			field : "colorscale",
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
 		}];
