@@ -114,6 +114,11 @@ using Arrays;
 		});
 	}
 
+	public function toObject(field : String)
+	{
+		return transform(Transformers.toObject(field));
+	}
+
 	public function transform(t : Transformer)
 	{
 		return stackAsync(asyncTransform(t));

@@ -49,6 +49,17 @@ class Transformers
 		return function(data : Array<Dynamic>) return data.map(handler);
 	}
 
+	public static function toObject(field : String)
+	{
+		return function(data : Array<Dynamic>) {
+			return data.map(function(dp, _) {
+				var ob = {};
+				Reflect.setField(ob, field, dp);
+				return ob;
+			});
+		}
+	}
+
 	public static function filter(handler : Dynamic -> Bool)
 	{
 		return function(data : Array<Dynamic>) return data.filter(handler);

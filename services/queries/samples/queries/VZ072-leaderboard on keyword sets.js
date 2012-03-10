@@ -1,8 +1,9 @@
 //** QUERY
 ReportGrid.query
 	.histogram({
+		path : pathvalue,
 		event : "impression",
-		path : pathvalue
+		property : "keywords"
 	})
 	.map(function(dp) {
 		var keywords = [];

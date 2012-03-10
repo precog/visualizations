@@ -80,6 +80,17 @@ class ReportGridTransformers
 		});
 	}
 
+	public static function events(arr : Array<Dynamic>, params : { event : String }, keep : Array<String>) : Array<Dynamic>
+	{
+		if(keep.length == 0)
+			return arr;
+		else
+			return arr.map(function(o, _) {
+				_keep(params, o, keep);
+				return o;
+			});
+	}
+
 	public static function histogramTag(counts : Dynamic, params : { property : String, tag : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var tag      = params.tag,

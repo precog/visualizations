@@ -20,6 +20,7 @@ interface IExecutorReportGrid
 	public function intersect(path : String, options : { }, success : Dynamic<Dynamic> -> Void, ?error : String -> Void) : Void;
 	public function histogram(path : String, options : { property : String, ?top : Int, ?bottom : Int }, success : Int -> Void, ?error : String -> Void) : Void;
 	public function propertiesHistogram(path : String, options :  { property : String, ?top : Int, ?bottom : Int }, success : Int -> Void, ?error : String -> Void) : Void;
+	public function events(path : String, options : { event : String }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void;
 }
 
 typedef TimeSeriesType = Array<Array<Dynamic>>;

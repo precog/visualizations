@@ -5927,7 +5927,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.4.7396"};
+	r.info.charts = { version : "1.4.4.7397"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -11104,6 +11104,9 @@ rg.query.BaseQuery.prototype = {
 			return out;
 		});
 	}
+	,toObject: function(field) {
+		return this.transform(rg.query.Transformers.toObject(field));
+	}
 	,transform: function(t) {
 		return this.stackAsync(rg.query.BaseQuery.asyncTransform(t));
 	}
@@ -11418,6 +11421,15 @@ rg.query.Transformers.split = function(data,f) {
 rg.query.Transformers.map = function(handler) {
 	return function(data) {
 		return data.map(handler);
+	};
+}
+rg.query.Transformers.toObject = function(field) {
+	return function(data) {
+		return data.map(function(dp,_) {
+			var ob = { };
+			ob[field] = dp;
+			return ob;
+		});
 	};
 }
 rg.query.Transformers.filter = function(handler) {

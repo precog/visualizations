@@ -87,6 +87,11 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		execute("propertiesHistogram", path, options, success, error);
 	}
 
+	public function events(path : String, options : { event : String }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void
+	{
+		execute("events", path, options, success, error);
+	}
+
 	public function setCacheTimeout(t : Int)
 	{
 		timeout = t;

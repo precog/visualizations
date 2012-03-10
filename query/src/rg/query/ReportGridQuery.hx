@@ -362,6 +362,36 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
+//ReportGrid.events('/query/test2', { event : "impression", start : "2012-03-01", end : "2012-03-11", tag : "location", location : "/italy" }, function(data) { console.log(data) })
+// properties=a,b,c
+	public function rawEvents(?p : { ?path : String, ?event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?keep : Array<String>)
+	{
+		keep = _normalizeKeep(keep);
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+			_ensureOptionalTimeParams(params);
+			var options : Dynamic = _defaultOptions(params, { event : params.event });
+			if(null != params.properties)
+			{
+				if(Std.is(params.properties, Arrays))
+				{
+					var arr : Array<String> = params.properties;
+					options.properties = arr.join(",");
+				} else {
+					options.properties = params.properties;
+				}
+			}
+			if(null != params.limit)
+			{
+				options.limit = params.limit;
+			}
+			executor.events(
+				params.path,
+				options,
+				_complete(ReportGridTransformers.events, params, keep, handler)
+			);
+		});
+	}
+
 	static function _defaultOptions(params : { ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?options : Dynamic) : Dynamic
 	{
 		if(null == options)

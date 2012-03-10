@@ -3740,7 +3740,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.range(a,b,p);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.2.1.1511"};
+	r.info.query = { version : "1.2.2.1531"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -3799,6 +3799,7 @@ rg.data.reportgrid.IExecutorReportGrid.prototype = {
 	,intersect: null
 	,histogram: null
 	,propertiesHistogram: null
+	,events: null
 	,__class__: rg.data.reportgrid.IExecutorReportGrid
 }
 rg.data.reportgrid.ReportGridExecutorCache = $hxClasses["rg.data.reportgrid.ReportGridExecutorCache"] = function(executor,storage,timeout) {
@@ -3853,6 +3854,9 @@ rg.data.reportgrid.ReportGridExecutorCache.prototype = {
 	}
 	,propertiesHistogram: function(path,options,success,error) {
 		this.execute("propertiesHistogram",path,options,success,error);
+	}
+	,events: function(path,options,success,error) {
+		this.execute("events",path,options,success,error);
 	}
 	,setCacheTimeout: function(t) {
 		this.timeout = t;
@@ -4028,6 +4032,9 @@ rg.query.BaseQuery.prototype = {
 			}
 			return out;
 		});
+	}
+	,toObject: function(field) {
+		return this.transform(rg.query.Transformers.toObject(field));
 	}
 	,transform: function(t) {
 		return this.stackAsync(rg.query.BaseQuery.asyncTransform(t));
@@ -4369,7 +4376,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 453, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 483, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
@@ -4569,6 +4576,22 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			}
 		});
 	}
+	,rawEvents: function(p,keep) {
+		var me = this;
+		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ event : params.event});
+			if(null != params.properties) {
+				if(Std["is"](params.properties,Arrays)) {
+					var arr = params.properties;
+					options.properties = arr.join(",");
+				} else options.properties = params.properties;
+			}
+			if(null != params.limit) options.limit = params.limit;
+			me.executor.events(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.events,params,keep,handler));
+		});
+	}
 	,_crossp: function(p) {
 		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).stackCross();
 	}
@@ -4643,6 +4666,12 @@ rg.query.ReportGridTransformers.histogram = function(arr,params,keep) {
 		rg.query.ReportGridTransformers._keep(params,o,keep);
 		if(null != params.where) Objects.copyTo(params.where,o);
 		o[property] = value[0];
+		return o;
+	});
+}
+rg.query.ReportGridTransformers.events = function(arr,params,keep) {
+	if(keep.length == 0) return arr; else return arr.map(function(o,_) {
+		rg.query.ReportGridTransformers._keep(params,o,keep);
 		return o;
 	});
 }
@@ -4962,6 +4991,15 @@ rg.query.Transformers.split = function(data,f) {
 rg.query.Transformers.map = function(handler) {
 	return function(data) {
 		return data.map(handler);
+	};
+}
+rg.query.Transformers.toObject = function(field) {
+	return function(data) {
+		return data.map(function(dp,_) {
+			var ob = { };
+			ob[field] = dp;
+			return ob;
+		});
 	};
 }
 rg.query.Transformers.filter = function(handler) {
