@@ -45,7 +45,7 @@ class JSBridge
 			timeout = 120,
 			executor : IExecutorReportGrid = new ReportGridExecutorCache(r, storage, timeout);
 		r.query = createQuery(executor);
-		r.date  = {
+		r.date                 = {
 			range : function(a : Dynamic, b : Dynamic, p : String) {
 				if (Std.is(a, String))
 					a = DateParser.parse(a);
@@ -61,6 +61,11 @@ class JSBridge
 				if (Std.is(b, Date))
 					b = b.getTime();
 				return Periodicity.range(a, b, p);
+			},
+			formatPeriodicity : function(date, periodicity)
+			{
+				var d : Float = Std.is(cast date, Date) ? date.getTime() : (Std.is(cast date, Float) ? cast date : thx.date.DateParser.parse(cast date).getTime() );
+				return Periodicity.format(periodicity, d);
 			},
 			parse : DateParser.parse,
 			snap : Dates.snap

@@ -12,7 +12,6 @@ class Logo
 	{
 		var id   = container.attr("id").get(),
 			logo = registry.get(id);
-		trace(id);
 		if(null == logo)
 		{
 			registry.set(id, logo = new Logo(container, padright));

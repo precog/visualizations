@@ -6,6 +6,7 @@
 package rg.info;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
+using rg.info.Info;
 
 @:keep class InfoBarChart extends InfoCartesianChart
 {
@@ -15,9 +16,12 @@ import rg.svg.chart.GradientEffects;
 	public var barPaddingAxis: Float;
 	public var barPadding : Float;
 	public var horizontal : Bool;
+	public var segment : InfoSegment;
+
 	public function new()
 	{
 		super();
+		segment = new InfoSegment();
 		stacked = true;
 		effect = GradientEffect.Gradient(1.25);
 		barPadding = 12;
@@ -63,6 +67,20 @@ import rg.svg.chart.GradientEffects;
 			filter : function(v) return [{
 				field : "barPaddingDataPoint",
 				value : v
+			}]
+		}, {
+			field : "segmenton",
+			validator : function(v) return Std.is(v, String),
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed( { on : v } )
+			}]
+		}, {
+			field : "segment",
+			validator : function(v) return Types.isAnonymous(v),
+			filter : function(v) return [{
+				field : "segment",
+				value : new InfoSegment().feed(v)
 			}]
 		}].concat(cast InfoCartesianChart.filters());
 	}

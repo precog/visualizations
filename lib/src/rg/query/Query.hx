@@ -86,12 +86,12 @@ using Arrays;
 		});
 	}
 
-	public function console()
+	public function console(?label : String)
 	{
 		return stackTransform(function(data) {
 			var API : { public function log(value : Dynamic) : Void; } = untyped __js__("console");
 			if(null != API)
-				API.log(data);
+				API.log((null == label ? "" : label + ": ") + Dynamics.string(data));
 			return data;
 		});
 	}

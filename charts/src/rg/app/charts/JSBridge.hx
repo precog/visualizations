@@ -132,6 +132,11 @@ class JSBridge
 					b = b.getTime();
 				return Periodicity.range(a, b, p);
 			},
+			formatPeriodicity : function(date, periodicity)
+			{
+				var d : Float = Std.is(cast date, Date) ? date.getTime() : (Std.is(cast date, Float) ? cast date : thx.date.DateParser.parse(cast date).getTime() );
+				return Periodicity.format(periodicity, d);
+			},
 			parse : DateParser.parse,
 			snap : Dates.snap
 		};

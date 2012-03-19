@@ -125,15 +125,19 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String }, ?keep : Array<String>)
+	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
 // TODO tag?
 // TODO time range?
 			if(null == params.type)
 				params.type = "mean";
-			var options = { property : params.event + _prefixProperty(params.property), periodicity : "eternity" };
+			_ensureOptionalTimeParams(params);
+			var options : Dynamic = _defaultOptions(params);
+			trace(options);
+			options.property = params.event + _prefixProperty(params.property);
+			options.periodicity = "single";
 			switch(params.type.toLowerCase())
 			{
 				case "mean":

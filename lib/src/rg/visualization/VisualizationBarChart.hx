@@ -11,6 +11,7 @@ import rg.data.Segmenter;
 import rg.util.DataPoints;
 import rg.data.Variable;
 import rg.axis.IAxis;
+import thx.collection.Set;
 using Arrays;
 
 class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
@@ -58,6 +59,7 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 		var results = [],
 			variable = independentVariables[0],
 			values = variable.axis.range(variable.min(), variable.max());
+
 		for (value in values)
 		{
 			var axisresults = [];
@@ -67,6 +69,36 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 				axisresults.push(dps.filter(function(d) return Reflect.field(d, variable.type) == value));
 			}
 			results.push(axisresults);
+		}
+
+		if(null != infoBar.segment.on)
+		{
+			var segmenton = infoBar.segment.on,
+				svalues = new Set();
+			dps.each(function(dp, _) { svalues.add(Reflect.field(dp, segmenton)); });
+			for (i in 0...values.length)
+			{
+				for (j in 0...dependentVariables.length)
+				{
+					var segment = results[i][j],
+						replace = [],
+						pos     = 0;
+					for(svalue in svalues)
+					{
+						if(svalue == Reflect.field(segment[pos], segmenton))
+						{
+							replace.push(segment[pos++]);
+						} else {
+							var ob : Dynamic = {};
+							Reflect.setField(ob, segmenton, svalue);
+							Reflect.setField(ob, variable.type, values[i]);
+							Reflect.setField(ob, dependentVariables[j].type, 0);
+							replace.push(ob);
+						}
+					}
+					results[i][j] = replace;
+				}
+			}
 		}
 		return results;
 	}

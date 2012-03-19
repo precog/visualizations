@@ -30,7 +30,7 @@ class Periodicity
 	{
 		return switch(periodicity)
 		{
-			case "eternity":
+			case "eternity", "single":
 				[0.0, 0.0];
 			case "minute":
 				parsePair("6 hours ago", "now");
@@ -76,7 +76,7 @@ class Periodicity
 	{
 		return switch(periodicity)
 		{
-			case "eternity": 1;
+			case "eternity", "single": 1;
 			case "minute":   Math.floor((end - start) / 60000);
 			case "hour":     Math.floor((end - start) / (60 * 60000));
 			case "day":      Math.floor((end - start) / (24 * 60 * 60000));
@@ -108,7 +108,7 @@ class Periodicity
 //		end = Dates.snap(end, periodicity);
 		switch(periodicity)
 		{
-			case "eternity":
+			case "eternity", "single":
 				return [0.0];
 			case "minute":
 				step = 60000;
@@ -164,7 +164,7 @@ class Periodicity
 			return date;
 		return switch(periodicity)
 		{
-			case "eternity": date;
+			case "eternity", "single": date;
 			case "minute": date + 60000 * step;
 			case "hour": date + 60 * 60000 * step;
 			case "day": date + 24 * 60 * 60000 * step;
@@ -199,6 +199,7 @@ class Periodicity
 		return switch(periodicity)
 		{
 			case "eternity": function(_ : Float) return "all time";
+			case "single": function(_ : Float) return "period";
 			case "minute", "hour": function(v : Float) return FormatDate.timeShort(Date.fromTime(v));
 			case "day", "week": function(v : Float) return FormatDate.dateShort(Date.fromTime(v));
 			case "month": function(v : Float) return FormatDate.yearMonth(Date.fromTime(v));
@@ -211,6 +212,7 @@ class Periodicity
 		switch(periodicity)
 		{
 			case "eternity": return "all time";
+			case "single": return "period";
 			case "minute": return FormatDate.timeShort(Date.fromTime(v));
 			case "hour": return FormatDate.hourShort(Date.fromTime(v));
 			case "day", "week": return FormatDate.dateShort(Date.fromTime(v));
@@ -224,7 +226,7 @@ class Periodicity
 	{
 		switch(periodicity)
 		{
-			case "eternity": return "all time";
+			case "eternity", "single": return "all time";
 			case "minute":
 				if (firstInSeries("hour", v))
 					return FormatDate.timeShort(Date.fromTime(v));
@@ -261,7 +263,7 @@ class Periodicity
 	{
 		return switch(periodicity)
 		{
-			case "eternity": 0 == v;
+			case "eternity", "single": 0 == v;
 			case "minute":   0 == v % 60000;
 			case "hour":     0 == v % (60000 * 60);
 			case "day":
