@@ -941,14 +941,8 @@ Dates.snap = function(time,period,mode) {
 	case "year":
 		var d = Date.fromTime(time);
 		return new Date(d.getFullYear(),0,1,0,0,0).getTime();
-	case "eternity":
-		return 0;
 	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 113, className : "Dates", methodName : "snap"});
-			return $r;
-		}(this));
+		return 0;
 	} else if(mode > 0) switch(period) {
 	case "second":
 		return Math.ceil(time / 1000.0) * 1000.0;
@@ -966,14 +960,8 @@ Dates.snap = function(time,period,mode) {
 	case "year":
 		var d = Date.fromTime(time);
 		return new Date(d.getFullYear() + 1,0,1,0,0,0).getTime();
-	case "eternity":
-		return 0;
 	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 138, className : "Dates", methodName : "snap"});
-			return $r;
-		}(this));
+		return 0;
 	} else switch(period) {
 	case "second":
 		return Math.round(time / 1000.0) * 1000.0;
@@ -991,14 +979,8 @@ Dates.snap = function(time,period,mode) {
 	case "year":
 		var d = Date.fromTime(time), mod = time > new Date(d.getFullYear(),6,2,0,0,0).getTime()?1:0;
 		return new Date(d.getFullYear() + mod,0,1,0,0,0).getTime();
-	case "eternity":
-		return 0;
 	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("unknown period '{0}'",null,period,{ fileName : "Dates.hx", lineNumber : 164, className : "Dates", methodName : "snap"});
-			return $r;
-		}(this));
+		return 0;
 	}
 }
 Dates.snapToWeekDay = function(time,day) {
@@ -1027,7 +1009,7 @@ Dates.snapToWeekDay = function(time,day) {
 		s = 6;
 		break;
 	default:
-		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 190, className : "Dates", methodName : "snapToWeekDay"});
+		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 184, className : "Dates", methodName : "snapToWeekDay"});
 	}
 	return time - (d - s) % 7 * 24 * 60 * 60 * 1000;
 }
@@ -1347,7 +1329,7 @@ Dynamics.same = function(a,b) {
 		return true;
 	case 7:
 		var e = $e[2];
-		var ea = Type.getEnumName(e), eb = Type.getEnumName(Type.getEnum(b));
+		var ea = Type.getEnumName(e), teb = Type.getEnum(b), eb = Type.getEnumName(teb);
 		if(ea != eb) return false;
 		if(a[1] != b[1]) return false;
 		var pa = a.slice(2), pb = b.slice(2);
@@ -1395,7 +1377,7 @@ Dynamics.same = function(a,b) {
 	}
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 371, className : "Dynamics", methodName : "same"});
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 372, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
 }
@@ -3738,9 +3720,12 @@ rg.app.query.JSBridge.main = function() {
 		if(null == b) b = rg.util.Periodicity.defaultRange(p)[1];
 		if(Std["is"](b,Date)) b = b.getTime();
 		return rg.util.Periodicity.range(a,b,p);
+	}, formatPeriodicity : function(date,periodicity) {
+		var d = Std["is"](date,Date)?date.getTime():Std["is"](date,Float)?date:thx.date.DateParser.parse(date).getTime();
+		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.2.2.1531"};
+	r.info.query = { version : "1.3.0.1549"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -4011,10 +3996,10 @@ rg.query.BaseQuery.prototype = {
 			return d;
 		});
 	}
-	,console: function() {
+	,console: function(label) {
 		return this.stackTransform(function(data) {
 			var API = console;
-			if(null != API) API.log(data);
+			if(null != API) API.log((null == label?"":label + ": ") + Dynamics.string(data));
 			return data;
 		});
 	}
@@ -4376,7 +4361,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 483, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 487, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
@@ -4446,7 +4431,10 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 		keep = null == keep?[]:Std["is"](keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			if(null == params.type) params.type = "mean";
-			var options = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property), periodicity : "eternity"};
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
+			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
+			options.periodicity = "single";
 			switch(params.type.toLowerCase()) {
 			case "mean":
 				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
@@ -5318,7 +5306,7 @@ rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":
+		case "eternity":case "single":
 			$r = [0.0,0.0];
 			break;
 		case "minute":
@@ -5353,7 +5341,7 @@ rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":
+		case "eternity":case "single":
 			$r = 1;
 			break;
 		case "minute":
@@ -5399,7 +5387,7 @@ rg.util.Periodicity.units = function(value,periodicity) {
 rg.util.Periodicity.range = function(start,end,periodicity) {
 	var step = 1000;
 	switch(periodicity) {
-	case "eternity":
+	case "eternity":case "single":
 		return [0.0];
 	case "minute":
 		step = 60000;
@@ -5439,7 +5427,7 @@ rg.util.Periodicity.next = function(periodicity,date,step) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":
+		case "eternity":case "single":
 			$r = date;
 			break;
 		case "minute":
@@ -5497,6 +5485,11 @@ rg.util.Periodicity.formatf = function(periodicity) {
 				return "all time";
 			};
 			break;
+		case "single":
+			$r = function(_) {
+				return "period";
+			};
+			break;
 		case "minute":case "hour":
 			$r = function(v) {
 				return thx.culture.FormatDate.timeShort(Date.fromTime(v));
@@ -5525,6 +5518,8 @@ rg.util.Periodicity.format = function(periodicity,v) {
 	switch(periodicity) {
 	case "eternity":
 		return "all time";
+	case "single":
+		return "period";
 	case "minute":
 		return thx.culture.FormatDate.timeShort(Date.fromTime(v));
 	case "hour":
@@ -5541,7 +5536,7 @@ rg.util.Periodicity.format = function(periodicity,v) {
 }
 rg.util.Periodicity.smartFormat = function(periodicity,v) {
 	switch(periodicity) {
-	case "eternity":
+	case "eternity":case "single":
 		return "all time";
 	case "minute":
 		if(rg.util.Periodicity.firstInSeries("hour",v)) return thx.culture.FormatDate.timeShort(Date.fromTime(v)); else return thx.culture.FormatDate.format("%i",Date.fromTime(v));
@@ -5569,7 +5564,7 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":
+		case "eternity":case "single":
 			$r = 0 == v;
 			break;
 		case "minute":
@@ -6243,7 +6238,7 @@ thx.data.IDataHandler.prototype = {
 	,endArray: null
 	,date: null
 	,string: null
-	,intValue: null
+	,'int': null
 	,'float': null
 	,'null': null
 	,bool: null
@@ -6268,7 +6263,7 @@ thx.data.ValueEncoder.prototype = {
 			this.handler["null"]();
 			break;
 		case 1:
-			this.handler.intValue(o);
+			this.handler["int"](o);
 			break;
 		case 2:
 			this.handler["float"](o);
@@ -6389,7 +6384,7 @@ thx.data.ValueHandler.prototype = {
 	,string: function(s) {
 		this._stack.push(s);
 	}
-	,intValue: function(i) {
+	,'int': function(i) {
 		this._stack.push(i);
 	}
 	,'float': function(f) {
@@ -6411,7 +6406,7 @@ thx.date.DateParser.__name__ = ["thx","date","DateParser"];
 thx.date.DateParser.parse = function(s,d) {
 	var time = thx.date.DateParser.parseTime(s), v;
 	if(null == d) d = Date.now();
-	s = StringTools.replace(s,time.matched,"");
+	if(null != time.matched) s = StringTools.replace(s,time.matched,"");
 	var year = 0, month = 0, day = 0, found = null != time.matched;
 	if(thx.date.DateParser.dateexp.match(s)) {
 		found = true;
@@ -6557,7 +6552,7 @@ thx.date.DateParser.parse = function(s,d) {
 			break;
 		}
 	}
-	if(!found) throw new thx.error.Error("no date information found in the string '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 338, className : "thx.date.DateParser", methodName : "parse"});
+	if(!found) throw new thx.error.Error("no date information found in the string '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 339, className : "thx.date.DateParser", methodName : "parse"});
 	return Date.fromTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
 }
 thx.date.DateParser.parseTime = function(s) {
@@ -6601,7 +6596,7 @@ thx.date.DateParser.parseTime = function(s) {
 		result.second = 59;
 		result.millis = 0.999;
 		break;
-	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 405, className : "thx.date.DateParser", methodName : "parseTime"});
+	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 406, className : "thx.date.DateParser", methodName : "parseTime"});
 	return result;
 }
 thx.date.DateParser.fixyear = function(y) {
@@ -6648,7 +6643,7 @@ thx.util.Message.prototype = {
 	,translate: function(translator,domain) {
 		if(null == domain) domain = translator.getDomain();
 		var culture = thx.culture.Culture.get(domain);
-		if(this.params.length == 1 && Std["is"](this.params[0],Int)) return Strings.format(translator.__(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator._(this.message,domain),this.params,null,culture);
+		if(this.params.length == 1 && Std["is"](this.params[0],Int)) return Strings.format(translator.plural(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator.singular(this.message,domain),this.params,null,culture);
 	}
 	,__class__: thx.util.Message
 }
@@ -6895,7 +6890,7 @@ thx.json.JsonDecoder.prototype = {
 			if(!(i1 >= 48 && i1 <= 57 || i1 >= 97 && i1 <= 102)) this.error("invalid hexadecimal value " + c);
 			v.push(c);
 		}
-		this.handler.intValue(Std.parseInt("0x" + v.join("")));
+		this.handler["int"](Std.parseInt("0x" + v.join("")));
 		return Std.parseInt("0x" + v.join(""));
 	}
 	,parseFloat: function() {
@@ -6912,13 +6907,13 @@ thx.json.JsonDecoder.prototype = {
 			v += this.parseDigits();
 		} catch( e ) {
 			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
-				this.handler.intValue(Std.parseInt(v));
+				this.handler["int"](Std.parseInt(v));
 				return;
 			} else throw(e);
 		}
 		try {
 			if(this.expect(".")) v += "." + this.parseDigits(1); else {
-				this.handler.intValue(Std.parseInt(v));
+				this.handler["int"](Std.parseInt(v));
 				return;
 			}
 			if(this.expect("e") || this.expect("E")) {
@@ -7021,7 +7016,7 @@ thx.json.JsonEncoder.prototype = {
 	,string: function(s) {
 		this.buf.add(this.quote(s));
 	}
-	,intValue: function(i) {
+	,'int': function(i) {
 		this.buf.add(i);
 	}
 	,'float': function(f) {
@@ -7128,8 +7123,8 @@ thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = func
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
 thx.translation.ITranslation.prototype = {
 	domain: null
-	,_: null
-	,__: null
+	,singular: null
+	,plural: null
 	,__class__: thx.translation.ITranslation
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
@@ -7257,25 +7252,28 @@ if (!('every' in Array.prototype)) {
 	String.__name__ = ["String"];
 	Array.prototype.__class__ = $hxClasses["Array"] = Array;
 	Array.__name__ = ["Array"];
-	Int = $hxClasses["Int"] = { __name__ : ["Int"]};
-	Dynamic = $hxClasses["Dynamic"] = { __name__ : ["Dynamic"]};
-	Float = $hxClasses["Float"] = Number;
+	var Int = $hxClasses["Int"] = { __name__ : ["Int"]};
+	var Dynamic = $hxClasses["Dynamic"] = { __name__ : ["Dynamic"]};
+	var Float = $hxClasses["Float"] = Number;
 	Float.__name__ = ["Float"];
-	Bool = $hxClasses["Bool"] = Boolean;
+	var Bool = $hxClasses["Bool"] = Boolean;
 	Bool.__ename__ = ["Bool"];
-	Class = $hxClasses["Class"] = { __name__ : ["Class"]};
-	Enum = { };
-	Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
+	var Class = $hxClasses["Class"] = { __name__ : ["Class"]};
+	var Enum = { };
+	var Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
 }
-if(typeof(haxe_timers) == "undefined") haxe_timers = [];
+if(typeof(haxe_timers) == "undefined") {
+	var haxe_timers = [];
+}
 {
 	if(typeof document != "undefined") js.Lib.document = document;
-	if(typeof window != "undefined") js.Lib.window = window;
-	onerror = function(msg,url,line) {
-		var f = js.Lib.onerror;
-		if( f == null )
-			return false;
-		return f(msg,[url+":"+line]);
+	if(typeof window != "undefined") {
+		js.Lib.window = window;
+		js.Lib.window.onerror = function(msg,url,line) {
+			var f = js.Lib.onerror;
+			if(f == null) return false;
+			return f(msg,[url + ":" + line]);
+		};
 	}
 }
 thx.languages.En.getLanguage();
