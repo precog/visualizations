@@ -16,9 +16,4 @@ class VisualizationSvg extends Visualization
 		super(layout.container);
 		this.layout = layout;
 	}
-
-	override function setVerticalOffset(offset : Int)
-	{
-		baseChart.setVerticalChartOffset(offset);
-	}
 }

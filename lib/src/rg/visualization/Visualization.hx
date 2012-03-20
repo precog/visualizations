@@ -48,17 +48,6 @@ class Visualization
 		trace("DATA FEED " + Dynamics.string(data));
 	}
 
-	public function setVerticalOffset(offset : Int)
-	{
-	}
-/*
-	function getVariables() : Array<Variable<Dynamic, IAxis<Dynamic>>>
-	{
-		return
-			independentVariables.map(function(d, i) : Variable<Dynamic, IAxis<Dynamic>> return cast d)
-				.concat(dependentVariables.map(function(d, i) : Variable<Dynamic, IAxis<Dynamic>> return cast d));
-	}
-*/
 	public function destroy()
 	{
 

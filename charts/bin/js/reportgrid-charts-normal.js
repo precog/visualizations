@@ -2919,7 +2919,7 @@ dhx.AccessStyle.getComputedStyleValue = function(node,key) {
 }
 dhx.AccessStyle.setStyleProperty = function(node,key,value,priority) {
 	if('setProperty' in node.style) dhx.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
-		node1.style.setProperty(key1,value1,priority1 == null?"":priority1);
+		node1.style.setProperty(key1,"" + value1,priority1 == null?"":priority1);
 	}; else dhx.AccessStyle.setStyleProperty = function(node1,key1,value1,priority1) {
 		var style = node1.style;
 		if(null == Reflect.field(style,key1)) key1 = dhx.AccessStyle._getPropertyName(key1);
@@ -4761,6 +4761,29 @@ js.Boot.__init = function() {
 js.Boot.prototype = {
 	__class__: js.Boot
 }
+js.Scroll = $hxClasses["js.Scroll"] = function() { }
+js.Scroll.__name__ = ["js","Scroll"];
+js.Scroll.getTop = function() {
+	var sy = window.pageYOffset;
+	if(typeof(sy) == "number") return sy;
+	if(document.body) {
+		sy = document.body.scrollTop;
+		if(sy) return sy;
+	}
+	return document.documentElement.scrollTop;
+}
+js.Scroll.getLeft = function() {
+	var sx = window.pageXOffset;
+	if(typeof(sx) == "number") return sx;
+	if(document.body) {
+		sx = document.body.scrollLeft;
+		if(sx) return sx;
+	}
+	return document.documentElement.scrollLeft;
+}
+js.Scroll.prototype = {
+	__class__: js.Scroll
+}
 var math = math || {}
 math.BigInteger = $hxClasses["math.BigInteger"] = function() {
 	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
@@ -5770,7 +5793,7 @@ rg.app.charts.App.prototype = {
 				visualization.feedData(datapoints);
 			});
 		}
-		var brandPadding = 0, logoHeight = 29;
+		var brandPadding = 0;
 		var download = rg.info.Info.feed(new rg.info.InfoDownload(),jsoptions.options.download);
 		if(uselegacy) {
 			var legacy = new rg.interactive.RGLegacyRenderer(el,download.legacyservice);
@@ -5791,7 +5814,6 @@ rg.app.charts.App.prototype = {
 		if(!uselegacy) {
 			if(!jsoptions.options.a) visualization.addReadyOnce(function() {
 				var widget = rg.html.widget.Logo.createLogo(visualization.container,brandPadding);
-				visualization.setVerticalOffset(logoHeight);
 			});
 			visualization.addReadyOnce(function() {
 				rg.app.charts.App.chartsLoaded++;
@@ -5912,7 +5934,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.5.7456"};
+	r.info.charts = { version : "1.4.6.7612"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -8964,7 +8986,7 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute");
 	this.setAnchorClass("");
 	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("rg_container");
-	this.background = this.container.append("div").style("position").string("relatve").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("rg_background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
+	this.background = this.container.append("div").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("rg_background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
 	this.content = this.container.append("div").attr("class").string("rg_content");
 	this.content.onNode("DOMSubtreeModified",this.resize.$bind(this));
 	this.anchortype = "bottomright";
@@ -10548,7 +10570,7 @@ rg.layout.Anchor.Right.__enum__ = rg.layout.Anchor;
 rg.layout.Layout = $hxClasses["rg.layout.Layout"] = function(width,height,container) {
 	this.container = container;
 	container.classed().add("rg");
-	this.space = new rg.svg.panel.Space(this.width = width,this.height = height,container);
+	this.space = new rg.svg.panel.Space(this.width = width,this.height = height,container.append("div"));
 };
 rg.layout.Layout.__name__ = ["rg","layout","Layout"];
 rg.layout.Layout.prototype = {
@@ -11689,7 +11711,6 @@ rg.svg.chart.Chart = $hxClasses["rg.svg.chart.Chart"] = function(panel) {
 	this.animationDuration = 1500;
 	this.animationEase = thx.math.Equations.linear;
 	this.ready = new hxevents.Notifier();
-	this.verticalChartOffset = 0;
 };
 rg.svg.chart.Chart.__name__ = ["rg","svg","chart","Chart"];
 rg.svg.chart.Chart.__super__ = rg.svg.panel.Layer;
@@ -11701,7 +11722,6 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,labelDataPoint: null
 	,labelDataPointOver: null
 	,ready: null
-	,verticalChartOffset: null
 	,panelx: null
 	,panely: null
 	,tooltip: null
@@ -11715,15 +11735,12 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		if(null != this.labelDataPointOver) this.tooltip = rg.html.widget.Tooltip.getInstance();
 		this.resize();
 	}
-	,setVerticalChartOffset: function(offset) {
-		this.verticalChartOffset = offset;
-	}
 	,moveTooltip: function(x,y,color) {
 		var coords = rg.svg.panel.Panels.absolutePos(this.panel);
 		this.panelx = coords.x;
 		this.panely = coords.y;
 		this.tooltip.setAnchorColor(color);
-		this.tooltip.showAt(this.panelx + x | 0,this.panely + y + this.verticalChartOffset | 0);
+		this.tooltip.showAt(this.panelx + x | 0,this.panely + y | 0);
 	}
 	,__class__: rg.svg.chart.Chart
 });
@@ -12514,6 +12531,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	,linePathShape: null
 	,chart: null
 	,segment: null
+	,stats: null
 	,setVariables: function(variables,variableIndependents,variableDependents,data) {
 		rg.svg.chart.CartesianChart.prototype.setVariables.call(this,variables,variableIndependents,variableDependents,data);
 		if(this.y0property != null && this.y0property != "") {
@@ -12605,16 +12623,18 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 			return "group group-" + i;
 		});
 		axisgroup.exit().remove();
+		this.stats = [];
 		var _g1 = 0, _g = dps.length;
 		while(_g1 < _g) {
-			var i = _g1++;
-			this.segments = dps[i];
-			var gi = this.chart.select("g.group-" + i), stats = [new rg.axis.Stats(this.yVariables[i].type)];
-			stats[0].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i].type));
+			var i = [_g1++];
+			this.segments = dps[i[0]];
+			var gi = this.chart.select("g.group-" + i[0]);
+			this.stats[i[0]] = new rg.axis.Stats(this.yVariables[i[0]].type);
+			this.stats[i[0]].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i[0]].type));
 			if(null != this.y0property) {
-				var area = new thx.svg.Area(this.x.$bind(this),this.getY0(i),this.getY1(i));
+				var area = new thx.svg.Area(this.x.$bind(this),this.getY0(i[0]),this.getY1(i[0]));
 				if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i,"area area-" + i)).attr("d").stringf(area.shape.$bind(area));
+				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i[0],"area area-" + i[0])).attr("d").stringf(area.shape.$bind(area));
 			}
 			var segmentgroup = gi.selectAll("path.main").data(this.segments);
 			var $e = (this.lineEffect);
@@ -12624,7 +12644,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				var levels1 = [levels];
 				var lightness1 = [lightness];
 				var fs = [[]];
-				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).eachNode((function(fs,lightness1) {
+				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i[0],"line")).eachNode((function(fs,lightness1) {
 					return function(n,i1) {
 						var start = thx.color.Hsl.toHsl(rg.util.RGColors.parse(dhx.Dom.selectNode(n).style("stroke").get(),"#000000")), end = rg.util.RGColors.applyLightness(start,lightness1[0]);
 						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
@@ -12637,7 +12657,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 						return function(_,i1) {
 							return fs[0][i1](j[0] / levels1[0]).hex("#");
 						};
-					})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i]);
+					})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i[0]]);
 				}
 				break;
 			case 2:
@@ -12645,12 +12665,12 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				var _g2 = 0;
 				while(_g2 < levels) {
 					var j = _g2++;
-					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i,"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i]);
+					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i[0],"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i[0]]);
 				}
 				break;
 			default:
 			}
-			var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i,"line")).attr("d").stringf(this.linePathShape[i]);
+			var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i[0],"line")).attr("d").stringf(this.linePathShape[i[0]]);
 			switch( (this.lineEffect)[1] ) {
 			case 1:
 				path.classed().add("gradient");
@@ -12662,69 +12682,52 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				path.classed().add("noeffect");
 				break;
 			}
-			segmentgroup.update().attr("d").stringf(this.linePathShape[i]);
+			segmentgroup.update().attr("d").stringf(this.linePathShape[i[0]]);
 			segmentgroup.exit().remove();
-			var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.yVariables, onclick = ((function() {
-				return function(f,a1) {
-					return (function() {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
-						};
-					})();
-				};
-			})())(this.onclick.$bind(this),stats[0]), onmouseover = ((function() {
-				return function(f,a1) {
-					return (function() {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
-						};
-					})();
-				};
-			})())(this.onmouseover.$bind(this),stats[0]);
-			var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classsf(i,"symbols"));
+			var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.yVariables;
+			var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classsf(i[0],"symbols"));
 			var gsymbol = enter.selectAll("g.symbol").dataf((function() {
 				return function(d,i1) {
 					return d;
 				};
-			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i));
-			if(null != this.click) gsymbol.on("click",onclick);
+			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i[0]));
 			var circle = gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
-			if(null != this.labelDataPointOver) circle.onNode("mouseover",onmouseover);
+			if(null != this.labelDataPointOver) circle.classed().add("rgdata");
 			rg.util.RGColors.storeColorForSelection(circle,"stroke");
 			if(null != this.symbol) {
 				var sp = [this.symbol];
-				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,stats) {
+				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,i) {
 					return function(dp,_) {
-						return sp[0](dp,stats[0]);
+						return sp[0](dp,me.stats[i[0]]);
 					};
-				})(sp,stats));
-				if(null != this.labelDataPointOver) spath.onNode("mouseover",onmouseover);
+				})(sp,i));
 				rg.util.RGColors.storeColorForSelection(spath,"stroke");
 				if(null != this.symbolStyle) {
 					var ss = [this.symbolStyle];
-					spath.attr("style").stringf((function(ss,stats) {
+					spath.attr("style").stringf((function(ss,i) {
 						return function(dp,_) {
-							return ss[0](dp,stats[0]);
+							return ss[0](dp,me.stats[i[0]]);
 						};
-					})(ss,stats));
+					})(ss,i));
 				}
 			}
 			if(null != this.labelDataPoint) {
 				var f = [this.labelDataPoint];
-				gsymbol.eachNode((function(f,stats) {
-					return function(n,i1) {
+				gsymbol.eachNode((function(f,i) {
+					return function(n,_) {
 						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,false,false);
-						label.setText(f[0](dp,stats[0]));
+						label.setText(f[0](dp,me.stats[i[0]]));
 					};
-				})(f,stats));
+				})(f,i));
 			}
 			gsymbols.update().selectAll("g.symbol").dataf((function() {
 				return function(d,i1) {
 					return d;
 				};
-			})()).update().attr("transform").stringf(this.getTranslatePointf(i));
+			})()).update().attr("transform").stringf(this.getTranslatePointf(i[0]));
 			gsymbols.exit().remove();
 		}
+		rg.svg.widget.Sensible.sensibleZone(this.g,this.panel,null == this.click?null:this.onclick.$bind(this),null == this.labelDataPointOver?null:this.onmouseover.$bind(this),null,100);
 		this.ready.dispatch();
 	}
 	,getTranslatePointf: function(pos) {
@@ -12733,16 +12736,25 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 			return "translate(" + x(dp) + "," + y(dp,i) + ")";
 		};
 	}
-	,onmouseover: function(stats,n,i) {
-		var p = n.parentNode;
-		var dp = Reflect.field(p,"__dhx_data__"), text = this.labelDataPointOver(dp,stats);
+	,getStats: function(dp) {
+		var _g = 0, _g1 = this.stats;
+		while(_g < _g1.length) {
+			var s = _g1[_g];
+			++_g;
+			if(Reflect.field(dp,s.type) != null) return s;
+		}
+		return null;
+	}
+	,onmouseover: function(n) {
+		var dp = Reflect.field(n,"__dhx_data__"), stats = this.getStats(dp), text = this.labelDataPointOver(dp,stats);
 		if(null == text) this.tooltip.hide(); else {
-			var sel = dhx.Dom.selectNode(p), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
+			var sel = dhx.Dom.selectNode(n.parentNode), coords = rg.svg.chart.Coords.fromTransform(sel.attr("transform").get());
 			this.tooltip.html(text.split("\n").join("<br>"));
 			this.moveTooltip(coords[0],coords[1],rg.util.RGColors.extractColor(n));
 		}
 	}
-	,onclick: function(stats,dp,i) {
+	,onclick: function(n) {
+		var dp = Reflect.field(n,"__dhx_data__"), stats = this.getStats(dp);
 		this.click(dp,stats);
 	}
 	,__class__: rg.svg.chart.LineChart
@@ -14540,16 +14552,19 @@ rg.svg.panel.Panels.absolutePos = function(panel) {
 		p = p.parent;
 	}
 	var node = rg.svg.panel.Panels.htmlContainer(panel);
-	var pos = node != null?rg.util.Js.findPosition(node):{ x : 0, y : 0};
-	pos.x += x;
-	pos.y += y;
-	return pos;
+	var rect = node.getBoundingClientRect();
+	var left = js.Scroll.getLeft(), top = js.Scroll.getTop();
+	return { x : rect.left + x + left, y : rect.top + y + top};
 }
-rg.svg.panel.Panels.htmlContainer = function(panel) {
+rg.svg.panel.Panels.svgContainer = function(panel) {
 	var node = panel.g.node();
 	do {
 	} while(null != Reflect.field(node = node.ownerSVGElement,"ownerSVGElement"));
-	return null == node?null:node.parentNode;
+	return null == node?null:node;
+}
+rg.svg.panel.Panels.htmlContainer = function(panel) {
+	var svg = rg.svg.panel.Panels.svgContainer(panel);
+	if(null == svg) return null; else return svg.parentNode;
 }
 rg.svg.panel.Panels.prototype = {
 	__class__: rg.svg.panel.Panels
@@ -15650,6 +15665,48 @@ rg.svg.widget.Map.prototype = {
 	,__class__: rg.svg.widget.Map
 	,__properties__: {set_className:"setClassName"}
 }
+rg.svg.widget.Sensible = $hxClasses["rg.svg.widget.Sensible"] = function() { }
+rg.svg.widget.Sensible.__name__ = ["rg","svg","widget","Sensible"];
+rg.svg.widget.Sensible.sensibleZone = function(container,panel,click,datapointover,stats,radius) {
+	if(null == click && null == datapointover) return;
+	var sensible = container.append("svg:rect").attr("class").string("sensible").attr("x")["float"](0).attr("y")["float"](0).attr("width")["float"](panel.frame.width).attr("height")["float"](panel.frame.height).attr("fill").string("#000").style("fill-opacity")["float"](0.0);
+	if(null != datapointover) sensible.onNode("mousemove",function(_,_1) {
+		var p = rg.svg.panel.Panels.absolutePos(panel), body = js.Lib.document.body;
+		var e = dhx.Dom.event;
+		var coords = { x : e.clientX, y : e.clientY};
+		var r = rg.svg.widget.Sensible.findDataNodesNear(coords,container,radius);
+		if(r.length > 0) {
+			datapointover(r[0]);
+			if(null != click) sensible.classed().add("pointer");
+		} else if(null != click) sensible.classed().remove("pointer");
+	});
+	if(null != click) sensible.onNode("click",function(_,_1) {
+		var p = rg.svg.panel.Panels.absolutePos(panel), body = js.Lib.document.body;
+		var e = dhx.Dom.event;
+		var coords = { x : e.clientX, y : e.clientY};
+		var r = rg.svg.widget.Sensible.findDataNodesNear(coords,container,radius);
+		if(r.length > 0) click(r[0]);
+	});
+}
+rg.svg.widget.Sensible.findDataNodesNear = function(coords,context,distance) {
+	var nodes = context.selectAll(".rgdata"), result = [], distancep = distance * distance;
+	nodes.eachNode(function(n,i) {
+		var rect = n.getBoundingClientRect();
+		var x = coords.x - (rect.left + rect.width / 2), y = coords.y - (rect.top + rect.height / 2);
+		var dist = x * x + y * y;
+		if(dist > distancep) return;
+		result.push({ node : n, dist : dist});
+	});
+	result.sort(function(a,b) {
+		return Floats.compare(a.dist,b.dist);
+	});
+	return result.map(function(item,_) {
+		return item.node;
+	});
+}
+rg.svg.widget.Sensible.prototype = {
+	__class__: rg.svg.widget.Sensible
+}
 if(!rg.util) rg.util = {}
 rg.util.Auth = $hxClasses["rg.util.Auth"] = function(authCode) {
 	this.test = rg.util.Decrypt.decrypt(authCode);
@@ -15811,14 +15868,6 @@ rg.util.Js.findScript = function(fragment) {
 		}
 	}
 	return null;
-}
-rg.util.Js.findPosition = function(el) {
-	var x = 0, y = 0, obj = el;
-	do {
-		x += obj.offsetLeft;
-		y += obj.offsetTop;
-	} while(null != (obj = obj.offsetParent));
-	return { x : x, y : y};
 }
 rg.util.Js.prototype = {
 	__class__: rg.util.Js
@@ -16221,8 +16270,6 @@ rg.visualization.Visualization.prototype = {
 	,feedData: function(data) {
 		null;
 	}
-	,setVerticalOffset: function(offset) {
-	}
 	,destroy: function() {
 	}
 	,addReadyOnce: function(handler) {
@@ -16244,9 +16291,6 @@ rg.visualization.VisualizationSvg.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualization.prototype,{
 	baseChart: null
 	,layout: null
-	,setVerticalOffset: function(offset) {
-		this.baseChart.setVerticalChartOffset(offset);
-	}
 	,__class__: rg.visualization.VisualizationSvg
 });
 rg.visualization.VisualizationCartesian = $hxClasses["rg.visualization.VisualizationCartesian"] = function(layout) {

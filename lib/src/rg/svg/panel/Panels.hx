@@ -30,19 +30,28 @@ class Panels
 			p = p.parent;
 		}
 		var node = htmlContainer(panel);
-
-		var pos = node != null ? rg.util.Js.findPosition(node) : { x : 0, y : 0 };
-
-		pos.x += x;
-		pos.y += y;
-		return pos;
+		var rect : Dynamic<Int> = untyped node.getBoundingClientRect();
+		var left = js.Scroll.getLeft(),
+			top  = js.Scroll.getTop();
+		return {
+			x : rect.left + x + left,
+			y : rect.top + y + top
+		};
+	}
+	public static function svgContainer(panel : Panel)
+	{
+		var node = panel.g.node();
+		do { } while(null != Reflect.field(node = untyped node.ownerSVGElement, "ownerSVGElement"));
+		return null == node ? null : node;
 	}
 
 	public static function htmlContainer(panel : Panel)
 	{
-		var node = panel.g.node();
-		do { } while(null != Reflect.field(node = untyped node.ownerSVGElement, "ownerSVGElement"));
-		return null == node ? null : node.parentNode;
+		var svg = svgContainer(panel);
+		if(null == svg)
+			return null;
+		else
+			return svg.parentNode;
 	}
 
 	public static function boundingBox(panel : Panel, ?ancestor : Panel)

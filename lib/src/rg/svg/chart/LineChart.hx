@@ -21,6 +21,7 @@ import thx.svg.LineInterpolator;
 import dhx.Access;
 import thx.svg.Area;
 import rg.svg.widget.Label;
+import rg.svg.widget.Sensible;
 using Arrays;
 
 // TODO transition animation
@@ -40,6 +41,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	var chart : Selection;
 	var dps : Array<Array<Array<DataPoint>>>;
 	var segment : Int;
+	var stats : Array<Stats<Dynamic>>;
 
 
 	public function new(panel : Panel)
@@ -159,14 +161,15 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 		// axis exit
 		axisgroup.exit().remove();
-
+		stats = [];
 		for (i in 0...dps.length)
 		{
 			segments = dps[i];
 
-			var gi = chart.select("g.group-" + i),
-				stats = new Stats(yVariables[i].type);
-			stats.addMany(DataPoints.values(segments.flatten(), yVariables[i].type));
+			var gi = chart.select("g.group-" + i)//,
+			;
+			stats[i] = new Stats(yVariables[i].type);
+			stats[i].addMany(DataPoints.values(segments.flatten(), yVariables[i].type));
 
 
 			if (null != y0property)
@@ -174,8 +177,6 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 				var area = new Area(x, getY0(i), getY1(i));
 				if (null != lineInterpolator)
 					area.interpolator(lineInterpolator);
-//			var reverse = segments.copy();
-//				reverse.reverse();
 				gi.selectAll("path.area")
 					.data(segments)
 					.enter()
@@ -242,9 +243,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			segmentgroup.exit().remove();
 
 			var gsymbols = gi.selectAll("g.symbols").data(segments),
-				vars = this.yVariables,
-				onclick = callback(onclick, stats),
-				onmouseover = callback(onmouseover, stats);
+				vars = this.yVariables;
 			var enter = gsymbols.enter()
 				.append("svg:g")
 				.attr("class").stringf(classsf(i, "symbols"));
@@ -252,50 +251,38 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			// TODO add id function
 			var gsymbol = enter.selectAll("g.symbol").dataf(function(d,i) return d).enter()
 				.append("svg:g")
-//				.attr("class").string("symbol")
-
-//				.attr("class").stringf(classf(i, "symbol-"))
 				.attr("transform").stringf(getTranslatePointf(i));
-
-			if (null != click)
-				gsymbol.on("click", onclick);
-
 
 			var circle = gsymbol.append("svg:circle")
 				.attr("r").float(6)
 				.attr("opacity").float(0.0)
 				.style("fill").string("#000000")
-//				.style("stroke").string("none")
 			;
 			if (null != labelDataPointOver)
-				circle.onNode("mouseover", onmouseover);
+				circle
+					.classed().add("rgdata");
 			RGColors.storeColorForSelection(cast circle, "stroke");
 
 			if (null != symbol)
 			{
 				var sp = this.symbol;
 				var spath = gsymbol.append("svg:path")
-					.attr("d").stringf(function(dp, _) return sp(dp, stats));
-				if (null != labelDataPointOver)
-				spath.onNode("mouseover", onmouseover);
+					.attr("d").stringf(function(dp, _) return sp(dp, stats[i]));
 				RGColors.storeColorForSelection(cast spath, "stroke");
 				if (null != symbolStyle)
 				{
 					var ss = this.symbolStyle;
-					spath.attr("style").stringf(function(dp, _) return ss(dp, stats));
+					spath.attr("style").stringf(function(dp, _) return ss(dp, stats[i]));
 				}
 			}
 
 			if (null != labelDataPoint)
 			{
 				var f = this.labelDataPoint;
-				gsymbol.eachNode(function(n, i) {
+				gsymbol.eachNode(function(n, _) {
 					var dp = Access.getData(n),
 						label = new Label(dhx.Dom.selectNode(n), true, false, false);
-					label.text = f(dp, stats);
-//					label.orientation = LabelOrientation.Aligned;
-//					label.place(3, 3, -30);
-//					label.anchor = GridAnchor.BottomLeft;
+					label.text = f(dp, stats[i]);
 				});
 			}
 
@@ -308,7 +295,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 			gsymbols.exit().remove();
 		}
-
+		Sensible.sensibleZone(g, panel, null == click ? null : onclick, null == labelDataPointOver ? null : onmouseover, null, 100); // TODO ADD STATS
 		ready.dispatch();
 	}
 
@@ -322,28 +309,34 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		};
 	}
 
-	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
+	function getStats(dp : Dynamic)
 	{
-		var p = n.parentNode;
-		var dp = Access.getData(p),
+		for(s in stats)
+			if(Reflect.field(dp, s.type) != null)
+				return s;
+		return null;
+	}
+
+	function onmouseover(n : js.Dom.HtmlDom)
+	{
+		var dp = Access.getData(n),
+			stats = getStats(dp),
 			text = labelDataPointOver(dp, stats);
 		if (null == text)
 			tooltip.hide();
 		else
 		{
-			var sel = dhx.Dom.selectNode(p),
+			var sel = dhx.Dom.selectNode(n.parentNode),
 				coords = Coords.fromTransform(sel.attr("transform").get());
-
-//			for (j in 0...segments.length)
-//				tooltip.removeClass("stroke-" + j);
-//			tooltip.addClass("stroke-" + seg);
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(coords[0], coords[1], RGColors.extractColor(n));
 		}
 	}
 
-	function onclick(stats : Stats<Dynamic>, dp : DataPoint, i : Int)
+	function onclick(n : js.Dom.HtmlDom)
 	{
+		var dp = Access.getData(n),
+			stats = getStats(dp);
 		click(dp, stats);
 	}
 }

@@ -100,8 +100,7 @@ class App
 		}
 
 
-		var brandPadding = 0,
-			logoHeight = 29;
+		var brandPadding = 0;
 		// download
 		var download = new InfoDownload().feed(jsoptions.options.download);
 		if(uselegacy)
@@ -139,7 +138,6 @@ class App
 				visualization.addReadyOnce(function()
 				{
 					var widget = Logo.createLogo(visualization.container, brandPadding);
-					visualization.setVerticalOffset(logoHeight);
 				});
 			}
 
@@ -153,10 +151,7 @@ class App
 			});
 		}
 
-//		visualization.addReadyOnce(function()
-//		{
-			haxe.Timer.delay(loader.load, 0);
-//		});
+		haxe.Timer.delay(loader.load, 0);
 
 		return visualization;
 	}
@@ -179,7 +174,6 @@ class App
 
 	public static function supportsSvg() : Bool
 	{
-//		return !(~/Firefox/).match(js.Lib.window.navigator.userAgent);
 		return untyped __js__("!!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect");
 	}
 }

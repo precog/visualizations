@@ -22,7 +22,6 @@ class Chart extends Layer
 	public var labelDataPoint : DataPoint -> Stats<Dynamic> -> String;
 	public var labelDataPointOver : DataPoint -> Stats<Dynamic> -> String;
 	public var ready(default, null) : Notifier;
-	var verticalChartOffset : Int;
 
 	var panelx : Float;
 	var panely : Float;
@@ -35,7 +34,6 @@ class Chart extends Layer
 		animationDuration = 1500;
 		animationEase = Equations.linear;
 		ready = new Notifier();
-		verticalChartOffset = 0;
 	}
 
 	override function resize()
@@ -55,35 +53,12 @@ class Chart extends Layer
 		resize();
 	}
 
-	public function setVerticalChartOffset(offset : Int)
-	{
-		verticalChartOffset = offset;
-	}
-
 	function moveTooltip(x : Float, y : Float, color : Null<String>)
 	{
-//		var coords = Panels.absolutePos(panel);
-//		panelx = coords.x;
-//		panely = coords.y;
 		var coords = Panels.absolutePos(panel);
 		panelx = coords.x;
 		panely = coords.y;
-
-
 		tooltip.setAnchorColor(color);
-		tooltip.showAt(Std.int(panelx + x), Std.int(panely + y + verticalChartOffset));
-/*
-		if(0 == tooltip.x && 0 == tooltip.y)
-		{
-			tooltip.hide();
-			tooltip.moveTo(panelx + x, panely + y, false);
-			tooltip.show(animated);
-		} else if(!tooltip.visible)
-		{
-			tooltip.moveTo(panelx + x, panely + y, false);
-			tooltip.show(animated);
-		} else
-			tooltip.moveTo(panelx + x, panely + y, animated);
-*/
+		tooltip.showAt(Std.int(panelx + x), Std.int(panely + y));
 	}
 }

@@ -24,7 +24,7 @@ class Layout
 	{
 		this.container = container;
 		container.classed().add("rg");
-		space = new Space(this.width = width, this.height = height, container);
+		space = new Space(this.width = width, this.height = height, container.append("div"));
 	}
 
 	public function getContext(name : String) : PanelContext

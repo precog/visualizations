@@ -49,7 +49,7 @@ class Tooltip
 		;
 
 		background = container.append("div")
-			.style("position").string("relatve")
+//			.style("position").string("relative")
 			.style("display").string("block")
 			.append("div")
 				.style("z-index").string("-1")
