@@ -36,6 +36,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	public var lineInterpolator : LineInterpolator;
 	public var lineEffect : LineEffect;
 	public var y0property : String;
+	public var sensibleRadius : Int;
 
 	var linePathShape : Array<Array<DataPoint> -> Int -> String>;
 	var chart : Selection;
@@ -50,6 +51,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 		addClass("line-chart");
 		chart = g.append("svg:g");
+		sensibleRadius = 100;
 	}
 
 	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
@@ -295,7 +297,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 
 			gsymbols.exit().remove();
 		}
-		Sensible.sensibleZone(g, panel, null == click ? null : onclick, null == labelDataPointOver ? null : onmouseover, null, 100); // TODO ADD STATS
+		Sensible.sensibleZone(g, panel, null == click ? null : onclick, null == labelDataPointOver ? null : onmouseover, sensibleRadius);
 		ready.dispatch();
 	}
 

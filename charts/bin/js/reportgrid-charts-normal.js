@@ -5934,7 +5934,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.6.7612"};
+	r.info.charts = { version : "1.4.6.7622"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -9766,6 +9766,7 @@ rg.info.InfoLineChart = $hxClasses["rg.info.InfoLineChart"] = function() {
 	this.effect = rg.svg.chart.LineEffect.Gradient(-1.2,2);
 	this.interpolation = thx.svg.LineInterpolator.Linear;
 	this.displayarea = false;
+	this.sensibleradius = 100;
 };
 rg.info.InfoLineChart.__name__ = ["rg","info","InfoLineChart"];
 rg.info.InfoLineChart.filters = function() {
@@ -9783,6 +9784,8 @@ rg.info.InfoLineChart.filters = function() {
 		return Std["is"](v,String);
 	}, filter : null},{ field : "displayarea", validator : function(v) {
 		return Std["is"](v,Bool);
+	}, filter : null},{ field : "sensibleradius", validator : function(v) {
+		return Std["is"](v,Int);
 	}, filter : null},{ field : "effect", validator : function(v) {
 		return Std["is"](v,String);
 	}, filter : function(v) {
@@ -9810,6 +9813,7 @@ rg.info.InfoLineChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 	,displayarea: null
 	,y0property: null
 	,segment: null
+	,sensibleradius: null
 	,__class__: rg.info.InfoLineChart
 });
 rg.info.InfoMap = $hxClasses["rg.info.InfoMap"] = function() {
@@ -12519,6 +12523,7 @@ rg.svg.chart.LineChart = $hxClasses["rg.svg.chart.LineChart"] = function(panel) 
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.addClass("line-chart");
 	this.chart = this.g.append("svg:g");
+	this.sensibleRadius = 100;
 };
 rg.svg.chart.LineChart.__name__ = ["rg","svg","chart","LineChart"];
 rg.svg.chart.LineChart.__super__ = rg.svg.chart.CartesianChart;
@@ -12528,6 +12533,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	,lineInterpolator: null
 	,lineEffect: null
 	,y0property: null
+	,sensibleRadius: null
 	,linePathShape: null
 	,chart: null
 	,segment: null
@@ -12727,7 +12733,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 			})()).update().attr("transform").stringf(this.getTranslatePointf(i[0]));
 			gsymbols.exit().remove();
 		}
-		rg.svg.widget.Sensible.sensibleZone(this.g,this.panel,null == this.click?null:this.onclick.$bind(this),null == this.labelDataPointOver?null:this.onmouseover.$bind(this),null,100);
+		rg.svg.widget.Sensible.sensibleZone(this.g,this.panel,null == this.click?null:this.onclick.$bind(this),null == this.labelDataPointOver?null:this.onmouseover.$bind(this),this.sensibleRadius);
 		this.ready.dispatch();
 	}
 	,getTranslatePointf: function(pos) {
@@ -15667,26 +15673,30 @@ rg.svg.widget.Map.prototype = {
 }
 rg.svg.widget.Sensible = $hxClasses["rg.svg.widget.Sensible"] = function() { }
 rg.svg.widget.Sensible.__name__ = ["rg","svg","widget","Sensible"];
-rg.svg.widget.Sensible.sensibleZone = function(container,panel,click,datapointover,stats,radius) {
+rg.svg.widget.Sensible.sensibleZone = function(container,panel,click,datapointover,radius) {
 	if(null == click && null == datapointover) return;
 	var sensible = container.append("svg:rect").attr("class").string("sensible").attr("x")["float"](0).attr("y")["float"](0).attr("width")["float"](panel.frame.width).attr("height")["float"](panel.frame.height).attr("fill").string("#000").style("fill-opacity")["float"](0.0);
 	if(null != datapointover) sensible.onNode("mousemove",function(_,_1) {
-		var p = rg.svg.panel.Panels.absolutePos(panel), body = js.Lib.document.body;
-		var e = dhx.Dom.event;
-		var coords = { x : e.clientX, y : e.clientY};
-		var r = rg.svg.widget.Sensible.findDataNodesNear(coords,container,radius);
+		var r = rg.svg.widget.Sensible.findDataNodeNearMouse(container,radius);
 		if(r.length > 0) {
 			datapointover(r[0]);
 			if(null != click) sensible.classed().add("pointer");
 		} else if(null != click) sensible.classed().remove("pointer");
 	});
-	if(null != click) sensible.onNode("click",function(_,_1) {
-		var p = rg.svg.panel.Panels.absolutePos(panel), body = js.Lib.document.body;
-		var e = dhx.Dom.event;
-		var coords = { x : e.clientX, y : e.clientY};
-		var r = rg.svg.widget.Sensible.findDataNodesNear(coords,container,radius);
-		if(r.length > 0) click(r[0]);
-	});
+	if(null != click) {
+		if(null == datapointover) sensible.onNode("mousemove",function(_,_1) {
+			var r = rg.svg.widget.Sensible.findDataNodeNearMouse(container,radius);
+			if(r.length > 0) sensible.classed().add("pointer"); else sensible.classed().remove("pointer");
+		});
+		sensible.onNode("click",function(_,_1) {
+			var r = rg.svg.widget.Sensible.findDataNodeNearMouse(container,radius);
+			if(r.length > 0) click(r[0]);
+		});
+	}
+}
+rg.svg.widget.Sensible.findDataNodeNearMouse = function(context,distance) {
+	var e = dhx.Dom.event;
+	return rg.svg.widget.Sensible.findDataNodesNear({ x : e.clientX, y : e.clientY},context,distance);
 }
 rg.svg.widget.Sensible.findDataNodesNear = function(coords,context,distance) {
 	var nodes = context.selectAll(".rgdata"), result = [], distancep = distance * distance;
@@ -16768,6 +16778,7 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 		chart.symbolStyle = this.infoLine.symbolStyle;
 		chart.lineInterpolator = this.infoLine.interpolation;
 		chart.lineEffect = this.infoLine.effect;
+		chart.sensibleRadius = this.infoLine.sensibleradius;
 		if(null == this.independentVariables[0].scaleDistribution) this.independentVariables[0].scaleDistribution = rg.axis.ScaleDistribution.ScaleFill;
 		if(null != this.infoLine.y0property) chart.y0property = this.infoLine.y0property; else if(this.infoLine.displayarea) chart.y0property = "";
 		this.chart = chart;

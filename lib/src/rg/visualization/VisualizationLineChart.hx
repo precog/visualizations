@@ -35,7 +35,7 @@ class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Da
 
 		chart.lineInterpolator = infoLine.interpolation;
 		chart.lineEffect = infoLine.effect;
-
+		chart.sensibleRadius = infoLine.sensibleradius;
 
 		if(null == independentVariables[0].scaleDistribution)
 			independentVariables[0].scaleDistribution = ScaleFill;

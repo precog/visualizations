@@ -2,11 +2,10 @@ package rg.svg.widget;
 
 import dhx.Selection;
 import rg.svg.panel.Panel;
-import rg.axis.Stats;
 
 class Sensible
 {
-	public static function sensibleZone(container : Selection, panel : Panel, click : js.Dom.HtmlDom -> Void, datapointover : js.Dom.HtmlDom -> Void, stats : Stats<Dynamic>, radius : Float)
+	public static function sensibleZone(container : Selection, panel : Panel, click : js.Dom.HtmlDom -> Void, datapointover : js.Dom.HtmlDom -> Void, radius : Float)
 	{
 		if(null == click && null == datapointover)
 			return;
@@ -24,11 +23,7 @@ class Sensible
 		if(null != datapointover)
 		{
 			sensible.onNode("mousemove", function(_, _) {
-				var p = rg.svg.panel.Panels.absolutePos(panel),
-					body = js.Lib.document.body;
-				var e = dhx.Dom.event;
-				var coords = { x : e.clientX, y : e.clientY };
-				var r = findDataNodesNear(coords, container, radius);
+				var r = findDataNodeNearMouse(container, radius);
 				if(r.length > 0)
 				{
 					datapointover(r[0]);
@@ -44,16 +39,30 @@ class Sensible
 		}
 		if(null != click)
 		{
+			if(null == datapointover)
+			{
+				sensible.onNode("mousemove", function(_, _) {
+					var r = findDataNodeNearMouse(container, radius);
+					if(r.length > 0)
+					{
+						sensible.classed().add("pointer");
+					} else {
+						sensible.classed().remove("pointer");
+					}
+				});
+			}
 			sensible.onNode("click", function(_, _) {
-				var p = rg.svg.panel.Panels.absolutePos(panel),
-					body = js.Lib.document.body;
-				var e = dhx.Dom.event;
-				var coords = { x : e.clientX, y : e.clientY };
-				var r = findDataNodesNear(coords, container, radius);
+				var r = findDataNodeNearMouse(container, radius);
 				if(r.length > 0)
 					click(r[0]);
 			});
 		}
+	}
+
+	public static function findDataNodeNearMouse(context : Selection, distance : Float)
+	{
+		var e = dhx.Dom.event;
+		return findDataNodesNear({ x : e.clientX, y : e.clientY }, context, distance);
 	}
 
 	public static function findDataNodesNear(coords : { x : Int, y : Int }, context : Selection, distance : Float)

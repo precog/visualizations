@@ -21,6 +21,7 @@ using rg.info.Info;
 	public var displayarea : Bool;
 	public var y0property : String;
 	public var segment : InfoSegment;
+	public var sensibleradius : Int;
 
 	public function new()
 	{
@@ -29,6 +30,7 @@ using rg.info.Info;
 		effect = LineEffect.Gradient(-1.2, 2);
 		interpolation = LineInterpolator.Linear;
 		displayarea = false;
+		sensibleradius = 100;
 	}
 
 	public static function filters()
@@ -54,6 +56,10 @@ using rg.info.Info;
 		}, {
 			field : "displayarea",
 			validator : function(v) return Std.is(v, Bool),
+			filter : null
+		}, {
+			field : "sensibleradius",
+			validator : function(v) return Std.is(v, Int),
 			filter : null
 		}, {
 			field : "effect",
