@@ -135,7 +135,6 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 				params.type = "mean";
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params);
-			trace(options);
 			options.property = params.event + _prefixProperty(params.property);
 			options.periodicity = "single";
 			switch(params.type.toLowerCase())
@@ -148,6 +147,12 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 					);
 				case "standarddeviation":
 					executor.propertyStandardDeviations(
+						params.path,
+						options,
+						_complete(ReportGridTransformers.propertySummary, params, keep, handler)
+					);
+				case "sum":
+					executor.propertySums(
 						params.path,
 						options,
 						_complete(ReportGridTransformers.propertySummary, params, keep, handler)
@@ -182,6 +187,12 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 					);
 				case "standarddeviation":
 					executor.propertyStandardDeviations(
+						params.path,
+						options,
+						_complete(tranform, params, keep, handler)
+					);
+				case "sum":
+					executor.propertySums(
 						params.path,
 						options,
 						_complete(tranform, params, keep, handler)

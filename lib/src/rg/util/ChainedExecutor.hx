@@ -16,7 +16,7 @@ class ChainedExecutor<T>
 		this.handler = handler;
 		actions = [];
 		pos = 0;
-		executor = Reflect.field(this, 'execute');
+		executor = execute;// Reflect.field(this, 'execute');
 	}
 
 	public function addAction(handler : T -> (T -> Void) -> Void )

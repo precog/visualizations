@@ -636,7 +636,7 @@ class Sankey extends Chart
 			hinoden = null;
 
 
-		function hielement(id : Int, type : String) 
+		function hielement(id : Int, type : String)
 		{
 			var key = type+":"+id;
 			maphi.set(key, mapelements.get(key).classed().add("over"));
@@ -773,7 +773,9 @@ class Sankey extends Chart
 			if(null == labelEdgeOver)
 				return;
 			var text = labelEdgeOver(edgeData(node.positives().next()), dependentVariable.stats);
-			if (null == text)
+			if(untyped __js__("false === text"))
+			{} // do nothing
+			else if (null == text)
 				tooltip.hide();
 			else
 			{
@@ -790,7 +792,9 @@ class Sankey extends Chart
 			if(null == labelDataPointOver)
 				return;
 			var text = labelDataPointOver(node.data.dp, dependentVariable.stats);
-			if (null == text)
+			if(untyped __js__("false === text"))
+			{} // do nothing
+			else if (null == text)
 				tooltip.hide();
 			else
 			{

@@ -37,6 +37,12 @@ using Arrays;
 		}
 		execute([]);
 	}
+/*
+	static function __init__()
+	{
+		Reflect.setField(untyped __js__("rg.query.Query"), "execute", untyped __js__("rg.query.Query.prototype.execute"));
+	}
+*/
 }
 
 @:keep class BaseQuery<This>
@@ -446,6 +452,12 @@ using Arrays;
 	public function toString() return Type.getClassName(Type.getClass(this)).split(".").pop() + Std.format(" [next: ${null != _next}, async: ${null != _async}]")
 
 	inline function _this(q) : This return cast q
+/*
+	static function __init__()
+	{
+		Reflect.setField(untyped __js__("rg.query.BaseQuery"), "execute", untyped __js__("rg.query.BaseQuery.prototype.execute"));
+	}
+*/
 }
 
 typedef StackTransformer = Array<Array<Dynamic>> -> Array<Array<Dynamic>>;

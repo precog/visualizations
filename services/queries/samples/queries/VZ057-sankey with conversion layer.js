@@ -39,7 +39,6 @@ function isConversion(id)
 
 function dataPointOver(dp, stats)
 {
-
 	if(isConversion(dp.id))
 		return;
 	var el = document.getElementById('nodechart');
@@ -65,7 +64,9 @@ function renderNodeChart(dp) {
 		options	:
 		{
 			label : {
-				datapointover : function(dp, stats){ return null; },
+				datapointover : function(dp, stats) {
+					return false;
+				},
 			},
 			barpadding : 2,
 			height: 120,
@@ -156,7 +157,7 @@ function layoutmap() {
 	stroke-dasharray: 0;
 }
 
-.rg.tooltip .container
+.rg.tooltip .rg_container
 {
 	max-width: 200px;
 	width: 200px;

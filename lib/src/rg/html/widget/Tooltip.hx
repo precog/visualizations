@@ -9,7 +9,10 @@ class Tooltip
 	static function getInstance()
 	{
 		if(null == instance)
+		{
 			instance = new Tooltip();
+			(untyped __js__("ReportGrid")).tooltip = instance;
+		}
 		return instance;
 	}
 	static inline var DEFAULT_DISTANCE = 0;

@@ -8,7 +8,9 @@
 -main rg.app.charts.JSBridge
 -D release
 -D js_shims
+-D noEmbedJS
 --no-traces
 --dead-code-elimination
+--js-modern
 --macro keep(["thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
 -cmd ./deploy.sh

@@ -1552,11 +1552,7 @@ Floats.prototype = {
 	__class__: Floats
 }
 var Hash = $hxClasses["Hash"] = function() {
-	this.h = {}
-	if(this.h.__proto__ != null) {
-		this.h.__proto__ = null;
-		delete(this.h.__proto__);
-	}
+	this.h = Object.create != null?Object.create(null):{ };
 };
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
@@ -1568,17 +1564,12 @@ Hash.prototype = {
 		return this.h["$" + key];
 	}
 	,exists: function(key) {
-		try {
-			key = "$" + key;
-			return this.hasOwnProperty.call(this.h,key);
-		} catch( e ) {
-			for(var i in this.h) if( i == key ) return true;
-			return false;
-		}
+		return Object.prototype.hasOwnProperty.call(this.h,"$" + key);
 	}
 	,remove: function(key) {
-		if(!this.exists(key)) return false;
-		delete(this.h["$" + key]);
+		key = "$" + key;
+		if(!Object.prototype.hasOwnProperty.call(this.h,key)) return false;
+		delete(this.h[key]);
 		return true;
 	}
 	,keys: function() {
@@ -1611,11 +1602,7 @@ Hash.prototype = {
 	,__class__: Hash
 }
 var IntHash = $hxClasses["IntHash"] = function() {
-	this.h = {}
-	if(this.h.__proto__ != null) {
-		this.h.__proto__ = null;
-		delete(this.h.__proto__);
-	}
+	this.h = { };
 };
 IntHash.__name__ = ["IntHash"];
 IntHash.prototype = {
@@ -1627,16 +1614,16 @@ IntHash.prototype = {
 		return this.h[key];
 	}
 	,exists: function(key) {
-		return this.h[key] != null;
+		return Object.prototype.hasOwnProperty.call(this.h,key);
 	}
 	,remove: function(key) {
-		if(this.h[key] == null) return false;
+		if(!Object.prototype.hasOwnProperty.call(this.h,key)) return false;
 		delete(this.h[key]);
 		return true;
 	}
 	,keys: function() {
 		var a = new Array();
-		for( x in this.h ) a.push(x|0);
+		for( var x in this.h ) a.push(x|0);
 		return a.iterator();
 	}
 	,iterator: function() {
@@ -2401,14 +2388,7 @@ Objects.prototype = {
 var Reflect = $hxClasses["Reflect"] = function() { }
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
-	if(o.hasOwnProperty != null) return o.hasOwnProperty(field);
-	var arr = Reflect.fields(o);
-	var $it0 = arr.iterator();
-	while( $it0.hasNext() ) {
-		var t = $it0.next();
-		if(t == field) return true;
-	}
-	return false;
+	return Object.prototype.hasOwnProperty.call(o,field);
 }
 Reflect.field = function(o,field) {
 	var v = null;
@@ -2433,20 +2413,12 @@ Reflect.callMethod = function(o,func,args) {
 	return func.apply(o,args);
 }
 Reflect.fields = function(o) {
-	if(o == null) return new Array();
-	var a = new Array();
-	if(o.hasOwnProperty) {
-		for(var i in o) if( o.hasOwnProperty(i) ) a.push(i);
-	} else {
-		var t;
-		try {
-			t = o.__proto__;
-		} catch( e ) {
-			t = null;
+	var a = [];
+	if(o != null) {
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		for( var f in o ) {
+		if(hasOwnProperty.call(o,f)) a.push(f);
 		}
-		if(t != null) o.__proto__ = null;
-		for(var i in o) if( i != "__proto__" ) a.push(i);
-		if(t != null) o.__proto__ = t;
 	}
 	return a;
 }
@@ -2483,12 +2455,7 @@ Reflect.copy = function(o) {
 }
 Reflect.makeVarArgs = function(f) {
 	return function() {
-		var a = new Array();
-		var _g1 = 0, _g = arguments.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			a.push(arguments[i]);
-		}
+		var a = Array.prototype.slice.call(arguments);
 		return f(a);
 	};
 }
@@ -3444,10 +3411,10 @@ haxe.Md5.prototype = {
 	,__class__: haxe.Md5
 }
 haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
-	var arr = haxe_timers;
-	this.id = arr.length;
-	arr[this.id] = this;
-	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
+	var me = this;
+	this.id = window.setInterval(function() {
+		me.run();
+	},time_ms);
 };
 haxe.Timer.__name__ = ["haxe","Timer"];
 haxe.Timer.delay = function(f,time_ms) {
@@ -3469,17 +3436,9 @@ haxe.Timer.stamp = function() {
 }
 haxe.Timer.prototype = {
 	id: null
-	,timerId: null
 	,stop: function() {
 		if(this.id == null) return;
-		window.clearInterval(this.timerId);
-		var arr = haxe_timers;
-		arr[this.id] = null;
-		if(this.id > 100 && this.id == arr.length - 1) {
-			var p = this.id - 1;
-			while(p >= 0 && arr[p] == null) p--;
-			arr = arr.slice(0,p + 1);
-		}
+		window.clearInterval(this.id);
 		this.id = null;
 	}
 	,run: function() {
@@ -3725,7 +3684,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.3.0.1549"};
+	r.info.query = { version : "1.3.0.1557"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -3776,6 +3735,7 @@ rg.data.reportgrid.IExecutorReportGrid.prototype = {
 	,propertySeries: null
 	,propertyMeans: null
 	,propertyStandardDeviations: null
+	,propertySums: null
 	,propertyValues: null
 	,propertyValueCount: null
 	,propertyValueSeries: null
@@ -3815,6 +3775,9 @@ rg.data.reportgrid.ReportGridExecutorCache.prototype = {
 	}
 	,propertyStandardDeviations: function(path,options,success,error) {
 		this.execute("propertyStandardDeviations",path,options,success,error);
+	}
+	,propertySums: function(path,options,success,error) {
+		this.execute("propertySums",path,options,success,error);
 	}
 	,propertyValues: function(path,options,success,error) {
 		this.execute("propertyValues",path,options,success,error);
@@ -4361,7 +4324,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 487, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 498, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
@@ -4442,6 +4405,9 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			case "standarddeviation":
 				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
 				break;
+			case "sum":
+				me.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				break;
 			default:
 				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
 			}
@@ -4462,6 +4428,9 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				break;
 			case "standarddeviation":
 				me.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				break;
+			case "sum":
+				me.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
 				break;
 			default:
 				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
@@ -7262,9 +7231,6 @@ if (!('every' in Array.prototype)) {
 	var Enum = { };
 	var Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
 }
-if(typeof(haxe_timers) == "undefined") {
-	var haxe_timers = [];
-}
 {
 	if(typeof document != "undefined") js.Lib.document = document;
 	if(typeof window != "undefined") {
@@ -7279,10 +7245,10 @@ if(typeof(haxe_timers) == "undefined") {
 thx.languages.En.getLanguage();
 thx.cultures.EnUS.getCulture();
 {
-	var JSON;
-	if(null != (JSON = JSON)) {
-		thx.json.Json.nativeDecoder = JSON.parse;
-		thx.json.Json.nativeEncoder = JSON.stringify;
+	var j;
+	if(null != (j = window.JSON)) {
+		thx.json.Json.nativeDecoder = j.parse;
+		thx.json.Json.nativeEncoder = j.stringify;
 	}
 }
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];

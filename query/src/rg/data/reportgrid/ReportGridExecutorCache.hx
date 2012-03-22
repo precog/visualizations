@@ -47,6 +47,11 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		execute("propertyStandardDeviations", path, options, success, error);
 	}
 
+	public function propertySums(path : String, options : { property : String, periodicity : String }, success : TimeSeriesType -> Void, ?error : String -> Void) : Void
+	{
+		execute("propertySums", path, options, success, error);
+	}
+
 	public function propertyValues(path : String, options : { property : String }, success : Array<Dynamic> -> Void, ?error : String -> Void) : Void
 	{
 		execute("propertyValues", path, options, success, error);

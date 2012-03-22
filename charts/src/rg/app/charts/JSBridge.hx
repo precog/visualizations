@@ -49,7 +49,7 @@ class JSBridge
 #if !release
 		if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
 #end
-		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (ReportGrid = {}) : ReportGrid");
+		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid");
 
 		// init app
 		var globalNotifier = new hxevents.Notifier();
@@ -95,6 +95,8 @@ class JSBridge
 		}
 
 		// define public visualization constrcutors
+//		register("barChart", function(el, options) return r.chart(el, options, "barchart"));
+//		JsExport.property(r, "barChart", function(el, options) return r.chart(el, options, "barchart"));
 		r.barChart     = function(el, options) return r.chart(el, options, "barchart");
 		r.funnelChart  = function(el, options) return r.chart(el, options, "funnelchart");
 		r.geo          = function(el, options) return r.chart(el, options, "geo");
@@ -159,8 +161,15 @@ class JSBridge
 		r.info.charts = {
 			version : thx.util.MacroVersion.fullVersion()
 		};
-	}
 
+//		untyped JsExport.property(rg.util.ChainedExecutor.prototype, "execute", rg.util.ChainedExecutor.prototype.execute);
+	}
+/*
+	static function register(name : String, value : Dynamic)
+	{
+		Reflect.setField(untyped __js__("window['ReportGrid']"), name, value);
+	}
+*/
 	// make sure a dhx.Selection is passed
 	static function select(el : Dynamic)
 	{
@@ -179,3 +188,31 @@ class JSBridge
 		return ob;
 	}
 }
+/*
+class JsExport
+{
+	public static function path(path : String, obj : Dynamic, ?anchor : Dynamic)
+	{
+		var parts = path.split("."),
+			cur   = null == anchor ? js.Lib.window : anchor,
+			part;
+
+		while(null != (part = parts.shift()))
+		{
+			if(cur[part])
+			{
+				cur = cur[part];
+			} else {
+				cur = cur[part] = {};
+			}
+			if(parts.length == 0)
+				cur[part] = obj;
+		}
+	}
+
+	public static function property(obj : Dynamic, name : String, symbol : Dynamic)
+	{
+		untyped obj[name] = symbol;
+	}
+}
+*/

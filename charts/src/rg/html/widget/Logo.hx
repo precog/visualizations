@@ -129,7 +129,7 @@ class Logo
 	{
 		var body = js.Lib.document.body,
 			len = body.childNodes.length;
-		if(Dom.select("body > :last").node() != anchor.node())
+		if(Dom.select("body :last-child").node() != anchor.node())
 		{
 			body.appendChild(anchor.node());
 		}
