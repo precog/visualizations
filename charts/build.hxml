@@ -10,6 +10,8 @@
 -D noEmbedJS
 --dead-code-elimination
 --macro keep(["thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
-#--connect 8888
+--macro keep(["rg.graph.Graph","rg.graph.GNode","rg.graph.GEdge"])
+--connect 8888
 --js-modern
+#--times
 -debug

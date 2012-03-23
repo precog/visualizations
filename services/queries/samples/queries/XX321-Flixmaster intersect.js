@@ -1,10 +1,13 @@
+//** TOKEN
+CC400D31-E7D0-4E0A-A364-3FB5AA2FD02E
+
 //** VIZ
 ReportGrid.sankey("#chart", {
 	axes : ["count"],
 	data : [
 
 	{head : "XXX", tail : "1285", count : 10},
-//	{head : "XXX", tail : "XXX", count : 2},
+
 	{head : "1296", tail : "1289", count : 1}, {head : "1295", tail : "1289", count : 1}, {head : "1294", tail : "1288", count : 2}, {head : "1292", tail : "1287", count : 1}, {head : "1291", tail : "1287", count : 1}, {head : "1289", tail : "1295", count : 1}, {head : "1289", tail : "1286", count : 3}, {head : "1288", tail : "1286", count : 2}, {head : "1287", tail : "1292", count : 1}, {head : "1287", tail : "1286", count : 3}, {head : "1286", tail : "1296", count : 1}, {head : "1286", tail : "1294", count : 1}, {head : "1286", tail : "1289", count : 1}, {head : "1286", tail : "1287", count : 2}, {head : "1286", tail : "1285", count : 4}, {head : "1285", tail : null, count : 4}, {id : "1296", count : 1}, {id : "1295", count : 1}, {id : "1294", count : 2}, {id : "1292", count : 1}, {id : "1291", count : 1}, {id : "1289", count : 4}, {id : "1288", count : 2}, {id : "1287", count : 5}, {id : "1286", count : 9}, {id : "1285", count : 4+10}],
 	options : {
 		layoutmap : {
@@ -18,6 +21,18 @@ ReportGrid.sankey("#chart", {
 		}
 	}
 });
+
+ReportGrid.query.intersect({
+	path : "/jtt/test9/1/194/195/",
+	event : "progression",
+	properties : [{ property : "parent_id"}, { property : "node_id" }]
+}).console().execute(function(){});
+
+ReportGrid.query.count({
+	path : "/com_flixmaster_erika/dev/jtt/test9/1/194/195/",
+	event : "progression"//,
+//	properties : [{ property : "node_id" }, { property : "parent_id" }]
+}).console().execute(function(){});
 
 //** HTML
 <div id="chart" class="chart"></div>

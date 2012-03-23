@@ -163,6 +163,11 @@ class LayoutCell
 		this.position  = position;
 		this.positions = positions;
 	}
+
+	public function toString()
+	{
+		return Std.format("LayoutCell, layer $layer ($layers), position $position ($positions)");
+	}
 }
 
 typedef FriendLayoutCell =

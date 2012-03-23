@@ -256,7 +256,7 @@ class MVPOptions
 							},
 
 							node : function(dp, stats) {
-								return dp.id;
+								return null != dp ? dp.id : "";
 							},
 
 							datapoint : function(dp, stats) {

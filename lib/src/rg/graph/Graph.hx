@@ -6,7 +6,6 @@ using Iterables;
 
 class Graph<TNodeData, TEdgeData>
 {
-//	public static var global(getGlobal, null) : GlobalGraph;
 	public var nodes(default, null) : GraphNodes<TNodeData, TEdgeData>;
 	public var edges(default, null) : GraphEdges<TNodeData, TEdgeData>;
 
@@ -136,7 +135,7 @@ class Graph<TNodeData, TEdgeData>
 					return acc + edge.weight;
 				}, 0);
 			});
-		} else 
+		} else
 		{
 			return paths.min(function(arr) return arr.length);
 		}

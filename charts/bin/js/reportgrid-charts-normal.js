@@ -1159,7 +1159,7 @@ Floats.prototype = {
 	__class__: Floats
 }
 var Hash = function() {
-	this.h = Object.create != null?Object.create(null):{ };
+	this.h = { };
 };
 $hxClasses["Hash"] = Hash;
 Hash.__name__ = ["Hash"];
@@ -1172,11 +1172,11 @@ Hash.prototype = {
 		return this.h["$" + key];
 	}
 	,exists: function(key) {
-		return Object.prototype.hasOwnProperty.call(this.h,"$" + key);
+		return this.h.hasOwnProperty("$" + key);
 	}
 	,remove: function(key) {
 		key = "$" + key;
-		if(!Object.prototype.hasOwnProperty.call(this.h,key)) return false;
+		if(!this.h.hasOwnProperty(key)) return false;
 		delete(this.h[key]);
 		return true;
 	}
@@ -1256,7 +1256,7 @@ IntHash.prototype = {
 		return this.h[key];
 	}
 	,remove: function(key) {
-		if(!Object.prototype.hasOwnProperty.call(this.h,key)) return false;
+		if(!this.h.hasOwnProperty(key)) return false;
 		delete(this.h[key]);
 		return true;
 	}
@@ -6024,7 +6024,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.7.7762"};
+	r.info.charts = { version : "1.4.7.7842"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -6161,7 +6161,7 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 				var v = Reflect.field(dp,type);
 				return rg.util.RGStrings.humanize(type) + ": " + rg.util.Properties.formatValue(type,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
 			}, node : function(dp,stats) {
-				return dp.id;
+				return null != dp?dp.id:"";
 			}, datapoint : function(dp,stats) {
 				return rg.util.Properties.formatValue(type,dp) + "\n" + rg.util.RGStrings.humanize(type);
 			}, edge : function(dp,stats) {
@@ -13369,7 +13369,25 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var lena = me.layout.cell(ea.tail).layer - me.layout.cell(ea.head).layer, lenb = me.layout.cell(eb.tail).layer - me.layout.cell(eb.head).layer, comp = lenb - lena;
 			if(comp != 0) return comp; else return Floats.compare(eb.weight,ea.weight);
 		});
-		edges.forEach(function(edge,_) {
+		Iterators.each(this.layout.graph.nodes.iterator(),function(node,_) {
+			node.graph.edges.sortPositives(node,function(a,b) {
+				var ca = me.layout.cell(a.head), cb = me.layout.cell(b.head);
+				var t = cb.layer - ca.layer;
+				if(t != 0) return t;
+				return ca.position - cb.position;
+			});
+			node.graph.edges.sortNegatives(node,function(a,b) {
+				var ca = me.layout.cell(a.tail), cb = me.layout.cell(b.tail);
+				if(ca.layer > cb.layer) return 1;
+				return ca.position - cb.position;
+			});
+		});
+		var cedges = edges.copy();
+		cedges.sort(function(a,b) {
+			var ca = me.layout.cell(a.tail), cb = me.layout.cell(b.tail);
+			return cb.position - ca.position;
+		});
+		cedges.forEach(function(edge,_) {
 			if(edge.weight <= 0) return;
 			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
 			if(cellhead.layer > celltail.layer) return;
@@ -13392,14 +13410,6 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				};
 			})(me.edgeClickWithEdge.$bind(me),edge));
 			backedgesy += weight + me.backEdgeSpacing;
-		});
-		Iterators.each(this.layout.graph.nodes.iterator(),function(node,_) {
-			node.graph.edges.sortPositives(node,function(a,b) {
-				return me.layout.cell(a.head).position - me.layout.cell(b.head).position;
-			});
-			node.graph.edges.sortNegatives(node,function(a,b) {
-				return me.layout.cell(a.tail).position - me.layout.cell(b.tail).position;
-			});
 		});
 		edges.forEach(function(edge,_) {
 			if(edge.weight <= 0) return;
@@ -17298,6 +17308,16 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 			var edge = edges[_g];
 			++_g;
 			var head = graph.nodes.getById(edge.head), tail = graph.nodes.getById(edge.tail);
+			if(head == null) {
+				var dp = { id : edge.head}, weight = weightf(edge);
+				dp[this.dependentVariables[0].type] = weight;
+				head = graph.nodes.create({ dp : dp, id : edge.head, weight : weight, entry : 0.0, exit : 0.0});
+			}
+			if(tail == null) {
+				var dp = { id : edge.tail}, weight = weightf(edge);
+				dp[this.dependentVariables[0].type] = weight;
+				tail = graph.nodes.create({ dp : dp, id : edge.tail, weight : weight, entry : 0.0, exit : 0.0});
+			}
 			graph.edges.create(tail,head,weightf(edge));
 		}
 		var $it0 = graph.nodes.collection.iterator();

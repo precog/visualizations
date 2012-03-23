@@ -632,6 +632,12 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG715-summary - sum with time range.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ057-sankey with conversion layer.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG710-summary - sum.js",
+		"/Users/francoponticelli/Projects/reportgrid/client-libraries/js/src/v1/reportgrid-core.js",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/ReportGridExecutorCache.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/IExecutorReportGrid.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridQuery.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/DataSourceReportGridGraph.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG705-summary - mean with time range.js",
@@ -657,12 +663,9 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/PR001-simple.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG920-raw events - fields.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG925-raw events - limit.js",
-		"/Users/francoponticelli/Projects/reportgrid/client-libraries/js/src/v1/reportgrid-core.js",
 		"/Users/francoponticelli/Projects/reportgrid/client-libraries/doc/src/charts-query-api.v1.rst",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridTransformers.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/RG620-histogram - tag.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/IExecutorReportGrid.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/ReportGridExecutorCache.hx",
 		"/Users/francoponticelli/Documents/scripts/haxesrc/Makefile",
 		"/Users/francoponticelli/Documents/scripts/haxesrc/build.ml",
 		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/Makefile",
@@ -737,7 +740,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ032-stacked area chart.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ055-sankey with node values.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ056-sankey with map and no values.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ057-sankey with conversion layer.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ060-sankey with node values and filter.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ071-leaderboard on keywords.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/VZ072-FAILING leaderboard on keyword sets.js",
@@ -757,9 +759,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU400-unique.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU405-unique function.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU450-store.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU455-store with names.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU460-store increment with names.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU500-split.js"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/QU455-store with names.js"
 	],
 	"find":
 	{
@@ -767,7 +767,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 91.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/,*.hx",
@@ -806,9 +806,10 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"sum(",
 			"eternit",
 			"eternity",
 			"_defaultOptions",
@@ -935,8 +936,7 @@
 			"officedistance",
 			"},",
 			"}, ",
-			"sortByField",
-			"filterByFields"
+			"sortByField"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1041,7 +1041,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 184.0
+		"height": 116.0
 	},
 	"replace":
 	{

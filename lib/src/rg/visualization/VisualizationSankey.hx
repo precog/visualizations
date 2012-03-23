@@ -178,11 +178,11 @@ class VisualizationSankey extends VisualizationSvg
 		for(dp in nodes)
 		{
 			graph.nodes.create({
-				dp       : dp,
-				id       : idf(dp),
-				weight   : weightf(dp),
+				dp     : dp,
+				id     : idf(dp),
+				weight : weightf(dp),
 				entry  : 0.0,
-				exit : 0.0
+				exit   : 0.0
 			});
 		}
 
@@ -190,6 +190,34 @@ class VisualizationSankey extends VisualizationSvg
 		{
 			var head = graph.nodes.getById(edge.head),
 				tail = graph.nodes.getById(edge.tail);
+
+			if(head == null)
+			{
+				var dp     = { id : edge.head },
+					weight = weightf(edge);
+				Reflect.setField(dp, dependentVariables[0].type, weight);
+				head = graph.nodes.create({
+					dp     : dp,
+					id     : edge.head,
+					weight : weight,
+					entry  : 0.0,
+					exit   : 0.0
+				});
+			}
+			if(tail == null)
+			{
+				var dp = { id : edge.tail },
+					weight = weightf(edge);
+				Reflect.setField(dp, dependentVariables[0].type, weight);
+				tail = graph.nodes.create({
+					dp     : dp,
+					id     : edge.tail,
+					weight : weight,
+					entry  : 0.0,
+					exit   : 0.0
+				});
+			}
+
 			graph.edges.create(tail, head, weightf(edge));
 		}
 
