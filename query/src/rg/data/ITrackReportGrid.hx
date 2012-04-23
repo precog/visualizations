@@ -3,7 +3,7 @@
  * @author Franco Ponticelli
  */
 
-package rg.data.reportgrid;
+package rg.data;
 
 interface ITrackReportGrid
 {

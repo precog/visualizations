@@ -36,7 +36,10 @@ class Properties
 		if(null == value)
 			return value;
 		if(Properties.isTime(type))
-			return Periodicity.format(Properties.periodicity(type), value);
+		{
+			var periodicity = Properties.periodicity(type);
+			return Periodicity.format(periodicity, Dates.snap(value, periodicity));
+		}
 		return RGStrings.humanize(value);
 	}
 }

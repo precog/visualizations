@@ -191,7 +191,6 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		{
 			var valuedps = dps[i],
 				dist = (span - (paddingAxis * (valuedps.length - 1))) / valuedps.length;
-
 			// axis values
 			for (j in 0...valuedps.length)
 			{
@@ -222,6 +221,8 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 						x = width * xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)),
 						y = prev,
 						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height;
+					if(Math.isNaN(h))
+						h = 0;
 					var bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
 						.attr("x").float(stacked ? x + offset : x + offset + k * (pad + paddingDataPoint))

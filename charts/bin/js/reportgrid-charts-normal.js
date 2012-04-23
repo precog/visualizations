@@ -1,10 +1,12 @@
-var $_, $hxClasses = $hxClasses || {}, $estr = function() { return js.Boot.__string_rec(this,''); }
+(function () { "use strict";
+var $_, $hxClasses = {}, $estr = function() { return js.Boot.__string_rec(this,''); }
 function $extend(from, fields) {
 	function inherit() {}; inherit.prototype = from; var proto = new inherit();
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
-var Arrays = $hxClasses["Arrays"] = function() { }
+var Arrays = function() { }
+$hxClasses["Arrays"] = Arrays;
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
 	if(null != condition) {
@@ -217,7 +219,8 @@ Arrays.rotate = function(a) {
 Arrays.prototype = {
 	__class__: Arrays
 }
-var Bools = $hxClasses["Bools"] = function() { }
+var Bools = function() { }
+$hxClasses["Bools"] = Bools;
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
 	return (Bools.formatf(param,params,culture))(v);
@@ -249,10 +252,11 @@ Bools.compare = function(a,b) {
 Bools.prototype = {
 	__class__: Bools
 }
-var Bytes = $hxClasses["Bytes"] = function(length,b) {
+var Bytes = function(length,b) {
 	this.length = length;
 	this.b = b;
 };
+$hxClasses["Bytes"] = Bytes;
 Bytes.__name__ = ["Bytes"];
 Bytes.alloc = function(length) {
 	var a = new Array();
@@ -351,9 +355,10 @@ Bytes.prototype = {
 	}
 	,__class__: Bytes
 }
-var BytesBuffer = $hxClasses["BytesBuffer"] = function() {
+var BytesBuffer = function() {
 	this.b = new Array();
 };
+$hxClasses["BytesBuffer"] = BytesBuffer;
 BytesBuffer.__name__ = ["BytesBuffer"];
 BytesBuffer.prototype = {
 	b: null
@@ -389,7 +394,8 @@ BytesBuffer.prototype = {
 	}
 	,__class__: BytesBuffer
 }
-var BytesUtil = $hxClasses["BytesUtil"] = function() { }
+var BytesUtil = function() { }
+$hxClasses["BytesUtil"] = BytesUtil;
 BytesUtil.__name__ = ["BytesUtil"];
 BytesUtil.EMPTY = null;
 BytesUtil.cleanHexFormat = function(hex) {
@@ -420,12 +426,14 @@ BytesUtil.toHex = function(b,separator) {
 BytesUtil.prototype = {
 	__class__: BytesUtil
 }
-var Constants = $hxClasses["Constants"] = function() { }
+var Constants = function() { }
+$hxClasses["Constants"] = Constants;
 Constants.__name__ = ["Constants"];
 Constants.prototype = {
 	__class__: Constants
 }
-var DateTools = $hxClasses["DateTools"] = function() { }
+var DateTools = function() { }
+$hxClasses["DateTools"] = DateTools;
 DateTools.__name__ = ["DateTools"];
 DateTools.getMonthDays = function(d) {
 	var month = d.getMonth();
@@ -437,10 +445,11 @@ DateTools.getMonthDays = function(d) {
 DateTools.prototype = {
 	__class__: DateTools
 }
-var EReg = $hxClasses["EReg"] = function(r,opt) {
+var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
 };
+$hxClasses["EReg"] = EReg;
 EReg.__name__ = ["EReg"];
 EReg.prototype = {
 	r: null
@@ -487,7 +496,8 @@ EReg.prototype = {
 	}
 	,__class__: EReg
 }
-var Dates = $hxClasses["Dates"] = function() { }
+var Dates = function() { }
+$hxClasses["Dates"] = Dates;
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
 	return (Dates.formatf(param,params,culture))(d);
@@ -703,7 +713,8 @@ Dates.compare = function(a,b) {
 Dates.prototype = {
 	__class__: Dates
 }
-var Dynamics = $hxClasses["Dynamics"] = function() { }
+var Dynamics = function() { }
+$hxClasses["Dynamics"] = Dynamics;
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
 	return (Dynamics.formatf(param,params,nullstring,culture))(v);
@@ -1022,7 +1033,8 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
-var Enums = $hxClasses["Enums"] = function() { }
+var Enums = function() { }
+$hxClasses["Enums"] = Enums;
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
 	var cons = e[0];
@@ -1043,7 +1055,8 @@ Enums.compare = function(a,b) {
 Enums.prototype = {
 	__class__: Enums
 }
-var Floats = $hxClasses["Floats"] = function() { }
+var Floats = function() { }
+$hxClasses["Floats"] = Floats;
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
 	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
@@ -1143,9 +1156,10 @@ Floats.uninterpolatef = function(a,b) {
 Floats.prototype = {
 	__class__: Floats
 }
-var Hash = $hxClasses["Hash"] = function() {
+var Hash = function() {
 	this.h = { };
 };
+$hxClasses["Hash"] = Hash;
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
 	h: null
@@ -1181,7 +1195,8 @@ Hash.prototype = {
 	}
 	,__class__: Hash
 }
-var I32 = $hxClasses["I32"] = function() { }
+var I32 = function() { }
+$hxClasses["I32"] = I32;
 I32.__name__ = ["I32"];
 I32.abs = function(v) {
 	return Math.abs(v) | 0;
@@ -1227,9 +1242,10 @@ I32.toInt = function(v) {
 I32.prototype = {
 	__class__: I32
 }
-var IntHash = $hxClasses["IntHash"] = function() {
+var IntHash = function() {
 	this.h = { };
 };
+$hxClasses["IntHash"] = IntHash;
 IntHash.__name__ = ["IntHash"];
 IntHash.prototype = {
 	h: null
@@ -1261,7 +1277,8 @@ IntHash.prototype = {
 	}
 	,__class__: IntHash
 }
-var IntHashes = $hxClasses["IntHashes"] = function() { }
+var IntHashes = function() { }
+$hxClasses["IntHashes"] = IntHashes;
 IntHashes.__name__ = ["IntHashes"];
 IntHashes.count = function(hash) {
 	var i = 0;
@@ -1275,7 +1292,8 @@ IntHashes.count = function(hash) {
 IntHashes.prototype = {
 	__class__: IntHashes
 }
-var Ints = $hxClasses["Ints"] = function() { }
+var Ints = function() { }
+$hxClasses["Ints"] = Ints;
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
 	if(step == null) step = 1;
@@ -1334,7 +1352,8 @@ Ints.compare = function(a,b) {
 Ints.prototype = {
 	__class__: Ints
 }
-var Iterables = $hxClasses["Iterables"] = function() { }
+var Iterables = function() { }
+$hxClasses["Iterables"] = Iterables;
 Iterables.__name__ = ["Iterables"];
 Iterables.count = function(it) {
 	return Iterators.count(it.iterator());
@@ -1365,7 +1384,8 @@ Iterables.isIterable = function(v) {
 Iterables.prototype = {
 	__class__: Iterables
 }
-var Iterators = $hxClasses["Iterators"] = function() { }
+var Iterators = function() { }
+$hxClasses["Iterators"] = Iterators;
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
 	var i = 0;
@@ -1431,7 +1451,8 @@ Iterators.isIterator = function(v) {
 Iterators.prototype = {
 	__class__: Iterators
 }
-var Lambda = $hxClasses["Lambda"] = function() { }
+var Lambda = function() { }
+$hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = ["Lambda"];
 Lambda.has = function(it,elt,cmp) {
 	if(cmp == null) {
@@ -1452,7 +1473,8 @@ Lambda.has = function(it,elt,cmp) {
 Lambda.prototype = {
 	__class__: Lambda
 }
-var List = $hxClasses["List"] = function() { }
+var List = function() { }
+$hxClasses["List"] = List;
 List.__name__ = ["List"];
 List.prototype = {
 	h: null
@@ -1468,7 +1490,8 @@ List.prototype = {
 	}
 	,__class__: List
 }
-var Objects = $hxClasses["Objects"] = function() { }
+var Objects = function() { }
+$hxClasses["Objects"] = Objects;
 Objects.__name__ = ["Objects"];
 Objects.keys = function(o) {
 	return Reflect.fields(o);
@@ -1542,7 +1565,8 @@ Objects.formatf = function(param,params,culture) {
 Objects.prototype = {
 	__class__: Objects
 }
-var Reflect = $hxClasses["Reflect"] = function() { }
+var Reflect = function() { }
+$hxClasses["Reflect"] = Reflect;
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
 	return Object.prototype.hasOwnProperty.call(o,field);
@@ -1592,7 +1616,8 @@ Reflect.deleteField = function(o,f) {
 Reflect.prototype = {
 	__class__: Reflect
 }
-var Std = $hxClasses["Std"] = function() { }
+var Std = function() { }
+$hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
 	return js.Boot.__instanceof(v,t);
@@ -1615,9 +1640,10 @@ Std.parseFloat = function(x) {
 Std.prototype = {
 	__class__: Std
 }
-var StringBuf = $hxClasses["StringBuf"] = function() {
+var StringBuf = function() {
 	this.b = new Array();
 };
+$hxClasses["StringBuf"] = StringBuf;
 StringBuf.__name__ = ["StringBuf"];
 StringBuf.prototype = {
 	add: function(x) {
@@ -1629,7 +1655,8 @@ StringBuf.prototype = {
 	,b: null
 	,__class__: StringBuf
 }
-var StringTools = $hxClasses["StringTools"] = function() { }
+var StringTools = function() { }
+$hxClasses["StringTools"] = StringTools;
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
 	return encodeURIComponent(s);
@@ -1714,7 +1741,8 @@ StringTools.stripWhite = function(s) {
 StringTools.prototype = {
 	__class__: StringTools
 }
-var Strings = $hxClasses["Strings"] = function() { }
+var Strings = function() { }
+$hxClasses["Strings"] = Strings;
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
 	if(nullstring == null) nullstring = "null";
@@ -1968,7 +1996,8 @@ ValueType.TEnum = function(e) { var $x = ["TEnum",7,e]; $x.__enum__ = ValueType;
 ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
-var Type = $hxClasses["Type"] = function() { }
+var Type = function() { }
+$hxClasses["Type"] = Type;
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
 	if(o == null) return null;
@@ -2086,7 +2115,8 @@ Type.enumIndex = function(e) {
 Type.prototype = {
 	__class__: Type
 }
-var Types = $hxClasses["Types"] = function() { }
+var Types = function() { }
+$hxClasses["Types"] = Types;
 Types.__name__ = ["Types"];
 Types.typeName = function(o) {
 	return (function($this) {
@@ -2176,9 +2206,10 @@ Types.isPrimitive = function(v) {
 Types.prototype = {
 	__class__: Types
 }
-var chx = chx || {}
-if(!chx.crypt) chx.crypt = {}
-chx.crypt.IBlockCipher = $hxClasses["chx.crypt.IBlockCipher"] = function() { }
+var chx = {}
+chx.crypt = {}
+chx.crypt.IBlockCipher = function() { }
+$hxClasses["chx.crypt.IBlockCipher"] = chx.crypt.IBlockCipher;
 chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
 chx.crypt.IBlockCipher.prototype = {
 	blockSize: null
@@ -2187,7 +2218,8 @@ chx.crypt.IBlockCipher.prototype = {
 	,__class__: chx.crypt.IBlockCipher
 	,__properties__: {get_blockSize:"__getBlockSize"}
 }
-chx.crypt.IPad = $hxClasses["chx.crypt.IPad"] = function() { }
+chx.crypt.IPad = function() { }
+$hxClasses["chx.crypt.IPad"] = chx.crypt.IPad;
 chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
 chx.crypt.IPad.prototype = {
 	blockSize: null
@@ -2200,12 +2232,13 @@ chx.crypt.IPad.prototype = {
 	,__class__: chx.crypt.IPad
 	,__properties__: {set_blockSize:"setBlockSize"}
 }
-chx.crypt.PadPkcs1Type1 = $hxClasses["chx.crypt.PadPkcs1Type1"] = function(size) {
+chx.crypt.PadPkcs1Type1 = function(size) {
 	this["blockSize"] = size;
 	this.setPadCount(8);
 	this.typeByte = 1;
 	this.setPadByte(255);
 };
+$hxClasses["chx.crypt.PadPkcs1Type1"] = chx.crypt.PadPkcs1Type1;
 chx.crypt.PadPkcs1Type1.__name__ = ["chx","crypt","PadPkcs1Type1"];
 chx.crypt.PadPkcs1Type1.__interfaces__ = [chx.crypt.IPad];
 chx.crypt.PadPkcs1Type1.prototype = {
@@ -2275,10 +2308,11 @@ chx.crypt.PadPkcs1Type1.prototype = {
 	,__class__: chx.crypt.PadPkcs1Type1
 	,__properties__: {set_padByte:"setPadByte",get_padByte:"getPadByte",set_blockSize:"setBlockSize"}
 }
-chx.crypt.RSAEncrypt = $hxClasses["chx.crypt.RSAEncrypt"] = function(nHex,eHex) {
+chx.crypt.RSAEncrypt = function(nHex,eHex) {
 	this.init();
 	if(nHex != null) this.setPublic(nHex,eHex);
 };
+$hxClasses["chx.crypt.RSAEncrypt"] = chx.crypt.RSAEncrypt;
 chx.crypt.RSAEncrypt.__name__ = ["chx","crypt","RSAEncrypt"];
 chx.crypt.RSAEncrypt.__interfaces__ = [chx.crypt.IBlockCipher];
 chx.crypt.RSAEncrypt.prototype = {
@@ -2367,7 +2401,8 @@ chx.crypt.RSAEncrypt.prototype = {
 	,__class__: chx.crypt.RSAEncrypt
 	,__properties__: {get_blockSize:"__getBlockSize"}
 }
-chx.crypt.RSA = $hxClasses["chx.crypt.RSA"] = function() { }
+chx.crypt.RSA = function() { }
+$hxClasses["chx.crypt.RSA"] = chx.crypt.RSA;
 chx.crypt.RSA.__name__ = ["chx","crypt","RSA"];
 chx.crypt.RSA.__interfaces__ = [chx.crypt.IBlockCipher];
 chx.crypt.RSA.__super__ = chx.crypt.RSAEncrypt;
@@ -2433,8 +2468,9 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 	}
 	,__class__: chx.crypt.RSA
 });
-if(!chx.formats) chx.formats = {}
-chx.formats.Base64 = $hxClasses["chx.formats.Base64"] = function() { }
+chx.formats = {}
+chx.formats.Base64 = function() { }
+$hxClasses["chx.formats.Base64"] = chx.formats.Base64;
 chx.formats.Base64.__name__ = ["chx","formats","Base64"];
 chx.formats.Base64.enc = null;
 chx.formats.Base64.decode = function(s) {
@@ -2454,8 +2490,9 @@ chx.formats.Base64.decode = function(s) {
 chx.formats.Base64.prototype = {
 	__class__: chx.formats.Base64
 }
-if(!chx.io) chx.io = {}
-chx.io.Input = $hxClasses["chx.io.Input"] = function() { }
+chx.io = {}
+chx.io.Input = function() { }
+$hxClasses["chx.io.Input"] = chx.io.Input;
 chx.io.Input.__name__ = ["chx","io","Input"];
 chx.io.Input.prototype = {
 	bigEndian: null
@@ -2491,7 +2528,8 @@ chx.io.Input.prototype = {
 	,__class__: chx.io.Input
 	,__properties__: {set_bigEndian:"__setEndian"}
 }
-chx.io.BytesInput = $hxClasses["chx.io.BytesInput"] = function() { }
+chx.io.BytesInput = function() { }
+$hxClasses["chx.io.BytesInput"] = chx.io.BytesInput;
 chx.io.BytesInput.__name__ = ["chx","io","BytesInput"];
 chx.io.BytesInput.__super__ = chx.io.Input;
 chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
@@ -2531,7 +2569,8 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 	}
 	,__class__: chx.io.BytesInput
 });
-chx.io.Output = $hxClasses["chx.io.Output"] = function() { }
+chx.io.Output = function() { }
+$hxClasses["chx.io.Output"] = chx.io.Output;
 chx.io.Output.__name__ = ["chx","io","Output"];
 chx.io.Output.prototype = {
 	bigEndian: null
@@ -2560,7 +2599,8 @@ chx.io.Output.prototype = {
 	,__class__: chx.io.Output
 	,__properties__: {set_bigEndian:"setBigEndian"}
 }
-chx.io.BytesOutput = $hxClasses["chx.io.BytesOutput"] = function() { }
+chx.io.BytesOutput = function() { }
+$hxClasses["chx.io.BytesOutput"] = chx.io.BytesOutput;
 chx.io.BytesOutput.__name__ = ["chx","io","BytesOutput"];
 chx.io.BytesOutput.__super__ = chx.io.Output;
 chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
@@ -2575,11 +2615,12 @@ chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
 	}
 	,__class__: chx.io.BytesOutput
 });
-if(!chx.lang) chx.lang = {}
-chx.lang.Exception = $hxClasses["chx.lang.Exception"] = function(msg,cause) {
+chx.lang = {}
+chx.lang.Exception = function(msg,cause) {
 	this.message = msg;
 	this.cause = cause;
 };
+$hxClasses["chx.lang.Exception"] = chx.lang.Exception;
 chx.lang.Exception.__name__ = ["chx","lang","Exception"];
 chx.lang.Exception.prototype = {
 	message: null
@@ -2589,17 +2630,19 @@ chx.lang.Exception.prototype = {
 	}
 	,__class__: chx.lang.Exception
 }
-chx.lang.IOException = $hxClasses["chx.lang.IOException"] = function(msg,cause) {
+chx.lang.IOException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.IOException"] = chx.lang.IOException;
 chx.lang.IOException.__name__ = ["chx","lang","IOException"];
 chx.lang.IOException.__super__ = chx.lang.Exception;
 chx.lang.IOException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.IOException
 });
-chx.lang.EofException = $hxClasses["chx.lang.EofException"] = function(msg,cause) {
+chx.lang.EofException = function(msg,cause) {
 	chx.lang.IOException.call(this,msg,cause);
 };
+$hxClasses["chx.lang.EofException"] = chx.lang.EofException;
 chx.lang.EofException.__name__ = ["chx","lang","EofException"];
 chx.lang.EofException.__super__ = chx.lang.IOException;
 chx.lang.EofException.prototype = $extend(chx.lang.IOException.prototype,{
@@ -2608,44 +2651,49 @@ chx.lang.EofException.prototype = $extend(chx.lang.IOException.prototype,{
 	}
 	,__class__: chx.lang.EofException
 });
-chx.lang.FatalException = $hxClasses["chx.lang.FatalException"] = function(msg,cause) {
+chx.lang.FatalException = function(msg,cause) {
 	this.message = msg;
 	this.cause = cause;
 };
+$hxClasses["chx.lang.FatalException"] = chx.lang.FatalException;
 chx.lang.FatalException.__name__ = ["chx","lang","FatalException"];
 chx.lang.FatalException.prototype = {
 	message: null
 	,cause: null
 	,__class__: chx.lang.FatalException
 }
-chx.lang.NullPointerException = $hxClasses["chx.lang.NullPointerException"] = function(msg,cause) {
+chx.lang.NullPointerException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.NullPointerException"] = chx.lang.NullPointerException;
 chx.lang.NullPointerException.__name__ = ["chx","lang","NullPointerException"];
 chx.lang.NullPointerException.__super__ = chx.lang.Exception;
 chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.NullPointerException
 });
-chx.lang.OutsideBoundsException = $hxClasses["chx.lang.OutsideBoundsException"] = function(msg,cause) {
+chx.lang.OutsideBoundsException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.OutsideBoundsException"] = chx.lang.OutsideBoundsException;
 chx.lang.OutsideBoundsException.__name__ = ["chx","lang","OutsideBoundsException"];
 chx.lang.OutsideBoundsException.__super__ = chx.lang.Exception;
 chx.lang.OutsideBoundsException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.OutsideBoundsException
 });
-chx.lang.UnsupportedException = $hxClasses["chx.lang.UnsupportedException"] = function(msg,cause) {
+chx.lang.UnsupportedException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.UnsupportedException"] = chx.lang.UnsupportedException;
 chx.lang.UnsupportedException.__name__ = ["chx","lang","UnsupportedException"];
 chx.lang.UnsupportedException.__super__ = chx.lang.Exception;
 chx.lang.UnsupportedException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.UnsupportedException
 });
-var dhx = dhx || {}
-dhx.Access = $hxClasses["dhx.Access"] = function(selection) {
+var dhx = {}
+dhx.Access = function(selection) {
 	this.selection = selection;
 };
+$hxClasses["dhx.Access"] = dhx.Access;
 dhx.Access.__name__ = ["dhx","Access"];
 dhx.Access.getData = function(d) {
 	return Reflect.field(d,"__dhx_data__");
@@ -2687,11 +2735,12 @@ dhx.Access.prototype = {
 	}
 	,__class__: dhx.Access
 }
-dhx.AccessAttribute = $hxClasses["dhx.AccessAttribute"] = function(name,selection) {
+dhx.AccessAttribute = function(name,selection) {
 	dhx.Access.call(this,selection);
 	this.name = name;
 	this.qname = dhx.Namespace.qualify(name);
 };
+$hxClasses["dhx.AccessAttribute"] = dhx.AccessAttribute;
 dhx.AccessAttribute.__name__ = ["dhx","AccessAttribute"];
 dhx.AccessAttribute.__super__ = dhx.Access;
 dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
@@ -2738,9 +2787,10 @@ dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
 	}
 	,__class__: dhx.AccessAttribute
 });
-dhx.AccessDataAttribute = $hxClasses["dhx.AccessDataAttribute"] = function(name,selection) {
+dhx.AccessDataAttribute = function(name,selection) {
 	dhx.AccessAttribute.call(this,name,selection);
 };
+$hxClasses["dhx.AccessDataAttribute"] = dhx.AccessDataAttribute;
 dhx.AccessDataAttribute.__name__ = ["dhx","AccessDataAttribute"];
 dhx.AccessDataAttribute.__super__ = dhx.AccessAttribute;
 dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
@@ -2778,9 +2828,10 @@ dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
 	}
 	,__class__: dhx.AccessDataAttribute
 });
-dhx.AccessClassed = $hxClasses["dhx.AccessClassed"] = function(selection) {
+dhx.AccessClassed = function(selection) {
 	dhx.Access.call(this,selection);
 };
+$hxClasses["dhx.AccessClassed"] = dhx.AccessClassed;
 dhx.AccessClassed.__name__ = ["dhx","AccessClassed"];
 dhx.AccessClassed.escapeERegChars = function(s) {
 	return dhx.AccessClassed._escapePattern.customReplace(s,function(e) {
@@ -2834,17 +2885,19 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 	}
 	,__class__: dhx.AccessClassed
 });
-dhx.AccessDataClassed = $hxClasses["dhx.AccessDataClassed"] = function(selection) {
+dhx.AccessDataClassed = function(selection) {
 	dhx.AccessClassed.call(this,selection);
 };
+$hxClasses["dhx.AccessDataClassed"] = dhx.AccessDataClassed;
 dhx.AccessDataClassed.__name__ = ["dhx","AccessDataClassed"];
 dhx.AccessDataClassed.__super__ = dhx.AccessClassed;
 dhx.AccessDataClassed.prototype = $extend(dhx.AccessClassed.prototype,{
 	__class__: dhx.AccessDataClassed
 });
-dhx.AccessHtml = $hxClasses["dhx.AccessHtml"] = function(selection) {
+dhx.AccessHtml = function(selection) {
 	dhx.Access.call(this,selection);
 };
+$hxClasses["dhx.AccessHtml"] = dhx.AccessHtml;
 dhx.AccessHtml.__name__ = ["dhx","AccessHtml"];
 dhx.AccessHtml.__super__ = dhx.Access;
 dhx.AccessHtml.prototype = $extend(dhx.Access.prototype,{
@@ -2861,9 +2914,10 @@ dhx.AccessHtml.prototype = $extend(dhx.Access.prototype,{
 	}
 	,__class__: dhx.AccessHtml
 });
-dhx.AccessDataHtml = $hxClasses["dhx.AccessDataHtml"] = function(selection) {
+dhx.AccessDataHtml = function(selection) {
 	dhx.AccessHtml.call(this,selection);
 };
+$hxClasses["dhx.AccessDataHtml"] = dhx.AccessDataHtml;
 dhx.AccessDataHtml.__name__ = ["dhx","AccessDataHtml"];
 dhx.AccessDataHtml.__super__ = dhx.AccessHtml;
 dhx.AccessDataHtml.prototype = $extend(dhx.AccessHtml.prototype,{
@@ -2877,10 +2931,11 @@ dhx.AccessDataHtml.prototype = $extend(dhx.AccessHtml.prototype,{
 	}
 	,__class__: dhx.AccessDataHtml
 });
-dhx.AccessStyle = $hxClasses["dhx.AccessStyle"] = function(name,selection) {
+dhx.AccessStyle = function(name,selection) {
 	dhx.Access.call(this,selection);
 	this.name = name;
 };
+$hxClasses["dhx.AccessStyle"] = dhx.AccessStyle;
 dhx.AccessStyle.__name__ = ["dhx","AccessStyle"];
 dhx.AccessStyle._getPropertyName = function(key) {
 	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Lib.document.body.cssFloat == null?"styleFloat":"cssFloat";
@@ -2953,9 +3008,10 @@ dhx.AccessStyle.prototype = $extend(dhx.Access.prototype,{
 	}
 	,__class__: dhx.AccessStyle
 });
-dhx.AccessDataStyle = $hxClasses["dhx.AccessDataStyle"] = function(name,selection) {
+dhx.AccessDataStyle = function(name,selection) {
 	dhx.AccessStyle.call(this,name,selection);
 };
+$hxClasses["dhx.AccessDataStyle"] = dhx.AccessDataStyle;
 dhx.AccessDataStyle.__name__ = ["dhx","AccessDataStyle"];
 dhx.AccessDataStyle.__super__ = dhx.AccessStyle;
 dhx.AccessDataStyle.prototype = $extend(dhx.AccessStyle.prototype,{
@@ -2969,9 +3025,10 @@ dhx.AccessDataStyle.prototype = $extend(dhx.AccessStyle.prototype,{
 	}
 	,__class__: dhx.AccessDataStyle
 });
-dhx.AccessText = $hxClasses["dhx.AccessText"] = function(selection) {
+dhx.AccessText = function(selection) {
 	dhx.Access.call(this,selection);
 };
+$hxClasses["dhx.AccessText"] = dhx.AccessText;
 dhx.AccessText.__name__ = ["dhx","AccessText"];
 dhx.AccessText.__super__ = dhx.Access;
 dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
@@ -2990,9 +3047,10 @@ dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
 	}
 	,__class__: dhx.AccessText
 });
-dhx.AccessDataText = $hxClasses["dhx.AccessDataText"] = function(selection) {
+dhx.AccessDataText = function(selection) {
 	dhx.AccessText.call(this,selection);
 };
+$hxClasses["dhx.AccessDataText"] = dhx.AccessDataText;
 dhx.AccessDataText.__name__ = ["dhx","AccessDataText"];
 dhx.AccessDataText.__super__ = dhx.AccessText;
 dhx.AccessDataText.prototype = $extend(dhx.AccessText.prototype,{
@@ -3006,10 +3064,11 @@ dhx.AccessDataText.prototype = $extend(dhx.AccessText.prototype,{
 	}
 	,__class__: dhx.AccessDataText
 });
-dhx.AccessTween = $hxClasses["dhx.AccessTween"] = function(transition,tweens) {
+dhx.AccessTween = function(transition,tweens) {
 	this.transition = transition;
 	this.tweens = tweens;
 };
+$hxClasses["dhx.AccessTween"] = dhx.AccessTween;
 dhx.AccessTween.__name__ = ["dhx","AccessTween"];
 dhx.AccessTween.prototype = {
 	transition: null
@@ -3034,11 +3093,12 @@ dhx.AccessTween.prototype = {
 	}
 	,__class__: dhx.AccessTween
 }
-dhx.AccessTweenAttribute = $hxClasses["dhx.AccessTweenAttribute"] = function(name,transition,tweens) {
+dhx.AccessTweenAttribute = function(name,transition,tweens) {
 	dhx.AccessTween.call(this,transition,tweens);
 	this.name = name;
 	this.qname = dhx.Namespace.qualify(name);
 };
+$hxClasses["dhx.AccessTweenAttribute"] = dhx.AccessTweenAttribute;
 dhx.AccessTweenAttribute.__name__ = ["dhx","AccessTweenAttribute"];
 dhx.AccessTweenAttribute.__super__ = dhx.AccessTween;
 dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
@@ -3086,9 +3146,10 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 	}
 	,__class__: dhx.AccessTweenAttribute
 });
-dhx.AccessDataTweenAttribute = $hxClasses["dhx.AccessDataTweenAttribute"] = function(name,transition,tweens) {
+dhx.AccessDataTweenAttribute = function(name,transition,tweens) {
 	dhx.AccessTweenAttribute.call(this,name,transition,tweens);
 };
+$hxClasses["dhx.AccessDataTweenAttribute"] = dhx.AccessDataTweenAttribute;
 dhx.AccessDataTweenAttribute.__name__ = ["dhx","AccessDataTweenAttribute"];
 dhx.AccessDataTweenAttribute.__super__ = dhx.AccessTweenAttribute;
 dhx.AccessDataTweenAttribute.prototype = $extend(dhx.AccessTweenAttribute.prototype,{
@@ -3099,10 +3160,11 @@ dhx.AccessDataTweenAttribute.prototype = $extend(dhx.AccessTweenAttribute.protot
 	}
 	,__class__: dhx.AccessDataTweenAttribute
 });
-dhx.AccessTweenStyle = $hxClasses["dhx.AccessTweenStyle"] = function(name,transition,tweens) {
+dhx.AccessTweenStyle = function(name,transition,tweens) {
 	dhx.AccessTween.call(this,transition,tweens);
 	this.name = name;
 };
+$hxClasses["dhx.AccessTweenStyle"] = dhx.AccessTweenStyle;
 dhx.AccessTweenStyle.__name__ = ["dhx","AccessTweenStyle"];
 dhx.AccessTweenStyle.__super__ = dhx.AccessTween;
 dhx.AccessTweenStyle.prototype = $extend(dhx.AccessTween.prototype,{
@@ -3166,7 +3228,8 @@ dhx.OSType.Linux.__enum__ = dhx.OSType;
 dhx.OSType.UnknownOs = ["UnknownOs",5];
 dhx.OSType.UnknownOs.toString = $estr;
 dhx.OSType.UnknownOs.__enum__ = dhx.OSType;
-dhx.ClientHost = $hxClasses["dhx.ClientHost"] = function() { }
+dhx.ClientHost = function() { }
+$hxClasses["dhx.ClientHost"] = dhx.ClientHost;
 dhx.ClientHost.__name__ = ["dhx","ClientHost"];
 dhx.ClientHost.host = null;
 dhx.ClientHost.environment = null;
@@ -3193,8 +3256,9 @@ dhx.ClientHost.hasNavigator = function() {
 dhx.ClientHost.prototype = {
 	__class__: dhx.ClientHost
 }
-var js = js || {}
-js.Lib = $hxClasses["js.Lib"] = function() { }
+var js = {}
+js.Lib = function() { }
+$hxClasses["js.Lib"] = js.Lib;
 js.Lib.__name__ = ["js","Lib"];
 js.Lib.isIE = null;
 js.Lib.isOpera = null;
@@ -3206,9 +3270,10 @@ js.Lib.alert = function(v) {
 js.Lib.prototype = {
 	__class__: js.Lib
 }
-dhx.Group = $hxClasses["dhx.Group"] = function(nodes) {
+dhx.Group = function(nodes) {
 	this.nodes = nodes;
 };
+$hxClasses["dhx.Group"] = dhx.Group;
 dhx.Group.__name__ = ["dhx","Group"];
 dhx.Group.current = null;
 dhx.Group.merge = function(source,target) {
@@ -3252,9 +3317,10 @@ dhx.Group.prototype = {
 	}
 	,__class__: dhx.Group
 }
-dhx.BaseSelection = $hxClasses["dhx.BaseSelection"] = function(groups) {
+dhx.BaseSelection = function(groups) {
 	this.groups = groups;
 };
+$hxClasses["dhx.BaseSelection"] = dhx.BaseSelection;
 dhx.BaseSelection.__name__ = ["dhx","BaseSelection"];
 dhx.BaseSelection.listenerEnterLeave = function(f,dom,i) {
 	var e = dhx.Dom.event, target = e.relatedTarget;
@@ -3559,9 +3625,10 @@ dhx.BaseSelection.prototype = {
 	}
 	,__class__: dhx.BaseSelection
 }
-dhx.UnboundSelection = $hxClasses["dhx.UnboundSelection"] = function(groups) {
+dhx.UnboundSelection = function(groups) {
 	dhx.BaseSelection.call(this,groups);
 };
+$hxClasses["dhx.UnboundSelection"] = dhx.UnboundSelection;
 dhx.UnboundSelection.__name__ = ["dhx","UnboundSelection"];
 dhx.UnboundSelection.__super__ = dhx.BaseSelection;
 dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
@@ -3604,9 +3671,10 @@ dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 	}
 	,__class__: dhx.UnboundSelection
 });
-dhx.Selection = $hxClasses["dhx.Selection"] = function(groups) {
+dhx.Selection = function(groups) {
 	dhx.UnboundSelection.call(this,groups);
 };
+$hxClasses["dhx.Selection"] = dhx.Selection;
 dhx.Selection.__name__ = ["dhx","Selection"];
 dhx.Selection.__properties__ = {get_current:"getCurrent"}
 dhx.Selection.current = null;
@@ -3626,15 +3694,17 @@ dhx.Selection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	}
 	,__class__: dhx.Selection
 });
-dhx.ISelectorEngine = $hxClasses["dhx.ISelectorEngine"] = function() { }
+dhx.ISelectorEngine = function() { }
+$hxClasses["dhx.ISelectorEngine"] = dhx.ISelectorEngine;
 dhx.ISelectorEngine.__name__ = ["dhx","ISelectorEngine"];
 dhx.ISelectorEngine.prototype = {
 	select: null
 	,selectAll: null
 	,__class__: dhx.ISelectorEngine
 }
-dhx.NativeSelectorEngine = $hxClasses["dhx.NativeSelectorEngine"] = function() {
+dhx.NativeSelectorEngine = function() {
 };
+$hxClasses["dhx.NativeSelectorEngine"] = dhx.NativeSelectorEngine;
 dhx.NativeSelectorEngine.__name__ = ["dhx","NativeSelectorEngine"];
 dhx.NativeSelectorEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.NativeSelectorEngine.supported = function() {
@@ -3658,8 +3728,9 @@ dhx.NativeSelectorEngine.prototype = {
 	}
 	,__class__: dhx.NativeSelectorEngine
 }
-dhx.SizzleEngine = $hxClasses["dhx.SizzleEngine"] = function() {
+dhx.SizzleEngine = function() {
 };
+$hxClasses["dhx.SizzleEngine"] = dhx.SizzleEngine;
 dhx.SizzleEngine.__name__ = ["dhx","SizzleEngine"];
 dhx.SizzleEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.SizzleEngine.supported = function() {
@@ -3677,7 +3748,8 @@ dhx.SizzleEngine.prototype = {
 	}
 	,__class__: dhx.SizzleEngine
 }
-dhx.Dom = $hxClasses["dhx.Dom"] = function() { }
+dhx.Dom = function() { }
+$hxClasses["dhx.Dom"] = dhx.Dom;
 dhx.Dom.__name__ = ["dhx","Dom"];
 dhx.Dom.select = function(selector) {
 	return dhx.Dom.doc.select(selector);
@@ -3695,7 +3767,8 @@ dhx.Dom.event = null;
 dhx.Dom.prototype = {
 	__class__: dhx.Dom
 }
-dhx.Namespace = $hxClasses["dhx.Namespace"] = function() { }
+dhx.Namespace = function() { }
+$hxClasses["dhx.Namespace"] = dhx.Namespace;
 dhx.Namespace.__name__ = ["dhx","Namespace"];
 dhx.Namespace.qualify = function(name) {
 	var i = name.indexOf(":");
@@ -3708,19 +3781,21 @@ dhx.Namespace.qualify = function(name) {
 dhx.Namespace.prototype = {
 	__class__: dhx.Namespace
 }
-dhx.NSQualifier = $hxClasses["dhx.NSQualifier"] = function(space,local) {
+dhx.NSQualifier = function(space,local) {
 	this.space = space;
 	this.local = local;
 };
+$hxClasses["dhx.NSQualifier"] = dhx.NSQualifier;
 dhx.NSQualifier.__name__ = ["dhx","NSQualifier"];
 dhx.NSQualifier.prototype = {
 	space: null
 	,local: null
 	,__class__: dhx.NSQualifier
 }
-dhx.BoundSelection = $hxClasses["dhx.BoundSelection"] = function(groups) {
+dhx.BoundSelection = function(groups) {
 	dhx.BaseSelection.call(this,groups);
 };
+$hxClasses["dhx.BoundSelection"] = dhx.BoundSelection;
 dhx.BoundSelection.__name__ = ["dhx","BoundSelection"];
 dhx.BoundSelection.__super__ = dhx.BaseSelection;
 dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
@@ -3781,10 +3856,11 @@ dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 	}
 	,__class__: dhx.BoundSelection
 });
-dhx.UpdateSelection = $hxClasses["dhx.UpdateSelection"] = function(update,choice) {
+dhx.UpdateSelection = function(update,choice) {
 	dhx.BoundSelection.call(this,update);
 	this._choice = choice;
 };
+$hxClasses["dhx.UpdateSelection"] = dhx.UpdateSelection;
 dhx.UpdateSelection.__name__ = ["dhx","UpdateSelection"];
 dhx.UpdateSelection.__super__ = dhx.BoundSelection;
 dhx.UpdateSelection.prototype = $extend(dhx.BoundSelection.prototype,{
@@ -3803,12 +3879,13 @@ dhx.UpdateSelection.prototype = $extend(dhx.BoundSelection.prototype,{
 	}
 	,__class__: dhx.UpdateSelection
 });
-dhx.DataChoice = $hxClasses["dhx.DataChoice"] = function(update,enter,exit) {
+dhx.DataChoice = function(update,enter,exit) {
 	this._update = update;
 	this._enter = enter;
 	this._exit = exit;
 	dhx.UpdateSelection.call(this,this._update,this);
 };
+$hxClasses["dhx.DataChoice"] = dhx.DataChoice;
 dhx.DataChoice.__name__ = ["dhx","DataChoice"];
 dhx.DataChoice.merge = function(groups,dc) {
 	dhx.Group.merge(groups,dc._update);
@@ -3826,9 +3903,10 @@ dhx.DataChoice.prototype = $extend(dhx.UpdateSelection.prototype,{
 	}
 	,__class__: dhx.DataChoice
 });
-dhx.ResumeSelection = $hxClasses["dhx.ResumeSelection"] = function(groups) {
+dhx.ResumeSelection = function(groups) {
 	dhx.BoundSelection.call(this,groups);
 };
+$hxClasses["dhx.ResumeSelection"] = dhx.ResumeSelection;
 dhx.ResumeSelection.__name__ = ["dhx","ResumeSelection"];
 dhx.ResumeSelection.create = function(groups) {
 	return new dhx.ResumeSelection(groups);
@@ -3840,10 +3918,11 @@ dhx.ResumeSelection.prototype = $extend(dhx.BoundSelection.prototype,{
 	}
 	,__class__: dhx.ResumeSelection
 });
-dhx.PreEnterSelection = $hxClasses["dhx.PreEnterSelection"] = function(enter,choice) {
+dhx.PreEnterSelection = function(enter,choice) {
 	this.groups = enter;
 	this._choice = choice;
 };
+$hxClasses["dhx.PreEnterSelection"] = dhx.PreEnterSelection;
 dhx.PreEnterSelection.__name__ = ["dhx","PreEnterSelection"];
 dhx.PreEnterSelection.prototype = {
 	groups: null
@@ -3887,10 +3966,11 @@ dhx.PreEnterSelection.prototype = {
 	}
 	,__class__: dhx.PreEnterSelection
 }
-dhx.EnterSelection = $hxClasses["dhx.EnterSelection"] = function(enter,choice) {
+dhx.EnterSelection = function(enter,choice) {
 	dhx.BoundSelection.call(this,enter);
 	this._choice = choice;
 };
+$hxClasses["dhx.EnterSelection"] = dhx.EnterSelection;
 dhx.EnterSelection.__name__ = ["dhx","EnterSelection"];
 dhx.EnterSelection.__super__ = dhx.BoundSelection;
 dhx.EnterSelection.prototype = $extend(dhx.BoundSelection.prototype,{
@@ -3903,10 +3983,11 @@ dhx.EnterSelection.prototype = $extend(dhx.BoundSelection.prototype,{
 	}
 	,__class__: dhx.EnterSelection
 });
-dhx.ExitSelection = $hxClasses["dhx.ExitSelection"] = function(exit,choice) {
+dhx.ExitSelection = function(exit,choice) {
 	dhx.UnboundSelection.call(this,exit);
 	this._choice = choice;
 };
+$hxClasses["dhx.ExitSelection"] = dhx.ExitSelection;
 dhx.ExitSelection.__name__ = ["dhx","ExitSelection"];
 dhx.ExitSelection.__super__ = dhx.UnboundSelection;
 dhx.ExitSelection.prototype = $extend(dhx.UnboundSelection.prototype,{
@@ -3919,7 +4000,8 @@ dhx.ExitSelection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	}
 	,__class__: dhx.ExitSelection
 });
-dhx.Svg = $hxClasses["dhx.Svg"] = function() { }
+dhx.Svg = function() { }
+$hxClasses["dhx.Svg"] = dhx.Svg;
 dhx.Svg.__name__ = ["dhx","Svg"];
 dhx.Svg.mouse = function(dom) {
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
@@ -3942,7 +4024,8 @@ dhx.Svg.mouse = function(dom) {
 dhx.Svg.prototype = {
 	__class__: dhx.Svg
 }
-dhx.Timer = $hxClasses["dhx.Timer"] = function() { }
+dhx.Timer = function() { }
+$hxClasses["dhx.Timer"] = dhx.Timer;
 dhx.Timer.__name__ = ["dhx","Timer"];
 dhx.Timer.timer = function(f,delay) {
 	if(delay == null) delay = 0.0;
@@ -3995,7 +4078,7 @@ dhx.Timer._flush = function() {
 dhx.Timer.prototype = {
 	__class__: dhx.Timer
 }
-dhx.BaseTransition = $hxClasses["dhx.BaseTransition"] = function(selection) {
+dhx.BaseTransition = function(selection) {
 	this.selection = selection;
 	var tid = this._transitionId = dhx.BaseTransition._inheritid > 0?dhx.BaseTransition._inheritid:++dhx.BaseTransition._id;
 	this._tweens = new Hash();
@@ -4012,6 +4095,7 @@ dhx.BaseTransition = $hxClasses["dhx.BaseTransition"] = function(selection) {
 	this.delay(null,0);
 	this.duration(null,250);
 };
+$hxClasses["dhx.BaseTransition"] = dhx.BaseTransition;
 dhx.BaseTransition.__name__ = ["dhx","BaseTransition"];
 dhx.BaseTransition.CUBIC_EQUATION = function(t) {
 	return Math.pow(t,3);
@@ -4142,9 +4226,10 @@ dhx.BaseTransition.prototype = {
 	}
 	,__class__: dhx.BaseTransition
 }
-dhx.UnboundTransition = $hxClasses["dhx.UnboundTransition"] = function(selection) {
+dhx.UnboundTransition = function(selection) {
 	dhx.BaseTransition.call(this,selection);
 };
+$hxClasses["dhx.UnboundTransition"] = dhx.UnboundTransition;
 dhx.UnboundTransition.__name__ = ["dhx","UnboundTransition"];
 dhx.UnboundTransition.__super__ = dhx.BaseTransition;
 dhx.UnboundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
@@ -4156,9 +4241,10 @@ dhx.UnboundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
 	}
 	,__class__: dhx.UnboundTransition
 });
-dhx.BoundTransition = $hxClasses["dhx.BoundTransition"] = function(selection) {
+dhx.BoundTransition = function(selection) {
 	dhx.BaseTransition.call(this,selection);
 };
+$hxClasses["dhx.BoundTransition"] = dhx.BoundTransition;
 dhx.BoundTransition.__name__ = ["dhx","BoundTransition"];
 dhx.BoundTransition.__super__ = dhx.BaseTransition;
 dhx.BoundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
@@ -4170,8 +4256,8 @@ dhx.BoundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
 	}
 	,__class__: dhx.BoundTransition
 });
-var haxe = haxe || {}
-haxe.BaseCode = $hxClasses["haxe.BaseCode"] = function(base) {
+var haxe = {}
+haxe.BaseCode = function(base) {
 	var len = base.length;
 	var nbits = 1;
 	while(len > 1 << nbits) nbits++;
@@ -4179,6 +4265,7 @@ haxe.BaseCode = $hxClasses["haxe.BaseCode"] = function(base) {
 	this.base = base;
 	this.nbits = nbits;
 };
+$hxClasses["haxe.BaseCode"] = haxe.BaseCode;
 haxe.BaseCode.__name__ = ["haxe","BaseCode"];
 haxe.BaseCode.prototype = {
 	base: null
@@ -4224,12 +4311,13 @@ haxe.BaseCode.prototype = {
 	}
 	,__class__: haxe.BaseCode
 }
-haxe.Http = $hxClasses["haxe.Http"] = function(url) {
+haxe.Http = function(url) {
 	this.url = url;
 	this.headers = new Hash();
 	this.params = new Hash();
 	this.async = true;
 };
+$hxClasses["haxe.Http"] = haxe.Http;
 haxe.Http.__name__ = ["haxe","Http"];
 haxe.Http.prototype = {
 	url: null
@@ -4310,8 +4398,9 @@ haxe.Http.prototype = {
 	}
 	,__class__: haxe.Http
 }
-haxe.Md5 = $hxClasses["haxe.Md5"] = function() {
+haxe.Md5 = function() {
 };
+$hxClasses["haxe.Md5"] = haxe.Md5;
 haxe.Md5.__name__ = ["haxe","Md5"];
 haxe.Md5.encode = function(s) {
 	return new haxe.Md5().doEncode(s);
@@ -4475,12 +4564,13 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
-haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
+haxe.Timer = function(time_ms) {
 	var me = this;
 	this.id = window.setInterval(function() {
 		me.run();
 	},time_ms);
 };
+$hxClasses["haxe.Timer"] = haxe.Timer;
 haxe.Timer.__name__ = ["haxe","Timer"];
 haxe.Timer.delay = function(f,time_ms) {
 	var t = new haxe.Timer(time_ms);
@@ -4501,10 +4591,11 @@ haxe.Timer.prototype = {
 	}
 	,__class__: haxe.Timer
 }
-var hxevents = hxevents || {}
-hxevents.Dispatcher = $hxClasses["hxevents.Dispatcher"] = function() {
+var hxevents = {}
+hxevents.Dispatcher = function() {
 	this.handlers = new Array();
 };
+$hxClasses["hxevents.Dispatcher"] = hxevents.Dispatcher;
 hxevents.Dispatcher.__name__ = ["hxevents","Dispatcher"];
 hxevents.Dispatcher.prototype = {
 	handlers: null
@@ -4546,9 +4637,10 @@ hxevents.Dispatcher.prototype = {
 	,_stop: null
 	,__class__: hxevents.Dispatcher
 }
-hxevents.Notifier = $hxClasses["hxevents.Notifier"] = function() {
+hxevents.Notifier = function() {
 	this.handlers = new Array();
 };
+$hxClasses["hxevents.Notifier"] = hxevents.Notifier;
 hxevents.Notifier.__name__ = ["hxevents","Notifier"];
 hxevents.Notifier.prototype = {
 	handlers: null
@@ -4590,7 +4682,8 @@ hxevents.Notifier.prototype = {
 	,_stop: null
 	,__class__: hxevents.Notifier
 }
-js.Boot = $hxClasses["js.Boot"] = function() { }
+js.Boot = function() { }
+$hxClasses["js.Boot"] = js.Boot;
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
@@ -4757,7 +4850,8 @@ js.Boot.__init = function() {
 js.Boot.prototype = {
 	__class__: js.Boot
 }
-js.Scroll = $hxClasses["js.Scroll"] = function() { }
+js.Scroll = function() { }
+$hxClasses["js.Scroll"] = js.Scroll;
 js.Scroll.__name__ = ["js","Scroll"];
 js.Scroll.getTop = function() {
 	var sy = window.pageYOffset;
@@ -4780,8 +4874,8 @@ js.Scroll.getLeft = function() {
 js.Scroll.prototype = {
 	__class__: js.Scroll
 }
-var math = math || {}
-math.BigInteger = $hxClasses["math.BigInteger"] = function() {
+var math = {}
+math.BigInteger = function() {
 	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
 	if(math.BigInteger.BI_RM.length == 0) throw "BI_RM not initialized";
 	this.chunks = new Array();
@@ -4800,6 +4894,7 @@ math.BigInteger = $hxClasses["math.BigInteger"] = function() {
 		null;
 	}
 };
+$hxClasses["math.BigInteger"] = math.BigInteger;
 math.BigInteger.__name__ = ["math","BigInteger"];
 math.BigInteger.__properties__ = {get_ONE:"getONE",get_ZERO:"getZERO"}
 math.BigInteger.DB = null;
@@ -5577,8 +5672,9 @@ math.BigInteger.prototype = {
 	}
 	,__class__: math.BigInteger
 }
-if(!math.prng) math.prng = {}
-math.prng.IPrng = $hxClasses["math.prng.IPrng"] = function() { }
+math.prng = {}
+math.prng.IPrng = function() { }
+$hxClasses["math.prng.IPrng"] = math.prng.IPrng;
 math.prng.IPrng.__name__ = ["math","prng","IPrng"];
 math.prng.IPrng.prototype = {
 	size: null
@@ -5587,8 +5683,9 @@ math.prng.IPrng.prototype = {
 	,toString: null
 	,__class__: math.prng.IPrng
 }
-if(!math.reduction) math.reduction = {}
-math.reduction.ModularReduction = $hxClasses["math.reduction.ModularReduction"] = function() { }
+math.reduction = {}
+math.reduction.ModularReduction = function() { }
+$hxClasses["math.reduction.ModularReduction"] = math.reduction.ModularReduction;
 math.reduction.ModularReduction.__name__ = ["math","reduction","ModularReduction"];
 math.reduction.ModularReduction.prototype = {
 	convert: null
@@ -5598,13 +5695,14 @@ math.reduction.ModularReduction.prototype = {
 	,sqrTo: null
 	,__class__: math.reduction.ModularReduction
 }
-math.reduction.Barrett = $hxClasses["math.reduction.Barrett"] = function(m) {
+math.reduction.Barrett = function(m) {
 	this.r2 = math.BigInteger.nbi();
 	this.q3 = math.BigInteger.nbi();
 	math.BigInteger.getONE().dlShiftTo(2 * m.t,this.r2);
 	this.mu = this.r2.div(m);
 	this.m = m;
 };
+$hxClasses["math.reduction.Barrett"] = math.reduction.Barrett;
 math.reduction.Barrett.__name__ = ["math","reduction","Barrett"];
 math.reduction.Barrett.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Barrett.prototype = {
@@ -5645,9 +5743,10 @@ math.reduction.Barrett.prototype = {
 	}
 	,__class__: math.reduction.Barrett
 }
-math.reduction.Classic = $hxClasses["math.reduction.Classic"] = function(m) {
+math.reduction.Classic = function(m) {
 	this.m = m;
 };
+$hxClasses["math.reduction.Classic"] = math.reduction.Classic;
 math.reduction.Classic.__name__ = ["math","reduction","Classic"];
 math.reduction.Classic.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Classic.prototype = {
@@ -5672,7 +5771,7 @@ math.reduction.Classic.prototype = {
 	}
 	,__class__: math.reduction.Classic
 }
-math.reduction.Montgomery = $hxClasses["math.reduction.Montgomery"] = function(x) {
+math.reduction.Montgomery = function(x) {
 	this.m = x;
 	this.mp = this.m.invDigit();
 	this.mpl = this.mp & 32767;
@@ -5680,6 +5779,7 @@ math.reduction.Montgomery = $hxClasses["math.reduction.Montgomery"] = function(x
 	this.um = (1 << math.BigInteger.DB - 15) - 1;
 	this.mt2 = 2 * this.m.t;
 };
+$hxClasses["math.reduction.Montgomery"] = math.reduction.Montgomery;
 math.reduction.Montgomery.__name__ = ["math","reduction","Montgomery"];
 math.reduction.Montgomery.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Montgomery.prototype = {
@@ -5731,18 +5831,20 @@ math.reduction.Montgomery.prototype = {
 	}
 	,__class__: math.reduction.Montgomery
 }
-var rg = rg || {}
-rg.RGConst = $hxClasses["rg.RGConst"] = function() { }
+var rg = {}
+rg.RGConst = function() { }
+$hxClasses["rg.RGConst"] = rg.RGConst;
 rg.RGConst.__name__ = ["rg","RGConst"];
 rg.RGConst.prototype = {
 	__class__: rg.RGConst
 }
-if(!rg.app) rg.app = {}
-if(!rg.app.charts) rg.app.charts = {}
-rg.app.charts.App = $hxClasses["rg.app.charts.App"] = function(notifier) {
+rg.app = {}
+rg.app.charts = {}
+rg.app.charts.App = function(notifier) {
 	this.layouts = new Hash();
 	this.globalNotifier = notifier;
 };
+$hxClasses["rg.app.charts.App"] = rg.app.charts.App;
 rg.app.charts.App.__name__ = ["rg","app","charts","App"];
 rg.app.charts.App.nextid = function() {
 	return ":RGVIZ-" + ++rg.app.charts.App.lastid;
@@ -5830,7 +5932,8 @@ rg.app.charts.App.prototype = {
 	}
 	,__class__: rg.app.charts.App
 }
-rg.app.charts.JSBridge = $hxClasses["rg.app.charts.JSBridge"] = function() { }
+rg.app.charts.JSBridge = function() { }
+$hxClasses["rg.app.charts.JSBridge"] = rg.app.charts.JSBridge;
 rg.app.charts.JSBridge.__name__ = ["rg","app","charts","JSBridge"];
 rg.app.charts.JSBridge.log = function(msg) {
 	var c = (window.console && window.console.warn) || alert;
@@ -5930,7 +6033,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.query.Query.create();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.19.8138"};
+	r.info.charts = { version : "1.4.22.8181"};
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
@@ -5949,7 +6052,8 @@ rg.app.charts.JSBridge.chartopt = function(ob,viz) {
 rg.app.charts.JSBridge.prototype = {
 	__class__: rg.app.charts.JSBridge
 }
-rg.app.charts.MVPOptions = $hxClasses["rg.app.charts.MVPOptions"] = function() { }
+rg.app.charts.MVPOptions = function() { }
+$hxClasses["rg.app.charts.MVPOptions"] = rg.app.charts.MVPOptions;
 rg.app.charts.MVPOptions.__name__ = ["rg","app","charts","MVPOptions"];
 rg.app.charts.MVPOptions.a1 = function(params,handler) {
 	var authcode = ReportGrid.authCode, authorized = false;
@@ -6083,8 +6187,9 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 rg.app.charts.MVPOptions.prototype = {
 	__class__: rg.app.charts.MVPOptions
 }
-if(!rg.axis) rg.axis = {}
-rg.axis.IAxis = $hxClasses["rg.axis.IAxis"] = function() { }
+rg.axis = {}
+rg.axis.IAxis = function() { }
+$hxClasses["rg.axis.IAxis"] = rg.axis.IAxis;
 rg.axis.IAxis.__name__ = ["rg","axis","IAxis"];
 rg.axis.IAxis.prototype = {
 	scale: null
@@ -6094,7 +6199,8 @@ rg.axis.IAxis.prototype = {
 	,createStats: null
 	,__class__: rg.axis.IAxis
 }
-rg.axis.IAxisDiscrete = $hxClasses["rg.axis.IAxisDiscrete"] = function() { }
+rg.axis.IAxisDiscrete = function() { }
+$hxClasses["rg.axis.IAxisDiscrete"] = rg.axis.IAxisDiscrete;
 rg.axis.IAxisDiscrete.__name__ = ["rg","axis","IAxisDiscrete"];
 rg.axis.IAxisDiscrete.__interfaces__ = [rg.axis.IAxis];
 rg.axis.IAxisDiscrete.prototype = {
@@ -6103,7 +6209,8 @@ rg.axis.IAxisDiscrete.prototype = {
 	,__class__: rg.axis.IAxisDiscrete
 	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
-rg.axis.IAxisOrdinal = $hxClasses["rg.axis.IAxisOrdinal"] = function() { }
+rg.axis.IAxisOrdinal = function() { }
+$hxClasses["rg.axis.IAxisOrdinal"] = rg.axis.IAxisOrdinal;
 rg.axis.IAxisOrdinal.__name__ = ["rg","axis","IAxisOrdinal"];
 rg.axis.IAxisOrdinal.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.IAxisOrdinal.prototype = {
@@ -6113,9 +6220,10 @@ rg.axis.IAxisOrdinal.prototype = {
 	,values: null
 	,__class__: rg.axis.IAxisOrdinal
 }
-rg.axis.AxisOrdinal = $hxClasses["rg.axis.AxisOrdinal"] = function() {
+rg.axis.AxisOrdinal = function() {
 	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFit);
 };
+$hxClasses["rg.axis.AxisOrdinal"] = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinal.__name__ = ["rg","axis","AxisOrdinal"];
 rg.axis.AxisOrdinal.__interfaces__ = [rg.axis.IAxisOrdinal];
 rg.axis.AxisOrdinal.prototype = {
@@ -6177,10 +6285,11 @@ rg.axis.AxisOrdinal.prototype = {
 	,__class__: rg.axis.AxisOrdinal
 	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
-rg.axis.AxisOrdinalFixedValues = $hxClasses["rg.axis.AxisOrdinalFixedValues"] = function(arr) {
+rg.axis.AxisOrdinalFixedValues = function(arr) {
 	rg.axis.AxisOrdinal.call(this);
 	this._values = arr;
 };
+$hxClasses["rg.axis.AxisOrdinalFixedValues"] = rg.axis.AxisOrdinalFixedValues;
 rg.axis.AxisOrdinalFixedValues.__name__ = ["rg","axis","AxisOrdinalFixedValues"];
 rg.axis.AxisOrdinalFixedValues.__super__ = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinalFixedValues.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
@@ -6190,10 +6299,11 @@ rg.axis.AxisOrdinalFixedValues.prototype = $extend(rg.axis.AxisOrdinal.prototype
 	}
 	,__class__: rg.axis.AxisOrdinalFixedValues
 });
-rg.axis.AxisGroupByTime = $hxClasses["rg.axis.AxisGroupByTime"] = function(groupby) {
+rg.axis.AxisGroupByTime = function(groupby) {
 	rg.axis.AxisOrdinalFixedValues.call(this,rg.axis.AxisGroupByTime.valuesByGroup(groupby));
 	this.groupBy = groupby;
 };
+$hxClasses["rg.axis.AxisGroupByTime"] = rg.axis.AxisGroupByTime;
 rg.axis.AxisGroupByTime.__name__ = ["rg","axis","AxisGroupByTime"];
 rg.axis.AxisGroupByTime.valuesByGroup = function(groupby) {
 	return Ints.range(rg.axis.AxisGroupByTime.defaultMin(groupby),rg.axis.AxisGroupByTime.defaultMax(groupby) + 1);
@@ -6229,8 +6339,9 @@ rg.axis.AxisGroupByTime.prototype = $extend(rg.axis.AxisOrdinalFixedValues.proto
 	groupBy: null
 	,__class__: rg.axis.AxisGroupByTime
 });
-rg.axis.AxisNumeric = $hxClasses["rg.axis.AxisNumeric"] = function() {
+rg.axis.AxisNumeric = function() {
 };
+$hxClasses["rg.axis.AxisNumeric"] = rg.axis.AxisNumeric;
 rg.axis.AxisNumeric.__name__ = ["rg","axis","AxisNumeric"];
 rg.axis.AxisNumeric.__interfaces__ = [rg.axis.IAxis];
 rg.axis.AxisNumeric._step = function(span,m) {
@@ -6285,10 +6396,11 @@ rg.axis.AxisNumeric.prototype = {
 	}
 	,__class__: rg.axis.AxisNumeric
 }
-rg.axis.AxisOrdinalStats = $hxClasses["rg.axis.AxisOrdinalStats"] = function(variable) {
+rg.axis.AxisOrdinalStats = function(variable) {
 	rg.axis.AxisOrdinal.call(this);
 	this.variable = variable;
 };
+$hxClasses["rg.axis.AxisOrdinalStats"] = rg.axis.AxisOrdinalStats;
 rg.axis.AxisOrdinalStats.__name__ = ["rg","axis","AxisOrdinalStats"];
 rg.axis.AxisOrdinalStats.__super__ = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinalStats.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
@@ -6298,10 +6410,11 @@ rg.axis.AxisOrdinalStats.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
 	}
 	,__class__: rg.axis.AxisOrdinalStats
 });
-rg.axis.AxisTime = $hxClasses["rg.axis.AxisTime"] = function(periodicity) {
+rg.axis.AxisTime = function(periodicity) {
 	this.periodicity = periodicity;
 	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFill);
 };
+$hxClasses["rg.axis.AxisTime"] = rg.axis.AxisTime;
 rg.axis.AxisTime.__name__ = ["rg","axis","AxisTime"];
 rg.axis.AxisTime.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.AxisTime.prototype = {
@@ -6350,7 +6463,7 @@ rg.axis.AxisTime.prototype = {
 			return (v - start) / (end - start);
 		default:
 			var values = this.range(start,end);
-			return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,values.indexOf(v),values.length);
+			return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,values.indexOf(Dates.snap(v,this.periodicity)),values.length);
 		}
 	}
 	,setScaleDistribution: function(v) {
@@ -6368,7 +6481,8 @@ rg.axis.AxisTime.prototype = {
 	,__class__: rg.axis.AxisTime
 	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
-rg.axis.ITickmark = $hxClasses["rg.axis.ITickmark"] = function() { }
+rg.axis.ITickmark = function() { }
+$hxClasses["rg.axis.ITickmark"] = rg.axis.ITickmark;
 rg.axis.ITickmark.__name__ = ["rg","axis","ITickmark"];
 rg.axis.ITickmark.prototype = {
 	delta: null
@@ -6391,7 +6505,8 @@ rg.axis.ScaleDistribution.ScaleBefore.__enum__ = rg.axis.ScaleDistribution;
 rg.axis.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
 rg.axis.ScaleDistribution.ScaleAfter.toString = $estr;
 rg.axis.ScaleDistribution.ScaleAfter.__enum__ = rg.axis.ScaleDistribution;
-rg.axis.ScaleDistributions = $hxClasses["rg.axis.ScaleDistributions"] = function() { }
+rg.axis.ScaleDistributions = function() { }
+$hxClasses["rg.axis.ScaleDistributions"] = rg.axis.ScaleDistributions;
 rg.axis.ScaleDistributions.__name__ = ["rg","axis","ScaleDistributions"];
 rg.axis.ScaleDistributions.distribute = function(scale,pos,values) {
 	switch( (scale)[1] ) {
@@ -6408,11 +6523,12 @@ rg.axis.ScaleDistributions.distribute = function(scale,pos,values) {
 rg.axis.ScaleDistributions.prototype = {
 	__class__: rg.axis.ScaleDistributions
 }
-rg.axis.Stats = $hxClasses["rg.axis.Stats"] = function(type,sortf) {
+rg.axis.Stats = function(type,sortf) {
 	this.type = type;
 	this.sortf = sortf;
 	this.reset();
 };
+$hxClasses["rg.axis.Stats"] = rg.axis.Stats;
 rg.axis.Stats.__name__ = ["rg","axis","Stats"];
 rg.axis.Stats.prototype = {
 	min: null
@@ -6452,10 +6568,11 @@ rg.axis.Stats.prototype = {
 	}
 	,__class__: rg.axis.Stats
 }
-rg.axis.StatsNumeric = $hxClasses["rg.axis.StatsNumeric"] = function(type,sortf) {
+rg.axis.StatsNumeric = function(type,sortf) {
 	if(null == sortf) sortf = Floats.compare;
 	rg.axis.Stats.call(this,type,sortf);
 };
+$hxClasses["rg.axis.StatsNumeric"] = rg.axis.StatsNumeric;
 rg.axis.StatsNumeric.__name__ = ["rg","axis","StatsNumeric"];
 rg.axis.StatsNumeric.__super__ = rg.axis.Stats;
 rg.axis.StatsNumeric.prototype = $extend(rg.axis.Stats.prototype,{
@@ -6481,11 +6598,12 @@ rg.axis.StatsNumeric.prototype = $extend(rg.axis.Stats.prototype,{
 	}
 	,__class__: rg.axis.StatsNumeric
 });
-rg.axis.Tickmark = $hxClasses["rg.axis.Tickmark"] = function(value,major,delta) {
+rg.axis.Tickmark = function(value,major,delta) {
 	this.value = value;
 	this.major = major;
 	this.delta = delta;
 };
+$hxClasses["rg.axis.Tickmark"] = rg.axis.Tickmark;
 rg.axis.Tickmark.__name__ = ["rg","axis","Tickmark"];
 rg.axis.Tickmark.__interfaces__ = [rg.axis.ITickmark];
 rg.axis.Tickmark.prototype = {
@@ -6508,13 +6626,14 @@ rg.axis.Tickmark.prototype = {
 	,__class__: rg.axis.Tickmark
 	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
-rg.axis.TickmarkOrdinal = $hxClasses["rg.axis.TickmarkOrdinal"] = function(pos,values,major,scaleDistribution) {
+rg.axis.TickmarkOrdinal = function(pos,values,major,scaleDistribution) {
 	if(major == null) major = true;
 	this.pos = pos;
 	this.values = values;
 	this.scaleDistribution = scaleDistribution;
 	this.major = major;
 };
+$hxClasses["rg.axis.TickmarkOrdinal"] = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkOrdinal.__name__ = ["rg","axis","TickmarkOrdinal"];
 rg.axis.TickmarkOrdinal.__interfaces__ = [rg.axis.ITickmark];
 rg.axis.TickmarkOrdinal.fromArray = function(values,scaleDistribution) {
@@ -6545,10 +6664,11 @@ rg.axis.TickmarkOrdinal.prototype = {
 	,__class__: rg.axis.TickmarkOrdinal
 	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
-rg.axis.TickmarkTime = $hxClasses["rg.axis.TickmarkTime"] = function(value,values,major,periodicity,scaleDistribution) {
+rg.axis.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
 	rg.axis.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
 	this.periodicity = periodicity;
 };
+$hxClasses["rg.axis.TickmarkTime"] = rg.axis.TickmarkTime;
 rg.axis.TickmarkTime.__name__ = ["rg","axis","TickmarkTime"];
 rg.axis.TickmarkTime.__super__ = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
@@ -6558,7 +6678,8 @@ rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
 	}
 	,__class__: rg.axis.TickmarkTime
 });
-rg.axis.Tickmarks = $hxClasses["rg.axis.Tickmarks"] = function() { }
+rg.axis.Tickmarks = function() { }
+$hxClasses["rg.axis.Tickmarks"] = rg.axis.Tickmarks;
 rg.axis.Tickmarks.__name__ = ["rg","axis","Tickmarks"];
 rg.axis.Tickmarks.bound = function(tickmarks,max) {
 	if(null == max || tickmarks.length <= (2 > max?2:max)) return tickmarks;
@@ -6587,12 +6708,13 @@ rg.axis.Tickmarks.forFloat = function(start,end,value,major) {
 rg.axis.Tickmarks.prototype = {
 	__class__: rg.axis.Tickmarks
 }
-if(!rg.data) rg.data = {}
-rg.data.DataLoader = $hxClasses["rg.data.DataLoader"] = function(loader) {
+rg.data = {}
+rg.data.DataLoader = function(loader) {
 	if(null == loader) throw new thx.error.NullArgument("loader","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "DataLoader.hx", lineNumber : 11, className : "rg.data.DataLoader", methodName : "new"}); else null;
 	this.loader = loader;
 	this.onLoad = new hxevents.Dispatcher();
 };
+$hxClasses["rg.data.DataLoader"] = rg.data.DataLoader;
 rg.data.DataLoader.__name__ = ["rg","data","DataLoader"];
 rg.data.DataLoader.prototype = {
 	loader: null
@@ -6605,8 +6727,9 @@ rg.data.DataLoader.prototype = {
 	}
 	,__class__: rg.data.DataLoader
 }
-rg.data.DependentVariableProcessor = $hxClasses["rg.data.DependentVariableProcessor"] = function() {
+rg.data.DependentVariableProcessor = function() {
 };
+$hxClasses["rg.data.DependentVariableProcessor"] = rg.data.DependentVariableProcessor;
 rg.data.DependentVariableProcessor.__name__ = ["rg","data","DependentVariableProcessor"];
 rg.data.DependentVariableProcessor.prototype = {
 	process: function(data,variables) {
@@ -6627,8 +6750,9 @@ rg.data.DependentVariableProcessor.prototype = {
 	}
 	,__class__: rg.data.DependentVariableProcessor
 }
-rg.data.IndependentVariableProcessor = $hxClasses["rg.data.IndependentVariableProcessor"] = function() {
+rg.data.IndependentVariableProcessor = function() {
 };
+$hxClasses["rg.data.IndependentVariableProcessor"] = rg.data.IndependentVariableProcessor;
 rg.data.IndependentVariableProcessor.__name__ = ["rg","data","IndependentVariableProcessor"];
 rg.data.IndependentVariableProcessor.prototype = {
 	process: function(data,variables) {
@@ -6646,11 +6770,12 @@ rg.data.IndependentVariableProcessor.prototype = {
 	}
 	,__class__: rg.data.IndependentVariableProcessor
 }
-rg.data.Segmenter = $hxClasses["rg.data.Segmenter"] = function(on,transform,scale) {
+rg.data.Segmenter = function(on,transform,scale) {
 	this.on = on;
 	this.transform = transform;
 	this.scale = scale;
 };
+$hxClasses["rg.data.Segmenter"] = rg.data.Segmenter;
 rg.data.Segmenter.__name__ = ["rg","data","Segmenter"];
 rg.data.Segmenter.prototype = {
 	on: null
@@ -6678,11 +6803,12 @@ rg.data.Segmenter.prototype = {
 	}
 	,__class__: rg.data.Segmenter
 }
-rg.data.Variable = $hxClasses["rg.data.Variable"] = function(type,scaleDistribution) {
+rg.data.Variable = function(type,scaleDistribution) {
 	this.type = type;
 	this.scaleDistribution = scaleDistribution;
 	this.meta = { };
 };
+$hxClasses["rg.data.Variable"] = rg.data.Variable;
 rg.data.Variable.__name__ = ["rg","data","Variable"];
 rg.data.Variable.prototype = {
 	type: null
@@ -6725,25 +6851,28 @@ rg.data.Variable.prototype = {
 	,__class__: rg.data.Variable
 	,__properties__: {set_maxf:"setMaxF",get_maxf:"getMaxF",set_minf:"setMinF",get_minf:"getMinF"}
 }
-rg.data.VariableDependent = $hxClasses["rg.data.VariableDependent"] = function(type,scaleDistribution) {
+rg.data.VariableDependent = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 };
+$hxClasses["rg.data.VariableDependent"] = rg.data.VariableDependent;
 rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
 rg.data.VariableDependent.__super__ = rg.data.Variable;
 rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
 	__class__: rg.data.VariableDependent
 });
-rg.data.VariableIndependent = $hxClasses["rg.data.VariableIndependent"] = function(type,scaleDistribution) {
+rg.data.VariableIndependent = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 };
+$hxClasses["rg.data.VariableIndependent"] = rg.data.VariableIndependent;
 rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
 rg.data.VariableIndependent.__super__ = rg.data.Variable;
 rg.data.VariableIndependent.prototype = $extend(rg.data.Variable.prototype,{
 	__class__: rg.data.VariableIndependent
 });
-if(!rg.factory) rg.factory = {}
-rg.factory.FactoryAxis = $hxClasses["rg.factory.FactoryAxis"] = function() {
+rg.factory = {}
+rg.factory.FactoryAxis = function() {
 };
+$hxClasses["rg.factory.FactoryAxis"] = rg.factory.FactoryAxis;
 rg.factory.FactoryAxis.__name__ = ["rg","factory","FactoryAxis"];
 rg.factory.FactoryAxis.prototype = {
 	create: function(type,isnumeric,variable,samples) {
@@ -6757,8 +6886,9 @@ rg.factory.FactoryAxis.prototype = {
 	}
 	,__class__: rg.factory.FactoryAxis
 }
-rg.factory.FactoryGeoProjection = $hxClasses["rg.factory.FactoryGeoProjection"] = function() {
+rg.factory.FactoryGeoProjection = function() {
 };
+$hxClasses["rg.factory.FactoryGeoProjection"] = rg.factory.FactoryGeoProjection;
 rg.factory.FactoryGeoProjection.__name__ = ["rg","factory","FactoryGeoProjection"];
 rg.factory.FactoryGeoProjection.prototype = {
 	create: function(info) {
@@ -6797,8 +6927,9 @@ rg.factory.FactoryGeoProjection.prototype = {
 	}
 	,__class__: rg.factory.FactoryGeoProjection
 }
-rg.factory.FactoryHtmlVisualization = $hxClasses["rg.factory.FactoryHtmlVisualization"] = function() {
+rg.factory.FactoryHtmlVisualization = function() {
 };
+$hxClasses["rg.factory.FactoryHtmlVisualization"] = rg.factory.FactoryHtmlVisualization;
 rg.factory.FactoryHtmlVisualization.__name__ = ["rg","factory","FactoryHtmlVisualization"];
 rg.factory.FactoryHtmlVisualization.prototype = {
 	create: function(type,container,options) {
@@ -6818,8 +6949,9 @@ rg.factory.FactoryHtmlVisualization.prototype = {
 	}
 	,__class__: rg.factory.FactoryHtmlVisualization
 }
-rg.factory.FactoryLayout = $hxClasses["rg.factory.FactoryLayout"] = function() {
+rg.factory.FactoryLayout = function() {
 };
+$hxClasses["rg.factory.FactoryLayout"] = rg.factory.FactoryLayout;
 rg.factory.FactoryLayout.__name__ = ["rg","factory","FactoryLayout"];
 rg.factory.FactoryLayout.size = function(container,info,heightmargin) {
 	var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
@@ -6837,8 +6969,9 @@ rg.factory.FactoryLayout.prototype = {
 	}
 	,__class__: rg.factory.FactoryLayout
 }
-rg.factory.FactorySvgVisualization = $hxClasses["rg.factory.FactorySvgVisualization"] = function() {
+rg.factory.FactorySvgVisualization = function() {
 };
+$hxClasses["rg.factory.FactorySvgVisualization"] = rg.factory.FactorySvgVisualization;
 rg.factory.FactorySvgVisualization.__name__ = ["rg","factory","FactorySvgVisualization"];
 rg.factory.FactorySvgVisualization.prototype = {
 	create: function(type,layout,options) {
@@ -6885,10 +7018,11 @@ rg.factory.FactorySvgVisualization.prototype = {
 	}
 	,__class__: rg.factory.FactorySvgVisualization
 }
-rg.factory.FactoryVariable = $hxClasses["rg.factory.FactoryVariable"] = function() {
+rg.factory.FactoryVariable = function() {
 	this.independentFactory = new rg.factory.FactoryVariableIndependent();
 	this.dependentFactory = new rg.factory.FactoryVariableDependent();
 };
+$hxClasses["rg.factory.FactoryVariable"] = rg.factory.FactoryVariable;
 rg.factory.FactoryVariable.__name__ = ["rg","factory","FactoryVariable"];
 rg.factory.FactoryVariable.prototype = {
 	independentFactory: null
@@ -6908,8 +7042,9 @@ rg.factory.FactoryVariable.prototype = {
 	}
 	,__class__: rg.factory.FactoryVariable
 }
-rg.factory.FactoryVariableDependent = $hxClasses["rg.factory.FactoryVariableDependent"] = function() {
+rg.factory.FactoryVariableDependent = function() {
 };
+$hxClasses["rg.factory.FactoryVariableDependent"] = rg.factory.FactoryVariableDependent;
 rg.factory.FactoryVariableDependent.__name__ = ["rg","factory","FactoryVariableDependent"];
 rg.factory.FactoryVariableDependent.prototype = {
 	create: function(info,isnumeric) {
@@ -6922,8 +7057,9 @@ rg.factory.FactoryVariableDependent.prototype = {
 	}
 	,__class__: rg.factory.FactoryVariableDependent
 }
-rg.factory.FactoryVariableIndependent = $hxClasses["rg.factory.FactoryVariableIndependent"] = function() {
+rg.factory.FactoryVariableIndependent = function() {
 };
+$hxClasses["rg.factory.FactoryVariableIndependent"] = rg.factory.FactoryVariableIndependent;
 rg.factory.FactoryVariableIndependent.__name__ = ["rg","factory","FactoryVariableIndependent"];
 rg.factory.FactoryVariableIndependent.convertBound = function(axis,value) {
 	if(null == value || Reflect.isFunction(value)) return value;
@@ -6958,10 +7094,11 @@ rg.factory.FactoryVariableIndependent.prototype = {
 	}
 	,__class__: rg.factory.FactoryVariableIndependent
 }
-if(!rg.frame) rg.frame = {}
-rg.frame.Frame = $hxClasses["rg.frame.Frame"] = function() {
+rg.frame = {}
+rg.frame.Frame = function() {
 	this.x = this.y = this.width = this.height = 0;
 };
+$hxClasses["rg.frame.Frame"] = rg.frame.Frame;
 rg.frame.Frame.__name__ = ["rg","frame","Frame"];
 rg.frame.Frame.prototype = {
 	x: null
@@ -6993,12 +7130,13 @@ rg.frame.Orientation.Vertical.__enum__ = rg.frame.Orientation;
 rg.frame.Orientation.Horizontal = ["Horizontal",1];
 rg.frame.Orientation.Horizontal.toString = $estr;
 rg.frame.Orientation.Horizontal.__enum__ = rg.frame.Orientation;
-rg.frame.Stack = $hxClasses["rg.frame.Stack"] = function(width,height,orientation) {
+rg.frame.Stack = function(width,height,orientation) {
 	this.orientation = null == orientation?rg.frame.Orientation.Vertical:orientation;
 	this.children = [];
 	this.width = width;
 	this.height = height;
 };
+$hxClasses["rg.frame.Stack"] = rg.frame.Stack;
 rg.frame.Stack.__name__ = ["rg","frame","Stack"];
 rg.frame.Stack.prototype = {
 	children: null
@@ -7196,10 +7334,11 @@ rg.frame.Stack.prototype = {
 	,__class__: rg.frame.Stack
 	,__properties__: {get_length:"getLength"}
 }
-rg.frame.StackItem = $hxClasses["rg.frame.StackItem"] = function(disposition) {
+rg.frame.StackItem = function(disposition) {
 	rg.frame.Frame.call(this);
 	this.setDisposition(disposition);
 };
+$hxClasses["rg.frame.StackItem"] = rg.frame.StackItem;
 rg.frame.StackItem.__name__ = ["rg","frame","StackItem"];
 rg.frame.StackItem.__super__ = rg.frame.Frame;
 rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
@@ -7217,9 +7356,9 @@ rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
 	,__class__: rg.frame.StackItem
 	,__properties__: {set_disposition:"setDisposition"}
 });
-if(!rg.html) rg.html = {}
-if(!rg.html.chart) rg.html.chart = {}
-rg.html.chart.Leadeboard = $hxClasses["rg.html.chart.Leadeboard"] = function(container) {
+rg.html = {}
+rg.html.chart = {}
+rg.html.chart.Leadeboard = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
 	this.animated = true;
@@ -7231,6 +7370,7 @@ rg.html.chart.Leadeboard = $hxClasses["rg.html.chart.Leadeboard"] = function(con
 	this.useMax = false;
 	this.colorScale = false;
 };
+$hxClasses["rg.html.chart.Leadeboard"] = rg.html.chart.Leadeboard;
 rg.html.chart.Leadeboard.__name__ = ["rg","html","chart","Leadeboard"];
 rg.html.chart.Leadeboard.prototype = {
 	variableIndependent: null
@@ -7338,13 +7478,14 @@ rg.html.chart.Leadeboard.prototype = {
 	}
 	,__class__: rg.html.chart.Leadeboard
 }
-var thx = thx || {}
-if(!thx.color) thx.color = {}
-thx.color.Rgb = $hxClasses["thx.color.Rgb"] = function(r,g,b) {
+var thx = {}
+thx.color = {}
+thx.color.Rgb = function(r,g,b) {
 	this.red = Ints.clamp(r,0,255);
 	this.green = Ints.clamp(g,0,255);
 	this.blue = Ints.clamp(b,0,255);
 };
+$hxClasses["thx.color.Rgb"] = thx.color.Rgb;
 thx.color.Rgb.__name__ = ["thx","color","Rgb"];
 thx.color.Rgb.fromInt = function(v) {
 	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
@@ -7396,12 +7537,13 @@ thx.color.Rgb.prototype = {
 	}
 	,__class__: thx.color.Rgb
 }
-thx.color.Hsl = $hxClasses["thx.color.Hsl"] = function(h,s,l) {
+thx.color.Hsl = function(h,s,l) {
 	this.hue = h = Floats.circularWrap(h,360);
 	this.saturation = s = Floats.normalize(s);
 	this.lightness = l = Floats.normalize(l);
 	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
 };
+$hxClasses["thx.color.Hsl"] = thx.color.Hsl;
 thx.color.Hsl.__name__ = ["thx","color","Hsl"];
 thx.color.Hsl._c = function(d,s,l) {
 	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
@@ -7437,8 +7579,9 @@ thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
 	,lightness: null
 	,__class__: thx.color.Hsl
 });
-if(!thx.math) thx.math = {}
-thx.math.Equations = $hxClasses["thx.math.Equations"] = function() { }
+thx.math = {}
+thx.math.Equations = function() { }
+$hxClasses["thx.math.Equations"] = thx.math.Equations;
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
 	return v;
@@ -7463,7 +7606,7 @@ thx.math.Equations.elasticf = function(a,p) {
 thx.math.Equations.prototype = {
 	__class__: thx.math.Equations
 }
-rg.html.chart.PivotTable = $hxClasses["rg.html.chart.PivotTable"] = function(container) {
+rg.html.chart.PivotTable = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
 	this.displayColumnTotal = true;
@@ -7473,6 +7616,7 @@ rg.html.chart.PivotTable = $hxClasses["rg.html.chart.PivotTable"] = function(con
 	this.colorEnd = rg.html.chart.PivotTable.defaultColorEnd;
 	this.incolumns = 1;
 };
+$hxClasses["rg.html.chart.PivotTable"] = rg.html.chart.PivotTable;
 rg.html.chart.PivotTable.__name__ = ["rg","html","chart","PivotTable"];
 rg.html.chart.PivotTable.prototype = {
 	displayColumnTotal: null
@@ -7817,13 +7961,14 @@ rg.html.chart.PivotTable.prototype = {
 	}
 	,__class__: rg.html.chart.PivotTable
 }
-if(!rg.html.widget) rg.html.widget = {}
-rg.html.widget.DownloaderMenu = $hxClasses["rg.html.widget.DownloaderMenu"] = function(handler,position,formats,container) {
+rg.html.widget = {}
+rg.html.widget.DownloaderMenu = function(handler,position,formats,container) {
 	this.handler = handler;
 	this.formats = null == formats?rg.html.widget.DownloaderMenu.DEFAULT_FORMATS:formats;
 	this.title = rg.html.widget.DownloaderMenu.DEFAULT_TITLE;
 	this.build(position,container);
 };
+$hxClasses["rg.html.widget.DownloaderMenu"] = rg.html.widget.DownloaderMenu;
 rg.html.widget.DownloaderMenu.__name__ = ["rg","html","widget","DownloaderMenu"];
 rg.html.widget.DownloaderMenu.prototype = {
 	handler: null
@@ -7902,7 +8047,8 @@ rg.html.widget.DownloaderPosition.Before.__enum__ = rg.html.widget.DownloaderPos
 rg.html.widget.DownloaderPosition.After = ["After",6];
 rg.html.widget.DownloaderPosition.After.toString = $estr;
 rg.html.widget.DownloaderPosition.After.__enum__ = rg.html.widget.DownloaderPosition;
-rg.html.widget.DownloaderPositions = $hxClasses["rg.html.widget.DownloaderPositions"] = function() { }
+rg.html.widget.DownloaderPositions = function() { }
+$hxClasses["rg.html.widget.DownloaderPositions"] = rg.html.widget.DownloaderPositions;
 rg.html.widget.DownloaderPositions.__name__ = ["rg","html","widget","DownloaderPositions"];
 rg.html.widget.DownloaderPositions.parse = function(v) {
 	switch(v.toLowerCase()) {
@@ -7925,7 +8071,7 @@ rg.html.widget.DownloaderPositions.parse = function(v) {
 rg.html.widget.DownloaderPositions.prototype = {
 	__class__: rg.html.widget.DownloaderPositions
 }
-rg.html.widget.Logo = $hxClasses["rg.html.widget.Logo"] = function(container,padright) {
+rg.html.widget.Logo = function(container,padright) {
 	this.mapvalues = new Hash();
 	this.padRight = padright;
 	this.id = ++rg.html.widget.Logo._id;
@@ -7934,6 +8080,7 @@ rg.html.widget.Logo = $hxClasses["rg.html.widget.Logo"] = function(container,pad
 	var timer = new haxe.Timer(5000);
 	timer.run = this.live.$bind(this);
 };
+$hxClasses["rg.html.widget.Logo"] = rg.html.widget.Logo;
 rg.html.widget.Logo.__name__ = ["rg","html","widget","Logo"];
 rg.html.widget.Logo.pageIsBranded = function() {
 	var _g = 0, _g1 = rg.html.widget.Logo.getLogos();
@@ -8043,7 +8190,7 @@ rg.html.widget.Logo.prototype = {
 	}
 	,__class__: rg.html.widget.Logo
 }
-rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
+rg.html.widget.Tooltip = function(el) {
 	this.visible = false;
 	el = null == el?js.Lib.document.body:el;
 	this.tooltip = dhx.Dom.selectNode(el).append("div").style("display").string("none").style("position").string("absolute").style("opacity")["float"](0).style("left").string("0px").style("top").string("0px").attr("class").string("rg tooltip").style("z-index").string("1000000");
@@ -8056,6 +8203,7 @@ rg.html.widget.Tooltip = $hxClasses["rg.html.widget.Tooltip"] = function(el) {
 	this.anchortype = "bottomright";
 	this.anchordistance = 0;
 };
+$hxClasses["rg.html.widget.Tooltip"] = rg.html.widget.Tooltip;
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
 rg.html.widget.Tooltip.__properties__ = {get_instance:"getInstance"}
 rg.html.widget.Tooltip.instance = null;
@@ -8145,8 +8293,9 @@ rg.html.widget.Tooltip.prototype = {
 	}
 	,__class__: rg.html.widget.Tooltip
 }
-if(!rg.info) rg.info = {}
-rg.info.Info = $hxClasses["rg.info.Info"] = function() { }
+rg.info = {}
+rg.info.Info = function() { }
+$hxClasses["rg.info.Info"] = rg.info.Info;
 rg.info.Info.__name__ = ["rg","info","Info"];
 rg.info.Info.feed = function(info,ob) {
 	if(null == ob) return info;
@@ -8176,12 +8325,13 @@ rg.info.Info.feed = function(info,ob) {
 rg.info.Info.prototype = {
 	__class__: rg.info.Info
 }
-rg.info.InfoAnimation = $hxClasses["rg.info.InfoAnimation"] = function() {
+rg.info.InfoAnimation = function() {
 	this.animated = false;
 	this.duration = 1500;
 	this.delay = 150;
 	this.ease = thx.math.Equations.elasticf();
 };
+$hxClasses["rg.info.InfoAnimation"] = rg.info.InfoAnimation;
 rg.info.InfoAnimation.__name__ = ["rg","info","InfoAnimation"];
 rg.info.InfoAnimation.filters = function() {
 	return [{ field : "animated", validator : function(v) {
@@ -8201,7 +8351,7 @@ rg.info.InfoAnimation.prototype = {
 	,delay: null
 	,__class__: rg.info.InfoAnimation
 }
-rg.info.InfoCartesianChart = $hxClasses["rg.info.InfoCartesianChart"] = function() {
+rg.info.InfoCartesianChart = function() {
 	this.animation = new rg.info.InfoAnimation();
 	this.label = new rg.info.InfoLabelAxis();
 	this.displayMinorTick = function(_) {
@@ -8240,6 +8390,7 @@ rg.info.InfoCartesianChart = $hxClasses["rg.info.InfoCartesianChart"] = function
 	this.paddingTickMajor = 1;
 	this.paddingLabel = 10;
 };
+$hxClasses["rg.info.InfoCartesianChart"] = rg.info.InfoCartesianChart;
 rg.info.InfoCartesianChart.__name__ = ["rg","info","InfoCartesianChart"];
 rg.info.InfoCartesianChart.filters = function() {
 	return [{ field : "animation", validator : function(v) {
@@ -8381,7 +8532,7 @@ rg.info.InfoCartesianChart.prototype = {
 	,paddingLabel: null
 	,__class__: rg.info.InfoCartesianChart
 }
-rg.info.InfoBarChart = $hxClasses["rg.info.InfoBarChart"] = function() {
+rg.info.InfoBarChart = function() {
 	rg.info.InfoCartesianChart.call(this);
 	this.segment = new rg.info.InfoSegment();
 	this.stacked = true;
@@ -8391,6 +8542,7 @@ rg.info.InfoBarChart = $hxClasses["rg.info.InfoBarChart"] = function() {
 	this.barPaddingDataPoint = 2;
 	this.horizontal = false;
 };
+$hxClasses["rg.info.InfoBarChart"] = rg.info.InfoBarChart;
 rg.info.InfoBarChart.__name__ = ["rg","info","InfoBarChart"];
 rg.info.InfoBarChart.filters = function() {
 	return [{ field : "stacked", validator : function(v) {
@@ -8434,8 +8586,9 @@ rg.info.InfoBarChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 	,segment: null
 	,__class__: rg.info.InfoBarChart
 });
-rg.info.InfoDataSource = $hxClasses["rg.info.InfoDataSource"] = function() {
+rg.info.InfoDataSource = function() {
 };
+$hxClasses["rg.info.InfoDataSource"] = rg.info.InfoDataSource;
 rg.info.InfoDataSource.__name__ = ["rg","info","InfoDataSource"];
 rg.info.InfoDataSource.filters = function() {
 	return [{ field : "data", validator : function(v) {
@@ -8460,8 +8613,9 @@ rg.info.InfoDataSource.prototype = {
 	loader: null
 	,__class__: rg.info.InfoDataSource
 }
-rg.info.InfoDomType = $hxClasses["rg.info.InfoDomType"] = function() {
+rg.info.InfoDomType = function() {
 };
+$hxClasses["rg.info.InfoDomType"] = rg.info.InfoDomType;
 rg.info.InfoDomType.__name__ = ["rg","info","InfoDomType"];
 rg.info.InfoDomType.filters = function() {
 	return [{ field : "visualization", validator : function(v) {
@@ -8481,11 +8635,12 @@ rg.info.DomKind.Html.__enum__ = rg.info.DomKind;
 rg.info.DomKind.Svg = ["Svg",1];
 rg.info.DomKind.Svg.toString = $estr;
 rg.info.DomKind.Svg.__enum__ = rg.info.DomKind;
-rg.info.InfoDownload = $hxClasses["rg.info.InfoDownload"] = function() {
+rg.info.InfoDownload = function() {
 	this.service = rg.RGConst.SERVICE_RENDERING_STATIC;
 	this.legacyservice = rg.RGConst.LEGACY_RENDERING_STATIC;
 	this.formats = ["pdf","png","jpg","svg"];
 };
+$hxClasses["rg.info.InfoDownload"] = rg.info.InfoDownload;
 rg.info.InfoDownload.__name__ = ["rg","info","InfoDownload"];
 rg.info.InfoDownload.filters = function() {
 	return [{ field : "handler", validator : function(v) {
@@ -8510,7 +8665,7 @@ rg.info.InfoDownload.prototype = {
 	,formats: null
 	,__class__: rg.info.InfoDownload
 }
-rg.info.InfoFunnelChart = $hxClasses["rg.info.InfoFunnelChart"] = function() {
+rg.info.InfoFunnelChart = function() {
 	this.animation = new rg.info.InfoAnimation();
 	this.label = new rg.info.InfoLabelFunnel();
 	this.padding = 2.5;
@@ -8518,6 +8673,7 @@ rg.info.InfoFunnelChart = $hxClasses["rg.info.InfoFunnelChart"] = function() {
 	this.effect = rg.svg.chart.GradientEffect.Gradient(1.25);
 	this.arrowSize = 30;
 };
+$hxClasses["rg.info.InfoFunnelChart"] = rg.info.InfoFunnelChart;
 rg.info.InfoFunnelChart.__name__ = ["rg","info","InfoFunnelChart"];
 rg.info.InfoFunnelChart.filters = function() {
 	return [{ field : "animation", validator : function(v) {
@@ -8559,9 +8715,10 @@ rg.info.InfoFunnelChart.prototype = {
 	,arrowSize: null
 	,__class__: rg.info.InfoFunnelChart
 }
-rg.info.InfoGeneral = $hxClasses["rg.info.InfoGeneral"] = function() {
+rg.info.InfoGeneral = function() {
 	this.forcelegacy = false;
 };
+$hxClasses["rg.info.InfoGeneral"] = rg.info.InfoGeneral;
 rg.info.InfoGeneral.__name__ = ["rg","info","InfoGeneral"];
 rg.info.InfoGeneral.filter = function() {
 	return [{ field : "ready", validator : function(v) {
@@ -8575,10 +8732,11 @@ rg.info.InfoGeneral.prototype = {
 	,forcelegacy: null
 	,__class__: rg.info.InfoGeneral
 }
-rg.info.InfoGeo = $hxClasses["rg.info.InfoGeo"] = function() {
+rg.info.InfoGeo = function() {
 	this.label = new rg.info.InfoLabel();
 	this.map = [rg.info.Info.feed(new rg.info.InfoMap(),{ template : "world"})];
 };
+$hxClasses["rg.info.InfoGeo"] = rg.info.InfoGeo;
 rg.info.InfoGeo.__name__ = ["rg","info","InfoGeo"];
 rg.info.InfoGeo.filters = function() {
 	return [{ field : "map", validator : function(v) {
@@ -8594,10 +8752,11 @@ rg.info.InfoGeo.prototype = {
 	,label: null
 	,__class__: rg.info.InfoGeo
 }
-rg.info.InfoHeatGrid = $hxClasses["rg.info.InfoHeatGrid"] = function() {
+rg.info.InfoHeatGrid = function() {
 	rg.info.InfoCartesianChart.call(this);
 	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCssInterpolation();
 };
+$hxClasses["rg.info.InfoHeatGrid"] = rg.info.InfoHeatGrid;
 rg.info.InfoHeatGrid.__name__ = ["rg","info","InfoHeatGrid"];
 rg.info.InfoHeatGrid.filters = function() {
 	return [{ field : "contour", validator : function(v) {
@@ -8614,8 +8773,9 @@ rg.info.InfoHeatGrid.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 	,colorScaleMode: null
 	,__class__: rg.info.InfoHeatGrid
 });
-rg.info.InfoLabel = $hxClasses["rg.info.InfoLabel"] = function() {
+rg.info.InfoLabel = function() {
 };
+$hxClasses["rg.info.InfoLabel"] = rg.info.InfoLabel;
 rg.info.InfoLabel.__name__ = ["rg","info","InfoLabel"];
 rg.info.InfoLabel.filters = function() {
 	return [{ field : "title", validator : function(v) {
@@ -8636,9 +8796,10 @@ rg.info.InfoLabel.prototype = {
 	,datapointover: null
 	,__class__: rg.info.InfoLabel
 }
-rg.info.InfoLabelAxis = $hxClasses["rg.info.InfoLabelAxis"] = function() {
+rg.info.InfoLabelAxis = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelAxis"] = rg.info.InfoLabelAxis;
 rg.info.InfoLabelAxis.__name__ = ["rg","info","InfoLabelAxis"];
 rg.info.InfoLabelAxis.filters = function() {
 	return [{ field : "axis", validator : function(v) {
@@ -8653,9 +8814,10 @@ rg.info.InfoLabelAxis.prototype = $extend(rg.info.InfoLabel.prototype,{
 	,tickmark: null
 	,__class__: rg.info.InfoLabelAxis
 });
-rg.info.InfoLabelFunnel = $hxClasses["rg.info.InfoLabelFunnel"] = function() {
+rg.info.InfoLabelFunnel = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelFunnel"] = rg.info.InfoLabelFunnel;
 rg.info.InfoLabelFunnel.__name__ = ["rg","info","InfoLabelFunnel"];
 rg.info.InfoLabelFunnel.filters = function() {
 	return [{ field : "arrow", validator : function(v) {
@@ -8667,9 +8829,10 @@ rg.info.InfoLabelFunnel.prototype = $extend(rg.info.InfoLabel.prototype,{
 	arrow: null
 	,__class__: rg.info.InfoLabelFunnel
 });
-rg.info.InfoLabelLeaderboard = $hxClasses["rg.info.InfoLabelLeaderboard"] = function() {
+rg.info.InfoLabelLeaderboard = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelLeaderboard"] = rg.info.InfoLabelLeaderboard;
 rg.info.InfoLabelLeaderboard.__name__ = ["rg","info","InfoLabelLeaderboard"];
 rg.info.InfoLabelLeaderboard.filters = function() {
 	return [{ field : "rank", validator : function(v) {
@@ -8684,9 +8847,10 @@ rg.info.InfoLabelLeaderboard.prototype = $extend(rg.info.InfoLabel.prototype,{
 	,value: null
 	,__class__: rg.info.InfoLabelLeaderboard
 });
-rg.info.InfoLabelPivotTable = $hxClasses["rg.info.InfoLabelPivotTable"] = function() {
+rg.info.InfoLabelPivotTable = function() {
 	rg.info.InfoLabelAxis.call(this);
 };
+$hxClasses["rg.info.InfoLabelPivotTable"] = rg.info.InfoLabelPivotTable;
 rg.info.InfoLabelPivotTable.__name__ = ["rg","info","InfoLabelPivotTable"];
 rg.info.InfoLabelPivotTable.filters = function() {
 	return [{ field : "total", validator : function(v) {
@@ -8704,9 +8868,10 @@ rg.info.InfoLabelPivotTable.prototype = $extend(rg.info.InfoLabelAxis.prototype,
 	,axisvalue: null
 	,__class__: rg.info.InfoLabelPivotTable
 });
-rg.info.InfoLabelSankey = $hxClasses["rg.info.InfoLabelSankey"] = function() {
+rg.info.InfoLabelSankey = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelSankey"] = rg.info.InfoLabelSankey;
 rg.info.InfoLabelSankey.__name__ = ["rg","info","InfoLabelSankey"];
 rg.info.InfoLabelSankey.filters = function() {
 	return [{ field : "edge", validator : function(v) {
@@ -8724,12 +8889,13 @@ rg.info.InfoLabelSankey.prototype = $extend(rg.info.InfoLabel.prototype,{
 	,node: null
 	,__class__: rg.info.InfoLabelSankey
 });
-rg.info.InfoLayout = $hxClasses["rg.info.InfoLayout"] = function() {
+rg.info.InfoLayout = function() {
 	this.main = "main";
 	this.titleOnTop = true;
 	this.scalePattern = rg.layout.ScalePattern.ScalesAlternating;
 	this.padding = new rg.info.InfoPadding();
 };
+$hxClasses["rg.info.InfoLayout"] = rg.info.InfoLayout;
 rg.info.InfoLayout.__name__ = ["rg","info","InfoLayout"];
 rg.info.InfoLayout.filters = function() {
 	return [{ field : "layout", validator : function(v) {
@@ -8788,13 +8954,14 @@ rg.info.InfoLayout.prototype = {
 	,padding: null
 	,__class__: rg.info.InfoLayout
 }
-rg.info.InfoLeaderboard = $hxClasses["rg.info.InfoLeaderboard"] = function() {
+rg.info.InfoLeaderboard = function() {
 	this.animation = new rg.info.InfoAnimation();
 	this.label = new rg.info.InfoLabelLeaderboard();
 	this.usemax = false;
 	this.displaybar = true;
 	this.colorscale = false;
 };
+$hxClasses["rg.info.InfoLeaderboard"] = rg.info.InfoLeaderboard;
 rg.info.InfoLeaderboard.__name__ = ["rg","info","InfoLeaderboard"];
 rg.info.InfoLeaderboard.filters = function() {
 	return [{ field : "animation", validator : function(v) {
@@ -8831,7 +8998,7 @@ rg.info.InfoLeaderboard.prototype = {
 	,colorscale: null
 	,__class__: rg.info.InfoLeaderboard
 }
-rg.info.InfoLineChart = $hxClasses["rg.info.InfoLineChart"] = function() {
+rg.info.InfoLineChart = function() {
 	rg.info.InfoCartesianChart.call(this);
 	this.segment = new rg.info.InfoSegment();
 	this.effect = rg.svg.chart.LineEffect.Gradient(-1.2,2);
@@ -8839,6 +9006,7 @@ rg.info.InfoLineChart = $hxClasses["rg.info.InfoLineChart"] = function() {
 	this.displayarea = false;
 	this.sensibleradius = 100;
 };
+$hxClasses["rg.info.InfoLineChart"] = rg.info.InfoLineChart;
 rg.info.InfoLineChart.__name__ = ["rg","info","InfoLineChart"];
 rg.info.InfoLineChart.filters = function() {
 	return [{ field : "symbol", validator : function(v) {
@@ -8887,7 +9055,7 @@ rg.info.InfoLineChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 	,sensibleradius: null
 	,__class__: rg.info.InfoLineChart
 });
-rg.info.InfoMap = $hxClasses["rg.info.InfoMap"] = function() {
+rg.info.InfoMap = function() {
 	this.property = "location";
 	this.type = "geojson";
 	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCssInterpolation();
@@ -8896,6 +9064,7 @@ rg.info.InfoMap = $hxClasses["rg.info.InfoMap"] = function() {
 		return 10;
 	};
 };
+$hxClasses["rg.info.InfoMap"] = rg.info.InfoMap;
 rg.info.InfoMap.__name__ = ["rg","info","InfoMap"];
 rg.info.InfoMap.filters = function() {
 	return [{ field : "url", validator : function(v) {
@@ -8987,8 +9156,9 @@ rg.info.InfoMap.prototype = {
 	,mappingurl: null
 	,__class__: rg.info.InfoMap
 }
-rg.info.InfoPadding = $hxClasses["rg.info.InfoPadding"] = function() {
+rg.info.InfoPadding = function() {
 };
+$hxClasses["rg.info.InfoPadding"] = rg.info.InfoPadding;
 rg.info.InfoPadding.__name__ = ["rg","info","InfoPadding"];
 rg.info.InfoPadding.filters = function() {
 	return [{ field : "top", validator : function(v) {
@@ -9008,7 +9178,7 @@ rg.info.InfoPadding.prototype = {
 	,right: null
 	,__class__: rg.info.InfoPadding
 }
-rg.info.InfoPieChart = $hxClasses["rg.info.InfoPieChart"] = function() {
+rg.info.InfoPieChart = function() {
 	this.innerradius = 0.0;
 	this.labelradius = 0.45;
 	this.labelorientation = rg.svg.widget.LabelOrientation.Aligned;
@@ -9020,6 +9190,7 @@ rg.info.InfoPieChart = $hxClasses["rg.info.InfoPieChart"] = function() {
 	this.effect = rg.svg.chart.GradientEffect.Gradient(1.2);
 	this.dontfliplabel = true;
 };
+$hxClasses["rg.info.InfoPieChart"] = rg.info.InfoPieChart;
 rg.info.InfoPieChart.__name__ = ["rg","info","InfoPieChart"];
 rg.info.InfoPieChart.validateOrientation = function(s) {
 	var name = s.split(":")[0].toLowerCase();
@@ -9092,7 +9263,7 @@ rg.info.InfoPieChart.prototype = {
 	,click: null
 	,__class__: rg.info.InfoPieChart
 }
-rg.info.InfoPivotTable = $hxClasses["rg.info.InfoPivotTable"] = function() {
+rg.info.InfoPivotTable = function() {
 	this.label = new rg.info.InfoLabelPivotTable();
 	this.heatmapColorStart = rg.info.InfoPivotTable.defaultStartColor;
 	this.heatmapColorEnd = rg.info.InfoPivotTable.defaultEndColor;
@@ -9101,6 +9272,7 @@ rg.info.InfoPivotTable = $hxClasses["rg.info.InfoPivotTable"] = function() {
 	this.displayRowTotal = true;
 	this.columnAxes = 1;
 };
+$hxClasses["rg.info.InfoPivotTable"] = rg.info.InfoPivotTable;
 rg.info.InfoPivotTable.__name__ = ["rg","info","InfoPivotTable"];
 rg.info.InfoPivotTable.filters = function() {
 	return [{ field : "columnaxes", validator : function(v) {
@@ -9146,7 +9318,7 @@ rg.info.InfoPivotTable.prototype = {
 	,click: null
 	,__class__: rg.info.InfoPivotTable
 }
-rg.info.InfoSankey = $hxClasses["rg.info.InfoSankey"] = function() {
+rg.info.InfoSankey = function() {
 	this.label = new rg.info.InfoLabelSankey();
 	this.idproperty = "id";
 	this.weightproperty = "count";
@@ -9154,6 +9326,7 @@ rg.info.InfoSankey = $hxClasses["rg.info.InfoSankey"] = function() {
 	this.stackbackedges = true;
 	this.thinbackedges = false;
 };
+$hxClasses["rg.info.InfoSankey"] = rg.info.InfoSankey;
 rg.info.InfoSankey.__name__ = ["rg","info","InfoSankey"];
 rg.info.InfoSankey.filters = function() {
 	return [{ field : "label", validator : function(v) {
@@ -9281,13 +9454,14 @@ rg.info.InfoSankey.prototype = {
 	,thinbackedges: null
 	,__class__: rg.info.InfoSankey
 }
-rg.info.InfoScatterGraph = $hxClasses["rg.info.InfoScatterGraph"] = function() {
+rg.info.InfoScatterGraph = function() {
 	rg.info.InfoCartesianChart.call(this);
 	this.segment = new rg.info.InfoSegment();
 	this.symbol = function(dp,s) {
 		return rg.svg.util.SymbolCache.cache.get("circle",16);
 	};
 };
+$hxClasses["rg.info.InfoScatterGraph"] = rg.info.InfoScatterGraph;
 rg.info.InfoScatterGraph.__name__ = ["rg","info","InfoScatterGraph"];
 rg.info.InfoScatterGraph.filters = function() {
 	return [{ field : "symbol", validator : function(v) {
@@ -9317,8 +9491,9 @@ rg.info.InfoScatterGraph.prototype = $extend(rg.info.InfoCartesianChart.prototyp
 	,segment: null
 	,__class__: rg.info.InfoScatterGraph
 });
-rg.info.InfoSegment = $hxClasses["rg.info.InfoSegment"] = function() {
+rg.info.InfoSegment = function() {
 };
+$hxClasses["rg.info.InfoSegment"] = rg.info.InfoSegment;
 rg.info.InfoSegment.__name__ = ["rg","info","InfoSegment"];
 rg.info.InfoSegment.filters = function() {
 	return [{ field : "on", validator : function(v) {
@@ -9335,12 +9510,13 @@ rg.info.InfoSegment.prototype = {
 	,scale: null
 	,__class__: rg.info.InfoSegment
 }
-rg.info.InfoStreamGraph = $hxClasses["rg.info.InfoStreamGraph"] = function() {
+rg.info.InfoStreamGraph = function() {
 	rg.info.InfoCartesianChart.call(this);
 	this.segment = new rg.info.InfoSegment();
 	this.interpolation = thx.svg.LineInterpolator.Cardinal();
 	this.effect = rg.svg.chart.StreamEffect.GradientVertical(1.25);
 };
+$hxClasses["rg.info.InfoStreamGraph"] = rg.info.InfoStreamGraph;
 rg.info.InfoStreamGraph.__name__ = ["rg","info","InfoStreamGraph"];
 rg.info.InfoStreamGraph.filters = function() {
 	return [{ field : "interpolation", validator : function(v) {
@@ -9368,9 +9544,10 @@ rg.info.InfoStreamGraph.prototype = $extend(rg.info.InfoCartesianChart.prototype
 	,segment: null
 	,__class__: rg.info.InfoStreamGraph
 });
-rg.info.InfoVariable = $hxClasses["rg.info.InfoVariable"] = function() {
+rg.info.InfoVariable = function() {
 	this.variableType = rg.info.VariableType.Unknown;
 };
+$hxClasses["rg.info.InfoVariable"] = rg.info.InfoVariable;
 rg.info.InfoVariable.__name__ = ["rg","info","InfoVariable"];
 rg.info.InfoVariable.filters = function() {
 	return [{ field : "type", validator : function(v) {
@@ -9424,8 +9601,9 @@ rg.info.VariableType.Independent.__enum__ = rg.info.VariableType;
 rg.info.VariableType.Dependent = ["Dependent",2];
 rg.info.VariableType.Dependent.toString = $estr;
 rg.info.VariableType.Dependent.__enum__ = rg.info.VariableType;
-rg.info.InfoVisualizationOption = $hxClasses["rg.info.InfoVisualizationOption"] = function() {
+rg.info.InfoVisualizationOption = function() {
 };
+$hxClasses["rg.info.InfoVisualizationOption"] = rg.info.InfoVisualizationOption;
 rg.info.InfoVisualizationOption.__name__ = ["rg","info","InfoVisualizationOption"];
 rg.info.InfoVisualizationOption.filters = function() {
 	return [{ field : "axes", validator : function(v) {
@@ -9443,9 +9621,10 @@ rg.info.InfoVisualizationOption.prototype = {
 	,options: null
 	,__class__: rg.info.InfoVisualizationOption
 }
-rg.info.InfoVisualizationType = $hxClasses["rg.info.InfoVisualizationType"] = function() {
+rg.info.InfoVisualizationType = function() {
 	this.replace = true;
 };
+$hxClasses["rg.info.InfoVisualizationType"] = rg.info.InfoVisualizationType;
 rg.info.InfoVisualizationType.__name__ = ["rg","info","InfoVisualizationType"];
 rg.info.InfoVisualizationType.filters = function() {
 	return [{ field : "visualization", validator : function(v) {
@@ -9461,12 +9640,13 @@ rg.info.InfoVisualizationType.prototype = {
 	,type: null
 	,__class__: rg.info.InfoVisualizationType
 }
-if(!rg.interactive) rg.interactive = {}
-rg.interactive.RGDownloader = $hxClasses["rg.interactive.RGDownloader"] = function(container,serviceurl) {
+rg.interactive = {}
+rg.interactive.RGDownloader = function(container,serviceurl) {
 	this.container = container;
 	this.serviceUrl = serviceurl;
 	this.tokenId = rg.util.RG.getTokenId();
 };
+$hxClasses["rg.interactive.RGDownloader"] = rg.interactive.RGDownloader;
 rg.interactive.RGDownloader.__name__ = ["rg","interactive","RGDownloader"];
 rg.interactive.RGDownloader.appendArgument = function(url,name,value) {
 	var sep = url.indexOf("?") >= 0?"&":"?";
@@ -9538,11 +9718,12 @@ rg.interactive.RGDownloader.prototype = {
 	}
 	,__class__: rg.interactive.RGDownloader
 }
-rg.interactive.RGLegacyRenderer = $hxClasses["rg.interactive.RGLegacyRenderer"] = function(container,serviceurl) {
+rg.interactive.RGLegacyRenderer = function(container,serviceurl) {
 	this.container = container;
 	this.serviceUrl = serviceurl;
 	this.tokenId = rg.util.RG.getTokenId();
 };
+$hxClasses["rg.interactive.RGLegacyRenderer"] = rg.interactive.RGLegacyRenderer;
 rg.interactive.RGLegacyRenderer.__name__ = ["rg","interactive","RGLegacyRenderer"];
 rg.interactive.RGLegacyRenderer.removeFunctions = function(o) {
 	var _g = 0, _g1 = Reflect.fields(o);
@@ -9637,7 +9818,7 @@ rg.interactive.RGLegacyRenderer.prototype = {
 	}
 	,__class__: rg.interactive.RGLegacyRenderer
 }
-if(!rg.layout) rg.layout = {}
+rg.layout = {}
 rg.layout.Anchor = $hxClasses["rg.layout.Anchor"] = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
 rg.layout.Anchor.Top = ["Top",0];
 rg.layout.Anchor.Top.toString = $estr;
@@ -9651,11 +9832,12 @@ rg.layout.Anchor.Left.__enum__ = rg.layout.Anchor;
 rg.layout.Anchor.Right = ["Right",3];
 rg.layout.Anchor.Right.toString = $estr;
 rg.layout.Anchor.Right.__enum__ = rg.layout.Anchor;
-rg.layout.Layout = $hxClasses["rg.layout.Layout"] = function(width,height,container) {
+rg.layout.Layout = function(width,height,container) {
 	this.container = container;
 	container.classed().add("rg");
 	this.space = new rg.svg.panel.Space(this.width = width,this.height = height,container.append("div"));
 };
+$hxClasses["rg.layout.Layout"] = rg.layout.Layout;
 rg.layout.Layout.__name__ = ["rg","layout","Layout"];
 rg.layout.Layout.prototype = {
 	mainPanelName: null
@@ -9723,13 +9905,14 @@ rg.layout.Layout.prototype = {
 	}
 	,__class__: rg.layout.Layout
 }
-rg.layout.LayoutCartesian = $hxClasses["rg.layout.LayoutCartesian"] = function(width,height,container) {
+rg.layout.LayoutCartesian = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
 	this.left = true;
 	this.alternating = true;
 	this.yitems = [];
 };
+$hxClasses["rg.layout.LayoutCartesian"] = rg.layout.LayoutCartesian;
 rg.layout.LayoutCartesian.__name__ = ["rg","layout","LayoutCartesian"];
 rg.layout.LayoutCartesian.__super__ = rg.layout.Layout;
 rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
@@ -9970,10 +10153,11 @@ rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
 	}
 	,__class__: rg.layout.LayoutCartesian
 });
-rg.layout.LayoutSimple = $hxClasses["rg.layout.LayoutSimple"] = function(width,height,container) {
+rg.layout.LayoutSimple = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
 };
+$hxClasses["rg.layout.LayoutSimple"] = rg.layout.LayoutSimple;
 rg.layout.LayoutSimple.__name__ = ["rg","layout","LayoutSimple"];
 rg.layout.LayoutSimple.__super__ = rg.layout.Layout;
 rg.layout.LayoutSimple.prototype = $extend(rg.layout.Layout.prototype,{
@@ -10010,10 +10194,11 @@ rg.layout.LayoutSimple.prototype = $extend(rg.layout.Layout.prototype,{
 	}
 	,__class__: rg.layout.LayoutSimple
 });
-rg.layout.LayoutX = $hxClasses["rg.layout.LayoutX"] = function(width,height,container) {
+rg.layout.LayoutX = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
 };
+$hxClasses["rg.layout.LayoutX"] = rg.layout.LayoutX;
 rg.layout.LayoutX.__name__ = ["rg","layout","LayoutX"];
 rg.layout.LayoutX.__super__ = rg.layout.Layout;
 rg.layout.LayoutX.prototype = $extend(rg.layout.Layout.prototype,{
@@ -10112,10 +10297,11 @@ rg.layout.LayoutX.prototype = $extend(rg.layout.Layout.prototype,{
 	}
 	,__class__: rg.layout.LayoutX
 });
-rg.layout.PanelContext = $hxClasses["rg.layout.PanelContext"] = function(panel,anchor) {
+rg.layout.PanelContext = function(panel,anchor) {
 	this.panel = panel;
 	this.anchor = anchor;
 };
+$hxClasses["rg.layout.PanelContext"] = rg.layout.PanelContext;
 rg.layout.PanelContext.__name__ = ["rg","layout","PanelContext"];
 rg.layout.PanelContext.prototype = {
 	panel: null
@@ -10132,12 +10318,13 @@ rg.layout.ScalePattern.ScalesAfter.__enum__ = rg.layout.ScalePattern;
 rg.layout.ScalePattern.ScalesAlternating = ["ScalesAlternating",2];
 rg.layout.ScalePattern.ScalesAlternating.toString = $estr;
 rg.layout.ScalePattern.ScalesAlternating.__enum__ = rg.layout.ScalePattern;
-if(!rg.query) rg.query = {}
-rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(async,first) {
+rg.query = {}
+rg.query.BaseQuery = function(async,first) {
 	this._async = async;
 	this._first = first;
 	this._store = new Hash();
 };
+$hxClasses["rg.query.BaseQuery"] = rg.query.BaseQuery;
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.asyncTransform = function(t) {
 	return function(data,handler) {
@@ -10448,9 +10635,10 @@ rg.query.BaseQuery.prototype = {
 	}
 	,__class__: rg.query.BaseQuery
 }
-rg.query.Query = $hxClasses["rg.query.Query"] = function() {
+rg.query.Query = function() {
 	rg.query.BaseQuery.call(this,null,this);
 };
+$hxClasses["rg.query.Query"] = rg.query.Query;
 rg.query.Query.__name__ = ["rg","query","Query"];
 rg.query.Query.create = function() {
 	var start = new rg.query.Query(), query = start._createQuery(function(data,handler) {
@@ -10484,7 +10672,8 @@ rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
 	}
 	,__class__: rg.query.Query
 });
-rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
+rg.query.Transformers = function() { }
+$hxClasses["rg.query.Transformers"] = rg.query.Transformers;
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.crossStack = function(data) {
 	if(data.length <= 1) return data;
@@ -10744,9 +10933,9 @@ rg.query.Transformers.rotate = function(matchingf) {
 rg.query.Transformers.prototype = {
 	__class__: rg.query.Transformers
 }
-if(!rg.svg) rg.svg = {}
-if(!rg.svg.panel) rg.svg.panel = {}
-rg.svg.panel.Layer = $hxClasses["rg.svg.panel.Layer"] = function(panel) {
+rg.svg = {}
+rg.svg.panel = {}
+rg.svg.panel.Layer = function(panel) {
 	this.frame = (this.panel = panel).frame;
 	var p = panel;
 	p.addLayer(this);
@@ -10754,6 +10943,7 @@ rg.svg.panel.Layer = $hxClasses["rg.svg.panel.Layer"] = function(panel) {
 	this.g.attr("class").string("layer");
 	this._resize();
 };
+$hxClasses["rg.svg.panel.Layer"] = rg.svg.panel.Layer;
 rg.svg.panel.Layer.__name__ = ["rg","svg","panel","Layer"];
 rg.svg.panel.Layer.prototype = {
 	panel: null
@@ -10788,14 +10978,15 @@ rg.svg.panel.Layer.prototype = {
 	,__class__: rg.svg.panel.Layer
 	,__properties__: {set_customClass:"setCustomClass"}
 }
-if(!rg.svg.chart) rg.svg.chart = {}
-rg.svg.chart.Chart = $hxClasses["rg.svg.chart.Chart"] = function(panel) {
+rg.svg.chart = {}
+rg.svg.chart.Chart = function(panel) {
 	rg.svg.panel.Layer.call(this,panel);
 	this.animated = true;
 	this.animationDuration = 1500;
 	this.animationEase = thx.math.Equations.linear;
 	this.ready = new hxevents.Notifier();
 };
+$hxClasses["rg.svg.chart.Chart"] = rg.svg.chart.Chart;
 rg.svg.chart.Chart.__name__ = ["rg","svg","chart","Chart"];
 rg.svg.chart.Chart.__super__ = rg.svg.panel.Layer;
 rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -10827,9 +11018,10 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	}
 	,__class__: rg.svg.chart.Chart
 });
-rg.svg.chart.CartesianChart = $hxClasses["rg.svg.chart.CartesianChart"] = function(panel) {
+rg.svg.chart.CartesianChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 };
+$hxClasses["rg.svg.chart.CartesianChart"] = rg.svg.chart.CartesianChart;
 rg.svg.chart.CartesianChart.__name__ = ["rg","svg","chart","CartesianChart"];
 rg.svg.chart.CartesianChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.CartesianChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -10844,7 +11036,7 @@ rg.svg.chart.CartesianChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,__class__: rg.svg.chart.CartesianChart
 });
-rg.svg.chart.BarChart = $hxClasses["rg.svg.chart.BarChart"] = function(panel) {
+rg.svg.chart.BarChart = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.addClass("bar-chart");
 	this.defs = this.g.append("svg:defs");
@@ -10856,6 +11048,7 @@ rg.svg.chart.BarChart = $hxClasses["rg.svg.chart.BarChart"] = function(panel) {
 	this.paddingDataPoint = 2;
 	this.horizontal = false;
 };
+$hxClasses["rg.svg.chart.BarChart"] = rg.svg.chart.BarChart;
 rg.svg.chart.BarChart.__name__ = ["rg","svg","chart","BarChart"];
 rg.svg.chart.BarChart.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -10913,7 +11106,6 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			}
 			return gr;
 		};
-		var flatdata = Arrays.flatten(Arrays.flatten(dps));
 		var _g1 = 0, _g = dps.length;
 		while(_g1 < _g) {
 			var i = _g1++;
@@ -10959,7 +11151,6 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			}
 			return gr;
 		};
-		var flatdata = Arrays.flatten(Arrays.flatten(dps));
 		var _g1 = 0, _g = dps.length;
 		while(_g1 < _g) {
 			var i = _g1++;
@@ -10981,6 +11172,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				while(_g5 < _g4) {
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
+					if(Math.isNaN(h)) h = 0;
 					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,a1) {
 						return function(a2,a3) {
 							return f(a1,a2,a3);
@@ -11025,7 +11217,8 @@ rg.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interp
 rg.svg.chart.ColorScaleMode.Sequence = function(colors) { var $x = ["Sequence",3,colors]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.Fixed = function(color) { var $x = ["Fixed",4,color]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.Fun = function(f) { var $x = ["Fun",5,f]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
-rg.svg.chart.ColorScaleModes = $hxClasses["rg.svg.chart.ColorScaleModes"] = function() { }
+rg.svg.chart.ColorScaleModes = function() { }
+$hxClasses["rg.svg.chart.ColorScaleModes"] = rg.svg.chart.ColorScaleModes;
 rg.svg.chart.ColorScaleModes.__name__ = ["rg","svg","chart","ColorScaleModes"];
 rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 	if(Reflect.isFunction(v)) return rg.svg.chart.ColorScaleMode.Fun(v);
@@ -11063,7 +11256,8 @@ rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 rg.svg.chart.ColorScaleModes.prototype = {
 	__class__: rg.svg.chart.ColorScaleModes
 }
-rg.svg.chart.Coords = $hxClasses["rg.svg.chart.Coords"] = function() { }
+rg.svg.chart.Coords = function() { }
+$hxClasses["rg.svg.chart.Coords"] = rg.svg.chart.Coords;
 rg.svg.chart.Coords.__name__ = ["rg","svg","chart","Coords"];
 rg.svg.chart.Coords.fromTransform = function(s) {
 	if(!rg.svg.chart.Coords.retransform.match(s)) return [0.0,0]; else {
@@ -11074,7 +11268,7 @@ rg.svg.chart.Coords.fromTransform = function(s) {
 rg.svg.chart.Coords.prototype = {
 	__class__: rg.svg.chart.Coords
 }
-rg.svg.chart.FunnelChart = $hxClasses["rg.svg.chart.FunnelChart"] = function(panel) {
+rg.svg.chart.FunnelChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 	this.padding = 2.5;
 	this.flatness = 1.0;
@@ -11085,6 +11279,7 @@ rg.svg.chart.FunnelChart = $hxClasses["rg.svg.chart.FunnelChart"] = function(pan
 	this.labelDataPoint = this.defaultLabelDataPoint.$bind(this);
 	this.labelDataPointOver = this.defaultLabelDataPointOver.$bind(this);
 };
+$hxClasses["rg.svg.chart.FunnelChart"] = rg.svg.chart.FunnelChart;
 rg.svg.chart.FunnelChart.__name__ = ["rg","svg","chart","FunnelChart"];
 rg.svg.chart.FunnelChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -11258,13 +11453,14 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,__class__: rg.svg.chart.FunnelChart
 });
-rg.svg.chart.Geo = $hxClasses["rg.svg.chart.Geo"] = function(panel) {
+rg.svg.chart.Geo = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 	this.mapcontainer = this.g.append("svg:g").attr("class").string("mapcontainer");
 	this.queue = [];
 	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
 	this.resize();
 };
+$hxClasses["rg.svg.chart.Geo"] = rg.svg.chart.Geo;
 rg.svg.chart.Geo.__name__ = ["rg","svg","chart","Geo"];
 rg.svg.chart.Geo.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -11414,7 +11610,8 @@ rg.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.GradientEffect.NoEffect.toString = $estr;
 rg.svg.chart.GradientEffect.NoEffect.__enum__ = rg.svg.chart.GradientEffect;
 rg.svg.chart.GradientEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.svg.chart.GradientEffect; $x.toString = $estr; return $x; }
-rg.svg.chart.GradientEffects = $hxClasses["rg.svg.chart.GradientEffects"] = function() { }
+rg.svg.chart.GradientEffects = function() { }
+$hxClasses["rg.svg.chart.GradientEffects"] = rg.svg.chart.GradientEffects;
 rg.svg.chart.GradientEffects.__name__ = ["rg","svg","chart","GradientEffects"];
 rg.svg.chart.GradientEffects.canParse = function(d) {
 	if(!Std["is"](d,String)) return false;
@@ -11445,11 +11642,12 @@ rg.svg.chart.GradientEffects.parse = function(s) {
 rg.svg.chart.GradientEffects.prototype = {
 	__class__: rg.svg.chart.GradientEffects
 }
-rg.svg.chart.HeatGrid = $hxClasses["rg.svg.chart.HeatGrid"] = function(panel) {
+rg.svg.chart.HeatGrid = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.useContour = false;
 	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
 };
+$hxClasses["rg.svg.chart.HeatGrid"] = rg.svg.chart.HeatGrid;
 rg.svg.chart.HeatGrid.__name__ = ["rg","svg","chart","HeatGrid"];
 rg.svg.chart.HeatGrid.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -11598,12 +11796,13 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,__class__: rg.svg.chart.HeatGrid
 	,__properties__: $extend(rg.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
-rg.svg.chart.LineChart = $hxClasses["rg.svg.chart.LineChart"] = function(panel) {
+rg.svg.chart.LineChart = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.addClass("line-chart");
 	this.chart = this.g.append("svg:g");
 	this.sensibleRadius = 100;
 };
+$hxClasses["rg.svg.chart.LineChart"] = rg.svg.chart.LineChart;
 rg.svg.chart.LineChart.__name__ = ["rg","svg","chart","LineChart"];
 rg.svg.chart.LineChart.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -11850,7 +12049,8 @@ rg.svg.chart.LineEffect.NoEffect.toString = $estr;
 rg.svg.chart.LineEffect.NoEffect.__enum__ = rg.svg.chart.LineEffect;
 rg.svg.chart.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.LineEffect.DropShadow = function(ox,oy,evels) { var $x = ["DropShadow",2,ox,oy,evels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
-rg.svg.chart.LineEffects = $hxClasses["rg.svg.chart.LineEffects"] = function() { }
+rg.svg.chart.LineEffects = function() { }
+$hxClasses["rg.svg.chart.LineEffects"] = rg.svg.chart.LineEffects;
 rg.svg.chart.LineEffects.__name__ = ["rg","svg","chart","LineEffects"];
 rg.svg.chart.LineEffects.parse = function(s) {
 	var parts = s.toLowerCase().split(":");
@@ -11879,7 +12079,7 @@ rg.svg.chart.LineEffects.parse = function(s) {
 rg.svg.chart.LineEffects.prototype = {
 	__class__: rg.svg.chart.LineEffects
 }
-rg.svg.chart.PieChart = $hxClasses["rg.svg.chart.PieChart"] = function(panel) {
+rg.svg.chart.PieChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 	this.addClass("pie-chart");
 	this.g.append("svg:defs");
@@ -11896,6 +12096,7 @@ rg.svg.chart.PieChart = $hxClasses["rg.svg.chart.PieChart"] = function(panel) {
 	this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
 	this.labelDontFlip = true;
 };
+$hxClasses["rg.svg.chart.PieChart"] = rg.svg.chart.PieChart;
 rg.svg.chart.PieChart.__name__ = ["rg","svg","chart","PieChart"];
 rg.svg.chart.PieChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -12066,7 +12267,7 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,__class__: rg.svg.chart.PieChart
 });
-rg.svg.chart.Sankey = $hxClasses["rg.svg.chart.Sankey"] = function(panel) {
+rg.svg.chart.Sankey = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 	this.addClass("sankey");
 	this.layerWidth = 61;
@@ -12088,6 +12289,7 @@ rg.svg.chart.Sankey = $hxClasses["rg.svg.chart.Sankey"] = function(panel) {
 	this.stackbackedges = true;
 	this.thinbackedges = true;
 };
+$hxClasses["rg.svg.chart.Sankey"] = rg.svg.chart.Sankey;
 rg.svg.chart.Sankey.__name__ = ["rg","svg","chart","Sankey"];
 rg.svg.chart.Sankey.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -12732,11 +12934,12 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,__class__: rg.svg.chart.Sankey
 });
-rg.svg.chart.ScatterGraph = $hxClasses["rg.svg.chart.ScatterGraph"] = function(panel) {
+rg.svg.chart.ScatterGraph = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.addClass("scatter-graph");
 	this.chart = this.g.append("svg:g");
 };
+$hxClasses["rg.svg.chart.ScatterGraph"] = rg.svg.chart.ScatterGraph;
 rg.svg.chart.ScatterGraph.__name__ = ["rg","svg","chart","ScatterGraph"];
 rg.svg.chart.ScatterGraph.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -12853,7 +13056,8 @@ rg.svg.chart.StreamEffect.NoEffect.toString = $estr;
 rg.svg.chart.StreamEffect.NoEffect.__enum__ = rg.svg.chart.StreamEffect;
 rg.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
-rg.svg.chart.StreamEffects = $hxClasses["rg.svg.chart.StreamEffects"] = function() { }
+rg.svg.chart.StreamEffects = function() { }
+$hxClasses["rg.svg.chart.StreamEffects"] = rg.svg.chart.StreamEffects;
 rg.svg.chart.StreamEffects.__name__ = ["rg","svg","chart","StreamEffects"];
 rg.svg.chart.StreamEffects.getLightness = function(p,alt) {
 	if(null == p) return alt; else return Std.parseFloat(p);
@@ -12872,12 +13076,13 @@ rg.svg.chart.StreamEffects.parse = function(s) {
 rg.svg.chart.StreamEffects.prototype = {
 	__class__: rg.svg.chart.StreamEffects
 }
-rg.svg.chart.StreamGraph = $hxClasses["rg.svg.chart.StreamGraph"] = function(panel) {
+rg.svg.chart.StreamGraph = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
 	this.gradientLightness = 0.75;
 	this.gradientStyle = 1;
 };
+$hxClasses["rg.svg.chart.StreamGraph"] = rg.svg.chart.StreamGraph;
 rg.svg.chart.StreamGraph.__name__ = ["rg","svg","chart","StreamGraph"];
 rg.svg.chart.StreamGraph.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -13016,8 +13221,8 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 	}
 	,__class__: rg.svg.chart.StreamGraph
 });
-if(!rg.svg.layer) rg.svg.layer = {}
-rg.svg.layer.RulesOrtho = $hxClasses["rg.svg.layer.RulesOrtho"] = function(panel,orientation) {
+rg.svg.layer = {}
+rg.svg.layer.RulesOrtho = function(panel,orientation) {
 	rg.svg.panel.Layer.call(this,panel);
 	this.orientation = orientation;
 	this.displayMinor = true;
@@ -13025,6 +13230,7 @@ rg.svg.layer.RulesOrtho = $hxClasses["rg.svg.layer.RulesOrtho"] = function(panel
 	this.displayAnchorLine = true;
 	this.g.classed().add("tickmarks");
 };
+$hxClasses["rg.svg.layer.RulesOrtho"] = rg.svg.layer.RulesOrtho;
 rg.svg.layer.RulesOrtho.__name__ = ["rg","svg","layer","RulesOrtho"];
 rg.svg.layer.RulesOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -13156,7 +13362,7 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	}
 	,__class__: rg.svg.layer.RulesOrtho
 });
-rg.svg.layer.TickmarksOrtho = $hxClasses["rg.svg.layer.TickmarksOrtho"] = function(panel,anchor) {
+rg.svg.layer.TickmarksOrtho = function(panel,anchor) {
 	rg.svg.panel.Layer.call(this,panel);
 	this.anchor = anchor;
 	this.displayMinor = true;
@@ -13170,6 +13376,7 @@ rg.svg.layer.TickmarksOrtho = $hxClasses["rg.svg.layer.TickmarksOrtho"] = functi
 	this.paddingLabel = 10;
 	this.g.classed().add("tickmarks");
 };
+$hxClasses["rg.svg.layer.TickmarksOrtho"] = rg.svg.layer.TickmarksOrtho;
 rg.svg.layer.TickmarksOrtho.__name__ = ["rg","svg","layer","TickmarksOrtho"];
 rg.svg.layer.TickmarksOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -13479,7 +13686,7 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	}
 	,__class__: rg.svg.layer.TickmarksOrtho
 });
-rg.svg.layer.Title = $hxClasses["rg.svg.layer.Title"] = function(panel,text,anchor,padding,className,shadow,outline) {
+rg.svg.layer.Title = function(panel,text,anchor,padding,className,shadow,outline) {
 	if(outline == null) outline = false;
 	if(shadow == null) shadow = false;
 	if(className == null) className = "title";
@@ -13494,6 +13701,7 @@ rg.svg.layer.Title = $hxClasses["rg.svg.layer.Title"] = function(panel,text,anch
 	this.setText(text);
 	this.resize();
 };
+$hxClasses["rg.svg.layer.Title"] = rg.svg.layer.Title;
 rg.svg.layer.Title.__name__ = ["rg","svg","layer","Title"];
 rg.svg.layer.Title.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -13580,11 +13788,12 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,__class__: rg.svg.layer.Title
 	,__properties__: $extend(rg.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
 });
-rg.svg.panel.Panel = $hxClasses["rg.svg.panel.Panel"] = function(frame) {
+rg.svg.panel.Panel = function(frame) {
 	this.frame = frame;
 	frame.change = this.reframe.$bind(this);
 	this._layers = [];
 };
+$hxClasses["rg.svg.panel.Panel"] = rg.svg.panel.Panel;
 rg.svg.panel.Panel.__name__ = ["rg","svg","panel","Panel"];
 rg.svg.panel.Panel.prototype = {
 	frame: null
@@ -13619,11 +13828,12 @@ rg.svg.panel.Panel.prototype = {
 	}
 	,__class__: rg.svg.panel.Panel
 }
-rg.svg.panel.Container = $hxClasses["rg.svg.panel.Container"] = function(frame,orientation) {
+rg.svg.panel.Container = function(frame,orientation) {
 	rg.svg.panel.Panel.call(this,frame);
 	this.stack = new rg.frame.Stack(frame.width,frame.height,orientation);
 	this.panels = [];
 };
+$hxClasses["rg.svg.panel.Container"] = rg.svg.panel.Container;
 rg.svg.panel.Container.__name__ = ["rg","svg","panel","Container"];
 rg.svg.panel.Container.__super__ = rg.svg.panel.Panel;
 rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
@@ -13709,7 +13919,8 @@ rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
 	}
 	,__class__: rg.svg.panel.Container
 });
-rg.svg.panel.Panels = $hxClasses["rg.svg.panel.Panels"] = function() { }
+rg.svg.panel.Panels = function() { }
+$hxClasses["rg.svg.panel.Panels"] = rg.svg.panel.Panels;
 rg.svg.panel.Panels.__name__ = ["rg","svg","panel","Panels"];
 rg.svg.panel.Panels.absolutePos = function(panel) {
 	var p = panel, x = 0, y = 0;
@@ -13719,15 +13930,14 @@ rg.svg.panel.Panels.absolutePos = function(panel) {
 		y += p.frame.y;
 		p = p.parent;
 	}
-	var node = rg.svg.panel.Panels.htmlContainer(panel);
+	var node = rg.svg.panel.Panels.htmlContainer(panel), left = js.Scroll.getLeft(), top = js.Scroll.getTop();
+	if(null == node) return { x : left, y : top};
 	var rect = node.getBoundingClientRect();
-	var left = js.Scroll.getLeft(), top = js.Scroll.getTop();
 	return { x : rect.left + x + left, y : rect.top + y + top};
 }
 rg.svg.panel.Panels.svgContainer = function(panel) {
 	var node = panel.g.node();
-	do {
-	} while(null != Reflect.field(node = node.ownerSVGElement,"ownerSVGElement"));
+	do node = node.ownerSVGElement; while(null != node && null != Reflect.field(node.ownerSVGElement,"ownerSVGElement"));
 	return null == node?null:node;
 }
 rg.svg.panel.Panels.htmlContainer = function(panel) {
@@ -13737,12 +13947,13 @@ rg.svg.panel.Panels.htmlContainer = function(panel) {
 rg.svg.panel.Panels.prototype = {
 	__class__: rg.svg.panel.Panels
 }
-rg.svg.panel.Space = $hxClasses["rg.svg.panel.Space"] = function(width,height,domcontainer) {
+rg.svg.panel.Space = function(width,height,domcontainer) {
 	this.panel = new rg.frame.StackItem(rg.frame.FrameLayout.Fill(0,0));
 	rg.svg.panel.Container.call(this,this.panel,rg.frame.Orientation.Vertical);
 	this.init(this.svg = domcontainer.append("svg:svg").attr("xmlns").string("http://www.w3.org/2000/svg"));
 	this.resize(width,height);
 };
+$hxClasses["rg.svg.panel.Space"] = rg.svg.panel.Space;
 rg.svg.panel.Space.__name__ = ["rg","svg","panel","Space"];
 rg.svg.panel.Space.__super__ = rg.svg.panel.Container;
 rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
@@ -13756,8 +13967,9 @@ rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
 	}
 	,__class__: rg.svg.panel.Space
 });
-if(!rg.svg.util) rg.svg.util = {}
-rg.svg.util.RGCss = $hxClasses["rg.svg.util.RGCss"] = function() { }
+rg.svg.util = {}
+rg.svg.util.RGCss = function() { }
+$hxClasses["rg.svg.util.RGCss"] = rg.svg.util.RGCss;
 rg.svg.util.RGCss.__name__ = ["rg","svg","util","RGCss"];
 rg.svg.util.RGCss.cache = null;
 rg.svg.util.RGCss.colorsInCss = function() {
@@ -13782,10 +13994,11 @@ rg.svg.util.RGCss.createBlock = function(container,pos) {
 rg.svg.util.RGCss.prototype = {
 	__class__: rg.svg.util.RGCss
 }
-rg.svg.util.SymbolCache = $hxClasses["rg.svg.util.SymbolCache"] = function() {
+rg.svg.util.SymbolCache = function() {
 	this.c = new Hash();
 	this.r = 0;
 };
+$hxClasses["rg.svg.util.SymbolCache"] = rg.svg.util.SymbolCache;
 rg.svg.util.SymbolCache.__name__ = ["rg","svg","util","SymbolCache"];
 rg.svg.util.SymbolCache.cache = null;
 rg.svg.util.SymbolCache.prototype = {
@@ -13802,8 +14015,8 @@ rg.svg.util.SymbolCache.prototype = {
 	}
 	,__class__: rg.svg.util.SymbolCache
 }
-if(!rg.svg.widget) rg.svg.widget = {}
-rg.svg.widget.Balloon = $hxClasses["rg.svg.widget.Balloon"] = function(container,bindOnTop) {
+rg.svg.widget = {}
+rg.svg.widget.Balloon = function(container,bindOnTop) {
 	if(bindOnTop == null) bindOnTop = true;
 	if(bindOnTop) {
 		var parent = container.node();
@@ -13835,6 +14048,7 @@ rg.svg.widget.Balloon = $hxClasses["rg.svg.widget.Balloon"] = function(container
 	this.setLineHeight(temp.getSize().height);
 	temp.destroy();
 };
+$hxClasses["rg.svg.widget.Balloon"] = rg.svg.widget.Balloon;
 rg.svg.widget.Balloon.__name__ = ["rg","svg","widget","Balloon"];
 rg.svg.widget.Balloon.prototype = {
 	text: null
@@ -14188,7 +14402,8 @@ rg.svg.widget.Balloon.prototype = {
 	,__class__: rg.svg.widget.Balloon
 	,__properties__: {set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox",set_preferredSide:"setPreferredSide",set_roundedCorner:"setRoundedCorner",set_lineHeight:"setLineHeight",set_text:"setText"}
 }
-rg.svg.widget.BalloonShape = $hxClasses["rg.svg.widget.BalloonShape"] = function() { }
+rg.svg.widget.BalloonShape = function() { }
+$hxClasses["rg.svg.widget.BalloonShape"] = rg.svg.widget.BalloonShape;
 rg.svg.widget.BalloonShape.__name__ = ["rg","svg","widget","BalloonShape"];
 rg.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
 	var w = width - rc * 2, h = height - rc * 2;
@@ -14226,7 +14441,7 @@ rg.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
 rg.svg.widget.BalloonShape.prototype = {
 	__class__: rg.svg.widget.BalloonShape
 }
-rg.svg.widget.DiagonalArea = $hxClasses["rg.svg.widget.DiagonalArea"] = function(container,classarea,classborder) {
+rg.svg.widget.DiagonalArea = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("diagonal");
 	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
 		return [a[1],a[0]];
@@ -14235,6 +14450,7 @@ rg.svg.widget.DiagonalArea = $hxClasses["rg.svg.widget.DiagonalArea"] = function
 	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before" + (null == classborder?"":" " + classborder));
 	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.DiagonalArea"] = rg.svg.widget.DiagonalArea;
 rg.svg.widget.DiagonalArea.__name__ = ["rg","svg","widget","DiagonalArea"];
 rg.svg.widget.DiagonalArea.prototype = {
 	g: null
@@ -14254,12 +14470,13 @@ rg.svg.widget.DiagonalArea.prototype = {
 	}
 	,__class__: rg.svg.widget.DiagonalArea
 }
-rg.svg.widget.ElbowArea = $hxClasses["rg.svg.widget.ElbowArea"] = function(container,classarea,classborder) {
+rg.svg.widget.ElbowArea = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("elbow");
 	this.area = this.g.append("svg:path").attr("class").string("elbow-fill" + (null == classarea?"":" " + classarea));
 	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder?"":" " + classborder));
 	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.ElbowArea"] = rg.svg.widget.ElbowArea;
 rg.svg.widget.ElbowArea.__name__ = ["rg","svg","widget","ElbowArea"];
 rg.svg.widget.ElbowArea.prototype = {
 	g: null
@@ -14357,7 +14574,8 @@ rg.svg.widget.GridAnchor.Bottom.__enum__ = rg.svg.widget.GridAnchor;
 rg.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
 rg.svg.widget.GridAnchor.BottomRight.toString = $estr;
 rg.svg.widget.GridAnchor.BottomRight.__enum__ = rg.svg.widget.GridAnchor;
-rg.svg.widget.GridAnchors = $hxClasses["rg.svg.widget.GridAnchors"] = function() { }
+rg.svg.widget.GridAnchors = function() { }
+$hxClasses["rg.svg.widget.GridAnchors"] = rg.svg.widget.GridAnchors;
 rg.svg.widget.GridAnchors.__name__ = ["rg","svg","widget","GridAnchors"];
 rg.svg.widget.GridAnchors.parse = function(s) {
 	return (function($this) {
@@ -14399,10 +14617,11 @@ rg.svg.widget.GridAnchors.parse = function(s) {
 rg.svg.widget.GridAnchors.prototype = {
 	__class__: rg.svg.widget.GridAnchors
 }
-rg.svg.widget.HookConnector = $hxClasses["rg.svg.widget.HookConnector"] = function(container,classborder) {
+rg.svg.widget.HookConnector = function(container,classborder) {
 	this.g = container.append("svg:g").attr("class").string("hook");
 	this.line = this.g.append("svg:path").attr("class").string("hook-stroke line" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.HookConnector"] = rg.svg.widget.HookConnector;
 rg.svg.widget.HookConnector.__name__ = ["rg","svg","widget","HookConnector"];
 rg.svg.widget.HookConnector.lineTo = function(x,y) {
 	return "L" + x + "," + y;
@@ -14435,12 +14654,13 @@ rg.svg.widget.HookConnector.prototype = {
 	}
 	,__class__: rg.svg.widget.HookConnector
 }
-rg.svg.widget.HookConnectorArea = $hxClasses["rg.svg.widget.HookConnectorArea"] = function(container,classarea,classborder) {
+rg.svg.widget.HookConnectorArea = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("hook-area");
 	this.area = this.g.append("svg:path").attr("class").string("hook-area-fill" + (null == classarea?"":" " + classarea));
 	this.upper = this.g.append("svg:path").attr("class").string("hook-area-stroke upper" + (null == classborder?"":" " + classborder));
 	this.lower = this.g.append("svg:path").attr("class").string("hook-area-stroke lower" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.HookConnectorArea"] = rg.svg.widget.HookConnectorArea;
 rg.svg.widget.HookConnectorArea.__name__ = ["rg","svg","widget","HookConnectorArea"];
 rg.svg.widget.HookConnectorArea.lineTo = function(x,y) {
 	return "L" + x + "," + y;
@@ -14477,7 +14697,7 @@ rg.svg.widget.HookConnectorArea.prototype = {
 	}
 	,__class__: rg.svg.widget.HookConnectorArea
 }
-rg.svg.widget.Label = $hxClasses["rg.svg.widget.Label"] = function(container,dontflip,shadow,outline) {
+rg.svg.widget.Label = function(container,dontflip,shadow,outline) {
 	if(dontflip == null) dontflip = true;
 	this.shadow = shadow;
 	this.outline = outline;
@@ -14500,6 +14720,7 @@ rg.svg.widget.Label = $hxClasses["rg.svg.widget.Label"] = function(container,don
 	this.setAnchor(rg.svg.widget.GridAnchor.Center);
 	this.visible = true;
 };
+$hxClasses["rg.svg.widget.Label"] = rg.svg.widget.Label;
 rg.svg.widget.Label.__name__ = ["rg","svg","widget","Label"];
 rg.svg.widget.Label.prototype = {
 	text: null
@@ -14741,7 +14962,8 @@ rg.svg.widget.LabelOrientation.Aligned.__enum__ = rg.svg.widget.LabelOrientation
 rg.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
 rg.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
 rg.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.svg.widget.LabelOrientation;
-rg.svg.widget.LabelOrientations = $hxClasses["rg.svg.widget.LabelOrientations"] = function() { }
+rg.svg.widget.LabelOrientations = function() { }
+$hxClasses["rg.svg.widget.LabelOrientations"] = rg.svg.widget.LabelOrientations;
 rg.svg.widget.LabelOrientations.__name__ = ["rg","svg","widget","LabelOrientations"];
 rg.svg.widget.LabelOrientations.parse = function(s) {
 	return (function($this) {
@@ -14759,7 +14981,7 @@ rg.svg.widget.LabelOrientations.parse = function(s) {
 rg.svg.widget.LabelOrientations.prototype = {
 	__class__: rg.svg.widget.LabelOrientations
 }
-rg.svg.widget.Map = $hxClasses["rg.svg.widget.Map"] = function(container,projection) {
+rg.svg.widget.Map = function(container,projection) {
 	var me = this;
 	this.g = container.append("svg:g").attr("class").string("map");
 	this.projection = projection;
@@ -14770,6 +14992,7 @@ rg.svg.widget.Map = $hxClasses["rg.svg.widget.Map"] = function(container,project
 		me.ready = true;
 	});
 };
+$hxClasses["rg.svg.widget.Map"] = rg.svg.widget.Map;
 rg.svg.widget.Map.__name__ = ["rg","svg","widget","Map"];
 rg.svg.widget.Map.loadJsonp = function(url,handler) {
 	rg.util.Jsonp.get(url,handler,null,null,null);
@@ -14869,7 +15092,8 @@ rg.svg.widget.Map.prototype = {
 	,__class__: rg.svg.widget.Map
 	,__properties__: {set_className:"setClassName"}
 }
-rg.svg.widget.Sensible = $hxClasses["rg.svg.widget.Sensible"] = function() { }
+rg.svg.widget.Sensible = function() { }
+$hxClasses["rg.svg.widget.Sensible"] = rg.svg.widget.Sensible;
 rg.svg.widget.Sensible.__name__ = ["rg","svg","widget","Sensible"];
 rg.svg.widget.Sensible.sensibleZone = function(container,panel,click,datapointover,radius) {
 	if(null == click && null == datapointover) return;
@@ -14915,10 +15139,11 @@ rg.svg.widget.Sensible.findDataNodesNear = function(coords,context,distance) {
 rg.svg.widget.Sensible.prototype = {
 	__class__: rg.svg.widget.Sensible
 }
-if(!rg.util) rg.util = {}
-rg.util.Auth = $hxClasses["rg.util.Auth"] = function(authCode) {
+rg.util = {}
+rg.util.Auth = function(authCode) {
 	this.test = rg.util.Decrypt.decrypt(authCode);
 };
+$hxClasses["rg.util.Auth"] = rg.util.Auth;
 rg.util.Auth.__name__ = ["rg","util","Auth"];
 rg.util.Auth.prototype = {
 	test: null
@@ -14940,12 +15165,13 @@ rg.util.Auth.prototype = {
 	}
 	,__class__: rg.util.Auth
 }
-rg.util.ChainedExecutor = $hxClasses["rg.util.ChainedExecutor"] = function(handler) {
+rg.util.ChainedExecutor = function(handler) {
 	this.handler = handler;
 	this.actions = [];
 	this.pos = 0;
 	this.executor = this.execute.$bind(this);
 };
+$hxClasses["rg.util.ChainedExecutor"] = rg.util.ChainedExecutor;
 rg.util.ChainedExecutor.__name__ = ["rg","util","ChainedExecutor"];
 rg.util.ChainedExecutor.prototype = {
 	handler: null
@@ -14963,7 +15189,8 @@ rg.util.ChainedExecutor.prototype = {
 	,executor: null
 	,__class__: rg.util.ChainedExecutor
 }
-rg.util.DataPoints = $hxClasses["rg.util.DataPoints"] = function() { }
+rg.util.DataPoints = function() { }
+$hxClasses["rg.util.DataPoints"] = rg.util.DataPoints;
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
 rg.util.DataPoints.partition = function(dps,property,def) {
 	if(def == null) def = "default";
@@ -15043,7 +15270,8 @@ rg.util.DataPoints.id = function(dp,dependentProperties) {
 rg.util.DataPoints.prototype = {
 	__class__: rg.util.DataPoints
 }
-rg.util.Decrypt = $hxClasses["rg.util.Decrypt"] = function() { }
+rg.util.Decrypt = function() { }
+$hxClasses["rg.util.Decrypt"] = rg.util.Decrypt;
 rg.util.Decrypt.__name__ = ["rg","util","Decrypt"];
 rg.util.Decrypt.decrypt = function(s) {
 	var r = new chx.crypt.RSAEncrypt(rg.util.Decrypt.modulus,rg.util.Decrypt.publicExponent), d = chx.formats.Base64.decode(s);
@@ -15056,7 +15284,8 @@ rg.util.Decrypt.decrypt = function(s) {
 rg.util.Decrypt.prototype = {
 	__class__: rg.util.Decrypt
 }
-rg.util.Js = $hxClasses["rg.util.Js"] = function() { }
+rg.util.Js = function() { }
+$hxClasses["rg.util.Js"] = rg.util.Js;
 rg.util.Js.__name__ = ["rg","util","Js"];
 rg.util.Js.findScript = function(fragment) {
 	var scripts = js.Lib.document.getElementsByTagName("SCRIPT");
@@ -15080,7 +15309,8 @@ rg.util.Js.findScript = function(fragment) {
 rg.util.Js.prototype = {
 	__class__: rg.util.Js
 }
-rg.util.Jsonp = $hxClasses["rg.util.Jsonp"] = function() { }
+rg.util.Jsonp = function() { }
+$hxClasses["rg.util.Jsonp"] = rg.util.Jsonp;
 rg.util.Jsonp.__name__ = ["rg","util","Jsonp"];
 rg.util.Jsonp.get = function(path,success,failure,query,headers) {
 	var api = rg.util.Jsonp.get_api;
@@ -15118,7 +15348,8 @@ rg.util.Jsonp.get_api = function(path,actions,query,headers) {
 rg.util.Jsonp.prototype = {
 	__class__: rg.util.Jsonp
 }
-rg.util.Periodicity = $hxClasses["rg.util.Periodicity"] = function() { }
+rg.util.Periodicity = function() { }
+$hxClasses["rg.util.Periodicity"] = rg.util.Periodicity;
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
@@ -15344,7 +15575,8 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 rg.util.Periodicity.prototype = {
 	__class__: rg.util.Periodicity
 }
-rg.util.Properties = $hxClasses["rg.util.Properties"] = function() { }
+rg.util.Properties = function() { }
+$hxClasses["rg.util.Properties"] = rg.util.Properties;
 rg.util.Properties.__name__ = ["rg","util","Properties"];
 rg.util.Properties.isTime = function(s) {
 	return s.indexOf("time:") >= 0;
@@ -15358,13 +15590,17 @@ rg.util.Properties.humanize = function(s) {
 rg.util.Properties.formatValue = function(type,dp) {
 	var value = Reflect.field(dp,type);
 	if(null == value) return value;
-	if(type.indexOf("time:") >= 0) return rg.util.Periodicity.format(type.substr(type.indexOf("time:") + "time:".length),value);
+	if(type.indexOf("time:") >= 0) {
+		var periodicity = type.substr(type.indexOf("time:") + "time:".length);
+		return rg.util.Periodicity.format(periodicity,Dates.snap(value,periodicity));
+	}
 	return rg.util.RGStrings.humanize(value);
 }
 rg.util.Properties.prototype = {
 	__class__: rg.util.Properties
 }
-rg.util.RG = $hxClasses["rg.util.RG"] = function() { }
+rg.util.RG = function() { }
+$hxClasses["rg.util.RG"] = rg.util.RG;
 rg.util.RG.__name__ = ["rg","util","RG"];
 rg.util.RG.getTokenId = function() {
 	if(ReportGrid.$) return Strings.rtrim(Strings.ltrim(ReportGrid.$.Config.tokenId,"\""),"\""); else return null;
@@ -15372,7 +15608,8 @@ rg.util.RG.getTokenId = function() {
 rg.util.RG.prototype = {
 	__class__: rg.util.RG
 }
-rg.util.RGColors = $hxClasses["rg.util.RGColors"] = function() { }
+rg.util.RGColors = function() { }
+$hxClasses["rg.util.RGColors"] = rg.util.RGColors;
 rg.util.RGColors.__name__ = ["rg","util","RGColors"];
 rg.util.RGColors.parse = function(s,alt) {
 	try {
@@ -15402,7 +15639,8 @@ rg.util.RGColors.storeColorForSelection = function(n,style,color) {
 rg.util.RGColors.prototype = {
 	__class__: rg.util.RGColors
 }
-rg.util.RGStrings = $hxClasses["rg.util.RGStrings"] = function() { }
+rg.util.RGStrings = function() { }
+$hxClasses["rg.util.RGStrings"] = rg.util.RGStrings;
 rg.util.RGStrings.__name__ = ["rg","util","RGStrings"];
 rg.util.RGStrings.humanize = function(d) {
 	if(Std["is"](d,Int)) return Ints.format(d);
@@ -15421,7 +15659,8 @@ rg.util.RGStrings.hstring = function(s) {
 rg.util.RGStrings.prototype = {
 	__class__: rg.util.RGStrings
 }
-rg.util.Urls = $hxClasses["rg.util.Urls"] = function() { }
+rg.util.Urls = function() { }
+$hxClasses["rg.util.Urls"] = rg.util.Urls;
 rg.util.Urls.__name__ = ["rg","util","Urls"];
 rg.util.Urls.addQueryParameters = function(url,query) {
 	var suffix = url.indexOf("?") < 0?"?":"&", queries = [];
@@ -15450,10 +15689,11 @@ rg.util.Urls.parseQueryParameters = function(url) {
 rg.util.Urls.prototype = {
 	__class__: rg.util.Urls
 }
-if(!rg.visualization) rg.visualization = {}
-rg.visualization.Visualization = $hxClasses["rg.visualization.Visualization"] = function(container) {
+rg.visualization = {}
+rg.visualization.Visualization = function(container) {
 	this.container = container;
 };
+$hxClasses["rg.visualization.Visualization"] = rg.visualization.Visualization;
 rg.visualization.Visualization.__name__ = ["rg","visualization","Visualization"];
 rg.visualization.Visualization.prototype = {
 	independentVariables: null
@@ -15491,10 +15731,11 @@ rg.visualization.Visualization.prototype = {
 	}
 	,__class__: rg.visualization.Visualization
 }
-rg.visualization.VisualizationSvg = $hxClasses["rg.visualization.VisualizationSvg"] = function(layout) {
+rg.visualization.VisualizationSvg = function(layout) {
 	rg.visualization.Visualization.call(this,layout.container);
 	this.layout = layout;
 };
+$hxClasses["rg.visualization.VisualizationSvg"] = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationSvg.__name__ = ["rg","visualization","VisualizationSvg"];
 rg.visualization.VisualizationSvg.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualization.prototype,{
@@ -15502,9 +15743,10 @@ rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualiza
 	,layout: null
 	,__class__: rg.visualization.VisualizationSvg
 });
-rg.visualization.VisualizationCartesian = $hxClasses["rg.visualization.VisualizationCartesian"] = function(layout) {
+rg.visualization.VisualizationCartesian = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationCartesian"] = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationCartesian.__name__ = ["rg","visualization","VisualizationCartesian"];
 rg.visualization.VisualizationCartesian.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15661,9 +15903,10 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 	}
 	,__class__: rg.visualization.VisualizationCartesian
 });
-rg.visualization.VisualizationBarChart = $hxClasses["rg.visualization.VisualizationBarChart"] = function(layout) {
+rg.visualization.VisualizationBarChart = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationBarChart"] = rg.visualization.VisualizationBarChart;
 rg.visualization.VisualizationBarChart.__name__ = ["rg","visualization","VisualizationBarChart"];
 rg.visualization.VisualizationBarChart.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -15708,22 +15951,43 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 	}
 	,transformData: function(dps) {
 		var results = [], variable = this.independentVariables[0], values = variable.axis.range(variable.min(),variable.max());
-		var _g = 0;
-		while(_g < values.length) {
-			var value = [values[_g]];
-			++_g;
-			var axisresults = [];
-			var _g2 = 0, _g1 = this.dependentVariables.length;
-			while(_g2 < _g1) {
-				var i = _g2++;
-				var dps1 = rg.util.DataPoints.filterByDependents(dps,[this.dependentVariables[i]]);
-				axisresults.push(Arrays.filter(dps1,(function(value) {
-					return function(d) {
-						return Reflect.field(d,variable.type) == value[0];
-					};
-				})(value)));
+		if(variable.type.indexOf("time:") >= 0) {
+			var periodicity = rg.util.Properties.periodicity(variable.type);
+			var _g = 0;
+			while(_g < values.length) {
+				var value = [values[_g]];
+				++_g;
+				var axisresults = [];
+				var _g2 = 0, _g1 = this.dependentVariables.length;
+				while(_g2 < _g1) {
+					var i = _g2++;
+					var dps1 = rg.util.DataPoints.filterByDependents(dps,[this.dependentVariables[i]]);
+					axisresults.push(Arrays.filter(dps1,(function(value) {
+						return function(d) {
+							return Dates.snap(Reflect.field(d,variable.type),periodicity) == value[0];
+						};
+					})(value)));
+				}
+				results.push(axisresults);
 			}
-			results.push(axisresults);
+		} else {
+			var _g = 0;
+			while(_g < values.length) {
+				var value = [values[_g]];
+				++_g;
+				var axisresults = [];
+				var _g2 = 0, _g1 = this.dependentVariables.length;
+				while(_g2 < _g1) {
+					var i = _g2++;
+					var dps1 = rg.util.DataPoints.filterByDependents(dps,[this.dependentVariables[i]]);
+					axisresults.push(Arrays.filter(dps1,(function(value) {
+						return function(d) {
+							return Reflect.field(d,variable.type) == value[0];
+						};
+					})(value)));
+				}
+				results.push(axisresults);
+			}
 		}
 		if(null != this.infoBar.segment.on) {
 			var segmenton = this.infoBar.segment.on, svalues = new thx.collection.Set();
@@ -15756,9 +16020,10 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 	}
 	,__class__: rg.visualization.VisualizationBarChart
 });
-rg.visualization.VisualizationFunnelChart = $hxClasses["rg.visualization.VisualizationFunnelChart"] = function(layout) {
+rg.visualization.VisualizationFunnelChart = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationFunnelChart"] = rg.visualization.VisualizationFunnelChart;
 rg.visualization.VisualizationFunnelChart.__name__ = ["rg","visualization","VisualizationFunnelChart"];
 rg.visualization.VisualizationFunnelChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15818,9 +16083,10 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 	}
 	,__class__: rg.visualization.VisualizationFunnelChart
 });
-rg.visualization.VisualizationGeo = $hxClasses["rg.visualization.VisualizationGeo"] = function(layout) {
+rg.visualization.VisualizationGeo = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationGeo"] = rg.visualization.VisualizationGeo;
 rg.visualization.VisualizationGeo.__name__ = ["rg","visualization","VisualizationGeo"];
 rg.visualization.VisualizationGeo.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15879,9 +16145,10 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 	}
 	,__class__: rg.visualization.VisualizationGeo
 });
-rg.visualization.VisualizationHeatGrid = $hxClasses["rg.visualization.VisualizationHeatGrid"] = function(layout) {
+rg.visualization.VisualizationHeatGrid = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationHeatGrid"] = rg.visualization.VisualizationHeatGrid;
 rg.visualization.VisualizationHeatGrid.__name__ = ["rg","visualization","VisualizationHeatGrid"];
 rg.visualization.VisualizationHeatGrid.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -15911,18 +16178,20 @@ rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.Visu
 	}
 	,__class__: rg.visualization.VisualizationHeatGrid
 });
-rg.visualization.VisualizationHtml = $hxClasses["rg.visualization.VisualizationHtml"] = function(container) {
+rg.visualization.VisualizationHtml = function(container) {
 	rg.visualization.Visualization.call(this,container);
 	container.classed().add("rg");
 };
+$hxClasses["rg.visualization.VisualizationHtml"] = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationHtml.__name__ = ["rg","visualization","VisualizationHtml"];
 rg.visualization.VisualizationHtml.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationHtml.prototype = $extend(rg.visualization.Visualization.prototype,{
 	__class__: rg.visualization.VisualizationHtml
 });
-rg.visualization.VisualizationLeaderboard = $hxClasses["rg.visualization.VisualizationLeaderboard"] = function(container) {
+rg.visualization.VisualizationLeaderboard = function(container) {
 	rg.visualization.VisualizationHtml.call(this,container);
 };
+$hxClasses["rg.visualization.VisualizationLeaderboard"] = rg.visualization.VisualizationLeaderboard;
 rg.visualization.VisualizationLeaderboard.__name__ = ["rg","visualization","VisualizationLeaderboard"];
 rg.visualization.VisualizationLeaderboard.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
@@ -15955,9 +16224,10 @@ rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.V
 	}
 	,__class__: rg.visualization.VisualizationLeaderboard
 });
-rg.visualization.VisualizationLineChart = $hxClasses["rg.visualization.VisualizationLineChart"] = function(layout) {
+rg.visualization.VisualizationLineChart = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationLineChart"] = rg.visualization.VisualizationLineChart;
 rg.visualization.VisualizationLineChart.__name__ = ["rg","visualization","VisualizationLineChart"];
 rg.visualization.VisualizationLineChart.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -15995,9 +16265,10 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 	}
 	,__class__: rg.visualization.VisualizationLineChart
 });
-rg.visualization.VisualizationPieChart = $hxClasses["rg.visualization.VisualizationPieChart"] = function(layout) {
+rg.visualization.VisualizationPieChart = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationPieChart"] = rg.visualization.VisualizationPieChart;
 rg.visualization.VisualizationPieChart.__name__ = ["rg","visualization","VisualizationPieChart"];
 rg.visualization.VisualizationPieChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -16062,9 +16333,10 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 	}
 	,__class__: rg.visualization.VisualizationPieChart
 });
-rg.visualization.VisualizationPivotTable = $hxClasses["rg.visualization.VisualizationPivotTable"] = function(container) {
+rg.visualization.VisualizationPivotTable = function(container) {
 	rg.visualization.VisualizationHtml.call(this,container);
 };
+$hxClasses["rg.visualization.VisualizationPivotTable"] = rg.visualization.VisualizationPivotTable;
 rg.visualization.VisualizationPivotTable.__name__ = ["rg","visualization","VisualizationPivotTable"];
 rg.visualization.VisualizationPivotTable.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
@@ -16100,9 +16372,10 @@ rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.Vi
 	}
 	,__class__: rg.visualization.VisualizationPivotTable
 });
-rg.visualization.VisualizationSankey = $hxClasses["rg.visualization.VisualizationSankey"] = function(layout) {
+rg.visualization.VisualizationSankey = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationSankey"] = rg.visualization.VisualizationSankey;
 rg.visualization.VisualizationSankey.__name__ = ["rg","visualization","VisualizationSankey"];
 rg.visualization.VisualizationSankey.defaultIdf = function(idf) {
 	if(idf == null) return function(data) {
@@ -16331,9 +16604,10 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 	}
 	,__class__: rg.visualization.VisualizationSankey
 });
-rg.visualization.VisualizationScatterGraph = $hxClasses["rg.visualization.VisualizationScatterGraph"] = function(layout) {
+rg.visualization.VisualizationScatterGraph = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationScatterGraph"] = rg.visualization.VisualizationScatterGraph;
 rg.visualization.VisualizationScatterGraph.__name__ = ["rg","visualization","VisualizationScatterGraph"];
 rg.visualization.VisualizationScatterGraph.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16368,9 +16642,10 @@ rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.
 	}
 	,__class__: rg.visualization.VisualizationScatterGraph
 });
-rg.visualization.VisualizationStreamGraph = $hxClasses["rg.visualization.VisualizationStreamGraph"] = function(layout) {
+rg.visualization.VisualizationStreamGraph = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationStreamGraph"] = rg.visualization.VisualizationStreamGraph;
 rg.visualization.VisualizationStreamGraph.__name__ = ["rg","visualization","VisualizationStreamGraph"];
 rg.visualization.VisualizationStreamGraph.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16413,7 +16688,8 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 	}
 	,__class__: rg.visualization.VisualizationStreamGraph
 });
-rg.visualization.Visualizations = $hxClasses["rg.visualization.Visualizations"] = function() { }
+rg.visualization.Visualizations = function() { }
+$hxClasses["rg.visualization.Visualizations"] = rg.visualization.Visualizations;
 rg.visualization.Visualizations.__name__ = ["rg","visualization","Visualizations"];
 rg.visualization.Visualizations.layoutDefault = null;
 rg.visualization.Visualizations.layoutType = null;
@@ -16424,12 +16700,13 @@ rg.visualization.Visualizations.instantiateLayout = function(name,width,height,c
 rg.visualization.Visualizations.prototype = {
 	__class__: rg.visualization.Visualizations
 }
-if(!thx.collection) thx.collection = {}
-thx.collection.HashList = $hxClasses["thx.collection.HashList"] = function() {
+thx.collection = {}
+thx.collection.HashList = function() {
 	this.length = 0;
 	this.__keys = [];
 	this.__hash = new Hash();
 };
+$hxClasses["thx.collection.HashList"] = thx.collection.HashList;
 thx.collection.HashList.__name__ = ["thx","collection","HashList"];
 thx.collection.HashList.prototype = {
 	length: null
@@ -16457,10 +16734,11 @@ thx.collection.HashList.prototype = {
 	,__hash: null
 	,__class__: thx.collection.HashList
 }
-thx.collection.Set = $hxClasses["thx.collection.Set"] = function() {
+thx.collection.Set = function() {
 	this._v = [];
 	this.length = 0;
 };
+$hxClasses["thx.collection.Set"] = thx.collection.Set;
 thx.collection.Set.__name__ = ["thx","collection","Set"];
 thx.collection.Set.prototype = {
 	length: null
@@ -16475,13 +16753,14 @@ thx.collection.Set.prototype = {
 	}
 	,__class__: thx.collection.Set
 }
-thx.color.Cmyk = $hxClasses["thx.color.Cmyk"] = function(cyan,magenta,yellow,black) {
+thx.color.Cmyk = function(cyan,magenta,yellow,black) {
 	thx.color.Rgb.call(this,Ints.interpolate(Floats.normalize(1 - cyan - black),0,255,null),Ints.interpolate(Floats.normalize(1 - magenta - black),0,255,null),Ints.interpolate(Floats.normalize(1 - yellow - black),0,255,null));
 	this.cyan = Floats.normalize(cyan);
 	this.magenta = Floats.normalize(magenta);
 	this.yellow = Floats.normalize(yellow);
 	this.black = Floats.normalize(black);
 };
+$hxClasses["thx.color.Cmyk"] = thx.color.Cmyk;
 thx.color.Cmyk.__name__ = ["thx","color","Cmyk"];
 thx.color.Cmyk.__super__ = thx.color.Rgb;
 thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
@@ -16491,7 +16770,8 @@ thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
 	,yellow: null
 	,__class__: thx.color.Cmyk
 });
-thx.color.Colors = $hxClasses["thx.color.Colors"] = function() { }
+thx.color.Colors = function() { }
+$hxClasses["thx.color.Colors"] = thx.color.Colors;
 thx.color.Colors.__name__ = ["thx","color","Colors"];
 thx.color.Colors.parse = function(s) {
 	if(!thx.color.Colors._reParse.match(s = StringTools.trim(s.toLowerCase()))) {
@@ -16533,11 +16813,12 @@ thx.color.Colors._p = function(s) {
 thx.color.Colors.prototype = {
 	__class__: thx.color.Colors
 }
-thx.color.Grey = $hxClasses["thx.color.Grey"] = function(value) {
+thx.color.Grey = function(value) {
 	this.grey = Floats.normalize(value);
 	var c = Ints.interpolate(this.grey,0,255,null);
 	thx.color.Rgb.call(this,c,c,c);
 };
+$hxClasses["thx.color.Grey"] = thx.color.Grey;
 thx.color.Grey.__name__ = ["thx","color","Grey"];
 thx.color.Grey.toGrey = function(rgb,luminance) {
 	if(null == luminance) luminance = thx.color.PerceivedLuminance.Perceived;
@@ -16565,7 +16846,8 @@ thx.color.PerceivedLuminance.Perceived.__enum__ = thx.color.PerceivedLuminance;
 thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
 thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
-thx.color.NamedColors = $hxClasses["thx.color.NamedColors"] = function() { }
+thx.color.NamedColors = function() { }
+$hxClasses["thx.color.NamedColors"] = thx.color.NamedColors;
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
 thx.color.NamedColors.aliceblue = null;
 thx.color.NamedColors.antiquewhite = null;
@@ -16718,8 +17000,9 @@ thx.color.NamedColors.byName = null;
 thx.color.NamedColors.prototype = {
 	__class__: thx.color.NamedColors
 }
-if(!thx.culture) thx.culture = {}
-thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
+thx.culture = {}
+thx.culture.Info = function() { }
+$hxClasses["thx.culture.Info"] = thx.culture.Info;
 thx.culture.Info.__name__ = ["thx","culture","Info"];
 thx.culture.Info.prototype = {
 	name: null
@@ -16730,7 +17013,8 @@ thx.culture.Info.prototype = {
 	,pluralRule: null
 	,__class__: thx.culture.Info
 }
-thx.culture.Culture = $hxClasses["thx.culture.Culture"] = function() { }
+thx.culture.Culture = function() { }
+$hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
 thx.culture.Culture.cultures = null;
@@ -16775,7 +17059,8 @@ thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
 	,percent: null
 	,__class__: thx.culture.Culture
 });
-thx.culture.FormatDate = $hxClasses["thx.culture.FormatDate"] = function() { }
+thx.culture.FormatDate = function() { }
+$hxClasses["thx.culture.FormatDate"] = thx.culture.FormatDate;
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 	if(leadingspace == null) leadingspace = true;
@@ -17007,7 +17292,8 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 thx.culture.FormatDate.prototype = {
 	__class__: thx.culture.FormatDate
 }
-thx.culture.FormatNumber = $hxClasses["thx.culture.FormatNumber"] = function() { }
+thx.culture.FormatNumber = function() { }
+$hxClasses["thx.culture.FormatNumber"] = thx.culture.FormatNumber;
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
@@ -17085,7 +17371,8 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 thx.culture.FormatNumber.prototype = {
 	__class__: thx.culture.FormatNumber
 }
-thx.culture.FormatParams = $hxClasses["thx.culture.FormatParams"] = function() { }
+thx.culture.FormatParams = function() { }
+$hxClasses["thx.culture.FormatParams"] = thx.culture.FormatParams;
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
 	if(p.length <= 1) return p;
@@ -17106,7 +17393,8 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
 }
-thx.culture.Language = $hxClasses["thx.culture.Language"] = function() { }
+thx.culture.Language = function() { }
+$hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
 thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
 thx.culture.Language.languages = null;
@@ -17121,8 +17409,8 @@ thx.culture.Language.__super__ = thx.culture.Info;
 thx.culture.Language.prototype = $extend(thx.culture.Info.prototype,{
 	__class__: thx.culture.Language
 });
-if(!thx.culture.core) thx.culture.core = {}
-thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
+thx.culture.core = {}
+thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	this.months = months;
 	this.abbrMonths = abbrMonths;
 	this.days = days;
@@ -17144,6 +17432,7 @@ thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = fu
 	this.patternTime = patternTime;
 	this.patternTimeShort = patternTimeShort;
 };
+$hxClasses["thx.culture.core.DateTimeInfo"] = thx.culture.core.DateTimeInfo;
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype = {
 	months: null
@@ -17168,7 +17457,7 @@ thx.culture.core.DateTimeInfo.prototype = {
 	,patternTimeShort: null
 	,__class__: thx.culture.core.DateTimeInfo
 }
-thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
+thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
 	this.decimals = decimals;
 	this.decimalsSeparator = decimalsSeparator;
 	this.groups = groups;
@@ -17176,6 +17465,7 @@ thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = functi
 	this.patternNegative = patternNegative;
 	this.patternPositive = patternPositive;
 };
+$hxClasses["thx.culture.core.NumberInfo"] = thx.culture.core.NumberInfo;
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype = {
 	decimals: null
@@ -17186,8 +17476,8 @@ thx.culture.core.NumberInfo.prototype = {
 	,patternPositive: null
 	,__class__: thx.culture.core.NumberInfo
 }
-if(!thx.languages) thx.languages = {}
-thx.languages.En = $hxClasses["thx.languages.En"] = function() {
+thx.languages = {}
+thx.languages.En = function() {
 	this.name = "en";
 	this.english = "English";
 	this["native"] = "English";
@@ -17196,6 +17486,7 @@ thx.languages.En = $hxClasses["thx.languages.En"] = function() {
 	this.pluralRule = 1;
 	thx.culture.Language.add(this);
 };
+$hxClasses["thx.languages.En"] = thx.languages.En;
 thx.languages.En.__name__ = ["thx","languages","En"];
 thx.languages.En.__properties__ = {get_language:"getLanguage"}
 thx.languages.En.language = null;
@@ -17207,8 +17498,8 @@ thx.languages.En.__super__ = thx.culture.Language;
 thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
 	__class__: thx.languages.En
 });
-if(!thx.cultures) thx.cultures = {}
-thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
+thx.cultures = {}
+thx.cultures.EnUS = function() {
 	this.language = thx.languages.En.getLanguage();
 	this.name = "en-US";
 	this.english = "English (United States)";
@@ -17236,6 +17527,7 @@ thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
 	this.isMetric = false;
 	thx.culture.Culture.add(this);
 };
+$hxClasses["thx.cultures.EnUS"] = thx.cultures.EnUS;
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
 thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
 thx.cultures.EnUS.culture = null;
@@ -17247,8 +17539,9 @@ thx.cultures.EnUS.__super__ = thx.culture.Culture;
 thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 	__class__: thx.cultures.EnUS
 });
-if(!thx.data) thx.data = {}
-thx.data.IDataHandler = $hxClasses["thx.data.IDataHandler"] = function() { }
+thx.data = {}
+thx.data.IDataHandler = function() { }
+$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
 thx.data.IDataHandler.prototype = {
 	start: null
@@ -17270,9 +17563,10 @@ thx.data.IDataHandler.prototype = {
 	,comment: null
 	,__class__: thx.data.IDataHandler
 }
-thx.data.ValueEncoder = $hxClasses["thx.data.ValueEncoder"] = function(handler) {
+thx.data.ValueEncoder = function(handler) {
 	this.handler = handler;
 };
+$hxClasses["thx.data.ValueEncoder"] = thx.data.ValueEncoder;
 thx.data.ValueEncoder.__name__ = ["thx","data","ValueEncoder"];
 thx.data.ValueEncoder.prototype = {
 	handler: null
@@ -17363,8 +17657,9 @@ thx.data.ValueEncoder.prototype = {
 	}
 	,__class__: thx.data.ValueEncoder
 }
-thx.data.ValueHandler = $hxClasses["thx.data.ValueHandler"] = function() {
+thx.data.ValueHandler = function() {
 };
+$hxClasses["thx.data.ValueHandler"] = thx.data.ValueHandler;
 thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
 thx.data.ValueHandler.__interfaces__ = [thx.data.IDataHandler];
 thx.data.ValueHandler.prototype = {
@@ -17425,8 +17720,9 @@ thx.data.ValueHandler.prototype = {
 	}
 	,__class__: thx.data.ValueHandler
 }
-if(!thx.date) thx.date = {}
-thx.date.DateParser = $hxClasses["thx.date.DateParser"] = function() { }
+thx.date = {}
+thx.date.DateParser = function() { }
+$hxClasses["thx.date.DateParser"] = thx.date.DateParser;
 thx.date.DateParser.__name__ = ["thx","date","DateParser"];
 thx.date.DateParser.parse = function(s,d) {
 	var time = thx.date.DateParser.parseTime(s), v;
@@ -17649,12 +17945,13 @@ thx.date.DateParser.plusPm = function(s) {
 thx.date.DateParser.prototype = {
 	__class__: thx.date.DateParser
 }
-if(!thx.util) thx.util = {}
-thx.util.Message = $hxClasses["thx.util.Message"] = function(message,params,param) {
+thx.util = {}
+thx.util.Message = function(message,params,param) {
 	this.message = message;
 	if(null == params) this.params = []; else this.params = params;
 	if(null != param) this.params.push(param);
 };
+$hxClasses["thx.util.Message"] = thx.util.Message;
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
 	message: null
@@ -17664,11 +17961,12 @@ thx.util.Message.prototype = {
 	}
 	,__class__: thx.util.Message
 }
-if(!thx.error) thx.error = {}
-thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
+thx.error = {}
+thx.error.Error = function(message,params,param,pos) {
 	thx.util.Message.call(this,message,params,param);
 	this.pos = pos;
 };
+$hxClasses["thx.error.Error"] = thx.error.Error;
 thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
 thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
@@ -17683,46 +17981,51 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 	}
 	,__class__: thx.error.Error
 });
-thx.error.AbstractMethod = $hxClasses["thx.error.AbstractMethod"] = function(posInfo) {
+thx.error.AbstractMethod = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 14, className : "thx.error.AbstractMethod", methodName : "new"});
 };
+$hxClasses["thx.error.AbstractMethod"] = thx.error.AbstractMethod;
 thx.error.AbstractMethod.__name__ = ["thx","error","AbstractMethod"];
 thx.error.AbstractMethod.__super__ = thx.error.Error;
 thx.error.AbstractMethod.prototype = $extend(thx.error.Error.prototype,{
 	__class__: thx.error.AbstractMethod
 });
-thx.error.NotImplemented = $hxClasses["thx.error.NotImplemented"] = function(posInfo) {
+thx.error.NotImplemented = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() needs to be implemented",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "NotImplemented.hx", lineNumber : 13, className : "thx.error.NotImplemented", methodName : "new"});
 };
+$hxClasses["thx.error.NotImplemented"] = thx.error.NotImplemented;
 thx.error.NotImplemented.__name__ = ["thx","error","NotImplemented"];
 thx.error.NotImplemented.__super__ = thx.error.Error;
 thx.error.NotImplemented.prototype = $extend(thx.error.Error.prototype,{
 	__class__: thx.error.NotImplemented
 });
-thx.error.NullArgument = $hxClasses["thx.error.NullArgument"] = function(argumentName,message,posInfo) {
+thx.error.NullArgument = function(argumentName,message,posInfo) {
 	if(null == message) message = "invalid null or empty argument '{0}' for method {1}.{2}()";
 	thx.error.Error.call(this,message,[argumentName,posInfo.className,posInfo.methodName],posInfo,{ fileName : "NullArgument.hx", lineNumber : 16, className : "thx.error.NullArgument", methodName : "new"});
 };
+$hxClasses["thx.error.NullArgument"] = thx.error.NullArgument;
 thx.error.NullArgument.__name__ = ["thx","error","NullArgument"];
 thx.error.NullArgument.__super__ = thx.error.Error;
 thx.error.NullArgument.prototype = $extend(thx.error.Error.prototype,{
 	__class__: thx.error.NullArgument
 });
-if(!thx.geo) thx.geo = {}
-thx.geo.IProjection = $hxClasses["thx.geo.IProjection"] = function() { }
+thx.geo = {}
+thx.geo.IProjection = function() { }
+$hxClasses["thx.geo.IProjection"] = thx.geo.IProjection;
 thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
 thx.geo.IProjection.prototype = {
 	project: null
 	,invert: null
 	,__class__: thx.geo.IProjection
 }
-thx.geo.Albers = $hxClasses["thx.geo.Albers"] = function() {
+thx.geo.Albers = function() {
 	this._origin = [-98.0,38];
 	this._parallels = [29.5,45.5];
 	this._scale = 1000;
 	this._translate = [480.0,250];
 	this.reload();
 };
+$hxClasses["thx.geo.Albers"] = thx.geo.Albers;
 thx.geo.Albers.__name__ = ["thx","geo","Albers"];
 thx.geo.Albers.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Albers.prototype = {
@@ -17786,7 +18089,7 @@ thx.geo.Albers.prototype = {
 	,__class__: thx.geo.Albers
 	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate",set_parallels:"setParallels",get_parallels:"getParallels",set_origin:"setOrigin",get_origin:"getOrigin"}
 }
-thx.geo.AlbersUsa = $hxClasses["thx.geo.AlbersUsa"] = function() {
+thx.geo.AlbersUsa = function() {
 	this.lower48 = new thx.geo.Albers();
 	this.alaska = new thx.geo.Albers();
 	this.alaska.setOrigin([-160.0,60]);
@@ -17799,6 +18102,7 @@ thx.geo.AlbersUsa = $hxClasses["thx.geo.AlbersUsa"] = function() {
 	this.puertoRico.setParallels([8.0,18]);
 	this.setScale(this.lower48.getScale());
 };
+$hxClasses["thx.geo.AlbersUsa"] = thx.geo.AlbersUsa;
 thx.geo.AlbersUsa.__name__ = ["thx","geo","AlbersUsa"];
 thx.geo.AlbersUsa.__interfaces__ = [thx.geo.IProjection];
 thx.geo.AlbersUsa.prototype = {
@@ -17844,12 +18148,13 @@ thx.geo.AlbersUsa.prototype = {
 	,__class__: thx.geo.AlbersUsa
 	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
-thx.geo.Azimuthal = $hxClasses["thx.geo.Azimuthal"] = function() {
+thx.geo.Azimuthal = function() {
 	this.setMode(thx.geo.ProjectionMode.Orthographic);
 	this.setScale(200);
 	this.setTranslate([480.0,250]);
 	this.setOrigin([0.0,0]);
 };
+$hxClasses["thx.geo.Azimuthal"] = thx.geo.Azimuthal;
 thx.geo.Azimuthal.__name__ = ["thx","geo","Azimuthal"];
 thx.geo.Azimuthal.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Azimuthal.prototype = {
@@ -17931,10 +18236,11 @@ thx.geo.ProjectionMode.Orthographic.__enum__ = thx.geo.ProjectionMode;
 thx.geo.ProjectionMode.Stereographic = ["Stereographic",1];
 thx.geo.ProjectionMode.Stereographic.toString = $estr;
 thx.geo.ProjectionMode.Stereographic.__enum__ = thx.geo.ProjectionMode;
-thx.geo.Mercator = $hxClasses["thx.geo.Mercator"] = function() {
+thx.geo.Mercator = function() {
 	this.setScale(500);
 	this.setTranslate([480.0,250]);
 };
+$hxClasses["thx.geo.Mercator"] = thx.geo.Mercator;
 thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
 thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Mercator.prototype = {
@@ -17964,10 +18270,11 @@ thx.geo.Mercator.prototype = {
 	,__class__: thx.geo.Mercator
 	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
 }
-if(!thx.geom) thx.geom = {}
-thx.geom.Polygon = $hxClasses["thx.geom.Polygon"] = function(coordinates) {
+thx.geom = {}
+thx.geom.Polygon = function(coordinates) {
 	this.coordinates = coordinates;
 };
+$hxClasses["thx.geom.Polygon"] = thx.geom.Polygon;
 thx.geom.Polygon.__name__ = ["thx","geom","Polygon"];
 thx.geom.Polygon.prototype = {
 	coordinates: null
@@ -17997,8 +18304,8 @@ thx.geom.Polygon.prototype = {
 	}
 	,__class__: thx.geom.Polygon
 }
-if(!thx.geom.layout) thx.geom.layout = {}
-thx.geom.layout.Pie = $hxClasses["thx.geom.layout.Pie"] = function() {
+thx.geom.layout = {}
+thx.geom.layout.Pie = function() {
 	this._startAngle = function(_,_1) {
 		return 0.0;
 	};
@@ -18010,6 +18317,7 @@ thx.geom.layout.Pie = $hxClasses["thx.geom.layout.Pie"] = function() {
 		return Number(d);
 	};
 };
+$hxClasses["thx.geom.layout.Pie"] = thx.geom.layout.Pie;
 thx.geom.layout.Pie.__name__ = ["thx","geom","layout","Pie"];
 thx.geom.layout.Pie.prototype = {
 	_startAngle: null
@@ -18041,10 +18349,11 @@ thx.geom.layout.Pie.prototype = {
 	}
 	,__class__: thx.geom.layout.Pie
 }
-thx.geom.layout.Stack = $hxClasses["thx.geom.layout.Stack"] = function() {
+thx.geom.layout.Stack = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
 };
+$hxClasses["thx.geom.layout.Stack"] = thx.geom.layout.Stack;
 thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
 thx.geom.layout.Stack.getStackOrder = function(order,data) {
 	switch( (order)[1] ) {
@@ -18222,9 +18531,10 @@ thx.geom.layout.StackOffset.Wiggle.__enum__ = thx.geom.layout.StackOffset;
 thx.geom.layout.StackOffset.ZeroOffset = ["ZeroOffset",2];
 thx.geom.layout.StackOffset.ZeroOffset.toString = $estr;
 thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
-if(!thx.graph) thx.graph = {}
-thx.graph.EdgeSplitter = $hxClasses["thx.graph.EdgeSplitter"] = function() {
+thx.graph = {}
+thx.graph.EdgeSplitter = function() {
 };
+$hxClasses["thx.graph.EdgeSplitter"] = thx.graph.EdgeSplitter;
 thx.graph.EdgeSplitter.__name__ = ["thx","graph","EdgeSplitter"];
 thx.graph.EdgeSplitter.prototype = {
 	split: function(layout,splitted,dataf,edgef) {
@@ -18255,11 +18565,12 @@ thx.graph.EdgeSplitter.prototype = {
 	}
 	,__class__: thx.graph.EdgeSplitter
 }
-thx.graph.GraphElement = $hxClasses["thx.graph.GraphElement"] = function(graph,id,data) {
+thx.graph.GraphElement = function(graph,id,data) {
 	this.id = id;
 	this.data = data;
 	this.graph = graph;
 };
+$hxClasses["thx.graph.GraphElement"] = thx.graph.GraphElement;
 thx.graph.GraphElement.__name__ = ["thx","graph","GraphElement"];
 thx.graph.GraphElement.friendDestroy = function(item) {
 	return item;
@@ -18274,12 +18585,13 @@ thx.graph.GraphElement.prototype = {
 	}
 	,__class__: thx.graph.GraphElement
 }
-thx.graph.GEdge = $hxClasses["thx.graph.GEdge"] = function(graph,id,tail,head,weight,data) {
+thx.graph.GEdge = function(graph,id,tail,head,weight,data) {
 	thx.graph.GraphElement.call(this,graph,id,data);
 	this.tail = tail;
 	this.head = head;
 	this.weight = weight;
 };
+$hxClasses["thx.graph.GEdge"] = thx.graph.GEdge;
 thx.graph.GEdge.__name__ = ["thx","graph","GEdge"];
 thx.graph.GEdge.create = function(graph,id,tail,head,weight,data) {
 	return new thx.graph.GEdge(graph,id,tail,head,weight,data);
@@ -18331,9 +18643,10 @@ thx.graph.GEdge.prototype = $extend(thx.graph.GraphElement.prototype,{
 	}
 	,__class__: thx.graph.GEdge
 });
-thx.graph.GNode = $hxClasses["thx.graph.GNode"] = function(graph,id,data) {
+thx.graph.GNode = function(graph,id,data) {
 	thx.graph.GraphElement.call(this,graph,id,data);
 };
+$hxClasses["thx.graph.GNode"] = thx.graph.GNode;
 thx.graph.GNode.__name__ = ["thx","graph","GNode"];
 thx.graph.GNode.create = function(graph,id,data) {
 	return new thx.graph.GNode(graph,id,data);
@@ -18413,10 +18726,11 @@ thx.graph.GNode.prototype = $extend(thx.graph.GraphElement.prototype,{
 	}
 	,__class__: thx.graph.GNode
 });
-thx.graph.Graph = $hxClasses["thx.graph.Graph"] = function(nodeidf,edgeidf) {
+thx.graph.Graph = function(nodeidf,edgeidf) {
 	this.nodes = thx.graph.GraphNodes.newInstance(this,nodeidf);
 	this.edges = thx.graph.GraphEdges.newInstance(this,edgeidf);
 };
+$hxClasses["thx.graph.Graph"] = thx.graph.Graph;
 thx.graph.Graph.__name__ = ["thx","graph","Graph"];
 thx.graph.Graph.friendNodes = function(friend) {
 	return friend;
@@ -18458,7 +18772,7 @@ thx.graph.Graph.prototype = {
 	}
 	,__class__: thx.graph.Graph
 }
-thx.graph.GraphCollection = $hxClasses["thx.graph.GraphCollection"] = function(graph,idf) {
+thx.graph.GraphCollection = function(graph,idf) {
 	var me = this;
 	this.nextid = 0;
 	this.graph = graph;
@@ -18480,6 +18794,7 @@ thx.graph.GraphCollection = $hxClasses["thx.graph.GraphCollection"] = function(g
 	this.onRemove = new hxevents.Dispatcher();
 	this.onCreate = new hxevents.Dispatcher();
 };
+$hxClasses["thx.graph.GraphCollection"] = thx.graph.GraphCollection;
 thx.graph.GraphCollection.__name__ = ["thx","graph","GraphCollection"];
 thx.graph.GraphCollection.prototype = {
 	onRemove: null
@@ -18518,11 +18833,12 @@ thx.graph.GraphCollection.prototype = {
 	,__class__: thx.graph.GraphCollection
 	,__properties__: {get_length:"get_length"}
 }
-thx.graph.GraphEdges = $hxClasses["thx.graph.GraphEdges"] = function(graph,edgeidf) {
+thx.graph.GraphEdges = function(graph,edgeidf) {
 	thx.graph.GraphCollection.call(this,graph,edgeidf);
 	this.edgesp = new IntHash();
 	this.edgesn = new IntHash();
 };
+$hxClasses["thx.graph.GraphEdges"] = thx.graph.GraphEdges;
 thx.graph.GraphEdges.__name__ = ["thx","graph","GraphEdges"];
 thx.graph.GraphEdges.newInstance = function(graph,edgeidf) {
 	return new thx.graph.GraphEdges(graph,edgeidf);
@@ -18644,7 +18960,7 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 	}
 	,__class__: thx.graph.GraphEdges
 });
-thx.graph.GraphLayout = $hxClasses["thx.graph.GraphLayout"] = function(graph,layers) {
+thx.graph.GraphLayout = function(graph,layers) {
 	this.graph = graph;
 	this._layers = layers.map(function(arr,_) {
 		return arr.copy();
@@ -18654,6 +18970,7 @@ thx.graph.GraphLayout = $hxClasses["thx.graph.GraphLayout"] = function(graph,lay
 	this.length = this._layers.length;
 	graph.nodes.onRemove.add(this._nodeRemove.$bind(this));
 };
+$hxClasses["thx.graph.GraphLayout"] = thx.graph.GraphLayout;
 thx.graph.GraphLayout.__name__ = ["thx","graph","GraphLayout"];
 thx.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
 	var map = new IntHash(), c = 0;
@@ -18719,7 +19036,7 @@ thx.graph.GraphLayout.prototype = {
 		}
 	}
 	,cell: function(node) {
-		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 57, className : "thx.graph.GraphLayout", methodName : "cell"});
+		if(node.graph != this.graph) throw new thx.error.Error("node doesn't belong to this graph",null,null,{ fileName : "GraphLayout.hx", lineNumber : 59, className : "thx.graph.GraphLayout", methodName : "cell"});
 		var pos = this._map.get(node.id);
 		if(null == pos) return null;
 		return new thx.graph.LayoutCell(pos[0],pos[1],this._layers.length,this._layers[pos[0]].length);
@@ -18764,7 +19081,7 @@ thx.graph.GraphLayout.prototype = {
 	}
 	,__class__: thx.graph.GraphLayout
 }
-thx.graph.LayoutCell = $hxClasses["thx.graph.LayoutCell"] = function(layer,position,layers,positions) {
+thx.graph.LayoutCell = function(layer,position,layers,positions) {
 	if(positions == null) positions = 0;
 	if(layers == null) layers = 0;
 	if(position == null) position = 0;
@@ -18774,6 +19091,7 @@ thx.graph.LayoutCell = $hxClasses["thx.graph.LayoutCell"] = function(layer,posit
 	this.position = position;
 	this.positions = positions;
 };
+$hxClasses["thx.graph.LayoutCell"] = thx.graph.LayoutCell;
 thx.graph.LayoutCell.__name__ = ["thx","graph","LayoutCell"];
 thx.graph.LayoutCell.prototype = {
 	layer: null
@@ -18788,9 +19106,10 @@ thx.graph.LayoutCell.prototype = {
 	}
 	,__class__: thx.graph.LayoutCell
 }
-thx.graph.GraphNodes = $hxClasses["thx.graph.GraphNodes"] = function(graph,nodeidf) {
+thx.graph.GraphNodes = function(graph,nodeidf) {
 	thx.graph.GraphCollection.call(this,graph,nodeidf);
 };
+$hxClasses["thx.graph.GraphNodes"] = thx.graph.GraphNodes;
 thx.graph.GraphNodes.__name__ = ["thx","graph","GraphNodes"];
 thx.graph.GraphNodes.newInstance = function(graph,nodeidf) {
 	return new thx.graph.GraphNodes(graph,nodeidf);
@@ -18825,7 +19144,8 @@ thx.graph.GraphNodes.prototype = $extend(thx.graph.GraphCollection.prototype,{
 	}
 	,__class__: thx.graph.GraphNodes
 });
-thx.graph.Graphs = $hxClasses["thx.graph.Graphs"] = function() { }
+thx.graph.Graphs = function() { }
+$hxClasses["thx.graph.Graphs"] = thx.graph.Graphs;
 thx.graph.Graphs.__name__ = ["thx","graph","Graphs"];
 thx.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 	var n = null, l = 0;
@@ -18843,8 +19163,9 @@ thx.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 thx.graph.Graphs.prototype = {
 	__class__: thx.graph.Graphs
 }
-thx.graph.GreedyCyclePartitioner = $hxClasses["thx.graph.GreedyCyclePartitioner"] = function() {
+thx.graph.GreedyCyclePartitioner = function() {
 };
+$hxClasses["thx.graph.GreedyCyclePartitioner"] = thx.graph.GreedyCyclePartitioner;
 thx.graph.GreedyCyclePartitioner.__name__ = ["thx","graph","GreedyCyclePartitioner"];
 thx.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative = function(graph) {
 	var n = null, l = 0;
@@ -18908,8 +19229,9 @@ thx.graph.GreedyCyclePartitioner.prototype = {
 	}
 	,__class__: thx.graph.GreedyCyclePartitioner
 }
-thx.graph.GreedySwitchDecrosser = $hxClasses["thx.graph.GreedySwitchDecrosser"] = function() {
+thx.graph.GreedySwitchDecrosser = function() {
 };
+$hxClasses["thx.graph.GreedySwitchDecrosser"] = thx.graph.GreedySwitchDecrosser;
 thx.graph.GreedySwitchDecrosser.__name__ = ["thx","graph","GreedySwitchDecrosser"];
 thx.graph.GreedySwitchDecrosser.combined = function() {
 	return { decross : function(layout) {
@@ -18967,9 +19289,10 @@ thx.graph.GreedySwitchDecrosser.prototype = {
 	}
 	,__class__: thx.graph.GreedySwitchDecrosser
 }
-thx.graph.GreedySwitch2Decrosser = $hxClasses["thx.graph.GreedySwitch2Decrosser"] = function() {
+thx.graph.GreedySwitch2Decrosser = function() {
 	thx.graph.GreedySwitchDecrosser.call(this);
 };
+$hxClasses["thx.graph.GreedySwitch2Decrosser"] = thx.graph.GreedySwitch2Decrosser;
 thx.graph.GreedySwitch2Decrosser.__name__ = ["thx","graph","GreedySwitch2Decrosser"];
 thx.graph.GreedySwitch2Decrosser.__super__ = thx.graph.GreedySwitchDecrosser;
 thx.graph.GreedySwitch2Decrosser.prototype = $extend(thx.graph.GreedySwitchDecrosser.prototype,{
@@ -19012,8 +19335,9 @@ thx.graph.GreedySwitch2Decrosser.prototype = $extend(thx.graph.GreedySwitchDecro
 	}
 	,__class__: thx.graph.GreedySwitch2Decrosser
 });
-thx.graph.HeaviestNodeLayer = $hxClasses["thx.graph.HeaviestNodeLayer"] = function() {
+thx.graph.HeaviestNodeLayer = function() {
 };
+$hxClasses["thx.graph.HeaviestNodeLayer"] = thx.graph.HeaviestNodeLayer;
 thx.graph.HeaviestNodeLayer.__name__ = ["thx","graph","HeaviestNodeLayer"];
 thx.graph.HeaviestNodeLayer.prototype = {
 	lay: function(graph) {
@@ -19054,8 +19378,9 @@ thx.graph.HeaviestNodeLayer.prototype = {
 	}
 	,__class__: thx.graph.HeaviestNodeLayer
 }
-thx.graph.LongestPathLayer = $hxClasses["thx.graph.LongestPathLayer"] = function() {
+thx.graph.LongestPathLayer = function() {
 };
+$hxClasses["thx.graph.LongestPathLayer"] = thx.graph.LongestPathLayer;
 thx.graph.LongestPathLayer.__name__ = ["thx","graph","LongestPathLayer"];
 thx.graph.LongestPathLayer.distanceToASink = function(graph,node) {
 	var traverse = (function($this) {
@@ -19098,8 +19423,9 @@ thx.graph.LongestPathLayer.prototype = {
 	}
 	,__class__: thx.graph.LongestPathLayer
 }
-thx.graph.OneCycleRemover = $hxClasses["thx.graph.OneCycleRemover"] = function() {
+thx.graph.OneCycleRemover = function() {
 };
+$hxClasses["thx.graph.OneCycleRemover"] = thx.graph.OneCycleRemover;
 thx.graph.OneCycleRemover.__name__ = ["thx","graph","OneCycleRemover"];
 thx.graph.OneCycleRemover.prototype = {
 	remove: function(graph) {
@@ -19116,13 +19442,14 @@ thx.graph.OneCycleRemover.prototype = {
 	}
 	,__class__: thx.graph.OneCycleRemover
 }
-thx.graph.SugiyamaMethod = $hxClasses["thx.graph.SugiyamaMethod"] = function(partitioner,layer,splitter,decrosser) {
+thx.graph.SugiyamaMethod = function(partitioner,layer,splitter,decrosser) {
 	var id = 0;
 	this.partitioner = null == partitioner?new thx.graph.GreedyCyclePartitioner():partitioner;
 	this.layer = null == layer?new thx.graph.LongestPathLayer():layer;
 	this.splitter = null == splitter?new thx.graph.EdgeSplitter():splitter;
 	this.decrosser = null == decrosser?thx.graph.GreedySwitchDecrosser.best():decrosser;
 };
+$hxClasses["thx.graph.SugiyamaMethod"] = thx.graph.SugiyamaMethod;
 thx.graph.SugiyamaMethod.__name__ = ["thx","graph","SugiyamaMethod"];
 thx.graph.SugiyamaMethod.prototype = {
 	partitioner: null
@@ -19167,8 +19494,9 @@ thx.graph.SugiyamaMethod.prototype = {
 	}
 	,__class__: thx.graph.SugiyamaMethod
 }
-thx.graph.TwoCycleRemover = $hxClasses["thx.graph.TwoCycleRemover"] = function() {
+thx.graph.TwoCycleRemover = function() {
 };
+$hxClasses["thx.graph.TwoCycleRemover"] = thx.graph.TwoCycleRemover;
 thx.graph.TwoCycleRemover.__name__ = ["thx","graph","TwoCycleRemover"];
 thx.graph.TwoCycleRemover.prototype = {
 	remove: function(graph) {
@@ -19189,8 +19517,9 @@ thx.graph.TwoCycleRemover.prototype = {
 	}
 	,__class__: thx.graph.TwoCycleRemover
 }
-if(!thx.json) thx.json = {}
-thx.json.Json = $hxClasses["thx.json.Json"] = function() { }
+thx.json = {}
+thx.json.Json = function() { }
+$hxClasses["thx.json.Json"] = thx.json.Json;
 thx.json.Json.__name__ = ["thx","json","Json"];
 thx.json.Json.nativeEncoder = null;
 thx.json.Json.nativeDecoder = null;
@@ -19209,11 +19538,12 @@ thx.json.Json.decode = function(value) {
 thx.json.Json.prototype = {
 	__class__: thx.json.Json
 }
-thx.json.JsonDecoder = $hxClasses["thx.json.JsonDecoder"] = function(handler,tabsize) {
+thx.json.JsonDecoder = function(handler,tabsize) {
 	if(tabsize == null) tabsize = 4;
 	this.handler = handler;
 	this.tabsize = tabsize;
 };
+$hxClasses["thx.json.JsonDecoder"] = thx.json.JsonDecoder;
 thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
 	col: null
@@ -19473,13 +19803,14 @@ thx.json.JsonDecoder.prototype = {
 	}
 	,__class__: thx.json.JsonDecoder
 }
-if(!thx.json._JsonDecoder) thx.json._JsonDecoder = {}
+thx.json._JsonDecoder = {}
 thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamError"] = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
-thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
+thx.json.JsonEncoder = function() {
 };
+$hxClasses["thx.json.JsonEncoder"] = thx.json.JsonEncoder;
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
 thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
 thx.json.JsonEncoder.prototype = {
@@ -19552,12 +19883,14 @@ thx.json.JsonEncoder.prototype = {
 	}
 	,__class__: thx.json.JsonEncoder
 }
-thx.math.Const = $hxClasses["thx.math.Const"] = function() { }
+thx.math.Const = function() { }
+$hxClasses["thx.math.Const"] = thx.math.Const;
 thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Const.prototype = {
 	__class__: thx.math.Const
 }
-thx.math.Ease = $hxClasses["thx.math.Ease"] = function() { }
+thx.math.Ease = function() { }
+$hxClasses["thx.math.Ease"] = thx.math.Ease;
 thx.math.Ease.__name__ = ["thx","math","Ease"];
 thx.math.Ease.mode = function(easemode,f) {
 	if(null == f) f = thx.math.Equations.cubic;
@@ -19593,10 +19926,11 @@ thx.math.EaseMode.EaseInEaseOut.__enum__ = thx.math.EaseMode;
 thx.math.EaseMode.EaseOutEaseIn = ["EaseOutEaseIn",3];
 thx.math.EaseMode.EaseOutEaseIn.toString = $estr;
 thx.math.EaseMode.EaseOutEaseIn.__enum__ = thx.math.EaseMode;
-thx.math.Random = $hxClasses["thx.math.Random"] = function(seed) {
+thx.math.Random = function(seed) {
 	if(seed == null) seed = 1;
 	this.seed = seed;
 };
+$hxClasses["thx.math.Random"] = thx.math.Random;
 thx.math.Random.__name__ = ["thx","math","Random"];
 thx.math.Random.prototype = {
 	seed: null
@@ -19608,8 +19942,9 @@ thx.math.Random.prototype = {
 	}
 	,__class__: thx.math.Random
 }
-if(!thx.math.scale) thx.math.scale = {}
-thx.math.scale.IScale = $hxClasses["thx.math.scale.IScale"] = function() { }
+thx.math.scale = {}
+thx.math.scale.IScale = function() { }
+$hxClasses["thx.math.scale.IScale"] = thx.math.scale.IScale;
 thx.math.scale.IScale.__name__ = ["thx","math","scale","IScale"];
 thx.math.scale.IScale.prototype = {
 	scale: null
@@ -19617,7 +19952,8 @@ thx.math.scale.IScale.prototype = {
 	,getRange: null
 	,__class__: thx.math.scale.IScale
 }
-thx.math.scale.NumericScale = $hxClasses["thx.math.scale.NumericScale"] = function() { }
+thx.math.scale.NumericScale = function() { }
+$hxClasses["thx.math.scale.NumericScale"] = thx.math.scale.NumericScale;
 thx.math.scale.NumericScale.__name__ = ["thx","math","scale","NumericScale"];
 thx.math.scale.NumericScale.__interfaces__ = [thx.math.scale.IScale];
 thx.math.scale.NumericScale.prototype = {
@@ -19649,7 +19985,8 @@ thx.math.scale.NumericScale.prototype = {
 	}
 	,__class__: thx.math.scale.NumericScale
 }
-thx.math.scale.Linear = $hxClasses["thx.math.scale.Linear"] = function() { }
+thx.math.scale.Linear = function() { }
+$hxClasses["thx.math.scale.Linear"] = thx.math.scale.Linear;
 thx.math.scale.Linear.__name__ = ["thx","math","scale","Linear"];
 thx.math.scale.Linear.__super__ = thx.math.scale.NumericScale;
 thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,{
@@ -19669,7 +20006,8 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	}
 	,__class__: thx.math.scale.Linear
 });
-thx.math.scale.LinearT = $hxClasses["thx.math.scale.LinearT"] = function() { }
+thx.math.scale.LinearT = function() { }
+$hxClasses["thx.math.scale.LinearT"] = thx.math.scale.LinearT;
 thx.math.scale.LinearT.__name__ = ["thx","math","scale","LinearT"];
 thx.math.scale.LinearT.__interfaces__ = [thx.math.scale.IScale];
 thx.math.scale.LinearT.prototype = {
@@ -19687,8 +20025,8 @@ thx.math.scale.LinearT.prototype = {
 	}
 	,__class__: thx.math.scale.LinearT
 }
-if(!thx.svg) thx.svg = {}
-thx.svg.Arc = $hxClasses["thx.svg.Arc"] = function() {
+thx.svg = {}
+thx.svg.Arc = function() {
 	this._r0 = function(_,_1) {
 		return 0;
 	};
@@ -19702,6 +20040,7 @@ thx.svg.Arc = $hxClasses["thx.svg.Arc"] = function() {
 		return Math.PI;
 	};
 };
+$hxClasses["thx.svg.Arc"] = thx.svg.Arc;
 thx.svg.Arc.__name__ = ["thx","svg","Arc"];
 thx.svg.Arc.fromAngleObject = function() {
 	return new thx.svg.Arc().startAnglef(function(d,_) {
@@ -19747,12 +20086,13 @@ thx.svg.Arc.prototype = {
 	}
 	,__class__: thx.svg.Arc
 }
-thx.svg.Area = $hxClasses["thx.svg.Area"] = function(x,y0,y1,interpolator) {
+thx.svg.Area = function(x,y0,y1,interpolator) {
 	this._x = x;
 	this._y0 = y0;
 	this._y1 = y1;
 	this._interpolator = interpolator;
 };
+$hxClasses["thx.svg.Area"] = thx.svg.Area;
 thx.svg.Area.__name__ = ["thx","svg","Area"];
 thx.svg.Area.prototype = {
 	_x: null
@@ -19782,9 +20122,10 @@ thx.svg.Area.prototype = {
 	}
 	,__class__: thx.svg.Area
 }
-thx.svg.Diagonal = $hxClasses["thx.svg.Diagonal"] = function() {
+thx.svg.Diagonal = function() {
 	this._projection = thx.svg.Diagonal.diagonalProjection;
 };
+$hxClasses["thx.svg.Diagonal"] = thx.svg.Diagonal;
 thx.svg.Diagonal.__name__ = ["thx","svg","Diagonal"];
 thx.svg.Diagonal.diagonalProjection = function(d,_) {
 	return d;
@@ -19826,11 +20167,12 @@ thx.svg.Diagonal.prototype = {
 	}
 	,__class__: thx.svg.Diagonal
 }
-thx.svg.Line = $hxClasses["thx.svg.Line"] = function(x,y,interpolator) {
+thx.svg.Line = function(x,y,interpolator) {
 	this._x = x;
 	this._y = y;
 	this._interpolator = interpolator;
 };
+$hxClasses["thx.svg.Line"] = thx.svg.Line;
 thx.svg.Line.__name__ = ["thx","svg","Line"];
 thx.svg.Line.prototype = {
 	_x: null
@@ -19845,7 +20187,8 @@ thx.svg.Line.prototype = {
 	}
 	,__class__: thx.svg.Line
 }
-thx.svg.LineInternals = $hxClasses["thx.svg.LineInternals"] = function() { }
+thx.svg.LineInternals = function() { }
+$hxClasses["thx.svg.LineInternals"] = thx.svg.LineInternals;
 thx.svg.LineInternals.__name__ = ["thx","svg","LineInternals"];
 thx.svg.LineInternals.linePoints = function(data,x,y) {
 	var points = [], value;
@@ -20080,7 +20423,8 @@ thx.svg.LineInterpolator.CardinalClosed = function(tension) { var $x = ["Cardina
 thx.svg.LineInterpolator.Monotone = ["Monotone",10];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
-thx.svg.LineInterpolators = $hxClasses["thx.svg.LineInterpolators"] = function() { }
+thx.svg.LineInterpolators = function() { }
+$hxClasses["thx.svg.LineInterpolators"] = thx.svg.LineInterpolators;
 thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
 thx.svg.LineInterpolators.parse = function(s,sep) {
 	if(sep == null) sep = "-";
@@ -20131,13 +20475,14 @@ thx.svg.LineInterpolators.argument = function(s) {
 thx.svg.LineInterpolators.prototype = {
 	__class__: thx.svg.LineInterpolators
 }
-thx.svg.PathGeoJson = $hxClasses["thx.svg.PathGeoJson"] = function() {
+thx.svg.PathGeoJson = function() {
 	this.setPointRadius(4.5);
 	this.setProjection(new thx.geo.AlbersUsa());
 	this.pathTypes = new thx.svg.PathTypes(this);
 	this.centroidTypes = new thx.svg.CentroidTypes(this);
 	this.areaTypes = new thx.svg.AreaTypes(this);
 };
+$hxClasses["thx.svg.PathGeoJson"] = thx.svg.PathGeoJson;
 thx.svg.PathGeoJson.__name__ = ["thx","svg","PathGeoJson"];
 thx.svg.PathGeoJson.circle = function(r) {
 	return "m0," + r + "a" + r + "," + r + " 0 1,1 0," + -2 * r + "a" + r + "," + r + " 0 1,1 0," + 2 * r + "z";
@@ -20166,9 +20511,10 @@ thx.svg.PathGeoJson.prototype = {
 	,__class__: thx.svg.PathGeoJson
 	,__properties__: {set_projection:"setProjection",set_pointRadius:"setPointRadius"}
 }
-thx.svg.PathTypes = $hxClasses["thx.svg.PathTypes"] = function(geo) {
+thx.svg.PathTypes = function(geo) {
 	this.geo = geo;
 };
+$hxClasses["thx.svg.PathTypes"] = thx.svg.PathTypes;
 thx.svg.PathTypes.__name__ = ["thx","svg","PathTypes"];
 thx.svg.PathTypes.prototype = {
 	geo: null
@@ -20282,9 +20628,10 @@ thx.svg.PathTypes.prototype = {
 	}
 	,__class__: thx.svg.PathTypes
 }
-thx.svg.AreaTypes = $hxClasses["thx.svg.AreaTypes"] = function(geo) {
+thx.svg.AreaTypes = function(geo) {
 	this.geo = geo;
 };
+$hxClasses["thx.svg.AreaTypes"] = thx.svg.AreaTypes;
 thx.svg.AreaTypes.__name__ = ["thx","svg","AreaTypes"];
 thx.svg.AreaTypes.prototype = {
 	geo: null
@@ -20358,9 +20705,10 @@ thx.svg.AreaTypes.prototype = {
 	}
 	,__class__: thx.svg.AreaTypes
 }
-thx.svg.CentroidTypes = $hxClasses["thx.svg.CentroidTypes"] = function(geo) {
+thx.svg.CentroidTypes = function(geo) {
 	this.geo = geo;
 };
+$hxClasses["thx.svg.CentroidTypes"] = thx.svg.CentroidTypes;
 thx.svg.CentroidTypes.__name__ = ["thx","svg","CentroidTypes"];
 thx.svg.CentroidTypes.prototype = {
 	geo: null
@@ -20410,7 +20758,8 @@ thx.svg.CentroidTypes.prototype = {
 	}
 	,__class__: thx.svg.CentroidTypes
 }
-thx.svg.Symbol = $hxClasses["thx.svg.Symbol"] = function() { }
+thx.svg.Symbol = function() { }
+$hxClasses["thx.svg.Symbol"] = thx.svg.Symbol;
 thx.svg.Symbol.__name__ = ["thx","svg","Symbol"];
 thx.svg.Symbol.triangleDown = function(size) {
 	var rx = Math.sqrt(size / thx.svg.Symbol.sqrt3), ry = rx * thx.svg.Symbol.sqrt3 / 2;
@@ -20463,8 +20812,9 @@ thx.svg.Symbol.star = function(size) {
 thx.svg.Symbol.prototype = {
 	__class__: thx.svg.Symbol
 }
-if(!thx.translation) thx.translation = {}
-thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
+thx.translation = {}
+thx.translation.ITranslation = function() { }
+$hxClasses["thx.translation.ITranslation"] = thx.translation.ITranslation;
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
 thx.translation.ITranslation.prototype = {
 	domain: null
@@ -21173,4 +21523,5 @@ thx.svg.LineInternals._lineBasisBezier2 = [0,1 / 3,2 / 3,0];
 thx.svg.LineInternals._lineBasisBezier3 = [0,1 / 6,2 / 3,1 / 6];
 thx.svg.Symbol.sqrt3 = Math.sqrt(3);
 thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
-rg.app.charts.JSBridge.main()
+rg.app.charts.JSBridge.main();
+})()

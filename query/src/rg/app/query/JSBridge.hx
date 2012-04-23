@@ -1,8 +1,8 @@
 package rg.app.query;
 
 import rg.data.DataPoint;
-import rg.data.reportgrid.ReportGridExecutorCache;
-import rg.data.reportgrid.IExecutorReportGrid;
+import rg.data.ReportGridExecutorCache;
+import rg.data.IExecutorReportGrid;
 import rg.storage.IStorage;
 import rg.storage.MemoryStorage;
 import rg.storage.BrowserStorage;

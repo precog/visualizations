@@ -3,17 +3,10 @@
  * @author Franco Ponticelli
  */
 
-package rg.data.reportgrid;
+package rg.data;
 import hxevents.Dispatcher;
-import rg.data.reportgrid.IExecutorReportGrid;
-/*
-import rg.util.Periodicity;
-import rg.util.Properties;
-import rg.data.IDataSource;
-import rg.data.reportgrid.QueryAst;
-import thx.error.Error;
-import rg.data.source.ITransform;
-*/
+import rg.data.IExecutorReportGrid;
+
 using Arrays;
 
 class DataSourceReportGridGraph implements IDataSource

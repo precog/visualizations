@@ -1,7 +1,7 @@
 package rg.query;
 
 import rg.query.Query;
-import rg.data.reportgrid.IExecutorReportGrid;
+import rg.data.IExecutorReportGrid;
 import rg.util.Periodicity;
 using Arrays;
 

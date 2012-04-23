@@ -3,9 +3,9 @@
  * @author Franco Ponticelli
  */
 
-package rg.data.reportgrid;
+package rg.data;
 
-interface IExecutorReportGrid 
+interface IExecutorReportGrid
 {
 	public function children(path : String, options : { ?type : String, ?property : String}, success : Array<String> -> Void, ?error : String -> Void) : Void;
 	public function propertyCount(path : String, options : { property : String }, success : Int -> Void, ?error : String -> Void) : Void;

@@ -3711,7 +3711,7 @@ rg.app.query.JSBridge.createQuery = function(executor) {
 rg.app.query.JSBridge.main = function() {
 	var storage;
 	if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
-	var r = (typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
+	var r = (typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid, timeout = 120, executor = new rg.data.ReportGridExecutorCache(r,storage,timeout);
 	r.query = rg.app.query.JSBridge.createQuery(executor);
 	r.date = { range : function(a,b,p) {
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
@@ -3726,7 +3726,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.3.7.1601"};
+	r.info.query = { version : "1.3.8.1610"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -3734,13 +3734,13 @@ rg.app.query.JSBridge.main = function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
 	r.cache = { executor : executor, disable : function() {
-		if(null == executor || Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
+		if(null == executor || Std["is"](executor,rg.data.ReportGridExecutorCache)) {
 			r.cache.executor = executor = r;
 			r.query = rg.app.query.JSBridge.createQuery(executor);
 		}
 	}, enable : function() {
-		if(null == executor || !Std["is"](executor,rg.data.reportgrid.ReportGridExecutorCache)) {
-			r.cache.executor = executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
+		if(null == executor || !Std["is"](executor,rg.data.ReportGridExecutorCache)) {
+			r.cache.executor = executor = new rg.data.ReportGridExecutorCache(r,storage,timeout);
 			r.query = rg.app.query.JSBridge.createQuery(executor);
 		}
 	}, setTimeout : function(t) {
@@ -3768,11 +3768,10 @@ rg.app.query.JSBridge.prototype = {
 	__class__: rg.app.query.JSBridge
 }
 rg.data = {}
-rg.data.reportgrid = {}
-rg.data.reportgrid.IExecutorReportGrid = function() { }
-$hxClasses["rg.data.reportgrid.IExecutorReportGrid"] = rg.data.reportgrid.IExecutorReportGrid;
-rg.data.reportgrid.IExecutorReportGrid.__name__ = ["rg","data","reportgrid","IExecutorReportGrid"];
-rg.data.reportgrid.IExecutorReportGrid.prototype = {
+rg.data.IExecutorReportGrid = function() { }
+$hxClasses["rg.data.IExecutorReportGrid"] = rg.data.IExecutorReportGrid;
+rg.data.IExecutorReportGrid.__name__ = ["rg","data","IExecutorReportGrid"];
+rg.data.IExecutorReportGrid.prototype = {
 	children: null
 	,propertyCount: null
 	,propertySeries: null
@@ -3788,19 +3787,19 @@ rg.data.reportgrid.IExecutorReportGrid.prototype = {
 	,histogram: null
 	,propertiesHistogram: null
 	,events: null
-	,__class__: rg.data.reportgrid.IExecutorReportGrid
+	,__class__: rg.data.IExecutorReportGrid
 }
-rg.data.reportgrid.ReportGridExecutorCache = function(executor,storage,timeout) {
+rg.data.ReportGridExecutorCache = function(executor,storage,timeout) {
 	this.executor = executor;
 	this.storage = storage;
 	this.queue = new Hash();
 	this.timeout = timeout;
 	this.cleanOld();
 };
-$hxClasses["rg.data.reportgrid.ReportGridExecutorCache"] = rg.data.reportgrid.ReportGridExecutorCache;
-rg.data.reportgrid.ReportGridExecutorCache.__name__ = ["rg","data","reportgrid","ReportGridExecutorCache"];
-rg.data.reportgrid.ReportGridExecutorCache.__interfaces__ = [rg.data.reportgrid.IExecutorReportGrid];
-rg.data.reportgrid.ReportGridExecutorCache.prototype = {
+$hxClasses["rg.data.ReportGridExecutorCache"] = rg.data.ReportGridExecutorCache;
+rg.data.ReportGridExecutorCache.__name__ = ["rg","data","ReportGridExecutorCache"];
+rg.data.ReportGridExecutorCache.__interfaces__ = [rg.data.IExecutorReportGrid];
+rg.data.ReportGridExecutorCache.prototype = {
 	timeout: null
 	,executor: null
 	,storage: null
@@ -3867,8 +3866,8 @@ rg.data.reportgrid.ReportGridExecutorCache.prototype = {
 		var periodicity = options.periodicity;
 		if(null == periodicity && options.start != null && options.end != null) periodicity = rg.util.Periodicity.defaultPeriodicity(options.end - options.start);
 		if(null == periodicity) return;
-		if(null != options.start) options.start = Dates.snap(options.start,periodicity,-1);
-		if(null != options.end) options.end = Dates.snap(options.end,periodicity,-1);
+		if(null != options.start && periodicity != "single") options.start = Dates.snap(options.start,periodicity,-1);
+		if(null != options.end && periodicity != "single") options.end = Dates.snap(options.end,periodicity,-1);
 	}
 	,storageSuccess: function(id,success) {
 		var me = this;
@@ -3892,12 +3891,12 @@ rg.data.reportgrid.ReportGridExecutorCache.prototype = {
 		};
 	}
 	,clearValueIfOld: function(id) {
-		var idd = rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id;
+		var idd = rg.data.ReportGridExecutorCache.DATE_PREFIX + id;
 		var v = this.storage.get(idd);
 		if(null == v) return;
 		if(v < Date.now().getTime() - this.timeout * 1000) {
 			this.storage.remove(idd);
-			this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+			this.storage.remove(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
 		}
 	}
 	,delayedCleanup: function(id) {
@@ -3907,23 +3906,23 @@ rg.data.reportgrid.ReportGridExecutorCache.prototype = {
 		},this.timeout * 1000);
 	}
 	,cacheSet: function(id,value) {
-		this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id,Date.now().getTime());
-		this.storage.set(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id,value);
+		this.storage.set(rg.data.ReportGridExecutorCache.DATE_PREFIX + id,Date.now().getTime());
+		this.storage.set(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id,value);
 	}
 	,cacheGet: function(id) {
 		this.clearValueIfOld(id);
-		var v = this.storage.get(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+		var v = this.storage.get(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
 		if(null != v) this.delayedCleanup(id);
 		return v;
 	}
 	,cacheRemove: function(id) {
-		this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id);
-		this.storage.remove(rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id);
+		this.storage.remove(rg.data.ReportGridExecutorCache.DATE_PREFIX + id);
+		this.storage.remove(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
 	}
 	,ids: function() {
-		var len = rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX.length;
+		var len = rg.data.ReportGridExecutorCache.VALUE_PREFIX.length;
 		return Iterators.filter(this.storage.keys(),function(cid) {
-			return cid.substr(0,len) == rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX;
+			return cid.substr(0,len) == rg.data.ReportGridExecutorCache.VALUE_PREFIX;
 		}).map(function(cid,_) {
 			return cid.substr(len);
 		});
@@ -3941,16 +3940,16 @@ rg.data.reportgrid.ReportGridExecutorCache.prototype = {
 		return this.queue.get(id);
 	}
 	,idDate: function(id) {
-		return rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX + id;
+		return rg.data.ReportGridExecutorCache.DATE_PREFIX + id;
 	}
 	,idValue: function(id) {
-		return rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX + id;
+		return rg.data.ReportGridExecutorCache.VALUE_PREFIX + id;
 	}
 	,uidquery: function(method,path,options) {
 		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
 		return haxe.Md5.encode(s);
 	}
-	,__class__: rg.data.reportgrid.ReportGridExecutorCache
+	,__class__: rg.data.ReportGridExecutorCache
 }
 rg.query = {}
 rg.query.BaseQuery = function(async,first) {
@@ -7366,8 +7365,8 @@ Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
 Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 js.Lib.onerror = null;
-rg.data.reportgrid.ReportGridExecutorCache.DATE_PREFIX = "D:";
-rg.data.reportgrid.ReportGridExecutorCache.VALUE_PREFIX = "V:";
+rg.data.ReportGridExecutorCache.DATE_PREFIX = "D:";
+rg.data.ReportGridExecutorCache.VALUE_PREFIX = "V:";
 rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";

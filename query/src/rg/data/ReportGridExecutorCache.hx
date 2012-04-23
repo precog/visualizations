@@ -1,6 +1,6 @@
-package rg.data.reportgrid;
+package rg.data;
 
-import rg.data.reportgrid.IExecutorReportGrid;
+import rg.data.IExecutorReportGrid;
 import rg.storage.IStorage;
 using Iterators;
 using Arrays;
@@ -133,9 +133,9 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 			periodicity = rg.util.Periodicity.defaultPeriodicity(options.end-options.start);
 		if(null == periodicity)
 			return;
-		if(null != options.start)
+		if(null != options.start && periodicity != "single")
 			options.start = Dates.snap(options.start, periodicity, -1);
-		if(null != options.end)
+		if(null != options.end && periodicity != "single")
 			options.end = Dates.snap(options.end, periodicity, -1);
 	}
 
